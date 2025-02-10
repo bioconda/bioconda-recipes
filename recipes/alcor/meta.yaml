@@ -1,0 +1,45 @@
+# This file created by conda-build 3.23.3
+# meta.yaml template
+# ------------------------------------------------
+{% set version = "1.9" %}
+
+package:
+  name: alcor
+  version: {{ version }}
+
+build:
+   # Passes some invalid flags for clang
+   skip: True  # [osx]
+   number: 5
+   run_exports:
+     - {{ pin_subpackage("alcor", max_pin="x.x") }}  
+
+source:
+  url: https://github.com/cobilab/alcor/archive/v{{ version }}.tar.gz
+  sha256: 69f4e18207882f1fa6fda9df53dbe1bb35b9ccffa84371f587a3b9e646f40d59
+
+requirements:
+  build:
+    - make  
+    - {{ compiler('cxx') }}
+    - cmake >=2.8.4
+  host:
+    - zlib
+  run:
+    - zlib
+
+
+test:
+  commands:
+    - AlcoR --help # Test that alcor can be run with the --help flag
+
+about:
+  home: https://cobilab.github.io/alcor/
+  license: GPL v3 License
+  license_file: LICENSE
+  license_family: GPL
+  summary: Software for alignment-free simulation, mapping, and visualization of low-complexity regions in FASTA data.
+
+extra:
+  additional-platforms:
+    - linux-aarch64

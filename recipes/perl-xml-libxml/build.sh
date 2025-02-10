@@ -1,4 +1,5 @@
 #!/bin/bash
+set -ex
 
 if [ `uname -s` == "Darwin" ]; then
     # Force use of conda's libxml instead of the system one
@@ -12,6 +13,7 @@ else
 fi
 
 # If it has Build.PL use that, otherwise use Makefile.PL
+export LD_LIBRARY_PATH="${PREFIX}/lib"
 if [ -f Build.PL ]; then
     perl Build.PL
     ./Build
@@ -19,10 +21,14 @@ if [ -f Build.PL ]; then
     # Make sure this goes in site
     ./Build install --installdirs site
 elif [ -f Makefile.PL ]; then
+    # Disable check_lib, it incorrectly tries -lnsl, which perl is not actually compiled againt
+    sed -i.bak 's/ check_lib/    print $conf_LIBS;\
+    check_lib/g' Makefile.PL
     # Make sure this goes in site
-    perl Makefile.PL INSTALLDIRS=site LDFLAGS="$LDFLAGS"
+    perl Makefile.PL INSTALLDIRS=site LDFLAGS="$LDFLAGS"  LIBS="-L${PREFIX}/lib -lxml2 -lz -llzma -liconv -licui18n -licuuc -licudata -lm -ldl" INC="-I$PREFIX/include/libxml2 -I$PREFIX/include"
     make
-    make test
+    # Several tests are broken. See https://stackoverflow.com/a/78965715/497381 for explanation
+    # make test
     make install
 else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'

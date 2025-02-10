@@ -1,5 +1,5 @@
 {% set name = "drop" %}
-{% set version = "1.0.5" %} 
+{% set version = "1.4.0" %} 
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/gagneurlab/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: eb780f2dfcaf6d5c914bc066f7ec55ac69874d389c3fa7db5077456e24ff38a8
+  sha256: e96585a06fe0a386d940c4bd31a595356f0041ae8b063fd55108eb4e84fe1c15
 
 build:
   number: 0
@@ -15,6 +15,8 @@ build:
   entry_points:
     - drop=drop.cli:main
   script: "{{ PYTHON }} -m pip install . -vv --no-deps --ignore-installed"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
 
 requirements:
   host:
@@ -27,20 +29,20 @@ requirements:
     - click-log
     - python-dateutil
     # snakemake/wbuild
-    - snakemake >=5.5.2
-    - wbuild >=1.7.1
+    - wbuild >=1.8=pyhdfd78af_2
+    - snakemake-minimal >=5.5.2
     - pandoc
     - graphviz
     # command line tools
     - bc
     - wget
     - htslib
-    - samtools >=1.7
-    - bcftools >=1.7
+    - samtools >=1.9
+    - bcftools >=1.9
     - gatk4 >=4.0.4
     - star >=2.7
     # R dependencies
-    - r-base>=4.0.0
+    - r-base >=4.0.0
     - r-rmarkdown
     - r-knitr
     - r-ggplot2
@@ -51,26 +53,22 @@ requirements:
     - r-tidyr
     - r-magrittr
     - r-devtools
-    - r-tmae
+    - r-tmae >=1.0.4
     # bioconductor packages
     - bioconductor-deseq2
-    - bioconductor-GenomicScores
-    - bioconductor-outrider >=1.6.1
-    - bioconductor-fraser >=1.2.1
+    - bioconductor-genomicscores
+    - bioconductor-outrider >=1.20.1
+    - bioconductor-fraser >=1.99.4
     - bioconductor-variantannotation
-      #- bioconductor-bsgenome.hsapiens.ucsc.hg19
-      #- bioconductor-mafdb.gnomad.r2.1.hs37d5
-      #- bioconductor-mafdb.gnomad.r2.1.grch38
-
+    
 test:
   imports:
     - drop
-  requires:
-    - pip
-    - pytest
-    - pytest-runner
-  source_files:
-    - tests/
+  commands:
+    - "drop --version"
+    - "gatk --version"
+    - "samtools --version"
+    - "bcftools --version"
 
 about:
   home: https://github.com/gagneurlab/drop
@@ -89,4 +87,5 @@ extra:
     - https://doi.org/10.1038/s41596-020-00462-5
   recipe-maintainers:
     - c-mertes
-    - mumichae
+    - nickhsmith
+    - vyepez88

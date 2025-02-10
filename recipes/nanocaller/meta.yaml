@@ -1,0 +1,48 @@
+{% set name = "nanocaller" %}
+{% set version = "3.6.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/WGLab/NanoCaller/archive/refs/tags/v{{ version }}.zip
+  sha256: df8288b4bd89c6ef178e9ee0569102bc90908a84fdac1421002409c278c4336b
+
+build:
+  number: 1
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('nanocaller', max_pin="x") }}
+
+requirements:
+  run:
+    - python >=3.8
+    - samtools >=1.10
+    - vcflib
+    - bcftools
+    - numpy >=1.18
+    - tensorflow >=2.4,<=2.15.0
+    - pysam
+    - intervaltree
+    - muscle >=3.8,<4
+    - whatshap >=2.2
+    - parasail-python
+    - tqdm
+    - rtg-tools
+
+test:
+  imports:
+    - pysam
+    - parasail
+    - tensorflow
+  commands:
+    - which NanoCaller
+    - NanoCaller --help
+
+about:
+  home: 'https://github.com/WGLab/NanoCaller'
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "NanoCaller for accurate detection of SNPs and indels in difficult-to-map regions from long-read sequencing."

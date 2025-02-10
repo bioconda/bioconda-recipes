@@ -1,0 +1,51 @@
+{% set name = "hybracter" %}
+{% set version = "0.11.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/hybracter-{{ version }}.tar.gz
+  sha256: 9148a620346eca55f7c5491744ca86092186883abe45e0917640029714f1d049
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - hybracter=hybracter.__main__:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('hybracter', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+  run:
+    - python >=3.9
+    - snakemake-minimal >=7.14.0
+    - pyyaml >=6.0
+    - click >=8.1.3
+    - attrmap >=0.0.5
+    - biopython >=1.76
+
+test:
+  imports:
+    - hybracter
+  commands:
+    - hybracter --help
+
+about:
+  home: "https://github.com/gbouras13/hybracter"
+  summary: "An automated long-read first bacterial genome assembly pipeline."
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: "https://hybracter.readthedocs.io/en/latest"
+  dev_url: "https://github.com/gbouras13/hybracter"
+
+extra:
+  recipe-maintainers:
+    - gbouras13

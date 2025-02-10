@@ -1,5 +1,5 @@
 {% set name = "ganon" %}
-{% set version = "1.0.0" %}
+{% set version = "2.1.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -8,46 +8,50 @@ package:
 source:
   - folder: ganon
     url: https://github.com/pirovc/{{ name }}/archive/{{ version }}.tar.gz
-    sha256: 1a24da960a3ef99a93c8d64a26d3a2ed9ae25ba1bb9f8333a08af9001a82353a
-  - folder: seqan3
-    url: https://github.com/seqan/seqan3/releases/download/3.1.0-rc.1/seqan3-3.1.0-rc.1-Source.tar.xz
-    sha256: 8284c051e81bc7245408d8b902de7efc9dcb3e2a14e966d43c6654411adae59f
+    sha256: bba93f9c45c922d6d309fcb81dfeddac6ef5439852ff1c48a1e6fed299e29f8b
+  - folder: robin-hood-hashing
+    url: https://github.com/martinus/robin-hood-hashing/archive/refs/tags/3.11.3.tar.gz
+    sha256: dcf2b7fa9ef9dd0c67102d94c28e8df3effbe1845e0ed1f31f4772ca5e857fc4
     
 build:
-  number: 0
-  skip: True  # [py<35 or osx]
+  number: 2
+  skip: True  # [py<36 or osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-    - cmake >=3.14
+    - cmake >=3.4
   host:
     - bzip2
-    - catch2 >=2.7.0
-    - cxxopts ==2.2.0
+    - seqan3 ==3.3.0
+    - catch2 ==2.*
+    - cxxopts >=2.2.0
     - python
-    - pandas >=0.22.0
-    - taxsbp ==1.1.1
-    - gawk
+    - pandas >=1.2.0
+    - multitax >=1.3.1
+    - genome_updater >=0.6.3
     - grep
-    - tar
-    - curl
-    - wget
     - coreutils
+    - curl
+    - diffutils
     - zlib
+    - parameterized >=0.9.0
+    - raptor ==3.*
   run:
     - bzip2
     - python
-    - pandas >=0.22.0
-    - taxsbp ==1.1.1
-    - gawk
+    - pandas >=1.2.0
+    - multitax >=1.3.1
+    - genome_updater >=0.6.3
     - grep
-    - tar
-    - curl
-    - wget
     - coreutils
+    - curl
+    - diffutils 
     - zlib
+    - raptor ==3.*
     
 test:
   commands:
@@ -57,12 +61,14 @@ test:
 
 about:
   home: https://github.com/pirovc/ganon
-  summary: "ganon: a read classification tool using Interleaved Bloom Filters"
+  summary: "ganon2 classifies genomic sequences against large sets of references efficiently,"
   description: |
-          ganon is a k-mer based read classification tool which uses Interleaved Bloom Filters
-          in conjunction with a taxonomic clustering and a k-mer counting-filtering scheme
+          ganon2 classifies genomic sequences against large sets of references efficiently, 
+          with integrated download and update of databases (refseq/genbank), taxonomic profiling 
+          (ncbi/gtdb), binning and hierarchical classification, customized reporting and more
   license: MIT License
   license_family: MIT
+  license_file: {{ SRC_DIR }}/ganon/LICENSE
 
 extra:
   identifiers:

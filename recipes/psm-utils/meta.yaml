@@ -1,0 +1,58 @@
+{% set name = "psm-utils" %}
+{% set version = "1.3.0" %}
+{% set sha256 = "d17e5217a7ea3c64749dddc840e5f1d01441d53b07566427ad17812720e48144" %}
+
+package:
+  name: {{ name|lower }}
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/psm_utils-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  entry_points:
+    - psm_utils=psm_utils.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+    - setuptools
+  run:
+    - python >=3.7
+    - pyteomics >=4
+    - lxml
+    - psims
+    - pandas
+    - numpy
+    - click
+    - rich
+    - pydantic
+    - sqlalchemy
+    - pyarrow
+
+test:
+  imports:
+    - psm_utils
+
+about:
+  home: https://github.com/compomics/psm_utils
+  license: Apache-2.0
+  license_file: LICENSE
+  license_family: APACHE
+  summary: "Common utilities for parsing and handling peptide-spectrum matches and search engine results."
+  doc_url: https://psm_utils.readthedocs.io
+  dev_url: https://github.com/compomics/psm_utils
+
+extra:
+  identifiers:
+    - doi:10.1021/acs.jproteome.2c00609
+    - biotools:psm_utils
+  recipe-maintainers:
+    - compomics

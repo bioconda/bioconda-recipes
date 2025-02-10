@@ -1,0 +1,51 @@
+{% set name = "dropkick" %}
+{% set version = "1.2.8" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/dropkick-{{ version }}.tar.gz
+  sha256: 4bfbd23984ac11669691818f29e1f0033e32dd7c2236b16d8a2f20fe60c923c6
+
+build:
+  number: 1
+  # "Failed to find libgfortran.3.dylib" build error on OSX
+  skip: True  # [py < 36 or osx]
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  entry_points:
+    - dropkick = dropkick.__main__:main
+  run_exports:
+    - {{ pin_subpackage('dropkick', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('fortran') }}
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - numpy
+  run:
+    - python
+    - scipy >=0.14.1
+    - pandas
+    - scikit-learn >=0.18.0
+    - scikit-image
+    - matplotlib-base >=3.0.3
+    - scanpy
+    - {{ pin_compatible('numpy') }}
+
+test:
+  imports:
+    - dropkick
+  commands:
+    - dropkick --help
+
+about:
+  home: https://github.com/KenLauLab/dropkick
+  summary: Automated scRNA-seq filtering
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE

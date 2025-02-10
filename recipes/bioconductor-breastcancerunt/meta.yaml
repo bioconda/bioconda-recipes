@@ -1,22 +1,22 @@
-{% set version = "1.30.0" %}
+{% set version = "1.44.0" %}
 {% set name = "breastCancerUNT" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 6eb888e2d9ac5985ed8f4ad0405b803e
+about:
+  description: Gene expression data from a breast cancer study published by Sotiriou et al. in 2007, provided as an eSet.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Gene expression dataset published by Sotiriou et al. [2007] (UNT).
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-breastcancerunt", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: survcomp, genefu, Biobase
 requirements:
   host:
@@ -24,12 +24,15 @@ requirements:
   run:
     - r-base
     - curl
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 59b7e8804b56e38b43e6fdbe27c7467d
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Gene expression dataset published by Sotiriou et al. [2007] (UNT).'
-  description: 'Gene expression data from a breast cancer study published by Sotiriou et al. in 2007, provided as an eSet.'
+    - $R -e "library('{{ name }}')"
 

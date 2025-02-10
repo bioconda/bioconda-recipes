@@ -1,6 +1,4 @@
-{% set version = '0.0.13' %}
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set version = '0.0.15' %}
 
 package:
   name: r-restfulr
@@ -10,25 +8,19 @@ source:
   url:
     - {{ cran_mirror }}/src/contrib/restfulr_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/restfulr/restfulr_{{ version }}.tar.gz
-  sha256: 7b59f5887aaf02f46a80617f4d1e0ffd4e11e4840e9e2fbd486a9a9c7f2d64b6
+  sha256: 40ff8f1fb2987af2223e1a855bb1680c5ce2143fbce7ebc42f1edb291f80e692
 
 build:
-  merge_build_host: True  # [win]
-  number: 1
+  number: 5
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports:
+    - {{ pin_subpackage("r-restfulr", max_pin="x.x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}              # [not win]
-    - {{ compiler('m2w64_c') }}        # [win]
-    - {{ posix }}filesystem        # [win]
-    - {{ posix }}make
-    - {{ posix }}sed               # [win]
-    - {{ posix }}coreutils         # [win]
-    - {{ posix }}zip               # [win]
-    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
+    - {{ compiler('c') }}
   host:
     - r-base
     - r-rcurl
@@ -38,7 +30,6 @@ requirements:
     - r-yaml
   run:
     - r-base
-    - {{ native }}gcc-libs         # [win]
     - r-rcurl
     - bioconductor-s4vectors >=0.13.15
     - r-xml
@@ -47,9 +38,11 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('restfulr')"           # [not win]
-    - "\"%R%\" -e \"library('restfulr')\""  # [win]
+    - $R -e "library('restfulr')"
 
+extra:
+  additional-platforms:
+    - linux-aarch64
 about:
   home: https://CRAN.R-project.org/package=restfulr
   license: Artistic-2.0
@@ -57,24 +50,3 @@ about:
   license_family: OTHER
   license_file:
     - '{{ environ["PREFIX"] }}/lib/R/share/licenses/Artistic-2.0'
-
-extra:
-  recipe-maintainers:
-    - conda-forge/r
-
-# Package: restfulr
-# Type: Package
-# Title: R Interface to RESTful Web Services
-# Version: 0.0.13
-# Author: Michael Lawrence
-# Maintainer: Michael Lawrence <michafla@gene.com>
-# Description: Models a RESTful service as if it were a nested R list.
-# License: Artistic-2.0
-# Imports: XML, RCurl, rjson, S4Vectors (>= 0.13.15), yaml
-# Depends: R (>= 3.4.0), methods
-# Suggests: getPass, rsolr, RUnit
-# Collate: CRUDProtocol-class.R CacheInfo-class.R Credentials-class.R HTTP-class.R Media-class.R MediaCache-class.R RestUri-class.R RestContainer-class.R test_restfulr_package.R utils.R
-# NeedsCompilation: yes
-# Packaged: 2017-08-03 00:05:01 UTC; larman
-# Repository: CRAN
-# Date/Publication: 2017-08-06 17:10:26 UTC

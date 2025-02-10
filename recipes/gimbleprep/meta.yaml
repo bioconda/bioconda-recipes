@@ -1,0 +1,54 @@
+{% set name = "gimbleprep" %}
+{% set version = "0.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/LohseLab/gimbleprep/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: afa5311acd8030635073dbe01b0e2cea55beecf217b968e43eb548bde418ba06
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - gimbleprep = gimbleprep.interface:main
+  script: {{ PYTHON }} setup.py install --single-version-externally-managed --record=record.txt
+  run_exports:
+    - {{ pin_subpackage("gimbleprep", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+    - docopt
+    - numpy
+    - pandas
+    - parallel
+    - pysam
+    - tqdm
+    - bedtools
+    - bcftools
+    - samtools
+    - vcflib
+    - mosdepth ==0.3.2
+
+test:
+  commands:
+    - gimbleprep --help
+
+about:
+  home: https://github.com/LohseLab/gimbleprep
+  summary: Preprocess fasta, bam and vcf files ready to be used by gimble
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  doc_url: https://github.com/LohseLab/gimbleprep
+
+extra:
+  recipe-maintainers:
+    - GertjanBisschop
+    - DRL

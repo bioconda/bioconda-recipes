@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-# Compile using make
-make 
-
-# Copy executable to environment bin directory. This folder is included in the path when the env is activated
-mkdir -p $PREFIX/bin
+if [[ ${target_platform} =~ osx.* ]]; then
+	make FC="${FC}" CC="${FC}" CXX="${CXX}"
+else
+	make FC="${FC}" CC="${FC}"
+fi
 
 chmod u+x Cur+
 chmod u+x Canal

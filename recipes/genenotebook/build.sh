@@ -4,36 +4,26 @@ set -exo pipefail
 
 outdir=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 mkdir -p $outdir $PREFIX/bin
-pwd
-ls -lah .
 
-#CC --version || echo 'cc not found'
-#GCC --version || echo 'gcc not found'
-#
-#git clone https://github.com/meteor/meteor
-#
-#pushd meteor
-#git checkout 39cc07472f8f1dc820b29b8c5a30813051d62700 #V1.9.0 commit
-#
-#
-#NODE_FROM_SRC='' ./scripts/build-node-for-dev-bundle.sh
-#
-#./scripts/generate-dev-bundle.sh
-#
-#./meteor --version
-#export PATH=$(pwd):$PATH
-#popd
-#
+# Fix architecture value
+export ARCH=$(uname -m)
+
+# Need a home for osx
+export HOME="/tmp/"
+
+# Install meteor here (instead of in npm run bundle) because we need to patch the install script
+curl "https://install.meteor.com/?release=2.8.0" > meteor.sh
+chmod a+x meteor.sh
+sed -i.bak 's|PREFIX=|#PREFIX=|' meteor.sh
+./meteor.sh
+
 npm install --unsafe-perm
 
 export PATH=$PATH:"$HOME/.meteor"
-#ls -lah .
-#
-#meteor node -v
 
+# Now run the normal gnb install
 METEOR_ALLOW_SUPERUSER=1 METEOR_DISABLE_OPTIMISTIC_CACHING=1 npm run bundle
 
 cp -R genenotebook_v${PKG_VERSION}/* $outdir
 
-ln -s ${outdir}/genenotebook ${PREFIX}/bin/genenotebook
-
+ln -s ${outdir}/genenotebook.js ${PREFIX}/bin/genenotebook

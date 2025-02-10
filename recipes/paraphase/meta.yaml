@@ -1,0 +1,47 @@
+{% set version = "3.2.0" %}
+{% set sha256 = "58f7763b7fc4368a0051a1ac338e0e77922027048e68784731e31b07b811b8c5" %}
+
+package:
+  name: paraphase
+  version: {{ version }}
+
+source:
+  url: https://github.com/PacificBiosciences/paraphase/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - paraphase = paraphase.__main__:main
+  script: python -m pip install --no-deps -vv .
+  run_exports:
+    - {{ pin_subpackage("paraphase", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools
+    - pip
+    - pytest-runner
+  run:
+    - python >=3.8
+    - numpy >=1.16
+    - scipy >=1.2
+    - pysam >=0.15.3
+    - networkx >=2.8.2
+    - matplotlib-base
+    - pyyaml
+
+test:
+  commands:
+    - paraphase -h
+
+about:
+  home: https://github.com/PacificBiosciences/paraphase
+  license: BSD-3-Clause-Clear
+  summary: HiFi-based caller for highly homologous genes
+
+extra:
+  recipe-maintainers:
+    - xiao-chen-xc

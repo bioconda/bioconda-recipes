@@ -4,8 +4,6 @@ grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 mkdir -p ~/.R
 echo -e "CC=$CC
 FC=$FC
-CFLAGS=-fcommon $CFLAGS
-CXXFLAGS=-fcommon $CXXFLAGS
 CXX=$CXX
 CXX98=$CXX
 CXX11=$CXX

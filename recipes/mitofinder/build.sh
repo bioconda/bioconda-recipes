@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/bin/bash
 
 ./install.sh
 

@@ -1,0 +1,47 @@
+{% set name = "hic-straw" %}
+{% set version = "1.3.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/hic-straw-{{ version }}.tar.gz
+  sha256: fb0f878127f6b1d096303c67793477c83fddf3f4a1a8e29a9d92952634989876
+
+build:
+  skip: true  # [py<36]
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 5
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - python
+    - curl
+    - zlib
+    - pybind11 >=2.4
+    - pip
+  run:
+    - python
+    - pybind11 >=2.4
+
+test:
+  imports:
+    - hicstraw
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/aidenlab/straw
+  summary: Straw bound with pybind11
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - Phlya

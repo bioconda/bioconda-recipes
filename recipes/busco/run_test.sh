@@ -2,6 +2,7 @@
 
 set -euxo pipefail
 
+stats.sh
 prodigal -h
 makeblastdb -h
 tblastn -h
@@ -13,3 +14,4 @@ optimize_augustus.pl
 hmmsearch -h
 run_sepp.py -h
 metaeuk -h
+miniprot --version

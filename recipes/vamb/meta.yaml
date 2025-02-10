@@ -1,33 +1,33 @@
-{% set version = "3.0.2" %}
+{% set version = "4.1.3" %}
 
 package:
   name: vamb
   version: {{ version }}
 
 source:
-  url: https://github.com/RasmussenLab/vamb/archive/{{ version }}.tar.gz
-  sha256: fb63011a89ec7fe1052983973dda6cdcdd796938cdf80ed1013f253c7ded8c67
+  url: https://github.com/RasmussenLab/vamb/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 3b82a36138ebbebf6efe5203da4f9dfae9d0335137bac9775d5b427021aa5645
 
 build:
-  number: 1
-  # Skipping py>=38 since no pytorch-cpu builds for Py3.8 are available.	  skip: True  # [py27]
-  skip: True  # [py<30 or py>=38]
+  number: 0
   entry_points:
     - vamb=vamb.__main__:main
   script: {{ PYTHON }} -m pip install . --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage('vamb', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - python
+    - python >=3.9.0,<3.12
+    - cython >=3.0.0
     - pip
-    - cython >=0.25.2
   run:
-    - python
-    - numpy >=1.15
-    - pytorch-cpu >=0.4
-    - pysam >=0.14
+    - python >=3.9.0,<3.12
+    - numpy ==1.24.2
+    - pytorch ==1.13.1
+    - pycoverm ==0.6.2
 
 test:
   imports:

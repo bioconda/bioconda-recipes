@@ -1,25 +1,25 @@
-{% set version = "0.1.9" %}
+{% set name = "elastic-blast" %}
+{% set version = "1.3.1" %}
 
 package:
-  name: elastic-blast
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/source/e/elastic-blast/elastic_blast-{{ version }}.tar.gz
-  sha256: e243f18c0cf2df64334a94c86e742e136fbf9b2796e55298af6d40032a6cd021
+  url: https://files.pythonhosted.org/packages/95/5e/00375acbe2a0c666c8643cbbf9c5c7d5ed6c74eea80767f7d4a3f05ffda9/elastic_blast-{{ version }}.tar.gz
+  sha256: ed64887dedfc1da109ea1ddb05e96c0e0268e6a372656f8412a7bac973e6e31c
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . -vvv
+  run_exports:
+    - {{ pin_subpackage("elastic-blast", max_pin="x") }}
 
 requirements:
   host:
     - pip
     - python >=3.7
-    - google-cloud-sdk
-    - awscli
-    - awslimitchecker
     - python-packit
     - importlib-metadata
   run:
@@ -29,8 +29,11 @@ requirements:
     - awslimitchecker
     - tenacity
     - google-cloud-sdk
-    - kubernetes-client ==1.18.8
+    - kubernetes-client
+    - importlib-resources ==6.1.1
     - importlib-metadata
+    - dataclasses-json
+    - pex ==2.9.0
 
 test:
   commands:
@@ -40,9 +43,9 @@ test:
     - gsutil --version
     - aws --version
     - kubectl version --client=true
-    - elastic-blast submit --dry-run --loglevel DEBUG --logfile stderr --program blastn --db nt --results gs://dummy-bucket --gcp-project my-gcp-project --gcp-zone us-east4-b --gcp-region us-east4 --query /dev/null
+
 about:
-  home: https://pypi.org/project/elastic-blast/
+  home: https://github.com/ncbi/elastic-blast/
   license: Public Domain
   license_family: PUBLIC-DOMAIN
   license_file: LICENSE.md
@@ -50,6 +53,9 @@ about:
   dev_url: https://github.com/ncbi/elastic-blast/
 
 extra:
+  identifiers:
+    - biotools:blast
+    - doi:10.1186/s12859-023-05245-9
   recipe-maintainers:
     - r78v10a07
     - christiam

@@ -1,19 +1,17 @@
 #!/bin/bash
-set -x -e -o pipefail
 
-export CPPFLAGS="-I${PREFIX}/include"
-export LDFLAGS="-L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS}"
+mkdir -p ${PREFIX}/bin
+mkdir -p ${PREFIX}/lib
+mkdir -p ${PREFIX}/include
 
-make CC=${CXX} CFLAGS=${CPPFLAGS}
-make CC=${CXX} CFLAGS=${CPPFLAGS} kmc_api/libkmc.so
-
-mkdir -p $PREFIX/bin
-mkdir -p $PREFIX/lib
-mkdir -p $PREFIX/include
-
-mv bin/kmc $PREFIX/bin/kmc
-mv bin/kmc_tools $PREFIX/bin
-mv bin/kmc_dump $PREFIX/bin
-mv kmc_api/*.so $PREFIX/lib
-mv kmc_api/*.h $PREFIX/include
+if [[ "$(uname)" == "Darwin" ]]; then
+    mv bin/kmc ${PREFIX}/bin
+    mv bin/kmc_tools ${PREFIX}/bin
+    mv bin/kmc_dump ${PREFIX}/bin
+else
+    mv bin/kmc ${PREFIX}/bin
+    mv bin/kmc_tools ${PREFIX}/bin
+    mv bin/kmc_dump ${PREFIX}/bin
+    mv bin/libkmc_core.a ${PREFIX}/lib
+    mv include/kmc_runner.h ${PREFIX}/include
+fi

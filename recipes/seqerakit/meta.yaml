@@ -1,0 +1,44 @@
+{% set name = "seqerakit" %}
+{% set version = "0.5.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/seqerakit-{{ version }}.tar.gz
+  sha256: 4dacff16ebdb851112e0f59c708bb302bec27f1a779a387e48e7f22d1a816ea6
+
+build:
+  entry_points:
+    - seqerakit=seqerakit.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+
+requirements:
+  host:
+    - python >=3.8,<4.0
+    - pip
+    - setuptools
+  run:
+    - python >=3.8,<4.0
+    - pyyaml >=6.0.0
+    - tower-cli >=0.9.0
+
+test:
+  imports:
+    - seqerakit
+  commands:
+    - seqerakit --help
+
+about:
+  home: https://github.com/seqeralabs/seqera-kit
+  summary: Automate creation of Seqera Platform resources
+  license: Apache-2.0
+  license_file: LICENSE.txt
+extra:
+  recipe-maintainers:
+    - pinin4fjords

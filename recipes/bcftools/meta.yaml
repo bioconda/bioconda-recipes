@@ -1,15 +1,17 @@
-{% set version="1.13" %}
+{% set version="1.21" %}
 
 package:
   name: bcftools
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage("bcftools", max_pin="x") }}
 
 source:
   url: https://github.com/samtools/bcftools/releases/download/{{ version }}/bcftools-{{ version }}.tar.bz2
-  sha256: 13bfa1da2a5edda8fa51196a47a0b4afb3fef17516451e4f0e78477f3dd30b90
+  sha256: 528a4cc1d3555368db75a700b22a3c95da893fd1827f6d304716dfd45ea4e282
 
 requirements:
   build:
@@ -19,14 +21,10 @@ requirements:
     - htslib
     - zlib
     - gsl
-    - libcblas
   run:
-    - gsl
-    - htslib
     # Currently removed due to size and dependency issues
     #- matplotlib # for plot-vcfstats
     #- tectonic # for plot-vcfstats
-    - zlib
     - perl
 
 test:
@@ -50,6 +48,9 @@ about:
     VCF and BCF and streams will work in most, but not all situations.
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:bcftools
     - usegalaxy-eu:bcftools_merge

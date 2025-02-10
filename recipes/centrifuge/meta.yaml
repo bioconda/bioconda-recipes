@@ -1,16 +1,21 @@
 {% set name = "centrifuge" %}
-{% set version = "1.0.4_beta" %}
+{% set version = "1.0.4.2" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 6
+  number: 1
+  skip: true # [osx]
+  run_exports:
+    - {{ pin_subpackage("centrifuge", max_pin="x.x") }}
 
 source:
-  url: https://github.com/infphilo/centrifuge/archive/v1.0.4-beta.tar.gz
-  md5: 7061fe6a7d7f73dbf49cdc3925260c4e
+  url: https://github.com/DaehwanKimLab/centrifuge/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: db142790522a72971c7deda7d22e1f29fce54dbf23afc2e40def9f5a764f4c99
+  patches:
+    - centrifuge-linux-aarch64.patch # [linux and aarch64]
 
 requirements:
   build:
@@ -18,24 +23,27 @@ requirements:
     - {{ compiler('cxx') }}
   host:
     - zlib
-
   run:
     - zlib
     - perl
     - wget
     - tar
-    - python <3
+    - python
 
 test:
   commands:
     - centrifuge --help
 
 about:
-  home: https://github.com/infphilo/centrifuge
-  license: GPL3
-  summary: 'Classifier for metagenomic sequences.'
+  home: https://github.com/DaehwanKimLab/centrifuge
+  license: GPL-3.0-only
+  license_file: LICENSE
+  license_family: GPL3
+  summary: 'Classifier for metagenomic sequences. Supports classifier scripts'
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:Centrifuge
     - doi:10.1101/gr.210641.116

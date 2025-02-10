@@ -1,0 +1,49 @@
+{% set name = "wfa2-lib" %}
+{% set version = "2.3.5" %}
+{% set sha256 = "2609d5f267f4dd91dce1776385b5a24a2f1aa625ac844ce0c3571c69178afe6e" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/smarco/WFA2-lib/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 3
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake
+    - pkg-config
+  host:
+    - rhash  # [osx]
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - "ls ${PREFIX}/lib/libwfa2.so.0"  # [not osx]
+    - "ls ${PREFIX}/lib/libwfa2.0.dylib"  # [osx]
+
+about:
+  home: "https://github.com/smarco/WFA2-lib"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Wavefront alignment algorithm library v2."
+  dev_url: "https://github.com/smarco/WFA2-lib"
+  doc_url: "https://github.com/smarco/WFA2-lib/blob/v{{ version }}/README.md"
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btaa777
+    - doi:10.1101/2022.04.14.488380
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

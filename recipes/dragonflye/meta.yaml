@@ -1,5 +1,5 @@
 {% set name = "dragonflye" %}
-{% set version = "1.0.5" %}
+{% set version = "1.2.1" %}
 
 package:
   name: {{ name }}
@@ -8,33 +8,44 @@ package:
 build:
   number: 0
   noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 source:
   url: https://github.com/rpetit3/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: d9cc842e790340f03cb1f61342b4635bc08cd9abd7ffc166a598f2a99e1cf2f9
+  sha256: 3a0499a5c9aeb1b9246d5eb9512c01fe07b6c87f80bc97b11d3b672e60eb51f9
 
 requirements:
   run:
-    - assembly-scan >=0.4.0
-    - any2fasta
-    - flye
+    - assembly-scan >=1.0.0
+    - any2fasta >=0.4.2
+    - bwa
+    - dnaapler
+    - fastp
+    - flye >=2.9.2
     - kmc >=3.1
-    - medaka
-    - miniasm
-    - nanoq
-    - perl
+    - medaka >=1.11.0
+    - miniasm >=0.3_r179
+    - nanoq >=0.10.0
+    - perl >=5.26
     - perl-file-spec
     - perl-findbin
-    - pigz
-    - racon
-    - rasusa
-    - raven-assembler
-    - seqtk >=1.3
+    - pigz >=2.6
+    - pilon
+    - polypolish >=0.6.0
+    - porechop
+    - racon >=1.5.0
+    - rasusa >=1.0.0
+    - raven-assembler >=1.8.3
+    - samclip
+    - samtools
+    - seqtk >=1.4
 
 test:
   commands:
     - dragonflye --version | grep -F '{{ version }}'
     - dragonflye --check
+    - dragonflye --list_models 2>&1 | grep "r1041"
 
 about:
   home: https://github.com/rpetit3/{{ name }}

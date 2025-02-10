@@ -1,57 +1,62 @@
 {% set name = "recetox-aplcms" %}
-{% set version = "0.9.3" %}
-{% set github = "https://github.com/RECETOX" %}
+{% set version = "0.13.4" %}
+{% set github = "https://github.com/RECETOX/recetox-aplcms" %}
 
 package:
   name: "r-{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "{{ github }}/recetox-aplcms/archive/refs/tags/v{{ version }}.tar.gz"
-  sha256: 46fe7c8a3c92f0365979aa411c5503ae97a9bf3f85e0cf04dcbaba71d3535112
+  url: "https://github.com/RECETOX/recetox-aplcms/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: c6c08d7e0def2b4df9f5ae366e0f69bf982d271bb8a4aec165e66c373d45c791
 
 build:
-  number: 0
+  number: 1
   noarch: generic
   rpaths:
     - lib/R/lib/
     - lib/
   script_env:
-    - RGL_USE_NULL=TRUE # avoid warning at test-time
-  script: R CMD INSTALL --build . 
-  
+    - RGL_USE_NULL=TRUE  # avoid warning at test-time
+  script: ${R} CMD INSTALL --build . ${R_ARGS}
+  run_exports:
+    - {{ pin_subpackage('r-recetox-aplcms', max_pin="x.x") }}
+
 requirements:
   host:
     - r-base
     - r-mass
-    - r-rgl
-    - bioconductor-mzr
+    - bioconductor-mzr ==2.36.0
+    - r-splines2
     - r-doparallel
     - r-foreach
     - r-iterators
     - r-snow
-    - r-gbm
-    - r-e1071
-    - r-randomforest
-    - r-rocr
-    - r-rocs
     - r-rcpp
-
+    - r-arrow
+    - r-dplyr
+    - r-tidyr
+    - r-stringr
+    - r-stringi
+    - r-tibble
+    - r-plyr
   run:
     - r-base
     - r-mass
-    - r-rgl
-    - bioconductor-mzr
+    - bioconductor-mzr ==2.36.0
+    - r-splines2
     - r-doparallel
     - r-foreach
     - r-iterators
     - r-snow
-    - r-gbm
-    - r-e1071
-    - r-randomforest
-    - r-rocr
-    - r-rocs 
     - r-rcpp
+    - r-arrow
+    - r-dplyr
+    - r-tidyr
+    - r-stringr
+    - r-stringi
+    - r-tibble
+    - r-plyr
 
 test:
   commands:
@@ -59,14 +64,22 @@ test:
 
 about:
   home: "{{ github }}"
-  license: GPL-2.0
+  license: "GPL-2.0-or-later"
   license_file: LICENSE
-  summary: apLCMS generates a feature table from a batch of LC/MS spectra.
+  summary: "apLCMS is a software which generates a feature table from a batch of LC/MS spectra. A modified fork of the original apLCMS by Tianwei Yu."
+  dev_url: "{{ github }}"
+  doc_url: "https://mypage.cuhk.edu.cn/academics/yutianwei/apLCMS"
 
 extra:
-  maintainers:
-    - RECETOX/conda
+  recipe-maintainers:
+    - hechth
+    - martenson
+    - maximskorik
   identifiers:
-    - doi:10.1021/acs.analchem.6b01214
+    - doi:10.1093/bioinformatics/btp291
+    - doi:10.1186/1471-2105-11-559
+    - doi:10.1021/pr301053d
+    - doi:10.1093/bioinformatics/btu430
+    - doi:10.1038/s41598-020-70850-0
   container:
     extended-base: True

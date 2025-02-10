@@ -1,49 +1,58 @@
-{% set version = "1.18.0" %}
+{% set version = "1.32.0" %}
 {% set name = "bigmelon" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: a144656a74a4f28cc547fa9f0c8d477e
+about:
+  description: Methods for working with Illumina arrays using gdsfmt.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Illumina methylation array analysis for large experiments
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-bigmelon", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocGenerics, RUnit, BiocStyle, minfiData, parallel, IlluminaHumanMethylation450kanno.ilmn12.hg19, IlluminaHumanMethylationEPICanno.ilm10b2.hg19, bumphunter
 requirements:
   host:
-    - 'bioconductor-biobase >=2.52.0,<2.53.0'
-    - 'bioconductor-biocgenerics >=0.38.0,<0.39.0'
-    - 'bioconductor-gdsfmt >=1.28.0,<1.29.0'
-    - 'bioconductor-geoquery >=2.60.0,<2.61.0'
-    - 'bioconductor-methylumi >=2.38.0,<2.39.0'
-    - 'bioconductor-minfi >=1.38.0,<1.39.0'
-    - 'bioconductor-watermelon >=1.36.0,<1.37.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-gdsfmt >=1.42.0,<1.43.0
+    - bioconductor-geoquery >=2.74.0,<2.75.0
+    - bioconductor-illuminaio >=0.48.0,<0.49.0
+    - bioconductor-methylumi >=2.52.0,<2.53.0
+    - bioconductor-minfi >=1.52.0,<1.53.0
+    - bioconductor-watermelon >=2.12.0,<2.13.0
     - r-base
   run:
-    - 'bioconductor-biobase >=2.52.0,<2.53.0'
-    - 'bioconductor-biocgenerics >=0.38.0,<0.39.0'
-    - 'bioconductor-gdsfmt >=1.28.0,<1.29.0'
-    - 'bioconductor-geoquery >=2.60.0,<2.61.0'
-    - 'bioconductor-methylumi >=2.38.0,<2.39.0'
-    - 'bioconductor-minfi >=1.38.0,<1.39.0'
-    - 'bioconductor-watermelon >=1.36.0,<1.37.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-gdsfmt >=1.42.0,<1.43.0
+    - bioconductor-geoquery >=2.74.0,<2.75.0
+    - bioconductor-illuminaio >=0.48.0,<0.49.0
+    - bioconductor-methylumi >=2.52.0,<2.53.0
+    - bioconductor-minfi >=1.52.0,<1.53.0
+    - bioconductor-watermelon >=2.12.0,<2.13.0
     - r-base
+
+source:
+  md5: 423b0bad7fa00435f8be661b0dc6f75f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Illumina methylation array analysis for large experiments'
-  description: 'Methods for working with Illumina arrays using gdsfmt.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

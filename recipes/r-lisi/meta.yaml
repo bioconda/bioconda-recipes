@@ -5,24 +5,28 @@
 package:
   name: r-{{ name }}
   version: {{ version }}
-
 source:
   url: https://github.com/immunogenomics/LISI/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  noarch: generic
-  number: 0
-  script: R CMD INSTALL --build .
+  number: 8
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("r-lisi", max_pin="x.x") }}'
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
     - r-base
     - r-rcpparmadillo
     - r-rann
+    - libblas
+    - liblapack
   run:
     - r-base
     - r-testthat
@@ -31,6 +35,7 @@ requirements:
     - r-magrittr
     - r-ggplot2
     - r-rann
+    - r-rcpparmadillo
     
 test:
   commands:
@@ -41,12 +46,14 @@ about:
   home: https://github.com/immunogenomics/LISI
   license: GPL-3
   license_family: GPL3
-  summary: This method was designed to assess how well mixed cells with
-    different labels are in single cell RNAseq. This method uses the Inverse
-    Simpson's Index to compute diversity of each cell's local neighborhood.
+  summary: A method to assess how well mixed cells with
+    different labels are in single cell RNAseq.
   license_file:
     - LICENSE
 
 extra:
   recipe-maintainers:
     - tdido
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

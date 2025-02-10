@@ -1,0 +1,41 @@
+{% set name = "peptides" %}
+{% set version = "0.3.4" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: e4cd95c7aec68a1876d85bd544478d2d0106e1d884b515c861979dbe00e14a39
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools >=46.4
+    - wheel >=0.30
+    - astor >=0.6
+  run:
+    - python
+
+test:
+  imports:
+    - {{ name }}
+
+about:
+  home: https://peptides.readthedocs.io/
+  license: MIT
+  license_file: COPYING
+  summary: Physicochemical properties, indices and descriptors for amino-acid sequences.
+
+extra:
+  recipe-maintainers:
+    - althonos

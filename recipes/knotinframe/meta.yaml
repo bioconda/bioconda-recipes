@@ -1,0 +1,43 @@
+{% set version = "2.3.2" %}
+{% set sha256 = "d3e6cc8d2ecd31d4764b41fea589b98c637ff227d7ab3dcfe66f2ad3f24dece5" %}
+
+package:
+  name: knotinframe
+  version: {{ version }}
+
+source:
+  sha256: {{ sha256 }}
+  url: https://github.com/jlab/fold-grammars/archive/{{ version }}.tar.gz
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('knotinframe', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - bellmans-gapc >=2020.12.08
+  run:
+    - perl
+    - bellmans-gapc >=2020.12.08
+
+test:
+  commands:
+  - echo "AUGC" | knotinframe | grep 'No suitable slippery sites'
+
+about:
+  home: https://bibiserv.cebitec.uni-bielefeld.de/knotinframe
+  license: 'GPL-3.0-or-later'
+  license_family: GPL3
+  license_file: LICENSE
+  summary: 'Predicts -1 frameshift sites with simple pseudoknots'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - doi:10.1093/nar/gkn578
+    - doi:10.1093/bioinformatics/btu649

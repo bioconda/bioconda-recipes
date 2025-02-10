@@ -1,6 +1,6 @@
 {% set name = "kma" %}
-{% set version = "1.3.23" %}
-{% set sha256 = "57af2593637829e5ead9d7b6353006a25b27f3b4d3b959405a0b8b6cbaa4b65b" %}
+{% set version = "1.4.17" %}
+{% set sha256 = "cb1b6e06cdb787803911c422043d91a03894f4d3f6eedbeefadb521b846cfb22" %}
 
 package:
   name: {{ name|lower }}
@@ -12,6 +12,8 @@ source:
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage('kma', max_pin="x") }}
 
 requirements:
   build:
@@ -19,20 +21,23 @@ requirements:
     - {{ compiler('c') }}
   host:
     - zlib
-  run:
-    - zlib
-  
+
 test:
   commands:
-   - kma --help 2>&1|grep KMA >/dev/null
-   - kma index  --help  2>&1 |grep kma_index
-   - kma shm --help 2>&1 |grep kma_shm >/dev/null
-   - kma update --help 2>&1 |grep KMA_update >/dev/null
+   - kma -h | grep KMA >/dev/null
+   - kma index -h | grep kma_index
+   - kma shm -h | grep kma_shm >/dev/null
+   - kma update -h | grep KMA_update >/dev/null
 
 about:
   home: https://bitbucket.org/genomicepidemiology/kma
-  summary: 'KMA is mapping a method designed to map raw reads directly against redundant databases, in an ultra-fast manner using seed and extend.'
+  summary: 'KMA is a mapping method designed to map raw reads directly against redundant databases, in an ultra-fast manner using seed and extend.'
   license: Apache-2.0
+  license_family: APACHE
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.1186/s12859-018-2336-6

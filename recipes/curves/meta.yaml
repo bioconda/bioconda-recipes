@@ -1,38 +1,51 @@
 {% set name = "curves" %}
-{% set version = "3.0.0" %}
-{% set file_ext = "tar" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "09076164ead19fdd69a8a775fa6d2c3a35dd692c03e34c8d735f6b05f09da0f6" %}
+{% set version = "3.0.3" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: http://mmb.irbbarcelona.org/gitlab/lucia.fabio/Curves_plus/raw/master/dist/curves.tar.gz
-  '{{ hash_type }}': '{{ hash_value }}'
+  - url: http://curvesplus.bsc.es/static/app/curves+_v3.0nc.tar.gz
+    sha256: b9033caffd398956336dfac1f05fd95d22a1efd376fb3501b1b9058ba74e6a91
+    patches:
+      - Makefile.patch  # [linux]
+      - Makefile.osx.patch  # [osx]
+  - url: http://curvesplus.bsc.es/static/app/canal.f
+    sha256: 4ff30cd6821fdb80e1520483f24b35cc3852af7dec2e7c73df9fd57d84e8dde2
+  - url: http://curvesplus.bsc.es/static/app/canion.f
+    sha256: 81b324d4b4ff835e56f81a3f7d6a408f511e89a42cac8f390516a9fb3f9026f7
 
 build:
-  number: 2
+  number: 1
+  # skip: true  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
 
 requirements:
   build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
     - make
   host:
-    - libnetcdf 4.7.*
-    - netcdf-fortran 4.5.*
-    - ambertools 20.*
+    - python
+    - libnetcdf
+    - netcdf-fortran
+    - ambertools >=22.0
   run:
-    - libnetcdf >=4.7.*
-    - netcdf-fortran >=4.5.*
-    - ambertools 20.*
+    - python 3.9.*  # [py39]
+    - python 3.10.*  # [py310]
+    - python 3.11.*  # [py311]
+    - libnetcdf
+    - netcdf-fortran
+    - ambertools >=22.0
+    - libcxx  # [osx]
 
 test:
-  commands:
-    - echo 0
+  files:
+    - input_files.tar.gz
 
 about:
   home: http://curvesplus.bsc.es/misc
@@ -40,3 +53,12 @@ about:
   license_family: APACHE
   summary: "CURVES+: Conformational analysis of single nucleic acid structures or of molecular dynamics trajectories"
   description: "Curves+ is a revised version of the Curves approach for analysing the structure of nucleic acids. It respects the international conventions for nucleic acid analysis, runs much faster and provides new data."
+
+extra:
+  skip: true  # [py2k or py3k]
+  # Define build matrix for multiple Python versions
+  build:
+    python:
+      - 3.9
+      - 3.10
+      - 3.11

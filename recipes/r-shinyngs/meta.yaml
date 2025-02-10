@@ -1,0 +1,118 @@
+{% set version = '2.1.0' %}
+{% set d3heatmap_version = '0.6.1.2' %}
+
+package:
+  name: r-shinyngs
+  version: {{ version|replace("-", "_") }}
+
+source:
+  - url: https://github.com/pinin4fjords/shinyngs/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: "1314fafed0072a2599da5379ce80af053117ea4d0a362c6d24f75d839de3172a"
+    folder: shinyngs
+  - url: https://github.com/cran/d3heatmap/archive/refs/tags/{{ d3heatmap_version }}.tar.gz 
+    sha256: "bda213c4d335b199c38a48cb8e60027c929a8ba8ef6e14dc7de692967777c25a"
+    folder: d3heatmap
+
+build:
+  number: 0
+  noarch: generic
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+  script_env:
+    - D3HEATMAP_VERSION={{ d3heatmap_version }}
+
+  run_exports:
+    - {{ pin_subpackage("r-shinyngs", max_pin="x") }}
+
+requirements:
+  host:
+    - r-base64enc
+    - r-biocmanager
+    - bioconductor-gseabase
+    - bioconductor-limma
+    - bioconductor-summarizedexperiment
+    - git
+    - pandoc <2.19
+    - r-base
+    - r-cluster
+    - r-cpp11
+    - r-data.table
+    - r-dendextend >=0.18.0
+    - r-dplyr
+    - r-dt >=0.2
+    - r-ggplot2
+    - r-ggdendro
+    - r-htmlwidgets
+    - r-markdown
+    - r-rmarkdown
+    - r-optparse
+    - r-pheatmap
+    - r-plotly  >=4.3.4
+    - r-plyr
+    - r-rcolorbrewer
+    - r-reshape2
+    - r-png
+    - r-rsconnect
+    - r-scales >=0.2.5
+    - r-scatterplot3d
+    - r-shiny
+    - r-shinybs
+    - r-shinyjs
+    - r-shinythemes
+    - r-stringi >=1.7.12
+    - r-yaml
+
+  run:
+    - r-base64enc
+    - r-biocmanager
+    - bioconductor-gseabase
+    - bioconductor-limma
+    - bioconductor-summarizedexperiment
+    - pandoc <2.19
+    - r-base
+    - r-cluster
+    - r-cpp11
+    - r-data.table
+    - r-dendextend >=0.18.0
+    - r-dplyr
+    - r-dt >=0.2
+    - r-ggplot2
+    - r-ggdendro
+    - r-htmlwidgets
+    - r-markdown
+    - r-rmarkdown
+    - r-optparse
+    - r-pheatmap
+    - r-plotly  >=4.3.4
+    - r-plyr
+    - r-png
+    - r-rcolorbrewer
+    - r-reshape2
+    - r-rsconnect
+    - r-scales >=0.2.5
+    - r-scatterplot3d
+    - r-shiny
+    - r-shinybs
+    - r-shinyjs
+    - r-shinythemes
+    - r-stringi >=1.7.12
+    - r-yaml
+
+test:
+  commands:
+    - $R -e "library('shinyngs')"
+    - make_app_from_files.R --help
+    - exploratory_plots.R --help 
+    - differential_plots.R --help
+
+about:
+  home: https://github.com/pinin4fjords/shinyngs
+  license: AGPL-3.0
+  summary: Provides Shiny applications for various array and NGS applications. Currently very
+    RNA-seq centric, with plans for expansion.
+  license_family: AGPL
+  license_file: shinyngs/LICENSE.md 

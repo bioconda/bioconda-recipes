@@ -1,0 +1,37 @@
+{% set version = "2.0.0" %}
+
+package:
+  name: unikseq
+  version: {{ version }}
+
+source:
+  url: https://github.com/bcgsc/unikseq/releases/download/v{{ version }}/unikseq-{{ version }}.tar.gz
+  sha256: 5682d54e15ca41662f958c402c13328f9f19a6dd6a13043e4198679b10a6acb0
+  patches:
+    - unikseq-bloom.patch
+    - unikseq-write-bloom.patch
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('unikseq', max_pin="x") }}
+
+requirements:
+  run:
+    - perl
+    - links =1.8.7
+
+test:
+  commands:
+    - unikseq.pl |grep "Usage"
+    - unikseq-Bloom.pl |grep "Usage"
+    - writeBloom.pl |grep "Usage"
+
+about:
+  summary: Unique DNA sequence region identification using a k-mer approach
+  home: https://github.com/bcgsc/unikseq
+  license: GPL-3.0
+  license_file: LICENSE
+  doc_url: https://github.com/bcgsc/unikseq
+

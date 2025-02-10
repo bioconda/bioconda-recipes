@@ -1,44 +1,71 @@
-{% set version = "1.2.0" %}
+{% set version = "2.8.0" %}
 {% set name = "ANCOMBC" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 6f50c2b24df144c4006ede9b1a8e00aa
+about:
+  description: 'ANCOMBC is a package containing differential abundance (DA) and correlation analyses for microbiome data. Specifically, the package includes Analysis of Compositions of Microbiomes with Bias Correction 2 (ANCOM-BC2), Analysis of Compositions of Microbiomes with Bias Correction (ANCOM-BC), and Analysis of Composition of Microbiomes (ANCOM) for DA analysis, and Sparse Estimation of Correlations among Microbiomes (SECOM) for correlation analysis. Microbiome data are typically subject to two sources of biases: unequal sampling fractions (sample-specific biases) and differential sequencing efficiencies (taxon-specific biases). Methodologies included in the ANCOMBC package are designed to correct these biases and construct statistically consistent estimators.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Microbiome differential abudance and correlation analyses with bias correction
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, tidyverse, testthat, DT, magrittr, qwraps2 (>= 0.5.0)
+  run_exports: '{{ pin_subpackage("bioconductor-ancombc", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: mia (>= 1.6.0), DT, S4Vectors, SingleCellExperiment, SummarizedExperiment, TreeSummarizedExperiment, dplyr, knitr, magrittr, microbiome, phyloseq, rmarkdown, testthat, tidyr, tidyverse
 requirements:
   host:
-    - 'bioconductor-microbiome >=1.14.0,<1.15.0'
-    - 'bioconductor-phyloseq >=1.36.0,<1.37.0'
     - r-base
+    - r-cvxr
+    - r-desctools
+    - r-doparallel
+    - r-dorng
+    - r-energy
+    - r-foreach
+    - r-gtools
+    - r-hmisc
+    - r-lme4
+    - r-lmertest
     - r-mass
+    - r-matrix
+    - r-multcomp
     - r-nloptr
     - r-rdpack
   run:
-    - 'bioconductor-microbiome >=1.14.0,<1.15.0'
-    - 'bioconductor-phyloseq >=1.36.0,<1.37.0'
     - r-base
+    - r-cvxr
+    - r-desctools
+    - r-doparallel
+    - r-dorng
+    - r-energy
+    - r-foreach
+    - r-gtools
+    - r-hmisc
+    - r-lme4
+    - r-lmertest
     - r-mass
+    - r-matrix
+    - r-multcomp
     - r-nloptr
     - r-rdpack
+
+source:
+  md5: 4b876fab332f19e7fc9bbbfe070e53f8
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Analysis of compositions of microbiomes with bias correction'
-  description: 'ANCOMBC is a package for normalizing the microbial observed abundance data due to unequal sampling fractions across samples, and identifying taxa (e.g. phyla, families, genera, species, etc.) that are differentially abundant with respect to the covariate of interest (e.g. study groups) between two or more groups of multiple samples.'
+    - $R -e "library('{{ name }}')"
 

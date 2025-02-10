@@ -1,19 +1,32 @@
-{% set version = "1.3.5" %}
+{% set name = "freebayes" %}
+{% set version = "1.3.8" %}
 
 package:
-  name: freebayes
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/freebayes/freebayes/releases/download/v{{ version }}/freebayes-{{ version }}-src.tar.gz
-  sha256: 7e2635690e916ed85cec36b3263e6e5357413a4f2bf3035362d9749335e8a696
-  patches:
-    - meson.patch
-
+  - folder: freebayes
+    url: https://github.com/freebayes/freebayes/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: d1c24b1d1b35277e7403cd67063557998218a105c916b01a745e7704715fce67
+    patches:
+      - 0001-make-meson-build-conda-friendly.patch
+      - 0002-fix-intervaltree-include-path.patch
+      - 0003-meson-macos.patch  # [osx]
+  - folder: freebayes/contrib/smithwaterman
+    url: https://github.com/ekg/smithwaterman/archive/2610e259611ae4cde8f03c72499d28f03f6d38a7.tar.gz
+    sha256: 8e1b37ab0e8cd9d3d5cbfdba80258c0ebd0862749b531e213f44cdfe2fc541d8
+  - folder: freebayes/contrib/multichoose
+    url: https://github.com/vcflib/multichoose/archive/255192edd49cfe36557f7f4f0d2d6ee1c702ffbb.tar.gz
+    sha256: 0045051ee85d36435582151830efe0eefb466be0ec9aedbbc4465dca30d22102
+  - folder: freebayes/contrib/fastahack
+    url: https://github.com/ekg/fastahack/archive/refs/tags/v1.0.0.tar.gz
+    sha256: cc1c04729b0c8ba3647cbb7e15e2b490ce701d73773f30f5892d68c36a1dceae
 
 build:
-  skip: True  # [py2k]
   number: 3
+  run_exports:
+    - {{ pin_subpackage("freebayes", max_pin="x") }}
 
 requirements:
   build:
@@ -26,33 +39,39 @@ requirements:
   host:
     - bzip2
     - htslib
-    - parallel
-    - samtools
-    - vcflib
     - tabixpp
-    # This is pulled in by vcflib but not actually linked against, but that causes conda to incorrectly pin it.
-    - python
+    - vcflib
+    - simde
+    - zlib
+    - wfa2-lib
+    - liblzma
   run:
-    - htslib
-    - python
     - parallel
     - samtools
-    - vcflib
     - tabixpp
-    
+    - vcflib
+    - wfa2-lib
+
 test:
   commands:
     - freebayes --version
     - freebayes-parallel
-    
+
 about:
-  home: https://github.com/ekg/freebayes
+  home: "https://github.com/freebayes/freebayes"
   license: MIT
-  license_file: LICENSE
+  license_file: "freebayes/LICENSE"
   license_family: MIT
-  summary: Bayesian haplotype-based polymorphism discovery and genotyping
-  maintainers: jpuritz
+  summary: "Bayesian haplotype-based polymorphism discovery and genotyping."
+  dev_url: "https://github.com/freebayes/freebayes"
+  doc_url: "https://github.com/freebayes/freebayes/blob/v{{ version }}/README.md"
 
 extra:
-   identifiers:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
     - biotools:freebayes
+    - usegalaxy-eu:freebayes
+    - doi:10.48550/arXiv.1207.3907
+  recipe-maintainers:
+    - jpuritz

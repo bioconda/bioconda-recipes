@@ -1,5 +1,5 @@
 {% set name = "cooltools" %}
-{% set version = "0.4.0" %}
+{% set version = "0.7.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,14 +7,15 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 24de6ae8039bc34aaa41f090093ef3f3869f55d107c5fa25c66f8bed88bc9ee7
+  sha256: 1f12494add7b1271b71e418d10d060e1dac906a021fc2bd691e91f5599010051
 
 build:
-  number: 0
-  skip: True  # [py2k]
+  number: 1
   entry_points:
     - cooltools = cooltools.cli:cli
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('cooltools', max_pin="x.x") }}
 
 requirements:
   build:
@@ -25,26 +26,24 @@ requirements:
     - python
     - numpy
   run:
-    - bioframe >=0.2.0
+    - bioframe >=0.4.1
     - click >=7
-    - cooler >=0.8.5
-    - cytoolz
+    - cooler >=0.9.1
     - joblib
     - matplotlib-base
     - multiprocess
     - numba
-    - numpy
-    - pandas
+    - {{ pin_compatible('numpy') }}
+    - pandas >=1.5.1
     - python
-    - scikit-learn
+    - scikit-learn >=1.1.2
     - scipy
-    - pytables
-
+    - scikit-image
+    
 test:
   imports:
     - cooltools
     - cooltools.cli
-    - cooltools.io
     - cooltools.lib
   commands:
     - cooltools --help

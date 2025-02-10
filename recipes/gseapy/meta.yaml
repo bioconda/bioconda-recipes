@@ -1,43 +1,36 @@
 package:
   name: gseapy
-  version: "0.10.5"
+  version: "1.1.5"
 
 source:
-  url: https://files.pythonhosted.org/packages/21/c9/2b6741669f4ed8008e1ad97321935e39744d2b1099e6b82c3a18a4537758/gseapy-0.10.5.tar.gz
-  sha256: ecd182c9c56fcb7774e7d611c395023aa78644f54050475de11a935e5e30780a
+  url: https://files.pythonhosted.org/packages/9b/6c/829be1732d04c8c6c075f3317081e8bba34542ba278aa24fa0aa877446a6/gseapy-1.1.5.tar.gz
+  sha256: 6227c4c06d204ba966d8e3f769a8dd9c1844789cd9ac7d9df18c4edc223cd299
 
 build:
-  noarch: python
   entry_points:
     - gseapy = gseapy.__main__:main
+  run_exports:
+    - {{ pin_subpackage("gseapy", max_pin="x") }}
+  skip: True  # [py2k or py == 36 ]
   number: 0
 
 requirements:
+  build: 
+    - {{ compiler('rust') }}
   host:
-    - python >3
+    - python
+    - wheel
     - setuptools
-    - numpy >=1.13.0
-    - scipy
-    - pandas >=0.16
-    - matplotlib-base >=1.4.3
-    - beautifulsoup4 >=4.4.1
-    - requests
-    - lxml
-    - html5lib
-    - bioservices
-    - joblib
+    - setuptools-rust
+    - tomli >=1.2.1
   run:
-    - python >3
+    - python
     - numpy >=1.13.0
     - scipy
     - pandas >=0.16
     - matplotlib-base >=1.4.3
-    - beautifulsoup4 >=4.4.1
     - requests
-    - lxml
-    - html5lib
-    - bioservices
-    - joblib
+    - tomli >=1.2.1
 
 test:
   imports:
@@ -47,11 +40,14 @@ test:
 
 about:
   home: https://github.com/zqfang/gseapy
-  license: MIT License
+  license: MIT
   summary: 'Gene Set Enrichment Analysis in Python'
   license_family: MIT
+  license_file: LICENSE
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   container:
     # matplotlib needs opengl support
     extended-base: true

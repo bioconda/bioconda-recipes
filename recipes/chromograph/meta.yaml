@@ -1,0 +1,38 @@
+{% set name = "chromograph" %}
+{% set version = "1.3.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  noarch: python
+  number: 2
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('chromograph', max_pin="x.x") }}
+
+source:
+  url: https://github.com/Clinical-Genomics/chromograph/archive/refs/tags/v{{version}}.tar.gz
+  sha256: 5decd07ab66276198c6a1540c238f6376906fcb9ca9a11b05a464d82c10ab1b4
+
+requirements:
+  host:
+    - python ==3.9
+    - pip
+  run:
+    - python ==3.9
+    - matplotlib-base ==3.5.3
+    - numpy >=1.15
+    - pyaml
+    - pandas
+
+test:
+  commands:
+    - chromograph --version
+
+about:
+  home: https://github.com/Clinical-Genomics/chromograph
+  license: MIT
+  license_file: LICENSE
+  summary: Chromograph is a python package to create PNG images from genetics data such as BED and WIG files.

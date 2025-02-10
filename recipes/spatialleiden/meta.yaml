@@ -1,0 +1,53 @@
+{% set name = "spatialleiden" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/spatialleiden-{{ version }}.tar.gz
+  sha256: e5c226a1dc4af98147cfd3dc2b6f61201c6f2af453df3966b76982ad9ab8ad38
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools >=61.0.0
+    - setuptools-scm >=6.2
+    - pip
+  run:
+    - python >=3.10
+    - anndata
+    - igraph
+    - leidenalg >=0.10.2,<0.11.dev0
+    - numpy >=1.21
+    - scanpy
+    - scipy >=1.9
+
+test:
+  imports:
+    - spatialleiden
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/HiDiHlabs/SpatialLeiden
+  summary: Implementation of multiplex Leiden for analysis of spatial omics data.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: https://spatialleiden.readthedocs.io/
+
+extra:
+  recipe-maintainers:
+    - niklasmueboe
+    - shashwatsahay

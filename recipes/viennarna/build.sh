@@ -4,7 +4,7 @@
 ## (mac or linux)
 ##
 if [ `uname` == Darwin ] ; then
-    extra_config_options="LDFLAGS=-Wl,-headerpad_max_install_names"
+    extra_config_options="--without-perl LDFLAGS=-Wl,-headerpad_max_install_names"
 fi
 
 ## Configure and make
@@ -13,10 +13,10 @@ fi
             --with-cluster \
             --disable-lto \
             --without-doc \
-            --without-tutorial \
-            --without-tutorial-pdf \
-            ${extra_config_options} \
-            &&\
+            --without-cla \
+            --without-rnaxplorer \
+            --disable-silent-rules \
+            ${extra_config_options} && \
 make -j${CPU_COUNT}
 
 ## Install

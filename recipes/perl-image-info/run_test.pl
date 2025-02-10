@@ -1,19 +1,7 @@
 #!/usr/bin/env perl
 
 my @items = (
-    ["Image::Info", "1.38"],
-    ["Image::Info::BMP", "1.04"],
-    ["Image::Info::GIF", "1.02"],
-    #["Image::Info::ICO", "1.38"],
-    ["Image::Info::JPEG", "0.05"],
-    ["Image::Info::PNG", "1.01"],
-    #["Image::Info::PPM", "1.38"],
-    ["Image::Info::SVG", "2.02"],
-    ["Image::Info::TIFF", "0.04"],
-    #["Image::Info::WBMP", "1.38"],
-    #["Image::Info::XBM", "1.38"],
-    #["Image::Info::XPM", "1.38"],
-    ["Image::TIFF", "1.09"],
+    ["Image::Info", "1.42"],
 );
 
 foreach $item (@items) {

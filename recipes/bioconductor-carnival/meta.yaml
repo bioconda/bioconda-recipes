@@ -1,23 +1,27 @@
-{% set version = "2.2.0" %}
+{% set version = "2.16.0" %}
 {% set name = "CARNIVAL" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f46bc9fee4e23e78b6e97c863cdca7b8
+about:
+  description: An upgraded causal reasoning tool from Melas et al in R with updated assignments of TFs' weights from PROGENy scores. Optimization parameters can be freely adjusted and multiple solutions can be obtained and aggregated.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: A CAusal Reasoning tool for Network Identification (from gene expression data) using Integer VALue programming
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, testthat (>= 2.1.0)
+  run_exports: '{{ pin_subpackage("bioconductor-carnival", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: RefManageR, BiocStyle, covr, knitr, testthat (>= 3.0.0), sessioninfo
 requirements:
   host:
     - r-base
@@ -28,6 +32,8 @@ requirements:
     - r-rjson
     - r-rmarkdown
     - r-stringr
+    - r-tibble
+    - r-tidyr
   run:
     - r-base
     - r-dplyr
@@ -37,13 +43,18 @@ requirements:
     - r-rjson
     - r-rmarkdown
     - r-stringr
+    - r-tibble
+    - r-tidyr
+
+source:
+  md5: d2dd4eea47a8e994cc4ea365de7889ed
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'A CAusal Reasoning tool for Network Identification (from gene expression data) using Integer VALue programming'
-  description: 'An upgraded causal reasoning tool from Melas et al in R with updated assignments of TFs'' weights from PROGENy scores. Optimization parameters can be freely adjusted and multiple solutions can be obtained and aggregated.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

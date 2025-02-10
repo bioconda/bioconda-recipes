@@ -1,4 +1,4 @@
-{% set version = "2021_09" %}
+{% set version = "2025_01" %}
 
 package:
   name: ngs-bits
@@ -6,38 +6,41 @@ package:
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage("ngs-bits", max_pin=None) }}
+
 
 source:
   url: https://github.com/imgag/ngs-bits/releases/download/{{ version }}/ngs-bits-{{ version }}.tgz
-  sha256: eb111a3663f6162e70cba081120b88f74df318b313e2032a83671465a95aec84
+  sha256: 2f51b150538327966ceadf05c97ca87f549a300d01c9e1b5114719fc2e8a44ed
 
+# Note: pinning of sysroot_linux-64 =2.17 enforces cos7 and is currently needed to prevent an memcpy@GLIBC2.14 error
 requirements:
   build:
+    - sysroot_linux-64 =2.17 # [linux]
     - make
     - {{ compiler('cxx') }}
-    - {{ cdt('mesa-libgl-devel') }}
-    - {{ cdt('mesa-dri-drivers') }}
-    - {{ cdt('libselinux') }}
-    - {{ cdt('libxdamage') }}
-    - {{ cdt('libxxf86vm') }}
-    - {{ cdt('libxfixes') }}
   host:
+    - sysroot_linux-64 =2.17 # [linux]
     - bzip2
     - xz
     - zlib
-    - qt
+    - qt-main
     - htslib
-    - xorg-libxfixes  # [linux]
   run:
+    - sysroot_linux-64 =2.17 # [linux]
     - bzip2
     - xz
     - zlib
     - python
     - matplotlib-base
-    - qt
+    - qt-main
     - htslib
 
+#For libGL dependency docu see: https://conda-forge.org/docs/maintainer/knowledge_base.html#core-dependency-tree-packages-cdt
 extra:
+  additional-platforms:
+    - linux-aarch64
   container:
     extended-base: True
 
@@ -47,4 +50,3 @@ about:
   license_file: LICENSE
   summary: Short-read sequencing tools
 
-#For libGL dependency docu see: https://conda-forge.org/docs/maintainer/knowledge_base.html#core-dependency-tree-packages-cdt

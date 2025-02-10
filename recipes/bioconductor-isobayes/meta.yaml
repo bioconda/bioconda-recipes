@@ -1,0 +1,72 @@
+{% set version = "1.4.0" %}
+{% set name = "IsoBayes" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: 'IsoBayes is a Bayesian method to perform inference on single protein isoforms. Our approach infers the presence/absence of protein isoforms, and also estimates their abundance; additionally, it provides a measure of the uncertainty of these estimates, via: i) the posterior probability that a protein isoform is present in the sample; ii) a posterior credible interval of its abundance. IsoBayes inputs liquid cromatography mass spectrometry (MS) data, and can work with both PSM counts, and intensities. When available, trascript isoform abundances (i.e., TPMs) are also incorporated: TPMs are used to formulate an informative prior for the respective protein isoform relative abundance. We further identify isoforms where the relative abundance of proteins and transcripts significantly differ. We use a two-layer latent variable approach to model two sources of uncertainty typical of MS data: i) peptides may be erroneously detected (even when absent); ii) many peptides are compatible with multiple protein isoforms. In the first layer, we sample the presence/absence of each peptide based on its estimated probability of being mistakenly detected, also known as PEP (i.e., posterior error probability). In the second layer, for peptides that were estimated as being present, we allocate their abundance across the protein isoforms they map to. These two steps allow us to recover the presence and abundance of each protein isoform.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: 'IsoBayes: Single Isoform protein inference Method via Bayesian Analyses'
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-isobayes", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, testthat, BiocStyle
+# SystemRequirements: C++17
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-data.table
+    - r-doparallel
+    - r-dorng
+    - r-foreach
+    - r-ggplot2
+    - r-glue
+    - r-hdinterval
+    - r-iterators
+    - r-rcpp
+    - r-rcpparmadillo
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-data.table
+    - r-doparallel
+    - r-dorng
+    - r-foreach
+    - r-ggplot2
+    - r-glue
+    - r-hdinterval
+    - r-iterators
+    - r-rcpp
+    - r-rcpparmadillo
+
+source:
+  md5: 8441343e4f5d5e49720a871d5a103b54
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

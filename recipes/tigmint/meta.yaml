@@ -1,5 +1,5 @@
 {% set name = "tigmint" %}
-{% set version = "1.2.4" %}
+{% set version = "1.2.10" %}
 
 package:
   name: "{{ name }}"
@@ -7,23 +7,29 @@ package:
 
 source:
   url: https://github.com/bcgsc/tigmint/releases/download/v{{ version }}/tigmint-{{ version }}.tar.gz
-  sha256: 5780a005cf7edec49d2404cceee45f3489b540daa23b3ef215ae5e4ac74d7619 
+  sha256: 8e7b5d424ff69d5da7b117bef9996463b02205078ce0fb6e3074ca6c9933efa9 
 
 build:
-  number: 1
-  skip: True  # [py<30]
+  number: 4
+  skip: True #[(py>38 or py<38) and (arm64 or aarch64)]
+  run_exports: 
+    - {{ pin_subpackage("tigmint", max_pin="x") }}
 
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+  host:
     - make
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
-  host:
+    - cmake
+    - meson
+    - ninja
     - pip
     - python
     - zlib
+    - btllib
   run:
     - python
     - intervaltree
@@ -33,6 +39,8 @@ requirements:
     - minimap2
     - bwa
     - zsh
+    - samtools
+    - btllib
 
 test:
   commands:
@@ -42,15 +50,15 @@ test:
 
 about:
   home: https://bcgsc.github.io/tigmint/
-  license: GNU General Public v3 (GPLv3)
-  license_family: GPL3
-#  license_file: LICENSE
+  license: GPL-3.0
+  license_file: LICENSE
   summary: Correct misassemblies using linked or long reads
   dev_url: https://github.com/bcgsc/tigmint
   doc_url: https://github.com/bcgsc/tigmint#readme
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.1101/304253
-  recipe-maintainers:
-    - sjackman

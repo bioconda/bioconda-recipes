@@ -1,0 +1,39 @@
+{% set name = "snakemake-interface-common" %}
+{% set version = "1.17.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/snakemake_interface_common-{{ version }}.tar.gz
+  sha256: c2142e1b93cbc18c2cf41d15968ba8688f60b077c8284e5de057cccfc215d4d3
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.8.0,<4.0.0
+    - argparse-dataclass >=2.0.0,<3.0.0
+    - configargparse >=1.7,<2.0
+
+
+test:
+  imports:
+    - snakemake_interface_common
+
+about:
+  home: https://github.com/snakemake/snakemake-interface-common
+  summary: Common functions and classes for Snakemake and its plugins
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE

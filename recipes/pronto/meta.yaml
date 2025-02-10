@@ -1,27 +1,31 @@
+{% set name = "pronto" %}
+{% set version = "2.5.8" %}
+
 package:
-  name: pronto
-  version: "2.4.3"
+  name: "{{ name }}"
+  version: "{{ version }}"
 
 source:
-  url: https://files.pythonhosted.org/packages/d3/9f/8f130df0039b19b102bcd57713adbdee73467c4e606a7d606d7a1153eabd/pronto-2.4.3.tar.gz
-  sha256: 13f1b8bad282dd0226c1e20c141d9ab44f30f7fad70b1863f6f681577db9cd64
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 5283ec5b35ddc12d34f2e50098b9900bb7b80172b7f769ccc93f5d82b7022799
 
 build:
   noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps -vvv
+  run_exports:
+    - {{ pin_subpackage('pronto', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.7
     - pip
   run:
-    - python >=3.6
-    - chardet >=3.0
-    - fastobo >=0.9.0
+    - python >=3.7
+    - chardet >=5.0
+    - fastobo >=0.12.2
     - networkx >=2.3
     - python-dateutil >=2.8
-    - immutabledict
 
 test:
   imports:
@@ -33,10 +37,13 @@ test:
     - pronto.serializers
 
 about:
-  home: http://github.com/althonos/pronto
+  home: https://github.com/althonos/pronto
   license: MIT
   summary: 'Python frontend to ontologies'
   license_family: MIT
+  license_file: COPYING
+  doc_url: https://pronto.readthedocs.io/en/stable/
+  dev_url: https://github.com/althonos/pronto
 
 extra:
   recipe-maintainers:

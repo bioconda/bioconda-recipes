@@ -1,48 +1,34 @@
-{% set version = "6.9.1" %}
+# Attention: when upgrading the version, please compare below dependencies with
+# https://github.com/snakemake/snakemake/blob/{version}/setup.cfg
+{% set name = "snakemake" %}
+{% set version = "8.27.1" %}
 
 package:
-  name: snakemake
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/s/snakemake/snakemake-{{ version }}.tar.gz
-  sha256: 8a8d196324cb93f5516c277360a5b46eee133e81b4eacdd74935212806e61c0f
+  url: https://pypi.io/packages/source/s/{{ name }}/snakemake-{{ version }}.tar.gz
+  sha256: 17fb3c80618dae88c236766a0fe45924119351da9bdc9aa2e8f11dbcfd95aded
 
 build:
   number: 0
   noarch: generic
+  run_exports:
+    - {{ pin_subpackage("snakemake", max_pin="x") }}
 
 requirements:
   run:
     - snakemake-minimal ={{ version }}
-    # optional dependencies needed for the full experience
-    # require this dropbox version to ensure that a conda doesn't pick up the
-    # outdated version available
-    - dropbox >=7.2.1
-    - ftputil >=3.2
-    - filechunkio >=1.6
-    - pysftp >=0.2.8
-    - psutil
-    - aioeasywebdav
     # pandas is optional, but required for many workflows
     - pandas
-    - python-irodsclient
-    - google-cloud-storage
-    - google-api-python-client
-    - google-crc32c
-    - boto3
-    - jsonschema
-    - jinja2
-    - pygraphviz >=1.5
-    - networkx >=2.0
-    - pygments
-    # older versions of imagemagick sometimes fail on PDF -> PNG conversion
-    - imagemagick >=7.0
-    - oauth2client
-    - slacker
-    # libXau is currently a missing dep for graphviz (linked by lib/graphviz/libgvplugin_pango.so)
-    - xorg-libxau
+    # options.extras_require: messaging
+    - slack_sdk
+    # options.extras_require: pep
+    - eido
     - peppy
+    # options.extras_require: reports
+    - pygments
 
 test:
   imports:
@@ -57,8 +43,12 @@ test:
     - rm -rf .snakemake Snakefile report.html
 
 about:
-  home: https://snakemake.github.io
+  home: "https://snakemake.github.io"
   license: MIT
+  license_family: MIT
+  license_file: LICENSE.md
+  dev_url: "https://github.com/snakemake/snakemake"
+  doc_url: "https://snakemake.readthedocs.io/en/stable"
   summary: A popular workflow management system aiming at full in-silico reproducibility.
   description: |
         Snakemake is a workflow management system that aims to reduce the complexity of creating 
@@ -70,49 +60,60 @@ about:
 extra:
   identifiers:
     - doi:10.1093/bioinformatics/bts480
-    - biotools:Snakemake
+    - biotools:snakemake
   skip-lints:
-    - uses_setuptools  # uses pkg_resoures during run time
     - should_be_noarch_python  # toplevel metapackage is noarch:generic
+  recipe-maintainers:
+    - johanneskoester
+    - corneliusroemer
 
 outputs:
   - name: snakemake-minimal
 
     build:
       noarch: python
-      script: python -m pip install --no-deps --ignore-installed .
+      script: python -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
       entry_points:
-        - snakemake = snakemake:main
-        - snakemake-bash-completion = snakemake:bash_completion
+        - snakemake = snakemake.cli:main
+      run_exports:
+        - {{ pin_subpackage("snakemake-minimal", max_pin="x") }}
 
     requirements:
       host:
-        - python >=3.5
+        - python >=3.11
         - pip
         - setuptools
       run:
-        - python >=3.5
-        - setuptools
-        - wrapt
-        - requests
-        - docutils
-        - pyyaml
-        - datrie
-        - requests >=2.8.1
-        - psutil
-        - ratelimiter
-        - configargparse
+        # Keep in sync with snakemake/setup.cfg 
+        - python >=3.11,<3.13 # we restrict to <3.13 because Python can have breaking changes in minor version bumps
         - appdirs
-        - jsonschema
-        - gitpython
-        - toposort
-        - nbformat
+        - immutables
+        - configargparse
         - connection_pool >=0.0.3
-        - pulp >=2.0
-        - smart_open >=3.0
-        - filelock
-        - stopit
+        - datrie
+        - docutils
+        - gitpython
+        - humanfriendly
+        - jinja2 >=3.0,<4.0
+        - jsonschema
+        - nbformat
+        - packaging
+        - psutil
+        - pulp >=2.3.1,<2.10
+        - pyyaml
+        - requests >=2.8.1,<3.0
+        - reretry
+        - smart_open >=4.0,<8.0
+        - snakemake-interface-executor-plugins >=9.3.2,<10.0.0
+        - snakemake-interface-common >=1.17.0,<2.0
+        - snakemake-interface-storage-plugins >=3.2.3,<4.0
+        - snakemake-interface-report-plugins >=1.1.0,<2.0.0
         - tabulate
+        - throttler
+        - wrapt
+        - yte >=1.5.1,<2.0
+        - dpath >=2.1.6,<3.0.0
+        - conda-inject >=1.3.1,<2.0
 
     test:
       imports:
@@ -123,8 +124,12 @@ outputs:
         - snakemake --version | grep "{{ version }}"
     
     about:
-      home: https://snakemake.github.io
+      home: "https://snakemake.github.io"
       license: MIT
+      license_family: MIT
+      license_file: LICENSE.md
+      dev_url: "https://github.com/snakemake/snakemake"
+      doc_url: "https://snakemake.readthedocs.io/en/stable"
       summary: A popular workflow management system aiming at full in-silico reproducibility.
       description: |
         Snakemake is a workflow management system that aims to reduce the complexity

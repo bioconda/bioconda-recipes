@@ -1,31 +1,40 @@
 {% set name = "seqfu" %}
-{% set version = "1.6.3" %}
-{% set sha256 = "1aecfe4e9f8e43f5810eef451459b134a6082248eb9d12201d4adcb3bef962f7" %}
+{% set version = "1.22.3" %}
+{% set sha256 = "65c1090cafe0e760e68d15d450bccfd57c0a03d553fdabca26e2191f566fef62" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/telatin/{{ name }}2/archive/v{{ version }}.tar.gz
+  url: https://github.com/telatin/{{ name }}2/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - nim
+    - {{ compiler('cxx') }}
+    - nim >=2.0.0
+    - make
+    - zlib
   host:
+    - zlib
+    - pcre
+  run:
     - zlib
     - pcre
     
 test:
   commands:
-    - seqfu --help
+    - seqfu
     - seqfu stats --help
-    - "seqfu  --version | grep 'version: {{ version }}'"
+    - seqfu --version
+    - "seqfu --version | grep '{{ version }}'"
 
 about:
   home: https://github.com/telatin/seqfu2/
@@ -39,6 +48,8 @@ about:
     Tools to interleave and deinterleave, to calculate stats, and extract
     portions of sequence datasets.
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
     - telatin
   identifiers:

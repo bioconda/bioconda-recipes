@@ -1,28 +1,29 @@
 {% set name = "IRMA" %}
-{% set version = "1.0.2" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "ad9187d898742288d2e9a0585a394a79c082983730237477926f3f7f72438a18" %}
+{% set version = "1.2.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://wonder.cdc.gov/amd/flu/irma/flu-amd-202103.zip
-  {{ hash_type }}: {{ hash_value }}
+  url: https://wonder.cdc.gov/amd/flu/irma/flu-amd-202408.zip
+  sha256: 8cc113289f3b441ef2bd8f7d793f6be71fbb77babbfff022e187ba2463fce9f8
   patches:
     - irma-fix-bin-cmds.patch
     - label-fix-bin-cmds.patch
+    - irma-check-dir-writable.patch
 
 build:
   number: 0
   noarch: generic
+  run_exports:
+    - {{ pin_subpackage('irma', max_pin="x.x") }}
 
 requirements:
   host:
-    - perl ==5.22.2.1
+    - perl
   run:
-    - perl ==5.22.2.1
+    - perl
     - r-base >=3.5.1
     - parallel >=20181022
     - pigz >=2.3.4

@@ -6,11 +6,16 @@ package:
   version: {{ version }}
 
 build:
-  number: 2
+  number: 14
+  run_exports:
+    - {{ pin_subpackage('hhsuite', max_pin="x") }}
 
 source:
   url: https://github.com/soedinglab/hh-suite/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - fix_cs219_include.patch
+    - reformat_pl.patch
 
 requirements:
   build:
@@ -32,9 +37,11 @@ test:
     - hhblits -h > /dev/null
     - hhsearch -h > /dev/null
     - hhalign -h > /dev/null
+    - reformat.pl > /dev/null
 
 about:
   home: https://github.com/soedinglab/hh-suite
+  doc_url: https://github.com/soedinglab/hh-suite/wiki
   license: GPLv3
   license_file: LICENSE
   summary: "HH-suite3 for fast remote homology detection and deep protein annotation"
@@ -43,3 +50,8 @@ extra:
   identifiers:
     - doi:10.1186/s12859-019-3019-7
     - biotools:hh-suite
+  recipe-maintainers:
+    - milot-mirdita
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm

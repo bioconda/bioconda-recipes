@@ -1,52 +1,57 @@
-{% set version="2.4.0" %}
+{% set name = "synapseclient" %}
+{% set version = "4.5.0" %}
 
 package:
-  name: synapseclient
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/s/synapseclient/synapseclient-{{ version }}.tar.gz
-  sha256: b06c4ef81fc6bfc533a6b372678f7103568c685d3ea631eb230aa2e237081ab9
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/synapseclient-{{ version }}.tar.gz
+  sha256: b8e3b58f4ae054cd2047a931d9c239f7497b9435ce9da72d4a673ddaab89e40e
 
 build:
   noarch: python
   entry_points:
     - synapse = synapseclient.__main__:main
   number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('synapseclient', max_pin="x") }}
 
 requirements:
   host:
-    - python
-    - setuptools
-    - requests >=1.2
-    - six
-    - future
-    - backports.csv
-    - deprecated >=1.2.3
-    - keyring >=12.0.2
+    - python >=3.8
+    - pip
   run:
-    - python
-    - requests >=1.2
-    - six
-    - future
-    - backports.csv
-    - deprecated >=1.2.3
-    - keyring >=12.0.2
-  run_constrained:
-    - pandas >=0.23.0
-    - pysftp >=0.28
+    - python >=3.8
+    - requests >=2.22
+    - urllib3 <2
+    - deprecated >=1.2.4
+    - opentelemetry-api
+    - opentelemetry-sdk
+    - opentelemetry-exporter-otlp-proto-http
+    - nest-asyncio
+    - asyncio-atexit
+    - httpx
+    - tqdm
+    - loky
+    - async-lru
+    - psutil
 
 test:
   imports:
     - synapseclient
   commands:
     - synapse --help
-  
+
 about:
-  home: http://synapse.sagebase.org/
-  dev_url: https://github.com/Sage-Bionetworks/synapsePythonClient
-  license: Apache Software License
+  home: https://www.synapse.org
+  license: Apache-2.0
+  license_family: APACHE
   summary: Python client for Synapse
   description: |
     A client for Synapse, a collaborative compute space  that allows
     scientists to share and analyze data together.
+  license_file: LICENSE
+  dev_url: https://github.com/Sage-Bionetworks/synapsePythonClient
+  doc_url: https://python-docs.synapse.org/

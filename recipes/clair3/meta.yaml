@@ -1,5 +1,5 @@
 {% set name = "clair3" %}
-{% set version = "0.1.6" %}
+{% set version = "1.0.10" %}
 
 package:
   name: {{ name }}
@@ -7,36 +7,54 @@ package:
 
 source:
   url: http://www.bio8.cs.hku.hk/clair3/bioconda/Clair3_v{{ version }}.zip
-  sha256: ea0a7b7ed079a8b312f37fd5d8f03e661766654d12496359536c85fc69cd86bd
-
-
+  sha256: b2de8180d3825f9e1ed4ee1710ce0988dd85eba79ab8bdaf2ad8dae7ac70e228
 
 build:
-  number: 0
-  noarch: generic
+  number: 1
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - cffi
+    - bzip2
+    - xz
+    - zlib
+    - python 3.9.0
+    - automake
+    - make
+    - libcurl 7.87.0
+    - openssl 1.1.1
   run:
-    - python=3.6.10
+    - python 3.9.0
     - pypy3.6
-    - numpy=1.19.5
-    - tensorflow=2.2.0
-    - pytables=3.6.1
-    - samtools=1.10
-    - whatshap=1.0
-    - pigz=2.4
-    - parallel=20191122
-    - zstd =1.4.4
+    - numpy
+    - tensorflow 2.8.0
+    - pytables
+    - samtools 1.15.1
+    - whatshap 1.7
+    - pigz
+    - parallel 20191122
+    - zstd
+    - openssl 1.1.1
+    - cffi 1.14.4
 test:
   imports:
     - tensorflow
   commands:
+    - longphase --version
     - which clair3.py
     - run_clair3.sh -v
+extra:
+  container:
+    extended-base: true
 
 about:
   home: 'https://github.com/HKU-BAL/Clair3'
   license: BSD-3-Clause
   license_file: LICENSE.md
   summary: "Clair3 is a small variant caller for long-reads. Compare to PEPPER (r0.4), Clair3 (v0.1) shows a better SNP F1-score with ≤30-fold of ONT data (precisionFDA Truth Challenge V2), and a better Indel F1-score, while runs generally four times faster. Clair3 makes the best of both worlds of using pileup or full-alignment as input for deep-learning based long-read small variant calling. Clair3 is simple and modular for easy deployment and integration."
-

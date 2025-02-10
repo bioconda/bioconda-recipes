@@ -1,19 +1,21 @@
-{% set version = "0.0.5" %}
+{% set version = "1.2.1" %}
 
 package:
   name: gofasta
   version: {{ version }}
 
 source:
-  url: https://github.com/cov-ert/gofasta/archive/v{{ version }}.tar.gz
-  sha256: 2d66f1bfd68cc673b4991634eedda14faf5f8c3e6ca578b18d68b3763a45606b
+  url: https://github.com/virus-evolution/gofasta/archive/v{{ version }}.tar.gz
+  sha256: 9ac248b6cd43954299ab88b536b155c9378394fc22f35840bae2ad3ea1234bff
 
 requirements:
   build:
     - {{ compiler('go-nocgo') }}
 
 build:
-  number: 0
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('gofasta', max_pin="x") }}
   script:
     - mkdir -p $PREFIX/bin
     - go build -o $PREFIX/bin/gofasta
@@ -23,7 +25,12 @@ test:
     - gofasta --help
 
 about:
-  home: https://github.com/cov-ert/gofasta
+  home: https://github.com/virus-evolution/gofasta
   license: MIT
   license_file: LICENSE
-  summary: Some functions for working on alignments in fasta format
+  summary: Genomic epidemiology utilities for short genome alignments
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,0 +1,49 @@
+{% set name = "pywgsim" %}
+{% set version = "0.5.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  entry_points:
+    - pywgsim=pywgsim.main:run
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 3
+  run_exports:
+    - {{ pin_subpackage('pywgsim', max_pin="x.x") }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pywgsim-{{ version }}.tar.gz
+  sha256: b6726be21629bd1cda12592b536dcd62d250fc4872e47cbcc54066e8a6e8f709
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - cython
+    - pip
+    - python
+    - zlib
+    - setuptools
+  run:
+    - plac
+    - python
+
+test:
+  imports:
+    - pywgsim
+  commands:
+    - pip check
+    - pywgsim --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/ialbert/pywgsim
+  summary: pywgsim
+  license: MIT
+
+extra:
+  recipe-maintainers:
+    - tdido

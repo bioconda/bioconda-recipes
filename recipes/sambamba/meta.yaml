@@ -1,36 +1,35 @@
 {% set name = "sambamba" %}
-{% set version = "0.8.1" %}
-{% set sha256 = "f432fdce3c51d333f2472c5fb1f84c87822a32639afe2b96434a13e7e7b7f7ef" %}
+{% set version = "1.0.1" %}
+{% set sha256 = "955a51a00be9122aa9b0c27796874bfdda85de58aa0181148ef63548ea5192b0" %}
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  - url: https://github.com/biod/sambamba/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: {{ sha256 }}
-    patches:
-      - makefile.patch
-  - url: https://github.com/lz4/lz4/archive/b3692db46d2b23a7c0af2d5e69988c94f126e10a.zip
-    sha256: 341fc478ccaf5f3ec1b620607d68541dfca3324dd2dbd386e9d45e85d2d26603
-    folder: lz4
+  url: https://github.com/biod/sambamba/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-fix-osx-compile.patch
 
 build:
-  number: 0
-  skip: True # [osx]
+  number: 3
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+  ignore_run_exports:
+    - bzip2
+    - xz
 
 requirements:
   build:
-    - make
     - {{ compiler('c') }}
-    - python >=3
+    - make
+    - python
   host:
-    - ldc >=1.17.0
     - bzip2
-    - htslib
-    - zlib
+    - ldc >=1.17.0
+    - lz4-c
     - xz
-  run:
-    - {{ pin_compatible('ldc', max_pin='x.x') }}
+    - zlib
 
 test:
   commands:
@@ -40,11 +39,15 @@ about:
   home: "https://github.com/biod/sambamba"
   doc_url: "https://lomereiter.github.io/sambamba/docs/sambamba-view.html"
   dev_url: "https://github.com/biod/sambamba"
-  license: GPL2
+  license: GPL-2.0-only
   license_family: GPL2
   license_file: LICENSE
   summary: "Tools for working with SAM/BAM data"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - doi:10.1093/bioinformatics/btv098
+  recipe-maintainers:
+    - mjsteinbaugh

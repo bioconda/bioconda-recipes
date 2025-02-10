@@ -1,29 +1,30 @@
-{% set version="104.3" %}
+{% set name = "ensembl-vep" %}
+{% set version = "113.3" %}
 
 package:
-  name: ensembl-vep
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/Ensembl/ensembl-vep/archive/release/{{ version }}.tar.gz
-  sha256: 4e6c7af5162ebb2a463f78366aab0b40dc4de05884f83e50e3f4198384dfaa68
+  sha256: ee68013eb035e17129e8f69977f525ebdd8321e73b3164a7bda6e103e2d10beb
 
 build:
   number: 1
   noarch: generic
-  
+  run_exports:
+    - {{ pin_subpackage('ensembl-vep', max_pin="x") }}
+
 requirements:
-  build:
-    - curl
   host:
     - perl
     - perl-archive-zip
-    - perl-lwp-simple
-    - unzip
     - perl-dbi
+    - perl-libwww-perl
+    - curl
+    - unzip
   run:
     - perl
-    - htslib
     - perl-bioperl >=1.7.2
     - perl-bio-db-hts >=2.11
     - perl-dbi
@@ -34,6 +35,7 @@ requirements:
     - perl-sereal
     - perl-set-intervaltree
     - perl-text-csv
+    - htslib
     - unzip
 
 test:
@@ -45,12 +47,17 @@ test:
     - variant_recoder --help
 
 about:
-  home: http://www.ensembl.org/info/docs/tools/vep/index.html
-  license: Apache-2.0
-  summary: Ensembl Variant Effect Predictor
-  description: The VEP determines the effect of your variants (SNPs, insertions, deletions, CNVs or structural variants) on genes, transcripts, and protein sequence, as well as regulatory regions.
+  home: "https://www.ensembl.org/info/docs/tools/vep/index.html"
+  license: "Apache-2.0"
+  license_family: APACHE
+  summary: "Ensembl Variant Effect Predictor"
+  description: "The VEP determines the effect of your variants (SNPs, insertions, deletions, CNVs or structural variants) on genes, transcripts, and protein sequence, as well as regulatory regions."
+  doc_url: "https://useast.ensembl.org/info/docs/tools/vep/script/vep_tutorial.html"
+  dev_url: "https://github.com/Ensembl/ensembl-vep"
 
 extra:
+  identifiers:
+    - biotools:vep
   notes: |
     This package installs only the variant effect predictor (VEP) library
     code. To install data libraries, you can use the 'vep_install' command

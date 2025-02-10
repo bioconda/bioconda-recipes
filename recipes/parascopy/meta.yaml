@@ -1,51 +1,79 @@
 {% set name = "parascopy" %}
-{% set version = "1.2.2" %}
+{% set version = "1.17.4" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
+build:
+  number: 0
+  entry_points:
+    - parascopy=parascopy.entry_point:main
+  run_exports:
+    - {{ pin_subpackage('parascopy', max_pin="x") }}
+
 source:
   url: https://github.com/tprodanov/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: f8f140903f3b61950489640d2df71fc58496ed093bbac71c8e650ae77e790482
-
-build:
-  noarch: python
-  number: 0
-  script: {{ PYTHON }} -m pip install . --ignore-install --no-deps -vv
+  sha256: cc89f97db81ec31d47fed50720beba37ae394e3487274efabff098a8774c80d7
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - meson
+    - ninja
+    - pkg-config
   host:
-    - python >=3.6
+    - python
     - pip
+    - setuptools
+    - bzip2
+    - zlib
+    - htslib
+    - tabixpp
+    - clangdev  # [osx]
+    - liblzma
+    - xz
   run:
-    - python >=3.6
+    - python
     - numpy >=1.15
     - scipy >=1.5
-    - pysam >=0.15
+    - pysam >=0.17
     - simpleeval >=0.9
     - parasail-python >=1.2
     - biopython >=1.70
     - samtools >=1.11
     - bwa >=0.7
     - intervaltree >=3.0
+    - tabixpp
+    - construct
 
 test:
   commands:
     - parascopy help
-    - parascopy pretable --help
-    - parascopy table --help
-    - parascopy depth --help
-    - parascopy cn --help
-    - parascopy cn-using --help
-    - parascopy pool --help
-    - parascopy view --help
-    - parascopy psvs --help
-    - parascopy msa --help
+    - parascopy pretable --version
+    - parascopy table --version
+    - parascopy depth --version
+    - parascopy cn --version
+    - parascopy cn-using --version
+    - parascopy pool --version
+    - parascopy view --version
+    - parascopy psvs --version
+    - parascopy msa --version
+    - parascopy call --version
+    - _parascopy_freebayes --version
 
 about:
   home: https://github.com/tprodanov/parascopy
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: Robust and accurate estimation of paralog-specific copy number for duplicated genes using whole-genome sequencing.
+  summary: "Calling paralog-specific copy number and sequence variants in duplicated genes using short-read whole-genome sequencing."
+  dev_url: https://github.com/tprodanov/parascopy
 
+extra:
+  additional-platforms:
+    - linux-aarch64
+    # ARM64 temporarily disabled as parasail is unable to detect m4
+    #- osx-arm64

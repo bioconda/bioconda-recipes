@@ -1,5 +1,5 @@
 {% set name = "ultraplex" %}
-{% set version = "1.2.3" %}
+{% set version = "1.2.9" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,28 +7,33 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 221eeece84ed1fcbc26913d8bf6a05a7f1c92658baa2840aeb190474d510f99d
-
+  sha256: 7b1efa09a421590907c7e5177eb9e4837deade89c237b961bcf2f7edfa9f2e90
 
 build:
-  number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
-  skip: True  # [py27]
+  number: 3
+  skip: True  # [py < 37 or py > 39]
+  script: 
+    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --use-pep517 -vvv"
+  entry_points:
+    - ultraplex = ultraplex.__main__:main
+  run_exports:
+    - {{ pin_subpackage('ultraplex', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - pip
-    - python >=3.7
+    - python
     - cython
-    - setuptools_scm
+    - setuptools-scm >8
   run:
-    - python >=3.7
+    - python
     - xopen >=1.0.0
     - dnaio >=0.5.0
-    - dataclasses >=0.7  # [py36]
     - pigz
+    - multiprocess
+    - setuptools_scm >8
 
 test:
   imports:
@@ -40,8 +45,10 @@ about:
   home: "https://github.com/ulelab/ultraplex.git"
   license: MIT
   license_family: MIT
+  license_file: LICENSE
   summary: "fastq demultiplexer"
 
 extra:
   recipe-maintainers:
     - Delayed-Gitification
+    - CharlotteAnne

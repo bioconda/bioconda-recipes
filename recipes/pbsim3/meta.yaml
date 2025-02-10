@@ -1,0 +1,44 @@
+{% set name = "pbsim3" %}
+{% set version = "3.0.4" %}
+{% set sha256 = "d9dd51d7522d9f2f21d3cab6f5f7ff0131702cba73dd1baa0b7d13f813d3854e" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/yukiteruono/pbsim3/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  include-package-data: true
+  manifest:
+  - recursive-include data *
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+  host:
+
+test:
+  commands:
+    - "pbsim 2>&1 | grep -q 'USAGE: pbsim'"
+
+about:
+  home: https://github.com/yukiteruono/pbsim3
+  license: GPLv2
+  license_file: COPYING
+  summary: "A simulator for all types of Pacific Biosciences (PacBio) and Oxford Nanopore Technologies (ONT) long reads"
+
+extra:
+  recipe-maintainers:
+    - idfarbanecha
+    - notestaff
+  identifiers:
+    - doi:10.1093/nargab/lqac092

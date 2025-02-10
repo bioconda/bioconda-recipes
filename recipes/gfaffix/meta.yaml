@@ -1,5 +1,6 @@
 {% set name = "GFAffix" %}
-{% set version = "0.1.2.1" %}
+{% set version = "0.2.0" %}
+{% set sha256 = "24f7102115580c22df90bffb9b3f7b33faeef5d8841d0f884b2998e464821ffa " %}
 
 package:
   name: {{ name|lower }}
@@ -7,15 +8,19 @@ package:
 
 source:
   url: https://github.com/marschall-lab/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 744379e24ad01529a963678191b36f479d17159dee24885876ca940766b2a8eb 
+  sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 2
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x.x", allow_no_other_outputs=True) }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - rust >=1.51
+    - {{ compiler('rust') }}
+    - cmake
+    - make
 
 test:
   commands:
@@ -24,9 +29,15 @@ test:
 about:
   home: https://github.com/marschall-lab/{{ name }}
   license: MIT
+  license_family: MIT
   license_file: LICENSE.md
-  summary: GFAffix identifies and collapses walk-preserving shared affixes in variation graphs 
+  summary: "GFAffix identifies and collapses walk-preserving shared affixes in variation graphs" 
+  dev_url: https://github.com/marschall-lab/{{ name|lower }}
+
 
 extra:
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64
   recipe-maintainers:
     - danydoerr

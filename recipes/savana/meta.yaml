@@ -1,0 +1,50 @@
+{% set name = "savana" %}
+{% set version = "1.3.0" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/cortes-ciriano-lab/{{ name }}/archive/{{ version }}.tar.gz"
+  sha256: 934cf7be8c76ce3ba1906b415bdeaf0a3bb16a9d747f46a82ec48728e04cbb53
+
+build:
+  number: 0
+  noarch: python
+  script:
+    - "{{ PYTHON }} -m pip install . -vv"
+  entry_points:
+    - savana=savana.savana:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - python >=3.9
+    - pip
+    - setuptools
+  run:
+    - python >=3.9
+    - pybedtools >=0.9.0
+    - pysam >=0.20.0
+    - cyvcf2 >=0.30.16
+    - scikit-learn 1.2.2
+    - pandas >=2.0.0
+    - matplotlib-base >=3.7.1
+
+test:
+  commands:
+    - savana --version
+    - savana --help
+    - savana run --help
+    - savana classify --help
+    - savana evaluate --help
+    - savana train --help
+    - savana cna --help
+
+about:
+  home: "https://github.com/cortes-ciriano-lab/{{ name }}"
+  license: Apache-2.0
+  license_file: LICENSE.txt
+  summary: "SAVANA: a somatic structural variant caller for long-read data"

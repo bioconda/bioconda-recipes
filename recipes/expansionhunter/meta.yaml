@@ -1,47 +1,53 @@
 {% set name = "ExpansionHunter" %}
-{% set version = "4.0.2" %}
-{% set sha256 = "cbe66f09b8d86499966ae6da8655de04976e097227656495644fde4a69104525" %}
+{% set version = "5.0.0" %}
+{% set sha256 = "921d1f8be658f2bdd144150278210bb921d605af921816e94a7508c0b9b9dfff" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
-
-build:
-  number: 1
-
 source:
   url: https://github.com/Illumina/ExpansionHunter/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - brackets.patch  # [osx]
-
+    - 0001-adjust-cmake-targets.patch
+    - 0002-specify-boost-for-make_unique.patch
+    - 0003-add-missing-limits-import.patch
+    - 0004-add-fmt-formatters-for-classes.patch
+    - 0005-apply-bioconda-4.0.2-patches.patch  # [osx]
+build:
+  number: 4
+  run_exports:
+    - {{ pin_subpackage('expansionhunter', max_pin="x") }}
 requirements:
   build:
-    - make
     - {{ compiler('cxx') }}
-    - {{ compiler('c') }}
+    - make
     - cmake
   host:
-    - boost-cpp
-    - icu
+    - abseil-cpp >=20210324.2,<20210324.3
+    - boost >=1.73
+    - bzip2
+    - fmt
+    - gmock
+    - gtest >=1.10.0
+    - htslib >=1.10.2
+    - libcurl
+    - libdeflate
+    - spdlog >=1.6.1
+    - xz
     - zlib
-    - htslib
   run:
-    - boost-cpp
-    - icu
-    - zlib
-    - htslib
-
+    - boost
 test:
   commands:
-  - ExpansionHunter --help 2>&1 | grep "help"
-
+    - test -f ${PREFIX}/bin/ExpansionHunter
+    - ExpansionHunter --help
 about:
   home: https://github.com/Illumina/ExpansionHunter
-  license: Apache v2.0
-  license_family: Apache
+  license: APACHE
   license_file: LICENSE.txt
   summary: "A tool for estimating repeat sizes"
+
 extra:
-  skip-lints:
-    - should_not_be_noarch_source
+  additional-platforms:
+    - linux-aarch64

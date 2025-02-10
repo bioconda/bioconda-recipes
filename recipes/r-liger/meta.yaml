@@ -1,87 +1,104 @@
-{% set version = '0.5.0.9000' %}
+{% set name = "liger" %}
+{% set version = '2.1.0' %}
 
 package:
-  name: r-liger
-  version: {{ version }}
+  name: r-{{ name }}
+  version: {{ version|replace("-", "_") }}
 
 source:
-  url: https://github.com/MacoskoLab/liger/archive/v{{ version }}.tar.gz
-  sha256: 78e910aa6a5516d10e965aff040549f41b4a452e466f630874bf5000e0ab01d3
+  url:
+    - {{ cran_mirror }}/src/contrib/rliger_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/rliger/rliger_{{ version }}.tar.gz
+  sha256: 16b79fdcd1467e4c192f9fb38bb4f35a6710aee319839639edfdf5d87e086e74
 
 build:
-  number: 3
+  number: 2
   script: R CMD INSTALL --build .
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports:
+    - {{ pin_subpackage("r-liger", max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - make
   host:
-    - libblas
     - r-base
-    - r-fnn
-    - r-hmisc
-    - r-rann.l1
     - r-rcpp >=0.12.10
     - r-rcpparmadillo
+    - r-rcppprogress
     - r-rtsne
     - r-cowplot
-    - r-dosnow
     - r-dplyr
-    - r-foreach
     - r-ggplot2
-    - r-ggrepel
     - r-ica
     - r-irlba
     - r-mclust
-    - r-patchwork
-    - r-plyr
-    - r-riverplot
-    - r-snow
-    - r-psych
-    - r-rcppeigen
+    - r-uwot
+    - r-hdf5r
     - r-rann
+    - r-circlize
+    - bioconductor-complexheatmap
+    - r-leidenalg >=1.1.1
+    - bioconductor-s4vectors
+    - r-cli
+    - r-rlang
+    - r-matrix
+    - r-lifecycle
+    - r-magrittr
+    - r-scales
+    - r-rcolorbrewer
+    - r-viridis
   run:
     - r-base
-    - r-fnn
-    - r-hmisc
-    - r-rann.l1
     - r-rcpp >=0.12.10
     - r-rcpparmadillo
+    - r-rcppprogress
     - r-rtsne
     - r-cowplot
-    - r-dosnow
     - r-dplyr
-    - r-foreach
     - r-ggplot2
-    - r-ggrepel
     - r-ica
     - r-irlba
     - r-mclust
-    - r-patchwork
-    - r-plyr
-    - r-riverplot
-    - r-snow
-    - r-psych
-    - r-rcppeigen
+    - r-uwot
+    - r-hdf5r
     - r-rann
-    - r-reticulate
-    - openjdk >=6
-    - umap-learn
-
+    - r-circlize
+    - bioconductor-complexheatmap
+    - r-leidenalg >=1.1.1
+    - bioconductor-s4vectors
+    - r-cli
+    - r-rlang
+    - r-matrix
+    - r-lifecycle
+    - r-magrittr
+    - r-scales
+    - r-rcolorbrewer
+    - r-viridis
+    - r-rcppplanc
 test:
   commands:
-    - $R -e "library('liger')"
+    - $R -e "library('rliger')"
 
 about:
   home: https://github.com/MacoskoLab/liger
-  license: GPL-3
-  summary: R package for integrating and analyzing multiple single-cell datasets
+  license: GPL-3.0-or-later
+  summary: Uses an extension of nonnegative matrix factorization to identify shared and dataset-specific
+    factors. See Welch J, Kozareva V, et al (2019) <doi:10.1016/j.cell.2019.05.006>,
+    and Liu J, Gao C, Sodicoff J, et al (2020) <doi:10.1038/s41596-020-0391-8> for more
+    details.
   license_family: GPL3
-  license_file: LICENSE
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  doc_url: https://welch-lab.github.io/liger/index.html
+  dev_url: https://github.com/MacoskoLab/liger
 
 extra:
   recipe-maintainers:
+    - theAeon
     - raivivek
+  identifiers:
+    - doi:10.1016/j.cell.2019.05.006

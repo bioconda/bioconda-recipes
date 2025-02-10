@@ -1,0 +1,75 @@
+{% set version = "2.4.2" %}
+
+package:
+  name: ffgc
+  version: "{{ version }}"
+
+source:
+  url: "https://gitlab.ub.uni-bielefeld.de/gi/FFGC/-/archive/{{ version }}/FFGC-{{ version }}.tar.bz2"
+  md5: 5449bfb702b5a4b3bad636aab8925506
+
+build:
+  number: 1
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage("ffgc", max_pin="x") }}
+  script:
+    - "echo $PREFIX"
+    - "mkdir -p $PREFIX/bin/"
+    - "mkdir -p $PREFIX/opt/ffgc/"
+    - "cp -r * $PREFIX/opt/ffgc/"
+    - "chmod u+x $PREFIX/opt/ffgc/ffgc_create_project.py"
+    - "ln -s $PREFIX/opt/ffgc/ffgc_create_project.py $PREFIX/bin/"
+
+requirements:
+  host:
+    - python
+  run:
+    - python
+    - snakemake >=7.24
+    - biopython >=1.78
+    - networkx >=2.4
+    - ruamel.yaml >=0.15
+    - blast >=2.8
+    - diamond >=2.0.15
+    - lxml >=4.9.1
+    - mcl >=14.137
+
+test:
+  commands:
+    - ffgc_create_project.py --help
+
+about:
+  home: https://gitlab.ub.uni-bielefeld.de/gi/FFGC
+  license: BSD
+  license_file: LICENSE
+  summary: "Family Free Genome Comparison (FFGC) workflow"
+  description: |
+    Family Free Genome Comparison (FFGC) is a self-contained workflow system that
+    provides functionality for all steps of a family-free gene order analysis
+    starting from annotated genome sequences.
+    
+    Family-free methods for gene order analyses do not require prior knowledge of
+    evolutionary relationships between the genes across the studied genomes. This
+    tool features a complete workflow for genome comparison, requiring nothing
+    but annotated genome sequences as input.
+    
+    Surprisingly, the continuous development of family-free methods recently lead
+    to an integrated method for inferring gene families across several species.
+    FFGC now includes a subworkflow for inferring gene families simultaneously
+    based on gene similarities and family-free genome rearrangements (OrthoFFGCʜ
+    and OrthoFFGCʜ≈ extensions).
+    
+    FFGC is available for download at our git repository
+    (https://gitlab.ub.uni-bielefeld.de/gi/FFGC) or as a
+    Conda package at Bioconda (https://anaconda.org/bioconda/ffgc).
+    
+    In general, three major steps are performed: (1) the computation of local
+    sequence alignment scores between genes of two or more gene order sequences
+    using BLAST+ or Diamond; (2) the establishment of gene relationships; and
+    (3) the actual family-free gene order analysis.
+  doc_url: https://gitlab.ub.uni-bielefeld.de/gi/FFGC/blob/master/README.md
+
+extra:
+  recipe-maintainers:
+    - diegorubert

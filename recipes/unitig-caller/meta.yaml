@@ -1,28 +1,28 @@
 {% set name = "unitig-caller" %}
-{% set version = "1.2.0" %}
+{% set version = "1.3.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/johnlees/{{ name|lower }}/archive/v{{ version }}.tar.gz
-  sha256: 22d7994382dad9ddcc2328b68353f0702d7ca92b6aad37e72f88341ddc0881b5
+  url: https://github.com/bacpop/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: e6b41fc96633fb321e3248272bde63e511b9ba1deac7d1394651c71005517d61
   patches:
-    - 0001-More-portable-install.patch
+    - 0001-No-experimental.patch
 
 build:
-  number: 2
-  skip: True  # [osx or py27]
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  number: 1
   entry_points:
     - unitig-caller = unitig_caller.__main__:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake
+    - cmake >=3.9
     - make
   host:
     - python
@@ -30,12 +30,12 @@ requirements:
     - pybind11
     - zlib
     - bzip2
-    - bifrost
-    - seqan3
-    - pthread-stubs
+    - bifrost >=1.3.0
+    - libgomp      # [linux]
+    - llvm-openmp  # [osx]
   run:
     - python
-    - bifrost
+    - bifrost >=1.3.0
 
 test:
   imports:
@@ -45,12 +45,14 @@ test:
     - unitig-caller --version
 
 about:
-   home: https://github.com/johnlees/unitig-caller
+   home: https://github.com/bacpop/unitig-caller
    license: Apache-2.0
    license_family: APACHE
    license_file: LICENSE
    summary: Determines presence/absence of sequence elements in bacterial sequence data.
+   dev_url: https://github.com/bacpop/unitig-caller
 
 extra:
-   skip-lints:
-     - uses_vcs_url
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

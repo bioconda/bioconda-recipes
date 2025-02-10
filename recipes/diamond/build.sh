@@ -1,18 +1,23 @@
 #!/bin/bash
 
 sed -i.bak 's/-march=native/-march=x86-64/' CMakeLists.txt
+rm -rf *.bak
 
-mkdir build
-cd build
+if [[ `uname` == "Darwin" ]]; then
+	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+else
+	export CONFIG_ARGS=""
+fi
 
+cmake -S. -B build -DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+	-DCMAKE_CXX_COMPILER="${CXX}" \
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include" \
+	-DWITH_ZSTD=ON \
+	-DZSTD_LIBRARY="${PREFIX}/lib/libzstd.a" \
+	-DZSTD_INCLUDE_DIR="${PREFIX}/include" \
+	-DBLAST_LIBRARY_DIR="${PREFIX}/lib/ncbi-blast+" \
+	-DCMAKE_OSX_DEPLOYMENT_TARGET="" \
+	"${CONFIG_ARGS}"
 
-cmake .. \
-      -DCMAKE_INSTALL_PREFIX=$PREFIX \
-      -DCMAKE_PREFIX_PATH=$PREFIX \
-      -DBOOST_NO_SYSTEM_PATHS=on \
-      -DCMAKE_OSX_DEPLOYMENT_TARGET=""
-
-cmake --build . --config Release --target install
-
-# Reference link:
-# https://github.com/conda/conda-recipes/blob/master/boost/build.sh
+cmake --build build --target install -v

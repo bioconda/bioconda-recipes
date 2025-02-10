@@ -1,38 +1,57 @@
-{% set version = "1.40.0" %}
+{% set version = "1.54.0" %}
 {% set name = "biovizBase" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 83ad0eb484435c661f92f3fc661ed4f5
+about:
+  description: The biovizBase package is designed to provide a set of utilities, color schemes and conventions for genomic data. It serves as the base for various high-level packages for biological data visualization. This saves development effort and encourages consistency.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Basic graphic utilities for visualization of genomic data.
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-biovizbase", max_pin="x.x") }}'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:biovizbase
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-biovizbase
+    path: recipes/bioconductor-biovizbase
+    version: 1.28.2
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BSgenome.Hsapiens.UCSC.hg19, TxDb.Hsapiens.UCSC.hg19.knownGene, BSgenome, rtracklayer, EnsDb.Hsapiens.v75, RUnit
 requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - make
+
   host:
-    - 'bioconductor-annotationdbi >=1.54.0,<1.55.0'
-    - 'bioconductor-annotationfilter >=1.16.0,<1.17.0'
-    - 'bioconductor-biocgenerics >=0.38.0,<0.39.0'
-    - 'bioconductor-biostrings >=2.60.0,<2.61.0'
-    - 'bioconductor-ensembldb >=2.16.0,<2.17.0'
-    - 'bioconductor-genomeinfodb >=1.28.0,<1.29.0'
-    - 'bioconductor-genomicalignments >=1.28.0,<1.29.0'
-    - 'bioconductor-genomicfeatures >=1.44.0,<1.45.0'
-    - 'bioconductor-genomicranges >=1.44.0,<1.45.0'
-    - 'bioconductor-iranges >=2.26.0,<2.27.0'
-    - 'bioconductor-rsamtools >=2.8.0,<2.9.0'
-    - 'bioconductor-s4vectors >=0.30.0,<0.31.0'
-    - 'bioconductor-summarizedexperiment >=1.22.0,<1.23.0'
-    - 'bioconductor-variantannotation >=1.38.0,<1.39.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-annotationfilter >=1.30.0,<1.31.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-ensembldb >=2.30.0,<2.31.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicalignments >=1.42.0,<1.43.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
     - r-base
     - r-dichromat
     - r-hmisc
@@ -41,44 +60,38 @@ requirements:
     - r-scales
     - libblas
     - liblapack
+
   run:
-    - 'bioconductor-annotationdbi >=1.54.0,<1.55.0'
-    - 'bioconductor-annotationfilter >=1.16.0,<1.17.0'
-    - 'bioconductor-biocgenerics >=0.38.0,<0.39.0'
-    - 'bioconductor-biostrings >=2.60.0,<2.61.0'
-    - 'bioconductor-ensembldb >=2.16.0,<2.17.0'
-    - 'bioconductor-genomeinfodb >=1.28.0,<1.29.0'
-    - 'bioconductor-genomicalignments >=1.28.0,<1.29.0'
-    - 'bioconductor-genomicfeatures >=1.44.0,<1.45.0'
-    - 'bioconductor-genomicranges >=1.44.0,<1.45.0'
-    - 'bioconductor-iranges >=2.26.0,<2.27.0'
-    - 'bioconductor-rsamtools >=2.8.0,<2.9.0'
-    - 'bioconductor-s4vectors >=0.30.0,<0.31.0'
-    - 'bioconductor-summarizedexperiment >=1.22.0,<1.23.0'
-    - 'bioconductor-variantannotation >=1.38.0,<1.39.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-annotationfilter >=1.30.0,<1.31.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-ensembldb >=2.30.0,<2.31.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicalignments >=1.42.0,<1.43.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
     - r-base
     - r-dichromat
     - r-hmisc
     - r-rcolorbrewer
     - r-rlang
     - r-scales
-  build:
-    - {{ compiler('c') }}
-    - make
+
+source:
+  md5: 8c46d5b8947d56ba506dd9fcb1e8363b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Basic graphic utilities for visualization of genomic data.'
-  description: 'The biovizBase package is designed to provide a set of utilities, color schemes and conventions for genomic data. It serves as the base for various high-level packages for biological data visualization. This saves development effort and encourages consistency.'
-extra:
-  identifiers:
-    - biotools:biovizbase
-    - doi:10.1038/nmeth.3252
-  parent_recipe:
-    name: bioconductor-biovizbase
-    path: recipes/bioconductor-biovizbase
-    version: 1.28.2
+    - $R -e "library('{{ name }}')"
 

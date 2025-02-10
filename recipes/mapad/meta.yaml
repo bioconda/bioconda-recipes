@@ -1,0 +1,39 @@
+{% set version = "0.43.0" %}
+
+package:
+  name: mapad
+  version: {{ version }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('mapad', max_pin="x.x") }}
+
+source:
+  url: https://github.com/mpieva/mapAD/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e35fbebef35a13d286e90222adfb9a3d7185122b062663c1cb2dc023b88c5cf6
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}  # [not win]
+    - {{ compiler('m2w64_c') }}  # [win]
+    - cargo-bundle-licenses
+    - pkg-config
+  host:
+    - zlib
+  run:
+
+test:
+  commands:
+    - mapad --help
+
+about:
+  home: https://github.com/mpieva/mapAD
+  license: MIT
+  license_file: LICENSE
+  summary: An aDNA aware short-read mapper
+
+extra:
+  recipe-maintainers:
+    - jch-13

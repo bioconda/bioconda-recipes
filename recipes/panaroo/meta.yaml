@@ -1,15 +1,18 @@
-{% set version = "1.2.8" %} # put in correct version here
+{% set version = "1.5.1" %} 
 {% set name = "panaroo" %}
+
 package:
   name: {{ name|lower }}
   version: {{ version }}
+
 source:
   url: https://github.com/gtonkinhill/{{ name|lower }}/archive/v{{ version }}.tar.gz
-  sha256: af56fae581908a93b843a90471dc80d4ff7299afc9e66e22510233d1a76d00c5
+  sha256: 870e09f206e5c2076aff106d19fb3e9183a56be9c9b8bca0bd0ad7a5c43030ca
+
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   entry_points:
     - panaroo = panaroo.__main__:main
     - run_prokka = panaroo.run_prokka:main
@@ -22,15 +25,18 @@ build:
     - panaroo-msa = panaroo.post_run_alignment_gen:main
     - panaroo-integrate = panaroo.integrate:main
     - panaroo-gene-neighbourhood = panaroo.get_neighborhood:main
+  run_exports:
+    - {{ pin_subpackage('panaroo', max_pin="x") }}
+
 requirements:
   host:
-    - python >=3
+    - python >=3.6
     - pip
   run:
-    - python >=3
+    - python >=3.6
     - networkx
     - numba
-    - numpy 
+    - numpy
     - mkl
     - scipy
     - scikit-learn
@@ -43,15 +49,12 @@ requirements:
     - plotly
     - dendropy
     - intbitset
+    - biocode
     - mafft
     - prank
     - mash
     - prokka
     - cd-hit
-    # Work around cd-hit not always allowing multiple threads
-    - zlib
-    - openmp 
-    - llvm-openmp  # [osx]
 
 test:
   imports:
@@ -65,8 +68,11 @@ test:
     - panaroo-img --help
     - panaroo-fmg --help
     - panaroo-msa --help
+
 about:
   home: https://gtonkinhill.github.io/panaroo
   license: MIT
+  license_family: MIT
   license_file: LICENSE
   summary: 'panaroo - an updated pipeline for pangenome investigation'
+  doc_url: https://gtonkinhill.github.io/panaroo/#/gettingstarted/quickstart

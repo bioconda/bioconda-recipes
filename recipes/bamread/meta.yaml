@@ -1,5 +1,5 @@
 {% set name = "bamread" %}
-{% set version = "0.0.9" %}
+{% set version = "0.0.16" %}
 
 package:
   name: '{{ name|lower }}'
@@ -7,12 +7,13 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: e0a385b6b2d7c6c10c1f167a5924ecb4befda2fa75fd467f195d9dd923a413a1
+  sha256: 913ae7d433592aa9bfad8699da93e74b5dfe8f567a1ebf4147f0da61baaf2b70
 
 build:
-  number: 0
-  skip: True  # [not py3k]
+  number: 5
   script: python setup.py install --single-version-externally-managed --record=record.txt
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
@@ -28,6 +29,7 @@ requirements:
     - natsort
     - pysam
     - pandas
+    - setuptools
 
 test:
   imports:
@@ -37,3 +39,9 @@ about:
   home: http://github.com/endrebak/bamread
   license: MIT
   summary: Read bam files quickly into dataframes in Python
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  skip-lints:
+    - uses_setuptools

@@ -10,18 +10,8 @@ export LIBRARY_PATH=${PREFIX}/lib
 export LD_LIBRARY_PATH=${PREFIX}/lib
 #export DYLD_LIBRARY_PATH=${PREFIX}/lib
 
-mkdir contrib-build
-cd contrib-build
-## By default WM is built and linked statically such that it does not
-## introduce a dependency that needs to be exported
-cmake -DBUILD_TYPE=WILDMAGIC ../contrib
-cd ..
-
-#sed -i.bak "s/CMAKE_INSTALL_NAME_DIR/FOO/g" CMakeLists.txt
-
 mkdir build
 cd build
-
 
 if [[ $(uname -s) == Darwin ]]; then
   RPATH='@loader_path/../lib'
@@ -30,12 +20,14 @@ else
   export ORIGIN
   RPATH='$${ORIGIN}/../lib'
 fi
+
+# not sure if needed. CMake should take care of that.
 LDFLAGS='-Wl,-rpath,${RPATH}'
 
 cmake .. \
-  -DOPENMS_CONTRIB_LIBS='../../contrib-build' \
   -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
-  -DOPENMS_GIT_SHORT_SHA1="2537a5d" \
+  -DOPENMS_GIT_SHORT_SHA1="d36094e" \
+  -DOPENMS_CONTRIB_LIBS="$SRC_DIR/contrib-build" \
   -DCMAKE_BUILD_TYPE="Release" \
   -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} \
   -DCMAKE_MACOSX_RPATH=ON \
@@ -53,8 +45,7 @@ cmake .. \
   -DBoost_ARCHITECTURE="-x64" \
   -DBUILD_EXAMPLES=OFF
 
-make -j${CPU_COUNT} OpenMS TOPP UTILS SuperHirn
-# The subpackages will do that (unfortunately "make install" installs everything right away)
-# Another option would be to install somewhere into the build dir (to use the existent install commands)
-# and then copy the relevant parts to the prefix. See CMAKE_INSTALL_PREFIX.
+# limit concurrent build jobs due to memory usage on CI
+make -j1 OpenMS TOPP
+# The subpackages will do the installing of the parts
 #make install

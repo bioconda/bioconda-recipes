@@ -1,16 +1,18 @@
 {% set name = "cuttlefish" %}
-{% set version = "1.0.0" %}
+{% set version = "2.2.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 1
+  number: 4
+  run_exports:
+    - {{ pin_subpackage('cuttlefish', max_pin="x") }}
 
 source:
   url: https://github.com/COMBINE-lab/cuttlefish/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: fdf9dcd0afe8d7b10c1bf67e32c7039c8dcb594300a77c25a3c3f3dd27dfc7b4
+  sha256: d524aaeed5dd86ce256c5540661eda388cecbfad2ce4dde86e52539b2b1d6ed5
 
 requirements:
   build:
@@ -19,26 +21,32 @@ requirements:
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
   host:
+    - jemalloc >=5.1.0
     - zlib
-  run:
-    - zlib
+    - bzip2
 
 test:
   commands:
     - cuttlefish build --help
-    - cuttlefish validate --help
+    - cuttlefish help
+    - cuttlefish version
 
 about:
-  home: https://github.com/COMBINE-lab/cuttlefish
-  license: BSD-3-Clause
+  home: "https://github.com/COMBINE-lab/cuttlefish"
+  license: "BSD-3-Clause"
+  license_family: BSD
   license_file: LICENSE
-  summary: Construction of the compacted de Bruijn graph efficiently from genome references
-  dev_url: https://github.com/COMBINE-lab/cuttlefish
-  doc_url: https://github.com/COMBINE-lab/cuttlefish#readme
+  summary: "Construction of the compacted de Bruijn graph efficiently."
+  dev_url: "https://github.com/COMBINE-lab/cuttlefish"
+  doc_url: "https://github.com/COMBINE-lab/cuttlefish/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    - osx-arm64
   recipe-maintainers:
     - jamshed
     - rob-p
   identifiers:
-    - doi:10.1101/2020.10.21.349605
+    - doi:10.1093/bioinformatics/btab309
+    - doi:10.1186/s13059-022-02743-6
+    - biotools:cuttlefish

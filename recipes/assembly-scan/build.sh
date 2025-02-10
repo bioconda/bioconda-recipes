@@ -1,5 +1,5 @@
 #!/bin/bash
 
 mkdir -p $PREFIX/bin
-chmod 755 assembly-scan.py
-cp -f assembly-scan.py $PREFIX/bin/assembly-scan
+chmod 755 bin/assembly-scan
+cp -f bin/assembly-scan $PREFIX/bin/assembly-scan

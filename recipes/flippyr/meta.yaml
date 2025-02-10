@@ -1,6 +1,6 @@
 {% set name = "flippyr" %}
-{% set version = "0.4.0" %}
-{% set sha256 = "71ddccda7298ef5a23b393160647e0d2a23b6a8c9617f62d46dd49c92020ef97" %}
+{% set version = "0.6.1" %}
+{% set sha256 = "65bc37f44c8df60c33c1f82638034df874050204cd832918ba7b41d78a1d8452" %}
 
 package:
   name: {{ name|lower }}
@@ -14,7 +14,7 @@ requirements:
   build:
     - python
     - setuptools
-
+    - pip
   run:
     - python
     - pyfaidx
@@ -23,9 +23,11 @@ requirements:
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} setup.py install --single-version-externally-managed --record=record.txt"
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir"
   entry_points:
     - flippyr = flippyr:main
+  run_exports:
+    - {{ pin_subpackage('flippyr', max_pin="x.x") }}
 
 test:
   commands:

@@ -11,10 +11,14 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  noarch: generic
-  number: 2
+  number: 6
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
   host:
     - perl
     - perl-extutils-makemaker
@@ -28,6 +32,11 @@ test:
   imports:
     - Socket
 
+extra:
+  additional-platforms:
+    - linux-aarch64
+    # needs perl-extutils-constant, perl-scalar-list-utils
+    # - osx-arm64
 about:
   home: http://metacpan.org/pod/Socket
   license: perl_5

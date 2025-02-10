@@ -1,0 +1,47 @@
+{% set name = "plinkio" %}
+{% set version = "0.9.8" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/plinkio-{{ version }}.tar.gz
+  sha256: 820cd57167ed28158f926ac4b2901b323f8593eb139bec000eeb3b895430011f
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 2
+  run_exports:
+    {{ pin_subpackage('plinkio', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - setuptools
+  run:
+    - python
+
+test:
+  imports:
+    - plinkio
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/mfranberg/libplinkio
+  summary: A library for parsing plink genotype files
+  license: BSD-3-Clause
+  license_file:
+    - COPYING
+    - COPYING
+    - copyright
+
+extra:
+  recipe-maintainers:
+    - SonofLastPanda

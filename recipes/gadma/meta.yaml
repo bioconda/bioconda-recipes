@@ -1,5 +1,5 @@
 {% set name = "gadma" %}
-{% set version = "2.0.0rc18" %}
+{% set version = "2.0.2" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,44 +7,46 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 051941b6ce66ac92f381fb2800adf17a6b2a324ef070582166877df198b31767
+  sha256: f7b610d0d347e97afb30e6b5f9a814c19e479203838de31aa2e44f7427073db5
 
 build:
   number: 0
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   entry_points:
     - gadma = gadma.core:main
     - gadma-run_ls_on_boot_data = gadma.run_ls_on_boot_data:main
     - gadma-get_confidence_intervals = gadma.get_confidence_intervals:main
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
-  skip: True  # [py27]
+    - gadma-get_confidence_intervals_for_ld = gadma.get_confidence_intervals_for_ld:main
+    - gadma-precompute_ld_data = gadma.precompute_ld_data:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('gadma', max_pin="x") }}
 
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
     - python >=3.6
-    - cython
-    - dadi
-    - matplotlib-base
-    - mpmath
-    - nlopt
-    - numpy
-    - pillow
     - pip
-    - ruamel.yaml
-    - scipy
-    - setuptools_scm 
+    - setuptools-scm
+    - setuptools
   run:
+    - python >=3.6
     - dadi
+    - demes
+    - demesdraw
+    - h5py ==3.10.0
     - matplotlib-base
     - mpmath
     - nlopt
     - numpy
-    - pandas
+    - pandas <=2.2.2
     - pillow
-    - python >=3.6
-    - ruamel.yaml
-    - scipy
+    - ruamel.yaml ==0.16.12
+    - scipy <1.14
+    - networkx
+    - moments
+    - scikit-allel
 
 test:
   imports:
@@ -61,6 +63,8 @@ test:
     - gadma --help
     - gadma-run_ls_on_boot_data --help
     - gadma-get_confidence_intervals --help
+    - gadma-get_confidence_intervals_for_ld --help
+    - gadma-precompute_ld_data --help
 
 about:
   home: "https://github.com/ctlab/GADMA"
@@ -68,6 +72,8 @@ about:
   license_family: LGPL
   license_file: LICENSE
   summary: "Genetic Algorithm for Demographic Inference"
+  doc_url: https://gadma.readthedocs.io/en/latest/
+  dev_url: "https://github.com/ctlab/GADMA"
 
 extra:
   identifiers:

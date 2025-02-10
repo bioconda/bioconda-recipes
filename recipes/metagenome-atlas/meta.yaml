@@ -1,42 +1,42 @@
-{% set version = "2.7.0" %}
-{% set sha256 = "b4d08820f3fd3bc7019de8a230c0b490dc7a961bc04847924bbff29c35563b47" %}
-
+{% set version = "2.19.0" %}
 
 package:
   name: metagenome-atlas
   version: {{ version }}
 
 source:
-  url: https://github.com/metagenome-atlas/atlas/archive/{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  url: https://github.com/metagenome-atlas/atlas/archive/v{{ version }}.tar.gz
+  sha256: d0a97c24be4e9b957003c99ba1807c971680fe2dccb29b586793de3cf3225f17
 
 build:
   number: 0
   entry_points:
     - atlas=atlas.atlas:cli
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
-
-
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('metagenome-atlas', max_pin="x") }}
 
 requirements:
   host:
-    - python=3.8
+    - python >=3.8,<3.11
     - pip
-
   run:
-    - python=3.8
+    - python >=3.8,<3.11
     - mamba
-    - bbmap=38
-    - snakemake-minimal=6.7
-    - pandas=1.2
-    - click=7
-    - ruamel.yaml=0.17
-    - biopython=1.74
+    - bbmap >=39.01,<40
+    - snakemake-minimal >=7.18.1,<7.26
+    - pygments
+    - networkx
+    - graphviz
+    - pandas >=1.2, <1.5
+    - pyarrow >=8 # for parquet reading
+    - click >=7
+    - ruamel.yaml >=0.17
     - cookiecutter
+    - pathlib
     # optional to help conda solve
-    - numpy= 1.21
-
+    - numpy =1.21
 
 test:
   imports:
@@ -60,7 +60,7 @@ about:
 
     Three commands to start analysing your metagenome data:
     ```
-        conda install -c bioconda -c conda-forge metagenome-atlas
+        mamba install -c bioconda -c conda-forge metagenome-atlas
         atlas init --db-dir databases path/to/fastq/files
         atlas run
     ```

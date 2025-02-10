@@ -1,0 +1,52 @@
+{% set name = "peaks2utr" %}
+{% set version = "1.4.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/peaks2utr-{{ version }}.tar.gz
+  sha256: ef7310a37690a604634cbcea3f495f9453d78fd6b9a787ca3a00073327a09180
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('peaks2utr', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8,<3.12
+    - wheel
+    - pip
+  run:
+    - python >=3.8,<3.12
+    - requests
+    - gffutils ==0.10.1
+    - pysam
+    - macs2 ==2.2.9.1
+    - numpy >=1.21.4
+    - tqdm
+    - asgiref
+    - psutil
+    - pybedtools
+    - typing-extensions
+    - importlib-resources
+    - zipp
+
+test:
+  imports:
+    - peaks2utr
+
+about:
+  home: https://github.com/haessar/peaks2utr
+  summary: A robust, parallelized Python CLI for annotating three_prime_UTR
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btad112

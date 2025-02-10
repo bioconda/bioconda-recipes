@@ -1,49 +1,21 @@
-{% set version = "1.68.0" %}
+{% set version = "1.82.0" %}
 {% set name = "makecdfenv" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 114de15f559c9c107789e521b9b6b1d2
+about:
+  description: This package has two functions. One reads a Affymetrix chip description file (CDF) and creates a hash table environment containing the location/probe set membership mapping. The other creates a package that automatically loads that environment.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: CDF Environment Maker
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-requirements:
-  host:
-    - 'bioconductor-affy >=1.70.0,<1.71.0'
-    - 'bioconductor-affyio >=1.62.0,<1.63.0'
-    - 'bioconductor-biobase >=2.52.0,<2.53.0'
-    - 'bioconductor-zlibbioc >=1.38.0,<1.39.0'
-    - r-base
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-affy >=1.70.0,<1.71.0'
-    - 'bioconductor-affyio >=1.62.0,<1.63.0'
-    - 'bioconductor-biobase >=2.52.0,<2.53.0'
-    - 'bioconductor-zlibbioc >=1.38.0,<1.39.0'
-    - r-base
-  build:
-    - {{ compiler('c') }}
-    - automake
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'CDF Environment Maker'
-  description: 'This package has two functions. One reads a Affymetrix chip description file (CDF) and creates a hash table environment containing the location/probe set membership mapping. The other creates a package that automatically loads that environment.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-makecdfenv", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:makecdfenv
@@ -52,4 +24,40 @@ extra:
     name: bioconductor-makecdfenv
     path: recipes/bioconductor-makecdfenv
     version: 1.56.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - automake
+    - make
+  host:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-affyio >=1.76.0,<1.77.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-zlibbioc >=1.52.0,<1.53.0
+    - r-base
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-affyio >=1.76.0,<1.77.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-zlibbioc >=1.52.0,<1.53.0
+    - r-base
+
+source:
+  md5: 8fea48d8169003c7436fc406fe5e3ac1
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

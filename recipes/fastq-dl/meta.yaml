@@ -1,34 +1,51 @@
-{% set version = "1.0.6" %}
+{% set name = "fastq-dl" %}
+{% set version = "3.0.0" %}
 
 package:
-  name: fastq-dl
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/rpetit3/fastq-dl/archive/v{{ version }}.tar.gz
-  sha256: 1bf94fbd062e66511f1b6b6c2139807d9bd72e8c83759e1dbf5d682a7e6a68f3
+  url: https://pypi.io/packages/source/f/fastq_dl/fastq_dl-{{ version }}.tar.gz
+  sha256: de85e3fcc60c2f2fb9313336df9706add440b0f89963f28a46fa75e5ff041a0a
 
 build:
-  number: 1
-  noarch: generic
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - fastq-dl = fastq_dl.cli.download:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
+  host:
+    - python >=3.9
+    - poetry-core
+    - pip
   run:
     - executor
     - pigz
-    - python >=3.6
+    - python >=3.9
+    - pysradb >=1.4
     - requests
-    - sra-tools >=2.9
+    - rich-click >=1.6.0
+    - sra-tools >=3.0.1
     - wget
 
 test:
   commands:
-    - fastq-dl
     - fastq-dl --version
-    - fastq-dl -h
+    - fastq-dl --help
+    - fastq-dl --accession SRX3606281 --provider SRA --outdir test-small-sra --verbose && rm -rf test-small-sra/
+    - fastq-dl --accession SRX3606281 --outdir test-small-ena --verbose && rm -rf test-small-ena/
 
 about:
   home: https://github.com/rpetit3/fastq-dl
   license: MIT
   license_file: LICENSE
   summary: A tool to download FASTQs associated with Study, Experiment, or Run accessions.
+
+extra:
+  recipe-maintainers:
+    - rpetit3

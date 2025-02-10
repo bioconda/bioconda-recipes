@@ -1,15 +1,21 @@
+{% set name = "whatshap" %}
+{% set version = "2.4" %}
+
 package:
-  name: whatshap
-  version: "1.1"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/94/69/20b124a032b37c73ac56708744cbf2542cbc3e31390f261853ca5a6f62fe/whatshap-1.1.tar.gz
-  sha256: 4e6486e6ce2babf55a225dd9e0030df6fcc27629d34803428cbe88a79137bb6f
+  url: https://files.pythonhosted.org/packages/a8/3f/e2beea47085f75f3947aff278911b1798a688dd48bd2044feb99b2823647/whatshap-2.4.tar.gz
+  sha256: 14217a9061b75498d73812f01f948cd735815d20e47d29c9cbb6c1bb57a477c7
 
 build:
-  skip: True  # [not py3k]
-  script: python -m pip install --no-deps --ignore-installed .
-  number: 1
+  number: 0
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  run_exports:
+    - {{ pin_subpackage('whatshap', max_pin="x") }}
 
 requirements:
   build:
@@ -17,33 +23,40 @@ requirements:
   host:
     - python
     - pip
-    - setuptools
+    - cython
     - setuptools-scm
   run:
     - python
-    - pysam =0.16
+    - pysam >=0.18
     - pyfaidx >=0.5.5.2
-    - networkx >=2.4
+    - networkx
     - biopython >=1.73
     - scipy
-    - xopen >=0.9.0
-    - dataclasses  # [py<37]
+    - xopen >=1.2.0
     # This is not an actual requirement, but allows to run subsequent WhatsHap commands
     # in the same container (input files need to be indexed with tabix)
     - htslib
+    - pulp >=2
 
 test:
   imports:
     - whatshap
   commands:
-    - whatshap --help > /dev/null
+    - "whatshap --help > /dev/null"
 
 about:
-  home: https://whatshap.readthedocs.io/
-  license: MIT License
-  summary: 'phase genomic variants using DNA sequencing reads (haplotype assembly)'
+  home: "https://whatshap.readthedocs.io"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Phase genomic variants using DNA sequencing reads (haplotype assembly)."
+  dev_url: "https://github.com/whatshap/whatshap"
+  doc_url: "https://whatshap.readthedocs.io"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:whatshap
     - doi:10.1089/cmb.2014.0157

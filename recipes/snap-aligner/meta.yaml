@@ -1,14 +1,21 @@
+{% set name = "snap-aligner" %}
+{% set version = "2.0.3" %}
+{% set sha256hash = "8a47cfa929827e60d45dbd436ba2d1119cb2161bd5b6be99eaedac01fb6fc33a" %}
 package:
-  name: snap-aligner
-  version: '1.0dev.97'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/amplab/snap/archive/bee5657.tar.gz
-  sha256: d5240a58b9319137ee6bf29a81d0c4b391bca5e6d34332688e8c5d1eb963e9f7
+  url: https://github.com/amplab/snap/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256hash }}
+  patches:
+    - snap-aligner-aarch64.patch # [linux and aarch64]
 
 build:
-  number: 3
+  number: 4
   skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
   build:
@@ -27,3 +34,9 @@ about:
   home: http://snap.cs.berkeley.edu/
   license: Apache v2
   summary: Scalable Nucleotide Alignment Program -- a fast and accurate read aligner for high-throughput sequencing data
+  dev_url: https://github.com/amplab/snap/
+
+
+extra:
+  additional-platforms:
+    - linux-aarch64

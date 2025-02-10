@@ -1,0 +1,55 @@
+{% set name = "resfinder" %}
+{% set version = "4.6.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/resfinder-{{ version }}.tar.gz
+  sha256: ca682ad8760c9cfbb1163235ce5bdb7c018d5b910937ac8f747d605309ce3c40
+  patches:
+    - python_path.patch
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('resfinder', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - pdm-backend
+  run:
+    - python >=3.9
+    - cgelib >=0.7.3
+    - cgecore ==1.5.6
+    - tabulate >=0.8.9
+    - pandas >=1.4.2
+    - biopython >=1.79
+    - python-dateutil
+    - kma
+    - blast >=2.8.1
+    - git
+
+test:
+  imports:
+    - resfinder
+  commands:
+    - "run_resfinder.py --help"
+
+about:
+  home: "https://bitbucket.org/genomicepidemiology/resfinder"
+  summary: "ResFinder identifies acquired antimicrobial resistance genes in total or partial sequenced isolates of bacteria."
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  dev_url: "https://bitbucket.org/genomicepidemiology/resfinder"
+  doc_url: "https://bitbucket.org/genomicepidemiology/resfinder/src/master/README.md"
+
+extra:
+  notes: "ResFinder requires databases that can be downloaded with download-db.sh."
+  identifiers:
+    - doi:10.1093/jac/dkaa345

@@ -1,5 +1,5 @@
 {% set name = "centrosome" %}
-{% set version = "1.2.0" %}
+{% set version = "1.3.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,12 +7,13 @@ package:
 
 source:
   url: https://github.com/CellProfiler/centrosome/archive/v{{version}}.zip
-  sha256: ad761ca3935b685b65f3ce4e22e2b2dc048d01c466879dbfbcf06eaa719b9830
+  sha256: 2dcd3f2927db6dfd20e33cec042e5c37c64171cafc79899d957d35aca94c7b12
 
 build:
-  number: 2
-  skip: True  # [py<30]
-  script: "python -m pip install --no-deps --ignore-installed ."
+  number: 0
+  script: CFLAGS="$CFLAGS -Wno-error=int-conversion" python -m pip install --no-deps --ignore-installed . -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
 
 requirements:
   build:
@@ -42,3 +43,8 @@ about:
   license: BSD 3
   license_file: LICENSE
   summary: 'An open source image processing library. Dependency for CellProfiler'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

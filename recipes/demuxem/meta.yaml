@@ -1,5 +1,5 @@
 {% set name = "demuxEM" %}
-{% set version = "0.1.6" %}
+{% set version = "0.1.7.post1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,29 +7,32 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "5290cd392f12bf2f5dcca4235ce627f5c07f918f04cd3bb47ff243dc16e8ee95"
+  sha256: "f6e6608c37875fb2db6cbd1abe48ce1149b41c7b2b26380cd4d581dca6cac260"
 
 build:
   number: 0
   noarch: python
   entry_points:
     - demuxEM = demuxEM.__main__:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --use-pep517 -vvv"
+  run_exports:
+    - {{ pin_subpackage('demuxem', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.7
+    - python >=3.8
     - pip
     - setuptools_scm
   run:
-    - python >=3.7
+    - python >=3.8
+    - docopt
     - numpy
     - pandas
     - scipy
     - scikit-learn
     - seaborn
     - pegasusio >=0.2.12
-    - importlib_metadata >=0.7
+    - importlib_metadata >=0.7  # [py < 38]
 
 test:
   imports:
@@ -39,15 +42,16 @@ test:
     - demuxEM --help
 
 about:
-  home: "https://github.com/klarman-cell-observatory/demuxEM"
+  home: "https://github.com/lilab-bcb/demuxEM"
   doc_url: "https://demuxEM.readthedocs.io"
-  license: BSD
+  license: BSD-3-Clause
+  license_family: BSD
   license_file: LICENSE
   summary: "DemuxEM is the demultiplexing module of Pegasus, which works on cell-hashing and nucleus-hashing genomics data."
 
 extra:
   recipe-maintainers:
     - yihming
-    - bli25broad
+    - bli25
   identifiers:
     - doi:10.1038/s41467-019-10756-2

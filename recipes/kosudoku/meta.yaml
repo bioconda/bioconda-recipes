@@ -1,0 +1,45 @@
+{% set name = "kosudoku" %}
+{% set version = "1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version | replace('-', '_') }}"
+
+source:
+  url: https://github.com/tuncK/kosudoku/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 01819d12a9e9da6fa9cb01ac817cb03a1f918ab2b6c8f83d265e931e2627c570
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('kosudoku', max_pin="x") }}
+
+requirements:
+  host:
+    - python
+  run:
+    - biopython
+    - bowtie2
+    - matplotlib-base
+    - numpy <1.24
+    - python >=3.5
+    - scipy
+
+test:
+  commands:
+   - kosudoku-poolanalyze --help > /dev/null
+   - kosudoku-poolfit --help > /dev/null
+   - kosudoku-poolsolve --help > /dev/null
+   - kosudoku-seqanalyze --help > /dev/null
+   - kosudoku-verify --help > /dev/null
+
+about:
+  home: https://github.com/tuncK/kosudoku
+  license: Princeton University Copyright Notice and Limited License
+  license_file: LICENSE.md
+  summary: "kosudoku: a suite to rapidly create whole genome knockout collections for microorganisms"
+
+extras:
+  identifiers:
+    - doi:10.1038/nprot.2017.073

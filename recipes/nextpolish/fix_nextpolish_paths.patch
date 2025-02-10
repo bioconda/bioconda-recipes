@@ -1,0 +1,110 @@
+diff --git a/nextPolish b/nextPolish
+index 0e1a423..2f318ac 100755
+--- a/nextPolish
++++ b/nextPolish
+@@ -10,7 +10,7 @@ import argparse
+ from glob import iglob, glob
+ from paralleltask import Task
+ 
+-SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
++SCRIPT_PATH = "BIOCONDA_SED_REPLACE"
+ sys.path.append(SCRIPT_PATH + '/lib/')
+ from kit import *
+ from config_parser import ConfigParser
+@@ -119,13 +119,13 @@ def blc_genome(cfg, genomefile):
+ def merge_bam(cfg, path, task):
+ 	from glob import glob
+ 	mergethread = cfg['multithread_jobs'] if cfg['sgs_use_duplicate_reads'] else max(int(int(cfg['multithread_jobs'])/2), 1)
+-	MERGE_SGS_TEMPLATE = MERGE_LGS_TEMPLATE = SCRIPT_PATH + '/bin/samtools merge -f -b %s --threads ' + str(mergethread)
++	MERGE_SGS_TEMPLATE = MERGE_LGS_TEMPLATE = 'samtools merge -f -b %s --threads ' + str(mergethread)
+ 	if not cfg['sgs_use_duplicate_reads']:
+-		MERGE_SGS_TEMPLATE += ' -|' + SCRIPT_PATH + '/bin/samtools markdup --threads %d -r -s -' % \
++		MERGE_SGS_TEMPLATE += ' -|' + 'samtools markdup --threads %d -r -s -' % \
+ 			(max(int(cfg['multithread_jobs']) - mergethread, 1))
+ 	MERGE_SGS_TEMPLATE += ' %s\n'
+ 	MERGE_LGS_TEMPLATE += ' %s\n'
+-	INDEX_TEMPLATE = SCRIPT_PATH + '/bin/samtools index -@ ' + cfg['multithread_jobs'] + ' %s\n'
++	INDEX_TEMPLATE = 'samtools index -@ ' + cfg['multithread_jobs'] + ' %s\n'
+ 	sgs_bam_list = hifi_bam_list = lgs_bam_list = ''
+ 
+ 	for subtask in task.jobs:
+@@ -190,30 +190,30 @@ def index_genome(cfg, genomefile, task):
+ 	cmd = ''
+ 	if check_task_type(task = task):
+ 		if 'minimap' in cfg['sgs_align_options']:
+-			cmd = SCRIPT_PATH + '/bin/minimap2 --split-prefix tmp -a -x sr -d ' +  genomefile + '.sgs ' + genomefile + '\n'
++			cmd = 'minimap2 --split-prefix tmp -a -x sr -d ' +  genomefile + '.sgs ' + genomefile + '\n'
+ 		else:
+-			cmd = SCRIPT_PATH + '/bin/bwa index -p ' +  genomefile + '.sgs ' + genomefile + '\n'
+-	cmd += SCRIPT_PATH + '/bin/samtools faidx ' +  genomefile + '\n'
++			cmd = 'bwa index -p ' +  genomefile + '.sgs ' + genomefile + '\n'
++	cmd += 'samtools faidx ' +  genomefile + '\n'
+ 	return cmd
+ 
+ def map_genome(cfg, genomefile, task):
+ 	THREADS = str(cfg['align_threads']) if int(cfg['align_threads']) < 5 else '5'
+ 	SGS_READS = cfg['workdir'] + ('/input.sgspart.%03d.fastq.gz' if 1 - int(cfg['sgs_unpaired']) else '/input.sgspart.%03d.fasta.gz')
+-	BWA_TEMPLATE = SCRIPT_PATH + '/bin/' + cfg['sgs_align_options'] + ' ' + genomefile + '.sgs' + ' %s|' + \
+-		SCRIPT_PATH + '/bin/samtools view --threads 5 -F 0x4 -b - |' 
++	BWA_TEMPLATE = cfg['sgs_align_options'] + ' ' + genomefile + '.sgs' + ' %s|' + \
++		'samtools view --threads 5 -F 0x4 -b - |' 
+ 	if not cfg['sgs_use_duplicate_reads']:
+-		BWA_TEMPLATE += SCRIPT_PATH + '/bin/samtools fixmate -m --threads ' + THREADS + '  - - |'
+-	BWA_TEMPLATE += SCRIPT_PATH + '/bin/samtools sort - -m 2g --threads ' + THREADS + ' -o sgs.part%03d.sort.bam\n'
++		BWA_TEMPLATE += 'samtools fixmate -m --threads ' + THREADS + '  - - |'
++	BWA_TEMPLATE += 'samtools sort - -m 2g --threads ' + THREADS + ' -o sgs.part%03d.sort.bam\n'
+ 
+ 	LGS_READS = cfg['workdir'] + '/input.lgspart.%03d.fasta.gz'
+-	MINIMAP2_LGS_TEMPLATE = SCRIPT_PATH + '/bin/minimap2 --split-prefix tmp -a ' + cfg['lgs_minimap2_options'] + ' ' + \
+-		genomefile + ' ' + LGS_READS + '|' + SCRIPT_PATH + '/bin/samtools view --threads 5 -F 0x4 -b - |' + SCRIPT_PATH + \
+-		'/bin/samtools sort - -m 2g --threads ' + THREADS + ' -o lgs.part%03d.sort.bam\n'
++	MINIMAP2_LGS_TEMPLATE = 'minimap2 --split-prefix tmp -a ' + cfg['lgs_minimap2_options'] + ' ' + \
++		genomefile + ' ' + LGS_READS + '|' + 'samtools view --threads 5 -F 0x4 -b - |' + \
++		'samtools sort - -m 2g --threads ' + THREADS + ' -o lgs.part%03d.sort.bam\n'
+ 
+ 	HIFI_READS = cfg['workdir'] + '/input.hifipart.%03d.fasta.gz'
+-	MINIMAP2_HIFI_TEMPLATE = SCRIPT_PATH + '/bin/minimap2 --split-prefix tmp -a ' + cfg['hifi_minimap2_options'] + ' ' + \
+-		genomefile + ' ' + HIFI_READS + '|' + SCRIPT_PATH + '/bin/samtools view --threads 5 -F 0x4 -b - |' + SCRIPT_PATH + \
+-		'/bin/samtools sort - -m 2g --threads ' + THREADS + ' -o hifi.part%03d.sort.bam\n'
++	MINIMAP2_HIFI_TEMPLATE = 'minimap2 --split-prefix tmp -a ' + cfg['hifi_minimap2_options'] + ' ' + \
++		genomefile + ' ' + HIFI_READS + '|' + 'samtools view --threads 5 -F 0x4 -b - |' + \
++		'samtools sort - -m 2g --threads ' + THREADS + ' -o hifi.part%03d.sort.bam\n'
+ 
+ 	cmd = ''
+ 	for i in range(int(cfg['parallel_jobs'])):
+@@ -262,7 +262,7 @@ def set_genome(Task, cfg, task, path):
+ def db_split(cfg):
+ 	cmd = ''
+ 	if check_task_type(cfg['task']):
+-		cmd = ' '.join(map(str, [SCRIPT_PATH + '/bin/seq_split',
++		cmd = ' '.join(map(str, ['seq_split',
+ 			'-d', cfg['workdir'],
+ 			'-m', cfg['sgs_block_size'],
+ 			'-n', cfg['parallel_jobs'],
+@@ -276,7 +276,7 @@ def db_split(cfg):
+ 			]))
+ 
+ 	if check_task_type(cfg['task'], lgs = True):
+-		cmd += ' '.join(map(str, [SCRIPT_PATH + '/bin/seq_split',
++		cmd += ' '.join(map(str, ['seq_split',
+ 			'-d', cfg['workdir'],
+ 			'-m', cfg['lgs_block_size'],
+ 			'-n', cfg['parallel_jobs'],
+@@ -291,7 +291,7 @@ def db_split(cfg):
+ 			]))
+ 
+ 	if check_task_type(cfg['task'], hifi = True):
+-		cmd += ' '.join(map(str, [SCRIPT_PATH + '/bin/seq_split',
++		cmd += ' '.join(map(str, ['seq_split',
+ 			'-d', cfg['workdir'],
+ 			'-m', cfg['hifi_block_size'],
+ 			'-n', cfg['parallel_jobs'],
+@@ -368,7 +368,7 @@ def main(args):
+ 		sys.exit(1)
+ 
+ 	global log
+-	log_file = 'pid' + str(os.getpid()) + '.' + args[0].log.strip('pidXXX.')
++	log_file = 'pid' + str(os.getpid()) + '.' + args[0].log.strip('pidXXX.') if args[0].log == "pidXXX.log.info" else args[0].log
+ 	log = plog(log_file)
+ 	log.info('NextPolish start...')
+ 	log.info('version:%s logfile:%s' % (getver(SCRIPT_PATH), log_file))

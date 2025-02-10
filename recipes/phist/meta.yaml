@@ -1,0 +1,48 @@
+{% set name = "PHIST" %}
+{% set version = "1.0.0" %}
+{% set revision = "ed2a1e6" %}
+{% set sha256 = "a6cb42dcf7990e7aa32f974dc826e8f721b4428f704010392ddd97ad69e1a4ba" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/refresh-bio/{{ name }}/archive/{{ revision }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - makefile.patch
+    - python.patch
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - python >=3
+    - kmer-db
+    - zlib
+  run:
+    - python >=3
+    - kmer-db
+    - zlib
+ 
+test:
+  commands:
+    - phist.py --help
+    - phist --help
+    - matcher --help
+
+about:
+  home: https://github.com/refresh-bio/PHIST
+  license: GPL-3
+  license_family: GPL-3
+  license_file: LICENSE
+  summary: "Phage-Host Interaction Search Tool."
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btab837

@@ -1,0 +1,42 @@
+{% set version = "1.0.2" %}
+{% set sha256 = "b37449ef3f5d1bb6a45e24e4eba8102c40e689aa4e3eccc119d30a998b5790fa" %}
+
+package:
+  name: kmercamel
+  version: {{ version }}
+
+source:
+  url: https://github.com/OndrejSladky/kmercamel/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('kmercamel', max_pin="x") }}
+
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - glpk
+  run:
+    - zlib
+    - glpk
+
+test:
+  commands:
+    - kmercamel -h 2>&1 | grep "KmerCamel"
+
+about:
+  home: https://github.com/OndrejSladky/kmercamel/
+  license: MIT
+  license_file: LICENSE.txt
+  summary: KmerCamel🐫 - compressing k-mer sets using masked superstrings
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

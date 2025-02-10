@@ -1,48 +1,58 @@
-{% set version = "1.0.6" %}
-{% set sha256 = "0bdac58a89c0bca33ce8dd552b4b6eefe838d5c54fb585abfc899cd7e82da2aa" %}
+{% set name = "eukulele" %}
+{% set version = "2.0.9" %}
+{% set sha256 = "575ab81fd5453abbf092543caaf12116ab36cd5451caeb4c87086a93f12e7431" %}
 
 package:
-  name: eukulele
-  version: 1.0.6
-
-build:
-  number: 0
-  noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/AlexanderLabWHOI/EUKulele/archive/refs/tags/v1.0.6.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/EUKulele-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
-test:
-  commands:
-    - EUKulele --version | grep '{{ version }}'
-    - EUKulele --help
+build:
+  number: 1
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv"
+  run_exports:
+    - {{ pin_subpackage('eukulele', max_pin="x") }}
 
 requirements:
   host:
-    - python>=3.6
+    - python >=3.6
     - pip
     - pytest-runner
   run:
-    - python>=3.6
-    - numpy==1.19.5
-    - biopython==1.78
-    - pandas==1.2.0
+    - python >=3.6
+    - numpy
+    - biopython
+    - pandas
     - seaborn-base
-    - r-base
     - boost-cpp
     - chardet
+    - multiprocess
     - joblib
     - ujson
+    - python-coveralls
     - pyyaml
-    - matplotlib-base==3.3.3
-    - blast==2.2.31
-    - busco==4.0.6
-    - diamond==0.9.24
+    - matplotlib-base
+    - pytest-cov
+    - pytest-xdist
+    - sphinxcontrib-bibtex ==1.0.0
+    - blast
+    - diamond
+    - busco >=4.0.4
+
+test:
+  commands:  
+    - EUKulele --version | grep '{{ version }}'
+    - EUKulele --help
 
 about:
-  home: https://github.com/AlexanderLabWHOI/EUKulele
+  home: "https://github.com/AlexanderLabWHOI/EUKulele"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: Easy taxonomic annotation for eukaryotic microbes
+  summary: "Easy taxonomic annotation for eukaryotic microbes."
+  dev_url: "https://github.com/AlexanderLabWHOI/EUKulele"
+  doc_url: "https://github.com/AlexanderLabWHOI/EUKulele/blob/{{ version }}/README.md"

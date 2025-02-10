@@ -1,0 +1,91 @@
+diff --git a/tools/utils/md5_fasta.c b/tools/utils/md5_fasta.c
+index d87e2a7..4a3ea97 100644
+--- a/tools/utils/md5_fasta.c
++++ b/tools/utils/md5_fasta.c
+@@ -79,7 +79,7 @@ static int get_cache_fname(char *path, const char * cache, const char * str) {
+ 	s -= ln;
+ 	while(ln--) *path++ = *cache++;
+ 	bool need_slash = (*str && path > init && path[-1] != '/');
+-	ln = strlen(str) + need_slash ? 1 : 0;
++	ln = strlen(str) + (need_slash ? 1 : 0);
+ 	if(ln >= s) return -1;
+ 	if(need_slash) *path++ = '/';
+ 	strcpy(path, str);
+diff --git a/tools/utils/mextr/command_line.c b/tools/utils/mextr/command_line.c
+index 2b0ce0d..816b347 100644
+--- a/tools/utils/mextr/command_line.c
++++ b/tools/utils/mextr/command_line.c
+@@ -299,10 +299,10 @@ if(!nr) error("None of the requested contigs are present in the input file\n");
+ 		qsort_r(ix, nr, sizeof(int), cmp_reg, reg);
+ 		char **tseq = malloc(sizeof(char *) * nr);
+-		region_t *treg = malloc(sizeof(region_t) * nr);
++		struct bcf_sr_region_t *treg = malloc(sizeof(struct bcf_sr_region_t) * nr);
+ 		for(int i = 0; i < nr; i++) {
+ 			const int j = ix[i];
+ 			tseq[i] = reg->seq_names[j];
+-			memcpy(treg + i, reg->regs + j, sizeof(region_t));
++			memcpy(treg + i, reg->regs + j, sizeof(struct bcf_sr_region_t));
+ 			khash_str2int_set(reg->seq_hash, tseq[i], i);
+ 		}
+ 		free(reg->seq_names);
+@@ -337,6 +337,6 @@ reg->prev_start = reg->prev_end = reg->prev_seq = -1;
+ 			reg->seq_hash = khash_str2int_init();
+ 			reg->seq_names = calloc(nctgs, sizeof(char *));
+-			reg->regs = calloc(nctgs, sizeof(region_t));
++			reg->regs = calloc(nctgs, sizeof(struct bcf_sr_region_t));
+ 			for(int i = 0; i < nctgs; i++) {
+ 				reg->nseqs++;
+ 				reg->seq_names[i] = ctgs[i].name;
+diff --git a/tools/utils/mextr/mextr.h b/tools/utils/mextr/mextr.h
+index ad7672a..378a2d2 100644
+--- a/tools/utils/mextr/mextr.h
++++ b/tools/utils/mextr/mextr.h
+@@ -192,7 +192,6 @@ void fill_base_prob_table(void);
+ void print_headers(args_t *args);
+ int calc_phred(double z);
+ double *get_prob_dist(int ns, double *Q[]);
+-extern char trans_base[256];
+ 
+ #define ks_output(fp, s) { \
+ 	int r; \
+diff --git a/tools/utils/mextr/output.c b/tools/utils/mextr/output.c
+index 260457d..1cca3f7 100644
+--- a/tools/utils/mextr/output.c
++++ b/tools/utils/mextr/output.c
+@@ -4,7 +4,8 @@
+ #include <math.h>
+ #include <stdbool.h>
+ #include <pthread.h>
+-#include <values.h>
++#include <limits.h>
++#include <float.h>
+ 
+ #include "mextr.h"
+ #include "bbi.h"
+@@ -12,6 +13,12 @@
+ #include "htslib/hfile.h"
+ #include "htslib/tbx.h"
+ 
++char trans_base[256] = {
++                ['A'] = 'T', ['C'] = 'G', ['G'] = 'C', ['T'] = 'A',
++                ['Y'] = 'R', ['R'] = 'Y', ['S'] = 'S', ['W'] = 'W', ['K'] = 'M', ['M'] = 'K',
++                ['B'] = 'V', ['V'] = 'B', ['D'] = 'H', ['H'] = 'D', ['N'] = 'N', ['.'] = '.'
++};
++
+ void output_cpg(args_t *const args, rec_t ** const lrec, const int idx) {
+ 	static char *gt_iupac = "AMRWCSYGKT";
+ 	static uint8_t gt_msk[] = {0x11, 0xb3, 0x55, 0x99, 0xa2, 0xf6, 0xaa, 0x54, 0xdc, 0x88};
+diff --git a/tools/utils/mextr/output_utils.c b/tools/utils/mextr/output_utils.c
+index 1da6816..e8d7ae8 100644
+--- a/tools/utils/mextr/output_utils.c
++++ b/tools/utils/mextr/output_utils.c
+@@ -43,9 +43,3 @@ double *get_prob_dist(int ns, double *Q[]) {
+ 	return q0;
+ }
+ 
+-char trans_base[256] = {
+-		['A'] = 'T', ['C'] = 'G', ['G'] = 'C', ['T'] = 'A',
+-		['Y'] = 'R', ['R'] = 'Y', ['S'] = 'S', ['W'] = 'W', ['K'] = 'M', ['M'] = 'K',
+-		['B'] = 'V', ['V'] = 'B', ['D'] = 'H', ['H'] = 'D', ['N'] = 'N', ['.'] = '.'
+-};
+-

@@ -1,80 +1,90 @@
 {% set name = "medaka" %}
-{% set version = "1.4.4" %}
+{% set version = "2.0.1" %}
+{% set sha256 = "7b7a0dc558f19d10fe8eb588f709a179ef5204a53aad5cfdfbd5c57039193a9f" %}
+# Bot PRs - Always review requirements.txt for new release
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 9327e1d3417c9bf17a3877f3acd3ca4b83781bcf6fc1e0b12eb644c2c05d1ad9
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/medaka-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
   patches:
     - patch
 
 build:
-  number: 0
-  skip: True  # [py!=38 or osx]
+  number: 1
+  skip: True  # [osx or py < 38 or py > 311]
   entry_points:
     - medaka = medaka.medaka:main
     - medaka_counts = medaka.medaka_counts:main
     - medaka_data_path = medaka.common:print_data_path
     - medaka_version_report = medaka:report_binaries
+  run_exports:
+    - {{ pin_subpackage('medaka', max_pin='x') }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - coreutils
+    - cmake
+    - make
   host:
-    - cffi
-    - pip
     - python
-    - htslib
+    - pip
+    - cffi
+    - htslib >=1.14
+    - libcurl
+    - openssl
     - bzip2
     - xz
     - zlib
   run:
-    - biopython
+    - python
     - cffi
+    - grpcio
     - h5py
-    - intervaltree >=3.0.0
-    - mappy
-    - numpy <1.20.0
+    - intervaltree
+    - pytorch >=2.3,<2.4
+    - numpy >=1.21.0,<2.0.0
     - nomkl  # [osx]
+    - mappy
     - ont-fast5-api
     - parasail-python
+    - pyabpoa
+    - pyspoa >=0.2.1
     - pysam >=0.16.0.1
-    - python
     - python-edlib
     - requests
-    - tensorflow ==2.2.*
-    - whatshap >=0.18
-    - samtools >=1.9
-    - bcftools >=1.9
+    - samtools >=1.14
+    - bcftools >=1.14
     - minimap2 >=2.17
-    - htslib >=1.9
-    - pyspoa
-    - racon >=1.4.13
+    - htslib >=1.14
+    - tqdm
+    - wurlitzer
 
 test:
   imports:
     - medaka
   commands:
     - medaka --help
-    - medaka consensus --help
+    - medaka inference --help
     - medaka_data_path
     - medaka_version_report
 
 about:
-  home: https://github.com/nanoporetech/medaka
-  license: Mozilla Public License 2.0
+  home: "https://github.com/nanoporetech/medaka"
+  summary: "A tool to create consensus sequences and variant calls from nanopore sequencing data using neural networks."
+  license: "MPL-2.0"
   license_family: OTHER
-  license_file: LICENSE.md
-  summary: Neural network sequence error correction.
-  doc_url: https://nanoporetech.github.io/medaka/index.html
-  dev_url: https://github.com/nanoporetech/medaka
+  license_file: "LICENSE"
+  dev_url: "https://github.com/nanoporetech/medaka"
+  doc_url: "https://github.com/nanoporetech/medaka/blob/v{{ version }}/README.md"
 
 extra:
-  recipe-maintainers:
-    - cjw85
   identifiers:
     - usegalaxy-eu:medaka_consensus
+    - usegalaxy-eu:medaka_consensus_pipeline
+    - usegalaxy-eu:medaka_variant
+    - usegalaxy-eu:medaka_variant_pipeline
+    - biotools:medaka

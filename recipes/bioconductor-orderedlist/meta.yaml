@@ -1,40 +1,22 @@
-{% set version = "1.64.0" %}
+{% set version = "1.78.0" %}
 {% set name = "OrderedList" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 3eb5dec3e409d7e30d5bca4d273b311b
+about:
+  description: Detection of similarities between ordered lists of genes. Thereby, either simple lists can be compared or gene expression data can be used to deduce the lists. Significance of similarities is evaluated by shuffling lists or by resampling in microarray data, respectively.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Similarities of Ordered Gene Lists
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.52.0,<2.53.0'
-    - 'bioconductor-twilight >=1.68.0,<1.69.0'
-    - r-base
-  run:
-    - 'bioconductor-biobase >=2.52.0,<2.53.0'
-    - 'bioconductor-twilight >=1.68.0,<1.69.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Similarities of Ordered Gene Lists'
-  description: 'Detection of similarities between ordered lists of genes. Thereby, either simple lists can be compared or gene expression data can be used to deduce the lists. Significance of similarities is evaluated by shuffling lists or by resampling in microarray data, respectively.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-orderedlist", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:orderedlist
@@ -43,4 +25,30 @@ extra:
     name: bioconductor-orderedlist
     path: recipes/bioconductor-orderedlist
     version: 1.52.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-twilight >=1.82.0,<1.83.0
+    - r-base
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-twilight >=1.82.0,<1.83.0
+    - r-base
+
+source:
+  md5: a2d2376888bc05bad547774c9777729b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

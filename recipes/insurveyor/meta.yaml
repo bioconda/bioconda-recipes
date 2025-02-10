@@ -1,0 +1,60 @@
+{% set name = "insurveyor" %}
+{% set version = "1.1.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/kensung-lab/INSurVeyor/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 0099ce859dd1b61b726b87ca26d7b89dabb34cab27afc97a5696780260b27304
+  patches:
+    - INSurVeyor-aarch64.patch # [aarch64 or arm64]
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('insurveyor', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - autoconf
+  host:
+    - htslib >=1.13
+    - zlib
+  run:
+    - pysam >=0.16.0.1
+    - pyfaidx >=0.5.9.1
+    - numpy
+
+test:
+  source_files:
+    - demo/reads.bam
+    - demo/reads.bam.bai
+    - demo/ref.fa
+    - demo/ref.fa.fai
+
+  requires:
+    - bcftools
+
+about:
+  home: https://github.com/kensung-lab/INSurVeyor
+  summary: 'An insertion caller for Illumina paired-end WGS data.'
+  description: |
+    INSurVeyor is a fast and accurate SV insertion caller for Illumina paired-end WGS data.
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  dev_url: https://github.com/kensung-lab/INSurVeyor
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - Mesh89
+  identifiers:
+    - doi:10.1038/s41467-023-38870-2

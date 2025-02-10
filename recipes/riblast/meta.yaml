@@ -1,0 +1,41 @@
+{% set version = "1.2.0" %}
+
+package:
+  name: riblast
+  version: {{ version }}
+
+source:
+  url: https://github.com/balajtimate/RIblast/archive/refs/tags/v1.2.0.tar.gz
+  sha256: b77ae9cfd131e9ced512749b10349b00c13bd6bf32e0f85500ad5b9ea29c3d5a
+
+build:
+  number: 1
+  binary_relocation: true
+  script:
+    - cmake -H. -Bbuild_conda -G "${CMAKE_GENERATOR}" -DCMAKE_INSTALL_PREFIX=${PREFIX}
+    - cmake --build build_conda --target install
+  run_exports:
+    - {{ pin_subpackage('riblast') }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - libtool
+    - automake
+    - cmake
+    - m4
+  host:
+    - zlib
+  run:
+    - zlib
+
+test:
+  commands:
+    - RIblast 2>&1 | grep Options
+
+about:
+  home: https://github.com/fukunagatsu/RIblast
+  license: MIT License
+  license_file: LICENSE
+  summary: RIblast is ultrafast RNA-RNA interaction prediction software.

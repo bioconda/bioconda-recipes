@@ -4,22 +4,17 @@ set -eu -o pipefail
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
 
-mkdir -p build
-cd build
-cmake -DCMAKE_BUILD_TYPE=RELEASE \
-      -DCONDA_BUILD=TRUE \
-      -DBoost_NO_BOOST_CMAKE=ON \
-      -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
-      -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX \
-      -DBoost_NO_SYSTEM_PATHS=ON \
-      -DNO_IPO=TRUE \
-      ..
-make VERBOSE=1
-echo "unit test executable"
-./src/unitTests
-echo "installing"
-make install CFLAGS="-L${PREFIX}/lib -I${PREFIX}/include"
-../tests/unitTests
-echo "cmake-powered unit test"
-CTEST_OUTPUT_ON_FAILURE=1 make test
+export CFLAGS="${CFLAGS} -O3 -L${PREFIX}/lib -I${PREFIX}/include"
 
+cmake -S . -B build \
+	-DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}" \
+	-DCMAKE_BUILD_TYPE=RELEASE \
+	-DCMAKE_C_FLAGS="${CFLAGS}" \
+	-DCONDA_BUILD=TRUE \
+	-DLIBSTADEN_LDFLAGS="-L${PREFIX}/lib" \
+	-DBoost_NO_BOOST_CMAKE=ON \
+	-DCMAKE_OSX_DEPLOYMENT_TARGET=10.11 \
+	-DBoost_NO_SYSTEM_PATHS=ON \
+	-DNO_IPO=TRUE
+
+cmake --build build/ --target install -v

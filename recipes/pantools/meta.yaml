@@ -1,53 +1,80 @@
-{% set name = "pantools" %}
-{% set version = "3.1.0" %}
-{% set sha256 = "77890e7e91c8945f5c307de21bc7eb301f8675cd0d4556a8fad02d82c183fa2e" %}
+{% set name = "PanTools" %}
+{% set version = "4.3.2" %}
+{% set sha256 = "510248d2b23aa90cf74661438ce0416c03d0366c40506d771ae6719a6305611c" %}
 
 package:
-  name: {{ name }}
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://git.wur.nl/bioinformatics/pantools/-/archive/f91bb25452d3120c95a79846bcc19b1882f96b3e/pantools-f91bb25452d3120c95a79846bcc19b1882f96b3e.tar.gz
+  url: https://git.wur.nl/bioinformatics/pantools/-/archive/v{{ version }}/pantools-v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   noarch: generic
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("pantools", max_pin="x") }}
 
 requirements:
+  host:
+    - openjdk =8
+    - maven
+    - jq
   run:
-    - python
-    - openjdk >=8
+    - python >=3.7
+    - openjdk =8
     - mcl
-    - kmc
+    - kmc >=3.1.0
+    - mafft
+    - iqtree
+    - fasttree
+    - blast
+    - mash =2.3
+    - fastani
+    - busco =5
+    - r-base >=3.5.0
+    - r-ggplot2
+    - r-ape
+    - graphviz
+    - aster =1.3
+    - bcftools >=1.12
+    - tabix
+    - pal2nal >=14.1
+    - paml >=4.10.6
+    - r-cowplot >=1.1.1
 
 test:
   commands:
-    # pantools returns non-zero exit code for version and help; grep a known output string to work around this
-    - pantools version | grep -i "pantools version" >/dev/null
+    - pantools --version
+    - pantools --help
 
 about:
   home: https://git.wur.nl/bioinformatics/pantools
-  license: GPL-3.0
+  dev_url: https://git.wur.nl/bioinformatics/pantools
+  doc_url: https://pantools.readthedocs.io/
+  license: GPL-3.0-only
   license_family: GPL
   license_file: LICENSE
-  summary: "PanTools is a pangenomic toolkit for comparative analysis of large number of genomes."
+  summary: "PanTools is a pangenomic toolkit for comparative analysis of large numbers of genomes."
   description: |
-    PanTools is a pangenomic toolkit for comparative analysis of large number
+    PanTools is a pangenomic toolkit for comparative analysis of large numbers
     of genomes. It is developed in the Bioinformatics Group of Wageningen
     University, the Netherlands. Please cite the relevant publication(s) from
     the list of publications if you use PanTools in your research.
 
-
 extra:
   notes: |
     PanTools is Java program that comes with a custom wrapper Python script.
-    This wrapper is called "pantools" and is on $PATH by default. By default
-    "-Xms512m -Xmx1g" is set in the wrapper. If you want to overwrite it you can
-    specify these values directly after your binaries. If you have _JAVA_OPTIONS
-    set globally this will take precedence.
-    For example run it with "pantools -Xms512m -Xmx1g"
+    This wrapper is called "pantools" and is on $PATH by default.
+    By default "-Xms512m -Xmx1g" is set in the wrapper.
+    If you want to overwrite it you can specify these values directly after your binaries.
+    If you have _JAVA_OPTIONS set globally this will take precedence.
+    For example run it with "pantools -Xms512m -Xmx1g".
   identifiers:
     - doi:https://doi.org/10.1093/bioinformatics/btw455
     - doi:https://doi.org/10.1186/s12859-018-2362-4
     - doi:https://doi.org/10.1101/813634
+    - doi:https://doi.org/10.1093/bioinformatics/btac506
+  recipe-maintainers:
+    - dirkjanvw

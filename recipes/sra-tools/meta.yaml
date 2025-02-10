@@ -1,69 +1,73 @@
-{% set version = "2.11.0" %}
-{% set bioconda_version = "2.11.0" %}
-{% set vdb_version = "2.11.0" %}
-{% set ngs_version = "2.11.0" %}
+{% set name = "sra-tools" %}
+{% set version = "3.2.0" %}
+{% set sha256 = "5ed9d0a61aa72c55566fb80b8b9293ad9006f528e7e11cba875d9377a0fc7b09" %}
 
 package:
-  name: sra-tools
-  version: '{{ bioconda_version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  - url: https://github.com/ncbi/sra-tools/archive/{{version}}.tar.gz
-    sha256: 10ac0a4d1fafc274bc107de811891d3e803d0713a247581dece4448231883810
-    patches:
-      # FIXME: Configure script does not recognize HDF5 as installed on macOS.
-      - 0001-No-libhdf5-libxml2-static-link-sra-tools.patch
-    folder: sra-tools
-  - url: https://github.com/ncbi/ncbi-vdb/archive/{{vdb_version}}.tar.gz
-    sha256: 9a65e3885b9ae1ebecbec871f04ce3162ac3764fb556ecdc8c1e61993e2164aa
-    patches:
-      - 0002-No-libhdf5-libxml2-static-link-ncbi-vdb.patch
-    folder: ncbi-vdb
+- url: https://github.com/ncbi/sra-tools/archive/refs/tags/{{version}}.tar.gz
+  sha256: {{ sha256 }}
+  folder: sra-tools
+- url: https://github.com/ncbi/ncbi-vdb/archive/refs/tags/{{version}}.tar.gz  # [osx]
+  sha256: 49fea92d9ec5ab38a5c06d1bcb057d1e7c9d4d39adcb7f31a3485ecc35bd5b77  # [osx]
+  folder: ncbi-vdb  # [osx]
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
-    - patch
+    - cmake
+    - bison
+    - flex
   host:
-    - ncbi-ngs-sdk
-    - libxml2
-    - hdf5
-    - perl
+    - ncbi-vdb >={{ version }}
   run:
     - ca-certificates
+    - curl
+    - ncbi-vdb >={{ version }}
     - ossuuid
     - perl
-    - ncbi-ngs-sdk
     - perl-xml-libxml
     - perl-uri
-    - curl
 
 test:
   commands:
     # create config file with /LIBS/GUID value so tests pass; new GUID value will be created in user's home dir upon installation via post-link.sh
     - if ! grep "/LIBS/GUID" ~/.ncbi/user-settings.mkfg &> /dev/null; then mkdir -p ~/.ncbi && printf '/LIBS/GUID = "%s"\n' `uuid` > ~/.ncbi/user-settings.mkfg; fi
     - fastq-dump --help > /dev/null
+    - fasterq-dump --help > /dev/null
     - prefetch --help > /dev/null
     - sam-dump --help > /dev/null
     - sra-pileup --help > /dev/null
     - vdb-config --help > /dev/null
     - vdb-decrypt --help > /dev/null
-    - fastq-dump -N 1 -X 1 SRR000001 && grep '@SRR000001.1' SRR000001.fastq
-    - fasterq-dump --help > /dev/null
+    - fastq-dump SRR002702 && grep '@SRR002702.1 EX35NVW14INCVK' SRR002702.fastq && rm SRR002702.fastq
+    # 2025-01-16T22:18:06 fasterq-dump.3.2.0 err: cannot find 'SRR002702' -> RC(rcVFS,rcQuery,rcExecuting,rcItem,rcNotFound)
+    #- fasterq-dump SRR002702 && grep '@SRR002702.1 EX35NVW14INCVK' SRR002702.fastq  && rm SRR002702.fastq
+    - prefetch SRR002702 -O ./ && test -d SRR002702 && rm -r SRR002702
+    - sam-dump SRR002702 | grep 'EX35NVW14ISYAK'
 
 about:
-  home: https://github.com/ncbi/sra-tools
-  license: Public Domain
-  summary: SRA Toolkit and SDK from NCBI
+  home: "https://github.com/ncbi/sra-tools"
+  license: "Public Domain"
+  summary: "The SRA Toolkit and SDK from NCBI."
   description:  |
-    The SRA Toolkit and SDK from NCBI is a collection of tools and libraries
-    for using data in the INSDC Sequence Read Archives.
+    "The SRA Toolkit and SDK from NCBI is a collection of tools and libraries
+    for using data in the INSDC Sequence Read Archives."
+  dev_url: "https://github.com/ncbi/sra-tools"
+  doc_url: "https://github.com/ncbi/sra-tools/wiki"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   notes: 'After installation, you should run the configuration tool: ./vdb-config
     -i. This tool will setup your download/cache area for downloaded files and references.'
+  identifiers:
+    - biotools:sra-tools

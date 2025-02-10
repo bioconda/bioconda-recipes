@@ -1,5 +1,5 @@
 {% set name = "dxpy" %}
-{% set version = "0.314.0" %}
+{% set version = "0.389.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 2a8a40822d33f957ba10c5ce0db5036d03f2372d2e62e7831b183f0693397547
+  sha256: fdba8390f27f915e517da5bae8a9b5cd2b3e144af84979bf99454fca30b7f7b4
 
 build:
   number: 0
@@ -17,23 +17,28 @@ build:
     - dx-build-app = dxpy.scripts.dx_build_app:main
     - dx = dxpy.scripts.dx:main
     - dx-app-wizard = dxpy.scripts.dx_app_wizard:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('dxpy', max_pin="x.x") }}
 
 requirements:
   host:
     - python
     - pip
   run:
-    - argcomplete >=1.9.4
-    - beautifulsoup4 >=4.4.1
-    - cryptography >=2.3,<3.0
-    - psutil >=3.3.0
-    - python
+    - python >=3.8
+    - argcomplete >=2.0.0 # [ py >= 310 ]
+    - argcomplete >=1.9.4,<2.0.0 # [ py < 310 ]
+    - websocket-client >=1.6.0,<1.8.0
     - python-dateutil >=2.5
-    - python-magic >=0.4.6
-    - requests >=2.8.0,<2.24.0
-    - websocket-client >=0.53.0
-    - xattr >=0.9.6
+    - psutil >=5.9.3
+    - certifi
+    - urllib3 >=1.25,<2.2
+    
+    # optional dependencies needed for 'dx extract_dataset'
+    # - numpy
+    # - pandas >=1.3.5
+    # - xattr ==0.10.1 # [linux]
 
 test:
   imports:

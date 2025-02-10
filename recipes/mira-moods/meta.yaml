@@ -1,0 +1,55 @@
+{% set name = "mira-moods" %}
+{% set version = "1.9.4.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/mira-moods-{{ version }}.tar.gz
+  sha256: e694e37c7487286801bffcda3e0576157960007919dd5ceb8b5a1626dc2968e1
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 2
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - pip
+    - python
+    - setuptools
+    - swig
+  run:
+    - python
+    - swig
+
+    
+test:
+  imports:
+    - MOODS
+  commands:
+    - pip check
+  requires:
+    - pip
+
+
+about:
+  home: https://www.cs.helsinki.fi/group/pssmfind/
+  summary: 'MOODS: Motif Occurrence Detection Suite'
+  license: MIT AND GPL-3.0
+  license_file:
+    - COPYING.BIOPYTHON
+    - COPYING.GPLv3
+
+extra:
+  recipe-maintainers:
+    - AllenWLynch
+  identifiers:
+    - biotools:MOODS
+    - doi:10.1109/TCBB.2009.35

@@ -1,0 +1,55 @@
+{% set version = "2.0.0" %}
+
+package:
+  name: hostile
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/h/hostile/hostile-{{ version }}.tar.gz
+  sha256: df28103b225407790b83b744383ca2f10e6dfcdddcc1291c4faed0a9673e9ff1
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('hostile', max_pin="x.x") }}
+  entry_points:
+    - hostile = hostile.cli:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+
+requirements:
+  host:
+    - pip
+    - python >=3.10
+    - flit-core >=3.9.0
+  run:
+    - bowtie2 ==2.5.4
+    - defopt >=6.4.0
+    - dnaio >=1.2.0
+    - gawk >=5.3.1
+    - httpx >=0.24.1
+    - minimap2 >=2.28
+    - platformdirs >=3.5.1
+    - python >=3.10
+    - samtools >=1.17
+    - tqdm >=4.65.0
+    - bedtools >=2.31.1
+
+test:
+  imports:
+    - hostile
+
+  commands:
+    - hostile --version
+
+about:
+  home: https://github.com/bede/hostile
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'Hostile: accurate host decontamination'
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btad728
+

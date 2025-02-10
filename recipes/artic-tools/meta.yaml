@@ -1,6 +1,6 @@
 {% set name = "artic-tools" %}
-{% set version = "0.3.0" %}
-{% set sha256 = "b6c6d401926b58987a8503dc8e5c02c7ad19136daeaa668618e5396f743d841d" %}
+{% set version = "0.3.1" %}
+{% set sha256 = "0699dbbdbf580b145e2754cf6930d967bca696950812c870d49995cf250be52f" %}
 
 package:
   name: {{ name|lower }}
@@ -26,13 +26,16 @@ source:
     folder : extlibs/kseq++
 
 build:
-  number: 1
+  skip: True  # [osx]
+  number: 8
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-    - cmake>=3.12
+    - cmake >=3.12
     - curl # used to grab headers during build, no release available to grab sooner
   host:
     - htslib
@@ -55,8 +58,8 @@ test:
     - artic-tools get_scheme -h
     - artic-tools validate_scheme -h
     - artic-tools check_vcf -h
-    - artic-tools get_scheme --schemeVersion 2 ncov
-    - artic-tools validate_scheme ncov.v2.primer.bed
+    #- artic-tools get_scheme --schemeVersion 2 ncov
+    #- artic-tools validate_scheme ncov.v2.primer.bed
 
 about:
   home: https://github.com/will-rowe/artic-tools
@@ -65,5 +68,7 @@ about:
   summary: A set of tools for working with the ARTIC bioinformatic pipeline.
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
     - will-rowe

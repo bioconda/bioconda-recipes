@@ -1,0 +1,44 @@
+{% set name = "lisa2" %}
+{% set version = "2.3.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/lisa2-{{ version }}.tar.gz
+  sha256: dc9df3495322c94f93c12372fb8d88d355447f7b8b69ea639394fc6274e9affb
+
+build:
+  number: 1
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.5
+  run:
+    - h5py >=2
+    - numpy >=1.17,<2
+    - python >=3.5
+    - scikit-learn >=0.22,<2
+    - scipy >=1.4,<2
+
+test:
+  imports:
+    - lisa
+  commands:
+    - lisa
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-1934-6
+  summary: 'Lisa: inferring transcriptional regulators through integrative modeling of public chromatin accessibility and ChIP-seq data. X. Shirley Liu Lab, 2020'
+  license: MIT
+  license_file: LICENSE
+

@@ -1,45 +1,22 @@
-{% set version = "1.18.0" %}
+{% set version = "1.32.0" %}
 {% set name = "IPO" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: c7a4e8e6c02d081efd802628554071bc
+about:
+  description: The outcome of XCMS data processing strongly depends on the parameter settings. IPO (`Isotopologue Parameter Optimization`) is a parameter optimization tool that is applicable for different kinds of samples and liquid chromatography coupled to high resolution mass spectrometry devices, fast and free of labeling steps. IPO uses natural, stable 13C isotopes to calculate a peak picking score. Retention time correction is optimized by minimizing the relative retention time differences within features and grouping parameters are optimized by maximizing the number of features showing exactly one peak from each injection of a pooled sample. The different parameter settings are achieved by design of experiment. The resulting scores are evaluated using response surface models.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2) + file LICENSE
+  license_file: LICENSE
+  summary: Automated Optimization of XCMS Data Processing parameters
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: RUnit, BiocGenerics, msdata, mtbls2, faahKO, knitr
-requirements:
-  host:
-    - 'bioconductor-biocparallel >=1.26.0,<1.27.0'
-    - 'bioconductor-camera >=1.48.0,<1.49.0'
-    - 'bioconductor-xcms >=3.14.0,<3.15.0'
-    - r-base
-    - r-rsm
-  run:
-    - 'bioconductor-biocparallel >=1.26.0,<1.27.0'
-    - 'bioconductor-camera >=1.48.0,<1.49.0'
-    - 'bioconductor-xcms >=3.14.0,<3.15.0'
-    - r-base
-    - r-rsm
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2) + file LICENSE'
-  summary: 'Automated Optimization of XCMS Data Processing parameters'
-  description: 'The outcome of XCMS data processing strongly depends on the parameter settings. IPO (`Isotopologue Parameter Optimization`) is a parameter optimization tool that is applicable for different kinds of samples and liquid chromatography coupled to high resolution mass spectrometry devices, fast and free of labeling steps. IPO uses natural, stable 13C isotopes to calculate a peak picking score. Retention time correction is optimized by minimizing the relative retention time differences within features and grouping parameters are optimized by maximizing the number of features showing exactly one peak from each injection of a pooled sample. The different parameter settings are achieved by design of experiment. The resulting scores are evaluated using response surface models.'
-  license_file: LICENSE
+  run_exports: '{{ pin_subpackage("bioconductor-ipo", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:ipo
@@ -47,4 +24,35 @@ extra:
     name: bioconductor-ipo
     path: recipes/bioconductor-ipo
     version: 1.8.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: RUnit, BiocGenerics, msdata, mtbls2, faahKO, knitr
+requirements:
+  host:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-camera >=1.62.0,<1.63.0
+    - bioconductor-xcms >=4.4.0,<4.5.0
+    - r-base
+    - r-rsm
+  run:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-camera >=1.62.0,<1.63.0
+    - bioconductor-xcms >=4.4.0,<4.5.0
+    - r-base
+    - r-rsm
+
+source:
+  md5: a28289f80eb8b8ee01ac00c4f9f03876
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

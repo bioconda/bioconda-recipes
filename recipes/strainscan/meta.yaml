@@ -1,0 +1,54 @@
+{% set name = "strainscan" %}
+{% set version = "1.0.14" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 2d927c5ac4d9b89a166afeca2aabaf4086d49b097e357ed0feb34181295cf243
+
+build:
+  number: 1
+  entry_points:
+    - strainscan = StrainScan.StrainScan:main
+    - strainscan_build = StrainScan.StrainScan_build:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('strainscan', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python ==3.7.3
+  run:
+    - python ==3.7.3
+    - sibeliaz ==1.2.3
+    - r-base ==4.0.2
+    - numpy ==1.17.3
+    - pandas ==1.0.1
+    - biopython ==1.74
+    - scipy ==1.3.1
+    - scikit-learn ==0.23.1
+    - bidict ==0.21.3
+    - treelib ==1.6.1
+    - psutil ==5.9.1
+
+test:
+    imports:
+     - StrainScan
+    commands:
+     - strainscan --help
+     - strainscan_build --help
+
+about:
+  home: https://github.com/liaoherui/StrainScan
+  license: MIT
+  license_family: MIT
+  summary: One efficient and accurate strain-level microbiome composition analysis tool based on reference genomes and k-mers.
+
+extra:
+  recipe-maintainers:
+    - liaoherui

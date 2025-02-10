@@ -1,5 +1,5 @@
-{% set version = "0.5.8" %}
-{% set sha256 = "f6363683c826c6d39ac5e43efdc8316328783a9cb4d29995520e9ca6913621ed" %}
+{% set version = "1.0.4" %}
+{% set sha256 = "5e2ef21878c1c4ce92be9925e47b9ccae0ecb59a79d71cc4cbb53d057e0de9ec" %}
 
 package:
   name: krakenuniq
@@ -10,10 +10,13 @@ source:
   sha256: {{ sha256 }}
   patches:
     - krakenuniq.patch
+    - krakenuniq2.patch
 
 build:
+  skip: true  # [osx]
   number: 4
-  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('krakenuniq', max_pin="x.x") }}
 
 requirements:
   build:
@@ -24,14 +27,17 @@ requirements:
   host:
     - perl
     - zlib
+    - bzip2
   run:
-    - kmer-jellyfish 1.*
+    - kmer-jellyfish >=1,<2
     - perl
     - rsync
     - wget
     - tar
     - perl-libwww-perl
     - perl-lwp-protocol-https
+    - curl
+    - bc
 
 test:
   commands:
@@ -52,5 +58,8 @@ about:
   summary: Metagenomics classifier with unique k-mer counting for more specific results
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   identifiers:
     - biotools:krakenhll

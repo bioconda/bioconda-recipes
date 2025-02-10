@@ -1,0 +1,45 @@
+{% set name = "biocantor" %}
+{% set version = "1.1.0" %}
+{% set sha256 = "ea06f10f589d54b30dbf432a9b3f6e9c65f8f371c88c706505dfd115c05ed635" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/ifiddes/{{ name }}/archive/refs/tags/{{ version }}.tar.gz"
+  sha256: "{{ sha256 }}"
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install .[io] --ignore-installed --no-deps -vv"
+  run_exports:
+    - {{ pin_subpackage("biocantor", max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - pysam
+    - pyvcf3
+    - gffutils
+    - biopython
+    - marshmallow
+    - methodtools
+    - marshmallow-dataclass
+    - marshmallow-enum
+    - marshmallow-union
+
+
+test:
+  imports:
+    - biocantor
+
+about:
+  home: "https://github.com/ifiddes/BioCantor"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Coordinate Maniuplation and Genome Annotation Data Model"

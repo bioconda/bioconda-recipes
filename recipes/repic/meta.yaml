@@ -1,0 +1,51 @@
+{% set version = "1.0.0" %}
+
+package:
+  name: repic
+  version: {{ version }}
+
+source:
+  url: https://github.com/ccameron/REPIC/archive/v{{ version }}.zip
+  sha256: 27bc27cea61e012742dba0f7c7a3451f0d29633b5eef3d59b194cfae55194ee0
+
+requirements:
+  host:
+    - python >=3.8.16
+    - pip
+  run:
+    - python >=3.8.16
+    - matplotlib-base >=3.2.2
+    - mrcfile >=1.4.3
+    - networkx >=2.8.4
+    - numpy >=1.24.2
+    - pandas
+    - scipy >=1.10.0
+    - tqdm
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - repic = repic.main:main
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage('repic', max_pin="x") }}
+
+test:
+  commands:
+    - repic -h
+
+about:
+  home:               https://github.com/ccameron/REPIC
+  license:            BSD-3-Clause
+  license_family:     BSD
+  license_file:       LICENSE
+  summary:            REPIC - an ensemble learning approach to cryo-EM particle picking.
+  description:        REliable PIcking by Consensus (REPIC) is an ensemble learning approach to cryogenic-electron microscopy (cryo-EM) particle picking. It identifies particles common to multiple picked particle sets (i.e., consensus particles) using graph theory and integer linear programming (ILP). Picked particle sets may be found by a human specialist (manual), template matching, mathematical function (e.g., RELION's Laplacian-of-Gaussian auto-picking), or machine-learning method. REPIC expects particle sets to be in BOX file format (*.box) where each particle has coordinates, a detection box size (in pixels), and (optional) a score [0-1].
+  dev_url:            https://github.com/ccameron/REPIC
+  doc_url:            https://repic.readthedocs.io/en/latest/
+  doc_source_url:     https://github.com/ccameron/REPIC/blob/main/README.md
+
+extra:
+  recipe-maintainers:
+    - ccameron

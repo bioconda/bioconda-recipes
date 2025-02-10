@@ -1,0 +1,41 @@
+{% set version = "0.99.6" %}
+{% set name = "JASPAR2024" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: JASPAR (https://testjaspar.uio.no/) is a widely-used open-access database presenting manually curated high-quality and non-redundant DNA-binding profiles for transcription factors (TFs) across taxa. In this 10th release and 20th-anniversary update, the CORE collection has expanded with 329 new profiles. We updated three existing profiles and provided orthogonal support for 72 profiles from the previous release UNVALIDATED collection. Altogether, the JASPAR 2024 update provides a 20 percent increase in CORE profiles from the previous release. A trimming algorithm enhanced profiles by removing low information content flanking base pairs, which were likely uninformative (within the capacity of the PFM models) for TFBS predictions and modelling TF-DNA interactions. This release includes enhanced metadata, featuring a refined classification for plant TFs structural DNA-binding domains. The new JASPAR collections prompt updates to the genomic tracks of predicted TF-binding sites in 8 organisms, with human and mouse tracks available as native tracks in the UCSC Genome browser. All data are available through the JASPAR web interface and programmatically through its API and the updated Bioconductor and pyJASPAR packages. Finally, a new TFBS extraction tool enables users to retrieve predicted JASPAR TFBSs intersecting their genomic regions of interest.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Data package for JASPAR database (version 2024)
+build:
+  noarch: generic
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-jaspar2024", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: knitr, rmarkdown, BiocStyle, RSQLite
+requirements:
+  host:
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - r-base
+  run:
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 9c8144547873a36473a5f9cad793f578
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

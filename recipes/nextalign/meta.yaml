@@ -1,42 +1,54 @@
 {% set name = "nextalign" %}
-{% set version = "1.4.0" %}
+{% set version = "2.14.0" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-Linux-x86_64 # [linux64]
-    sha256: 17e1ecb4126eb1f63d61c31a5dbf8b239fdcf4008a27d2567d5f1db6d5105083                             # [linux64]
-  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-MacOS-x86_64 # [osx and x86_64]
-    sha256: 19ead3409a40d0fb0f3bd9da736a292a9108a8b76598e41ad6f298e769b2704f                             # [osx and x86_64]
-  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-MacOS-arm64  # [arm64]
-    sha256: 55bfd7c13e52e1520c9b1721d04d88e1c12acab6254e05044b6e7a7c985c63c6                             # [arm64]
+  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-x86_64-unknown-linux-gnu   # [linux and x86_64]
+    sha256: 90602c64c89c6921f6713d60f726b890d8892b4c1f4f0334fbd6e4b10fd8db69                                           # [linux and x86_64]
+  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-aarch64-unknown-linux-gnu  # [linux and aarch64]
+    sha256: b6fddd12cc4767c0316b13ce5f6fe8d6e26097bfb52f5c957615ffc884ce2448                                           # [linux and aarch64]
+  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-x86_64-apple-darwin        # [osx and x86_64]
+    sha256: 0585a0c4af33ac28a2cb2dd63eb5d5c9b749bf6a1af319b999b8440da9dd35d8                                           # [osx and x86_64]
+  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/{{ name }}-aarch64-apple-darwin       # [osx and arm64]
+    sha256: 2d8ec8f379b150c2ac271f3c08ca79ee372b1fb14da3dc8e1b3033a1b65cfc58                                           # [osx and arm64]
 
 build:
-  number: 0
+  number: 2
   binary_relocation: False
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
 
 requirements:
 
 test:
+  files:
+    - test-data
   commands:
-    - nextalign --help
+    - nextalign --help # [not aarch64]
 
 about:
-  home: https://github.com/nextstrain/nextclade/tree/master/packages/nextalign_cli
+  home: https://github.com/nextstrain/nextclade
   license: MIT
   license_family: MIT
-  summary: "Viral genome sequence alignment tool"
-  doc_url: https://docs.nextstrain.org/projects/nextclade/en/stable/user/nextalign-cli.html
-  dev_url: https://github.com/nextstrain/nextclade 
+  summary: "Viral genome alignment"
+  doc_url: https://docs.nextstrain.org/projects/nextclade/en/stable/
+  dev_url: https://github.com/nextstrain/nextclade
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - cjw85
     - thanhleviet
     - pvanheus
+    - corneliusroemer
+    - ivan-aksamentov
   skip-lints:
     # repackaged binary
     - should_be_noarch_generic
-
+  identifiers:
+    - doi:10.21105/joss.03773

@@ -12,12 +12,12 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    url = 'http://dfam.org/web_download/Current_Release/Dfam.hmm.gz'
+    url = 'http://dfam.org/releases/Dfam_${PKG_VERSION}/families/Dfam.hmm.gz'
 
     if args.output:
-        print("We are download file to {}".format(args.output))
+        print("We are downloading file to {}".format(args.output))
         filename = wget.download(url)
         shutil(filename, args.output)
     else:
-        print("We are download file to Dfam.hmm.gz")
+        print("We are downloading file to Dfam.hmm.gz")
         filename = wget.download(url)

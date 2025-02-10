@@ -7,19 +7,33 @@
 # Program Parameters
 #
 import os
-import subprocess
 import sys
 import shutil
 from os import access
 from os import getenv
 from os import X_OK
+from pathlib import Path
 
-jar_file = 'webin-cli-4.1.0.jar'
-default_jvm_mem_opts = ['-Xms2g', '-Xmx4g']
-original_string = "java -jar " + jar_file + " CLI"
-wrapper_string = "webin-cli"
+
+default_jvm_mem_opts = ["-Xms2g", "-Xmx4g"]
+
+
+class TooManyJars(Exception):
+    pass
+
 
 # !!! End of parameter section. No user-serviceable code below this line !!!
+def find_jar_file(directory):
+    d = Path(directory)
+    jars = list(d.glob("webin-cli-*.jar"))
+    if not jars:
+        raise FileNotFoundError(
+            "Could not find the jar file in {}".format(str(directory))
+        )
+    elif len(jars) > 1:
+        raise TooManyJars("Too many jar files found in {} - {}".format(directory, jars))
+    else:
+        return str(jars[0].resolve())
 
 
 def real_dirname(path):
@@ -29,13 +43,13 @@ def real_dirname(path):
 
 def java_executable():
     """Return the executable name of the Java interpreter."""
-    java_home = getenv('JAVA_HOME')
-    java_bin = os.path.join('bin', 'java')
+    java_home = getenv("JAVA_HOME")
+    java_bin = os.path.join("bin", "java")
 
     if java_home and access(os.path.join(java_home, java_bin), X_OK):
         return os.path.join(java_home, java_bin)
     else:
-        return 'java'
+        return "java"
 
 
 def jvm_opts(argv):
@@ -51,16 +65,18 @@ def jvm_opts(argv):
     exec_dir = None
 
     for arg in argv:
-        if arg.startswith('-D'):
+        if arg.startswith("-D"):
             prop_opts.append(arg)
-        elif arg.startswith('-XX'):
+        elif arg.startswith("-XX"):
             prop_opts.append(arg)
-        elif arg.startswith('-Xm'):
+        elif arg.startswith("-Xm"):
             mem_opts.append(arg)
-        elif arg.startswith('--exec_dir='):
-            exec_dir = arg.split('=')[1].strip('"').strip("'")
+        elif arg.startswith("--exec_dir="):
+            exec_dir = arg.split("=")[1].strip('"').strip("'")
             if not os.path.exists(exec_dir):
-                shutil.copytree(real_dirname(sys.argv[0]), exec_dir, symlinks=False, ignore=None)
+                shutil.copytree(
+                    real_dirname(sys.argv[0]), exec_dir, symlinks=False, ignore=None
+                )
         else:
             pass_args.append(arg)
 
@@ -70,46 +86,22 @@ def jvm_opts(argv):
     # it is important to explictly check for equality with None
     # in the second condition, so a null envar value counts as True!
 
-    if mem_opts == [] and getenv('_JAVA_OPTIONS') is None:
+    if mem_opts == [] and getenv("_JAVA_OPTIONS") is None:
         mem_opts = default_jvm_mem_opts
 
     return (mem_opts, prop_opts, pass_args, exec_dir)
 
 
-def def_temp_log_opts(args):
-    """
-    Establish default temporary and log folders.
-    """
-    TEMP  = os.getenv("TEMP")
-
-    if TEMP is not None:
-        if '-log' not in args:
-            args.append('-log')
-            args.append(TEMP+'/logs')
-
-        if '-temp_folder' not in args :
-            args.append('-temp_folder')
-            args.append(TEMP)
-
-    return args
-
 def main():
     java = java_executable()
     (mem_opts, prop_opts, pass_args, exec_dir) = jvm_opts(sys.argv[1:])
-    pass_args = def_temp_log_opts(pass_args)
     jar_dir = exec_dir if exec_dir else real_dirname(sys.argv[0])
-    jar_arg = '-jar'
-    jar_path = os.path.join(jar_dir, jar_file)
+    jar_arg = "-jar"
+    jar_path = find_jar_file(jar_dir)
     java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
-    # cmd = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + [cli] + pass_args
-    sys.exit(subprocess.call(java_args))
-
-    # p = subprocess.Popen(cmd,stderr=subprocess.PIPE);
-    # for line in iter(p.stderr.readline,b''):
-        # tomod = line.decode("utf-8")
-        # tomod = tomod.replace(original_string,wrapper_string)
-        # print(tomod,end='')
+    command = " ".join(java_args)
+    sys.exit(os.system(command))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

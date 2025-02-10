@@ -1,21 +1,36 @@
+{% set name = "dendropy" %}
+{% set version = "5.0.6" %}
+{% set sha256 = "1c01e65f4d1c3f70df236d1d3a29b1f2c1ae4c17d3bd389740e488b250421496" %}
+
 package:
-  name: dendropy
-  version: "4.5.2"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/f9/10/125c181b1d97ffc4661a60ec897cfe058dc46cb53900d807819464c3510f/DendroPy-4.5.2.tar.gz
-  sha256: 3e5d2522170058ebc8d1ee63a7f2d25b915e34957dc02693ebfdc15f347a0101
+  url: https://github.com/jeetsukumaran/DendroPy/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
   noarch: python
+  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - sumtrees=dendropy.application.sumtrees:main
+    - sumlabels=dendropy.application.sumlabels:main_cli
+    - dendropy-format=dendropy.application.dendropy_format:main
+    - sumtrees.py=dendropy.application.sumtrees:main
+    - sumlabels.py=dendropy.application.sumlabels:main_cli
+  run_exports:
+    - {{ pin_subpackage('dendropy', max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.6
+    - pip
     - setuptools
+    - pytest-runner
   run:
-    - python
+    - python >=3.6
 
 test:
   imports:
@@ -32,6 +47,15 @@ test:
     - dendropy.utility.libexec
 
 about:
-  home: http://packages.python.org/DendroPy/
-  license: BSD License
+  home: "https://github.com/jeetsukumaran/DendroPy"
   summary: 'A Python library for phylogenetics and phylogenetic computing: reading, writing, simulation, processing and manipulation of phylogenetic trees (phylogenies) and characters.'
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE.rst
+  dev_url: "https://github.com/jeetsukumaran/DendroPy"
+  doc_url: "https://dendropy.org"
+
+extra:
+  identifiers:
+    - biotools:dendropy
+    - doi:10.1093/bioinformatics/btq228

@@ -1,10 +1,30 @@
 #!/bin/bash
 
 # Add scripts
-mkdir -p ${PREFIX}/bin
+mkdir -p ${PREFIX}/bin ${PREFIX}/share
 cp *.pl ${PREFIX}/bin
 cp miniscripts/*.pl ${PREFIX}/bin
 chmod 755 ${PREFIX}/bin/*.pl
+
+# Custom build of Fasta3
+# patch Makefile with vadr specific changes and copy to expected name so 'build' step is linux/osx agnostic
+if [ "$(uname)" == "Linux" ]; then
+    patch fasta/make/Makefile.linux fasta-mods/vadr-fasta-Makefile.linux.patch
+    cp fasta/make/Makefile.linux fasta/make/Makefile.vadr_install
+else 
+    patch fasta/make/Makefile.os_x86_64 fasta-mods/vadr-fasta-Makefile.os_x86_64.patch
+    cp fasta/make/Makefile.os_x86_64 fasta/make/Makefile.vadr_install
+fi
+# patch defs.h with vadr specific changes
+patch fasta/src/defs.h fasta-mods/vadr-fasta-defs.patch
+
+# build fasta specific to vadr
+cd fasta/src
+make -f ../make/Makefile.vadr_install all CC="${CC} ${CPPFLAGS} ${CFLAGS}" LDFLAGS="${LDFLAGS}" LIB_M='-lm'
+cd ../
+cp {bin/*36,bin/map_db,scripts/*.pl,misc/*.pl} ${PREFIX}/bin
+cp -R {doc,data,seq} ${PREFIX}/share
+cd ../
 
 # copy script to download database
 chmod 755 ${RECIPE_DIR}/download-vadr-models.sh ${RECIPE_DIR}/installed-vadr-models.sh ${RECIPE_DIR}/run-vadr-local-tests.sh
@@ -33,6 +53,7 @@ echo "export VADRBIOEASELDIR=${PREFIX}/bin" >> ${PREFIX}/etc/conda/activate.d/va
 echo "export VADRSEQUIPDIR=${PREFIX}/bin" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
 echo "export VADRBLASTDIR=${PREFIX}/bin" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
 echo "export VADRFASTADIR=${PREFIX}/bin" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
+echo "export VADRMINIMAP2DIR=${PREFIX}/bin" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
 echo "export PERL5LIB=${VADR_DIR}:${PERL5LIB}" >> ${PREFIX}/etc/conda/activate.d/vadr.sh
 chmod a+x ${PREFIX}/etc/conda/activate.d/vadr.sh
 
@@ -48,5 +69,12 @@ echo "unset VADRBIOEASELDIR" >> ${PREFIX}/etc/conda/deactivate.d/vadr.sh
 echo "unset VADRSEQUIPDIR" >> ${PREFIX}/etc/conda/deactivate.d/vadr.sh
 echo "unset VADRBLASTDIR" >> ${PREFIX}/etc/conda/deactivate.d/vadr.sh
 echo "unset VADRFASTADIR" >> ${PREFIX}/etc/conda/deactivate.d/vadr.sh
+echo "unset VADRMINIMAP2DIR" >> ${PREFIX}/etc/conda/deactivate.d/vadr.sh
 echo "unset PERL5LIB" >> ${PREFIX}/etc/conda/deactivate.d/vadr.sh
 chmod a+x ${PREFIX}/etc/conda/deactivate.d/vadr.sh
+
+# Play nicely with Docker's --entrypoint
+echo "#!/usr/bin/env bash" > ${PREFIX}/bin/vadr-run.sh
+echo "for f in ${PREFIX}/etc/conda/activate.d/*; do source \${f}; done" >> ${PREFIX}/bin/vadr-run.sh
+echo '"$@"' >> ${PREFIX}/bin/vadr-run.sh
+chmod 755 ${PREFIX}/bin/vadr-run.sh

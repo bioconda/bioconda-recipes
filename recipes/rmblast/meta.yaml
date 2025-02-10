@@ -1,48 +1,47 @@
-{% set name = "rmblast" %}
-{% set version = "2.10.0" %}
+{% set name = "RMBlast" %}
+{% set version = "2.14.1" %}
+{% set sha256 = "712c2dbdf0fb13cc1c2d4f4ef5dd1ce4b06c3b57e96dfea8f23e6e99f5b1650e" %}
 
 package:
-  name: {{ name }}
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
   url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz
-  sha256: 3acdd9cec01c4f43e56aeaf89049cb8f8013d60b9c1705eced10166967f1d926
-  #patches:
-    # patch taken from http://www.repeatmasker.org/isb-2.10.0+-rmblast.patch.gz
+  sha256: {{ sha256 }}
+  patches:
     #- isb-{{ version }}+-{{ name }}.patch # Needs the -p1 option, applied in build.sh
+    # patch taken from http://www.repeatmasker.org/rmblast/isb-2.14.1+-rmblast.patch.gz
+    - isb-2.14.1+-rmblast.patch
+    - configurellvm.patch
+    - get_species_taxids.patch
+    - phonehome.patch
 
 build:
-  skip: True  # [osx]
-  # N.B., version 2.10.0 can't handle clang: "Do not know how to parse GCC version number 11.1.0"
   number: 1
+  run_exports:
+    - {{ pin_subpackage('rmblast', max_pin="x") }}
 
 requirements:
   build:
     - make
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - bzip2
     - zlib
-    - gnutls # [linux]
-    - openssl # [osx]
-    - nettle 3.3|3.3.*
+    - bzip2
+    - entrez-direct
     - pcre
+    - curl
     - time
+    - ncbi-vdb
+    - sqlite =3
   run:
-    - bzip2
-    - zlib
-    - gnutls # [linux]
-    - openssl # [osx]
-    - nettle 3.3|3.3.*
-    - pcre
+    - entrez-direct
+    - ncbi-vdb
     - perl
     - perl-list-moreutils
     - perl-archive-tar
     - perl-json
-    - entrez-direct
-    - curl
 
 test:
   commands:
@@ -75,6 +74,15 @@ test:
     - update_blastdb.pl --help
 
 about:
-  home: http://www.repeatmasker.org/RMBlast.html
+  home: https://www.repeatmasker.org/rmblast
   license: OSL-2.1
   summary: RMBlast is a RepeatMasker compatible version of the standard NCBI BLAST+ suite.
+  doc_url: https://www.repeatmasker.org/rmblast
+
+extra:
+  identifiers:
+    - biotools:rmblast
+  recipe-maintainers:
+    - mencian
+  additional-platforms:
+    - linux-aarch64

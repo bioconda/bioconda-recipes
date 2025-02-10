@@ -9,13 +9,16 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - pdm.patch
 
 build:
-  number: 1
-  skip: True  # [py2k]
+  number: 6
   script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vvv
   entry_points:
     - deltapd = deltapd.__main__:main
+  run_exports:
+    - {{ pin_subpackage("deltapd", max_pin="x.x") }}
 
 requirements:
   build:
@@ -41,6 +44,7 @@ test:
     - deltapd
     - deltapd.file
   commands:
+    - deltapd --version
     - deltapd --version > /dev/null 2>&1
 
 about:

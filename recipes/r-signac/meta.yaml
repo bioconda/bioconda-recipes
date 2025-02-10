@@ -1,20 +1,23 @@
-{% set version = '1.4.0' %}
+{% set name = "r-signac" %}
+{% set version = '1.14.0' %}
 
 package:
-  name: r-signac
+  name: {{ name }}
   version: {{ version|replace("-", "_") }}
 
 source:
   url:
     - {{ cran_mirror }}/src/contrib/Signac_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/Signac/Signac_{{ version }}.tar.gz
-  sha256: e07b124156b370b838e0a3e2dc85d536dd7fcaa2a9c65ebf9ffc31238ba64931
+  sha256: e0aad9e2c27c148fdd376081c2de1e3db46b1835eac83ef41fe562e08363c59e
 
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports:
+    - {{ pin_subpackage("r-signac", max_pin="x") }}
 
 requirements:
   build:
@@ -24,7 +27,7 @@ requirements:
   host:
     - r-base
     - bioconductor-biocgenerics
-    - bioconductor-genomeinfodb
+    - bioconductor-genomeinfodb >=1.29.3
     - bioconductor-genomicranges
     - bioconductor-iranges
     - r-matrix
@@ -32,29 +35,27 @@ requirements:
     - r-rcpproll
     - bioconductor-rsamtools
     - bioconductor-s4vectors
-    - r-seurat >=4.0.0
-    - r-seuratobject >=4.0.0
+    - r-seuratobject >=5.0.2
     - r-data.table
     - r-dplyr >=1.0.0
     - r-fastmatch
     - r-future
     - r-future.apply
-    - r-ggforce
     - r-ggplot2
-    - r-ggrepel
-    - r-ggseqlogo
     - r-irlba
-    - r-lsa
     - r-patchwork
     - r-pbapply
-    - r-qlcmatrix
+    - r-rlang
     - r-scales
     - r-stringi
     - r-tidyr
+    - r-tidyselect
+    - r-vctrs
+    - zlib
   run:
     - r-base
     - bioconductor-biocgenerics
-    - bioconductor-genomeinfodb
+    - bioconductor-genomeinfodb >=1.29.3
     - bioconductor-genomicranges
     - bioconductor-iranges
     - r-matrix
@@ -62,32 +63,29 @@ requirements:
     - r-rcpproll
     - bioconductor-rsamtools
     - bioconductor-s4vectors
-    - r-seurat >=4.0.0
-    - r-seuratobject >=4.0.0
+    - r-seuratobject >=5.0.2
     - r-data.table
     - r-dplyr >=1.0.0
     - r-fastmatch
     - r-future
     - r-future.apply
-    - r-ggforce
     - r-ggplot2
-    - r-ggrepel
-    - r-ggseqlogo
     - r-irlba
-    - r-lsa
     - r-patchwork
     - r-pbapply
-    - r-qlcmatrix
+    - r-rlang
     - r-scales
     - r-stringi
     - r-tidyr
+    - r-tidyselect
+    - r-vctrs
 
 test:
   commands:
     - $R -e "library('Signac')"
 
 about:
-  home: https://github.com/timoast/signac, https://satijalab.org/signac
+  home: "https://github.com/timoast/signac"
   license: MIT
   summary: 'A framework for the analysis and exploration of single-cell chromatin data. The ''Signac''
     package contains functions for quantifying single-cell chromatin data, computing
@@ -97,3 +95,5 @@ about:
   license_file:
     - {{ environ["PREFIX"] }}/lib/R/share/licenses/MIT
     - LICENSE
+  doc_url: "https://satijalab.org/signac"
+  dev_url: "https://github.com/timoast/signac"

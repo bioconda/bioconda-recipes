@@ -1,51 +1,56 @@
-{% set version = "1.2.0" %}
+{% set version = "1.16.0" %}
 {% set name = "SpatialExperiment" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 3f46428360a9184c26c21553dafc7c2f
+about:
+  description: Defines an S4 class for storing data from spatial -omics experiments. The class extends SingleCellExperiment to support storage and retrieval of additional information from spot-based and molecule-based platforms, including spatial coordinates, images, and image metadata. A specialized constructor function is included for data from the 10x Genomics Visium platform.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: S4 Class for Spatially Resolved -omics Data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, rmarkdown, testthat, BiocStyle, BumpyMatrix
+  run_exports: '{{ pin_subpackage("bioconductor-spatialexperiment", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, testthat, BiocStyle, BumpyMatrix, DropletUtils
 requirements:
   host:
-    - 'bioconductor-biocfilecache >=2.0.0,<2.1.0'
-    - 'bioconductor-biocgenerics >=0.38.0,<0.39.0'
-    - 'bioconductor-dropletutils >=1.12.0,<1.13.0'
-    - 'bioconductor-s4vectors >=0.30.0,<0.31.0'
-    - 'bioconductor-singlecellexperiment >=1.14.0,<1.15.0'
-    - 'bioconductor-summarizedexperiment >=1.22.0,<1.23.0'
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-magick
     - r-rjson
   run:
-    - 'bioconductor-biocfilecache >=2.0.0,<2.1.0'
-    - 'bioconductor-biocgenerics >=0.38.0,<0.39.0'
-    - 'bioconductor-dropletutils >=1.12.0,<1.13.0'
-    - 'bioconductor-s4vectors >=0.30.0,<0.31.0'
-    - 'bioconductor-singlecellexperiment >=1.14.0,<1.15.0'
-    - 'bioconductor-summarizedexperiment >=1.22.0,<1.23.0'
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-magick
     - r-rjson
+
+source:
+  md5: dd52315d7fcca2045bb553d952a15573
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'S4 Class for Spatial Experiments handling'
-  description: 'Defines S4 classes for storing data for spatial experiments. Main examples are reported by using seqFISH and 10x-Visium Spatial Gene Expression data. This includes specialized methods for storing, retrieving spatial coordinates, 10x dedicated parameters and their handling.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

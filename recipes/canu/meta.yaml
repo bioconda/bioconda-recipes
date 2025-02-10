@@ -1,59 +1,72 @@
-{% set version = "2.1.1" %}
+{% set name = "canu" %}
+{% set version = "2.3" %}
 
 package:
-  name: canu
-  version: '{{version}}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  git_url: https://github.com/marbl/canu.git
-  git_rev: 5638f7d9a5379373310ab62c28aa0cdbd864722d
+  url: https://github.com/marbl/canu/releases/download/v{{ version }}/canu-{{ version }}.tar.xz
+  sha256: ecb071943cde722152deb861d4ab897090f00b227fd0b261592e1e3fdd3e3e1a
+  patches:
+    - arm_hwcap.patch  # [linux and aarch64]
 
 build:
-  number: 2
-  skip: true  # [osx]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('canu', max_pin="x") }}
 
 requirements:
   build:
     - make
-    - '{{ compiler("c") }}'
-    - '{{ compiler("cxx") }}'
-    - {{ cdt('mesa-libgl-devel') }}  # [linux]
-    - {{ cdt('mesa-dri-drivers') }}  # [linux]
-    - {{ cdt('libselinux') }}  # [linux]
-    - {{ cdt('libxdamage') }}  # [linux]
-    - {{ cdt('libxxf86vm') }}  # [linux]
-    - {{ cdt('libxext') }}     # [linux]
+    - {{ compiler("cxx") }}
+    - pkg-config
   host:
     - gnuplot >=5.2
     - xorg-libxfixes  # [linux]
+    - boost-cpp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - curl
+    - zlib
   run:
     - perl
     - perl-filesys-df
-    - openjdk
+    - openjdk >=20
     - minimap2
+    - boost-cpp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - gnuplot >=5.2
+    - samtools
 
 test:
+  requires:
+    - curl
   commands:
     - canu --version
-    # needed internally
-    - getconf --help
-    ##- gnuplot --help
+    - sqStoreDumpFASTQ --version
 
 about:
-  home: http://canu.readthedocs.org/
-  license: GPLv2 and others
-  license_file: README.licenses
+  home: "https://github.com/marbl/canu"
+  license: "GPL-2.0-or-later and others"
+  license_file: "README.licenses"
   license_family: GPL
-  summary: Canu is a fork of the Celera Assembler designed for high-noise single-molecule sequencing.
-  dev_url: https://github.com/marbl/canu
+  summary: "Canu is a fork of the Celera Assembler designed for high-noise single-molecule sequencing."
+  dev_url: "https://github.com/marbl/canu"
+  doc_url: "https://canu.readthedocs.org"
 
 extra:
   container:
     # libGL needed for gnuplot
-    extended-base: true
+    extended-base: True
   identifiers:
     - usegalaxy-eu:canu
-  skip-lints:
-    - uses_vcs_url
-    - missing_hash
+    - biotools:canu
+    - biotools:hicanu
+    - doi:10.1101/gr.215087.116
+    - doi:10.1038/nbt.4277
+    - doi:10.1101/gr.263566.120
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

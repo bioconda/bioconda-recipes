@@ -1,0 +1,15 @@
+Avoid MAPQ = -2147483648, which causes samtools >= 1.10 to fail.
+Applies https://github.com/philres/ngmlr/pull/96
+
+diff --git a/src/AlignmentBuffer.cpp b/src/AlignmentBuffer.cpp
+index 26130d1..33597ec 100644
+--- a/src/AlignmentBuffer.cpp
++++ b/src/AlignmentBuffer.cpp
+@@ -1888,6 +1888,7 @@ int AlignmentBuffer::computeMappingQuality(Align const & alignment, int readLeng
+ 		mqSum += results[j].value;
+ 		mqCount += 1;
+ 	}
++	if (mqCount == 0) return 0;
+ //	verbose(1, true, "");
+ 	verbose(1, true, "%d / %d = %d", mqSum, mqCount, (int) (mqSum * 1.0f / mqCount));
+ 	return (int) (mqSum * 1.0f / mqCount);

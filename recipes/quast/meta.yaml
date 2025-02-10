@@ -1,22 +1,20 @@
-{% set version = "5.0.2" %}
-{% set hash = "2b31aac010f5c04d5367f1bf718516ae" %}
+{% set version = "5.3.0" %}
+{% set hash = "ac9dba03ef9d0a51d7a9e2c56826104e78f340f6263a3ad393648442debc74ec" %}
 
 package:
   name: quast
   version: {{ version }}
 
 build:
-  number: 4
-  # Needs to adjust cgi.escape to be html.escape for Python 3.8.
-  # (cgi.escape is deprecated since 3.2)
-  # AttributeError: module 'cgi' has no attribute 'escape'
-  skip: True  # [py>=38]
+  number: 1
+  run_exports:
+    - {{ pin_subpackage("quast", max_pin="x.x") }}
 
 source:
   url:
     - https://github.com/ablab/quast/releases/download/quast_{{ version }}/quast-{{ version }}.tar.gz
     - http://downloads.sourceforge.net/project/quast/quast-{{ version }}.tar.gz
-  md5: {{ hash }}
+  sha256: {{ hash }}
   patches:
     - genemark-issue_disable-and-exclude-from-package.patch
     - skip-glimmer-in-test.patch
@@ -24,7 +22,8 @@ source:
 
 requirements:
   build:
-    - {{ compiler('c') }}    
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
     - make
   host:
     - perl
@@ -47,10 +46,11 @@ requirements:
     - joblib
     - simplejson
     - blast
-    - zlib
     - glimmerHMM
     - circos
     - minimap2 >=2.10
+    - bedtools
+    - bwa
 
 test:
   source_files:

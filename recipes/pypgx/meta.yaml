@@ -1,5 +1,5 @@
 {% set name = "pypgx" %}
-{% set version = "0.5.0" %}
+{% set version = "0.25.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 16c17f072aef1a1df192d45b43e6c8079190274a9c3fc7a93acd8a3a462d0614
+  sha256: 4395ffdd7e9a30033b76eb6e0afe98e4c2fd2b131eab1a0de47cc404b5122fd2
 
 build:
   number: 0
@@ -15,6 +15,8 @@ build:
     - pypgx=pypgx.__main__:main
   script: "{{ PYTHON }} -m pip install . --no-deps -vv"
   noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
@@ -25,6 +27,8 @@ requirements:
     - openjdk
     - python
     - scikit-learn
+    # ensure fuc doesn't pull in a broken pysam build
+    - pysam >=0.15
 
 test:
   imports:

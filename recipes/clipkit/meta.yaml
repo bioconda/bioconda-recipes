@@ -1,5 +1,5 @@
 {% set name = "clipkit" %}
-{% set version = "1.1.5" %}
+{% set version = "2.3.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,23 +7,28 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 1f635c4632f095efe49a6ff7cb82b2e46cf1ceb3d019774f3b3c0fa2177e9631
+  sha256: 6e4f39f7b0e99b89de17aa57a26d1a7c6a1c064203b4fd436b413ad7d2e57ce5
 
 build:
   number: 0
   noarch: python
   entry_points:
     - clipkit = clipkit.clipkit:main
-  script: python -m pip install --no-deps --ignore-installed . 
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv
+  run_exports:
+    - {{ pin_subpackage('clipkit', max_pin="x") }}
 
 requirements:
   host:
+    - python >=3.9
     - pip
-    - python >3
+    - cython
+    - biopython >=1.81
+    - tqdm >=4.45.0
   run:
-    - biopython >=1.76
-    - numpy 
-    - python >3
+    - python >=3.9
+    - biopython >=1.81
+    - numpy >=1.24.0
     - tqdm >=4.45.0
 
 test:
@@ -36,4 +41,10 @@ about:
   home: "https://github.com/jlsteenwyk/clipkit"
   license: MIT
   license_family: MIT
+  license_file: LICENSE.md
   summary: "Alignment trimming software for phylogenetics."
+  doc_url: https://jlsteenwyk.com/ClipKIT/
+
+extra:
+  identifiers:
+    - doi:10.1371/journal.pbio.3001007
