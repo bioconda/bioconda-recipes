@@ -27,7 +27,5 @@ cmake -S $SRC_DIR -B "$SRC_DIR/build" -DCMAKE_BUILD_TYPE=Release \
 echo "cmake install"
 cmake --build "$SRC_DIR/build" --target install -j "${CPU_COUNT}"
 
-install -v -m 0755 bin/lja "${PREFIX}/bin"
-
-#cp -rf $SRC_DIR/bin $PREFIX
-#cp -rf $SRC_DIR/src $PREFIX
+install -v -m 0755 ${SRC_DIR}/bin/* "${PREFIX}/bin"
+cp -rfv $SRC_DIR/src "${PREFIX}"
