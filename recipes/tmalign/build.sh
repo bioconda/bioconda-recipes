@@ -7,7 +7,7 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 if [[ `uname` == "Darwin" ]]; then
 	rm -f TMalign.cpp TMscore.cpp
-	cp -rf ${RECIPE_DIR}/TMalign.cpp.cpp .
+	cp -rf ${RECIPE_DIR}/TMalign.cpp .
 	wget https://zhanggroup.org/TM-score/TMscore.cpp
 	${CXX} ${FFLAGS} -o "${PREFIX}/bin/TMalign" TMalign.cpp
 	${CXX} ${FFLAGS} -o "${PREFIX}/bin/TMscore" TMscore.cpp
