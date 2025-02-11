@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -eux
+ls -l ..
 
 # Install the runner package from the tarball that is one level up
 pip install ../runner-0.0.0.tar.gz
