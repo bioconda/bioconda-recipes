@@ -1,0 +1,39 @@
+{% set version = "0.1" %}
+{% set name = "sdust" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/lh3/sdust/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 0825a760fae884e65b2b024cc4f511e32e6c1698571c147daf5a61ba0dcac589
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage("sdust", max_pin="x.x") }}
+
+requirements:
+    build:
+      - make
+      - {{ compiler('cxx') }}
+    host:
+      - zlib
+
+test:
+  commands:
+    - "sdust 2>&1 | grep 'Usage: sdust'"
+
+about:
+  home: "https://github.com/lh3/sdust"
+  dev_url: "https://github.com/lh3/sdust"
+  license: Unknown
+  summary: "Symmetric DUST for finding low-complexity regions in DNA sequences."
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+      - smeds

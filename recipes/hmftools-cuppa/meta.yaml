@@ -1,22 +1,18 @@
-{% set version = "2.2.1" %}
-{% set sha256_jar = "38669b46befd678059426342b9c71ec3a2b007d850174e132e42ec7cd13e8752" %}
-{% set sha256_src = "eb27b92670999bd8825305496508df63da56d59569e8eb64ed93bd814e6d35c3" %}
+{% set version = "2.3.0_beta" %}
+{% set beta_suffix = ".1" %}
+{% set sha256 = "ae3a3d9bc31e45cba52943df01b6f8f190beff904dff392e6413c1396d7db36d" %}
 
 package:
   name: hmftools-cuppa
   version: '{{ version }}'
 
 source:
-  - folder: jar
-    url: https://github.com/hartwigmedical/hmftools/releases/download/cuppa-v{{ version }}/cuppa_v{{ version }}.jar
-    sha256: '{{ sha256_jar }}'
-  - folder: src
-    url: https://github.com/hartwigmedical/hmftools/archive/refs/tags/cuppa-v{{ version }}.tar.gz
-    sha256: '{{ sha256_src }}'
+  url: https://github.com/hartwigmedical/hmftools/releases/download/cuppa-v{{ version }}/cuppa_v{{ version|replace(".0", "") }}{{ beta_suffix }}.jar
+  sha256: '{{ sha256 }}'
 
 build:
   noarch: generic
-  number: 0
+  number: 2
   run_exports:
     - {{ pin_subpackage("hmftools-cuppa", max_pin="x.x") }}
 
@@ -24,8 +20,9 @@ requirements:
   host:
     - python ==3.11
     - r-base >=4.2,<4.3.0a0
+    - unzip
   run:
-    - openjdk >=8
+    - openjdk >=8,<=21
     - python ==3.11
     - numpy >=1.24
     - pandas ==2.0.*

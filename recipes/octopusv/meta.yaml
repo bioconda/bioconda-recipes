@@ -1,0 +1,54 @@
+{% set name = "octopusv" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/octopusv-{{ version }}.tar.gz
+  sha256: 10e4241473440285ea4704f6a5a367cc28b35552776ca00753bdf5860001cc6d
+
+build:
+  entry_points:
+    - octopusv = octopusv.cli.cli:app
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.10.0,<4.0.0
+    - typer >=0.12.3,<0.13.0
+    - loguru >=0.7.2,<0.8.0
+    - rich >=13.7.1,<14.0.0
+    - natsort >=8.4.0,<9.0.0
+    - pytest-cov >=4.1.0,<5.0.0
+    - matplotlib-base >=3.9.2,<4.0.0
+    - seaborn >=0.13.2,<0.14.0
+    - jinja2 >=3.1.5,<4.0.0
+
+test:
+  imports:
+    - octopusv
+  commands:
+    - pip check
+    - octopusv --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/ylab-hi/octopusV
+  summary: 'OctopusV: Advanced Structural Variant Analysis Toolkit'
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - qingxiangguo

@@ -1,23 +1,24 @@
-{% set version = "1.25" %}
-{% set sha256 = "2fa9a91801239ded3e82fcd0ee9987e6181d0e400855420ef7f5000f3b4a96da" %}
+{% set version = "2.0_beta" %}
+{% set beta_suffix = ".3" %}
+{% set sha256 = "a23e690b6da95226f20d90a3aade31caaee2e08996d6b05f9c1eaae869d33ba1" %}
 
 package:
   name: hmftools-linx
   version: '{{ version }}'
 
 source:
-  url: https://github.com/hartwigmedical/hmftools/releases/download/linx-v{{ version }}/linx_v{{ version }}.jar
+  url: https://github.com/hartwigmedical/hmftools/releases/download/linx-v{{ version }}/linx_v{{ version }}{{ beta_suffix }}.jar
   sha256: '{{ sha256 }}'
 
 build:
   noarch: generic
-  number: 0
+  number: 2
   run_exports:
     - {{ pin_subpackage('hmftools-linx', max_pin="x") }}
 
 requirements:
   run:
-    - openjdk >=8
+    - openjdk >=8,<=21
     - xorg-libxtst
     - r-tidyr
     - r-dplyr
@@ -26,6 +27,7 @@ requirements:
     - r-magick
     - bioconductor-gviz
     - circos >=0.69.6
+    - perl-gd >=2.76 # Fixes missing GD perl module error (even though circos does install GD)
 
 test:
   commands:

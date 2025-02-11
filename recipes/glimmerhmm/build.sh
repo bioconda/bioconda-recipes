@@ -1,7 +1,13 @@
-if [ `uname` == Darwin ]; then
-    sed -i.bak "s~#include <malloc.h>~#include <malloc/malloc.h>~g" sources/util.c
-    sed -i.bak "s~#include <malloc.h>~#include <malloc/malloc.h>~g" sources/oc1.h
-    sed -i.bak "s~#include <malloc.h>~#include <malloc/malloc.h>~g" train/utils.c
+#!/bin/bash
+
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+if [[ `uname` == "Darwin" ]]; then
+	sed -i.bak "s~#include <malloc.h>~#include <stdlib.h>~g" sources/util.c
+	sed -i.bak "s~#include <malloc.h>~#include <stdlib.h>~g" sources/oc1.h
+	sed -i.bak "s~#include <malloc.h>~#include <stdlib.h>~g" train/utils.c
+	rm -rf sources/*.bak
+	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names"
 fi
 
 # fix typos in train makefile
@@ -16,37 +22,28 @@ sed -i.bak 's|FindBin;|FindBin qw($RealBin);|g' train/trainGlimmerHMM
 sed -i.bak 's|$FindBin::Bin;|"$RealBin/../share/glimmerhmm/train";|g' train/trainGlimmerHMM
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' bin/glimmhmm.pl
 
+rm -rf train/*.bak
+rm -rf bin/*.bak
+
 # make directories for storing training data and binaries
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/share/glimmerhmm
 mkdir -p $PREFIX/share/glimmerhmm/train
 
 # make
-make -C sources CC=$CXX
-make -C train clean && make -C train all C=$CC CC=$CXX
+make -C sources CC="$CXX" -j"${CPU_COUNT}"
+make -C train clean && make -C train all C="$CC" CC="$CXX" -j"${CPU_COUNT}"
 
 # copy the executables	
-cp bin/glimmhmm.pl $PREFIX/bin/
-cp sources/glimmerhmm $PREFIX/bin/
-cp train/trainGlimmerHMM $PREFIX/bin/
-cp train/build-icm $PREFIX/share/glimmerhmm/train/
-cp train/build-icm-noframe $PREFIX/share/glimmerhmm/train/
-cp train/build1 $PREFIX/share/glimmerhmm/train/
-cp train/build2 $PREFIX/share/glimmerhmm/train/
-cp train/erfapp $PREFIX/share/glimmerhmm/train/
-cp train/falsecomp $PREFIX/share/glimmerhmm/train/
-cp train/findsites $PREFIX/share/glimmerhmm/train/
-cp train/karlin $PREFIX/share/glimmerhmm/train/
-cp train/score $PREFIX/share/glimmerhmm/train/
-cp train/score2 $PREFIX/share/glimmerhmm/train/
-cp train/scoreATG $PREFIX/share/glimmerhmm/train/
-cp train/scoreATG2 $PREFIX/share/glimmerhmm/train/
-cp train/scoreSTOP $PREFIX/share/glimmerhmm/train/
-cp train/scoreSTOP2 $PREFIX/share/glimmerhmm/train/
-cp train/splicescore $PREFIX/share/glimmerhmm/train/
+install -v -m 0755 bin/glimmhmm.pl $PREFIX/bin
+install -v -m 0755 sources/glimmerhmm $PREFIX/bin
+install -v -m 0755 train/trainGlimmerHMM $PREFIX/bin
+install -v -m 0755 train/build-icm train/build-icm-noframe train/build1 train/build2 train/erfapp $PREFIX/share/glimmerhmm/train
+install -v -m 0755 train/falsecomp train/findsites train/karlin train/score train/score2 train/scoreATG $PREFIX/share/glimmerhmm/train
+install -v -m 0755 train/scoreATG2 train/scoreSTOP train/scoreSTOP2 train/splicescore $PREFIX/share/glimmerhmm/train
 
 # copy the perl modules
-cp train/*.pm $PREFIX/share/glimmerhmm/train/
+cp -f train/*.pm $PREFIX/share/glimmerhmm/train/
 
 # copy the training data
-cp -R trained_dir $PREFIX/share/glimmerhmm/
+cp -Rf trained_dir $PREFIX/share/glimmerhmm/

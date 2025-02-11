@@ -1,0 +1,49 @@
+{% set version = "2.4.1" %}
+
+package:
+  name: eagle2
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('eagle2', max_pin='x.x.x') }}
+
+source:
+  url: https://github.com/poruloh/Eagle/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 85804bfe972186ccb66e602856d6e04044302e5c0dbf9309849b0cde981e3432
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - htslib >=1.9
+    - bzip2
+    - zlib
+    - boost-cpp >=1.58
+    - openblas >=0.2.19
+  run:
+    - {{ pin_compatible('bzip2') }}
+    - {{ pin_compatible('zlib') }}
+    - {{ pin_compatible('boost-cpp') }}
+    - {{ pin_compatible('openblas') }}
+
+
+test:
+  commands:
+    - eagle -h
+
+about:
+  home: https://github.com/poruloh/Eagle
+  license: GPL-3.0-or-later
+  summary: The Eagle software estimates haplotype phase either within a genotyped cohort or using a phased reference panel.
+  description:
+    Eagle2 is now the default phasing method used by the Sanger and Michigan imputation servers and uses a new
+    very fast HMM-based algorithm that improves speed and accuracy over existing methods via two key ideas;
+    a new data structure based on the positional Burrows-Wheeler transform and a rapid search algorithm that
+    explores only the most relevant paths through the HMM. Compared to the Eagle1 algorithm, Eagle2 has similar
+    speed but much greater accuracy at sample sizes <50,000; as such, we have made the Eagle2 algorithm the default option.
+    (The Eagle1 algorithm can be accessed via the --v1 flag.) Eagle v2.3+ supports phasing sequence data with or without
+    a reference and also supports phasing chrX.

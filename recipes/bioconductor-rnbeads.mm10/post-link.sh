@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "rnbeads.mm10-2.10.0"
+installBiocDataPackage.sh "rnbeads.mm10-2.14.0"

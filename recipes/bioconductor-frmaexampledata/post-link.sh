@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "frmaexampledata-1.38.0"
+installBiocDataPackage.sh "frmaexampledata-1.42.0"

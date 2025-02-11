@@ -1,0 +1,52 @@
+{% set fold_grammars_version = "2.3.2" %}
+{% set acms_version = "1.3.0" %}
+{% set packagename = "acms" %}
+{% set sha256 = "d3e6cc8d2ecd31d4764b41fea589b98c637ff227d7ab3dcfe66f2ad3f24dece5" %}
+
+package:
+  name: {{ packagename }}
+  version: 1.3.0
+
+source:
+  sha256: {{ sha256 }}
+  # the repository "fold-grammars" contains sources for several programs, i.e. pKiss, RNAshapes, ...
+  # thus, the version number does not correspond to the {{ packagename }} version number
+  #url: https://github.com/jlab/fold-grammars/archive/{{ version }}.tar.gz
+  url: https://github.com/jlab/fold-grammars/archive/refs/tags/{{ fold_grammars_version }}.tar.gz
+
+build:
+  number: 2
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('acms', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - ghc
+  host:
+    - perl
+    - bellmans-gapc >=2024.01.12
+    - ghc
+  run:
+    - perl
+    - bellmans-gapc >=2024.01.12
+    - ghc
+
+test:
+  commands:
+  - acmbuild -h
+
+about:
+  home: https://bibiserv.cebitec.uni-bielefeld.de/{{ packagename }}
+  license: 'GPL-3.0-or-later'
+  license_file: LICENSE
+  summary: 'Ambivalent Covariance Models (aCMs) are our prototypic suggestion to extend CMs with more than one consensus structure.'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - doi:10.1186/s12859-015-0569-1
+    - doi:10.1093/bioinformatics/btu649

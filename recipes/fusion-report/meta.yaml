@@ -1,22 +1,25 @@
-{% set version = "2.1.5" %}
+{% set version = "3.1.1" %}
 
 package:
   name: fusion-report
   version: "{{ version }}"
 
 source:
-  url: https://github.com/matq007/fusion-report/archive/{{ version }}.tar.gz
-  sha256: f1d7d4bba20a73fdfeddd171318e38b0dae520fae58894ba589a9f809e047bcf
+  url: https://github.com/Clinical-Genomics/fusion-report/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 4937f5e556d8a73e1549a7315d3eaa47352cc4b760f0d66459aed35419e2bc89
 
 build:
   number: 0
   noarch: python
   script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  run_exports:
+  - {{ pin_subpackage("fusion-report", max_pin="x") }}
 
 requirements:
   host:
     - python >=3.6
     - pip
+    - setuptools
   run:
     - python >=3.6
     - tqdm ==4.33.0
@@ -26,6 +29,7 @@ requirements:
     - pyyaml >=4.2b1
     - markupsafe <2.1
     - pandas
+    - requests
 
 test:
   # Python imports
@@ -36,7 +40,7 @@ test:
     - fusion_report --help
 
 about:
-  home: https://github.com/matq007/fusion-report
+  home: https://github.com/Clinical-Genomics/fusion-report/
   license: GPL-3.0-only
   summary: 'Tool for parsing outputs from fusion detection tools. Part of a nf-core/rnafusion pipeline'
   license_family: GPL3

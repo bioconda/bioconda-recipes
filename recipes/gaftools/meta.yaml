@@ -1,0 +1,42 @@
+{% set name = "gaftools" %}
+{% set version = "1.1.1" %}
+{% set sha256 = "c99eeb028f744fe038d8b262b32bacd2cd37696a8a7b7755ff06c01481b7b194" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  run_exports:
+    - {{ pin_compatible('gaftools', max_pin="x") }}
+
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - setuptools
+  run:
+    - python >=3.6
+    - pysam
+    - pywfa ==0.5.1
+
+test:
+  commands:
+    - gaftools -h
+
+about:
+  home: "https://github.com/marschall-lab/gaftools"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'gaftools is a fast and comprehensive toolkit designed for processing pangenome alignments in GAF format'
+  doc_url: "https://gaftools.readthedocs.io/en/latest/index.html"
+  dev_url: "https://github.com/marschall-lab"

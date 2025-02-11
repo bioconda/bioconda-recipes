@@ -1,9 +1,13 @@
+#!/usr/bin/env bash
+
+set -xe
+
 mkdir -p $PREFIX/bin
 
 mkdir src/build
 cd src/build/
 cmake ..
-make
+make -j ${CPU_COUNT}
 
 cp ../../hairsplitter.py $PREFIX/bin
 chmod +x $PREFIX/bin/hairsplitter.py

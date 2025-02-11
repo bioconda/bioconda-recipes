@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     perl Build.PL
@@ -10,7 +12,7 @@ if [ -f Build.PL ]; then
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
     perl Makefile.PL INSTALLDIRS=site
-    make
+    make -j ${CPU_COUNT}
     make test
     make install
 else

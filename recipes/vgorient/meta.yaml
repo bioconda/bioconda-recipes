@@ -1,0 +1,51 @@
+{% set name = "vgorient" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/whelixw/vgOrient/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 99bef68d2545179da8206a573e55f4294a903024ef943ee97e723fdb8bc3668f
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('vgorient', max_pin="x.x") }}
+  script:
+    - mkdir -p $PREFIX/bin
+    - cp -rf *.py $PREFIX/bin/
+    - chmod +x $PREFIX/bin/cut_and_rot.py $PREFIX/bin/VG_diterative.py $PREFIX/bin/kmer_jaccard.py $PREFIX/bin/jaccard_dit_wrapper.py
+
+requirements:
+  host:
+    - python >=3.8,<3.12
+  run:
+    - python >=3.8,<3.12
+    - vg
+    - biopython >=1.83
+    - networkx >=3.3
+    - numpy >=1.26.4
+
+test:
+  commands:
+    - cut_and_rot.py --help
+    - VG_diterative.py --help
+    - kmer_jaccard.py --help
+    - jaccard_dit_wrapper.py --help
+
+about:
+  home: "https://github.com/whelixw/vgOrient"
+  license: "MIT"
+  license_family: "MIT"
+  summary: "Scripts for processing mitochondrial graphs."
+  description: |
+    MitoGraphs is a collection of scripts for analyzing and processing mitochondrial genome graphs using various bioinformatics tools.
+  doc_url: "https://github.com/whelixw/vgOrient/blob/v{{ version }}/README.md"
+  dev_url: "https://github.com/whelixw/vgOrient"
+
+extra:
+  recipe-maintainers:
+    - whelixw

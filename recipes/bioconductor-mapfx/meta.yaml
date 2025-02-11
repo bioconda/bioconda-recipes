@@ -1,0 +1,78 @@
+{% set version = "1.2.0" %}
+{% set name = "MAPFX" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: MAPFX is an end-to-end toolbox that pre-processes the raw data from MPC experiments (e.g., BioLegend's LEGENDScreen and BD Lyoplates assays), and further imputes the ‘missing’ infinity markers in the wells without those measurements. The pipeline starts by performing background correction on raw intensities to remove the noise from electronic baseline restoration and fluorescence compensation by adapting a normal-exponential convolution model. Unwanted technical variation, from sources such as well effects, is then removed using a log-normal model with plate, column, and row factors, after which infinity markers are imputed using the informative backbone markers as predictors. The completed dataset can then be used for clustering and other statistical analyses. Additionally, MAPFX can be used to normalise data from FFC assays as well.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: 'MAssively Parallel Flow cytometry Xplorer (MAPFX): A Toolbox for Analysing Data from the Massively-Parallel Cytometry Experiments'
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-mapfx", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, rmarkdown, testthat
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - r-base
+    - r-circlize
+    - r-cowplot
+    - r-e1071
+    - r-ggplot2
+    - r-glmnetutils
+    - r-gtools
+    - r-icellr
+    - r-igraph
+    - r-pbapply
+    - r-rcolorbrewer
+    - r-reshape2
+    - r-rfast
+    - r-stringr
+    - r-uwot
+    - r-xgboost
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - r-base
+    - r-circlize
+    - r-cowplot
+    - r-e1071
+    - r-ggplot2
+    - r-glmnetutils
+    - r-gtools
+    - r-icellr
+    - r-igraph
+    - r-pbapply
+    - r-rcolorbrewer
+    - r-reshape2
+    - r-rfast
+    - r-stringr
+    - r-uwot
+    - r-xgboost
+
+source:
+  md5: 9d71addcff5b12f2961af7a87ba796ac
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

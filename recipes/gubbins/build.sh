@@ -13,7 +13,7 @@ fi
 
 autoreconf -i
 ./configure --prefix=$PREFIX
-make
+make -j"${CPU_COUNT}"
 make install
 cd python
 $PYTHON -m pip install . --report record.txt

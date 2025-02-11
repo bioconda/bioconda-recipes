@@ -1,0 +1,51 @@
+{% set name = "popins2" %}
+{% set version = "0.13.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  skip: True # [osx]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+source:
+  git_url: https://github.com/kehrlab/PopIns2
+  git_rev: v{{ version }}
+  patches:
+    - popins2.patch
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - bifrost
+    - bwa
+    - htslib
+    - samtools
+    - sickle-trim
+    - zlib
+  run:
+    - bifrost
+
+test:
+  commands:
+    - popins2 --help 2>&1 | grep {{ version }}
+
+about:
+  home: https://github.com/kehrlab/PopIns2
+  license: GPL-2.0-only
+  license_family: GPL
+  license_file: LICENSE
+  summary: Population-scale detection of non-reference sequence variants using colored de Bruijn Graphs
+  doc_url: https://github.com/kehrlab/PopIns2
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  skip-lints:
+    - missing_hash
+    - uses_vcs_url

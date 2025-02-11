@@ -1,0 +1,73 @@
+{% set name = "pod5" %}
+{% set version = "0.3.15" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/nanoporetech/pod5-file-format/releases/download/{{ version }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 85e3196bfc375b7d6eb36787a312af5276b19829ceded551b55e9e193939e8f4
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - pod5 = pod5.tools.main:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('pod5', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+    - lib-pod5 =={{ version }}
+    - iso8601
+    - importlib-metadata  # [py < 38]
+    - more-itertools
+    - numpy >=1.21.0
+    - typing-extensions  # [py < 310]
+    - pyarrow >=16.1.0,<16.2.dev0  # [not osx or py < 312]
+    - pytz
+    - packaging
+    - polars >=0.19,<1.dev0
+    - h5py >=3.11.0,<3.12.dev0  # [py > 38]
+    #- vbz_h5py_plugin
+    - tqdm
+
+test:
+  imports:
+    - pod5
+  commands:
+    - pod5 --help
+
+about:
+  summary: "Oxford Nanopore Technologies Pod5 File Format Python API and Tools."
+  license: "MPL-2.0"
+  license_family: OTHER
+  license_file: "LICENSE.md"
+  home: "https://github.com/nanoporetech/pod5-file-format"
+  dev_url: "https://github.com/nanoporetech/pod5-file-format"
+  doc_url: "https://pod5-file-format.readthedocs.io/en/latest"
+  description:
+    
+    POD5 File Format
+    ----------------
+
+    POD5 is a file format for storing nanopore dna data in an easily accessible way.
+    The format is able to be written in a streaming manner which allows a sequencing instrument to directly write the format.
+
+    Data in POD5 is stored using Apache Arrow, allowing users to consume data in many languages using standard tools.
+    
+    What does this project contain
+    ------------------------------
+    
+    This project contains a core library for reading and writing POD5 data, and a toolkit for accessing this data in other languages.
+
+    Documentation
+    -------------
+    
+    Full documentation is found at https://pod5-file-format.readthedocs.io

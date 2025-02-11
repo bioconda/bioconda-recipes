@@ -1,0 +1,64 @@
+{% set name = "inmoose" %}
+{% set version = "0.7.2" %}
+{% set sha256 = "e7e16d0d20335476f66a24158f26cbadac4f1c8244684441f5b2451c1ae3c8b7" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/epigenelabs/inmoose/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  skip: True  # [py < 39]
+  run_exports:
+    - {{ pin_subpackage('inmoose', max_pin="x.x") }}
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-cache-dir --no-build-isolation"
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - pip
+    - setuptools
+    - cython >=3.0.0
+    - numpy >=2.0.0
+    - scipy
+  run:
+    - python
+    - numpy
+    - scipy
+    - pandas
+    - seaborn-base
+    - matplotlib-base
+    - anndata
+    - scikit-learn
+    - fastcluster
+    - mpmath >=1.1.0
+    - patsy
+    - statsmodels
+    - click
+
+test:
+  imports:
+    - inmoose
+    - inmoose.pycombat
+    - inmoose.consensus_clustering.consensus_clustering
+
+about:
+  home: https://github.com/epigenelabs/inmoose
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: 'InMoose is the Integrated Multi Omic Open Source Environment. It is a collection of tools for the analysis of omic data.'
+  dev_url: https://github.com/epigenelabs/inmoose
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true  # [py3k]

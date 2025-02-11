@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "curatedtbdata-1.8.0"
+installBiocDataPackage.sh "curatedtbdata-2.2.0"

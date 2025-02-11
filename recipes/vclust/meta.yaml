@@ -1,0 +1,58 @@
+{% set version = "1.2.9" %}
+
+{% set system = "manylinux2014_x86_64" %}      # [linux and x86_64]
+{% set system = "manylinux2014_aarch64" %}     # [linux and aarch64]
+{% set system = "macosx_10_9_x86_64" %}        # [osx and x86_64]
+{% set system = "macosx_11_0_arm64" %}         # [osx and arm64]
+
+{% set site = "https://files.pythonhosted.org/packages/b1/3a/b8352f0a7f2545c776ebada5b1dca6f87d37371aab25d7d08ada0b915465" %}     # [linux and x86_64]
+{% set site = "https://files.pythonhosted.org/packages/38/10/0e710d70f2c1965452d09b83d71a155f14ebe118c9c7a31df653e7ed20da" %}     # [linux and aarch64]
+{% set site = "https://files.pythonhosted.org/packages/89/51/6ad165a892857c1deb28edebc3f93c683cce9b91e8dba3c50bb4aa35ad12" %}     # [osx and x86_64]
+{% set site = "https://files.pythonhosted.org/packages/5e/e8/9f3fc60dd8141ad5fe73b845a0b5e89d4d416e6ed7e7c8b78c24b65aada5" %}     # [osx and arm64]
+
+{% set sha256 = "3d2c801909f6ca5471a571505913a8a2f740b4e0da3e4c2e8d63d3b909be6a8f" %}  # [linux and x86_64]
+{% set sha256 = "dcd6baecd399ccb85a5855346c310b9fdec8564465236aed3f0eb615467abab2" %}  # [linux and aarch64]
+{% set sha256 = "510793711cd577a2506e1a1da2128be38f5bcedaff7b71f2fc28d204642e44f9" %}  # [osx and x86_64]
+{% set sha256 = "3bfa92622be4cb292b968601b6390a94d7807dbf9fbc4190cc4e4f4af2844307" %}  # [osx and arm64]
+
+
+package:
+  name: vclust
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('vclust', max_pin='x') }}
+  script: |
+    {{ PYTHON }} -m pip install vclust-{{ version }}-py3-none-{{ system }}.whl
+
+source:
+  url: {{ site }}/vclust-{{ version }}-py3-none-{{ system }}.whl
+  sha256: {{ sha256 }}
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+  run:
+    - python >=3.7
+
+about:
+  home: https://github.com/refresh-bio/vclust
+  summary: "Fast and accurate tool for calculating ANI and clustering virus genomes and metagenomes."
+  license: GPL-3.0-or-later
+  license_family: GPL3
+
+test:
+  commands:
+    - vclust --help
+    - vclust info
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - should_be_noarch_generic
+    - should_not_be_noarch_source

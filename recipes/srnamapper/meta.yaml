@@ -1,16 +1,19 @@
 {% set name = "srnaMapper" %}
-{% set version = "1.0.8" %}
+{% set version = "1.0.11" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 2
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 source:
-  url: https://github.com/mzytnicki/srnaMapper/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 389fb960add27a3cfef5d52329711976ff7954cbca589f4c67f60f66bd64ce2a
+  git_url: https://github.com/mzytnicki/srnaMapper.git
+  git_rev: {{ version }}
+  sha256: 582b2f891ae181cf9754cd5d8968dc1eafa0f1d5978d7f8d588f1136a005e467
 
 requirements:
   build:
@@ -33,5 +36,11 @@ test:
     - srnaMapper -h
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash
   recipe-maintainers:
     - mzytnicki

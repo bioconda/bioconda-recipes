@@ -1,0 +1,47 @@
+{% set name = "pyskani" %}
+{% set version = "0.1.3" %}
+
+package:
+  name: "{{ name | lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "cb8b05f18f12d49a989d21d8bfe9180c9ddb00c595eb8481a3532716b94c4db3"
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv"
+  skip: True  # [osx or py27 or py36]
+  run_exports:
+    - {{ pin_subpackage('pyskani', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+  host:
+    - python
+    - pip
+    - maturin
+  run:
+    - python
+
+test:
+  imports:
+    - {{ name }}
+  commands:
+    - python -m unittest -vv {{ name }}.tests
+
+about:
+  home: "https://github.com/althonos/pyskani/"
+  license: "MIT"
+  license_family: "MIT"
+  license_file: "COPYING"
+  summary: "PyO3 bindings and Python interface to skani, a method for fast fast genomic identity calculation using sparse chaining."
+  doc_url: "https://pyskani.readthedocs.io"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - althonos

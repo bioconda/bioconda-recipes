@@ -1,0 +1,64 @@
+{% set name = "flexsweep" %}
+{% set version = "1.0" %}
+{% set python_min = "3.10" %}
+{% set python_max = "3.12" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/f/flexsweep/flexsweep-{{ version }}.tar.gz
+  sha256: 2104bdf4e7de4f749d17d607fb000dc64bf3035119d7b067facdb20380c67697
+
+build:
+  noarch: python
+  script: |
+    {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools
+    - wheel
+    - poetry
+    - tensorflow
+  run:
+    - python >={{ python_min }},<{{ python_max }}
+    - pip
+    - tensorflow
+    - scipy <2.0.0,>=1.14.0
+    - scikit-allel <2.0.0,>=1.3.8
+    - scikit-learn <2.0.0,>=1.5.1
+    - joblib <2.0.0,>=1.4.2
+    - threadpoolctl <4.0.0,>=3.5.0
+    - click <9.0.0,>=8.1.7
+    - numpy ==1.26.4
+    - numba <0.61.0,>=0.60.0
+    - demes <0.3.0,>=0.2.3
+    - pyarrow <18.0.0,>=17.0.0
+    - matplotlib-base <4.0.0,>=3.9.2
+    - polars <2.0.0,>=1.14.0
+    - cudatoolkit >=11.2,<12
+
+test:
+  imports:
+    - flexsweep
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/jmurga/flexsweep
+  summary: 'A versatile tool for detecting selective sweeps'
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - jmurga

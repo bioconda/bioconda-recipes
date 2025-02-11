@@ -1,0 +1,56 @@
+--- a/third-party/cqf/gqf.c	2019-03-13 13:42:12
++++ b/third-party/cqf/gqf.c	2025-01-20 17:31:09
+@@ -49,11 +49,7 @@
+ 
+ static inline int popcnt(uint64_t val)
+ {
+-	asm("popcnt %[val], %[val]"
+-			: [val] "+r" (val)
+-			:
+-			: "cc");
+-	return val;
++  return __builtin_popcountll(val);
+ }
+ 
+ static inline int64_t bitscanreverse(uint64_t val)
+@@ -61,11 +57,16 @@
+ 	if (val == 0) {
+ 		return -1;
+ 	} else {
+-		asm("bsr %[val], %[val]"
+-				: [val] "+r" (val)
+-				:
+-				: "cc");
+-		return val;
++#ifdef __x86_64__
++	  asm("bsr %[val], %[val]"
++	      : [val] "+r" (val)
++	      :
++	      : "cc");
++#else
++	  val = 63 - __builtin_clzll(val);
++#endif
++	  
++	  return val;
+ 	}
+ }
+ 
+@@ -81,11 +82,7 @@
+ // Bits are numbered from 0
+ static inline int bitrank(uint64_t val, int pos) {
+ 	val = val & ((2ULL << pos) - 1);
+-	asm("popcnt %[val], %[val]"
+-			: [val] "+r" (val)
+-			:
+-			: "cc");
+-	return val;
++	return __builtin_popcountll(val);
+ }
+ 
+ /**
+@@ -1630,3 +1627,5 @@
+ 
+ 	return;
+ }
++
++

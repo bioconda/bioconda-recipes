@@ -1,4 +1,4 @@
-{% set version = "1.04.22" %}
+{% set version = "1.04.41" %}
 
 
 package:
@@ -7,11 +7,12 @@ package:
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage('lastz', max_pin='x') }}
 
 source:
   url: https://github.com/lastz/lastz/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 4c829603ba4aed7ddf64255b528cd88850e4557382fca29580d3576c25c5054a
-
+  sha256: ade7c8619e1f83aae1b1e6e16a9bc74d283756565f0bb9f6a6ca28f8d862227e
   patches:
     - makefile.patch
 
@@ -20,6 +21,7 @@ requirements:
     - make
     - {{ compiler('c') }}
   run:
+
 test:
   commands:
     - lastz --version 2>&1 | grep {{ version }} > /dev/null
@@ -30,5 +32,8 @@ about:
   summary: LASTZ is a program for aligning DNA sequences, a pairwise aligner.
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:lastz
