@@ -4,9 +4,9 @@ set -eux
 
 mkdir -p "$PREFIX"/{bin,lib,include/quicktree}
 
-make CC=$CC
+make CC=$CC -j"${CPU_COUNT}"
 
-cp quicktree $PREFIX/bin
-cp libquicktree.so "${PREFIX}/lib/"
+install -v -m 0755 quicktree $PREFIX/bin
+install -v -m 0644 libquicktree.so "${PREFIX}/lib/"
 # some header files are named generic enough to warrant namespacing
-cp include/*.h "${PREFIX}/include/quicktree/"
+install -v -m 0755 include/*.h "${PREFIX}/include/quicktree/"
