@@ -3,7 +3,6 @@ set -eux
 ls -l ..
 
 # Build and install Ratatosk
-tar -xzf Ratatosk-0.9.0.tar.gz
 cd Ratatosk-0.9.0
 mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
