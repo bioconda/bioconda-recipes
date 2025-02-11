@@ -9,7 +9,7 @@ pwd -P
 
 echo ""
 
-tree
+find
 
 echo ""
 
