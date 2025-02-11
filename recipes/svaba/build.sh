@@ -1,9 +1,9 @@
 #!/bin/bash
 set -eu -o pipefail
 
-#######################
-### DEBUGGING START ###
-#######################
+echo "#######################"
+echo "### DEBUGGING START ###"
+echo "#######################"
 
 pwd -P
 
@@ -15,9 +15,9 @@ echo ""
 
 which gcc
 
-#####################
-### DEBUGGING END ###
-#####################
+echo "#####################"
+echo "### DEBUGGING END ###"
+echo "#####################"
 
 
 cmake -DHTSLIB_DIR=htslib
