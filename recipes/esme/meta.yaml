@@ -270,11 +270,14 @@ outputs:
         - {{ mpi_name }} {% if mpi_version %}={{ mpi_version }}{% endif %}
       run:
         - {{ mpi_name }} {% if mpi_version %}={{ mpi_version }}{% endif %}
+        - openssh  # [mpi_name == 'openmpi']
     test:
       commands:
         {% if mpi_name == "psmpi" %}
           - echo "PSMPI does not have mpiexec, skipping test."
         {% elif mpi_name == "openmpi" %}
+          - echo "Setting plm_rsh_agent and allowing root execution for OpenMPI"
+          - export OMPI_MCA_plm_rsh_agent=$(command -v ssh)
           - echo "Allow root execution for OpenMPI"
           - mpiexec --allow-run-as-root -n 2 $PREFIX/libexec/osu-micro-benchmarks/mpi/pt2pt/osu_latency -m 1024:1024
         {% else %}
