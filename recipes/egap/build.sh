@@ -9,7 +9,7 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j 4
 cd ../..
 
-# Install EGAP: copy EGAP.py to $PREFIX/bin and make it executable
+# Install EGAP: copy EGAP.py to $PREFIX/bin and make it executable.
 mkdir -p "${PREFIX}/bin"
 cp EGAP.py "${PREFIX}/bin/EGAP"
 chmod +x "${PREFIX}/bin/EGAP"
