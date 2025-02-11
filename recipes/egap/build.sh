@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -eux
 
-# Install runner package using pip
-pip install ./runner-0.0.0.tar.gz
+# Install the runner package from the tarball that is one level up
+pip install ../runner-0.0.0.tar.gz
 
 # Build and install Ratatosk
 tar -xzf Ratatosk-0.9.0.tar.gz
@@ -12,7 +12,7 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j 4
 cd ../..
 
-# Copy EGAP.py to the conda prefix's bin directory and make it executable
+# Install EGAP: copy EGAP.py to $PREFIX/bin and make it executable
 mkdir -p "${PREFIX}/bin"
 cp EGAP.py "${PREFIX}/bin/EGAP"
 chmod +x "${PREFIX}/bin/EGAP"
