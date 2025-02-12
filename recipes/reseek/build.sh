@@ -8,6 +8,9 @@ export CPPFLAGS="${CPPFLAGS} -O3 -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 export CFLAGS="${CFLAGS} -O3"
 
+mv zlib-1.3.1/*.c src/
+mv zlib-1.3.1/*.h src/
+
 cd src || exit 1
 echo "0" > gitver.txt
 
@@ -17,12 +20,12 @@ ARCH=$(uname -m)
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
 	cp -rf ${RECIPE_DIR}/vcxproj_make_osx.py .
  	chmod 0755 vcxproj_make_osx.py
-	python ./vcxproj_make_osx.py --openmp --lrt --pthread --cppcompiler "${CXX}" --ccompiler "${CC}"
+	python ./vcxproj_make_osx.py --openmp --pthread --cppcompiler "${CXX}" --ccompiler "${CC}"
 elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
  	cp -rfv ${RECIPE_DIR}/sse2neon.h ${SRC_DIR}/src
 	cp -rf ${RECIPE_DIR}/vcxproj_make_osx.py .
 	chmod 0755 vcxproj_make_osx.py
- 	python ./vcxproj_make_osx.py --openmp --lrt --pthread --nonative --cppcompiler "${CXX}" --ccompiler "${CC}"
+ 	python ./vcxproj_make_osx.py --openmp --pthread --nonative --cppcompiler "${CXX}" --ccompiler "${CC}"
 elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
 	cp -rfv ${RECIPE_DIR}/sse2neon.h ${SRC_DIR}/src
  	cp -rf ${RECIPE_DIR}/vcxproj_make.py .
