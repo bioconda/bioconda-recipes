@@ -11,7 +11,6 @@ echo "#################"
 echo "### DEBUG END ###"
 echo "#################"
 
-./configure
 cmake
 make CC=${CC} CXX=${CXX} CFLAGS="-fcommon ${CFLAGS} -L${PREFIX}/lib" CXXFLAGS="-fcommon ${CXXFLAGS} -UNDEBUG -L${PREFIX}/lib" LDFLAGS="${LDFLAGS}"
 
