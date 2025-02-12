@@ -1,7 +1,7 @@
 #!/bin/bash
 set -xe
 
-mkdir -p "${PREFIX}/share/torch"
+mkdir -p "${PREFIX}/share/.cache/torch"
 OS=$(uname)
 ARCH=$(uname -m)
 
@@ -10,27 +10,20 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 if [[ "${OS}" == "Darwin" ]]; then
-	export LDFLAGS="${LDFLAGS} -Wl,-headerpad_max_install_names -Wl,-rpath,${PREFIX}/lib"
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
-	export ADDITIONAL_ARGS="-DCUDA=OFF"
-elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
-	#export CONFIG_ARGS="-DCUDAToolkit_ROOT=${PREFIX}"
+else
 	export CONFIG_ARGS=""
-	export ADDITIONAL_ARGS=""
- 	#cp -rf ${PREFIX}/targets/sbsa-linux/include/* "${PREFIX}/include"
-	ln -sf ${PREFIX}/targets/sbsa-linux/include "${PREFIX}/include"
-elif [[ "${OS}" == "Linux" && "${ARCH}" == "x86_64" ]]; then
-	#export CONFIG_ARGS="-DCUDAToolkit_ROOT=${PREFIX}"
-	export CONFIG_ARGS=""
- 	export ADDITIONAL_ARGS=""
-  	#cp -rf ${PREFIX}/targets/x86_64-linux/include/* "${PREFIX}/include"
-	ln -sf ${PREFIX}/targets/x86_64-linux/include "${PREFIX}/include"
+fi
+
+if [[ "${ARCH}" == "x86_64" ]]; then
+	export ADDITIONAL_FLAGS="-DALTCPU=ON"
+else
+ 	export ADDITIONAL_FLAGS=""
 fi
 
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
-	-DGUI=OFF -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+	-DGUI=OFF -DCUDA=OFF -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-DPYTHON_EXE_PATH="${PYTHON}" -DTORCH_HOME_PATH="${PREFIX}/share/torch" \
- 	"${CONFIG_ARGS}" \
-	"${ADDITIONAL_ARGS}"
+	-DPYTHON_EXE_PATH="${PREFIX}/bin/python" -DTORCH_HOME_PATH="${PREFIX}/share/.cache/torch" \
+	"${ADDITIONAL_FLAGS}" "${CONFIG_ARGS}"
 cmake --build build --target install -j "${CPU_COUNT}" -v
