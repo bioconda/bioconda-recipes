@@ -24,6 +24,7 @@ fi
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-DGUI=OFF -DCUDA=OFF -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-DPYTHON_EXE_PATH="${BUILD_PREFIX}/bin/python3.13" -DTORCH_HOME_PATH="${PREFIX}/share/.cache/torch" \
+	-DPYTHON_EXE_PATH="${PYTHON}" -DTORCH_HOME_PATH="${PREFIX}/share/.cache/torch" \
+	-DFETCH_WEIGHTS=OFF \
 	"${ADDITIONAL_FLAGS}" "${CONFIG_ARGS}"
 cmake --build build --target install -j "${CPU_COUNT}" -v
