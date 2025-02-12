@@ -5,7 +5,7 @@ ls -l ..
 # Build and install Ratatosk
 cd Ratatosk-0.9.0
 mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_AVX2=OFF ..
+cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_AVX2=OFF -DENABLE_BIFROST=OFF ..
 make -j 4
 cd ../..
 
