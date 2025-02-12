@@ -6,21 +6,25 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/MomentsLD/moments/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 2aaa422146c29ab29741e56433656c3af96937ff71182c52464b93c8d41a5546
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}_popgen-{{ version }}.tar.gz
+  sha256: 0a3090462379a09bb16af494d8887258c9ad0e62698365fb84d80a6ab9eec638
 
 build:
   number: 0
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - pkgconfig
+    - pkg-config
   host:
     - pip
     - python
+    - setuptools-scm
     - numpy ==1.12.1  # [py == 36]
     - numpy ==1.15.4  # [py == 37]
     - numpy ==1.17.5  # [py == 38]
@@ -40,12 +44,13 @@ test:
     - moments
 
 about:
-  home: https://github.com/MomentsLD/moments
+  home: "https://github.com/MomentsLD/moments"
   license: MIT
   license_family: MIT
-  license_file: LICENSE.txt
+  license_file: "LICENSE.txt"
   summary: 'Evolutionary inference using SFS and LD statistics.'
-  dev_url: https://github.com/MomentsLD/moments
+  dev_url: "https://github.com/MomentsLD/moments"
+  doc_url: "https://momentsld.github.io/moments"
 
 extra:
   additional-platforms:
