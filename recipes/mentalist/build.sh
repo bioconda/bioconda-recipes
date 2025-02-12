@@ -19,7 +19,7 @@ julia -e 'using Pkg; Pkg.add("Blosc")'
 julia -e 'using Pkg; Pkg.add("FileIO")'
 julia -e 'using Pkg; Pkg.add("TextWrap")'
 julia -e 'using Pkg; Pkg.add("LightXML")'
-julia -e 'using Pkg; Pkg.add("JuMP")'
+#julia -e 'using Pkg; Pkg.add("JuMP")'
 julia -e 'using Pkg; Pkg.add("Gurobi")'
 julia -e 'using Pkg; Pkg.add("Distributed")'
 
