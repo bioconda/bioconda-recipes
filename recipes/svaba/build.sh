@@ -7,7 +7,7 @@ find .
 
 echo "### DEBUG CMAKE ###"
 
-cmake -DHTSLIB_DIR=htslib
+cmake -DHTSLIB_DIR=htslib/htslib/
 
 echo "### DEBUG MAKE ###"
 
