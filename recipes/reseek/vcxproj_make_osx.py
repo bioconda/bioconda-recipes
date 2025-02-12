@@ -56,8 +56,8 @@ sys.stderr.write("binary=" + binary + "\n")
 # compiler_opts = " -ffast-math -march=native"
 # linker_opts = " -ffast-math -march=native"
 
-compiler_opts = " -O3 -ffast-math -Wno-deprecated-non-prototype -fno-define-target-os-macros -I${PREFIX}/include"
-linker_opts = " -ffast-math -Wno-deprecated-non-prototype -fno-define-target-os-macros -Wl,-rpath,${PREFIX}/lib -L${PREFIX}/lib"
+compiler_opts = " -O3 -ffast-math -Wno-deprecated-non-prototype -fno-define-target-os-macros -Wno-implicit-function-declaration -I${PREFIX}/include"
+linker_opts = " -ffast-math -Wno-deprecated-non-prototype -fno-define-target-os-macros -Wno-implicit-function-declaration -Wl,-rpath,${PREFIX}/lib -L${PREFIX}/lib"
 if not Args.nonative:
     compiler_opts += " -march=native"
     linker_opts += " -march=native"
