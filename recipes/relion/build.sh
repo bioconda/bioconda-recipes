@@ -14,12 +14,13 @@ if [[ `uname` == "Darwin" ]]; then
 else
 	export CONFIG_ARGS="-DCUDAToolkit_ROOT=${PREFIX}"
 	export ADDITIONAL_ARGS=""
+ 	cp -rf "${PREFIX}/targets/*-linux/include/*" "${PREFIX}/include"
 fi
 
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-DGUI=OFF -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-DPYTHON_EXE_PATH="${PYTHON}" -DTORCH_HOME_PATH="${PREFIX}/share/torch" \
+	-DPYTHON_EXE_PATH="${PREFIX}/bin/python" -DTORCH_HOME_PATH="${PREFIX}/share/torch" \
  	"${CONFIG_ARGS}" \
 	"${ADDITIONAL_ARGS}"
 cmake --build build --target install -j "${CPU_COUNT}" -v
