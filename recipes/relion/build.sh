@@ -14,13 +14,17 @@ if [[ "${OS}" == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 	export ADDITIONAL_ARGS="-DCUDA=OFF"
 elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
-	export CONFIG_ARGS="-DCUDAToolkit_ROOT=${PREFIX}"
+	#export CONFIG_ARGS="-DCUDAToolkit_ROOT=${PREFIX}"
+	export CONFIG_ARGS=""
 	export ADDITIONAL_ARGS=""
- 	cp -rf ${PREFIX}/targets/sbsa-linux/include/* "${PREFIX}/include"
+ 	#cp -rf ${PREFIX}/targets/sbsa-linux/include/* "${PREFIX}/include"
+	ln -sf ${PREFIX}/targets/sbsa-linux/include "${PREFIX}/include"
 elif [[ "${OS}" == "Linux" && "${ARCH}" == "x86_64" ]]; then
-	export CONFIG_ARGS="-DCUDAToolkit_ROOT=${PREFIX}"
+	#export CONFIG_ARGS="-DCUDAToolkit_ROOT=${PREFIX}"
+	export CONFIG_ARGS=""
  	export ADDITIONAL_ARGS=""
-  	cp -rf ${PREFIX}/targets/x86_64-linux/include/* "${PREFIX}/include"
+  	#cp -rf ${PREFIX}/targets/x86_64-linux/include/* "${PREFIX}/include"
+	ln -sf ${PREFIX}/targets/x86_64-linux/include "${PREFIX}/include"
 fi
 
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
