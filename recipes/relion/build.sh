@@ -1,6 +1,8 @@
 #!/bin/bash
 set -xe
 
+mkdir -p "${PREFIX}/share/torch"
+
 export CXXFLAGS="${CXXFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
@@ -14,9 +16,10 @@ else
 	export ADDITIONAL_ARGS=""
 fi
 
-cmake -S . -B build "${CMAKE_ARGS}" -DCMAKE_BUILD_TYPE=Release \
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-DGUI=OFF -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	"${CONFIG_ARGS}" \
+	-DPYTHON_EXE_PATH="${PYTHON}" -DTORCH_HOME_PATH="${PREFIX}/share/torch" \
+ 	"${CONFIG_ARGS}" \
 	"${ADDITIONAL_ARGS}"
 cmake --build build --target install -j "${CPU_COUNT}" -v
