@@ -9,6 +9,7 @@ cp -r $SRC_DIR/scripts $PREFIX
 ln -sf $PREFIX/bin/MentaLiST.jl $PREFIX/bin/mentalist
 chmod 0755 $PREFIX/bin/mentalist
 
+julia -e 'Pkg.init()'
 julia -e 'Pkg.add("ArgParse")'
 julia -e 'Pkg.add("BioSequences")'
 julia -e 'Pkg.add("JSON")'
