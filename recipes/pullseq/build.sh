@@ -3,7 +3,7 @@
 export CPATH=${PREFIX}/include
 export LD_LIBRARY_PATH=${PREFIX}/lib
 export LDFLAGS="-L${PREFIX}/lib"
-export CFLAGS="${CFLAGS} -fcommon -Wimplicit-function-declaration"
+export CFLAGS="${CFLAGS} -fcommon -std=c89"
 
 ./bootstrap
 ./configure --prefix=${PREFIX}
