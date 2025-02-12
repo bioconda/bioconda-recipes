@@ -15,10 +15,10 @@ OS=$(uname)
 ARCH=$(uname -m)
 
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
-	export CFLAGS="${CFLAGS} -fno-define-target-os-macros"
+	export CFLAGS="${CFLAGS} -fno-define-target-os-macros -Wno-error=switch"
 	cp -rf ${RECIPE_DIR}/vcxproj_make_osx.py .
  	chmod 0755 vcxproj_make_osx.py
-	python ./vcxproj_make_osx.py --openmp --lrt --pthread --cppcompiler "${CXX}" --ccompiler "${CC}"
+	python ./vcxproj_make_osx.py --openmp --lrt --pthread --nonative --cppcompiler "${CXX}" --ccompiler "${CC}"
 elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	export CFLAGS="${CFLAGS} -fno-define-target-os-macros"
  	cp -rfv ${RECIPE_DIR}/sse2neon.h ${SRC_DIR}/src
