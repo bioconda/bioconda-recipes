@@ -1,14 +1,16 @@
 #!/bin/bash
 set -xe
 
-export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 if [[ `uname` == "Darwin" ]]; then
+	export LDFLAGS="${LDFLAGS} -Wl,-headerpad_max_install_names -Wl,-rpath,${PREFIX}/lib"
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 	export ADDITIONAL_ARGS="-DCUDA=OFF"
 else
-	export CONFIG_ARGS="-DCUDAToolkit_ROOT=${PREFIX} -DCMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES=${PREFIX}/include"
+	export CONFIG_ARGS="-DCUDAToolkit_ROOT=${PREFIX}"
 	export ADDITIONAL_ARGS=""
 fi
 
