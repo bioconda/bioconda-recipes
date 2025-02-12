@@ -9,20 +9,19 @@ cp -r $SRC_DIR/scripts $PREFIX
 ln -sf $PREFIX/bin/MentaLiST.jl $PREFIX/bin/mentalist
 chmod 0755 $PREFIX/bin/mentalist
 
-julia -e 'Pkg.init()'
-julia -e 'Pkg.add("ArgParse")'
-julia -e 'Pkg.add("BioSequences")'
-julia -e 'Pkg.add("JSON")'
-julia -e 'Pkg.add("DataStructures")'
-julia -e 'Pkg.add("JLD")'
-julia -e 'Pkg.add("GZip")'
-julia -e 'Pkg.add("Blosc")'
-julia -e 'Pkg.add("FileIO")'
-julia -e 'Pkg.add("TextWrap")'
-julia -e 'Pkg.add("LightXML")'
-julia -e 'Pkg.add("JuMP")'
-julia -e 'Pkg.add("Gurobi")'
-julia -e 'Pkg.add("Distributed")'
+julia -e 'using Pkg; Pkg.add("ArgParse")'
+julia -e 'using Pkg; Pkg.add("BioSequences")'
+julia -e 'using Pkg; Pkg.add("JSON")'
+julia -e 'using Pkg; Pkg.add("DataStructures")'
+julia -e 'using Pkg; Pkg.add("JLD")'
+julia -e 'using Pkg; Pkg.add("GZip")'
+julia -e 'using Pkg; Pkg.add("Blosc")'
+julia -e 'using Pkg; Pkg.add("FileIO")'
+julia -e 'using Pkg; Pkg.add("TextWrap")'
+julia -e 'using Pkg; Pkg.add("LightXML")'
+julia -e 'using Pkg; Pkg.add("JuMP")'
+julia -e 'using Pkg; Pkg.add("Gurobi")'
+julia -e 'using Pkg; Pkg.add("Distributed")'
 
 rm -f "$PREFIX"/share/julia/site/lib/v*/*.ji
 rm -rf "$PREFIX"/share/julia/site/v*/METADATA
