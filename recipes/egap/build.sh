@@ -12,6 +12,3 @@ cd ../..
 mkdir -p "${PREFIX}/bin"
 cp EGAP.py "${PREFIX}/bin/EGAP"
 chmod +x "${PREFIX}/bin/EGAP"
-
-# Patch the shebang in EGAP so that it uses python3.
-sed -i '1s|^#!/usr/bin/env python$|#!/usr/bin/env python3|' "${PREFIX}/bin/EGAP"
