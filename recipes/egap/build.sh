@@ -5,7 +5,7 @@ set -eux
 cd Ratatosk-0.9.0
 mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_AVX2=OFF ..
-make -j 4
+make -j"${CPU_COUNT}"
 cd ../..
 
 # Install EGAP: copy EGAP.py to $PREFIX/bin and make it executable.
