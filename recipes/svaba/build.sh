@@ -5,7 +5,7 @@ echo "###################"
 echo "### DEBUG START ###"
 echo "###################"
 
-find . | grep configure
+find .
 
 echo "#################"
 echo "### DEBUG END ###"
