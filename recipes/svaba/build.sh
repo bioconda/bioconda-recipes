@@ -13,7 +13,7 @@ echo "#####################"
 
 mkdir build
 cd build
-cmake ..
+cmake -DHTSLIB_DIR ../htslib/htslib ..
 make
 
 mkdir -p ${PREFIX}/bin
