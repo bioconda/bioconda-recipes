@@ -1,8 +1,15 @@
 #!/bin/bash
 set -eu -o pipefail
 
+echo "### DEBUGGING A ###"
+find . -name configure.ac
+
 cd htslib
 autoreconf -i
+
+echo "### DEBUGGING B ###"
+find . -name configure.ac
+
 ./configure
 make
 make install
