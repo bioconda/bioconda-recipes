@@ -5,7 +5,7 @@ echo "#######################"
 echo "### DEBUGGING START ###"
 echo "#######################"
 
-find . | grep htslib
+which gcc
 
 echo "#####################"
 echo "### DEBUGGING END ###"
