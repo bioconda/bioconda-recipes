@@ -1,6 +1,17 @@
 #!/bin/bash
 set -eu -o pipefail
 
+echo "#######################"
+echo "### DEBUGGING START ###"
+echo "#######################"
+
+find . -name configure
+
+echo "#####################"
+echo "### DEBUGGING END ###"
+echo "#####################"
+
+
 cd htslib
 ./configure --prefix=${PREFIX} --enable-libcurl --with-libdeflate --enable-plugins --enable-gcs --enable-s3
 make install
