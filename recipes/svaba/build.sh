@@ -2,9 +2,7 @@
 set -eu -o pipefail
 
 cd htslib
-autoreconf -i
-./configure
-make
+./configure --prefix=${PREFIX} --enable-libcurl --with-libdeflate --enable-plugins --enable-gcs --enable-s3
 make install
 cd ..
 
