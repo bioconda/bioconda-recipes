@@ -1,8 +1,5 @@
 #!/bin/bash
 
-sed -i.bak 's/-march=native/-march=x86-64/' CMakeLists.txt
-rm -rf *.bak
-
 if [[ `uname` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
