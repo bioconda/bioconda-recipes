@@ -1,42 +1,50 @@
-{% set version = "1.1.1" %}
+{% set name = "clusty" %}
+{% set version = "1.1.5" %}
+
+{% set system = "x64_linux" %}       # [linux and x86_64]
+{% set system = "x64_mac" %}         # [osx and x86_64]
+{% set system = "arm64_linux" %}     # [linux and aarch64]
+{% set system = "arm64_mac" %}       # [osx and arm64]
+
+{% set sha256 = "d606b4e910dca637a4e5db5e484b915bb994afa17bc2c6a11bb08693cd2eb029" %}  # [linux and x86_64]
+{% set sha256 = "50c8f440472a812fa3c3ef9043e29869643bac3eb094c69ab0046a26568014bb" %}  # [osx and x86_64]
+{% set sha256 = "41d466d3043a62238ee74291e2e6afa686abaf6e8679eb73b94c930e83881dab" %}  # [linux and aarch64]
+{% set sha256 = "b304648854fcf8c006a9f66dcecf6612a2f495723eb8b54a6da182120210c3c9" %}  # [osx and arm64]
 
 package:
-  name: clusty
+  name: {{ name }}
   version: {{ version }}
 
 build:
   number: 0
   run_exports:
-  - {{ pin_subpackage('clusty', max_pin='x.x.x') }}
+  - {{ pin_subpackage('clusty', max_pin='x') }}
+  script: |
+    mkdir -p "${PREFIX}/bin"
+    cp -v clusty "${PREFIX}/bin/" || { echo "Error: Failed to copy clusty binary"; exit 1; }
 
 source:
-  git_url: https://github.com/refresh-bio/clusty.git
-  git_rev: v{{ version }}
+  url: https://github.com/refresh-bio/clusty/releases/download/v{{ version }}/clusty-v{{ version }}-{{ system }}.tar.gz
+  sha256: {{ sha256 }}
 
-requirements:
-  build:
-    - make
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - cmake
-    - flex
-    - bison
-
-about:
-  home: https://github.com/refresh-bio/clusty
-  summary: "Clusty is a tool for large-scale data clustering."
-  license: GPL-3
-  license_family: GPL
-  license_file: LICENSE
 
 test:
   commands:
     - clusty > /dev/null
+
+about:
+  home: https://github.com/refresh-bio/clusty
+  summary: "Clusty is a tool for large-scale data clustering."
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  dev_url: https://github.com/refresh-bio/clusty
+  doc_url: "https://github.com/refresh-bio/clusty/blob/v{{ version }}/README.md"
 
 extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
   skip-lints:
-    - uses_vcs_url 
-    - missing_hash
+    - should_be_noarch_generic
+    - should_not_be_noarch_source
