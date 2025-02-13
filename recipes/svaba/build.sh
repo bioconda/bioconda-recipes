@@ -1,6 +1,13 @@
 #!/bin/bash
 set -eu -o pipefail
 
+cd htslib
+autoreconf -i
+./configure
+make
+make install
+cd ..
+
 cd SeqLib
 ln -s ../htslib .
 cd ..
