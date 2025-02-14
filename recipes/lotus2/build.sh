@@ -1,13 +1,13 @@
 #!/bin/sh
 SHARE_DIR=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 
-rm -rf bin/installs/ bin/LCA bin/rtk bin/sdm bin/vsearch configs/sdm_src/
+rm -rf bin/installs/ bin/lambda3* bin/LCA bin/rtk bin/sdm bin/vsearch
 # Configure LotuS2
 cp configs/LotuS.cfg.def lOTUs.cfg
-for binary in blastn clustalo lambda LCA mafft minimap2 rtk sdm swarm vsearch; do
+for binary in blastn clustalo lambda3 LCA mafft minimap2 rtk sdm swarm usearch vsearch; do
     sed -i.bak -e "s|^$binary[[:space:]].*|$binary $PREFIX/bin/$binary|" lOTUs.cfg
 done
-for binary in cd-hit fasttree hmmsearch iqtree itsx lambda_index makeBlastDB RDPjar; do
+for binary in cd-hit fasttree hmmsearch iqtree itsx makeBlastDB RDPjar; do
     sed -i.bak -e "s|^$binary[[:space:]]\(.*\)|$binary $PREFIX/bin/\1|" lOTUs.cfg
 done
 # Install

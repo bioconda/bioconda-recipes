@@ -1,18 +1,18 @@
-{% set version="202308" %}
+{% set version="202308.03" %}
 
 package:
   name: sentieon
   version: {{ version }}
 source:
-  - url: https://s3.amazonaws.com/sentieon-release/software/sentieon-genomics-{{ version }}.tar.gz # [linux64]
-    sha256: d663067f46e499c23819e344cf548fdc362abbf94d3ef086a2e655c072ebe0d6 # [linux64]
-    patches: # [linux64]
-      # Fix driver scripts so they resolves location including symlinks
-      - sentieon_symlinks.patch # [linux64]
-
+  - url: https://s3.amazonaws.com/sentieon-release/software/sentieon-genomics-{{ version }}.tar.gz  #[linux and x86_64]
+    sha256: d63b8330e30e48b834d38ae843299798f8705a1b165c1dfa4c81318258a869b6  #[linux and x86_64]
+  - url: https://s3.amazonaws.com/sentieon-release/software/arm-sentieon-genomics-{{ version }}.tar.gz  #[linux and aarch64]
+    sha256: 929820c960ca533bf3bda1283e348083185996d6e7f346654977633b7609c2a4  #[linux and aarch64]
+    patches:
+      - sentieon_symlinks.patch
 build:
-  number: 0
-  skip: True # [not linux64]
+  number: 3
+  skip: True  # [not linux]
   binary_relocation: false
   run_exports:
     - {{ pin_subpackage('sentieon', max_pin='x') }}
@@ -21,17 +21,20 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - libudev
   host:
     - zlib
+    - libudev
   run:
     - python >=2.7
     - zlib
+    - libudev
 
 test:
   commands:
     - sentieon driver
     - sentieon driver --help --algo TNscope
-    - sentieon STAR --help # [linux64]
+    - sentieon STAR --help  # [linux and x86_64]
     - sentieon umi --help
     - sentieon util --help
 
@@ -41,5 +44,8 @@ about:
   summary: Accelerated performance bioinformatics tools for mapping and variant calling
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   skip-lints:
-      - should_be_noarch_generic # Supports Linux64 only
+    - should_be_noarch_generic  # uses per platform binaries
+    - should_not_be_noarch_source  # uses binaries

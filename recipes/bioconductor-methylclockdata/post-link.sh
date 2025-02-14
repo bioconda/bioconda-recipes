@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "methylclockdata-1.8.1"
+installBiocDataPackage.sh "methylclockdata-1.14.0"

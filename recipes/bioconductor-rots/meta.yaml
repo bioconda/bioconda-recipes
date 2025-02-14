@@ -1,47 +1,21 @@
-{% set version = "1.28.0" %}
+{% set version = "1.34.0" %}
 {% set name = "ROTS" %}
-{% set bioc = "3.17" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 0fe2a766a69ca811fc88c2141b937e4f
+about:
+  description: Calculates the Reproducibility-Optimized Test Statistic (ROTS) for differential testing in omics data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Reproducibility-Optimized Test Statistic
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: testthat
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.60.0,<2.61.0'
-    - r-base
-    - r-rcpp
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biobase >=2.60.0,<2.61.0'
-    - r-base
-    - r-rcpp
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Reproducibility-Optimized Test Statistic'
-  description: 'Calculates the Reproducibility-Optimized Test Statistic (ROTS) for differential testing in omics data.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-rots", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:rots
@@ -50,4 +24,37 @@ extra:
     name: bioconductor-rots
     path: recipes/bioconductor-rots
     version: 1.8.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+    - r-rcpp
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+    - r-rcpp
+
+source:
+  md5: 4f180993ef115cb9c6e7f1f27b64d0ef
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

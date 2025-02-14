@@ -1,19 +1,20 @@
 package:
   name: ncbi-fcs-gx
-  version: 0.4.1
+  version: 0.5.4
 
 source:
-  url: https://github.com/ncbi/fcs-gx/archive/refs/tags/v0.4.1.zip
-  sha256: 7bedb6a43945df4821d3e23fd1c5c4bf117cd70001cb96b310d177f0fd049a6b
-
+  url: https://github.com/ncbi/fcs-gx/archive/refs/tags/v0.5.4.zip
+  sha256: 4398f935f5f5053a9a47d46416e28e8e7df34942bc72f6b5ac266de8ee365cf0
+  patches:
+    - no_static.patch
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - make
     - cmake
-    - libstdcxx-ng
-    - libgcc-ng
+    - libstdcxx-ng <=12.2
+    - libgcc-ng <=12.2
   run:
     - python >=3.9
     - aria2 =1.36.0
@@ -23,14 +24,16 @@ requirements:
     - grep >=3.4
 
 build:
-  number: 0
+  number: 1
   skip: True  # [not linux or not x86_64]
   run_exports:
-    - {{ pin_compatible('nxbi-fcs-gx', max_pin="x.x") }}
+    - {{ pin_compatible('ncbi-fcs-gx', max_pin="x.x") }}
 
 test:
   commands:
     - gx --help 
+    - ls -l ${PREFIX}/bin/
+    - ${PREFIX}/bin/gx --help 
 
 about:
   home: https://github.com/ncbi/fcs

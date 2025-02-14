@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "methylseqdata-1.10.0"
+installBiocDataPackage.sh "methylseqdata-1.16.0"

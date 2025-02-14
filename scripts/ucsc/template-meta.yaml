@@ -8,37 +8,49 @@ package:
   version: "{{{{ version }}}}"
 
 source:
-  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{{{{ version }}}}.src.tgz"
+  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{{{ version }}}}.src.tgz"
   sha256: "{{{{ sha256 }}}}"
   patches:
     - "include.patch"
 
 build:
+  skip: True  # [osx]
   number: 0
+  run_exports:
+    - {{{{ pin_subpackage(package, max_pin=None) }}}}
 
 requirements:
   build:
+    - make
     - {{{{ compiler('c') }}}}
   host:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
+    - libopenssl-static
     - zlib
 
   run:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
+    - libopenssl-static
     - zlib
 
 test:
   commands:
-    # just check for existence, because the individual packages have no unified behavior
-    - which {{{{ program }}}}
+    # just check for existence and exec bit, because the individual packages have no unified behavior
+    - test -x ${{PREFIX}}/bin/{{{{ program }}}}
 
 about:
-  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "varies; see http://genome.ucsc.edu/license"
+  home: "https://hgdownload.cse.ucsc.edu/admin/exe/"
+  license: "Varies; see http://genome.ucsc.edu/license"
   summary: "{summary}"
+  dev_url: "https://github.com/ucscGenomeBrowser/kent"
+  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/master/README"
+
+extra:
+  identifiers:
+    - biotools:UCSC_Genome_Browser_Utilities
+    - doi:10.1093/bib/bbs038
+  {linux_aarch64}

@@ -1,0 +1,68 @@
+{% set version = "1.4.0" %}
+{% set name = "MICSQTL" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: Our pipeline, MICSQTL, utilizes scRNA-seq reference and bulk transcriptomes to estimate cellular composition in the matched bulk proteomes. The expression of genes and proteins at either bulk level or cell type level can be integrated by Angle-based Joint and Individual Variation Explained (AJIVE) framework. Meanwhile, MICSQTL can perform cell-type-specic quantitative trait loci (QTL) mapping to proteins or transcripts based on the input of bulk expression data and the estimated cellular composition per molecule type, without the need for single cell sequencing. We use matched transcriptome-proteome from human brain frontal cortex tissue samples to demonstrate the input and output of our tool.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: MICSQTL (Multi-omic deconvolution, Integration and Cell-type-specific Quantitative Trait Loci)
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-micsqtl", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat (>= 3.0.0), rmarkdown, knitr, BiocStyle
+requirements:
+  host:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-toast >=1.20.0,<1.21.0
+    - r-base
+    - r-dirmult
+    - r-ggplot2
+    - r-ggpubr
+    - r-ggridges
+    - r-glue
+    - r-magrittr
+    - r-nnls
+    - r-purrr
+    - r-tca
+  run:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-toast >=1.20.0,<1.21.0
+    - r-base
+    - r-dirmult
+    - r-ggplot2
+    - r-ggpubr
+    - r-ggridges
+    - r-glue
+    - r-magrittr
+    - r-nnls
+    - r-purrr
+    - r-tca
+
+source:
+  md5: 09eaf773ad8d3777ca46e06d1afcdab9
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

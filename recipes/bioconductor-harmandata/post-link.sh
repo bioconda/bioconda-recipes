@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "harmandata-1.28.0"
+installBiocDataPackage.sh "harmandata-1.34.0"

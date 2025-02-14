@@ -1,5 +1,6 @@
 {% set name = "ms2rescore" %}
-{% set version = "3.0.0b1" %}
+{% set version = "3.1.4" %}
+{% set sha256 = "1b87a6c9991333eee83001d519d7378eabf8b84f1474abb2d9be1b87819c67f1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,71 +8,71 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/ms2rescore-{{ version }}.tar.gz
-  sha256: d3fa5112038d2e92a916f57b47f634fec5235836260fe0949fd8cc4549cc7410
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   noarch: python
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
   entry_points:
     - ms2rescore = ms2rescore.__main__:main
     - ms2rescore-gui = ms2rescore.gui.__main__:main
     - ms2rescore-report = ms2rescore.report.__main__:main
-  script: "{{ PYTHON }} -m pip install . --no-deps -vvv"
+    - tims2rescore = ms2rescore.__main__:main_tims
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
 
 requirements:
   host:
-    - python >=3.8
+    - python
     - flit-core
     - pip
   run:
-    - python >=3.8
-    - numpy >=1.16.0
-    - pandas >=1.0
-    - rich >=12
-    - pyteomics >=4.1.0
-    - pyopenms
-    - lxml >=4.5
-    - ms2pip >=4.0.0-dev4
-    - click >=7
+    - python
     - cascade-config >=0.4.0
-    - deeplc >=2.2
-    - deeplcretrainer ==0.1.17
-    - tomli >=2  # [py<311]
-    - psm-utils >=0.4
+    - click >=7
     - customtkinter >=5,<6
-    - mokapot >=0.9
-    - pydantic >=1.8.2,<2
+    - deeplc >=3.0
+    - deeplcretrainer
+    - im2deep >=0.1.3
     - jinja2 >=3
-    - plotly
-    - sqlalchemy <2,>=1.3
-    - mokapot
-    - statsmodels
-    - matplotlib-base
-    - seaborn
+    - lxml >=4.5
+    - mokapot ==0.10
+    - ms2pip >=4.0
+    - ms2rescore-rs
+    - numpy >=1.25
+    - pandas >=1
+    - plotly >=5
+    - psm-utils >=1.1
+    - pyopenms >=3.0
+    - pyteomics >=4.7.2
+    - rich >=12
+    - tomli >=2  # [py < 311]
 
 test:
   imports:
     - ms2rescore
   commands:
-    - pip check
     - ms2rescore --help
-#    - ms2rescore-gui --help
     - ms2rescore-report --help
-  requires:
-    - pip
+    - tims2rescore --help
 
 about:
-  home: https://compomics.github.io/projects/ms2rescore/
-  summary: 'MS²Rescore: Sensitive PSM rescoring with predicted MS² peak intensities and retention times.'
+  home: https://github.com/compomics/ms2rescore
+  summary: 'Modular and user-friendly platform for AI-assisted rescoring of peptide identifications'
   dev_url: https://github.com/compomics/ms2rescore
   license: Apache-2.0
+  license_family: APACHE
   license_file: LICENSE
+  doc_url: https://ms2rescore.readthedocs.io/en/stable
 
 extra:
   container:
     # Click requires the extended container
     extended-base: true
   recipe-maintainers:
-    - compomics
+    - CompOmics
+    - RalfG
+  additional-platforms:
+    # - linux-aarch64  # No Tensorflow, pyOpenMS, nor Gooey support
+    - osx-arm64

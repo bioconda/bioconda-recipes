@@ -1,4 +1,4 @@
-{% set version = "1.21.0" %}
+{% set version = "1.22.0" %}
 
 package:
   name: igblast
@@ -20,14 +20,16 @@ about:
 
 source:
   url: ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/{{ version }}/ncbi-igblast-{{ version }}-src.tar.gz  # [linux]
-  sha256: f679a417b170e96103c088a9d1e82bfd40571526080da00fdf62de74aee82d16 # [linux]
+  sha256: a04eb195087447cf42e673401ae2d9f6ef8414b34f1534724a6953f41224df68 # [linux]
   url: ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/{{ version }}/ncbi-igblast-{{ version }}-x64-macosx.tar.gz  # [osx]
-  sha256: 9d8f13a7ab3b2ab42df3565cdf3b480bd9c04fb0ffb1d54834e67fa37d4fc09b # [osx]
+  sha256: b8a0034642b5dbef7f41c7fcfbb4bc035d2c5877d3e987af43605ea8e3d55c40 # [osx]
   patches:
     - shared_vdb.patch  # [linux]
 
 build:
   number: 1
+  run_exports:
+  - {{ pin_subpackage('igblast', max_pin="x") }}
 
 requirements:
   build:
@@ -41,6 +43,7 @@ requirements:
     - gnutls  # [osx]
     - libidn11
     - lzo # [osx]
+    - libsqlite >=3
     - ncbi-vdb >=2.9.6
   run:
     - ncbi-vdb >=2.9.6
@@ -53,5 +56,7 @@ test:
     - makeblastdb -h
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:igblast

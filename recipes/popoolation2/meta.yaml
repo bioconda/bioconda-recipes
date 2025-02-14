@@ -1,0 +1,55 @@
+{% set name = "popoolation2" %}
+{% set version = "1.201" %}
+{% set sha256 = "7f45353a211ec88d36fd1beed1d128673f3ff911b731211eb5a39f8602bddd42" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://downloads.sourceforge.net/project/popoolation2/popoolation2_1201.zip
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('popoolation2', max_pin="x") }}
+
+requirements:
+  host:
+    - perl
+  run:
+    - perl
+    - perl-text-nsp
+    - r-base
+    - bwa
+    - samtools
+    - igv
+    - openjdk
+    - python
+
+test:
+  commands:
+    - page -V 2>&1 | grep page
+    - snp-frequency-diff.pl --help 2>&1 | grep SNP-frequency-diff.pl
+    - fst-sliding.pl --help 2>&1 | grep fst-sliding.pl
+    - fisher-test.pl --help 2>&1 | grep fisher-test.pl
+    - pwc2igv.pl --help 2>&1 | grep pwc2igv
+    - cmh2gwas.pl --help 2>&1 | grep cmh2gwas
+    - identify-indel-regions.pl 2>&1 | grep identify-indel-regions
+    - filter-sync-by-gtf.pl 2>&1 | grep filter-sync-by-gtf
+    - mpileup2sync --help 2>&1 | grep mpileup2sync
+    - subsample_sync2fasta.pl 2>&1 | grep subsample_sync2fasta
+    - subsample_sync2GenePop.pl 2>&1 | grep subsample_sync2GenePop
+    - filter-sync-by-gtf.pl 2>&1 | grep filter-sync-by-gtf
+
+about:
+  home: "https://sourceforge.net/projects/popoolation2"
+  summary: "PoPoolation2 allows to compare allele frequencies for SNPs between two or more populations and to identify significant differences."
+  license: BSD-3
+  license_family: BSD
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btr589

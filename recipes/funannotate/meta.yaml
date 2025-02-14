@@ -1,65 +1,71 @@
 {% set name = "funannotate" %}
-{% set version = "1.8.15" %}
+{% set version = "1.8.17" %}
 
 package:
-  name: funannotate
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://pypi.io/packages/source/f/funannotate/funannotate-{{ version }}.tar.gz
-  sha256: 98a1baf18fbbe320986e011bfabb7dd5e79ee24286d6d400547d09c0fe65d300
+  sha256: bdadfd7a5636383c1c40c26dab37c5908a77e8c4064adced84f1ba9e86187a04
 
 build:
-  number: 2
+  number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - funannotate=funannotate.funannotate:main
+  run_exports:
+    - {{ pin_subpackage('funannotate', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.6,<3.9
+    - python >=3.6,<3.10
   run:
-    - python >=3.6,<3.9
-    - biopython
+    - python >=3.6,<3.10
+    - biopython <1.80
     - goatools
-    - matplotlib-base <3.5
+    - matplotlib-base
     - natsort
     - numpy
-    - pandas <2.0  # https://github.com/nextgenusfs/funannotate/pull/906
+    - pandas
     - psutil
     - requests
     - scikit-learn
     - scipy
-    - seaborn
+    - seaborn-base
     - blast
+    - fasta3
     - tantan
     - bedtools
     - hmmer
     - exonerate
-    - diamond >=2.1.6
+    - diamond
     - tbl2asn
+    - ucsc-blat
     - ucsc-pslcdnafilter
-    - pasa >=2.4.1
+    - pasa
     - trimmomatic
-    - raxml
     - trimal
     - mafft >=7
-    - iqtree
     - kallisto >=0.46.0,<0.46.2
     - minimap2
-    - evidencemodeler ==1.1.1
+    - evidencemodeler
     - codingquarry
     - stringtie
     - snap
     - glimmerhmm
     - bamtools
     - augustus ==3.5.0
-    - trinity >=2.8.5=h8b12597_5  # [linux]
+    - trinity
     - trnascan-se
     - hisat2
-    - proteinortho >=6.0.16
-    - salmon >=0.9
-    - phyml
+    - proteinortho
+    - salmon
+    - ete3
+    - samtools
+    - pigz
     - perl
     - perl-math-utils  # Needed by GeneMark
     - perl-mce  # Needed by GeneMark
@@ -72,15 +78,12 @@ requirements:
     - perl-scalar-util-numeric
     - perl-text-soundex
     - perl-parallel-forkmanager
-    - perl-db-file
+    - perl-db_file
     - perl-local-lib
-    - r-base >=3.4.1
-    - ete3
-    - distro
-    - samtools >=1.9
-    - pigz
 
 test:
+  import:
+    - funannotate
   commands:
     - "funannotate --help | grep \"Funannotate is a genome prediction\""
 
@@ -90,8 +93,15 @@ about:
   license_family: "BSD"
   license_file: "LICENSE.md"
   summary: "funannotate: eukaryotic genome annotation pipeline"
-  doc_url: "funannotate.readthedocs.io"
+  doc_url: "https://funannotate.readthedocs.io/en/latest/"
+  dev_url: "https://github.com/nextgenusfs/funannotate"
 
 extra:
   recipe-maintainers:
     - nextgenusfs
+  identifiers:
+    - biotools:funannotate
+    - usegalaxy-eu:funannotate_compare
+    - usegalaxy-eu:funannotate_clean
+    - usegalaxy-eu:funannotate_predict
+    - usegalaxy-eu:funannotate_annotate

@@ -1,5 +1,5 @@
 {% set name = "parascopy" %}
-{% set version = "1.12.0" %}
+{% set version = "1.17.4" %}
 
 package:
   name: {{ name|lower }}
@@ -7,25 +7,34 @@ package:
 
 build:
   number: 0
-  skip: true # [osx or py2k]
+  entry_points:
+    - parascopy=parascopy.entry_point:main
+  run_exports:
+    - {{ pin_subpackage('parascopy', max_pin="x") }}
 
 source:
   url: https://github.com/tprodanov/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: b25d998868814d52b29fbb6a2031d19e4aee106898b9df7470e2aba9f6cfe7d8
+  sha256: cc89f97db81ec31d47fed50720beba37ae394e3487274efabff098a8774c80d7
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - cmake
     - meson
     - ninja
     - pkg-config
   host:
     - python
     - pip
+    - setuptools
     - bzip2
+    - zlib
     - htslib
     - tabixpp
+    - clangdev  # [osx]
+    - liblzma
+    - xz
   run:
     - python
     - numpy >=1.15
@@ -38,6 +47,7 @@ requirements:
     - bwa >=0.7
     - intervaltree >=3.0
     - tabixpp
+    - construct
 
 test:
   commands:
@@ -57,5 +67,13 @@ test:
 about:
   home: https://github.com/tprodanov/parascopy
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: Calling paralog-specific copy number and sequence variants in duplicated genes using short-read whole-genome sequencing.
+  summary: "Calling paralog-specific copy number and sequence variants in duplicated genes using short-read whole-genome sequencing."
+  dev_url: https://github.com/tprodanov/parascopy
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    # ARM64 temporarily disabled as parasail is unable to detect m4
+    #- osx-arm64

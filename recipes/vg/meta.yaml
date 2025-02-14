@@ -1,20 +1,22 @@
 {% set name = "vg" %}
-{% set version = "1.52.0" %}
+{% set version = "1.63.1" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/vgteam/vg/releases/download/v{{ version }}/vg
-  sha256: 07776b51aa6494b45982e4134eb84005ddc743e81c67e61fa52bff211d81777c
+  - url: https://github.com/vgteam/vg/releases/download/v{{ version }}/vg       # [linux and x86_64]
+    sha256: 1e6ed99337c10c6015daf85597b3e6daa75391c98330ab645d5c673980efae68    # [linux and x86_64]
+  - url: https://github.com/vgteam/vg/releases/download/v{{ version }}/vg-arm64 # [linux and aarch64]
+    sha256: 99fc9c4d4245698a9c13af6d7c53ddcb259190bee3133cfe05e5345c6c14bb2a    # [linux and aarch64]
 
 build:
   number: 0
   skip: true  # [osx]
   script:
     - mkdir -p ${PREFIX}/bin
-    - cp vg ${PREFIX}/bin/
+    - cp vg* ${PREFIX}/bin/vg
     - chmod +x ${PREFIX}/bin/vg
   run_exports:
     - {{ pin_subpackage('vg', max_pin="x") }}
@@ -30,5 +32,7 @@ about:
   summary: Variation graph data structures, interchange formats, alignment, genotyping, and variant calling methods
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   skip-lints:
     - should_be_noarch_generic

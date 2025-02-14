@@ -1,5 +1,5 @@
 {% set name = "genomad" %}
-{% set version = "1.7.1" %}
+{% set version = "1.9.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,16 +7,16 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: d435b72c401d7dc1755a5fc120601bca756db475232c0ebf32ea673b43da83f7
+  sha256: 1b4d5035153e33986502727ecd7f3f9c28138e4a1303c9d258b636b70db8f761
 
 build:
-  number: 0
+  number: 1
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   entry_points:
     - genomad=genomad.cli:cli
   run_exports:
-    - {{ pin_subpackage("genomad", max_pin="x.x") }}
+    - {{ pin_subpackage("genomad", max_pin=None) }}
 
 requirements:
   host:
@@ -25,16 +25,16 @@ requirements:
     - flit-core >=3.2,<4
   run:
     - python >=3.8
-    - pyrodigal-gv
+    - pyrodigal-gv >=0.3.1
     - mmseqs2 =14.7e284
     - aragorn
-    - keras >=2.7
+    - keras >=3
     - numba >=0.57
     - numpy >=1.21
     - python-crfsuite
     - rich-click >=1.4
     - taxopy >=0.4.0
-    - tensorflow >=2.7
+    - tensorflow >=2.16
     - xgboost >=1.6
 
 test:
@@ -48,3 +48,8 @@ about:
   license_file: LICENSE
   summary: "Identification of mobile genetic elements"
   dev_url: https://github.com/apcamargo/genomad/
+  doc_url: https://portal.nersc.gov/genomad/
+
+extra:
+  identifiers:
+    - biotools:genomad

@@ -1,0 +1,51 @@
+{% set name = "arborator" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "682f022481203da36368e46942213767068ecdb4fae4d0ab7580d8556d961d0e" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/arborator-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  
+
+build:
+  number: 3
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps -vvv
+  entry_points:
+    - arborator=arborator.main:main
+
+requirements:
+  host:
+    - python >=3.8,<3.10
+    - pip
+  run:
+    - python >=3.8,<3.10
+    - {{ pin_compatible('numpy', max_pin="x") }}
+    - pyarrow ==12.0.0
+    - pandas ==2.0.2
+    - scipy >=1.0.0
+    - numba ==0.57.1
+    - pytables
+    - psutil
+    - six
+    - profile_dists
+    - genomic_address_service
+
+
+test: 
+  commands:
+    - arborator -h
+
+about:
+  home: 'https://pypi.org/project/arborator/'
+  summary: 'Arborator: Simplifying operationalized pathogen surveillance and outbreak detection'
+  license: Apache-2.0
+  license_file: LICENSE
+  dev_url: 'https://github.com/phac-nml/arborator'
+

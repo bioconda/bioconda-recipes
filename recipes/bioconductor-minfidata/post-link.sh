@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "minfidata-0.46.0"
+installBiocDataPackage.sh "minfidata-0.52.0"

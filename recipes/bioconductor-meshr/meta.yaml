@@ -1,30 +1,32 @@
-{% set version = "2.6.0" %}
+{% set version = "2.12.0" %}
 {% set name = "meshr" %}
-{% set bioc = "3.17" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 7bcf4253b38df394c838c2cc477f84a9
+about:
+  description: A set of annotation maps describing the entire MeSH assembled using data from MeSH.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Tools for conducting enrichment analysis of MeSH
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-meshr", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 requirements:
   host:
-    - 'bioconductor-biocgenerics >=0.46.0,<0.47.0'
-    - 'bioconductor-biocstyle >=2.28.0,<2.29.0'
-    - 'bioconductor-category >=2.66.0,<2.67.0'
-    - 'bioconductor-meshdbi >=1.36.0,<1.37.0'
-    - 'bioconductor-s4vectors >=0.38.0,<0.39.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-category >=2.72.0,<2.73.0
+    - bioconductor-meshdbi >=1.42.0,<1.43.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-fdrtool
     - r-knitr
@@ -32,23 +34,27 @@ requirements:
     - r-rmarkdown
     - r-rsqlite
   run:
-    - 'bioconductor-biocgenerics >=0.46.0,<0.47.0'
-    - 'bioconductor-biocstyle >=2.28.0,<2.29.0'
-    - 'bioconductor-category >=2.66.0,<2.67.0'
-    - 'bioconductor-meshdbi >=1.36.0,<1.37.0'
-    - 'bioconductor-s4vectors >=0.38.0,<0.39.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-category >=2.72.0,<2.73.0
+    - bioconductor-meshdbi >=1.42.0,<1.43.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-fdrtool
     - r-knitr
     - r-markdown
     - r-rmarkdown
     - r-rsqlite
+
+source:
+  md5: bd7179596eddb8790f09d35bbb4dbc2f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Tools for conducting enrichment analysis of MeSH'
-  description: 'A set of annotation maps describing the entire MeSH assembled using data from MeSH.'
+    - $R -e "library('{{ name }}')"
 

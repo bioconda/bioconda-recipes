@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "plotgardenerdata-1.6.0"
+installBiocDataPackage.sh "plotgardenerdata-1.12.0"
