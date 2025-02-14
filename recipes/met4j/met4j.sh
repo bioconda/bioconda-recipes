@@ -4,12 +4,11 @@ JARFILE="met4j-toolbox.jar"
 
 function printUsageAndHelp(){
     echo ""
-    echo "Usage: $0 [package.function] [options]"
-    echo "  example : $0 fr.inrae.toulouse.metexplore.met4j_toolbox.convert.Sbml2Graph -i mySbml.xml -o ./output.txt"
+    echo "Usage: met4j [package.function] [options]"
+    echo "  example : met4j fr.inrae.toulouse.metexplore.met4j_toolbox.convert.Sbml2Graph -i mySbml.xml -o ./output.txt"
     echo ""
     echo '-------------------------------------------'
-    java -jar $JARFILE
-    exit 0
+    exec java -jar $JARFILE
 }
 
 # no arguments
