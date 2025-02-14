@@ -12,7 +12,7 @@ source:
     - makefile.patch
 
 build:
-  number: 0
+  number: 1
   skip: True # [osx]
   run_exports:
     - {{ pin_subpackage('ribotin', max_pin="x.x") }}
@@ -21,9 +21,9 @@ requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - pkg-config
   host:
     - zlib =1.2 # ribotin does not need a specific zlib version. however, the dependency graphaligner needs zlib 1.2, and if the zlib version is not specified here then conda's environment resolve fails with an incompatible package error.
-    - pkg-config
     - bamtools
   run:
     - graphaligner
@@ -34,7 +34,7 @@ requirements:
 
 test:
   commands:
-    - (ribotin-ref -h 2>&1 || true) | grep ribotin
+    - ribotin-ref -h 2>&1 | grep ribotin
 
 about:
   home: https://github.com/maickrau/ribotin
@@ -43,6 +43,8 @@ about:
   summary: Ribosomal DNA assembly tool
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   maintainers:
     - maickrau
   skip-lints:
