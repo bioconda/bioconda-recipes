@@ -1,19 +1,18 @@
 #!/bin/bash
 set -eu -o pipefail
 
-echo "### DEBUGGING A ###"
-find . -name configure.ac
+echo "#######################"
+echo "### DEBUGGING START ###"
+echo "#######################"
 
-cd htslib
-autoreconf -i
+find .
 
-echo "### DEBUGGING B ###"
-find . -name configure.ac
+echo "#####################"
+echo "### DEBUGGING END ###"
+echo "#####################"
 
-./configure
-make
+./configure --prefix=${PREFIX} --enable-libcurl --with-libdeflate --enable-plugins --enable-gcs --enable-s3
 make install
-cd ..
 
 cd SeqLib
 ln -s ../htslib .
