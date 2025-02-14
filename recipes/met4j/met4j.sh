@@ -1,6 +1,6 @@
 #!/bin/bash
 
-JARFILE="met4j-toolbox.jar"
+JARFILE="$(dirname $(readlink -f "$0"))/met4j-toolbox.jar"
 
 function printUsageAndHelp(){
     echo ""
