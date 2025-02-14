@@ -46,3 +46,12 @@ mkdir -p "${PREFIX}/bin"
 rm -fv ${PREFIX}/bin/*
 
 sed -e "s|CHANGEME|${SHARE_DIR}|" -e "s|__OS__|${OS}|" "$RECIPE_DIR/t_coffee.sh" > "${PREFIX}/bin/t_coffee"
+
+# Get test data 
+# mkdir -p $PREFIX/share/test/
+# wget https://raw.githubusercontent.com/nf-core/test-datasets/refs/heads/multiplesequencealign/testdata/setoxin-ref.fa -O $PREFIX/share/test/seatoxin-ref.fa
+# wget https://raw.githubusercontent.com/nf-core/test-datasets/multiplesequencealign/testdata/af2_structures/seatoxin-ref.tar.gz -O seatoxin-ref.tar.gz
+# tar -xvf $PREFIX/share/test/seatoxin-ref.tar.gz
+# mv $PREFIX/share/test/seatoxin-ref/* $PREFIX/share/test/
+# rm -r $PREFIX/share/test/seatoxin-ref
+# wget https://raw.githubusercontent.com/nf-core/test-datasets/refs/heads/multiplesequencealign/testdata/templates/seatoxin-ref_template.txt -O $PREFIX/share/test/seatoxin-ref_template.txt
