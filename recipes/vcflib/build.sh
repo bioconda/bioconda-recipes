@@ -27,7 +27,8 @@ if [[ `uname` == "Darwin" ]]; then
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DWFA_GITMODULE=OFF"
 else
-        export CONFIG_ARGS="-DWFA_GITMODULE=ON"
+        #export CONFIG_ARGS="-DWFA_GITMODULE=ON"
+	export CONFIG_ARGS="-DWFA_GITMODULE=OFF"
 fi
 
 cmake -S . -B build \
