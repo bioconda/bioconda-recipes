@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 7e90114..5983481 100644
+index 7e90114..4b41f96 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -69,11 +69,6 @@ if(NOT CMAKE_BUILD_TYPE)
@@ -33,7 +33,7 @@ index 7e90114..5983481 100644
    )
  
  set(vcfwfa_SOURCE
-@@ -180,16 +180,59 @@ set(vcflib_SOURCE
+@@ -180,16 +180,60 @@ set(vcflib_SOURCE
      contrib/fsom/fsom.c
      contrib/filevercmp/filevercmp.c
      contrib/c-progress-bar/progress.c
@@ -89,12 +89,13 @@ index 7e90114..5983481 100644
 +target_link_libraries(vcflib PUBLIC
 +    tabixpp
 +    wfa2
++    hts
 +    )
 +
  set(BINS
      vcfecho
      dumpContigsFromHeader
-@@ -326,6 +369,10 @@ set(SCRIPTS
+@@ -326,6 +370,10 @@ set(SCRIPTS
  file (STRINGS "VERSION" BUILD_NUMBER)
  add_definitions(-DVCFLIB_VERSION="${BUILD_NUMBER}")
  add_definitions(-DVERSION="${BUILD_NUMBER}")
@@ -105,7 +106,7 @@ index 7e90114..5983481 100644
  
  # ---- Build htslib
  #
-@@ -337,11 +384,11 @@ if (HTSLIB_LOCAL)
+@@ -337,11 +385,11 @@ if (HTSLIB_LOCAL)
  
    include_directories(${HTSLIB_LOCAL})
  
@@ -120,7 +121,7 @@ index 7e90114..5983481 100644
      INSTALL_COMMAND ""
      BUILD_IN_SOURCE ON
      BUILD_COMMAND $(MAKE) CFLAGS=${flags} lib-static
-@@ -381,8 +428,8 @@ if(WFA_GITMODULE)
+@@ -381,8 +429,8 @@ if(WFA_GITMODULE)
    add_subdirectory(${WFA_LOCAL})
    set(WFALIB wfa2) # pick up the wfa2 lib target from the included CMakeLists.txt
  else(WFA_GITMODULE)
@@ -131,7 +132,7 @@ index 7e90114..5983481 100644
    find_library(WFALIB wfa2 wfa REQUIRED) # distro search for shared lib
  endif(WFA_GITMODULE)
  
-@@ -457,13 +504,15 @@ if (NOT BUILD_ONLY_LIB)
+@@ -457,13 +505,15 @@ if (NOT BUILD_ONLY_LIB)
    foreach(BIN ${BINS})
      add_executable(${BIN} src/${BIN}.cpp)
      add_dependencies(${BIN} vcflib)
@@ -150,7 +151,7 @@ index 7e90114..5983481 100644
    endforeach(WFBIN ${BINS})
    install(TARGETS ${BINS} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
  
-@@ -595,8 +644,12 @@ endif (PANDOC)
+@@ -595,8 +645,12 @@ endif (PANDOC)
  # ---- Install
  
  install(TARGETS vcflib ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})
