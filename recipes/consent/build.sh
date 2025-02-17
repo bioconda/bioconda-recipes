@@ -5,7 +5,7 @@ cp -rf ${RECIPE_DIR}/sse2neon.h BMEAN/Complete-Striped-Smith-Waterman-Library/sr
 
 # Fix zlib error
 export CFLAGS="$CFLAGS -O3 -I$PREFIX/include"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib -lz"
 
 # Fix some error can't be patch before
 if [[ "$(uname)" == "Darwin" ]]; then
