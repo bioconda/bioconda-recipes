@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 7e90114..4b41f96 100644
+index 7e90114..f0119de 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -69,11 +69,6 @@ if(NOT CMAKE_BUILD_TYPE)
@@ -14,15 +14,7 @@ index 7e90114..4b41f96 100644
  if ((${CMAKE_BUILD_TYPE} MATCHES Release) OR (${CMAKE_BUILD_TYPE} MATCHES RelWithDebInfo))
    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_FLAGS}")
    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_FLAGS}")
-@@ -114,6 +109,7 @@ include_directories(contrib/smithwaterman)
- # include_directories(contrib/multichoose) merged with vcflib
- include_directories(contrib/filevercmp)
- include_directories(contrib/c-progress-bar)
-+include_directories(contrib/WFA2-lib/wavefront)
- 
- if(HTSLIB_FOUND)
-   list(JOIN HTSLIB_CFLAGS " " HTSLIB_CFLAGS_STRING)
-@@ -149,6 +145,10 @@ file(GLOB INCLUDES
+@@ -149,6 +144,10 @@ file(GLOB INCLUDES
    contrib/smithwaterman/*.h*
    contrib/fastahack/*.h*
    contrib/filevercmp/*.h*
@@ -33,7 +25,7 @@ index 7e90114..4b41f96 100644
    )
  
  set(vcfwfa_SOURCE
-@@ -180,16 +180,60 @@ set(vcflib_SOURCE
+@@ -180,16 +179,60 @@ set(vcflib_SOURCE
      contrib/fsom/fsom.c
      contrib/filevercmp/filevercmp.c
      contrib/c-progress-bar/progress.c
@@ -95,7 +87,7 @@ index 7e90114..4b41f96 100644
  set(BINS
      vcfecho
      dumpContigsFromHeader
-@@ -326,6 +370,10 @@ set(SCRIPTS
+@@ -326,6 +369,10 @@ set(SCRIPTS
  file (STRINGS "VERSION" BUILD_NUMBER)
  add_definitions(-DVCFLIB_VERSION="${BUILD_NUMBER}")
  add_definitions(-DVERSION="${BUILD_NUMBER}")
@@ -106,7 +98,7 @@ index 7e90114..4b41f96 100644
  
  # ---- Build htslib
  #
-@@ -337,11 +385,11 @@ if (HTSLIB_LOCAL)
+@@ -337,11 +384,11 @@ if (HTSLIB_LOCAL)
  
    include_directories(${HTSLIB_LOCAL})
  
@@ -121,37 +113,7 @@ index 7e90114..4b41f96 100644
      INSTALL_COMMAND ""
      BUILD_IN_SOURCE ON
      BUILD_COMMAND $(MAKE) CFLAGS=${flags} lib-static
-@@ -381,8 +429,8 @@ if(WFA_GITMODULE)
-   add_subdirectory(${WFA_LOCAL})
-   set(WFALIB wfa2) # pick up the wfa2 lib target from the included CMakeLists.txt
- else(WFA_GITMODULE)
--  include_directories($ENV{CMAKE_PREFIX_PATH}/include/wfa2lib)
--  set(WFA_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/wfa2lib)
-+  include_directories($ENV{PREFIX}/include/wfa2lib)
-+  set(WFA_INCLUDE_DIRS ${PREFIX}/include/wfa2lib)
-   find_library(WFALIB wfa2 wfa REQUIRED) # distro search for shared lib
- endif(WFA_GITMODULE)
- 
-@@ -457,13 +505,15 @@ if (NOT BUILD_ONLY_LIB)
-   foreach(BIN ${BINS})
-     add_executable(${BIN} src/${BIN}.cpp)
-     add_dependencies(${BIN} vcflib)
--    target_link_libraries(${BIN} PUBLIC ${vcflib_LIBS} vcflib)
-+    set_target_properties(${BIN} PROPERTIES SOVERSION 1)
-+    target_link_libraries(${BIN} PUBLIC vcflib)
-   endforeach(BIN ${BINS})
-   foreach(WFBIN ${WFBINS})
-     add_executable(${WFBIN} src/${WFBIN}.cpp ${vcfwfa_SOURCE})
-     add_dependencies(${WFBIN} vcflib)
--    target_link_libraries(${WFBIN} PUBLIC ${vcflib_LIBS} vcflib)
--    target_link_libraries(${WFBIN} PUBLIC ${vcflib_LIBS} ${WFALIB})
-+    set_target_properties(${WFBIN} PROPERTIES SOVERSION 1)
-+    target_link_libraries(${WFBIN} PUBLIC vcflib)
-+    target_link_libraries(${WFBIN} PUBLIC ${WFALIB})
-   endforeach(WFBIN ${BINS})
-   install(TARGETS ${BINS} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
- 
-@@ -595,8 +645,12 @@ endif (PANDOC)
+@@ -595,8 +642,12 @@ endif (PANDOC)
  # ---- Install
  
  install(TARGETS vcflib ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})

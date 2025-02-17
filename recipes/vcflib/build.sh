@@ -36,6 +36,6 @@ cmake -S . -B build \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	"${CONFIG_ARGS}"
+	-DPROFILING=ON "${CONFIG_ARGS}"
 
 cmake --build build --target install -j "${CPU_COUNT}" -v
