@@ -11,7 +11,8 @@ fi
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include -O3"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
 cmake -S . -B build \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
