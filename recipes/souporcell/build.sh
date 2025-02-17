@@ -18,6 +18,6 @@ for pkg in souporcell troublet; do
   
     # Scripts expect the binary located in the following folder
     mkdir -p ${PREFIX}/bin/${pkg}/target/release
-    install -D target/$(rustc -vV | grep host | awk '{print $2}')/release/${pkg} ${PREFIX}/bin/${pkg}/target/release/${pkg}
+    cp target/$(rustc -vV | grep host | awk '{print $2}')/release/${pkg} ${PREFIX}/bin/${pkg}/target/release/${pkg}
   popd
 done
