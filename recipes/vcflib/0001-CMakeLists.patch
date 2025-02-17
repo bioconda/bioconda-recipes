@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 7e90114..5a54a0b 100644
+index 7e90114..b52de18 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -69,11 +69,6 @@ if(NOT CMAKE_BUILD_TYPE)
@@ -14,16 +14,18 @@ index 7e90114..5a54a0b 100644
  if ((${CMAKE_BUILD_TYPE} MATCHES Release) OR (${CMAKE_BUILD_TYPE} MATCHES RelWithDebInfo))
    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_FLAGS}")
    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_FLAGS}")
-@@ -149,6 +144,8 @@ file(GLOB INCLUDES
+@@ -149,6 +144,10 @@ file(GLOB INCLUDES
    contrib/smithwaterman/*.h*
    contrib/fastahack/*.h*
    contrib/filevercmp/*.h*
 +  contrib/WFA2-lib/wavefront/*.h*
 +  contrib/WFA2-lib/utils/*.h*
++  contrib/WFA2-lib/alignment/*.h*
++  contrib/WFA2-lib/system/*.h*
    )
  
  set(vcfwfa_SOURCE
-@@ -180,16 +177,30 @@ set(vcflib_SOURCE
+@@ -180,16 +179,48 @@ set(vcflib_SOURCE
      contrib/fsom/fsom.c
      contrib/filevercmp/filevercmp.c
      contrib/c-progress-bar/progress.c
@@ -37,6 +39,24 @@ index 7e90114..5a54a0b 100644
 +    contrib/WFA2-lib/wavefront/wavefront_bialigner.c
 +    contrib/WFA2-lib/wavefront/wavefront.c
 +    contrib/WFA2-lib/wavefront/wavefront_components.c
++    contrib/WFA2-lib/wavefront/wavefront_compute_affine2p.c
++    contrib/WFA2-lib/wavefront/wavefront_compute_affine.c
++    contrib/WFA2-lib/wavefront/wavefront_compute.c
++    contrib/WFA2-lib/wavefront/wavefront_compute_edit.c
++    contrib/WFA2-lib/wavefront/wavefront_compute_linear.c
++    contrib/WFA2-lib/wavefront/wavefront_debug.c
++    contrib/WFA2-lib/wavefront/wavefront_display.c
++    contrib/WFA2-lib/wavefront/wavefront_extend.c
++    contrib/WFA2-lib/wavefront/wavefront_heuristic.c
++    contrib/WFA2-lib/wavefront/wavefront_pcigar.c
++    contrib/WFA2-lib/wavefront/wavefront_penalties.c
++    contrib/WFA2-lib/wavefront/wavefront_plot.c
++    contrib/WFA2-lib/wavefront/wavefront_sequences.c
++    contrib/WFA2-lib/wavefront/wavefront_slab.c
++    contrib/WFA2-lib/wavefront/wavefront_unialign.c
++    contrib/WFA2-lib/wavefront/wavefront_termination.c
++    contrib/WFA2-lib/wavefront/wavefront_extend_kernels_avx.c
++    contrib/WFA2-lib/wavefront/wavefront_extend_kernels.c
  )
  
  if (TABIXPP_LOCAL) # add the tabixpp source file
@@ -55,7 +75,7 @@ index 7e90114..5a54a0b 100644
  set(BINS
      vcfecho
      dumpContigsFromHeader
-@@ -326,6 +337,10 @@ set(SCRIPTS
+@@ -326,6 +357,10 @@ set(SCRIPTS
  file (STRINGS "VERSION" BUILD_NUMBER)
  add_definitions(-DVCFLIB_VERSION="${BUILD_NUMBER}")
  add_definitions(-DVERSION="${BUILD_NUMBER}")
@@ -66,7 +86,7 @@ index 7e90114..5a54a0b 100644
  
  # ---- Build htslib
  #
-@@ -337,10 +352,10 @@ if (HTSLIB_LOCAL)
+@@ -337,10 +372,10 @@ if (HTSLIB_LOCAL)
  
    include_directories(${HTSLIB_LOCAL})
  
@@ -79,7 +99,7 @@ index 7e90114..5a54a0b 100644
      CONFIGURE_COMMAND ./configure --disable-s3
      INSTALL_COMMAND ""
      BUILD_IN_SOURCE ON
-@@ -595,8 +610,12 @@ endif (PANDOC)
+@@ -595,8 +630,12 @@ endif (PANDOC)
  # ---- Install
  
  install(TARGETS vcflib ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})
