@@ -1,12 +1,13 @@
 {% set name = "souporcell" %}
 {% set version = "2.5" %}
+{% set github = "https://github.com/wheaton5/souporcell" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/wheaton5/souporcell/archive/refs/tags/v{{ version }}.tar.gz
+  url: {{ github }}/archive/refs/tags/v{{ version }}.tar.gz
   sha256: 1404b87e44c4452b2f329abb81ce4a8383ed5b7e94f38ff2815c5bed62ec2c7f
   patches:
     - patches/0001-constrain-vcf-dep.patch
@@ -20,6 +21,7 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('rust') }}
+    - cargo-bundle-licenses
   run:
     - python
     - pysam
@@ -39,13 +41,24 @@ requirements:
 
 test:
   commands:
+    - ./souporcell/target/release/souporcell -h
+    - ./troublet/target/release/troublet -h
+    - compile_stan_model.py -h
+    - consensus.py -h
+    - renamer.py -h
+    - retag.py -h
+    - shared_samples.py -h
+    - souporcell.py -h
     - souporcell_pipeline.py -h
-    
+
 about:
-  home: "https://github.com/wheaton5/souporcell"
+  home: {{ github }}
   license: MIT
   license_family: MIT
-  license_file: LICENSE
+  license_file:
+    - LICENSE
+    - souporcell/souporcell-THIRDPARTY.yml
+    - troublet/troublet-THIRDPARTY.yml
   summary: "Clustering scRNAseq by genotypes."
 
 extra:
