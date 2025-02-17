@@ -7,7 +7,7 @@ export CXXFLAGS="${CFLAGS} -fcommon -I${PREFIX}/include"
 
 # Include scripts
 cp -f stan_consensus.pickle $PREFIX/bin/stan_consensus.pickle
-cp -f *py $PREFIX/bin
+cp -f *.py $PREFIX/bin
 
 # Build statically linked binary with Rust
 RUST_BACKTRACE=1
