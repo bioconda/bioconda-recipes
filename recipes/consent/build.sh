@@ -22,7 +22,7 @@ fi
 
 # build
 cd BMEAN
-./install.sh
+CC="${CC}" ./install.sh
 
 cd ../minimap2
 make CC="${CC}" "${CONFIG_ARGS}" -j"${CPU_COUNT}"
