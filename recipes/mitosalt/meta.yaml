@@ -1,0 +1,53 @@
+{% set name = "MitoSAlt" %}
+{% set version = '1.1.1' %}
+{% set sha256 = "5d362e40620c6536d234571f25557613d73fbf30014dd9dbf530ba4c61f13819" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://sourceforge.net/projects/mitosalt/files/{{ name }}_{{ version }}.zip
+  sha256: {{ sha256 }}
+  patches:
+    - setup.patch
+    - configs.patch
+
+    - perl_script.patch
+    - r_script.patch
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('mitosalt', max_pin="x.x") }}
+
+requirements:
+  build:
+      - wget
+      - unzip
+      - r-base=4.4.2
+  host: []
+  run:
+    - bioconda::last=1608
+    - bioconda::bedtools=2.31.1
+    - bioconda::samtools=1.21
+    - perl=5.26
+    - r-base=4.4.2
+    - bioconductor-biostrings=2.74.0
+
+test:
+  commands:
+    - test -f ${PREFIX}/bin/mitosalt.pl
+    - test -f ${PREFIX}/bin/mitosalt_se.pl
+
+about:
+  home: https://sourceforge.net/projects/mitosalt/
+  summary: MitoSAlt is a pipeline to identify large deletions and duplications in human and mouse mitochondrial genomes from next generation whole genome/exome sequencing data. The pipeline is capable of analyzing any circular genome in principle, as long as a proper configuration file is provided.
+  license: MIT-0
+  license_family: MIT
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - tm4zza
