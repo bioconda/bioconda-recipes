@@ -1,0 +1,55 @@
+{% set name = "seqlib" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('seqlib', max_pin='x') }}
+
+source:
+  git_url: https://github.com/walaj/SeqLib.git
+  git_commit: 534c657496a203e9ad6dd959d7c9c41e2b123afd
+  sha256: ignored
+  patches:
+    - bwa-Makefile.patch
+    - fermi-Makefile.patch
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+  host:
+    - htslib
+    - bzip2
+    - xz
+    - zlib
+  run:
+    - htslib
+
+about:
+  home: "https://github.com/walaj/SeqLib"
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: "C++ interface to HTSlib, BWA-MEM and Fermi."
+  dev_url: "https://github.com/walaj/SeqLib"
+  doc_url: "https://github.com/walaj/SeqLib/blob/{{ version }}/README.md"
+
+test:
+  commands:
+    - ls "${PREFIX}/lib/libseqlib.so"  # [linux]
+    - ls "${PREFIX}/lib/libseqlib.dylib"  # [osx]
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/bioinformatics/btw741
+  skip-lints:
+    - uses_vcs_url
