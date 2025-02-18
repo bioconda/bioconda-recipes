@@ -1,6 +1,5 @@
 #!/bin/bash
 
-mkdir -p bin
 cp -rf ${RECIPE_DIR}/sse2neon.h BMEAN/Complete-Striped-Smith-Waterman-Library/src/
 
 # Fix zlib error
