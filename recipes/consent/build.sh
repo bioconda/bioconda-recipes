@@ -19,12 +19,9 @@ if [[ "${ARCH}" == "arm64" ]]; then
 	export CONFIG_ARGS="arm_neon=1 aarch64=1"
 elif [[ "${ARCH}" == "aarch64" ]]; then
 	export CONFIG_ARGS="aarch64=1"
+	sed -i.bak -e "s/-msse2//" minimap2/Makefile
+	rm -rf minimap2/*.bak
 fi
-
-#if [[ "${ARCH}" == "aarch64" ]]; then
-	#sed -i.bak -e "s/-msse2//" minimap2/Makefile
-	#rm -rf minimap2/*.bak
-#fi
 
 # build
 make -C BMEAN/Complete-Striped-Smith-Waterman-Library/src default CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS} ${LDFLAGS} -Wall -pipe -O3" -j"${CPU_COUNT}"
