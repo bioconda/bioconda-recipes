@@ -1,0 +1,47 @@
+{% set name = "muat" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/primasanjaya/muat/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 8bab7429a5757e6d5b4cdc1a08d523f44284b84d05812e92141120002e91f6ab
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}  # Ensures downstream compatibility
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+  run:
+    - python
+    - setuptools
+    - numpy
+    - pandas
+    - requests
+    - bedtools
+    - htslib
+    - natsort
+    - boto3
+
+test:
+  imports:
+    - muat
+
+about:
+  home: https://github.com/primasanjaya/muat
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: A package for Mutation Attention Tool
+
+extra:
+  recipe-maintainers:
+    - primasanjaya 
