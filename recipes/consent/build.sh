@@ -18,8 +18,9 @@ fi
 if [[ "${ARCH}" == "arm64" ]]; then
 	export CONFIG_ARGS="arm_neon=1 aarch64=1"
 elif [[ "${ARCH}" == "aarch64" ]]; then
-	export CONFIG_ARGS="aarch64=1"
+	export CONFIG_ARGS="arm_neon=1 aarch64=1"
 	sed -i.bak -e "s/-msse2//" minimap2/Makefile
+ 	sed -i.bak -e "s/-msse4.1//" minimap2/Makefile
 	rm -rf minimap2/*.bak
 fi
 
@@ -32,7 +33,7 @@ make -C BMEAN/spoa/build -j"${CPU_COUNT}"
 
 make -C BMEAN CXX="${CXX}" -j"${CPU_COUNT}"  # BMEAN make
 
-make -C minimap2 CC="${CC}" "${CONFIG_ARGS}" -j"${CPU_COUNT}"
+make "${CONFIG_ARGS}" CC="${CC}" -j"${CPU_COUNT}" -C minimap2
 
 mkdir -p bin
 make CC="${CXX} -std=c++14" -j"${CPU_COUNT}"  # CONSENT make
