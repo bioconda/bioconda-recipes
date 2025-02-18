@@ -10,7 +10,7 @@ fi
 
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lz"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
@@ -20,7 +20,7 @@ cmake -S . -B build \
 	-DBUILD_SHARED_LIBS=ON \
 	-DCMAKE_INSTALL_LIBDIR="${PREFIX}/lib" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
-	-DCMAKE_CXX_FLAGS="${CXXFLAGS} -Wno-return-type" \
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS} -Wno-return-type -Wno-unused-result -Wno-unused-but-set-variable" \
 	-DHTSLIB_DIR="${PREFIX}/include/htslib" \
 	"${CONFIG_ARGS}"
 
