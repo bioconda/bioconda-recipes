@@ -15,16 +15,16 @@ else
     sed -i'' -e "s#/BMEAN/BOA/blosum80.mat#/../share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/blosum80.mat#" src/main.cpp  # Fix matrix path
 fi
 
-if [[ "${ARCH}" == "aarch64" || "${ARCH}" == "arm64" ]]; then
+if [[ "${ARCH}" == "arm64" ]]; then
 	export CONFIG_ARGS="arm_neon=1 aarch64=1"
-else
-	export CONFIG_ARGS=""
+elif [[ "${ARCH}" == "aarch64" ]]; then
+	export CONFIG_ARGS="aarch64=1"
 fi
 
-if [[ "${ARCH}" == "aarch64" ]]; then
-	sed -i.bak -e "s/-msse2//" minimap2/Makefile
-	rm -rf minimap2/*.bak
-fi
+#if [[ "${ARCH}" == "aarch64" ]]; then
+	#sed -i.bak -e "s/-msse2//" minimap2/Makefile
+	#rm -rf minimap2/*.bak
+#fi
 
 # build
 make -C BMEAN/Complete-Striped-Smith-Waterman-Library/src default CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS} ${LDFLAGS} -Wall -pipe -O3" -j"${CPU_COUNT}"
