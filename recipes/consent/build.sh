@@ -21,16 +21,18 @@ else
 fi
 
 # build
-cd BMEAN
-CC="${CC}" ./install.sh
+make -C BMEAN/Complete-Striped-Smith-Waterman-Library/src default CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS} ${LDFLAGS} -Wall -pipe -O3" -j"${CPU_COUNT}"
 
-cd ../minimap2
-make CC="${CC}" "${CONFIG_ARGS}" -j"${CPU_COUNT}"
+mkdir -p BMEAN/spoa/build
+cmake -DCMAKE_BUILD_TYPE=Release -BBMEAN/spoa/build BMEAN/spoa/
+make -C BMEAN/spoa/build -j"${CPU_COUNT}"
 
-cd ..
+make -C BMEAN CXX="${CXX}" -j"${CPU_COUNT}"  # BMEAN make
+
+make -C minimap2 CC="${CC}" "${CONFIG_ARGS}" -j"${CPU_COUNT}"
 
 mkdir -p bin
-make CC="$CXX -std=c++14" -j"${CPU_COUNT}"  # CONSENT make
+make CC="${CXX} -std=c++14" -j"${CPU_COUNT}"  # CONSENT make
 
 # rename some binary
 mv bin/explode bin/CONSENT-explode
