@@ -16,6 +16,6 @@ cmake -G Ninja \
       -DLLVM_ENABLE_ASSERTIONS=OFF \
       ../llvm
 
-ninja -C build -j"${CPU_COUNT}"
+ninja -j"${CPU_COUNT}"
 
 ninja install
