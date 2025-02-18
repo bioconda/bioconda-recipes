@@ -15,15 +15,6 @@ else
     sed -i'' -e "s#/BMEAN/BOA/blosum80.mat#/../share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/blosum80.mat#" src/main.cpp  # Fix matrix path
 fi
 
-if [[ "${ARCH}" == "arm64" ]]; then
-	export CONFIG_ARGS="arm_neon=1 aarch64=1"
-elif [[ "${ARCH}" == "aarch64" ]]; then
-	export CONFIG_ARGS="arm_neon=1 aarch64=1"
-	sed -i.bak -e "s/-msse2//" minimap2/Makefile
- 	sed -i.bak -e "s/-msse4.1//" minimap2/Makefile
-	rm -rf minimap2/*.bak
-fi
-
 # build
 make -C BMEAN/Complete-Striped-Smith-Waterman-Library/src default CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS} ${LDFLAGS} -Wall -pipe -O3" -j"${CPU_COUNT}"
 
@@ -32,8 +23,6 @@ cmake -DCMAKE_BUILD_TYPE=Release -BBMEAN/spoa/build BMEAN/spoa/
 make -C BMEAN/spoa/build -j"${CPU_COUNT}"
 
 make -C BMEAN CXX="${CXX}" -j"${CPU_COUNT}"  # BMEAN make
-
-make "${CONFIG_ARGS}" CC="${CC}" -j"${CPU_COUNT}" -C minimap2
 
 mkdir -p bin
 make CC="${CXX} -std=c++14" -j"${CPU_COUNT}"  # CONSENT make
