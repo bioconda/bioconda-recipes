@@ -1,5 +1,8 @@
 #!/bin/bash
 
+rm -rf include/seqan
+mv ${SRC_DIR}/seqan include/
+
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
 
