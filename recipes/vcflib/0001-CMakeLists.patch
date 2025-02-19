@@ -1,0 +1,125 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7e90114..877ba4e 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -69,11 +69,6 @@ if(NOT CMAKE_BUILD_TYPE)
+           "Choose the type of build, options are: Release|Debug|RelWithDebInfo (for distros)." FORCE)
+ endif()
+ 
+-if (${CMAKE_BUILD_TYPE} MATCHES Release)
+-  set(EXTRA_FLAGS "-march=native -D_FILE_OFFSET_BITS=64")
+-  # set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG") # reset CXX_FLAGS to replace -O3 with -Ofast
+-endif()
+-
+ if ((${CMAKE_BUILD_TYPE} MATCHES Release) OR (${CMAKE_BUILD_TYPE} MATCHES RelWithDebInfo))
+   set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_FLAGS}")
+   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_FLAGS}")
+@@ -149,6 +144,10 @@ file(GLOB INCLUDES
+   contrib/smithwaterman/*.h*
+   contrib/fastahack/*.h*
+   contrib/filevercmp/*.h*
++  contrib/WFA2-lib/wavefront/*.h*
++  contrib/WFA2-lib/utils/*.h*
++  contrib/WFA2-lib/alignment/*.h*
++  contrib/WFA2-lib/system/*.h*
+   )
+ 
+ set(vcfwfa_SOURCE
+@@ -180,16 +179,58 @@ set(vcflib_SOURCE
+     contrib/fsom/fsom.c
+     contrib/filevercmp/filevercmp.c
+     contrib/c-progress-bar/progress.c
++    contrib/WFA2-lib/wavefront/wavefront_align.c
++    contrib/WFA2-lib/wavefront/wavefront_aligner.c
++    contrib/WFA2-lib/wavefront/wavefront_attributes.c
++    contrib/WFA2-lib/wavefront/wavefront_backtrace_buffer.c
++    contrib/WFA2-lib/wavefront/wavefront_backtrace.c
++    contrib/WFA2-lib/wavefront/wavefront_backtrace_offload.c
++    contrib/WFA2-lib/wavefront/wavefront_bialign.c
++    contrib/WFA2-lib/wavefront/wavefront_bialigner.c
++    contrib/WFA2-lib/wavefront/wavefront.c
++    contrib/WFA2-lib/wavefront/wavefront_components.c
++    contrib/WFA2-lib/wavefront/wavefront_compute_affine2p.c
++    contrib/WFA2-lib/wavefront/wavefront_compute_affine.c
++    contrib/WFA2-lib/wavefront/wavefront_compute.c
++    contrib/WFA2-lib/wavefront/wavefront_compute_edit.c
++    contrib/WFA2-lib/wavefront/wavefront_compute_linear.c
++    contrib/WFA2-lib/wavefront/wavefront_debug.c
++    contrib/WFA2-lib/wavefront/wavefront_display.c
++    contrib/WFA2-lib/wavefront/wavefront_extend.c
++    contrib/WFA2-lib/wavefront/wavefront_heuristic.c
++    contrib/WFA2-lib/wavefront/wavefront_pcigar.c
++    contrib/WFA2-lib/wavefront/wavefront_penalties.c
++    contrib/WFA2-lib/wavefront/wavefront_plot.c
++    contrib/WFA2-lib/wavefront/wavefront_slab.c
++    contrib/WFA2-lib/wavefront/wavefront_unialign.c
++    contrib/WFA2-lib/system/profiler_counter.c
++    contrib/WFA2-lib/system/profiler_timer.c
++    contrib/WFA2-lib/system/mm_allocator.c
++    contrib/WFA2-lib/system/mm_stack.c
++    contrib/WFA2-lib/utils/bitmap.c
++    contrib/WFA2-lib/utils/dna_text.c
++    contrib/WFA2-lib/utils/sequence_buffer.c
++    contrib/WFA2-lib/utils/vector.c
++    contrib/WFA2-lib/utils/commons.c
++    contrib/WFA2-lib/utils/heatmap.c
++    contrib/WFA2-lib/alignment/affine2p_penalties.c
++    contrib/WFA2-lib/alignment/affine_penalties.c
++    contrib/WFA2-lib/alignment/cigar.c
++    contrib/WFA2-lib/alignment/score_matrix.c
+ )
+ 
+ if (TABIXPP_LOCAL) # add the tabixpp source file
+     list(APPEND vcflib_SOURCE ${tabixpp_SOURCE})
+ endif()
+ 
+-add_library(vcflib STATIC
++add_library(vcflib SHARED
+     ${vcflib_SOURCE}
+     )
+ 
++target_link_libraries(vcflib PUBLIC
++    tabixpp
++    )
++
+ set(BINS
+     vcfecho
+     dumpContigsFromHeader
+@@ -326,6 +367,10 @@ set(SCRIPTS
+ file (STRINGS "VERSION" BUILD_NUMBER)
+ add_definitions(-DVCFLIB_VERSION="${BUILD_NUMBER}")
+ add_definitions(-DVERSION="${BUILD_NUMBER}")
++string(REGEX MATCH "^[0-9]+" MAJOR_BUILD_NUMBER ${BUILD_NUMBER})
++set_target_properties(vcflib PROPERTIES
++	SOVERSION ${MAJOR_BUILD_NUMBER}
++    )
+ 
+ # ---- Build htslib
+ #
+@@ -337,10 +382,10 @@ if (HTSLIB_LOCAL)
+ 
+   include_directories(${HTSLIB_LOCAL})
+ 
+-  set(flags "-O2 -g -fPIC")
++  set(flags "-O3 -g -fPIC")
+   ExternalProject_Add(htslib-EXT
+     SOURCE_DIR "${CMAKE_SOURCE_DIR}/${HTSLIB_LOCAL}"
+-    UPDATE_COMMAND autoreconf -i
++    UPDATE_COMMAND autoreconf -if
+     CONFIGURE_COMMAND ./configure --disable-s3
+     INSTALL_COMMAND ""
+     BUILD_IN_SOURCE ON
+@@ -595,8 +640,12 @@ endif (PANDOC)
+ # ---- Install
+ 
+ install(TARGETS vcflib ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})
+-install(TARGETS ${WFALIB} ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})
++if(WFA_GITMODULE)
++  install(TARGETS ${WFALIB} ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})
++endif(WFA_GITMODULE)
+ 
+ install(FILES ${INCLUDES} DESTINATION include/vcflib)
++configure_file(${CMAKE_CURRENT_SOURCE_DIR}/vcflib.pc.in ${CMAKE_CURRENT_BINARY_DIR}/vcflib.pc @ONLY)
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/vcflib.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+ 
+ install(DIRECTORY ${CMAKE_SOURCE_DIR}/man/ DESTINATION ${CMAKE_INSTALL_PREFIX}/man/man1)
