@@ -5,9 +5,9 @@ set -xe
 export COMMIT_VERS="${PKG_VERSION}"
 export COMMIT_DATE="$(date -Idate -u)"
 
-# git clone https://github.com/odelaneau/xcftools.git
+git clone https://github.com/odelaneau/xcftools.git
 
-# ls
+ls
 
 for subdir in phase_common phase_rare switch ligate
 
