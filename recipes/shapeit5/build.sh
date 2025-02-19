@@ -23,7 +23,7 @@ if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
 	sed -i.bak -e "s/-mavx2 -mfma//" ligate/makefile
 	sed -i.bak -e "s/-mavx2 -mfma//" simulate/makefile
 	sed -i.bak -e "s/-mavx2 -mfma//" xcftools/makefile
-	export EXTRA_ARGS="-march=native"
+	export EXTRA_ARGS=""
 else
 	export EXTRA_ARGS="-mavx2 -mfma"
 fi
