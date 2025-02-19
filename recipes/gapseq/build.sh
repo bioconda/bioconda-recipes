@@ -3,18 +3,18 @@
 # Installation instructions taken from https://gapseq.readthedocs.io/en/latest/install.html
 
 # Copy contents to conda prefix
-mkdir -p ${PREFIX}/gapseq/
-cp ISSUE_TEMPLATE.MD LICENSE README.md gapseq gapseq_env.yml ${PREFIX}/gapseq/
-cp -r dat/ docs/ src/ toy/ unit/ ${PREFIX}/gapseq/
+mkdir -p ${PREFIX}
+cp ISSUE_TEMPLATE.MD LICENSE README.md gapseq gapseq_env.yml ${PREFIX}
+cp -r dat/ docs/ src/ toy/ unit/ ${PREFIX}
 
 
 # Make binaries available
 mkdir -p ${PREFIX}/bin
-ln -sr ${PREFIX}/gapseq/gapseq ${PREFIX}/bin/
+ln -sr ${PREFIX}/gapseq ${PREFIX}/bin
 
 # Download reference sequence data
 # To install the database, we must call the installed file as it uses its own path to place the files correctly.
-bash ${PREFIX}/gapseq/src/update_sequences.sh
+bash ${PREFIX}/src/update_sequences.sh
 
 # --- 
 
