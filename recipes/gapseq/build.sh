@@ -8,18 +8,13 @@ cp ISSUE_TEMPLATE.MD LICENSE README.md gapseq gapseq_env.yml ${PREFIX}/gapseq/
 cp -r dat/ docs/ src/ toy/ unit/ ${PREFIX}/gapseq/
 
 
+# Make binaries available
+mkdir -p ${PREFIX}/bin
+ln -sr ${PREFIX}/gapseq/gapseq ${PREFIX}/bin/
 
 # Download reference sequence data
 # To install the database, we must call the installed file as it uses its own path to place the files correctly.
 bash ${PREFIX}/gapseq/src/update_sequences.sh
-
-
-# Final setup - Make binary available
-mkdir -p ${PREFIX}/bin
-ln -sr ${PREFIX}/gapseq/gapseq ${PREFIX}/bin/
-ln -sr ${PREFIX}/gapseq/src/update_sequences.sh ${PREFIX}/bin/
-ln -sr ${PREFIX}/gapseq/src/install_archived_sybilSBML.sh ${PREFIX}/bin/
-
 
 # --- 
 
