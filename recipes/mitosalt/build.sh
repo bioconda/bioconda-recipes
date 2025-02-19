@@ -23,13 +23,14 @@ chmod +x ${PREFIX}/bin/*.R
 cp bin/faSize ${PREFIX}/bin/
 cp bin/faSomeRecords ${PREFIX}/bin/
 cp bin/bedGraphToBigWig ${PREFIX}/bin/
-cp -r bin/sambamba ${PREFIX}/bin/
+cp bin/sambamba ${PREFIX}/bin/
 cp -r bin/bbmap ${PREFIX}/bin/
-cp -r bin/hisat2 ${PREFIX}/bin/
-chmod +x ${PREFIX}/bin/hisat2/hisat2-build ${PREFIX}/bin/hisat2/hisat2
+cp bin/hisat2/hisat2 bin/hisat2/hisat2-align-s bin/hisat2/hisat2-align-l bin/hisat2/hisat2-build bin/hisat2/hisat2-build-s bin/hisat2/hisat2-build-l bin/hisat2/hisat2-inspect bin/hisat2/hisat2-inspect-s bin/hisat2/hisat2-inspect-l ${PREFIX}/bin/
+chmod +x ${PREFIX}/bin/hisat2*
 chmod +x ${PREFIX}/bin/bbmap/*.sh
 chmod +x ${PREFIX}/bin/faSize ${PREFIX}/bin/faSomeRecords ${PREFIX}/bin/bedGraphToBigWig
 chmod +x ${PREFIX}/bin/sambamba
+ln -s ${PREFIX}/bin/bbmap/*.sh ${PREFIX}/bin/
 
 
 # Copy config files
