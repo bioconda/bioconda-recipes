@@ -26,8 +26,8 @@ pushd build
 cmake -S .. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-    -DTBB_DIR="${PWD}/../$tbb_root" \
-    -DCMAKE_PREFIX_PATH="${PWD}/../$tbb_root/cmake" \
+    -DTBB_DIR=${PWD}/../$tbb_root \
+    -DCMAKE_PREFIX_PATH=${PWD}/../$tbb_root/cmake \
     "${CONFIG_ARGS}"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
