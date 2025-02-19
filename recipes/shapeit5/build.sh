@@ -6,6 +6,9 @@ export CXXFLAGS="${CXXFLAGS} -O3 -Wno-unused-command-line-argument"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
+OS=$(uname)
+ARCH=$(uname -m)
+
 if [[ `uname` == "Darwin" ]]; then
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
 	export CXXFLAGS="${CXXFLAGS} -fno-define-target-os-macros"
@@ -35,9 +38,9 @@ do
         CXX="${CXX} -std=c++14" \
         CXXFLAG="${CXXFLAGS} ${PREFIX} -D__COMMIT_ID__='\"${COMMIT_VERS}\"' -D__COMMIT_DATE__='\"${COMMIT_DATE}\"' -Wno-ignored-attributes -O3 ${EXTRA_ARGS}" \
         LDFLAG="${LDFLAGS}" \
-        HTSLIB_INC="${PREFIX}/include/htslib" \
+        HTSLIB_INC="${PREFIX}" \
         HTSLIB_LIB="${PREFIX}/lib/libhts.a" \
-        BOOST_INC="${PREFIX}/include"\
+        BOOST_INC="${PREFIX}/include" \
         BOOST_LIB_IO="${PREFIX}/lib/libboost_iostreams.a" \
         BOOST_LIB_PO="${PREFIX}/lib/libboost_program_options.a" \
         BOOST_LIB_SE="${PREFIX}/lib/libboost_serialization.a" \
