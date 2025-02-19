@@ -8,6 +8,8 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 OS=$(uname)
 ARCH=$(uname -m)
+cp -rf ${RECIPE_DIR}/sse2neon.h phase_common/src/models/
+cp -rf ${RECIPE_DIR}/sse2neon.h phase_rare/src/models/hmm_scaffold/
 
 if [[ `uname` == "Darwin" ]]; then
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
