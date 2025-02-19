@@ -33,9 +33,10 @@ fi
 cmake -S . -B build \
 	-DZIG=OFF -DOPENMP=ON \
 	-DCMAKE_BUILD_TYPE=Release \
+	-DBUILD_SHARED_LIBS=ON \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	"${CONFIG_ARGS}"
+	-DPROFILING=ON "${CONFIG_ARGS}"
 
-cmake --build build --target install -j "${CPU_COUNT}" -v
+cmake --build build --target install -j "${CPU_COUNT}"
