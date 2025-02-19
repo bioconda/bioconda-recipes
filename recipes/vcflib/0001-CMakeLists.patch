@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 7e90114..f0119de 100644
+index 7e90114..a58b059 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -69,11 +69,6 @@ if(NOT CMAKE_BUILD_TYPE)
@@ -14,67 +14,15 @@ index 7e90114..f0119de 100644
  if ((${CMAKE_BUILD_TYPE} MATCHES Release) OR (${CMAKE_BUILD_TYPE} MATCHES RelWithDebInfo))
    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_FLAGS}")
    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_FLAGS}")
-@@ -149,6 +144,10 @@ file(GLOB INCLUDES
-   contrib/smithwaterman/*.h*
-   contrib/fastahack/*.h*
-   contrib/filevercmp/*.h*
-+  contrib/WFA2-lib/wavefront/*.h*
-+  contrib/WFA2-lib/utils/*.h*
-+  contrib/WFA2-lib/alignment/*.h*
-+  contrib/WFA2-lib/system/*.h*
-   )
- 
- set(vcfwfa_SOURCE
-@@ -180,16 +179,60 @@ set(vcflib_SOURCE
-     contrib/fsom/fsom.c
-     contrib/filevercmp/filevercmp.c
-     contrib/c-progress-bar/progress.c
-+    contrib/WFA2-lib/wavefront/wavefront_align.c
-+    contrib/WFA2-lib/wavefront/wavefront_aligner.c
-+    contrib/WFA2-lib/wavefront/wavefront_attributes.c
-+    contrib/WFA2-lib/wavefront/wavefront_backtrace_buffer.c
-+    contrib/WFA2-lib/wavefront/wavefront_backtrace.c
-+    contrib/WFA2-lib/wavefront/wavefront_backtrace_offload.c
-+    contrib/WFA2-lib/wavefront/wavefront_bialign.c
-+    contrib/WFA2-lib/wavefront/wavefront_bialigner.c
-+    contrib/WFA2-lib/wavefront/wavefront.c
-+    contrib/WFA2-lib/wavefront/wavefront_components.c
-+    contrib/WFA2-lib/wavefront/wavefront_compute_affine2p.c
-+    contrib/WFA2-lib/wavefront/wavefront_compute_affine.c
-+    contrib/WFA2-lib/wavefront/wavefront_compute.c
-+    contrib/WFA2-lib/wavefront/wavefront_compute_edit.c
-+    contrib/WFA2-lib/wavefront/wavefront_compute_linear.c
-+    contrib/WFA2-lib/wavefront/wavefront_debug.c
-+    contrib/WFA2-lib/wavefront/wavefront_display.c
-+    contrib/WFA2-lib/wavefront/wavefront_extend.c
-+    contrib/WFA2-lib/wavefront/wavefront_heuristic.c
-+    contrib/WFA2-lib/wavefront/wavefront_pcigar.c
-+    contrib/WFA2-lib/wavefront/wavefront_penalties.c
-+    contrib/WFA2-lib/wavefront/wavefront_plot.c
-+    contrib/WFA2-lib/wavefront/wavefront_slab.c
-+    contrib/WFA2-lib/wavefront/wavefront_unialign.c
-+    contrib/WFA2-lib/system/profiler_counter.c
-+    contrib/WFA2-lib/system/profiler_timer.c
-+    contrib/WFA2-lib/system/mm_allocator.c
-+    contrib/WFA2-lib/system/mm_stack.c
-+    contrib/WFA2-lib/utils/bitmap.c
-+    contrib/WFA2-lib/utils/dna_text.c
-+    contrib/WFA2-lib/utils/sequence_buffer.c
-+    contrib/WFA2-lib/utils/vector.c
-+    contrib/WFA2-lib/utils/commons.c
-+    contrib/WFA2-lib/utils/heatmap.c
-+    contrib/WFA2-lib/alignment/affine2p_penalties.c
-+    contrib/WFA2-lib/alignment/affine_penalties.c
-+    contrib/WFA2-lib/alignment/cigar.c
-+    contrib/WFA2-lib/alignment/score_matrix.c
- )
+@@ -184,12 +179,19 @@ set(vcflib_SOURCE
  
  if (TABIXPP_LOCAL) # add the tabixpp source file
      list(APPEND vcflib_SOURCE ${tabixpp_SOURCE})
++    list(APPEND INCLUDES ${TABIXPP_LOCAL}/tabix.hpp)
  endif()
  
 -add_library(vcflib STATIC
-+add_library(vcflib SHARED
++add_library(vcflib
      ${vcflib_SOURCE}
      )
  
@@ -87,7 +35,7 @@ index 7e90114..f0119de 100644
  set(BINS
      vcfecho
      dumpContigsFromHeader
-@@ -326,6 +369,10 @@ set(SCRIPTS
+@@ -326,6 +328,10 @@ set(SCRIPTS
  file (STRINGS "VERSION" BUILD_NUMBER)
  add_definitions(-DVCFLIB_VERSION="${BUILD_NUMBER}")
  add_definitions(-DVERSION="${BUILD_NUMBER}")
@@ -98,7 +46,7 @@ index 7e90114..f0119de 100644
  
  # ---- Build htslib
  #
-@@ -337,11 +384,11 @@ if (HTSLIB_LOCAL)
+@@ -337,11 +343,11 @@ if (HTSLIB_LOCAL)
  
    include_directories(${HTSLIB_LOCAL})
  
@@ -113,7 +61,36 @@ index 7e90114..f0119de 100644
      INSTALL_COMMAND ""
      BUILD_IN_SOURCE ON
      BUILD_COMMAND $(MAKE) CFLAGS=${flags} lib-static
-@@ -595,8 +642,12 @@ endif (PANDOC)
+@@ -381,8 +387,7 @@ if(WFA_GITMODULE)
+   add_subdirectory(${WFA_LOCAL})
+   set(WFALIB wfa2) # pick up the wfa2 lib target from the included CMakeLists.txt
+ else(WFA_GITMODULE)
+-  include_directories($ENV{CMAKE_PREFIX_PATH}/include/wfa2lib)
+-  set(WFA_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/wfa2lib)
++  find_path(WFA_INCLUDE_DIRS wavefront/wfa.hpp PATH_SUFFIXES wfa2lib)
+   find_library(WFALIB wfa2 wfa REQUIRED) # distro search for shared lib
+ endif(WFA_GITMODULE)
+ 
+@@ -453,6 +458,9 @@ add_dependencies(vcflib ${vcflib_DEPS})
+ 
+ # ---- Build all
+ 
++if (BUILD_SHARED_LIBS)
++  target_link_libraries(vcflib PUBLIC ${vcflib_LIBS} ${WFALIB})
++endif()
+ if (NOT BUILD_ONLY_LIB)
+   foreach(BIN ${BINS})
+     add_executable(${BIN} src/${BIN}.cpp)
+@@ -465,7 +473,7 @@ if (NOT BUILD_ONLY_LIB)
+     target_link_libraries(${WFBIN} PUBLIC ${vcflib_LIBS} vcflib)
+     target_link_libraries(${WFBIN} PUBLIC ${vcflib_LIBS} ${WFALIB})
+   endforeach(WFBIN ${BINS})
+-  install(TARGETS ${BINS} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
++  install(TARGETS ${BINS} ${WFBINS} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+ 
+   # ---- Copy scripts
+   foreach(SCRIPT ${SCRIPTS})
+@@ -595,8 +603,12 @@ endif (PANDOC)
  # ---- Install
  
  install(TARGETS vcflib ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})
@@ -127,4 +104,5 @@ index 7e90114..f0119de 100644
 +configure_file(${CMAKE_CURRENT_SOURCE_DIR}/vcflib.pc.in ${CMAKE_CURRENT_BINARY_DIR}/vcflib.pc @ONLY)
 +install(FILES ${CMAKE_CURRENT_BINARY_DIR}/vcflib.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
  
- install(DIRECTORY ${CMAKE_SOURCE_DIR}/man/ DESTINATION ${CMAKE_INSTALL_PREFIX}/man/man1)
+-install(DIRECTORY ${CMAKE_SOURCE_DIR}/man/ DESTINATION ${CMAKE_INSTALL_PREFIX}/man/man1)
++install(DIRECTORY ${CMAKE_SOURCE_DIR}/man/ DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
