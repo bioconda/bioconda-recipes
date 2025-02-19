@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 # Do not set -x, this script outputs a value with echo
 
 # Check to see if any changed recipes have specified the key
