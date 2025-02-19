@@ -36,11 +36,12 @@ do
     # Build the binaries
     make \
         -j"${CPU_COUNT}" \
-        DYN_LIBS="-lz -lpthread -lbz2 -llzma -lcurl -lhts -ldeflate -lm -lcrypto" \
+        DYN_LIBS="-lz -lpthread -lbz2 -llzma -lcurl -lhts -ldeflate -lm -lcrypto -lboost_iostreams -lboost_program_options -lboost_serialization" \
         CXX="${CXX} -std=c++14" \
         CXXFLAG="${CXXFLAGS} ${PREFIX} -D__COMMIT_ID__='\"${COMMIT_VERS}\"' -D__COMMIT_DATE__='\"${COMMIT_DATE}\"' -Wno-ignored-attributes -O3 ${EXTRA_ARGS}" \
         LDFLAG="${LDFLAGS}" \
-        HTSLIB_INC="${PREFIX}" \
+	HTSSRC="${PREFIX}" \
+        HTSLIB_INC="${PREFIX}/include" \
         HTSLIB_LIB="${PREFIX}/lib/libhts.a" \
         BOOST_INC="${PREFIX}/include" \
         BOOST_LIB_IO="${PREFIX}/lib/libboost_iostreams.a" \
