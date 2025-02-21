@@ -27,11 +27,14 @@ done
 shift $((OPTIND -1))
 
 
-
 # MITOSALT_DATA is defined in build.sh, store the db there
-echo "\nDownloading MITOSALT database to ${MITOSALT_DATA}..."
-cd "${MITOSALT_DATA}" || { echo "Error: Could not change to MITOSALT_DATA directory"; exit 1; }
-mkdir genome
+if [[ ! -v "${MITOSALT_DATA}" ]]; then
+  printf "\nDownloading MITOSALT database in the current directory\n\n"
+else
+  mkdir -p "${MITOSALT_DATA}"
+  cd "${MITOSALT_DATA}"
+fi
+
 
 # Set variables
 HG19_V=hg19_g1k.fasta
