@@ -23,10 +23,10 @@ echo "=end========== DEBUG ===============pre=="
 
 if [ $unamestr == 'Linux' ];
 then
-	sed -i 's@'"$PREFIX"'/.*/@/opt/anaconda1anaconda2anaconda3@g' $PREFIX/share/sepp/sepp/upp.config
+	sed -i 's@\$SRC_DIR/.*/@/opt/anaconda1anaconda2anaconda3@g' $PREFIX/share/sepp/sepp/upp.config
 elif [ $unamestr == 'Darwin' ];
 then
-	gsed -i 's@'"$PREFIX"'/.*/@/opt/anaconda1anaconda2anaconda3@g' $PREFIX/share/sepp/sepp/upp.config
+	gsed -i 's@\$SRC_DIR/.*/@/opt/anaconda1anaconda2anaconda3@g' $PREFIX/share/sepp/sepp/upp.config
 fi
 
 echo "============== DEBUG ===============post=="
