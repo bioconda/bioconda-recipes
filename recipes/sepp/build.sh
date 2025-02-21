@@ -17,6 +17,10 @@ cp ./.sepp/upp.config $PREFIX/share/sepp/sepp/upp.config
 
 # replace $PREFIX with /opt/anaconda1anaconda2anaconda3 for later replacement of concrete build PREFIX
 # note: can't apply a patch here, as upp.config is not part of upstream but gets generated during python setup
+echo "============== DEBUG ================="
+cat $PREFIX/share/sepp/sepp/upp.config
+echo "=end========== DEBUG ================="
+
 if [ $unamestr == 'Linux' ];
 then
 	sed -i 's@'"$PREFIX"'@/opt/anaconda1anaconda2anaconda3@g' $PREFIX/share/sepp/sepp/upp.config
