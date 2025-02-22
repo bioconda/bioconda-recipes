@@ -34,6 +34,7 @@ else
 fi
 
 # Build statically linked binary with Rust
+export RUSTC_BOOTSTRAP=1
 RUST_BACKTRACE=1 \
 cargo install \
   --path . \
