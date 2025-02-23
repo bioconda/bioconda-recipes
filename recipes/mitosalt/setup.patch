@@ -1,6 +1,6 @@
 --- setup.sh	2020-11-18 20:43:10.000000000 +0000
-+++ setup_patched.sh	2025-02-19 19:47:13.955685300 +0000
-@@ -19,21 +19,15 @@
++++ setup_patched.sh	2025-02-23 11:30:49.449356200 +0000
+@@ -19,115 +19,28 @@
  HISAT2_V=hisat2-2.1.0
  BBMAP_URL=https://downloads.sourceforge.net/project/bbmap/BBMap_38.05.tar.gz
  BBMAP_V=bbmap
@@ -23,9 +23,18 @@
  FASR_V=faSomeRecords
  FASZ_URL=http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64.v369/faSize
  FASZ_V=faSize
-@@ -44,88 +38,13 @@
- RCB_URL=https://cran.r-project.org/src/contrib/Archive/RColorBrewer/RColorBrewer_1.0-5.tar.gz
- RCB_V=RColorBrewer_1.0-5.tar.gz
+ 
+-#R PACKAGES
+-PLOTRIX_URL=https://cran.r-project.org/src/contrib/Archive/plotrix/plotrix_3.7-3.tar.gz
+-PLOTRIX_V=plotrix_3.7-3.tar.gz
+-RCB_URL=https://cran.r-project.org/src/contrib/Archive/RColorBrewer/RColorBrewer_1.0-5.tar.gz
+-RCB_V=RColorBrewer_1.0-5.tar.gz
++#SELECTORS
++FOLDER=yes
++HISAT=yes
++BBMAP=yes
++SAMBAMBA=yes
++UCSC=yes
  
 -#GENOME DATA
 -HG19_URL=https://www.dropbox.com/s/e1xwzye9hieewxz/human_g1k_v37.fasta.gz
@@ -36,7 +45,7 @@
 -M38_V=mm10.fasta
 -MTM_V=mouse_mt.fasta
 -M38S_V=mm10.size
--
+ 
 -#ASK USER OPINION
 -echo -e "\x1b[30;43m Do you want basic installation (all tools and genomes installed by default)? (yes/no, no will take you to advanced installation): \x1b[m"
 -read BASIC;
@@ -109,17 +118,13 @@
 -  lscpu | grep -E '^Thread|^Core|^Socket|^CPU\('
 -  read THREADS;
 -fi
-+FOLDER=yes
-+HISAT=yes
-+BBMAP=yes
-+SAMBAMBA=yes
-+UCSC=yes
-+PLOTRIX=yes
-+RCB=yes
- 
- echo -e "\n\n\x1b[30;43m $now: Ok! based on your selection it may take upto two hours to complete all the download and compiling!\x1b[m"
+-
+-echo -e "\n\n\x1b[30;43m $now: Ok! based on your selection it may take upto two hours to complete all the download and compiling!\x1b[m"
++echo -e "\n\n\x1b[30;43m $now: Ok! it may take upto two hours to complete all the download and compiling!\x1b[m"
  #CLEAN DATA
-@@ -151,15 +70,6 @@
+ if [ "$FOLDER" == "yes" ]; then
+   echo -e "bam\nbin\nbw\ngenome\nindel\nlog\nplot\ntab" > tmp.list
+@@ -151,15 +64,6 @@
  mv $HISAT2_V bin/hisat2
  fi
  
@@ -135,7 +140,7 @@
  echo -e "\x1b[97;41m $now:Installing BBMap: \x1b[m"
  if [ "$BBMAP" == "yes" ]; then
  wget -O $TMPFILE $BBMAP_URL
-@@ -167,28 +77,6 @@
+@@ -167,28 +71,6 @@
  rm $TMPFILE
  fi
  
@@ -164,7 +169,7 @@
  echo -e "\x1b[97;41m $now:Installing Sambamba: \x1b[m"
  if [ "$SAMBAMBA" == "yes" ]; then
  wget -O $TMPFILE $SAMBAMBA_URL
-@@ -213,48 +101,6 @@
+@@ -213,61 +95,4 @@
  chmod 755 bin/$FASZ_V
  fi
  
@@ -210,6 +215,19 @@
 -  bin/samtools/samtools faidx genome/$MTM_V
 -fi
 -
- #INSTALL PLOTRIX
- echo -e "\x1b[97;41m $now:Install R packages: \x1b[m"
- if [ "$PLOTRIX" == "yes" ]; then
+-#INSTALL PLOTRIX
+-echo -e "\x1b[97;41m $now:Install R packages: \x1b[m"
+-if [ "$PLOTRIX" == "yes" ]; then
+-  wget $PLOTRIX_URL
+-  R CMD INSTALL -l bin $PLOTRIX_V
+-  rm $PLOTRIX_V
+-fi
+-
+-#INSTALL RCOLORBREWER
+-if [ "$RCB" == "yes" ]; then
+-  wget $RCB_URL
+-  R CMD INSTALL -l bin $RCB_V
+-  rm $RCB_V
+-fi
+-
+ echo -e "\n\n\x1b[30;43m $now: Setup finished!\x1b[m"
