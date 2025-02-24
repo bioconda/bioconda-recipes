@@ -1,6 +1,5 @@
 #!/bin/bash -euo
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 # Identify OS and architecture
@@ -9,18 +8,7 @@ ARCH=$(uname -m)
 
 # Determine features based on platform
 FEATURES=""
-if [[ "${OS}" == "Darwin" ]]; then
-    # macOS
-    # Both x86_64 and arm64 (Apple Silicon) will use the same features
-    # If you need to differentiate, uncomment the lines below
-    # if [[ "${ARCH}" == "x86_64" ]]; then
-    #     FEATURES="stdsimd,macos-accelerate"
-    # elif [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
-    #     FEATURES="stdsimd,macos-accelerate"
-    # fi
-    FEATURES="stdsimd"
-else
-    # Linux
+if [[ "${OS}" == "Linux" ]]; then
     if [[ "${ARCH}" == "x86_64" ]]; then
         FEATURES="intel-mkl-static,simdeez_f"
     elif [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
