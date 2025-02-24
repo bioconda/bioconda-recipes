@@ -1,0 +1,36 @@
+---
+{% set version = "0.1.0" %}
+
+package:
+  name: atol-bpa-datamapper
+  version: {{ version }}
+
+source:
+  url: https://github.com/TomHarrop/atol-bpa-datamapper/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 65e84abf871cb1b6fd64fe67389152079f6ad0accddc9eb9479c10d1d5392cd5
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install --ignore-installed .
+  run_exports:
+    - {{ pin_subpackage("atol-bpa-datamapper", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.12
+  run:
+    - ckanapi >= 4.8
+    - jsonlines >= 4.0.0
+
+test:
+  commands:
+    - "filter-packages --help | grep 'usage: filter-packages'"
+    - "map-metadata --help | grep 'usage: map-metadata'"
+
+about:
+  home: https://github.com/TomHarrop/atol-bpa-datamapper
+  license: GPL-3
+  license_file: LICENSE
+  summary: >
+    Map data from the BPA data portal for AToL's Genome Engine.
