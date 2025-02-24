@@ -21,7 +21,7 @@ else
     if [[ "${ARCH}" == "x86_64" ]]; then
         FEATURES="intel-mkl-static,simdeez_f"
     elif [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
-        FEATURES="openblas-static,stdsimd"
+        FEATURES="openblas-system,stdsimd"
     else
         echo "Unsupported architecture '${ARCH}' on Linux."
         exit 1
@@ -32,4 +32,5 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
-cargo install --features "${FEATURES}" --verbose --path . --root "${PREFIX}"
+cargo install --path . --root "${PREFIX}" \
+    --features "${FEATURES}" --verbose
