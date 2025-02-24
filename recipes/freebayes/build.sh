@@ -6,14 +6,14 @@ cd freebayes
 mkdir build
 
 export C_INCLUDE_PATH="${PREFIX}/include"
-export LIBPATH="-L${PREFIX}/lib"
+export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -Wno-deprecated-declarations -Wno-use-after-free -Wno-maybe-uninitialized"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-deprecated-declarations"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 wget -O src/multipermute.h https://raw.githubusercontent.com/ekg/multipermute/refs/heads/master/multipermute.h
 
-sed -i.bak -e 's|"split.h"|<vcflib/split.h>|' src/*.h 
+sed -i.bak -e 's|"split.h"|<vcflib/split.h>|' src/*.h
 sed -i.bak -e 's|"split.h"|<vcflib/split.h>|' src/*.cpp
 sed -i.bak -e 's|"convert.h"|<vcflib/convert.h>|' src/*.h
 sed -i.bak -e 's|"convert.h"|<vcflib/convert.h>|' src/*.cpp
@@ -27,7 +27,13 @@ sed -i.bak -e 's|<IntervalTree.h>|<vcflib/IntervalTree.h>|' src/BedReader.cpp
 
 rm -rf src/*.bak
 
-CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" meson setup --buildtype release \
+if [[ `uname` == "Darwin" ]]; then
+	CC_LD=ld
+else
+	CC_LD=lld
+fi
+
+CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" CC_LD="${CC_LD}" meson setup --buildtype release \
 	--prefix "${PREFIX}" --strip \
 	--includedir "${PREFIX}/include" \
 	--libdir "${PREFIX}/lib" build/
