@@ -22,14 +22,14 @@ cat $PREFIX/share/sepp/sepp/upp.config
 echo "=end========== DEBUG ===============pre=="
 
 if [ x"$(uname)" == x"Linux" ]; then
-	sed -E -i 's@\$SRC_DIR/.*/@/opt/anaconda1anaconda2anaconda3@g' $PREFIX/share/sepp/sepp/upp.config
+	cat $PREFIX/share/sepp/sepp/upp.config | sed 's@\$SRC_DIR/.*/@/opt/anaconda1anaconda2anaconda3@g' 
 elif [ x"$(uname)" == x"Darwin" ]; then
 	gsed -i 's@\$SRC_DIR/.*/@/opt/anaconda1anaconda2anaconda3@g' $PREFIX/share/sepp/sepp/upp.config
 fi
 
-echo "============== DEBUG ===============post=="
-cat $PREFIX/share/sepp/sepp/upp.config
-echo "=end========== DEBUG ===============post=="
+#echo "============== DEBUG ===============post=="
+#cat $PREFIX/share/sepp/sepp/upp.config
+#echo "=end========== DEBUG ===============post=="
 
 $PYTHON -m pip install . --ignore-installed --no-deps -vv
 
