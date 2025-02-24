@@ -16,6 +16,9 @@ build:
     - pairtools = pairtools.cli:cli
   script:
     - export M4="${BUILD_PREFIX}/bin/m4"
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+    - export DYLD_LIBRARY_PATH="${PREFIX}/lib:${DYLD_LIBRARY_PATH}"  # [osx]
     - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   run_exports:
     - {{ pin_subpackage('pairtools', max_pin="x") }}
@@ -37,7 +40,8 @@ requirements:
     - click
     - lz4-c
     - samtools
-    - htslib  # for bgzip
+    # for bgzip
+    - htslib
     - pbgzip  # [not arm64]
     - pysam >=0.19
     - pandas
