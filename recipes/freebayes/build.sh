@@ -27,6 +27,15 @@ sed -i.bak -e 's|<IntervalTree.h>|<vcflib/IntervalTree.h>|' src/BedReader.cpp
 
 rm -rf src/*.bak
 
+OS=$(uname)
+ARCH=$(uname -m)
+
+if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64 ]]; then
+	export CXXFLAGS="${CXXFLAGS} -arch x86_64"
+elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
+	export CXXFLAGS="${CXXFLAGS} -arch arm64"
+fi
+
 CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" meson setup --buildtype release \
 	--prefix "${PREFIX}" --strip \
 	--includedir "${PREFIX}/include" \
