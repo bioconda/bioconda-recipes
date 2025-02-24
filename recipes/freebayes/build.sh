@@ -5,15 +5,39 @@ mkdir -p ${PREFIX}/bin
 cd freebayes
 mkdir build
 
-export INCLUDES="-I{PREFIX}/include"
+export C_INCLUDE_PATH="${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -I{PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-deprecated-declarations"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
-CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" CC="${CC}" meson setup --buildtype release \
+if [[ `uname` == "Darwin" ]]; then
+	export CONFIG_ARGS="-Dstatic=false"
+else
+	export CONFIG_ARGS="-Dstatic=true"
+fi
+
+sed -i.bak -e 's|"split.h"|<vcflib/split.h>|' src/*.h 
+sed -i.bak -e 's|"split.h"|<vcflib/split.h>|' src/*.cpp
+sed -i.bak -e 's|"convert.h"|<vcflib/convert.h>|' src/*.h
+sed -i.bak -e 's|"convert.h"|<vcflib/convert.h>|' src/*.cpp
+sed -i.bak -e 's|"join.h"|<vcflib/join.h>|' src/*.h
+sed -i.bak -e 's|"join.h"|<vcflib/join.h>|' src/*.cpp
+sed -i.bak -e 's|"multichoose.h"|<vcflib/multichoose.h>|' src/*.h
+sed -i.bak -e 's|"multichoose.h"|<vcflib/multichoose.h>|' src/*.cpp
+sed -i.bak -e 's|#include "multipermute.h"||' src/freebayes.cpp
+sed -i.bak -e 's|#include "multipermute.h"||' src/AlleleParser.cpp
+sed -i.bak -e 's|#include "multipermute.h"||' src/DataLikelihood.cpp
+sed -i.bak -e 's|<Variant.h>|<vcflib/Variant.h>|' src/*.h
+sed -i.bak -e 's|<intervaltree/IntervalTree.h>|<vcflib/IntervalTree.h>|' src/BedReader.h
+sed -i.bak -e 's|<IntervalTree.h>|<vcflib/IntervalTree.h>|' src/BedReader.cpp
+
+rm -rf src/*.bak
+
+CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" meson setup --buildtype release \
 	--prefix "${PREFIX}" --strip \
 	--includedir "${PREFIX}/include" \
-	--libdir "${PREFIX}/lib" build/
+	--libdir "${PREFIX}/lib" "${CONFIG_ARGS}" build/
 
 cd build
 ninja -v
@@ -27,7 +51,7 @@ chmod 0755 ../scripts/*.pl
 cp -nf ../scripts/*.py ${PREFIX}/bin
 cp -nf ../scripts/*.sh ${PREFIX}/bin
 cp -nf ../scripts/*.pl ${PREFIX}/bin
+cp -nf ../scripts/freebayes-parallel ${PREFIX}/bin
 
 chmod 0755 ${PREFIX}/bin/freebayes
-chmod 0755 ../scripts/freebayes-parallel
-cp -nf ../scripts/freebayes-parallel ${PREFIX}/bin
+chmod 0755 ${PREFIX}/bin/freebayes-parallel
