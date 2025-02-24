@@ -3,11 +3,20 @@
 set -xe
 
 mkdir -p $PREFIX/bin
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+
+if [[ `uname` == "Darwin" ]]; then
+  export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+else
+  export CONFIG_ARGS=""
+fi
 
 mkdir src/build
 cd src/build/
-cmake ..
-make -j ${CPU_COUNT}
+cmake -S .. -B . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+  -DCMAKE_CXX_COMPILER="${CXX}" "${CONFIG_ARGS}"
+cmake --build . -j "${CPU_COUNT}"
 
 cp ../../hairsplitter.py $PREFIX/bin
 chmod +x $PREFIX/bin/hairsplitter.py
@@ -33,4 +42,3 @@ cp -r ../GraphUnzip/solve_with_long_reads.py $PREFIX/bin
 cp -r ../GraphUnzip/solve_with_HiC.py $PREFIX/bin
 cp -r ../GraphUnzip/contig_DBG.py $PREFIX/bin
 chmod +x $PREFIX/bin/determine_multiplicity.py
-
