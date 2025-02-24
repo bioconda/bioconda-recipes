@@ -2,7 +2,7 @@
 
 set -xe
 
-make -j"${CPU_COUNT}" CC=$CC CFLAGS="$CFLAGS
+make -j"${CPU_COUNT}" CC=$CC CFLAGS="$CFLAGS"
 
 if [ ! -d ${PREFIX}/bin ] ; then
     mkdir -p ${PREFIX}/bin
