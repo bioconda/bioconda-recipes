@@ -5,27 +5,31 @@ package:
   version: {{ version }}
 
 build:
-  number: 1
+  number: 3
+  run_exports:
+    - {{ pin_subpackage('merfishtools', max_pin="x") }}
   skip: True # [not py3k or osx]
 
 source:
   url: https://github.com/merfishtools/merfishtools/archive/v{{version}}.tar.gz
   sha256: 5ee49804b88b0ff57c6e4e277954b098bd2e6c21d826aa3c416073aec4dcf208
+  patches:
+    - fix-build.patch
 
 requirements:
   build:
-    - rust >=1.19
     - {{ compiler('c') }}
+    - {{ compiler('rust') }}
   host:
     - gsl
     - python
-    - matplotlib
+    - matplotlib-base
     - numpy
     - pandas
     - openblas
   run:
     - python
-    - matplotlib
+    - matplotlib-base
     - numpy
     - pandas
     - gsl
@@ -45,3 +49,7 @@ about:
   analysis can be performed for two or multiple conditions, including credible
   intervals for fold change and coefficient of variation, and controlling
   the expected false discovery rate."
+
+extra:
+  additional-platforms:
+    - linux-aarch64

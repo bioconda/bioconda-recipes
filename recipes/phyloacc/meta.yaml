@@ -1,6 +1,6 @@
 {% set name = "PhyloAcc" %}
-{% set version = "2.3.3" %}
-{% set sha256 = "9fd75cae7015dd35d516ec040a331fcb6cb5377644d0d7864b488fda2f288d60" %}
+{% set version = "2.4.2" %}
+{% set sha256 = "effa443400fa1ebfa43de1daf551c8344f883bcf8d048a11e64fca64243a93fe" %}
 
 package:
   name: {{ name|lower }}
@@ -11,8 +11,8 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
-  skip: True  # [py < 38]
+  number: 1
+  skip: True  # [py < 311]
   run_exports:
     - {{ pin_subpackage('phyloacc', max_pin="x") }}
 
@@ -35,15 +35,14 @@ requirements:
     - matplotlib-base >=3.5
     - biopython >=1.79
     - numpy >=1.22
-    - snakemake-minimal >=7.3
+    - snakemake-minimal >=8.0
+    - snakemake-executor-plugin-slurm
     - libgomp  # [linux]
     - llvm-openmp  # [osx]
 
 test:
-  commands:
-    - phyloacc.py --version
-    - phyloacc.py --depcheck
-    - phyloacc_post.py -h
+  requires:
+    - wget
 
 about:
   home: https://phyloacc.github.io/
@@ -56,5 +55,7 @@ about:
   dev_url: https://github.com/phyloacc/PhyloAcc
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
     - gwct

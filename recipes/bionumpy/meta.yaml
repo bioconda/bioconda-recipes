@@ -1,4 +1,4 @@
-{% set version = "1.0.9" %}
+{% set version = "1.0.13" %}
 
 package:
   name: bionumpy
@@ -6,34 +6,40 @@ package:
 
 source:
   url: https://github.com/bionumpy/bionumpy/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 91410620e3ed38ce349fd77ec528e49c2c0a60535cd70d704c5291a87f59c255
+  sha256: ef15440fe040eb95461ed29092f5452726953a32710357f7ca58bda0bf06ad8f
   
 build:
   noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  entry_points:
+    - bionumpy=bionumpy.cli:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage("bionumpy", max_pin="x.x") }}
+    - {{ pin_subpackage("bionumpy", max_pin="x") }}
 
 requirements:
   host:
-    - python >=3
+    - python >=3.6
     - zlib
     - pip
+    - setuptools
   run:
-    - python >=3
-    - numpy >=1.20,<1.24
-    - npstructures >=0.2.9
+    - python >=3.6
+    - numpy >=1.20
+    - npstructures >=0.2.15
 
 test:
   imports:
     - bionumpy
 
-
 about:
   home: https://github.com/bionumpy/bionumpy
   license: MIT
-  summary: "Library for working with biological sequence data as numpy arrays"
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Library for working with biological sequence data as numpy arrays."
+  dev_url: https://github.com/bionumpy/bionumpy
+  doc_url: https://bionumpy.github.io/bionumpy
   
 extra:
   recipe-maintainers:

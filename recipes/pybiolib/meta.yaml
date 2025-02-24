@@ -1,5 +1,5 @@
 {% set name = "pybiolib" %}
-{% set version = "1.1.2109" %}
+{% set version = "1.2.517" %}
 
 package:
   name: {{ name|lower }}
@@ -7,25 +7,28 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pybiolib-{{ version }}.tar.gz
-  sha256: a2a017270de5bc4231d4598defca028b78dc4e21368599cfc6afda4c52538af1
+  sha256: 24196f996e2bbb3465662a7ccbe2500665ec8ffff686d4a420a20d8f3db50359
 
 build:
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
   number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - biolib = biolib:call_cli
   run_exports:
-    - {{ pin_subpackage('pybiolib', max_pin="x.x") }}
+    - {{ pin_subpackage('pybiolib', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.6,<4.0
-    - poetry >=0.12
+    - python >=3.6,<3.13
+    - poetry >=1.8.0
     - poetry-core
     - pip
+    - setuptools
   run:
-    - python >=3.6,<4.0
+    - python >=3.6,<3.13
     - appdirs >=1.4.3
-    - click >=8.0.0,<8.1.0
+    - click >=8.0.0
     - docker-py >=5.0.3
     - flask >=2.0.1
     - flask-cors >=3.0.10
@@ -35,24 +38,23 @@ requirements:
     - pyjwt >=2.3.0
     - pyyaml >=5.3.1
     - requests >=2.25.1,<2.30.0
-    - rich >=12.4.4,<13.0.0
-    - typing_extensions >=3.10.0 #  [py<38]
-    - typing_inspect >=0.5.0,<0.6.0 #  [py<38]
+    - rich >=12.4.4
+    - typing_extensions >=3.10.0  # [py < 38]
+    - typing_inspect >=0.5.0,<0.6.0  # [py < 38]
 
 test:
   imports:
     - biolib
   commands:
-    - pip check
     - biolib -h
-  requires:
-    - pip
 
 about:
   home: https://github.com/biolib
-  summary: BioLib Python Client
+  summary: "BioLib Python Client"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
+  dev_url: https://github.com/biolib
 
 extra:
   recipe-maintainers:

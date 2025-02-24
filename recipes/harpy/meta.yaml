@@ -1,5 +1,5 @@
-{% set version = "0.9.1" %}
-{% set sha256 = "3d05a4995f6c6c9059b5fba269ff6dee7f8befd1bdc7cb622c7f753dea49af79" %}
+{% set version = "1.16.3" %}
+{% set sha256 = "81479a85742ff0df6bf5385ae6045bf7db11b19bc312396f2a2306bd33662c94" %}
 
 package:
   name: harpy
@@ -10,25 +10,38 @@ source:
   sha256: '{{ sha256 }}'
 
 build:
-  skip: True  # [osx]
   number: 0
-  missing_dso_whitelist:
-    - /lib64/libstdc++.so.6
-    - /lib64/libc.so.6
+  skip: True  # [osx or py < 39]
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   run_exports:
-    - {{ pin_subpackage('harpy', max_pin="x.x") }}
+    - {{ pin_subpackage('harpy', max_pin="x") }}
+  script: |
+    mkdir -p ${PREFIX}/bin
+    "${CXX}" harpy/bin/extractReads.cpp -O3 -o ${PREFIX}/bin/extractReads
+    ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+    chmod 0755 harpy/bin/* 
+    cp -rf harpy/bin/* ${PREFIX}/bin/
+  entry_points:
+    - harpy = harpy.__main__:cli
 
 requirements:
+  build:
+    - {{ compiler('cxx') }}
   host:
-    - python =3.12
+    - python
     - pip
+    - setuptools-scm >=3.4
   run:
-    - bcftools =1.19
-    - pandas
-    - python >3.10
+    - apptainer
+    - bcftools =1.20
+    - conda >24.7
+    - lrez
+    - pysam
+    - python
     - rich-click
     - snakemake-minimal >7
-    - samtools
+    - samtools =1.20
     - seqtk
     - tabix
 
@@ -38,7 +51,7 @@ test:
     - "harpy --version"
 
 about:
-  home: "https://github.com/pdimens/harpy/"
+  home: "https://github.com/pdimens/harpy"
   license: GPL-3.0-or-later
   license_family: GPL3
   license_file: LICENSE
@@ -50,11 +63,11 @@ about:
     to Snakemake directly. With an emphasis on user-friendliness, parallelization, transparency,
     and reproducibility, Harpy aims to quickly handle data processing so that you can focus more
     on analyzing your data. 
-  doc_url: https://pdimens.github.io/harpy/
-  dev_url: https://github.com/pdimens/harpy
+  doc_url: "https://pdimens.github.io/harpy"
+  dev_url: "https://github.com/pdimens/harpy"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
     - pdimens
-  skip-lints:
-    - should_be_noarch_generic

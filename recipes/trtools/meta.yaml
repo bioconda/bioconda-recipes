@@ -1,5 +1,5 @@
 {% set name = "trtools" %}
-{% set version = "6.0.1" %}
+{% set version = "6.1.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 915e5f1e2ee490ad2e78294014da71cb103182277fc075ee0ccc1d27aab8bece
+  sha256: 3a177cf19060945eff4044f16d5ebdc66364e72a8a3c9bd725086ba10003df96
 
 build:
   noarch: python
@@ -20,21 +20,22 @@ build:
     - associaTR=trtools.associaTR:run
     - prancSTR = trtools.prancSTR:run
     - simTR = trtools.simTR:run
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+    - annotaTR = trtools.annotaTR:run
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   number: 0
   run_exports:
     - {{ pin_subpackage('trtools', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.7.1
+    - python >=3.7.1,<4.0
     - poetry-core >=1.0.0
     - pip >=20.3
   run:
     - python >=3.7.1,<4.0
-    - cyvcf2 >=0.30.4
+    - cyvcf2 >=0.30.27
     - matplotlib-base >=3.1.2
-    - numpy >=1.17.3,<2.0
+    - numpy >=1.17.3
     - pandas >=1.2.0
     - pysam >=0.15.4
     - scikit-learn >=0.23.1
@@ -42,6 +43,7 @@ requirements:
     - statsmodels >=0.10.2
     - pyfaidx >=0.5.6
     - ART >=2016.06.05
+    - pgenlib >=0.90.1
 
 test:
   imports:
@@ -54,6 +56,7 @@ test:
     - trtools.statSTR
     - trtools.prancSTR
     - trtools.simTR
+    - trtools.annotaTR
     - trtools.utils
   requires:
     - bcftools
@@ -69,6 +72,7 @@ test:
     - qcSTR --help
     - prancSTR --help
     - simTR --help
+    - annotaTR --help
 
 about:
   home: https://github.com/gymreklab/TRTools
@@ -86,3 +90,6 @@ extra:
   identifiers:
     - biotools:trtools
     - doi:10.1093/bioinformatics/btaa736
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64

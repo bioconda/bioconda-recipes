@@ -1,0 +1,32 @@
+{% set version = "1.0" %}
+{% set beta_suffix = "" %}
+{% set sha256 = "9afd8a43815bcb9960d4260f93389f0eeaa50d46d6337503112d9611ad23ce8b" %}
+
+package:
+  name: hmftools-esvee
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/hartwigmedical/hmftools/releases/download/esvee-v{{ version }}/esvee_v{{ version }}{{ beta_suffix }}.jar
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("hmftools-esvee", max_pin="x.x") }}
+
+requirements:
+  run:
+    - openjdk >=8,<=21
+    - sambamba ==0.6.8
+
+test:
+  commands:
+    - 'esvee -version | grep Esvee'
+
+about:
+  home: https://github.com/hartwigmedical/hmftools/blob/master/esvee/README.md
+  license: GPL-3.0-only
+  license_family: GPL3
+  summary: Structural variant caller specialised for breakend-breakpoint calling.

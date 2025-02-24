@@ -1,38 +1,36 @@
-{% set version = "0.8.0" %}
-{% set git_commit = "413dd69008519c5d8157b7985578e767b321109c" %}
-{% set sha256 = "a72af2ab728e95aa6766a3bb4520af6273a9ea3be44a6a8dc260cd97615877df" %}
+{% set version = "0.12.2" %}
+{% set name = "piscem" %}
+{% set sha256 = "4a3895f693843ecdaa104d6826adbcf0e5146717b1bc9efc129b5a80d6125bbb" %}
 
 package:
-  name: piscem
+  name: {{ name }}
   version: {{ version }}
 
 build:
   number: 0
   run_exports:
     - {{ pin_subpackage("piscem", max_pin="x.x") }}
-  # skip: True  # [linux]
-
+  
 source:
-  git_url: https://github.com/COMBINE-lab/piscem
-  git_rev: "{{ git_commit }}"
+  url: https://github.com/COMBINE-lab/piscem/releases/download/v{{ version }}/source.tar.gz
   sha256: {{ sha256 }}
 
 requirements:
   build:
-    - rust >=1.75  
     - cmake
     - autoconf
     - make
     - zlib
     - bzip2
-    - jemalloc >=5.1.2
+    - jemalloc >=5.2.1
     - {{ compiler('rust') }}
     - {{ compiler('cxx') }}
     - pkg-config
   host:
     - zlib
     - bzip2
-    - jemalloc >=5.1.2
+    - jemalloc >=5.2.1
+    - tapi # [osx and x86_64]
   run:
     - __osx >={{ MACOSX_DEPLOYMENT_TARGET|default("10.9") }}  # [osx and x86_64]
     
@@ -47,5 +45,6 @@ about:
   summary: piscem is a next-generation compacted colored de Bruijn Graph-based indexer and mapper
 
 extra:
-  skip-lints:
-    - uses_vcs_url
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64 

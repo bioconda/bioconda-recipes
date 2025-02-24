@@ -1,27 +1,29 @@
 {% set name = "sdrf-pipelines" %}
-{% set version = "0.0.26" %}
+{% set pypi_name = "sdrf_pipelines" %}
+{% set version = "0.0.31" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: eba64fddad8ecc05ac3efecc43e19a7ba556ede7cd5b57475277a3ec20195216
+  url: "https://pypi.io/packages/source/{{ pypi_name[0] }}/{{ pypi_name }}/{{ pypi_name }}-{{ version }}.tar.gz"
+  sha256: 2d78d297e1e4de98d8d6965ae00aab9adb9420a20d5dd56336a45becc19a4920
 
 build:
-  number: 0
+  number: 1
   noarch: python
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
   entry_points:
     - parse_sdrf = sdrf_pipelines.parse_sdrf:main
-  script: "{{ PYTHON }} -m pip install . --no-deps -vvv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
 
 requirements:
   host:
     - pip
     - python >=3.5
+    - setuptools
   run:
     - click
     - requests
@@ -31,6 +33,10 @@ requirements:
     - pyaml
     - defusedxml
     - pytest
+    - duckdb
+    - rdflib
+    - pyarrow
+    - setuptools
 
 test:
   imports:
@@ -38,13 +44,14 @@ test:
     - sdrf_pipelines.openms
     - sdrf_pipelines.sdrf
     - sdrf_pipelines.utils
-    - sdrf_pipelines.zooma
+    - sdrf_pipelines.ols
   commands:
     - parse_sdrf --help
 
 about:
   home: "https://github.com/bigbio/sdrf-pipelines"
-  license: Apache 2
+  license: "Apache-2.0"
+  license_family: APACHE
   ##license_file: LICENSE ## patch is applied upstream, next version will have it
   summary: "Translate, convert SDRF to configuration pipelines"
   doc_url: "https://github.com/bigbio/sdrf-pipelines"

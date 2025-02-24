@@ -1,0 +1,49 @@
+{% set name = "steamboat" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/steamboat-binf/steamboat_binf-{{ version }}.tar.gz
+  sha256: dfade01e251d5bbfb117378b9abeaf7231e0fc7a37fc7e37be0933ac9185981c
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed -vv .
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - poetry-core
+  run:
+    - biopython
+    - executor
+    - pigz
+    - python >=3.9
+    - pyyaml
+    - rich-click >=1.6.0
+
+test:
+  imports:
+    - steamboat
+  commands:
+    - pip check
+    - gisaid-batch --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/rpetit3/steamboat-py
+  summary: A collection of tools/scripts for microbial bioinformatics
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - rpetit3

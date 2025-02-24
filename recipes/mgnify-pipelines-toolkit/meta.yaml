@@ -1,5 +1,5 @@
 {% set name = "mgnify-pipelines-toolkit" %}
-{% set version = "0.1.3" %}
+{% set version = "0.2.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,13 +7,16 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/mgnify_pipelines_toolkit-{{ version }}.tar.gz
-  sha256: d04f57d1ac719bc716d672de08c08eca35ce62d25d248dccf0269bda924388e2
+  sha256: b77ba5ba184dacdb3b5d2c12a51fa1ce28f20c7f14c68b43a3806265cad1e74f
 
 build:
   entry_points:
     - get_subunits = mgnify_pipelines_toolkit.analysis.shared.get_subunits:main
     - get_subunits_coords = mgnify_pipelines_toolkit.analysis.shared.get_subunits_coords:main
     - mapseq2biom = mgnify_pipelines_toolkit.analysis.shared.mapseq2biom:main
+    - fastq_suffix_header_check = mgnify_pipelines_toolkit.analysis.shared.fastq_suffix_header_check:main
+    - library_strategy_check = mgnify_pipelines_toolkit.analysis.shared.library_strategy_check:main
+    - study_summary_generator = mgnify_pipelines_toolkit.analysis.shared.study_summary_generator:main
     - are_there_primers = mgnify_pipelines_toolkit.analysis.amplicon.are_there_primers:main
     - assess_inflection_point_mcp = mgnify_pipelines_toolkit.analysis.amplicon.assess_inflection_point_mcp:main
     - assess_mcp_proportions = mgnify_pipelines_toolkit.analysis.amplicon.assess_mcp_proportions:main
@@ -23,8 +26,16 @@ build:
     - remove_ambiguous_reads = mgnify_pipelines_toolkit.analysis.amplicon.remove_ambiguous_reads:main
     - rev_comp_se_primers = mgnify_pipelines_toolkit.analysis.amplicon.rev_comp_se_primers:main
     - standard_primer_matching = mgnify_pipelines_toolkit.analysis.amplicon.standard_primer_matching:main
+    - mapseq_to_asv_table = mgnify_pipelines_toolkit.analysis.amplicon.mapseq_to_asv_table:main
+    - primer_val_classification = mgnify_pipelines_toolkit.analysis.amplicon.primer_val_classification:main
+    - add_rhea_chebi_annotation = mgnify_pipelines_toolkit.analysis.assembly.add_rhea_chebi_annotation:main
+    - cgc_merge = mgnify_pipelines_toolkit.analysis.assembly.cgc_merge:combine_main
+    - generate_gaf = mgnify_pipelines_toolkit.analysis.assembly.generate_gaf:main
+    - summarise_goslims = mgnify_pipelines_toolkit.analysis.assembly.summarise_goslims:main
+    - fasta_to_delimited = mgnify_pipelines_toolkit.utils.fasta_to_delimited:main
+    - get_mpt_version = mgnify_pipelines_toolkit.utils.get_mpt_version:main
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   number: 0
   run_exports:
     - {{ pin_subpackage('mgnify-pipelines-toolkit', max_pin="x.x") }}
@@ -40,12 +51,15 @@ requirements:
     - numpy ==1.26.0
     - pandas ==2.0.2
     - regex ==2023.12.25
+    - click
+    - pandera
+    - requests
+    - pyfastx >=2.2.0
 
 test:
   imports:
     - mgnify_pipelines_toolkit
   commands:
-    - pip check
     - get_subunits --help
     - get_subunits_coords --help
     - mapseq2biom --help
@@ -58,17 +72,17 @@ test:
     - remove_ambiguous_reads --help
     - rev_comp_se_primers --help
     - standard_primer_matching --help
-  requires:
-    - pip
 
 about:
   home: https://github.com/EBI-Metagenomics/mgnify-pipelines-toolkit
-  summary: Collection of scripts and tools for MGnify pipelines
+  summary: "Collection of scripts and tools for MGnify pipelines."
   description: |
     This package contains a collection of scripts used by MGnify
     pipelines
   license: Apache-2.0
+  license_family: APACHE
   license_file: LICENSE
+  dev_url: https://github.com/EBI-Metagenomics/mgnify-pipelines-toolkit
 
 extra:
   recipe-maintainers:

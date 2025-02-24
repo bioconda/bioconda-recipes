@@ -1,16 +1,19 @@
+{% set name = "whatshap" %}
+{% set version = "2.4" %}
+
 package:
-  name: whatshap
-  version: "2.3"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/37/99/7f156642064fe65aabbe6fa044a485e2aae6437dd545a9d539c06c1535dd/whatshap-2.3.tar.gz
-  sha256: 1f7ac47b18784b213492e4b92dddc63132d371b2f353660462536bcadc15e62e
+  url: https://files.pythonhosted.org/packages/a8/3f/e2beea47085f75f3947aff278911b1798a688dd48bd2044feb99b2823647/whatshap-2.4.tar.gz
+  sha256: 14217a9061b75498d73812f01f948cd735815d20e47d29c9cbb6c1bb57a477c7
 
 build:
   number: 0
-  # Unexplicable CI failure, feel free to try to make this work again
-  skip: true  # [osx]
-  script: python -m pip install --no-deps --ignore-installed .
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
   run_exports:
     - {{ pin_subpackage('whatshap', max_pin="x") }}
 
@@ -21,13 +24,12 @@ requirements:
     - python
     - pip
     - cython
-    - setuptools
     - setuptools-scm
   run:
     - python
     - pysam >=0.18
     - pyfaidx >=0.5.5.2
-    - networkx >=2.4
+    - networkx
     - biopython >=1.73
     - scipy
     - xopen >=1.2.0
@@ -40,16 +42,21 @@ test:
   imports:
     - whatshap
   commands:
-    - whatshap --help > /dev/null
+    - "whatshap --help > /dev/null"
 
 about:
-  home: https://whatshap.readthedocs.io/
-  license: MIT License
-  summary: 'phase genomic variants using DNA sequencing reads (haplotype assembly)'
+  home: "https://whatshap.readthedocs.io"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Phase genomic variants using DNA sequencing reads (haplotype assembly)."
+  dev_url: "https://github.com/whatshap/whatshap"
+  doc_url: "https://whatshap.readthedocs.io"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:whatshap
     - doi:10.1089/cmb.2014.0157

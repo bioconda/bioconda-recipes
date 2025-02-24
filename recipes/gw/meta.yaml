@@ -1,50 +1,78 @@
-
-{% set version = "0.9.3" %}
-{% set sha256 = "43445ef6d96bd8a09a9a45cd18e21481d7fefe7e9ab26aec4abd8d1f4bff3fcd" %}
+{% set version = "1.1.4" %}
+{% set sha256 = "ceb439bdd699810d2b2b0e265c10956045a758de4e96c3a47149f83fc451b1cd" %}
 
 package:
   name: gw
   version: {{ version }}
 
-
 source:
   url: https://github.com/kcleal/gw/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
-
 build:
   number: 1
   run_exports:
-    - {{ pin_subpackage('gw', max_pin="x") }} 
+    - {{ pin_subpackage('gw', max_pin="x") }}
+  ignore_run_exports:
+    - libglx          # [linux]
+    - libgles         # [linux]
+    - libegl          # [linux]
+    - xorg-libsm      # [linux]
+    - xorg-libice     # [linux]
+    - xorg-libx11     # [linux]
+    - xorg-libxau     # [linux]
+    - xorg-libxext    # [linux]
+    - libxcb          # [linux]
+    - freetype        # [osx]
+    - fontconfig      # [osx]
+    - zlib            # [osx]
+    - libuuid
+    - libdeflate
+  # skip: true  # [osx and x86_64]
 
 requirements:
   build:
     - make
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - {{ cdt('xorg-x11-proto-devel') }}          # [linux]
-    - {{ cdt('mesa-libgl-devel') }}  # [linux]
-    - {{ cdt('mesa-dri-drivers') }}  # [linux]
-    - {{ cdt('libselinux') }}        # [linux]
-    - {{ cdt('libxdamage') }}        # [linux]
-    - {{ cdt('libxxf86vm') }}        # [linux]
-    - {{ cdt('libxfixes') }}         # [linux]
-    - {{ cdt('libxext') }}           # [linux]
-    - wget
-    - unzip
+
   host:
     - fontconfig
-    - libcurl
+    - libuuid
+    - libcurl >=7.5
     - libdeflate >=1.0
     - htslib >=1.12
     - glfw >=3.3
+    - unzip
     - freetype
-    - xorg-libxfixes  # [linux]
+    - zlib >=1.1
+    - pthread-stubs       # [linux]
+    - xorg-libsm          # [linux]
+    - xorg-libice         # [linux]
+    - xorg-libx11         # [linux]
+    - libxcb              # [linux]
+    - libegl-devel        # [linux]
+    - libgl-devel         # [linux]
+    - libglx-devel        # [linux]
+    - libgles-devel       # [linux]
+    - wayland             # [linux]
+
   run:
     - glfw >=3.3
-    - htslib >=1.12 
+    - htslib >=1.12
+    - xorg-libxt          # [linux]
+    - xorg-libxau         # [linux]
+    - xorg-libxfixes      # [linux]
+    - xorg-libxxf86vm     # [linux]
+    - xorg-libxdamage     # [linux]
+    - mesalib             # [linux]
+    - wayland             # [linux]
 
 test:
   commands:
+    - which gw && ls -lh $(which gw)
+    - uname -a
+    - if [[ "$(uname)" == "Darwin" ]]; then file $(which gw); otool -L $(which gw); nm $(which gw); fi
     - gw --version
 
 about:
@@ -54,7 +82,9 @@ about:
   summary: 'View genomic sequencing data and vcf files'
 
 extra:
+  additional-platforms:
+    - osx-arm64
   container:
-      extended-base: True
+    extended-base: True
   recipe-maintainers:
     - kcleal
