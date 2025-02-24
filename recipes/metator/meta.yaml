@@ -15,17 +15,23 @@ build:
     - {{ pin_subpackage("metator", max_pin="x") }}
   entry_points:
     - metator = metator.main:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
-  noarch: python
+  script:
+    - sed -i.bak 's/^CXX=g++/CXX=${CXX}/g' external/setup_dependencies.sh
+    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  skip: True  # [py < 39 or py > 312]
 
 requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - python >=3.9,<3.13
+    - python
     - hatch
     - hatch-build-scripts
     - pip
+    - tar
   run:
-    - python >=3.9,<3.13
+    - python
     - hicstuff
     - networkx
     - checkv
