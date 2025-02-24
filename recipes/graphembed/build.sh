@@ -33,4 +33,5 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
 cargo install --path . --root "${PREFIX}" \
-    --features "${FEATURES}" --verbose
+    --features "${FEATURES}" \
+    --no-track --locked --verbose
