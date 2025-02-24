@@ -27,10 +27,6 @@ sed -i.bak -e 's|<IntervalTree.h>|<vcflib/IntervalTree.h>|' src/BedReader.cpp
 
 rm -rf src/*.bak
 
-if [[ `uname` == "Darwin" ]]; then
-	export LDFLAGS="${LDFLAGS} -lseqlib"
-fi
-
 CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" meson setup --buildtype release \
 	--prefix "${PREFIX}" --strip \
 	--includedir "${PREFIX}/include" \
