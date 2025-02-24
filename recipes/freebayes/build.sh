@@ -28,10 +28,10 @@ sed -i.bak -e 's|<IntervalTree.h>|<vcflib/IntervalTree.h>|' src/BedReader.cpp
 rm -rf src/*.bak
 
 if [[ `uname` == "Darwin" ]]; then
-	CC_LD=lld
+	CC_LD="$(which lld)"
 	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 else
-	CC_LD=ld
+	CC_LD="$(which lld)"
 fi
 
 CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" CC_LD="${CC_LD}" meson setup --buildtype release \
