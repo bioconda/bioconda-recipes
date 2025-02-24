@@ -34,7 +34,7 @@ else
 	CC_LD="$(which lld)"
 fi
 
-CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" CC_LD="${CC_LD}" meson setup --buildtype release \
+CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" CC_LD="${CC_LD}" LDFLAGS="${LDFLAGS}" meson setup --buildtype release \
 	--prefix "${PREFIX}" --strip \
 	--includedir "${PREFIX}/include" \
 	--libdir "${PREFIX}/lib" build/
