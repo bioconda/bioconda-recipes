@@ -22,10 +22,8 @@ cat $PREFIX/share/sepp/sepp/upp.config
 echo "=end========== DEBUG ===============pre=="
 
 if [ x"$(uname)" == x"Linux" ]; then
-then
-	sed -i 's@\$SRC_DIR/.*/@/opt/anaconda1anaconda2anaconda3@g' $PREFIX/share/sepp/sepp/upp.config
+	sed -E -i 's@\$SRC_DIR/.*/@/opt/anaconda1anaconda2anaconda3@g' $PREFIX/share/sepp/sepp/upp.config
 elif [ x"$(uname)" == x"Darwin" ]; then
-then
 	gsed -i 's@\$SRC_DIR/.*/@/opt/anaconda1anaconda2anaconda3@g' $PREFIX/share/sepp/sepp/upp.config
 fi
 
