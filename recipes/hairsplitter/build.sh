@@ -20,7 +20,8 @@ cmake -S .. -B . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_CXX_COMPILER="${CXX}" "${CONFIG_ARGS}"
 cmake --build . -j "${CPU_COUNT}"
 
-install -v -m 0755 ./HS_* ${PREFIX}/bin
+install -v -m 0755 HS_GenomeTailor/HS_GenomeTailor $PREFIX/bin
+install -v -m 0755 HS_call_variants HS_create_new_contigs HS_fa2gfa HS_gfa2fa HS_separate_reads ${PREFIX}/bin
 install -v -m 0755 ../cut_gfa.py ${PREFIX}/bin
 install -v -m 0755 ../GraphUnzip/*.py ${PREFIX}/bin
 install -v -m 0755 ../../hairsplitter.py ${PREFIX}/bin
