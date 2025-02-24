@@ -8,8 +8,10 @@ mkdir build
 export C_INCLUDE_PATH="${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -Wno-deprecated-declarations"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-deprecated-declarations -Wno-use-after-free -Wno-maybe-uninitialized"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+
+wget -O src/multipermute.h https://raw.githubusercontent.com/ekg/multipermute/refs/heads/master/multipermute.h
 
 sed -i.bak -e 's|"split.h"|<vcflib/split.h>|' src/*.h 
 sed -i.bak -e 's|"split.h"|<vcflib/split.h>|' src/*.cpp
@@ -19,27 +21,16 @@ sed -i.bak -e 's|"join.h"|<vcflib/join.h>|' src/*.h
 sed -i.bak -e 's|"join.h"|<vcflib/join.h>|' src/*.cpp
 sed -i.bak -e 's|"multichoose.h"|<vcflib/multichoose.h>|' src/*.h
 sed -i.bak -e 's|"multichoose.h"|<vcflib/multichoose.h>|' src/*.cpp
-sed -i.bak -e 's|#include "multipermute.h"||' src/freebayes.cpp
-sed -i.bak -e 's|#include "multipermute.h"||' src/AlleleParser.cpp
-sed -i.bak -e 's|#include "multipermute.h"||' src/DataLikelihood.cpp
 sed -i.bak -e 's|<Variant.h>|<vcflib/Variant.h>|' src/*.h
 sed -i.bak -e 's|<intervaltree/IntervalTree.h>|<vcflib/IntervalTree.h>|' src/BedReader.h
 sed -i.bak -e 's|<IntervalTree.h>|<vcflib/IntervalTree.h>|' src/BedReader.cpp
 
 rm -rf src/*.bak
 
-wget -O src/multipermute.h https://raw.githubusercontent.com/ekg/multipermute/refs/heads/master/multipermute.h
-
-if [[ `uname` == "Darwin" ]]; then
-	export CONFIG_ARGS="-Dstatic=false"
-else
-	export CONFIG_ARGS="-Dstatic=true"
-fi
-
-CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" meson setup --buildtype release \
+CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" meson setup --buildtype release \
 	--prefix "${PREFIX}" --strip \
 	--includedir "${PREFIX}/include" \
-	--libdir "${PREFIX}/lib" "${CONFIG_ARGS}" build/
+	--libdir "${PREFIX}/lib" build/
 
 cd build
 ninja -v
