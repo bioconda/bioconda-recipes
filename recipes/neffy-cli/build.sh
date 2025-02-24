@@ -2,8 +2,8 @@
 
 set -xe
 
-sed -i.bak "s/CC=.*/CC=$CXX/" Makefile
-sed -i.bak "s/CFLAGS=.*/CFLAGS=$CXXFLAGS/" Makefile
+sed -i.bak "s#CC=.*#CC=$CXX#" Makefile
+sed -i.bak "s#CFLAGS=.*#CFLAGS=$CXXFLAGS#" Makefile
 
 make -j"${CPU_COUNT}"
 
