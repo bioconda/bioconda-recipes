@@ -2,11 +2,10 @@
 
 set -xe
 
-make
+sed -i.bak "s/CC=.*/CC=$CXX/" Makefile
+sed -i.bak "s/CFLAGS=.*/CFLAGS=$CXXFLAGS/" Makefile
 
-if [ ! -d ${PREFIX}/bin ] ; then
-    mkdir -p ${PREFIX}/bin
-fi
+make -j"${CPU_COUNT}"
 
-cp converter ${PREFIX}/bin
-cp neff ${PREFIX}/bin
+mkdir -p ${PREFIX}/bin
+install -v -m 0755 converter neff ${PREFIX}/bin
