@@ -1,0 +1,43 @@
+{% set version = "1.2.0" %}
+{% set name = "BREW3R.r" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: This R package provide functions that are used in the BREW3R workflow. This mainly contains a function that extend a gtf as GRanges using information from another gtf (also as GRanges). The process allows to extend gene annotation without increasing the overlap between gene ids.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: R package associated to BREW3R
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-brew3r.r", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: testthat (>= 3.0.0), IRanges, knitr, rmarkdown, BiocStyle, rtracklayer
+requirements:
+  host:
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-rlang
+  run:
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-rlang
+source:
+  md5: ac38ec812219d763381c8554a9a5cdf3
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
