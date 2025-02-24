@@ -1,5 +1,8 @@
 #!/bin/bash -euo
 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+
 # Identify OS and architecture
 OS=$(uname -s)
 ARCH=$(uname -m)
@@ -31,6 +34,7 @@ fi
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # build statically linked binary with Rust
+export RUSTC_BOOTSTRAP=1
 RUST_BACKTRACE=1
 cargo install --path . --root "${PREFIX}" \
     --features "${FEATURES}" \
