@@ -30,7 +30,7 @@ rm -rf src/*.bak
 OS=$(uname)
 ARCH=$(uname -m)
 
-if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64 ]]; then
+if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
 	export CXXFLAGS="${CXXFLAGS} -arch x86_64"
 elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	export CXXFLAGS="${CXXFLAGS} -arch arm64"
