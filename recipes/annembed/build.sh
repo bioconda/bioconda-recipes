@@ -1,8 +1,42 @@
 #!/bin/bash -euo
 
-# Add workaround for SSH-based Git connections from Rust/cargo.  See https://github.com/rust-lang/cargo/issues/2078 for details.
-# We set CARGO_HOME because we don't pass on HOME to conda-build, thus rendering the default "${HOME}/.cargo" defunct.
-export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
+# Workaround for SSH-based Git connections from Rust/cargo
+# We set CARGO_HOME because conda-build doesn't pass HOME
+export CARGO_NET_GIT_FETCH_WITH_CLI=true
+export CARGO_HOME="$(pwd)/.cargo"
 
-# build statically linked binary with Rust
-RUST_BACKTRACE=1 cargo install --features intel-mkl-static,simdeez_f --verbose --path . --root $PREFIX
+# Identify OS and architecture
+OS=$(uname -s)
+ARCH=$(uname -m)
+
+# Determine features based on platform
+FEATURES=""
+if [[ "${OS}" == "Darwin" ]]; then
+    # macOS
+    # Both x86_64 and arm64 (Apple Silicon) will use the same features
+    # If you need to differentiate, uncomment the lines below
+    # if [[ "${ARCH}" == "x86_64" ]]; then
+    #     FEATURES="stdsimd,macos-accelerate"
+    # elif [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
+    #     FEATURES="stdsimd,macos-accelerate"
+    # fi
+    FEATURES="stdsimd,macos-accelerate"
+else
+    # Linux
+    if [[ "${ARCH}" == "x86_64" ]]; then
+        FEATURES="intel-mkl-static,simdeez_f"
+    elif [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
+        FEATURES="openblas-static,stdsimd"
+    else
+        echo "Unsupported architecture '${ARCH}' on Linux."
+        exit 1
+    fi
+fi
+
+# Build statically linked binary with Rust
+export RUSTC_BOOTSTRAP=1
+RUST_BACKTRACE=1 \
+cargo install \
+  --path . \
+  --features "${FEATURES}" \
+  --root $PREFIX

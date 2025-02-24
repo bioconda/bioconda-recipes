@@ -5,4 +5,5 @@
 export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
 
 # build statically linked binary with Rust
+export RUSTC_BOOTSTRAP=1
 RUST_BACKTRACE=1 cargo install --features intel-mkl-static,simdeez_f --verbose --path . --root $PREFIX
