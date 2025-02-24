@@ -1,5 +1,5 @@
 diff --git a/meson.build b/meson.build
-index ac5ca5d..fc86d81 100644
+index ac5ca5d..6d2226e 100644
 --- a/meson.build
 +++ b/meson.build
 @@ -15,7 +15,7 @@
@@ -11,3 +11,56 @@ index ac5ca5d..fc86d81 100644
  static_build = get_option('static')
  
  # used by Debian: add_global_arguments('-D_GLIBCXX_ASSERTIONS=1', language : 'cpp')
+@@ -146,12 +146,14 @@ extra_cpp_args = cc.get_supported_arguments(
+     '-Wno-sign-compare',
+     '-Wno-unused-variable',
+     '-Wno-unused-but-set-variable',
++    '-Wno-deprecated-declarations',
++    '-fno-define-target-os-macros',
+     )
+ 
+ freebayes_lib = static_library(
+     'freebayes_common',
+     freebayes_common_src,
+-    include_directories : [incdir, vcflib_inc, fastahack_inc, multichoose_inc],
++    include_directories : [incdir, vcflib_inc, fastahack_inc, multichoose_inc, seqlib_inc],
+     cpp_args : extra_cpp_args,
+     dependencies : [zlib_dep, lzma_dep, thread_dep, htslib_dep, tabixpp_dep,
+                     vcflib_dep, wfa2lib_dep, seqlib_dep],
+@@ -166,7 +168,7 @@ endif
+ 
+ executable('freebayes',
+            [freebayes_src],
+-           include_directories : [incdir, vcflib_inc, fastahack_inc, multichoose_inc],
++           include_directories : [incdir, vcflib_inc, fastahack_inc, multichoose_inc, seqlib_inc],
+            cpp_args : extra_cpp_args,
+            link_args: link_arguments,
+            dependencies: [zlib_dep,
+@@ -178,14 +180,15 @@ executable('freebayes',
+                           seqlib_dep,
+                           fastahack_dep, # for vcflib
+                           smithwaterman_dep, # for vcflib
+-                          wfa2lib_dep],
++                          wfa2lib_dep,
++                          seqlib_dep],
+            link_with : freebayes_lib,
+            install: true
+           )
+ 
+ executable('bamleftalign',
+            [bamleftalign_src],
+-           include_directories : [incdir, vcflib_inc, fastahack_inc],
++           include_directories : [incdir, vcflib_inc, fastahack_inc, multichoose_inc, seqlib_inc],
+            cpp_args : extra_cpp_args,
+            link_args: link_arguments,
+            dependencies: [zlib_dep,
+@@ -196,7 +199,8 @@ executable('bamleftalign',
+                           seqlib_dep,
+                           fastahack_dep, # for vcflib
+                           smithwaterman_dep, # for vcflib
+-                          wfa2lib_dep],
++                          wfa2lib_dep,
++                          seqlib_dep],
+            link_with : freebayes_lib,
+            install: true
+           )
