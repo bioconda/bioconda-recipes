@@ -25,11 +25,3 @@ make CXX="$CXX $LDFLAGS" CPPFLAGS="$CXXFLAGS -I${PREFIX}/include" PREFIX="$PREFI
 
 make install INSTALL_DIR="$PREFIX/bin"
 
-### Temporary bug fix for issue with Makefile. These lines have been added to the makefile
-# for future releases, so remove after version 4.0.3
-if [ ! -e "$PREFIX/bin/stx/stxtyper" ]
-then
-    mkdir "$PREFIX/bin/stx"
-    ln -s ../stxtyper "$PREFIX/bin/stx/stxtyper"
-fi
-# end bug fix
