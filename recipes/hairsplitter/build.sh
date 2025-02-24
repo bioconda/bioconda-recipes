@@ -20,7 +20,7 @@ cmake -S .. -B . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_CXX_COMPILER="${CXX}" "${CONFIG_ARGS}"
 cmake --build . -j "${CPU_COUNT}"
 
-chmod -v -m 0755 ./HS_* ${PREFIX}/bin
-chmod -v -m 0755 ../cut_gfa.py ${PREFIX}/bin
-chmod -v -m 0755 ../GraphUnzip/*.py ${PREFIX}/bin
-chmod -v -m 0755 ../../hairsplitter.py ${PREFIX}/bin
+install -v -m 0755 ./HS_* ${PREFIX}/bin
+install -v -m 0755 ../cut_gfa.py ${PREFIX}/bin
+install -v -m 0755 ../GraphUnzip/*.py ${PREFIX}/bin
+install -v -m 0755 ../../hairsplitter.py ${PREFIX}/bin
