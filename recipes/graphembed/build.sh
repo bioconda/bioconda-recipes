@@ -1,8 +1,29 @@
 #!/bin/bash -euo
 
-# Add workaround for SSH-based Git connections from Rust/cargo.  See https://github.com/rust-lang/cargo/issues/2078 for details.
-# We set CARGO_HOME because we don't pass on HOME to conda-build, thus rendering the default "${HOME}/.cargo" defunct.
-export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+
+# Identify OS and architecture
+OS=$(uname -s)
+ARCH=$(uname -m)
+
+# Determine features based on platform
+FEATURES=""
+if [[ "${OS}" == "Linux" ]]; then
+    if [[ "${ARCH}" == "x86_64" ]]; then
+        FEATURES="intel-mkl-static,simdeez_f"
+    elif [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
+        FEATURES="openblas-system,stdsimd"
+    else
+        echo "Unsupported architecture '${ARCH}' on Linux."
+        exit 1
+    fi
+fi
+
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # build statically linked binary with Rust
-RUST_BACKTRACE=1 cargo install --features intel-mkl-static,simdeez_f --verbose --path . --root $PREFIX
+export RUSTC_BOOTSTRAP=1
+RUST_BACKTRACE=1
+cargo install --path . --root "${PREFIX}" \
+    --features "${FEATURES}" \
+    --no-track
