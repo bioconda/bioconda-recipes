@@ -18,7 +18,7 @@ if [[ "${OS}" == "Darwin" ]]; then
     # elif [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
     #     FEATURES="stdsimd,macos-accelerate"
     # fi
-    FEATURES="stdsimd,macos-accelerate"
+    FEATURES="stdsimd"
 else
     # Linux
     if [[ "${ARCH}" == "x86_64" ]]; then
@@ -38,4 +38,4 @@ export RUSTC_BOOTSTRAP=1
 RUST_BACKTRACE=1
 cargo install --path . --root "${PREFIX}" \
     --features "${FEATURES}" \
-    --no-track --locked --verbose
+    --no-track
