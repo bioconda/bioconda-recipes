@@ -11,12 +11,6 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -Wno-deprecated-declarations"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
-if [[ `uname` == "Darwin" ]]; then
-	export CONFIG_ARGS="-Dstatic=false"
-else
-	export CONFIG_ARGS="-Dstatic=true"
-fi
-
 sed -i.bak -e 's|"split.h"|<vcflib/split.h>|' src/*.h 
 sed -i.bak -e 's|"split.h"|<vcflib/split.h>|' src/*.cpp
 sed -i.bak -e 's|"convert.h"|<vcflib/convert.h>|' src/*.h
@@ -33,6 +27,14 @@ sed -i.bak -e 's|<intervaltree/IntervalTree.h>|<vcflib/IntervalTree.h>|' src/Bed
 sed -i.bak -e 's|<IntervalTree.h>|<vcflib/IntervalTree.h>|' src/BedReader.cpp
 
 rm -rf src/*.bak
+
+wget -O src/multipermute.h https://raw.githubusercontent.com/ekg/multipermute/refs/heads/master/multipermute.h
+
+if [[ `uname` == "Darwin" ]]; then
+	export CONFIG_ARGS="-Dstatic=false"
+else
+	export CONFIG_ARGS="-Dstatic=true"
+fi
 
 CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" meson setup --buildtype release \
 	--prefix "${PREFIX}" --strip \
