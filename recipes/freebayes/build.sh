@@ -29,6 +29,7 @@ rm -rf src/*.bak
 
 if [[ `uname` == "Darwin" ]]; then
 	CC_LD=ld
+	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 else
 	CC_LD=lld
 fi
