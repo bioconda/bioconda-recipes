@@ -17,10 +17,12 @@ build:
   script:
     - export M4="${BUILD_PREFIX}/bin/m4"
     - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-    - export LDFLAGS="${LDFLAGS} -Wl,-rpath,${SP_DIR}/pairtools"  # [osx]
+    - export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"  # [osx]
     - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
-    #- cp -rf "${SP_DIR}/pysam/libchtslib.*.so" "${PREFIX}/lib"  # [osx]
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir  # [linux]
+    - {{ PYTHON }} -m build -n  # [osx]
+    - DYLD_LIBRARY_PATH=$(python -c 'import pysam, os; print(os.path.dirname(pysam.get_libraries()[0]))') delocate-wheel -v dist/pairtools-darwin.whl  # [osx]
+    - {{ PYTHON }} -m pip install dist/pairtools-darwin.whl -vvv  # [osx]
   run_exports:
     - {{ pin_subpackage('pairtools', max_pin="x") }}
 
@@ -34,6 +36,7 @@ requirements:
     - cython
     - numpy
     - pysam
+    - delocate  # [osx]
   run:
     - python
     - coreutils
@@ -49,6 +52,7 @@ requirements:
     - scipy >=1.7
     - pyyaml
     - bioframe >=0.3.3
+    - delocate  # [osx]
 
 test:
   imports:
