@@ -2,7 +2,7 @@
 set -eu -o pipefail
 
 mkdir -p $PREFIX/bin
-
+export CXXFLAGS="${CXXFLAGS} -std=c++14"
 mkdir YARA_BUILD
 cd YARA_BUILD
 cmake .. -DSEQAN_BUILD_SYSTEM=APP:yara
