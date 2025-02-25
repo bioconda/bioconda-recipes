@@ -1,6 +1,6 @@
 {% set name = "hictk" %}
-{% set version = "2.0.1" %}
-{% set sha256 = "bd12f87f6f33ea91f898d6b660e8dcca9f97b0aaf27719e867ab643cd705fced" %}
+{% set version = "2.0.2" %}
+{% set sha256 = "e6f7b78f5d751ca5a6b39bab9c5bc7b5367c0f5ee332aae2a1a9ca44981c0c22" %}
 
 package:
   name: {{ name|lower }}
@@ -12,7 +12,8 @@ build:
     - {{ pin_subpackage('hictk', max_pin='x') }}
 
 source:
-  url: https://github.com/paulsengroup/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  # url: https://github.com/paulsengroup/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  url: https://github.com/paulsengroup/hictk/archive/refs/heads/main.tar.gz
   sha256: {{ sha256 }}
 
 requirements:
@@ -22,15 +23,15 @@ requirements:
     - cmake >=3.25
     - conan >=2
     - make
-    - catch2 >=3.7
+    - catch2 >=3.8
     - cli11 >=2.4
     - eigen >=3.4
-    - fast_float >=6
+    - fast_float >=7
     - fmt >=11
-    - highfive >=2.9
+    - highfive >=2.10
     - nlohmann_json >=3.11
     - tomlplusplus >=3.3
-    - spdlog >=1.14
+    - spdlog >=1.15
 
   host:
     - hdf5 >=1.12
@@ -56,6 +57,11 @@ about:
 
 test:
   requires:
+    # compilers and make are required to build certain wheels
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - gxx  # required to build b2
+    - make
     - python >=3.11,<3.13
     - pip
     - curl
