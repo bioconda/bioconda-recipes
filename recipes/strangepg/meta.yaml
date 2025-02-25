@@ -1,55 +1,51 @@
 {% set name = "strangepg" %}
-{% set version = "0.8.2" %}
-{% set ref = "7fbd2957cf1bf0295b6c4bd95fcfc9f1970ecb13" %}
+{% set version = "0.8.18.1" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/qwx9/{{ name }}/archive/{{ ref }}.tar.gz
-  sha256: bac0f9bbce7fdee6a555cca37536ed7f41b8c594aa16ff92212345e2664b7f67
+  url: https://github.com/qwx9/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: b39049a09d6a21319ebb2b32550071715a70f30c718eab2086e862d77ac4c2c2
 
 build:
   number: 0
-  skip: True # [not linux]
   run_exports:
-    - {{ pin_subpackage('strangepg', max_pin=None) }}
+    - {{ pin_subpackage('strangepg', max_pin='x.x') }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - make
-    - {{ cdt('mesa-libgl-devel') }}
-    - {{ cdt('mesa-libegl-devel') }}
-    - {{ cdt('mesa-dri-drivers') }}
-    - {{ cdt('libdrm-devel') }}
-    - {{ cdt('libglvnd-glx') }}      # [cdt_name != 'cos6']
+    - {{ cdt('mesa-libegl-devel') }}  # [linux and aarch64]
+    - {{ cdt('mesa-libgl-devel') }}   # [linux]
+    - {{ cdt('mesa-dri-drivers') }}   # [linux]
+    - {{ cdt('libdrm-devel') }}       # [linux]
+    - {{ cdt('libglvnd-glx') }}       # [linux and cdt_name != 'cos6']
+    - {{ cdt('libglvnd-egl') }}       # [linux and aarch64 and cdt_name != 'cos6']
+    - {{ cdt('libglvnd-gles') }}      # [linux and aarch64 and cdt_name != 'cos6']
   host:
-    - xorg-libx11
-    - xorg-libxau
-    - xorg-libxcb
-    - xorg-libxcursor
-    - xorg-libxdmcp
-    - xorg-libxext
-    - xorg-libxfixes
-    - xorg-libxi
-    - xorg-libxrandr
+    - libegl-devel    # [linux and aarch64]
+    - libgles-devel   # [linux and aarch64]
+    - xorg-libx11     # [linux]
+    - xorg-libxcursor # [linux]
+    - xorg-libxi      # [linux]
+    - xorg-xorgproto  # [linux]
   run:
-    - xorg-libx11
-    - xorg-libxau
-    - xorg-libxcb
-    - xorg-libxcursor
-    - xorg-libxdmcp
-    - xorg-libxext
-    - xorg-libxfixes
-    - xorg-libxi
-    - xorg-libxrandr
+    - libxcb          # [linux]
+    - xorg-libx11     # [linux]
+    - xorg-libxau     # [linux]
+    - xorg-libxcursor # [linux]
+    - xorg-libxdmcp   # [linux]
+    - xorg-libxext    # [linux]
+    - xorg-libxfixes  # [linux]
+    - xorg-libxi      # [linux]
+    - xorg-libxrandr  # [linux]
 
 test:
-  commands:
-    - which strpg
-    - which strawk
+  source_files:
+    - test/frag10.gfa
 
 about:
   home: https://github.com/qwx9/{{ name }}
@@ -57,8 +53,12 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE
+  dev-url: https://github.com/qwx9/{{ name }}
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - qwx9
   container:

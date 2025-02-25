@@ -1,5 +1,5 @@
-{% set version = "1.0.2" %}
-{% set sha256 = "1f9b17702a073e255a87e5e273c0dd0ddafbc25c02b19aa143b3d744ce5d359d" %}
+{% set version = "1.1.4" %}
+{% set sha256 = "ceb439bdd699810d2b2b0e265c10956045a758de4e96c3a47149f83fc451b1cd" %}
 
 package:
   name: gw
@@ -8,27 +8,27 @@ package:
 source:
   url: https://github.com/kcleal/gw/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - fix-linker-issues.patch  # [linux]
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('gw', max_pin="x") }}
   ignore_run_exports:
     - libglx          # [linux]
+    - libgles         # [linux]
+    - libegl          # [linux]
     - xorg-libsm      # [linux]
     - xorg-libice     # [linux]
     - xorg-libx11     # [linux]
     - xorg-libxau     # [linux]
     - xorg-libxext    # [linux]
-    - libegl          # [linux]
     - libxcb          # [linux]
     - freetype        # [osx]
     - fontconfig      # [osx]
     - zlib            # [osx]
     - libuuid
     - libdeflate
+  # skip: true  # [osx and x86_64]
 
 requirements:
   build:
@@ -39,13 +39,13 @@ requirements:
   host:
     - fontconfig
     - libuuid
-    - libcurl
+    - libcurl >=7.5
     - libdeflate >=1.0
     - htslib >=1.12
     - glfw >=3.3
     - unzip
     - freetype
-    - zlib
+    - zlib >=1.1
     - pthread-stubs       # [linux]
     - xorg-libsm          # [linux]
     - xorg-libice         # [linux]
@@ -54,6 +54,8 @@ requirements:
     - libegl-devel        # [linux]
     - libgl-devel         # [linux]
     - libglx-devel        # [linux]
+    - libgles-devel       # [linux]
+    - wayland             # [linux]
 
   run:
     - glfw >=3.3
@@ -63,10 +65,15 @@ requirements:
     - xorg-libxfixes      # [linux]
     - xorg-libxxf86vm     # [linux]
     - xorg-libxdamage     # [linux]
+    - mesalib             # [linux]
+    - wayland             # [linux]
 
 test:
   commands:
-    - gw hg19 -b https://github.com/kcleal/gw/releases/download/v1.0.0/demo1.bam -r chr8:37047270-37055161 -n > test.png; ls -lh test.png
+    - which gw && ls -lh $(which gw)
+    - uname -a
+    - if [[ "$(uname)" == "Darwin" ]]; then file $(which gw); otool -L $(which gw); nm $(which gw); fi
+    - gw --version
 
 about:
   home: https://github.com/kcleal/gw
