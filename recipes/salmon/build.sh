@@ -6,7 +6,7 @@ export CFLAGS="${CFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 if [[ `uname` == "Darwin" ]]; then
-	export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument -Wno-unused-parameter"
+	export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument -Wno-unused-parameter -Wno-array-bounds"
 	export CONFIG_ARGS="-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 -DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
 else
@@ -24,10 +24,7 @@ cmake -S . -B build \
 	-DCEREAL_INCLUDE_DIR="${PREFIX}/include" \
 	-DLIB_GFF_INCLUDE_DIR="${PREFIX}/include" \
 	-DLIBSTADEN_LDFLAGS="-L${PREFIX}/lib" \
-	-DSTADEN_INCLUDE_DIR="${PREFIX}/include" \
-	-DSTADEN_LIBRARY="${PREFIX}/lib/libstaden-read.a" \
-	-DSTADEN_VERSION="1.15.0" \
 	-DNO_IPO=TRUE \
 	"${CONFIG_ARGS}"
 
-cmake --build build/ --target install -v
+cmake --build build/ --target install
