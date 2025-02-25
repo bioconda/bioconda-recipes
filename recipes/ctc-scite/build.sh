@@ -4,13 +4,13 @@ set -xe
 
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH="${PREFIX}/include:/usr/include/c++/$(gcc -dumpversion)"
-export CXXFLAGS="${CXXFLAGS} -std=c++11"
+export CXXFLAGS="${CXXFLAGS} -std=c++11 -Wall -Wextra -Wno-missing-field-initializers -g -O2"
 
 mkdir -p $PREFIX/bin
 
 case $(uname -m) in
     aarch64)
-        CXXFLAGS="${CXXFLAGS} -fsigned-char"
+       CXXFLAGS="${CXXFLAGS} -fsigned-char"
         ARCH_OPTS="SSE_FLAG= POPCNT_CAPABILITY=0"
         ;;
     *)
