@@ -1,20 +1,21 @@
-{% set name = "mity" %}
+{% set name = 'mity' %}
 {% set version = '1.1.0' %}
-{% set sha256 = "2d407a70632b7cb23792c84346a41d3b186ab0b6d839a335b9173cab42198e1d" %}
+{% set sha256 = "b9ffe136cacf78bd07b271d928269e660c0bc27502c44c0829d485497ab1df68" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/8b/07/911f1a30fcd360a0861a2f6bb887f87a39b2d4cb788123cfbc3856e7f4de/mitywgs-{{ version }}.tar.gz
+  url: https://github.com/KCCG/{{ name }}/archive/refs/tags/{{ version }}.zip
   sha256: {{ sha256 }}
+  patches:
+    - _version.patch
+    - setup.patch
 
 build:
   number: 0
   noarch: python
-  entry_points:
-    - mity = mitylib.mity:main
   run_exports:
     - {{ pin_subpackage('mity', max_pin="x.x") }}
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
@@ -22,7 +23,7 @@ build:
 requirements:
   host:
     - pip
-    - python >=3.5.4
+    - python =3.10
     - setuptools >=75.3
   run:
     - bioconda::freebayes >=1.2
@@ -33,7 +34,7 @@ requirements:
     - pandas
     - pyyaml
     - xlsxwriter
-    - python >=3.5.4
+    - python =3.10
 
 test:
   imports:
@@ -43,18 +44,34 @@ test:
 
 about:
   home: https://github.com/KCCG/mity
-  summary: mity is a bioinformatic analysis pipeline designed to call mitochondrial SNV and INDEL variants from Whole Genome Sequencing (WGS) data.
-  # description: |
-  #   This is a *patched* version of mitosalt that includes:
+  summary: This is a patched version of mity: a bioinformatic analysis pipeline designed to call mitochondrial SNV and INDEL variants from Whole Genome Sequencing (WGS) data.
+  description: |
+    **USAGE**
+    This is an example of calling variants in the [Ashkenazim Trio](https://github.com/KCCG/mity).
 
-  #   - a fix for the setup script to allow for installation in a conda environment
-  #   - a fix for the download of user-selected reference genomes
-  #     - `download-mitosalt-db.sh -h [human_genome_url, blank for custom hg19 genome]`
-  #     - `download-mitosalt-db.sh -m [mouse_genome_url, blank for custom GRCm38.p6 genome]`
-  #     - `download-mitosalt-db.sh -h [human_genome_url, blank for custom hg19 genome] -m [mouse_genome_url, blank for custom GRCm38.p6 genome]`
-  #   - a fix for choosing the destination folder of the reference genomes and indices
-  #     - `export MITOSALTDATA=/path/to/mitosalt/genomedata`
-  #   - custom config files available in the package at `$CONDA_PREFIX/share/mitosalt-1.1.1-0/`
+    **mity call**
+    ```
+    mity call \
+      --prefix ashkenazim \
+      --output-dir test_out \
+      --region MT:1-500 \
+      --normalise \
+      test_in/HG002.hs37d5.2x250.small.MT.RG.bam \
+      test_in/HG003.hs37d5.2x250.small.MT.RG.bam \
+      test_in/HG004.hs37d5.2x250.small.MT.RG.bam
+    ```
+    This will create `test_out/normalised/ashkenazim.mity.vcf.gz` (and tbi file).
+
+    **mity report**
+    ```
+    mity report \
+      --prefix ashkenazim \
+      --min_vaf 0.01 \
+      --output-dir test_out \
+      test_out/ashkenazim.mity.vcf.gz
+    ```
+    This will create: `test_out/ashkenazim.annotated_variants.csv` and `test_out/ashkenazim.annotated_variants.xlsx`.
+    
   license: MIT
   license_family: MIT
   license_file: LICENSE.txt
