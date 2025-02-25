@@ -20,7 +20,8 @@ cp ./.sepp/upp.config $PREFIX/share/sepp/sepp/upp.config
 if [ x"$(uname)" == x"Linux" ]; then
 	sed -i "s|path=.*/|path=/opt/anaconda1anaconda2anaconda3/|g" $PREFIX/share/sepp/sepp/upp.config
 elif [ x"$(uname)" == x"Darwin" ]; then
-	sed -i "s|path=.*/|path=/opt/anaconda1anaconda2anaconda3/|g" $PREFIX/share/sepp/sepp/upp.config
+	# see https://stackoverflow.com/questions/19456518/error-when-using-sed-with-find-command-on-os-x-invalid-command-code
+	sed -i '' -e "s|path=.*/|path=/opt/anaconda1anaconda2anaconda3/|g" $PREFIX/share/sepp/sepp/upp.config
 fi
 
 echo "============== DEBUG ===============post=="
