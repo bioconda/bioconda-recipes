@@ -5,7 +5,7 @@ mkdir -p $PREFIX/bin
 
 mkdir YARA_BUILD
 cd YARA_BUILD
-cmake ../seqan -DSEQAN_BUILD_SYSTEM=APP:yara
+cmake .. -DSEQAN_BUILD_SYSTEM=APP:yara
 make all
 
 binaries="\
