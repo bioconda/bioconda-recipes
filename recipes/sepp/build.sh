@@ -24,10 +24,6 @@ elif [ x"$(uname)" == x"Darwin" ]; then
 	sed -i '' -e "s|path=.*/|path=/opt/anaconda1anaconda2anaconda3/|g" $PREFIX/share/sepp/sepp/upp.config
 fi
 
-echo "============== DEBUG ===============post=="
-cat $PREFIX/share/sepp/sepp/upp.config
-echo "=end========== DEBUG ===============post=="
-
 $PYTHON -m pip install . --ignore-installed --no-deps -vv
 
 # copy bundled binaries, but hmmer which should be provided by conda, into $PREFIX/bin/
