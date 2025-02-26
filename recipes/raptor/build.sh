@@ -34,6 +34,7 @@ else
     INS_SETS=(none sse2 sse4.2 avx2 avx512)
 fi
 
+export IFS=" "
 for INSTRUCTION_SET in $INS_SETS ; do
     mkdir -p build/${INSTRUCTION_SET}
     cd build/${INSTRUCTION_SET}
