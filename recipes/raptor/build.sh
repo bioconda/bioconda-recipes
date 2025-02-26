@@ -27,7 +27,13 @@ get_instruction_set_flags() {
     esac
 }
 
-for INSTRUCTION_SET in "none" "sse2" "sse4.2" "avx2" "avx512"; do
+if [ "$(uname -m)" == "aarch64" ]; then
+    INS_SETS=(none)
+else
+    INS_SETS=(none sse2 sse4.2 avx2 avx512)
+fi
+
+for INSTRUCTION_SET in $INS_SETS ; do
     mkdir -p build/${INSTRUCTION_SET}
     cd build/${INSTRUCTION_SET}
     cmake ../.. -DCMAKE_BUILD_TYPE=Release \
