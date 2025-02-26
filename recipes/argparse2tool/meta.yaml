@@ -1,5 +1,5 @@
 {% set name = "argparse2tool" %}
-{% set version = "0.4.9" %}
+{% set version = "0.5.2" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,22 +7,24 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: ecd7142c1ce60bf9e1416443ce393907b7f99a9396a0530277c110dcb7106579
+  sha256: 8c6fbf68df690edf80f438b458e6da1f943254b0c4337ac2b732c567c67fde46
 
 build:
   number: 0
   entry_points:
     - argparse2tool_check_path = argparse2tool.check_path:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('argparse2tool', max_pin="x.x") }}
 
 requirements:
   host:
     - pip
     - python >=3
+    - setuptools
   run:
-    - click
-    - galaxyxml >=0.2.3
+    - galaxyxml >=0.4.6
     - jinja2
     - python >=3
 
