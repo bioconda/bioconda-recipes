@@ -15,6 +15,7 @@ if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	tar -xf ldc2-1.40.0-osx-arm64.tar.xz
 	export PATH="${SRC_DIR}/ldc2-1.40.0-osx-arm64/bin:${PATH}"
 	export LIBRARY_PATH="${SRC_DIR}/ldc2-1.40.0-osx-arm64/lib-ios-arm64"
+	export DYLD_LIBRARY_PATH="${PREFIX}/lib:${DYLD_LIBRARY_PATH}"
 fi
 
 if [[ "${OS}" == "Darwin" ]]; then
