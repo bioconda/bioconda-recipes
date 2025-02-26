@@ -4,6 +4,7 @@ set -xe
 
 export C_INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 OS=$(uname)
 ARCH=$(uname -m)
@@ -13,8 +14,10 @@ if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	tar -xf ldc2-1.40.0-osx-arm64.tar.xz
 	export PATH="${SRC_DIR}/ldc2-1.40.0-osx-arm64/bin:${PATH}"
 	export LIBRARY_PATH="${SRC_DIR}/ldc2-1.40.0-osx-arm64/lib-ios-arm64"
-else
-	export LIBRARY_PATH="${PREFIX}/lib"
+fi
+
+if [[ "${OS}" == "Darwin" ]]; then
+	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
 fi
 
 # Running `make check` recompiles as an unoptimised binary so must be done prior to release compile
