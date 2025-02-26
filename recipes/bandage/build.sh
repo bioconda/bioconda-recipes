@@ -27,4 +27,8 @@ rm -rf *.bak
 make -j"${CPU_COUNT}"
 
 # Install
-install -v -m 0755 Bandage $PREFIX/bin
+if [[ `uname` == "Darwin" ]]; then
+	install -v -m 0755 Bandage.app/Contents/MacOS/Bandage ${PREFIX}/bin
+else
+	install -v -m 0755 Bandage ${PREFIX}/bin
+fi
