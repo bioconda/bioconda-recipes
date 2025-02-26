@@ -5,48 +5,14 @@ set -u
 set -x
 set -o pipefail
 
-scratch=$(mktemp -d)
-export CONAN_HOME="$scratch/conan"
-
-# shellcheck disable=SC2064
-trap "rm -rf '$scratch'" EXIT
-
 which hictk
 if [[ "$OSTYPE" =~ .*darwin.* ]]; then
-  CC=clang CXX=clang++ conan profile detect
   otool -L "$(which hictk)"
 else
-  CC=gcc CXX=g++ conan profile detect
   ldd "$(which hictk)"
 fi
 
 hictk --version
-
-cat << EOF >> "/tmp/conanfile.txt"
-[requires]
-b2/5.2.1
-EOF
-
-conan install /tmp/conanfile.txt --build="*"
-
-export CC=clang
-export CXX=clang++
-conan profile detect --force
-
-# This is just needed in case we need to build hictkpy from source
-HICTKPY_CONAN_INSTALL_ARGS=(
-  --settings=compiler.cppstd=17
-  --settings=build_type=Release
-  --build=missing
-  --options='*/*:shared=False'
-  --update
-)
-
-HICTKPY_CONAN_INSTALL_ARGS="$(IFS=\; ; echo "${HICTKPY_CONAN_INSTALL_ARGS[*]}")"
-export HICTKPY_CONAN_INSTALL_ARGS
-
-# Install the test suite
-pip install test/integration
 
 # Extract test dataset URL and checksum
 url="$(grep -F 'DOWNLOAD' 'cmake/FetchTestDataset.cmake' | sed -E 's/.*DOWNLOAD[[:space:]]+//')"
@@ -58,6 +24,15 @@ echo "$checksum  hictk_test_dataset.tar.zst" > checksum.sha256
 shasum -c checksum.sha256
 
 zstdcat hictk_test_dataset.tar.zst | tar -xf -
+
+# Try to install the test suite
+if ! pip install test/integration --only-binary=hictkpy; then
+  1>&2 echo "WARNING! Unable to install hictk's integration suite (see messages above for the reason)"
+  1>&2 echo "WARNING! Only running a simple test for hictk convert!"
+  hictk convert test/data/integration_tests/4DNFIZ1ZVXC8.mcool out.hic
+  1>&2 echo "WARNING! Unable to install hictk's integration suite (see messages above for the reason)"
+  exit 0
+fi
 
 # Run integration tests
 hictk_integration_suite \
