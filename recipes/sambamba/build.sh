@@ -21,7 +21,7 @@ fi
 make -j"${CPU_COUNT}" check CC="${CC}"
 
 make -j"${CPU_COUNT}" release CC="${CC}" LIBRARY_PATH="${LIBRARY_PATH}"
-make install prefix="${PREFIX}"
+make install prefix="${PREFIX}" CC="${CC}"
 
 # The binaries are versioned for some reason
 mv ${PREFIX}/bin/sambamba-* ${PREFIX}/bin/sambamba
