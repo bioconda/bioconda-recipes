@@ -5,6 +5,7 @@ set -xe
 export C_INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 OS=$(uname)
 ARCH=$(uname -m)
@@ -13,7 +14,7 @@ if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	wget https://github.com/ldc-developers/ldc/releases/download/v1.40.0/ldc2-1.40.0-osx-arm64.tar.xz
 	tar -xf ldc2-1.40.0-osx-arm64.tar.xz
 	export PATH="${SRC_DIR}/ldc2-1.40.0-osx-arm64/bin:${PATH}"
-	export PATH="${SRC_DIR}/ldc2-1.40.0-osx-arm64/lib-ios-arm64:${PATH}"
+	export LIBRARY_PATH="${SRC_DIR}/ldc2-1.40.0-osx-arm64/lib-ios-arm64"
 fi
 
 if [[ "${OS}" == "Darwin" ]]; then
