@@ -21,9 +21,9 @@ if [[ "${OS}" == "Darwin" ]]; then
 fi
 
 # Running `make check` recompiles as an unoptimised binary so must be done prior to release compile
-make -j"${CPU_COUNT}" check CC="${CC}"
+make -j"${CPU_COUNT}" check CC="${CC}" LDFLAGS="${LDFLAGS}"
 
-make -j"${CPU_COUNT}" release CC="${CC}" LIBRARY_PATH="${LIBRARY_PATH}"
+make -j"${CPU_COUNT}" release CC="${CC}" LIBRARY_PATH="${LIBRARY_PATH}" LDFLAGS="${LDFLAGS}"
 make install prefix="${PREFIX}" CC="${CC}"
 
 # The binaries are versioned for some reason
