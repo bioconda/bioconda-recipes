@@ -29,12 +29,11 @@ get_instruction_set_flags() {
 
 if [ "$(uname -m)" == "aarch64" ]; then
 # leave optimization generic - not the same need to build specifically as there is on x86
-    INS_SETS=(none)
+    INS_SETS="none"
 else
-    INS_SETS=(none sse2 sse4.2 avx2 avx512)
+    INS_SETS="none sse2 sse4.2 avx2 avx512"
 fi
 
-export IFS=" "
 for INSTRUCTION_SET in $INS_SETS ; do
     mkdir -p build/${INSTRUCTION_SET}
     cd build/${INSTRUCTION_SET}
