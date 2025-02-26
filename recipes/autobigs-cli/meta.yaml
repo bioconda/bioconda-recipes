@@ -1,0 +1,46 @@
+{% set name = "autoBIGS.cli" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: {{ name|lower|replace(".", "-") }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/autobigs_cli-{{ version }}.tar.gz
+  sha256: f3402b6063e2ae57e642a1e4da87bc2df4f663b26af47977656b4c459f4896a7
+
+build:
+  entry_points:
+    - autoBIGS = autobigs.cli.program:run
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage( name|lower|replace(".", "-"), max_pin="x.x") }}
+requirements:
+  host:
+    - python >=3.12
+    - setuptools >=64
+    - setuptools-scm >=8
+    - pip
+  run:
+    - python >=3.12
+    - autobigs-engine ==0.12.*
+
+test:
+  imports:
+    - autobigs
+  commands:
+    - pip check
+    - autoBIGS --help
+  requires:
+    - pip
+
+about:
+  summary: A CLI tool to rapidly fetch fetch MLST profiles given sequences for various diseases.
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  home: https://github.com/Syph-and-VPD-Lab/autoBIGS.cli
+extra:
+  recipe-maintainers:
+    - Harrison Deng
