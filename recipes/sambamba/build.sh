@@ -13,7 +13,7 @@ if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	wget https://github.com/ldc-developers/ldc/releases/download/v1.40.0/ldc2-1.40.0-osx-arm64.tar.xz
 	tar -xf ldc2-1.40.0-osx-arm64.tar.xz
 	export PATH="${SRC_DIR}/ldc2-1.40.0-osx-arm64/bin:${PATH}"
-	export LIBRARY_PATH="${SRC_DIR}/ldc2-1.40.0-osx-arm64/lib-ios-arm64"
+	export PATH="${SRC_DIR}/ldc2-1.40.0-osx-arm64/lib-ios-arm64:${PATH}"
 fi
 
 if [[ "${OS}" == "Darwin" ]]; then
@@ -21,9 +21,9 @@ if [[ "${OS}" == "Darwin" ]]; then
 fi
 
 # Running `make check` recompiles as an unoptimised binary so must be done prior to release compile
-make -j"${CPU_COUNT}" check CC="${CC}" LDFLAGS="${LDFLAGS}"
+make -j"${CPU_COUNT}" check CC="${CC}"
 
-make -j"${CPU_COUNT}" release CC="${CC}" LIBRARY_PATH="${LIBRARY_PATH}" LDFLAGS="${LDFLAGS}"
+make -j"${CPU_COUNT}" release CC="${CC}" LIBRARY_PATH="${LIBRARY_PATH}"
 make install prefix="${PREFIX}" CC="${CC}"
 
 # The binaries are versioned for some reason
