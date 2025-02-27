@@ -1,0 +1,64 @@
+{% set name = "MitoSAlt" %}
+{% set version = '1.1.1' %}
+{% set sha256 = "5d362e40620c6536d234571f25557613d73fbf30014dd9dbf530ba4c61f13819" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://sourceforge.net/projects/mitosalt/files/{{ name }}_{{ version }}.zip
+  sha256: {{ sha256 }}
+  patches:
+    - setup.patch
+    - configs.patch
+    - perl_script.patch
+    - r_script.patch
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('mitosalt', max_pin="x.x") }}
+
+requirements:
+  build:
+      - wget
+      - unzip
+  host: []
+  run:
+    - last =1608
+    - bedtools =2.31.1
+    - samtools =1.21
+    - perl =5.32
+    - r-base =4.3.3
+    - r-plotrix =3.8_4
+    - r-rcolorbrewer =1.1
+    - bioconductor-biostrings =2.70.1
+    - openjdk >=11.0.1
+
+test:
+  commands:
+    - test -f ${PREFIX}/bin/mitosalt.pl
+    - test -f ${PREFIX}/bin/mitosalt_se.pl
+
+about:
+  home: https://sourceforge.net/projects/mitosalt/
+  summary: MitoSAlt is a pipeline to identify large deletions and duplications in human and mouse mitochondrial genomes from next generation whole genome/exome sequencing data. The pipeline is capable of analyzing any circular genome in principle, as long as a proper configuration file is provided.
+  description: |
+    This mitosalt version can:
+
+    - download user-selected reference genomes
+      - `download-mitosalt-db.sh -h [human_genome_url, blank for custom hg19 genome]`
+      - `download-mitosalt-db.sh -m [mouse_genome_url, blank for custom GRCm38.p6 genome]`
+      - `download-mitosalt-db.sh -h [human_genome_url, blank for custom hg19 genome] -m [mouse_genome_url, blank for custom GRCm38.p6 genome]`
+    - let us choose the destination folder of the reference genomes and indices
+      - `export MITOSALTDATA=/path/to/mitosalt/genomedata`
+    - specify custom config files that are available in the package at `$CONDA_PREFIX/share/mitosalt-1.1.1-0/`
+  license: MIT-0
+  license_family: MIT
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - tm4zza
