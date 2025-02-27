@@ -21,7 +21,7 @@ case "$(uname -m)" in
         mkdir ext/simde
         wget https://github.com/simd-everywhere/simde-no-tests/archive/refs/tags/v0.8.2.tar.gz -O - | tar -xvz
         mv simde-no-tests-0.8.2/* ext/simde/
-        LIBS="${LDFLAGS}" make -j${CPU_COUNT} arch=native EXE=bwa-mem2 CC="${CC}" CXX="${CXX}" all
+        LIBS="${LDFLAGS}" make -j${CPU_COUNT} arch="-march=armv8-a" EXE=bwa-mem2 CC="${CC}" CXX="${CXX}" all
       fi
       ;;
   *)
