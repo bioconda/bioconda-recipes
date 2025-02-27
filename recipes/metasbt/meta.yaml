@@ -1,0 +1,66 @@
+{% set name = "metasbt" %}
+{% set version = "0.1.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: c8beef032277a891d73a7a608023e147a5be7c37540f70607c1e364cd749454f
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - metasbt=metasbt.metasbt:main
+  run_exports:
+    - {{ pin_subpackage('metasbt', max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+
+requirements:
+  host:
+    - numpy >=1.19.2
+    - pip
+    - python >=3.8,<3.9
+    - requests >=2.28.0
+  run:
+    - biopython >=1.83
+    - checkm2 >=1.0.1
+    - checkv >=1.0.1
+    - eukcc >=2.1.0
+    - fastcluster >=1.2.6
+    - howdesbt >=2.00.13
+    - kitsune >=1.3.3
+    - mash >=2.3
+    - minimizers >=0.1.2
+    - ncbitax2lin >=2.3.2
+    - ntcard >=1.2.2
+    - numpy >=1.19.2
+    - packaging >=23.2
+    - python >=3.8
+    - requests >=2.28.0
+    - tabulate >=0.9.0
+    - tqdm >=4.38.0
+    - wget >=1.21.3
+
+test:
+  imports:
+    - metasbt
+  commands:
+    - metasbt --test all
+
+about:
+  home: https://github.com/cumbof/MetaSBT
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Microbial genomes characterization with Sequence Bloom Trees."
+  description: |
+   A scalable framework for automatically indexing microbial genomes and accurately 
+   characterizing metagenome-assembled genomes with Sequence Bloom Trees
+  dev_url: https://github.com/cumbof/MetaSBT
+
+extra:
+  recipe-maintainers:
+    - cumbof
