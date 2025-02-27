@@ -1,29 +1,39 @@
+{% set name = "colorbrewer" %}
+{% set version = "0.3" %}
+
 package:
-  name: colorbrewer
-  version: '0.3'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/c3/31/698268893515b154f7e130dc35365d477f9a7f1f3b627664b533036a1659/colorbrewer-0.3.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/colorbrewer-{{ version }}.tar.gz
   sha256: 0f9e46fc91eba29f5824b1ca379daea18eed57a1ee1024bf621b7bf1544fc868
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('colorbrewer', max_pin="x.x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.9
+    - setuptools
+    - setuptools-scm
   run:
     - six
-    - python
+    - python >=3.9
 
 test:
   imports:
     - colorbrewer
 
 about:
-  home: http://noble.gs.washington.edu/~mmh1/software/colorbrewer/
-  license: MIT
-  summary: An easy way to get access to ColorBrewer schemes from within a Python program
+  home: https://github.com/hoffmangroup/colorbrewer
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: "An easy way to get access to ColorBrewer schemes from within a Python program."
+  dev_url: https://github.com/hoffmangroup/colorbrewer
