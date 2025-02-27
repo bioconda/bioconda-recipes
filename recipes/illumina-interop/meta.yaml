@@ -6,7 +6,7 @@ package:
   version: '{{version}}'
 
 build:
-  number: 1
+  number: 2
   skip: true  # [osx]
   run_exports:
     - {{ pin_subpackage('illumina-interop', max_pin="x.x") }}
@@ -21,9 +21,19 @@ requirements:
     - cmake
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - python >=3.9
+    - numpy
+    - swig
+    - libgomp  # [linux]
 
 test:
+  requires:
+    - python >=3.9
+    - numpy
   commands:
+    - 'ls -Ra $CONDA_PREFIX/lib/'
+    - 'ls -Ra /opt/mambaforge/envs/bioconda/lib/python3*'
+    - 'ls -Ra /opt/mambaforge/envs/bioconda/lib/python3*/site-packages'
     - interop_dumptext | grep Version > /dev/null
     - interop_imaging_table | grep Version > /dev/null
     - interop_summary | grep Version > /dev/null
@@ -47,6 +57,7 @@ about:
     faster display of a subset of the original data (collapsed quality scores).
   dev_url: https://github.com/Illumina/interop
   license_family: GPL
+  license_file: LICENSE
 
 extra:
   additional-platforms:
