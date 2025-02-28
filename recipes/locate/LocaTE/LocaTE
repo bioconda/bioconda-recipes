@@ -1,0 +1,208 @@
+#!/bin/bash
+bam_file=""
+te_gff=""
+output_prefix=""
+overlap=0.5
+# min_length=10
+expectation=0.8
+max_iterations_outer=10
+max_iterations_inner=10
+# kmer_step="False"
+abe_step="False"
+script_dir=$(cd $(dirname $0);pwd)
+reserve_tmp_dir="False"
+
+# parameter
+usage() {
+	echo "Usage: $0" 
+	echo "	-b <BAM file (sorted)>" 
+	echo "	-r <TE annotation file (GFF)>"
+	echo "	-o <Output prefix> (default: working directory)"
+	echo "	-f <Minimum overlap requirement> (default: 0.5)"
+	echo "	-p <Minimum likelihood value for assignment> (default: 0.8)"
+	echo "	-m <Maximum iterations of the outer cycle> (default: 10)"
+	echo "	-M <Maximum iterations of the inner cycle> (default: 10)"
+	echo "	-e <Abnormal ERV detection> (default: Flase)"
+	exit 1
+}
+
+# getopts
+while getopts ":b:r:o:f:m:M:p:ez" opt; do
+    case $opt in
+        b)
+            bam_file="$OPTARG"
+            ;;
+        r)
+            te_gff="$OPTARG"
+            ;;
+        o)
+            output_prefix="$OPTARG"
+            ;;
+        f)
+            overlap="$OPTARG"
+            ;;
+        p)
+            expectation="$OPTARG"
+            ;;
+        e)
+            abe_step="True"
+            ;;
+        m)
+            max_iterations_outer="$OPTARG"
+            ;;
+        M)
+            max_iterations_inner="$OPTARG"
+            ;;
+        z)
+            reserve_tmp_dir="True"
+            ;;
+        :)
+            echo "The option -$OPTARG requires a parameter."
+            usage
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+
+# 
+shift $((OPTIND - 1))
+
+# checking the necessary parameters
+if [ -z "$bam_file" ] || [ -z "$te_gff" ] ; then
+    echo "Error： -b and -r are necessary"
+    usage
+fi
+if [ ! -e "$bam_file" ] || [ ! -e "$te_gff" ] ; then
+    echo "Error： no such BAM file or TE annotation file"
+    usage
+fi
+
+# absolute path (in case)
+absPathBamFile=$(readlink -f "$bam_file")
+absPathTeGff=$(readlink -f "$te_gff")
+bam_file=$absPathBamFile
+te_gff=$absPathTeGff
+
+# output prefix
+if [ -z ${output_prefix} ] ; then
+	output_prefix=$(pwd | sed "s/$/\/$(basename $bam_file)&/g")
+else
+	# dir 
+	absPathOutput=$(dirname ${output_prefix})
+	if [ ! -d "$absPathOutput" ] ; then
+		echo "Error: no such output directory"
+		usage
+	fi
+	# prefix
+	absPathPrefix=$(readlink -f "$output_prefix")
+	if [ ${absPathPrefix} == $(pwd) ] ; then
+		output_prefix=$(pwd | sed "s/$/\/$(basename $bam_file)&/g")
+  else
+		output_prefix=$absPathPrefix
+	fi
+fi
+
+# print the parameters
+echo "BAM file: $bam_file"
+echo "TE annotation file: $te_gff"
+echo "Output prefix: $output_prefix"
+echo "Minimum overlap requirement: $overlap"
+# echo "Minimum TE fragment length: $min_length"
+echo "Minimum expecation: $expectation"
+echo "Abnormal ERV detection: $abe_step"
+
+# making temporary directory
+tmp_dir=$(date +%s%N | sha256sum | awk '{print $1}')
+mkdir ${tmp_dir}
+
+# change directory
+cd ${tmp_dir}
+
+# preparing data
+samtools view -e '[AS] && [NH]==1' ${bam_file} -b -o single.bam
+samtools view -e '[AS] && [NH]!=1' ${bam_file} -b -o multi.bam
+## bamtobed
+bedtools bamtobed -split -i single.bam > single.bed
+bedtools bamtobed -split -i multi.bam > multi.bed
+## intersect
+bedtools intersect -wa -wb -f ${overlap} -a single.bed -b ${te_gff} | awk '!seen[$0]++' > single_te.bed
+bedtools intersect -wa -wb -f ${overlap} -a multi.bed -b ${te_gff} | awk '!seen[$0]++' > multi_te.bed
+
+# outer loop cycle
+out_cycle_time=1
+EndingCycleCount=$(awk '{print $4}' multi_te.bed | sort -u | wc -l | awk '{print $0 / 10}' | cut -f 1 -d ".")
+while [ $out_cycle_time -lt $max_iterations_outer ]; 
+do
+    # echo "outside cycle time " ${out_cycle_time}
+    # echo "current expectation " ${expectation}
+    [ ${out_cycle_time} -eq 1 ] && LastSettleReadCount=0
+    out_cycle_time=$(expr ${out_cycle_time} + 1)
+    
+    # ByTESubfamily
+    [ -e "ByTESubfamily" ] || mkdir ByTESubfamily && cd ByTESubfamily
+    ## pre
+    awk -v OFS="|" ' !seen[$0]++ {print$16 "\t" $1,$2,$3 "\t" $4}' ../multi_te.bed > MultiTEReads
+    ## executing
+    ${script_dir=$}/ByTESubfamily.sh ../single_te.bed MultiTEReads ${expectation} ${max_iterations_inner}
+    ## connecting
+    ${script_dir=$}/insideConnection.sh $out_cycle_time "ByTESubfamily" ../single_te.bed ../multi_te.bed ../RecordSettledMultiReads
+    cd ../
+
+    # ByTEConsensus_SubFamily
+    [ -e "ByTEConsensus_SubFamily" ] || mkdir ByTEConsensus_SubFamily && cd ByTEConsensus_SubFamily
+    ## reformatting
+    awk -v OFS="|" ' !seen[$0]++ {print$7,$10,$11,$16,$17,$18 "\t" $1,$2,$3 "\t" $4}' ../multi_te.bed > MultiTEReads
+    awk -v OFS="|" '{print$7,$10,$11,$16,$17,$18 "\t" $1,$2,$3 "\t" $4}' ../single_te.bed | awk -v OFS="\t" '{gsub(/\|/,"\t",$2); print $2,$1,$3}'  > SingleTEReads.bed
+    awk -v OFS="\t" '{gsub(/\|/,"\t",$2); print $2,$1,$3}' MultiTEReads | sort -k5,5 > MultiTEReads.bed
+    ## executing
+    ${script_dir=$}/ByTEConsensus_SubFamily.sh ./SingleTEReads.bed ./MultiTEReads.bed ${expectation} ${max_iterations_inner}
+    ## connecting
+    ${script_dir=$}/insideConnection.sh $out_cycle_time "ByTESubfamily" ../single_te.bed ../multi_te.bed ../RecordSettledMultiReads
+    cd ..
+
+    # ByTEAnnotation
+    [ -e "ByTEAnnotation" ] || mkdir ByTEAnnotation && cd ByTEAnnotation
+    ## reformatting
+    awk -v OFS="|" ' !seen[$0]++ {print$7,$10,$11,$16,$17,$18 "\t" $1,$2,$3 "\t" $4}' ../multi_te.bed > MultiTEReads
+    ## executing
+    ${script_dir=$}/ByTEAnnotation.sh ../single_te.bed ./MultiTEReads ${expectation} ${max_iterations_inner}
+    ## connecting
+    ${script_dir=$}/insideConnection.sh $out_cycle_time "ByTESubfamily" ../single_te.bed ../multi_te.bed ../RecordSettledMultiReads
+    cd ../
+
+    # Ending the useless cycle
+    TotalSettleReadCount=$(wc -l RecordSettledMultiReads | awk '{print $1}')
+    CycleSettleReadCount=$(expr ${TotalSettleReadCount} - ${LastSettleReadCount})
+    # echo "CurrentSettledReads" ${CycleSettleReadCount}
+    if [[ ${CycleSettleReadCount} -lt ${EndingCycleCount} ]]; then
+        break
+    fi
+    mid_value=$(expr ${CycleSettleReadCount} + ${LastSettleReadCount})
+    LastSettleReadCount=${mid_value}
+done
+
+# ByJointProbability
+[ -e "ByJointProbability" ] || mkdir ByJointProbability && cd ByJointProbability
+${script_dir=$}/ByJointProbability.sh ../multi_te.bed
+## connecting
+${script_dir=$}/insideConnection.sh $out_cycle_time "ByJointProbability" ../single_te.bed ../multi_te.bed ../RecordSettledMultiReads
+cd ../
+
+# AbnormalERVDetection.sh
+if [ ${abe_step} == "True" ];then
+	cp ${script_dir=$}/ERVFamily ERVFamily
+	${script_dir=$}/AbnormalERVDetection.sh ${te_gff} ./single_te.bed
+	[ -s "abnormal_ERVs" ] && cat abnormal_ERVs > ${output_prefix}_AbnormalERVs
+fi
+
+# Output
+awk -v OFS="|" '{print$7,$10,$11,$16,$17,$18 "\t" $1,$2,$3 "\t" $4}' single_te.bed > SingleTEReads
+cat ./SingleTEReads >> ${output_prefix}_TE
+# awk '{print $6}' ./RecordSettledMultiReads > RecordSettledMultiReadsName
+# awk 'BEGIN { while(getline<"RecordSettledMultiReadsName") a[$1]=1; close("RecordSettledMultiReadsName"); } { if ( a[$4]==1 ) print$7,$10,$11,$16,$17,$18 "\t" $1,$2,$3 "\t" $4 }' multi_te.bed >> ${output_prefix}_TE
+
+# delect the temporary directory
+cd ../
+[ ${reserve_tmp_dir} == "True" ] || rm -rf ${tmp_dir}
