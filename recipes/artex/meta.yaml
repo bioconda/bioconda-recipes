@@ -1,0 +1,43 @@
+{% set name = "artex" %}
+{% set version = "0.2.0" %}
+{% set sha256hash = "d4918687e955202b19324066282e38332a0231d3f0531ff1e28f36eb2ff11a1d" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/JMencius/Artex/releases/download/{{ name|lower }}-{{ version }}/{{ name|lower }}-{{ version }}.zip
+  sha256: {{ sha256hash }}
+
+build:
+  number: 0
+  skip: True  # [win or osx]
+  run_exports:
+    - {{ pin_subpackage('artex', max_pin="x.x") }}
+  entry_points:
+    - artex = artex:main
+
+requirements:
+  build:
+    - python ==3.9.0
+  run:
+    - python ==3.9.0
+    - clair3 >=1.0.10
+    - bcftools ==1.14
+    - click >=8.1.7
+
+test:
+  commands:
+    - artex --help
+    - artex --test
+
+about:
+  home: https://github.com/JMencius/Artex
+  license: GPL-3.0
+  license_file: LICENSE
+  summary: "Artex - Artic pipeline extension"
+
+extra:
+  skip-lints:
+    - should_be_noarch_python
