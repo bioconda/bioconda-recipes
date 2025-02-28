@@ -12,10 +12,13 @@ cp -r dat/ docs/ src/ toy/ unit/ ${PREFIX}/share/gapseq/
 # Make binaries available
 mkdir -p ${PREFIX}/bin/
 ln -sr ${PREFIX}/share/gapseq/gapseq ${PREFIX}/bin/
+ln -sr ${PREFIX}/share/gapseq/src/update_sequences.sh ${PREFIX}/bin/
 
 # Download reference sequence data
 # To install the database, we must call the installed file as it uses its own path to place the files correctly.
-bash ${PREFIX}/share/gapseq/src/update_sequences.sh
+bash ${PREFIX}/share/gapseq/src/update_sequences.sh Bacteria
+bash ${PREFIX}/share/gapseq/src/update_sequences.sh Archaea
+
 
 # --- 
 
