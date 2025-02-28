@@ -25,6 +25,7 @@ if [[ `uname` == Darwin ]]; then
 	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 	export CFLAGS="${CFLAGS} -O3 -fno-define-target-os-macros -Wno-unguarded-availability -Wno-deprecated-non-prototype -Wno-implicit-function-declaration"
+	export MACOSX_DEPLOYMENT_TARGET=13.0
 else
 	export CONFIG_ARGS=""
 fi
