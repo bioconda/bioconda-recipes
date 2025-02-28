@@ -10,6 +10,6 @@ cp JACUSA_v$PKG_VERSION.jar $PREFIX/share/jacusa2-$PKG_VERSION-$PKG_BUILDNUM/
 mkdir -p $PREFIX/bin
 cat > $PREFIX/bin/JACUSA2 <<EOF
 #!/bin/bash
-exec java -jar \$PREFIX/share/jacusa2-$PKG_VERSION-$PKG_BUILDNUM/JACUSA_v$PKG_VERSION.jar "\$@"
+exec java -jar \$CONDA_PREFIX/share/jacusa2-$PKG_VERSION-$PKG_BUILDNUM/JACUSA_v$PKG_VERSION.jar "\$@"
 EOF
 chmod +x $PREFIX/bin/JACUSA2
