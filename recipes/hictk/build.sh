@@ -8,7 +8,7 @@ export CTEST_PARALLEL_LEVEL=${CPU_COUNT}
 if [[ ${DEBUG_C} == yes ]]; then
   CMAKE_BUILD_TYPE=Debug
 else
-  CMAKE_BUILD_TYPE=Release
+  CMAKE_BUILD_TYPE=RelWithDebInfo
 fi
 
 scratch=$(mktemp -d)
