@@ -32,10 +32,6 @@ else
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
 fi
 
-# Remember to update these profiles when bioconda's compiler toolchains are updated
-mkdir -p "$CONAN_HOME/profiles/"
-sed "s/arch=x86_64/arch=$(uname -m)/" "${RECIPE_DIR}/conan_profiles/clang" | tee "$CONAN_HOME/profiles/default"
-
 # Remove unnecessary dependencies from conanfile.py
 patch conanfile.Dockerfile.py < "${RECIPE_DIR}/conanfile.Dockerfile.py.patch"
 
