@@ -22,7 +22,7 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 if [[ `uname` == Darwin ]]; then
 	wget https://github.com/alexey-lysiuk/macos-sdk/releases/download/13.3/MacOSX13.3.tar.xz
 	tar -xf MacOSX13.3.tar.xz
-	cp -rf MacOSX13.3.sdk /Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
+	ln -sf MacOSX13.3.sdk /Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk
 	export CONDA_BUILD_SYSROOT="/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
 	export SDKROOT="/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
