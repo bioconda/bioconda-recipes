@@ -80,12 +80,12 @@ ctest --test-dir build/   \
       --timeout 240
 
 ls -lah build/src/hictk/hictk
-sha256sum build/src/hictk/hictk
+shasum -a256 build/src/hictk/hictk
 
 cmake --install build/
 
 ls -lah "${PREFIX}/bin"
-sha256sum "${PREFIX}/bin/hictk"
+shasum -a256 "${PREFIX}/bin/hictk"
 
 if [[ ${HOST} =~ .*darwin.* ]]; then
   codesign -dv --verbose=4 "${PREFIX}/bin/hictk"
