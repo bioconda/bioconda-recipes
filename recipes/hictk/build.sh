@@ -88,7 +88,8 @@ ls -lah "${PREFIX}/bin"
 shasum -a256 "${PREFIX}/bin/hictk"
 
 if [[ ${HOST} =~ .*darwin.* ]]; then
-  codesign -dv --verbose=4 "${PREFIX}/bin/hictk"
+  sig="$(2>&1 codesign -dv --verbose=4 "${PREFIX}/bin/hictk" || true)"
+  printf "SIGSTART ########\n%s\nSIGEND ########\n" "$sig"
 fi
 
 "${PREFIX}/bin/hictk" --version
