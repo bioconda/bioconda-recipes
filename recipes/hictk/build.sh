@@ -45,7 +45,6 @@ patch conanfile.Dockerfile.py < "${RECIPE_DIR}/conanfile.Dockerfile.py.patch"
 # Install header-only deps
 conan install conanfile.Dockerfile.py \
        --build="*" \
-       -s "build_type=RelWithDebInfo" \
        -pr:b "$conan_profile" \
        -pr:h "$conan_profile" \
        --output-folder=build/
