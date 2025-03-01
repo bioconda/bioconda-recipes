@@ -15,20 +15,21 @@ rm -rf cmake/*.bak
 # Needed for building utils dependency
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
-export LDFLAGS="${LDFLAGS} -pthread -L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -pthread"
 export CXXFLAGS="${CXXFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
-if [[ `uname` == Darwin ]]; then
+OS=$(uname)
+ARCH=$(uname -m)
+
+if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	wget https://github.com/alexey-lysiuk/macos-sdk/releases/download/13.3/MacOSX13.3.tar.xz
 	tar -xf MacOSX13.3.tar.xz
 	cp -rH MacOSX13.3.sdk /Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
 	wget https://github.com/tukaani-project/xz/archive/refs/tags/v5.6.4.tar.gz
 	mv v5.6.4.tar.gz vendor/xz-5.2.4.tar.gz
-	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
-	# See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
-	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-	export CFLAGS="${CFLAGS} -O3 -fno-define-target-os-macros -Wno-unguarded-availability -Wno-deprecated-non-prototype -Wno-implicit-function-declaration"
+	wget https://github.com/curl/curl/releases/download/curl-7_88_1/curl-7.88.1.tar.gz
+	mv curl-7.88.1.tar.gz vendor/curl-7.67.0.tar.gz
 	export SDKROOT="/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DCMAKE_OSX_SYSROOT=/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
 	export MACOSX_DEPLOYMENT_TARGET=13.0
@@ -40,6 +41,10 @@ fi
 if [[ `uname` == "Darwin" ]]; then
 	ln -sf ${CC} ${BUILD_PREFIX}/bin/clang
 	ln -sf ${CXX} ${BUILD_PREFIX}/bin/clang++
+	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
+	# See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
+	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+	export CFLAGS="${CFLAGS} -O3 -fno-define-target-os-macros -Wno-unguarded-availability -Wno-deprecated-non-prototype -Wno-implicit-function-declaration"
 else
 	ln -sf ${CC} ${BUILD_PREFIX}/bin/gcc
 	ln -sf ${CXX} ${BUILD_PREFIX}/bin/g++
