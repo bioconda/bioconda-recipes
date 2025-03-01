@@ -23,11 +23,11 @@ if [[ ${HOST} =~ .*darwin.* ]]; then
   export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
   # https://github.com/conda/conda-build/issues/4392
-  for toolname in "otool" "install_name_tool"; do
-    tool=$(find "${BUILD_PREFIX}/bin/" -name "*apple*-$toolname")
-    mv "${tool}" "${tool}.bak"
-    ln -s "/Library/Developer/CommandLineTools/usr/bin/${toolname}" "$tool"
-  done
+  # for toolname in "otool" "install_name_tool"; do
+  #   tool=$(find "${BUILD_PREFIX}/bin/" -name "*apple*-$toolname")
+  #   mv "${tool}" "${tool}.bak"
+  #   ln -s "/Library/Developer/CommandLineTools/usr/bin/${toolname}" "$tool"
+  # done
 else
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
 fi
