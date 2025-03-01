@@ -22,14 +22,12 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 if [[ `uname` == Darwin ]]; then
 	wget https://github.com/alexey-lysiuk/macos-sdk/releases/download/13.3/MacOSX13.3.tar.xz
 	tar -xf MacOSX13.3.tar.xz
-	ln -sf MacOSX13.3.sdk /Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk
-	export CONDA_BUILD_SYSROOT="/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
-	export SDKROOT="/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
+	cp -rH MacOSX13.3.sdk /Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
 	# See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
 	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
 	export CFLAGS="${CFLAGS} -O3 -fno-define-target-os-macros -Wno-unguarded-availability -Wno-deprecated-non-prototype -Wno-implicit-function-declaration"
+	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DCMAKE_OSX_SYSROOT=/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
 	export MACOSX_DEPLOYMENT_TARGET=13.0
 	export MACOSX_SDK_VERSION=13.0
 else
