@@ -20,14 +20,8 @@ trap "rm -rf '$scratch'" EXIT
 declare -a CMAKE_PLATFORM_FLAGS
 if [[ ${HOST} =~ .*darwin.* ]]; then
   # https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
-  export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-  CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
-  # https://github.com/conda/conda-build/issues/4392
-  # for toolname in "otool" "install_name_tool"; do
-  #   tool=$(find "${BUILD_PREFIX}/bin/" -name "*apple*-$toolname")
-  #   mv "${tool}" "${tool}.bak"
-  #   ln -s "/Library/Developer/CommandLineTools/usr/bin/${toolname}" "$tool"
-  # done
+  export CXXFLAGS="$CXXFLAGS -D_LIBCPP_DISABLE_AVAILABILITY"
+  CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="$CONDA_BUILD_SYSROOT")
 else
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
 fi
@@ -75,9 +69,5 @@ ctest --test-dir build/   \
       --timeout 240
 
 cmake --install build/
-
-if [[ ${HOST} =~ .*darwin.* ]]; then
-  otool -L "${PREFIX}/bin/hictk"
-fi
 
 "${PREFIX}/bin/hictk" --version
