@@ -23,6 +23,8 @@ if [[ `uname` == Darwin ]]; then
 	wget https://github.com/alexey-lysiuk/macos-sdk/releases/download/13.3/MacOSX13.3.tar.xz
 	tar -xf MacOSX13.3.tar.xz
 	cp -rH MacOSX13.3.sdk /Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
+	wget https://github.com/tukaani-project/xz/archive/refs/tags/v5.6.4.tar.gz
+	mv v5.6.4.tar.gz vendor/xz-5.2.4.tar.gz
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
 	# See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
 	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
