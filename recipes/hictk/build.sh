@@ -2,10 +2,10 @@
 
 export CONAN_NON_INTERACTIVE=1
 
-export CMAKE_BUILD_PARALLEL_LEVEL=${CPU_COUNT}
-export CTEST_PARALLEL_LEVEL=${CPU_COUNT}
+export CMAKE_BUILD_PARALLEL_LEVEL=$CPU_COUNT
+export CTEST_PARALLEL_LEVEL=$CPU_COUNT
 
-if [[ ${DEBUG_C} == yes ]]; then
+if [[ "$DEBUG_C" == yes ]]; then
   CMAKE_BUILD_TYPE=Debug
 else
   CMAKE_BUILD_TYPE=Release
@@ -18,16 +18,16 @@ export CONAN_HOME="$scratch/conan"
 trap "rm -rf '$scratch'" EXIT
 
 declare -a CMAKE_PLATFORM_FLAGS
-if [[ ${HOST} =~ .*darwin.* ]]; then
+if [[ "$OSTYPE" =~ .*darwin.* ]]; then
   # https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
   export CXXFLAGS="$CXXFLAGS -D_LIBCPP_DISABLE_AVAILABILITY"
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="$CONDA_BUILD_SYSROOT")
 else
-  CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
+  CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="$RECIPE_DIR/cross-linux.cmake")
 fi
 
 # Remove unnecessary dependencies from conanfile.py
-patch conanfile.Dockerfile.py < "${RECIPE_DIR}/conanfile.Dockerfile.py.patch"
+patch conanfile.Dockerfile.py < "$RECIPE_DIR/conanfile.Dockerfile.py.patch"
 
 conan profile detect
 
