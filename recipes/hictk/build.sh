@@ -42,6 +42,7 @@ conan install conanfile.Dockerfile.py \
 sed -i.bak 's/set(HICTK_PROJECT_VERSION_SUFFIX "")/set(HICTK_PROJECT_VERSION_SUFFIX "bioconda")/' cmake/Versioning.cmake
 
 CMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH:$PWD/build"
+AR="$(printf '%s\n' "$BUILD_PREFIX/"*-ar | grep conda | head -n 1)"
 
 # https://docs.conda.io/projects/conda-build/en/stable/user-guide/environment-variables.html#environment-variables-set-during-the-build-process
 cmake -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE"   \
@@ -57,6 +58,7 @@ cmake -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE"   \
       -DCMAKE_INSTALL_PREFIX="$PREFIX"         \
       -DCMAKE_C_COMPILER="$CC"                 \
       -DCMAKE_CXX_COMPILER="$CXX"              \
+      -DCMAKE_AR="$AR"                         \
       "${CMAKE_PLATFORM_FLAGS[@]}"             \
       -B build/                                \
       -S .
