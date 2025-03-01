@@ -22,8 +22,6 @@ if [[ ${HOST} =~ .*darwin.* ]]; then
   # https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
   export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
-  conan_profile='apple-clang'
-
   # https://github.com/conda/conda-build/issues/4392
   for toolname in "otool" "install_name_tool"; do
     tool=$(find "${BUILD_PREFIX}/bin/" -name "*apple*-$toolname")
@@ -32,12 +30,11 @@ if [[ ${HOST} =~ .*darwin.* ]]; then
   done
 else
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
-  conan_profile='clang'
 fi
 
 # Remember to update these profiles when bioconda's compiler toolchains are updated
 mkdir -p "$CONAN_HOME/profiles/"
-ln -s "${RECIPE_DIR}/conan_profiles/$conan_profile" "$CONAN_HOME/profiles/$conan_profile"
+ln -s "${RECIPE_DIR}/conan_profiles/clang" "$CONAN_HOME/profiles/default"
 
 # Remove unnecessary dependencies from conanfile.py
 patch conanfile.Dockerfile.py < "${RECIPE_DIR}/conanfile.Dockerfile.py.patch"
@@ -45,8 +42,8 @@ patch conanfile.Dockerfile.py < "${RECIPE_DIR}/conanfile.Dockerfile.py.patch"
 # Install header-only deps
 conan install conanfile.Dockerfile.py \
        --build="*" \
-       -pr:b "$conan_profile" \
-       -pr:h "$conan_profile" \
+       -pr:b default \
+       -pr:h default \
        --output-folder=build/
 
 # Add bioconda suffix to hictk version
