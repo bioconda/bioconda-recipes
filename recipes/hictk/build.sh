@@ -34,16 +34,18 @@ fi
 
 # Remember to update these profiles when bioconda's compiler toolchains are updated
 mkdir -p "$CONAN_HOME/profiles/"
-ln -s "${RECIPE_DIR}/conan_profiles/clang" "$CONAN_HOME/profiles/default"
+sed "s/arch=x86_64/arch=$(uname -m)/" "${RECIPE_DIR}/conan_profiles/clang" | tee "$CONAN_HOME/profiles/default"
 
 # Remove unnecessary dependencies from conanfile.py
 patch conanfile.Dockerfile.py < "${RECIPE_DIR}/conanfile.Dockerfile.py.patch"
 
+conan profile detect
+
 # Install header-only deps
 conan install conanfile.Dockerfile.py \
+       -s build_type="$CMAKE_BUILD_TYPE" \
+       -s compuler.cppstd=17 \
        --build="*" \
-       -pr:b default \
-       -pr:h default \
        --output-folder=build/
 
 # Add bioconda suffix to hictk version
