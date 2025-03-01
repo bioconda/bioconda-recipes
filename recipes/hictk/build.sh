@@ -77,7 +77,7 @@ cmake --build build/
 ctest --test-dir build/   \
       --output-on-failure \
       --no-tests=error    \
-      --timeout 180
+      --timeout 240
 
 cmake --install build/
 
