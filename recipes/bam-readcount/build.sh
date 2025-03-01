@@ -40,8 +40,6 @@ if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	cp -rH MacOSX13.3.sdk /Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
 	wget https://github.com/tukaani-project/xz/archive/refs/tags/v5.6.4.tar.gz
 	mv v5.6.4.tar.gz vendor/xz-5.2.4.tar.gz
-	wget https://github.com/curl/curl/releases/download/curl-7_88_1/curl-7.88.1.tar.gz
-	mv curl-7.88.1.tar.gz vendor/curl-7.67.0.tar.gz
 	wget https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-2.28.9/mbedtls-2.28.9.tar.bz2
 	mv mbedtls-2.28.9.tar.bz2 vendor/mbedtls-2.16.4-apache.tgz
 	export SDKROOT="/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
