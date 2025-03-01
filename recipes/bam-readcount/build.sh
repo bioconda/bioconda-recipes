@@ -22,6 +22,18 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 OS=$(uname)
 ARCH=$(uname -m)
 
+if [[ "${OS}" == "Darwin" ]]; then
+        ln -sf ${CC} ${BUILD_PREFIX}/bin/clang
+        ln -sf ${CXX} ${BUILD_PREFIX}/bin/clang++
+        export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
+        # See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_D$
+        export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+        export CFLAGS="${CFLAGS} -O3 -fno-define-target-os-macros -Wno-unguarded-availability -Wno-deprecated-non-proto$
+else
+        ln -sf ${CC} ${BUILD_PREFIX}/bin/gcc
+        ln -sf ${CXX} ${BUILD_PREFIX}/bin/g++
+fi
+
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	wget https://github.com/alexey-lysiuk/macos-sdk/releases/download/13.3/MacOSX13.3.tar.xz
 	tar -xf MacOSX13.3.tar.xz
@@ -30,24 +42,14 @@ if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	mv v5.6.4.tar.gz vendor/xz-5.2.4.tar.gz
 	wget https://github.com/curl/curl/releases/download/curl-7_88_1/curl-7.88.1.tar.gz
 	mv curl-7.88.1.tar.gz vendor/curl-7.67.0.tar.gz
+	wget https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-2.28.9/mbedtls-2.28.9.tar.bz2
+	mv mbedtls-2.28.9.tar.bz2 vendor/mbedtls-2.16.4-apache.tgz
 	export SDKROOT="/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DCMAKE_OSX_SYSROOT=/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
 	export MACOSX_DEPLOYMENT_TARGET=13.0
 	export MACOSX_SDK_VERSION=13.0
 else
 	export CONFIG_ARGS=""
-fi
-
-if [[ `uname` == "Darwin" ]]; then
-	ln -sf ${CC} ${BUILD_PREFIX}/bin/clang
-	ln -sf ${CXX} ${BUILD_PREFIX}/bin/clang++
-	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
-	# See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
-	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-	export CFLAGS="${CFLAGS} -O3 -fno-define-target-os-macros -Wno-unguarded-availability -Wno-deprecated-non-prototype -Wno-implicit-function-declaration"
-else
-	ln -sf ${CC} ${BUILD_PREFIX}/bin/gcc
-	ln -sf ${CXX} ${BUILD_PREFIX}/bin/g++
 fi
 
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
