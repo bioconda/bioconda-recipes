@@ -85,6 +85,10 @@ sha256sum build/src/hictk/hictk
 cmake --install build/
 
 ls -lah "${PREFIX}/bin"
-sha256sum "${PREFIX}/hictk"
+sha256sum "${PREFIX}/bin/hictk"
+
+if [[ ${HOST} =~ .*darwin.* ]]; then
+  codesign -dv --verbose=4 "${PREFIX}/bin/hictk"
+fi
 
 "${PREFIX}/bin/hictk" --version
