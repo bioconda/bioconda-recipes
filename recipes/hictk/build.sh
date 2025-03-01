@@ -79,6 +79,12 @@ ctest --test-dir build/   \
       --no-tests=error    \
       --timeout 240
 
+ls -lah build/src/hictk/hictk
+md5sum build/src/hictk/hictk
+
 cmake --install build/
+
+ls -lah "${PREFIX}/bin"
+md5sum "${PREFIX}/hictk"
 
 "${PREFIX}/bin/hictk" --version
