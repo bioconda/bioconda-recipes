@@ -1,8 +1,8 @@
 #!/bin/bash -euo
 
-wget https://github.com/boostorg/boost/releases/download/boost-1.87.0/boost-1.87.0-cmake.tar.gz
+wget https://archives.boost.io/release/1.78.0/source/boost_1_78_0.tar.gz
 
-mv boost-1.87.0-cmake.tar.gz vendor/boost-1.55-bamrc.tar.gz
+mv boost_1_78_0.tar.gz vendor/boost-1.55-bamrc.tar.gz
 
 mkdir -p "${PREFIX}/bin"
 
@@ -25,8 +25,6 @@ if [[ `uname` == Darwin ]]; then
 	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 	export CFLAGS="${CFLAGS} -O3 -fno-define-target-os-macros -Wno-unguarded-availability -Wno-deprecated-non-prototype -Wno-implicit-function-declaration"
-	export RECOMMENDED_MACOSX_DEPLOYMENT_TARGET=11.0
-	export MACOSX_DEPLOYMENT_TARGET=11.0
 else
 	export CONFIG_ARGS=""
 fi
@@ -48,6 +46,6 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
-cmake --build build --clean-first -j 1 -v
+cmake --build build --clean-first -j "${CPU_COUNT}" -v
 
 install -v -m 0755 build/bin/bam-readcount "${PREFIX}/bin"
