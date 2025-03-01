@@ -79,17 +79,10 @@ ctest --test-dir build/   \
       --no-tests=error    \
       --timeout 240
 
-ls -lah build/src/hictk/hictk
-shasum -a256 build/src/hictk/hictk
-
 cmake --install build/
 
-ls -lah "${PREFIX}/bin"
-shasum -a256 "${PREFIX}/bin/hictk"
-
 if [[ ${HOST} =~ .*darwin.* ]]; then
-  sig="$(2>&1 codesign -dv --verbose=4 "${PREFIX}/bin/hictk" || true)"
-  printf "SIGSTART ########\n%s\nSIGEND ########\n" "$sig"
+  codesign --force --sign - "${PREFIX}/bin/hictk"
 fi
 
 "${PREFIX}/bin/hictk" --version
