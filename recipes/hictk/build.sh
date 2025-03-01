@@ -40,7 +40,7 @@ conan profile detect
 # Install header-only deps
 conan install conanfile.Dockerfile.py \
        -s build_type="$CMAKE_BUILD_TYPE" \
-       -s compuler.cppstd=17 \
+       -s compiler.cppstd=17 \
        --build="*" \
        --output-folder=build/
 
