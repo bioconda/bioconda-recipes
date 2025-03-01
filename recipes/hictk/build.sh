@@ -82,7 +82,7 @@ ctest --test-dir build/   \
 cmake --install build/
 
 if [[ ${HOST} =~ .*darwin.* ]]; then
-  codesign --force --sign - "${PREFIX}/bin/hictk"
+  otool -L "${PREFIX}/bin/hictk"
 fi
 
 "${PREFIX}/bin/hictk" --version
