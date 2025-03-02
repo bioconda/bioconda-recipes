@@ -40,7 +40,7 @@ hictk_integration_suite \
   test/integration/config.toml \
   --data-dir test/data \
   --do-not-copy-binary \
-  --threads "${CPU_COUNT}" \
+  --threads "$CPU_COUNT" \
   --result-file results.json
 
 printf '#####\n#####\n#####\n\n\n'
