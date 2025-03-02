@@ -1,0 +1,57 @@
+{% set name = "splam" %}
+{% set version = "0.2.15" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "656ed5fe31d1d3053e322d38e23004e1d50074e6d9b83a9aaa94ff81ad6140c8"
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('splam', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - autoconf
+    - automake
+    - libtool
+    - ninja
+  host:
+    - python
+    - pip
+    - zlib
+  run:
+    - python
+    - pytorch
+    - pybedtools
+    - gffutils
+    - numpy
+    - pandas
+    - progress
+
+test:
+  imports:
+    - splam
+
+about:
+  home: "https://github.com/Kuanhao-Chao/splam"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Deep learning-based splicing predictor."
+  doc_url: "https://github.com/Kuanhao-Chao/splam/blob/main/README.md"
+  dev_url: "https://github.com/Kuanhao-Chao/splam"
+
+extra:
+  recipe-maintainers:
+    - Kuanhao-Chao
+  identifiers:
+    - doi:10.1101/2023.07.27.550754
