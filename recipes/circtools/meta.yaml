@@ -1,6 +1,6 @@
 {% set name = "circtools" %}
-{% set version = "1.3.1" %}
-{% set sha256 = "597544ac8f614b3c48000aee28e1de326f8d0582f57f35d808dbcbf24fdbf863" %}
+{% set version = "2.0" %}
+{% set sha256 = "605efb67fd8e8af6470d534d3b9d52e1a7d43f8436788e1faa294bea7e0e5381" %}
 
 package:
   name: {{ name }}
@@ -13,7 +13,7 @@ source:
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   entry_points:
     - circtools_install_R_dependencies = circtools.scripts.r_runner:install_R_dependencies
     - circtools_circtest_wrapper = circtools.scripts.r_runner:circtools_circtest_wrapper
@@ -33,11 +33,14 @@ build:
     - guided_denovo_circle_structure = circtools.reconstruct.guided_denovo_circle_structure_parallel:main
     - wonderdump = circtools.scripts.bash_runner:wonderdump
     - circtools = circtools.circtools:main
+  run_exports:
+    - {{ pin_subpackage('circtools', max_pin="x") }}
 
 requirements:
   host:
     - python >=3.8
     - pip
+    - setuptools
   run:
     - python >=3.8
     - pysam >=0.16.0.1
@@ -50,8 +53,11 @@ requirements:
     - numpy >=1.14.5
     - htseq >=2.0.0
     - pathos >=0.3.0
+    - pyyaml >=6.0.2
+    - requests >=2.32.3
     - star
     - stringtie
+    - tqdm >=4.67.1
     - r-base
     - r-aod
     - r-devtools
@@ -79,15 +85,17 @@ requirements:
 
 test:
   commands:
-    - circtools_install_R_dependencies --help
+    #- circtools_install_R_dependencies --help
     - circtools --help
 
 about:
   home: https://github.com/jakobilab/circtools
-  summary: circtools - a circular RNA toolbox
-  doc_url: https://docs.circ.tools/en/latest/
-  license: GPL-3.0
+  summary: "circtools - a circular RNA toolbox."
+  doc_url: "https://docs.circ.tools/en/latest"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
+  dev_url: https://github.com/jakobilab/circtools
 
 extra:
   identifiers:
