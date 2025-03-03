@@ -1,0 +1,52 @@
+{% set version = "0.1.0" %}
+{% set sha256 = "5df98ab64344982b581d724ddd5512728165ae70" %}
+
+package:
+  name: dpcstruct
+  version: {{ version }}
+
+source:
+  url: https://github.com/RitAreaSciencePark/DPCstruct/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+#   git_url: https://github.com/RitAreaSciencePark/DPCstruct.git
+#   git_rev: 46c5a91a1a9b5d6b77f2706cb652e5120234bba7
+
+requirements:
+  build:
+    - cmake
+    - make
+    - libgomp             # [linux]
+    - llvm-openmp         # [osx]
+    - unzip
+    - {{ compiler('cxx') }}
+  # run:
+  #   - libgc++  # or libstdc++, depending on your compiler
+
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('dpcstruct', max_pin="x") }}
+
+test:
+  commands:
+    - dpcstruct > /dev/null
+
+about:
+  home: https://github.com/RitAreaSciencePark/DPCstruct
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: "Unsupervised clustering algorithm for identifying and classifying protein domains based on structural similarity."
+  
+extra:
+  identifiers:
+    - doi:10.1101/2024.08.21.608992
+    - biotools:dpcstruct
+  recipe-maintainers:
+    - fede112
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  
+
