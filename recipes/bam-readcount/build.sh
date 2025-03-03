@@ -28,7 +28,7 @@ if [[ "${OS}" == "Darwin" ]]; then
         export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
         # See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_D$
         export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-        export CFLAGS="${CFLAGS} -O3 -fno-define-target-os-macros -Wno-unguarded-availability -Wno-deprecated-non-prototype -Wno-implicit-function-declaration"
+        export CFLAGS="${CFLAGS} -O3 -fno-define-target-os-macros -D_POSIX_C_SOURCE=1999309l -Wno-unguarded-availability -Wno-deprecated-non-prototype -Wno-implicit-function-declaration"
 else
         ln -sf ${CC} ${BUILD_PREFIX}/bin/gcc
         ln -sf ${CXX} ${BUILD_PREFIX}/bin/g++
