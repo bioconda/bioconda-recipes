@@ -17,12 +17,11 @@ cp ./.sepp/upp.config $PREFIX/share/sepp/sepp/upp.config
 
 # replace $PREFIX with /opt/anaconda1anaconda2anaconda3 for later replacement of concrete build PREFIX
 # note: can't apply a patch here, as upp.config is not part of upstream but gets generated during python setup
-if [ $unamestr == 'Linux' ];
-then
-	sed -i 's@'"$PREFIX"'@/opt/anaconda1anaconda2anaconda3@g' $PREFIX/share/sepp/sepp/upp.config
-elif [ $unamestr == 'Darwin' ];
-then
-	gsed -i 's@'"$PREFIX"'@/opt/anaconda1anaconda2anaconda3@g' $PREFIX/share/sepp/sepp/upp.config
+if [ x"$(uname)" == x"Linux" ]; then
+	sed -i "s|path=.*/|path=/opt/anaconda1anaconda2anaconda3/bin/|g" $PREFIX/share/sepp/sepp/upp.config
+elif [ x"$(uname)" == x"Darwin" ]; then
+	# see https://stackoverflow.com/questions/19456518/error-when-using-sed-with-find-command-on-os-x-invalid-command-code
+	sed -i '' -e "s|path=.*/|path=/opt/anaconda1anaconda2anaconda3/bin/|g" $PREFIX/share/sepp/sepp/upp.config
 fi
 
 $PYTHON -m pip install . --ignore-installed --no-deps -vv
