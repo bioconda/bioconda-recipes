@@ -1,0 +1,51 @@
+{% set name = "mach2" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/mach2-{{ version }}.tar.gz
+  sha256: cd32d7adb752533630bc4360c20eb1b85bda13b18043a41cb736ea974927e535
+
+build:
+  entry_points:
+    - mach2 = mach2.__main__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('mach2', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - pdm-backend
+    - pip
+  run:
+    - python >=3.12
+    - pandas
+    - networkx
+    - gurobipy
+    - jupyterlab
+    - python-graphviz
+
+test:
+  imports:
+    - mach2
+  commands:
+    - pip check
+    - mach2 --help
+  requires:
+    - pip
+
+about:
+  home: "https://github.com/elkebir-group/mach2"
+  summary: Migration Analysis of Clonal Histories 2
+  license: BSD-3-Clause
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - roddur
