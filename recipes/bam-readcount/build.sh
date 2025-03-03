@@ -28,7 +28,7 @@ if [[ "${OS}" == "Darwin" ]]; then
         export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
         # See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_D$
         export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-        export CFLAGS="${CFLAGS} -O3 -fno-define-target-os-macros -D_POSIX_C_SOURCE=1999309l -Wno-unguarded-availability -Wno-deprecated-non-prototype -Wno-implicit-function-declaration"
+        export CFLAGS="${CFLAGS} -O3 -fno-define-target-os-macros -Wno-unguarded-availability -Wno-deprecated-non-prototype -Wno-implicit-function-declaration"
 else
         ln -sf ${CC} ${BUILD_PREFIX}/bin/gcc
         ln -sf ${CXX} ${BUILD_PREFIX}/bin/g++
@@ -43,7 +43,7 @@ if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	wget https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-2.28.9/mbedtls-2.28.9.tar.bz2
 	mv mbedtls-2.28.9.tar.bz2 vendor/mbedtls-2.16.4-apache.tgz
 	export SDKROOT="/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
-	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DCMAKE_OSX_SYSROOT=/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
+	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 -DCMAKE_OSX_SYSROOT=/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
 	export MACOSX_DEPLOYMENT_TARGET=13.0
 	export MACOSX_SDK_VERSION=13.0
 else
