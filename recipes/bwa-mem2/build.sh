@@ -9,7 +9,7 @@ if [[ $OSTYPE == "darwin"* ]]; then
     sed -i.bak 's/memset_s/memset8_s/g' ext/safestringlib/safeclib/memset_s.c
     sed -i.bak 's/memset_s/memset8_s/g' ext/safestringlib/safeclib/wmemset_s.c
 fi
-
+rm -rf ext/sse2neon
 git submodule add https://github.com/DLTcollab/sse2neon ext/sse2neon
 cd ext/sse2neon ; git checkout tags/v1.8.0
 cd ../..
