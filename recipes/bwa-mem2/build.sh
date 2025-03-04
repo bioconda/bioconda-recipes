@@ -11,7 +11,7 @@ if [[ $OSTYPE == "darwin"* ]]; then
 fi
 
 git submodule add https://github.com/DLTcollab/sse2neon ext/sse2neon
-cd ext/sse2neon ; git checkout tags/1.8.0
+cd ext/sse2neon ; git checkout tags/v1.8.0
 cd ../..
 
 case "$(uname -m)" in
