@@ -1,0 +1,62 @@
+{% set name = "fastoma" %}
+{% set version = "0.3.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/DessimozLab/FastOMA/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b4fb86339f250b58ac844bcb6ea0a508af5016a88c504dbcaabecdaf79aea8ef
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  pkg_format: '.conda'
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - hatchling
+  run:
+    - omamer
+    - mafft
+    - fasttree
+    - nextflow
+    - papermill
+    - seaborn
+    - matplotlib-base
+    - pyparsing
+    - networkx
+    - jupyter
+    - mmseqs2
+    - dendropy
+    - future
+
+test:
+  commands:
+    - fastoma-check-input  -h
+    - fastoma-batch-roothogs -h
+    - fastoma-infer-subhogs -h 
+    - fastoma-collect-subhogs -h
+    - nextflow -h
+
+about:
+  home: https://github.com/DessimozLab/FastOMA
+  summary: FastOMA - a package to infer orthology information among proteomes
+  license: Mozilla Public License 2.0
+  license_file:
+    - license
+
+
+extra:
+  recipe-maintainers:
+    - sinamajidian
+  identifiers:
+    - doi:10.1038/s41592-024-02552-8
+
+

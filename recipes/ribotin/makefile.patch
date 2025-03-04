@@ -1,10 +1,10 @@
 diff --git a/makefile b/makefile
-index 5166dd0..83ff306 100644
+index a9e213d..5461ae4 100644
 --- a/makefile
 +++ b/makefile
-@@ -15,8 +15,8 @@ OBJ = $(patsubst %, $(ODIR)/%, $(_OBJ))
+@@ -18,8 +18,8 @@ OBJ = $(patsubst %, $(ODIR)/%, $(_OBJ))
  
- LINKFLAGS = $(CPPFLAGS) -Wl,-Bstatic $(LIBS) -Wl,-Bdynamic -Wl,--as-needed -lpthread -pthread -static-libstdc++
+ LINKFLAGS = $(CPPFLAGS) $(LIBS) -lpthread -pthread -static-libstdc++
  
 -TEMPLATEPATH := $(realpath template_seqs)
 -VERSION := Branch $(shell git rev-parse --abbrev-ref HEAD) commit $(shell git rev-parse HEAD) $(shell git show -s --format=%ci)
@@ -13,8 +13,12 @@ index 5166dd0..83ff306 100644
  
  $(shell mkdir -p bin)
  $(shell mkdir -p obj)
-@@ -33,13 +33,13 @@ $(BINDIR)/ribotin-ref: $(OBJ) $(ODIR)/ribotin-ref.o
+@@ -36,16 +36,16 @@ $(BINDIR)/ribotin-ref: $(OBJ) $(ODIR)/ribotin-ref.o edlib/edlib/src/edlib.cpp
  	$(GPP) -o $@ $^ $(LINKFLAGS)
+ 
+ $(ODIR)/CommonParams.o: $(SRCDIR)/CommonParams.cpp $(DEPS) $(OBJ)
+-	$(GPP) -c -o $@ $< $(CPPFLAGS) -DVERSION="\"$(VERSION)\"" -DRIBOTIN_TEMPLATE_PATH="\"$(TEMPLATEPATH)\""
++	$(GPP) -c -o $@ $< $(CPPFLAGS) -DVERSION="\"$(VERSION)\"" -DRIBOTIN_TEMPLATE_PATH="$(TEMPLATEPATH)"
  
  $(ODIR)/ribotin-verkko.o: $(SRCDIR)/ribotin-verkko.cpp $(DEPS) $(OBJ)
 -	$(GPP) -c -o $@ $< $(CPPFLAGS) -DVERSION="\"$(VERSION)\"" -DRIBOTIN_TEMPLATE_PATH="\"$(TEMPLATEPATH)\""

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 # Do not set -x, this script outputs a value with echo
 
 # Check to see if any changed recipes have specified the key
@@ -20,7 +22,7 @@ wget https://github.com/mikefarah/yq/releases/latest/download/yq_${yq_platform}_
 chmod +x ${HOME}/bin/yq
 
 # Find recipes changed from this merge
-files=`git diff --name-only --diff-filter AMR ${git_range} | grep -v 'template' | grep -E 'meta.yaml$' `
+files=`git diff --name-only --diff-filter AMR ${git_range} | grep -E 'meta.yaml$' `
 build=0
 
 for file in $files; do

@@ -1,0 +1,61 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0ff9550..40eb700 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -160,10 +160,11 @@ if(APPLE)
+   # In order to "think different", we also have to use non-standard suffixes
+   # for our shared libraries
+   set(SHARED_LIB_EXTENSION "dylib")
++  set(LIBSALMON_LINKER_FLAGS "-lstaden-read -lm -pthread -lcurl -lz -ldeflate -lzstd -ldl")
+ else()
+   # We're in sane linux world
+   set(SHARED_LIB_EXTENSION "so")
+-  set(LIBSALMON_LINKER_FLAGS "")
++  set(LIBSALMON_LINKER_FLAGS "-lstaden-read -lm -pthread -lcurl -lz -ldeflate -lzstd -ldl")
+ endif()
+ 
+ set( BOOST_EXTRA_FLAGS "--layout=tagged" )
+@@ -388,8 +389,8 @@ externalproject_add(liblzma
+ # Tell cmake that the external project generated a library so we can
+ # add dependencies here instead of later
+ set(LIBLZMA_LIBRARIES ${GAT_SOURCE_DIR}/external/install/lib/liblzma.a)
+-set(LIBSTADEN_LDFLAGS "-L${GAT_SOURCE_DIR}/external/install/lib")
+-set(LIBSTADEN_CFLAGS "-I${GAT_SOURCE_DIR}/external/install/include")
++set(LIBSTADEN_LDFLAGS "-L${GAT_SOURCE_DIR}/external/install/lib -L${PREFIX}/lib")
++set(LIBSTADEN_CFLAGS "-I${GAT_SOURCE_DIR}/external/install/include -O3 -I${PREFIX}/include")
+ set(FETCHED_LIBLZMA TRUE)
+ else()
+   message("Found liblzma library: ${LIBLZMA_LIBRARIES}")
+@@ -417,8 +418,8 @@ externalproject_add(libbz2
+ # Tell cmake that the external project generated a library so we can
+ # add dependencies here instead of later
+ set(BZIP2_LIBRARIES ${GAT_SOURCE_DIR}/external/install/lib/libbz2.a)
+-set(LIBSTADEN_LDFLAGS "-L${GAT_SOURCE_DIR}/external/install/lib -I${GAT_SOURCE_DIR}/external/install/include")
+-set(LIBSTADEN_CFLAGS "-I${GAT_SOURCE_DIR}/external/install/include")
++set(LIBSTADEN_LDFLAGS "-L${GAT_SOURCE_DIR}/external/install/lib -I${GAT_SOURCE_DIR}/external/install/include -L${PREFIX}/lib")
++set(LIBSTADEN_CFLAGS "-I${GAT_SOURCE_DIR}/external/install/include -O3 -I${PREFIX}/include")
+ set(FETCHED_LIBBZ2 TRUE)
+ else()
+   message("Found libbz2 library: ${BZIP2_LIBRARIES}")
+@@ -740,8 +741,8 @@ endif()
+ # Because of the way that Apple has changed SIP
+ # in el capitan, some headers may be in a new location
+ if(APPLE)
+-  set(STADEN_INC "-I/usr/local/include")
+-  set(STADEN_LIB "-L/usr/local/lib")
++  set(STADEN_INC "-I${PREFIX}/include")
++  set(STADEN_LIB "-L${PREFIX}/lib")
+ endif()
+ 
+ if(CONDA_BUILD)
+@@ -773,7 +774,9 @@ if (NOT LIBSTADENIO_FOUND)
+       mkdir -p htscodecs-1.6.0 &&
+       tar -xzf htscodecs-1.6.0.tar.gz --strip-components=1 -C htscodecs-1.6.0 &&
+       rm -fr staden-io_lib/htscodecs &&
+-      mv -f htscodecs-1.6.0 staden-io_lib/htscodecs
++      mv -f htscodecs-1.6.0 staden-io_lib/htscodecs &&
++      cp -rf ${RECIPE_DIR}/config.* staden-io_lib &&
++      cd staden-io_lib && autoreconf -if && cd ..
+     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/staden-io_lib
+     INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/install
+     CONFIGURE_COMMAND ./configure --enable-shared=no --without-libcurl --prefix=<INSTALL_DIR> LDFLAGS=${LIBSTADEN_LDFLAGS} CFLAGS=${LIBSTADEN_CFLAGS} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER}

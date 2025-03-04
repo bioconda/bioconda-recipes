@@ -1,32 +1,51 @@
 {% set name = "reseek" %}
-{% set version = "2.02" %}
+{% set version = "2.3" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/rcedgar/reseek/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 83296e5edcdccdf4848f52ff34f35b753fa9ae1d383c3347eee41ef7d26888b1
+- url: https://github.com/rcedgar/reseek/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 2c0fc59a0f54af067e80e607c28399978c17ec21cb02773e522cc792db696312
+  patches:
+    - arm_support.patch
+    - parasail.patch  # [aarch64 or arm64]
+- url: https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz
+  sha256: 9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23
+  folder: zlib-1.3.1
 
 build:
-  number: 1
-  skip: True  #[osx]
+  number: 0
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
-
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler("cxx") }}
     - {{ compiler("c") }}
     - make
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
 
 test:
   commands:
     - reseek -version
+
 about:
   home: https://github.com/rcedgar/reseek
   license: GPL-3.0-only
   license_file: LICENSE
-  summary: Protein structure alignment and search algorithm
+  license_family: GPL3
+  summary: "Protein structure alignment and search algorithm."
+  dev_url: https://github.com/rcedgar/reseek
+  doc_url: https://drive5.com/reseek/doc.html
+
+#extra:
+  #additional-platforms:
+    #- linux-aarch64
+    #- osx-arm64

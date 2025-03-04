@@ -1,0 +1,108 @@
+{% set name = "ensembl-genomio" %}
+{% set version = "1.6.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/ensembl_genomio-{{ version }}.tar.gz
+  sha256: fdfafe9a04cffe290d65e8f8f82ae4d96ef19c20a9a14894266134bcab8f1fbc
+
+build:
+  entry_points:
+    - assembly_download = ensembl.io.genomio.assembly.download:main
+    - assembly_tracker = ensembl.io.genomio.assembly.status:main
+    - database_factory = ensembl.io.genomio.database.factory:main
+    - query_db_meta = ensembl.io.genomio.database.meta_getter:main
+    - events_dump = ensembl.io.genomio.events.dump:main
+    - events_load = ensembl.io.genomio.events.load:main
+    - events_format = ensembl.io.genomio.events.format:main
+    - fasta_chunk = ensembl.io.genomio.fasta.chunk:main
+    - fasta_process = ensembl.io.genomio.fasta.process:main
+    - genbank_download = ensembl.io.genomio.genbank.download:main
+    - genbank_extract_data = ensembl.io.genomio.genbank.extract_data:main
+    - genome_metadata_dump = ensembl.io.genomio.genome_metadata.dump:main
+    - genome_metadata_extend = ensembl.io.genomio.genome_metadata.extend:main
+    - genome_metadata_prepare = ensembl.io.genomio.genome_metadata.prepare:main
+    - genome_stats_compare = ensembl.io.genomio.genome_stats.compare:main
+    - genome_stats_dump = ensembl.io.genomio.genome_stats.dump:main
+    - gff3_process = ensembl.io.genomio.gff3.process:main
+    - gff3_overlaps = ensembl.io.genomio.gff3.overlaps:main
+    - annotation_update_description = ensembl.io.genomio.annotation.update_description:main
+    - manifest_check_integrity = ensembl.io.genomio.manifest.check_integrity:main
+    - manifest_compute_stats = ensembl.io.genomio.manifest.compute_stats:main
+    - manifest_generate = ensembl.io.genomio.manifest.generate:main
+    - schemas_json_factory = ensembl.io.genomio.schemas.json.factory:main
+    - schemas_json_validate = ensembl.io.genomio.schemas.json.validate:main
+    - seq_region_dump = ensembl.io.genomio.seq_region.dump:main
+    - seq_region_prepare = ensembl.io.genomio.seq_region.prepare:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools-scm
+    - pip
+  run:
+    - python >=3.10
+    - bcbio-gff ==0.7.1
+    - biopython >=1.81
+    - ensembl-py >=2.1.2
+    - ensembl-utils >=0.5.1
+    - jsonschema >=4.6.0
+    - intervaltree >=3.1.0
+    - mysql-connector-python >=8.0.29
+    - python-redmine >=2.3.0
+    - requests >=2.28.0
+    - spython >=0.3.13
+
+test:
+  imports:
+    - ensembl.io.genomio
+  commands:
+    - assembly_download --help
+    - assembly_tracker --help
+    - database_factory --help
+    - query_db_meta --help
+    - events_dump --help
+    - events_load --help
+    - events_format --help
+    - fasta_chunk --help
+    - fasta_process --help
+    - genbank_download --help
+    - genbank_extract_data --help
+    - genome_metadata_dump --help
+    - genome_metadata_extend --help
+    - genome_metadata_prepare --help
+    - genome_stats_compare --help
+    - genome_stats_dump --help
+    - gff3_process --help
+    - gff3_overlaps --help
+    - annotation_update_description --help
+    - manifest_check_integrity --help
+    - manifest_compute_stats --help
+    - manifest_generate --help
+    - schemas_json_factory --help
+    - schemas_json_validate --help
+    - seq_region_dump --help
+    - seq_region_prepare --help
+
+about:
+  home: https://www.ensembl.org/
+  summary: Ensembl GenomIO - tools to convert basic genomic data into Ensembl cores and back to flatfile
+  license: Apache-2.0
+  license_file:
+    - NOTICE
+    - LICENSE
+  license_family: APACHE
+  doc_url: https://ensembl.github.io/ensembl-genomio/
+  dev_url: "https://github.com/Ensembl/ensembl-genomio"
+
+extra:
+  identifiers:
+    - biotools:Ensembl

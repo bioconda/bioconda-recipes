@@ -46,3 +46,4 @@ mkdir -p "${PREFIX}/bin"
 rm -fv ${PREFIX}/bin/*
 
 sed -e "s|CHANGEME|${SHARE_DIR}|" -e "s|__OS__|${OS}|" "$RECIPE_DIR/t_coffee.sh" > "${PREFIX}/bin/t_coffee"
+
