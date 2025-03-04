@@ -31,7 +31,11 @@ case "$(uname -m)" in
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS} -std=c++14" -DEXTRA_FLAGS='-march=armv8-a -Ofast' \
 	"${CONFIG_ARGS}"
       ;;
-  *)
+  *) 
+  echo "unsupported" 
+  exit 1
+  ;;
+esac
 cmake --build build --target install -j "${CPU_COUNT}" -v
 
 PYVER=`python -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version_info[1]))'`
