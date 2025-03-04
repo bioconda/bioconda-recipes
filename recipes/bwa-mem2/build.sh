@@ -23,16 +23,10 @@ case "$(uname -m)" in
           LIBS="${LDFLAGS}" make -j${CPU_COUNT} arch="-march=armv8-a" EXE=bwa-mem2 CC="${CC}" CXX="${CXX}" all
       fi
       ;;
-  arm64)
-      if [ "$(uname -s)" == Darwin ]
-      then
-        LIBS="${LDFLAGS}" make -j${CPU_COUNT} CC="${CC}" CXX="${CXX}"
-      else
+  arm64) # has to be darwin
 	  git submodule init
 	  git submodule update
           LIBS="${LDFLAGS}" make -j${CPU_COUNT} arch="-march=armv8-a" EXE=bwa-mem2 CC="${CC}" CXX="${CXX}" all
-	  ;;
-      fi
       ;;
   *)
       echo "Not supported architecture: $(uname -m)" ;;
