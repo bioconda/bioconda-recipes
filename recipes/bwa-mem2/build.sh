@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 # https://github.com/intel/safestringlib/issues/14
 if [[ $OSTYPE == "darwin"* ]]; then
     sed -i.bak "s#extern errno_t memset_s#//xxx extern errno_t memset_s#g" ext/safestringlib/include/safe_mem_lib.h
@@ -16,11 +16,22 @@ case "$(uname -m)" in
   aarch64)
       if [ "$(uname -s)" == Darwin ]
       then
-        LIBS="${LDFLAGS}" make -j${CPU_COUNT} CC="${CC}" CXX="${CXX}" multi
+        LIBS="${LDFLAGS}" make -j${CPU_COUNT} CC="${CC}" CXX="${CXX}"
       else
 	  git submodule init
 	  git submodule update
           LIBS="${LDFLAGS}" make -j${CPU_COUNT} arch="-march=armv8-a" EXE=bwa-mem2 CC="${CC}" CXX="${CXX}" all
+      fi
+      ;;
+  arm64)
+      if [ "$(uname -s)" == Darwin ]
+      then
+        LIBS="${LDFLAGS}" make -j${CPU_COUNT} CC="${CC}" CXX="${CXX}"
+      else
+	  git submodule init
+	  git submodule update
+          LIBS="${LDFLAGS}" make -j${CPU_COUNT} arch="-march=armv8-a" EXE=bwa-mem2 CC="${CC}" CXX="${CXX}" all
+	  ;;
       fi
       ;;
   *)
