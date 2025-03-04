@@ -1,0 +1,63 @@
+{% set name = 'mity' %}
+{% set version = '1.1.0' %}
+{% set sha256 = "b9ffe136cacf78bd07b271d928269e660c0bc27502c44c0829d485497ab1df68" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/KCCG/{{ name }}/archive/refs/tags/{{ version }}.zip
+  sha256: {{ sha256 }}
+  patches:
+    - _version.patch
+    - setup.patch
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('mity', max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+
+requirements:
+  host:
+    - pip
+    - python >=3.10
+    - setuptools >=75.3
+  run:
+    - freebayes >=1.2
+    - gsort >=0.1.4
+    - pysam
+    - vcfanno
+    - scipy
+    - numpy
+    - pandas
+    - pyyaml
+    - xlsxwriter
+    - python >=3.10
+
+test:
+  imports:
+    - mitylib
+  commands:
+    - mity -h
+
+about:
+  home: https://github.com/KCCG/mity
+  summary: Mity is a bioinformatic analysis pipeline designed to call mitochondrial SNV and INDEL variants from Whole Genome Sequencing (WGS) data.
+  description: |
+    *Mity* can: 
+    
+    - identify very low-heteroplasmy variants, even <1% heteroplasmy when there is sufficient read-depth (eg >1000x)
+    - filter out common artefacts that arise from high-depth sequencing
+    - easily integrate with existing nuclear DNA analysis pipelines (mity merge)
+    - provide an annotated report, designed for clinicians and researchers to interrogate
+    
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - tm4zza
