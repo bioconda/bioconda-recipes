@@ -10,23 +10,18 @@ if [[ $OSTYPE == "darwin"* ]]; then
     sed -i.bak 's/memset_s/memset8_s/g' ext/safestringlib/safeclib/wmemset_s.c
 fi
 
+git submodule add https://github.com/DLTcollab/sse2neon ext/sse2neon
+cd ext/sse2neon ; git checkout tags/1.8.0
+cd ../..
+
 case "$(uname -m)" in
   x86_64)
-      LIBS="${LDFLAGS}" make -j${CPU_COUNT} CC="${CC}" CXX="${CXX}" multi ;;
-  aarch64)
-      if [ "$(uname -s)" == Darwin ]
-      then
-        LIBS="${LDFLAGS}" make -j${CPU_COUNT} CC="${CC}" CXX="${CXX}"
-      else
-	  git submodule init
-	  git submodule update
-          LIBS="${LDFLAGS}" make -j${CPU_COUNT} arch="-march=armv8-a" EXE=bwa-mem2 CC="${CC}" CXX="${CXX}" all
-      fi
+      	LIBS="${LDFLAGS}" make -j${CPU_COUNT} CC="${CC}" CXX="${CXX}" multi ;;
+  aarch64)      
+	LIBS="${LDFLAGS}" make -j${CPU_COUNT} arch="-march=armv8-a" EXE=bwa-mem2 CC="${CC}" CXX="${CXX}" all
       ;;
   arm64) # has to be darwin
-	  git submodule init
-	  git submodule update
-          LIBS="${LDFLAGS}" make -j${CPU_COUNT} arch="-march=armv8-a" EXE=bwa-mem2 CC="${CC}" CXX="${CXX}" all
+        LIBS="${LDFLAGS}" make -j${CPU_COUNT} arch="-march=armv8-a" EXE=bwa-mem2 CC="${CC}" CXX="${CXX}" all
       ;;
   *)
       echo "Not supported architecture: $(uname -m)" ;;
