@@ -1,0 +1,31 @@
+package:
+  name: aliview
+  version: "1.29"  # Version 1.28 won't build, and v1.30 is still being worked on
+
+source:
+  git_url: https://github.com/AliView/AliView.git
+  # git_tag: 1.30 - Still under construction 
+  git_depth: 1
+
+build:
+  number: 0
+  script: |
+    mvn clean compile install package -DskipTests
+    mkdir -p $PREFIX/share/aliview
+    cp target/aliview.jar $PREFIX/share/aliview/
+    mkdir -p $PREFIX/bin
+    echo -e "#!/bin/bash\njava -jar $PREFIX/share/aliview/aliview.jar \"\$@\"" > $PREFIX/bin/aliview
+    chmod +x $PREFIX/bin/aliview
+
+requirements:
+  build:
+    - openjdk >=8
+    - maven
+  run:
+    - openjdk >=8
+
+about:
+  home: https://github.com/AliView/AliView
+  summary: "AliView is an intuitive and fast alignment viewer and editor for DNA and amino acid sequences."
+  license: GPL-3.0
+
