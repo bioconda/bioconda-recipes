@@ -1,0 +1,65 @@
+{% set name = "lassaseq" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/DaanJansen94/LassaSeq/archive/v.{{ version }}.tar.gz
+  sha256: 63dc4478ddcf5f1571b1114a3613ee534e8e90cdb0c7d281904469344c3c6b5e
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - lassaseq=lassaseq.lassaseq:cli_main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+  run:
+    - python >=3.9
+    - bioconda::mafft
+    - bioconda::trimal
+    - bioconda::iqtree
+    - numpy >=1.20.0
+    - biopython >=1.80
+    - requests >=2.25.0
+    - tqdm >=4.50.0
+
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+
+test:
+  imports:
+    - lassaseq
+  commands:
+    - lassaseq --help
+    - mafft --help
+    - trimal --help
+    - iqtree --help
+
+about:
+  home: https://github.com/DaanJansen94/LassaSeq
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: Tool for downloading Lassa virus sequences
+  description: |
+    LassaSeq is a command-line tool that simplifies the process of analyzing Lassa virus sequences. 
+    It automates the complete workflow from downloading sequences to creating phylogenetic trees, 
+    with special handling for Lassa's bi-segmented genome.
+  doc_url: https://github.com/DaanJansen94/LassaSeq/blob/master/README.md
+  dev_url: https://github.com/DaanJansen94/LassaSeq
+
+extra:
+  recipe-maintainers:
+    - DaanJansen94 
