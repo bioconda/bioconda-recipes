@@ -1,4 +1,4 @@
-{% set version = "0.1.2" %}
+{% set version = "0.1.4" %}
 
 package:
   name: graphembed
@@ -6,20 +6,29 @@ package:
 
 build:
   number: 0
+  skip: True  # [osx]
   run_exports:
       - {{ pin_subpackage('graphembed', max_pin="x.x") }}
-  skip: True  # [osx]
+
 source:
   url: https://github.com/jianshu93/graphembed/archive/v{{ version }}.tar.gz
-  sha256: 9e3d87b57b493768dbb38feb1084b41f79141a12775373cac74a2798c9c9cd56
+  sha256: 001c9ef81ebab0da857cc5948dc4383de5c92088af135c4b55b18e15a9be8cc5
 
 requirements:
   build:
     - {{ compiler("cxx") }}
     - {{ compiler('c') }}
-    - rust >=1.69
+    - {{ compiler('rust') }}
     - make
     - cmake
+    - cargo-bundle-licenses
+    - pkg-config
+  host:
+    - openblas
+    - openssl  # [aarch64]
+  run:
+    - openblas
+    - openssl  # [aarch64]
 
 test:
   commands:
@@ -28,8 +37,14 @@ test:
 about:
   home: https://github.com/jean-pierreBoth/graphembed
   license: MIT
-  summary: Efficient and Robust Graph Embedding via High-Order Proximity Preservation or Recursive Sketching
+  license_family: MIT
+  summary: "Efficient and Robust Graph Embedding via High-Order Proximity Preservation or Recursive Sketching."
+  dev_url: https://github.com/jean-pierreBoth/graphembed
+
 extra:
-  maintainers:
-   - Jean Pierre-Both
-   - Jianshu Zhao
+  recipe-maintainers:
+    - jean-pierreBoth
+    - jianshu93
+  #additional-platforms:
+    #- osx-arm64
+    #- linux-aarch64
