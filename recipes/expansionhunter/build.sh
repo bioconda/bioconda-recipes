@@ -1,8 +1,11 @@
 #!/bin/bash
+
+set -xe
+
 mkdir build
 cd build
 cmake ..
-make
+make -j ${CPU_COUNT}
 mkdir -p $PREFIX/bin
 cp install/bin/ExpansionHunter $PREFIX/bin
 mkdir -p $PREFIX/share/ExpansionHunter

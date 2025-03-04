@@ -1,0 +1,56 @@
+{% set name = "massdash" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: dd62b62368ba6457d74b0b07bc0b3ba1df095f4788800a79a9cec6e4cbaf564d
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  entry_points:
+    - massdash = massdash.main:cli
+  run_exports:  
+    - {{ pin_subpackage('massdash', max_pin='x.x') }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.10,<=3.12
+    - flit-core
+  run:
+    - python >=3.10,<=3.12
+    - bokeh >3.0
+    - click >=8.1
+    - joblib
+    - matplotlib-base
+    - upsetplot
+    - numpy >=1.9.0
+    - pandas >=0.17
+    - plotly ==5.24.1
+    - psutil
+    - pyopenms >=3.2.0
+    - requests
+    - scipy >=1.12.0
+    - streamlit
+    - tqdm
+
+test:
+  imports:
+    - massdash
+
+about:
+  home: https://github.com/Roestlab/massdash
+  license: BSD-3-Clause
+  license_family: BSD
+  summary: "MassDash is a streamlined DIA mass spec visualization, analysis, optimization, and rapid prototyping."
+  dev_url: https://github.com/Roestlab/massdash
+
+extra:
+  recipe-maintainers:
+    - singjc

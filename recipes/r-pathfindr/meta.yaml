@@ -1,22 +1,20 @@
-{% set version = '2.3.0' %}
-
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set name = "r-pathfindr" %}
+{% set version = "2.4.2" %}
 
 package:
-  name: r-pathfindr
-  version: {{ version|replace("-", "_") }}
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url:
     - {{ cran_mirror }}/src/contrib/pathfindR_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/pathfindR/pathfindR_{{ version }}.tar.gz
-  sha256: e7fc4f10859890af5ab17cc7870efac64614f234059f5734ddd7af705f67281b
+  sha256: e54e8164b6a076736a0dbd5d1056af284b7bf7197c5ae113476c26a236e71343
 
 build:
-  merge_build_host: True  # [win]
   number: 0
   noarch: generic
+  merge_build_host: True  # [win]
   rpaths:
     - lib/R/lib/
     - lib/
@@ -24,11 +22,6 @@ build:
     - {{ pin_subpackage("r-pathfindr", max_pin="x") }}
 
 requirements:
-  build:
-    - {{ posix }}zip               # [win]
-    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
-    - openjdk 8.*
-
   host:
     - r-base
     - openjdk 8.*
@@ -36,6 +29,8 @@ requirements:
     - r-dbi
     - bioconductor-keggrest
     - bioconductor-kegggraph
+    - bioconductor-ggkegg
+    - r-httr
     - r-r.utils
     - r-doparallel
     - r-foreach
@@ -50,7 +45,6 @@ requirements:
     - bioconductor-org.hs.eg.db
     - r-pathfindr.data >=2.0
     - r-rmarkdown
-
   run:
     - r-base
     - openjdk 8.*
@@ -58,6 +52,8 @@ requirements:
     - r-dbi
     - bioconductor-keggrest
     - bioconductor-kegggraph
+    - bioconductor-ggkegg
+    - r-httr
     - r-r.utils
     - r-doparallel
     - r-foreach
@@ -75,11 +71,10 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('pathfindR')"           # [not win]
-    - "\"%R%\" -e \"library('pathfindR')\""  # [win]
+    - $R -e "library('pathfindR')"
 
 about:
-  home: https://egeulgen.github.io/pathfindR/, https://github.com/egeulgen/pathfindR
+  home: "https://github.com/egeulgen/pathfindR"
   license: MIT
   summary: 'Enrichment analysis enables researchers to uncover mechanisms underlying a phenotype.
     However, conventional methods for enrichment analysis do not take into account protein-protein
@@ -99,6 +94,9 @@ about:
   license_file:
     - '{{ environ["PREFIX"] }}/lib/R/share/licenses/MIT'
     - LICENSE
+  doc_url: "https://egeulgen.github.io/pathfindR/"
+  dev_url: "https://github.com/egeulgen/pathfindR"
+
 extra:
   recipe-maintainers:
     - egeulgen

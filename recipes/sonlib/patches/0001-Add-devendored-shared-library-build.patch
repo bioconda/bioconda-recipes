@@ -1,0 +1,247 @@
+From 1e06372425d4492bc943b34ade7a9ef443cb1bec Mon Sep 17 00:00:00 2001
+From: Travis Wrightsman <tw493@cornell.edu>
+Date: Tue, 23 Jan 2024 21:04:37 -0500
+Subject: [PATCH] Add devendored shared library build
+
+---
+ C/Makefile                     | 14 ++++++++++++++
+ C/impl/stPhylogeny.c           |  6 +++---
+ C/tests/cigarsTest.c           | 10 +++++-----
+ C/tests/fastaCTest.c           |  6 +++---
+ C/tests/kvDatabaseTestCommon.c |  2 +-
+ C/tests/sonLibCommonTest.c     |  2 +-
+ C/tests/sonLibExceptTest.c     |  6 +++---
+ C/tests/sonLibGlobalsTest.h    |  2 +-
+ C/tests/stPhylogenyTest.c      |  4 ++--
+ C/tests/stThreadPoolTest.c     |  2 +-
+ C/tests/stUnionFindTest.c      |  2 +-
+ Makefile                       |  6 ++++++
+ setup.py                       |  2 +-
+ 13 files changed, 42 insertions(+), 22 deletions(-)
+
+diff --git a/C/Makefile b/C/Makefile
+index fcb627a..92856ac 100644
+--- a/C/Makefile
++++ b/C/Makefile
+@@ -1,4 +1,6 @@
+ rootPath = ..
++BINDIR = ../bin
++LIBDIR = ../lib
+ 
+ include ../include.mk
+ 
+@@ -23,6 +25,13 @@ LDLIBS = ${LIBDIR}/sonLib.a ${dblibs} ${LIBS}
+ 
+ all : ${LIBDIR}/sonLib.a ${testProgs} ${libHeadersDep}
+ 
++shlib : ${LIBDIR}/libsonLib.so
++
++tests-shlib:
++	${CC} ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -o ${rootPath}/sonLibTests tests/allTests.c ${libTests} -lsonLib -lcutest -lz -lm -lpthread
++	${CC} ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -o ${rootPath}/sonLib_cigarTest tests/cigarsTest.c -l sonLib -lz -lpthread
++	${CC} ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -o ${rootPath}/sonLib_fastaCTest tests/fastaCTest.c -l sonLib -lz -lpthread
++
+ # note: old Makefile put .o files in this directory, clean if for now (FIXME: remove soon)
+ clean : 
+ 	rm -rf  ${BINDIR} ${LIBDIR} ${libObjs} *.o
+@@ -62,5 +71,10 @@ ${LIBDIR}/sonLib.a : ${libObjs}
+ 	${RANLIB} sonLib.a 
+ 	mv sonLib.a ${LIBDIR}/
+ 
++${LIBDIR}/libsonLib.so : ${libObjs}
++	@mkdir -p $(dir $@)
++	${CC} ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -shared -fPIC ${libObjs} -lquicktree -lz -o libsonLib.so
++	mv libsonLib.so ${LIBDIR}/
++
+ test:
+ 	${PYTHON} allTests.py --testLength=SHORT --logLevel CRITICAL
+diff --git a/C/impl/stPhylogeny.c b/C/impl/stPhylogeny.c
+index fd0fcf4..33b594d 100644
+--- a/C/impl/stPhylogeny.c
++++ b/C/impl/stPhylogeny.c
+@@ -2,9 +2,9 @@
+ #include "sonLib.h"
+ #include "stPhylogeny.h"
+ // QuickTree includes
+-#include "cluster.h"
+-#include "tree.h"
+-#include "buildtree.h"
++#include "quicktree/cluster.h"
++#include "quicktree/tree.h"
++#include "quicktree/buildtree.h"
+ // Spimap C/C++ translation layer include
+ #include "stSpimapLayer.h"
+ 
+diff --git a/C/tests/cigarsTest.c b/C/tests/cigarsTest.c
+index 5189f69..a4547ba 100644
+--- a/C/tests/cigarsTest.c
++++ b/C/tests/cigarsTest.c
+@@ -9,11 +9,11 @@
+ #include <assert.h>
+ #include <string.h>
+ 
+-#include "fastCMaths.h"
+-#include "avl.h"
+-#include "commonC.h"
+-#include "bioioC.h"
+-#include "pairwiseAlignment.h"
++#include "sonLib/fastCMaths.h"
++#include "sonLib/avl.h"
++#include "sonLib/commonC.h"
++#include "sonLib/bioioC.h"
++#include "sonLib/pairwiseAlignment.h"
+ 
+ int main(int argc, char *argv[]) {
+     int64_t i;
+diff --git a/C/tests/fastaCTest.c b/C/tests/fastaCTest.c
+index 9cc81db..4d41ca4 100644
+--- a/C/tests/fastaCTest.c
++++ b/C/tests/fastaCTest.c
+@@ -9,9 +9,9 @@
+ #include <assert.h>
+ #include <string.h>
+ 
+-#include "fastCMaths.h"
+-#include "commonC.h"
+-#include "bioioC.h"
++#include "sonLib/fastCMaths.h"
++#include "sonLib/commonC.h"
++#include "sonLib/bioioC.h"
+ 
+ int main(int argc, char *argv[]) {
+     FILE *fileHandle;
+diff --git a/C/tests/kvDatabaseTestCommon.c b/C/tests/kvDatabaseTestCommon.c
+index eccf3c3..b5a9b21 100644
+--- a/C/tests/kvDatabaseTestCommon.c
++++ b/C/tests/kvDatabaseTestCommon.c
+@@ -9,7 +9,7 @@
+  */
+ #include "sonLibGlobalsTest.h"
+ #include "kvDatabaseTestCommon.h"
+-#include "stSafeC.h"
++#include "sonLib/stSafeC.h"
+ #include <getopt.h>
+ 
+ /* usage message and exit */
+diff --git a/C/tests/sonLibCommonTest.c b/C/tests/sonLibCommonTest.c
+index 1c208fc..6924ffa 100644
+--- a/C/tests/sonLibCommonTest.c
++++ b/C/tests/sonLibCommonTest.c
+@@ -11,7 +11,7 @@
+  *      Author: benedictpaten
+  */
+ #include "sonLibGlobalsTest.h"
+-#include "bioioC.h"
++#include "sonLib/bioioC.h"
+ 
+ static void test_st_logging(CuTest *testCase) {
+     /*
+diff --git a/C/tests/sonLibExceptTest.c b/C/tests/sonLibExceptTest.c
+index db00120..4d3f1cf 100644
+--- a/C/tests/sonLibExceptTest.c
++++ b/C/tests/sonLibExceptTest.c
+@@ -7,12 +7,12 @@
+ /*
+  * basic tests of stExcept.
+  */
+-#include "sonLibExcept.h"
++#include "sonLib/sonLibExcept.h"
+ #include "sonLibGlobalsTest.h"
+-#include "sonLibCommon.h"
++#include "sonLib/sonLibCommon.h"
+ #include <stdlib.h>
+ #include <stdio.h>
+-#include "stSafeC.h"
++#include "sonLib/stSafeC.h"
+ 
+ /* test throwing through two levels */
+ static const char *const ERR1 = "err1";
+diff --git a/C/tests/sonLibGlobalsTest.h b/C/tests/sonLibGlobalsTest.h
+index ddb1293..a704b99 100644
+--- a/C/tests/sonLibGlobalsTest.h
++++ b/C/tests/sonLibGlobalsTest.h
+@@ -28,6 +28,6 @@
+ #include <math.h>
+ 
+ #include "CuTest.h"
+-#include "sonLib.h"
++#include "sonLib/sonLib.h"
+ 
+ #endif // SONLIB_GLOBALS_TEST_H_
+diff --git a/C/tests/stPhylogenyTest.c b/C/tests/stPhylogenyTest.c
+index ea4c84b..93c3f1d 100644
+--- a/C/tests/stPhylogenyTest.c
++++ b/C/tests/stPhylogenyTest.c
+@@ -1,8 +1,8 @@
+ #include <stdlib.h>
+ #include <math.h>
+ #include "CuTest.h"
+-#include "sonLib.h"
+-#include "stPhylogeny.h"
++#include "sonLib/sonLib.h"
++#include "sonLib/stPhylogeny.h"
+ 
+ static stIndexedTreeInfo *getIndex(stTree *node) {
+     assert(node != NULL);
+diff --git a/C/tests/stThreadPoolTest.c b/C/tests/stThreadPoolTest.c
+index 8a456a6..a3f3128 100644
+--- a/C/tests/stThreadPoolTest.c
++++ b/C/tests/stThreadPoolTest.c
+@@ -1,5 +1,5 @@
+ #include "CuTest.h"
+-#include "sonLib.h"
++#include "sonLib/sonLib.h"
+ 
+ // Test sorting a few sublists into a larger list to try to catch out
+ // any race conditions.
+diff --git a/C/tests/stUnionFindTest.c b/C/tests/stUnionFindTest.c
+index c39826d..b7caf53 100644
+--- a/C/tests/stUnionFindTest.c
++++ b/C/tests/stUnionFindTest.c
+@@ -1,5 +1,5 @@
+ #include "CuTest.h"
+-#include "sonLib.h"
++#include "sonLib/sonLib.h"
+ 
+ // Simple static test.
+ static void stUnionFind_staticTest(CuTest *testCase) {
+diff --git a/Makefile b/Makefile
+index b244b55..e04e298 100644
+--- a/Makefile
++++ b/Makefile
+@@ -5,6 +5,9 @@ BINDIR = ./bin
+ 
+ all : cP ${BINDIR}/sonLib_daemonize.py
+ 
++shlib:
++	cd C && ${MAKE} shlib
++
+ clean : cP.clean externalToolsP.clean
+ 	rm -f ${BINDIR}/sonLib_daemonize.py
+ 
+@@ -23,6 +26,9 @@ externalToolsP.clean :
+ test : all
+ 	PYTHONPATH=src:. PATH=$$(pwd)/bin:$$PATH ${PYTHON} allTests.py --testLength=SHORT --logLevel=WARN
+ 
++tests-shlib:
++	cd C && ${MAKE} tests-shlib
++
+ ${BINDIR}/sonLib_daemonize.py : sonLib_daemonize.py cP
+ 	cp sonLib_daemonize.py ${BINDIR}/sonLib_daemonize.py
+ 	chmod +x ${BINDIR}/sonLib_daemonize.py
+diff --git a/setup.py b/setup.py
+index 9d96fd0..7db446e 100755
+--- a/setup.py
++++ b/setup.py
+@@ -12,7 +12,7 @@ class BuildWithMake(distutils.command.build_py.build_py):
+     """
+     def run(self):
+         # Call make.
+-        subprocess.check_call(["make"])
++        #subprocess.check_call(["make"])
+ 
+         # Keep building the Python stuff
+         distutils.command.build_py.build_py.run(self)
+-- 
+2.39.2
+

@@ -1,0 +1,63 @@
+{% set name = "phold" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 1e57d55a1a1626bddda07c201d2be0d7816c3df61f069a98acac59176b2c2ad5
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - phold = phold:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"      
+  run_exports:
+    - {{ pin_subpackage('phold', max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.8,<3.12
+    - pip
+  run:
+    - foldseek ==9.427df8a
+    - python >=3.8,<3.12
+    - biopython >=1.76
+    - alive-progress >=3.0.1
+    - datasets >=2.15
+    - requests >=2.25
+    - pyarrow >=14.0.0
+    - pandas >=1.4.2
+    - loguru >=0.5.3
+    - pyyaml >=6.0
+    - click >=8.0.0
+    - sentencepiece >=0.1.99
+    - transformers >=4.34
+    - pyrodigal-gv >=0.3.1
+    - pytorch >=2.1.2
+    - numpy >=1.20
+    - pycirclize >=0.3.1
+    - h5py >=3.5
+
+
+
+test:
+  imports:
+    - phold
+  commands:
+    - phold --help
+
+about:
+  home: https://github.com/gbouras13/phold
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Phage annotation using protein structures
+  doc_url: https://phold.readthedocs.io/en/latest/
+
+extra:
+  recipe-maintainers:
+    - gbouras13

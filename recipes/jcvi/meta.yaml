@@ -1,18 +1,20 @@
 {% set name = "jcvi" %}
-{% set version = "1.3.8" %}
+{% set version = "1.4.16" %}
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: f193f93b0a967ab6b6e940645f68e7ab640f2838973d270a0aa8662fe3f774ae
+  sha256: 78201d911d45d226f1cb6a97076e6f5aac57fa5d5fec5fc5bd2896e6e5c240e7
 
 build:
-  skip: True  # [py2k or osx]
-  number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  skip: True  # [osx]
+  number: 1
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage(name, max_pin='x') }}
 
@@ -22,8 +24,9 @@ requirements:
   host:
     - python
     - pip
-    - numpy 
+    - setuptools-scm
     - cython
+    - numpy
   run:
     - python
     - biopython
@@ -39,20 +42,16 @@ requirements:
     - matplotlib-base
     - natsort
     - networkx
-    - numpy
+    - {{ pin_compatible('numpy') }}
     - pypdf2
     - more-itertools
-    - r-ggplot2
     - last
+    - r-ggplot2
     - r-tinytex
-    #- pytest
-    #- pytest-benchmark
-    #- pytest-cov
     - pyyaml
     - rich
     - scipy
     - seaborn-base
-    #- texlive-core
     - ucsc-liftover
 
 test:
@@ -71,11 +70,18 @@ test:
     - jcvi.variation
   #This fails for some unknown reason, even though it's outputting "JCVI utility libraries"
   #commands:
-  #  - "python -m jcvi.apps 2>&1 | grep 'JCVI utility libraries'"
+  #  - 'python -m jcvi.apps 2>&1 | grep "JCVI utility libraries"'
 
 about:
-  home: http://github.com/tanghaibao/jcvi
+  home: "https://github.com/tanghaibao/jcvi"
   license: BSD-2-Clause
   license_family: BSD
-  summary: Python utility libraries on genome assembly, annotation and comparative genomics
+  license_file: LICENSE
+  summary: "Python utility libraries on genome assembly, annotation, and comparative genomics"
   description: "JCVI utility libraries"
+  dev_url: "https://github.com/tanghaibao/jcvi"
+  doc_url: "https://github.com/tanghaibao/jcvi/wiki"
+
+extra:
+  additional-platforms:
+    - linux-aarch64

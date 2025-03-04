@@ -1,29 +1,43 @@
-#!/bin/bash
+#!/bin/bash -euo
 
-export INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
+export M4="${BUILD_PREFIX}/bin/m4"
+export INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
-if [ "$(uname)" == "Darwin" ]; then
-    # for Mac OSX
-    export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
-    export CFLAGS="${CFLAGS} -m64"
-fi
-
-export LANGUAGE=en_US.UTF-8
-export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-autoconf
-autoheader
+if [[ "$(uname)" == "Darwin" ]]; then
+    # for Mac OSX
+    export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
+    export CFLAGS="${CFLAGS} -m64 -Wno-implicit-function-declaration -Wno-deprecated-non-prototype"
+    export LC_ALL=C
+fi
+
+case $(uname -m) in
+	x86_64)
+		SIMD_LEVEL="sse42"
+		;;
+	aarch64)
+		SIMD_LEVEL="arm"
+		;;
+	arm64)
+		SIMD_LEVEL="arm"
+                ;;
+	*)
+		SIMD_LEVEL="none"
+		;;
+esac
+
+autoreconf -if
 ./configure CC="${CC}" CFLAGS="${CFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" \
 	LDFLAGS="${LDFLAGS}" \
 	--prefix="${PREFIX}" \
 	--with-gmapdb="${PREFIX}/share" \
-	--with-simd-level=sse42
+	--with-simd-level="${SIMD_LEVEL}"
 
 make -j"${CPU_COUNT}"
 make install
@@ -48,5 +62,7 @@ sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/md_coords
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/psl_genes
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/psl_introns
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/psl_splicesites
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/snpindex
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/vcf_iit
 
+rm -rf ${PREFIX}/bin/*.bak

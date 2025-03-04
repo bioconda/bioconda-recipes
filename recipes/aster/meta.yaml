@@ -1,13 +1,15 @@
-{% set version = "1.15" %}
+{% set version = "1.19" %}
 {% set name = "ASTER" %}
-{% set sha256 = "71618824a0f39135977709f21f3b6374815407411fb44474442a1a9c88a6c919" %}
+{% set sha256 = "f6d7fd58297ab854a6c869ba5d6715d056a82df8254c0d6cba6d9a6db355f054" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 build:
-  number: 2
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('aster', max_pin="x") }}
 
 source:
   url: "https://github.com/chaoszhang/ASTER/archive/refs/tags/v{{ version }}.tar.gz"
@@ -20,16 +22,21 @@ requirements:
 
 test:
   commands:
-    - master-site -h &> /dev/null # [linux]
-    - master-pair -h &> /dev/null # [linux]
+    - caster-site -h &> /dev/null # [linux]
+    - caster-pair -h &> /dev/null # [linux]
+    - waster-site -h &> /dev/null # [linux]
     - astral -h &> /dev/null
     - astral-pro -h &> /dev/null
     - astral-hybrid -h &> /dev/null
 
 about:
   home: https://github.com/chaoszhang/ASTER
-  license: AGPL-3.0
+  license: AGPL-3.0-or-later
+  license_family: AGPL
   license_file: LICENSE
   summary: |
     Accurate Species Tree EstimatoR series; a family of optimation algorithms
     for species tree inference implemented in C++
+extra:
+  additional-platforms:
+    - linux-aarch64    

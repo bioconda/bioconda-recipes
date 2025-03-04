@@ -1,0 +1,54 @@
+{% set name = "IonQuant" %}
+{% set version = "1.10.27" %}
+
+# This key was generated ONLY for the testing of this bioconda package.
+# Users must generate their own key by agreeing to the terms at https://msfragger.arsci.com/ionquant/IonQuant%20Academic%20Use%20License%2005162022.pdf.
+{% set academic_use_only_key = "47cb2953-b4bf7726-2c96f5fe-8f1013aa" %}
+{% set sha256sum = "235772cc6cb1404e612ea1eec09d95ee6250c74c0a3444616ec107a53ede8cab" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+  script_env:
+    - SHA256SUM={{ sha256sum }}
+
+requirements:
+  host:
+    - python >=3.9
+    - unzip
+  run:
+    - openjdk >=11
+    - python >=3.9
+
+test:
+  commands:
+    - ionquant --key {{ academic_use_only_key }} -Xms512m -Xmx1g --help | grep 'License key verified'
+
+about:
+  home: https://github.com/Nesvilab/IonQuant
+  license: Academic License
+  license_file:
+    - licenses/IonQuant Academic Use License 05162022.pdf
+    - licenses/IonQuant-LICENSE-3RD-PARTY.txt
+  summary: A label free quantification tool
+  description: |
+    IonQuant is a fast and comprehensive tool for MS1 precursor intensity-based quantification for timsTOF PASEF DDA and non-timsTOF (e.g., Orbitrap) data.
+    It enables label-free quantification with false discovery (FDR) controlled match-between-runs (MBR).
+    It can also be used for quantification in labelling-based experiments such as those involving SILAC, dimethyl, or similar labelling strategies.
+
+    IonQuant is available freely for academic research and educational purposes only, in accordance with the terms at https://msfragger.arsci.com/ionquant/IonQuant%20Academic%20Use%20License%2005162022.pdf.
+
+extra:
+  recipe-maintainers:
+    - reid-wagner
+  notes: |
+    The "ionquant" command runs the IonQuant java program.
+  identifiers:
+    - biotools:fragpipe
+    - doi:10.1074/mcp.TIR120.002048

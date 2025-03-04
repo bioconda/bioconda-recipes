@@ -1,0 +1,68 @@
+{% set name = "snp2cell" %}
+{% set version = "0.2.1" %}
+{% set github = "https://github.com/Teichlab/snp2cell" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: {{ github }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: b47e1c47720134eedfbe3644f67225a54a09eed96c0fc4a5ef86d4371a5ee40c
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - snp2cell=snp2cell.cli:app
+  run_exports:
+    - {{ pin_subpackage('snp2cell', max_pin='x.x') }}
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+
+requirements:
+  host:
+    - python >=3.8,<3.12
+    - pip
+    - setuptools
+  run:
+    - python >=3.8,<3.12
+    - dill
+    - joblib
+    - matplotlib-base
+    - networkx
+    - numpy
+    - pandas
+    - pybiomart
+    - pyranges
+    - rich
+    - scanpy
+    - scipy
+    - seaborn
+    - statsmodels
+    - tqdm
+    - typer
+    - typing_extensions
+
+test:
+  imports:
+    - snp2cell
+  requires:
+    - pytest
+  source_files:
+    - tests
+  commands:
+    - snp2cell --help
+    - if command -v pytest; then pytest tests; fi
+
+about:
+  home: {{ github }}
+  license: BSD-3-Clause
+  license_file: LICENSE.txt
+  license_family: BSD
+  summary: A package for finding enriched regulatory networks from GWAS and single cell data.
+  description: "A package for identifying gene regulation involved in specific traits and cell types. It combines three elements: (i) GWAS summary statistics, (ii) single cell data and (iii) a base gene regulatory network."
+  
+
+extra:
+  maintainers:
+    - mfansler

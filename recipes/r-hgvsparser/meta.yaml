@@ -1,0 +1,40 @@
+{% set version = "0.1.0" %}
+{% set name = "hgvsParseR" %}
+{% set sha256 = "a540ae0ec48e892f0e31d50a2c33d5b6d477cdf9b1d03612361acb2da4fcd5ab" %}
+
+package:
+  name: r-hgvsparser
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/VariantEffect/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 1
+  noarch: generic
+  script: '$R CMD INSTALL --build .'
+  run_exports:
+    - {{ pin_subpackage("r-hgvsparser", max_pin="x.x.x") }}  
+
+requirements:
+  host:
+    - r-base
+    - r-devtools
+    
+  run:
+    - r-base
+    - r-devtools
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://github.com/VariantEffect/hgvsParseR
+  license: GPL-3.0-only
+  license_family: GPL
+  license_file: COPYING
+  summary: {{ name }}
+  doc_url: https://github.com/VariantEffect/hgvsParseR
+  dev_url: https://github.com/VariantEffect/hgvsParseR

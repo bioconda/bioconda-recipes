@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "merfishdata-1.2.0"
+installBiocDataPackage.sh "merfishdata-1.8.0"

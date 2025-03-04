@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "mspuritydata-1.28.0"
+installBiocDataPackage.sh "mspuritydata-1.34.0"

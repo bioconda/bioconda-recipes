@@ -1,68 +1,22 @@
-{% set version = "1.26.0" %}
+{% set version = "1.32.0" %}
 {% set name = "HelloRanges" %}
-{% set bioc = "3.17" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 3ab315f2b6ce576e79f3c00634c2ad24
+about:
+  description: Translates bedtools command-line invocations to R code calling functions from the Bioconductor *Ranges infrastructure. This is intended to educate novice Bioconductor users and to compare the syntax and semantics of the two frameworks.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Introduce *Ranges to bedtools users
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: HelloRangesData, BiocStyle
-requirements:
-  host:
-    - 'bioconductor-biocgenerics >=0.46.0,<0.47.0'
-    - 'bioconductor-biocio >=1.10.0,<1.11.0'
-    - 'bioconductor-biostrings >=2.68.0,<2.69.0'
-    - 'bioconductor-bsgenome >=1.68.0,<1.69.0'
-    - 'bioconductor-genomeinfodb >=1.36.0,<1.37.0'
-    - 'bioconductor-genomicalignments >=1.36.0,<1.37.0'
-    - 'bioconductor-genomicfeatures >=1.52.0,<1.53.0'
-    - 'bioconductor-genomicranges >=1.52.0,<1.53.0'
-    - 'bioconductor-iranges >=2.34.0,<2.35.0'
-    - 'bioconductor-rsamtools >=2.16.0,<2.17.0'
-    - 'bioconductor-rtracklayer >=1.60.0,<1.61.0'
-    - 'bioconductor-s4vectors >=0.38.0,<0.39.0'
-    - 'bioconductor-summarizedexperiment >=1.30.0,<1.31.0'
-    - 'bioconductor-variantannotation >=1.46.0,<1.47.0'
-    - r-base
-    - r-docopt
-  run:
-    - 'bioconductor-biocgenerics >=0.46.0,<0.47.0'
-    - 'bioconductor-biocio >=1.10.0,<1.11.0'
-    - 'bioconductor-biostrings >=2.68.0,<2.69.0'
-    - 'bioconductor-bsgenome >=1.68.0,<1.69.0'
-    - 'bioconductor-genomeinfodb >=1.36.0,<1.37.0'
-    - 'bioconductor-genomicalignments >=1.36.0,<1.37.0'
-    - 'bioconductor-genomicfeatures >=1.52.0,<1.53.0'
-    - 'bioconductor-genomicranges >=1.52.0,<1.53.0'
-    - 'bioconductor-iranges >=2.34.0,<2.35.0'
-    - 'bioconductor-rsamtools >=2.16.0,<2.17.0'
-    - 'bioconductor-rtracklayer >=1.60.0,<1.61.0'
-    - 'bioconductor-s4vectors >=0.38.0,<0.39.0'
-    - 'bioconductor-summarizedexperiment >=1.30.0,<1.31.0'
-    - 'bioconductor-variantannotation >=1.46.0,<1.47.0'
-    - r-base
-    - r-docopt
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Introduce *Ranges to bedtools users'
-  description: 'Translates bedtools command-line invocations to R code calling functions from the Bioconductor *Ranges infrastructure. This is intended to educate novice Bioconductor users and to compare the syntax and semantics of the two frameworks.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-helloranges", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:helloranges
@@ -71,4 +25,57 @@ extra:
     name: bioconductor-helloranges
     path: recipes/bioconductor-helloranges
     version: 1.6.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: HelloRangesData, BiocStyle, RUnit, TxDb.Hsapiens.UCSC.hg19.knownGene
+requirements:
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocio >=1.16.0,<1.17.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicalignments >=1.42.0,<1.43.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
+    - r-base
+    - r-docopt
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocio >=1.16.0,<1.17.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicalignments >=1.42.0,<1.43.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
+    - r-base
+    - r-docopt
+
+source:
+  md5: ee369883249c5424d123a30d6f80a112
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

@@ -1,6 +1,6 @@
 {% set name = "profile_dists" %}
-{% set version = "1.0.0" %}
-{% set sha256 = "e0ebef9c8ee13eba957320209113a6e85ecae7ba59113d186a543b4ca0463d60" %}
+{% set version = "1.0.3" %}
+{% set sha256 = "9baae8754be598947f86353508bc0cd0407cefebcb844afbc9b612f29a9d0c20" %}
 
 package:
   name: {{ name|lower }}
@@ -9,24 +9,24 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/profile_dists-{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  
 
 build:
   number: 0
   noarch: python
   run_exports:
-    - {{ pin_subpackage("profile_dists", max_pin="x.x") }}
-  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps -vvv
+    - {{ pin_subpackage("profile_dists", max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps --no-cache-dir --no-build-isolation -vvv
   entry_points:
     - profile_dists=profile_dists.main:main
 
 requirements:
   host:
-    - python
+    - python >=3.8,<3.12
     - pip
+    - setuptools
     - pytest-runner
   run:
-    - python >=3.8,<4
+    - python >=3.8,<3.12
     - {{ pin_compatible('numpy') }}
     - pyarrow >=12.0.0
     - fastparquet >=2023.4.0
@@ -48,5 +48,3 @@ about:
   license: Apache-2.0
   license_file: LICENSE
   dev_url: 'https://github.com/phac-nml/profile_dists/'
-
-

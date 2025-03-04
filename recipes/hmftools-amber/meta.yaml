@@ -1,31 +1,33 @@
-{% set version = "3.9" %}
-{% set sha256 = "a1f249d691c1d45f41e4b844d0f9e91dadf3920e340bc8d80c9130c4b7d2522b" %}
+{% set version = "4.1.1" %}
+{% set sha256 = "90da93cfd21a3a6f40d7c442720aa5ccc0783b3095c6f9ee9dabba14c94d6e55" %}
 
 package:
   name: hmftools-amber
   version: '{{ version }}'
 
 source:
-  url: https://github.com/hartwigmedical/hmftools/releases/download/amber-v{{ version }}/amber-{{ version }}.jar
+  url: https://github.com/hartwigmedical/hmftools/releases/download/amber-v{{ version|replace("_beta", "") }}/amber_v{{ version }}.jar
   sha256: '{{ sha256 }}'
 
 build:
   noarch: generic
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("hmftools-amber", max_pin="x.x") }}
 
 requirements:
   run:
     - zlib
-    - openjdk >=8
+    - openjdk >=8,<=21
     - bioconductor-copynumber
     - r-dplyr
 
 test:
   commands:
-    - 'AMBER 2>&1 | grep -q "tumor_bam"'
+    - 'amber -version | grep Amber'
 
 about:
   home: https://github.com/hartwigmedical/hmftools/blob/master/amber/README.md
-  license: MIT
-  license_family: MIT
-  summary: Generates a tumor BAF file for use in PURPLE
+  license: GPL-3.0-only
+  license_family: GPL3
+  summary: Generates a tumor BAF file for use in PURPLE.

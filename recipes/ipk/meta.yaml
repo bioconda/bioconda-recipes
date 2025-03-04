@@ -1,0 +1,55 @@
+{% set name = "IPK" %}
+{% set version = "0.5.1" %}
+{% set sha256 = "22efbfe282a37d153b69f44f6a655f39727d6ae955690b60fe1c6c785bbc0535" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/phylo42/{{ name|lower }}/releases/download/v{{ version }}/IPK-v{{ version }}_src_for_bioconda.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 3
+  run_exports:
+    - {{ pin_subpackage('ipk', max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
+    - boost-cpp =1.85
+    - zlib
+  run:
+    - boost-cpp =1.85
+    - raxml-ng
+    - phyml
+    - python
+    - click
+
+# git-lfs is absent from the docker image, so test files are not cloned
+# unstable workaround it to set wget as a test dependancy
+# and download them from github in the run_tests.sh script
+test:
+  requires:
+    - wget
+  # because they are not cloned, we cannot copy them from source in the test environment
+  #source_files:
+  #  - tests/data/neotrop/reference.fasta
+  #  - tests/data/neotrop/tree.rooted.newick
+  
+
+about:
+  home: https://github.com/phylo42/ipk
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "IPK is a tool for computing phylo-k-mers for a fixed phylogeny."
+  description: "IPK is a tool for computing phylo-k-mers for a fixed phylogeny. Please cite: doi.org/10.1093/bioinformatics/btad692"
+
+extra:
+  additional-platforms:
+    - linux-aarch64

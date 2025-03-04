@@ -1,0 +1,47 @@
+{% set name = "ebi-eva-common-pyutils" %}
+{% set version = "0.6.12" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/ebi_eva_common_pyutils-{{ version }}.tar.gz
+  sha256: 27353b4cdd6155706a0425b744bf6182937cdb4feca250f7cc9f95c32db0fdf9
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - requests
+    - lxml
+    - pyyaml
+    - cached-property
+    - retry
+
+test:
+  imports:
+    - ebi_eva_common_pyutils
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/EBIVariation/eva-common-pyutils
+  summary: EBI EVA - Common Python Utilities
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - apriltuesday

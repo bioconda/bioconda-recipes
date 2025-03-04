@@ -1,0 +1,54 @@
+{% set name = "ensembl-utils" %}
+{% set version = "0.7.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/ensembl_utils-{{ version }}.tar.gz
+  sha256: e60a1bed0e7795285aadd821db560141b44995e03d4230dd3b91e34fae0828bd
+
+build:
+  entry_points:
+    - extract_file = ensembl.utils.archive:extract_file_cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools-scm
+    - pip
+  run:
+    - python >=3.10
+    - python-dotenv >=0.19.2
+    - pyyaml >=6.0,<7.0
+    - requests >=2.22.0
+    - pytest
+    - sqlalchemy >=1.4.0,<2.0
+    - sqlalchemy-utils
+
+test:
+  imports:
+    - ensembl.utils
+  commands:
+    - extract_file --help
+
+about:
+  home: https://www.ensembl.org/
+  summary: Ensembl Python general-purpose utils
+  license: Apache-2.0
+  license_file:
+    - NOTICE
+    - LICENSE
+  license_family: APACHE
+  doc_url: https://ensembl.github.io/ensembl-utils/
+  dev_url: "https://github.com/Ensembl/ensembl-utils"
+
+extra:
+  identifiers:
+    - biotools:Ensembl

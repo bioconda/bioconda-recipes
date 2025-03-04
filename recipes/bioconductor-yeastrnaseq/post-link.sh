@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "yeastrnaseq-0.38.0"
+installBiocDataPackage.sh "yeastrnaseq-0.44.0"
