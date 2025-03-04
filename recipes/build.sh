@@ -1,0 +1,21 @@
+echo "Building"
+mkdir -p $PREFIX/bin
+cp $SRC_DIR/AbnormalERVDetection.sh $PREFIX/bin
+cp $SRC_DIR/abnormal_ERVs.py $PREFIX/bin
+cp $SRC_DIR/ByJointProbability.sh $PREFIX/bin
+cp $SRC_DIR/ByTEAnnotation.sh $PREFIX/bin
+cp $SRC_DIR/ByTEConsensus_SubFamily.sh $PREFIX/bin
+cp $SRC_DIR/ByTESubfamily.sh $PREFIX/bin
+cp $SRC_DIR/ByTETranscript.sh $PREFIX/bin
+cp $SRC_DIR/ERVFamily $PREFIX/bin
+cp $SRC_DIR/expTEsub_cattle $PREFIX/bin
+cp $SRC_DIR/expTEsub_chicken $PREFIX/bin
+cp $SRC_DIR/expTEsub_goat $PREFIX/bin
+cp $SRC_DIR/expTEsub_pig $PREFIX/bin
+cp $SRC_DIR/expTEsub_sheep $PREFIX/bin
+cp $SRC_DIR/GFFfilter $PREFIX/bin
+cp $SRC_DIR/insideConnection.sh $PREFIX/bin
+cp $SRC_DIR/LocaTE $PREFIX/bin
+cp $SRC_DIR/test.bam $PREFIX/bin
+cp $SRC_DIR/testTE.gff $PREFIX/bin
+cp $SRC_DIR/run_test.sh $PREFIX/bin
