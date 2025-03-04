@@ -10,6 +10,9 @@ cp JACUSA_v$PKG_VERSION.jar $PREFIX/share/jacusa2-$PKG_VERSION-$PKG_BUILDNUM/
 mkdir -p $PREFIX/bin
 cat > $PREFIX/bin/JACUSA2 <<EOF
 #!/bin/bash
-exec java -jar \$CONDA_PREFIX/share/jacusa2-$PKG_VERSION-$PKG_BUILDNUM/JACUSA_v$PKG_VERSION.jar "\$@"
+# Determine the directory where this script is located.
+SCRIPT_DIR=\$(dirname "\$0")
+# Run the jar using a path relative to this script.
+exec java -jar "\$SCRIPT_DIR/../share/jacusa2-$PKG_VERSION-$PKG_BUILDNUM/JACUSA_v$PKG_VERSION.jar" "\$@"
 EOF
 chmod +x $PREFIX/bin/JACUSA2
