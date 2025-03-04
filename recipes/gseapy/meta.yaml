@@ -1,36 +1,41 @@
+{% set name = "gseapy" %}
+{% set version = "1.1.6" %}
+
 package:
-  name: gseapy
-  version: "1.1.4"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/12/92/0a4e24f4a0ac772e8ec652f299a89292eb66d67e329579e1ea48cc006250/gseapy-1.1.4.tar.gz
-  sha256: 7e858752d7684b1abed124c585f3ca2f156ff22985575234232a54c57b88ba66
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/gseapy-{{ version }}.tar.gz
+  sha256: 6cd72cde59bd44257f483ed378db76dbf1aaf509e54777c96b224c1750fdd9b3
 
 build:
+  number: 0
+  skip: True  # [ py < 37 ]
   entry_points:
     - gseapy = gseapy.__main__:main
+  script:
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir --use-pep517
   run_exports:
     - {{ pin_subpackage("gseapy", max_pin="x") }}
-  skip: True  # [py2k or py == 36 ]
-  number: 1
 
 requirements:
-  build: 
+  build:
     - {{ compiler('rust') }}
   host:
     - python
-    - wheel
+    - pip
     - setuptools
     - setuptools-rust
-    - tomli >=1.2.1
+    - toml
   run:
     - python
     - numpy >=1.13.0
     - scipy
-    - pandas >=0.16
-    - matplotlib-base >=1.4.3
+    - pandas
+    - matplotlib-base >=2.2
     - requests
-    - tomli >=1.2.1
+    - pyopengl
 
 test:
   imports:
@@ -39,15 +44,18 @@ test:
     - gseapy --help
 
 about:
-  home: https://github.com/zqfang/gseapy
-  license: MIT
-  summary: 'Gene Set Enrichment Analysis in Python'
-  license_family: MIT
+  home: "https://github.com/zqfang/gseapy"
+  license: "BSD-3-Clause"
+  summary: "Gene Set Enrichment Analysis in Python."
+  license_family: BSD
   license_file: LICENSE
+  dev_url: "https://github.com/zqfang/gseapy"
+  doc_url: "https://gseapy.readthedocs.io/en/latest"
 
 extra:
   additional-platforms:
     - linux-aarch64
-  container:
-    # matplotlib needs opengl support
-    extended-base: true
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/bioinformatics/btac757
+    - biotools:gseapy
