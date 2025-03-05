@@ -3,8 +3,6 @@ set -x
 
 export CXXFLAGS="${CXXFLAGS} -std=c++14"
 if [ "$(uname)" = "Darwin" -a "$(uname -m)" = "x86_64" ]; then
-  # add ironic flag for safe library..
-  export CC="${CC} -Wno-error=implicit-function-declaration"
   # makefile isn't propagating at all well..
   sed -i 's/directories libsafestring.a/CFLAGS="-Iinclude -fstack-protector-strong -fPIE -fPIC -O2 -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -Wno-error=implicit-function-declaration" directories libsafestring.a/g' Makefile
   make ext/safestringlib/libsafestring.a
