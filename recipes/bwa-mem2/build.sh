@@ -2,7 +2,7 @@
 set -x
 
 export CXXFLAGS="${CXXFLAGS} -std=c++14"
-if [ "$(uname)" = "Darwin" -a "$(uname -m)" = "arm64" ]; then
+if [ "$(uname)" = "Darwin" -a "$(uname -m)" = "x86_64" ]; then
   # add ironic flag for safe library..
   export CC="${CC} -Wno-error=implicit-function-declaration"
   # makefile isn't propagating at all well..
