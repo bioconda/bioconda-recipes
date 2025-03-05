@@ -1,29 +1,32 @@
----
+{% set name = "seismic-rna" %}
+{% set version = "0.23.0" %}
 
 package:
-  name: seismic-rna
-  version: 0.22.1
-about:
-  home: https://github.com/rouskinlab/seismic-rna
-  license: GPL-3.0-only
-  license_family: GPL3
-  license_file: LICENSE
-  license_url: https://www.gnu.org/licenses/gpl-3.0.html
-  summary: SEISMIC-RNA software by the Rouskin Lab
+  name: {{ name }}
+  version: {{ version }}
+
 source:
-  url: https://github.com/rouskinlab/seismic-rna/archive/refs/tags/v0.22.1.tar.gz
-  sha256: 1b4fdbd40c05b4842dc2df796d4bb6a717950bc094ccffe6fb2800e85faa8468
+  url: https://github.com/rouskinlab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 4f457f95a5f07b85a994f80e25cdf10b9377e091c8ee4ab3e10531b5ed772435
+
 build:
-  noarch: python
   number: 0
+  skip: True  # [py < 310]
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  entry_points:
+    - seismic = seismicrna.main:cli
   run_exports:
     - {{ pin_subpackage("seismic-rna", max_pin="x.x") }}
+
 requirements:
   build:
-    - python >=3.10
-    - hatch >=1.12
+    - {{ compiler('c') }}
+  host:
+    - python
+    - meson-python >=0.15.0
+    - pip
   run:
-    - python >=3.10
+    - python
     - bowtie2 >=2.5.4
     - fastp >=0.23.0
     - rnastructure >=6.4
@@ -32,12 +35,33 @@ requirements:
     - python-kaleido >=0.2.1
     - click >=8.1
     - fastqsplitter >=1.2
+    - networkx >=3.4
     - numpy >=1.26,<1.27
     - numba >=0.60
     - pandas >=2.2
     - plotly >=5.23
     - pyyaml >=6.0
     - scipy >=1.13
+    - jinja2 >=3.0
+
 test:
+  #test_modules012_read120 (seismicrna.tests.ensembles_test.TestEnsembles) ... skipped 'Takes a very long time'
+  #commands:
+    #- seismic --log "" test -vv
   imports:
     - seismicrna
+
+about:
+  home: "https://github.com/rouskinlab/seismic-rna"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: LICENSE
+  license_url: "https://www.gnu.org/licenses/gpl-3.0.html"
+  summary: "SEISMIC-RNA software by the Rouskin Lab."
+  dev_url: "https://github.com/rouskinlab/seismic-rna"
+  doc_url: "https://rouskinlab.github.io/seismic-rna"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
