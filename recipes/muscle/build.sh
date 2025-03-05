@@ -20,7 +20,7 @@ OS=$(uname)
 if [[ "${OS}" == "Darwin" ]]; then
 	python ./vcxproj_make.py --openmp --pthread --cppcompiler "${CXX}" --ccompiler "${CC}"
 elif [[ "${OS}" == "Linux" ]]; then
-  	python ./vcxproj_make.py --openmp --pthread --cppcompiler "${CXX}" --ccompiler "${CC}"
+  	python ./vcxproj_make.py --openmp --pthread --lrt --cppcompiler "${CXX}" --ccompiler "${CC}"
 fi
 
 # Verify binary exists and is executable
