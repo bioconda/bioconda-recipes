@@ -10,9 +10,12 @@ source:
 
 build:
   number: 0
+  skip: True  # [py < 310]
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   entry_points:
-    - vamb=vamb.__main__:main
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
+    - vamb = vamb.__main__:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage('vamb', max_pin="x") }}
 
@@ -20,14 +23,21 @@ requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - python >=3.9.0,<3.12
-    - cython >=3.0.0
+    - python
+    - cython >=3.0.1
     - pip
+    - setuptools-scm >=8.0
   run:
-    - python >=3.9.0,<3.12
-    - numpy ==1.24.2
-    - pytorch ==1.13.1
+    - python
+    - numpy ==1.26.4
+    - pytorch ==2.6.0
     - pycoverm ==0.6.2
+    - networkx ==3.4.2
+    - scikit-learn ==1.6.1
+    #- dadaptation ==3.2
+    - loguru ==0.7.3
+    - pyhmmer ==0.10.15
+    - pyrodigal ==3.6.3
 
 test:
   imports:
@@ -37,6 +47,14 @@ test:
 
 about:
   home: https://github.com/RasmussenLab/vamb
-  license: MIT License
+  license: MIT
   license_family: MIT
-  summary: Variational autoencoder for metagenomic binning
+  license_file: LICENSE
+  summary: "Variational autoencoder for metagenomic binning."
+  dev_url: https://github.com/RasmussenLab/vamb
+  doc_url: https://vamb.readthedocs.io/en/latest
+
+extra:
+  identifiers:
+    - doi:10.1101/2024.10.25.620172
+    - biotools:vamb
