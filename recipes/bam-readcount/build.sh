@@ -5,8 +5,6 @@ mkdir -p "${PREFIX}/bin"
 wget https://github.com/boostorg/boost/releases/download/boost-1.87.0/boost-1.87.0-cmake.tar.gz
 mv boost-1.87.0-cmake.tar.gz vendor/boost-1.55-bamrc.tar.gz
 
-cp -rf ${RECIPE_DIR}/macOS.configure.patch vendor/
-
 sed -i.bak -e 's|2.8.3|3.10|' CMakeLists.txt
 rm -rf *.bak
 sed -i.bak -e 's|2.8|3.10|' cmake/BuildSamtools.cmake
