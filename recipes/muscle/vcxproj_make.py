@@ -47,7 +47,7 @@ binary = ProjFileName.replace(".vcxproj", "")
 sys.stderr.write("binary=" + binary + "\n")
 
 compiler_opts = "-ffast-math -O3 -I${PREFIX}/include"
-linker_opts = "-ffast-math -ldl -L${PREFIX}/lib"
+linker_opts = "-ffast-math -L${PREFIX}/lib"
 
 if std:
     compiler_opts += " --std=" + std
