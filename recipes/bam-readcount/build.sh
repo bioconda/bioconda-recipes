@@ -18,7 +18,7 @@ rm -rf cmake/*.bak
 # Needed for building utils dependency
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -pthread -lrt"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -pthread"
 export CXXFLAGS="${CXXFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
@@ -29,11 +29,11 @@ if [[ "${OS}" == "Darwin" ]]; then
         ln -sf ${CC} ${BUILD_PREFIX}/bin/clang
         ln -sf ${CXX} ${BUILD_PREFIX}/bin/clang++
         export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
-        # See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_D$
-        export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+        # See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
+        #export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
         export CFLAGS="${CFLAGS} -O3 -fno-define-target-os-macros -Wno-unguarded-availability -Wno-deprecated-non-prototype -Wno-implicit-function-declaration"
-	export LIBS="-lrt"
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	export LIBS="-lrt"
 else
         ln -sf ${CC} ${BUILD_PREFIX}/bin/gcc
         ln -sf ${CXX} ${BUILD_PREFIX}/bin/g++
