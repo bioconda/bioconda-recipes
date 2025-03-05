@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 
 import os
 import sys
@@ -176,7 +176,7 @@ with open("Makefile", "w") as f:
         Cmd = "\t%(CC) $(LDFLAGS) $(OBJS) -o $(BINPATH)"
 
     if Args.lrt:
-        Cmd += " -lrt"
+        Cmd += " -lrt -ldl"
     Out(Cmd)
 
     if not nostrip:
