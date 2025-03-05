@@ -2,7 +2,7 @@
 set -x
 
 export CXXFLAGS="${CXXFLAGS} -std=c++14"
-
+export CFLAGS="${CFLAGS} -DSTDC_HEADERS"
 rm -rf ext/sse2neon
 git submodule add https://github.com/DLTcollab/sse2neon ext/sse2neon
 cd ext/sse2neon ; git checkout tags/v1.8.0
