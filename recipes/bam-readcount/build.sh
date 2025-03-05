@@ -5,6 +5,8 @@ mkdir -p "${PREFIX}/bin"
 wget https://github.com/boostorg/boost/releases/download/boost-1.87.0/boost-1.87.0-cmake.tar.gz
 mv boost-1.87.0-cmake.tar.gz vendor/boost-1.55-bamrc.tar.gz
 
+cp -rf ${RECIPE_DIR}/macOS.configure.patch vendor/
+
 sed -i.bak -e 's|2.8.3|3.10|' CMakeLists.txt
 rm -rf *.bak
 sed -i.bak -e 's|2.8|3.10|' cmake/BuildSamtools.cmake
@@ -24,7 +26,7 @@ ARCH=$(uname -m)
 if [[ "${OS}" == "Darwin" ]]; then
         ln -sf ${CC} ${BUILD_PREFIX}/bin/clang
         ln -sf ${CXX} ${BUILD_PREFIX}/bin/clang++
-        export LDFLAGS="${LDFLAGS} -Wl,-no_weak_imports -Wl,-rpath,${PREFIX}/lib"
+        export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
         # See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
         #export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
         export CFLAGS="${CFLAGS} -O3 -fno-define-target-os-macros -Wno-unguarded-availability -Wno-deprecated-non-prototype -Wno-implicit-function-declaration"
