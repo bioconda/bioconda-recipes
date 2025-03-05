@@ -2,9 +2,11 @@
 set -x
 
 export CXXFLAGS="${CXXFLAGS} -std=c++14"
-if [ "$(uname)" = "Darwin" ]; then
+if [ "$(uname)" = "Darwin" -a "$(uname -m)" = "arm64" ]; then
   # add ironic flag for safe library..
   export CC="${CC} -Wno-error=implicit-function-declaration"
+  # makefile isn't propagating at all well..
+  make ext/safestringlib/libsafestring.a
 fi
 
 rm -rf ext/sse2neon
