@@ -21,10 +21,10 @@ ARCH=$(uname -m)
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
 	python ./vcxproj_make.py --openmp --pthread --cppcompiler "${CXX}" --ccompiler "${CC}"
 elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
- 	cp -rfv ${RECIPE_DIR}/sse2neon.h ${SRC_DIR}/src
+ 	#cp -rfv ${RECIPE_DIR}/sse2neon.h ${SRC_DIR}/src
  	python ./vcxproj_make.py --openmp --pthread --cppcompiler "${CXX}" --ccompiler "${CC}"
 elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
-	cp -rfv ${RECIPE_DIR}/sse2neon.h ${SRC_DIR}/src
+	#cp -rfv ${RECIPE_DIR}/sse2neon.h ${SRC_DIR}/src
   	python ./vcxproj_make.py --openmp --lrt --pthread --cppcompiler "${CXX}" --ccompiler "${CC}"
 else
  	python ./vcxproj_make.py --openmp --lrt --pthread --cppcompiler "${CXX}" --ccompiler "${CC}"
