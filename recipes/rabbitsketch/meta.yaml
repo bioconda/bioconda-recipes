@@ -8,7 +8,15 @@ source:
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  script:
+    - mkdir -p build
+    - cd build
+    - cmake -DCXXAPI=ON -DCMAKE_INSTALL_PREFIX=$PREFIX ..
+    - make -j$(nproc)
+    - make install
+    - export LD_LIBRARY_PATH=$PREFIX/lib:$LD_LIBRARY_PATH
+    - cd ..
+    - "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
   run_exports:
     - {{ pin_subpackage('rabbitsketch', max_pin="x.x") }}
 
