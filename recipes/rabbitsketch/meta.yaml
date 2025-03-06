@@ -11,25 +11,25 @@ build:
   script:
     - mkdir -p build
     - cd build
-    - cmake -DCXXAPI=ON -DCMAKE_INSTALL_PREFIX=$PREFIX ..
+    - cmake -DCXXAPI=ON -DCMAKE_PREFIX_PATH=$PREFIX -DCMAKE_INSTALL_PREFIX=$PREFIX ..
     - make -j$(nproc)
     - make install
     - export LD_LIBRARY_PATH=$PREFIX/lib:$LD_LIBRARY_PATH
     - cd ..
     - "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
-  run_exports:
-    - {{ pin_subpackage('rabbitsketch', max_pin="x.x") }}
-
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
     - setuptools
     - pip
     - wheel
-    - cmake
     - pybind11 >=2.5, <2.6
-    - make
-  host: 
+    - cython
+  host:
     - python =3.7
     - zlib
     - pybind11 >=2.5, <2.6
@@ -44,11 +44,10 @@ test:
     - python -c "import rabbitsketch; print(rabbitsketch.__file__)"
     - python -c "import rabbitsketch"
     - python -c "from rabbitsketch import Kssd"
+
 about:
   home: https://github.com/RabbitBio/RabbitSketch
   license: https://github.com/RabbitBio/RabbitSketch/blob/lib/LICENSE.txt
   license_file: LICENSE.txt
   summary: "RabbitSketch is a highly optimized sketching library that exploits the power of modern multi-core CPUs."
-extra:
-  skip-lints:
-    - should_be_noarch_python
+

@@ -45,6 +45,6 @@ if (CXXAPI)
 	#	   DESTINATION include/hll
 	#	   )
 else ()
-	add_subdirectory(pybind11)
-	pybind11_add_module(rabbitsketch ${DIR_SRCS})
+  add_subdirectory(pybind11)
+  pybind11_add_module(rabbitsketch ${DIR_SRCS})
 endif ()
