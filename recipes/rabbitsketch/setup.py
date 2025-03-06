@@ -3,7 +3,7 @@ import re
 import sys
 import platform
 import subprocess
-
+import pybind11
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
@@ -39,7 +39,9 @@ class CMakeBuild(build_ext):
 
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                       '-DPYTHON_EXECUTABLE=' + sys.executable,
-                      ]
+                      '-DCMAKE_PREFIX_PATH=' + sys.prefix,
+                      '-Dpybind11_DIR=' + pybind11.get_cmake_dir()
+                     ]
 
         cfg = 'Debug' if self.debug else 'Release'
         build_args = ['--config', cfg]
