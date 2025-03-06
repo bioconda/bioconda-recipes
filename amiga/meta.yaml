@@ -1,0 +1,64 @@
+{% set name = "amiga" %}
+{% set version = "3.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/amiga-{{ version }}.tar.gz
+  sha256: 8a53500f0d5e860c0be32ce5755253d52f8725b35e408bf61e1be26335af2ed8
+
+build:
+  noarch: python
+  skip: true  # [py>=313 or py2k]
+  entry_points:
+    - amiga = amiga.amiga:AMiGA
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python >=3.12.0,<3.13.0
+    - pip
+  run:
+    - python >=3.12.0,<3.13.0
+    - cycler ==0.12.1
+    - cython ==3.0.12
+    - decorator ==5.2.1
+    - gpy ==1.13.2
+    - kiwisolver ==1.4.8
+    - matplotlib-base ==3.10.1
+    - numpy ==1.26.4
+    - pandas ==2.2.3
+    - paramz ==0.9.6
+    - pyparsing ==3.2.1
+    - python-dateutil ==2.9.0.post0
+    - pytz ==2025.1
+    - scipy ==1.12.0
+    - seaborn ==0.13.2
+    - six ==1.17.0
+    - tabulate ==0.9.0
+
+test:
+  imports:
+    - amiga
+  commands:
+    - pip check
+    - amiga --help
+  requires:
+    - pip
+
+about:
+  summary: Analysis of Microbial Growth Assays
+  license: GPL-3.0
+  license_file: LICENSE.md
+  home: https://github.com/firasmidani/amiga
+
+extra:
+  recipe-maintainers:
+    - firasmidani
+  doi:
+    - doi:10.1128/msystems.00508-21
