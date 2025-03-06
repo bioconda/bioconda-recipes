@@ -1,0 +1,43 @@
+{% set version = "" %}
+{% set sha256 = "" %}
+
+package:
+  name: dmox
+  version: '{{ version }}'
+
+source:
+  url: https://gitlab.mbb.cnrs.fr/ibonnici/dmox/-/archive/{{ version }}/dmox-{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 0
+  skip: True  # [osx or py < 39]
+  run_exports:
+    - {{ pin_subpackage('dmox', max_pin="x") }}
+  script: |
+    cargo build --release
+
+requirements:
+  build:
+    - rust
+    - cargo
+test:
+  commands:
+    - "dmox --help"
+
+about:
+  home: "https://gitlab.mbb.cnrs.fr/ibonnici/dmox"
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Rust-based demultiplexing of haplotagging linked-read data"
+  description: |
+    dmox is a drop-in replacement for the haplotagging linked-read demultiplexing module implemented in Harpy.
+    It's used within Harpy itself, but also functions as a standalone ultra-fast demultiplexing software, written in Rust! 
+  dev_url: "https://gitlab.mbb.cnrs.fr/ibonnici/dmox"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - iago-lito
