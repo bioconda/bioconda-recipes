@@ -11,7 +11,7 @@ export LC_ALL=en_US.UTF-8
 
 if [[ "$(uname)" == "Darwin" ]]; then
     # for Mac OSX
-    export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
+    export LDFLAGS="${LDFLAGS} -Wl,-dead_strip_dylibs -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names"
     export CFLAGS="${CFLAGS} -m64 -Wno-implicit-function-declaration -Wno-deprecated-non-prototype"
     export LC_ALL=C
 fi
@@ -37,7 +37,8 @@ autoreconf -if
 	LDFLAGS="${LDFLAGS}" \
 	--prefix="${PREFIX}" \
 	--with-gmapdb="${PREFIX}/share" \
-	--with-simd-level="${SIMD_LEVEL}"
+	--with-simd-level="${SIMD_LEVEL}" \
+	--disable-option-checking --disable-dependency-tracking --enable-silent-rules
 
 make -j"${CPU_COUNT}"
 make install
