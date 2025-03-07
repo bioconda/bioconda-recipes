@@ -14,7 +14,11 @@ build:
   run_exports:
     - {{ pin_subpackage('dmox', max_pin="x") }}
   script: |
+    if [ `uname` == Darwin ]; then
+      export HOME=`mktemp -d`
+    fi
     cargo build --release
+    mv target/release/dmox $PREFIX/bin
 
 requirements:
   build:
@@ -25,7 +29,7 @@ requirements:
     - cargo
 test:
   commands:
-    - "dmox --help"
+    - "cargo test --release"
 
 about:
   home: "https://gitlab.mbb.cnrs.fr/ibonnici/dmox"
