@@ -2,4 +2,4 @@
 
 mkdir -p $PREFIX/bin;
 cp -r $SRC_DIR/src/longbow/* $PREFIX/bin;
-chmod +x $PREFIX/bin;
+chmod +x $PREFIX/bin/*
