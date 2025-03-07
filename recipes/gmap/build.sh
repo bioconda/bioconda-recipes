@@ -12,7 +12,7 @@ export LC_ALL=en_US.UTF-8
 if [[ "$(uname)" == "Darwin" ]]; then
     # for Mac OSX
     export LDFLAGS="${LDFLAGS} -Wl,-dead_strip_dylibs -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names"
-    export CFLAGS="${CFLAGS} -m64 -Wno-implicit-function-declaration -Wno-deprecated-non-prototype"
+    export CFLAGS="${CFLAGS} -m64 -fno-define-target-os-macros -Wno-implicit-function-declaration -Wno-deprecated-non-prototype -Wno-asm-operand-widths"
     export LC_ALL=C
 fi
 
