@@ -1,5 +1,11 @@
 #!/bin/sh
 
+# Ensure correct compiler flags for macOS
+if [[ "$(uname)" == "Darwin" ]]; then
+    export CFLAGS="-std=gnu11 -D_DARWIN_C_SOURCE"
+    export LDFLAGS="-stdlib=libc++"
+fi
+
 mkdir -p $PREFIX/gmapdb_$PKG_VERSION
 
 env MAX_READLENGTH=500 ./configure --prefix=$PREFIX --with-gmapdb=$PREFIX/gmapdb_$PKG_VERSION
