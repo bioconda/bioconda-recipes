@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export CFLAGS="${CFLAGS:-} -O3 -m64 -I${PREFIX}/include"
+
 mkdir -p $PREFIX/gmapdb_$PKG_VERSION
 env MAX_READLENGTH=500 ./configure --prefix=$PREFIX --with-gmapdb=$PREFIX/gmapdb_$PKG_VERSION
 make
