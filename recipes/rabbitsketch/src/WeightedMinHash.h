@@ -1,4 +1,0 @@
-#ifndef __WEIGHTEDMINHASH_H__
-#define __WEIGHTEDMINHASH_H__
-
-#endif // __WEIGHTEDMINHASH_H__
