@@ -1,5 +1,10 @@
 {% set version = "1.0.1" %}
 {% set beta_suffix = "" %}
+{% set base_url = "https://github.com/umccr/hmftools/releases/download/" %}  # [linux and aarch64]
+{% set jar_artifact = "{{ base_url }}/esvee-v{{ version }}-linux-aarch64/esvee_{{ version }}{{ beta_suffix }}.jar" %} # [linux and aarch64]
+{% set sha256 = "e6d83b13ec354e2ecee6850ab99aa94cac065b8c48d7be920906e833ca04f081" %}  # [linux and aarch64]
+{% set base_url = "https://github.com/hartwigmedical/hmftools/releases/download/" %}
+{% set jar_artifact = "{{ base_url }}/esvee-v{{ version }}/esvee_v{{ version }}{{ beta_suffix }}.jar" %}
 {% set sha256 = "c5abe2422458a637a66a44448fb26f0ffbf8606dc7536b5214e5db3c1fd7c7be" %}
 
 package:
@@ -7,12 +12,12 @@ package:
   version: '{{ version }}'
 
 source:
-  url: https://github.com/hartwigmedical/hmftools/releases/download/esvee-v{{ version }}/esvee_v{{ version }}{{ beta_suffix }}.jar
+  url: {{ base_url }}/{{ jar_artifact }}
   sha256: '{{ sha256 }}'
 
 build:
   noarch: generic
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage("hmftools-esvee", max_pin="x.x") }}
 
@@ -24,6 +29,10 @@ requirements:
 test:
   commands:
     - 'esvee -version | grep Esvee'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
 
 about:
   home: https://github.com/hartwigmedical/hmftools/blob/master/esvee/README.md
