@@ -1,0 +1,108 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7e90114..a58b059 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -69,11 +69,6 @@ if(NOT CMAKE_BUILD_TYPE)
+           "Choose the type of build, options are: Release|Debug|RelWithDebInfo (for distros)." FORCE)
+ endif()
+ 
+-if (${CMAKE_BUILD_TYPE} MATCHES Release)
+-  set(EXTRA_FLAGS "-march=native -D_FILE_OFFSET_BITS=64")
+-  # set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG") # reset CXX_FLAGS to replace -O3 with -Ofast
+-endif()
+-
+ if ((${CMAKE_BUILD_TYPE} MATCHES Release) OR (${CMAKE_BUILD_TYPE} MATCHES RelWithDebInfo))
+   set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_FLAGS}")
+   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_FLAGS}")
+@@ -184,12 +179,19 @@ set(vcflib_SOURCE
+ 
+ if (TABIXPP_LOCAL) # add the tabixpp source file
+     list(APPEND vcflib_SOURCE ${tabixpp_SOURCE})
++    list(APPEND INCLUDES ${TABIXPP_LOCAL}/tabix.hpp)
+ endif()
+ 
+-add_library(vcflib STATIC
++add_library(vcflib
+     ${vcflib_SOURCE}
+     )
+ 
++target_link_libraries(vcflib PUBLIC
++    tabixpp
++    wfa2
++    hts
++    )
++
+ set(BINS
+     vcfecho
+     dumpContigsFromHeader
+@@ -326,6 +328,10 @@ set(SCRIPTS
+ file (STRINGS "VERSION" BUILD_NUMBER)
+ add_definitions(-DVCFLIB_VERSION="${BUILD_NUMBER}")
+ add_definitions(-DVERSION="${BUILD_NUMBER}")
++string(REGEX MATCH "^[0-9]+" MAJOR_BUILD_NUMBER ${BUILD_NUMBER})
++set_target_properties(vcflib PROPERTIES
++	SOVERSION ${MAJOR_BUILD_NUMBER}
++    )
+ 
+ # ---- Build htslib
+ #
+@@ -337,11 +343,11 @@ if (HTSLIB_LOCAL)
+ 
+   include_directories(${HTSLIB_LOCAL})
+ 
+-  set(flags "-O2 -g -fPIC")
++  set(flags "-O3 -g -fPIC")
+   ExternalProject_Add(htslib-EXT
+     SOURCE_DIR "${CMAKE_SOURCE_DIR}/${HTSLIB_LOCAL}"
+-    UPDATE_COMMAND autoreconf -i
+-    CONFIGURE_COMMAND ./configure --disable-s3
++    UPDATE_COMMAND autoreconf -if
++    CONFIGURE_COMMAND ./configure --disable-s3 CC=${CC}
+     INSTALL_COMMAND ""
+     BUILD_IN_SOURCE ON
+     BUILD_COMMAND $(MAKE) CFLAGS=${flags} lib-static
+@@ -381,8 +387,7 @@ if(WFA_GITMODULE)
+   add_subdirectory(${WFA_LOCAL})
+   set(WFALIB wfa2) # pick up the wfa2 lib target from the included CMakeLists.txt
+ else(WFA_GITMODULE)
+-  include_directories($ENV{CMAKE_PREFIX_PATH}/include/wfa2lib)
+-  set(WFA_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/wfa2lib)
++  find_path(WFA_INCLUDE_DIRS wavefront/wfa.hpp PATH_SUFFIXES wfa2lib)
+   find_library(WFALIB wfa2 wfa REQUIRED) # distro search for shared lib
+ endif(WFA_GITMODULE)
+ 
+@@ -453,6 +458,9 @@ add_dependencies(vcflib ${vcflib_DEPS})
+ 
+ # ---- Build all
+ 
++if (BUILD_SHARED_LIBS)
++  target_link_libraries(vcflib PUBLIC ${vcflib_LIBS} ${WFALIB})
++endif()
+ if (NOT BUILD_ONLY_LIB)
+   foreach(BIN ${BINS})
+     add_executable(${BIN} src/${BIN}.cpp)
+@@ -465,7 +473,7 @@ if (NOT BUILD_ONLY_LIB)
+     target_link_libraries(${WFBIN} PUBLIC ${vcflib_LIBS} vcflib)
+     target_link_libraries(${WFBIN} PUBLIC ${vcflib_LIBS} ${WFALIB})
+   endforeach(WFBIN ${BINS})
+-  install(TARGETS ${BINS} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
++  install(TARGETS ${BINS} ${WFBINS} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+ 
+   # ---- Copy scripts
+   foreach(SCRIPT ${SCRIPTS})
+@@ -595,8 +603,12 @@ endif (PANDOC)
+ # ---- Install
+ 
+ install(TARGETS vcflib ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})
+-install(TARGETS ${WFALIB} ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})
++if(WFA_GITMODULE)
++  install(TARGETS ${WFALIB} ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})
++endif(WFA_GITMODULE)
+ 
+-install(FILES ${INCLUDES} DESTINATION include/vcflib)
++install(FILES ${INCLUDES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/vcflib)
++configure_file(${CMAKE_CURRENT_SOURCE_DIR}/vcflib.pc.in ${CMAKE_CURRENT_BINARY_DIR}/vcflib.pc @ONLY)
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/vcflib.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+ 
+-install(DIRECTORY ${CMAKE_SOURCE_DIR}/man/ DESTINATION ${CMAKE_INSTALL_PREFIX}/man/man1)
++install(DIRECTORY ${CMAKE_SOURCE_DIR}/man/ DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)

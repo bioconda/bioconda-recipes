@@ -1,5 +1,9 @@
 #!/bin/bash
-set -x
+
+set -xe
+
+# use newer config.guess and config.sub that support osx-arm64
+cp -f ${RECIPE_DIR}/config.* ./am-aux/
 
 # build version with MPI & Beagle
 ./configure \
