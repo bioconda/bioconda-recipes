@@ -3,18 +3,16 @@ package:
   version: "0.1.0"
 
 source:
-  url: https://github.com/RabbitBio/RabbitSketch/archive/refs/tags/v0.1.0.tar.gz
-  sha256: 07cfc87005f4f3d60ef6f83ec8fd48ff1f1a4778afe5da0de7cb9cc64045d1f0
+  url: https://github.com/RabbitBio/RabbitSketch/archive/refs/heads/bioconda.tar.gz
+  sha256: 72c9275f79111debdaa6fd7cd4feeee78705a002a73785c4c658cabbc50e57c9
 
 build:
   number: 0
   script:
     - mkdir -p build
     - cd build
-    - cmake -DCXXAPI=OFF -DCMAKE_INSTALL_PREFIX=$PREFIX -DCMAKE_PREFIX_PATH=$PREFIX ..
+    - cmake -DCXXAPI=ON .. -DCMAKE_INSTALL_PREFIX=.
     - make -j$(nproc)
-    - make install
-    - export LD_LIBRARY_PATH=$PREFIX/lib:$LD_LIBRARY_PATH
     - cd ..
     - "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
   run_exports:
@@ -27,6 +25,7 @@ requirements:
     - cmake
     - make
     - setuptools
+    - libxcrypt
     - pip
     - wheel
     - pybind11 >=2.6, <2.7
@@ -35,8 +34,11 @@ requirements:
     - zlib
     - pybind11 >=2.6, <2.7
     - cython
+    - sysroot_linux-64
+    - libxcrypt
   run:
     - python =3.7
+    - libxcrypt
 
 test:
   requires:
