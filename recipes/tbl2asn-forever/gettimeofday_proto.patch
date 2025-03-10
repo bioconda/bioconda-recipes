@@ -1,0 +1,28 @@
+--- src/libfaketime.c.orig	2025-02-11 11:34:55.053576612 +0000
++++ src/libfaketime.c	2025-02-11 13:33:31.322515469 +0000
+@@ -36,6 +36,7 @@
+ #ifdef __GLIBC__
+ #ifndef __APPLE__
+ #include <gnu/libc-version.h>
++#include <sys/time.h>
+ #endif
+ #endif
+ #include <time.h>
+@@ -191,7 +192,7 @@
+ static int          (*real_lxstat64)        (int, const char *, struct stat64 *);
+ static time_t       (*real_time)            (time_t *);
+ static int          (*real_ftime)           (struct timeb *);
+-static int          (*real_gettimeofday)    (struct timeval *, void *);
++static int          (*real_gettimeofday)    (struct timeval *, struct timezone *);
+ static int          (*real_clock_gettime)   (clockid_t clk_id, struct timespec *tp);
+ static int          (*real_timespec_get)    (struct timespec *ts, int base);
+ #ifdef FAKE_INTERNAL_CALLS
+@@ -2219,7 +2220,7 @@
+ #ifdef MACOS_DYLD_INTERPOSE
+ int macos_gettimeofday(struct timeval *tv, void *tz)
+ #else
+-int gettimeofday(struct timeval *tv, void *tz)
++int gettimeofday(struct timeval *tv, struct timezone *tz)
+ #endif
+ {
+   int result;
