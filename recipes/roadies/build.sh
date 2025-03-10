@@ -32,7 +32,7 @@ if [ ! -d "workflow/scripts/lastz_32" ]; then
     wget https://github.com/lastz/lastz/archive/refs/tags/1.04.45.zip
     unzip 1.04.45.zip 
     cd lastz-1.04.45/src/
-    make lastz_40
+    make CC="${CC}" CXX="${CXX}" lastz_40
     make install_40
     cp lastz_40 ../../
     cd ../../../../
