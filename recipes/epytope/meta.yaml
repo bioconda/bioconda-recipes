@@ -1,20 +1,25 @@
 {% set name = "epytope" %}
-{% set version = "3.3.1" %}
+{% set version = "3.4.0" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}-1682423381.tar.gz"
-  sha256: d6ab7d472d4025c7ac9f3db39cffaf500c011c5d3efb6d9423c826d138ae341e
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 425c280f5aa9526744c8a62c27c0e08afb2df8f6fe6b1b7f60dd1cb0888fa443
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . -vvv"
+  run_exports:
+    - {{ pin_subpackage('epytope', max_pin="x") }}
 
 requirements:
+  build:
+    # tensorflow version only available for linux-64
+    - sysroot_linux-64
   host:
     - python
     - pip
@@ -31,7 +36,6 @@ requirements:
     - python
     - pyvcf3
     - requests
-    - setuptools
 
 test:
   imports:
@@ -88,7 +92,7 @@ test:
 
 about:
   home: "https://github.com/KohlbacherLab/epytope"
-  license: BSD
+  license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE.txt
   summary: "A Framework for Epitope Detection and Vaccine Design"
