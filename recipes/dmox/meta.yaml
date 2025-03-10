@@ -1,0 +1,50 @@
+{% set version = "0.1.1" %}
+{% set sha256 = "d08efd4fc59be9a481d24e3f6ae611a343e6d03fa49552c898901ba3b55896de" %}
+
+package:
+  name: dmox
+  version: '{{ version }}'
+
+source:
+  url: https://gitlab.mbb.cnrs.fr/ibonnici/dmox/-/archive/v{{ version }}/dmox-v{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('dmox', max_pin="x") }}
+  script: |
+    if [ `uname` == Darwin ]; then
+      export HOME=`mktemp -d`
+    fi
+    cargo install -v --locked --no-track --root $PREFIX --path .
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - make
+    - cmake
+test:
+  commands:
+    - "cargo test --release"
+
+about:
+  home: "https://gitlab.mbb.cnrs.fr/ibonnici/dmox"
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Rust-based demultiplexing of haplotagging linked-read data"
+  description: |
+    dmox is a drop-in replacement for the haplotagging linked-read demultiplexing module implemented in Harpy.
+    It's used within Harpy itself, but also functions as a standalone, efficient demultiplexing software. 
+  dev_url: "https://gitlab.mbb.cnrs.fr/ibonnici/dmox"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - iago-lito
+  skip-lints:
+    - should_be_noarch_generic  # Rust's `cargo build` command makes this not a noarch recipe.
