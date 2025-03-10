@@ -8,14 +8,20 @@ concurrency:
 jobs:
   lint:
     name: Lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: true
       max-parallel: 13
     steps:
       - uses: actions/checkout@v4
+
+      - name: Fetch commits through the merge base
+        uses: fulcrumgenomics/fetch-through-merge-base@v1
         with:
-          fetch-depth: 0
+          base-ref: ${{ env.GITHUB_BASE_REF }}
+          head-ref: ${{ github.sha }}
+          fallback-base-ref: master
+          fallback-fetch-all: true
 
       - name: set path
         run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
@@ -45,24 +51,26 @@ jobs:
           conda config --show-sources
           python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
           echo '============'
-          if [ -z "$GITHUB_BASE_REF" ] ; then
-              export GITHUB_BASE_REF="master"
-          fi
-          git fetch origin "$GITHUB_BASE_REF"
           bioconda-utils lint --loglevel debug --full-report --git-range origin/"$GITHUB_BASE_REF" HEAD
           conda clean -y --all
 
   build-linux:
     name: Linux Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: true
       max-parallel: 13
     needs: lint
     steps:
       - uses: actions/checkout@v4
+
+      - name: Fetch commits through the merge base
+        uses: fulcrumgenomics/fetch-through-merge-base@v1
         with:
-          fetch-depth: 0
+          base-ref: ${{ env.GITHUB_BASE_REF }}
+          head-ref: ${{ github.sha }}
+          fallback-base-ref: master
+          fallback-fetch-all: true
 
       - name: set path
         run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
@@ -95,10 +103,6 @@ jobs:
           eval "$(conda shell.bash hook)"
           conda activate bioconda
           source common.sh
-          if [ -z "$GITHUB_BASE_REF" ] ; then
-              export GITHUB_BASE_REF="master"
-          fi
-          git fetch origin "$GITHUB_BASE_REF"
 
           bioconda-utils build recipes config.yml \
             --docker --mulled-test \
@@ -148,8 +152,15 @@ jobs:
     needs: build-linux
     steps:
       - uses: actions/checkout@v4
+      
+      - name: Fetch commits through the merge base
+        uses: fulcrumgenomics/fetch-through-merge-base@v1
+        continue-on-error: true
         with:
-          fetch-depth: 0
+          base-ref: ${{ env.GITHUB_BASE_REF }}
+          head-ref: ${{ github.sha }}
+          fallback-base-ref: master
+          fallback-fetch-all: true
 
       - name: set path
         run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
@@ -183,11 +194,6 @@ jobs:
               rm -f /opt/mambaforge/envs/bioconda/conda-bld/$n/*.tar.bz2
           done
 
-          if [ -z "$GITHUB_BASE_REF" ] ; then
-              export GITHUB_BASE_REF="master"
-          fi
-          git fetch origin "$GITHUB_BASE_REF"
-
           bioconda-utils build recipes config.yml \
             --git-range origin/"$GITHUB_BASE_REF" HEAD
 
@@ -220,8 +226,6 @@ jobs:
   #   needs: build-linux
   #   steps:
   #     - uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
 
   #     # bail if there's no osx-arm64 recipes
   #     - name: Check for Additional Platforms
