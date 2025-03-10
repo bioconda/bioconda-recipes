@@ -1,0 +1,59 @@
+package:
+  name: rabbitsketch
+  version: "0.1.0"
+
+source:
+  url: https://github.com/RabbitBio/RabbitSketch/archive/refs/heads/bioconda.tar.gz
+  sha256: bab19130a9bba9f547d4b229db5c0508739fcc6942ebadb2ca1cc8666b30c343
+
+build:
+  number: 0
+  script:
+    - mkdir -p build
+    - cd build
+    - cmake -DCXXAPI=ON .. -DCMAKE_INSTALL_PREFIX=.
+    - make
+    - cd ..
+    - "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  run_exports:
+    - {{ pin_subpackage('rabbitsketch', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - llvm-openmp
+    - setuptools
+    - libxcrypt
+    - pip
+    - wheel
+    - pybind11 >=2.6, <2.7
+  host:
+    - python =3.7
+    - zlib
+    - llvm-openmp
+    - pybind11 >=2.6, <2.7
+    - cython
+    - sysroot_linux-64
+    - libxcrypt
+  run:
+    - python =3.7
+    - libxcrypt
+
+test:
+  requires:
+    - python =3.7
+  commands:
+    - python -c "import sys; print(sys.path)"
+    - python -c "import rabbitsketch; print(rabbitsketch.__file__)"
+    - python -c "import rabbitsketch"
+    - python -c "from rabbitsketch import Kssd"
+
+about:
+  home: https://github.com/RabbitBio/RabbitSketch
+  license: https://github.com/RabbitBio/RabbitSketch/blob/lib/LICENSE.txt
+  license_file: LICENSE.txt
+  summary: "RabbitSketch is a highly optimized sketching library that exploits the power of modern multi-core CPUs."
+
