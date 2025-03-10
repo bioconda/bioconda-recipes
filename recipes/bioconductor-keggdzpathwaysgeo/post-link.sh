@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "keggdzpathwaysgeo-1.40.0"
+installBiocDataPackage.sh "keggdzpathwaysgeo-1.44.0"

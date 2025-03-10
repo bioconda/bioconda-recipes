@@ -1,0 +1,51 @@
+{% set name = "pyjess" %}
+{% set version = "0.4.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 93777c121892e86ef33e266feb057850309d4423edbfbdcab13a97c081ba27ea
+
+build:
+  number: 1
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv"
+  run_exports:
+    - {{ pin_subpackage("pyjess", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - cmake >=3.20
+    - make
+  host:
+    - python
+    - pip
+    - cython
+    - scikit-build-core
+  run:
+    - python
+
+test:
+  imports:
+    - {{ name }}
+  commands:
+    - python -m unittest -vv {{ name }}.tests
+
+about:
+  home: "https://github.com/althonos/pyjess"
+  license: "MIT"
+  license_family: MIT
+  license_file: COPYING
+  summary: "Cython bindings and Python interface to JESS, a 3D template matching software."
+  doc_url: "https://pyjess.readthedocs.org"
+  dev_url: "https://github.com/althonos/pyjess"
+
+extra:
+  recipe-maintainers:
+    - althonos
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

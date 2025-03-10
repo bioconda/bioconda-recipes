@@ -2,6 +2,15 @@
 
 set -xe
 
-export CFLAGS="$CFLAGS -I${PREFIX}/include"
-export LDFLAGS="$LDFLAGS -ldl -lpthread"
-make -j ${CPU_COUNT} install
+OS=$(uname)
+ARCH=$(uname -m)
+if [[ ${OS} == "Linux" ]]; then
+	export C_INCLUDE_PATH="${PREFIX}/include"
+	export LIBRARY_PATH="${PREFIX}/lib"
+	export LDLIBS="-ldl -lpthread"
+	if [[ ${ARCH} == "aarch64" ]]; then
+		export EGL=1
+	fi
+fi
+
+make CC="${CC}" PREFIX="${PREFIX}" -j ${CPU_COUNT} install

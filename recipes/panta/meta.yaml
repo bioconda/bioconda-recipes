@@ -1,0 +1,47 @@
+{% set version = "1.0.1" %}
+{% set name = "PanTA" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/94/69/7f6f8881c749cb66ff01f75e7f96c270b00c98a2b99e9a90177ce4e3b8bc/{{ name|lower }}-{{ version }}-py3-none-any.whl
+  sha256: 6195aad006bd26265f4f6db04f93408dd6f31a918498110413fcbff4645bac35
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install {{ name|lower }}-{{ version }}-py3-none-any.whl"
+  run_exports:
+    - {{ pin_subpackage('panta', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+  run:
+    - python >=3.9
+    - biopython
+    - cd-hit >=4.8.1
+    - blast >=2.13.0
+    - diamond >=2.1.3
+    - mcl >=14.137
+    - mafft >=7.520
+    - pandas
+    - psutil
+
+
+test:
+  imports:
+    - panta
+  commands:
+    - panta --help
+    - panta main --help
+    - panta add --help
+
+about:
+  home: https://github.com/amromics/panta
+  license: MIT
+  license_family: MIT
+  summary: 'PanTA - pan-genome pipeline'
