@@ -1,0 +1,44 @@
+{% set name = "gsnap" %}
+{% set version = '2024.11.20' %}
+{% set sha256 = "d92bb85627a540c676816759d33f7878cc408dfd689bde28be2d87dbde4049f1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: http://research-pub.gene.com/gmap/src/gmap-{{ name }}-{{ version | replace(".", "-") }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - config.site.patch
+    - genome_sites.c.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ name }} >=2024.11.20,<2024.11.21
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - make
+  run:
+    - perl
+    - zlib
+
+test:
+  commands:
+    - gmap --version
+    - gsnap --version
+
+about:
+  home: http://research-pub.gene.com/gmap/
+  summary: GMAP, a Genomic Mapping and Alignment Program for mRNA and EST Sequences, and GSNAP, a Genomic Short-read Nucleotide Alignment Program
+  description: |
+    The README file from the source code distribution contains basic usage information (http://research-pub.gene.com/gmap/src/README).
+  license: MIT
+  license_family: MIT
+
+extra:
+  recipe-maintainers:
+    - tm4zza
