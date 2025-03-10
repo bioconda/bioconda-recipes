@@ -1,0 +1,50 @@
+{% set name = "MACH2" %}
+{% set version = "1.0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+ 
+source:
+  url: https://github.com/elkebir-group/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 7545661ad79a1be50b40afc16c6937b86fa0af6a6804f9412da24ce0443302c2
+
+build:
+  entry_points:
+    - mach2 = mach2.__main__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('mach2', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - pdm-backend
+    - pip
+  run:
+    - python >=3.12
+    - pandas
+    - networkx
+    - jupyterlab
+    - python-graphviz
+    # - gurobi [not available on bioconda or conda-forge]
+
+test:
+  imports:
+    - mach2
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: "https://github.com/elkebir-group/mach2"
+  summary: Migration Analysis of Clonal Histories 2
+  license: BSD-3-Clause
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - roddur
