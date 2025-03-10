@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 
-set -o xtrace -o nounset -o pipefail -o errexit
-
 # Use echo because unzip does not return 0 despite a successful extraction
-echo $(unzip impute5.zip)
+echo $(unzip impute5_v${PKG_VERSION}.zip)
 unzip impute5_v${PKG_VERSION}.zip
 
 mkdir -p ${PREFIX}/bin
