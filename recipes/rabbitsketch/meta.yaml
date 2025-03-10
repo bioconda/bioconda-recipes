@@ -11,7 +11,7 @@ build:
   script:
     - mkdir -p build
     - cd build
-    - cmake -DCXXAPI=ON .. -DCMAKE_INSTALL_PREFIX=.
+    - cmake -DCXXAPI=ON -DCMAKE_INSTALL_PREFIX=. -DCMAKE_CXX_FLAGS="-Xpreprocessor -fopenmp" ..
     - make
     - cd ..
     - "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
@@ -24,23 +24,35 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake
     - make
-    - llvm-openmp
     - setuptools
-    - libxcrypt
     - pip
     - wheel
-    - pybind11 >=2.6, <2.7
-  host:
-    - python =3.7
-    - zlib
+    - pybind11 >=2.6, <2.11
     - llvm-openmp
-    - pybind11 >=2.6, <2.7
+      - llvm-openmp
+        selector: linux
+    - libomp  
+      - libomp
+        selector: osx
+    - libxcrypt  
+      - libxcrypt
+        selector: linux
+  host:
+    - python >=3.7,<3.11
+    - zlib
+    - pybind11 >=2.6, <2.11
     - cython
-    - sysroot_linux-64
-    - libxcrypt
+    - llvm-openmp  
+      - llvm-openmp
+        selector: linux
+    - libxcrypt  
+      - libxcrypt
+        selector: linux
   run:
-    - python =3.7
-    - libxcrypt
+    - python >=3.7,<3.11
+    - libxcrypt 
+      - libxcrypt
+        selector: linux
 
 test:
   requires:
