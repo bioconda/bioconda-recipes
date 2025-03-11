@@ -1,5 +1,5 @@
-{% set version = "0.1.1" %}
-{% set sha256 = "d08efd4fc59be9a481d24e3f6ae611a343e6d03fa49552c898901ba3b55896de" %}
+{% set version = "0.1.2" %}
+{% set sha256 = "8f2225b2ed6e36a6229fef225effed8a19d87bca1c80763abb6a7a6260902b0e" %}
 
 package:
   name: dmox
@@ -17,6 +17,12 @@ build:
     if [ `uname` == Darwin ]; then
       export HOME=`mktemp -d`
     fi
+    # https://github.com/sstadick/cargo-bundle-licenses?tab=readme-ov-file#usage
+    cargo bundle-licenses       \
+      --format yaml             \
+      --output CI.yaml          \
+      --previous THIRDPARTY.yml \
+      --check-previous
     cargo test --release
     cargo install -v --locked --no-track --root $PREFIX --path .
 
@@ -25,6 +31,7 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('rust') }}
+    - cargo-bundle-licenses
     - make
     - cmake
 test:
