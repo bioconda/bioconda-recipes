@@ -2,16 +2,13 @@
 
 mkdir -p "${PREFIX}/bin"
 
-make -C src release
+sed -i.bak -e 's|!atomic_compare_exchange_strong|!atomic_compare_exchange_strong_int|' src/hashcounter.c
+sed -i.bak -e 's|(atomic_compare_exchange_strong|(atomic_compare_exchange_strong_int|' src/hashcounter.c
+rm -rf src/*.bak
 
-chmod +x $SRC_DIR/src/PreProcessR
-chmod +x $SRC_DIR/src/subcontig
-chmod +x $SRC_DIR/src/hashcounter
+make -C src release -j"${CPU_COUNT}"
+
 chmod +x $SRC_DIR/src/Plot.R
-chmod +x $SRC_DIR/src/StrainR
+cp -f $SRC_DIR/src/Plot.R ${PREFIX}/bin/
 
-cp $SRC_DIR/src/PreProcessR ${PREFIX}/bin/
-cp $SRC_DIR/src/subcontig ${PREFIX}/bin/
-cp $SRC_DIR/src/hashcounter ${PREFIX}/bin/
-cp $SRC_DIR/src/Plot.R ${PREFIX}/bin/
-cp $SRC_DIR/src/StrainR ${PREFIX}/bin/
+install -v -m 0755 src/PreProcessR src/subcontig src/hashcounter src/StrainR ${PREFIX}/bin
