@@ -1,10 +1,13 @@
 #!/bin/bash -euo
 
 mkdir -p "${PREFIX}/bin"
+OS=$(uname)
 
-sed -i.bak -e 's|!atomic_compare_exchange_strong|!atomic_compare_exchange_strong_int|' src/hashcounter.c
-sed -i.bak -e 's|(atomic_compare_exchange_strong|(atomic_compare_exchange_strong_int|' src/hashcounter.c
-rm -rf src/*.bak
+if [[ "${OS}" == "Darwin" ]]; then
+  sed -i.bak -e 's|!atomic_compare_exchange_strong|!atomic_compare_exchange_strong_int|' src/hashcounter.c
+  sed -i.bak -e 's|(atomic_compare_exchange_strong|(atomic_compare_exchange_strong_int|' src/hashcounter.c
+  rm -rf src/*.bak
+fi
 
 make -C src release -j"${CPU_COUNT}"
 
