@@ -9,7 +9,7 @@ export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
-export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include ${LDFLAGS}"
+export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include ${LDFLAGS}"
 export L="${LDFLAGS}"
 
 mkdir -p "${BINDIR}"
@@ -24,5 +24,5 @@ fi
 (cd kent/src/jkOwnLib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
 (cd kent/src/hg/lib && make USE_HIC=0 CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
 (cd kent/src/utils/faToTwoBit && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
-cp bin/faToTwoBit "${PREFIX}/bin"
+cp -f bin/faToTwoBit "${PREFIX}/bin"
 chmod 0755 "${PREFIX}/bin/faToTwoBit"

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "metagxbreast-1.22.0"
+installBiocDataPackage.sh "metagxbreast-1.26.0"

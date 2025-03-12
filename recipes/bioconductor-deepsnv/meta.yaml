@@ -1,59 +1,21 @@
-{% set version = "1.48.0" %}
+{% set version = "1.52.0" %}
 {% set name = "deepSNV" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 4df42adbe4997ad401a7d2505ee2b227
+about:
+  description: This package provides provides quantitative variant callers for detecting subclonal mutations in ultra-deep (>=100x coverage) sequencing experiments. The deepSNV algorithm is used for a comparative setup with a control experiment of the same loci and uses a beta-binomial model and a likelihood ratio test to discriminate sequencing errors and subclonal SNVs. The shearwater algorithm computes a Bayes classifier based on a beta-binomial model for variant calling with multiple samples for precisely estimating model parameters - such as local error rates and dispersion - and prior knowledge, e.g. from variation data bases such as COSMIC.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Detection of subclonal SNVs in deep sequencing data.
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-deepsnv", max_pin="x.x") }}'
-# Suggests: RColorBrewer, knitr, rmarkdown
-# SystemRequirements: GNU make
-requirements:
-  host:
-    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
-    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
-    - 'bioconductor-iranges >=2.36.0,<2.37.0'
-    - 'bioconductor-rhtslib >=2.4.0,<2.5.0'
-    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
-    - 'bioconductor-variantannotation >=1.48.0,<1.49.0'
-    - r-base
-    - r-vgam
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
-    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
-    - 'bioconductor-iranges >=2.36.0,<2.37.0'
-    - 'bioconductor-rhtslib >=2.4.0,<2.5.0'
-    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
-    - 'bioconductor-variantannotation >=1.48.0,<1.49.0'
-    - r-base
-    - r-vgam
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Detection of subclonal SNVs in deep sequencing data.'
-  description: 'This package provides provides quantitative variant callers for detecting subclonal mutations in ultra-deep (>=100x coverage) sequencing experiments. The deepSNV algorithm is used for a comparative setup with a control experiment of the same loci and uses a beta-binomial model and a likelihood ratio test to discriminate sequencing errors and subclonal SNVs. The shearwater algorithm computes a Bayes classifier based on a beta-binomial model for variant calling with multiple samples for precisely estimating model parameters - such as local error rates and dispersion - and prior knowledge, e.g. from variation data bases such as COSMIC.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
 extra:
   identifiers:
     - biotools:deepsnv
@@ -61,4 +23,50 @@ extra:
     name: bioconductor-deepsnv
     path: recipes/bioconductor-deepsnv
     version: 1.26.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: RColorBrewer, knitr, rmarkdown
+# SystemRequirements: GNU make
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rhtslib >=3.2.0,<3.3.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
+    - r-base
+    - r-vgam
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rhtslib >=3.2.0,<3.3.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
+    - r-base
+    - r-vgam
+
+source:
+  md5: 23f4830f8b5ad3b1c38ef91ad6427a9a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

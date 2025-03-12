@@ -1,18 +1,13 @@
-{% set version = "2.1.0_beta" %}
-{% set sha256_jar = "26d0a40e20635c4b797d28e0c7819b1653c9f8fa28180b9a556215d22387968c" %}
-{% set sha256_src = "ed039e7b405130a1e52df71c3535c6a5ed8aab0f80724bc83df88ae14aeaa257" %}
+{% set version = "2.1.0" %}
+{% set sha256 = "8820b5cb4b45a0436d11c65433599fc59651ba0bf7069edcb0c89eb32833302e" %}
 
 package:
   name: hmftools-chord
   version: '{{ version }}'
 
 source:
-  - folder: jar
-    url: https://github.com/hartwigmedical/hmftools/releases/download/chord-v{{ version }}/chord-{{ version }}.jar
-    sha256: '{{ sha256_jar }}'
-  - folder: src
-    url: https://github.com/hartwigmedical/hmftools/archive/refs/tags/chord-v{{ version }}.tar.gz
-    sha256: '{{ sha256_src }}'
+  url: https://github.com/hartwigmedical/hmftools/releases/download/chord-v{{ version }}/chord_v{{ version }}.jar
+  sha256: '{{ sha256 }}'
 
 build:
   noarch: generic
@@ -21,31 +16,17 @@ build:
     - {{ pin_subpackage("hmftools-chord", max_pin="x.x") }}
 
 requirements:
-  host:
-    - r-base
-    - r-randomforest
-    - r-stringr
-    - bioconductor-bsgenome
-    - bioconductor-bsgenome.hsapiens.ucsc.hg19
-    - bioconductor-bsgenome.hsapiens.ucsc.hg38
   run:
-    - openjdk >=8
+    - openjdk >=8,<=21
     - r-base
     - r-randomforest
-    - r-stringr
-    - bioconductor-bsgenome
-    - bioconductor-bsgenome.hsapiens.ucsc.hg19
-    - bioconductor-bsgenome.hsapiens.ucsc.hg38
 
 test:
   commands:
-    - $R -e "library('CHORD')"
-    - $R -e "library('mutSigExtractor')"
-    - 'chord com.hartwig.hmftools.chord.ChordRunner -version | grep CHORD'
+    - 'chord -version | grep CHORD'
 
 about:
   home: https://github.com/hartwigmedical/hmftools/blob/master/chord/
   license: GPL-3.0-only
   license_family: GPL3
-  license_file: LICENSE
   summary: Predict HRD using somatic mutations contexts

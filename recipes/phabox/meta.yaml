@@ -1,5 +1,5 @@
 {% set name = "PhaBOX" %}
-{% set version = "2.0.0" %}
+{% set version = "2.1.10" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,49 +7,60 @@ package:
 
 source:
   url: https://github.com/KennthShang/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 3e120da4b6c37d1ae9f7291382365012a4efa0c4e704068c1ecd897e5fd8178a
-  patches:
-    - setup.patch
+  sha256: e9a4e2a13b9dda3eb8d7c2a75acf36bf5afb2d38d048770fb4421c00fd870ff5
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  entry_points:
+    - phabox2=phabox2.phabox2:main
   run_exports:
     - {{ pin_subpackage('phabox', max_pin="x.x") }}
 
 requirements:
   host:
+    - python >=3.8
     - pip
-    - python
     - setuptools
   run:
-    - python
+    - python >=3.8
     - biopython >=1.84
-    - networkx >=3.4
-    - numpy >=2
-    - pandas >=2
-    - pprodigal >=1
-    - scipy >=1.14
-    - pytorch >=2.4
-    - transformers >=4.40
     - datasets >=3
-    - pyarrow >=17
-
+    - kcounter >=0.1.1
+    - fasttree >=2.1.11
+    - mafft >=7.525
+    - networkx >=3.4
+    - numpy >=1.26
+    - pandas >=2
+    - prodigal-gv >=2.11.0
+    - pyarrow >=16
+    - pytorch >=2.4
+    - scipy >=1.14
+    - seaborn-base >=0.13.2
+    - transformers >=4
+    - blast >=2.16.0
+    - diamond =0.9.14
+    - mcl >=22.282
+    - accelerate >=1.0.1
+    
 test:
   commands:
-    - phabox --help
-    - Cherry_single --help
-    - PhaGCN_single --help
-    - PhaMer_single --help
-    - PhaTYP_single --help
+    - phabox2 --help
 
 about:
   home: https://github.com/KennthShang/PhaBOX
-  license: AFL
-  license_file: LICENSE.md 
-  summary: Phage BOX is a Python library for phage-related tasks
+  license: "AFL-3.0"
+  license_family: OTHER
+  license_file: "LICENSE.md"
+  summary: Virus identification and analysis tool set
+  dev_url: "https://github.com/KennthShang/PhaBOX"
+  doc_url: "https://github.com/KennthShang/PhaBOX/wiki"
 
 extra:
   recipe-maintainers:
-    - bernt-matthias
+    - SHANG Jiayu
+    - PENG Cheng
+  identifiers:
+    - doi:10.1093/bioadv/vbad101
+    - biotools:phabox

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "tenxvisiumdata-1.10.0"
+installBiocDataPackage.sh "tenxvisiumdata-1.14.0"

@@ -1,0 +1,55 @@
+diff --git a/src/version.h b/src/version.h
+index 86b10f6..eb562fa 100644
+--- a/src/version.h
++++ b/src/version.h
+@@ -17,4 +17,4 @@
+  */
+ #define MAJOR 1
+ #define MINOR 2
+-#define PATCH 5
++#define PATCH 6
+diff --git a/src/makefile b/src/makefile
+index f28bc47..a2e9f0a 100644
+--- a/src/makefile
++++ b/src/makefile
+@@ -1,6 +1,6 @@
+-CC      =  gcc
+-CFLAGS  =  -g -Wall  -D DEBUG #-O2 
+-LDFLAGS = -lz -lm
++CC      = $(CC)
++CFLAGS  = -g -Wall -D DEBUG -O3 
++LDFLAGS = -lz -lm -L$(PREFIX)/lib
+ 
+ OBJS = gfa.o opt.o paf.o sdict.o eg.o 
+ PROG = calcuts purge_dups pbcstat split_fa get_seqs  ngscstat
+diff --git a/scripts/hist_plot.py b/scripts/hist_plot.py
+index 907c8ef..fd17e27 100755
+--- a/scripts/hist_plot.py
++++ b/scripts/hist_plot.py
+@@ -16,6 +16,7 @@ def col_hist(stat_fn, delim):
+             hists.append(int(lnlist[1])) 
+         f.close()
+     return hists
++
+ def get_cutoffs(con):
+     if con:
+         lnlst = []
+@@ -46,14 +47,16 @@ def mk_plot(hists, cutoffs, ttle, xm, xM, ym, yM, out_fl):
+     height = 6
+     plt.figure(num=None, figsize=(width, height))
+     plt.plot(x, hists[xm:xM], label = "l", color="blue") # 
+-    plt.xticks([z for z in range(xm, xM, 10)], fontsize=3)
++    plt.xticks([z for z in range(xm, xM, 10)], fontsize=6, rotation=45)
++    plt.xlabel("Read fold-coverage")
++    plt.ylabel("Number of assembly positions")
+     # cutoffs
+     colors = ['r', 'g', 'c']
+     if len(cutoffs):
+         for i in range(len(cutoffs)):
+             plt.text(cutoffs[i], 0, str(cutoffs[i]), fontsize = 12, color=colors[i])
+             plt.axvline(x=cutoffs[i], linewidth=1, color = colors[i]) 
+-    plt.xlim([0, max(cutoffs)*1.5])
++    # plt.xlim([0, max(cutoffs)*1.5])
+     plt.title(ttle)
+     plt.gca().xaxis.grid(True, color="black", alpha=0.2)
+ 
