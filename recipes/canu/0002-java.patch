@@ -1,0 +1,267 @@
+diff --git a/src/main.mk b/src/main.mk
+index 3c80717fb..479bf0dac 100644
+--- a/src/main.mk
++++ b/src/main.mk
+@@ -1,5 +1,5 @@
+ MODULE       :=    canu
+-VERSION      := release v2.3
++VERSION      := snapshot v2.3
+ VERSION_H    := utility/src/version.H
+ 
+ TARGET       := libcanu.a
+diff --git a/src/overlapErrorAdjustment/fixErrors.C b/src/overlapErrorAdjustment/fixErrors.C
+index 7b1829507..1b9bb0505 100644
+--- a/src/overlapErrorAdjustment/fixErrors.C
++++ b/src/overlapErrorAdjustment/fixErrors.C
+@@ -143,8 +143,10 @@ main(int argc, char **argv) {
+ 
+     totalBases += read.sqRead_length();
+ 
++    // update array if we don't have enough space, pad by 5% to account of insertions due to corrections
++	// if these are very erroneous reads, likely need more than 5%
+     if (read.sqRead_length() > corBasesMax)
+-      resizeArray(corBases, 0, corBasesMax, read.sqRead_length() + 1024, _raAct::doNothing);
++      resizeArray(corBases, 0, corBasesMax, read.sqRead_length() + std::max(1024, int(0.05 * read.sqRead_length())), _raAct::doNothing);
+ 
+     correctRead(curID,
+                 corBases,
+diff --git a/src/pipelines/canu/Defaults.pm b/src/pipelines/canu/Defaults.pm
+index 4d2fe0564..e732fbac1 100644
+--- a/src/pipelines/canu/Defaults.pm
++++ b/src/pipelines/canu/Defaults.pm
+@@ -31,6 +31,7 @@ require Exporter;
+              printCitation
+              setParametersFromFile
+              setParametersFromCommandLine
++             findCommand
+              checkJava
+              checkMinimap
+              checkGnuplot
+@@ -797,7 +798,6 @@ sub setDefaults () {
+     $global{"availablehosts"}              = undef;   #  Internal list of cpus-memory-nodes describing the grid.
+ 
+     $global{"perl"}                        = $^X;     #  Use whatever perl interpreter is in use now for resubmission.
+-    $global{"perl"}                        = `command -v perl`   if (!defined($global{"perl"}));
+ 
+     $global{"localmemory"}                 = 0;       #  Amount of memory on the local host, set in Grid_Local.pm
+     $global{"localthreads"}                = 0;
+@@ -818,14 +818,12 @@ sub setDefaults () {
+ 
+     #####  General Configuration Options (aka miscellany)
+ 
+-    my $java = (exists $ENV{"JAVA_HOME"} && -e "$ENV{'JAVA_HOME'}/bin/java") ? "$ENV{'JAVA_HOME'}/bin/java" : "java";
+-
+     setDefault("showNext",            undef,      "Don't run any commands, just report what would run");
+     setDefault("shell",               "/bin/sh",  "Command interpreter to use; sh-compatible (e.g., bash), NOT C-shell (csh or tcsh); default '/bin/sh'");
+                
+     setDefault("minimap",             "minimap2", "Path to minimap2; default 'minimap2'");
+ 
+-    setDefault("java",                $java,      "Java interpreter to use; at least version 1.8; default 'java'");
++    setDefault("java",                undef,      "Java interpreter to use; at least version 1.8; default 'java'");   #  Set in checkJava().
+     setDefault("javaUse64Bit",        undef,      "Java interpreter supports the -d64 or -d32 flags; default auto");
+ 
+     setDefault("gnuplot",             "gnuplot",  "Path to the gnuplot executable");
+@@ -1067,20 +1065,44 @@ sub setVersion ($) {
+ }
+ 
+ 
+-sub checkJava () {
+-    my $java;
+ 
++#  Scan the PATH, return the first executable found.
++sub findCommand ($) {
++    my $cmd  = shift @_;
++    my @path = File::Spec->path;
++
++    foreach my $path (@path) {
++        return "$path/$cmd"   if (-x "$path/$cmd");
++    }
++    return undef;
++}
++
++
++
++sub checkJava () {
+     return  if ((getGlobal("corOverlapper") ne "mhap") &&
+                 (getGlobal("obtOverlapper") ne "mhap") &&
+                 (getGlobal("utgOverlapper") ne "mhap"));
+ 
+-    $java = getGlobal("java");
+-    $java = `command -v $java`;  #  See Execution.pm getBinDirectoryShellCode()
++    my $javag = getGlobal("java");
++    my $javah = "$ENV{'JAVA_HOME'}/bin/java"   if (exists $ENV{"JAVA_HOME"});
++    my $javap = findCommand("java");
++    my $java;
++
++    if    (defined($javag))   { $java = $javag; }
++    elsif (-e $javah)         { $java = $javah; }
++    else                      { $java = $javap; }
++
+     $java =~ s/^\s+//;
+     $java =~ s/\s+$//;
+ 
+-    if ($java =~ m/^\./) {
++    if ($java !~ m!^/!) {
+         addCommandLineError("ERROR:  path to java '$java' must not be a relative path.\n");
++        return;
++    }
++    if (! -x $java) {
++        addCommandLineError("ERROR:  java interpreter '$java' not found.\n");
++        return;
+     }
+ 
+     #  We've seen errors running just this tiny java if too many copies are
+@@ -1136,6 +1158,7 @@ sub checkJava () {
+         print STDERR "-- Detected Java(TM) Runtime Environment '$versionStr' (from '$java')";
+         print STDERR (defined(getGlobal("javaUse64Bit")) && getGlobal("javaUse64Bit") == 1) ? " with " : " without ";
+         print STDERR "-d64 support.\n";
++        setGlobal("java", $java);
+     }
+ }
+ 
+@@ -1460,10 +1483,10 @@ sub checkParameters () {
+     #  Check for inconsistent parameters
+     #
+ 
+-    my $gs = getGlobal("genomeSize");
++    my $gs  = getGlobal("genomeSize");
+ 
+     addCommandLineError("ERROR:  Required parameter 'genomeSize' not set.\n")           if (!defined($gs));
+-    addCommandLineError("ERROR:  Implausibly small genome size $gs.  Check units!\n")   if ($gs < 1000);
++    addCommandLineError("ERROR:  Implausibly small genome size $gs.  Check units!\n")   if ($gs < 1000) && (defined($gs));
+ 
+     #
+     #  If we're running as a job array, unset the ID of the job array.  This screws
+diff --git a/src/pipelines/canu/Execution.pm b/src/pipelines/canu/Execution.pm
+index 407966bb4..77134d898 100644
+--- a/src/pipelines/canu/Execution.pm
++++ b/src/pipelines/canu/Execution.pm
+@@ -34,8 +34,6 @@ require Exporter;
+              submitOrRunParallelJob
+              runCommand
+              runCommandSilently
+-             findCommand
+-             findExecutable
+              caExit
+              caFailure);
+ 
+@@ -404,6 +402,9 @@ sub getBinDirectoryShellCode () {
+     $string .= "\n";
+     $string .= "jn=" . getGlobal("java") . "\n";
+     $string .= "je=" . "`command -v \$jn`" . "\n";
++    $string .= "if [ \"x\$je\" = \"x\" ]; then" . "\n";
++    $string .= "   je=\$jn\n";
++    $string .= "fi\n";
+     $string .= "jv=" . "`command    \$jn -showversion 2>&1 | head -n 1`" . "\n";
+     $string .= "\n";
+     $string .= "cn=" . "$FindBin::RealBin/" . basename($0) . "\n";
+@@ -1563,34 +1564,6 @@ sub runCommandSilently ($$$) {
+ 
+ 
+ 
+-sub findCommand ($) {
+-    my $cmd  = shift @_;
+-    my @path = File::Spec->path;
+-
+-    for my $path (@path) {
+-        if (-x "$path/$cmd") {
+-            return("$path/$cmd");
+-        }
+-    }
+-
+-    return(undef);
+-}
+-
+-
+-
+-sub findExecutable ($) {
+-    my $exec = shift @_;
+-
+-    my $path = `which \"$exec\" 2> /dev/null`;
+-
+-    $path =~ s/^\s+//;
+-    $path =~ s/\s+$//;
+-
+-    return(undef)  if ($path eq "");
+-    return($path);
+-}
+-
+-
+ #  Use caExit() for transient errors, like not opening files, processes that die, etc.
+ sub caExit ($$) {
+     my  $asm     = getGlobal("onExitNam");
+diff --git a/src/pipelines/canu/Grid_DNANexus.pm b/src/pipelines/canu/Grid_DNANexus.pm
+index 2315bacf5..5b5ea19e1 100644
+--- a/src/pipelines/canu/Grid_DNANexus.pm
++++ b/src/pipelines/canu/Grid_DNANexus.pm
+@@ -148,7 +148,7 @@ sub detectDNANexus () {
+     return   if ( defined(getGlobal("gridEngine")));   #  Grid not requested.
+     return   if (!defined($ENV{'DNANEXUS_HOME'}));     #  Not a DNA Nexus grid
+ 
+-    my $dnanodes = findExecutable("dx-jobutil-new-job");
++    my $dnanodes = findCommand("dx-jobutil-new-job");
+ 
+     return   if (!defined($dnanodes));
+ 
+diff --git a/src/pipelines/canu/Grid_LSF.pm b/src/pipelines/canu/Grid_LSF.pm
+index e0705ccd0..3b8fbb578 100644
+--- a/src/pipelines/canu/Grid_LSF.pm
++++ b/src/pipelines/canu/Grid_LSF.pm
+@@ -37,7 +37,7 @@ sub detectLSF () {
+ 
+     return   if ( defined(getGlobal("gridEngine")));
+ 
+-    my $bsub = findExecutable("bsub");
++    my $bsub = findCommand("bsub");
+ 
+     return   if (!defined($bsub));
+ 
+diff --git a/src/pipelines/canu/Grid_PBSTorque.pm b/src/pipelines/canu/Grid_PBSTorque.pm
+index 8ca7eae8d..9448a45fd 100644
+--- a/src/pipelines/canu/Grid_PBSTorque.pm
++++ b/src/pipelines/canu/Grid_PBSTorque.pm
+@@ -58,7 +58,7 @@ sub detectPBSTorque () {
+ 
+     return   if ( defined(getGlobal("gridEngine")));
+ 
+-    my $pbsnodes = findExecutable("pbsnodes");
++    my $pbsnodes = findCommand("pbsnodes");
+ 
+     return   if (!defined($pbsnodes));
+ 
+diff --git a/src/pipelines/canu/Grid_Slurm.pm b/src/pipelines/canu/Grid_Slurm.pm
+index 75aac71ea..773619c87 100644
+--- a/src/pipelines/canu/Grid_Slurm.pm
++++ b/src/pipelines/canu/Grid_Slurm.pm
+@@ -37,7 +37,7 @@ sub detectSlurm () {
+ 
+     return   if ( defined(getGlobal("gridEngine")));
+ 
+-    my $sinfo = findExecutable("sinfo");
++    my $sinfo = findCommand("sinfo");
+ 
+     return   if (!defined($sinfo));
+ 
+diff --git a/src/pipelines/canu/OverlapMhap.pm b/src/pipelines/canu/OverlapMhap.pm
+index eea2e7191..93368cb74 100644
+--- a/src/pipelines/canu/OverlapMhap.pm
++++ b/src/pipelines/canu/OverlapMhap.pm
+@@ -242,8 +242,11 @@ sub mhapConfigure ($$$) {
+             #  Make a place to save queries.  If this is the last-block-special-case, make a directory,
+             #  but don't link in any files.  Without the directory, we'd need even more special case
+             #  code down in mhap.sh to exclude the -q option for this last block.
++            #  always create an empty file to esnure empty directory is not removed for last block
+ 
+             make_path("$path/queries/$job");
++            open my $fh, '>', "$path/queries/$job/.emptyfile.txt";
++            close $fh;
+ 
+             if ($qbgn < $numBlocks) {
+                 print L "Job ", scalar(@hashes), " computes block $bid vs blocks $qbgn-$qend$andSelf,\n";
+diff --git a/src/utility b/src/utility
+index 31385050d..a96ff941a 160000
+--- a/src/utility
++++ b/src/utility
+@@ -1 +1 @@
+-Subproject commit 31385050df4cd791e5548bed41176b1b5df743b3
++Subproject commit a96ff941a9882f68639bb88d94f7272c653c4ec9

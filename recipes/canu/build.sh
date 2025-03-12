@@ -6,6 +6,7 @@ set -e
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 mkdir -p "${PREFIX}/bin"
 mkdir -p "${PREFIX}/lib"
@@ -16,14 +17,13 @@ cp -rfv src/pipelines/canu/*.pm "${PREFIX}/lib/perl5/site_perl/canu"
 cp -rfv src/mhap/mhap-2.1.3.jar "${PREFIX}/share/java/classes"
 
 cd src
+rm -rf utility
+git clone https://github.com/marbl/meryl-utility.git utility
+cd utility
+git checkout a96ff941a9882f68639bb88d94f7272c653c4ec9
+cd ../
 make CC="${CC} -O3" CXX="${CXX} -O3 -I${PREFIX}/include" -j"${CPU_COUNT}"
 
 cp -rfv ${SRC_DIR}/build/lib/libcanu.a "${PREFIX}/lib"
 cd ../build/bin
-install -v -m 0755 canu canu-time draw-tig canu.defaults dumpBlob ovStoreBuild ovStoreConfig ovStoreBucketizer \
-	ovStoreSorter ovStoreIndexer ovStoreDump ovStoreStats sqStoreCreate sqStoreDumpFASTQ sqStoreDumpMetaData \
-	tgStoreCompress tgStoreDump tgStoreLoad tgTigDisplay loadCorrectedReads loadTrimmedReads loadErates \
-	seqrequester meryl overlapInCore overlapInCorePartition overlapConvert overlapImport overlapPair \
-	edalign mhapConvert mmapConvert filterCorrectionOverlaps generateCorrectionLayouts filterCorrectionLayouts \
-	falconsense errorEstimate splitHaplotype trimReads splitReads mergeRanges overlapAlign findErrors \
-	fixErrors correctOverlaps bogart layoutReads utgcns layoutToPackage alignGFA "${PREFIX}/bin"
+install -v -m 0755 * "${PREFIX}/bin"
