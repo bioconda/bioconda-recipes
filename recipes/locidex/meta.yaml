@@ -10,13 +10,12 @@ source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/locidex-{{ version }}.tar.gz
   sha256: {{ sha256 }}
   
-
 build:
   number: 0
   noarch: python
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
-  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps -vvv
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
   entry_points:
     - locidex=locidex.main:main
 
@@ -24,9 +23,11 @@ requirements:
   host:
     - python >=3.8,<4
     - pip
+    - pytest-runner
+    - setuptools
   run:
     - python >=3.8,<4
-    - {{ pin_compatible('numpy', max_pin="x") }}
+    - numpy >=1.24.4
     - pandas >=2.0.2
     - numba >=0.57.1
     - pytables >=3.8
@@ -47,8 +48,8 @@ test:
     - locidex build  -h
 
 about:
-  home: 'https://pypi.org/project/locidex/'
-  summary: 'Locidex: Common search engine for similarity based typing applications'
+  home: 'https://pypi.org/project/locidex'
+  summary: 'Locidex: Common search engine for similarity based typing applications.'
   license: Apache-2.0
+  license_family: APACHE
   dev_url: 'https://github.com/phac-nml/locidex'
-
