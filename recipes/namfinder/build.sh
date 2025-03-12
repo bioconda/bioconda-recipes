@@ -16,12 +16,7 @@ export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 cd $SRC_DIR/
 
-if [ "$(uname -m)" = "x86_64" ]; then
-    export CFLAGS="${CFLAGS} -msse4.2"
-    export CXXFLAGS="${CXXFLAGS} -msse4.2"
-fi
-
-cmake -B build
+cmake -B build -DCMAKE_C_FLAGS="-msse4.2" -DCMAKE_CXX_FLAGS="-msse4.2"
 make -j -C build
 
 cp build/namfinder $PREFIX/bin/
