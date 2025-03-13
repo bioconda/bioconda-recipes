@@ -3,7 +3,7 @@
 mkdir -p "${PREFIX}/bin"
 OS=$(uname)
 
-if [[ "${OS}" == "Darwin" ]]; then
+if [[ false ]]; then # [[ "${OS}" == "Darwin" ]]; then
   sed -i.bak -e 's|!atomic_compare_exchange_strong|!atomic_compare_exchange_strong_int|' src/hashcounter.c
   sed -i.bak -e 's|(atomic_compare_exchange_strong|(atomic_compare_exchange_strong_int|' src/hashcounter.c
   rm -rf src/*.bak
