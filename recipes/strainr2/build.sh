@@ -1,18 +1,10 @@
-#!/bin/bash -euo
+!/bin/bash -euo
 
 mkdir -p "${PREFIX}/bin"
 
-${CC} ${SRC_DIR}/src/subcontig.c -O3 -o subcontig
-${CC} ${SRC_DIR}/src/hashcounter.c -I$PREFIX/include -L$PREFIX/lib -O3 -o hashcounter -lz
+make -C src release -j"${CPU_COUNT}"
 
-chmod +x $SRC_DIR/src/PreProcessR
-chmod +x $SRC_DIR/subcontig
-chmod +x $SRC_DIR/hashcounter
 chmod +x $SRC_DIR/src/Plot.R
-chmod +x $SRC_DIR/src/StrainR
+cp -f $SRC_DIR/src/Plot.R ${PREFIX}/bin/
 
-cp $SRC_DIR/src/PreProcessR ${PREFIX}/bin/
-cp $SRC_DIR/subcontig ${PREFIX}/bin/
-cp $SRC_DIR/hashcounter ${PREFIX}/bin/
-cp $SRC_DIR/src/Plot.R ${PREFIX}/bin/
-cp $SRC_DIR/src/StrainR ${PREFIX}/bin/
+install -v -m 0755 src/PreProcessR src/subcontig src/hashcounter src/StrainR ${PREFIX}
