@@ -1,4 +1,4 @@
-!/bin/bash -euo
+#!/bin/bash -euo
 
 mkdir -p "${PREFIX}/bin"
 
