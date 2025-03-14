@@ -137,7 +137,7 @@ chmod +x $PREFIX/bin/polap.sh
 
 #zlib headers for minimap
 
-for i in libs/cflye libs/dflye; do
+for i in libs/cflye; do
 	cd ${i}
 
 	#zlib headers for minimap
