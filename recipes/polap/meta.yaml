@@ -1,25 +1,36 @@
 {% set name = "polap" %}
-{% set version = "0.3.7.3" %}
-{% set sha256 = "755ff93913c687c01a32bdd434bd5fcfeb73ce94c7ddf19bf2304184f294d8bf" %}
+{% set version = "0.4.3.7" %}
+{% set sha256 = "cec0439a4b4bb79dfed5d0bb5d6c9904921812448a202eed4c317ab2518f0f2a" %}
 
 package:
   name: "{{ name }}"
   version: "{{ version }}"
 
 source:
-  url: https://github.com/goshng/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  url: https://github.com/goshng/{{ name }}/releases/download/{{ version }}/{{ name }}.tar.gz
   sha256: "{{ sha256 }}"
 
 build:
-  noarch: generic
   number: 1
+  entry_points:
+    - cflye = cflye.main:main
+    - dflye = dflye.main:main
   run_exports:
     - {{ pin_subpackage('polap', max_pin="x.x") }}
 
 requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - python >=3.11,<3.12
+  host:
+    - python >=3.11,<3.12
+    - pip
+    - zlib
   run:
-    - python
-    - flye >=2.9.2
+    - python >=3.11,<3.12
+    - setuptools  # [osx and arm64]
+    - flye >=2.9.5
     - minimap2 >=2.24
     - seqkit
     - bedtools
@@ -35,6 +46,7 @@ requirements:
     - networkx
     - pandas
     - gfatools
+    - mafft
     - r-optparse
     - r-dplyr
     - r-readr
@@ -54,9 +66,14 @@ requirements:
     - icu
     - libxml2
     - perl
+    - pandoc
 
 test:
   commands:
+    - python -V
+    - python -c "import sys; print(sys.path)"
+    - cflye -h | grep "Assembly"
+    - dflye -h | grep "Assembly"
     - polap
 
 about:
