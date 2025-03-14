@@ -8,7 +8,11 @@ build:
   number: 0
   run_exports:
     - {{ pin_subpackage('fqgrep', max_pin="x") }}
-
+  script:
+    - export CFLAGS="${CFLAGS} -Wno-implicit-function-declaration"
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path .
+    
 source:
   url: https://github.com/fulcrumgenomics/fqgrep/archive/v{{ version }}.tar.gz
   sha256: 7be606f25f2241fc6d071276888cf7c82a8f8b4073dd5488e08a663e94715f48
@@ -21,6 +25,7 @@ requirements:
     - pkg-config
     - make
     - cmake
+    - cargo-bundle-licenses
   host:
   run:
 
@@ -35,7 +40,12 @@ about:
   summary: Search a pair of fastq files for reads that match a given ref or alt sequence
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - nh13
   skip-lints:
     - should_use_compilers
+  identifiers:
+    - DOI:10.5281/zenodo.14985002
