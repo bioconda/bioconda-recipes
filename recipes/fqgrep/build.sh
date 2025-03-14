@@ -8,9 +8,7 @@ export \
 
 export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
-if [[ "${OS}" == "Darwin" ]]; then
-    export CFLAGS="${CFLAGS} -Wno-implicit-function-declaration"
-fi
+export CFLAGS="${CFLAGS} -Wno-implicit-function-declaration"
 
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
