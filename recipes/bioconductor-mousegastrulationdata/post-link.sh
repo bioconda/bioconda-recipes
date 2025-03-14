@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "mousegastrulationdata-1.16.0"
+installBiocDataPackage.sh "mousegastrulationdata-1.19.0"

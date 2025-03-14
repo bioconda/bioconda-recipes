@@ -1,18 +1,16 @@
 {% set name = "strangepg" %}
-{% set version = "0.8.14" %}
-{% set ref = "1e666b80f464f9e898e8fce1e42f96eaf10953be" %}
+{% set version = "0.8.18.1" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/qwx9/{{ name }}/archive/{{ ref }}.tar.gz
-  sha256: 23b154d12ea00326e57083c4a4907f80132fdbc0c7310bfc6b5bad5b53d26a63
+  url: https://github.com/qwx9/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: b39049a09d6a21319ebb2b32550071715a70f30c718eab2086e862d77ac4c2c2
 
 build:
   number: 0
-  skip: True  # [not linux]
   run_exports:
     - {{ pin_subpackage('strangepg', max_pin='x.x') }}
 
@@ -20,29 +18,34 @@ requirements:
   build:
     - {{ compiler('c') }}
     - make
-    - {{ cdt('mesa-libgl-devel') }}
-    - {{ cdt('mesa-libegl-devel') }}
-    - {{ cdt('mesa-dri-drivers') }}
-    - {{ cdt('libdrm-devel') }}
-    - {{ cdt('libglvnd-glx') }}      # [cdt_name != 'cos6']
+    - {{ cdt('mesa-libegl-devel') }}  # [linux and aarch64]
+    - {{ cdt('mesa-libgl-devel') }}   # [linux]
+    - {{ cdt('mesa-dri-drivers') }}   # [linux]
+    - {{ cdt('libdrm-devel') }}       # [linux]
+    - {{ cdt('libglvnd-glx') }}       # [linux and cdt_name != 'cos6']
+    - {{ cdt('libglvnd-egl') }}       # [linux and aarch64 and cdt_name != 'cos6']
+    - {{ cdt('libglvnd-gles') }}      # [linux and aarch64 and cdt_name != 'cos6']
   host:
-    - xorg-libx11
-    - xorg-libxcursor
-    - xorg-libxi
+    - libegl-devel    # [linux and aarch64]
+    - libgles-devel   # [linux and aarch64]
+    - xorg-libx11     # [linux]
+    - xorg-libxcursor # [linux]
+    - xorg-libxi      # [linux]
+    - xorg-xorgproto  # [linux]
   run:
-    - libxcb
-    - xorg-libx11
-    - xorg-libxau
-    - xorg-libxcursor
-    - xorg-libxdmcp
-    - xorg-libxext
-    - xorg-libxfixes
-    - xorg-libxi
-    - xorg-libxrandr
+    - libxcb          # [linux]
+    - xorg-libx11     # [linux]
+    - xorg-libxau     # [linux]
+    - xorg-libxcursor # [linux]
+    - xorg-libxdmcp   # [linux]
+    - xorg-libxext    # [linux]
+    - xorg-libxfixes  # [linux]
+    - xorg-libxi      # [linux]
+    - xorg-libxrandr  # [linux]
 
 test:
   source_files:
-    - cmd/main.awk
+    - test/frag10.gfa
 
 about:
   home: https://github.com/qwx9/{{ name }}
@@ -53,6 +56,9 @@ about:
   dev-url: https://github.com/qwx9/{{ name }}
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - qwx9
   container:
