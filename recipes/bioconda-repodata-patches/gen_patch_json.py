@@ -175,7 +175,7 @@ def _gen_new_index(repodata, subdir):
         if record_name in ['htslib', 'staden_io_lib', 'fastp', 'pysam'] and has_dep(record, 'libdeflate'):
             # skip deps that allow anything <1.3, which contained an incompatible library filename
             # TODO adjust the replacement (exclusive) upper bound each time a compatible new libdeflate is released
-            _pin_looser(fn, record, 'libdeflate', min_lower_bound='1.3', upper_bound='1.22')
+            _pin_looser(fn, record, 'libdeflate', min_lower_bound='1.3', upper_bound='1.24')
 
         # nanosim <=3.1.0 requires scikit-learn<=0.22.1
         if record_name.startswith('nanosim') and has_dep(record, "scikit-learn") and version <= "3.1.0":

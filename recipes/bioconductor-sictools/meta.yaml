@@ -1,57 +1,63 @@
-{% set version = "1.32.0" %}
+{% set version = "1.36.0" %}
 {% set name = "SICtools" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 1df54634cb8bc00e60963b0ca10886d2
+about:
+  description: This package is to find SNV/Indel differences between two bam files with near relationship in a way of pairwise comparison thourgh each base position across the genome region of interest. The difference is inferred by fisher test and euclidean distance, the input of which is the base count (A,T,G,C) in a given position and read counts for indels that span no less than 2bp on both sides of indel region.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Find SNV/Indel differences between two bam files with near relationship
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-sictools", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, RUnit, BiocGenerics
 requirements:
-  host:
-    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
-    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
-    - 'bioconductor-iranges >=2.36.0,<2.37.0'
-    - 'bioconductor-rsamtools >=2.18.0,<2.19.0'
-    - r-base
-    - 'r-doparallel >=1.0.8'
-    - 'r-matrixstats >=0.10.0'
-    - 'r-plyr >=1.8.3'
-    - 'r-stringr >=0.6.2'
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
-    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
-    - 'bioconductor-iranges >=2.36.0,<2.37.0'
-    - 'bioconductor-rsamtools >=2.18.0,<2.19.0'
-    - r-base
-    - 'r-doparallel >=1.0.8'
-    - 'r-matrixstats >=0.10.0'
-    - 'r-plyr >=1.8.3'
-    - 'r-stringr >=0.6.2'
   build:
     - {{ compiler('c') }}
     - make
+  host:
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - r-base
+    - r-doparallel >=1.0.8
+    - r-matrixstats >=0.10.0
+    - r-plyr >=1.8.3
+    - r-stringr >=0.6.2
+    - libblas
+    - liblapack
+    - zlib
+  run:
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - r-base
+    - r-doparallel >=1.0.8
+    - r-matrixstats >=0.10.0
+    - r-plyr >=1.8.3
+    - r-stringr >=0.6.2
+
+source:
+  md5: 211832c3db57789ff2e090a1c344926c
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>=2)'
-  summary: 'Find SNV/Indel differences between two bam files with near relationship'
-  description: 'This package is to find SNV/Indel differences between two bam files with near relationship in a way of pairwise comparison thourgh each base position across the genome region of interest. The difference is inferred by fisher test and euclidean distance, the input of which is the base count (A,T,G,C) in a given position and read counts for indels that span no less than 2bp on both sides of indel region.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 
