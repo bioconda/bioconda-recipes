@@ -3,37 +3,39 @@ package:
   version: 3.101
 
 source:
-  - url: ftp://ftp.ncbi.nlm.nih.gov/pub/agarwala/bmtagger/bmtools.tar.gz  # [linux]
+  - url: https://ftp.ncbi.nlm.nih.gov/pub/agarwala/bmtagger/bmtools.tar.gz  # [linux]
     md5: 719474a0e3b54449cbe06f6e442994dd  # [linux]
-  - url: ftp://ftp.ncbi.nlm.nih.gov/pub/agarwala/bmtagger/mac-os/bmtagger.sh  # [osx]
+  - url: https://ftp.ncbi.nlm.nih.gov/pub/agarwala/bmtagger/mac-os/bmtagger.sh  # [osx]
     md5: d861f6fe5ed658f274d0b37872ca65f5  # [osx]
     patches:
       - bmtagger.sh.osxpatch  # [osx]
 
 build:
-  number: 6
+  number: 7
+  run_exports:
+    - {{ pin_subpackage('bmtagger', max_pin="x.x") }}
 
 requirements:
   build:
-    - make
+    - make 4.3.*
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+ 
   host:
-    - blast
+    - blast 2.16.0.*
     - srprism
-    - bmfilter
-    - bmtool
-    - extract_fullseq
+  
   run:
     - gnu-getopt  # [osx]
-    - blast
+    - blast 2.16.0.*
     - srprism
-    - bmfilter
-    - bmtool
-    - extract_fullseq
+
 test:
   commands:
-    - "bmtagger.sh -V &> /dev/null"
+    - bmfilter -hV &> /dev/null
+    - bmtool -hV &> /dev/null
+    - bmdiff -hV &> /dev/null
+    - bmdump -hV &> /dev/null
 
 about:
   home: ftp://ftp.ncbi.nlm.nih.gov/pub/agarwala/bmtagger/
@@ -44,3 +46,5 @@ extra:
   skip-lints:
     - should_not_be_noarch_source
   notes: "You may find it necessary to create a bmtagger.conf file to specify paired or single-end searching. The file should contain the line 'srprismopts=\"-b 100000000 -n 5 -R 0 -r 1 -M 7168\"' along with '-p true' or '-p false' for paired, and single, respectively. This config file can be passed to bmtagger.sh via the '-C' option."
+  additional-platforms:
+    - linux-aarch64
