@@ -137,33 +137,41 @@ chmod +x $PREFIX/bin/polap.sh
 
 #zlib headers for minimap
 
-for i in libs/cflye libs/dflye; do
-	cd ${i}
+set -euxo pipefail # Exit on errors
 
-	#zlib headers for minimap
-	sed -i.bak 's/CFLAGS=/CFLAGS+=/' lib/minimap2/Makefile
-	sed -i.bak 's/INCLUDES=/INCLUDES+=/' lib/minimap2/Makefile
-	export CFLAGS="${CFLAGS} -O3 -L$PREFIX/lib"
-	export INCLUDES="-I$PREFIX/include"
+files=(
+	cflye
+	dflye
+)
 
-	rm -rf lib/minimap2/*.bak
-
-	#zlib headers for flye binaries
-	export CXXFLAGS="$CXXFLAGS -O3 -I$PREFIX/include"
-	export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-
-	#install_name_tool error fix
-	if [[ "$(uname)" == Darwin ]]; then
-		export LDFLAGS="$LDFLAGS -headerpad_max_install_names"
-	fi
-
-	#dynamic flag is needed for backtrace printing,
-	#but it seems it fails OSX build
-	sed -i.bak 's/-rdynamic//' src/Makefile
-
-	rm -rf src/*.bak
-
-	${PYTHON} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
-	cd -
-
+for i in "${files[@]}"; do
+	cp bin/${i} ${PREFIX}/bin/
+	chmod +x ${PREFIX}/bin/${i}
 done
+
+files=(
+	cflye-minimap2
+	cflye-modules
+	cflye-samtools
+	dflye-minimap2
+	dflye-modules
+	dflye-samtools
+)
+
+# Install Executable
+for i in "${files[@]}"; do
+	cp bin/${i} ${PREFIX}/bin/
+	chmod +x ${PREFIX}/bin/${i}
+	bash src/polap-install-fix-missing-libs.sh ${PREFIX}/bin/${i}
+done
+
+# Install Python Code
+PYTHON_SITE_PACKAGES=$(python -c "import site; print(site.getsitepackages()[0])")
+
+for i in cflye dflye; do
+	mkdir -p ${PYTHON_SITE_PACKAGES}/${i}
+	cp -pr py/${i}/* ${PYTHON_SITE_PACKAGES}/${i}/
+done
+
+# Alternatively, use pip
+# python -m pip install . --no-deps --prefix=${PREFIX}
