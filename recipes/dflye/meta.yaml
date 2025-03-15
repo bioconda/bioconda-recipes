@@ -1,0 +1,44 @@
+{% set name = "dflye" %}
+{% set version = "2.9.5.0" %}
+{% set sha256 = "b789d9083d3388c186c4fbc8de50df0b9791bb439d9083ca482ec0a334737e0a" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/goshng/Flye/archive/refs/tags/{{ version }}-d.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Makefile-aarch64.patch
+
+build:
+  number: 0
+  entry_points:
+    - dflye = dflye.main:main
+  run_exports:
+    - {{ pin_subpackage("dflye", max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - python
+    - pip
+    - zlib
+  run:
+    - python
+    - setuptools  # [osx]
+
+test:
+  commands:
+    - dflye -h | grep "Assembly"
+
+about:
+  home: "https://github.com/goshng/Flye"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: LICENSE
+  summary: "dflye: Directional reads in the Flye."
+
