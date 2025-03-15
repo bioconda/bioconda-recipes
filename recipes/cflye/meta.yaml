@@ -1,0 +1,44 @@
+{% set name = "cflye" %}
+{% set version = "2.9.5.0" %}
+{% set sha256 = "19a57626cebd0bd6fb3544b83ef6b5e8aa2180abc5f8431498e799df6e6c697c" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/goshng/Flye/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Makefile-aarch64.patch
+
+build:
+  number: 0
+  entry_points:
+    - cflye = cflye.main:main
+  run_exports:
+    - {{ pin_subpackage("cflye", max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - python
+    - pip
+    - zlib
+  run:
+    - python
+    - setuptools  # [osx]
+
+test:
+  commands:
+    - cflye -h | grep "Assembly"
+
+about:
+  home: "https://github.com/goshng/Flye/tree/coverage"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: LICENSE
+  summary: "cflye: Filtering disjointigs via read-coverage in the Flye."
+
