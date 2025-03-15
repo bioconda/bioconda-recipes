@@ -168,9 +168,14 @@ done
 # Install Python Code
 PYTHON_SITE_PACKAGES=$(python -c "import site; print(site.getsitepackages()[0])")
 
+echo "Python version at build time:"
+python --version
+echo "Python site-packages at build time:"
+python -c "import site; print(site.getsitepackages())"
+
 for i in cflye dflye; do
-	mkdir -p ${PYTHON_SITE_PACKAGES}/${i}
-	cp -pr py/${i}/* ${PYTHON_SITE_PACKAGES}/${i}/
+	mkdir -p ${SP_DIR}/${i}
+	cp -pr py/${i}/* ${SP_DIR}/${i}/
 done
 
 # Alternatively, use pip
