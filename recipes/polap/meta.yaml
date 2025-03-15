@@ -1,26 +1,33 @@
 {% set name = "polap" %}
 {% set version = "0.4.3.7" %}
-{% set sha256 = "9e225905991025d58ea905fea7ef4645236de3e290225f6db665d5774ebec516" %}
+{% set sha256 = "2707a944a26ed56fb6824aa4c5e42e30ded7cc23510785519d8a145b7a920e77" %}
 
 package:
   name: "{{ name }}"
   version: "{{ version }}"
 
 source:
-  url: https://github.com/goshng/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  url: https://github.com/goshng/{{ name }}/releases/download/{{ version }}/{{ name }}.tar.gz
   sha256: "{{ sha256 }}"
 
 build:
   noarch: generic
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('polap', max_pin="x.x") }}
 
 requirements:
+  build:
+    - patchelf
+  host:
+    - python
+    - pip
+    - zlib
   run:
     - python
-    - flye >=2.9.2
-    - minimap2 >=2.24
+    - setuptools  # [osx and arm64]
+    - flye >=2.9.5
+    - minimap2
     - seqkit
     - bedtools
     - seqtk
@@ -35,6 +42,7 @@ requirements:
     - networkx
     - pandas
     - gfatools
+    - mafft
     - r-optparse
     - r-dplyr
     - r-readr
@@ -54,9 +62,13 @@ requirements:
     - icu
     - libxml2
     - perl
+    - pandoc
 
 test:
   commands:
+    - python --version  # Debug: Check Python version at test time
+    - python -c "import site; print(site.getsitepackages())"  # Verify correct path
+    - python -c "import sys; print(sys.path)"
     - polap
 
 about:
