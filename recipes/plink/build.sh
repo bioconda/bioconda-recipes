@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
 
+
 set -xe
 
 wget https://github.com/simd-everywhere/simde/archive/refs/tags/v0.8.2.tar.gz
 tar zxvf v0.8.2.tar.gz
 
-export CFLAGS="${CFLAGS} -I simd-0.8.2/simde -Wall -O2"
+export CFLAGS="${CFLAGS} -I ${SRC_DIR}/simde-0.8.2/simde -Wall -O2 -DDYNAMIC_ZLIB"
+export CXXFLAGS="${CXXFLAGS} -I ${SRC_DIR}/simde-0.8.2/simde -Wall -O2"
 
-make CFLAGS=${CFLAGS} PREFIX=${PREFIX} CC=${CC}
+echo $PWD
+
+echo Building ... 
+make CFLAGS="${CFLAGS}" PREFIX="${PREFIX}" CC="${CC}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS}"
+
+echo Installing
 make install 
-# Install as plink
