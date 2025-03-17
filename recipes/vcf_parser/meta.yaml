@@ -1,0 +1,44 @@
+{% set name = "vcf_parser" %}
+{% set version = "1.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: d3200aee08ef3407abd9af4cc5e977c9086cec21582d9f66f26a12da3e806ddd
+
+build:
+  entry_points: 
+    - wakhan = src.main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+    - setuptools
+  run:
+    - python >=3.7
+    
+test:
+  imports:
+    - vcf_parser
+  requires:
+    - pip
+    
+about:
+  home: "https://github.com/moonso/vcf_parser"
+  summary: Small library for parsing vcf files
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - ljwharbers
