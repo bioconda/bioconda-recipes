@@ -30,9 +30,23 @@ jobs:
         run: |
           wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
 
+      - name: Restore cache
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: /opt/mambaforge
+          key: ${{ runner.os }}--master--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
+
       - name: Set up bioconda-utils
+        if: steps.cache.outputs.cache-hit != 'true'
         run: bash install-and-set-up-conda.sh
 
+      # This script can be used to reconfigure conda to use the right channel setup.
+      # This has to be done after the cache is restored, because
+      # the channel setup is not cached as it resides in the home directory.
+      # We could use a system-wide (and therefore cached) channel setup,
+      # but mamba does not support that at the time of implementation
+      # (it ignores settings made with --system).
       - name: Configure conda
         run: bash configure-conda.sh
 
@@ -79,10 +93,23 @@ jobs:
         run: |
           wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
 
+      - name: Restore cache
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: /opt/mambaforge
+          key: ${{ runner.os }}--master--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
+
       - name: Set up bioconda-utils
+        if: steps.cache.outputs.cache-hit != 'true'
         run: bash install-and-set-up-conda.sh
 
       # This script can be used to reconfigure conda to use the right channel setup.
+      # This has to be done after the cache is restored, because
+      # the channel setup is not cached as it resides in the home directory.
+      # We could use a system-wide (and therefore cached) channel setup,
+      # but mamba does not support that at the time of implementation
+      # (it ignores settings made with --system).
       - name: Configure conda
         run: bash configure-conda.sh
 
@@ -169,10 +196,33 @@ jobs:
         run: |
           wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
 
+      # This is required so actions/cache below will restore properly
+      # See: https://github.com/actions/cache/issues/629#issuecomment-1189184648
+      - name: Make gtar SUDO
+        run: |
+          echo -e '#!/bin/sh\nexec sudo /usr/local/bin/gtar.orig "$@"\n' > gtar;
+          cat gtar;
+          sudo mv -v /usr/local/bin/gtar /usr/local/bin/gtar.orig;
+          sudo cp -v gtar /usr/local/bin/gtar;
+          sudo chmod +x /usr/local/bin/gtar;
+
+      - name: Restore cache
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: /opt/mambaforge
+          key: ${{ runner.os }}--master--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
+
       - name: Set up bioconda-utils
+        if: steps.cache.outputs.cache-hit != 'true'
         run: bash install-and-set-up-conda.sh
 
       # This script can be used to reconfigure conda to use the right channel setup.
+      # This has to be done after the cache is restored, because
+      # the channel setup is not cached as it resides in the home directory.
+      # We could use a system-wide (and therefore cached) channel setup,
+      # but mamba does not support that at the time of implementation
+      # (it ignores settings made with --system).
       - name: Configure conda
         run: bash configure-conda.sh
 
