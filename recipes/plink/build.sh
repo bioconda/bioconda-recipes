@@ -14,4 +14,4 @@ make -j CFLAGS="${CFLAGS}" DESTDIR="${PREFIX}" PREFIX="" CC="${CC}" CXX="${CXX}"
 
 echo Installing
 make install DESTDIR="${PREFIX}" PREFIX="" 
-
+${PREFIX}/bin/plink -v
