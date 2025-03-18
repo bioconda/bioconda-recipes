@@ -7,7 +7,7 @@ tar zxvf v0.8.2.tar.gz
 
 export CFLAGS="${CFLAGS} -I ${SRC_DIR}/simde-0.8.2/simde -Wall -O2 -DDYNAMIC_ZLIB"
 export CXXFLAGS="${CXXFLAGS} -I ${SRC_DIR}/simde-0.8.2/simde -Wall -O2"
-export LDFLAGS="${LDFLAGS} -llapack -lblas -lcblas -lpthread"
+export LDFLAGS="${LDFLAGS} -lopenblas -lpthread"
 
 echo Building ... 
 make -j CFLAGS="${CFLAGS}" DESTDIR="${PREFIX}" PREFIX="" CC="${CC}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" ZLIB="-lz" LDFLAGS="${LDFLAGS}" BLASFLAGS=""
