@@ -21,9 +21,9 @@ fi
 
 #dynamic flag is needed for backtrace printing,
 #but it seems it fails OSX build
-if [[ "$(uname)" == Darwin ]]; then
-	sed -i.bak 's/-rdynamic//' src/Makefile
-fi
+# if [[ "$(uname)" == Darwin ]]; then
+sed -i.bak 's/-rdynamic//' src/Makefile
+# fi
 
 rm -rf src/*.bak
 
