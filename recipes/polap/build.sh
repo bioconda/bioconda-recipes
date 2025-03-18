@@ -22,6 +22,7 @@ files=(polap
 	polap-function-steps.sh
 	polap-git-hash-version.sh
 	polap-github-generate_toc.sh
+	polap-install-fix-missing-libs.sh
 	polap-package-common.sh
 	polap-package-mtcontigs.sh
 	polap-parsing.sh
@@ -78,6 +79,7 @@ files=(polap
 	run-polap-py-select-mtdna-2-nx-find-circular-path.py
 	run-polap-py-select-mtdna-2-nx-simple-cycles.py
 	run-polap-py-unique-mtcontigs.py
+	polap-data-v2.R
 	run-polap-pairs.R
 	run-polap-r-assemble-bioproject-3-length-match.R
 	run-polap-r-blast-mtdna-1-determine-gene.R
@@ -132,51 +134,3 @@ cp -pr src/lib $PREFIX/bin
 
 chmod +x $PREFIX/bin/polap
 chmod +x $PREFIX/bin/polap.sh
-
-# cflye and dflye
-
-#zlib headers for minimap
-
-set -euxo pipefail # Exit on errors
-
-files=(
-	cflye
-	dflye
-)
-
-for i in "${files[@]}"; do
-	cp bin/${i} ${PREFIX}/bin/
-	chmod +x ${PREFIX}/bin/${i}
-done
-
-files=(
-	cflye-minimap2
-	cflye-modules
-	cflye-samtools
-	dflye-minimap2
-	dflye-modules
-	dflye-samtools
-)
-
-# Install Executable
-for i in "${files[@]}"; do
-	cp bin/${i} ${PREFIX}/bin/
-	chmod +x ${PREFIX}/bin/${i}
-	bash src/polap-install-fix-missing-libs.sh ${PREFIX}/bin/${i}
-done
-
-# Install Python Code
-PYTHON_SITE_PACKAGES=$(python -c "import site; print(site.getsitepackages()[0])")
-
-echo "Python version at build time:"
-python --version
-echo "Python site-packages at build time:"
-python -c "import site; print(site.getsitepackages())"
-
-for i in cflye dflye; do
-	mkdir -p ${SP_DIR}/${i}
-	cp -pr py/${i}/* ${SP_DIR}/${i}/
-done
-
-# Alternatively, use pip
-# python -m pip install . --no-deps --prefix=${PREFIX}
