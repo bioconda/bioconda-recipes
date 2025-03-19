@@ -2,8 +2,8 @@
 set -e  # Exit on error
 
 # fix zlib error
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 # Make sure binaries and scripts are installed in Conda's bin directory
 mkdir -p "${PREFIX}/bin"
