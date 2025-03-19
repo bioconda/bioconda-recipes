@@ -1,0 +1,75 @@
+{% set name = "run-dbcan-new" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: {{ version }}
+
+source:
+  url: https://github.com/bcb-unl/run_dbcan_new/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 551d500f24488bd95d6161eb14ce4864c3f3c832e6d1375215fb980eb0f8dd8b
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  noarch: python
+  entry_points:
+    - run_dbcan = dbcan.main:cli
+    - dbcan_utils = dbcan.utils.utils:main
+    - dbcan_plot = dbcan.utils.plots:main
+    - dbcan_asmfree = dbcan.utils.diamond_unassembly:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.9
+    - hatchling
+  run:
+    - python >=3.9
+    - diamond
+    - pyrodigal
+    - scipy
+    - psutil~=6.0
+    - pyhmmer==0.11.0
+    - numpy >1.19
+    - biopython==1.85
+    - pandas
+    - tqdm
+    - openpyxl
+    - matplotlib-base
+    - session-info
+    - requests
+    - importlib_metadata
+    - seaborn
+    - pycirclize==1.9.0
+    - rich-click==1.8.8
+    - pysam==0.23.0
+    - bcbio-gff==0.7.1
+    - matplotlib==3.10.1
+
+test:
+  imports:
+    - run-dbcan-new
+  commands:
+    - run_dbcan --help
+
+about:
+  home: https://bcb.unl.edu/dbCAN2/
+  dev_url: https://github.com/bcb-unl/run_dbcan_new
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Updated standalone version of dbCAN annotation tool for automated CAZyme annotation"
+  doc_url: https://run-dbcan-new.readthedocs.io/en/latest/
+
+extra:
+  recipe-maintainers:
+    - Xinpeng021001
+  identifiers:
+    - doi:10.1093/nar/gkx894
+    - doi:10.1093/nar/gky418
+    - doi:10.1093/nar/gkac1068
+    - doi:10.1093/nar/gkad328
+    - biotools:dbcan2
