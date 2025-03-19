@@ -12,18 +12,11 @@ if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	wget https://github.com/alexey-lysiuk/macos-sdk/releases/download/13.3/MacOSX13.3.tar.xz
 	tar -xf MacOSX13.3.tar.xz
 	cp -rH MacOSX13.3.sdk /Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
-	wget https://github.com/tukaani-project/xz/archive/refs/tags/v5.6.4.tar.gz
-	mv v5.6.4.tar.gz vendor/xz-5.2.4.tar.gz
-	wget https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-2.28.9/mbedtls-2.28.9.tar.bz2
-	mv mbedtls-2.28.9.tar.bz2 vendor/mbedtls-2.16.4-apache.tgz
 	export SDKROOT="/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
 	export CONFIG_ARGS="${CONFIG_ARGS} -DCMAKE_OSX_SYSROOT=/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
 	export MACOSX_DEPLOYMENT_TARGET=13.0
 	export MACOSX_SDK_VERSION=13.0
 fi
-
-
-
 
 # For debugging ./configure
 cat << EOF >&2
