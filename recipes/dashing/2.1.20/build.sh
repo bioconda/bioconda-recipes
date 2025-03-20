@@ -1,5 +1,7 @@
 #!/bin/bash
 
+conda install -c conda-forge llvm-openmp
+
 
 make -j4
 mkdir -p $PREFIX/bin
