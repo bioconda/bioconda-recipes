@@ -144,6 +144,7 @@ else
 	# --with(out)-zstd:
 	#   Do not use Zstandard.
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-zstd"
+	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-gui"
 fi
 
 # Fixes building on unix (linux and osx)
@@ -156,7 +157,7 @@ cd "$NCBI_CXX_TOOLKIT"
 # Run GNU Make
 cd "$RESULT_PATH/build"
 echo "RUNNING MAKE" >&2
-make -j 4 -f Makefile.flat rpsbproc.exe >&2
+make -j 4 --verbose -f Makefile.flat rpsbproc.exe VERBOSE=1 >&2
 
 # Copy compiled binaries to the Conda $PREFIX
 mkdir -p "$PREFIX/bin"
