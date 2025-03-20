@@ -14,7 +14,9 @@ mkdir -p "${PREFIX}/bin"
 cd submodules/src/
 
 # Avoid conflicts with C++20  
-mv "${SRC_DIR}"/submodules/src/lib/libgab/gzstream/version "${SRC_DIR}"submodules/src/lib/libgab/gzstream/version.txt
+#mv "${SRC_DIR}"/submodules/src/lib/libgab/gzstream/version "${SRC_DIR}"submodules/src/lib/libgab/gzstream/version.txt
+
+ls -la ${SRC_DIR} 
 
 make clean
 make
