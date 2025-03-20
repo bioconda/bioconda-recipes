@@ -2,10 +2,7 @@
 set -e  # Exit on error
 
 export CPATH=${PREFIX}/include
-
-#cd "${SRC_DIR}"/addeam || { echo "Folder ${SRC_DIR}/addeam not found"; exit 1; }
-
-#ls -la "${SRC_DIR}/addeam"
+export LDFLAGS="-L${PREFIX}/lib -llzma"
 
 # Make sure binaries and scripts are installed in Conda's bin directory
 mkdir -p "${PREFIX}/bin"
@@ -16,7 +13,7 @@ cd submodules/src/
 # Avoid conflicts with C++20  
 #mv "${SRC_DIR}"/submodules/src/lib/libgab/gzstream/version "${SRC_DIR}"submodules/src/lib/libgab/gzstream/version.txt
 
-ls -la ${SRC_DIR} 
+#ls -la ${SRC_DIR} 
 
 make clean
 make
