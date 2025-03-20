@@ -2,8 +2,14 @@
 set -e  # Exit on error
 
 export CPATH=${PREFIX}/include
+
+export CXXPATH=${PREFIX}/include
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export CXXFLAGS="$CFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+
 #export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export LDFLAGS="-L$SRC_DIR/HTSLIB -L$PREFIX/lib"
+#export LDFLAGS="-L$SRC_DIR/HTSLIB -L$PREFIX/lib"
 
 #export CXXFLAGS="-I${PREFIX}/include -I${PREFIX}/lib"
 #export LDFLAGS="-L${PREFIX}/lib -llzma"
