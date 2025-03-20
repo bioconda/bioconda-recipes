@@ -2,7 +2,7 @@
 set -e  # Exit on error
 
 export CPATH=${PREFIX}/include
-
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 #export CXXFLAGS="-I${PREFIX}/include -I${PREFIX}/lib"
 #export LDFLAGS="-L${PREFIX}/lib -llzma"
 #export LDFLAGS="-L${PREFIX}/lib -llzma"
