@@ -1,11 +1,21 @@
 #!/bin/bash
 set -e  # Exit on error
 
+export CPATH=${PREFIX}/include
+
+#cd "${SRC_DIR}"/addeam || { echo "Folder ${SRC_DIR}/addeam not found"; exit 1; }
+
+#ls -la "${SRC_DIR}/addeam"
+
 # Make sure binaries and scripts are installed in Conda's bin directory
 mkdir -p "${PREFIX}/bin"
 
 # Move into the source directory and compile C++ binary
 cd submodules/src/
+
+# Avoid conflicts with C++20  
+mv "${SRC_DIR}"/lib/libgab/gzstream/version "${SRC_DIR}"/lib/libgab/gzstream/version.txt
+
 make clean
 make
 mv bam2prof "${PREFIX}/bin/"
