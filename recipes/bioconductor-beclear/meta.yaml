@@ -1,63 +1,21 @@
-{% set version = "2.18.0" %}
+{% set version = "2.22.0" %}
 {% set name = "BEclear" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: bd34703e5a35dfc888f0029395df2c80
+about:
+  description: Provides functions to detect and correct for batch effects in DNA methylation data. The core function is based on latent factor models and can also be used to predict missing values in any other matrix containing real numbers.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Correction of batch effects in DNA methylation data
+
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-beclear", max_pin="x.x") }}'
-# Suggests: testthat, BiocStyle, knitr, rmarkdown, pander, seewave
-# SystemRequirements: C++11
-requirements:
-  host:
-    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
-    - r-abind
-    - r-base
-    - 'r-data.table >=1.11.8'
-    - r-dixontest
-    - r-futile.logger
-    - r-ids
-    - r-matrix
-    - r-rcpp
-    - r-rdpack
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
-    - r-abind
-    - r-base
-    - 'r-data.table >=1.11.8'
-    - r-dixontest
-    - r-futile.logger
-    - r-ids
-    - r-matrix
-    - r-rcpp
-    - r-rdpack
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL-3.0-only'
-  summary: 'Correction of batch effects in DNA methylation data'
-  description: 'Provides functions to detect and correct for batch effects in DNA methylation data. The core function is based on latent factor models and can also be used to predict missing values in any other matrix containing real numbers.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
 extra:
   additional-platforms:
     - linux-aarch64
@@ -68,4 +26,52 @@ extra:
     name: bioconductor-beclear
     path: recipes/bioconductor-beclear
     version: 1.12.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, BiocStyle, knitr, rmarkdown, pander, seewave
+# SystemRequirements: C++11
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - r-abind
+    - r-base
+    - r-data.table >=1.11.8
+    - r-dixontest
+    - r-futile.logger
+    - r-ids
+    - r-matrix
+    - r-rcpp
+    - r-rdpack
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - r-abind
+    - r-base
+    - r-data.table >=1.11.8
+    - r-dixontest
+    - r-futile.logger
+    - r-ids
+    - r-matrix
+    - r-rcpp
+    - r-rdpack
+
+source:
+  md5: d8de2e2efc4f8bb25d2a9462d2e23f86
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

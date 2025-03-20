@@ -1,61 +1,43 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
-import argparse
 import os
 import sys
+import argparse
 
-Usage = (
-    "Convert Visual Studio .vcxproj file in current directory to Makefile and run make."
+Usage = \
+(
+"Convert Visual Studio .vcxproj file in current directory to Makefile, generate gitver.txt with current commit hash, and run make."
 )
 
-AP = argparse.ArgumentParser(description=Usage)
+AP = argparse.ArgumentParser(description = Usage)
 
 # Value opts
-AP.add_argument(
-    "--std",
-    required=False,
-    help="C++ standard option for GCC, e.g. c++11 or c++17 (default none)",
-)
-AP.add_argument(
-    "--cppcompiler",
-    required=False,
-    default="g++",
-    help="C++ compiler command name default g++)",
-)
-AP.add_argument(
-    "--ccompiler",
-    required=False,
-    default="gcc",
-    help="C++ compiler command name default gcc)",
-)
+AP.add_argument("--std", required=False, help="C++ standard option for GCC, e.g. c++11 or c++17 (default none)")
+AP.add_argument("--cppcompiler", required=False, default="g++", help="C++ compiler command name default g++)")
+AP.add_argument("--ccompiler", required=False, default="gcc", help="C compiler command name default gcc)")
 
 # Flag opts
-AP.add_argument("--debug", required=False, action="store_true", help="Debug build")
-AP.add_argument("--openmp", required=False, action="store_true", help="Requires OMP")
-AP.add_argument(
-    "--pthread", required=False, action="store_true", help="Requires pthread"
-)
-AP.add_argument("--lrt", required=False, action="store_true", help="Requires lrt")
-AP.add_argument(
-    "--symbols",
-    required=False,
-    action="store_true",
-    help="Debug symbols (default if --debug)",
-)
-AP.add_argument(
-    "--nostrip",
-    required=False,
-    action="store_true",
-    help="Don't strip symbols (default if --debug or --symbols)",
-)
+AP.add_argument("--debug", required=False, action='store_true', help="Debug build")
+AP.add_argument("--openmp", required=False, action='store_true', help="Requires OMP")
+AP.add_argument("--pthread", required=False, action='store_true', help="Requires pthread")
+AP.add_argument("--lrt", required=False, action='store_true', help="Requires lrt")
+AP.add_argument("--nonative", required=False, action='store_true', help="Don't use -march=native (for OSX M1)")
+AP.add_argument("--symbols", required=False, action='store_true', help="Debug symbols (default if --debug)")
+AP.add_argument("--nostrip", required=False, action='store_true', help="Don't strip symbols (default if --debug or --symbols)")
+AP.add_argument("--nostatic", required=False, action='store_true', help="Don't do static linking")
+AP.add_argument("--nomake", required=False, action='store_true', help="Generate Makefile only, don't run make")
 
 Args = AP.parse_args()
 debug = Args.debug
+nomake = Args.nomake
 std = Args.std
 cppcompiler = Args.cppcompiler
 ccompiler = Args.ccompiler
 nostrip = debug or Args.symbols
 symbols = debug or Args.symbols
+static = True
+if Args.nostatic:
+    static = False
 
 ProjFileName = None
 HdrNames = []
@@ -71,8 +53,14 @@ if ProjFileName is None:
 binary = ProjFileName.replace(".vcxproj", "")
 sys.stderr.write("binary=" + binary + "\n")
 
-compiler_opts = " -ffast-math -march=native"
-linker_opts = " -ffast-math -march=native"
+# compiler_opts = " -ffast-math -march=native"
+# linker_opts = " -ffast-math -march=native"
+
+compiler_opts = " -ffast-math -O3 -I${PREFIX}/include"
+linker_opts = " -ffast-math -L${PREFIX}/lib"
+if not Args.nonative:
+    compiler_opts += " -march=native"
+    linker_opts += " -march=native"
 
 if std:
     compiler_opts += " --std=" + std
@@ -96,7 +84,17 @@ if Args.pthread:
     compiler_opts += " -pthread"
     linker_opts += " -lpthread"
 
-rc = os.system(r"rm -rf o/ ../bin/%s*" % binary)
+rc = os.system('test -z $(git status --porcelain) 2> /dev/null')
+if rc != 0:
+    sys.stderr.write("\n\nWarning -- Uncommited changes\n\n")
+
+rc = os.system(r'echo \"$(git log --oneline | head -n1 | cut "-d " -f1)\" | tee gitver.txt')
+if rc != 0:
+    sys.stderr.write("\n\nERROR -- failed to generate gitver.txt\n\n")
+    sys.exit(1)
+sys.stderr.write("gitver.txt done.\n")
+
+rc = os.system(r'rm -rf o/ ../bin/%s*' % binary)
 if rc != 0:
     sys.stderr.write("\n\nERROR -- failed to clean\n\n")
     sys.exit(1)
@@ -107,7 +105,7 @@ BINDIR = "../bin"
 
 Fields = ProjFileName.split("/")
 n = len(Fields)
-Name = Fields[n - 1]
+Name = Fields[n-1]
 Fields = Name.split(".")
 binary = Fields[0]
 
@@ -116,8 +114,8 @@ CNames = []
 with open(ProjFileName) as File:
     for Line in File:
         Line = Line.strip()
-        Line = Line.replace('"', "")
-        Line = Line.replace(" ", "")
+        Line = Line.replace('"', '')
+        Line = Line.replace(' ', '')
         # <ClCompile Include="betadiv.cpp" />
         if Line.startswith("<ClCompileInclude"):
             Fields = Line.split("=")
@@ -135,11 +133,10 @@ with open(ProjFileName) as File:
 assert len(CXXNames) > 0 or len(CNames) > 0
 
 with open("Makefile", "w") as f:
-
     def Out(s):
         print(s, file=f)
 
-    BINPATH = "$(BINDIR)/%s" % (binary)
+    BINPATH = "$(BINDIR)/%s" % (binary) 
 
     Out("######################################################")
     Out("# Makefile is generated by " + sys.argv[0])
@@ -153,19 +150,20 @@ with open("Makefile", "w") as f:
     if CNames:
         Out("")
         Out("CC = " + ccompiler)
-        Out("CFLAGS := $(CFLAGS) " + compiler_opts)
+        Out("CFLAGS := " + compiler_opts)
 
     if CXXNames:
         Out("")
         Out("CXX = " + cppcompiler)
-        Out("CXXFLAGS := $(CFLAGS) " + compiler_opts)
+        Out("CXXFLAGS := " + compiler_opts)
 
     Out("")
     Out("UNAME_S := $(shell uname -s)")
     Out("LDFLAGS := $(LDFLAGS) " + linker_opts)
-    Out("ifeq ($(UNAME_S),Linux)")
-    Out("    LDFLAGS += -static")
-    Out("endif")
+    if static:
+        Out("ifeq ($(UNAME_S),Linux)")
+        Out("    LDFLAGS += -static")
+        Out("endif")
 
     Out("")
     Out("HDRS = \\")
@@ -217,9 +215,13 @@ with open("Makefile", "w") as f:
         Out("	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<")
 
 sys.stderr.write("Makefile done.\n")
+if nomake:
+    sys.exit(0)
 
-rc = os.system("make")
+rc = os.system("make 2> make.stderr | tee make.stdout")
+os.system("tail make.stderr")
 if rc != 0:
-    sys.stderr.write("\n\nERROR -- make failed\n\n")
+    sys.stderr.write("\n\nERROR -- make failed, see make.stderr\n\n")
     sys.exit(1)
 sys.stderr.write("make done.\n")
+os.system("ls -lh ../bin/" + binary + "\n")

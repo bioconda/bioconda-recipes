@@ -1,19 +1,10 @@
 #!/bin/bash
 set -ex
 
-OS=$(uname)
-ARCH=$(uname -m)
+cp -rf "${RECIPE_DIR}/vcflib.pc.in" "${SRC_DIR}"
 
-if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
-	echo $(pwd)/zig-macos-x86_64-*
-	export PATH="$(pwd)/zig-macos-x86_64-0.10.1:${PATH}"
-elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
-	echo $(pwd)/zig-macos-aarch64-*
-	export PATH="$(pwd)/zig-macos-aarch64-0.10.1:${PATH}"
-else
-	echo $(pwd)/zig-linux-${ARCH}-*
-	export PATH="$(pwd)/zig-linux-${ARCH}-0.10.1:${PATH}"
-fi
+export M4="${BUILD_PREFIX}/bin/m4"
+#export PATH="$(which zig):${PATH}"
 
 export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Itabixpp -Iwfa2 -I\$(INC_DIR)"
 export LIBPATH="-L${PREFIX}/lib -L. -Lhtslib -Ltabixpp -Lwfa2"
@@ -34,21 +25,18 @@ if [[ `uname` == "Darwin" ]]; then
 	sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' contrib/smithwaterman/Makefile
 	sed -i.bak 's/-std=c++0x/-std=c++17 -stdlib=libc++/g' contrib/intervaltree/Makefile
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
-	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DWFA_GITMODULE=OFF"
 else
-        export CONFIG_ARGS=""
+        export CONFIG_ARGS="-DWFA_GITMODULE=ON"
 fi
 
-pkg-config --list-all
-
 cmake -S . -B build \
-	-DZIG=ON -DOPENMP=ON -DWFA_GITMODULE=OFF \
+	-DZIG=OFF -DOPENMP=ON \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DBUILD_SHARED_LIBS=ON \
-	-DCMAKE_INSTALL_LIBDIR=lib \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	"${CONFIG_ARGS}"
+	-DPROFILING=ON "${CONFIG_ARGS}"
 
-cmake --build build/ --target install -j "${CPU_COUNT}" -v
+cmake --build build --target install -j "${CPU_COUNT}"

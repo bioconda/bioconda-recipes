@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "bladderbatch-1.40.0"
+installBiocDataPackage.sh "bladderbatch-1.44.0"
