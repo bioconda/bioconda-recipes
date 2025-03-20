@@ -4,7 +4,7 @@ set -o xtrace
 set -o errexit
 set -o nounset
 set -o pipefail
-
+export MACOSX_DEPLOYMENT_TARGET=13
 
 # For debugging ./configure
 cat << EOF >&2
