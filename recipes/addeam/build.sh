@@ -1,10 +1,6 @@
 #!/bin/bash
 set -e  # Exit on error
 
-# fix zlib error
-export CFLAGS="$CFLAGS -I$PREFIX/include"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-
 # Make sure binaries and scripts are installed in Conda's bin directory
 mkdir -p "${PREFIX}/bin"
 
