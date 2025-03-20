@@ -2,8 +2,9 @@
 set -e  # Exit on error
 
 export CPATH=${PREFIX}/include
-export CXXFLAGS="-I${PREFIX}/include -I${PREFIX}/lib"
-export LDFLAGS="-L${PREFIX}/lib -llzma"
+
+#export CXXFLAGS="-I${PREFIX}/include -I${PREFIX}/lib"
+#export LDFLAGS="-L${PREFIX}/lib -llzma"
 #export LDFLAGS="-L${PREFIX}/lib -llzma"
 
 # Make sure binaries and scripts are installed in Conda's bin directory
