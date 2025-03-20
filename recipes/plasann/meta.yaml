@@ -1,0 +1,62 @@
+{% set name = "plasann" %}
+{% set version = "1.0.8" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ajlopatkin/PlasAnn/archive/v{{ version }}.tar.gz
+  sha256: b2080a07da25033d5c8f681fa44dbbd507a2caac7d65c86ffa5c5592a59d2195
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  entry_points:
+    - PlasAnn = Scripts.annotate_plasmid:cli
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+    - setuptools >=42
+  run:
+    - python >=3.6
+    - biopython >=1.78
+    - pandas >=1.0.0
+    - gdown >=4.0.0
+    - matplotlib >=3.0.0
+    - pycirclize >=0.1.0
+    # blast and prodigal are not included as direct dependencies
+
+test:
+  commands:
+    - PlasAnn --help
+
+about:
+  home: https://github.com/ajlopatkin/PlasAnn
+  license: MIT
+  license_file: LICENSE
+  summary: 'Plasmid Annotation Pipeline'
+  description: |
+    A comprehensive tool for annotating plasmid sequences, identifying coding
+    sequences, detecting origins of replication and transfer, and generating
+    plasmid maps.
+    
+    IMPORTANT: This package requires BLAST and Prodigal to be installed separately:
+    
+    For Linux/Windows/Intel Macs:
+    conda install -c bioconda blast prodigal
+    
+    For Apple Silicon (M1/M2) Macs:
+    brew install blast
+    brew install brewsci/bio/prodigal
+    
+    Please ensure both tools are available in your PATH before running PlasAnn.
+
+extra:
+  notes: |
+    This package requires external dependencies (BLAST and Prodigal) which must be
+    installed separately due to platform compatibility issues, especially on macOS
+    with Apple Silicon (M1/M2).
