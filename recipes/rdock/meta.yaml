@@ -1,47 +1,64 @@
-package:
-  name: rdock
-  version: 2013.1
+{% set name = "rDock" %}
+{% set version = "0.22" %}
 
-build:
-  number: 2
-  skip: True  # [osx]
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://depot.galaxyproject.org/software/rDock/rDock_2013.1_src_all.tar.gz
-  sha256: e716998c3f8a2a70205a8d30ba22675bfdb1764d13c858645138c5eadf2a37e9
+  url: https://github.com/CBDD/rDock/releases/download/v{{ version }}/{{ name }}_2022_v0.tar.gz
+  sha256: 3dd4d4eae8cdbcfd5cec8584df43f5fc4fba2267b6c7041bf93e96705277ba62
   patches:
-    - rDock_python_fixes.patch
-    - rDock_fix_paths.patch
+    - 0001-add-missing-cmath.patch
+
+build:
+  number: 0
+  skip: True  # [osx]
 
 requirements:
   build:
-    - make
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - make
+    - perl *
   host:
     - cppunit
-    - perl
     - popt
-    - python
   run:
     - numpy
-    - perl
-    - popt
+    - perl *
+    - python *
     - openbabel
 
 test:
   commands:
+    - grep() { sed "/$*/{:m;n;bm};\$q1" ; }  # redefine grep so we keep the output for debugging when running the following commands
+    - rbcalcgrid 2>&1 | grep rDock
     - rbcavity --help
     - rbdock --help
-    - sdrmsd --help
+    - rbhtfinder 2>&1 | grep "high throughput" 
+    - rblist 2>&1 | grep rDock
+    - rbmoegrid 2>&1 | grep rDock
+    - rbrms 2>&1 | grep RMSD
+    - sdfilter -h
+    - sdmodify -h
+    - sdreport -h
     - sdsort -h
-
+    - sdsplit -h
+     
 about:
-  home: http://rdock.sourceforge.net/
-  license: LGPLv3
+  home: https://github.com/CBDD/rDock
+  summary: |
+    rDock is a fast and versatile Open Source docking program that can
+    be used to dock small molecules against proteins and nucleic acids.
+  license: LGPL-3 
+  license_family: LGPL
   license_file: license.txt
-  summary: A Fast, Versatile and Open Source Program for Docking Ligands to Proteins and Nucleic Acids
 
 extra:
-  identifiers:
-    - doi:10.1371/journal.pcbi.1003571
-    - usegalaxy-eu:rdock_rbdock
+  recipe-maintainers:
+    - simonbray
+
+identifiers:
+  - doi:10.1371/journal.pcbi.1003571
+  - usegalaxy-eu:rdock_rbdock
