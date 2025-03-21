@@ -1,0 +1,40 @@
+{% set name = "longcalld" %}
+{% set version = "0.0.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/yangao07/longcallD/releases/download/v{{ version }}/longcallD-v{{ version }}.tar.gz
+  sha256: 15340df61ca8da1f98c2f2eb48c58c1248c5e6a7c357408b26db64a0fbcd308b
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name | lower, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - zlib
+    - htslib
+
+test:
+  commands:
+    - longcallD call --version | grep {{ version }}
+
+about:
+  home: https://github.com/yangao07/longcallD
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'longcallD: local-haplotagging-based small and structural variant calling'
+  dev_url: https://github.com/yangao07/longcallD
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
