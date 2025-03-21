@@ -22,36 +22,44 @@ build:
 
 requirements:
   host:
-    - python =3.10
+    - python >=3.10,<3.13
     - pip
   run:
-    # Dependencies that MAYBE can be relaxed without losing reproducible/determinstic results
-    - python =3.10
+    # Minor version changes should not affect reproducible results
     - pip
-    - tqdm =4.66.5
-    - tar =1.34
-    - networkx =3.4.2
-    - dendropy =5.0.1
-    - nextflow =24.10.3
+    - python >=3.10,<3.13
+    - nextflow >=24.10
+    - tqdm >=4.66
+    - tar >=1.34
+    # Minor version changes might affect fonts in figures slightly
     - pycairo =1.27.0
     - cairosvg =2.7.1
-    - svgpathtools =1.6.0
-    # Dependencies that PROBABLY need to be locked to ensure reproducible/deterministic results
+    - svgpathtools =1.6.0    
+    # Scientific dependencies, should be locked for model specificity
+    - networkx =3.4.2
+    - dendropy =5.0.1
     - mafft =7.526
     - iqtree =2.3.6
     - pyseer =1.3.12
-    # Dependencies we know MUST be locked
+    # Scientific dependencies that MUST be locked
     - bakta =1.9.2
     - diamond =2.1.8
     - ncbi-amrfinderplus =3.11.26
-    - mmseqs2 =15.6f452    
-
+    - mmseqs2 =15.6f452
 
 test:
-  commands:
-    - pangwas --help
+  requires:
+    - pytest >=8
+    - pytest-cov >=6
+    - pytest-sugar >=1
+    - parametrize-from-file >=0.20
+  source_files:
+    - test/*
   imports:
     - pangwas
+  commands:
+    - pangwas --help
+    - pytest
 
 about:
   home: https://github.com/phac-nml/pangwas
