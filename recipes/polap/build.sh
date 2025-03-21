@@ -129,6 +129,7 @@ files=(polap
 	polap-data-v2.csv
 	polap-data-v2-later.csv
 	polap-data-v4.csv
+	polap-template-cflye-archive-files.txt
 	polap.sh)
 
 for i in "${files[@]}"; do
