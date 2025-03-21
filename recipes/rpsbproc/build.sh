@@ -5,6 +5,17 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+OS=$(uname)
+ARCH=$(uname -m)
+
+if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
+	wget https://github.com/alexey-lysiuk/macos-sdk/releases/download/13.3/MacOSX13.3.tar.xz
+	tar -xf MacOSX13.3.tar.xz
+	cp -rH MacOSX13.3.sdk /Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
+	export SDKROOT="/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
+	export MACOSX_DEPLOYMENT_TARGET=13.0
+	export MACOSX_SDK_VERSION=13.0
+fi
 
 # For debugging ./configure
 cat << EOF >&2
