@@ -7,6 +7,6 @@ TGT="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
 cd "${SRC_DIR}"
 mv purple*.jar $TGT/purple.jar
 
-cp $RECIPE_DIR/PURPLE.sh $TGT/PURPLE
-ln -s $TGT/PURPLE $PREFIX/bin
-chmod 0755 "${PREFIX}/bin/PURPLE"
+cp $RECIPE_DIR/purple.sh $TGT/purple
+ln -s $TGT/purple $PREFIX/bin
+chmod 0755 "${PREFIX}/bin/purple"

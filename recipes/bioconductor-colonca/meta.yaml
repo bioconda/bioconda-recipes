@@ -1,38 +1,40 @@
-{% set version = "1.40.0" %}
+{% set version = "1.48.0" %}
 {% set name = "colonCA" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 945aaff5b3d9fd9acf23da95b63e3b8d
+about:
+  description: exprSet for Alon et al. (1999) colon cancer data
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: LGPL
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: exprSet for Alon et al. (1999) colon cancer data
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-colonca", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
     - r-base
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221104
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 06c2d5c6e9853feb34e80befab9356f7
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: LGPL
-  summary: 'exprSet for Alon et al. (1999) colon cancer data'
-  description: 'exprSet for Alon et al. (1999) colon cancer data'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+    - $R -e "library('{{ name }}')"
 

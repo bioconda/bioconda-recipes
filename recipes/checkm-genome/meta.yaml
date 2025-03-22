@@ -1,31 +1,34 @@
-{% set version="1.2.2" %}
-{% set hash="a748b94e93f8d5fecfd0d5b3f17fcb119b25d4b45217e047b2fd742b21e74c0e" %}
+{% set name = "checkm-genome" %}
+{% set version = "1.2.3" %}
+{% set sha256 = "5f8340e71d3256ba8cf407d27bdc7914d1aa86b14b2d63d1e32cceb325e5aa82" %}
 
 package:
-  name: checkm-genome
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/Ecogenomics/CheckM/archive/v{{ version }}.tar.gz
-  sha256: {{ hash }}
+  sha256: {{ sha256 }}
 
 build:
   number: 1
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('checkm-genome', max_pin="x") }}
 
 requirements:
   host:
     - python >=3.6
     - pip
   run:
-    - python >=3.6
-    - numpy >=1.13.1
-    - scipy >=0.19.1
-    - matplotlib-base >=2.1.0
+    - python >=3.6, <3.12
+    - numpy >=1.21.3
+    - scipy >=1.7.3
+    - matplotlib-base >=3.5.1
     # older pysam versions have wrong openssl pinning
-    - pysam >=0.15.3
-    - dendropy >=4.4.0
+    - pysam >=0.19.0
+    - dendropy >=4.5.2
     - hmmer >=3.1b1
     - prodigal >=2.6.1
     - pplacer ==1.1.alpha19
@@ -39,7 +42,10 @@ test:
     - checkm.util
 
 about:
-  home: https://ecogenomics.github.io/CheckM/
-  license: GPL3
+  home: "https://github.com/Ecogenomics/CheckM"
+  license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: LICENSE
   summary: 'Assess the quality of microbial genomes recovered from isolates, single cells, and metagenomes.'
+  dev_url: "https://github.com/Ecogenomics/CheckM"
+  doc_url: "https://ecogenomics.github.io/CheckM"

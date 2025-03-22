@@ -1,33 +1,59 @@
+{% set name = "ngscheckmate" %}
+{% set version = "1.0.1" %}
+
 package:
-  name: ngscheckmate
-  version: 1.0.0
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/parklab/NGSCheckMate/archive/8ea2c043896adf9bbd1dc5bb2136f3a1dab9b445.zip
-  md5: 4c4e34abc8c4851d29661f5f0cc13b49
+  url: https://github.com/parklab/NGSCheckMate/archive/ef7a38c51dadbd4ef5b6b6db60775f239926f0a8.zip
+  md5: 42d4578e02a81e4e55857f126ae719af
+  patches:
+    - py3.patch  # from https://github.com/parklab/NGSCheckMate/compare/master...dslarm:NGSCheckMate:master.patch
 
 build:
-  number: 3
-  noarch: generic
+  number: 4
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
   host:
-    - python 2.7.18
-    - R 4.1
-    - samtools 1.14
+    - python >=2.7
+    - samtools
     - bcftools
+    - bowtie
+    - zlib
   run:
-    - python 2.7.18
-    - R 4.1
-    - samtools 1.14
+    - python >=2.7
+    - r-base >=4
+    - perl
+    - samtools
     - bcftools
+    - bowtie
 
 test:
   commands:
     - ncm.py -h
     - ncm_fastq.py -h
-
+    - vaf_ncm.py -h
+    - ngscheckmate_fastq
+    - makesnvpattern.pl
+    
 about:
-  home: https://github.com/parklab/NGSCheckMate
+  home: "https://github.com/parklab/NGSCheckMate"
   license: MIT
-  summary: Software package for identifying next generation sequencing (NGS) data files from the same individual.
+  license_family: MIT
+  summary: "Software package for identifying next generation sequencing (NGS) data files from the same individual."
+  description: "This version is built from a pull request which fixes a handful of known bugs."
+  dev_url: "https://github.com/parklab/NGSCheckMate"
+  doc_url: "https://github.com/parklab/NGSCheckMate/blob/master/Documentation.pdf"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:ngscheckmate

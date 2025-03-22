@@ -1,52 +1,21 @@
-{% set version = "1.32.0" %}
+{% set version = "1.40.0" %}
 {% set name = "pepStat" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 38910e377dd84136891dc8768dbecf7e
+about:
+  description: Statistical analysis of peptide microarrays
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Statistical analysis of peptide microarrays
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: pepDat, Pviz, knitr, shiny
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - r-base
-    - r-data.table
-    - r-fields
-    - r-ggplot2
-    - r-plyr
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - r-base
-    - r-data.table
-    - r-fields
-    - r-ggplot2
-    - r-plyr
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Statistical analysis of peptide microarrays'
-  description: 'Statistical analysis of peptide microarrays'
+  run_exports: '{{ pin_subpackage("bioconductor-pepstat", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:pepstat
@@ -55,4 +24,43 @@ extra:
     name: bioconductor-pepstat
     path: recipes/bioconductor-pepstat
     version: 1.14.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: pepDat, Pviz, knitr, shiny
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - r-base
+    - r-data.table
+    - r-fields
+    - r-ggplot2
+    - r-plyr
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - r-base
+    - r-data.table
+    - r-fields
+    - r-ggplot2
+    - r-plyr
+
+source:
+  md5: 1b6b83f0415ec64eaeb7c802f5c77ee3
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

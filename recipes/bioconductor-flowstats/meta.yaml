@@ -1,35 +1,45 @@
-{% set version = "4.10.0" %}
+{% set version = "4.18.0" %}
 {% set name = "flowStats" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: b4abf02b574012875424458cb8d153e5
+about:
+  description: Methods and functionality to analyse flow data that is beyond the basic infrastructure provided by the flowCore package.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Statistical methods for the analysis of flow cytometry data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-flowstats", max_pin="x.x") }}'
+
+extra:
+  parent_recipe:
+    name: bioconductor-flowstats
+    path: recipes/bioconductor-flowstats
+    version: 3.40.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: xtable, testthat, openCyto, ggcyto, ggridges
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-flowviz >=1.62.0,<1.63.0'
-    - 'bioconductor-flowworkspace >=4.10.0,<4.11.0'
-    - 'bioconductor-ncdfflow >=2.44.0,<2.45.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-flowviz >=1.70.0,<1.71.0
+    - bioconductor-flowworkspace >=4.18.0,<4.19.0
+    - bioconductor-ncdfflow >=2.52.0,<2.53.0
     - r-base
+    - r-clue
     - r-cluster
     - r-corpcor
-    - 'r-fda >=2.2.6'
+    - r-fda >=2.2.6
     - r-kernsmooth
     - r-ks
     - r-lattice
@@ -38,16 +48,17 @@ requirements:
     - r-rcolorbrewer
     - r-rrcov
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-flowviz >=1.62.0,<1.63.0'
-    - 'bioconductor-flowworkspace >=4.10.0,<4.11.0'
-    - 'bioconductor-ncdfflow >=2.44.0,<2.45.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-flowviz >=1.70.0,<1.71.0
+    - bioconductor-flowworkspace >=4.18.0,<4.19.0
+    - bioconductor-ncdfflow >=2.52.0,<2.53.0
     - r-base
+    - r-clue
     - r-cluster
     - r-corpcor
-    - 'r-fda >=2.2.6'
+    - r-fda >=2.2.6
     - r-kernsmooth
     - r-ks
     - r-lattice
@@ -55,17 +66,16 @@ requirements:
     - r-mnormt
     - r-rcolorbrewer
     - r-rrcov
+
+source:
+  md5: 40303230fdbecf52ebe00053c8509533
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Statistical methods for the analysis of flow cytometry data'
-  description: 'Methods and functionality to analyse flow data that is beyond the basic infrastructure provided by the flowCore package.'
-extra:
-  parent_recipe:
-    name: bioconductor-flowstats
-    path: recipes/bioconductor-flowstats
-    version: 3.40.0
+    - $R -e "library('{{ name }}')"
 

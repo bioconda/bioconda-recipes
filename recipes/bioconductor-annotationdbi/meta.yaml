@@ -1,50 +1,21 @@
-{% set version = "1.60.0" %}
+{% set version = "1.68.0" %}
 {% set name = "AnnotationDbi" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: ca505996a762f02071da415c8acf4dfd
+about:
+  description: Implements a user-friendly interface for querying SQLite-based annotation data packages.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Manipulation of SQLite-based annotations in Bioconductor
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: hgu95av2.db, GO.db, org.Sc.sgd.db, org.At.tair.db, RUnit, TxDb.Hsapiens.UCSC.hg19.knownGene, org.Hs.eg.db, reactome.db, AnnotationForge, graph, EnsDb.Hsapiens.v75, BiocStyle, knitr
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-keggrest >=1.38.0,<1.39.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - r-dbi
-    - r-rsqlite
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-keggrest >=1.38.0,<1.39.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - r-dbi
-    - r-rsqlite
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Manipulation of SQLite-based annotations in Bioconductor'
-  description: 'Implements a user-friendly interface for querying SQLite-based annotation data packages.'
+  run_exports: '{{ pin_subpackage("bioconductor-annotationdbi", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:annotationdbi
@@ -53,4 +24,41 @@ extra:
     name: bioconductor-annotationdbi
     path: recipes/bioconductor-annotationdbi
     version: 1.42.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: utils, hgu95av2.db, GO.db, org.Sc.sgd.db, org.At.tair.db, RUnit, TxDb.Hsapiens.UCSC.hg19.knownGene, org.Hs.eg.db, reactome.db, AnnotationForge, graph, EnsDb.Hsapiens.v75, BiocStyle, knitr
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-keggrest >=1.46.0,<1.47.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-dbi
+    - r-rsqlite
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-keggrest >=1.46.0,<1.47.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-dbi
+    - r-rsqlite
+
+source:
+  md5: 0f0e70eecd93f528f954d8d9fb4c8a8e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

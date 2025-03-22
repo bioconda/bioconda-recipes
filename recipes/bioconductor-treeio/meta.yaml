@@ -1,23 +1,32 @@
-{% set version = "1.22.0" %}
+{% set version = "1.30.0" %}
 {% set name = "treeio" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: b9488ba3eb48293ae06950a9336703b7
+about:
+  description: '''treeio'' is an R package to make it easier to import and store phylogenetic tree with associated data; and to link external data from different sources to phylogeny. It also supports exporting phylogenetic tree with heterogeneous associated data to a single tree file and can be served as a platform for merging tree with associated data and converting file formats.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Base Classes and Functions for Phylogenetic Tree Input and Output
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: Biostrings, ggplot2, ggtree, igraph, knitr, rmarkdown, phangorn, prettydoc, testthat, tidyr, vroom, xml2, yaml, purrr
+  run_exports: '{{ pin_subpackage("bioconductor-treeio", max_pin="x.x") }}'
+
+extra:
+  parent_recipe:
+    name: bioconductor-treeio
+    path: recipes/bioconductor-treeio
+    version: 1.4.3
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: Biostrings, cli, ggplot2, ggtree, igraph, knitr, rmarkdown, phangorn, prettydoc, purrr, testthat, tidyr, vroom, xml2, yaml
 requirements:
   host:
     - r-ape
@@ -27,7 +36,8 @@ requirements:
     - r-magrittr
     - r-rlang
     - r-tibble
-    - 'r-tidytree >=0.3.9'
+    - r-tidytree >=0.4.5
+    - r-yulab.utils >=0.1.6
   run:
     - r-ape
     - r-base
@@ -36,18 +46,18 @@ requirements:
     - r-magrittr
     - r-rlang
     - r-tibble
-    - 'r-tidytree >=0.3.9'
+    - r-tidytree >=0.4.5
+    - r-yulab.utils >=0.1.6
+
+source:
+  md5: ccf737f20029fdf856c800fc831686ba
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Base Classes and Functions for Phylogenetic Tree Input and Output'
-  description: '''treeio'' is an R package to make it easier to import and store phylogenetic tree with associated data; and to link external data from different sources to phylogeny. It also supports exporting phylogenetic tree with heterogeneous associated data to a single tree file and can be served as a platform for merging tree with associated data and converting file formats.'
-extra:
-  parent_recipe:
-    name: bioconductor-treeio
-    path: recipes/bioconductor-treeio
-    version: 1.4.3
+    - $R -e "library('{{ name }}')"
 

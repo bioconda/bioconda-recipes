@@ -1,43 +1,21 @@
-{% set version = "1.28.0" %}
+{% set version = "2.6.0" %}
 {% set name = "lfa" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: a0a1693a3fa1c63a57d6de56aa8657b6
+about:
+  description: Logistic Factor Analysis is a method for a PCA analogue on Binomial data via estimation of latent structure in the natural parameter.  The main method estimates genetic population structure from genotype data.  There are also methods for estimating individual-specific allele frequencies using the population structure.  Lastly, a structured Hardy-Weinberg equilibrium (HWE) test is developed, which quantifies the goodness of fit of the genotype data to the estimated population structure, via the estimated individual-specific allele frequencies (all of which generalizes traditional HWE tests).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 3)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Logistic Factor Analysis for Categorical Data
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: knitr, ggplot2
-requirements:
-  host:
-    - r-base
-    - r-corpcor
-    - libblas
-    - liblapack
-  run:
-    - r-base
-    - r-corpcor
-  build:
-    - {{ compiler('c') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Logistic Factor Analysis for Categorical Data'
-  description: 'LFA is a method for a PCA analogue on Binomial data via estimation of latent structure in the natural parameter.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-lfa", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:lfa
@@ -46,4 +24,36 @@ extra:
     name: bioconductor-lfa
     path: recipes/bioconductor-lfa
     version: 1.10.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, ggplot2, testthat, BEDMatrix, genio
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - r-base
+    - r-corpcor
+    - r-rspectra
+    - libblas
+    - liblapack
+  run:
+    - r-base
+    - r-corpcor
+    - r-rspectra
+
+source:
+  md5: 8cc986c57b3ea73343d7dba9e2e687ab
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

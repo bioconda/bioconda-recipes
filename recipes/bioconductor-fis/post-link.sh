@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "fis-1.26.0"
+installBiocDataPackage.sh "fis-1.34.0"

@@ -1,0 +1,52 @@
+{% set name = "GraphBin2" %}
+{% set version = "1.3.3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/metagentools/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: 03ab89dbb6d26c9b414ff808598c295cf22fd3af22816a5c9fada94104a79686
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('graphbin2', max_pin="x.x") }}
+  script:
+    - "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - pip
+    - python
+    - flit-core
+  run:
+    - cairocffi
+    - python >=3.9
+    - python-igraph
+    - cogent3
+    - tqdm
+    - click
+    - scipy
+
+test:
+  commands:
+    - graphbin2 --help
+
+about:
+  home: "https://github.com/metagentools/GraphBin2"
+  license: BSD-3
+  license_file: LICENSE
+  summary: "GraphBin2: Refined and Overlapped Binning of Metagenomic Contigs Using Assembly Graphs"
+  description: |
+    GraphBin2 is a metagenomic contig bin-refinement tool that makes use of assembly graphs and can assign contigs to multiple bins.
+  doc_url: "https://graphbin2.readthedocs.io/"
+  dev_url: "https://github.com/metagentools/GraphBin2"
+
+extra:
+  recipe-maintainers:
+    - Vini2
+  identifiers:
+    - doi:10.1186/s13015-021-00185-6

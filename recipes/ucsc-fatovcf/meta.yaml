@@ -1,18 +1,23 @@
 {% set package = "ucsc-fatovcf" %}
 {% set program = "faToVcf" %}
-{% set version = "426" %}
-{% set sha256 = "b79d057adeac0c1c2997da3975c103d4b4bdf8ecdaf49a9d48ed091fc5ebf74a" %}
+{% set version = "473" %}
+{% set sha256 = "ed929a7141440e0718ed453283e6e7dde103e8e2facf27d2367be7b34e53e597" %}
 
 package:
-  name: "{{ package }}"
-  version: "{{ version }}"
+  name: {{ package }}
+  version: {{ version }}
 
 source:
-  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
-  sha256: "{{ sha256 }}"
+  url: http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz
+  sha256: {{ sha256 }}
+  patches:
+    - include.patch  # [linux]
+    - include.macos.patch  # [osx]
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(package, max_pin=None) }}
 
 requirements:
   build:
@@ -23,21 +28,29 @@ requirements:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
     - libopenssl-static
+    - clangdev  # [osx]
+    - ucsc-stringify
     - zlib
   run:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
+    - libopenssl-static
+    - ucsc-stringify
 
 test:
   commands:
-    # just check for existence, because the individual packages have no unified behavior
-    - which {{ program }}
+    # just check for existence and exec bit, because the individual packages have no unified behavior
+    - test -x ${PREFIX}/bin/{{ program }}
 
 about:
-  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "varies; see http://genome.ucsc.edu/license"
-  summary: "Extract VCF from a multi-sequence FASTA alignment"
+  home: "https://hgdownload.cse.ucsc.edu/admin/exe"
+  license: "Varies; see https://genome.ucsc.edu/license"
+  summary: "Extract VCF from a multi-sequence FASTA alignment."
+  dev_url: "https://github.com/ucscGenomeBrowser/kent"
+  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/master/v{{ version }}_base/README"
+
+extra:
+  additional-platforms:
+    - linux-aarch64

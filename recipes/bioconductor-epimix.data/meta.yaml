@@ -1,39 +1,41 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "EpiMix.data" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 60ad87849d55d75238373a37ce14b4c8
+about:
+  description: 'Supporting data for the EpiMix R package. It include: - HM450_lncRNA_probes.rda - HM450_miRNA_probes.rda - EPIC_lncRNA_probes.rda - EPIC_miRNA_probes.rda - EpigenomeMap.rda - LUAD.sample.annotation - TCGA_BatchData - MET.data - mRNA.data - microRNA.data - lncRNA.data - Sample_EpiMixResults_lncRNA - Sample_EpiMixResults_miRNA - Sample_EpiMixResults_Regular - Sample_EpiMixResults_Enhancer - lncRNA expression data of tumors from TCGA that are stored in the ExperimentHub.'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Data for the EpiMix package
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-epimix.data", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: rmarkdown, knitr
 requirements:
   host:
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
     - r-base
   run:
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221108
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 64dd6bc27966ef5920f06823dcc4af94
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Data for the EpiMix package'
-  description: 'Supporting data for the EpiMix R package. It include: - HM450_lncRNA_probes.rda - HM450_miRNA_probes.rda - EPIC_lncRNA_probes.rda - EPIC_miRNA_probes.rda - EpigenomeMap.rda - LUAD.sample.annotation - TCGA_BatchData - MET.data - mRNA.data - microRNA.data - lncRNA.data - Sample_EpiMixResults_lncRNA - Sample_EpiMixResults_miRNA - Sample_EpiMixResults_Regular - lncRNA expression data of tumors from TCGA that are stored in the ExperimentHub.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

@@ -1,63 +1,70 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "SimBu" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 7ebf2cacff2bf935022e3559e2740e6a
+about:
+  description: SimBu can be used to simulate bulk RNA-seq datasets with known cell type fractions. You can either use your own single-cell study for the simulation or the sfaira database. Different pre-defined simulation scenarios exist, as are options to run custom simulations. Additionally, expression values can be adapted by adding an mRNA bias, which produces more biologically relevant simulations.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 + file LICENSE
+  license_file: LICENSE
+  summary: Simulate Bulk RNA-seq Datasets from Single-Cell Datasets
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: curl, knitr, matrixStats, rmarkdown, Seurat, testthat (>= 3.0.0)
+  run_exports: '{{ pin_subpackage("bioconductor-simbu", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: curl, knitr, matrixStats, rmarkdown, Seurat (>= 5.0.0), SeuratObject (>= 5.0.0), testthat (>= 3.0.0)
 requirements:
   host:
-    - 'bioconductor-basilisk >=1.9.0,<1.10.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-phyloseq >=1.42.0,<1.43.0'
-    - 'bioconductor-sparsematrixstats >=1.10.0,<1.11.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-basilisk >=1.18.0,<1.19.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-phyloseq >=1.50.0,<1.51.0
+    - bioconductor-sparsematrixstats >=1.18.0,<1.19.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-data.table
     - r-dplyr
     - r-ggplot2
-    - 'r-matrix >=1.3.3'
+    - r-matrix >=1.3.3
     - r-proxyc
     - r-rcolorbrewer
     - r-rcurl
     - r-reticulate
     - r-tidyr
   run:
-    - 'bioconductor-basilisk >=1.9.0,<1.10.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-phyloseq >=1.42.0,<1.43.0'
-    - 'bioconductor-sparsematrixstats >=1.10.0,<1.11.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-basilisk >=1.18.0,<1.19.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-phyloseq >=1.50.0,<1.51.0
+    - bioconductor-sparsematrixstats >=1.18.0,<1.19.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-data.table
     - r-dplyr
     - r-ggplot2
-    - 'r-matrix >=1.3.3'
+    - r-matrix >=1.3.3
     - r-proxyc
     - r-rcolorbrewer
     - r-rcurl
     - r-reticulate
     - r-tidyr
+
+source:
+  md5: 6481bcae0136a8572d411c675417284f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL-3 + file LICENSE'
-  summary: 'Simulate Bulk RNA-seq Datasets from Single-Cell Datasets'
-  description: 'SimBu can be used to simulate bulk RNA-seq datasets with known cell type fractions. You can either use your own single-cell study for the simulation or the sfaira database. Different pre-defined simulation scenarios exist, as are options to run custom simulations. Additionally, expression values can be adapted by adding an mRNA bias, which produces more biologically relevant simulations.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

@@ -1,44 +1,21 @@
-{% set version = "1.44.0" %}
+{% set version = "1.52.0" %}
 {% set name = "PANR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 32dc6542d3abc00c0a41fa46d8ae6052
+about:
+  description: This package provides S4 classes and methods for inferring functional gene networks with edges encoding posterior beliefs of gene association types and nodes encoding perturbation effects.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Posterior association networks and functional modules inferred from rich phenotypes of gene perturbations
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: snow
-requirements:
-  host:
-    - 'bioconductor-reder >=2.2.0,<2.3.0'
-    - r-base
-    - r-igraph
-    - r-mass
-    - r-pvclust
-  run:
-    - 'bioconductor-reder >=2.2.0,<2.3.0'
-    - r-base
-    - r-igraph
-    - r-mass
-    - r-pvclust
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Posterior association networks and functional modules inferred from rich phenotypes of gene perturbations'
-  description: 'This package provides S4 classes and methods for inferring functional gene networks with edges encoding posterior beliefs of gene association types and nodes encoding perturbation effects.'
+  run_exports: '{{ pin_subpackage("bioconductor-panr", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:panr
@@ -47,4 +24,35 @@ extra:
     name: bioconductor-panr
     path: recipes/bioconductor-panr
     version: 1.28.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: snow
+requirements:
+  host:
+    - bioconductor-reder >=3.2.0,<3.3.0
+    - r-base
+    - r-igraph
+    - r-mass
+    - r-pvclust
+  run:
+    - bioconductor-reder >=3.2.0,<3.3.0
+    - r-base
+    - r-igraph
+    - r-mass
+    - r-pvclust
+
+source:
+  md5: 2b53dd76ced348d4cf0a191051886c42
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

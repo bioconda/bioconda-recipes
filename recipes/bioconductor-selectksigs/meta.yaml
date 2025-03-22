@@ -1,25 +1,33 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "selectKSigs" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 7d3257cd0a511c5fb850296e773f3141
+about:
+  description: A package to suggest the number of mutational signatures in a collection of somatic mutations using calculating the cross-validated perplexity score.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Selecting the number of mutational signatures using a perplexity-based measure and cross-validation
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-selectksigs", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, testthat, BiocStyle, ggplot2, dplyr, tidyr
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - 'bioconductor-hilda >=1.12.0,<1.13.0'
+    - bioconductor-hilda >=1.20.0,<1.21.0
     - r-base
     - r-gtools
     - r-magrittr
@@ -27,22 +35,21 @@ requirements:
     - libblas
     - liblapack
   run:
-    - 'bioconductor-hilda >=1.12.0,<1.13.0'
+    - bioconductor-hilda >=1.20.0,<1.21.0
     - r-base
     - r-gtools
     - r-magrittr
     - r-rcpp
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: 5c94b8595503af2cc228959d5b8d68f3
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Selecting the number of mutational signatures using a perplexity-based measure and cross-validation'
-  description: 'A package to suggest the number of mutational signatures in a collection of somatic mutations using calculating the cross-validated perplexity score.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

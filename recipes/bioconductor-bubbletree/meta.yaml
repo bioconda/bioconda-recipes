@@ -1,32 +1,45 @@
-{% set version = "2.28.0" %}
+{% set version = "2.36.0" %}
 {% set name = "BubbleTree" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 5de859d09914c8875949f216ee088047
+about:
+  description: CNV analysis in groups of tumor samples.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL (>= 3)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: 'BubbleTree: an intuitive visualization to elucidate tumoral aneuploidy and clonality in somatic mosaicism using next generation sequencing data'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-bubbletree", max_pin="x.x") }}'
+
+extra:
+  identifiers:
+    - biotools:bubbletree
+    - doi:10.1093/nar/gkv1102
+  parent_recipe:
+    name: bioconductor-bubbletree
+    path: recipes/bioconductor-bubbletree
+    version: 2.10.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocstyle >=2.26.0,<2.27.0'
-    - 'bioconductor-biovizbase >=1.46.0,<1.47.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-biovizbase >=1.54.0,<1.55.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-limma >=3.62.0,<3.63.0
     - r-base
     - r-dplyr
     - r-e1071
@@ -39,13 +52,13 @@ requirements:
     - r-rcolorbrewer
     - r-writexls
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocstyle >=2.26.0,<2.27.0'
-    - 'bioconductor-biovizbase >=1.46.0,<1.47.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-biovizbase >=1.54.0,<1.55.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-limma >=3.62.0,<3.63.0
     - r-base
     - r-dplyr
     - r-e1071
@@ -57,21 +70,16 @@ requirements:
     - r-plyr
     - r-rcolorbrewer
     - r-writexls
+
+source:
+  md5: acf0e813b99cba417798d192588822e0
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'LGPL (>= 3)'
-  summary: 'BubbleTree: an intuitive visualization to elucidate tumoral aneuploidy and clonality in somatic mosaicism using next generation sequencing data'
-  description: 'CNV analysis in groups of tumor samples.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
-extra:
-  identifiers:
-    - biotools:bubbletree
-    - doi:10.1093/nar/gkv1102
-  parent_recipe:
-    name: bioconductor-bubbletree
-    path: recipes/bioconductor-bubbletree
-    version: 2.10.0
+    - $R -e "library('{{ name }}')"
 

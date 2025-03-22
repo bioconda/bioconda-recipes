@@ -1,48 +1,57 @@
-{% set version = "1.4.0" %}
+{% set version = "1.12.0" %}
 {% set name = "biodbHmdb" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 4c625a5697d02e9ec649e24c689175fa
+about:
+  description: The biodbHmdb library is an extension of the biodb framework package that provides access to the HMDB Metabolites database. It allows to download the whole HMDB Metabolites database locally, access entries and search for entries by name or description. A future version of this package will also include a search by mass and mass spectra annotation.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: AGPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+  summary: biodbHmdb, a library for connecting to the HMDB Database
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-biodbhmdb", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, roxygen2, devtools, testthat (>= 2.0.0), knitr, rmarkdown, covr, lgr
 requirements:
-  host:
-    - 'bioconductor-biodb >=1.6.0,<1.7.0'
-    - r-base
-    - r-r6
-    - r-rcpp
-    - r-testthat
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biodb >=1.6.0,<1.7.0'
-    - r-base
-    - r-r6
-    - r-rcpp
-    - r-testthat
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+  host:
+    - bioconductor-biodb >=1.14.0,<1.15.0
+    - r-base
+    - r-r6
+    - r-rcpp
+    - r-testthat
+    - r-zip
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biodb >=1.14.0,<1.15.0
+    - r-base
+    - r-r6
+    - r-rcpp
+    - r-testthat
+    - r-zip
+
+source:
+  md5: 0333d0ac49b6de03426e7709fa2ca1ac
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: AGPL-3
-  summary: 'biodbHmdb, a library for connecting to the HMDB Database'
-  description: 'The biodbHmdb library is an extension of the biodb framework package that provides access to the HMDB Metabolites database. It allows to download the whole HMDB Metabolites database locally, access entries and search for entries by name or description. A future version of this package will also include a search by mass and mass spectra annotation.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+    - $R -e "library('{{ name }}')"
 

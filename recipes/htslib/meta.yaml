@@ -1,30 +1,25 @@
-{% set version = "1.16" %}
+{% set version = "1.21" %}
 
 package:
   name: htslib
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('htslib', max_pin='x.x') }}
 
 source:
   url: https://github.com/samtools/htslib/releases/download/{{ version }}/htslib-{{ version }}.tar.bz2
-  sha256: 606b7c7aff73734cf033ecd156f40529fa5792f54524952a28938ca0890d7924
+  sha256: 84b510e735f4963641f26fd88c8abdee81ff4cb62168310ae716636aac0f1823
+  patches:
+    - arm_hwcap.patch
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
   host:
-    - libcurl
-    - bzip2
-    - xz
-    - zlib
-    - libdeflate
-    - openssl  # [not osx]
-  run:
     - libcurl
     - bzip2
     - xz
@@ -47,9 +42,15 @@ test:
 about:
   home: https://github.com/samtools/htslib
   license: MIT
+  license_family: MIT
+  license_file: LICENSE
   summary: C library for high-throughput sequencing data formats.
+  doc_url: http://www.htslib.org/
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:HTSlib
   skip-lints:

@@ -1,59 +1,100 @@
-{% set version = "1.2.0" %}
+{% set version = "2.6.0" %}
 {% set name = "COTAN" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: ee4bcf7168bf9c2660df2a703c5417bf
+about:
+  description: Statistical and computational method to analyze the co-expression of gene pairs at single cell level. It provides the foundation for single-cell gene interactome analysis. The basic idea is studying the zero UMI counts' distribution instead of focusing on positive counts; this is done with a generalized contingency tables framework. COTAN can effectively assess the correlated or anti-correlated expression of gene pairs. It provides a numerical index related to the correlation and an approximate p-value for the associated independence test. COTAN can also evaluate whether single genes are differentially expressed, scoring them with a newly defined global differentiation index. Moreover, this approach provides ways to plot and cluster genes according to their co-expression pattern with other genes, effectively helping the study of gene interactions and becoming a new tool to identify cell-identity marker genes.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: COexpression Tables ANalysis
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: testthat (>= 3.0.0), spelling, knitr, data.table, R.utils, tidyverse, rmarkdown, htmlwidgets, MASS, factoextra, Rtsne, plotly, dendextend, BiocStyle, cowplot
+  run_exports: '{{ pin_subpackage("bioconductor-cotan", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat (>= 3.2.0), proto, spelling, knitr, data.table, gsubfn, R.utils, tidyverse, rmarkdown, htmlwidgets, MASS, Rtsne, plotly, BiocStyle, cowplot, qpdf, GEOquery, sf, torch
 requirements:
+
   host:
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
+    - bioconductor-biocsingular >=1.22.0,<1.23.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-pcatools >=2.18.0,<2.19.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-assertthat
     - r-base
     - r-circlize
+    - r-dendextend
     - r-dplyr
     - r-ggplot2
     - r-ggrepel
-    - r-irlba
+    - r-ggthemes
     - r-matrix
+    - r-paralleldist
+    - r-parallelly
+    - r-plyr
+    - r-rcolorbrewer
     - r-rfast
     - r-rlang
     - r-scales
+    - r-seurat
+    - r-stringr
     - r-tibble
     - r-tidyr
+    - r-umap
+    - r-withr
+    - r-zeallot
+
   run:
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
+    - bioconductor-biocsingular >=1.22.0,<1.23.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-pcatools >=2.18.0,<2.19.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-assertthat
     - r-base
     - r-circlize
+    - r-dendextend
     - r-dplyr
     - r-ggplot2
     - r-ggrepel
-    - r-irlba
+    - r-ggthemes
     - r-matrix
+    - r-paralleldist
+    - r-parallelly
+    - r-plyr
+    - r-rcolorbrewer
     - r-rfast
     - r-rlang
     - r-scales
+    - r-seurat
+    - r-stringr
     - r-tibble
     - r-tidyr
+    - r-umap
+    - r-withr
+    - r-zeallot
+
+source:
+  md5: 3793761f685365e4c421eba140208990
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'COexpression Tables ANalysis'
-  description: 'Statistical and computational method to analyze the co-expression of gene pairs at single cell level. It provides the foundation for single-cell gene interactome analysis. The basic idea is studying the zero UMI counts'' distribution instead of focusing on positive counts; this is done with a generalized contingency tables framework. COTAN can effectively assess the correlated or anti-correlated expression of gene pairs. It provides a numerical index related to the correlation and an approximate p-value for the associated independence test. COTAN can also evaluate whether single genes are differentially expressed, scoring them with a newly defined global differentiation index. Moreover, this approach provides ways to plot and cluster genes according to their co-expression pattern with other genes, effectively helping the study of gene interactions and becoming a new tool to identify cell-identity marker genes.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

@@ -1,5 +1,5 @@
 {% set name = "pyfamsa" %}
-{% set version = "0.2.0" %}
+{% set version = "0.5.3.post1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,26 +7,29 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 26b04a709d5cb7317c89141e7d6edc2e0d3af16f4c002b2e59e33ab145d199dd
+  sha256: 26e95de13adce18e923847591681f085a35fab20eac76887deb6ad12f1b6a06c
 
 build:
   number: 0
-  skip: True  #[py2k]
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv"
+  run_exports:
+    - {{ pin_subpackage('pyfamsa', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - cmake
+    - make
   host:
     - python
     - pip
     - cython
-    - setuptools
-    - semantic_version
+    - scikit-build-core
+    - scoring-matrices >=0.2
   run:
     - python
-    - setuptools
+    - scoring-matrices >=0.2
 
 test:
   imports:
@@ -36,12 +39,16 @@ test:
 
 about:
   home: https://github.com/althonos/pyfamsa
-  license: GPL-3
-  license_family: GPL
+  license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: COPYING
-  summary: Cython bindings and Python interface to FAMSA, an algorithm for ultra-scale multiple sequence alignments.
-  doc_url: https://pyfamsa.readthedocs.org/
+  summary: "Cython bindings and Python interface to FAMSA, an algorithm for ultra-scale multiple sequence alignments."
+  doc_url: https://pyfamsa.readthedocs.org
+  dev_url: https://github.com/althonos/pyfamsa
 
 extra:
   recipe-maintainers:
     - althonos
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

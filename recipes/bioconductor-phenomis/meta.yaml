@@ -1,33 +1,37 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "phenomis" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 74f32c4f3aaf13cb4f826dfe9b953914
+about:
+  description: The 'phenomis' package provides methods to perform post-processing (i.e. quality control and normalization) as well as univariate statistical analysis of single and multi-omics data sets. These methods include quality control metrics, signal drift and batch effect correction, intensity transformation, univariate hypothesis testing, but also clustering (as well as annotation of metabolomics data). The data are handled in the standard Bioconductor formats (i.e. SummarizedExperiment and MultiAssayExperiment for single and multi-omics datasets, respectively; the alternative ExpressionSet and MultiDataSet formats are also supported for convenience). As a result, all methods can be readily chained as workflows. The pipeline can be further enriched by multivariate analysis and feature selection, by using the 'ropls' and 'biosigner' packages, which support the same formats. Data can be conveniently imported from and exported to text files. Although the methods were initially targeted to metabolomics data, most of the methods can be applied to other types of omics data (e.g., transcriptomics, proteomics).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: CeCILL
+  summary: Postprocessing and univariate analysis of omics data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-phenomis", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocGenerics, BiocStyle, biosigner, CLL, knitr, omicade4, rmarkdown, testthat
 requirements:
+
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biodb >=1.6.0,<1.7.0'
-    - 'bioconductor-biodbchebi >=1.4.0,<1.5.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-multiassayexperiment >=1.24.0,<1.25.0'
-    - 'bioconductor-multidataset >=1.26.0,<1.27.0'
-    - 'bioconductor-ropls >=1.30.0,<1.31.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biodb >=1.14.0,<1.15.0
+    - bioconductor-biodbchebi >=1.12.0,<1.13.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-multiassayexperiment >=1.32.0,<1.33.0
+    - bioconductor-multidataset >=1.34.0,<1.35.0
+    - bioconductor-ropls >=1.38.0,<1.39.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-data.table
     - r-futile.logger
@@ -42,15 +46,16 @@ requirements:
     - r-tibble
     - r-tidyr
     - r-venndiagram
+
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biodb >=1.6.0,<1.7.0'
-    - 'bioconductor-biodbchebi >=1.4.0,<1.5.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-multiassayexperiment >=1.24.0,<1.25.0'
-    - 'bioconductor-multidataset >=1.26.0,<1.27.0'
-    - 'bioconductor-ropls >=1.30.0,<1.31.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biodb >=1.14.0,<1.15.0
+    - bioconductor-biodbchebi >=1.12.0,<1.13.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-multiassayexperiment >=1.32.0,<1.33.0
+    - bioconductor-multidataset >=1.34.0,<1.35.0
+    - bioconductor-ropls >=1.38.0,<1.39.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-data.table
     - r-futile.logger
@@ -65,12 +70,16 @@ requirements:
     - r-tibble
     - r-tidyr
     - r-venndiagram
+
+source:
+  md5: 73d059932bb380964ca38e2fa1a550a3
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: CeCILL
-  summary: 'Postprocessing and univariate analysis of omics data'
-  description: 'The ''phenomis'' package provides methods to perform post-processing (i.e. quality control and normalization) as well as univariate statistical analysis of single and multi-omics data sets. These methods include quality control metrics, signal drift and batch effect correction, intensity transformation, univariate hypothesis testing, but also clustering (as well as annotation of metabolomics data). The data are handled in the standard Bioconductor formats (i.e. SummarizedExperiment and MultiAssayExperiment for single and multi-omics datasets, respectively; the alternative ExpressionSet and MultiDataSet formats are also supported for convenience). As a result, all methods can be readily chained as workflows. The pipeline can be further enriched by multivariate analysis and feature selection, by using the ''ropls'' and ''biosigner'' packages, which support the same formats. Data can be conveniently imported from and exported to text files. Although the methods were initially targeted to metabolomics data, most of the methods can be applied to other types of omics data (e.g., transcriptomics, proteomics).'
+    - $R -e "library('{{ name }}')"
 

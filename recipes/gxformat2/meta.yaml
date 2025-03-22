@@ -1,5 +1,5 @@
 {% set name = "gxformat2" %}
-{% set version = "0.17.0" %}
+{% set version = "0.20.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,22 +7,30 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: f04b19b74f03bc84b21cc1882dc55d7dc914c05a0ebec3c5369d130c66d308cc
+  sha256: 9697b1548c7a016e211581831c48242718f2cbe8987c7db0dc75c20e65931df8
 
 build:
   number: 0
   noarch: python
-  preserve_egg_dir: True
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  entry_points:
+    - gxwf-to-native = gxformat2.converter:main
+    - gxwf-to-format2 = gxformat2.export:main
+    - gxwf-lint = gxformat2.lint:main
+    - gxwf-viz = gxformat2.cytoscape:main
+    - gxwf-abstract-export = gxformat2.abstract:main
+  run_exports:
+    - {{ pin_subpackage('gxformat2', max_pin="x.x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.7
     - pip
   run:
-    - python
-    - pyyaml
+    - python >=3.7
     - bioblend
+    - pyyaml
+    - schema-salad >=8.2
     - six >=1.9.0
 
 test:
@@ -31,6 +39,8 @@ test:
 
 about:
   home: https://github.com/jmchilton/gxformat2
-  license: AFL-3.0-only
+  license: MIT
   summary: 'Galaxy Workflow Format 2 Descriptions'
-  license_family: OTHER
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/jmchilton/gxformat2

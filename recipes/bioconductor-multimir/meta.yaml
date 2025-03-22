@@ -1,49 +1,56 @@
-{% set version = "1.20.0" %}
+{% set version = "1.28.0" %}
 {% set name = "multiMiR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: e828c9713bc9cd6be6545396da969f74
+about:
+  description: A collection of microRNAs/targets from external resources, including validated microRNA-target databases (miRecords, miRTarBase and TarBase), predicted microRNA-target databases (DIANA-microT, ElMMo, MicroCosm, miRanda, miRDB, PicTar, PITA and TargetScan) and microRNA-disease/drug databases (miR2Disease, Pharmaco-miR VerSe and PhenomiR).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Integration of multiple microRNA-target databases with their disease and drug associations
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-multimir", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, edgeR, knitr, rmarkdown, testthat (>= 1.0.2)
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
     - r-base
     - r-dplyr
-    - 'r-purrr >=0.2.2'
+    - r-purrr >=0.2.2
     - r-rcurl
-    - 'r-tibble >=1.2'
+    - r-tibble >=2.0
     - r-xml
   run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
     - r-base
     - r-dplyr
-    - 'r-purrr >=0.2.2'
+    - r-purrr >=0.2.2
     - r-rcurl
-    - 'r-tibble >=1.2'
+    - r-tibble >=2.0
     - r-xml
+
+source:
+  md5: b99c3f147f539b220544149f38b69f10
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Integration of multiple microRNA-target databases with their disease and drug associations'
-  description: 'A collection of microRNAs/targets from external resources, including validated microRNA-target databases (miRecords, miRTarBase and TarBase), predicted microRNA-target databases (DIANA-microT, ElMMo, MicroCosm, miRanda, miRDB, PicTar, PITA and TargetScan) and microRNA-disease/drug databases (miR2Disease, Pharmaco-miR VerSe and PhenomiR).'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

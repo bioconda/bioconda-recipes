@@ -1,23 +1,38 @@
-{% set version = "1.48.0" %}
+{% set version = "1.56.0" %}
 {% set name = "survcomp" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: dd57b9cd18086ae87f150c7032c9fb68
+about:
+  description: Assessment and Comparison for Performance of Risk Prediction (Survival) Models.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Performance Assessment and Comparison for Survival Analysis
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-survcomp", max_pin="x.x") }}'
+
+extra:
+  identifiers:
+    - biotools:survcomp
+  parent_recipe:
+    name: bioconductor-survcomp
+    path: recipes/bioconductor-survcomp
+    version: 1.30.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: Hmisc, clinfun, xtable, Biobase, BiocManager
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
     - r-base
     - r-bootstrap
@@ -40,23 +55,16 @@ requirements:
     - r-suppdists
     - r-survival
     - r-survivalroc
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: d1c0e8e9725b9bff15c03e5911af86a9
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Performance Assessment and Comparison for Survival Analysis'
-  description: 'Assessment and Comparison for Performance of Risk Prediction (Survival) Models.'
-extra:
-  identifiers:
-    - biotools:survcomp
-  parent_recipe:
-    name: bioconductor-survcomp
-    path: recipes/bioconductor-survcomp
-    version: 1.30.0
+    - $R -e "library('{{ name }}')"
 

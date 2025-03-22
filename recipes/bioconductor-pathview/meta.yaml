@@ -1,53 +1,22 @@
-{% set version = "1.38.0" %}
+{% set version = "1.46.0" %}
 {% set name = "pathview" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 74fb173381014b8c5d4cdbdbdd1e2e21
+about:
+  description: Pathview is a tool set for pathway based data integration and visualization. It maps and renders a wide variety of biological data on relevant pathway graphs. All users need is to supply their data and specify the target pathway. Pathview automatically downloads the pathway graph data, parses the data file, maps user data to the pathway, and render pathway graph with the mapped data. In addition, Pathview also seamlessly integrates with pathway and gene set (enrichment) analysis tools for large-scale and fully automated analysis.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=3.0)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: a tool set for pathway based data integration and visualization
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: gage, org.Mm.eg.db, RUnit, BiocGenerics
-requirements:
-  host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-kegggraph >=1.58.0,<1.59.0'
-    - 'bioconductor-keggrest >=1.38.0,<1.39.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-rgraphviz >=2.42.0,<2.43.0'
-    - r-base
-    - r-png
-    - r-xml
-  run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-kegggraph >=1.58.0,<1.59.0'
-    - 'bioconductor-keggrest >=1.38.0,<1.39.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-rgraphviz >=2.42.0,<2.43.0'
-    - r-base
-    - r-png
-    - r-xml
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>=3.0)'
-  summary: 'a tool set for pathway based data integration and visualization'
-  description: 'Pathview is a tool set for pathway based data integration and visualization. It maps and renders a wide variety of biological data on relevant pathway graphs. All users need is to supply their data and specify the target pathway. Pathview automatically downloads the pathway graph data, parses the data file, maps user data to the pathway, and render pathway graph with the mapped data. In addition, Pathview also seamlessly integrates with pathway and gene set (enrichment) analysis tools for large-scale and fully automated analysis.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-pathview", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:pathview
@@ -55,4 +24,43 @@ extra:
     name: bioconductor-pathview
     path: recipes/bioconductor-pathview
     version: 1.20.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: gage, org.Mm.eg.db, org.EcK12.eg.db, RUnit, BiocGenerics
+requirements:
+  host:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-kegggraph >=1.66.0,<1.67.0
+    - bioconductor-keggrest >=1.46.0,<1.47.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
+    - r-base
+    - r-png
+    - r-xml
+  run:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-kegggraph >=1.66.0,<1.67.0
+    - bioconductor-keggrest >=1.46.0,<1.47.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
+    - r-base
+    - r-png
+    - r-xml
+
+source:
+  md5: 3cb3d45ea299c1d3d947cfd06b61b75e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

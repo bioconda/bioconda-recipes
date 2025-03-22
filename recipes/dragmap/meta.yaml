@@ -9,10 +9,18 @@ package:
 source:
   url: https://github.com/Illumina/DRAGMAP/archive/refs/tags/{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - overflow.patch  # Don't break with CHM13 (https://github.com/Illumina/DRAGMAP/pull/55)
+    - PG.patch        # Remove extra space in @PG line after ID: (https://github.com/Illumina/DRAGMAP/pull/14)
+    - contigs.patch   # Handle large numbers of contigs (https://github.com/Illumina/DRAGMAP/pull/56)
+    - cstdint.patch   # Patch around missing cstdint
+    - boost.patch     # Fix boost
 
 build:
-  number: 1
+  number: 5
   skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage("dragmap", max_pin="x.x") }}
 
 requirements:
   build:

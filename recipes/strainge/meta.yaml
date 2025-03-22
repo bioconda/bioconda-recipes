@@ -1,5 +1,5 @@
 {% set name = "strainge" %}
-{% set version = "1.3.7" %}
+{% set version = "1.3.9" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,16 +7,18 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: f73bbd9f5e1e4775ee070fc681eadeaba6bd6ab4300bda68144d9e669502c9b5
+  sha256: a056798fdadf9cb9d12675cb421508c0605e637f4a5baf468eca32922ed30d08
 
 build:
-  number: 0
-  skip: true  # [py<38]
+  number: 1
+  skip: True  # [py < 38]
   entry_points:
     - strainge=strainge.cli.main:strainge_cli
     - straingst=strainge.cli.main:straingst_cli
     - straingr=strainge.cli.main:straingr_cli
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-cache-dir --no-deps -vvv
+  run_exports:
+    - {{ pin_subpackage("strainge", max_pin="x") }}
 
 requirements:
   build:
@@ -26,18 +28,19 @@ requirements:
     - pip
     - pybind11 >=2.2
     - numpy
+    - toml
+    - versioneer
     - zlib
   run:
     - python
-    - numpy
-    - pybind11 >=2.2
+    - {{ pin_compatible('numpy') }}
     - h5py
     - intervaltree
     - matplotlib-base
-    - scikit-bio >=0.5
+    - scikit-bio >=0.5.8
     - scikit-learn >=0.24
     - pysam >=0.10
-    - scipy <1.9
+    - scipy
 
 test:
   imports:
@@ -55,7 +58,11 @@ about:
   license_family: BSD
   license_file: LICENSE
   summary: "Strain Genome Explorer: a tool suite for tracking and characterizing low-abundance strains."
+  dev_url: https://github.com/broadinstitute/strainge
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - lrvdijk

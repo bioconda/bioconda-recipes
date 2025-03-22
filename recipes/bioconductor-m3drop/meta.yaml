@@ -1,25 +1,39 @@
-{% set version = "1.24.0" %}
+{% set version = "1.32.0" %}
 {% set name = "M3Drop" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 6cc8e23c85dfa49d27da4b66e21aabfe
+about:
+  description: This package fits a model to the pattern of dropouts in single-cell RNASeq data. This model is used as a null to identify significantly variable (i.e. differentially expressed) genes for use in downstream analysis, such as clustering cells. Also includes an method for calculating exact Pearson residuals in UMI-tagged data using a library-size aware negative binomial model.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Michaelis-Menten Modelling of Dropouts in single-cell RNASeq
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: ROCR, knitr, M3DExampleData, scater, SingleCellExperiment, monocle, Seurat, Biobase
+  run_exports: '{{ pin_subpackage("bioconductor-m3drop", max_pin="x.x") }}'
+
+extra:
+  identifiers:
+    - biotools:m3drop
+    - doi:10.1002/1873-3468.12684
+  parent_recipe:
+    name: bioconductor-m3drop
+    path: recipes/bioconductor-m3drop
+    version: 1.8.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: ROCR, knitr, M3DExampleData, SingleCellExperiment, Seurat, Biobase
 requirements:
   host:
+    - bioconductor-scater >=1.34.0,<1.35.0
     - r-base
     - r-bbmle
     - r-gplots
@@ -32,6 +46,7 @@ requirements:
     - r-reldist
     - r-statmod
   run:
+    - bioconductor-scater >=1.34.0,<1.35.0
     - r-base
     - r-bbmle
     - r-gplots
@@ -43,21 +58,16 @@ requirements:
     - r-rcolorbrewer
     - r-reldist
     - r-statmod
+
+source:
+  md5: 65a23be10bdfae99a3245ad2f1c10ba8
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>=2)'
-  summary: 'Michaelis-Menten Modelling of Dropouts in single-cell RNASeq'
-  description: 'This package fits a Michaelis-Menten model to the pattern of dropouts in single-cell RNASeq data. This model is used as a null to identify significantly variable (i.e. differentially expressed) genes for use in downstream analysis, such as clustering cells.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-extra:
-  identifiers:
-    - biotools:m3drop
-    - doi:10.1002/1873-3468.12684
-  parent_recipe:
-    name: bioconductor-m3drop
-    path: recipes/bioconductor-m3drop
-    version: 1.8.0
+    - $R -e "library('{{ name }}')"
 

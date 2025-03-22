@@ -1,39 +1,41 @@
-{% set version = "1.38.0" %}
+{% set version = "1.46.0" %}
 {% set name = "CNORfeeder" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: bd08b30eb1f73ae6e10a712c8e3ae940
+about:
+  description: This package integrates literature-constrained and data-driven methods to infer signalling networks from perturbation experiments. It permits to extends a given network with links derived from the data via various inference methods and uses information on physical interactions of proteins to guide and validate the integration of links.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Integration of CellNOptR to add missing links
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: minet, catnet, Rgraphviz, RUnit, BiocGenerics, igraph
+  run_exports: '{{ pin_subpackage("bioconductor-cnorfeeder", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: minet, Rgraphviz, RUnit, BiocGenerics, igraph
 requirements:
   host:
-    - 'bioconductor-cellnoptr >=1.44.0,<1.45.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
+    - bioconductor-cellnoptr >=1.52.0,<1.53.0
+    - bioconductor-graph >=1.84.0,<1.85.0
     - r-base
   run:
-    - 'bioconductor-cellnoptr >=1.44.0,<1.45.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
+    - bioconductor-cellnoptr >=1.52.0,<1.53.0
+    - bioconductor-graph >=1.84.0,<1.85.0
     - r-base
+source:
+  md5: d3605757ae1d4c8fe6cfff19fc9680c9
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Integration of CellNOptR to add missing links'
-  description: 'This package integrates literature-constrained and data-driven methods to infer signalling networks from perturbation experiments. It permits to extends a given network with links derived from the data via various inference methods and uses information on physical interactions of proteins to guide and validate the integration of links.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "kidpack-1.40.0"
+installBiocDataPackage.sh "kidpack-1.48.0"

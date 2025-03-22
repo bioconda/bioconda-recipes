@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "mouse4302barcodevecs-1.35.0"
+installBiocDataPackage.sh "mouse4302barcodevecs-1.44.0"

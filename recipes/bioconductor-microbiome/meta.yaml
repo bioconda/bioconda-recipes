@@ -1,27 +1,37 @@
-{% set version = "1.20.0" %}
+{% set version = "1.28.0" %}
 {% set name = "microbiome" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: c43968ac013d507e53ad62db6e172973
+about:
+  description: Utilities for microbiome analysis.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: BSD_2_clause + file LICENSE
+  license_file: LICENSE
+  summary: Microbiome Analytics
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-microbiome", max_pin="x.x") }}'
+
+extra:
+  parent_recipe:
+    name: bioconductor-microbiome
+    path: recipes/bioconductor-microbiome
+    version: 1.2.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocGenerics, BiocStyle, Cairo, knitr, rmarkdown, testthat
 requirements:
   host:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-phyloseq >=1.42.0,<1.43.0'
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-phyloseq >=1.50.0,<1.51.0
     - r-base
     - r-compositions
     - r-dplyr
@@ -33,8 +43,8 @@ requirements:
     - r-tidyr
     - r-vegan
   run:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-phyloseq >=1.42.0,<1.43.0'
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-phyloseq >=1.50.0,<1.51.0
     - r-base
     - r-compositions
     - r-dplyr
@@ -45,18 +55,16 @@ requirements:
     - r-tibble
     - r-tidyr
     - r-vegan
+
+source:
+  md5: 25d79565e12d9b23303b8631b926497a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'BSD_2_clause + file LICENSE'
-  summary: 'Microbiome Analytics'
-  description: 'Utilities for microbiome analysis.'
-  license_file: LICENSE
-extra:
-  parent_recipe:
-    name: bioconductor-microbiome
-    path: recipes/bioconductor-microbiome
-    version: 1.2.1
+    - $R -e "library('{{ name }}')"
 

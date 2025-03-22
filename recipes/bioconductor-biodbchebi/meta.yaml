@@ -1,39 +1,41 @@
-{% set version = "1.4.0" %}
+{% set version = "1.12.0" %}
 {% set name = "biodbChebi" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 0582144179a30a8feb6f001330e8ce80
+about:
+  description: The biodbChebi library provides access to the ChEBI Database, using biodb package framework. It allows to retrieve entries by their accession number. Web services can be accessed for searching the database by name, mass or other fields.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: AGPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+  summary: biodbChebi, a library for connecting to the ChEBI Database
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-biodbchebi", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: BiocStyle, roxygen2, devtools, testthat (>= 2.0.0), knitr, rmarkdown, lgr
 requirements:
   host:
-    - 'bioconductor-biodb >=1.6.0,<1.7.0'
+    - bioconductor-biodb >=1.14.0,<1.15.0
     - r-base
     - r-r6
   run:
-    - 'bioconductor-biodb >=1.6.0,<1.7.0'
+    - bioconductor-biodb >=1.14.0,<1.15.0
     - r-base
     - r-r6
+source:
+  md5: 60d18795d94f834ec183ef0ccfaf4b3d
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: AGPL-3
-  summary: 'biodbChebi, a library for connecting to the ChEBI Database'
-  description: 'The biodbChebi library provides access to the ChEBI Database, using biodb package framework. It allows to retrieve entries by their accession number. Web services can be accessed for searching the database by name, mass or other fields.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+    - $R -e "library('{{ name }}')"
 

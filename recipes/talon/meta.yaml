@@ -1,4 +1,4 @@
-{% set version = "5.0" %}
+{% set version = "6.0.1" %}
 
 package:
   name: talon
@@ -6,30 +6,46 @@ package:
 
 source:
   url: https://github.com/mortazavilab/TALON/archive/v{{ version }}.zip
-  sha256: d64cf0f602be5e8cac989e7ddaa6d82c0455f94f29368782348adf36feaf0a24
-
+  sha256: 62f5681c1d067c451a6879c927c62ca47bf640745cdc24e9529e7ef0ac01d689
 
 build:
   noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps -vvv
+  entry_points:
+    - talon=talon.talon:main
+    - talon_label_reads=talon.talon_label_reads:main
+    - talon_initialize_database=talon.initialize_talon_database:main
+    - talon_filter_transcripts=talon.post.filter_talon_transcripts:main
+    - talon_abundance=talon.post.create_abundance_file_from_database:main
+    - talon_create_GTF=talon.post.create_GTF_from_database:main
+    - talon_create_adata=talon.post.create_anndata_from_database:main
+    - talon_reformat_gtf=talon.reformat_gtf:main
+    - talon_generate_report=talon.post.generate_talon_report:main
+    - talon_summarize=talon.post.summarize_datasets:main
+    - talon_fetch_reads=talon.post.get_read_annotations:main
+    - talon_get_sjs=talon.post.get_transcript_sjs:main
+    - talon_longest_end=talon.post.call_longest_ends:main
+  run_exports:
+    - {{ pin_subpackage('talon', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.6,<=3.7
+    - python >=3.6,<3.8
     - pip
- 
   run:
-    - python >=3.6,<=3.7
+    - python >=3.6,<3.8
+    - bamread >=0.0.11
     - pandas
     - pybedtools
+    - pyranges
     - pysam >=0.15.4
     - pyfaidx
-   
+    - scanpy
 
 test:
   commands:
-    - talon --help 2>&1 | grep usage 
+    - talon --help 2>&1 | grep usage
     - talon_label_reads --help
     - talon_initialize_database --help
     - talon_filter_transcripts --help
@@ -38,6 +54,8 @@ test:
 about:
   home: https://github.com/mortazavilab/TALON
   license: MIT
+  license_family: MIT
+  license_file: LICENSE
   summary: |
     TALON is a Python package for identifying and quantifying known and novel 
     genes/isoforms in long-read transcriptome data sets. TALON is 

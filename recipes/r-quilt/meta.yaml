@@ -1,17 +1,19 @@
-{% set version = "1.0.3" %}
-{% set sha256 = "4ef44650be6d58f35c1d60c2a7d93912a628dfad6b9111a8c89c4512d4e6f3b3" %}
+{% set name = "r-quilt" %}
+{% set version = "2.0.1" %}
+{% set sha256 = "6e0f041641c96014b879a7fea6c0cc21351a83e8ba938c828c07a0c297574eba" %}
 
 package:
-  name: r-quilt
+  name: '{{ name }}'
   version: '{{ version }}'
 
 source:
-  url: https://github.com/rwdavies/quilt/releases/download/{{ version }}/QUILT_{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  - url: https://github.com/rwdavies/QUILT/archive/refs/tags/{{ version }}.tar.gz
+    sha256: '{{ sha256 }}'
 
 build:
-  number: 2
-  script: '$R CMD INSTALL --build --install-tests .'
+  number: 1
+  run_exports:
+        - {{ pin_subpackage('r-quilt', max_pin="x") }}
 
 requirements:
   build:
@@ -19,47 +21,37 @@ requirements:
     - {{ compiler('cxx') }}
   host:
     - r-base
-    - r-rcpp >=0.12.18
-    - r-rcpparmadillo >=0.8.600.0.0
-    - r-data.table >=1.11.8
+    - r-rcpp <=1.0.12
+    - r-rcppeigen
     - r-rrbgen >=0.0.6
-    - r-stitch >=1.6.6
-    - xz
-    - gmp
-    - mpfr
-    - mpc >=1.1.0
-    - libblas    
-    - zlib
+    - r-stitch >=1.7.0
+    - r-mspbwt >=0.1.0
   run:
     - r-base
-    - r-rcpp >=0.12.18
-    - r-rcpparmadillo >=0.8.600.0.0
-    - r-data.table >=1.11.8
+    - r-rcpp <=1.0.12
+    - r-rcppeigen
     - r-rrbgen >=0.0.6
-    - r-stitch >=1.6.6    
-    - xz
-    - gmp
-    - mpfr
-    - mpc >=1.1.0
-    - r-testthat >=2.0.0
-    - htslib >=1.4
-    - samtools >=1.4
-    - rsync  
-    - zlib
+    - r-stitch >=1.7.0
+    - r-mspbwt >=0.1.0
+    - r-optparse
 
 test:
   commands:
     - $R -e "library('QUILT');  testthat::test_package('QUILT', stop_on_failure = TRUE, stop_on_warning = TRUE, filter = 'acceptance-one', reporter = 'summary')"
+    - 'QUILT.R --help'
 
 about:
   home: https://github.com/rwdavies/quilt
-  license: GPL-3.0-only
+  license: "GPL-3.0-only"
   license_family: GPL3
   license_file: LICENSE
-  summary: Read aware low coverage whole genome sequence imputation from a reference panel
+  summary: "Rapid and accurate genotype imputation from low coverage short read, long read, and cell free DNA sequence."
   doc_url: https://github.com/rwdavies/quilt
   dev_url: https://github.com/rwdavies/quilt
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
+    - Zilong-Li
     - rwdavies

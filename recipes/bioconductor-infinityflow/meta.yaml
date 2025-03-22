@@ -1,27 +1,31 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "infinityFlow" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: ca6052aa905a58bc1f4c810b7b0769f2
+about:
+  description: Pipeline to analyze and merge data files produced by BioLegend's LEGENDScreen or BD Human Cell Surface Marker Screening Panel (BD Lyoplates).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Augmenting Massively Parallel Cytometry Experiments Using Multivariate Non-Linear Regressions
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-infinityflow", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, keras, tensorflow, glmnetUtils, e1071
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
     - r-base
     - r-generics
     - r-gtools
@@ -32,8 +36,8 @@ requirements:
     - r-uwot
     - r-xgboost
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
     - r-base
     - r-generics
     - r-gtools
@@ -43,13 +47,16 @@ requirements:
     - r-raster
     - r-uwot
     - r-xgboost
+
+source:
+  md5: 401db5ce8ade415fa555be18af55eae2
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Augmenting Massively Parallel Cytometry Experiments Using Multivariate Non-Linear Regressions'
-  description: 'Pipeline to analyze and merge data files produced by BioLegend''s LEGENDScreen or BD Human Cell Surface Marker Screening Panel (BD Lyoplates).'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

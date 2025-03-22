@@ -1,33 +1,37 @@
-{% set version = "1.4.0" %}
+{% set version = "1.12.0" %}
 {% set name = "scTreeViz" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: dbc0c09c7df3c30b7469ad195ed5697e
+about:
+  description: scTreeViz provides classes to support interactive data aggregation and visualization of single cell RNA-seq datasets with hierarchies for e.g. cell clusters at different resolutions. The `TreeIndex` class provides methods to manage hierarchy and split the tree at a given resolution or across resolutions. The `TreeViz` class extends `SummarizedExperiment` and can performs quick aggregations on the count matrix defined by clusters.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: R/Bioconductor package to interactively explore and visualize single cell RNA-seq datasets with hierarhical annotations
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-sctreeviz", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, BiocStyle, testthat, SC3, scRNAseq, rmarkdown, msd16s, metagenomeSeq, epivizrStandalone, GenomeInfoDb
 requirements:
+
   host:
-    - 'bioconductor-epivizr >=2.28.0,<2.29.0'
-    - 'bioconductor-epivizrdata >=1.26.0,<1.27.0'
-    - 'bioconductor-epivizrserver >=1.26.0,<1.27.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-scater >=1.26.0,<1.27.0'
-    - 'bioconductor-scran >=1.26.0,<1.27.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-epivizr >=2.36.0,<2.37.0
+    - bioconductor-epivizrdata >=1.34.0,<1.35.0
+    - bioconductor-epivizrserver >=1.34.0,<1.35.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-scater >=1.34.0,<1.35.0
+    - bioconductor-scran >=1.34.0,<1.35.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-clustree
     - r-data.table
@@ -40,15 +44,16 @@ requirements:
     - r-rtsne
     - r-seurat
     - r-sys
+
   run:
-    - 'bioconductor-epivizr >=2.28.0,<2.29.0'
-    - 'bioconductor-epivizrdata >=1.26.0,<1.27.0'
-    - 'bioconductor-epivizrserver >=1.26.0,<1.27.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-scater >=1.26.0,<1.27.0'
-    - 'bioconductor-scran >=1.26.0,<1.27.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-epivizr >=2.36.0,<2.37.0
+    - bioconductor-epivizrdata >=1.34.0,<1.35.0
+    - bioconductor-epivizrserver >=1.34.0,<1.35.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-scater >=1.34.0,<1.35.0
+    - bioconductor-scran >=1.34.0,<1.35.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-clustree
     - r-data.table
@@ -61,12 +66,16 @@ requirements:
     - r-rtsne
     - r-seurat
     - r-sys
+
+source:
+  md5: 8c96789f4dd4d0338e36fa08172d47d1
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'R/Bioconductor package to interactively explore and visualize single cell RNA-seq datasets with hierarhical annotations'
-  description: 'scTreeViz provides classes to support interactive data aggregation and visualization of single cell RNA-seq datasets with hierarchies for e.g. cell clusters at different resolutions. The `TreeIndex` class provides methods to manage hierarchy and split the tree at a given resolution or across resolutions. The `TreeViz` class extends `SummarizedExperiment` and can performs quick aggregations on the count matrix defined by clusters.'
+    - $R -e "library('{{ name }}')"
 

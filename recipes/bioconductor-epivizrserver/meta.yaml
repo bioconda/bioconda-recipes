@@ -1,45 +1,22 @@
-{% set version = "1.26.0" %}
+{% set version = "1.34.0" %}
 {% set name = "epivizrServer" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: b396fa1c9286bece2671aeb8827d154c
+about:
+  description: This package provides objects to manage WebSocket connections to epiviz apps. Other epivizr package use this infrastructure.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: WebSocket server infrastructure for epivizr apps and packages
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: testthat, knitr, rmarkdown, BiocStyle
-requirements:
-  host:
-    - r-base
-    - 'r-httpuv >=1.3.0'
-    - 'r-mime >=0.2'
-    - 'r-r6 >=2.0.0'
-    - r-rjson
-  run:
-    - r-base
-    - 'r-httpuv >=1.3.0'
-    - 'r-mime >=0.2'
-    - 'r-r6 >=2.0.0'
-    - r-rjson
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'WebSocket server infrastructure for epivizr apps and packages'
-  description: 'This package provides objects to manage WebSocket connections to epiviz apps. Other epivizr package use this infrastructure.'
-  license_file: LICENSE
+  run_exports: '{{ pin_subpackage("bioconductor-epivizrserver", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:epivizrserver
@@ -48,4 +25,35 @@ extra:
     name: bioconductor-epivizrserver
     path: recipes/bioconductor-epivizrserver
     version: 1.8.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, knitr, rmarkdown, BiocStyle
+requirements:
+  host:
+    - r-base
+    - r-httpuv >=1.3.0
+    - r-mime >=0.2
+    - r-r6 >=2.0.0
+    - r-rjson
+  run:
+    - r-base
+    - r-httpuv >=1.3.0
+    - r-mime >=0.2
+    - r-r6 >=2.0.0
+    - r-rjson
+
+source:
+  md5: 6156ae07bce88bf1bc59d633186cc1b3
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

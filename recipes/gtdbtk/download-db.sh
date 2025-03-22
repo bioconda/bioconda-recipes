@@ -1,9 +1,9 @@
 set -e
 
 # Configuration
-N_FILES_IN_TAR=139919
-DB_URL="https://data.gtdb.ecogenomic.org/releases/release207/207.0/auxillary_files/gtdbtk_r207_v2_data.tar.gz"
-TARGET_TAR_NAME="gtdbtk_r207_v2_data.tar.gz"
+N_FILES_IN_TAR=241860
+DB_URL="https://data.gtdb.ecogenomic.org/releases/release220/220.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r220_data.tar.gz"
+TARGET_TAR_NAME="gtdbtk_r220_data.tar.gz"
 
 # Script variables (no need to configure)
 TARGET_DIR=${1:-$GTDBTK_DATA_PATH}

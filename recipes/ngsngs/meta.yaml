@@ -1,0 +1,49 @@
+{% set name = "ngsngs" %}
+{% set version = "0.9.2" %}
+{% set sha256 = "eca9a4e4e79662a4e897a3d5a1e5047e318e81ef27892a4b5da6f31cffbd25fe" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/rahenriksen/ngsngs/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 2
+  skip: false
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - zlib
+    - bzip2
+    - xz
+    - htslib
+  run:
+    - htslib
+    - zlib
+    - bzip2
+    - xz
+
+test:
+  commands:
+    - ngsngs 2>&1 | grep 'ngsngs'
+
+about:
+  home: https://github.com/rahenriksen/ngsngs
+  license: GPLv3, MIT
+  summary: "NGSNGS: Next Generation Simulator for Next Generation Sequencing data"
+
+extra:
+  recipe-maintainers:
+    - ANGSD
+    - rahenriksen
+  identifiers:
+    - doi:10.1093/bioinformatics/btad041

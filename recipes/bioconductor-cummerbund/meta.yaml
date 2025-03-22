@@ -1,56 +1,21 @@
-{% set version = "2.40.0" %}
+{% set version = "2.48.0" %}
 {% set name = "cummeRbund" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: a1342d9f6f0b921c29f50b5e7260ede7
+about:
+  description: Allows for persistent storage, access, exploration, and manipulation of Cufflinks high-throughput sequencing data.  In addition, provides numerous plotting functions for commonly used visualizations.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Analysis, exploration, manipulation, and visualization of Cufflinks high-throughput sequencing data.
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: cluster, plyr, NMFN, stringr, GenomicFeatures, GenomicRanges, rjson
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-gviz >=1.42.0,<1.43.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - r-fastcluster
-    - r-ggplot2
-    - r-plyr
-    - r-reshape2
-    - r-rsqlite
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-gviz >=1.42.0,<1.43.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - r-fastcluster
-    - r-ggplot2
-    - r-plyr
-    - r-reshape2
-    - r-rsqlite
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Analysis, exploration, manipulation, and visualization of Cufflinks high-throughput sequencing data.'
-  description: 'Allows for persistent storage, access, exploration, and manipulation of Cufflinks high-throughput sequencing data.  In addition, provides numerous plotting functions for commonly used visualizations.'
+  run_exports: '{{ pin_subpackage("bioconductor-cummerbund", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:cummerbund
@@ -59,4 +24,47 @@ extra:
     name: bioconductor-cummerbund
     path: recipes/bioconductor-cummerbund
     version: 2.22.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: cluster, plyr, NMFN, stringr, GenomicFeatures, GenomicRanges, rjson
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-gviz >=1.50.0,<1.51.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-fastcluster
+    - r-ggplot2
+    - r-plyr
+    - r-reshape2
+    - r-rsqlite
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-gviz >=1.50.0,<1.51.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-fastcluster
+    - r-ggplot2
+    - r-plyr
+    - r-reshape2
+    - r-rsqlite
+
+source:
+  md5: 165f719d08fff1b4b4b165a0762dfca3
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

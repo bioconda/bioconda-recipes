@@ -1,0 +1,73 @@
+{% set name = "syny" %}
+{% set version = "1.2" %}
+{% set sha256 = "ad54ccfd22135fdd4770d1d37eadd12f917c47dc35280ebf9c6fc1cf94786dbe" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/PombertLab/SYNY/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+  - {{ pin_subpackage('syny', max_pin='x') }}
+
+requirements:
+  host:
+    - perl >=5.32
+    - python
+  run:
+    - perl >=5.32
+    - python
+    - matplotlib-base
+    - pandas
+    - seaborn
+    - scipy
+    - libgd
+    - perl-perlio-gzip
+    - perl-getopt-argvfile
+    - perl-clone
+    - perl-config-general
+    - perl-font-ttf
+    - perl-list-moreutils
+    - perl-math-bezier
+    - perl-math-round 
+    - perl-math-vecstat
+    - perl-params-validate
+    - perl-readonly 
+    - perl-regexp-common
+    - perl-set-intspan
+    - perl-statistics-basic
+    - perl-SVG
+    - perl-gd
+    - perl-text-format
+    - perl-text-roman
+    - minimap2 >=2.28
+    - mashmap >=3.1.3
+    - diamond >=2.1.9
+    - circos
+
+test:
+  commands:
+    - run_syny.pl --version
+    - paf_to_barplot.py
+    - linear_maps.py
+    - get_homology.pl
+    - get_paf.pl
+    - circos -v
+    - minimap2 --version
+    - mashmap --version
+    - diamond --version
+
+about:
+  home: https://github.com/PombertLab/SYNY
+  license: MIT
+  summary: "Genome collinearity inferences"
+
+extra:
+  recipe-maintainers:
+    - Pombert-JF

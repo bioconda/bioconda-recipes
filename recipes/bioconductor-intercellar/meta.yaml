@@ -1,27 +1,32 @@
-{% set version = "2.4.0" %}
+{% set version = "2.12.0" %}
 {% set name = "InterCellar" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f5726b7e9214c90c33089b6eeb5dec6a
+about:
+  description: InterCellar is implemented as an R/Bioconductor Package containing a Shiny app that allows users to interactively analyze cell-cell communication from scRNA-seq data. Starting from precomputed ligand-receptor interactions, InterCellar provides filtering options, annotations and multiple visualizations to explore clusters, genes and functions. Finally, based on functional annotation from Gene Ontology and pathway databases, InterCellar implements data-driven analyses to investigate cell-cell communication in one or multiple conditions.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: 'InterCellar: an R-Shiny app for interactive analysis and exploration of cell-cell communication in single-cell transcriptomics'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-intercellar", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: testthat (>= 3.0.0), knitr, rmarkdown, glue, graphite, processx, attempt, BiocStyle, httr
 requirements:
+
   host:
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
+    - bioconductor-biomart >=2.62.0,<2.63.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
     - r-base
     - r-circlize
     - r-colorspace
@@ -56,9 +61,10 @@ requirements:
     - r-umap
     - r-visnetwork
     - r-wordcloud2
+
   run:
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
+    - bioconductor-biomart >=2.62.0,<2.63.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
     - r-base
     - r-circlize
     - r-colorspace
@@ -93,13 +99,16 @@ requirements:
     - r-umap
     - r-visnetwork
     - r-wordcloud2
+
+source:
+  md5: 864c8fa51ec2091440caf5853f659865
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'InterCellar: an R-Shiny app for interactive analysis and exploration of cell-cell communication in single-cell transcriptomics'
-  description: 'InterCellar is implemented as an R/Bioconductor Package containing a Shiny app that allows users to interactively analyze cell-cell communication from scRNA-seq data. Starting from precomputed ligand-receptor interactions, InterCellar provides filtering options, annotations and multiple visualizations to explore clusters, genes and functions. Finally, based on functional annotation from Gene Ontology and pathway databases, InterCellar implements data-driven analyses to investigate cell-cell communication in one or multiple conditions.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

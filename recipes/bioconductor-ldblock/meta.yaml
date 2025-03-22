@@ -1,42 +1,44 @@
-{% set version = "1.28.0" %}
+{% set version = "1.36.0" %}
 {% set name = "ldblock" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: d9007dd36c9a31da7126f72e09da0b1e
+about:
+  description: Define data structures for linkage disequilibrium measures in populations.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: data structures for linkage disequilibrium measures in populations
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-ldblock", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: RUnit, knitr, BiocStyle, gwascat, rmarkdown, snpStats, VariantAnnotation, GenomeInfoDb, ensembldb, EnsDb.Hsapiens.v75, Rsamtools, GenomicFiles (>= 1.13.6)
 requirements:
   host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
     - r-base
     - r-httr
     - r-matrix
     - r-rlang
   run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
     - r-base
     - r-httr
     - r-matrix
     - r-rlang
+source:
+  md5: 3f84d33f77d6672958a7ba420ec1ac8a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'data structures for linkage disequilibrium measures in populations'
-  description: 'Define data structures for linkage disequilibrium measures in populations.'
+    - $R -e "library('{{ name }}')"
 

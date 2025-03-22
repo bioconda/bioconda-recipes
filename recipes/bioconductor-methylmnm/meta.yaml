@@ -1,45 +1,24 @@
-{% set version = "1.36.0" %}
+{% set version = "1.44.0" %}
 {% set name = "methylMnM" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 9770923b1feb24d89c16cdab8bf12dbb
+about:
+  description: To give the exactly p-value and q-value of MeDIP-seq and MRE-seq data for different samples comparation.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: detect different methylation level (DMR)
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-requirements:
-  host:
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - r-base
-    - r-statmod
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - r-base
-    - r-statmod
-  build:
-    - {{ compiler('c') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'detect different methylation level (DMR)'
-  description: 'To give the exactly p-value and q-value of MeDIP-seq and MRE-seq data for different samples comparation.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-methylmnm", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:methylmnm
     - doi:10.1101/gr.156539.113
@@ -47,4 +26,35 @@ extra:
     name: bioconductor-methylmnm
     path: recipes/bioconductor-methylmnm
     version: 1.18.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - r-base
+    - r-statmod
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - r-base
+    - r-statmod
+
+source:
+  md5: 23ff1dc1c980c3bf3664854fcff99599
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

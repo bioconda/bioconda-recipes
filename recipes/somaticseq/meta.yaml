@@ -1,6 +1,6 @@
 {% set name = "somaticseq" %}
-{% set version = "3.7.3" %}
-{% set sha256 = "3721c03646496980a17141fe63a90e09ee10328edc1b692aae57bc07c2477e3c" %}
+{% set version = "3.11.0" %}
+{% set sha256 = "285ef028af593bdadace7baaab96618b127ebe136c629b94a6a6afa672c859af" %}
 
 package:
   name: {{ name|lower }}
@@ -13,28 +13,51 @@ source:
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  entry_points:
+    - somaticseq = somaticseq.somaticseq_parallel:main
+    - somaticseq_parallel = somaticseq.somaticseq_parallel:main
+    - somaticseq_xgboost = somaticseq.somatic_xgboost:main
+    - somaticseq_tsv2vcf = somaticseq.somatic_tsv2vcf:main
+    - somaticseq_single_vcf2tsv = somaticseq.single_sample_vcf2tsv:main
+    - somaticseq_paired_vcf2tsv = somaticseq.somatic_vcf2tsv:main
+    - somaticseq_concat = somaticseq.genomic_file_parsers.concat:main
+    - somaticseq_linguistic_sequence_complexity = somaticseq.utilities.linguistic_sequence_complexity:main
+    - somaticseq_loci_counter = somaticseq.utilities.lociCounterWithLabels:main
+    - somaticseq_paired_end_bam2fastq = somaticseq.utilities.paired_end_bam2fastq:main
+    - somaticseq_split_bed_into_equal_regions = somaticseq.utilities.split_bed_into_equal_regions:main
+    - somaticseq_make_alignment_scripts = somaticseq.utilities.dockered_pipelines.makeAlignmentScripts:main
+    - somaticseq_make_somatic_scripts = somaticseq.utilities.dockered_pipelines.makeSomaticScripts:main
+    - somaticseq_run_workflows = somaticseq.utilities.dockered_pipelines.run_workflows:main
+    - somaticseq_split_vcf = somaticseq.vcf_modifier.splitVcf:main
+  run_exports:
+    - {{ pin_subpackage('somaticseq', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3
+    - python >=3.11
     - pip
+    - setuptools-scm
+    - setuptools
   run:
-    - python >=3
+    - python >=3.11
     - numpy
     - pysam
     - scipy
     - pandas
-    - xgboost
+    - xgboost >=1.4
     - r-base
     - r-ada
-    - bedtools
+    - pybedtools
     - gatk4
     - varscan >=2
     - vardict
     - muse
     - lofreq
     - scalpel
+    - pydantic
   # Strelka relies on python 2 and cannot be included
 
 test:
@@ -45,11 +68,12 @@ test:
     - makeSomaticScripts.py --help
 
 about:
-  home: http://bioinform.github.io/somaticseq/
+  home: https://bioinform.github.io/somaticseq
   license: BSD-2-Clause
   license_file: LICENSE.txt
   license_family: BSD
-  summary: An ensemble approach to accurately detect somatic mutations
+  summary: "An ensemble approach to accurately detect somatic mutations."
+  dev_url: https://github.com/bioinform/somaticseq
   description: >
     SomaticSeq is an ensemble caller that has the ability to use machine learning to filter out false positives.
     The detailed documentation is included in the package, located in docs/Manual.pdf. A quick guide can also be found here.

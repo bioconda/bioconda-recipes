@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "geneplast.data-0.99.6"
+installBiocDataPackage.sh "geneplast.data-0.99.9"

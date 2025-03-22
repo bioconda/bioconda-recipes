@@ -1,22 +1,23 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "interacCircos" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: b1bab11b02ff1f3cb0a217c13971c18d
+about:
+  description: Implement in an efficient approach to display the genomic data, relationship, information in an interactive circular genome(Circos) plot. 'interacCircos' are inspired by 'circosJS', 'BioCircos.js' and 'NG-Circos' and we integrate the modules of 'circosJS', 'BioCircos.js' and 'NG-Circos' into this R package, based on 'htmlwidgets' framework.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: The Generation of Interactive Circos Plot
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-interaccircos", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: knitr, rmarkdown
 requirements:
   host:
@@ -29,13 +30,14 @@ requirements:
     - r-htmlwidgets
     - r-plyr
     - r-rcolorbrewer
+source:
+  md5: a6899ee320ae109f491acb9a0aec156b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'The Generation of Interactive Circos Plot'
-  description: 'Implement in an efficient approach to display the genomic data, relationship, information in an interactive circular genome(Circos) plot. ''interacCircos'' are inspired by ''circosJS'', ''BioCircos.js'' and ''NG-Circos'' and we integrate the modules of ''circosJS'', ''BioCircos.js'' and ''NG-Circos'' into this R package, based on ''htmlwidgets'' framework.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

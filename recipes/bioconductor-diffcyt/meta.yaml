@@ -1,32 +1,36 @@
-{% set version = "1.18.0" %}
+{% set version = "1.26.0" %}
 {% set name = "diffcyt" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 24de43c96ac3fdecd877ca028e0c5fc6
+about:
+  description: Statistical methods for differential discovery analyses in high-dimensional cytometry data (including flow cytometry, mass cytometry or CyTOF, and oligonucleotide-tagged cytometry), based on a combination of high-resolution clustering and empirical Bayes moderated tests adapted from transcriptomics.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Differential discovery in high-dimensional cytometry via high-resolution clustering
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-diffcyt", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, knitr, rmarkdown, testthat, HDCytoData, CATALYST
 requirements:
   host:
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-flowsom >=2.6.0,<2.7.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-flowsom >=2.14.0,<2.15.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-circlize
     - r-dplyr
@@ -36,13 +40,13 @@ requirements:
     - r-reshape2
     - r-tidyr
   run:
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-flowsom >=2.6.0,<2.7.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-flowsom >=2.14.0,<2.15.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-circlize
     - r-dplyr
@@ -51,13 +55,16 @@ requirements:
     - r-multcomp
     - r-reshape2
     - r-tidyr
+
+source:
+  md5: 36746fa6a908f973272a264242b0b39a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Differential discovery in high-dimensional cytometry via high-resolution clustering'
-  description: 'Statistical methods for differential discovery analyses in high-dimensional cytometry data (including flow cytometry, mass cytometry or CyTOF, and oligonucleotide-tagged cytometry), based on a combination of high-resolution clustering and empirical Bayes moderated tests adapted from transcriptomics.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

@@ -1,5 +1,5 @@
 {% set name = "bbknn" %} 
-{% set version = "1.5.1" %}
+{% set version = "1.6.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,12 +7,13 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 16da9c778ddfe363f8a3fa0d72707694d2217f94d3a87482336e8a2c6beb2160 
+  sha256: 1c01a9d6df2fc52a527de8a403617897a4b672724863299a7026f2132f1b041b 
 
 build:
-  number: 2
-  skip: true  # [py2k or py == 310]
+  number: 4
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  run_exports:
+    - {{ pin_subpackage('bbknn', max_pin="x") }}
 
 requirements:
   build:
@@ -24,19 +25,19 @@ requirements:
     - numpy >=1.13
     - pip
     - python
-    - scipy
-    - scikit-learn
+    - flit-core >=3.2,<4
+    - scipy >=1.6.0
+    - scikit-learn >=1.0.2
     - umap-learn
-    - packaging
+    - pandas
   run:
     - python
     - python-annoy
     - pynndescent
     - numpy >=1.13
-    - scipy
-    - scikit-learn
+    - scipy >=1.6.0
+    - scikit-learn >=1.0.2
     - umap-learn
-    - packaging
     - pandas
 
 test:
@@ -51,5 +52,7 @@ about:
   summary: Batch balanced KNN
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
     - jenzopr

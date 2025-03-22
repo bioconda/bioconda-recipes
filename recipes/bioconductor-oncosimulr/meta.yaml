@@ -1,68 +1,21 @@
-{% set version = "4.0.0" %}
+{% set version = "4.8.0" %}
 {% set name = "OncoSimulR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 10e2e821e21dcb08e3fc7b22d51dfb0a
+about:
+  description: 'Functions for forward population genetic simulation in asexual populations, with special focus on cancer progression. Fitness can be an arbitrary function of genetic interactions between multiple genes or modules of genes, including epistasis, order restrictions in mutation accumulation, and order effects. Fitness (including just birth, just death, or both birth and death) can also be a function of the relative and absolute frequencies of other genotypes (i.e., frequency-dependent fitness). Mutation rates can differ between genes, and we can include mutator/antimutator genes (to model mutator phenotypes). Simulating multi-species scenarios and therapeutic interventions, including adaptive therapy, is also possible. Simulations use continuous-time models and can include driver and passenger genes and modules. Also included are functions for: simulating random DAGs of the type found in Oncogenetic Trees, Conjunctive Bayesian Networks, and other cancer progression models; plotting and sampling from single or multiple realizations of the simulations, including single-cell sampling; plotting the parent-child relationships of the clones; generating random fitness landscapes (Rough Mount Fuji, House of Cards, additive, NK, Ising, and Eggbox models) and plotting them.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 3)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Forward Genetic Simulation of Cancer Progression with Epistasis
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: BiocStyle, knitr, Oncotree, testthat (>= 1.0.0), rmarkdown, bookdown, pander
-requirements:
-  host:
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-rgraphviz >=2.42.0,<2.43.0'
-    - r-base
-    - r-car
-    - r-data.table
-    - r-dplyr
-    - r-ggplot2
-    - r-ggrepel
-    - r-gtools
-    - r-igraph
-    - r-rcolorbrewer
-    - 'r-rcpp >=0.12.4'
-    - r-smatr
-    - r-stringr
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-rgraphviz >=2.42.0,<2.43.0'
-    - r-base
-    - r-car
-    - r-data.table
-    - r-dplyr
-    - r-ggplot2
-    - r-ggrepel
-    - r-gtools
-    - r-igraph
-    - r-rcolorbrewer
-    - 'r-rcpp >=0.12.4'
-    - r-smatr
-    - r-stringr
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 3)'
-  summary: 'Forward Genetic Simulation of Cancer Progression with Epistasis'
-  description: 'Functions for forward population genetic simulation in asexual populations, with special focus on cancer progression. Fitness can be an arbitrary function of genetic interactions between multiple genes or modules of genes, including epistasis, order restrictions in mutation accumulation, and order effects. Fitness (including just birth, just death, or both birth and death) can also be a function of the relative and absolute frequencies of other genotypes (i.e., frequency-dependent fitness). Mutation rates can differ between genes, and we can include mutator/antimutator genes (to model mutator phenotypes). Simulating multi-species scenarios and therapeutic interventions, including adaptive therapy, is also possible. Simulations use continuous-time models and can include driver and passenger genes and modules. Also included are functions for: simulating random DAGs of the type found in Oncogenetic Trees, Conjunctive Bayesian Networks, and other cancer progression models; plotting and sampling from single or multiple realizations of the simulations, including single-cell sampling; plotting the parent-child relationships of the clones; generating random fitness landscapes (Rough Mount Fuji, House of Cards, additive, NK, Ising, and Eggbox models) and plotting them.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-oncosimulr", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:oncosimulr
@@ -70,4 +23,59 @@ extra:
     name: bioconductor-oncosimulr
     path: recipes/bioconductor-oncosimulr
     version: 2.10.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, Oncotree, testthat (>= 1.0.0), rmarkdown, bookdown, pander
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
+    - r-base
+    - r-car
+    - r-data.table
+    - r-dplyr
+    - r-ggplot2
+    - r-ggrepel
+    - r-gtools
+    - r-igraph
+    - r-rcolorbrewer
+    - r-rcpp >=0.12.4
+    - r-smatr
+    - r-stringr
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
+    - r-base
+    - r-car
+    - r-data.table
+    - r-dplyr
+    - r-ggplot2
+    - r-ggrepel
+    - r-gtools
+    - r-igraph
+    - r-rcolorbrewer
+    - r-rcpp >=0.12.4
+    - r-smatr
+    - r-stringr
+
+source:
+  md5: 0ee28418fe4a4fff5393eb1eaf472e50
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

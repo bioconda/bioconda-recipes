@@ -1,50 +1,57 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "BiocFHIR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 40e5e24e20ae1bfcffc0dddbfcec198a
+about:
+  description: FHIR R4 bundles in JSON format are derived from https://synthea.mitre.org/downloads. Transformation inspired by a kaggle notebook published by Dr Alexander Scarlat, https://www.kaggle.com/code/drscarlat/fhir-starter-parse-healthcare-bundles-into-tables. This is a very limited illustration of some basic parsing and reorganization processes.  Additional tooling will be required to move beyond the Synthea data illustrations.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Illustration of FHIR ingestion and transformation using R
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, testthat, rjsoncons
+  run_exports: '{{ pin_subpackage("bioconductor-biocfhir", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, testthat, rjsoncons, igraph, BiocStyle
 requirements:
   host:
-    - 'bioconductor-biocbaseutils >=1.0.0,<1.1.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
+    - bioconductor-biocbaseutils >=1.8.0,<1.9.0
+    - bioconductor-graph >=1.84.0,<1.85.0
     - r-base
+    - r-dplyr
     - r-dt
-    - r-igraph
     - r-jsonlite
     - r-shiny
     - r-tidyr
     - r-visnetwork
   run:
-    - 'bioconductor-biocbaseutils >=1.0.0,<1.1.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
+    - bioconductor-biocbaseutils >=1.8.0,<1.9.0
+    - bioconductor-graph >=1.84.0,<1.85.0
     - r-base
+    - r-dplyr
     - r-dt
-    - r-igraph
     - r-jsonlite
     - r-shiny
     - r-tidyr
     - r-visnetwork
+
+source:
+  md5: eb92ae6530e91900d382a7ef1e148343
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Illustration of FHIR ingestion and transformation using R'
-  description: 'FHIR R4 bundles in JSON format are derived from https://synthea.mitre.org/downloads. Transformation inspired by a kaggle notebook published by Dr Alexander Scarlat, https://www.kaggle.com/code/drscarlat/fhir-starter-parse-healthcare-bundles-into-tables. This is a very limited illustration of some basic parsing and reorganization processes.  Additional tooling will be required to move beyond the Synthea data illustrations.'
+    - $R -e "library('{{ name }}')"
 

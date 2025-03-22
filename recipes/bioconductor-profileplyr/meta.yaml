@@ -1,46 +1,51 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "profileplyr" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 761aa141277fffb3e61d57a010b8bc0d
+about:
+  description: Quick and straightforward visualization of read signal over genomic intervals is key for generating hypotheses from sequencing data sets (e.g. ChIP-seq, ATAC-seq, bisulfite/methyl-seq). Many tools both inside and outside of R and Bioconductor are available to explore these types of data, and they typically start with a bigWig or BAM file and end with some representation of the signal (e.g. heatmap). profileplyr leverages many Bioconductor tools to allow for both flexibility and additional functionality in workflows that end with visualization of the read signal.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 3)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Visualization and annotation of read signal over genomic ranges with profileplyr
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-profileplyr", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, testthat, knitr, rmarkdown, png, Cairo
 requirements:
+
   host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-chipseeker >=1.34.0,<1.35.0'
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
-    - 'bioconductor-enrichedheatmap >=1.27.0,<1.28.0'
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-org.mm.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-rgreat >=2.0.0,<2.1.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-soggi >=1.30.0,<1.31.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-txdb.hsapiens.ucsc.hg19.knowngene >=3.2.0,<3.3.0'
-    - 'bioconductor-txdb.hsapiens.ucsc.hg38.knowngene >=3.16.0,<3.17.0'
-    - 'bioconductor-txdb.mmusculus.ucsc.mm10.knowngene >=3.10.0,<3.11.0'
-    - 'bioconductor-txdb.mmusculus.ucsc.mm9.knowngene >=3.2.0,<3.3.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-chipseeker >=1.42.0,<1.43.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-enrichedheatmap >=1.36.0,<1.37.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-org.mm.eg.db >=3.20.0,<3.21.0
+    - bioconductor-rgreat >=2.8.0,<2.9.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-soggi >=1.38.0,<1.39.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-txdb.hsapiens.ucsc.hg19.knowngene >=3.2.0,<3.3.0
+    - bioconductor-txdb.hsapiens.ucsc.hg38.knowngene >=3.20.0,<3.21.0
+    - bioconductor-txdb.mmusculus.ucsc.mm10.knowngene >=3.10.0,<3.11.0
+    - bioconductor-txdb.mmusculus.ucsc.mm9.knowngene >=3.2.0,<3.3.0
     - r-base
     - r-circlize
     - r-dplyr
@@ -52,28 +57,29 @@ requirements:
     - r-rlang
     - r-tidyr
     - r-tiff
+
   run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-chipseeker >=1.34.0,<1.35.0'
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
-    - 'bioconductor-enrichedheatmap >=1.27.0,<1.28.0'
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-org.mm.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-rgreat >=2.0.0,<2.1.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-soggi >=1.30.0,<1.31.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-txdb.hsapiens.ucsc.hg19.knowngene >=3.2.0,<3.3.0'
-    - 'bioconductor-txdb.hsapiens.ucsc.hg38.knowngene >=3.16.0,<3.17.0'
-    - 'bioconductor-txdb.mmusculus.ucsc.mm10.knowngene >=3.10.0,<3.11.0'
-    - 'bioconductor-txdb.mmusculus.ucsc.mm9.knowngene >=3.2.0,<3.3.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-chipseeker >=1.42.0,<1.43.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-enrichedheatmap >=1.36.0,<1.37.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-org.mm.eg.db >=3.20.0,<3.21.0
+    - bioconductor-rgreat >=2.8.0,<2.9.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-soggi >=1.38.0,<1.39.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-txdb.hsapiens.ucsc.hg19.knowngene >=3.2.0,<3.3.0
+    - bioconductor-txdb.hsapiens.ucsc.hg38.knowngene >=3.20.0,<3.21.0
+    - bioconductor-txdb.mmusculus.ucsc.mm10.knowngene >=3.10.0,<3.11.0
+    - bioconductor-txdb.mmusculus.ucsc.mm9.knowngene >=3.2.0,<3.3.0
     - r-base
     - r-circlize
     - r-dplyr
@@ -85,13 +91,16 @@ requirements:
     - r-rlang
     - r-tidyr
     - r-tiff
+
+source:
+  md5: 338eed59007c3609827942b0a50b4311
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 3)'
-  summary: 'Visualization and annotation of read signal over genomic ranges with profileplyr'
-  description: 'Quick and straightforward visualization of read signal over genomic intervals is key for generating hypotheses from sequencing data sets (e.g. ChIP-seq, ATAC-seq, bisulfite/methyl-seq). Many tools both inside and outside of R and Bioconductor are available to explore these types of data, and they typically start with a bigWig or BAM file and end with some representation of the signal (e.g. heatmap). profileplyr leverages many Bioconductor tools to allow for both flexibility and additional functionality in workflows that end with visualization of the read signal.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

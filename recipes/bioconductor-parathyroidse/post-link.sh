@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "parathyroidse-1.36.0"
+installBiocDataPackage.sh "parathyroidse-1.43.0"

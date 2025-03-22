@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "snadata-1.44.0"
+installBiocDataPackage.sh "snadata-1.52.0"

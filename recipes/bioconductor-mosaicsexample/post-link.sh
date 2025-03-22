@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "mosaicsexample-1.35.0"
+installBiocDataPackage.sh "mosaicsexample-1.44.0"

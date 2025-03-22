@@ -1,37 +1,39 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "basilisk.utils" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 9e3a4c0ec22a491c0bfb6d7fefbe2587
+about:
+  description: Implements utilities for installation of the basilisk package, primarily for creation of the underlying Conda instance. This allows us to avoid re-writing the same R code in both the configure script (for centrally administered R installations) and in the lazy installation mechanism (for distributed package binaries). It is highly unlikely that developers - or, heaven forbid, end-users! - will need to interact with this package directly; they should be using the basilisk package instead.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Basilisk Installation Utilities
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: reticulate, knitr, rmarkdown, BiocStyle, testthat
+  run_exports: '{{ pin_subpackage("bioconductor-basilisk.utils", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: reticulate, knitr, rmarkdown, BiocStyle, testthat, basilisk
 requirements:
   host:
-    - 'bioconductor-dir.expiry >=1.6.0,<1.7.0'
+    - bioconductor-dir.expiry >=1.14.0,<1.15.0
     - r-base
   run:
-    - 'bioconductor-dir.expiry >=1.6.0,<1.7.0'
+    - bioconductor-dir.expiry >=1.14.0,<1.15.0
     - r-base
+source:
+  md5: 89953864457a1974b657ed7dc01f8d50
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Basilisk Installation Utilities'
-  description: 'Implements utilities for installation of the basilisk package, primarily for creation of the underlying Conda instance. This allows us to avoid re-writing the same R code in both the configure script (for centrally administered R installations) and in the lazy installation mechanism (for distributed package binaries). It is highly unlikely that developers - or, heaven forbid, end-users! - will need to interact with this package directly; they should be using the basilisk package instead.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

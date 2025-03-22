@@ -1,55 +1,21 @@
-{% set version = "2.0.0" %}
+{% set version = "2.8.0" %}
 {% set name = "matter" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: a8e6479af99a68722657ec5a71a6b645
+about:
+  description: Toolbox for larger-than-memory scientific computing and visualization, providing efficient out-of-core data structures using files or shared memory, for dense and sparse vectors, matrices, and arrays, with applications to nonuniformly sampled signals and images.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0 | file LICENSE
+  license_file: LICENSE
+  summary: Out-of-core statistical computing and signal processing
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: BiocStyle, knitr, testthat
-requirements:
-  host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-protgenerics >=1.30.0,<1.31.0'
-    - r-base
-    - r-biglm
-    - r-digest
-    - r-irlba
-    - r-matrix
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-protgenerics >=1.30.0,<1.31.0'
-    - r-base
-    - r-biglm
-    - r-digest
-    - r-irlba
-    - r-matrix
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'A framework for rapid prototyping with file-based data structures'
-  description: 'Memory-efficient reading, writing, and manipulation of structured binary data as file-based vectors, matrices, arrays, lists, and data frames.'
+  run_exports: '{{ pin_subpackage("bioconductor-matter", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:matter
@@ -58,4 +24,47 @@ extra:
     name: bioconductor-matter
     path: recipes/bioconductor-matter
     version: 1.6.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, testthat, plotly
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-protgenerics >=1.38.0,<1.39.0
+    - r-base
+    - r-bh
+    - r-digest
+    - r-irlba
+    - r-matrix
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-protgenerics >=1.38.0,<1.39.0
+    - r-base
+    - r-bh
+    - r-digest
+    - r-irlba
+    - r-matrix
+
+source:
+  md5: a88ddbb17b4cee347e387880d46e6658
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

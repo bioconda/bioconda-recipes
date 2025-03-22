@@ -1,38 +1,40 @@
-{% set version = "1.34.0" %}
+{% set version = "1.42.0" %}
 {% set name = "cnvGSAdata" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 191d2a67eeeb2ded97f7fb93c1bfebb3
+about:
+  description: This package contains the data used in the vignette of the cnvGSA package.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: LGPL
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: Data used in the vignette of the cnvGSA package
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-cnvgsadata", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 requirements:
   host:
-    - 'bioconductor-cnvgsa >=1.42.0,<1.43.0'
+    - bioconductor-cnvgsa >=1.50.0,<1.51.0
     - r-base
   run:
-    - 'bioconductor-cnvgsa >=1.42.0,<1.43.0'
+    - bioconductor-cnvgsa >=1.50.0,<1.51.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221105
+    - bioconductor-data-packages >=20241103
+source:
+  md5: fe2b4f6e04f12f795b1b6fff123446ce
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: LGPL
-  summary: 'Data used in the vignette of the cnvGSA package'
-  description: 'This package contains the data used in the vignette of the cnvGSA package.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+    - $R -e "library('{{ name }}')"
 

@@ -1,41 +1,40 @@
-{% set version = "1.18.0" %}
+{% set version = "1.26.0" %}
 {% set name = "rRDPData" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 8aee1a2c5cf2f30553b3365034464991
+about:
+  description: The package provides the data for the RDP Classifier 2.14 released in August 2023. It contains the latest bacterial and archaeal taxonomy training set No. 19 as described in Wang Q, Cole JR. 2024. Updated RDP taxonomy and RDP Classifier for more accurate taxonomic classification. Microbiol Resour Announc 0:e01063-23. <doi.org/10.1128/mra.01063-23>
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Databases for the Default RDP Classifier
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# SystemRequirements: Java
+  run_exports: '{{ pin_subpackage("bioconductor-rrdpdata", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 requirements:
   host:
-    - 'bioconductor-rrdp >=1.32.0,<1.33.0'
+    - bioconductor-rrdp >=1.40.0,<1.41.0
     - r-base
-    - openjdk
   run:
-    - 'bioconductor-rrdp >=1.32.0,<1.33.0'
+    - bioconductor-rrdp >=1.40.0,<1.41.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221106
-    - openjdk
+    - bioconductor-data-packages >=20241103
+source:
+  md5: fa19b2b3f0f17eca244b65480bce1ddd
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Database for the Default RDP Classifier'
-  description: 'Database used by the default RDP Classifier'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+    - $R -e "library('{{ name }}')"
 

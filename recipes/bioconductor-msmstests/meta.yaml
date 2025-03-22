@@ -1,47 +1,56 @@
-{% set version = "1.36.0" %}
+{% set version = "1.44.0" %}
 {% set name = "msmsTests" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: d6fcb6524c0eaee866ec79bc270b2c24
+about:
+  description: 'Statistical tests for label-free LC-MS/MS data by spectral counts, to discover differentially expressed proteins between two biological conditions. Three tests are available: Poisson GLM regression, quasi-likelihood GLM regression, and the negative binomial of the edgeR package.The three models admit blocking factors to control for nuissance variables.To assure a good level of reproducibility a post-test filter is available, where we may set the minimum effect size considered biologicaly relevant, and the minimum expression of the most abundant condition.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: LC-MS/MS Differential Expression Tests
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-msmseda >=1.36.0,<1.37.0'
-    - 'bioconductor-msnbase >=2.24.0,<2.25.0'
-    - 'bioconductor-qvalue >=2.30.0,<2.31.0'
-    - r-base
-  run:
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-msmseda >=1.36.0,<1.37.0'
-    - 'bioconductor-msnbase >=2.24.0,<2.25.0'
-    - 'bioconductor-qvalue >=2.30.0,<2.31.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'LC-MS/MS Differential Expression Tests'
-  description: 'Statistical tests for label-free LC-MS/MS data by spectral counts, to discover differentially expressed proteins between two biological conditions. Three tests are available: Poisson GLM regression, quasi-likelihood GLM regression, and the negative binomial of the edgeR package.The three models admit blocking factors to control for nuissance variables.To assure a good level of reproducibility a post-test filter is available, where we may set the minimum effect size considered biologicaly relevant, and the minimum expression of the most abundant condition.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-msmstests", max_pin="x.x") }}'
+
 extra:
   parent_recipe:
     name: bioconductor-msmstests
     path: recipes/bioconductor-msmstests
     version: 1.20.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: xtable
+requirements:
+  host:
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-msmseda >=1.44.0,<1.45.0
+    - bioconductor-msnbase >=2.32.0,<2.33.0
+    - bioconductor-qvalue >=2.38.0,<2.39.0
+    - r-base
+  run:
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-msmseda >=1.44.0,<1.45.0
+    - bioconductor-msnbase >=2.32.0,<2.33.0
+    - bioconductor-qvalue >=2.38.0,<2.39.0
+    - r-base
+
+source:
+  md5: abde5f7510d8e0461e5f030124a99ed3
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

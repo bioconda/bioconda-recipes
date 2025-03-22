@@ -1,5 +1,5 @@
 {% set name = "pyranges" %}
-{% set version = "0.0.120" %}
+{% set version = "0.1.4" %}
 
 package:
   name: '{{ name|lower }}'
@@ -7,32 +7,45 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 44768a3c33e919369f2d16d4ba9f712e685e41259919f895dd9126fc8b2fbd4d
+  sha256: ca99cb70ff41c5da86ebc337f057877d293643b69e8e9937ccc738f98c32dbeb
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  run_exports:
+    - {{ pin_subpackage('pyranges', max_pin="x.x") }}
 
 requirements:
   host:
-    - python
+    - python >=3
+    - setuptools-scm
     - pip
   run:
-    - python
+    - python >=3
     - pandas
-    - ncls >=0.0.50
+    - ncls >=0.0.63
     - tabulate
-    - sorted_nearest >=0.0.30
-    - pyrle
+    - sorted_nearest >=0.0.33
     - natsort
+    - importlib-metadata
 
 test:
   imports:
     - pyranges
 
 about:
-  home: http://github.com/endrebak/pyranges
+  home: "https://github.com/endrebak/pyranges"
   license: MIT
-  summary: GenomicRanges for Python.
+  license_family: MIT
+  summary: "Performant Pythonic GenomicRanges."
   license_file: LICENSE
+  dev_url: "https://github.com/endrebak/pyranges"
+  doc_url: "https://pyranges.readthedocs.io"
+
+extra:
+  identifiers:
+    - biotools:PyRanges
+    - doi:10.1093/bioinformatics/btz615

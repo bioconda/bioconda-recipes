@@ -1,43 +1,45 @@
-{% set version = "1.16.0" %}
+{% set version = "1.24.0" %}
 {% set name = "ACE" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: c44aad495e4ae569b085f511a104b27b
+about:
+  description: Uses segmented copy number data to estimate tumor cell percentage and produce copy number plots displaying absolute copy numbers.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Absolute Copy Number Estimation from Low-coverage Whole Genome Sequencing
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-ace", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: knitr, rmarkdown, BiocStyle
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-qdnaseq >=1.34.0,<1.35.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-qdnaseq >=1.42.0,<1.43.0
     - r-base
     - r-ggplot2
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-qdnaseq >=1.34.0,<1.35.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-qdnaseq >=1.42.0,<1.43.0
     - r-base
     - r-ggplot2
+source:
+  md5: 046bdc85e9ed95204bb696c7f0a14700
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Absolute Copy Number Estimation from Low-coverage Whole Genome Sequencing'
-  description: 'Uses segmented copy number data to estimate tumor cell percentage and produce copy number plots displaying absolute copy numbers.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+    - $R -e "library('{{ name }}')"
 

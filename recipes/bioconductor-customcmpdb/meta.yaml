@@ -1,46 +1,53 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "customCMPdb" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 080cd0d0cfdb6834b772f31f3dcf95bd
+about:
+  description: This package serves as a query interface for important community collections of small molecules, while also allowing users to include custom compound collections.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Customize and Query Compound Annotation Database
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-customcmpdb", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, testthat, BiocStyle
 requirements:
   host:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
-    - 'bioconductor-chemminer >=3.50.0,<3.51.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-chemminer >=3.58.0,<3.59.0
     - r-base
     - r-rappdirs
     - r-rsqlite
     - r-xml
   run:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
-    - 'bioconductor-chemminer >=3.50.0,<3.51.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-chemminer >=3.58.0,<3.59.0
     - r-base
     - r-rappdirs
     - r-rsqlite
     - r-xml
+
+source:
+  md5: ab3e10a76d37ffae89e0f7eac786deae
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Customize and Query Compound Annotation Database'
-  description: 'This package serves as a query interface for important community collections of small molecules, while also allowing users to include custom compound collections.'
+    - $R -e "library('{{ name }}')"
 

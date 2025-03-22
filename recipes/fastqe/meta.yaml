@@ -1,5 +1,5 @@
 {% set name = "fastqe" %}
-{% set version = "0.2.7" %}
+{% set version = "0.3.3" %}
 
 package:
   name: '{{ name|lower }}'
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: "295788b824ba2fd995cad49aef2e78b1f5b0931a380c3da8530a49e29248b7f4"
+  sha256: "6ddcef4a9d25e22d7391ea6f6234181f3ec22c0767d07c90cb2c66deb4ec3881"
   patches:
     - patch
 
@@ -16,14 +16,18 @@ build:
   number: 0
   entry_points:
     - fastqe = fastqe.fastqe:main
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir --use-pep517 -vvv
+  run_exports:
+    - {{ pin_subpackage('fastqe', max_pin="x.x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.7
     - pip
+    - twine >=1.11.0
+    - setuptools
   run:
-    - python
+    - python >=3.7
     - biopython >=1.66
     - pyemojify
 
@@ -35,7 +39,8 @@ test:
 
 about:
   home: https://github.com/lonsbio/fastqe
-  license: MIT
-  license_family: MIT
-  summary: A emoji based bioinformatics command line tool
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE.txt
+  summary: "A emoji based bioinformatics command line tool."
   description: "The program reads one or more input FASTQ files.\nFor each file it computes the minimum, maximum and mean FASTQ quality score at each position across all reads in a file.\n\nFor some reason, it then represents these as emoji."

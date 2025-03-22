@@ -1,28 +1,32 @@
-{% set version = "3.26.0" %}
+{% set version = "3.34.0" %}
 {% set name = "TPP" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: aab946f7c09dc6b343a525ae9de13d1a
+about:
+  description: Analyze thermal proteome profiling (TPP) experiments with varying temperatures (TR) or compound concentrations (CCR).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Analyze thermal proteome profiling (TPP) experiments
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-tpp", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, testthat
 requirements:
+
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biobroom >=1.30.0,<1.31.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biobroom >=1.38.0,<1.39.0
+    - bioconductor-limma >=3.62.0,<3.63.0
     - r-base
     - r-broom
     - r-data.table
@@ -37,7 +41,7 @@ requirements:
     - r-mass
     - r-mefa
     - r-nls2
-    - 'r-openxlsx >=2.4.0'
+    - r-openxlsx >=2.4.0
     - r-plyr
     - r-purrr
     - r-rcolorbrewer
@@ -49,10 +53,11 @@ requirements:
     - r-tidyr
     - r-venndiagram
     - r-vgam
+
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biobroom >=1.30.0,<1.31.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biobroom >=1.38.0,<1.39.0
+    - bioconductor-limma >=3.62.0,<3.63.0
     - r-base
     - r-broom
     - r-data.table
@@ -67,7 +72,7 @@ requirements:
     - r-mass
     - r-mefa
     - r-nls2
-    - 'r-openxlsx >=2.4.0'
+    - r-openxlsx >=2.4.0
     - r-plyr
     - r-purrr
     - r-rcolorbrewer
@@ -79,12 +84,16 @@ requirements:
     - r-tidyr
     - r-venndiagram
     - r-vgam
+
+source:
+  md5: 4ac7e43263f1a1c5e6040a0a12a651f4
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Analyze thermal proteome profiling (TPP) experiments'
-  description: 'Analyze thermal proteome profiling (TPP) experiments with varying temperatures (TR) or compound concentrations (CCR).'
+    - $R -e "library('{{ name }}')"
 

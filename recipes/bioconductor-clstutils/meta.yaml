@@ -1,47 +1,22 @@
-{% set version = "1.46.0" %}
+{% set version = "1.54.0" %}
 {% set name = "clstutils" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 55e243db171f8d4286ee6edf43181e80
+about:
+  description: Tools for performing taxonomic assignment based on phylogeny using pplacer and clst.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Tools for performing taxonomic assignment
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: RUnit
-requirements:
-  host:
-    - 'bioconductor-clst >=1.46.0,<1.47.0'
-    - r-ape
-    - r-base
-    - r-lattice
-    - r-rjson
-    - r-rsqlite
-  run:
-    - 'bioconductor-clst >=1.46.0,<1.47.0'
-    - r-ape
-    - r-base
-    - r-lattice
-    - r-rjson
-    - r-rsqlite
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Tools for performing taxonomic assignment'
-  description: 'Tools for performing taxonomic assignment based on phylogeny using pplacer and clst.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-clstutils", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:clstutils
@@ -50,4 +25,37 @@ extra:
     name: bioconductor-clstutils
     path: recipes/bioconductor-clstutils
     version: 1.28.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: RUnit
+requirements:
+  host:
+    - bioconductor-clst >=1.54.0,<1.55.0
+    - r-ape
+    - r-base
+    - r-lattice
+    - r-rjson
+    - r-rsqlite
+  run:
+    - bioconductor-clst >=1.54.0,<1.55.0
+    - r-ape
+    - r-base
+    - r-lattice
+    - r-rjson
+    - r-rsqlite
+
+source:
+  md5: d2c9c35acd886699560233004b0ded61
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

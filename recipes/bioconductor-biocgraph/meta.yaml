@@ -1,44 +1,21 @@
-{% set version = "1.60.0" %}
+{% set version = "1.68.0" %}
 {% set name = "biocGraph" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 5b20d0b6430960a5202ae6caff59cd89
+about:
+  description: This package provides examples and code that make use of the different graph related packages produced by Bioconductor.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Graph examples and use cases in Bioinformatics
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: fibroEset, geneplotter, hgu95av2.db
-requirements:
-  host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-geneplotter >=1.76.0,<1.77.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-rgraphviz >=2.42.0,<2.43.0'
-    - r-base
-  run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-geneplotter >=1.76.0,<1.77.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-rgraphviz >=2.42.0,<2.43.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Graph examples and use cases in Bioinformatics'
-  description: 'This package provides examples and code that make use of the different graph related packages produced by Bioconductor.'
+  run_exports: '{{ pin_subpackage("bioconductor-biocgraph", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:biocgraph
@@ -47,4 +24,35 @@ extra:
     name: bioconductor-biocgraph
     path: recipes/bioconductor-biocgraph
     version: 1.42.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: fibroEset, geneplotter, hgu95av2.db
+requirements:
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-geneplotter >=1.84.0,<1.85.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
+    - r-base
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-geneplotter >=1.84.0,<1.85.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
+    - r-base
+
+source:
+  md5: 742f69229f19a7c626ba3ecb3c52acca
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

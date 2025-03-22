@@ -1,49 +1,54 @@
-{% set version = "1.4.0" %}
+{% set version = "1.12.0" %}
 {% set name = "miaSim" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 2799c0ad22de60cfa4463f37604eebcb
+about:
+  description: Microbiome time series simulation with generalized Lotka-Volterra model, Self-Organized Instability (SOI), and other models. Hubbell's Neutral model is used to determine the abundance matrix. The resulting abundance matrix is applied to (Tree)SummarizedExperiment objects.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0 | file LICENSE
+  license_file: LICENSE
+  summary: Microbiome Data Simulation
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: rmarkdown, knitr, BiocStyle, testthat
+  run_exports: '{{ pin_subpackage("bioconductor-miasim", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: ape, cluster, foreach, doParallel, dplyr, GGally, ggplot2, igraph, network, reshape2, sna, vegan, rmarkdown, knitr, BiocStyle, testthat, mia, miaViz, colourvalues, philentropy
 requirements:
   host:
-    - 'bioconductor-matrixgenerics >=1.10.0,<1.11.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-treesummarizedexperiment >=2.6.0,<2.7.0'
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-treesummarizedexperiment >=2.14.0,<2.15.0
     - r-base
     - r-desolve
-    - r-gtools
     - r-powerlaw
   run:
-    - 'bioconductor-matrixgenerics >=1.10.0,<1.11.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-treesummarizedexperiment >=2.6.0,<2.7.0'
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-treesummarizedexperiment >=2.14.0,<2.15.0
     - r-base
     - r-desolve
-    - r-gtools
     - r-powerlaw
+
+source:
+  md5: 63f5e34abd70ce9d9b6e15fe645b02cd
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'Artistic-2.0 | file LICENSE'
-  summary: 'Microbiome Data Simulation'
-  description: 'Microbiome time series simulation with generalized Lotka-Volterra model, Self-Organized Instability (SOI), and other models. Hubbell''s Neutral model is used to determine the abundance matrix. The resulting abundance matrix is applied to SummarizedExperiment or TreeSummarizedExperiment objects.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

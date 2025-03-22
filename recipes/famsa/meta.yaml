@@ -1,20 +1,22 @@
-{% set version = "2.2.2" %}
-{% set sha256 = "9e1d96b80ff0010852dcab24f8691bf2deb7415838c001f0362ec72fd0ac2d44" %}
+{% set version = "2.2.3" %}
 
 package:
   name: famsa
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('famsa', max_pin='x') }}
 
 source:
-  url: https://github.com/refresh-bio/FAMSA/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  git_url: https://github.com/refresh-bio/FAMSA.git
+  git_rev: v{{ version }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - cmake
     - make
 
 test:
@@ -23,12 +25,19 @@ test:
 
 about:
   home: https://github.com/refresh-bio/FAMSA
-  summary: "Algorithm for large-scale multiple sequence alignments"
-  license: GPL-3
-  license_family: GPL
+  summary: "Algorithm for large-scale multiple sequence alignments."
+  license: GPL-3.0-only
+  license_family: GPL3
   license_file: LICENSE
+  dev_url: https://github.com/refresh-bio/FAMSA
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.1038/srep33964
     - biotools:famsa
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

@@ -1,37 +1,39 @@
 {% set version = "1.4.0" %}
 {% set name = "BSgenome.Scerevisiae.UCSC.sacCer2" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f1025b4d0fa7891dc46301550163753e
+about:
+  description: Saccharomyces cerevisiae (Yeast) full genome as provided by UCSC (sacCer2, June 2008) and stored in Biostrings objects.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Saccharomyces cerevisiae (Yeast) full genome (UCSC version sacCer2)
 build:
-  number: 10
+  noarch: generic
+  number: 13
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-bsgenome.scerevisiae.ucsc.saccer2", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 requirements:
   host:
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
     - r-base
   run:
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221102
+    - bioconductor-data-packages >=20241103
+source:
+  md5: f1025b4d0fa7891dc46301550163753e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Saccharomyces cerevisiae (Yeast) full genome (UCSC version sacCer2)'
-  description: 'Saccharomyces cerevisiae (Yeast) full genome as provided by UCSC (sacCer2, June 2008) and stored in Biostrings objects.'
+    - $R -e "library('{{ name }}')"
 

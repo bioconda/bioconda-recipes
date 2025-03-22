@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "ccdata-1.24.0"
+installBiocDataPackage.sh "ccdata-1.32.0"

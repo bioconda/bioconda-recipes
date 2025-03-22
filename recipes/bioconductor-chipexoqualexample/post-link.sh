@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "chipexoqualexample-1.21.0"
+installBiocDataPackage.sh "chipexoqualexample-1.30.0"

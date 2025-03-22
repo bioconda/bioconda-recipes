@@ -1,42 +1,21 @@
-{% set version = "1.52.0" %}
+{% set version = "1.60.0" %}
 {% set name = "iChip" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 6b935119adc7fcfab78edc9a18efb0e5
+about:
+  description: Hidden Ising models are implemented to identify enriched genomic regions in ChIP-chip data.  They can be used to analyze the data from multiple platforms (e.g., Affymetrix, Agilent, and NimbleGen), and the data with single to multiple replicates.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Bayesian Modeling of ChIP-chip Data Through Hidden Ising Models
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-requirements:
-  host:
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - r-base
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - r-base
-  build:
-    - {{ compiler('c') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Bayesian Modeling of ChIP-chip Data Through Hidden Ising Models'
-  description: 'Hidden Ising models are implemented to identify enriched genomic regions in ChIP-chip data.  They can be used to analyze the data from multiple platforms (e.g., Affymetrix, Agilent, and NimbleGen), and the data with single to multiple replicates.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-ichip", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:ichip
@@ -45,4 +24,33 @@ extra:
     name: bioconductor-ichip
     path: recipes/bioconductor-ichip
     version: 1.34.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - r-base
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - r-base
+
+source:
+  md5: e2f8c25bb34a748e937e8d4c85f2d1db
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

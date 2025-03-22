@@ -1,38 +1,21 @@
-{% set version = "1.32.0" %}
+{% set version = "1.40.0" %}
 {% set name = "pepXMLTab" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 2f30f83653f1f245c06f9f31e53ad946
+about:
+  description: Parsing pepXML files based one XML package. The package tries to handle pepXML files generated from different softwares. The output will be a peptide-spectrum-matching tabular file. The package also provide function to filter the PSMs based on FDR.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Parsing pepXML files and filter based on peptide FDR.
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: RUnit, BiocGenerics
-requirements:
-  host:
-    - r-base
-    - 'r-xml >=3.98-1.1'
-  run:
-    - r-base
-    - 'r-xml >=3.98-1.1'
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Parsing pepXML files and filter based on peptide FDR.'
-  description: 'Parsing pepXML files based one XML package. The package tries to handle pepXML files generated from different softwares. The output will be a peptide-spectrum-matching tabular file. The package also provide function to filter the PSMs based on FDR.'
+  run_exports: '{{ pin_subpackage("bioconductor-pepxmltab", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:pepxmltab
@@ -41,4 +24,29 @@ extra:
     name: bioconductor-pepxmltab
     path: recipes/bioconductor-pepxmltab
     version: 1.16.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: RUnit, BiocGenerics
+requirements:
+  host:
+    - r-base
+    - r-xml >=3.98-1.1
+  run:
+    - r-base
+    - r-xml >=3.98-1.1
+
+source:
+  md5: 79c519a5ba5c9e98a19b081a82dac5c7
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

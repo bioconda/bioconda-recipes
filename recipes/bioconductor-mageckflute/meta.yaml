@@ -1,31 +1,35 @@
-{% set version = "2.2.0" %}
+{% set version = "2.9.0" %}
 {% set name = "MAGeCKFlute" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 603f82fd64bae38b73a12bf5ea8286b0
+about:
+  description: CRISPR (clustered regularly interspaced short palindrome repeats) coupled with nuclease Cas9 (CRISPR/Cas9) screens represent a promising technology to systematically evaluate gene functions. Data analysis for CRISPR/Cas9 screens is a critical process that includes identifying screen hits and exploring biological functions for these hits in downstream analysis. We have previously developed two algorithms, MAGeCK and MAGeCK-VISPR, to analyze CRISPR/Cas9 screen data in various scenarios. These two algorithms allow users to perform quality control, read count generation and normalization, and calculate beta score to evaluate gene selection performance. In downstream analysis, the biological functional analysis is required for understanding biological functions of these identified genes with different screening purposes. Here, We developed MAGeCKFlute for supporting downstream analysis. MAGeCKFlute provides several strategies to remove potential biases within sgRNA-level read counts and gene-level beta scores. The downstream analysis with the package includes identifying essential, non-essential, and target-associated genes, and performing biological functional category analysis, pathway enrichment analysis and protein complex enrichment analysis of these genes. The package also visualizes genes in multiple ways to benefit users exploring screening data. Collectively, MAGeCKFlute enables accurate identification of essential, non-essential, and targeted genes, as well as their related biological functions. This vignette explains the use of the package and demonstrates typical workflows.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=3)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Integrative Analysis Pipeline for Pooled CRISPR Functional Genetic Screens
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-mageckflute", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: biomaRt, BiocStyle, dendextend, graphics, knitr, pheatmap, png, scales, sva, BiocManager
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-clusterprofiler >=4.6.0,<4.7.0'
-    - 'bioconductor-depmap >=1.12.0,<1.13.0'
-    - 'bioconductor-dose >=3.24.0,<3.25.0'
-    - 'bioconductor-enrichplot >=1.18.0,<1.19.0'
-    - 'bioconductor-pathview >=1.38.0,<1.39.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-clusterprofiler >=4.14.0,<4.15.0
+    - bioconductor-depmap >=1.20.0,<1.21.0
+    - bioconductor-dose >=4.0.0,<4.1.0
+    - bioconductor-enrichplot >=1.26.0,<1.27.0
+    - bioconductor-pathview >=1.46.0,<1.47.0
     - r-base
     - r-ggplot2
     - r-ggrepel
@@ -33,25 +37,28 @@ requirements:
     - r-msigdbr
     - r-reshape2
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-clusterprofiler >=4.6.0,<4.7.0'
-    - 'bioconductor-depmap >=1.12.0,<1.13.0'
-    - 'bioconductor-dose >=3.24.0,<3.25.0'
-    - 'bioconductor-enrichplot >=1.18.0,<1.19.0'
-    - 'bioconductor-pathview >=1.38.0,<1.39.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-clusterprofiler >=4.14.0,<4.15.0
+    - bioconductor-depmap >=1.20.0,<1.21.0
+    - bioconductor-dose >=4.0.0,<4.1.0
+    - bioconductor-enrichplot >=1.26.0,<1.27.0
+    - bioconductor-pathview >=1.46.0,<1.47.0
     - r-base
     - r-ggplot2
     - r-ggrepel
     - r-gridextra
     - r-msigdbr
     - r-reshape2
+
+source:
+  md5: 09a221017ca0e42c35bdbde86aa15a00
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>=3)'
-  summary: 'Integrative Analysis Pipeline for Pooled CRISPR Functional Genetic Screens'
-  description: 'CRISPR (clustered regularly interspaced short palindrome repeats) coupled with nuclease Cas9 (CRISPR/Cas9) screens represent a promising technology to systematically evaluate gene functions. Data analysis for CRISPR/Cas9 screens is a critical process that includes identifying screen hits and exploring biological functions for these hits in downstream analysis. We have previously developed two algorithms, MAGeCK and MAGeCK-VISPR, to analyze CRISPR/Cas9 screen data in various scenarios. These two algorithms allow users to perform quality control, read count generation and normalization, and calculate beta score to evaluate gene selection performance. In downstream analysis, the biological functional analysis is required for understanding biological functions of these identified genes with different screening purposes. Here, We developed MAGeCKFlute for supporting downstream analysis. MAGeCKFlute provides several strategies to remove potential biases within sgRNA-level read counts and gene-level beta scores. The downstream analysis with the package includes identifying essential, non-essential, and target-associated genes, and performing biological functional category analysis, pathway enrichment analysis and protein complex enrichment analysis of these genes. The package also visualizes genes in multiple ways to benefit users exploring screening data. Collectively, MAGeCKFlute enables accurate identification of essential, non-essential, and targeted genes, as well as their related biological functions. This vignette explains the use of the package and demonstrates typical workflows.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

@@ -1,39 +1,22 @@
-{% set version = "1.30.0" %}
+{% set version = "1.38.0" %}
 {% set name = "PROPER" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 7f36d105300d6e3604e654eb41eb8bce
+about:
+  description: This package provide simulation based methods for evaluating the statistical power in differential expression analysis from RNA-seq data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: PROspective Power Evaluation for RNAseq
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle,DESeq2,DSS,knitr
-requirements:
-  host:
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - r-base
-  run:
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL
-  summary: 'PROspective Power Evaluation for RNAseq'
-  description: 'This package provide simulation based methods for evaluating the statistical power in differential expression analysis from RNA-seq data.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-proper", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:proper
@@ -41,4 +24,29 @@ extra:
     name: bioconductor-proper
     path: recipes/bioconductor-proper
     version: 1.14.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle,DESeq2,DSS,knitr
+requirements:
+  host:
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - r-base
+  run:
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - r-base
+
+source:
+  md5: 015d560900231510bd434cbf6f7ca621
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

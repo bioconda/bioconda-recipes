@@ -1,57 +1,20 @@
-{% set version = "2.42.0" %}
+{% set version = "2.50.0" %}
 {% set name = "PING" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: fb4ec5041e863c1038b8ba014992ec12
+about:
+  description: Probabilistic inference of ChIP-Seq using an empirical Bayes mixture model approach.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Probabilistic inference for Nucleosome Positioning with MNase-based or Sonicated Short-read Data
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: parallel, ShortRead, rtracklayer
-requirements:
-  host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-gviz >=1.42.0,<1.43.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-pics >=2.42.0,<2.43.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - r-fda
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-gviz >=1.42.0,<1.43.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-pics >=2.42.0,<2.43.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - r-fda
-  build:
-    - {{ compiler('c') }}
-    - automake
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Probabilistic inference for Nucleosome Positioning with MNase-based or Sonicated Short-read Data'
-  description: 'Probabilistic inference of ChIP-Seq using an empirical Bayes mixture model approach.'
+  run_exports: '{{ pin_subpackage("bioconductor-ping", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:ping
@@ -59,4 +22,49 @@ extra:
     name: bioconductor-ping
     path: recipes/bioconductor-ping
     version: 2.24.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: parallel, ShortRead, rtracklayer
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - automake
+    - make
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-gviz >=1.50.0,<1.51.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-pics >=2.50.0,<2.51.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-fda
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-gviz >=1.50.0,<1.51.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-pics >=2.50.0,<2.51.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-fda
+
+source:
+  md5: 8339c8918acb33c6c33786c409899dc8
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

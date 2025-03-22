@@ -1,84 +1,25 @@
-{% set version = "4.10.0" %}
+{% set version = "4.18.0" %}
 {% set name = "flowWorkspace" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 5371111466fe1164d387f8d58e6826f7
+about:
+  description: This package is designed to facilitate comparison of automated gating methods against manual gating done in flowJo. This package allows you to import basic flowJo workspaces into BioConductor and replicate the gating from flowJo using the flowCore functionality. Gating hierarchies, groups of samples, compensation, and transformation are performed so that the output matches the flowJo analysis.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: AGPL-3.0-only
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Infrastructure for representing and interacting with gated and ungated cytometry data sets.
+
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: testthat, flowWorkspaceData (>= 2.23.2), knitr, rmarkdown, ggcyto, parallel, CytoML, openCyto
-# SystemRequirements: GNU make, C++11
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-cytolib >=2.10.0,<2.11.0'
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-ncdfflow >=2.44.0,<2.45.0'
-    - 'bioconductor-rbgl >=1.74.0,<1.75.0'
-    - 'bioconductor-rgraphviz >=2.42.0,<2.43.0'
-    - 'bioconductor-rhdf5lib >=1.20.0,<1.21.0'
-    - 'bioconductor-rprotobuflib >=2.10.0,<2.11.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - 'r-bh >=1.62.0-1'
-    - r-cpp11
-    - r-data.table
-    - r-dplyr
-    - r-ggplot2
-    - r-matrixstats
-    - r-scales
-    - r-xml
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-cytolib >=2.10.0,<2.11.0'
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-ncdfflow >=2.44.0,<2.45.0'
-    - 'bioconductor-rbgl >=1.74.0,<1.75.0'
-    - 'bioconductor-rgraphviz >=2.42.0,<2.43.0'
-    - 'bioconductor-rhdf5lib >=1.20.0,<1.21.0'
-    - 'bioconductor-rprotobuflib >=2.10.0,<2.11.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - 'r-bh >=1.62.0-1'
-    - r-cpp11
-    - r-data.table
-    - r-dplyr
-    - r-ggplot2
-    - r-matrixstats
-    - r-scales
-    - r-xml
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: AGPL-3.0-only
-  summary: 'Infrastructure for representing and interacting with gated and ungated cytometry data sets.'
-  description: 'This package is designed to facilitate comparison of automated gating methods against manual gating done in flowJo. This package allows you to import basic flowJo workspaces into BioConductor and replicate the gating from flowJo using the flowCore functionality. Gating hierarchies, groups of samples, compensation, and transformation are performed so that the output matches the flowJo analysis.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-flowworkspace", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   identifiers:
     - biotools:flowworkspace
     - doi:10.1186/1471-2105-13-252
@@ -86,4 +27,80 @@ extra:
     name: bioconductor-flowworkspace
     path: recipes/bioconductor-flowworkspace
     version: 3.28.2
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, flowWorkspaceData (>= 2.23.2), knitr, rmarkdown, ggcyto, parallel, CytoML, openCyto
+# SystemRequirements: GNU make, C++11
+requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-cytolib >=2.18.0,<2.19.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-ncdfflow >=2.52.0,<2.53.0
+    - bioconductor-rbgl >=1.82.0,<1.83.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
+    - bioconductor-rhdf5lib >=1.28.0,<1.29.0
+    - bioconductor-rprotobuflib >=2.18.0,<2.19.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-bh >=1.62.0-1
+    - r-cpp11
+    - r-data.table
+    - r-dplyr
+    - r-ggplot2
+    - r-matrixstats
+    - r-scales >=1.3.0
+    - r-xml
+    - libblas
+    - liblapack
+    - zlib
+
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-cytolib >=2.18.0,<2.19.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-ncdfflow >=2.52.0,<2.53.0
+    - bioconductor-rbgl >=1.82.0,<1.83.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
+    - bioconductor-rhdf5lib >=1.28.0,<1.29.0
+    - bioconductor-rprotobuflib >=2.18.0,<2.19.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-bh >=1.62.0-1
+    - r-cpp11
+    - r-data.table
+    - r-dplyr
+    - r-ggplot2
+    - r-matrixstats
+    - r-scales >=1.3.0
+    - r-xml
+
+source:
+  md5: 6c2010307be1f1484a32a9d09a4752b3
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  patches:
+    - Makevars.osx.patch  # [osx]
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

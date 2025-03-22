@@ -1,33 +1,38 @@
-{% set version = "1.12.0" %}
+{% set version = "1.20.0" %}
 {% set name = "tradeSeq" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: c51d9231c2694ca6129c3940f693bddc
+about:
+  description: tradeSeq provides a flexible method for fitting regression models that can be used to find genes that are differentially expressed along one or multiple lineages in a trajectory. Based on the fitted models, it uses a variety of tests suited to answer different questions of interest, e.g. the discovery of genes for which expression is associated with pseudotime, or which are differentially expressed (in a specific region) along the trajectory. It fits a negative binomial generalized additive model (GAM) for each gene, and performs inference on the parameters of the GAM.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: trajectory-based differential expression analysis for sequencing data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, rmarkdown, testthat, covr, clusterExperiment
+  run_exports: '{{ pin_subpackage("bioconductor-tradeseq", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, testthat, covr, clusterExperiment, DelayedMatrixStats
 requirements:
+
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-slingshot >=2.6.0,<2.7.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-trajectoryutils >=1.6.0,<1.7.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-slingshot >=2.14.0,<2.15.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-trajectoryutils >=1.14.0,<1.15.0
     - r-base
     - r-ggplot2
     - r-igraph
@@ -41,15 +46,16 @@ requirements:
     - r-rcolorbrewer
     - r-tibble
     - r-viridis
+
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-slingshot >=2.6.0,<2.7.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-trajectoryutils >=1.6.0,<1.7.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-slingshot >=2.14.0,<2.15.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-trajectoryutils >=1.14.0,<1.15.0
     - r-base
     - r-ggplot2
     - r-igraph
@@ -63,13 +69,16 @@ requirements:
     - r-rcolorbrewer
     - r-tibble
     - r-viridis
+
+source:
+  md5: ea65f3a3d11bc27c09659c3817221e1f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'trajectory-based differential expression analysis for sequencing data'
-  description: 'tradeSeq provides a flexible method for fitting regression models that can be used to find genes that are differentially expressed along one or multiple lineages in a trajectory. Based on the fitted models, it uses a variety of tests suited to answer different questions of interest, e.g. the discovery of genes for which expression is associated with pseudotime, or which are differentially expressed (in a specific region) along the trajectory. It fits a negative binomial generalized additive model (GAM) for each gene, and performs inference on the parameters of the GAM.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

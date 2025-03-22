@@ -1,40 +1,42 @@
 {% set version = "1.0.0" %}
 {% set name = "FDb.UCSC.snp135common.hg19" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 0cdca5fa595bb69464016ceb97635f78
+about:
+  description: makeFeatureDbFromUCSC cannot cope with this track, hence a package
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: UCSC common SNPs track for dbSNP build 135
 build:
-  number: 10
+  noarch: generic
+  number: 13
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-fdb.ucsc.snp135common.hg19", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: BSgenome.Hsapiens.UCSC.hg19, SNPlocs.Hsapiens.dbSNP.20111119
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
     - r-base
   run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221102
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 0cdca5fa595bb69464016ceb97635f78
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'UCSC common SNPs track for dbSNP build 135'
-  description: 'makeFeatureDbFromUCSC cannot cope with this track, hence a package'
+    - $R -e "library('{{ name }}')"
 

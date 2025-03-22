@@ -1,29 +1,33 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "mslp" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 902338b37c934b09d241122f7d8ec630
+about:
+  description: An integrated pipeline to predict the potential synthetic lethality partners (SLPs) of tumour mutations, based on gene expression, mutation profiling and cell line genetic screens data. It has builtd-in support for data from cBioPortal. The primary SLPs correlating with muations in WT and compensating for the loss of function of mutations are predicted by random forest based methods (GENIE3) and Rank Products, respectively. Genetic screens are employed to identfy consensus SLPs leads to reduced cell viability when perturbed.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Predict synthetic lethal partners of tumour mutations
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: doFuture, future, knitr, rmarkdown, roxygen2, tinytest
+  run_exports: '{{ pin_subpackage("bioconductor-mslp", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, doFuture, future, knitr, rmarkdown, roxygen2, tinytest
 requirements:
   host:
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-rankprod >=3.24.0,<3.25.0'
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-rankprod >=3.32.0,<3.33.0
     - r-base
-    - 'r-data.table >=1.13.0'
+    - r-data.table >=1.13.0
     - r-dorng
     - r-fmsb
     - r-foreach
@@ -31,23 +35,26 @@ requirements:
     - r-proc
     - r-randomforest
   run:
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-rankprod >=3.24.0,<3.25.0'
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-rankprod >=3.32.0,<3.33.0
     - r-base
-    - 'r-data.table >=1.13.0'
+    - r-data.table >=1.13.0
     - r-dorng
     - r-fmsb
     - r-foreach
     - r-magrittr
     - r-proc
     - r-randomforest
+
+source:
+  md5: d1daaf0f5a6170eed32cc5462d94ee47
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Predict synthetic lethal partners of tumour mutations'
-  description: 'An integrated pipeline to predict the potential synthetic lethality partners (SLPs) of tumour mutations, based on gene expression, mutation profiling and cell line genetic screens data. It has builtd-in support for data from cBioPortal. The primary SLPs correlating with muations in WT and compensating for the loss of function of mutations are predicted by random forest based methods (GENIE3) and Rank Products, respectively. Genetic screens are employed to identfy consensus SLPs leads to reduced cell viability when perturbed.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

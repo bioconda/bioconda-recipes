@@ -1,39 +1,41 @@
 {% set version = "3.14.0" %}
 {% set name = "TxDb.Cfamiliaris.UCSC.canFam5.refGene" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: fc3d84569c092b74e5e0bccb785db8b6
+about:
+  description: Exposes an annotation databases generated from UCSC by exposing these as TxDb objects
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Annotation package for TxDb object(s)
 build:
-  number: 2
+  noarch: generic
+  number: 5
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-txdb.cfamiliaris.ucsc.canfam5.refgene", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
     - r-base
   run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221103
+    - bioconductor-data-packages >=20241103
+source:
+  md5: fc3d84569c092b74e5e0bccb785db8b6
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Annotation package for TxDb object(s)'
-  description: 'Exposes an annotation databases generated from UCSC by exposing these as TxDb objects'
+    - $R -e "library('{{ name }}')"
 

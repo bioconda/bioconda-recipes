@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "mugaexampledata-1.17.0"
+installBiocDataPackage.sh "mugaexampledata-1.26.0"

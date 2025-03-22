@@ -1,50 +1,43 @@
-{% set version = "1.38.0" %}
+{% set version = "1.46.0" %}
 {% set name = "TCC" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 12a23d4a631d9b030171a6ada2a281aa
+about:
+  description: This package provides a series of functions for performing differential expression analysis from RNA-seq count data using robust normalization strategy (called DEGES). The basic idea of DEGES is that potential differentially expressed genes or transcripts (DEGs) among compared samples should be removed before data normalization to obtain a well-ranked gene list where true DEGs are top-ranked and non-DEGs are bottom ranked. This can be done by performing a multi-step normalization strategy (called DEGES for DEG elimination strategy). A major characteristic of TCC is to provide the robust normalization methods for several kinds of count data (two-group with or without replicates, multi-group/multi-factor, and so on) by virtue of the use of combinations of functions in depended packages.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: 'TCC: Differential expression analysis for tag count data with robust normalization strategies'
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-tcc", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: RUnit, BiocGenerics
 requirements:
   host:
-    - 'bioconductor-bayseq >=2.31.0,<2.32.0'
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-roc >=1.74.0,<1.75.0'
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-roc >=1.82.0,<1.83.0
     - r-base
   run:
-    - 'bioconductor-bayseq >=2.31.0,<2.32.0'
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-roc >=1.74.0,<1.75.0'
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-roc >=1.82.0,<1.83.0
     - r-base
+source:
+  md5: dd5ee19edca147016b7bb36a0172e65c
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'TCC: Differential expression analysis for tag count data with robust normalization strategies'
-  description: 'This package provides a series of functions for performing differential expression analysis from RNA-seq count data using robust normalization strategy (called DEGES). The basic idea of DEGES is that potential differentially expressed genes or transcripts (DEGs) among compared samples should be removed before data normalization to obtain a well-ranked gene list where true DEGs are top-ranked and non-DEGs are bottom ranked. This can be done by performing a multi-step normalization strategy (called DEGES for DEG elimination strategy). A major characteristic of TCC is to provide the robust normalization methods for several kinds of count data (two-group with or without replicates, multi-group/multi-factor, and so on) by virtue of the use of combinations of functions in depended packages.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
-extra:
-  identifiers:
-    - biotools:tcc
-  parent_recipe:
-    name: bioconductor-tcc
-    path: recipes/bioconductor-tcc
-    version: 1.20.1
+    - $R -e "library('{{ name }}')"
 

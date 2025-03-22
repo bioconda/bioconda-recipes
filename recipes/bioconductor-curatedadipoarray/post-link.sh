@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "curatedadipoarray-1.9.0"
+installBiocDataPackage.sh "curatedadipoarray-1.18.0"

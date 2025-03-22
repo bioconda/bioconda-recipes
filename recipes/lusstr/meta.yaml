@@ -1,5 +1,5 @@
-{% set version = "0.5" %}
-{% set sha256 = "40fb90907d61c0a871e1ccaa5a65bdaa3485e3f42794f9896e030b0b173f6356" %}
+{% set version = "0.10" %}
+{% set sha256 = "cd4006c8a54249feefb44d26799557d029a8e10f262bad887de11491cf572844" %}
 
 package:
     name: lusstr
@@ -12,19 +12,27 @@ source:
 build:
     noarch: python
     entry_points:
-        - lusstr = lusSTR.__main__:main
-    script: python -m pip install --no-deps --ignore-installed .
+        - lusstr = lusSTR.cli:main
+    script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
     number: 0
+    run_exports:
+        - {{ pin_subpackage('lusstr', max_pin="x.x") }}
 
 requirements:
     host:
-        - python >=3
+        - python >=3,<3.12
         - pip
     run:
-        - python >=3
-        - pandas >=1
+        - python >=3,<3.12
+        - pandas >=1.0,<2.0
         - xlrd >=1.0,<2.0
-        - openpyxl
+        - openpyxl >=3.0.6
+        - snakemake-minimal >=7.22.0,<8.0
+        - pyyaml >=6.0
+        - matplotlib-base >=3.5.3
+        - numpy ==1.26.4
+        - streamlit >=1.31.0
+        - streamlit_option_menu >=0.3.13
 
 test:
     imports:
@@ -35,10 +43,11 @@ test:
 
 about:
     home: https://www.github.com/bioforensics/lusSTR
-    license: BSD license
+    license: BSD-3-Clause
     license_family: BSD
     summary: Tool for converting NGS sequence data of forensic STR loci to various annotation styles
     dev_url: https://www.github.com/bioforensics/lusSTR
+    license_file: LICENSE.txt
 
 extra:
     recipe-maintainers:

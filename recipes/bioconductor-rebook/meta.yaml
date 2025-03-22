@@ -1,47 +1,54 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "rebook" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 3ded885d23e56eff97ceb55783bb2404
+about:
+  description: Provides utilities to re-use content across chapters of a Bioconductor book. This is mostly based on functionality developed while writing the OSCA book, but generalized for potential use in other large books with heavy compute. Also contains some functions to assist book deployment.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Re-using Content in Bioconductor Books
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-rebook", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: testthat, igraph, XML, BiocManager, RCurl, bookdown, rappdirs, yaml, BiocParallel, OSCA.intro, OSCA.workflows
 requirements:
   host:
-    - 'bioconductor-biocstyle >=2.26.0,<2.27.0'
-    - 'bioconductor-dir.expiry >=1.6.0,<1.7.0'
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-dir.expiry >=1.14.0,<1.15.0
     - r-base
     - r-codedepends
     - r-filelock
-    - 'r-knitr >=1.32'
+    - r-knitr >=1.32
     - r-rmarkdown
   run:
-    - 'bioconductor-biocstyle >=2.26.0,<2.27.0'
-    - 'bioconductor-dir.expiry >=1.6.0,<1.7.0'
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-dir.expiry >=1.14.0,<1.15.0
     - r-base
     - r-codedepends
     - r-filelock
-    - 'r-knitr >=1.32'
+    - r-knitr >=1.32
     - r-rmarkdown
+
+source:
+  md5: 1a43fb79b3571524d0fbae53c3b3d4ee
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Re-using Content in Bioconductor Books'
-  description: 'Provides utilities to re-use content across chapters of a Bioconductor book. This is mostly based on functionality developed while writing the OSCA book, but generalized for potential use in other large books with heavy compute. Also contains some functions to assist book deployment.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

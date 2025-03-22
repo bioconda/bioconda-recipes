@@ -1,60 +1,71 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "epistasisGA" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 7566a0e1e903c818511625a1c7526fc4
+about:
+  description: This package runs the GADGETS method to identify epistatic effects in nuclear family studies. It also provides functions for permutation-based inference and graphical visualization of the results.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: An R package to identify multi-snp effects in nuclear family studies using the GADGETS method
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: Matrix, BiocStyle, knitr, rmarkdown, magrittr, kableExtra, testthat (>= 3.0.0)
+  run_exports: '{{ pin_subpackage("bioconductor-epistasisga", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, rmarkdown, magrittr, kableExtra, testthat (>= 3.0.0)
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
     - r-base
     - r-batchtools
+    - r-bh
+    - r-bigmemory
     - r-data.table
     - r-ggplot2
     - r-igraph
     - r-matrixstats
     - r-qgraph
-    - 'r-rcpp >=0.11.0'
+    - r-rcpp
     - r-rcpparmadillo
     - r-survival
     - libblas
     - liblapack
   run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
     - r-base
     - r-batchtools
+    - r-bh
+    - r-bigmemory
     - r-data.table
     - r-ggplot2
     - r-igraph
     - r-matrixstats
     - r-qgraph
-    - 'r-rcpp >=0.11.0'
+    - r-rcpp
     - r-rcpparmadillo
     - r-survival
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: becb50c407ab48cee495562d867da943
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'An R package to identify multi-snp effects in nuclear family studies using the GADGETS method'
-  description: 'This package runs the GADGETS method to identify epistatic effects in nuclear family studies. It also provides functions for permutation-based inference and graphical visualization of the results.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

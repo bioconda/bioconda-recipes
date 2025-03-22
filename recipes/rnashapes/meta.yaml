@@ -1,30 +1,37 @@
-{% set version = "3.3.2" %}
-{% set sha256 = "da7371378e32b2329da226be79a11974fdc4e66fe0b664757b5aafe29e2e12d6" %}
+{% set fold_grammars_version = "2.3.1" %}
+{% set rnashapes_version = "3.4.0" %}
+{% set packagename = "rnashapes" %}
+{% set sha256 = "0c5b7d91893d0a23189f4af3602e18f110f030eac49a3658f7acede23596fde0" %}
 
 package:
-  name: rnashapes
-  version: 3.3.2
+  name: {{ packagename }}
+  version: {{ rnashapes_version }}
 
 source:
   sha256: {{ sha256 }}
   # the repository "fold-grammars" contains sources for several programs, i.e. pKiss, RNAshapes, ...
-  # thus, the version number does not correspond to the RNAshapes version number
-  url: https://github.com/jlab/fold-grammars/archive/2.2.14.tar.gz
+  # thus, the version number does not correspond to the {{ packagename }} version number
+  url: https://github.com/jlab/fold-grammars/archive/{{ fold_grammars_version }}.tar.gz
 
 build:
   number: 2
-  skip: False # [osx]
+  run_exports:
+    - {{ pin_subpackage('rnashapes', max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - libcxx <17 # [osx]
   host:
     - perl
-    - bellmans-gapc >=2021.04.28
+    - bellmans-gapc >=2024.01.12
+    - libopenblas
+    - libcxx <17 # [osx]
   run:
     - perl
-    - bellmans-gapc >=2021.04.28
+    - bellmans-gapc >=2024.01.12
+    - libopenblas
 
 test:
   commands:
@@ -32,8 +39,8 @@ test:
     - RNAshapes CGCAUGCUAGUCGCG
 
 about:
-  home: https://bibiserv.cebitec.uni-bielefeld.de/rnashapes
-  license: 'GPLv3+'
+  home: https://bibiserv.cebitec.uni-bielefeld.de/{{ packagename }}
+  license: 'GPL-3.0-or-later'
   license_file: LICENSE
   summary: "RNAshape abstraction maps structures to a tree-like domain of shapes,
     retaining adjacency and nesting of structural features, but disregarding helix
@@ -43,5 +50,7 @@ about:
     account of properties of the molecule's folding space."
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - doi:10.1093/bioinformatics/btu649

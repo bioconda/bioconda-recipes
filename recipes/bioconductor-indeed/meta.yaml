@@ -1,47 +1,55 @@
-{% set version = "2.12.0" %}
+{% set version = "2.20.0" %}
 {% set name = "INDEED" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 8b1f51b45f593dbc5aa278ace607d6dd
+about:
+  description: 'An R package for integrated differential expression and differential network analysis based on omic data for cancer biomarker discovery. Both correlation and partial correlation can be used to generate differential network to aid the traditional differential expression analysis to identify changes between biomolecules on both their expression and pairwise association levels. A detailed description of the methodology has been published in Methods journal (PMID: 27592383). An interactive visualization feature allows for the exploration and selection of candidate biomarkers.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Interactive Visualization of Integrated Differential Expression and Differential Network Analysis for Biomarker Candidate Selection Package
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr (>= 1.19), rmarkdown (>= 1.8), testthat (>= 2.0.0)
-requirements:
-  host:
-    - r-base
-    - 'r-devtools >=1.13.0'
-    - 'r-glasso >=1.8'
-    - 'r-igraph >=1.2.4'
-    - 'r-visnetwork >=2.0.6'
-  run:
-    - r-base
-    - 'r-devtools >=1.13.0'
-    - 'r-glasso >=1.8'
-    - 'r-igraph >=1.2.4'
-    - 'r-visnetwork >=2.0.6'
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Interactive Visualization of Integrated Differential Expression and Differential Network Analysis for Biomarker Candidate Selection Package'
-  description: 'An R package for integrated differential expression and differential network analysis based on omic data for cancer biomarker discovery. Both correlation and partial correlation can be used to generate differential network to aid the traditional differential expression analysis to identify changes between biomolecules on both their expression and pairwise association levels. A detailed description of the methodology has been published in Methods journal (PMID: 27592383). An interactive visualization feature allows for the exploration and selection of candidate biomarkers.'
+  run_exports: '{{ pin_subpackage("bioconductor-indeed", max_pin="x.x") }}'
+
 extra:
   parent_recipe:
     name: bioconductor-indeed
     path: recipes/bioconductor-indeed
     version: 1.0.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr (>= 1.19), rmarkdown (>= 1.8), testthat (>= 2.0.0)
+requirements:
+  host:
+    - r-base
+    - r-devtools >=1.13.0
+    - r-glasso >=1.8
+    - r-igraph >=1.2.4
+    - r-visnetwork >=2.0.6
+  run:
+    - r-base
+    - r-devtools >=1.13.0
+    - r-glasso >=1.8
+    - r-igraph >=1.2.4
+    - r-visnetwork >=2.0.6
+
+source:
+  md5: bead8a561e0225c4447fd94c49cdb2c5
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

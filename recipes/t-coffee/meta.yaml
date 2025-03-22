@@ -1,75 +1,57 @@
-{% set version = "13.45.0.4846264" %}
-
+{% set version = "13.46.1.b8b01e06" %}
+{% set name = "t-coffee" %}
 package:
-  name: t-coffee
+  name: {{ name }}
   version: {{ version }}
 
 build:
-  number: 5
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('t-coffee', max_pin="x") }}
+  skip: True    # [osx]
 
 source:
   # The latest stable release is at http://www.tcoffee.org/Packages/Stable/Latest/ ,
   # but is then archived at http://www.tcoffee.org/Packages/Archives/
-  url: https://s3.eu-central-1.amazonaws.com/tcoffee-packages/Stable/Latest/T-COFFEE_distribution_Version_{{ version }}.tar.gz
-  sha256: c8e5ba17de11ddf07cf2ed37f077d81c1432d55b77761f115f9374de6f8d0d03
+  url: https://s3.eu-central-1.amazonaws.com/tcoffee-packages/Archives/T-COFFEE_distribution_Version_{{ version }}.tar.gz
+  sha256: 54d2b00956af79a884fe7174522522c77e65796d5aa08974dad86e061e6d12d1
   patches:
     - expose-os-detection.patch
-
+    - coredump.patch
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
     - perl-xml-simple
-    - blast
-    - clustalo
-    - clustalw
-    - consan # [not osx]
-    - dca
-    - dialign-tx 1.0.2
-    - famsa
-    - kalign2
-    - mafft 7.310
-    - muscle
-    - mustang 3.2.3
-    - pasta
-    - perl
-    - phylip
-    - poa 2.0 # [not osx]
-    - prank
-    - probcons
-    - probconsrna
-    - ruby
-    - sap
-    - tmalign
-    - viennarna 2.1.9
+    - perl            ==5.32.1
   run:
-    - blast
-    - clustalo
-    - clustalw
-    - consan # [not osx]
-    - dca
-    - dialign-tx 1.0.2
-    - famsa
-    - kalign2
-    - mafft 7.310
-    - muscle
-    - mustang 3.2.3
-    - pasta
-    - perl
-    - phylip
-    - poa 2.0 # [not osx]
-    - prank
-    - probcons
-    - probconsrna
-    - ruby
-    - sap
-    - tmalign
-    - viennarna 2.1.9
+    - perl            ==5.32.1
+    - clustalo        ==1.2.4
+    - clustalw        ==2.1
+    - consan          ==1.2 # [not osx]
+    - dialign-tx      >=1.0.2
+    - famsa           ==2.2.3
+    - kalign2         ==2.04
+    - mafft           ==7.526
+    - muscle          ==3.8.1551
+    - mustang         >=3.2.3
+    - pasta           ==1.9.2
+    - phylip          ==3.697
+    - poa             >=2.0 # [not osx]
+    - prank           ==170427
+    - probcons        ==1.12
+    - probconsrna     ==1.10
+    - sap             ==1.1.3
+    - tmalign         ==20170708
+    - viennarna       ==2.7.0
     
 test:
   commands:
     - HOME=/tmp t_coffee -version
+    # what does the package think it has installed:
+    - HOME=/tmp t_coffee 
     # These messages don't end up getting compiled in correctly under OSX
     - HOME=/tmp t_coffee 2>&1 | grep "kalign is  Installed"  # [not osx]
     - HOME=/tmp t_coffee 2>&1 | grep "mafft is  Installed"  # [not osx]
@@ -84,5 +66,7 @@ about:
   summary: "A collection of tools for Multiple Alignments of DNA, RNA, Protein Sequence"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - doi:10.1006/jmbi.2000.4042

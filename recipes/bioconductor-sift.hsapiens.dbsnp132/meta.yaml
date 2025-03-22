@@ -1,41 +1,43 @@
 {% set version = "1.0.2" %}
 {% set name = "SIFT.Hsapiens.dbSNP132" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: c374f0bf4c99357cfe99e0b192c00d75
+about:
+  description: Database of SIFT predictions for Homo sapiens dbSNP build 132
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: SIFT Predictions for Homo sapiens dbSNP build 132
 build:
-  number: 10
+  noarch: generic
+  number: 13
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-sift.hsapiens.dbsnp132", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-variantannotation >=1.44.0,<1.45.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
     - r-base
-    - 'r-rsqlite >=0.11.0'
+    - r-rsqlite >=0.11.0
   run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-variantannotation >=1.44.0,<1.45.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
     - r-base
-    - 'r-rsqlite >=0.11.0'
+    - r-rsqlite >=0.11.0
     - curl
-    - bioconductor-data-packages>=20221103
+    - bioconductor-data-packages >=20241103
+source:
+  md5: c374f0bf4c99357cfe99e0b192c00d75
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'SIFT Predictions for Homo sapiens dbSNP build 132'
-  description: 'Database of SIFT predictions for Homo sapiens dbSNP build 132'
+    - $R -e "library('{{ name }}')"
 

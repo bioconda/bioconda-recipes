@@ -1,44 +1,22 @@
-{% set version = "2.56.0" %}
+{% set version = "2.64.0" %}
 {% set name = "KCsmart" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: da0ce6a92f03b3830b227763cbdebc31
+about:
+  description: Multi sample aCGH analysis package using kernel convolution
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Multi sample aCGH analysis package using kernel convolution
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-multtest >=2.54.0,<2.55.0'
-    - 'bioconductor-siggenes >=1.72.0,<1.73.0'
-    - r-base
-    - r-kernsmooth
-  run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-multtest >=2.54.0,<2.55.0'
-    - 'bioconductor-siggenes >=1.72.0,<1.73.0'
-    - r-base
-    - r-kernsmooth
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Multi sample aCGH analysis package using kernel convolution'
-  description: 'Multi sample aCGH analysis package using kernel convolution'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-kcsmart", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:kcsmart
@@ -47,4 +25,34 @@ extra:
     name: bioconductor-kcsmart
     path: recipes/bioconductor-kcsmart
     version: 2.38.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-multtest >=2.62.0,<2.63.0
+    - bioconductor-siggenes >=1.80.0,<1.81.0
+    - r-base
+    - r-kernsmooth
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-multtest >=2.62.0,<2.63.0
+    - bioconductor-siggenes >=1.80.0,<1.81.0
+    - r-base
+    - r-kernsmooth
+
+source:
+  md5: a5f8500e44005b573292f1f49ffd6253
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

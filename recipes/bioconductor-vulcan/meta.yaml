@@ -1,34 +1,38 @@
-{% set version = "1.20.0" %}
+{% set version = "1.28.0" %}
 {% set name = "vulcan" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: a47f0db9f3c3a4d7a9335194b498b4bf
+about:
+  description: 'Vulcan (VirtUaL ChIP-Seq Analysis through Networks) is a package that interrogates gene regulatory networks to infer cofactors significantly enriched in a differential binding signature coming from ChIP-Seq data. In order to do so, our package combines strategies from different BioConductor packages: DESeq for data normalization, ChIPpeakAnno and DiffBind for annotation and definition of ChIP-Seq genomic peaks, csaw to define optimal peak width and viper for applying a regulatory network over a differential binding signature.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: VirtUaL ChIP-Seq data Analysis using Networks
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-vulcan", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: vulcandata
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-chippeakanno >=3.32.0,<3.33.0'
-    - 'bioconductor-csaw >=1.32.0,<1.33.0'
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-diffbind >=3.8.0,<3.9.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-txdb.hsapiens.ucsc.hg19.knowngene >=3.2.0,<3.3.0'
-    - 'bioconductor-viper >=1.32.0,<1.33.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-chippeakanno >=3.40.0,<3.41.0
+    - bioconductor-csaw >=1.40.0,<1.41.0
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-diffbind >=3.16.0,<3.17.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-txdb.hsapiens.ucsc.hg19.knowngene >=3.2.0,<3.3.0
+    - bioconductor-viper >=1.40.0,<1.41.0
     - r-base
     - r-catools
     - r-gplots
@@ -36,28 +40,31 @@ requirements:
     - r-wordcloud
     - r-zoo
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-chippeakanno >=3.32.0,<3.33.0'
-    - 'bioconductor-csaw >=1.32.0,<1.33.0'
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-diffbind >=3.8.0,<3.9.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-txdb.hsapiens.ucsc.hg19.knowngene >=3.2.0,<3.3.0'
-    - 'bioconductor-viper >=1.32.0,<1.33.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-chippeakanno >=3.40.0,<3.41.0
+    - bioconductor-csaw >=1.40.0,<1.41.0
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-diffbind >=3.16.0,<3.17.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-txdb.hsapiens.ucsc.hg19.knowngene >=3.2.0,<3.3.0
+    - bioconductor-viper >=1.40.0,<1.41.0
     - r-base
     - r-catools
     - r-gplots
     - r-locfit
     - r-wordcloud
     - r-zoo
+
+source:
+  md5: 2fc8872a1ee68ebf6b7df05b194d7f0b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: LGPL-3
-  summary: 'VirtUaL ChIP-Seq data Analysis using Networks'
-  description: 'Vulcan (VirtUaL ChIP-Seq Analysis through Networks) is a package that interrogates gene regulatory networks to infer cofactors significantly enriched in a differential binding signature coming from ChIP-Seq data. In order to do so, our package combines strategies from different BioConductor packages: DESeq for data normalization, ChIPpeakAnno and DiffBind for annotation and definition of ChIP-Seq genomic peaks, csaw to define optimal peak width and viper for applying a regulatory network over a differential binding signature.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+    - $R -e "library('{{ name }}')"
 

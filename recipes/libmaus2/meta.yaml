@@ -1,7 +1,7 @@
 {% set name = "libmaus2" %}
-{% set version = "2.0.810" %}
-{% set datestamp = "20220216151520" %}
-{% set sha256hash = "6639289aba6bbece3057ab7d1782a1b94b80a9ae22fc3d136a78ba8f7b9edaee" %}
+{% set version = "2.0.813" %}
+{% set datestamp = "20221210220409" %}
+{% set sha256 = "4125f8daefd6900185675026498369457088e25e81029597659249be49cd5261" %}
 
 package:
   name: {{ name }}
@@ -10,43 +10,61 @@ package:
 build:
   # There's some issue with clang
   skip: True  # [osx]
-  number: 3
+  number: 1
   run_exports:
-    - {{ pin_subpackage('libmaus2', max_pin='x.x') }}
+    - {{ pin_subpackage('libmaus2', max_pin='x') }}
 
 source:
   url: https://gitlab.com/german.tischler/libmaus2/-/archive/{{ version }}-release-{{ datestamp }}/libmaus2-{{ version }}-release-{{ datestamp }}.tar.gz
-  sha256: {{ sha256hash }}
-  patches:
+  sha256: {{ sha256 }}
+  #patches:
     # Until gcc >=8 is being used
-    - patch
+    #- patch
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
   host:
     - boost-cpp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - libcurl
     # snappy 1.1.9 introduced a binary incompatible build change (https://github.com/mhx/dwarfs/issues/56#issuecomment-896857211)
     # enabling -fno-rtti. libmaus needs typeid, which is only available with activated rtti.
     # Hence, we stick with snappy 1.1.8
-    - snappy =1.1.8 
-    - staden_io_lib >=1.14.14
-  run:
-    - boost-cpp
-    - libcurl
     - snappy =1.1.8
     - staden_io_lib >=1.14.14
-  ignore_run_exports:
-    - snappy
-
-about:
-  home: https://gitlab.com/german.tischler/libmaus2
-  license: GPL3
-  summary: collection of data structures and algorithms for NGS data
+    - libdeflate
+    - gmp
+    - nettle
+    - zlib
+  run:
+    - boost-cpp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - snappy =1.1.8
+    - staden_io_lib >=1.14.14
 
 test:
   commands:
     - echo
+
+about:
+  home: https://gitlab.com/german.tischler/libmaus2
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: GPLv3
+  summary: "Collection of data structures and algorithms for NGS data."
+  dev_url: https://gitlab.com/german.tischler/libmaus2
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:libmaus

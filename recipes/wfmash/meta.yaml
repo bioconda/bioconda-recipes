@@ -1,5 +1,5 @@
 {% set name = "wfmash" %}
-{% set version = "0.10.3" %}
+{% set version = "0.22.0" %}
 
 package:
   name: "{{ name }}"
@@ -7,11 +7,13 @@ package:
 
 source:
   url: https://github.com/waveygang/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
-  sha256: 62f2b58d81ce182999da208dcefa7faf8969d44fc6360fa0ebad5c963ba6ebd0
+  sha256: 381cf8e763add9f9a9b04d7fd20ca41a7e028313355f2710264e77a65c8019e7
 
 build:
-  skip: True  # [osx]
-  number: 0
+  skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+  number: 1
 
 requirements:
   build:
@@ -25,8 +27,13 @@ requirements:
     - zlib
     - jemalloc
     - htslib
+    - libblas
+    - liblzma
+    - xz
   run:
     - llvm-openmp  # [osx]
+    - python >=3.7
+    - xz
 
 test:
   commands:
@@ -39,6 +46,8 @@ about:
   summary: a pangenome-scale aligner
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   skip-lints:
     - uses_vcs_url
   recipe-maintainers:

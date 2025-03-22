@@ -1,22 +1,25 @@
-{% set version = "0.3.8" %}
+{% set name = "d4tools" %}
+{% set version = "0.3.11" %}
 
 package:
-  name: d4tools
+  name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 0
-
 source:
-  url: https://github.com/38/d4-format/archive/refs/tags/d4tools-v{{ version }}.tar.gz
-  sha256: 2b1df781fd40e3e80b9e0871f2ebec53f1b57004baa96547e4d7912def011607
+  url: https://github.com/38/d4-format/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 376e61c93cfe2efc15f5e74b75214e065e278146555e67b8769818bf49594726
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('d4tools', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - gcc #[not osx]
-    - rust >=1.30
+    - {{ compiler('rust') }}
+    - gcc  # [not osx]
     - clangdev
     - pkg-config
     - make
@@ -31,9 +34,14 @@ test:
 about:
   home: https://github.com/38/d4-format
   license: MIT
+  license_family: MIT
   summary: |
-    The D4 command line utility program
+    The D4 command line utility program.
+  dev_url: https://github.com/38/d4-format
+
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
     - haohou
   skip-lints:

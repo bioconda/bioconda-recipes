@@ -1,28 +1,32 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "rifi" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: b82eba0e5a451dfe1b597f1b2bfcd8c3
+about:
+  description: '''rifi'' analyses data from rifampicin time series created by microarray or RNAseq. ''rifi'' is a transcriptome data analysis tool for the holistic identification of transcription and decay associated processes. The decay constants and the delay of the onset of decay is fitted for each probe/bin. Subsequently, probes/bins of equal properties are combined into segments by dynamic programming, independent of a existing genome annotation. This allows to detect transcript segments of different stability or transcriptional events within one annotated gene. In addition to the classic decay constant/half-life analysis, ''rifi'' detects processing sites, transcription pausing sites, internal transcription start sites in operons, sites of partial transcription termination in operons, identifies areas of likely transcriptional interference by the collision mechanism and gives an estimate of the transcription velocity. All data are integrated to give an estimate of continous transcriptional units, i.e. operons. Comprehensive output tables and visualizations of the full genome result and the individual fits for all probes/bins are produced.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 + file LICENSE
+  license_file: LICENSE
+  summary: '''rifi'' analyses data from rifampicin time series created by microarray or RNAseq'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: DescTools, knitr, rmarkdown, BiocStyle
+  run_exports: '{{ pin_subpackage("bioconductor-rifi", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: DescTools, devtools, knitr, rmarkdown, BiocStyle
 requirements:
   host:
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-car
     - r-cowplot
@@ -39,9 +43,9 @@ requirements:
     - r-stringr
     - r-tibble
   run:
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-car
     - r-cowplot
@@ -57,13 +61,16 @@ requirements:
     - r-scales
     - r-stringr
     - r-tibble
+
+source:
+  md5: 9c1fda271448f428b30150b5c48f8607
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL-3 + file LICENSE'
-  summary: '''rifi'' analyses data from rifampicin time series created by microarray or RNAseq'
-  description: '''rifi'' analyses data from rifampicin time series created by microarray or RNAseq. ''rifi'' is a transcriptome data analysis tool for the holistic identification of transcription and decay associated processes. The decay constants and the delay of the onset of decay is fitted for each probe/bin. Subsequently, probes/bins of equal properties are combined into segments by dynamic programming, independent of a existing genome annotation. This allows to detect transcript segments of different stability or transcriptional events within one annotated gene. In addition to the classic decay constant/half-life analysis, ''rifi'' detects processing sites, transcription pausing sites, internal transcription start sites in operons, sites of partial transcription termination in operons, identifies areas of likely transcriptional interference by the collision mechanism and gives an estimate of the transcription velocity. All data are integrated to give an estimate of continous transcriptional units, i.e. operons. Comprehensive output tables and visualizations of the full genome result and the individual fits for all probes/bins are produced.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

@@ -1,21 +1,25 @@
+{% set name = "fastahack" %}
+{% set version = "1.0.0" %}
+
 package:
-  name: fastahack
-  version: 2016.07.2
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/ekg/fastahack/archive/bbc645f2f7966cb7b44446200c02627c3168b399.zip
-  md5: d32a9dee44a8da7477631930e92f5095
+  url: https://github.com/ekg/fastahack/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: cc1c04729b0c8ba3647cbb7e15e2b490ce701d73773f30f5892d68c36a1dceae
+  patches:
+    - 0001-Makefile.patch
 
 build:
-  number: 4
-  skip: True # [osx]
+  number: 3
+  run_exports:
+    - {{ pin_subpackage("fastahack", max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-
-  run:
 
 test:
   commands:
@@ -24,5 +28,13 @@ test:
 about:
   home: https://github.com/ekg/fastahack
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: fastahack --- *fast* FASTA file indexing, subsequence and sequence extraction
+  summary: "fastahack --- *fast* FASTA file indexing, subsequence and sequence extraction."
+  dev_url: https://github.com/ekg/fastahack
+  doc_url: https://github.com/ekg/fastahack/blob/v{{ version }}/README
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

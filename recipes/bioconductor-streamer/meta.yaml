@@ -1,46 +1,20 @@
-{% set version = "1.44.0" %}
+{% set version = "1.52.0" %}
 {% set name = "Streamer" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 3243c67591846bfea9fd0bea5f241a08
+about:
+  description: Large data files can be difficult to work with in R, where data generally resides in memory. This package encourages a style of programming where data is 'streamed' from disk into R via a `producer' and through a series of `consumers' that, typically reduce the original data to a manageable size. The package provides useful Producer and Consumer stream components for operations such as data input, sampling, indexing, and transformation; see package?Streamer for details.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Enabling stream processing of large files
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: RUnit, Rsamtools (>= 1.5.53), GenomicAlignments, Rgraphviz
-requirements:
-  host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-rbgl >=1.74.0,<1.75.0'
-    - r-base
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-rbgl >=1.74.0,<1.75.0'
-    - r-base
-  build:
-    - {{ compiler('c') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Enabling stream processing of large files'
-  description: 'Large data files can be difficult to work with in R, where data generally resides in memory. This package encourages a style of programming where data is ''streamed'' from disk into R via a `producer'' and through a series of `consumers'' that, typically reduce the original data to a manageable size. The package provides useful Producer and Consumer stream components for operations such as data input, sampling, indexing, and transformation; see package?Streamer for details.'
+  run_exports: '{{ pin_subpackage("bioconductor-streamer", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:streamer
@@ -49,4 +23,38 @@ extra:
     name: bioconductor-streamer
     path: recipes/bioconductor-streamer
     version: 1.26.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: RUnit, Rsamtools (>= 1.5.53), GenomicAlignments, Rgraphviz
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-rbgl >=1.82.0,<1.83.0
+    - r-base
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-rbgl >=1.82.0,<1.83.0
+    - r-base
+
+source:
+  md5: a8f1d72c63f0700f2bb954f4fd549238
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

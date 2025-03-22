@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "pwmenrich.dmelanogaster.background-4.32.0"
+installBiocDataPackage.sh "pwmenrich.dmelanogaster.background-4.40.0"

@@ -1,88 +1,98 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "scMET" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 2624cfeecb7e2d55bae3b55dc0dda8db
+about:
+  description: High-throughput single-cell measurements of DNA methylomes can quantify methylation heterogeneity and uncover its role in gene regulation. However, technical limitations and sparse coverage can preclude this task. scMET is a hierarchical Bayesian model which overcomes sparsity, sharing information across cells and genomic features to robustly quantify genuine biological heterogeneity. scMET can identify highly variable features that drive epigenetic heterogeneity, and perform differential methylation and variability analyses. We illustrate how scMET facilitates the characterization of epigenetically distinct cell populations and how it enables the formulation of novel hypotheses on the epigenetic regulation of gene expression.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Bayesian modelling of cell-to-cell DNA methylation heterogeneity
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-scmet", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: testthat, knitr, rmarkdown
 # SystemRequirements: GNU make
 requirements:
-  host:
-    - 'bioconductor-biocstyle >=2.26.0,<2.27.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - r-assertthat
-    - r-base
-    - 'r-bh >=1.66.0'
-    - r-coda
-    - r-cowplot
-    - r-data.table
-    - r-dplyr
-    - r-ggplot2
-    - r-logitnorm
-    - r-mass
-    - r-matrix
-    - r-matrixstats
-    - 'r-rcpp >=1.0.0'
-    - 'r-rcppeigen >=0.3.3.3.0'
-    - 'r-rcppparallel >=5.0.1'
-    - 'r-rstan >=2.21.3'
-    - 'r-rstantools >=2.1.0'
-    - 'r-stanheaders >=2.21.0.7'
-    - r-vgam
-    - r-viridis
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biocstyle >=2.26.0,<2.27.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - r-assertthat
-    - r-base
-    - 'r-bh >=1.66.0'
-    - r-coda
-    - r-cowplot
-    - r-data.table
-    - r-dplyr
-    - r-ggplot2
-    - r-logitnorm
-    - r-mass
-    - r-matrix
-    - r-matrixstats
-    - 'r-rcpp >=1.0.0'
-    - 'r-rcppeigen >=0.3.3.3.0'
-    - 'r-rcppparallel >=5.0.1'
-    - 'r-rstan >=2.21.3'
-    - 'r-rstantools >=2.1.0'
-    - 'r-stanheaders >=2.21.0.7'
-    - r-vgam
-    - r-viridis
+
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - automake
     - make
+
+  host:
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-assertthat
+    - r-base
+    - r-bh >=1.66.0
+    - r-coda
+    - r-cowplot
+    - r-data.table
+    - r-dplyr
+    - r-ggplot2
+    - r-logitnorm
+    - r-mass
+    - r-matrix
+    - r-matrixstats
+    - r-rcpp >=1.0.0
+    - r-rcppeigen >=0.3.3.3.0
+    - r-rcppparallel >=5.0.1
+    - r-rstan >=2.21.3
+    - r-rstantools >=2.1.0
+    - r-stanheaders >=2.21.0.7
+    - r-vgam
+    - r-viridis
+    - libblas
+    - liblapack
+
+  run:
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-assertthat
+    - r-base
+    - r-bh >=1.66.0
+    - r-coda
+    - r-cowplot
+    - r-data.table
+    - r-dplyr
+    - r-ggplot2
+    - r-logitnorm
+    - r-mass
+    - r-matrix
+    - r-matrixstats
+    - r-rcpp >=1.0.0
+    - r-rcppeigen >=0.3.3.3.0
+    - r-rcppparallel >=5.0.1
+    - r-rstan >=2.21.3
+    - r-rstantools >=2.1.0
+    - r-stanheaders >=2.21.0.7
+    - r-vgam
+    - r-viridis
+
+source:
+  md5: 454268faca57a0ade6352837704f5b15
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Bayesian modelling of cell-to-cell DNA methylation heterogeneity'
-  description: 'High-throughput single-cell measurements of DNA methylomes can quantify methylation heterogeneity and uncover its role in gene regulation. However, technical limitations and sparse coverage can preclude this task. scMET is a hierarchical Bayesian model which overcomes sparsity, sharing information across cells and genomic features to robustly quantify genuine biological heterogeneity. scMET can identify highly variable features that drive epigenetic heterogeneity, and perform differential methylation and variability analyses. We illustrate how scMET facilitates the characterization of epigenetically distinct cell populations and how it enables the formulation of novel hypotheses on the epigenetic regulation of gene expression.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

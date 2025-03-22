@@ -1,48 +1,21 @@
-{% set version = "1.72.0" %}
+{% set version = "1.80.0" %}
 {% set name = "made4" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 73dcfb9909aeec72eec4682335e52eed
+about:
+  description: Multivariate data analysis and graphical display of microarray data. Functions include for supervised dimension reduction (between group analysis) and joint dimension reduction of 2 datasets (coinertia analysis). It contains functions that require R package ade4.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Multivariate analysis of microarray data using ADE4
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: affy, BiocStyle, knitr, rmarkdown
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - r-ade4
-    - r-base
-    - r-gplots
-    - r-rcolorbrewer
-    - r-scatterplot3d
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - r-ade4
-    - r-base
-    - r-gplots
-    - r-rcolorbrewer
-    - r-scatterplot3d
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Multivariate analysis of microarray data using ADE4'
-  description: 'Multivariate data analysis and graphical display of microarray data. Functions include for supervised dimension reduction (between group analysis) and joint dimension reduction of 2 datasets (coinertia analysis). It contains functions that require R package ade4.'
+  run_exports: '{{ pin_subpackage("bioconductor-made4", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:made4
@@ -50,4 +23,39 @@ extra:
     name: bioconductor-made4
     path: recipes/bioconductor-made4
     version: 1.54.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: affy, BiocStyle, knitr, rmarkdown
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-ade4
+    - r-base
+    - r-gplots
+    - r-rcolorbrewer
+    - r-scatterplot3d
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-ade4
+    - r-base
+    - r-gplots
+    - r-rcolorbrewer
+    - r-scatterplot3d
+
+source:
+  md5: 7669d7276ff623c318b6337c6776512e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

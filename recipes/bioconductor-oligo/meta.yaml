@@ -1,68 +1,80 @@
-{% set version = "1.62.0" %}
+{% set version = "1.70.0" %}
 {% set name = "oligo" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: d4b9ef5b846ff560241eebe7f0809caa
+about:
+  description: A package to analyze oligonucleotide arrays (expression/SNP/tiling/exon) at probe-level. It currently supports Affymetrix (CEL files) and NimbleGen arrays (XYS files).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: Preprocessing tools for oligonucleotide arrays
+
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: BSgenome.Hsapiens.UCSC.hg18, hapmap100kxba, pd.hg.u95av2, pd.mapping50k.xba240, pd.huex.1.0.st.v2, pd.hg18.60mer.expr, pd.hugene.1.0.st.v1, maqcExpression4plex, genefilter, limma, RColorBrewer, oligoData, BiocStyle, knitr, RUnit, biomaRt, AnnotationDbi, ACME, RCurl
-requirements:
-  host:
-    - 'bioconductor-affxparser >=1.70.0,<1.71.0'
-    - 'bioconductor-affyio >=1.68.0,<1.69.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-oligoclasses >=1.60.0,<1.61.0'
-    - 'bioconductor-preprocesscore >=1.60.0,<1.61.0'
-    - 'bioconductor-zlibbioc >=1.44.0,<1.45.0'
-    - r-base
-    - 'r-dbi >=0.3.1'
-    - r-ff
-    - 'r-rsqlite >=1.0.0'
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-affxparser >=1.70.0,<1.71.0'
-    - 'bioconductor-affyio >=1.68.0,<1.69.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-oligoclasses >=1.60.0,<1.61.0'
-    - 'bioconductor-preprocesscore >=1.60.0,<1.61.0'
-    - 'bioconductor-zlibbioc >=1.44.0,<1.45.0'
-    - r-base
-    - 'r-dbi >=0.3.1'
-    - r-ff
-    - 'r-rsqlite >=1.0.0'
-  build:
-    - {{ compiler('c') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'LGPL (>= 2)'
-  summary: 'Preprocessing tools for oligonucleotide arrays'
-  description: 'A package to analyze oligonucleotide arrays (expression/SNP/tiling/exon) at probe-level. It currently supports Affymetrix (CEL files) and NimbleGen arrays (XYS files).'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-oligo", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   identifiers:
     - biotools:oligo
   parent_recipe:
     name: bioconductor-oligo
     path: recipes/bioconductor-oligo
     version: 1.44.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BSgenome.Hsapiens.UCSC.hg18, hapmap100kxba, pd.hg.u95av2, pd.mapping50k.xba240, pd.huex.1.0.st.v2, pd.hg18.60mer.expr, pd.hugene.1.0.st.v1, maqcExpression4plex, genefilter, limma, RColorBrewer, oligoData, BiocStyle, knitr, RUnit, biomaRt, AnnotationDbi, ACME, RCurl
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-affxparser >=1.78.0,<1.79.0
+    - bioconductor-affyio >=1.76.0,<1.77.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-oligoclasses >=1.68.0,<1.69.0
+    - bioconductor-preprocesscore >=1.68.0,<1.69.0
+    - bioconductor-zlibbioc >=1.52.0,<1.53.0
+    - r-base
+    - r-dbi >=0.3.1
+    - r-ff
+    - r-rsqlite >=1.0.0
+    - libblas
+    - liblapack
+    - zlib
+  run:
+    - bioconductor-affxparser >=1.78.0,<1.79.0
+    - bioconductor-affyio >=1.76.0,<1.77.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-oligoclasses >=1.68.0,<1.69.0
+    - bioconductor-preprocesscore >=1.68.0,<1.69.0
+    - bioconductor-zlibbioc >=1.52.0,<1.53.0
+    - r-base
+    - r-dbi >=0.3.1
+    - r-ff
+    - r-rsqlite >=1.0.0
+
+source:
+  md5: 7596c63194f0bf3e58feaa2a854c2061
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

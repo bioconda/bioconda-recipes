@@ -1,6 +1,6 @@
 {% set name = "metapi" %}
-{% set version = "2.4.0" %}
-{% set sha256 = "b780926704574b21d60f1622ee9aa68c8f81af299265eadd771c0ad1eb974bec" %}
+{% set version = "3.0.0" %}
+{% set sha256 = "ee0b2cedc9c5e42e9dfe015c85167b859be96cbd673e2396f0df8c027e096752" %}
 
 package:
   name: {{ name|lower }}
@@ -13,9 +13,11 @@ source:
 build:
   noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   entry_points:
     - metapi = metapi.corer:main
+  run_exports:
+    - {{ pin_subpackage('metapi', max_pin="x") }}
 
 requirements:
   host:
@@ -31,12 +33,13 @@ requirements:
     - biopython >=1.73
     - natsort
     - ruamel.yaml
-    - snakemake >=7.0
+    - snakemake-minimal >=7.0
     - seqtk
     - seqkit
     - pigz
     - fd-find
     - sra-tools >=2.11.0
+    - executor
 
 test:
   imports:
@@ -51,7 +54,8 @@ about:
   home: https://github.com/ohmeta/metapi
   summary: 'A general metagenomics data mining system focus on robust microbiome research'
   license: GPL-3.0-only
-  license_family: GPL
+  license_family: GPL3
+  license_file: LICENSE
 
 extra:
   identifiers:

@@ -6,13 +6,15 @@ package:
   version: {{ version }}
 
 source:
-  - url: https://github.com/gpertea/gffread/releases/download/v{{ version }}/gffread-{{ version }}.tar.gz
-    sha256: bfde1c857495e578f5b3af3c007a9aa40593e69450eafcc6a42c3e8ef08ed1f5
-    patches:
-      - Makefile.patch
+  url: https://github.com/gpertea/gffread/releases/download/v{{ version }}/gffread-{{ version }}.tar.gz
+  sha256: bfde1c857495e578f5b3af3c007a9aa40593e69450eafcc6a42c3e8ef08ed1f5
+  patches:
+    - Makefile.patch
 
 build:
-  number: 1
+  number: 6
+  run_exports:
+    - {{ pin_subpackage("gffread", max_pin="x.x") }}
 
 requirements:
   build:
@@ -20,21 +22,25 @@ requirements:
     - make
   host:
     - zlib
-  run:
-    - zlib
-    
+
 test:
   commands:
     - gffread --version
 
 about:
-  home: http://ccb.jhu.edu/software/stringtie/gff.shtml
+  home: "https://ccb.jhu.edu/software/stringtie/gff.shtml"
   license: 'MIT'
+  license_family: MIT
+  license_file: LICENSE
   summary: 'GFF/GTF utility providing format conversions, region filtering, FASTA sequence extraction and more.'
   dev_url: "https://github.com/gpertea/gffread"
+  doc_url: "https://ccb.jhu.edu/software/stringtie/gff.shtml#gffread"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:gffread
-  skip-lints:
-    - should_not_be_noarch_source
+    - usegalaxy-eu:gffread
+    - doi:10.12688/f1000research.23297.2

@@ -1,82 +1,90 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "ppcseq" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 26ba8f7f77732973d7cdcd1229cf2b97
+about:
+  description: Relative transcript abundance has proven to be a valuable tool for understanding the function of genes in biological systems. For the differential analysis of transcript abundance using RNA sequencing data, the negative binomial model is by far the most frequently adopted. However, common methods that are based on a negative binomial model are not robust to extreme outliers, which we found to be abundant in public datasets. So far, no rigorous and probabilistic methods for detection of outliers have been developed for RNA sequencing data, leaving the identification mostly to visual inspection. Recent advances in Bayesian computation allow large-scale comparison of observed data against its theoretical distribution given in a statistical model. Here we propose ppcseq, a key quality-control tool for identifying transcripts that include outlier data points in differential expression analysis, which do not follow a negative binomial distribution. Applying ppcseq to analyse several publicly available datasets using popular tools, we show that from 3 to 10 percent of differentially abundant transcripts across algorithms and datasets had statistics inflated by the presence of outliers.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Probabilistic Outlier Identification for RNA Sequencing Generalized Linear Models
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-ppcseq", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, testthat, BiocStyle, rmarkdown
 # SystemRequirements: GNU make
 requirements:
-  host:
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - r-base
-    - r-benchmarkme
-    - 'r-bh >=1.66.0'
-    - r-dplyr
-    - r-foreach
-    - r-furrr
-    - r-future
-    - r-ggplot2
-    - r-lifecycle
-    - r-magrittr
-    - r-purrr
-    - 'r-rcpp >=0.12.0'
-    - 'r-rcppeigen >=0.3.3.3.0'
-    - r-rlang
-    - 'r-rstan >=2.18.1'
-    - 'r-rstantools >=2.0.0'
-    - 'r-stanheaders >=2.18.0'
-    - r-tibble
-    - r-tidybayes
-    - 'r-tidyr >=0.8.3.9000'
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - r-base
-    - r-benchmarkme
-    - 'r-bh >=1.66.0'
-    - r-dplyr
-    - r-foreach
-    - r-furrr
-    - r-future
-    - r-ggplot2
-    - r-lifecycle
-    - r-magrittr
-    - r-purrr
-    - 'r-rcpp >=0.12.0'
-    - 'r-rcppeigen >=0.3.3.3.0'
-    - r-rlang
-    - 'r-rstan >=2.18.1'
-    - 'r-rstantools >=2.0.0'
-    - 'r-stanheaders >=2.18.0'
-    - r-tibble
-    - r-tidybayes
-    - 'r-tidyr >=0.8.3.9000'
+
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - automake
     - make
+
+  host:
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - r-base
+    - r-benchmarkme
+    - r-bh >=1.66.0
+    - r-dplyr
+    - r-foreach
+    - r-ggplot2
+    - r-lifecycle
+    - r-magrittr
+    - r-purrr
+    - r-rcpp >=0.12.0
+    - r-rcppeigen >=0.3.3.3.0
+    - r-rcppparallel >=5.0.1
+    - r-rlang
+    - r-rstan >=2.18.1
+    - r-rstantools >=2.1.1
+    - r-stanheaders >=2.18.0
+    - r-tibble
+    - r-tidybayes
+    - r-tidyr >=0.8.3.9000
+    - libblas
+    - liblapack
+
+  run:
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - r-base
+    - r-benchmarkme
+    - r-bh >=1.66.0
+    - r-dplyr
+    - r-foreach
+    - r-ggplot2
+    - r-lifecycle
+    - r-magrittr
+    - r-purrr
+    - r-rcpp >=0.12.0
+    - r-rcppeigen >=0.3.3.3.0
+    - r-rcppparallel >=5.0.1
+    - r-rlang
+    - r-rstan >=2.18.1
+    - r-rstantools >=2.1.1
+    - r-stanheaders >=2.18.0
+    - r-tibble
+    - r-tidybayes
+    - r-tidyr >=0.8.3.9000
+
+source:
+  md5: 61ba747d87e8faa669273b348c31a957
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Probabilistic Outlier Identification for RNA Sequencing Generalized Linear Models'
-  description: 'Relative transcript abundance has proven to be a valuable tool for understanding the function of genes in biological systems. For the differential analysis of transcript abundance using RNA sequencing data, the negative binomial model is by far the most frequently adopted. However, common methods that are based on a negative binomial model are not robust to extreme outliers, which we found to be abundant in public datasets. So far, no rigorous and probabilistic methods for detection of outliers have been developed for RNA sequencing data, leaving the identification mostly to visual inspection. Recent advances in Bayesian computation allow large-scale comparison of observed data against its theoretical distribution given in a statistical model. Here we propose ppcseq, a key quality-control tool for identifying transcripts that include outlier data points in differential expression analysis, which do not follow a negative binomial distribution. Applying ppcseq to analyse several publicly available datasets using popular tools, we show that from 3 to 10 percent of differentially abundant transcripts across algorithms and datasets had statistics inflated by the presence of outliers.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

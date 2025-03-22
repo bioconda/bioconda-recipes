@@ -1,5 +1,5 @@
 {% set name = "piper" %}
-{% set version = "0.12.3" %}
+{% set version = "0.14.4" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,25 +7,29 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "0ec7d4c4fd9cd1142e87193483c4f92022adbe2cd0f4678f2a1ea8227cdcd9fd"
+  sha256: "70adf4d151cad655e882936ff49eaf77f6f91c1075338cd3af6ad53e12bb5215"
 
 build:
   number: 0
   noarch: python
-  script: "2to3 . && {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: "2to3 . && {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('piper', max_pin="x.x") }}
 
 requirements:
   host:
     - pip
     - python >=3
+    - setuptools
   run:
-    - attmap >=0.12.5
     - logmuse >=0.2.4
     - pandas
     - psutil
     - python >=3
-    - ubiquerg >=0.4.5
-    - yacman
+    - ubiquerg >=0.8.0
+    - yacman >=0.9.3
+    - pipestat >=0.11.0
+    - importlib_metadata
 
 test:
   imports:
@@ -39,10 +43,13 @@ test:
     - veracitools
 
 about:
-  home: "https://github.com/databio/pypiper/"
+  home: "https://github.com/databio/pypiper"
   license: "BSD-2-Clause"
-  license_family: "BSD"
-  summary: "A lightweight python toolkit for gluing together restartable, robust command line pipelines"
+  license_family: BSD
+  license_file: "LICENSE.txt"
+  dev_url: "https://github.com/databio/pypiper"
+  doc_url: "https://pypiper.databio.org/en/latest"
+  summary: "A lightweight python toolkit for gluing together restartable, robust command line pipelines."
 
 extra:
   recipe-maintainers:

@@ -1,46 +1,55 @@
-{% set version = "1.4.0" %}
+{% set version = "1.12.1" %}
 {% set name = "scATAC.Explorer" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 5348b5d62c7488c3049f412bfbb50d77
+about:
+  description: This package provides a tool to search and download a collection of publicly available single cell ATAC-seq datasets and their metadata. scATAC-Explorer aims to act as a single point of entry for users looking to study single cell ATAC-seq data. Users can quickly search available datasets using the metadata table and download datasets of interest for immediate analysis within R.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: A Collection of Single-cell ATAC Sequencing Datasets and Corresponding Metadata
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-scatac.explorer", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, knitr, rmarkdown, testthat (>= 3.0.0)
 requirements:
   host:
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-zellkonverter >=1.16.0,<1.17.0
     - r-base
     - r-data.table
     - r-matrix
   run:
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-zellkonverter >=1.16.0,<1.17.0
     - r-base
     - r-data.table
     - r-matrix
     - curl
-    - bioconductor-data-packages>=20221106
+    - bioconductor-data-packages >=20250104
+
+source:
+  md5: e031fee987eb77af3299313b5a5f391b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'A Collection of Single-cell ATAC Sequencing Datasets and Corresponding Metadata'
-  description: 'This package provides a tool to search and download a collection of publicly available single cell ATAC-seq datasets and their metadata. scATAC-Explorer aims to act as a single point of entry for users looking to study single cell ATAC-seq data. Users can quickly search available datasets using the metadata table and download datasets of interest for immediate analysis within R.'
+    - $R -e "library('{{ name }}')"
 

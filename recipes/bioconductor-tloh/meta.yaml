@@ -1,28 +1,32 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "tLOH" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 10d4ea1a71e6973a284038f909611192
+about:
+  description: tLOH, or transcriptomicsLOH, assesses evidence for loss of heterozygosity (LOH) in pre-processed spatial transcriptomics data. This tool requires spatial transcriptomics cluster and allele count information at likely heterozygous single-nucleotide polymorphism (SNP) positions in VCF format. Bayes factors are calculated at each SNP to determine likelihood of potential loss of heterozygosity event. Two plotting functions are included to visualize allele fraction and aggregated Bayes factor per chromosome. Data generated with the 10X Genomics Visium Spatial Gene Expression platform must be pre-processed to obtain an individual sample VCF with columns for each cluster. Required fields are allele depth (AD) with counts for reference/alternative alleles and read depth (DP).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Assessment of evidence for LOH in spatial transcriptomics pre-processed data using Bayes factor calculations
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-tloh", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown
 requirements:
   host:
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-matrixgenerics >=1.10.0,<1.11.0'
-    - 'bioconductor-variantannotation >=1.44.0,<1.45.0'
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
     - r-base
     - r-bestnormalize
     - r-data.table
@@ -34,9 +38,9 @@ requirements:
     - r-scales
     - r-stringr
   run:
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-matrixgenerics >=1.10.0,<1.11.0'
-    - 'bioconductor-variantannotation >=1.44.0,<1.45.0'
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
     - r-base
     - r-bestnormalize
     - r-data.table
@@ -47,13 +51,16 @@ requirements:
     - r-purrr
     - r-scales
     - r-stringr
+
+source:
+  md5: 99855940a5a855cc39bc937ef6f50f53
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Assessment of evidence for LOH in spatial transcriptomics pre-processed data using Bayes factor calculations'
-  description: 'tLOH, or transcriptomicsLOH, assesses evidence for loss of heterozygosity (LOH) in pre-processed spatial transcriptomics data. This tool requires spatial transcriptomics cluster and allele count information at likely heterozygous single-nucleotide polymorphism (SNP) positions in VCF format. Bayes factors are calculated at each SNP to determine likelihood of potential loss of heterozygosity event. Two plotting functions are included to visualize allele fraction and aggregated Bayes factor per chromosome. Data generated with the 10X Genomics Visium Spatial Gene Expression platform must be pre-processed to obtain an individual sample VCF with columns for each cluster. Required fields are allele depth (AD) with counts for reference/alternative alleles and read depth (DP).'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

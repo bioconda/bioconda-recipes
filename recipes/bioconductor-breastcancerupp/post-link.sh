@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "breastcancerupp-1.35.0"
+installBiocDataPackage.sh "breastcancerupp-1.44.0"

@@ -1,78 +1,23 @@
-{% set version = "1.36.0" %}
+{% set version = "1.44.0" %}
 {% set name = "COMPASS" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 361f4c3ff0e549b82e85cd159f9b5aff
+about:
+  description: COMPASS is a statistical framework that enables unbiased analysis of antigen-specific T-cell subsets. COMPASS uses a Bayesian hierarchical framework to model all observed cell-subsets and select the most likely to be antigen-specific while regularizing the small cell counts that often arise in multi-parameter space. The model provides a posterior probability of specificity for each cell subset and each sample, which can be used to profile a subject's immune response to external stimuli such as infection or vaccination.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Combinatorial Polyfunctionality Analysis of Single Cells
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: flowWorkspace (>= 3.33.1), flowCore, ncdfFlow, shiny, testthat, devtools, flowWorkspaceData, ggplot2, progress
-requirements:
-  host:
-    - 'bioconductor-biocstyle >=2.26.0,<2.27.0'
-    - r-abind
-    - r-base
-    - r-clue
-    - r-coda
-    - r-data.table
-    - r-dplyr
-    - r-foreach
-    - r-knitr
-    - r-magrittr
-    - r-pdist
-    - r-plyr
-    - r-rcolorbrewer
-    - 'r-rcpp >=0.11.0'
-    - r-reshape2
-    - r-rlang
-    - r-rmarkdown
-    - r-scales
-    - r-tidyr
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biocstyle >=2.26.0,<2.27.0'
-    - r-abind
-    - r-base
-    - r-clue
-    - r-coda
-    - r-data.table
-    - r-dplyr
-    - r-foreach
-    - r-knitr
-    - r-magrittr
-    - r-pdist
-    - r-plyr
-    - r-rcolorbrewer
-    - 'r-rcpp >=0.11.0'
-    - r-reshape2
-    - r-rlang
-    - r-rmarkdown
-    - r-scales
-    - r-tidyr
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Combinatorial Polyfunctionality Analysis of Single Cells'
-  description: 'COMPASS is a statistical framework that enables unbiased analysis of antigen-specific T-cell subsets. COMPASS uses a Bayesian hierarchical framework to model all observed cell-subsets and select the most likely to be antigen-specific while regularizing the small cell counts that often arise in multi-parameter space. The model provides a posterior probability of specificity for each cell subset and each sample, which can be used to profile a subject''s immune response to external stimuli such as infection or vaccination.'
+  run_exports: '{{ pin_subpackage("bioconductor-compass", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:compass
     - doi:10.1038/nbt.3187
@@ -80,4 +25,72 @@ extra:
     name: bioconductor-compass
     path: recipes/bioconductor-compass
     version: 1.18.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: flowWorkspace (>= 3.33.1), flowCore, ncdfFlow, shiny, testthat, devtools, flowWorkspaceData, ggplot2, progress
+requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
+  host:
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - r-abind
+    - r-base
+    - r-clue
+    - r-coda
+    - r-data.table
+    - r-dplyr
+    - r-foreach
+    - r-knitr
+    - r-magrittr
+    - r-pdist
+    - r-plyr
+    - r-rcolorbrewer
+    - r-rcpp >=0.11.0
+    - r-reshape2
+    - r-rlang
+    - r-rmarkdown
+    - r-scales
+    - r-tidyr
+    - libblas
+    - liblapack
+
+  run:
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - r-abind
+    - r-base
+    - r-clue
+    - r-coda
+    - r-data.table
+    - r-dplyr
+    - r-foreach
+    - r-knitr
+    - r-magrittr
+    - r-pdist
+    - r-plyr
+    - r-rcolorbrewer
+    - r-rcpp >=0.11.0
+    - r-reshape2
+    - r-rlang
+    - r-rmarkdown
+    - r-scales
+    - r-tidyr
+
+source:
+  md5: 66b61eaa89a7de69465c9d5d98d8f7a6
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

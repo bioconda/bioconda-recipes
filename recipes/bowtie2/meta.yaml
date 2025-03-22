@@ -1,33 +1,35 @@
-{% set version = "2.5.1" %}
+{% set name = "bowtie2" %}
+{% set version = "2.5.4" %}
 
 package:
-  name: bowtie2
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/BenLangmead/bowtie2/archive/v{{ version }}.tar.gz
-  sha256: 3fe00f4f89b5dd85fd9317e2168ec93f30dbb75d7950a08516c767d21eca7c27
+  sha256: 841a6a60111b690c11d1e123cb5c11560b4cd1502b5cee7e394fd50f83e74e13
 
 build:
-  number: 0
-  skip: True  # [py2k]
+  number: 5
+  run_exports:
+    - {{ pin_subpackage('bowtie2', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - cmake
     - make
+    - git
   host:
-    - python
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
     - zlib
     - zstd
-    - tbb-devel
-    - tbb
   run:
     - python
     - perl
-    - zlib
-    - zstd
-    - tbb
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
 
 test:
   commands:
@@ -45,12 +47,18 @@ test:
     - bowtie2-inspect-s --help
 
 about:
-  home: 'http://bowtie-bio.sourceforge.net/bowtie2/index.shtml'
-  license: GPL-3.0-only
+  home: "https://bowtie-bio.sourceforge.net/bowtie2/index.shtml"
+  license: "GPL-3.0-only"
+  license_family: GPL3
   license_file: LICENSE
-  summary: Fast and sensitive gapped read alignment
+  summary: "A fast and sensitive gapped read aligner."
+  dev_url: "https://github.com/BenLangmead/bowtie2"
+  doc_url: "https://github.com/BenLangmead/bowtie2/blob/master/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:bowtie2
     - doi:10.1038/nmeth.1923

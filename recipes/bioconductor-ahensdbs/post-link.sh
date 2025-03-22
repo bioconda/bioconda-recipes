@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "ahensdbs-1.1.8"
+installBiocDataPackage.sh "ahensdbs-1.5.1"

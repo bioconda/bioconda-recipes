@@ -1,73 +1,104 @@
-{% set version = "1.4.0" %}
+{% set version = "1.12.0" %}
 {% set name = "GEOexplorer" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 3cd384a467347c1eb15659190e903939
+about:
+  description: 'GEOexplorer is a webserver and R/Bioconductor package and web application that enables users to perform gene expression analysis. The development of GEOexplorer was made possible because of the excellent code provided by GEO2R (https: //www.ncbi.nlm.nih.gov/geo/geo2r/).'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: 'GEOexplorer: a webserver for gene expression analysis and visualisation'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: rmarkdown, knitr, usethis, testthat (>= 3.0.0)
+  run_exports: '{{ pin_subpackage("bioconductor-geoexplorer", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: rmarkdown, usethis, testthat (>= 3.0.0)
 requirements:
+
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-geoquery >=2.66.0,<2.67.0'
-    - 'bioconductor-impute >=1.72.0,<1.73.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-geoquery >=2.74.0,<2.75.0
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-sva >=3.54.0,<3.55.0
     - r-base
+    - r-car
     - r-dt
+    - r-enrichr
     - r-factoextra
     - r-ggplot2
     - r-heatmaply
     - r-htmltools
-    - r-maptools
+    - r-httr
+    - r-knitr
+    - r-markdown
     - r-pheatmap
     - r-plotly
+    - r-r.utils
+    - r-readxl
     - r-scales
     - r-shiny
-    - r-shinybs
     - r-shinybusy
+    - r-shinycssloaders
     - r-shinyheatmaply
     - r-stringr
     - r-umap
+    - r-xfun
+    - r-xml
+    - r-xml2
+
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-geoquery >=2.66.0,<2.67.0'
-    - 'bioconductor-impute >=1.72.0,<1.73.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-geoquery >=2.74.0,<2.75.0
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-sva >=3.54.0,<3.55.0
     - r-base
+    - r-car
     - r-dt
+    - r-enrichr
     - r-factoextra
     - r-ggplot2
     - r-heatmaply
     - r-htmltools
-    - r-maptools
+    - r-httr
+    - r-knitr
+    - r-markdown
     - r-pheatmap
     - r-plotly
+    - r-r.utils
+    - r-readxl
     - r-scales
     - r-shiny
-    - r-shinybs
     - r-shinybusy
+    - r-shinycssloaders
     - r-shinyheatmaply
     - r-stringr
     - r-umap
+    - r-xfun
+    - r-xml
+    - r-xml2
+
+source:
+  md5: 4c551b3a32be33591646d06feae085b9
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'GEOexplorer: an R/Bioconductor package for gene expression analysis and visualisation'
-  description: 'GEOexplorer is a Shiny app that enables exploratory data analysis and differential gene expression of gene expression analysis on microarray gene expression datasets held on the GEO database. The outputs are interactive graphs that enable users to explore the results of the analysis. The development of GEOexplorer was made possible because of the excellent code provided by GEO2R (https: //www.ncbi.nlm.nih.gov/geo/geo2r/).'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

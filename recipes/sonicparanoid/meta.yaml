@@ -1,60 +1,81 @@
-# Project ID of SonicParanoid in git lab is 11148448
-
 {% set name = "sonicparanoid" %}
-{% set version = "1.3.8" %}
-
-# Working example of link that can be downloaded
-# https://gitlab.com/api/v4/projects/11148448/repository/archive.zip?sha=6af30d9d7e7ebf40ca151ccbe2de56bdb1ccea8a
+{% set version = "2.0.8" %}
+{% set sha256 = "3649ca513f3ad72f495ccd3aa9871ca9e7bdc0bef21b4efa9e93eeae405c24c2" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://gitlab.com/salvo981/sonicparanoid2/-/archive/v{{ version }}/sonicparanoid2-v{{ version }}.tar.gz
-  sha256: d573bb761e619adc14e51736f73d3142049cb1e00f5d61f10e081566edaefaec
-
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/sonicparanoid-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - sys_tools.patch
+    - use-env-vars.patch
 
 build:
-  number: 2
-  skip: True  # [py2k or py < 37 or py > 39]
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-cache-dir -vvv "
+  number: 0
+  skip: True  # [py < 39 or py >= 313]
+  script:
+    - "mkdir -p ${PREFIX}/bin"
+    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  entry_points:
+    - sonicparanoid = sonicparanoid.sonic_paranoid:main
+    - sonicparanoid-get-test-data = sonicparanoid.get_test_data:main
+    - sonicparanoid-get-profiles = sonicparanoid.get_pfam_profiles:main
+    - sonicparanoid-extract = sonicparanoid.sonic_paranoid_extract:main
+    - sonic-debug-infer-ortho-table = sonicparanoid.sonic_infer_ortho_table:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
   build:
-    - {{ compiler('cxx') }}
     - {{ compiler('c') }}
   host:
     - python
     - pip
-    - setuptools >=57.4.0
-    - wheel >=0.37.0
-    - Cython >=0.29.24
+    - python-build >=1.2.1
+    - cython
+    - numpy
   run:
     - python
-    - numpy >=1.21
-    - pandas >=1.3.2
-    - scipy >=1.7.1
-    - biopython >=1.79
-    - psutil >=5.8.0
-    - scikit-learn >=0.24.2
-    - filetype >=1.0.7
+    - {{ pin_compatible('numpy') }}
+    - pandas >=2.2.0
+    - scipy <1.13
+    - biopython >=1.83
+    - psutil >=6.0.0
+    - scikit-learn >=1.5.0
+    - filetype >=1.2.0
+    - gdown >=5.2.0
+    - gensim >=4.2.0
+    - mypy >=1.10.0
+    - smart-open >=7.0.1
+    - tqdm >=4.66.0
     - mmseqs2 >=13.45111
     - diamond >=2.0.12
     - blast >=2.12.0
     - mcl >=14.137
 
 test:
+  imports:
+    - sonicparanoid
   commands:
-    - "sonicparanoid --help"
+    - sonicparanoid --help
+    - sonicparanoid-get-test-data --help
+    - sonicparanoid-get-profiles --help
+    - sonicparanoid-extract --help
 
 about:
-  home: "http://iwasakilab.bs.s.u-tokyo.ac.jp/sonicparanoid/"
-  license: "GNU General Public License v3"
-  license_family: "GPL3"
+  home: "https://gitlab.com/salvo981/sonicparanoid2"
+  license: "GPL-3.0-only"
+  license_family: "GPL"
   license_file: "LICENSE.md"
-  summary: "SonicParanoid: fast, easy and accurate orthology inference"
+  summary: "SonicParanoid: fast, accurate, and comprehensive orthology inference with machine learning and language models"
+  dev_url: "https://gitlab.com/salvo981/sonicparanoid2"
+  doc_url: "https://gitlab.com/salvo981/sonicparanoid2/-/wikis/home"
 
 extra:
   identifiers:
+    - doi:10.1101/2023.05.14.540736
     - doi:10.1093/bioinformatics/bty631
+    - biotools:SonicParanoid

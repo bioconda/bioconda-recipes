@@ -1,30 +1,38 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "GGPA" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: e7e2f31a8ebf363e7c31637db4172dc6
+about:
+  description: Genome-wide association studies (GWAS) is a widely used tool for identification of genetic variants associated with phenotypes and diseases, though complex diseases featuring many genetic variants with small effects present difficulties for traditional these studies. By leveraging pleiotropy, the statistical power of a single GWAS can be increased. This package provides functions for fitting graph-GPA, a statistical framework to prioritize GWAS results by integrating pleiotropy. 'GGPA' package provides user-friendly interface to fit graph-GPA models, implement association mapping, and generate a phenotype graph.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: 'graph-GPA: A graphical model for prioritizing GWAS results and investigating pleiotropic architecture'
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-ggpa", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle
 # SystemRequirements: GNU make
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
     - r-base
     - r-ggally
     - r-matrixstats
     - r-network
-    - 'r-rcpp >=0.11.3'
+    - r-rcpp >=0.11.3
     - r-rcpparmadillo
     - r-scales
     - r-sna
@@ -35,21 +43,20 @@ requirements:
     - r-ggally
     - r-matrixstats
     - r-network
-    - 'r-rcpp >=0.11.3'
+    - r-rcpp >=0.11.3
     - r-rcpparmadillo
     - r-scales
     - r-sna
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: 41f5478a2aa44282a8e74e8a9ac5a334
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'graph-GPA: A graphical model for prioritizing GWAS results and investigating pleiotropic architecture'
-  description: 'Genome-wide association studies (GWAS) is a widely used tool for identification of genetic variants associated with phenotypes and diseases, though complex diseases featuring many genetic variants with small effects present difficulties for traditional these studies. By leveraging pleiotropy, the statistical power of a single GWAS can be increased. This package provides functions for fitting graph-GPA, a statistical framework to prioritize GWAS results by integrating pleiotropy. ''GGPA'' package provides user-friendly interface to fit graph-GPA models, implement association mapping, and generate a phenotype graph.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

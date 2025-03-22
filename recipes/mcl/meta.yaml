@@ -1,54 +1,63 @@
-package:
-  name: mcl
-  version: "14.137"
+{% set name = "MCL" %}
+{% set version = "22.282" %}
+{% set sha256 = "291f35837b6e852743bd87e499c5a46936125dcdf334f7747af92e88ac902183" %}
 
-build:
-  number: 8
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: http://micans.org/mcl/src/mcl-14-137.tar.gz
-  sha256: b5786897a8a8ca119eb355a5630806a4da72ea84243dba85b19a86f14757b497
-  patches:
-    - mcl.patch
+- url: https://micans.org/mcl/src/mcl-{{ version | replace(".", "-") }}.tar.gz
+  sha256: {{ sha256 }}
+- url: https://micans.org/mcl/src/cimfomfa-22-273.tar.gz
+  sha256: b0f0549fda1d288ddd22a2675581636a6f4bde0f01e956fcf452d0f815b4964f
+  folder: cimfomfa
+
+build:
+  number: 3
+  run_exports:
+     - {{ pin_subpackage('mcl', max_pin=None) }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
-
-
+    - autoconf
+    - automake
+    - libtool
   host:
     - perl
-
   run:
     - perl
-    - blast
 
 test:
   commands:
     - clm -h
-    - clmformat --version
     - clxdo -h
     - mcl --help
-    - mclblastline
-    - mclcm --version
-    - mclpipeline
     - mcx -h
     - mcxarray --version
-    - mcxassemble --version
     - mcxdeblast -h
     - mcxdump --version
     - mcxi -h
     - mcxload --version
     - mcxmap --version
-    - mcxrand --version
     - mcxsubs --version
 
-
-
-
 about:
-  home: http://micans.org/mcl/
-  license: GPL3
+  home: "https://micans.org/mcl"
+  license: "GPL-3.0-only"
+  license_family: GPL
   license_file: LICENSE
-  summary: MCL - a cluster algorithm for graphs
+  summary: "MCL - a cluster algorithm for graphs."
+  dev_url: "https://github.com/micans/mcl"
+  doc_url: "https://micans.org/mcl/man/mcl.html"
+
+extra:
+  identifiers:
+    - doi:10.1137/040608635
+    - doi:10.1093/nar/30.7.1575
+    - biotools:mcl
+    - usegalaxy-eu:mcl
+  additional-platforms:
+    - linux-aarch64

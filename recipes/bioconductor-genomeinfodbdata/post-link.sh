@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "genomeinfodbdata-1.2.9"
+installBiocDataPackage.sh "genomeinfodbdata-1.2.13"

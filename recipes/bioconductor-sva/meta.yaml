@@ -1,53 +1,24 @@
-{% set version = "3.46.0" %}
+{% set version = "3.54.0" %}
 {% set name = "sva" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 5d69841c0ad44bab0fdc2b5d75ddfaa7
+about:
+  description: 'The sva package contains functions for removing batch effects and other unwanted variation in high-throughput experiment. Specifically, the sva package contains functions for the identifying and building surrogate variables for high-dimensional data sets. Surrogate variables are covariates constructed directly from high-dimensional data (like gene expression/RNA sequencing/methylation/brain imaging data) that can be used in subsequent analyses to adjust for unknown, unmodeled, or latent sources of noise. The sva package can be used to remove artifacts in three ways: (1) identifying and estimating surrogate variables for unknown sources of variation in high-throughput experiments (Leek and Storey 2007 PLoS Genetics,2008 PNAS), (2) directly removing known batch effects using ComBat (Johnson et al. 2007 Biostatistics) and (3) removing batch effects with known control probes (Leek 2014 biorXiv). Removing batch effects and using surrogate variables in differential expression analysis have been shown to reduce dependence, stabilize error rate estimates, and improve reproducibility, see (Leek and Storey 2007 PLoS Genetics, 2008 PNAS or Leek et al. 2011 Nat. Reviews Genetics).'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Surrogate Variable Analysis
+
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: pamr, bladderbatch, BiocStyle, zebrafishRNASeq, testthat
-requirements:
-  host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-genefilter >=1.80.0,<1.81.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - r-base
-    - r-matrixstats
-    - r-mgcv
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-genefilter >=1.80.0,<1.81.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - r-base
-    - r-matrixstats
-    - r-mgcv
-  build:
-    - {{ compiler('c') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Surrogate Variable Analysis'
-  description: 'The sva package contains functions for removing batch effects and other unwanted variation in high-throughput experiment. Specifically, the sva package contains functions for the identifying and building surrogate variables for high-dimensional data sets. Surrogate variables are covariates constructed directly from high-dimensional data (like gene expression/RNA sequencing/methylation/brain imaging data) that can be used in subsequent analyses to adjust for unknown, unmodeled, or latent sources of noise. The sva package can be used to remove artifacts in three ways: (1) identifying and estimating surrogate variables for unknown sources of variation in high-throughput experiments (Leek and Storey 2007 PLoS Genetics,2008 PNAS), (2) directly removing known batch effects using ComBat (Johnson et al. 2007 Biostatistics) and (3) removing batch effects with known control probes (Leek 2014 biorXiv). Removing batch effects and using surrogate variables in differential expression analysis have been shown to reduce dependence, stabilize error rate estimates, and improve reproducibility, see (Leek and Storey 2007 PLoS Genetics, 2008 PNAS or Leek et al. 2011 Nat. Reviews Genetics).'
+  run_exports: '{{ pin_subpackage("bioconductor-sva", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:sva
     - doi:10.1371/journal.pgen.0030161
@@ -55,4 +26,44 @@ extra:
     name: bioconductor-sva
     path: recipes/bioconductor-sva
     version: 3.28.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: pamr, bladderbatch, BiocStyle, zebrafishRNASeq, testthat
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-genefilter >=1.88.0,<1.89.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - r-base
+    - r-matrixstats
+    - r-mgcv
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-genefilter >=1.88.0,<1.89.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - r-base
+    - r-matrixstats
+    - r-mgcv
+
+source:
+  md5: e3f926939855e9fc04006b67a322eeb9
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

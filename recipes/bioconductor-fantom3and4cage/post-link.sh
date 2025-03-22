@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "fantom3and4cage-1.33.0"
+installBiocDataPackage.sh "fantom3and4cage-1.42.0"

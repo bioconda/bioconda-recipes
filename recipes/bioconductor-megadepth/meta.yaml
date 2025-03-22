@@ -1,27 +1,30 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "megadepth" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 7117f19e94ae0ade0fd844097f15f2a5
+about:
+  description: This package provides an R interface to Megadepth by Christopher Wilks available at https://github.com/ChristopherWilks/megadepth. It is particularly useful for computing the coverage of a set of genomic regions across bigWig or BAM files. With this package, you can build base-pair coverage matrices for regions or annotations of your choice from BigWig files. Megadepth was used to create the raw files provided by https://bioconductor.org/packages/recount3.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: 'megadepth: BigWig and BAM related utilities'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-megadepth", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: covr, knitr, BiocStyle, sessioninfo, rmarkdown, rtracklayer, derfinder, GenomeInfoDb, tools, RefManageR, testthat
 # SystemRequirements: megadepth (<https://github.com/ChristopherWilks/megadepth>)
 requirements:
   host:
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
     - r-base
     - r-cmdfun
     - r-dplyr
@@ -30,7 +33,7 @@ requirements:
     - r-readr
     - r-xfun
   run:
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
     - r-base
     - r-cmdfun
     - r-dplyr
@@ -38,12 +41,16 @@ requirements:
     - r-magrittr
     - r-readr
     - r-xfun
+
+source:
+  md5: afbcaad3f9b031a65f0febdfcc2b4276
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'megadepth: BigWig and BAM related utilities'
-  description: 'This package provides an R interface to Megadepth by Christopher Wilks available at https://github.com/ChristopherWilks/megadepth. It is particularly useful for computing the coverage of a set of genomic regions across bigWig or BAM files. With this package, you can build base-pair coverage matrices for regions or annotations of your choice from BigWig files. Megadepth was used to create the raw files provided by https://bioconductor.org/packages/recount3.'
+    - $R -e "library('{{ name }}')"
 

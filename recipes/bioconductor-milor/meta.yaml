@@ -1,34 +1,44 @@
-{% set version = "1.6.0" %}
+{% set version = "2.2.0" %}
 {% set name = "miloR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 4a6b1d138e8b16026e1d8328a92f81f1
+about:
+  description: Milo performs single-cell differential abundance testing. Cell states are modelled as representative neighbourhoods on a nearest neighbour graph. Hypothesis testing is performed using either a negative bionomial generalized linear model or negative binomial generalized linear mixed model.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 + file LICENSE
+  license_file: LICENSE
+  summary: Differential neighbourhood abundance testing on a graph
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: testthat, MASS, mvtnorm, scater, scran, covr, knitr, rmarkdown, uwot, scuttle, BiocStyle, MouseGastrulationData, MouseThymusAgeing, magick, RCurl, curl, graphics
+  run_exports: '{{ pin_subpackage("bioconductor-milor", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, mvtnorm, scater, scran, covr, knitr, rmarkdown, uwot, scuttle, BiocStyle, MouseGastrulationData, MouseThymusAgeing, magick, RCurl, MASS, curl, scRNAseq, graphics, sparseMatrixStats
 requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
   host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocneighbors >=1.16.0,<1.17.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-biocsingular >=1.14.0,<1.15.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocneighbors >=2.0.0,<2.1.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-biocsingular >=1.22.0,<1.23.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-cowplot
     - r-dplyr
@@ -39,23 +49,33 @@ requirements:
     - r-gtools
     - r-igraph
     - r-irlba
-    - 'r-matrix >=1.3-0'
+    - r-matrix >=1.3-0
     - r-matrixstats
+    - r-numderiv
     - r-patchwork
+    - r-pracma
     - r-rcolorbrewer
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-rcppeigen
+    - r-rcppml
     - r-stringr
     - r-tibble
     - r-tidyr
+    - libblas
+    - liblapack
+
   run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocneighbors >=1.16.0,<1.17.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-biocsingular >=1.14.0,<1.15.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocneighbors >=2.0.0,<2.1.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-biocsingular >=1.22.0,<1.23.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-cowplot
     - r-dplyr
@@ -66,20 +86,29 @@ requirements:
     - r-gtools
     - r-igraph
     - r-irlba
-    - 'r-matrix >=1.3-0'
+    - r-matrix >=1.3-0
     - r-matrixstats
+    - r-numderiv
     - r-patchwork
+    - r-pracma
     - r-rcolorbrewer
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-rcppeigen
+    - r-rcppml
     - r-stringr
     - r-tibble
     - r-tidyr
+
+source:
+  md5: dd33732ab19ad0bf8206fb392e6e9c62
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL-3 + file LICENSE'
-  summary: 'Differential neighbourhood abundance testing on a graph'
-  description: 'Milo performs single-cell differential abundance testing. Cell states are modelled as representative neighbourhoods on a nearest neighbour graph. Hypothesis testing is performed using a negative bionomial generalized linear model.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

@@ -1,51 +1,112 @@
-{% set version = "1.0.3" %}
+{% set name = "vcflib" %}
+{% set version = "1.0.12" %}
+{% set sha256 = "cb1e78d675f06ae3b22ffed7e1dea317e4c7f826e51e5b5dabd80240efbe1019" %}
 
 package:
-  name: vcflib
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/vcflib/vcflib/releases/download/v{{ version }}/vcflib-{{ version }}-src.tar.gz
-  sha256: 766bb8f47eb19810b7a0c53b6e3130658300450493d39db46eadc6124b0af200
+- url: https://github.com/vcflib/vcflib/releases/download/v{{ version }}/{{ name }}-{{ version }}-src.tar.gz
+  sha256: {{ sha256 }}
   patches:
-    - shared_lib.patch
-    - pkg-config.patch
+    - 0001-CMakeLists.patch  # [linux]
+    - 0002-CMakeLists.macos.patch  # [osx]
+    - tabix.patch
 
 build:
-  number: 2
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('vcflib', max_pin="x") }}
 
 requirements:
   build:
-    - make
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - make
+    - cmake
+    - pybind11
     # python really only used as a build tool; no ${PREFIX}/bin/python needed.
     - python >=3
-    - cmake
     - pkg-config
+    #- zig >=0.13.0
+    - autoconf
+    - automake
+    - libtool
   host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - htslib
     - tabixpp
+    - wfa2-lib
+    - pandoc
+    - zlib
+    - bzip2
+    - xz
   run:
     - python >=3
-    - zlib   
+    - perl
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - htslib
     - tabixpp
+    - wfa2-lib
+    - wget
 
 test:
+  requires:
+    - wget
   commands:
-    - vcfallelicprimitives -h
-    - vcffirstheader < /dev/null
-    - vcfsort < /dev/null
-    - vcfrandom | grep 'fileformat=VCF'
+    # Some VCF executables are not installed until a working Zig version is released
+    #- "vcfwave -h"
+    - "vcffirstheader < /dev/null"
+    - "vcfsort < /dev/null"
+    # On linux: libvcflib.so.1: undefined symbol: strings_padded_delete
+    - "vcfstreamsort --help"
+    - "wget -O test.vcf https://raw.githubusercontent.com/vcflib/vcflib/a610b7444daab0c9e974d9a001550bf8dd644770/test/data/regression/vcffilter_2.vcf"
+    # On linux: libvcflib.so.1: undefined symbol: strings_padded_delete
+    - "vcfuniq test.vcf"
 
 about:
-  home: https://github.com/vcflib/vcflib
+  home: "https://github.com/vcflib/vcflib"
   license: MIT
-  summary: Command-line tools for manipulating VCF files
-  maintainers: jpuritz
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Command-line tools for manipulating VCF files."
+  dev_url: "https://github.com/vcflib/vcflib"
+  doc_url: "https://github.com/vcflib/vcflib/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    # zig v0.11.0-0.13.0: error: HttpProxyMissingHost
+    # zig osx-arm64 error: error(link): undefined reference to symbol 'dyld_stub_binder'
+    - osx-arm64
+  recipe-maintainers:
+    - jpuritz
+    - mencian
   identifiers:
     - biotools:vcflib
-    - doi:10.1101/023754
+    - doi:10.1371/journal.pcbi.1009123
+    - usegalaxy-eu:vcfsort
+    - usegalaxy-eu:vcfallelicprimitives
+    - usegalaxy-eu:vcfbreakcreatemulti
+    - usegalaxy-eu:vcffilter2
+    - usegalaxy-eu:vcfcheck
+    - usegalaxy-eu:vcfcombine
+    - usegalaxy-eu:vcfaddinfo
+    - usegalaxy-eu:vcf2tsv
+    - usegalaxy-eu:vcfleftalign
+    - usegalaxy-eu:vcfhethom
+    - usegalaxy-eu:vcfrandomsample
+    - usegalaxy-eu:vcfbedintersect
+    - usegalaxy-eu:vcfgenotypes
+    - usegalaxy-eu:vcffixup
+    - usegalaxy-eu:vcfgeno2haplo
+    - usegalaxy-eu:vcfvcfintersect
+    - usegalaxy-eu:vcfanno
+    - usegalaxy-eu:vcfannotate
+    - usegalaxy-eu:vcfcommonsamples
+    - usegalaxy-eu:vcfflatten2
+    - usegalaxy-eu:vcfdistance
+    - usegalaxy-eu:vcfannotategenotypes
+    - usegalaxy-eu:vcfselectsamples

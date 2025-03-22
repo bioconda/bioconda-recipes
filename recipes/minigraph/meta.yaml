@@ -1,15 +1,20 @@
-{% set version = "0.20" %}
+{% set name = "minigraph" %}
+{% set version = "0.21" %}
 
 package:
-  name: minigraph
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/lh3/minigraph/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: ef695e69d57bbc34478d7d3007e4153422ee2e3534e4f3fcbb8930cfaa5e1dc0
+  sha256: 4272447393f0ae1e656376abe144de96cbafc777414d4c496f735dd4a6d3c06a
+  patches:
+    - minigraph-aarch64.patch # [aarch64 or arm64]
 
 build:
-  number: 0
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('minigraph', max_pin="x.x") }}
 
 requirements:
   build:
@@ -25,9 +30,14 @@ test:
 about:
   home: https://github.com/lh3/minigraph
   license: MIT
+  license_family: MIT
   license_file: LICENSE.txt
   summary: Proof-of-concept seq-to-graph mapper and graph generator
+  doc_url: https://lh3.github.io/minigraph/minigraph.html
+  dev_url: https://github.com/lh3/minigraph
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - doi:10.1186/s13059-020-02168-z

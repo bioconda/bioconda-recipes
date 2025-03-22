@@ -1,53 +1,22 @@
-{% set version = "1.32.0" %}
+{% set version = "1.40.0" %}
 {% set name = "tracktables" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 3f955c8f91ed30c263e3c8667247d20c
+about:
+  description: Methods to create complex IGV genome browser sessions and dynamic IGV reports in HTML pages.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 3)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Build IGV tracks and HTML reports
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, BiocStyle
-requirements:
-  host:
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-xvector >=0.38.0,<0.39.0'
-    - r-base
-    - r-rcolorbrewer
-    - r-stringr
-    - r-tractor.base
-    - r-xml
-  run:
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-xvector >=0.38.0,<0.39.0'
-    - r-base
-    - r-rcolorbrewer
-    - r-stringr
-    - r-tractor.base
-    - r-xml
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 3)'
-  summary: 'Build IGV tracks and HTML reports'
-  description: 'Methods to create complex IGV genome browser sessions and dynamic IGV reports in HTML pages.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-tracktables", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:tracktables
@@ -56,4 +25,43 @@ extra:
     name: bioconductor-tracktables
     path: recipes/bioconductor-tracktables
     version: 1.14.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, BiocStyle
+requirements:
+  host:
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-xvector >=0.46.0,<0.47.0
+    - r-base
+    - r-rcolorbrewer
+    - r-stringr
+    - r-tractor.base
+    - r-xml
+  run:
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-xvector >=0.46.0,<0.47.0
+    - r-base
+    - r-rcolorbrewer
+    - r-stringr
+    - r-tractor.base
+    - r-xml
+
+source:
+  md5: f9df323cc6a53fd11d9e7ec57d245426
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

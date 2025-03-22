@@ -1,47 +1,21 @@
-{% set version = "1.68.0" %}
+{% set version = "1.76.0" %}
 {% set name = "SIM" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f96c6bb3a1580c4c2b4fd0d8f701df56
+about:
+  description: Finds associations between two human genomic datasets.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Integrated Analysis on two human genomic datasets
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: biomaRt, RColorBrewer
-requirements:
-  host:
-    - 'bioconductor-globaltest >=5.52.0,<5.53.0'
-    - 'bioconductor-quantsmooth >=1.64.0,<1.65.0'
-    - r-base
-    - r-quantreg
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-globaltest >=5.52.0,<5.53.0'
-    - 'bioconductor-quantsmooth >=1.64.0,<1.65.0'
-    - r-base
-    - r-quantreg
-  build:
-    - {{ compiler('c') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Integrated Analysis on two human genomic datasets'
-  description: 'Finds associations between two human genomic datasets.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-sim", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:sim
@@ -50,4 +24,38 @@ extra:
     name: bioconductor-sim
     path: recipes/bioconductor-sim
     version: 1.50.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: biomaRt, RColorBrewer
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-globaltest >=5.60.0,<5.61.0
+    - bioconductor-quantsmooth >=1.72.0,<1.73.0
+    - r-base
+    - r-quantreg
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-globaltest >=5.60.0,<5.61.0
+    - bioconductor-quantsmooth >=1.72.0,<1.73.0
+    - r-base
+    - r-quantreg
+
+source:
+  md5: ad97c8ac31f33a53a9bf7319c3abdf0a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

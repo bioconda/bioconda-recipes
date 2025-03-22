@@ -1,5 +1,5 @@
-{% set version = "0.8.5" %}
-{% set sha256 = "15a3ec701ab771abe017b8ea1df9a1668070e6817996ea12ae9750f57e99f54a" %}
+{% set version = "0.10.2" %}
+{% set sha256 = "c4e1a7409d6bb3b0b252fa5efa7781b806897bd2c6cddef62b9abf9c0d7b8a40" %}
 
 package:
   name: perbase
@@ -8,16 +8,21 @@ package:
 source:
   url: https://github.com/sstadick/perbase/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - perbase-aarch64.patch
 
 build:
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('perbase', max_pin="x.x") }}
 
 requirements:
   build:
-    - rust >=1.42
     - clangdev
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
     - pkg-config
     - make
     - cmake
@@ -27,21 +32,23 @@ requirements:
     - zlib
     - bzip2
     - xz
-    - clangdev
   run:
-    - curl
     - openssl
-    - zlib
-    - bzip2
-    - xz
 
 test:
   commands:
     - perbase --help
 
 about:
-  home: https://github.com/sstadick/perbase
+  home: "https://github.com/sstadick/perbase"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: Per-base metrics on BAM/CRAM files.
+  summary: "Per-base metrics on BAM/CRAM files."
+  dev_url: "https://github.com/sstadick/perbase"
+  doc_url: "https://github.com/sstadick/perbase/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

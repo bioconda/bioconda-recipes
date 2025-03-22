@@ -1,39 +1,40 @@
-{% set version = "0.2.0" %}
+{% set version = "0.10.1" %}
 
 package:
   name: minute
   version: {{ version }}
 
 source:
-  url: https://github.com/NBISweden/minute/archive/v{{ version }}.tar.gz
-  sha256: 914d6f578cc2e744f01bdae83bdf4de352c75d9abdfbe6bd34130d8c2ce8ef60
+  url: https://github.com/elsasserlab/minute/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 666204aa5ba17fe1c77a156b0987d036ecf7a8792f860745e0741e3ad33b0976
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('minute', max_pin='x.x') }}
 
 requirements:
   host:
     - pip
     - python >=3.7
+    - setuptools
   run:
     - python >=3.7
-    - importlib-metadata  # [py==37]
     - ruamel.yaml
-    - snakemake-minimal >=6.9.0
+    - snakemake-minimal >=7.22.0
     - samtools >=1.13
     - cutadapt >=3.7
-    - bowtie2 >=2.4.4
+    - bowtie2 >=2.5.3
+    - strobealign >=0.13.0
     - je-suite >=2.0.RC
     - igvtools >=2.5.3
     - deeptools >=3.5.0
     - picard >=2.26.0
     - fastqc >=0.11.9
     - bedtools >=2.30.0
-    # MultiQC 1.12 ongoing issue with custom_content module
-    # https://github.com/ewels/MultiQC/issues/1645
-    - multiqc =1.11
+    - multiqc =1.17
     - xopen >=1.2.0
     - sra-tools >=2.11.0
     - r-base >=4.0.0
@@ -48,10 +49,13 @@ test:
     - minute --version
 
 about:
-  home: https://github.com/NBISweden/minute/
+  home: https://github.com/elsasserlab/minute/
   license: MIT
+  license_family: MIT
+  license_file: LICENSE
   summary: MINUTE-ChIP data analysis workflow
-
+  dev_url: https://github.com/elsasserlab/minute
+  doc_url: https://minute.readthedocs.io/en/latest
 extra:
   recipe-maintainers:
     - marcelm

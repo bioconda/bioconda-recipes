@@ -8,9 +8,17 @@ package:
 source:
   sha256: '{{sha256}}'
   url: https://github.com/voutcn/megahit/archive/v{{version}}.tar.gz
+  patches:
+    - linux-aarch64-support-pr-368.patch
+    - gcc-13-support-pr-366.patch
 
 build:
-  number: 1
+  number: 6
+  # TODO test fails on osx without visible error.
+  # Feel free to fix and enable again.
+  skip: true  # [osx]
+  run_exports:
+    - {{ pin_subpackage('megahit', max_pin='x') }}
 
 requirements:
   build:
@@ -29,8 +37,8 @@ requirements:
 
 test:
   commands:
-    - megahit --test
-    - megahit --test --kmin-1pass
+    - megahit --test || (echo "error log:" && cat /tmp/megahit_test_*/log && exit 1)
+    - megahit --test --kmin-1pass || (echo "error log:" && cat /tmp/megahit_test_*/log && exit 1)
 
 about:
   home: https://github.com/voutcn/megahit
@@ -42,6 +50,8 @@ about:
     metagenomics assembly via succinct de Bruijn graph
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:megahit
     - doi:10.1093/bioinformatics/btv033

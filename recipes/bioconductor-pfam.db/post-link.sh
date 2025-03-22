@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "pfam.db-3.16.0"
+installBiocDataPackage.sh "pfam.db-3.20.0"

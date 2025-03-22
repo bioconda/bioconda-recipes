@@ -1,55 +1,62 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "crisprScore" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: e0f272b62ca271ee8f51193beb2b057f
+about:
+  description: 'Provides R wrappers of several on-target and off-target scoring methods for CRISPR guide RNAs (gRNAs). The following nucleases are supported: SpCas9, AsCas12a, enAsCas12a, and RfxCas13d (CasRx). The available on-target cutting efficiency scoring methods are RuleSet1, Azimuth, DeepHF, DeepCpf1, enPAM+GB, and CRISPRscan. Both the CFD and MIT scoring methods are available for off-target specificity prediction. The package also provides a Lindel-derived score to predict the probability of a gRNA to produce indels inducing a frameshift for the Cas9 nuclease. Note that DeepHF, DeepCpf1 and enPAM+GB are not available on Windows machines.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: On-Target and Off-Target Scoring Algorithms for CRISPR gRNAs
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-crisprscore", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, knitr, rmarkdown, testthat
 requirements:
   host:
-    - 'bioconductor-basilisk >=1.10.0,<1.11.0'
-    - 'bioconductor-basilisk.utils >=1.10.0,<1.11.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-crisprscoredata >=1.2.0,<1.3.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-xvector >=0.38.0,<0.39.0'
+    - bioconductor-basilisk >=1.18.0,<1.19.0
+    - bioconductor-basilisk.utils >=1.18.0,<1.19.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-crisprscoredata >=1.10.0,<1.11.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-xvector >=0.46.0,<0.47.0
     - r-base
     - r-randomforest
     - r-reticulate
     - r-stringr
   run:
-    - 'bioconductor-basilisk >=1.10.0,<1.11.0'
-    - 'bioconductor-basilisk.utils >=1.10.0,<1.11.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-crisprscoredata >=1.2.0,<1.3.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-xvector >=0.38.0,<0.39.0'
+    - bioconductor-basilisk >=1.18.0,<1.19.0
+    - bioconductor-basilisk.utils >=1.18.0,<1.19.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-crisprscoredata >=1.10.0,<1.11.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-xvector >=0.46.0,<0.47.0
     - r-base
     - r-randomforest
     - r-reticulate
     - r-stringr
+
+source:
+  md5: 4dfe683c4ce70e62c4d5a0b6eadbcd19
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'On-Target and Off-Target Scoring Algorithms for CRISPR gRNAs'
-  description: 'Provides R wrappers of several on-target and off-target scoring methods for CRISPR guide RNAs (gRNAs). The following nucleases are supported: SpCas9, AsCas12a, enAsCas12a, and RfxCas13d (CasRx). The available on-target cutting efficiency scoring methods are RuleSet1, Azimuth, DeepHF, DeepCpf1, enPAM+GB, and CRISPRscan. Both the CFD and MIT scoring methods are available for off-target specificity prediction. The package also provides a Lindel-derived score to predict the probability of a gRNA to produce indels inducing a frameshift for the Cas9 nuclease. Note that DeepHF, DeepCpf1 and enPAM+GB are not available on Windows machines.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

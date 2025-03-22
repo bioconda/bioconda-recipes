@@ -1,29 +1,34 @@
-{% set version = "1.12.0" %}
+{% set version = "1.20.0" %}
 {% set name = "scPCA" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f1fc3d6e40ac424f090787892359ed1c
+about:
+  description: A toolbox for sparse contrastive principal component analysis (scPCA) of high-dimensional biological data. scPCA combines the stability and interpretability of sparse PCA with contrastive PCA's ability to disentangle biological signal from unwanted variation through the use of control data. Also implements and extends cPCA.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Sparse Contrastive Principal Component Analysis
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-scpca", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: DelayedMatrixStats, sparseMatrixStats, testthat (>= 2.1.0), covr, knitr, rmarkdown, BiocStyle, ggplot2, ggpubr, splatter, SingleCellExperiment, microbenchmark
 requirements:
+
   host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-matrixgenerics >=1.10.0,<1.11.0'
-    - 'bioconductor-scaledmatrix >=1.6.0,<1.7.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-scaledmatrix >=1.14.0,<1.15.0
     - r-assertthat
     - r-base
     - r-cluster
@@ -40,11 +45,12 @@ requirements:
     - r-sparsepca
     - r-stringr
     - r-tibble
+
   run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-matrixgenerics >=1.10.0,<1.11.0'
-    - 'bioconductor-scaledmatrix >=1.6.0,<1.7.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-scaledmatrix >=1.14.0,<1.15.0
     - r-assertthat
     - r-base
     - r-cluster
@@ -61,13 +67,16 @@ requirements:
     - r-sparsepca
     - r-stringr
     - r-tibble
+
+source:
+  md5: a3b9cac8e449f8898a5274fff7fd9f16
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Sparse Contrastive Principal Component Analysis'
-  description: 'A toolbox for sparse contrastive principal component analysis (scPCA) of high-dimensional biological data. scPCA combines the stability and interpretability of sparse PCA with contrastive PCA''s ability to disentangle biological signal from unwanted variation through the use of control data. Also implements and extends cPCA.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

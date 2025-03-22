@@ -1,43 +1,45 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "goSorensen" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: ebeeb3eb07dcb6cd28e1e19b0ae29a28
+about:
+  description: This package implements inferential methods to compare gene lists in terms of their biological meaning as expressed in the GO. The compared gene lists are characterized by cross-tabulation frequency tables of enriched GO items. Dissimilarity between gene lists is evaluated using the Sorensen-Dice index. The fundamental guiding principle is that two gene lists are taken as similar if they share a great proportion of common enriched GO items.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Statistical inference based on the Sorensen-Dice dissimilarity and the Gene Ontology (GO)
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, knitr, rmarkdown
+  run_exports: '{{ pin_subpackage("bioconductor-gosorensen", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: BiocManager, BiocStyle, knitr, rmarkdown, org.At.tair.db, org.Ag.eg.db, org.Bt.eg.db, org.Ce.eg.db, org.Cf.eg.db, org.Dm.eg.db, org.Dr.eg.db, org.EcSakai.eg.db, org.EcK12.eg.db, org.Gg.eg.db, org.Mm.eg.db, org.Mmu.eg.db, org.Rn.eg.db, org.Sc.sgd.db, org.Ss.eg.db, org.Pt.eg.db, org.Xl.eg.db
 requirements:
   host:
-    - 'bioconductor-clusterprofiler >=4.6.0,<4.7.0'
-    - 'bioconductor-go.db >=3.16.0,<3.17.0'
-    - 'bioconductor-goprofiles >=1.60.0,<1.61.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
+    - bioconductor-clusterprofiler >=4.14.0,<4.15.0
+    - bioconductor-goprofiles >=1.68.0,<1.69.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
     - r-base
+    - r-stringr
   run:
-    - 'bioconductor-clusterprofiler >=4.6.0,<4.7.0'
-    - 'bioconductor-go.db >=3.16.0,<3.17.0'
-    - 'bioconductor-goprofiles >=1.60.0,<1.61.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
+    - bioconductor-clusterprofiler >=4.14.0,<4.15.0
+    - bioconductor-goprofiles >=1.68.0,<1.69.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
     - r-base
+    - r-stringr
+source:
+  md5: aba6bdd63cc6e5ee46dac40d3297caca
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Statistical inference based on the Sorensen-Dice dissimilarity and the Gene Ontology (GO)'
-  description: 'This package implements inferential methods to compare gene lists (in this first release, to prove equivalence) in terms of their biological meaning as expressed in the GO. The compared gene lists are characterized by cross-tabulation frequency tables of enriched GO items. Dissimilarity between gene lists is evaluated using the Sorensen-Dice index. The fundamental guiding principle is that two gene lists are taken as similar if they share a great proportion of common enriched GO items.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

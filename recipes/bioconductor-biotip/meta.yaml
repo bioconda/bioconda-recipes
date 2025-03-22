@@ -1,27 +1,31 @@
-{% set version = "1.12.0" %}
+{% set version = "1.20.0" %}
 {% set name = "BioTIP" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: debeb275ee85a57c16e5e569a1624960
+about:
+  description: Adopting tipping-point theory to transcriptome profiles to unravel disease regulatory trajectory.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: 'BioTIP: An R package for characterization of Biological Tipping-Point'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-biotip", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, markdown, base, rmarkdown, ggplot2
 requirements:
   host:
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-scran >=1.26.0,<1.27.0'
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-scran >=1.34.0,<1.35.0
     - r-base
     - r-cluster
     - r-igraph
@@ -29,21 +33,24 @@ requirements:
     - r-psych
     - r-stringr
   run:
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-scran >=1.26.0,<1.27.0'
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-scran >=1.34.0,<1.35.0
     - r-base
     - r-cluster
     - r-igraph
     - r-mass
     - r-psych
     - r-stringr
+
+source:
+  md5: 3361614ccd89db9170a5a239ef6f5006
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'BioTIP: An R package for characterization of Biological Tipping-Point'
-  description: 'Adopting tipping-point theory to transcriptome profiles to unravel disease regulatory trajectory.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+    - $R -e "library('{{ name }}')"
 

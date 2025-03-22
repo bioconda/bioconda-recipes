@@ -1,49 +1,22 @@
-{% set version = "1.38.0" %}
+{% set version = "1.46.0" %}
 {% set name = "MethylSeekR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 2dcf909a7e64435d3c0f5a4c7f5fd70f
+about:
+  description: This is a package for the discovery of regulatory regions from Bis-seq data
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Segmentation of Bis-seq data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BSgenome.Hsapiens.UCSC.hg18
-requirements:
-  host:
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
-    - 'bioconductor-geneplotter >=1.76.0,<1.77.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - r-base
-    - 'r-mhsmm >=0.4.4'
-  run:
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
-    - 'bioconductor-geneplotter >=1.76.0,<1.77.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - r-base
-    - 'r-mhsmm >=0.4.4'
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>=2)'
-  summary: 'Segmentation of Bis-seq data'
-  description: 'This is a package for the discovery of regulatory regions from Bis-seq data'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-methylseekr", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:methylseekr
@@ -51,4 +24,39 @@ extra:
     name: bioconductor-methylseekr
     path: recipes/bioconductor-methylseekr
     version: 1.20.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BSgenome.Hsapiens.UCSC.hg18
+requirements:
+  host:
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-geneplotter >=1.84.0,<1.85.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - r-base
+    - r-mhsmm >=0.4.4
+  run:
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-geneplotter >=1.84.0,<1.85.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - r-base
+    - r-mhsmm >=0.4.4
+
+source:
+  md5: b57f523a0de8f9a9c810e6b84625224c
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

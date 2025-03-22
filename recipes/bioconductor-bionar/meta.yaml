@@ -1,70 +1,87 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "BioNAR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 59af065d7e33a18ae629d5b805b732f9
+about:
+  description: the R package BioNAR, developed to step by step analysis of PPI network. The aim is to quantify and rank each protein’s simultaneous impact into multiple complexes based on network topology and clustering. Package also enables estimating of co-occurrence of diseases across the network and specific clusters pointing towards shared/common mechanisms.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Biological Network Analysis in R
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, rmarkdown, igraphdata, testthat (>= 3.0.0), vdiffr, devtools, pander, plotly, randomcoloR
+  run_exports: '{{ pin_subpackage("bioconductor-bionar", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, BiocStyle, magick, rmarkdown, igraphdata, testthat (>= 3.0.0), vdiffr, devtools, pander, plotly, randomcoloR
 requirements:
+
   host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-fgsea >=1.24.0,<1.25.0'
-    - 'bioconductor-go.db >=3.16.0,<3.17.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-synaptome.db >=0.99.0,<0.100.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-fgsea >=1.32.0,<1.33.0
+    - bioconductor-go.db >=3.20.0,<3.21.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
     - r-base
     - r-clustercons
+    - r-cowplot
+    - r-data.table
     - r-dplyr
     - r-ggplot2
     - r-ggrepel
-    - r-igraph
+    - r-igraph >=2.0.1.1
     - r-latex2exp
+    - r-matrix
+    - r-minpack.lm
     - r-powerlaw
     - r-rdpack
     - r-rspectra
     - r-rspectral
     - r-scales
     - r-stringr
+    - r-viridis
     - r-wgcna
+
   run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-fgsea >=1.24.0,<1.25.0'
-    - 'bioconductor-go.db >=3.16.0,<3.17.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-synaptome.db >=0.99.0,<0.100.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-fgsea >=1.32.0,<1.33.0
+    - bioconductor-go.db >=3.20.0,<3.21.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
     - r-base
     - r-clustercons
+    - r-cowplot
+    - r-data.table
     - r-dplyr
     - r-ggplot2
     - r-ggrepel
-    - r-igraph
+    - r-igraph >=2.0.1.1
     - r-latex2exp
+    - r-matrix
+    - r-minpack.lm
     - r-powerlaw
     - r-rdpack
     - r-rspectra
     - r-rspectral
     - r-scales
     - r-stringr
+    - r-viridis
     - r-wgcna
+
+source:
+  md5: 6d871ed023436cf01a3eda576b888423
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Biological Network Analysis in R'
-  description: 'the R package BioNAR, developed to step by step analysis of PPI network. The aim is to quantify and rank each protein’s simultaneous impact into multiple complexes based on network topology and clustering. Package also enables estimating of co-occurrence of diseases across the network and specific clusters pointing towards shared/common mechanisms.'
+    - $R -e "library('{{ name }}')"
 

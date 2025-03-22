@@ -1,75 +1,77 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "sSNAPPY" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 105350c134e2d2c94e0f36cd9d45042d
+about:
+  description: A single sample pathway perturbation testing method for RNA-seq data. The method propagates changes in gene expression down gene-set topologies to compute single-sample directional pathway perturbation scores that reflect potential direction of change. Perturbation scores can be used to test significance of pathway perturbation at both individual-sample and treatment levels.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Single Sample directioNAl Pathway Perturbation analYsis
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: BiocManager, BiocStyle, cowplot, DT, knitr, pander, rmarkdown, spelling, stringr, testthat (>= 3.0.0), tidyverse
+  run_exports: '{{ pin_subpackage("bioconductor-ssnappy", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocManager, BiocStyle, colorspace, cowplot, DT, htmltools, knitr, pander, patchwork, rmarkdown, spelling, testthat (>= 3.0.0), tidyverse
 # SystemRequirements: C++11
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-graphite >=1.44.0,<1.45.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-graphite >=1.52.0,<1.53.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
-    - r-dplyr
+    - r-dplyr >=1.1
+    - r-ggforce
     - r-ggplot2
     - r-ggraph
+    - r-gtools
     - r-igraph
     - r-magrittr
-    - r-plyr
-    - r-purrr
-    - r-rcpp
-    - r-rcpparmadillo
+    - r-pheatmap
     - r-reshape2
     - r-rlang
+    - r-stringr
     - r-tibble
-    - libblas
-    - liblapack
+    - r-tidyr
   run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-graphite >=1.44.0,<1.45.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-graphite >=1.52.0,<1.53.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
-    - r-dplyr
+    - r-dplyr >=1.1
+    - r-ggforce
     - r-ggplot2
     - r-ggraph
+    - r-gtools
     - r-igraph
     - r-magrittr
-    - r-plyr
-    - r-purrr
-    - r-rcpp
-    - r-rcpparmadillo
+    - r-pheatmap
     - r-reshape2
     - r-rlang
+    - r-stringr
     - r-tibble
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+    - r-tidyr
+
+source:
+  md5: 19c4be1cf2891d0fe3497ebb4bfcbf2f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Single Sample directioNAl Pathway Perturbation analYsis'
-  description: 'A single sample pathway perturbation testing method for RNA-seq data. The method propagates changes in gene expression down gene-set topologies to compute single-sample directional pathway perturbation scores that reflect potential directions of changes.Perturbation scores can be used to test significance of pathway perturbation at both individual-sample and treatment levels.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

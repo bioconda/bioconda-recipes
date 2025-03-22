@@ -1,39 +1,22 @@
-{% set version = "1.28.0" %}
+{% set version = "1.36.0" %}
 {% set name = "acde" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: e56cb58b44f42acc784e183126551c5c
+about:
+  description: This package provides a multivariate inferential analysis method for detecting differentially expressed genes in gene expression data. It uses artificial components, close to the data's principal components but with an exact interpretation in terms of differential genetic expression, to identify differentially expressed genes while controlling the false discovery rate (FDR). The methods on this package are described in the vignette or in the article 'Multivariate Method for Inferential Identification of Differentially Expressed Genes in Gene Expression Experiments' by J. P. Acosta, L. Lopez-Kleine and S. Restrepo (2015, pending publication).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Artificial Components Detection of Differentially Expressed Genes
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocGenerics, RUnit
-requirements:
-  host:
-    - r-base
-    - 'r-boot >=1.3'
-  run:
-    - r-base
-    - 'r-boot >=1.3'
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Artificial Components Detection of Differentially Expressed Genes'
-  description: 'This package provides a multivariate inferential analysis method for detecting differentially expressed genes in gene expression data. It uses artificial components, close to the data''s principal components but with an exact interpretation in terms of differential genetic expression, to identify differentially expressed genes while controlling the false discovery rate (FDR). The methods on this package are described in the vignette or in the article ''Multivariate Method for Inferential Identification of Differentially Expressed Genes in Gene Expression Experiments'' by J. P. Acosta, L. Lopez-Kleine and S. Restrepo (2015, pending publication).'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-acde", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:acde
@@ -42,4 +25,29 @@ extra:
     name: bioconductor-acde
     path: recipes/bioconductor-acde
     version: 1.10.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocGenerics, RUnit
+requirements:
+  host:
+    - r-base
+    - r-boot >=1.3
+  run:
+    - r-base
+    - r-boot >=1.3
+
+source:
+  md5: df39a71c8b906769d5894ea2ffab69cb
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

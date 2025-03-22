@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "curatedadipochip-1.14.0"
+installBiocDataPackage.sh "curatedadipochip-1.22.0"

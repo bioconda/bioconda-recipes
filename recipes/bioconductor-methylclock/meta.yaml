@@ -1,31 +1,41 @@
-{% set version = "1.4.0" %}
+{% set version = "1.12.0" %}
 {% set name = "methylclock" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: c33b21d106163a730dafd515dc4716cf
+about:
+  description: 'This package allows to estimate chronological and gestational DNA methylation (DNAm) age as well as biological age using different methylation clocks. Chronological DNAm age (in years) : Horvath''s clock, Hannum''s clock, BNN, Horvath''s skin+blood clock, PedBE clock and Wu''s clock. Gestational DNAm age : Knight''s clock, Bohlin''s clock, Mayne''s clock and Lee''s clocks. Biological DNAm clocks : Levine''s clock and Telomere Length''s clock.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Methylclock - DNA methylation-based clocks
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-methylclock", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, knitr, GEOquery, rmarkdown
 requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
-    - 'bioconductor-impute >=1.72.0,<1.73.0'
-    - 'bioconductor-methylclockdata >=1.6.0,<1.7.0'
-    - 'bioconductor-minfi >=1.44.0,<1.45.0'
-    - 'bioconductor-planet >=1.6.0,<1.7.0'
-    - 'bioconductor-preprocesscore >=1.60.0,<1.61.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - bioconductor-methylclockdata >=1.14.0,<1.15.0
+    - bioconductor-minfi >=1.52.0,<1.53.0
+    - bioconductor-planet >=1.14.0,<1.15.0
+    - bioconductor-preprocesscore >=1.68.0,<1.69.0
     - r-base
     - r-devtools
     - r-dplyr
@@ -36,21 +46,22 @@ requirements:
     - r-gridextra
     - r-performanceanalytics
     - r-quadprog
-    - 'r-rcpp >=1.0.6'
+    - r-rcpp >=1.0.6
     - r-rpmm
     - r-tibble
     - r-tidyr
     - r-tidyverse
     - libblas
     - liblapack
+
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
-    - 'bioconductor-impute >=1.72.0,<1.73.0'
-    - 'bioconductor-methylclockdata >=1.6.0,<1.7.0'
-    - 'bioconductor-minfi >=1.44.0,<1.45.0'
-    - 'bioconductor-planet >=1.6.0,<1.7.0'
-    - 'bioconductor-preprocesscore >=1.60.0,<1.61.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - bioconductor-methylclockdata >=1.14.0,<1.15.0
+    - bioconductor-minfi >=1.52.0,<1.53.0
+    - bioconductor-planet >=1.14.0,<1.15.0
+    - bioconductor-preprocesscore >=1.68.0,<1.69.0
     - r-base
     - r-devtools
     - r-dplyr
@@ -61,22 +72,21 @@ requirements:
     - r-gridextra
     - r-performanceanalytics
     - r-quadprog
-    - 'r-rcpp >=1.0.6'
+    - r-rcpp >=1.0.6
     - r-rpmm
     - r-tibble
     - r-tidyr
     - r-tidyverse
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: 61d2f452c0d86f49888d77bf94b7afa0
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Methylclock - DNA methylation-based clocks'
-  description: 'This package allows to estimate chronological and gestational DNA methylation (DNAm) age as well as biological age using different methylation clocks. Chronological DNAm age (in years) : Horvath''s clock, Hannum''s clock, BNN, Horvath''s skin+blood clock, PedBE clock and Wu''s clock. Gestational DNAm age : Knight''s clock, Bohlin''s clock, Mayne''s clock and Lee''s clocks. Biological DNAm clocks : Levine''s clock and Telomere Length''s clock.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

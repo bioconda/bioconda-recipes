@@ -1,36 +1,38 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "MatrixGenerics" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: d699dd28635bdee023a78d352c651bf2
+about:
+  description: S4 generic functions modeled after the 'matrixStats' API for alternative matrix implementations. Packages with alternative matrix implementation can depend on this package and implement the generic functions that are defined here for a useful set of row and column summary statistics. Other package developers can import this package and handle a different matrix implementations without worrying about incompatibilities.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: S4 Generic Summary Statistic Functions that Operate on Matrix-Like Objects
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: sparseMatrixStats, DelayedMatrixStats, SummarizedExperiment, testthat (>= 2.1.0), Matrix
+  run_exports: '{{ pin_subpackage("bioconductor-matrixgenerics", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: Matrix, sparseMatrixStats, SparseArray, DelayedArray, DelayedMatrixStats, SummarizedExperiment, testthat (>= 2.1.0)
 requirements:
   host:
     - r-base
-    - 'r-matrixstats >=0.60.1'
+    - r-matrixstats >=1.4.1
   run:
     - r-base
-    - 'r-matrixstats >=0.60.1'
+    - r-matrixstats >=1.4.1
+source:
+  md5: be0b5a464be94a86963f7c1c30c8c3da
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'S4 Generic Summary Statistic Functions that Operate on Matrix-Like Objects'
-  description: 'S4 generic functions modeled after the ''matrixStats'' API for alternative matrix implementations. Packages with alternative matrix implementation can depend on this package and implement the generic functions that are defined here for a useful set of row and column summary statistics. Other package developers can import this package and handle a different matrix implementations without worrying about incompatibilities.'
+    - $R -e "library('{{ name }}')"
 

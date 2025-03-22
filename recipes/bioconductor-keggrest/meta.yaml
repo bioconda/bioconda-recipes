@@ -1,42 +1,21 @@
-{% set version = "1.38.0" %}
+{% set version = "1.46.0" %}
 {% set name = "KEGGREST" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 310e736e684002207adf8ee1350f2526
+about:
+  description: A package that provides a client interface to the Kyoto Encyclopedia of Genes and Genomes (KEGG) REST API. Only for academic use by academic users belonging to academic institutions (see <https://www.kegg.jp/kegg/rest/>). Note that KEGGREST is based on KEGGSOAP by J. Zhang, R. Gentleman, and Marc Carlson, and KEGG (python package) by Aurelien Mazurie.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Client-side REST access to the Kyoto Encyclopedia of Genes and Genomes (KEGG)
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: RUnit, BiocGenerics, knitr, markdown
-requirements:
-  host:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - r-base
-    - r-httr
-    - r-png
-  run:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - r-base
-    - r-httr
-    - r-png
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Client-side REST access to the Kyoto Encyclopedia of Genes and Genomes (KEGG)'
-  description: 'A package that provides a client interface to the Kyoto Encyclopedia of Genes and Genomes (KEGG) REST server. Based on KEGGSOAP by J. Zhang, R. Gentleman, and Marc Carlson, and KEGG (python package) by Aurelien Mazurie.'
+  run_exports: '{{ pin_subpackage("bioconductor-keggrest", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:keggrest
@@ -45,4 +24,33 @@ extra:
     name: bioconductor-keggrest
     path: recipes/bioconductor-keggrest
     version: 1.20.2
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: RUnit, BiocGenerics, BiocStyle, knitr, markdown
+requirements:
+  host:
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - r-base
+    - r-httr
+    - r-png
+  run:
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - r-base
+    - r-httr
+    - r-png
+
+source:
+  md5: 700871ac08e548038a9986884d153360
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

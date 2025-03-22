@@ -1,61 +1,68 @@
-{% set version = "1.32.0" %}
+{% set version = "1.40.0" %}
 {% set name = "PAA" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: d19918868939513b5e7fef5d822b6fac
+about:
+  description: PAA imports single color (protein) microarray data that has been saved in gpr file format - esp. ProtoArray data. After preprocessing (background correction, batch filtering, normalization) univariate feature preselection is performed (e.g., using the "minimum M statistic" approach - hereinafter referred to as "mMs"). Subsequently, a multivariate feature selection is conducted to discover biomarker candidates. Therefore, either a frequency-based backwards elimination aproach or ensemble feature selection can be used. PAA provides a complete toolbox of analysis tools including several different plots for results examination and evaluation.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: BSD_3_clause + file LICENSE
+  license_file: LICENSE
+  summary: PAA (Protein Array Analyzer)
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-paa", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, RUnit, BiocGenerics, vsn
 # SystemRequirements: C++ software package Random Jungle
 requirements:
-  host:
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-sva >=3.46.0,<3.47.0'
-    - r-base
-    - r-e1071
-    - r-gplots
-    - r-gtools
-    - r-mass
-    - r-mrmre
-    - r-randomforest
-    - 'r-rcpp >=0.11.6'
-    - r-rocr
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-sva >=3.46.0,<3.47.0'
-    - r-base
-    - r-e1071
-    - r-gplots
-    - r-gtools
-    - r-mass
-    - r-mrmre
-    - r-randomforest
-    - 'r-rcpp >=0.11.6'
-    - r-rocr
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+  host:
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-sva >=3.54.0,<3.55.0
+    - r-base
+    - r-e1071
+    - r-gplots
+    - r-gtools
+    - r-mass
+    - r-mrmre
+    - r-randomforest
+    - r-rcpp >=0.11.6
+    - r-rocr
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-sva >=3.54.0,<3.55.0
+    - r-base
+    - r-e1071
+    - r-gplots
+    - r-gtools
+    - r-mass
+    - r-mrmre
+    - r-randomforest
+    - r-rcpp >=0.11.6
+    - r-rocr
+
+source:
+  md5: 730153dfb6e7a37f522a59102b5a9f45
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'BSD_3_clause + file LICENSE'
-  summary: 'PAA (Protein Array Analyzer)'
-  description: 'PAA imports single color (protein) microarray data that has been saved in gpr file format - esp. ProtoArray data. After preprocessing (background correction, batch filtering, normalization) univariate feature preselection is performed (e.g., using the "minimum M statistic" approach - hereinafter referred to as "mMs"). Subsequently, a multivariate feature selection is conducted to discover biomarker candidates. Therefore, either a frequency-based backwards elimination aproach or ensemble feature selection can be used. PAA provides a complete toolbox of analysis tools including several different plots for results examination and evaluation.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

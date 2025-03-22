@@ -1,57 +1,22 @@
-{% set version = "1.34.0" %}
+{% set version = "1.42.0" %}
 {% set name = "STATegRa" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f27300e8dd916357a779d4dda4fba2d5
+about:
+  description: Classes and tools for multi-omics data integration.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Classes and methods for multi-omics data integration
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: RUnit, BiocGenerics, knitr (>= 1.6), rmarkdown, BiocStyle (>= 1.3), roxygen2, doSNOW
-requirements:
-  host:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - r-base
-    - r-calibrate
-    - r-foreach
-    - r-ggplot2
-    - r-gplots
-    - r-gridextra
-    - r-mass
-  run:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - r-base
-    - r-calibrate
-    - r-foreach
-    - r-ggplot2
-    - r-gplots
-    - r-gridextra
-    - r-mass
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Classes and methods for multi-omics data integration'
-  description: 'Classes and tools for multi-omics data integration.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-stategra", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:stategra
@@ -60,4 +25,47 @@ extra:
     name: bioconductor-stategra
     path: recipes/bioconductor-stategra
     version: 1.16.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: RUnit, BiocGenerics, knitr (>= 1.6), rmarkdown, BiocStyle (>= 1.3), roxygen2, doSNOW
+requirements:
+  host:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - r-base
+    - r-calibrate
+    - r-foreach
+    - r-ggplot2
+    - r-gplots
+    - r-gridextra
+    - r-mass
+  run:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - r-base
+    - r-calibrate
+    - r-foreach
+    - r-ggplot2
+    - r-gplots
+    - r-gridextra
+    - r-mass
+
+source:
+  md5: 5bc7c8398540e93911f698c4e5c411ab
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

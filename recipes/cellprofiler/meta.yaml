@@ -1,5 +1,5 @@
 {% set name = "CellProfiler" %}
-{% set version = "4.2.1" %}
+{% set version = "4.2.8" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,29 +7,31 @@ package:
 
 source:
   url: https://github.com/CellProfiler/{{ name  }}/archive/v{{ version }}.tar.gz
-  sha256: "4b315864ac492a8042a626b130c89d86d1fe891902f4316f1f7a91a468e29d2a"
+  sha256: "c1352e703ca36af63b6069fda9a0de3b54980ed0d2b7d45d08c84fbeeded03fd"
 
 build:
-  number: 2
-  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed . -vv"
-  #skip: True  # this is using for some reason up to 3GB of memory and crashes CCI, build and push locally
-  #skip: True  # [win or osx or py3k]
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir --use-pep517 . -vvv"
+  entry_points:
+    - cellprofiler=cellprofiler.__main__:main
+  run_exports:
+    - {{ pin_subpackage('cellprofiler', max_pin='x') }}
 
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - python  3.8  ## pymzq 18 not available for any later python version
+    - python >=3.8
     - pip
-    - cython
-    - python-javabridge
     - pytest
+    - setuptools
   run:
-    - python  3.8
+    - python >=3.8
+    - boto3 >=1.12.28
     - centrosome
     - docutils
-    - cellprofiler-core {{ version }}
-    - h5py  >=2.10
+    - cellprofiler-core =={{ version }}
+    - h5py >=3.6.0,<3.7.dev0,<4
+    - imageio >=2.5
     - inflect
     - python-javabridge
     - joblib
@@ -38,16 +40,18 @@ requirements:
     - sentry-sdk
     - matplotlib-base
     - mysqlclient
-    - numpy  >=1.18.2,<=1.20.0
+    - numpy
+    - pillow
     - prokaryote
     - python-bioformats
+    - pyzmq >=22.3,<23.dev0
     - requests
-    - scikit-image  >=0.17.2
-    - scikit-learn  >=0.20
-    - scipy         >=1.4.1
+    - scikit-image ==0.18.3
+    - scikit-learn >=0.20,<1
+    - scipy ==1.9.0
     - six
+    - tifffile <2022.4.22
     - wxpython
-    - pillow
 
 test:
   imports:
@@ -56,14 +60,16 @@ test:
     - cellprofiler --help
 
 about:
-  home: https://github.com/CellProfiler/CellProfiler
-  license: 3-clause BSD
+  home: "https://github.com/CellProfiler/CellProfiler"
+  license: "BSD-3-Clause"
   license_family: BSD
   license_file: LICENSE
-  summary: "CellProfiler is free, open-source software for quantitative analysis of biological images"
+  summary: "CellProfiler is free, open-source software for quantitative analysis of biological images."
   description: |
      CellProfiler is free, open-source software for quantitative analysis of biological images.No prior experience in programming or computer vision is required.
+  dev_url: "https://github.com/CellProfiler/CellProfiler"
+  doc_url: "https://cellprofiler-manual.s3.amazonaws.com/CellProfiler-{{ version }}/index.html"
 
 extra:
   container:
-    extended-base: true
+    extended-base: True

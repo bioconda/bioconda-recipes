@@ -1,5 +1,5 @@
 {% set name = "kneaddata" %}
-{% set version = "0.12.0" %}
+{% set version = "0.12.2" %}
 
 package:
   name: '{{ name|lower }}'
@@ -7,23 +7,27 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: b211bf973ea50cc89dd5935761ca3b101d422cfb62b215aae08f5ed92a624a58
+  sha256: 1fbbe10ac6b307f69df8e592ce039d081fedd7749ad11ac2f6920989a62a7e3e
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} setup.py install --bypass-dependencies-install --single-version-externally-managed --record=record.txt
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   entry_points:
     - kneaddata = kneaddata.knead_data:main
     - kneaddata_bowtie2_discordant_pairs = kneaddata.bowtie2_discordant_pairs:main
+    - kneaddata_trf_parallel = kneaddata.trf_parallel:main
     - kneaddata_database = kneaddata.download_db:main
     - kneaddata_build_database = kneaddata.generate_db:main
     - kneaddata_read_count_table = kneaddata.read_count_table:main
     - kneaddata_test = kneaddata.tests.kneaddata_test:main
+  run_exports:
+    - {{ pin_subpackage('kneaddata', max_pin="x.x") }}
 
 requirements:
   build:
     - python >=3
+    - pip
     - setuptools
     - bowtie2 >=2.2
   run:
@@ -33,6 +37,9 @@ requirements:
     - samtools
     - trimmomatic
     - trf
+    - blast
+    - srprism
+    - bmtool
 
 test:
   imports:
@@ -48,9 +55,11 @@ test:
     - kneaddata_test --help
 
 about:
-  home: http://huttenhower.sph.harvard.edu/kneaddata
+  home: "https://huttenhower.sph.harvard.edu/kneaddata"
   license: MIT
   license_family: MIT
-  summary: KneadData is a tool designed to perform quality control on metagenomic sequencing data.
+  license_file: LICENSE
+  summary: "KneadData is a tool designed to perform quality control on metagenomic sequencing data."
   description: KneadData is a tool designed to perform quality control on metagenomic sequencing data, especially data from microbiome experiments. In these experiments, samples are typically taken from a host in hopes of learning something about the microbial community on the host. However, metagenomic sequencing data from such experiments will often contain a high ratio of host to bacterial reads. This tool aims to perform principled in silico separation of bacterial reads from these "contaminant" reads, be they from the host, from bacterial 16S sequences, or other user-defined sources.
-  doc_url: http://huttenhower.sph.harvard.edu/kneaddata
+  doc_url: "https://huttenhower.sph.harvard.edu/kneaddata"
+  dev_url: "https://github.com/biobakery/kneaddata"

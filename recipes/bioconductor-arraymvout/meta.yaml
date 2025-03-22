@@ -1,46 +1,53 @@
-{% set version = "1.56.0" %}
+{% set version = "1.64.0" %}
 {% set name = "arrayMvout" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 2e824877f0535fafa29106d192931e34
+about:
+  description: This package supports the application of diverse quality metrics to AffyBatch instances, summarizing these metrics via PCA, and then performing parametric outlier detection on the PCs to identify aberrant arrays with a fixed Type I error rate
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: multivariate outlier detection for expression array QA
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-arraymvout", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: MAQCsubset, mvoutData, lumiBarnes, affyPLM, affydata, hgu133atagcdf
 requirements:
   host:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-affycontam >=1.56.0,<1.57.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-lumi >=2.50.0,<2.51.0'
-    - 'bioconductor-mdqc >=1.60.0,<1.61.0'
-    - 'bioconductor-parody >=1.56.0,<1.57.0'
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-affycontam >=1.64.0,<1.65.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-lumi >=2.58.0,<2.59.0
+    - bioconductor-mdqc >=1.68.0,<1.69.0
+    - bioconductor-parody >=1.64.0,<1.65.0
     - r-base
   run:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-affycontam >=1.56.0,<1.57.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-lumi >=2.50.0,<2.51.0'
-    - 'bioconductor-mdqc >=1.60.0,<1.61.0'
-    - 'bioconductor-parody >=1.56.0,<1.57.0'
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-affycontam >=1.64.0,<1.65.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-lumi >=2.58.0,<2.59.0
+    - bioconductor-mdqc >=1.68.0,<1.69.0
+    - bioconductor-parody >=1.64.0,<1.65.0
     - r-base
+
+source:
+  md5: 1a220831639a56bbe6cd97eece9b1d1f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'multivariate outlier detection for expression array QA'
-  description: 'This package supports the application of diverse quality metrics to AffyBatch instances, summarizing these metrics via PCA, and then performing parametric outlier detection on the PCs to identify aberrant arrays with a fixed Type I error rate'
+    - $R -e "library('{{ name }}')"
 

@@ -1,44 +1,21 @@
-{% set version = "2.50.0" %}
+{% set version = "2.58.0" %}
 {% set name = "keggorthology" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 1c115179d4ba4bf8fcf198f0d7c0cce7
+about:
+  description: graphical representation of the Feb 2010 KEGG Orthology. The KEGG orthology is a set of pathway IDs that are not to be confused with the KEGG ortholog IDs.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: graph support for KO, KEGG Orthology
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: RBGL,ALL
-requirements:
-  host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-hgu95av2.db >=3.13.0,<3.14.0'
-    - r-base
-    - r-dbi
-  run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-hgu95av2.db >=3.13.0,<3.14.0'
-    - r-base
-    - r-dbi
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'graph support for KO, KEGG Orthology'
-  description: 'graphical representation of the Feb 2010 KEGG Orthology. The KEGG orthology is a set of pathway IDs that are not to be confused with the KEGG ortholog IDs.'
+  run_exports: '{{ pin_subpackage("bioconductor-keggorthology", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:keggorthology
@@ -47,4 +24,35 @@ extra:
     name: bioconductor-keggorthology
     path: recipes/bioconductor-keggorthology
     version: 2.32.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: RBGL,ALL
+requirements:
+  host:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-hgu95av2.db >=3.13.0,<3.14.0
+    - r-base
+    - r-dbi
+  run:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-hgu95av2.db >=3.13.0,<3.14.0
+    - r-base
+    - r-dbi
+
+source:
+  md5: 5cd740f7ce22655579c8ae79d2ddbeab
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

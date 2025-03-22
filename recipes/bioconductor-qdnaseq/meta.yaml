@@ -1,57 +1,22 @@
-{% set version = "1.34.0" %}
+{% set version = "1.42.0" %}
 {% set name = "QDNAseq" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: b4ee187a398ad47ca39997dac68121bf
+about:
+  description: Quantitative DNA sequencing for chromosomal aberrations. The genome is divided into non-overlapping fixed-sized bins, number of sequence reads in each counted, adjusted with a simultaneous two-dimensional loess correction for sequence mappability and GC content, and filtered to remove spurious regions in the genome. Downstream steps of segmentation and calling are also implemented via packages DNAcopy and CGHcall, respectively.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Quantitative DNA Sequencing for Chromosomal Aberrations
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle (>= 1.8.0), BSgenome (>= 1.38.0), digest (>= 0.6.20), GenomeInfoDb (>= 1.6.0), future (>= 1.22.1), parallelly (>= 1.28.1), R.cache (>= 0.13.0), QDNAseq.hg19, QDNAseq.mm10
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-cghbase >=1.58.0,<1.59.0'
-    - 'bioconductor-cghcall >=2.60.0,<2.61.0'
-    - 'bioconductor-dnacopy >=1.72.0,<1.73.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - r-base
-    - 'r-future.apply >=1.8.1'
-    - 'r-matrixstats >=0.60.0'
-    - 'r-r.utils >=2.9.0'
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-cghbase >=1.58.0,<1.59.0'
-    - 'bioconductor-cghcall >=2.60.0,<2.61.0'
-    - 'bioconductor-dnacopy >=1.72.0,<1.73.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - r-base
-    - 'r-future.apply >=1.8.1'
-    - 'r-matrixstats >=0.60.0'
-    - 'r-r.utils >=2.9.0'
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL
-  summary: 'Quantitative DNA Sequencing for Chromosomal Aberrations'
-  description: 'Quantitative DNA sequencing for chromosomal aberrations. The genome is divided into non-overlapping fixed-sized bins, number of sequence reads in each counted, adjusted with a simultaneous two-dimensional loess correction for sequence mappability and GC content, and filtered to remove spurious regions in the genome. Downstream steps of segmentation and calling are also implemented via packages DNAcopy and CGHcall, respectively.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-qdnaseq", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:qdnaseq
@@ -59,4 +24,47 @@ extra:
     name: bioconductor-qdnaseq
     path: recipes/bioconductor-qdnaseq
     version: 1.16.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle (>= 1.8.0), BSgenome (>= 1.38.0), digest (>= 0.6.20), GenomeInfoDb (>= 1.6.0), future (>= 1.22.1), parallelly (>= 1.28.1), R.cache (>= 0.13.0), QDNAseq.hg19, QDNAseq.mm10
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-cghbase >=1.66.0,<1.67.0
+    - bioconductor-cghcall >=2.68.0,<2.69.0
+    - bioconductor-dnacopy >=1.80.0,<1.81.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - r-base
+    - r-future.apply >=1.8.1
+    - r-matrixstats >=0.60.0
+    - r-r.utils >=2.9.0
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-cghbase >=1.66.0,<1.67.0
+    - bioconductor-cghcall >=2.68.0,<2.69.0
+    - bioconductor-dnacopy >=1.80.0,<1.81.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - r-base
+    - r-future.apply >=1.8.1
+    - r-matrixstats >=0.60.0
+    - r-r.utils >=2.9.0
+
+source:
+  md5: 86d1bb0aad347d95853508b57aa97dc0
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

@@ -1,45 +1,21 @@
-{% set version = "1.40.0" %}
+{% set version = "1.48.0" %}
 {% set name = "CNORfuzzy" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 8f53be92ad13d10c66b8297298221d0f
+about:
+  description: This package is an extension to CellNOptR.  It contains additional functionality needed to simulate and train a prior knowledge network to experimental data using constrained fuzzy logic (cFL, rather than Boolean logic as is the case in CellNOptR).  Additionally, this package will contain functions to use for the compilation of multiple optimization results (either Boolean or cFL).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: 'Addon to CellNOptR: Fuzzy Logic'
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: xtable, Rgraphviz, RUnit, BiocGenerics
-requirements:
-  host:
-    - 'bioconductor-cellnoptr >=1.44.0,<1.45.0'
-    - r-base
-    - 'r-nloptr >=0.8.5'
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-cellnoptr >=1.44.0,<1.45.0'
-    - r-base
-    - 'r-nloptr >=0.8.5'
-  build:
-    - {{ compiler('c') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Addon to CellNOptR: Fuzzy Logic'
-  description: 'This package is an extension to CellNOptR.  It contains additional functionality needed to simulate and train a prior knowledge network to experimental data using constrained fuzzy logic (cFL, rather than Boolean logic as is the case in CellNOptR).  Additionally, this package will contain functions to use for the compilation of multiple optimization results (either Boolean or cFL).'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-cnorfuzzy", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:cnorfuzzy
@@ -48,4 +24,36 @@ extra:
     name: bioconductor-cnorfuzzy
     path: recipes/bioconductor-cnorfuzzy
     version: 1.22.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: xtable, Rgraphviz, RUnit, BiocGenerics
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-cellnoptr >=1.52.0,<1.53.0
+    - r-base
+    - r-nloptr >=0.8.5
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-cellnoptr >=1.52.0,<1.53.0
+    - r-base
+    - r-nloptr >=0.8.5
+
+source:
+  md5: a8cde52abc735953fe73186424e16414
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

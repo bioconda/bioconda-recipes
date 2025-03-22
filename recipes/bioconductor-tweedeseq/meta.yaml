@@ -1,54 +1,68 @@
-{% set version = "1.44.0" %}
+{% set version = "1.52.0" %}
 {% set name = "tweeDEseq" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: b1cbbdfdc99eac72276bbf48b6129fac
+about:
+  description: Differential expression analysis of RNA-seq using the Poisson-Tweedie (PT) family of distributions. PT distributions are described by a mean, a dispersion and a shape parameter and include Poisson and NB distributions, among others, as particular cases. An important feature of this family is that, while the Negative Binomial (NB) distribution only allows a quadratic mean-variance relationship, the PT distributions generalizes this relationship to any orde.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: RNA-seq data analysis using the Poisson-Tweedie family of distributions
+
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: tweeDEseqCountData, xtable
-requirements:
-  host:
-    - 'bioconductor-cqn >=1.44.0,<1.45.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - r-base
-    - r-mass
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-cqn >=1.44.0,<1.45.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - r-base
-    - r-mass
-  build:
-    - {{ compiler('c') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'RNA-seq data analysis using the Poisson-Tweedie family of distributions'
-  description: 'Differential expression analysis of RNA-seq using the Poisson-Tweedie family of distributions.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-tweedeseq", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   identifiers:
     - biotools:tweedeseq
   parent_recipe:
     name: bioconductor-tweedeseq
     path: recipes/bioconductor-tweedeseq
     version: 1.26.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: tweeDEseqCountData, xtable
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-cqn >=1.52.0,<1.53.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - r-base
+    - r-mass
+    - r-rcpp >=1.0.10
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-cqn >=1.52.0,<1.53.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - r-base
+    - r-mass
+    - r-rcpp >=1.0.10
+
+source:
+  md5: ff5a78e57b13d4e38bdf925b89a7b238
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

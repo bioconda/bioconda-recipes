@@ -9,4 +9,4 @@ mkdir -p build
 cd build
 cmake -DLAMBDA_NATIVE_BUILD=0 ..
 make
-cp bin/lambda2 "$PREFIX/bin/"
+cp bin/lambda3 "$PREFIX/bin/"

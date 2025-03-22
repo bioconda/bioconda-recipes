@@ -1,46 +1,22 @@
-{% set version = "1.36.0" %}
+{% set version = "1.44.0" %}
 {% set name = "rTRMui" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f262362f2b2ad7bdba8dcaf5f92341f3
+about:
+  description: This package provides a web interface to compute transcriptional regulatory modules with rTRM.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: A shiny user interface for rTRM
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-motifdb >=1.40.0,<1.41.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-org.mm.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-rtrm >=1.36.0,<1.37.0'
-    - r-base
-    - 'r-shiny >=0.9'
-  run:
-    - 'bioconductor-motifdb >=1.40.0,<1.41.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-org.mm.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-rtrm >=1.36.0,<1.37.0'
-    - r-base
-    - 'r-shiny >=0.9'
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'A shiny user interface for rTRM'
-  description: 'This package provides a web interface to compute transcriptional regulatory modules with rTRM.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-rtrmui", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:rtrmui
@@ -49,4 +25,36 @@ extra:
     name: bioconductor-rtrmui
     path: recipes/bioconductor-rtrmui
     version: 1.18.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  host:
+    - bioconductor-motifdb >=1.48.0,<1.49.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-org.mm.eg.db >=3.20.0,<3.21.0
+    - bioconductor-rtrm >=1.44.0,<1.45.0
+    - r-base
+    - r-shiny >=0.9
+  run:
+    - bioconductor-motifdb >=1.48.0,<1.49.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-org.mm.eg.db >=3.20.0,<3.21.0
+    - bioconductor-rtrm >=1.44.0,<1.45.0
+    - r-base
+    - r-shiny >=0.9
+
+source:
+  md5: 6f4baf596e1a9987e285330b3b04e046
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

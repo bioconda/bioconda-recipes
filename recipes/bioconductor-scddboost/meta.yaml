@@ -1,63 +1,70 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "scDDboost" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f45ffa21932575f85e7eabdb5ac8a408
+about:
+  description: scDDboost is an R package to analyze changes in the distribution of single-cell expression data between two experimental conditions. Compared to other methods that assess differential expression, scDDboost benefits uniquely from information conveyed by the clustering of cells into cellular subtypes. Through a novel empirical Bayesian formulation it calculates gene-specific posterior probabilities that the marginal expression distribution is the same (or different) between the two conditions. The implementation in scDDboost treats gene-level expression data within each condition as a mixture of negative binomial distributions.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: A compositional model to assess expression changes from single-cell rna-seq data
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-scddboost", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, BiocStyle, testthat
 # SystemRequirements: c++11
 requirements:
-  host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-ebseq >=1.38.0,<1.39.0'
-    - 'bioconductor-oscope >=1.28.0,<1.29.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - r-base
-    - r-bh
-    - r-cluster
-    - r-ggplot2
-    - r-mclust
-    - 'r-rcpp >=0.12.11'
-    - 'r-rcppeigen >=0.3.2.9.0'
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-ebseq >=1.38.0,<1.39.0'
-    - 'bioconductor-oscope >=1.28.0,<1.29.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - r-base
-    - r-bh
-    - r-cluster
-    - r-ggplot2
-    - r-mclust
-    - 'r-rcpp >=0.12.11'
-    - 'r-rcppeigen >=0.3.2.9.0'
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+  host:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-ebseq >=2.4.0,<2.5.0
+    - bioconductor-oscope >=1.36.0,<1.37.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-bh
+    - r-cluster
+    - r-ggplot2
+    - r-mclust
+    - r-rcpp >=0.12.11
+    - r-rcppeigen >=0.3.2.9.0
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-ebseq >=2.4.0,<2.5.0
+    - bioconductor-oscope >=1.36.0,<1.37.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-bh
+    - r-cluster
+    - r-ggplot2
+    - r-mclust
+    - r-rcpp >=0.12.11
+    - r-rcppeigen >=0.3.2.9.0
+
+source:
+  md5: 888bd691549bf9be9f0c557fe50d29a4
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'A compositional model to assess expression changes from single-cell rna-seq data'
-  description: 'scDDboost is an R package to analyze changes in the distribution of single-cell expression data between two experimental conditions. Compared to other methods that assess differential expression, scDDboost benefits uniquely from information conveyed by the clustering of cells into cellular subtypes. Through a novel empirical Bayesian formulation it calculates gene-specific posterior probabilities that the marginal expression distribution is the same (or different) between the two conditions. The implementation in scDDboost treats gene-level expression data within each condition as a mixture of negative binomial distributions.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

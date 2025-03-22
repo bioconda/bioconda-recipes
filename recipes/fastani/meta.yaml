@@ -1,17 +1,22 @@
 {% set name = "FastANI" %}
-{% set version = "1.33" %}
-{% set sha256 = "0b18b3074094722fb1b2247c1a1c4eb96295fff369b837f422e05072740e0013" %}
+{% set version = "1.34" %}
+{% set sha256 = "dc185cf29b9fa40cdcc2c83bb48150db46835e49b9b64a3dbff8bc4d0f631cb1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 1
+  number: 5
+  run_exports:
+    - {{ pin_subpackage('fastani', max_pin="x") }}
 
 source:
   url: https://github.com/ParBLiSS/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - wrap-memcpy-only-for-linux-x86_64.patch # [linux and aarch64]
+    - fix-reported-version.patch
 
 requirements:
   build:
@@ -22,18 +27,20 @@ requirements:
   host:
     - zlib
     - gsl >=2.6, <2.7.1
-    - openmp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - clangdev  # [osx]
     - libcxx >=4.0  # [osx]
   run:
     - zlib
     - gsl
     - libcxx >=4.0  # [osx]
-    - openmp >=4.0  # [osx]
+    - llvm-openmp >=4.0  # [osx]
 
 test:
   commands:
     - fastANI -h 2>&1 | grep 'fastANI'
+    - fastANI -v 2>&1 | grep 'version {{ version }}'
 
 about:
   home: https://github.com/ParBLiSS/FastANI
@@ -41,3 +48,8 @@ about:
   license_family: Apache
   license_file: LICENSE
   summary: 'FastANI is developed for fast alignment-free computation of whole-genome Average Nucleotide Identity (ANI).'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

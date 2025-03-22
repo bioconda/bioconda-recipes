@@ -1,0 +1,26 @@
+diff --git a/Makefile b/Makefile
+index e821782..7282d03 100644
+--- a/Makefile
++++ b/Makefile
+@@ -22,9 +22,9 @@ LIBDIRS = common-v4.5 \
+ all:	compile
+ 
+ binary:	compile
+-	@sh -c './binary.sh'
+-	@./bin/DictToSdb -ddlFile ./data/ascii/mmcif_ddl.dic -dictFile ./data/ascii/mmcif_pdbx.dic -dictSdbFile mmcif_pdbx.sdb
+-	@mv mmcif_pdbx.sdb ./data/binary
++	@sh -c 'if [ `uname -m` = "x86_64" ]; then tar Jxvf ./data-binary_linux-x86_64.tar.xz; fi'
++	@sh -c 'if [ `uname -m` = "aarch64" ]; then tar Jxvf ./data-binary_linux-aarch64.tar.xz; fi'
++	@sh -c 'mv ./binary/* ./data/binary'
+ 	@rm -f ./bin/DictToSdb ./bin/cif2bin ./bin/connect_main
+ 	@sh -c 'if [ -e ./mmcif_pdbx.dic-parser.log ]; then rm -rf ./mmcif_pdbx.dic-parser.log; fi'
+ 
+@@ -48,7 +48,7 @@ debug:
+ 		(cd $$libdir && $(MAKE) -f $(MAKEFILE)  "OPT=-g" install) || exit 1; \
+ 	done
+ #
+-clean:  
++clean:
+ 	@for libdir in $(LIBDIRS); do \
+ 		echo cleaning $$libdir; \
+ 		(cd $$libdir && $(MAKE) -f $(MAKEFILE) clean) || exit 1; \

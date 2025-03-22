@@ -1,35 +1,40 @@
-{% set version = "1.4.0" %}
+{% set version = "1.12.0" %}
 {% set name = "imcRtools" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 841e93d1b5c869fd931088203ee4b25d
+about:
+  description: This R package supports the handling and analysis of imaging mass cytometry and other highly multiplexed imaging data. The main functionality includes reading in single-cell data after image segmentation and measurement, data formatting to perform channel spillover correction and a number of spatial analysis approaches. First, cell-cell interactions are detected via spatial graph construction; these graphs can be visualized with cells representing nodes and interactions representing edges. Furthermore, per cell, its direct neighbours are summarized to allow spatial clustering. Per image/grouping level, interactions between types of cells are counted, averaged and compared against random permutations. In that way, types of cells that interact more (attraction) or less (avoidance) frequently than expected by chance are detected.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Methods for imaging mass cytometry data analysis
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: CATALYST, grid, BiocStyle, knitr, rmarkdown, markdown, testthat
+  run_exports: '{{ pin_subpackage("bioconductor-imcrtools", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: CATALYST, grid, tidyr, BiocStyle, knitr, rmarkdown, markdown, testthat
 requirements:
+
   host:
-    - 'bioconductor-biocneighbors >=1.16.0,<1.17.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-cytomapper >=1.10.0,<1.11.0'
-    - 'bioconductor-ebimage >=4.40.0,<4.41.0'
-    - 'bioconductor-matrixgenerics >=1.10.0,<1.11.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-scuttle >=1.8.0,<1.9.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-spatialexperiment >=1.8.0,<1.9.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocneighbors >=2.0.0,<2.1.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-cytomapper >=1.18.0,<1.19.0
+    - bioconductor-ebimage >=4.48.0,<4.49.0
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-scuttle >=1.16.0,<1.17.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-spatialexperiment >=1.16.0,<1.17.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-abind
     - r-base
     - r-concaveman
@@ -43,6 +48,7 @@ requirements:
     - r-magrittr
     - r-pheatmap
     - r-readr
+    - r-rlang
     - r-rtriangle
     - r-sf
     - r-stringr
@@ -50,17 +56,18 @@ requirements:
     - r-tidyselect
     - r-viridis
     - r-vroom
+
   run:
-    - 'bioconductor-biocneighbors >=1.16.0,<1.17.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-cytomapper >=1.10.0,<1.11.0'
-    - 'bioconductor-ebimage >=4.40.0,<4.41.0'
-    - 'bioconductor-matrixgenerics >=1.10.0,<1.11.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-scuttle >=1.8.0,<1.9.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-spatialexperiment >=1.8.0,<1.9.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocneighbors >=2.0.0,<2.1.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-cytomapper >=1.18.0,<1.19.0
+    - bioconductor-ebimage >=4.48.0,<4.49.0
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-scuttle >=1.16.0,<1.17.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-spatialexperiment >=1.16.0,<1.17.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-abind
     - r-base
     - r-concaveman
@@ -74,6 +81,7 @@ requirements:
     - r-magrittr
     - r-pheatmap
     - r-readr
+    - r-rlang
     - r-rtriangle
     - r-sf
     - r-stringr
@@ -81,13 +89,16 @@ requirements:
     - r-tidyselect
     - r-viridis
     - r-vroom
+
+source:
+  md5: 05b80d9fcab29c6827e7a67cc17ab353
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Methods for imaging mass cytometry data analysis'
-  description: 'This R package supports the handling and analysis of imaging mass cytometry and other highly multiplexed imaging data. The main functionality includes reading in single-cell data after image segmentation and measurement, data formatting to perform channel spillover correction and a number of spatial analysis approaches. First, cell-cell interactions are detected via spatial graph construction; these graphs can be visualized with cells representing nodes and interactions representing edges. Furthermore, per cell, its direct neighbours are summarized to allow spatial clustering. Per image/grouping level, interactions between types of cells are counted, averaged and compared against random permutations. In that way, types of cells that interact more (attraction) or less (avoidance) frequently than expected by chance are detected.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

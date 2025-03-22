@@ -1,6 +1,6 @@
-{% set version = "1.12.0" %}
+{% set version = "1.18.0" %}
 {% set name = "Maaslin2" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.19" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,21 +8,24 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 5382ad81bbed778dd4ed9d62d8187647
+  md5: 65689f289ef30a89d727f676e645719a
+  patches:
+    - rpath.patch
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-maaslin2", max_pin="x.x") }}'
   noarch: generic
-# Suggests: knitr, testthat (>= 2.1.0), rmarkdown
+# Suggests: knitr, testthat (>= 2.1.0), rmarkdown, markdown
 requirements:
   host:
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-lpsymphony >=1.26.0,<1.27.0'
-    - 'bioconductor-metagenomeseq >=1.40.0,<1.41.0'
+    - 'bioconductor-edger >=4.0.0,<4.1.0'
+    - 'bioconductor-metagenomeseq >=1.43.0,<1.44.0'
     - r-base
     - r-biglm
     - r-car
@@ -43,11 +46,11 @@ requirements:
     - r-pheatmap
     - r-pscl
     - r-robustbase
+    - r-tibble
     - r-vegan
   run:
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-lpsymphony >=1.26.0,<1.27.0'
-    - 'bioconductor-metagenomeseq >=1.40.0,<1.41.0'
+    - 'bioconductor-edger >=4.0.0,<4.1.0'
+    - 'bioconductor-metagenomeseq >=1.43.0,<1.44.0'
     - r-base
     - r-biglm
     - r-car
@@ -68,10 +71,12 @@ requirements:
     - r-pheatmap
     - r-pscl
     - r-robustbase
+    - r-tibble
     - r-vegan
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
+    - Maaslin2.R --help
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'MIT + file LICENSE'

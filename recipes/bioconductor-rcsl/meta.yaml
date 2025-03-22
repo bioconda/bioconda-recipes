@@ -1,49 +1,65 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "RCSL" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 7005de8d320e579e13704af3af664242
+about:
+  description: A novel clustering algorithm and toolkit RCSL (Rank Constrained Similarity Learning) to accurately identify various cell types using scRNA-seq data from a complex tissue. RCSL considers both lo-cal similarity and global similarity among the cells to discern the subtle differences among cells of the same type as well as larger differences among cells of different types. RCSL uses Spearman’s rank correlations of a cell’s expression vector with those of other cells to measure its global similar-ity, and adaptively learns neighbour representation of a cell as its local similarity. The overall similar-ity of a cell to other cells is a linear combination of its global similarity and local similarity.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Rank Constrained Similarity Learning for single cell RNA sequencing data
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, rmarkdown, mclust, RcppAnnoy
+  run_exports: '{{ pin_subpackage("bioconductor-rcsl", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, knitr, BiocStyle, rmarkdown, mclust, tidyverse, tinytex
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
     - r-base
-    - r-ggplot2
+    - r-ggplot2 >=3.4.0
     - r-igraph
     - r-nbclust
     - r-pracma
+    - r-rcpp >=0.11.0
     - r-rcppannoy
     - r-rtsne
     - r-umap
+    - libblas
+    - liblapack
   run:
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
     - r-base
-    - r-ggplot2
+    - r-ggplot2 >=3.4.0
     - r-igraph
     - r-nbclust
     - r-pracma
+    - r-rcpp >=0.11.0
     - r-rcppannoy
     - r-rtsne
     - r-umap
+
+source:
+  md5: 2624ecbd83fdbb8adbd2478ca9c59f40
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Rank Constrained Similarity Learning for single cell RNA sequencing data'
-  description: 'A novel clustering algorithm and toolkit RCSL (Rank Constrained Similarity Learning) to accurately identify various cell types using scRNA-seq data from a complex tissue. RCSL considers both lo-cal similarity and global similarity among the cells to discern the subtle differences among cells of the same type as well as larger differences among cells of different types. RCSL uses Spearman’s rank correlations of a cell’s expression vector with those of other cells to measure its global similar-ity, and adaptively learns neighbour representation of a cell as its local similarity. The overall similar-ity of a cell to other cells is a linear combination of its global similarity and local similarity.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

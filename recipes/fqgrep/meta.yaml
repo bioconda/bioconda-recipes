@@ -1,4 +1,4 @@
-{% set version = "1.0.2" %}
+{% set version = "1.1.1" %}
 
 package:
   name: fqgrep
@@ -6,18 +6,22 @@ package:
 
 build:
   number: 0
-
+  run_exports:
+    - {{ pin_subpackage('fqgrep', max_pin="x") }}
+    
 source:
   url: https://github.com/fulcrumgenomics/fqgrep/archive/v{{ version }}.tar.gz
-  sha256: 1679692d907fe1ad187ab6818733b989a2e8c8353acbfe900e50c1853d789450
+  sha256: dc62c81db0ee0d98264c0f3257b9ff7ed8602554b9eba8eb2752f03dae6f463b
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
     - rust >=1.60  
     - pkg-config
     - make
     - cmake
+    - cargo-bundle-licenses
   host:
   run:
 
@@ -32,5 +36,12 @@ about:
   summary: Search a pair of fastq files for reads that match a given ref or alt sequence
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - nh13
+  skip-lints:
+    - should_use_compilers
+  identifiers:
+    - DOI:10.5281/zenodo.14985002

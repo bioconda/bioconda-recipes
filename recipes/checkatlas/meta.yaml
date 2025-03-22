@@ -1,0 +1,61 @@
+{% set name = "checkatlas" %}
+{% set version = "0.4.17" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 3b831f58142cfd3a51fbf0df6a88e588d04f3df40a2a33a69cab7e8d6785b179
+
+build:
+  number: 0
+  entry_points:
+    - checkatlas = checkatlas.__main__:main
+    - checkatlas-workflow = checkatlas.checkatlas_workflow:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('checkatlas', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - poetry-core >=1.5.1,<2.0.0
+    - python >=3.10
+  run:
+    - python >=3.10
+    - llvmlite >=0.39.1,<0.40.0
+    - numba >=0.56.4,<0.57.0
+    - numpy >=1.23.5,<2.0.0
+    - rpy2 ==3.5.10
+    - scanpy >=1.9.1,<2.0.0
+    - scikit-learn >=1.2.1,<2.0.0
+    - types-pyyaml >=6.0.12.6,<7.0.0.0
+
+test:
+  imports:
+    - checkatlas
+    - checkatlas.metrics
+    - checkatlas.metrics.annot
+    - checkatlas.metrics.cluster
+    - checkatlas.metrics.dimred
+    - checkatlas.metrics.specificity
+    - checkatlas.utils
+  commands:
+    - checkatlas --help
+    - checkatlas-workflow --help
+
+about:
+  home: "https://checkatlas.readthedocs.io/"
+  license: BSD 3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: "One liner tool to check the quality of your single-cell atlases."
+  doc_url: "https://checkatlas.readthedocs.io/"
+  dev_url: "https://github.com/becavin-lab/checkatlas"
+
+extra:
+  recipe-maintainers:
+    - drbecavin

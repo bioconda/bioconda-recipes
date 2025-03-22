@@ -1,38 +1,42 @@
-{% set version = "0.99.1" %}
+{% set version = "1.0.0" %}
 {% set name = "HDO.db" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 007a50523f1de27048dfc97f4d458f59
+about:
+  description: A set of annotation maps describing the entire Human Disease Ontology assembled using data from DO. Its annotation data comes from https://github.com/DiseaseOntology/HumanDiseaseOntology/tree/main/src/ontology.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: A set of annotation maps describing the entire Human Disease Ontology
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-hdo.db", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: rmarkdown, knitr, testthat (>= 3.0.0)
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
     - r-base
+    - r-dbi
   run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
     - r-base
+    - r-dbi
     - curl
-    - bioconductor-data-packages>=20221102
+    - bioconductor-data-packages >=20241103
+source:
+  md5: adb9df8c89fa3f2f877e7db1fbeb6b70
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'A set of annotation maps describing the entire Human Disease Ontology'
-  description: 'A set of annotation maps describing the entire Human Disease Ontology assembled using data from DO. Its annotation data comes from https://github.com/DiseaseOntology/HumanDiseaseOntology/tree/main/src/ontology.'
+    - $R -e "library('{{ name }}')"
 

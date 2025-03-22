@@ -1,28 +1,32 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "MOMA" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 12880abd652cc5fd253beb8846ebdc16
+about:
+  description: This package implements the inference of candidate master regulator proteins from multi-omics' data (MOMA) algorithm, as well as ancillary analysis and visualization functions.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Multi Omic Master Regulator Analysis
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-moma", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, knitr, rmarkdown, testthat, viper
 requirements:
   host:
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
-    - 'bioconductor-multiassayexperiment >=1.24.0,<1.25.0'
-    - 'bioconductor-qvalue >=2.30.0,<2.31.0'
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-multiassayexperiment >=1.32.0,<1.33.0
+    - bioconductor-qvalue >=2.38.0,<2.39.0
     - r-base
     - r-circlize
     - r-cluster
@@ -38,9 +42,9 @@ requirements:
     - r-tibble
     - r-tidyr
   run:
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
-    - 'bioconductor-multiassayexperiment >=1.24.0,<1.25.0'
-    - 'bioconductor-qvalue >=2.30.0,<2.31.0'
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-multiassayexperiment >=1.32.0,<1.33.0
+    - bioconductor-qvalue >=2.38.0,<2.39.0
     - r-base
     - r-circlize
     - r-cluster
@@ -55,13 +59,16 @@ requirements:
     - r-stringr
     - r-tibble
     - r-tidyr
+
+source:
+  md5: 723ca93b14f8f8514315b94a47c6eb72
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Multi Omic Master Regulator Analysis'
-  description: 'This package implements the inference of candidate master regulator proteins from multi-omics'' data (MOMA) algorithm, as well as ancillary analysis and visualization functions.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

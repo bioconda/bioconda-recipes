@@ -1,45 +1,22 @@
-{% set version = "1.36.0" %}
+{% set version = "1.44.0" %}
 {% set name = "rTRM" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 34d53db5bbe458f222a39ce78d2196ed
+about:
+  description: rTRM identifies transcriptional regulatory modules (TRMs) from protein-protein interaction networks.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Identification of Transcriptional Regulatory Modules from Protein-Protein Interaction Networks
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: RUnit, BiocGenerics, MotifDb, graph, PWMEnrich, biomaRt, Biostrings, BSgenome.Mmusculus.UCSC.mm8.masked, org.Hs.eg.db, org.Mm.eg.db, ggplot2, BiocStyle, knitr, rmarkdown
-requirements:
-  host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - r-base
-    - r-dbi
-    - 'r-igraph >=1.0'
-    - r-rsqlite
-  run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - r-base
-    - r-dbi
-    - 'r-igraph >=1.0'
-    - r-rsqlite
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Identification of Transcriptional Regulatory Modules from Protein-Protein Interaction Networks'
-  description: 'rTRM identifies transcriptional regulatory modules (TRMs) from protein-protein interaction networks.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-rtrm", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:rtrm
@@ -47,4 +24,35 @@ extra:
     name: bioconductor-rtrm
     path: recipes/bioconductor-rtrm
     version: 1.18.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: RUnit, BiocGenerics, MotifDb, graph, PWMEnrich, biomaRt, Biostrings, BSgenome.Mmusculus.UCSC.mm8.masked, org.Hs.eg.db, org.Mm.eg.db, ggplot2, BiocStyle, knitr, rmarkdown
+requirements:
+  host:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - r-base
+    - r-dbi
+    - r-igraph >=1.0
+    - r-rsqlite
+  run:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - r-base
+    - r-dbi
+    - r-igraph >=1.0
+    - r-rsqlite
+
+source:
+  md5: 18daea52e386d0f963f647b18e7c89c7
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

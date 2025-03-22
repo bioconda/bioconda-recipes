@@ -1,28 +1,33 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "cosmosR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 89beb9a3a8e0d0bd9c7bf6866e3854e1
+about:
+  description: COSMOS (Causal Oriented Search of Multi-Omic Space) is a method that integrates phosphoproteomics, transcriptomics, and metabolomics data sets based on prior knowledge of signaling, metabolic, and gene regulatory networks. It estimated the activities of transcrption factors and kinases and finds a network-level causal reasoning. Thereby, COSMOS provides mechanistic hypotheses for experimental observations across mulit-omics datasets.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: COSMOS (Causal Oriented Search of Multi-Omic Space)
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-cosmosr", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: testthat, knitr, rmarkdown, piano, ggplot2
 requirements:
   host:
-    - 'bioconductor-carnival >=2.8.0,<2.9.0'
-    - 'bioconductor-dorothea >=1.10.0,<1.11.0'
-    - 'bioconductor-gseabase >=1.60.0,<1.61.0'
+    - bioconductor-carnival >=2.16.0,<2.17.0
+    - bioconductor-decoupler >=2.12.0,<2.13.0
+    - bioconductor-dorothea >=1.18.0,<1.19.0
+    - bioconductor-gseabase >=1.68.0,<1.69.0
     - r-base
     - r-dplyr
     - r-igraph
@@ -32,9 +37,10 @@ requirements:
     - r-stringr
     - r-visnetwork
   run:
-    - 'bioconductor-carnival >=2.8.0,<2.9.0'
-    - 'bioconductor-dorothea >=1.10.0,<1.11.0'
-    - 'bioconductor-gseabase >=1.60.0,<1.61.0'
+    - bioconductor-carnival >=2.16.0,<2.17.0
+    - bioconductor-decoupler >=2.12.0,<2.13.0
+    - bioconductor-dorothea >=1.18.0,<1.19.0
+    - bioconductor-gseabase >=1.68.0,<1.69.0
     - r-base
     - r-dplyr
     - r-igraph
@@ -43,13 +49,16 @@ requirements:
     - r-rlang
     - r-stringr
     - r-visnetwork
+
+source:
+  md5: 8eec04fe8b6b4d900404ce51afa24088
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'COSMOS (Causal Oriented Search of Multi-Omic Space)'
-  description: 'COSMOS (Causal Oriented Search of Multi-Omic Space) is a method that integrates phosphoproteomics, transcriptomics, and metabolomics data sets based on prior knowledge of signaling, metabolic, and gene regulatory networks. It estimated the activities of transcrption factors and kinases and finds a network-level causal reasoning. Thereby, COSMOS provides mechanistic hypotheses for experimental observations across mulit-omics datasets.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

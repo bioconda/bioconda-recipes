@@ -1,58 +1,54 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "GWAS.BAYES" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 7ee51b78011386e07acf41c05ce646a4
+about:
+  description: 'This package is built to perform GWAS analysis using Bayesian techniques. Currently, GWAS.BAYES has functionality for the implementation of BICOSS (Williams, J., Ferreira, M. A., and Ji, T. (2022). BICOSS: Bayesian iterative conditional stochastic search for GWAS. BMC Bioinformatics), BGWAS (Williams, J., Xu, S., Ferreira, M. A.. (2023) "BGWAS: Bayesian variable selection in linear mixed models with nonlocal priors for genome-wide association studies." BMC Bioinformatics), and GINA. All methods currently are for the analysis of Gaussian phenotypes The research related to this package was supported in part by National Science Foundation awards DMS 1853549, DMS 1853556, and DMS 2054173.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 + file LICENSE
+  license_file: LICENSE
+  summary: Bayesian analysis of Gaussian GWAS data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: BiocStyle, knitr, rmarkdown, formatR, rrBLUP, qqman
+  run_exports: '{{ pin_subpackage("bioconductor-gwas.bayes", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, rmarkdown, formatR, rrBLUP
 requirements:
   host:
+    - bioconductor-limma >=3.62.0,<3.63.0
     - r-base
-    - 'r-caret >=6.0-86'
-    - 'r-doparallel >=1.0.15'
-    - 'r-ga >=3.2'
-    - 'r-ggplot2 >=3.3.0'
-    - 'r-matrix >=1.2-18'
-    - 'r-memoise >=1.1.0'
-    - 'r-rcpp >=1.0.3'
-    - 'r-rcppeigen >=0.3.3.7.0'
-    - 'r-reshape2 >=1.4.4'
-    - libblas
-    - liblapack
+    - r-caret >=6.0-86
+    - r-ga >=3.2
+    - r-mass >=7.3-58.1
+    - r-matrix >=1.2-18
+    - r-memoise >=1.1.0
   run:
+    - bioconductor-limma >=3.62.0,<3.63.0
     - r-base
-    - 'r-caret >=6.0-86'
-    - 'r-doparallel >=1.0.15'
-    - 'r-ga >=3.2'
-    - 'r-ggplot2 >=3.3.0'
-    - 'r-matrix >=1.2-18'
-    - 'r-memoise >=1.1.0'
-    - 'r-rcpp >=1.0.3'
-    - 'r-rcppeigen >=0.3.3.7.0'
-    - 'r-reshape2 >=1.4.4'
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+    - r-caret >=6.0-86
+    - r-ga >=3.2
+    - r-mass >=7.3-58.1
+    - r-matrix >=1.2-18
+    - r-memoise >=1.1.0
+
+source:
+  md5: 4f113111d05801f70ffed9e580023f5f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL-2 | GPL-3'
-  summary: 'GWAS for Selfing Species'
-  description: 'This package is built to perform GWAS analysis for selfing species. The research related to this package was supported in part by National Science Foundation Award 1853549.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

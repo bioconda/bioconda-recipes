@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "bsseqdata-0.36.0"
+installBiocDataPackage.sh "bsseqdata-0.44.0"

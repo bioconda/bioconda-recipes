@@ -1,64 +1,75 @@
-{% set version = "1.32.0" %}
+{% set version = "1.40.0" %}
 {% set name = "canceR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 51791983ed57a2ed350a74b2abc42af3
+about:
+  description: The package is user friendly interface based on the cgdsr and other modeling packages to explore, compare, and analyse all available Cancer Data (Clinical data, Gene Mutation, Gene Methylation, Gene Expression, Protein Phosphorylation, Copy Number Alteration) hosted by the Computational Biology Center at Memorial-Sloan-Kettering Cancer Center (MSKCC).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: A Graphical User Interface for accessing and modeling the Cancer Genomics Data of MSKCC
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-cancer", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: testthat (>= 3.1), knitr, rmarkdown, BiocStyle
 # SystemRequirements: Tktable, BWidget
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-genetclassifier >=1.38.0,<1.39.0'
-    - 'bioconductor-gseabase >=1.60.0,<1.61.0'
-    - 'bioconductor-phenotest >=1.46.0,<1.47.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-cbioportaldata >=2.18.0,<2.19.0
+    - bioconductor-genetclassifier >=1.46.0,<1.47.0
+    - bioconductor-gseabase >=1.68.0,<1.69.0
+    - bioconductor-phenotest >=1.54.0,<1.55.0
     - r-base
     - r-circlize
+    - r-dplyr
     - r-formula
-    - r-httr
     - r-plyr
     - r-r.methodss3
     - r-r.oo
     - r-rpart
     - r-runit
     - r-survival
+    - r-tidyr
     - r-tkrplot
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-genetclassifier >=1.38.0,<1.39.0'
-    - 'bioconductor-gseabase >=1.60.0,<1.61.0'
-    - 'bioconductor-phenotest >=1.46.0,<1.47.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-cbioportaldata >=2.18.0,<2.19.0
+    - bioconductor-genetclassifier >=1.46.0,<1.47.0
+    - bioconductor-gseabase >=1.68.0,<1.69.0
+    - bioconductor-phenotest >=1.54.0,<1.55.0
     - r-base
     - r-circlize
+    - r-dplyr
     - r-formula
-    - r-httr
     - r-plyr
     - r-r.methodss3
     - r-r.oo
     - r-rpart
     - r-runit
     - r-survival
+    - r-tidyr
     - r-tkrplot
+
+source:
+  md5: ea3e99cc592c53d219a6955ef969533d
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'A Graphical User Interface for accessing and modeling the Cancer Genomics Data of MSKCC'
-  description: 'The package is user friendly interface based on the cgdsr and other modeling packages to explore, compare, and analyse all available Cancer Data (Clinical data, Gene Mutation, Gene Methylation, Gene Expression, Protein Phosphorylation, Copy Number Alteration) hosted by the Computational Biology Center at Memorial-Sloan-Kettering Cancer Center (MSKCC).'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+    - $R -e "library('{{ name }}')"
 

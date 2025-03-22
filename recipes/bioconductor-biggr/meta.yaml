@@ -1,46 +1,53 @@
-{% set version = "1.34.0" %}
+{% set version = "1.42.0" %}
 {% set name = "BiGGR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 710994f31ca3e07167d94fed4b5e2a8c
+about:
+  description: This package provides an interface to simulate metabolic reconstruction from the BiGG database(http://bigg.ucsd.edu/) and other metabolic reconstruction databases. The package facilitates flux balance analysis (FBA) and the sampling of feasible flux distributions. Metabolic networks and estimated fluxes can be visualized with hypergraphs.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: file LICENSE
+  license_file: LICENSE
+  summary: Constraint based modeling in R using metabolic reconstruction databases
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-biggr", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 requirements:
   host:
-    - 'bioconductor-hyperdraw >=1.50.0,<1.51.0'
-    - 'bioconductor-hypergraph >=1.70.0,<1.71.0'
-    - 'bioconductor-rsbml >=2.56.0,<2.57.0'
+    - bioconductor-hyperdraw >=1.58.0,<1.59.0
+    - bioconductor-hypergraph >=1.78.0,<1.79.0
+    - bioconductor-rsbml >=2.64.0,<2.65.0
     - r-base
     - r-lim
     - r-limsolve
     - r-stringr
   run:
-    - 'bioconductor-hyperdraw >=1.50.0,<1.51.0'
-    - 'bioconductor-hypergraph >=1.70.0,<1.71.0'
-    - 'bioconductor-rsbml >=2.56.0,<2.57.0'
+    - bioconductor-hyperdraw >=1.58.0,<1.59.0
+    - bioconductor-hypergraph >=1.78.0,<1.79.0
+    - bioconductor-rsbml >=2.64.0,<2.65.0
     - r-base
     - r-lim
     - r-limsolve
     - r-stringr
+
+source:
+  md5: 35ba1a1c22de3f2c7e971f2a0bba0a4b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'file LICENSE'
-  summary: 'Constraint based modeling in R using metabolic reconstruction databases'
-  description: 'This package provides an interface to simulate metabolic reconstruction from the BiGG database(http://bigg.ucsd.edu/) and other metabolic reconstruction databases. The package facilitates flux balance analysis (FBA) and the sampling of feasible flux distributions. Metabolic networks and estimated fluxes can be visualized with hypergraphs.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

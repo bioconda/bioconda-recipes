@@ -1,6 +1,6 @@
 {% set name = "StringTie" %}
-{% set version = "2.2.1" %}
-{% set sha256 = "ce4eec532bbbe39af462be844afa6395ab38fa3418ef5fc2431e2d6194129527" %}
+{% set version = "3.0.0" %}
+{% set sha256 = "eeb55de1a6d77b9884249921a46cf06a12e189f2dd14a493901b10dd325e8ade" %}
 
 package:
   name: {{ name|lower }}
@@ -13,16 +13,25 @@ source:
     - patch
 
 build:
-  number: 3
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("stringtie", max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - libtool
   host:
     # curl is used to download prepDE.py
     - htslib
+    - curl
+    - bzip2
+    - xz
+    - zlib
   run:
     - htslib
     - python
@@ -33,16 +42,20 @@ test:
     - prepDE.py --help
 
 about:
-  home: https://ccb.jhu.edu/software/stringtie/
+  home: "https://ccb.jhu.edu/software/stringtie"
   license: MIT
   license_file: LICENSE
   license_family: MIT
-  summary: "StringTie is a fast and highly efficient assembler of RNA-Seq alignments into potential transcripts."
-  dev_url: https://github.com/gpertea/stringtie
+  summary: "StringTie employs efficient algorithms for transcript structure recovery and abundance estimation from bulk RNA-Seq reads aligned to a reference genome."
+  dev_url: "https://github.com/gpertea/stringtie"
+  doc_url: "https://ccb.jhu.edu/software/stringtie/index.shtml?t=manual"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
-    - biotools:StringTie
+    - biotools:stringtie
     - usegalaxy-eu:stringtie
     - doi:10.1038/nbt.3122
     - doi:10.1038/nprot.2016.095

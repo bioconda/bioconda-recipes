@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "macrophage-1.13.0"
+installBiocDataPackage.sh "macrophage-1.22.0"

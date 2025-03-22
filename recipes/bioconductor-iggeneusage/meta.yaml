@@ -1,60 +1,69 @@
-{% set version = "1.12.0" %}
+{% set version = "1.20.0" %}
 {% set name = "IgGeneUsage" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 0c9efbfe192d2309fa0ddad0e9892659
+about:
+  description: Detection of biases in the usage of immunoglobulin (Ig) genes is an important task in immune repertoire profiling. IgGeneUsage detects aberrant Ig gene usage between biological conditions using a probabilistic model which is analyzed computationally by Bayes inference. With this IgGeneUsage also avoids some common problems related to the current practice of null-hypothesis significance testing.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Differential gene usage in immune repertoires
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: BiocStyle, knitr, rmarkdown, testthat (>= 2.1.0), ggplot2, ggforce, gridExtra, ggrepel
+  run_exports: '{{ pin_subpackage("bioconductor-iggeneusage", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, rmarkdown, testthat (>= 2.1.0), ggplot2, ggforce, ggrepel, patchwork
 # SystemRequirements: GNU make
 requirements:
-  host:
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - r-base
-    - 'r-bh >=1.66.0'
-    - 'r-rcpp >=0.12.0'
-    - 'r-rcppeigen >=0.3.3.3.0'
-    - 'r-rcppparallel >=5.0.1'
-    - 'r-reshape2 >=1.4.3'
-    - 'r-rstan >=2.18.1'
-    - 'r-rstantools >=2.2.0'
-    - 'r-stanheaders >=2.18.0'
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - r-base
-    - 'r-bh >=1.66.0'
-    - 'r-rcpp >=0.12.0'
-    - 'r-rcppeigen >=0.3.3.3.0'
-    - 'r-rcppparallel >=5.0.1'
-    - 'r-reshape2 >=1.4.3'
-    - 'r-rstan >=2.18.1'
-    - 'r-rstantools >=2.2.0'
-    - 'r-stanheaders >=2.18.0'
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - automake
     - make
+  host:
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-bh >=1.66.0
+    - r-rcpp >=0.12.0
+    - r-rcppeigen >=0.3.3.3.0
+    - r-rcppparallel >=5.0.1
+    - r-reshape2 >=1.4.3
+    - r-rstan >=2.18.1
+    - r-rstantools >=2.2.0
+    - r-stanheaders >=2.18.0
+    - r-tidyr
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-bh >=1.66.0
+    - r-rcpp >=0.12.0
+    - r-rcppeigen >=0.3.3.3.0
+    - r-rcppparallel >=5.0.1
+    - r-reshape2 >=1.4.3
+    - r-rstan >=2.18.1
+    - r-rstantools >=2.2.0
+    - r-stanheaders >=2.18.0
+    - r-tidyr
+
+source:
+  md5: 0432bed8882294ef0ac0747430bbd02a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Differential gene usage in immune repertoires'
-  description: 'Detection of biases in the usage of immunoglobulin (Ig) genes is an important task in immune repertoire profiling. IgGeneUsage detects aberrant Ig gene usage between biological conditions using a probabilistic model which is analyzed computationally by Bayes inference. With this IgGeneUsage also avoids some common problems related to the current practice of null-hypothesis significance testing.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

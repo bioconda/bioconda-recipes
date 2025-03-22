@@ -1,106 +1,117 @@
-{% set version = "2.26.0" %}
+{% set version = "2.34.0" %}
 {% set name = "monocle" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: af246fb6ee2b887d62a568245dc47c7e
+about:
+  description: Monocle performs differential expression and time-series analysis for single-cell expression experiments. It orders individual cells according to progress through a biological process, without knowing ahead of time which genes define progress through that process. Monocle also performs differential expression analysis, clustering, visualization, and other useful tasks on single cell expression data.  It is designed to work with RNA-Seq and qPCR data, but could be used with other types as well.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Clustering, differential expression, and trajectory analysis for single- cell RNA-Seq
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: destiny, Hmisc, knitr, Seurat, scater, testthat
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocviews >=1.66.0,<1.67.0'
-    - 'bioconductor-hsmmsinglecell >=1.18.0,<1.19.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - r-base
-    - r-cluster
-    - r-combinat
-    - 'r-ddrtree >=0.1.4'
-    - r-dplyr
-    - r-fastica
-    - 'r-ggplot2 >=1.0.0'
-    - 'r-igraph >=1.0.1'
-    - 'r-irlba >=2.0.0'
-    - 'r-leidenbase >=0.1.9'
-    - r-mass
-    - 'r-matrix >=1.2-6'
-    - r-matrixstats
-    - r-pheatmap
-    - r-plyr
-    - r-proxy
-    - r-qlcmatrix
-    - 'r-rann >=2.5'
-    - 'r-rcpp >=0.12.0'
-    - r-reshape2
-    - r-rtsne
-    - r-slam
-    - r-stringr
-    - r-tibble
-    - 'r-vgam >=1.0-6'
-    - r-viridis
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocviews >=1.66.0,<1.67.0'
-    - 'bioconductor-hsmmsinglecell >=1.18.0,<1.19.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - r-base
-    - r-cluster
-    - r-combinat
-    - 'r-ddrtree >=0.1.4'
-    - r-dplyr
-    - r-fastica
-    - 'r-ggplot2 >=1.0.0'
-    - 'r-igraph >=1.0.1'
-    - 'r-irlba >=2.0.0'
-    - 'r-leidenbase >=0.1.9'
-    - r-mass
-    - 'r-matrix >=1.2-6'
-    - r-matrixstats
-    - r-pheatmap
-    - r-plyr
-    - r-proxy
-    - r-qlcmatrix
-    - 'r-rann >=2.5'
-    - 'r-rcpp >=0.12.0'
-    - r-reshape2
-    - r-rtsne
-    - r-slam
-    - r-stringr
-    - r-tibble
-    - 'r-vgam >=1.0-6'
-    - r-viridis
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Clustering, differential expression, and trajectory analysis for single- cell RNA-Seq'
-  description: 'Monocle performs differential expression and time-series analysis for single-cell expression experiments. It orders individual cells according to progress through a biological process, without knowing ahead of time which genes define progress through that process. Monocle also performs differential expression analysis, clustering, visualization, and other useful tasks on single cell expression data.  It is designed to work with RNA-Seq and qPCR data, but could be used with other types as well.'
+  run_exports: '{{ pin_subpackage("bioconductor-monocle", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:monocle
   parent_recipe:
     name: bioconductor-monocle
     path: recipes/bioconductor-monocle
     version: 2.8.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: destiny, Hmisc, knitr, Seurat, scater, testthat
+requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocviews >=1.74.0,<1.75.0
+    - bioconductor-hsmmsinglecell >=1.26.0,<1.27.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - r-base
+    - r-cluster
+    - r-combinat
+    - r-ddrtree >=0.1.4
+    - r-dplyr
+    - r-fastica
+    - r-ggplot2 >=1.0.0
+    - r-igraph >=1.0.1
+    - r-irlba >=2.0.0
+    - r-leidenbase >=0.1.9
+    - r-mass
+    - r-matrix >=1.2-6
+    - r-matrixstats
+    - r-pheatmap
+    - r-plyr
+    - r-proxy
+    - r-rann >=2.5
+    - r-rcpp >=0.12.0
+    - r-reshape2
+    - r-rtsne
+    - r-slam
+    - r-stringr
+    - r-tibble
+    - r-vgam >=1.0-6
+    - r-viridis
+    - libblas
+    - liblapack
+
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocviews >=1.74.0,<1.75.0
+    - bioconductor-hsmmsinglecell >=1.26.0,<1.27.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - r-base
+    - r-cluster
+    - r-combinat
+    - r-ddrtree >=0.1.4
+    - r-dplyr
+    - r-fastica
+    - r-ggplot2 >=1.0.0
+    - r-igraph >=1.0.1
+    - r-irlba >=2.0.0
+    - r-leidenbase >=0.1.9
+    - r-mass
+    - r-matrix >=1.2-6
+    - r-matrixstats
+    - r-pheatmap
+    - r-plyr
+    - r-proxy
+    - r-rann >=2.5
+    - r-rcpp >=0.12.0
+    - r-reshape2
+    - r-rtsne
+    - r-slam
+    - r-stringr
+    - r-tibble
+    - r-vgam >=1.0-6
+    - r-viridis
+
+source:
+  md5: 6be2330eb42a8c8c4692d96aac05fb3d
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

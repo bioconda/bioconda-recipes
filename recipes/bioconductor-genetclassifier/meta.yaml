@@ -1,45 +1,22 @@
-{% set version = "1.38.0" %}
+{% set version = "1.46.0" %}
 {% set name = "geNetClassifier" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 4a54f89f055a14e6bd4341193b83eb8f
+about:
+  description: Comprehensive package to automatically train and validate a multi-class SVM classifier based on gene expression data. Provides transparent selection of gene markers, their coexpression networks, and an interface to query the classifier.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Classify diseases and build associated gene networks using gene expression profiles
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: leukemiasEset, RUnit, BiocGenerics
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-ebarrays >=2.62.0,<2.63.0'
-    - 'bioconductor-minet >=3.56.0,<3.57.0'
-    - r-base
-    - r-e1071
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-ebarrays >=2.62.0,<2.63.0'
-    - 'bioconductor-minet >=3.56.0,<3.57.0'
-    - r-base
-    - r-e1071
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Classify diseases and build associated gene networks using gene expression profiles'
-  description: 'Comprehensive package to automatically train and validate a multi-class SVM classifier based on gene expression data. Provides transparent selection of gene markers, their coexpression networks, and an interface to query the classifier.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-genetclassifier", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:genetclassifier
@@ -47,4 +24,35 @@ extra:
     name: bioconductor-genetclassifier
     path: recipes/bioconductor-genetclassifier
     version: 1.20.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: leukemiasEset, RUnit, BiocGenerics
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-ebarrays >=2.70.0,<2.71.0
+    - bioconductor-minet >=3.64.0,<3.65.0
+    - r-base
+    - r-e1071
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-ebarrays >=2.70.0,<2.71.0
+    - bioconductor-minet >=3.64.0,<3.65.0
+    - r-base
+    - r-e1071
+
+source:
+  md5: bc29ee3feafccc630ed6268b887eca7a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

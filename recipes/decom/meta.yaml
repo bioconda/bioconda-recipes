@@ -1,0 +1,75 @@
+{% set name = "decOM" %}
+{% set version = "0.0.32" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: c9efaa97b7abfe6f19f01a199ca6c7a7b32ec699f886d226667b8b5fe562dd88
+
+build:
+  noarch: python
+  number: 2
+  entry_points:
+    - decOM = decOM.__main__:main
+    - decOM-aOralOut = decOM.aOralOut.__main__:main
+    - decOM-format = decOM.format.__main__:main
+    - decOM-LOO = decOM.LOO.__main__:main
+    - decOM-CV = decOM.CV.__main__:main
+    - decOM-MST = decOM.MST.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('decom', max_pin='x.x.x') }}
+
+requirements:
+  host:
+    - pip
+    - setuptools
+    - python >=3.9,<3.13
+  run:
+    - python >=3.9,<3.13
+    - setuptools
+    - colorama
+    - numpy >=1.7
+    - pandas
+    - plotly >=5.5.0
+    - dask >=2021.12.0
+    - importlib_resources >=5.4.0
+    - python-kaleido
+    - git
+    - kmtricks >=1.4.0
+
+test:
+  imports:
+    - decOM
+    - decOM.CV
+    - decOM.LOO
+    - decOM.MST
+    - decOM.aOralOut
+    - decOM.data
+    - decOM.format
+    - decOM.modules
+  commands:
+    - decOM --help
+    - decOM-aOralOut --help
+    - decOM-format --help
+    - decOM-LOO --help
+    - decOM-CV --help
+    - decOM-MST --help
+
+about:
+  home: "https://github.com/CamilaDuitama/decOM"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "decOM: Microbial source tracking of ancient oral samples using k-mers."
+  description: |
+    decOM is a similarity-based microbial source tracking tool for contamination assessment of ancient oral samples using k-mer-based methods.
+  doc_url: https://github.com/CamilaDuitama/decOM 
+  dev_url: https://github.com/CamilaDuitama/decOM
+
+extra:
+  recipe-maintainers:
+    - CamilaDuitama

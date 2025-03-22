@@ -1,17 +1,14 @@
 {% set name = "pbfusion" %}
-{% set version = "0.1.0" %}
-{% set pbfusion_sha256 = "094e7b2f79b0505d62635b4c33f078f18e3a522296209aebf11ec9c194dc47c6" %}
-{% set gffcache_sha256 = "d5cd010103a390d7749c59b57c6abe22312cff6b737dd322535f9e76d3ef941a" %}
+{% set version = "0.5.1" %}
+{% set pbfusion_sha256 = "1109292d71c2debdd9927f4040d13374fa90cde74e3677ddd89b5e67e94f9105" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  - url: https://github.com/PacificBiosciences/pbfusion/releases/download/v{{ version }}/pbfusion-v{{ version }}-linux_x86_64.gz
+  - url: https://github.com/PacificBiosciences/pbfusion/releases/download/{{ version }}/pbfusion-v{{ version }}-linux_x86_64.gz
     sha256: {{ pbfusion_sha256 }}
-  - url: https://github.com/PacificBiosciences/pbfusion/releases/download/v{{ version }}/gffcache-v{{ version }}-linux_x86_64.gz
-    sha256: {{ gffcache_sha256 }}
 
 about:
   home: https://github.com/PacificBiosciences/pbfusion
@@ -27,8 +24,9 @@ extra:
 build:
   number: 0
   noarch: generic
+  run_exports:
+    - {{ pin_subpackage('pbfusion', max_pin="x") }}
 
 test:
   commands:
     - pbfusion --version
-    - gffcache --version

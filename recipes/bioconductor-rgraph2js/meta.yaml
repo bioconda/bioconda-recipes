@@ -1,48 +1,22 @@
-{% set version = "1.26.0" %}
+{% set version = "1.34.0" %}
 {% set name = "RGraph2js" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 8a2ad6a9c701b812bec6ff8c6307db18
+about:
+  description: Generator of web pages which display interactive network/graph visualizations with D3js, jQuery and Raphael.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Convert a Graph into a D3js Script
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: RUnit, BiocStyle, BiocGenerics, xtable, sna
-# SystemRequirements: jQuery, jQueryUI, qTip2, D3js and Raphael are required Javascript libraries made available via the online CDNJS service (http://cdnjs.cloudflare.com).
-requirements:
-  host:
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - r-base
-    - r-digest
-    - r-rjson
-    - r-whisker
-    - jquery
-  run:
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - r-base
-    - r-digest
-    - r-rjson
-    - r-whisker
-    - jquery
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Convert a Graph into a D3js Script'
-  description: 'Generator of web pages which display interactive network/graph visualizations with D3js, jQuery and Raphael.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-rgraph2js", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:rgraph2js
@@ -51,4 +25,38 @@ extra:
     name: bioconductor-rgraph2js
     path: recipes/bioconductor-rgraph2js
     version: 1.8.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: RUnit, BiocStyle, BiocGenerics, xtable, sna
+# SystemRequirements: jQuery, jQueryUI, qTip2, D3js and Raphael are required Javascript libraries made available via the online CDNJS service (http://cdnjs.cloudflare.com).
+requirements:
+  host:
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - r-base
+    - r-digest
+    - r-rjson
+    - r-whisker
+    - jquery
+  run:
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - r-base
+    - r-digest
+    - r-rjson
+    - r-whisker
+    - jquery
+
+source:
+  md5: 05152598c5c004db4823453285452209
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

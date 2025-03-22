@@ -1,27 +1,31 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "vissE" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 928d3a574805cb86456f89cfc7d46c9b
+about:
+  description: This package enables the interpretation and analysis of results from a gene set enrichment analysis using network-based and text-mining approaches. Most enrichment analyses result in large lists of significant gene sets that are difficult to interpret. Tools in this package help build a similarity-based network of significant gene sets from a gene set enrichment analysis that can then be investigated for their biological function using text-mining approaches.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Visualising Set Enrichment Analysis Results
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-visse", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: testthat, org.Hs.eg.db, org.Mm.eg.db, patchwork, singscore, knitr, rmarkdown, prettydoc, BiocStyle, pkgdown, covr
 requirements:
   host:
-    - 'bioconductor-gseabase >=1.60.0,<1.61.0'
-    - 'bioconductor-msigdb >=1.6.0,<1.7.0'
+    - bioconductor-gseabase >=1.68.0,<1.69.0
+    - bioconductor-msigdb >=1.14.0,<1.15.0
     - r-base
     - r-ggforce
     - r-ggplot2
@@ -38,8 +42,8 @@ requirements:
     - r-tidygraph
     - r-tm
   run:
-    - 'bioconductor-gseabase >=1.60.0,<1.61.0'
-    - 'bioconductor-msigdb >=1.6.0,<1.7.0'
+    - bioconductor-gseabase >=1.68.0,<1.69.0
+    - bioconductor-msigdb >=1.14.0,<1.15.0
     - r-base
     - r-ggforce
     - r-ggplot2
@@ -55,13 +59,16 @@ requirements:
     - r-textstem
     - r-tidygraph
     - r-tm
+
+source:
+  md5: 07e33163eb61ab6d823b565a43e3475a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Visualising Set Enrichment Analysis Results'
-  description: 'This package enables the interpretation and analysis of results from a gene set enrichment analysis using network-based and text-mining approaches. Most enrichment analyses result in large lists of significant gene sets that are difficult to interpret. Tools in this package help build a similarity-based network of significant gene sets from a gene set enrichment analysis that can then be investigated for their biological function using text-mining approaches.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

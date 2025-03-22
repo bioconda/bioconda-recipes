@@ -1,48 +1,21 @@
-{% set version = "1.28.0" %}
+{% set version = "1.36.0" %}
 {% set name = "DNABarcodes" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 7a7fb3d4f03a9eaa574a81d96e3e256a
+about:
+  description: The package offers a function to create DNA barcode sets capable of correcting insertion, deletion, and substitution errors. Existing barcodes can be analysed regarding their minimal, maximal and average distances between barcodes. Finally, reads that start with a (possibly mutated) barcode can be demultiplexed, i.e., assigned to their original reference barcode.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: A tool for creating and analysing DNA barcodes used in Next Generation Sequencing multiplexing experiments
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: knitr, BiocStyle, rmarkdown
-requirements:
-  host:
-    - r-base
-    - r-bh
-    - r-matrix
-    - 'r-rcpp >=0.11.2'
-    - libblas
-    - liblapack
-  run:
-    - r-base
-    - r-bh
-    - r-matrix
-    - 'r-rcpp >=0.11.2'
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'A tool for creating and analysing DNA barcodes used in Next Generation Sequencing multiplexing experiments'
-  description: 'The package offers a function to create DNA barcode sets capable of correcting insertion, deletion, and substitution errors. Existing barcodes can be analysed regarding their minimal, maximal and average distances between barcodes. Finally, reads that start with a (possibly mutated) barcode can be demultiplexed, i.e., assigned to their original reference barcode.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-dnabarcodes", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:dnabarcodes
@@ -50,4 +23,39 @@ extra:
     name: bioconductor-dnabarcodes
     path: recipes/bioconductor-dnabarcodes
     version: 1.10.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, BiocStyle, rmarkdown
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - r-base
+    - r-bh
+    - r-matrix
+    - r-rcpp >=0.11.2
+    - libblas
+    - liblapack
+  run:
+    - r-base
+    - r-bh
+    - r-matrix
+    - r-rcpp >=0.11.2
+
+source:
+  md5: a095e98696182153e9e2cd36bac1c728
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

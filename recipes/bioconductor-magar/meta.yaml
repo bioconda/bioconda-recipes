@@ -1,31 +1,36 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "MAGAR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: d3bf94d2015c392cb7860f4e82b1b72d
+about:
+  description: '"Methylation-Aware Genotype Association in R" (MAGAR) computes methQTL from DNA methylation and genotyping data from matched samples. MAGAR uses a linear modeling stragety to call CpGs/SNPs that are methQTLs. MAGAR accounts for the local correlation structure of CpGs.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: 'MAGAR: R-package to compute methylation Quantitative Trait Loci (methQTL) from DNA methylation and genotyping data'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-magar", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: gridExtra, VennDiagram, qqman, LOLA, RUnit, rmutil, rmarkdown, JASPAR2018, TFBSTools, seqLogo, knitr, devtools, BiocGenerics, BiocManager
 requirements:
   host:
-    - 'bioconductor-crlmm >=1.56.0,<1.57.0'
-    - 'bioconductor-hdf5array >=1.26.0,<1.27.0'
-    - 'bioconductor-impute >=1.72.0,<1.73.0'
-    - 'bioconductor-rnbeads >=2.16.0,<2.17.0'
-    - 'bioconductor-rnbeads.hg19 >=1.30.0,<1.31.0'
-    - 'bioconductor-snpstats >=1.48.0,<1.49.0'
+    - bioconductor-crlmm >=1.64.0,<1.65.0
+    - bioconductor-hdf5array >=1.34.0,<1.35.0
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - bioconductor-rnbeads >=2.24.0,<2.25.0
+    - bioconductor-rnbeads.hg19 >=1.38.0,<1.39.0
+    - bioconductor-rnbeads.hg38 >=1.38.0,<1.39.0
+    - bioconductor-snpstats >=1.56.0,<1.57.0
     - r-argparse
     - r-base
     - r-bigstatsr
@@ -39,12 +44,13 @@ requirements:
     - r-rjson
     - r-upsetr
   run:
-    - 'bioconductor-crlmm >=1.56.0,<1.57.0'
-    - 'bioconductor-hdf5array >=1.26.0,<1.27.0'
-    - 'bioconductor-impute >=1.72.0,<1.73.0'
-    - 'bioconductor-rnbeads >=2.16.0,<2.17.0'
-    - 'bioconductor-rnbeads.hg19 >=1.30.0,<1.31.0'
-    - 'bioconductor-snpstats >=1.48.0,<1.49.0'
+    - bioconductor-crlmm >=1.64.0,<1.65.0
+    - bioconductor-hdf5array >=1.34.0,<1.35.0
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - bioconductor-rnbeads >=2.24.0,<2.25.0
+    - bioconductor-rnbeads.hg19 >=1.38.0,<1.39.0
+    - bioconductor-rnbeads.hg38 >=1.38.0,<1.39.0
+    - bioconductor-snpstats >=1.56.0,<1.57.0
     - r-argparse
     - r-base
     - r-bigstatsr
@@ -57,13 +63,16 @@ requirements:
     - r-reshape2
     - r-rjson
     - r-upsetr
+
+source:
+  md5: a54d3ada0dda135fabf355780623abe0
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'MAGAR: R-package to compute methylation Quantitative Trait Loci (methQTL) from DNA methylation and genotyping data'
-  description: '"Methylation-Aware Genotype Association in R" (MAGAR) computes methQTL from DNA methylation and genotyping data from matched samples. MAGAR uses a linear modeling stragety to call CpGs/SNPs that are methQTLs. MAGAR accounts for the local correlation structure of CpGs.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

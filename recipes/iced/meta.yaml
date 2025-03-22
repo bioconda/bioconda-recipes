@@ -1,32 +1,38 @@
 {% set name = "iced" %}
-{% set version = "0.5.10" %}
-{% set sha256 = "77240573bfb552d33301cf5b22f597f50c04e03c8ccea4dcc88fee884e394fd0" %}
+{% set version = "0.5.13" %}
+{% set sha256 = "455ecb3464cc64e0fdec776bc7b0f0cae9d729539be6865ac9d5436c5e77e6b9" %}
 
 package:
   name: "{{ name }}"
   version: "{{ version }}"
 
 source:
-  url: https://github.com/hiclib/{{ name }}/archive/v{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/iced-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-setup.py.patch
 
 build:
-  number: 1
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  entry_points:
+    - ice = iced.scripts.ice:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
   host:
     - pip
     - python
     - cython
-    - numpy
-    - scipy >=0.13.3
+    - numpy >=1.16.0
+    - scipy >=0.19.0
   run:
     - python
     - {{ pin_compatible('numpy') }}
-    - scipy >=0.13.3
+    - scipy >=0.19.0
     - pandas
     - scikit-learn
     - matplotlib-base
@@ -34,10 +40,19 @@ requirements:
 test:
   imports:
     - iced
+  commands:
+    - ice --help
 
 about:
-  home: https://github.com/hiclib/iced
-  license: new BSD
+  home: "https://github.com/hiclib/iced"
+  license: "BSD-3-Clause"
   license_family: BSD
   license_file: LICENSE
   summary: "The python module iced implements the ICE normalization of hic data."
+  dev_url: "https://github.com/hiclib/iced"
+  doc_url: "https://members.cbio.mines-paristech.fr/~nvaroquaux/iced"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

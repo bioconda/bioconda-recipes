@@ -1,5 +1,5 @@
 {% set name = "beagle-lib" %}
-{% set version = "4.0.0" %}
+{% set version = "4.0.1" %}
 
 package:
   name: {{ name }}
@@ -7,31 +7,38 @@ package:
 
 source:
   url: https://github.com/beagle-dev/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: d197eeb7fe5879dfbae789c459bcc901cb04d52c9cf5ef14fb07ff7a6b74560b
+  sha256: 9d258cd9bedd86d7c28b91587acd1132f4e01d4f095c657ad4dc93bd83d4f120
 
 build:
-  number: 0
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('beagle-lib', max_pin="x") }}
 
 requirements:
   build:
-    - make
     - {{ compiler('cxx') }}
+    - make
     - cmake
     - autoconf
     - automake
     - libtool
-    - openjdk
-  run:
-    - libtool
+    - pkg-config
+  host:
     - openjdk
 
 test:
   commands:
-    - test -f ${PREFIX}/lib/libhmsbeagle-jni.so # [linux]
-    - test -f ${PREFIX}/lib/libhmsbeagle-jni.jnilib # [osx]
+    - test -f ${PREFIX}/lib/libhmsbeagle-jni.so  # [linux]
+    - test -f ${PREFIX}/lib/libhmsbeagle-jni.jnilib  # [osx]
 
 about:
-  home: https://github.com/beagle-dev/beagle-lib
-  license: GPL-3.0+
-  license_family: GPL
-  summary: general purpose library for evaluating the likelihood of sequence evolution on trees
+  home: "https://github.com/beagle-dev/beagle-lib"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "A general purpose library for evaluating the likelihood of sequence evolution on phylogenetic trees."
+  dev_url: "https://github.com/beagle-dev/beagle-lib"
+
+extra:
+  additional-platforms:
+    - linux-aarch64

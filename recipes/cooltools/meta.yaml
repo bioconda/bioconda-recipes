@@ -1,5 +1,5 @@
 {% set name = "cooltools" %}
-{% set version = "0.5.4" %}
+{% set version = "0.7.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,14 +7,15 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 24cd25a52c03f9f2473aa33dc6a4729f28856cc8812f3f4aa8f7e792877d9ef3
+  sha256: 1f12494add7b1271b71e418d10d060e1dac906a021fc2bd691e91f5599010051
 
 build:
-  number: 0
-  skip: True # [py <= 37]
+  number: 2
   entry_points:
     - cooltools = cooltools.cli:cli
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('cooltools', max_pin="x.x") }}
 
 requirements:
   build:
@@ -23,15 +24,16 @@ requirements:
     - cython
     - pip
     - python
-    - numpy <1.24
+    - numpy
   run:
-    - bioframe >=0.3.3
+    - bioframe >=0.4.1
     - click >=7
     - cooler >=0.9.1
     - joblib
     - matplotlib-base
+    - multiprocess
     - numba
-    - numpy <1.24 # remove constraint once https://github.com/numba/numba/issues/8615 has been resolved
+    - {{ pin_compatible('numpy') }}
     - pandas >=1.5.1
     - python
     - scikit-learn >=1.1.2
@@ -55,5 +57,8 @@ about:
   doc_url: https://cooltools.readthedocs.io
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   recipe-maintainers:
     - abretaud

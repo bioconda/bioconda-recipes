@@ -25,7 +25,11 @@ for make_file in libs/string_buffer/Makefile $(find libs/seq_file -name Makefile
     sed -i.bak 's/-lz/-lz $(LDFLAGS)/' "$make_file"
 done
 
-make MAXK=31
+if [ $(arch) != "x86_64" ]; then
+    sed -i.bak 's/-m64//' Makefile
+fi
+
+make MAXK=31 -j ${CPU_COUNT}
 cp bin/mccortex31 ../src/mykrobe/cortex/
 cd ../ || exit 1
 

@@ -1,26 +1,29 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "HubPub" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f996aed5ee39abacca57b821fe1e49dd
+about:
+  description: HubPub provides users with functionality to help with the Bioconductor Hub structures. The package provides the ability to create a skeleton of a Hub style package that the user can then populate with the necessary information. There are also functions to help add resources to the Hub package metadata files as well as publish data to the Bioconductor S3 bucket.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Utilities to create and use Bioconductor Hubs
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-hubpub", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: AnnotationHubData, ExperimentHubData, testthat, knitr, rmarkdown, BiocStyle,
 requirements:
   host:
-    - 'bioconductor-biocthis >=1.8.0,<1.9.0'
+    - bioconductor-biocthis >=1.16.0,<1.17.0
     - r-available
     - r-aws.s3
     - r-base
@@ -29,7 +32,7 @@ requirements:
     - r-fs
     - r-usethis
   run:
-    - 'bioconductor-biocthis >=1.8.0,<1.9.0'
+    - bioconductor-biocthis >=1.16.0,<1.17.0
     - r-available
     - r-aws.s3
     - r-base
@@ -37,12 +40,16 @@ requirements:
     - r-dplyr
     - r-fs
     - r-usethis
+
+source:
+  md5: 3a9913ba3d2dffa26ecb52faa33ee89c
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Utilities to create and use Bioconductor Hubs'
-  description: 'HubPub provides users with functionality to help with the Bioconductor Hub structures. The package provides the ability to create a skeleton of a Hub style package that the user can then populate with the necessary information. There are also functions to help add resources to the Hub package metadata files as well as publish data to the Bioconductor S3 bucket.'
+    - $R -e "library('{{ name }}')"
 

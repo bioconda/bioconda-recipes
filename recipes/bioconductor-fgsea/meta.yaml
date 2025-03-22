@@ -1,59 +1,24 @@
-{% set version = "1.24.0" %}
+{% set version = "1.32.2" %}
 {% set name = "fgsea" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 37e277c0b49d3a5f3a63eb4b67198f6f
+about:
+  description: The package implements an algorithm for fast gene set enrichment analysis. Using the fast algorithm allows to make more permutations and get more fine grained p-values, which allows to use accurate stantard approaches to multiple hypothesis correction.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENCE
+  summary: Fast Gene Set Enrichment Analysis
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: testthat, knitr, rmarkdown, reactome.db, AnnotationDbi, parallel, org.Mm.eg.db, limma, GEOquery, msigdbr, aggregation
-# SystemRequirements: C++11
-requirements:
-  host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - r-base
-    - r-bh
-    - r-cowplot
-    - r-data.table
-    - r-fastmatch
-    - 'r-ggplot2 >=2.2.0'
-    - r-matrix
-    - r-rcpp
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - r-base
-    - r-bh
-    - r-cowplot
-    - r-data.table
-    - r-fastmatch
-    - 'r-ggplot2 >=2.2.0'
-    - r-matrix
-    - r-rcpp
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENCE'
-  summary: 'Fast Gene Set Enrichment Analysis'
-  description: 'The package implements an algorithm for fast gene set enrichment analysis. Using the fast algorithm allows to make more permutations and get more fine grained p-values, which allows to use accurate stantard approaches to multiple hypothesis correction.'
+  run_exports: '{{ pin_subpackage("bioconductor-fgsea", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:fgsea
     - doi:10.1101/060012
@@ -61,4 +26,52 @@ extra:
     name: bioconductor-fgsea
     path: recipes/bioconductor-fgsea
     version: 1.6.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, knitr, rmarkdown, reactome.db, AnnotationDbi, parallel, org.Mm.eg.db, limma, GEOquery, msigdbr, aggregation, Seurat
+# SystemRequirements: C++11
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - r-base
+    - r-bh
+    - r-cowplot
+    - r-data.table
+    - r-fastmatch
+    - r-ggplot2 >=2.2.0
+    - r-matrix
+    - r-rcpp
+    - r-scales
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - r-base
+    - r-bh
+    - r-cowplot
+    - r-data.table
+    - r-fastmatch
+    - r-ggplot2 >=2.2.0
+    - r-matrix
+    - r-rcpp
+    - r-scales
+
+source:
+  md5: ff7d3a6bf3cc8bdfea0c100fd59cec2f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

@@ -1,40 +1,42 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "ggtreeDendro" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: d3cf8188d0b7922c1ccb01f4e2b386d5
+about:
+  description: Offers a set of 'autoplot' methods to visualize tree-like structures (e.g., hierarchical clustering and classification/regression trees) using 'ggtree'. You can adjust graphical parameters using grammar of graphic syntax and integrate external data to the tree.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Drawing 'dendrogram' using 'ggtree'
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-ggtreedendro", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: aplot, cluster, knitr, MASS, mdendro, prettydoc, pvclust, rmarkdown, testthat (>= 3.0.0), treeio, yulab.utils
 requirements:
   host:
-    - 'bioconductor-ggtree >=3.6.0,<3.7.0'
+    - bioconductor-ggtree >=3.14.0,<3.15.0
     - r-base
     - r-ggplot2
     - r-tidytree
   run:
-    - 'bioconductor-ggtree >=3.6.0,<3.7.0'
+    - bioconductor-ggtree >=3.14.0,<3.15.0
     - r-base
     - r-ggplot2
     - r-tidytree
+source:
+  md5: defc1f45bc699d6ef9d433146de0c62d
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Drawing ''dendrogram'' using ''ggtree'''
-  description: 'Offers a set of ''autoplot'' methods to visualize tree-like structures (e.g., hierarchical clustering and classification/regression trees) using ''ggtree''. You can adjust graphical parameters using grammar of graphic syntax and integrate external data to the tree.'
+    - $R -e "library('{{ name }}')"
 

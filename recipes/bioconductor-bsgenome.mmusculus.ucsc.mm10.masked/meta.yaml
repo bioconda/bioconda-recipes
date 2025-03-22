@@ -1,39 +1,41 @@
 {% set version = "1.4.3" %}
 {% set name = "BSgenome.Mmusculus.UCSC.mm10.masked" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 40d51fb428a5fda8c05101a3dddb8957
+about:
+  description: 'Full genome sequences for Mus musculus (Mouse) as provided by UCSC (genome mm10, based on GRCm38.p6) and stored in Biostrings objects. The sequences are the same as in BSgenome.Mmusculus.UCSC.mm10, except that each of them has the 2 following masks on top: (1) the mask of assembly gaps (AGAPS mask), and (2) the mask of intra-contig ambiguities (AMB mask).'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Full masked genome sequences for Mus musculus (UCSC genome mm10, based on GRCm38.p6)
 build:
-  number: 2
+  noarch: generic
+  number: 5
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-bsgenome.mmusculus.ucsc.mm10.masked", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 requirements:
   host:
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
-    - 'bioconductor-bsgenome.mmusculus.ucsc.mm10 >=1.4.0,<1.5.0'
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-bsgenome.mmusculus.ucsc.mm10 >=1.4.0,<1.5.0
     - r-base
   run:
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
-    - 'bioconductor-bsgenome.mmusculus.ucsc.mm10 >=1.4.0,<1.5.0'
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-bsgenome.mmusculus.ucsc.mm10 >=1.4.0,<1.5.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221102
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 40d51fb428a5fda8c05101a3dddb8957
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Full masked genome sequences for Mus musculus (UCSC genome mm10, based on GRCm38.p6)'
-  description: 'Full genome sequences for Mus musculus (Mouse) as provided by UCSC (genome mm10, based on GRCm38.p6) and stored in Biostrings objects. The sequences are the same as in BSgenome.Mmusculus.UCSC.mm10, except that each of them has the 2 following masks on top: (1) the mask of assembly gaps (AGAPS mask), and (2) the mask of intra-contig ambiguities (AMB mask).'
+    - $R -e "library('{{ name }}')"
 

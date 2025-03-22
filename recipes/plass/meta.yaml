@@ -1,15 +1,18 @@
-{% set version = "4-687d7" %}
+{% set version = "5-cf8933" %}
+{% set sha256 = "04f8f695e925fd842667b1839c960afef93deb05131eba478426f622b97ab6a0" %}
 
 package:
   name: plass 
   version: {{ version|replace("-", ".")  }}
 
 build:
-  number: 3
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('plass', max_pin=None) }}
 
 source:
-  git_url: https://github.com/soedinglab/plass.git
-  git_rev: {{ version }}
+  url: https://github.com/soedinglab/plass/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 requirements:
   build:
@@ -32,16 +35,21 @@ requirements:
 test:
   commands:
     - plass > /dev/null
+    - penguin > /dev/null
 
 about:
   home: https://github.com/soedinglab/plass
   license: GPLv3
-  summary: "Plass (Protein-Level ASSembler) is a software to assemble short read sequencing data on a protein level" 
+  summary: "Plass (Protein-Level ASSembler) and PenguiN (Protein-guided Nucleotide assembler) are methods to assemble short read sequencing data on a protein level to proteins or DNA contigs"
 
 extra:
-  skip-lints:
-    - uses_vcs_url
-    - missing_hash
   identifiers:
     - doi:10.1038/s41592-019-0437-4
+    - doi:10.1101/2024.03.29.587318
     - biotools:plass
+  recipe-maintainers:
+    - milot-mirdita
+    - martin-steinegger
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

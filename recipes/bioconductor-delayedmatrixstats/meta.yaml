@@ -1,54 +1,62 @@
-{% set version = "1.20.0" %}
+{% set version = "1.28.0" %}
 {% set name = "DelayedMatrixStats" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: eccc9b5201ff734463db9b0e453c11a0
+about:
+  description: A port of the 'matrixStats' API for use with DelayedMatrix objects from the 'DelayedArray' package. High-performing functions operating on rows and columns of DelayedMatrix objects, e.g. col / rowMedians(), col / rowRanks(), and col / rowSds(). Functions optimized per data type and for subsetted calculations such that both memory usage and processing time is minimized.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Functions that Apply to Rows and Columns of 'DelayedMatrix' Objects
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: testthat, knitr, rmarkdown, covr, BiocStyle, microbenchmark, profmem, HDF5Array
-requirements:
-  host:
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-matrixgenerics >=1.10.0,<1.11.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-sparsematrixstats >=1.10.0,<1.11.0'
-    - r-base
-    - 'r-matrix >=1.5-0'
-    - 'r-matrixstats >=0.60.0'
-  run:
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-matrixgenerics >=1.10.0,<1.11.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-sparsematrixstats >=1.10.0,<1.11.0'
-    - r-base
-    - 'r-matrix >=1.5-0'
-    - 'r-matrixstats >=0.60.0'
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Functions that Apply to Rows and Columns of ''DelayedMatrix'' Objects'
-  description: 'A port of the ''matrixStats'' API for use with DelayedMatrix objects from the ''DelayedArray'' package. High-performing functions operating on rows and columns of DelayedMatrix objects, e.g. col / rowMedians(), col / rowRanks(), and col / rowSds(). Functions optimized per data type and for subsetted calculations such that both memory usage and processing time is minimized.'
-  license_file: LICENSE
+  run_exports: '{{ pin_subpackage("bioconductor-delayedmatrixstats", max_pin="x.x") }}'
+
 extra:
   parent_recipe:
     name: bioconductor-delayedmatrixstats
     path: recipes/bioconductor-delayedmatrixstats
     version: 1.2.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, knitr, rmarkdown, BiocStyle, microbenchmark, profmem, HDF5Array, matrixStats (>= 1.0.0)
+requirements:
+  host:
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-sparsearray >=1.6.0,<1.7.0
+    - bioconductor-sparsematrixstats >=1.18.0,<1.19.0
+    - r-base
+    - r-matrix >=1.5-0
+  run:
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-sparsearray >=1.6.0,<1.7.0
+    - bioconductor-sparsematrixstats >=1.18.0,<1.19.0
+    - r-base
+    - r-matrix >=1.5-0
+
+source:
+  md5: 1417e01b05f813b1955f3bd2cc62043c
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

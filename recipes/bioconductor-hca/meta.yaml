@@ -1,26 +1,30 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "hca" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 1e06854ef70c75472d67f9002a5731e7
+about:
+  description: This package provides users with the ability to query the Human Cell Atlas data repository for single-cell experiment data. The `projects()`, `files()`, `samples()` and `bundles()` functions retrieve summary information on each of these indexes; corresponding `*_details()` are available for individual entries of each index. File-based resources can be downloaded using `files_download()`. Advanced use of the package allows the user to page through large result sets, and to flexibly query the 'list-of-lists' structure representing query responses.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Exploring the Human Cell Atlas Data Coordinating Platform
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-hca", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: LoomExperiment, SummarizedExperiment, SingleCellExperiment, S4Vectors, methods, testthat (>= 3.0.0), knitr, rmarkdown, BiocStyle
 requirements:
   host:
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
     - r-base
     - r-digest
     - r-dplyr
@@ -33,7 +37,7 @@ requirements:
     - r-tibble
     - r-tidyr
   run:
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
     - r-base
     - r-digest
     - r-dplyr
@@ -45,13 +49,16 @@ requirements:
     - r-shiny
     - r-tibble
     - r-tidyr
+
+source:
+  md5: 0992e3bac4384a3c334382f2d43623df
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Exploring the Human Cell Atlas Data Coordinating Platform'
-  description: 'This package provides users with the ability to query the Human Cell Atlas data repository for single-cell experiment data. The `projects()`, `files()`, `samples()` and `bundles()` functions retrieve summary information on each of these indexes; corresponding `*_details()` are available for individual entries of each index. File-based resources can be downloaded using `files_download()`. Advanced use of the package allows the user to page through large result sets, and to flexibly query the ''list-of-lists'' structure representing query responses.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

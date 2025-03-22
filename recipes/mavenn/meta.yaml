@@ -1,5 +1,5 @@
 {% set name = "mavenn" %}
-{% set version = "1.0.0" %}
+{% set version = "1.1.0" %}
 
 package:
   name: mavenn
@@ -7,25 +7,30 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: c638cbe54b20fb0c698f694e2a655088c418d80e1e24fba4da1b436326a28054
+  sha256: e86e759095e9de402a324453c5b0b222d39318ade8a8481bbcc2e4cfa0604b3d
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv --ignore-installed --no-deps"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: "{{ PYTHON }} -m pip install . -vvv --no-build-isolation --no-deps --no-cache-dir"
 
 requirements:
   host:
     - pip
-    - python >=3
+    - python >=3.8
+    - setuptools
   run:
-    - logomaker >=0.8
-    - matplotlib-base >=3.2.0
+    - logomaker
+    - matplotlib-base
     - numpy
-    - pandas >=1.1.2
-    - python >=3
-    - scikit-learn >=0.22
-    - tensorflow >=2.3.0
+    - pandas
+    - python >=3.8
+    - scikit-learn
+    - scipy
+    - seaborn-base
+    - tensorflow
 
 test:
   imports:
@@ -36,8 +41,10 @@ about:
   home: "http://mavenn.readthedocs.io"
   license: MIT
   license_family: MIT
-  summary: "MAVE-NN: genotype-phenotype maps from multiplex assays of variant effect"
+  license_file: LICENSE
+  summary: "MAVE-NN: genotype-phenotype maps from multiplex assays of variant effect."
   dev_url: "http://github.com/jbkinney/mavenn"
+  doc_url: "https://mavenn.readthedocs.io"
 
 extra:
   recipe-maintainers:

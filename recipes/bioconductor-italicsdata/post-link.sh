@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "italicsdata-2.36.0"
+installBiocDataPackage.sh "italicsdata-2.44.0"

@@ -1,32 +1,36 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "DExMA" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 8463b6f8020f8b47f21d2b8d0519b70a
+about:
+  description: performing all the steps of gene expression meta-analysis considering the possible existence of missing genes. It provides the necessary functions to be able to perform the different methods of gene expression meta-analysis. In addition, it contains functions to apply quality controls, download GEO datasets and show graphical representations of the results.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Differential Expression Meta-Analysis
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-dexma", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, qpdf, BiocGenerics, RUnit
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-dexmadata >=1.6.0,<1.7.0'
-    - 'bioconductor-geoquery >=2.66.0,<2.67.0'
-    - 'bioconductor-impute >=1.72.0,<1.73.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-snpstats >=1.48.0,<1.49.0'
-    - 'bioconductor-sva >=3.46.0,<3.47.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-dexmadata >=1.14.0,<1.15.0
+    - bioconductor-geoquery >=2.74.0,<2.75.0
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-snpstats >=1.56.0,<1.57.0
+    - bioconductor-sva >=3.54.0,<3.55.0
     - r-base
     - r-bnstruct
     - r-pheatmap
@@ -35,13 +39,13 @@ requirements:
     - r-scales
     - r-swamp
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-dexmadata >=1.6.0,<1.7.0'
-    - 'bioconductor-geoquery >=2.66.0,<2.67.0'
-    - 'bioconductor-impute >=1.72.0,<1.73.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-snpstats >=1.48.0,<1.49.0'
-    - 'bioconductor-sva >=3.46.0,<3.47.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-dexmadata >=1.14.0,<1.15.0
+    - bioconductor-geoquery >=2.74.0,<2.75.0
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-snpstats >=1.56.0,<1.57.0
+    - bioconductor-sva >=3.54.0,<3.55.0
     - r-base
     - r-bnstruct
     - r-pheatmap
@@ -49,13 +53,16 @@ requirements:
     - r-rcolorbrewer
     - r-scales
     - r-swamp
+
+source:
+  md5: 2db6cbb01b58ca63b9372cd70d698f1a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Differential Expression Meta-Analysis'
-  description: 'performing all the steps of gene expression meta-analysis considering the possible existence of missing genes. It provides the necessary functions to be able to perform the different methods of gene expression meta-analysis. In addition, it contains functions to apply quality controls, download GEO datasets and show graphical representations of the results.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+    - $R -e "library('{{ name }}')"
 

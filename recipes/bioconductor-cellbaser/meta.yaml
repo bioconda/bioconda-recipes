@@ -1,27 +1,30 @@
-{% set version = "1.22.0" %}
+{% set version = "1.30.0" %}
 {% set name = "cellbaseR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: c083374dafa795b5ebe6fb233f3d6ed3
+about:
+  description: This R package makes use of the exhaustive RESTful Web service API that has been implemented for the Cellabase database. It enable researchers to query and obtain a wealth of biological information from a single database saving a lot of time. Another benefit is that researchers can easily make queries about different biological topics and link all this information together as all information is integrated.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Apache License (== 2.0)
+  summary: Querying annotation data from the high performance Cellbase web
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-cellbaser", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, knitr, rmarkdown, Gviz, VariantAnnotation
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
     - r-base
     - r-data.table
     - r-doparallel
@@ -32,8 +35,8 @@ requirements:
     - r-r.utils
     - r-tidyr
   run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
     - r-base
     - r-data.table
     - r-doparallel
@@ -43,12 +46,16 @@ requirements:
     - r-pbapply
     - r-r.utils
     - r-tidyr
+
+source:
+  md5: d859f87b16f32b7735d9672440e1f095
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'Apache License (== 2.0)'
-  summary: 'Querying annotation data from the high performance Cellbase web'
-  description: 'This R package makes use of the exhaustive RESTful Web service API that has been implemented for the Cellabase database. It enable researchers to query and obtain a wealth of biological information from a single database saving a lot of time. Another benefit is that researchers can easily make queries about different biological topics and link all this information together as all information is integrated.'
+    - $R -e "library('{{ name }}')"
 

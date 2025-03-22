@@ -1,22 +1,23 @@
-{% set version = "0.99.9" %}
+{% set version = "0.99.11" %}
 {% set name = "CTCF" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: c5449543be4c56393d737bbe07c6255c
+about:
+  description: Genomic coordinates of CTCF binding sites, with strand orientation (directionality of binding). Position weight matrices (PWMs) from JASPAR, HOCOMOCO, CIS-BP, CTCFBSDB, SwissRegulon, Jolma 2013, were used to uniformly predict CTCF binding sites using FIMO (default settings) on human (hg18, hg19, hg38, T2T) and mouse (mm9, mm10, mm39) genome assemblies. Extra columns include motif/PWM name (e.g., MA0139.1), score, p-value, q-value, and the motif sequence. It is recommended to filter FIMO-predicted sites by 1e-6 p-value threshold instead of using the default 1e-4 threshold. Experimentally obtained CTCF-bound cis-regulatory elements from ENCODE SCREEN and predicted CTCF sites from CTCFBSDB are also included. Selected data are lifted over from a different genome assembly as we demonstrated liftOver is a viable option to obtain CTCF coordinates in different genome assemblies. CTCF sites obtained using JASPAR's MA0139.1 PWM and filtered at 1e-6 p-value threshold are recommended.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Genomic coordinates of CTCF binding sites, with orientation
 build:
-  number: 0
+  noarch: generic
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-ctcf", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: BiocStyle, rmarkdown, knitr, AnnotationHub, GenomicRanges, plyranges, sessioninfo
 requirements:
   host:
@@ -24,14 +25,15 @@ requirements:
   run:
     - r-base
     - curl
-    - bioconductor-data-packages>=20221102
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 5ec44245864395de390e68fa56e465af
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Genomic coordinates of CTCF binding sites, with orientation'
-  description: 'Genomic coordinates of CTCF binding sites, with strand orientation (directionality of binding). Position weight matrices (PWMs) from JASPAR, HOCOMOCO, CIS-BP, CTCFBSDB, SwissRegulon, Jolma 2013, were used to uniformly predict CTCF binding sites using FIMO (default settings) on human (hg18, hg19, hg38, T2T) and mouse (mm9, mm10, mm39) genome assemblies. Extra columns include motif/PWM name (e.g., MA0139.1), score, p-value, q-value, and the motif sequence. It is recommended to filter FIMO-predicted sites by 1e-6 p-value threshold instead of using the default 1e-4 threshold. Experimentally obtained CTCF-bound cis-regulatory elements from ENCODE SCREEN and predicted CTCF sites from CTCFBSDB are also included. Selected data are lifted over from a different genome assembly as we demonstrated liftOver is a viable option to obtain CTCF coordinates in different genome assemblies. CTCF sites obtained using JASPAR''s MA0139.1 PWM and filtered at 1e-6 p-value threshold are recommended.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

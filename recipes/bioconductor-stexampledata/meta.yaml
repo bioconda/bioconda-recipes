@@ -1,41 +1,45 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "STexampleData" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: ff9053a3878f326298e4eefb76bdc44f
+about:
+  description: Collection of spatial transcriptomics datasets stored in SpatialExperiment Bioconductor format, for use in examples, demonstrations, and tutorials. The datasets are from several different platforms and have been sourced from various publicly available sources. Several datasets include images and/or reference annotation labels.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Collection of spatial transcriptomics datasets in SpatialExperiment Bioconductor format
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, knitr, rmarkdown, BumpyMatrix
+  run_exports: '{{ pin_subpackage("bioconductor-stexampledata", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: BiocStyle, knitr, rmarkdown, BumpyMatrix, HDF5Array
 requirements:
   host:
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
-    - 'bioconductor-spatialexperiment >=1.8.0,<1.9.0'
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-spatialexperiment >=1.16.0,<1.17.0
     - r-base
   run:
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
-    - 'bioconductor-spatialexperiment >=1.8.0,<1.9.0'
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-spatialexperiment >=1.16.0,<1.17.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221108
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 20e089ef88575b871a5e0edc17c520ca
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Collection of spatially-resolved transcriptomics datasets in SpatialExperiment Bioconductor format'
-  description: 'Collection of spatially-resolved transcriptomics (SRT) datasets in SpatialExperiment Bioconductor format, for use in examples, demonstrations, and tutorials. The datasets are from several different SRT platforms and have been sourced from various publicly available sources. Several datasets include images and/or ground truth annotation labels.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

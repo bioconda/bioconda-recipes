@@ -1,29 +1,41 @@
-{% set version = "2.14.0" %}
+{% set version = "2.22.0" %}
 {% set name = "piano" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 56f7a2c1893fa5af9bf5f5ba40b20fb6
+about:
+  description: Piano performs gene set analysis using various statistical methods, from different gene level statistics and a wide range of gene-set collections. Furthermore, the Piano package contains functions for combining the results of multiple runs of gene set analyses.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Platform for integrative analysis of omics data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-piano", max_pin="x.x") }}'
+
+extra:
+  identifiers:
+    - biotools:piano
+  parent_recipe:
+    name: bioconductor-piano
+    path: recipes/bioconductor-piano
+    version: 1.20.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: yeast2.db, rsbml, plotrix, limma, affy, plier, affyPLM, gtools, biomaRt, snowfall, AnnotationDbi, knitr, rmarkdown, BiocStyle
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-fgsea >=1.24.0,<1.25.0'
-    - 'bioconductor-marray >=1.76.0,<1.77.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-fgsea >=1.32.0,<1.33.0
+    - bioconductor-marray >=1.84.0,<1.85.0
     - r-base
     - r-dt
     - r-gplots
@@ -36,10 +48,10 @@ requirements:
     - r-shinyjs
     - r-visnetwork
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-fgsea >=1.24.0,<1.25.0'
-    - 'bioconductor-marray >=1.76.0,<1.77.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-fgsea >=1.32.0,<1.33.0
+    - bioconductor-marray >=1.84.0,<1.85.0
     - r-base
     - r-dt
     - r-gplots
@@ -51,20 +63,16 @@ requirements:
     - r-shinydashboard
     - r-shinyjs
     - r-visnetwork
+
+source:
+  md5: 85e52c0b48f3fe7a528f2bbb96657ca5
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>=2)'
-  summary: 'Platform for integrative analysis of omics data'
-  description: 'Piano performs gene set analysis using various statistical methods, from different gene level statistics and a wide range of gene-set collections. Furthermore, the Piano package contains functions for combining the results of multiple runs of gene set analyses.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-extra:
-  identifiers:
-    - biotools:piano
-  parent_recipe:
-    name: bioconductor-piano
-    path: recipes/bioconductor-piano
-    version: 1.20.1
+    - $R -e "library('{{ name }}')"
 

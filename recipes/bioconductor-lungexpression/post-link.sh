@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "lungexpression-0.36.0"
+installBiocDataPackage.sh "lungexpression-0.44.0"

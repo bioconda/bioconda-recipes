@@ -1,0 +1,125 @@
+{% set version = "1.4.0" %}
+{% set name = "Moonlight2R" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: 'The understanding of cancer mechanism requires the identification of genes playing a role in the development of the pathology and the characterization of their role (notably oncogenes and tumor suppressors). We present an updated version of the R/bioconductor package called MoonlightR, namely Moonlight2R, which returns a list of candidate driver genes for specific cancer types on the basis of omics data integration. The Moonlight framework contains a primary layer where gene expression data and information about biological processes are integrated to predict genes called oncogenic mediators, divided into putative tumor suppressors and putative oncogenes. This is done through functional enrichment analyses, gene regulatory networks and upstream regulator analyses to score the importance of well-known biological processes with respect to the studied cancer type. By evaluating the effect of the oncogenic mediators on biological processes or through random forests, the primary layer predicts two putative roles for the oncogenic mediators: i) tumor suppressor genes (TSGs) and ii) oncogenes (OCGs). As gene expression data alone is not enough to explain the deregulation of the genes, a second layer of evidence is needed. We have automated the integration of a secondary mutational layer through new functionalities in Moonlight2R. These functionalities analyze mutations in the cancer cohort and classifies these into driver and passenger mutations using the driver mutation prediction tool, CScape-somatic. Those oncogenic mediators with at least one driver mutation are retained as the driver genes. As a consequence, this methodology does not only identify genes playing a dual role (e.g. TSG in one cancer type and OCG in another) but also helps in elucidating the biological processes underlying their specific roles. In particular, Moonlight2R can be used to discover OCGs and TSGs in the same cancer type. This may for instance help in answering the question whether some genes change role between early stages (I, II) and late stages (III, IV). In the future, this analysis could be useful to determine the causes of different resistances to chemotherapeutic treatments.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Identify oncogenes and tumor suppressor genes from omics data
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-moonlight2r", max_pin="x.x") }}'
+
+extra:
+  container:
+    extended-base: yes
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, rmarkdown, testthat (>= 3.0.0), devtools, roxygen2, png
+# SystemRequirements: CScapeSomatic
+requirements:
+
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
+
+  host:
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-clusterprofiler >=4.14.0,<4.15.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-dose >=4.0.0,<4.1.0
+    - bioconductor-epimix >=1.8.0,<1.9.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-geoquery >=2.74.0,<2.75.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - r-base
+    - r-circlize
+    - r-doparallel
+    - r-dplyr
+    - r-easypubmed
+    - r-foreach
+    - r-fuzzyjoin
+    - r-ggplot2
+    - r-gplots
+    - r-hiver
+    - r-magrittr
+    - r-parmigene
+    - r-purrr
+    - r-qpdf
+    - r-randomforest
+    - r-rcolorbrewer
+    - r-readr
+    - r-rismed
+    - r-seqminer
+    - r-stringr
+    - r-tibble
+    - r-tidyheatmap
+    - r-tidyr
+
+  run:
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-clusterprofiler >=4.14.0,<4.15.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-dose >=4.0.0,<4.1.0
+    - bioconductor-epimix >=1.8.0,<1.9.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-geoquery >=2.74.0,<2.75.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - r-base
+    - r-circlize
+    - r-doparallel
+    - r-dplyr
+    - r-easypubmed
+    - r-foreach
+    - r-fuzzyjoin
+    - r-ggplot2
+    - r-gplots
+    - r-hiver
+    - r-magrittr
+    - r-parmigene
+    - r-purrr
+    - r-qpdf
+    - r-randomforest
+    - r-rcolorbrewer
+    - r-readr
+    - r-rismed
+    - r-seqminer
+    - r-stringr
+    - r-tibble
+    - r-tidyheatmap
+    - r-tidyr
+
+source:
+  md5: 96842c4ab79b82de4ee8a43d1cc10976
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library('{{ name }}')"
+
