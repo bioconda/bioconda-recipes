@@ -1,5 +1,10 @@
 #!/bin/bash
 
+
 mkdir -p $PREFIX/bin
 
-make CFLAGS="${CFLAGS} -I${PREFIX}/include -L${PREFIX}/lib"
+export LANGUAGE=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+make CFLAGS="${CFLAGS} -I${PREFIX}/include" LIB_PATH="-L${PREFIX}/lib"
