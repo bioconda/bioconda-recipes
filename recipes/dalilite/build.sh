@@ -1,3 +1,3 @@
 cd bin
-make
+make CC=${CC} FC=${FC}
 cp * $PREFIX/bin
