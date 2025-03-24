@@ -21,14 +21,3 @@ fi
 cargo build --release
 cargo install --root $PREFIX
 
-
-
-
-
-~
-~
-~
-~
-~
-~
-
