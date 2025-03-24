@@ -125,6 +125,11 @@ files=(polap
 	run-polap-r-taxonomy.R
 	run-polap-r-template.R
 	run-polap-r-test-reads-bar-graph.R
+	polap-data-v1.csv
+	polap-data-v2.csv
+	polap-data-v2-later.csv
+	polap-data-v4.csv
+	polap-template-cflye-archive-files.txt
 	polap.sh)
 
 for i in "${files[@]}"; do
