@@ -12,6 +12,7 @@ files=(polap
 	polap-command-completion.sh
 	polap-constants.sh
 	polap-data-v1.sh
+	polap-data-v2-remote.sh
 	polap-data-v2.sh
 	polap-data-v3.sh
 	polap-data-v4.sh
@@ -127,15 +128,13 @@ files=(polap
 	run-polap-r-test-reads-bar-graph.R
 	polap-data-v1.csv
 	polap-data-v2.csv
-	polap-data-v2-later.csv
 	polap-data-v4.csv
-	polap-template-cflye-archive-files.txt
 	polap.sh)
 
 for i in "${files[@]}"; do
 	cp src/$i $PREFIX/bin
 done
-cp -pr src/lib $PREFIX/bin
+cp -pr src/polaplib $PREFIX/bin
 
 chmod +x $PREFIX/bin/polap
 chmod +x $PREFIX/bin/polap.sh
