@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -e  # Exit on error
 
 export CPATH=${PREFIX}/include
