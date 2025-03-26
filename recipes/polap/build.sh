@@ -12,7 +12,6 @@ files=(polap
 	polap-command-completion.sh
 	polap-constants.sh
 	polap-data-v1.sh
-	polap-data-v2-remote.sh
 	polap-data-v2.sh
 	polap-data-v3.sh
 	polap-data-v4.sh
