@@ -1,12 +1,22 @@
 #!/bin/bash
-
 set -e  # Exit on error
 
-export CPATH=${PREFIX}/include
+# Ensure headers from the conda environment are found
+export CPATH="${PREFIX}/include"
 
-export LDFLAGS="-L$SRC_DIR/HTSLIB -L$PREFIX/lib"
-export CFLAGS="-I$SRC_DIR -I$SRC_DIR/HTSLIB -I$SRC_DIR/LIBDEFLATE -I$SRC_DIR/LIBDEFLATE/common -I$PREFIX/include -L$SRC_DIR/HTSLIB -L$PREFIX/lib"
-export CPPFLAGS="-I$SRC_DIR -I$SRC_DIR/HTSLIB -I$SRC_DIR/LIBDEFLATE -I$SRC_DIR/LIBDEFLATE/common -I$PREFIX/include -L$SRC_DIR/HTSLIB -L$PREFIX/lib"
+# Pass the conda library directory to the linker
+export LDFLAGS="-L${PREFIX}/lib"
+
+# Add include directories for C and C++ compilation
+export CFLAGS="-I${SRC_DIR}/HTSLIB -I${SRC_DIR}/LIBDEFLATE/common -I${PREFIX}/include"
+export CPPFLAGS="-I${SRC_DIR}/HTSLIB -I${SRC_DIR}/LIBDEFLATE/common -I${PREFIX}/include"
+export CXXFLAGS="-I${SRC_DIR}/HTSLIB -I${SRC_DIR}/LIBDEFLATE/common -I${PREFIX}/include"
+
+# export CPATH=${PREFIX}/include
+
+# export LDFLAGS="-L$SRC_DIR/HTSLIB -L$PREFIX/lib"
+# export CFLAGS="-I$SRC_DIR -I$SRC_DIR/HTSLIB -I$SRC_DIR/LIBDEFLATE -I$SRC_DIR/LIBDEFLATE/common -I$PREFIX/include -L$SRC_DIR/HTSLIB -L$PREFIX/lib"
+# export CPPFLAGS="-I$SRC_DIR -I$SRC_DIR/HTSLIB -I$SRC_DIR/LIBDEFLATE -I$SRC_DIR/LIBDEFLATE/common -I$PREFIX/include -L$SRC_DIR/HTSLIB -L$PREFIX/lib"
 
 #export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 #export LDFLAGS="-L$SRC_DIR/HTSLIB -L$PREFIX/lib"
