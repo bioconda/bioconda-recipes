@@ -1,24 +1,50 @@
-#!/bin/bash
+#!/bin/bash -x
+
+echo "Executing build script"
 
 # RSAT_DEST="$PREFIX/opt/rsat/"
 BASE=`pwd`
-RSAT_DEST="$PREFIX/share/rsat/"
+RSAT_DEST="$PREFIX/share/rsat"
 mkdir -p "$RSAT_DEST"
 mkdir -p "$PREFIX/bin"
 ## mkdir -p "$PREFIX/share/rsat"
+## mkdir -p "$PREFIX/public_html"
+
+mkdir -p "$PREFIX/share/rsat/public_html"
+#mkdir -p "$CONDA_PREFIX/public_html"
+
+
+
 
 cp -a LICENSE.txt \
    perl-scripts \
    python-scripts \
    makefiles \
    R-scripts \
+   public_html \
    RSAT_config_default.mk \
    RSAT_config_default.bashrc \
    RSAT_config_default.props \
    RSAT_config_default.conf \
    "$RSAT_DEST"
 
+echo "Executing copy scripts"
+
 cp bin/rsat $PREFIX/bin/rsat
+echo "Path: $(pwd)"
+echo "Prefix: $PREFIX)"
+echo "cp bin/rsat $PREFIX/bin/rsat"
+cp version.txt $PREFIX/version.txt
+echo "cp version.txt $PREFIX/bin/version.txt"
+cp version.txt $PREFIX/bin/version.txt
+cp version.txt $CONDA_PREFIX/version.txt
+cp version.txt $CONDA_PREFIX/../version.txt
+cp version.txt $RSAT_DEST/version.txt
+mkdir $PREFIX/public_html
+mkdir $CONDA_PREFIX/public_html
+cp public_html/publications.csv $PREFIX/public_html/publications.csv
+cp public_html/publications.csv $CONDA_PREFIX/public_html/publications.csv
+cp public_html/publications.csv $RSAT_DEST/public_html/publications.csv
 cp share/rsat/rsat.yaml $PREFIX/share/rsat/rsat.yaml
 
 # Build and dispatch compiled binaries
@@ -49,4 +75,3 @@ perl-scripts/configure_rsat.pl -auto \
   ensembl_tools=1 \
   LOGO_PROGRAM=weblogo
 cd $BASE
-
