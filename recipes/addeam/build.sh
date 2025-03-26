@@ -1,23 +1,16 @@
 #!/bin/bash
 set -e  # Exit on error
 
-# Ensure headers from the conda environment are found
 export CPATH="${PREFIX}/include"
 
-# Pass the conda library directory to the linker
 export LDFLAGS="-L${PREFIX}/lib"
-#-L${SRC_DIR}/submodules/lib/htslib -L${SRC_DIR}/submodules/lib/samtools -L${SRC_DIR}/submodules/lib/libgab"
-#export LDFLAGS="-Wl,-t -L${PREFIX}/lib -L${SRC_DIR}/submodules/lib/htslib -L${SRC_DIR}/submodules/lib/samtools -L${SRC_DIR}/submodules/lib/libgab"
 
-# Adjust include directories to match your directory structure
 export CFLAGS="-I${SRC_DIR}/submodules/lib/htslib -I${SRC_DIR}/submodules/lib/samtools -I${SRC_DIR}/submodules/lib/libgab -I${PREFIX}/include"
 export CPPFLAGS="-I${SRC_DIR}/submodules/lib/htslib -I${SRC_DIR}/submodules/lib/samtools -I${SRC_DIR}/submodules/lib/libgab -I${PREFIX}/include"
 export CXXFLAGS="-I${SRC_DIR}/submodules/lib/htslib -I${SRC_DIR}/submodules/lib/samtools -I${SRC_DIR}/submodules/lib/libgab -I${PREFIX}/include"
 
-# Make sure binaries and scripts are installed in Conda's bin directory
 mkdir -p "${PREFIX}/bin"
 
-# Move into the source directory and compile C++ binary
 cd submodules/src/
 
 ln -s ${PREFIX}/lib/libncurses.so ${PREFIX}/lib/libcurses.so
