@@ -5,7 +5,8 @@ set -e  # Exit on error
 export CPATH="${PREFIX}/include"
 
 # Pass the conda library directory to the linker
-export LDFLAGS="-L${PREFIX}/lib -L${SRC_DIR}/submodules/lib/htslib -L${SRC_DIR}/submodules/lib/samtools -L${SRC_DIR}/submodules/lib/libgab"
+#export LDFLAGS="-L${PREFIX}/lib -L${SRC_DIR}/submodules/lib/htslib -L${SRC_DIR}/submodules/lib/samtools -L${SRC_DIR}/submodules/lib/libgab"
+export LDFLAGS="-Wl,-t -L${PREFIX}/lib -L${SRC_DIR}/submodules/lib/htslib -L${SRC_DIR}/submodules/lib/samtools -L${SRC_DIR}/submodules/lib/libgab"
 
 # Adjust include directories to match your directory structure
 export CFLAGS="-I${SRC_DIR}/submodules/lib/htslib -I${SRC_DIR}/submodules/lib/samtools -I${SRC_DIR}/submodules/lib/libgab -I${PREFIX}/include"
