@@ -1,4 +1,3 @@
 #!/bin/sh
 
-make CXX="$CXX" all
-make prefix="$PREFIX" install
+CXXFLAGS="${CXXFLAGS} -D__STDC_FORMAT_MACROS" make -j${CPU_COUNT} CXX="${CXX}" prefix="${PREFIX}" install

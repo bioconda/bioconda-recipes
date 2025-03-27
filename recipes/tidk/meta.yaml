@@ -1,4 +1,4 @@
-{% set version = "0.2.41" %}
+{% set version = "0.2.65" %}
 
 package:
   name: tidk
@@ -10,22 +10,24 @@ build:
     - {{ pin_subpackage('tidk', max_pin="x.x") }}
 
 source:
-  url: https://github.com/tolkit/telomeric-identifier/archive/{{ version }}.tar.gz
-  sha256: 28cac3506d66ffc7ee37ff48a429663dde68aa23ba5d9b28ee0a6656aeea03d4
+  url: https://github.com/tolkit/telomeric-identifier/archive/v{{ version }}.tar.gz
+  sha256: c0fde2971029683a2bb4f451c872b0d207f421b2dac2622535894f600cc59866
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
     - cmake
     - make
-    - rust >=1.52
     - pkg-config  # [osx]
+
+  host:
+    - openssl
 
 test:
   commands:
-    - tidk --help
-    - tidk --version
+    - tidk -h
 
 about:
   home: https://github.com/tolkit/telomeric-identifier
@@ -33,3 +35,8 @@ about:
   license_family: MIT
   summary: |
     Identify and find telomeres, or telomeric repeats in a genome.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

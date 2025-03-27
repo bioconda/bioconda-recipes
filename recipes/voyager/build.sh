@@ -5,6 +5,8 @@ cp voyager-cli $PREFIX/bin/
 cp voyager-build-cli $PREFIX/bin/
 cp voyager-combine-cli $PREFIX/bin/
 cp voyager-debug-index $PREFIX/bin/
+cp voyager-remove-genome-cli $PREFIX/bin/
+cp voyager-replace-taxonomy-cli $PREFIX/bin/
 
 mkdir -p "$PREFIX/lib"
 cp voyager-monitor-$PKG_VERSION-SNAPSHOT.jar $PREFIX/lib/

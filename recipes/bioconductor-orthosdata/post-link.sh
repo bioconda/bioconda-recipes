@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "orthosdata-1.0.0"
+installBiocDataPackage.sh "orthosdata-1.4.0"

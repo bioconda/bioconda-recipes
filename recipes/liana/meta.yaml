@@ -1,0 +1,65 @@
+{% set name = "liana" %}
+{% set version = "1.5.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/liana-{{ version }}.tar.gz
+  sha256: 4a2777867ec089ee3c7f0cd9b98abc475fc1f66098369633a5c3bf8b7b1b81d7
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("liana", max_pin="x.x.x") }}
+    
+requirements:
+  host:
+    - python >=3.10,<3.12   # per 1.5.1 release notes
+    - poetry-core >=1.0.0
+    - pip
+  run:
+    - python >=3.10,<3.12
+    - anndata >=0.7.4
+    - mudata
+    - pandas >2.0.1
+    - scanpy >=1.8.0
+    - numba >=0.60.0,<0.61.0  # pip check install gets dependency error with decoupler
+    - plotnine >=0.10.0
+    - tqdm >=4.0.0,<5.0.0
+    - docrep >=0.3.1
+    - pre-commit >=3.0.0
+    - omnipath >=1.0.6
+    - decoupler-py >=1.5.1
+    - pydeseq2 >=0.3.5
+    - cell2cell
+    - muon
+    - mofax
+    - mofapy2 >=0.7.0
+    - corneto
+    - cvxpy >=1.6,<2
+    - requests >=2.25.1,<3.0.0
+
+test:
+  imports:
+    - liana
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://liana-py.readthedocs.io
+  summary: 'LIANA+: a one-stop-shop framework for cell-cell communication'
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+
+  recipe-maintainers:
+    - nilchia

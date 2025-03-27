@@ -1,6 +1,8 @@
+#!/usr/bin/env bash
+
 set -xeuo pipefail
 cd src
-make all
+make -j ${CPU_COUNT} all
 
 # Install (makefile install has hard-coded destination, so have to do this manually)
  mkdir -p $PREFIX/bin
