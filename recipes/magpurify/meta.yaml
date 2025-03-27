@@ -9,21 +9,24 @@ source:
   sha256: aeb2121824bf327e90a8f4101819dcff96ca7ecee7d9ad087b5ac3354ff0a77c
 
 build:
-  number: 1
+  number: 2
+  skip: True # [osx]  
   noarch: python
   entry_points:
     - magpurify=magpurify.cli:cli
   script: {{ PYTHON }} -m pip install . --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage('magpurify', max_pin="x.x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.6
+    - python >=3.6,<=3.12
   run:
     - biopython
     - numpy
     - pandas
-    - python >=3.6
+    - python >=3.6,<=3.12
     - scikit-learn
     - blast
     - prodigal
@@ -50,3 +53,8 @@ about:
   license_family: GPL
   license_file: LICENSE
   summary: "Identify and remove incorrectly binned contigs from metagenome-assembled genomes."
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  
