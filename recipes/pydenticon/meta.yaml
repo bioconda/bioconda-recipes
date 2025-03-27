@@ -1,0 +1,50 @@
+{% set name = "pydenticon" %}
+{% set version = "0.3.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/azaghal/pydenticon/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 67d0da2ee4204b6a460f1af2a739524e3d64b54e9d23b2ce979b0ec519aa65dd
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install -vv ."
+  run_exports: 
+    - {{ pin_subpackage('pydenticon', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - pip
+  run:
+    - python
+    - pytest
+    - conda-forge::pillow
+    - conda-forge::mock
+
+test:
+  source_files: 
+    - tests/
+  imports:
+    - {{ name|lower }}
+  requires:
+    - pytest
+    - mock
+
+
+about:
+  home: https://github.com/azaghal/pydenticon
+  summary: "Library for generating identicons."
+  license: BSD-3-Clause
+  license_file: LICENSE
+
+
+extra:
+  recipe-maintainers:
+    - ramez17khaled
+
