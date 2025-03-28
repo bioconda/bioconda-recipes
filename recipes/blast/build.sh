@@ -11,8 +11,6 @@ BLAST_SRC_DIR="$SRC_DIR/c++"
 # Work directory
 RESULT_PATH="$BLAST_SRC_DIR/Release"
 
-# needs fresh to recognize darwin / arm64
-cp -rf $BUILD_PREFIX/share/gnuconfig/config.* ${SRC_DIR}/c++/src/build-system 
 
 # C/C++ preprocessor header includes paths
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
