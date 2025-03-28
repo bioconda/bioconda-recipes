@@ -8,7 +8,7 @@ mkdir -p "$PREFIX/bin"
 
 # copy scripts and config files
 cp -a LICENSE.txt \
-   version.txt
+   version.txt \
    perl-scripts \
    python-scripts \
    makefiles \
