@@ -1,0 +1,34 @@
+
+{% set version = "1.0" %}
+
+package:
+  name: seqrequester
+  version: {{ version }}
+
+source:
+  url: https://github.com/marbl/seqrequester/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 6848986650bd268ab501892e3d0082e7d2839081
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage("seqrequester", max_pin="x") }}
+
+requirements:
+  host:
+    - make
+
+test:
+  files:
+    - 1.fasta.gz
+    - 1.fasta.gz.summarize.test
+  commands:
+    - seqrequester summarize 1.fasta.gz > 1.fasta.gz.summarize
+    - diff -q 1.fasta.gz.summarize 1.fasta.gz.summarize.test > /dev/null
+
+about:
+  summary: A tool for summarizing, extracting, generating and modifying DNA sequences.
+  home: https://github.com/marbl/seqrequester
+  license: Public domain
+  license_file: license
