@@ -8,6 +8,7 @@ files=(polap
 	polap-mt.1.c70.3.faa
 	polap-pt.2.c70.3.faa
 	run-polap-ncbitools
+	polap-batch-v2.sh
 	polap-build-msbwt.sh
 	polap-command-completion.sh
 	polap-constants.sh
@@ -127,6 +128,7 @@ files=(polap
 	run-polap-r-test-reads-bar-graph.R
 	polap-data-v1.csv
 	polap-data-v2.csv
+	polap-data-v2-later.csv
 	polap-data-v4.csv
 	polap.sh)
 
