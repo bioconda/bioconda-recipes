@@ -12,17 +12,20 @@ echo "Current directory: $(pwd)"
 echo "Directory contents:"
 ls -la
 
-echo "======== Checking for zlib ========"
+echo "======== Checking for dependencies ========"
 echo "ZLIB location:"
 find $PREFIX -name "*zlib*" || echo "No zlib found directly"
 find $PREFIX -name "libz.*" || echo "No libz found directly"
+echo "BZIP2 location:"
+find $PREFIX -name "*bzip2*" || echo "No bzip2 found directly"
+find $PREFIX -name "libbz2.*" || echo "No libbz2 found directly"
 echo "Library contents:"
 ls -la $PREFIX/lib/ || echo "Could not list lib directory"
 echo "Include contents:"
 ls -la $PREFIX/include/ || echo "Could not list include directory"
 
 echo "======== Setting environment variables ========"
-# Set environment variables to help find zlib
+# Set environment variables to help find zlib and bzip2
 export CFLAGS="${CFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
@@ -42,9 +45,9 @@ cd build || { echo "Failed to change to build directory"; exit 1; }
 echo "Now in directory: $(pwd)"
 
 echo "======== Running CMake ========"
-# Try to find zlib manually before CMake
-echo "Searching for libz:"
-find / -name "libz.so*" -o -name "libz.dylib*" 2>/dev/null | head -10 || echo "No libz found in search"
+# Try to find dependencies manually before CMake
+echo "Searching for libraries:"
+find / -name "libz.so*" -o -name "libz.dylib*" -o -name "libbz2.so*" -o -name "libbz2.dylib*" 2>/dev/null | head -10 || echo "No libraries found in search"
 
 # Configure with more verbose output
 cmake ${CMAKE_ARGS} \
@@ -55,13 +58,16 @@ cmake ${CMAKE_ARGS} \
     -DZLIB_ROOT=${PREFIX} \
     -DZLIB_LIBRARY=${PREFIX}/lib/libz${SHLIB_EXT} \
     -DZLIB_INCLUDE_DIR=${PREFIX}/include \
+    -DBZIP2_ROOT_DIR=${PREFIX} \
+    -DBZIP2_INCLUDE_DIR=${PREFIX}/include \
+    -DBZIP2_LIBRARIES=${PREFIX}/lib/libbz2${SHLIB_EXT} \
     .. || { echo "======== CMake configuration failed ========"; exit 1; }
 
 echo "======== CMake completed successfully ========"
 echo "CMake files:"
 find . -name "CMakeCache.txt" -o -name "CMakeFiles" | head -10
 echo "CMakeCache.txt contents:"
-cat CMakeCache.txt | grep -i zlib || echo "No zlib info in CMakeCache.txt"
+cat CMakeCache.txt | grep -i "zlib\|bzip2" || echo "No zlib or bzip2 info in CMakeCache.txt"
 
 echo "======== Running Make ========"
 # Build with specified number of cores
