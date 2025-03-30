@@ -1,0 +1,62 @@
+{% set name = "taranys" %}
+{% set version = "3.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/BU-ISCIII/taranys/archive/{{ version }}.tar.gz
+  sha256: 89824baa50f8b5ecf2e20b15ee841391401b250a29db720bff5c025c806042c1
+
+build:
+  entry_points:
+    - taranys = taranys.__main__:run_taranys
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools
+    - setuptools-scm
+    - pip
+  run:
+    - python >=3.10
+    - poetry >=1.7.1
+    - prokka >=1.14
+    - blast >=2.9
+    - mash >=2
+    - prodigal >=2.6.3
+    - mafft >=7.505
+    - igraph >=0.9.8
+    - rich >=13.4.1
+    - click >=8.1.3
+    - leidenalg >=0.9.1
+    - questionary >=1.10.0
+    - bio >=1.6.0
+    - scikit-learn >=1.2.0
+    - plotly >=5.11.0
+    - python-kaleido >=0.2.1
+    - six >=1.16.0
+
+test:
+  imports:
+    - taranys
+  commands:
+    - taranys --help
+  requires:
+    - pip
+
+about:
+  summary: cg/wgMLST allele calling software, schema evaluation and allele distance estimation for outbreak reserch.
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  home: https://github.com/BU-ISCIII/taranys
+
+extra:
+  recipe-maintainers:
+    - saramonzon
