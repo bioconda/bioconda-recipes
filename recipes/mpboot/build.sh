@@ -28,12 +28,18 @@ fi
 # On x86 use -DIQTREE_FLAGS=avx, on arm use -DIQTREE_FLAGS=sse4
 if [[ "$(uname -m)" == "aarch64" ]]; then
     DCMAKE_ARGS+=(-DIQTREE_FLAGS=sse4)
+    EXE_NAME=mpboot-avx
 else
     DCMAKE_ARGS+=(-DIQTREE_FLAGS=avx)
+    EXE_NAME=mpboot
 fi
 
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release \
-	-DCMAKE_C_COMPILER="${CC}" -DCMAKE_CXX_COMPILER="${CXX}" \
+mkdir build
+
+cd build
+
+cmake -S ../ -B . \
+    -DCMAKE_C_COMPILER="${CC}" -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_C_FLAGS="${CFLAGS}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 	"${DCMAKE_ARGS[@]}" \
@@ -47,4 +53,10 @@ if [[ "$(uname -m)" == "aarch64" ]] && [[ "${CPU_COUNT}" -lt 4 ]]; then
 	JOBS=1 # CircleCI's arm.medium VM runs out of memory with higher values
 fi
 
+
 VERBOSE=1 make -j "${JOBS}" 
+
+# install
+mkdir -p "${PREFIX}/bin"
+cp "${EXE_NAME}" "${PREFIX}/bin/"
+chmod 0755 "${PREFIX}/bin/${EXE_NAME}"
