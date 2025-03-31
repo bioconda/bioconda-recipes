@@ -47,4 +47,4 @@ if [[ "$(uname -m)" == "aarch64" ]] && [[ "${CPU_COUNT}" -lt 4 ]]; then
 	JOBS=1 # CircleCI's arm.medium VM runs out of memory with higher values
 fi
 
-VERBOSE=1 make --build build --target install -j "${JOBS}" 
+VERBOSE=1 make install -j "${JOBS}" 
