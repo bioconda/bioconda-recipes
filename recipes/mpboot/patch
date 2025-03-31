@@ -1,3 +1,219 @@
+diff --git a/.github/workflows/build-mac.yaml b/.github/workflows/build-mac.yaml
+new file mode 100644
+index 0000000..0da4ab6
+--- /dev/null
++++ b/.github/workflows/build-mac.yaml
+@@ -0,0 +1,49 @@
++name: Release Mpboot Mac
++on:
++  workflow_dispatch:
++    inputs:
++      version:
++        required: true
++        type: string
++        description: Sematic versioning
++  workflow_call:
++    inputs:
++      version:
++        required: true
++        type: string
++        description: Sematic versioning
++
++jobs:
++  build:
++    strategy:
++      fail-fast: false
++      matrix:
++        chipset_arch: ["sse4", "avx"]
++        os: [macos-13]
++    permissions:
++      contents: write
++    runs-on: ${{ matrix.os }}
++    steps:
++    - uses: actions/checkout@v3
++
++    - name: Setup cmake
++      uses: jwlawson/actions-setup-cmake@v1.13
++      with:
++        cmake-version: '3.16.x'
++
++    - name: Run cmake
++      run: cmake . -DIQTREE_FLAGS=${{ matrix.chipset_arch }}
++
++    - name: Build
++      run: make
++    
++    - name: Zip build artifact
++      run: zip -r mpboot-${{ matrix.chipset_arch }}-${{ matrix.os }}-${{ inputs.version }}.zip mpboot*
++
++    - name: Release
++      uses: softprops/action-gh-release@v1
++      with:
++        files: mpboot-${{ matrix.chipset_arch }}-${{ matrix.os }}-${{ inputs.version }}.zip
++        tag_name: ${{ inputs.version }}
++        draft: true
++        append_body: true
+\ No newline at end of file
+diff --git a/.github/workflows/build-ubuntu.yaml b/.github/workflows/build-ubuntu.yaml
+new file mode 100644
+index 0000000..ff035d9
+--- /dev/null
++++ b/.github/workflows/build-ubuntu.yaml
+@@ -0,0 +1,49 @@
++name: Release Mpboot Linux
++on:
++  workflow_dispatch:
++    inputs:
++      version:
++        required: true
++        type: string
++        description: Sematic versioning
++  workflow_call:
++    inputs:
++      version:
++        required: true
++        type: string
++        description: Sematic versioning
++
++jobs:
++  build:
++    strategy:
++      fail-fast: false
++      matrix:
++        chipset_arch: ["sse4", "avx"]
++        os: [ubuntu-latest]
++    permissions:
++      contents: write
++    runs-on: ${{ matrix.os }}
++    steps:
++    - uses: actions/checkout@v3
++
++    - name: Setup cmake
++      uses: jwlawson/actions-setup-cmake@v1.13
++      with:
++        cmake-version: '3.16.x'
++
++    - name: Run cmake
++      run: cmake . -DIQTREE_FLAGS=${{ matrix.chipset_arch }} -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
++
++    - name: Build
++      run: make
++    
++    - name: Zip build artifact
++      run: zip -r mpboot-${{ matrix.chipset_arch }}-${{ matrix.os }}-${{ inputs.version }}.zip mpboot*
++
++    - name: Release
++      uses: softprops/action-gh-release@v1
++      with:
++        files: mpboot-${{ matrix.chipset_arch }}-${{ matrix.os }}-${{ inputs.version }}.zip
++        tag_name: ${{ inputs.version }}
++        draft: true
++        append_body: true
+\ No newline at end of file
+diff --git a/.github/workflows/build-windows.yaml b/.github/workflows/build-windows.yaml
+new file mode 100644
+index 0000000..47758a5
+--- /dev/null
++++ b/.github/workflows/build-windows.yaml
+@@ -0,0 +1,62 @@
++name: Release Mpboot Window
++on:
++  workflow_dispatch:
++    inputs:
++      version:
++        required: true
++        type: string
++        description: Sematic versioning
++  workflow_call:
++    inputs:
++      version:
++        required: true
++        type: string
++        description: Sematic versioning
++        
++jobs:
++  build:
++    strategy:
++      fail-fast: false
++      matrix:
++        chipset_arch: ["sse4", "avx"]
++        os: [windows-latest]
++    permissions:
++      contents: write
++    runs-on: ${{ matrix.os }}
++    steps:
++    - uses: actions/checkout@v3
++
++
++    - name: install tdm-gcc (v10.3.0)
++      run: |
++        mkdir tdm 
++        cd tdm
++        curl -LJ -o tdm64-gcc.exe https://github.com/jmeubank/tdm-gcc/releases/download/v10.3.0-tdm64-2/tdm64-gcc-10.3.0-2.exe
++        7z e tdm64-gcc.exe
++        mkdir install
++        forfiles /M *.tar.xz /C "cmd /C 7z x @file -y"
++        forfiles /M *.tar /C "cmd /C 7z x @file -oinstall -y"
++        cd install
++        cd bin
++        echo "$PWD"
++    - name: test tdm-gcc
++      run: |
++        gcc --version
++        echo $env:PATH 
++
++    - name: Run cmake
++      run: cmake . -G "MinGW Makefiles" -DIQTREE_FLAGS=${{ matrix.chipset_arch }} -DCMAKE_CXX_COMPILER="D:/a/mpboot/mpboot/tdm/install/bin/g++.exe" -DCMAKE_C_COMPILER="D:/a/mpboot/mpboot/tdm/install/bin/gcc.exe"
++
++    - name: Build
++      run: make
++    
++    - name: Zip build artifact
++      run: 7z a mpboot-${{ matrix.chipset_arch }}-${{ matrix.os }}-${{ inputs.version }}.7z mpboot*
++
++    - name: Release
++      uses: softprops/action-gh-release@v1
++      with:
++        files: mpboot-${{ matrix.chipset_arch }}-${{ matrix.os }}-${{ inputs.version }}.7z
++        tag_name: ${{ inputs.version }}
++        draft: true
++        append_body: true
+\ No newline at end of file
+diff --git a/.github/workflows/release.yaml b/.github/workflows/release.yaml
+new file mode 100644
+index 0000000..26a9cd2
+--- /dev/null
++++ b/.github/workflows/release.yaml
+@@ -0,0 +1,28 @@
++name: Release Mpboot
++on:
++  workflow_dispatch:
++    inputs:
++      version:
++        required: true
++        type: string
++        description: Sematic versioning
++
++jobs:
++  windows:
++    permissions:
++      contents: write
++    uses: ./.github/workflows/build-windows.yaml
++    with:
++      version: ${{ inputs.version }}
++  ubuntu:
++    permissions:
++      contents: write
++    uses: ./.github/workflows/build-ubuntu.yaml
++    with:
++      version: ${{ inputs.version }}
++  mac:
++    permissions:
++      contents: write
++    uses: ./.github/workflows/build-mac.yaml
++    with:
++      version: ${{ inputs.version }}
+\ No newline at end of file
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index fce4a26..ebb6506 100755
 --- a/CMakeLists.txt
@@ -11,6 +227,186 @@ index fce4a26..ebb6506 100755
  	set(CMAKE_CXX_FLAGS_RELEASE "-O3 -g0")
  	set(CMAKE_C_FLAGS_RELEASE "-O3 -g0")
  elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+diff --git a/README.md b/README.md
+index d8c5336..fb75825 100644
+--- a/README.md
++++ b/README.md
+@@ -1,38 +1,137 @@
+-# mpboot
+-MPBoot: Fast phylogenetic maximum parsimony tree inference and bootstrap approximation
+-
+-## **COMPILING INSTRUCTION SINCE 2020**
+-* Clone the source code, unzip it, and rename to **source**
+-* Create folder **build** outside folder **source**
+-* Change directory to **build**
+-* Run **cmake** command:
+-
+-**cmake ../source -DIQTREE_FLAGS=sse4 -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++**
+-* Replace **sse4** by **avx** in above command if you decide to run MPBoot on AVX architecture
+-* Run **make**
+-* You will find the executable named **mpboot** once the **make** command is done.
+-
+-<hr>
+-<br><br><br>
+-
+-
+-> ## **COMPILING INSTRUCTION PRIOR TO 2020**
+-> * Clone the source code, unzip it, and rename to **source**
+-> * Change directory to **source**, run following commands to update the sub-repository
+-> 
+-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**git submodule init**
+-> 
+-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**git submodule update**
+-> 
+-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**cd pllrepo**
+-> 
+-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**git checkout subufbootmp**
+-> 
+-> * Create folder **build** outside folder **source**
+-> * Change directory to **build**
+-> * Run **cmake** command:
+-> 
+-> **cmake ../source -DIQTREE_FLAGS=sse4 -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++**
+-> * Replace **sse4** by **avx** in above command if you decide to run MPBoot on AVX architecture
+-> * Run **make**
+-> * You will find the executable named **mpboot** once the **make** command is done.
++# Compilation guide
++## MPBoot
++### Downloading source code
++You can clone the source code from GitHub with:
++
++`git clone https://github.com/diepthihoang/mpboot.git`
++### Compiling under Linux
++1. Create folder **build** outside folder **mpboot**.
++2. Open Terminal.
++3. Change directory to **build**
++4. Configure source code with CMake:  
++`cmake ../mpboot -DIQTREE_FLAGS=avx -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++`
++> Replace avx by sse4 in above command if you decide to run MPBoot on SSE architecture
++
++5. Run command `make -j4` to compile source code with 4 processes:  
++> Option **j** specifies the number of processes used to compile source code with **make**.  
++  
++The compiler will generate an executable file named **mpboot-avx** 
++> In case of running MPBoot on SSE architecture, the executable file is named **mpboot**.
++
++6. To analyst file **example.phy**, run command:  
++`./mpboot-avx -s example.phy`
++
++### Compiling under Mac OS X
++1. Create folder **build** outside folder **mpboot**.
++2. Open a Terminal.
++3. Change directory to **build**
++4. Configure source code with CMake:  
++`cmake ../mpboot -DIQTREE_FLAGS=avx`
++> Replace avx by sse4 in above command if you decide to run MPBoot on SSE architecture
++
++5. Run command `make -j4` to compile source code with 4 processes:  
++> Option **j** specifies the number of processes used to compile source code with **make**.  
++  
++The compiler will generate an executable file named **mpboot-avx** 
++> In case of running MPBoot on SSE architecture, the executable file is named **mpboot**.
++
++6. To analyst file **example.phy**, run command:  
++`./mpboot-avx -s example.phy`
++
++### Compiling under Windows
++* Requirements:  
++  * cmake version >= 3.21
++  * TDM-GCC
++1. Create folder **build** outside folder **mpboot**.
++2. Open a Terminal.
++3. Change directory to **build**
++4. Configure source code with CMake:  
++`cmake -G "MinGW Makefiles" -DIQTREE_FLAGS=avx ../mpboot`
++> Replace avx by sse4 in above command if you decide to run MPBoot on SSE architecture.  
++> Due to having conflicts with **Vectorization**, please not using **Clang** to configure source code.
++
++5. Run command `mingw32-make -j4` to compile source code with 4 processes:  
++> Option **j** specifies the number of processes used to compile source code with **make**.
++  
++The compiler will generate two executable files named **mpboot-avx** and **mpboot-avx-click**
++> In case of running MPBoot on SSE architecture, the executable files are named **mpboot** and **mpboot-click**.
++
++6. To analyst file **example.phy**:
++* Run command `./mpboot-avx -s example.phy`
++* Or:
++    1. Open **mpboot-click** by double click on it
++    2. Press **y** to start enter command
++    3. Type **-s** and press **Enter**
++    4. Press **e** to continue entering command
++    5. Type **example.phy** and press **Enter**
++    6. Press **y** to finish command
++
++
++  
++## MPBoot-MPI
++### Downloading source code
++You can clone the source code from GitHub with:
++
++`git clone https://github.com/diepthihoang/mpboot.git`  
++Switch to branch which contains MPBoot-MPI source code:
++* `git checkout mpboot-mpi-sync` for synchronous version
++* `git checkout mpboot-mpi-async` for asynchronous version
++
++### Compiling under Linux
++1. Create folder **build** outside folder **mpboot**.
++2. Open a Terminal.
++3. Change directory to **build**
++4. Configure source code with CMake:  
++`cmake ../source -DIQTREE_FLAGS=avx -DCMAKE_C_COMPILER=mpicc -DCMAKE_CXX_COMPILER=mpicxx`
++> Replace avx by sse4 in above command if you decide to run MPBoot on SSE architecture
++
++5. Run command `make -j4` to compile source code with 4 processes:  
++> Option **j** specifies the number of processes used to compile source code with **make**.
++  
++The compiler will generate an executable file named **mpboot-avx**
++> In case of running MPBoot on SSE architecture, the executable file is named **mpboot**.
++
++6. To analyst file **example.phy** with 2 processes, run command:  
++`mpirun -np 2 ./mpboot-avx -s example.phy`
++> Option **np** specifies the number of processes used to run MPBoot-MPI
++
++### Compiling under Mac OS X
++1. Create folder **build** outside folder **mpboot**.
++2. Open a Terminal.
++3. Change directory to **build**
++4. Configure source code with CMake:  
++`cmake ../mpboot -DIQTREE_FLAGS=avx -DCMAKE_C_COMPILER=mpicc -DCMAKE_CXX_COMPILER=mpicxx`
++> Replace avx by sse4 in above command if you decide to run MPBoot on SSE architecture
++
++5. Run command `make -j4` to compile source code with 4 processes. Option **j** specifies the number of processes used to compile source code with **make**.
++  
++The compiler will generate an executable file named **mpboot-avx**
++> In case of running MPBoot on SSE architecture, the executable file is named **mpboot**.
++
++6. To analyst file **example.phy** with 2 processes, run command:  
++`mpirun -np 2 ./mpboot-avx -s example.phy` 
++> Option **np** specifies the number of processes used to run MPBoot-MPI
++
++### Compiling under Windows
++* Requirements:  
++  * cmake version >= 3.21
++  * TDM-GCC
++  * MSMPI
++1. Create folder **build** outside folder **mpboot**.
++2. Open a Terminal.
++3. Change directory to **build**
++4. Configure source code with CMake:  
++`cmake -G "MinGW Makefiles" -DIQTREE_FLAGS=mpiavx ../mpboot`
++> Replace mpiavx by mpisse4 in above command if you decide to run MPBoot on SSE architecture.  
++> Due to having conflicts with **Vectorization**, please not using **Clang** to configure source code.
++
++5. Run command `mingw32-make -j4` to compile source code with 4 processes:  
++> Option **j** specifies the number of processes used to compile source code with **make**.
++  
++The compiler will generate an executable file named **mpboot-avx** 
++> In case of running MPBoot on SSE architecture, the executable file is named **mpboot**.
++  
++
++6. To analyst file **example.phy** with 2 processes, run command:  
++`mpiexec -n 2 ./mpboot-avx -s example.phy`
++> Option **n** specifies the number of processes used to run MPBoot-MPI
 diff --git a/alignment.cpp b/alignment.cpp
 index f046ce5..8b1d32b 100644
 --- a/alignment.cpp
