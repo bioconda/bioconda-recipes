@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -exo pipefail
 
 # Copy all source files from SRC_DIR into the bin folder
