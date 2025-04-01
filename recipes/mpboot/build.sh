@@ -37,5 +37,5 @@ VERBOSE=1 make -j "${JOBS}"
 
 # install
 mkdir -p "${PREFIX}/bin"
-cp "{$SRC_DIR}/${EXE_NAME}" "${PREFIX}/bin/mpboot"
+cp "${SRC_DIR}/${EXE_NAME}" "${PREFIX}/bin/mpboot"
 chmod 0755 "${PREFIX}/bin/${EXE_NAME}"
