@@ -28,10 +28,16 @@ fi
 # On x86 use -DIQTREE_FLAGS=avx, on arm use -DIQTREE_FLAGS=sse4
 if [[ "$(uname -m)" == "aarch64" ]]; then
     DCMAKE_ARGS+=(-DIQTREE_FLAGS=sse4)
-    EXE_NAME=mpboot-avx
-else
-    DCMAKE_ARGS+=(-DIQTREE_FLAGS=avx)
     EXE_NAME=mpboot
+elif [[ "$(uname -m)" == "x86_64" ]]; then
+    DCMAKE_ARGS+=(-DIQTREE_FLAGS=avx)
+    EXE_NAME=mpboot-avx
+elif [[ "$(uname -m)" == "arm64" ]]; then
+    DCMAKE_ARGS+=(-DIQTREE_FLAGS=sse4)
+    EXE_NAME=mpboot
+else
+    echo "Unsupported architecture: $(uname -m)"
+    exit 1
 fi
 
 cmake -S . -B . \
