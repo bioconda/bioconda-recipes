@@ -1,0 +1,49 @@
+{% set name = "bed_annotation" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/bed_annotation-{{ version }}.tar.gz
+  sha256: 7dfb78a5bc1784a561aa06cddf4d13210abd75a8cbcb80506a94fd2edc34482a
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('bed_annotation', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - cython
+    - pip
+  run:
+    - python
+    - pip
+    - setuptools >=18.5
+    - pybedtools
+    - cython
+    - numpy
+    - joblib
+    - gffutils
+    - click
+
+test:
+  imports:
+    - bed_annotation
+    - ngs_utils
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/vladsaveliev/bed_annotation
+  summary: Genome capture target coverage evaluation tool
+  license: MIT
+  license_file: LICENSE
