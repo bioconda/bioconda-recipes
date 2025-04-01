@@ -3,7 +3,7 @@ set -ex
 
 # On x86 use -DIQTREE_FLAGS=avx, on arm use -DIQTREE_FLAGS=sse4
 if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
-    DCMAKE_ARGS+=(-DIQTREE_FLAGS=sse4)
+    # DCMAKE_ARGS+=(-DIQTREE_FLAGS=sse4)
     EXE_NAME=mpboot
 elif [[ "$(uname -m)" == "x86_64" ]]; then
     DCMAKE_ARGS+=(-DIQTREE_FLAGS=avx)
@@ -17,6 +17,7 @@ cmake -S . -B . \
     -DCMAKE_C_COMPILER="${CC}" -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_C_FLAGS="${CFLAGS}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${DCMAKE_ARGS[@]}" \
 	"${CONFIG_ARGS}"
 
