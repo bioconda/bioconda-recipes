@@ -1,6 +1,10 @@
 #!/bin/bash
 set -ex
 
+export CFLAGS="${CFLAGS} -w"
+export CPPFLAGS="${CPPFLAGS} -w"
+export CXXFLAGS="${CXXFLAGS} -w"
+
 # On x86 use -DIQTREE_FLAGS=avx, on arm use -DIQTREE_FLAGS=sse4
 if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
     # DCMAKE_ARGS+=(-DIQTREE_FLAGS=sse4)
@@ -33,5 +37,5 @@ VERBOSE=1 make -j "${JOBS}"
 
 # install
 mkdir -p "${PREFIX}/bin"
-cp "${EXE_NAME}" "${PREFIX}/bin/mpboot"
+cp "{$SRC_DIR}/${EXE_NAME}" "${PREFIX}/bin/mpboot"
 chmod 0755 "${PREFIX}/bin/${EXE_NAME}"
