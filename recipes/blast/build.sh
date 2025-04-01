@@ -158,7 +158,7 @@ export AR="${AR} rcs"
 
 # Run configure script
 cd "$BLAST_SRC_DIR"
-./configure.orig $CONFIGURE_FLAGS >&2
+./configure $CONFIGURE_FLAGS >&2
 
 
 # Run GNU Make
