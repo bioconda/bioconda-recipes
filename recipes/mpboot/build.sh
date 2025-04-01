@@ -2,7 +2,7 @@
 set -ex
 
 # On x86 use -DIQTREE_FLAGS=avx, on arm use -DIQTREE_FLAGS=sse4
-if [[ "$(uname -m)" == "aarch64" or "$(uname -m)" == "arm64" ]]; then
+if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
     DCMAKE_ARGS+=(-DIQTREE_FLAGS=sse4)
     EXE_NAME=mpboot
 elif [[ "$(uname -m)" == "x86_64" ]]; then
