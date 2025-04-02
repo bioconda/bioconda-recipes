@@ -29,9 +29,12 @@ fi
 # Download and setup LASTZ if not already done
 if [ ! -d "workflow/scripts/lastz_32" ]; then
     cd workflow/scripts
-    wget https://github.com/lastz/lastz/archive/refs/tags/1.04.45.zip
-    unzip 1.04.45.zip 
-    cd lastz-1.04.45/src/
+    # wget https://github.com/lastz/lastz/archive/refs/tags/1.04.45.zip
+    # unzip 1.04.45.zip 
+    # cd lastz-1.04.45/src/
+    wget https://github.com/lastz/lastz/archive/refs/heads/master.zip
+    unzip master.zip
+    cd lastz-master/src/
     make CC="${CC}" CXX="${CXX}" lastz_40
     make install_40
     cp lastz_40 ../../
