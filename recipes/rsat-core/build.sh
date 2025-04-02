@@ -14,6 +14,7 @@ cp -a LICENSE.txt \
    makefiles \
    R-scripts \
    public_html \
+   share \
    RSAT_config_default.mk \
    RSAT_config_default.bashrc \
    RSAT_config_default.props \
@@ -23,10 +24,6 @@ cp -a LICENSE.txt \
 # copy main script rsat, version.txt
 echo "cp bin/rsat $PREFIX/bin/rsat"
 cp bin/rsat $PREFIX/bin/rsat
-
-echo "cp version.txt $PREFIX/bin/version.txt"
-cp version.txt $PREFIX/bin/version.txt
-
 
 # Build and dispatch compiled binaries
 cd contrib
@@ -40,7 +37,7 @@ done
 cd ..
 
 # Build the R package with RSAT functions used by matrix-clustering
-echo "Building R package TFBMclust"
+echo "Building R package TFBMclust from local source"
 cd R-scripts
 R CMD INSTALL --no-multiarch --with-keep.source TFBMclust
 cd ..
