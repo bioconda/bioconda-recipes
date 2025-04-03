@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "prostatecancertaylor-1.30.0"
+installBiocDataPackage.sh "prostatecancertaylor-1.34.0"

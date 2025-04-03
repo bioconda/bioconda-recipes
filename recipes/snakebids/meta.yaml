@@ -1,0 +1,74 @@
+{% set name = "snakebids" %}
+{% set version = "0.14.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/s/snakebids/snakebids-{{ version }}.tar.gz
+  sha256: acb987df3f9e763dd20a3398ac199282ff9443796ab115f610c7d06d0a831ece
+
+build:
+  entry_points:
+    - snakebids = snakebids.admin:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 2
+  run_exports:
+    - {{ pin_subpackage("snakebids", max_pin="x.x") }} 
+
+requirements:
+  host:
+    - python
+    - poetry-core >=1.0.0
+    - poetry-dynamic-versioning
+    - pip
+  run:
+    - python >=3.8,<4.0
+    - pybids >=0.16.0,<0.17
+    - snakemake >=5.28.0,<8  # [py<311]
+    - snakemake >=7.18.2  # [py>=311]
+    - typing_extensions >=3.10.0
+    - attrs >=22.2.0
+    - boutiques >=0.5.25,<0.6.0
+    - more-itertools >=8
+    - pvandyken-deprecated ==0.0.4
+    - importlib-resources >=5.12.0
+    - numpy <=1.24.4  # [py<39]
+    - numpy >=1.23.2  # [py>=311]
+    - scipy >=1.10.0,<=1.10.1  # [py<39]
+    - scipy >=1.10.0  # [py>=39]
+    - pandas <=2.0.3  # [py<39]
+    - pandas >=2.1.1  # [py>312]
+    - copier >=9.2.0
+    - jinja2-time >=0.2.0
+    - requests >=2.31.0
+    - ruamel.yaml >=0.17.2
+    - lazy-loader >=0.3
+    - docutils !=0.21.post1
+    - pluggy >=1.3
+
+test:
+  imports:
+    - snakebids
+  commands:
+    - snakebids --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/khanlab/snakebids
+  summary: BIDS integration into snakemake workflows
+  description: |
+    Snakebids is a Python package that extends Snakemake, enabling 
+    users to create reproducible, scalable pipelines for processing 
+    neuroimaging data in the BIDS format.
+  license: MIT
+  license_file: LICENSE
+
+
+extra:
+  recipe-maintainers:
+    - Dhananjhay
+
