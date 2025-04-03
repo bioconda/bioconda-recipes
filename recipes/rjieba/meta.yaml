@@ -1,0 +1,42 @@
+{% set name = "rjieba" %}
+{% set version = "0.1.13" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/ec/d6/00bce0f8997f01d4c626b87791597c02d40602d7eeedf785edd194ee49b6/{{name}}-{{version}}.tar.gz
+  sha256: 3ff7396e645c6ebf8c780ac2d585a6c92ddc5e135be83b0da0da9f995ae62f46
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("rjieba", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - maturin
+  host:
+    - python >=3
+    - setuptools
+  run:
+    - python >=3
+
+test:
+  imports:
+    - rjieba
+  commands:
+    - python -c "import rjieba; rjieba.cut('我们中出了一个叛徒')"
+
+about:
+  home: https://github.com/messense/rjieba-py
+  license: MIT
+  license_file: LICENSE
+  summary: jieba-rs Python binding
+
+extra:
+  maintainers:
+    - ggabernet
