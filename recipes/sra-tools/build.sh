@@ -35,7 +35,7 @@ cmake -S sra-tools/ -B build_sratools/ \
 	-DCMAKE_C_FLAGS="${CFLAGS}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	"${CONFIG_ARGS}"
+	${CONFIG_ARGS}
 
 cmake --build build_sratools/ --target install -j "${CPU_COUNT}" -v
 

@@ -1,5 +1,5 @@
 {% set name = "immuneML" %}
-{% set version = "3.0.6" %}
+{% set version = "3.0.12" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,11 +7,11 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/i/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz"
-  sha256: 788591fe4d792ede77d5916489d36aab366ceae7ae411fa699b6aea486e9713f
+  sha256: f238b86d5d4f8fe756970d3f544aa69ca825a57a8883507fd0866f4c02de44d0
 
 build:
   number: 0
-  skip: true  # [py<39 or py>311 or target_platform == "osx-64"]#
+  skip: True  # [py < 37 or py > 311 or target_platform == "osx-64"]
   run_exports:
     - {{ pin_subpackage('immuneml', max_pin="x") }}
   entry_points:
@@ -20,7 +20,7 @@ build:
     - ligo = immuneML.app.LigoApp:main
   script: |
     echo 'Installing immuneML...'
-    $PYTHON -m pip install . --no-deps --no-build-isolation -vvv || exit 1
+    $PYTHON -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv || exit 1
     echo 'Done installing immuneML'
 
 requirements:
@@ -28,10 +28,11 @@ requirements:
     - {{ compiler('c') }}
   host:
     - python
+    - pip
   run:
-    - numpy <2.0.0
+    - numpy <=1.26.4
     - pytest >=4
-    - pandas
+    - pandas >=2.1.0
     - PyYAML >=5.3
     - scikit-learn >=0.23
     - gensim >=4
@@ -39,7 +40,7 @@ requirements:
     - editdistance
     - regex
     - tzlocal
-    - airr >=1, <1.4
+    - airr >=1,<1.4
     - pystache
     - dill >=0.3
     - plotly >=4
@@ -47,11 +48,12 @@ requirements:
     - matplotlib-venn >=0.11
     - scipy <1.13
     - umap-learn
-    - bionumpy >=0.2.31
+    - bionumpy ==1.0.12
     - npstructures
     - olga >=1.2.4
     - tensorflow >=2.12.0
     - keras >=2.12.0
+    - pytorch >=2.* cpu_*
 
 test:
   imports:
@@ -65,7 +67,7 @@ about:
   license_family: AGPL
   license_file: LICENSE.md
   summary: "immuneML is a software platform for machine learning analysis of immune receptor repertoires."
-  doc_url: "https://docs.immuneml.uio.no/"
+  doc_url: "https://docs.immuneml.uio.no"
   dev_url: "https://github.com/uio-bmi/immuneML"
 
 extra:
