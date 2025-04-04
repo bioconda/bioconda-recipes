@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ `uname` == Darwin ]]; then
-	export CFLAGS="${CFLAGS} -O3 -Wno-int-conversion"
+	export CFLAGS="${CFLAGS} -O3 -Wno-int-conversion -Wno-implicit-function-declaration"
 fi
 
 # https://molpopgen.github.io/fwdpy11/misc/developersguide.html
