@@ -3,6 +3,7 @@ set -eux -o pipefail
 
 # make compilation not be dependent on locale settings
 export LC_ALL=C
+export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${PREFIX}/lib:{BUILD_PREFIX}/lib}"
 
 # allows boost to find the correct build toolset in Linux
 BIN_DIR=$(which x86_64-conda-linux-gnu-gcc)
