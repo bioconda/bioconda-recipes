@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lpopt"
+LDFLAGS="${LDFLAGS} -L${BUILD_PREFIX}/lib -lpopt"
 make -j${CPU_COUNT} LDFLAGS="${LDFLAGS}"
 
 mkdir -p ${PREFIX}/etc/conda/activate.d
