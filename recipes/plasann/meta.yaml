@@ -1,47 +1,48 @@
 {% set name = "PlasAnn" %}
-{% set version = "1.0.5" %}
+{% set version = "1.0.8" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/ajlopatkin/PlasAnn/archive/refs/tags/v1.0.5.tar.gz
-  sha256: d58bae3be8ce4755282fcd61567f75692f32cd86919c7c42475ca10af13db423
+  url: https://github.com/ajlopatkin/PlasAnn/archive/v{{ version }}.tar.gz
+  sha256: b2080a07da25033d5c8f681fa44dbbd507a2caac7d65c86ffa5c5592a59d2195
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
   entry_points:
-    - PlasAnn = plasann.annotate_plasmid:main
+    - PlasAnn = Scripts.annotate_plasmid:cli
   run_exports:
     - {{ pin_subpackage('plasann', max_pin='x.x') }}
 
 requirements:
   host:
-    - python >=3.7
+    - python >=3.6
     - pip
     - setuptools
   run:
-    - python >=3.7
+    - python >=3.6
     - pandas
     - matplotlib-base
     - pycirclize
     - biopython
     - gdown
-    - prodigal # [not arm64]
-    - blast # [not arm64]
+    - prodigal  # [not arm64]
+    - blast
 
 test:
   commands:
-    - python -c "import plasann"
+    - PlasAnn --help
 
 about:
   home: https://github.com/ajlopatkin/PlasAnn
+  dev_url: https://github.com/ajlopatkin/PlasAnn
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: 'A tool for plasmid annotation and visualization'
+  summary: 'A tool for plasmid annotation and visualization.'
   description: |
     PlasAnn is a tool for plasmid annotation and visualization.
     
