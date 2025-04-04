@@ -1,0 +1,49 @@
+{% set version = "1.7.3" %} # put in correct version here
+{% set name = "shiver" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+source:
+  url: https://github.com/ChrisHIV/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: 4d373bf4d257e52ea1cc548c492bfe654dc677c65df1d07402f898f73c9f1c65
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('shiver', max_pin="x") }}
+
+
+requirements:
+  run:
+    - python >=3
+    - smalt
+    - trimmomatic
+    - samtools
+    - biopython
+    - mafft
+    - blast >=2.2.28
+    - pyfastaq
+    - six
+    - pandas
+    - bc
+
+test:
+  commands:
+    - shiver_init.sh --test $PREFIX/bin/config.sh
+    - shiver_align_contigs.sh --test $PREFIX/bin/config.sh
+    - shiver_map_reads.sh --test $PREFIX/bin/config.sh paired
+    - $PREFIX/bin/tools/TestPythonModulesInstalled.py
+
+about:
+  home: https://github.com/ChrisHIV/shiver
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: SHIVER - Sequences from HIV Easily Reconstructed
+
+extra:
+  recipe-maintainers:
+    - notestaff
+    - gtonkinhill
+    - chrishiv

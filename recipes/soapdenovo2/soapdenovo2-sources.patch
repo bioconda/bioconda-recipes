@@ -1,0 +1,163 @@
+--- sparsePregraph/build_preArc.cpp
++++ sparsePregraph/build_preArc.cpp
+@@ -32,7 +32,6 @@
+ #include "faidx.h"
+ #include "knetfile.h"
+ #include "sam_view.h"
+-#include "xcurses.h"
+ #include "zlib.h"
+ #include "bgzf.h"
+ #include "glf.h"
+--- sparsePregraph/inc/stdinc.h
++++ sparsePregraph/inc/stdinc.h
+@@ -32,6 +32,8 @@
+ #include <stddef.h>
+ #include <time.h>
+ #include <pthread.h>
++#include <unistd.h>
++
+ using namespace std;
+ 
+ 
+--- sparsePregraph/io_func.cpp
++++ sparsePregraph/io_func.cpp
+@@ -29,7 +29,6 @@
+ #include "faidx.h"
+ #include "knetfile.h"
+ #include "sam_view.h"
+-#include "xcurses.h"
+ #include "zlib.h"
+ #include "bgzf.h"
+ #include "glf.h"
+--- standardPregraph/hashFunction.c
++++ standardPregraph/hashFunction.c
+@@ -82,7 +82,7 @@
+ };
+ 
+ typedef int ( *CRC32CFunctionPtr ) ( uint32_t, const char *, size_t );
+-static CRC32CFunctionPtr crc32;
++static CRC32CFunctionPtr crc32_local;
+ 
+ static uint32_t cpuid ( uint32_t functionInput )
+ {
+@@ -145,11 +145,11 @@
+ 
+ ubyte8 hash_kmer ( Kmer kmer )
+ {
+-	return ( crc32 ( 0, ( char * ) &kmer, sizeof ( Kmer ) ) );
++	return ( crc32_local ( 0, ( char * ) &kmer, sizeof ( Kmer ) ) );
+ }
+ 
+ void crc32c_Init()
+ {
+-	crc32 = detectBestCRC32C();
++	crc32_local = detectBestCRC32C();
+ }
+ 
+--- standardPregraph/inc/stdinc.h
++++ standardPregraph/inc/stdinc.h
+@@ -30,5 +30,7 @@
+ #include <pthread.h>
+ #include "def.h"
+ #include "types.h"
++#include <stdbool.h>
+ #include <aio.h>
+ #include <errno.h>
++#include "unistd.h"
+--- standardPregraph/orderContig.c
++++ standardPregraph/orderContig.c
+@@ -3202,7 +3202,7 @@ void ScafStat ( int len_cut, char * graphfile )
+ 	Singleton_Seq[Scaffold_Number] = 0;
+ 	Nucleotide = fgetc ( fp );
+ 
+-	while ( Nucleotide != EOF )
++	while ( Nucleotide != (char) EOF ) /* Bug Fix */
+ 	{
+ 		if ( Nucleotide == '>' )
+ 		{
+@@ -3529,7 +3529,7 @@ void ScafStat ( int len_cut, char * graphfile )
+ 	Singleton_Seq[Scaffold_Number] = 0;
+ 	Nucleotide = fgetc ( fp2 );
+ 
+-	while ( Nucleotide != EOF )
++	while ( Nucleotide != (char) EOF ) /* Bug Fix */
+ 	{
+ 		if ( Nucleotide == '>' )
+ 		{
+--- standardPregraph/prlReadFillGap.c
++++ standardPregraph/prlReadFillGap.c
+@@ -827,6 +827,7 @@ static void outputScafSeq ( FILE * fo, FILE * foc, FILE * foc2, FILE * fo3, int
+ 	int i, t, lu_len = 0, lu_end = 0;
+ 	unsigned int ctg_start_pos = 0;
+ 	char strand;
++#if 0 /* change by BSN: avoid allocating big chunk of memory unless needed for "visual" */
+ 	unsigned int * pos_start = ( unsigned int * ) ckalloc ( 1000000 * sizeof ( unsigned int ) );
+ 	unsigned int * pos_end = ( unsigned int * ) ckalloc ( 1000000 * sizeof ( unsigned int ) );
+ 	//  char index_contig[num_ctg][20];
+@@ -838,6 +839,7 @@ static void outputScafSeq ( FILE * fo, FILE * foc, FILE * foc2, FILE * fo3, int
+ 	char * orien_array;
+ 	orien_array = ( char * ) ckalloc ( 1000000 * sizeof ( char ) );
+ 	//  scaffBuffer = (char *) ckalloc (300000000 * sizeof (char));
++#endif /* end change by BSN */
+ 	stackRecover ( ctgsStack );
+ 
+ 	while ( ( actg = stackPop ( ctgsStack ) ) != NULL )
+@@ -929,6 +931,18 @@ static void outputScafSeq ( FILE * fo, FILE * foc, FILE * foc2, FILE * fo3, int
+ 
+ 	if ( visual )
+ 	{
++#if 1  /* change by BSN: allocating memory *only* when "visual" is on */
++		unsigned int * pos_start = ( unsigned int * ) ckalloc ( 1000000 * sizeof ( unsigned int ) );
++		unsigned int * pos_end = ( unsigned int * ) ckalloc ( 1000000 * sizeof ( unsigned int ) );
++		//  char index_contig[num_ctg][20];
++		char ** index_contig = ( char ** ) ckalloc ( 1000000 * sizeof ( char * ) );
++
++		for ( i = 0; i < 1000000; i++ )
++			{ index_contig[i] = ( char * ) ckalloc ( 20 * sizeof ( char ) ); }
++
++		char * orien_array;
++		orien_array = ( char * ) ckalloc ( 1000000 * sizeof ( char ) );
++#endif /* end change by BSN */
+ 		scaffBuffer = ( char * ) ckalloc ( ( ctg_start_pos + 5 ) * sizeof ( char ) );
+ 		prevCtg = NULL;
+ 		column = 0;
+@@ -1086,18 +1100,20 @@ static void outputScafSeq ( FILE * fo, FILE * foc, FILE * foc2, FILE * fo3, int
+ 
+ 		fprintf ( fo3, "}\n" );
+ 		free ( ( void * ) scaffBuffer );
+-	}
+ 
+-	free ( ( void * ) pos_start );
+-	free ( ( void * ) pos_end );
+-	free ( ( void * ) orien_array );
++#if 1  /* change by BSN: deallocating memory *only* when "visual" is on */
++		free ( ( void * ) pos_start );
++		free ( ( void * ) pos_end );
++		free ( ( void * ) orien_array );
+ 
+-	for ( i = 0; i < 1000000; i++ )
+-	{
+-		free ( ( void * ) index_contig[i] );
+-	}
++		for ( i = 0; i < 1000000; i++ )
++		  {
++		    free ( ( void * ) index_contig[i] );
++		  }
+ 
+-	free ( ( void * ) index_contig );
++		free ( ( void * ) index_contig );
++#endif /* end change by BSN */
++	}
+ }
+ 
+ static void fill1scaf ( int index, STACK * ctgsStack, int thrdID );
+--- standardPregraph/readseq1by1.c
++++ standardPregraph/readseq1by1.c
+@@ -31,7 +31,6 @@
+ #include "faidx.h"
+ #include "knetfile.h"
+ #include "sam_view.h"
+-#include "xcurses.h"
+ #include "zlib.h"
+ #include "bgzf.h"
+ #include "glf.h"

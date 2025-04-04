@@ -1,0 +1,52 @@
+{% set version = "3.1.0" %}
+
+package:
+  name: arvados-python-client
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/a/arvados-python-client/arvados-python-client-{{ version }}.tar.gz
+  sha256: 2f2883cf8ae2229d8762cb5239f8dab09bab7202de24e720b2ca1067f42136b0
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('arvados-python-client', max_pin="x") }}
+
+requirements:
+  host:
+    - python 3.8
+    - setuptools >=40.3.0
+    - pip
+  run:
+    - python >=3.8
+    - setuptools >=40.3.0
+    - ciso8601 >=2.0.0
+    - google-api-python-client >=2.1.0
+    - google-auth
+    - httplib2 >=0.9.2
+    - pycurl >=7.19.5.1
+    - websockets
+
+test:
+  imports:
+    - arvados
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/curoverse/arvados/tree/main/sdk/python
+  license: Apache-2.0
+  summary: Python API for Arvados
+  description: |
+     Python API for Arvados, an open source platform for managing and
+     analyzing biomedical big data
+  license_file: LICENSE-2.0.txt
+
+extra:
+  skip-lints:
+    - uses_setuptools
+    - should_be_noarch_generic  # needs subprocess32 on py2k

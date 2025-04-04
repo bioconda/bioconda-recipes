@@ -1,0 +1,45 @@
+{% set version = "3.7.0" %}
+{% set name = "r-misha" %}
+{% set commit = "fb45473ac27833154724bac04136c601e7b2a6f0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: '{{ version }}'
+
+source:
+  url: 'https://github.com/tanaylab/misha/archive/{{ commit }}.zip'
+  sha256: a27885729422368972734cf7a657a0a4f8abada8aa5728cb9a4ac745f3184d5a
+
+build:
+  # https://github.com/tanaylab/misha/issues/9
+  skip: True  # [osx]
+  number: 1
+  rpaths:
+    - lib/R/lib
+    - lib/
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - sed
+  host:
+    - r-base
+    - r-devtools
+  run:
+    - r-base
+
+test:
+  commands:
+    - '$R -e "library(misha)"'
+
+about:
+  home: 'https://tanaylab.github.io/misha/index.html'
+  license: GPL-2
+  summary: 'Toolkit for analysis of genomic data'
+
+extra:
+  maintainers:
+    - Misha Hoichman <misha@hoichman.com>

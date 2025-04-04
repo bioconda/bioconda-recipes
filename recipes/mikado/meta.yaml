@@ -1,0 +1,80 @@
+{% set name = "mikado" %}
+{% set version = "2.3.4" %}
+
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/Mikado-{{ version }}.tar.gz
+  sha256: 6d8844bacacc776214cf35cb148fa638c029b2972751d04fc1f7d0d8f3e961c2
+
+build:
+  number: 1
+  skip: True   # [py < 37]
+  entry_points:
+    - mikado = Mikado.__main__:main
+    - daijin = Mikado.daijin.__main__:main
+  script: {{ PYTHON }} -m pip install . -vv
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - cython
+    - numpy
+    - pip
+    - python
+    - scipy
+  run:
+    - biopython >=1.78
+    - datrie >=0.8
+    - drmaa
+    - sqlite
+    - hypothesis
+    - marshmallow >=3.1.0
+    - marshmallow-dataclass >=8.3.1
+    - msgpack-python >=1.0.0
+    - networkx >=2.3
+    - {{ pin_compatible('numpy') }}
+    - {{ pin_compatible('scipy') }}
+    - pandas >=1.0
+    - pyfaidx >=0.5.8
+    - pysam >=0.15.3
+    - pytest
+    - python
+    - pyyaml >=5.1.2
+    - python-rapidjson >=1.0
+    - six >=1.12.0
+    - snakemake-minimal >=5.7.0
+    - sqlalchemy >=1.4.0
+    - sqlalchemy-utils >=0.34.1
+    - tabulate >=0.8.5
+    - toml >=0.10.0
+    - typeguard >=2.9.1
+
+test:
+  imports:
+    - Mikado
+    - Mikado.configuration
+    - Mikado.loci
+    - rapidjson
+  commands:
+    - mikado --help
+    - daijin --help
+    #- python -c "import Mikado; Mikado.test(label='fast')"
+
+about:
+  home: https://github.com/EI-CoreBioinformatics/mikado
+  summary: A Python3 annotation program to select the best gene model in each locus
+  license: LGPL-3.0-or-later
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - lucventurini
+    - ljyanesm
+    - gemygk
+    - swarbred

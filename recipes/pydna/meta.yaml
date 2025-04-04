@@ -1,0 +1,50 @@
+{% set name = "pydna" %}
+{% set version = "5.2.0" %}
+{% set hash = "24e89cc71c77c727c3681da8fe889fb65f243766db63fb17f67a8a6280fde313" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  script_env:
+    # Workaround for poetry-dynamic-versioning generating incorrect version due
+    # to missing Git metadata.
+    - POETRY_DYNAMIC_VERSIONING_BYPASS={{ version }}
+  run_exports:
+    - {{ pin_subpackage('pydna', max_pin='x.x') }}
+
+source:
+  url: https://github.com/BjornFJohansson/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: {{ hash }}
+
+requirements:
+  host:
+  - python >=3.8
+  - pip
+  - poetry
+  - poetry-dynamic-versioning
+  run:
+  - python >=3.8
+  - appdirs >=1.4.4
+  - biopython >=1.80
+  - networkx >=2.8.8
+  - prettytable >=3.5.0
+  - pyperclip >=1.8.2
+  - pyfiglet >=0.8.post1
+  - pyparsing >=2.4.7
+  - requests >=2.26.0
+
+test:
+  imports:
+    - pydna
+
+about:
+  home: https://github.com/BjornFJohansson/pydna
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE.txt
+  summary: 'Representing double stranded DNA and functions for simulating cloning and homologous recombination between DNA molecules.'

@@ -1,0 +1,58 @@
+{% set name = "bandage_ng" %}
+{% set version = "2022.09" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  - url: https://github.com/asl/BandageNG/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: 892c36350ee0eb8a58ec7187cf08b6b5b288915bd74f6d69e68c7aa2fdd704f0
+
+build:
+  number: 5
+  skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage("bandage_ng", max_pin=None) }}
+
+requirements:
+  build:
+    - make
+    - cmake
+    - {{ compiler('cxx') }}
+    - {{ cdt('mesa-libgl-devel') }}      # [linux]
+    - {{ cdt('mesa-libegl-devel') }}     # [linux]
+    - {{ cdt('mesa-dri-drivers') }}      # [linux]
+    - {{ cdt('libdrm-devel') }}          # [linux]
+    - {{ cdt('libglvnd-glx') }}          # [linux and cdt_name != 'cos6']
+  host:
+    - xorg-libx11                        # [linux]
+    - xorg-libxext                       # [linux]
+    - xorg-libxdamage                    # [linux]
+    - xorg-libsm                         # [linux]
+    - xorg-libice                        # [linux]
+    - xorg-libxcomposite                 # [linux]
+    - xorg-libxxf86vm                    # [linux]
+    - xorg-xf86vidmodeproto              # [linux]
+    - qt6-main
+  run:
+    - qt6-main
+    - fonts-conda-ecosystem
+test:
+  commands:
+    - which Bandage
+    - QT_QPA_PLATFORM='offscreen' Bandage --version
+
+about:
+  home: https://github.com/asl/BandageNG
+  license: GPL-3.0
+  license_family: GPL3
+  license_file: COPYING
+  summary: Bandage - a Bioinformatics Application for Navigating De novo Assembly Graphs Easily
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btv383
+  container:
+    # needed for libGL.so.1
+    extended-base: true

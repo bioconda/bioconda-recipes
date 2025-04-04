@@ -1,0 +1,64 @@
+{% set name = "whatshap" %}
+{% set version = "2.5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/1a/54/0a46068ddcf47493282908b80be6362fae4511c7bb5df432abeb430fff90/whatshap-2.5.tar.gz
+  sha256: d81c9bdf950902521f5525c1269089df7900c7d54f7a864ace584c8ed8fdd763
+
+build:
+  number: 0
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  run_exports:
+    - {{ pin_subpackage('whatshap', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - pip
+    - cython
+    - setuptools-scm
+  run:
+    - python
+    - pysam >=0.18
+    - pyfaidx >=0.5.5.2
+    - networkx
+    - biopython >=1.73
+    - scipy
+    - xopen >=1.2.0
+    # This is not an actual requirement, but allows to run subsequent WhatsHap commands
+    # in the same container (input files need to be indexed with tabix)
+    - htslib
+    - pulp >=2
+
+test:
+  imports:
+    - whatshap
+  commands:
+    - "whatshap --help > /dev/null"
+
+about:
+  home: "https://whatshap.readthedocs.io"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Phase genomic variants using DNA sequencing reads (haplotype assembly)."
+  dev_url: "https://github.com/whatshap/whatshap"
+  doc_url: "https://whatshap.readthedocs.io"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:whatshap
+    - doi:10.1089/cmb.2014.0157
+  recipe-maintainers:
+    - marcelm

@@ -1,0 +1,36 @@
+diff --git a/makefile b/makefile
+index a9e213d..5461ae4 100644
+--- a/makefile
++++ b/makefile
+@@ -18,8 +18,8 @@ OBJ = $(patsubst %, $(ODIR)/%, $(_OBJ))
+ 
+ LINKFLAGS = $(CPPFLAGS) $(LIBS) -lpthread -pthread -static-libstdc++
+ 
+-TEMPLATEPATH := $(realpath template_seqs)
+-VERSION := Branch $(shell git rev-parse --abbrev-ref HEAD) commit $(shell git rev-parse HEAD) $(shell git show -s --format=%ci)
++TEMPLATEPATH := std::string{std::getenv(\"CONDA_PREFIX\")} + \"/share/${PKG_NAME}-${PKG_VERSION}\"
++VERSION := bioconda $(PKG_VERSION)
+ 
+ $(shell mkdir -p bin)
+ $(shell mkdir -p obj)
+@@ -36,16 +36,16 @@ $(BINDIR)/ribotin-ref: $(OBJ) $(ODIR)/ribotin-ref.o edlib/edlib/src/edlib.cpp
+ 	$(GPP) -o $@ $^ $(LINKFLAGS)
+ 
+ $(ODIR)/CommonParams.o: $(SRCDIR)/CommonParams.cpp $(DEPS) $(OBJ)
+-	$(GPP) -c -o $@ $< $(CPPFLAGS) -DVERSION="\"$(VERSION)\"" -DRIBOTIN_TEMPLATE_PATH="\"$(TEMPLATEPATH)\""
++	$(GPP) -c -o $@ $< $(CPPFLAGS) -DVERSION="\"$(VERSION)\"" -DRIBOTIN_TEMPLATE_PATH="$(TEMPLATEPATH)"
+ 
+ $(ODIR)/ribotin-verkko.o: $(SRCDIR)/ribotin-verkko.cpp $(DEPS) $(OBJ)
+-	$(GPP) -c -o $@ $< $(CPPFLAGS) -DVERSION="\"$(VERSION)\"" -DRIBOTIN_TEMPLATE_PATH="\"$(TEMPLATEPATH)\""
++	$(GPP) -c -o $@ $< $(CPPFLAGS) -DVERSION="\"$(VERSION)\"" -DRIBOTIN_TEMPLATE_PATH="$(TEMPLATEPATH)"
+ 
+ $(ODIR)/ribotin-hifiasm.o: $(SRCDIR)/ribotin-hifiasm.cpp $(DEPS) $(OBJ)
+-	$(GPP) -c -o $@ $< $(CPPFLAGS) -DVERSION="\"$(VERSION)\"" -DRIBOTIN_TEMPLATE_PATH="\"$(TEMPLATEPATH)\""
++	$(GPP) -c -o $@ $< $(CPPFLAGS) -DVERSION="\"$(VERSION)\"" -DRIBOTIN_TEMPLATE_PATH="$(TEMPLATEPATH)"
+ 
+ $(ODIR)/ribotin-ref.o: $(SRCDIR)/ribotin-ref.cpp $(DEPS) $(OBJ)
+-	$(GPP) -c -o $@ $< $(CPPFLAGS) -DVERSION="\"$(VERSION)\"" -DRIBOTIN_TEMPLATE_PATH="\"$(TEMPLATEPATH)\""
++	$(GPP) -c -o $@ $< $(CPPFLAGS) -DVERSION="\"$(VERSION)\"" -DRIBOTIN_TEMPLATE_PATH="$(TEMPLATEPATH)"
+ 
+ $(ODIR)/%.o: $(SRCDIR)/%.cpp $(DEPS)
+ 	$(GPP) -c -o $@ $< $(CPPFLAGS)

@@ -1,0 +1,56 @@
+From 19a842e8688fb25cbd5a1b5768e2a5a823fba25d Mon Sep 17 00:00:00 2001
+From: Matus Kosut <matus.kosut@ntnu.no>
+Date: Tue, 30 Mar 2021 18:37:43 +0200
+Subject: [PATCH] patch cmakelists for conda build2
+
+---
+ CMakeLists.txt | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 52eab24..8d145cc 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -21,10 +21,13 @@ if(CGET_PREFIX)
+     link_directories(${CGET_PREFIX}/lib)
+ endif()
+ 
++include_directories("include" "${SRC_DIR}/include" "${CMAKE_INSTALL_PREFIX}/include" "${CMAKE_INSTALL_PREFIX}/include/shrinkwrap" "${CMAKE_INSTALL_PREFIX}/include/htslib")
++link_directories("lib" "${SRC_DIR}/lib" "${CMAKE_INSTALL_PREFIX}/lib")
++
+ #list(APPEND CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX})
+ #find_package(shrinkwrap CONFIG REQUIRED)
+ #if (NOT BUILD_SHARED_LIBS)
+-    set(CMAKE_FIND_LIBRARY_SUFFIXES ".a;${CMAKE_FIND_LIBRARY_SUFFIXES}") # Prefer libz.a when both are available
++#    set(CMAKE_FIND_LIBRARY_SUFFIXES ".a;${CMAKE_FIND_LIBRARY_SUFFIXES}") # Prefer libz.a when both are available
+ #endif()
+ 
+ find_library(ZLIB_LIBRARY z)
+@@ -56,7 +59,7 @@ add_library(savvy INTERFACE)
+ #        include/savvy/vcf_reader.hpp) #src/savvy/vcf_reader.cpp include/savvy/vcf_reader.hpp)
+ 
+ target_link_libraries(savvy INTERFACE ${ZLIB_LIBRARY} ${ZSTD_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+-target_include_directories(savvy INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
++target_include_directories(savvy INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}> $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/shrinkwrap> $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/htslib>)
+ 
+ add_executable(sav
+         src/sav/main.cpp
+@@ -131,13 +134,13 @@ if(BUILD_SLR_EXAMPLES)
+     target_link_libraries(linreg-ttest savvy ${OPENCL_LIB})
+ endif()
+ 
+-install(DIRECTORY include/savvy COMPONENT api DESTINATION include)
++install(DIRECTORY include/savvy COMPONENT api DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+ install(TARGETS savvy COMPONENT api EXPORT ${PROJECT_NAME}-config
+         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ 
+ install(TARGETS sav COMPONENT cli
+-        RUNTIME DESTINATION bin
++        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+         OPTIONAL)
+ 
+ install(EXPORT ${PROJECT_NAME}-config COMPONENT api DESTINATION share/${PROJECT_NAME})
+-- 
+2.31.0
+

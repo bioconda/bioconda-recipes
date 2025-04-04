@@ -1,0 +1,55 @@
+{% set name = "DeepLC" %}
+{% set version = "3.1.8" %}
+{% set sha256 = "a53759a62fdc8057a58fcb7981d75e622a9a5c75e7f3504614d7d9ea00865e03" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/deeplc-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage("deeplc", max_pin="x") }}
+  entry_points:
+    - deeplc=deeplc.__main__:main
+    - deeplc-gui=deeplc.gui:start_gui
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+  run:
+    - python >=3.9
+    - numpy >=1.17,<3
+    - pandas >=0.25,<3
+    - tensorflow >=2.15.0,<3
+    - deeplcretrainer >=1,<2
+    - psm-utils >=1,<2
+    - scikit-learn >=1.2.0,<2
+
+test:
+  imports:
+    - deeplc
+
+about:
+  home: "https://compomics.github.io/projects/DeepLC"
+  summary: 'DeepLC: Retention time prediction for (modified) peptides using Deep Learning.'
+  dev_url: "https://github.com/compomics/DeepLC"
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  doc_url: "https://github.com/compomics/DeepLC/blob/v{{ version }}/README.md"
+
+extra:
+  identifiers:
+    - doi:10.1038/s41592-021-01301-5
+    - biotools:deeplc
+  recipe-maintainers:
+    - compomics

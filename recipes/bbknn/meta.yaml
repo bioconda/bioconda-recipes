@@ -1,0 +1,58 @@
+{% set name = "bbknn" %} 
+{% set version = "1.6.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 1c01a9d6df2fc52a527de8a403617897a4b672724863299a7026f2132f1b041b 
+
+build:
+  number: 4
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  run_exports:
+    - {{ pin_subpackage('bbknn', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - cython
+    - python-annoy
+    - pynndescent
+    - numpy >=1.13
+    - pip
+    - python
+    - flit-core >=3.2,<4
+    - scipy >=1.6.0
+    - scikit-learn >=1.0.2
+    - umap-learn
+    - pandas
+  run:
+    - python
+    - python-annoy
+    - pynndescent
+    - numpy >=1.13
+    - scipy >=1.6.0
+    - scikit-learn >=1.0.2
+    - umap-learn
+    - pandas
+
+test:
+  imports:
+    - bbknn
+
+about:
+  home: https://github.com/Teichlab/bbknn
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Batch balanced KNN
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - jenzopr

@@ -1,0 +1,85 @@
+{% set name = "BioExt" %}
+{% set version = "0.21.9" %}
+{% set sha256 = "21bf30eac79c5bc553f0870a119688adaab5a040ff72f9e8fdac46fec978130f" %}
+
+package:
+  name: python-{{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/bioext-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - cythonize.patch
+    - osx-freetype.patch  # [osx]
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage("python-bioext", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - pip
+    - cython
+    - numpy
+    - setuptools
+  run:
+    - freetype
+    - python
+    - biopython >=1.78
+    - {{ pin_compatible('numpy') }}
+    - scipy
+    - pysam
+    - joblib
+    - six
+
+test:
+  imports:
+    - BioExt
+    - BioExt.align
+    - BioExt.args
+    - BioExt.collections
+    - BioExt.errorize
+    - BioExt.freetype
+    - BioExt.freetype.ft_enums
+    - BioExt.io
+    - BioExt.io.BamIO
+    - BioExt.io.LazyAlignIO
+    - BioExt.io.SamIO
+    - BioExt.merge
+    - BioExt.misc
+    - BioExt.ndarray
+    - BioExt.optimize
+    - BioExt.orflist
+    - BioExt.phylo
+    - BioExt.rateclass
+    - BioExt.references
+    - BioExt.scorematrices
+    - BioExt.stats
+    - BioExt.tn93
+    - BioExt.uds
+    - BioExt.untranslate
+
+  commands:
+    - bam2fna 2>&1 | grep 'usage' > /dev/null
+    - bam2msa 2>&1 | grep 'usage' > /dev/null
+    - bealign 2>&1 | grep 'usage' > /dev/null
+    - clipedge 2>&1 | grep 'usage' > /dev/null
+    - msa2bam 2>&1 | grep 'usage' > /dev/null
+    - seqmerge 2>&1 | grep 'usage' > /dev/null
+
+about:
+  home: https://github.com/veg/BioExt.git
+  license: GPL-3.0-only
+  license_family: GPL3
+  summary: 'A few handy bioinformatics tools not already in BioPython'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

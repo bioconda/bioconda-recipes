@@ -1,0 +1,39 @@
+{% set name = "QoRTs" %}
+{% set version = "1.3.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/hartleys/QoRTs/archive/v{{ version }}.tar.gz
+  sha256: 51095994e1bd8fe5403d27eada8ceca97be0cecbee8eed802b6dc3fc6ce372af
+
+build:
+  number: 1
+  noarch: generic
+
+requirements:
+  run:
+    - openjdk
+    - python
+    - r-qorts ==1.3.6
+
+test:
+  commands:
+    - qorts QC --man &> /dev/null
+
+about:
+  home: http://hartleys.github.io/QoRTs/
+  license: Public Domain
+  summary: |
+    QoRTs toolkit for analysis, quality control, and data management of RNA-Seq
+    datasets.
+
+extra:
+  notes: |
+    Based on the Picard equivalent, found in the BioConda recipies repo.
+    Simplifies the call to the QoRTs JAVA utility so that you can just go :-
+      qorts [Java Options] QC [QoRTs options] input.bam annotation.gtf outputDir
+    which is equivalent to :-
+      java [Java Options] -jar /path/to/jar/QoRTs.jar QC [QoRTs options] input.bam annotation.gtf outputDir

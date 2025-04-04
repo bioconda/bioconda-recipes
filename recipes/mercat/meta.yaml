@@ -1,0 +1,57 @@
+
+{% set name = "mercat" %}
+{% set version = "0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/pnnl/mercat/archive/{{ version }}.tar.gz
+  md5: d5bef2073368f8a82a46015bebc8962d
+
+
+build:
+  noarch: python
+  number: 2
+  script: python -m pip install --no-deps --ignore-installed .
+
+preserve_egg_dir: yes
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+
+  run:
+    - python
+    - scikit-bio ==0.2.3
+    - prodigal
+    - trimmomatic
+    - dask
+    - pandas
+    - numpy
+    - humanize
+    - plotly
+    - psutil
+    - joblib
+
+
+test:
+  commands:
+    - mercat --help
+
+about:
+  home: https://github.com/pnnl/mercat
+  license: BSD
+  summary: 'Mercat: a versatile counter and diversity estimator for data base independent property analysis obtained from whole community sequencing data.'
+  license_family: BSD
+
+extra:
+  recipe-maintainers:
+    - ajaypanyala
+    - raw937
+  container:
+    # needs libGL.so.1
+    extended-base: true

@@ -1,0 +1,65 @@
+{% set version = "1.7.0" %}
+{% set sha256 = "e57cd7940d80ece838d9411eefe3b8c8f51031408b06bf774032d61612d75727" %}
+package:
+  name: magicblast
+  version: {{ version }}
+
+source:
+  - url: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/magicblast/{{ version }}/ncbi-magicblast-{{ version }}-src.tar.gz
+    sha256: {{ sha256 }}
+
+build:
+  number: 2
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - zlib #1.2.7
+    - bzip2 #1.0.6
+    - libxml2 >=2.9.1,<2.10.0a0
+    - ncbi-vdb >=3.0.0
+  run:
+    - zlib #1.2.7
+    - bzip2 #1.0.6
+    - libxml2 >=2.9.1,<2.10.0a0
+
+test:
+  commands:
+    - magicblast -help
+
+about:
+  home: https://ncbi.github.io/magicblast/
+  license: Public Domain
+  summary: NCBI BLAST next generation read mapper
+  description: |
+    Magic-BLAST is a tool for mapping large next-generation RNA or DNA 
+    sequencing runs against a whole genome or transcriptome. Each alignment
+    optimizes a composite score, taking into account simultaneously the two
+    reads of a pair, and in case of RNA-seq, locating the candidate introns
+    and adding up the score of all exons. This is very different from other
+    versions of BLAST, where each exon is scored as a separate hit and
+    read-pairing is ignored.
+
+    Magic-BLAST incorporates within the NCBI BLAST code framework ideas 
+    developed in the NCBI Magic pipeline, in particular hit extensions by local 
+    walk and jump (http://www.ncbi.nlm.nih.gov/pubmed/26109056), and 
+    recursive clipping of mismatches near the edges of the reads, which avoids
+    accumulating artefactual mismatches near splice sites and is needed to
+    distinguish short indels from substitutions near the edges.
+
+    More details about the algorithm and comparison with other similar tools
+    are presented here:
+    https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2996-x.
+
+extra:
+  identifiers:
+    - biotools:magicblast
+    - doi:10.1186/s12859-019-2996-x
+  recipe-maintainers:
+    - boratyng
+  skip-lints:
+    - should_be_noarch_generic
+    - should_not_be_noarch_source

@@ -1,0 +1,59 @@
+{% set name = "gencove" %}
+{% set version = "3.1.0" %}
+{% set sha256 = "7807ae93b0b2b415fa3a27afbba1000a9bfaf554b36c7e705be27740cdc28a29" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/gncv/gencove-cli/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: '{{ PYTHON }} -m pip install . --use-pep517 --no-deps --no-build-isolation --no-cache-dir -vvv'
+  entry_points:
+    - gencove = gencove.cli:cli
+    - d = gencove.command.explorer.data.cli:data
+  run_exports:
+    - {{ pin_subpackage("gencove", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+    - pytest-runner
+  run:
+    - python >=3.7
+    - python-dateutil >=2.2.0
+    - six >=1.5
+    - click >=7.0
+    - click-default-group >=1.2.4
+    - requests >=2.19.1
+    - boto3 >=1.17.97
+    - progressbar2 ==3.55.0
+    - backoff <=2.2.1
+    - pydantic ==1.10.13
+    - sh >=1.14.3
+
+test:
+  imports:
+    - gencove
+  #commands:
+    #- gencove --help
+
+about:
+  home: https://docs.gencove.com
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: LICENSE
+  summary: "Gencove is a high-throughput, cost-effective platform for genome sequencing and analysis. This command-line interface can be used to easily access the Gencove API."
+  dev_url: "https://github.com/gncv/gencove-cli"
+  doc_url: https://docs.gencove.com
+
+extra:
+  recipe-maintainers:
+    - atrigila
+    - matthdsm

@@ -1,0 +1,54 @@
+{% set name = "cloudspades" %}
+{% set version = "3.16.0" %}
+{% set sha256 = "5972a76722fadf9527675fea3884a03ca864b153b8de9dd94532b1b797de04aa" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ablab/spades/archive/refs/tags/cloudspades-0.1.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 3
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('cloudspades', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - pkg-config
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - zlib
+    - bzip2
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - python >=3.8
+
+test:
+  commands:
+    - spades.py --version 2>&1 | grep {{ version }}
+    - metaspades.py --version 2>&1 | grep {{ version }}
+    - spades-kmercount -h 2>&1 | grep spades-kmercount
+    - spades-gmapper 2>&1 | grep spades-gmapper
+    - spades-gbuilder 2>&1 | grep spades-gbuilder
+
+about:
+  home: "https://github.com/ablab/spades"
+  license: "GPL-2.0-only"
+  license_family: GPL
+  license_file: 'assembler/LICENSE'
+  summary: "A module of the SPAdes assembler aimed at genome assembly from linked read technologies (10x, Tellseq, Haplotagging)."
+  dev_url: "https://github.com/ablab/spades/tree/cloudspades-0.1"
+  doc_url: "https://github.com/ablab/spades/tree/cloudspades-ismb"
+
+extra:
+  recipe-maintainers:
+    - pdimens

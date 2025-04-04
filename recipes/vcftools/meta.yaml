@@ -1,0 +1,51 @@
+{% set version = "0.1.16" %}
+{% set sha256 = "575c13073efe65cbff6e2ab99eef12fe04536f5dc1f98de6674c848ca83cf302" %}
+
+
+package:
+  name: vcftools
+  version: {{ version }}
+
+source:
+  url: https://github.com/vcftools/vcftools/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - patch
+
+build:
+  number: 12
+  run_exports:
+     - {{ pin_subpackage('vcftools', max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+  host:
+    - zlib
+    - perl
+  run:
+    - zlib
+    - perl
+
+test:
+  commands:
+    - vcftools -h
+    #- vcf-sort -h  2>&1 | grep "{{ version }}"
+
+about:
+  home: https://vcftools.github.io/
+  license: LGPL
+  summary: A set of tools written in Perl and C++ for working with VCF files.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:vcftools
+    - doi:10.1093/bioinformatics/btr330

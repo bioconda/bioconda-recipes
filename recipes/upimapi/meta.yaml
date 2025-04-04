@@ -1,0 +1,56 @@
+{% set name = "upimapi" %}
+{% set version = "1.13.1" %}
+{% set sha256 = "72fd88f6c21b6982071c007e9ce9a92ffe2bbc75edff3f6eddcfb0653bced0d4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/iquasere/UPIMAPI/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: >
+    mkdir -p $PREFIX/bin && 
+    cp upimapi.py $PREFIX/bin &&
+    chmod +x $PREFIX/bin/upimapi.py &&
+    ln -s $PREFIX/bin/upimapi.py $PREFIX/bin/upimapi
+
+requirements:
+  run:
+    - pandas
+    - diamond
+    - psutil
+    - tqdm
+    - requests
+    - biopython
+    - pyyaml
+
+test:
+  commands:
+    - upimapi -v 
+
+about:
+  home: https://github.com/iquasere/UPIMAPI
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: 'UniProt Id Mapping through API'
+  description: |
+    UPIMAPI takes as input either a list of UniProt IDs or a blast file from
+    annotation using UniProt database as reference and uses UniProt's API to
+    retrieve information relative to those IDs. It is essentially a command
+    line implementation of UniProt's ID mapping web service available at
+    https://www.uniprot.org/uploadlists/, allowing for retrieval of information
+    from thousands of IDs in one go, while still relying on the web service.
+  doc_url: https://github.com/iquasere/UPIMAPI/blob/master/README.md
+  dev_url: https://github.com/iquasere/UPIMAPI 
+
+extra:
+  recipe-maintainers:
+    - iquasere

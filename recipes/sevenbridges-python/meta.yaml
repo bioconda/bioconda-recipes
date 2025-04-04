@@ -1,0 +1,61 @@
+{% set version = "2.11.2" %}
+{% set sha256 = "bf773bb3b892c439a7a049e776d26019a193a16b9b32050df073e7eb4711a52f" %}
+
+package:
+  name: sevenbridges-python
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/s/sevenbridges-python/sevenbridges-python-{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: python
+  number: 0
+  script: touch requirements.txt && {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  run_exports:
+    - {{ pin_subpackage('sevenbridges-python', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3
+    - pip
+    - setuptools
+    - requests >=2.25.1  # needed because setup.py imports the sevenbridges module
+  run:
+    - python >=3
+    - requests >=2.25.1
+
+test:
+  requires:
+    - pytest
+  imports:
+    - sevenbridges
+    - sevenbridges.http
+    - sevenbridges.meta
+    - sevenbridges.models
+    - sevenbridges.models.compound
+    - sevenbridges.models.compound.billing
+    - sevenbridges.models.compound.files
+    - sevenbridges.models.compound.jobs
+    - sevenbridges.models.compound.limits
+    - sevenbridges.models.compound.markers
+    - sevenbridges.models.compound.projects
+    - sevenbridges.models.compound.tasks
+    - sevenbridges.models.compound.volumes
+    - sevenbridges.transfer
+
+about:
+  home: https://github.com/sbg/sevenbridges-python
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: SBG API python client bindings
+  description: sevenbridges-python is a Python library that provides an interface for the Seven Bridges Platform the Cancer
+    Genomics Cloud and Cavatica public APIs. It works with Python versions 2.6+ and supports Python 3.
+  dev_url: https://github.com/sbg/sevenbridges-python
+
+extra:
+  recipe-maintainers:
+    - stankic
+    - borislavd88

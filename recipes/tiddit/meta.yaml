@@ -1,0 +1,53 @@
+{% set name = "tiddit" %}
+{% set version = "3.9.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/SciLifeLab/TIDDIT/archive/TIDDIT-{{ version }}.tar.gz
+  sha256: f3600033456af030a1f79026bdecba1fc8e94292538f709f425fe20ba139fa6c
+
+build:
+  number: 0
+  entry_points:
+    - tiddit = tiddit.__main__:main
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  run_exports:
+    - {{ pin_subpackage('tiddit', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - cython
+    - numpy
+    - pip
+    - pysam
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+    - pysam
+    - fermi2
+    - bwa
+    - ropebwt2
+    - joblib
+
+test:
+  commands:
+    - tiddit --help
+
+about:
+  home: "https://github.com/SciLifeLab/TIDDIT"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "TIDDIT - structural variant calling."
+  dev_url: "https://github.com/SciLifeLab/TIDDIT"
+  doc_url: "https://github.com/SciLifeLab/TIDDIT/blob/TIDDIT-{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64

@@ -1,0 +1,109 @@
+schedules:
+  - cron: "0 0 * * *"
+    displayName: Nightly uploader
+    branches:
+      include:
+        - master
+    always: true
+pr: none
+trigger:
+  branches:
+    exclude:
+      - "*"
+
+jobs:
+  - job: "build_and_push_linux"
+    pool:
+      vmImage: "ubuntu-latest"
+    strategy:
+      maxParallel: 8
+    timeoutInMinutes: 360
+
+    steps:
+      - script: |
+          git checkout master
+
+      - bash: echo "##vso[task.prependpath]/opt/mambaforge/bin"
+        displayName: Add conda to PATH
+
+      - bash: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
+        displayName: Fetch bioconda install script
+
+      - script: bash install-and-set-up-conda.sh
+        displayName: Install bioconda-utils
+
+      # We reconfigure conda to use the right channel setup.
+      - script: bash configure-conda.sh
+        displayName: Configure conda
+
+      - bash: |
+          set -e
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+          conda build --token $ANACONDA_TOKEN --user bioconda --quiet recipes/bioconda-repodata-patches
+        env:
+          ANACONDA_TOKEN: $(ANACONDA_TOKEN)
+        displayName: Rebuild and push the bioconda-repodata-patches package
+
+      - bash: |
+          set -e
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+
+          export OSTYPE="linux-gnu"
+          export CI="true"
+
+          # build and push all leftover packages
+          bioconda-utils build recipes config.yml \
+              --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
+              --prelint --exclude bioconda-repodata-patches
+        env:
+          QUAY_OAUTH_TOKEN: $(QUAY_OAUTH_TOKEN)
+          ANACONDA_TOKEN: $(ANACONDA_TOKEN)
+          INVOLUCRO_AUTH: $(INVOLUCRO_AUTH)
+        displayName: Build and push leftover packages
+
+  - job: "build_and_push_osx"
+    pool:
+      vmImage: "macOS-latest"
+    strategy:
+      maxParallel: 4
+    timeoutInMinutes: 360
+
+    steps:
+      - script: |
+          git checkout master
+
+      - bash: echo "##vso[task.prependpath]/opt/mambaforge/bin"
+        displayName: Add conda to PATH
+
+      - bash: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
+        displayName: Fetch bioconda install script
+
+      - script: bash install-and-set-up-conda.sh
+        displayName: Install bioconda-utils
+
+      # We reconfigure conda to use the right channel setup.
+      - script: bash configure-conda.sh
+        displayName: Configure conda
+
+      - bash: |
+          set -e
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+          export OSTYPE="darwin"
+          export CI="true"
+
+          # Get MACOSX vars
+          source common.sh
+
+          bioconda-utils build recipes config.yml \
+              --anaconda-upload \
+              --prelint
+        env:
+          QUAY_OAUTH_TOKEN: $(QUAY_OAUTH_TOKEN)
+          ANACONDA_TOKEN: $(ANACONDA_TOKEN)
+          INVOLUCRO_AUTH: $(INVOLUCRO_AUTH)
+        displayName: Build and push leftover packages

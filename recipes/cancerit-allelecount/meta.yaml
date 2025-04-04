@@ -1,0 +1,46 @@
+{% set version = "4.3.0" %}
+
+package:
+  name: cancerit-allelecount
+  version: {{ version }}
+
+source:
+  url: https://github.com/cancerit/alleleCount/archive/v{{ version }}.tar.gz
+  sha256: 5363ae12c2385c962728336a4498b1a29c9eaa3d4a24492d0debf897771cfd3c
+
+build:
+  number: 8
+  skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage('cancerit-allelecount', max_pin='x') }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - wget
+  host:
+    - htslib
+    - zlib
+    - bzip2
+    - xz
+  run:
+    - zlib
+    - htslib
+    - bzip2
+    - xz
+
+test:
+  commands:
+    - 'alleleCounter -h'
+
+about:
+  home: https://github.com/cancerit/alleleCount
+  license: GPL-3.0-only
+  license_file: LICENCE
+  license_family: GPL3
+  summary: Support code for NGS copy number algorithms
+
+extra:
+  additional-platforms:
+    - linux-aarch64

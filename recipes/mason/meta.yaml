@@ -1,0 +1,49 @@
+{% set version = "2.0.9" %}
+
+package:
+  name: mason
+  version: {{ version }}
+
+source:
+  # Note, version numbers for SeqAn and Mason are different.
+  # SeqAn 2.4.0 contains Mason 2.0.9
+  - url:  http://packages.seqan.de/seqan-src/seqan-src-2.4.0.tar.gz
+    sha256: d7084d17729214003e84818e0280a16f223c8f1c6a30eeef040c27e0c0047bd7
+
+build:
+  number: 4
+  run_exports:
+  - {{ pin_subpackage("mason", max_pin="x.y") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
+    - zlib
+  run:
+    - zlib
+
+test:
+  commands:
+    - mason_frag_sequencing --help 2>&1 > /dev/null
+    - mason_genome --help 2>&1 > /dev/null
+    - mason_materializer --help 2>&1 > /dev/null
+    - mason_methylation --help 2>&1 > /dev/null
+    - mason_simulator --help 2>&1 > /dev/null
+    - mason_splicing --help 2>&1 > /dev/null
+    - mason_variator --help 2>&1 > /dev/null
+
+about:
+  home: https://github.com/seqan/seqan/tree/master/apps/mason2/README
+  license: https://github.com/seqan/seqan/tree/master/apps/mason2/LICENSE
+  summary: Mason is a collection of tools for the simulation of biological sequences.
+  license_file: LICENSE
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:mason
+    - doi:10.1371/journal.pone.0049110

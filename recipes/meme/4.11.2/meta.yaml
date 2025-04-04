@@ -1,0 +1,70 @@
+{% set name = "meme" %}
+{% set version = "4.11.2" %}
+{% set sha256 = "377238c2a9dda64e01ffae8ecdbc1492c100df9b0f84132d50c1cf2f68921b22" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://meme-suite.org/meme/meme-software/4.11.2/meme_4.11.2_2.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - mast.patch
+    - 2to3.patch
+
+build:
+  number: 8
+  detect_binary_files_with_prefix: True
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - yaml
+    - python
+    - perl
+    - ghostscript
+    - zlib
+    - libxslt
+    - libxml2
+    - expat
+    - perl-xml-parser
+    - perl-app-cpanminus
+    - perl-yaml
+    - perl-xml-simple
+    - perl-html-template
+    - perl-cgi
+  run:
+    - yaml
+    - expat
+    - python
+    - perl
+    - zlib
+    - libxslt
+    - libxml2
+    - ghostscript
+    - perl-xml-parser
+    - perl-yaml
+    - perl-xml-simple
+    - perl-html-template
+    - perl-cgi
+
+test:
+  commands:
+    - meme -version
+    - mast -version
+    - meme-chip -version
+    - centrimo -version
+
+about:
+    home: http://alternate.meme-suite.org/
+    license: Custom
+    license_file: COPYING
+    summary: Motif based sequence Analysis tools
+
+extra:
+  container:
+    # openmpi needs ssh/rsh
+    extended-base: true

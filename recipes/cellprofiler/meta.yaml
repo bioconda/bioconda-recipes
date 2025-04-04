@@ -1,0 +1,75 @@
+{% set name = "CellProfiler" %}
+{% set version = "4.2.8" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/CellProfiler/{{ name  }}/archive/v{{ version }}.tar.gz
+  sha256: "c1352e703ca36af63b6069fda9a0de3b54980ed0d2b7d45d08c84fbeeded03fd"
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir --use-pep517 . -vvv"
+  entry_points:
+    - cellprofiler=cellprofiler.__main__:main
+  run_exports:
+    - {{ pin_subpackage('cellprofiler', max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - pytest
+    - setuptools
+  run:
+    - python >=3.8
+    - boto3 >=1.12.28
+    - centrosome
+    - docutils
+    - cellprofiler-core =={{ version }}
+    - h5py >=3.6.0,<3.7.dev0,<4
+    - imageio >=2.5
+    - inflect
+    - python-javabridge
+    - joblib
+    - mahotas
+    - jinja2
+    - sentry-sdk
+    - matplotlib-base
+    - mysqlclient
+    - numpy
+    - pillow
+    - prokaryote
+    - python-bioformats
+    - pyzmq >=22.3,<23.dev0
+    - requests
+    - scikit-image ==0.18.3
+    - scikit-learn >=0.20,<1
+    - scipy ==1.9.0
+    - six
+    - tifffile <2022.4.22
+    - wxpython
+
+test:
+  imports:
+    - cellprofiler
+  commands:
+    - cellprofiler --help
+
+about:
+  home: "https://github.com/CellProfiler/CellProfiler"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: LICENSE
+  summary: "CellProfiler is free, open-source software for quantitative analysis of biological images."
+  description: |
+     CellProfiler is free, open-source software for quantitative analysis of biological images.No prior experience in programming or computer vision is required.
+  dev_url: "https://github.com/CellProfiler/CellProfiler"
+  doc_url: "https://cellprofiler-manual.s3.amazonaws.com/CellProfiler-{{ version }}/index.html"
+
+extra:
+  container:
+    extended-base: True

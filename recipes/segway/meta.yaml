@@ -1,0 +1,56 @@
+{% set name = "segway" %}
+{% set version = "3.0.4" %}
+{% set sha256 = "900a7c6883ed74a189c70c05f35d2396b47f16dd9358945c7091dd67180a4992" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 1
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools_scm
+  run:
+    - python
+    - six
+    - genomedata
+    - gmtk >=1.4.4
+    - autolog
+    - textinput
+    - optbuild
+    - optplus
+    - path.py
+    - colorbrewer
+    - drmaa >=0.4a3
+    - ucsc-bedtobigbed
+
+test:
+  imports:
+   - segway
+
+  commands:
+  # Smoke test
+  - segway --version | grep {{ version }}
+  - segway --help
+
+about:
+  home: http://segway.hoffmanlab.org/
+  license: GPL2
+  license_file: LICENSE
+  summary: 'a tool for easy pattern discovery and identification in functional genomics data.'
+
+extra:
+  recipe-maintainers:
+    - ericr86
+  identifiers:
+    - doi:10.1093/bioinformatics/btx603
+    - biotools:segway

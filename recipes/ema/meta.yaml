@@ -1,0 +1,45 @@
+{% set version = "0.7.0" %}
+{% set sha256 = "e09038cb21a069c1c04d6e57a64caf2a0df2623f9a87a15aa630e60c3d23e03d" %}
+
+package:
+  name: ema
+  version: {{ version }}
+
+source:
+  url: https://github.com/arshajii/ema/releases/download/v{{ version }}/ema-v{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+  patches:
+    - bwa.patch
+#    - remove_native.patch
+
+build:
+  number: 1
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - zlib
+    - llvm-openmp  # [osx]
+  run:
+    - zlib
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - ema help
+
+about:
+  home: http://ema.csail.mit.edu/
+  license: MIT
+  summary: Fast & accurate alignment of barcoded short-reads
+  dev_url: https://github.com/arshajii/ema
+  doc_url: https://github.com/arshajii/ema#usage
+
+
+extra:
+  identifiers:
+    - doi:10.1101/220236

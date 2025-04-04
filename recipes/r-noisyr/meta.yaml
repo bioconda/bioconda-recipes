@@ -1,0 +1,64 @@
+{% set version = '1.0.0' %}
+
+package:
+  name: r-noisyr
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/noisyr_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/noisyr/noisyr_{{ version }}.tar.gz
+  sha256: b98de24f1963c676b0b6457644a7648a5a642ac19e1cb585899a1285cbefdb16
+
+build:
+  number: 3
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ posix }}zip               # [win]
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
+  host:
+    - r-base
+    - bioconductor-genomicranges
+    - bioconductor-iranges
+    - bioconductor-rsamtools
+    - r-doparallel
+    - r-dplyr
+    - r-foreach
+    - r-ggplot2
+    - r-magrittr
+    - r-philentropy
+    - bioconductor-preprocesscore
+    - r-tibble
+  run:
+    - r-base
+    - bioconductor-genomicranges
+    - bioconductor-iranges
+    - bioconductor-rsamtools
+    - r-doparallel
+    - r-dplyr
+    - r-foreach
+    - r-ggplot2
+    - r-magrittr
+    - r-philentropy
+    - bioconductor-preprocesscore
+    - r-tibble
+
+test:
+  commands:
+    - $R -e "library('noisyr')"
+
+about:
+  home: https://github.com/Core-Bioinformatics/noisyR
+  license: GPL-2.0-only
+  summary: Quantifies and removes technical noise from high-throughput sequencing data. Two approaches
+    are used, one based on the count matrix, and one using the alignment BAM files directly.
+    Contains several options for every step of the process, as well as tools to quality
+    check and assess the stability of output.
+  license_family: GPL2
+  license_file:
+    - {{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2

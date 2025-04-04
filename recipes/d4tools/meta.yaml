@@ -1,0 +1,49 @@
+{% set name = "d4tools" %}
+{% set version = "0.3.11" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/38/d4-format/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 376e61c93cfe2efc15f5e74b75214e065e278146555e67b8769818bf49594726
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('d4tools', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - gcc  # [not osx]
+    - clangdev
+    - pkg-config
+    - make
+    - cmake
+  run:
+    - starcode
+
+test:
+  commands:
+    - "true"
+
+about:
+  home: https://github.com/38/d4-format
+  license: MIT
+  license_family: MIT
+  summary: |
+    The D4 command line utility program.
+  dev_url: https://github.com/38/d4-format
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - haohou
+  skip-lints:
+    # Because the Rust build script will build all the upstream dependencies and those dependencies contains make file that directly call gcc rather than use $(CC) variable. Thus not forcing install gcc into the environment can cause linking error as the conda system have it's own libc. 
+    - should_use_compilers

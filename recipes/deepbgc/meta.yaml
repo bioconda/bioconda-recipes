@@ -1,0 +1,58 @@
+{% set name = "deepbgc" %}
+{% set version = "0.1.31" %} # remember to update sha256 hash as well
+{% set file_ext = "tar.gz" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  sha256: 'f294736ca63790a0429a2802457774da9c07e0b42dee8b2963f42f77ccb06255'
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - deepbgc = deepbgc.main:main
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+  run_exports:
+    - {{ pin_subpackage('deepbgc', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.5
+    - setuptools
+    - numpy
+  run:
+    - python >=3.5
+    - biopython >=1.78  # support for structured comments from version 1.70
+    - scikit-learn ==0.21.3  # sklearn with random forest compatibility
+    - pandas ==0.24.1
+    - numpy ==1.16.1
+    - keras ==2.2.4
+    - tensorflow >=1.12.0,<2.0.0
+    - matplotlib-base ==2.2.3
+    - appdirs >=1.4.3
+    - scipy ==1.2.0
+    - hmmer >=3.1b2 # needed for antiSMASH compatibility
+    - prodigal
+    - protobuf <=3.19.0 # needed to load old model pickle files
+
+test:
+  imports:
+    - deepbgc
+    - deepbgc.command
+    - deepbgc.models
+    - deepbgc.output
+    - deepbgc.output.evaluation
+    - deepbgc.pipeline
+  commands:
+    - deepbgc --help
+    - deepbgc info
+
+about:
+  home: https://github.com/Merck/DeepBGC
+  license: MIT
+  license_family: MIT
+  summary: DeepBGC - Biosynthetic Gene Cluster detection and classification

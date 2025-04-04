@@ -1,0 +1,37 @@
+{% set name = "slivar" %}
+{% set version = "0.3.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/brentp/slivar/releases/download/v{{ version }}/slivar
+  sha256: 7378f566e2abba91dc03373f48ebac504b78aa4ed5d5d7c7549d053fede2f271
+
+build:
+  number: 1
+  skip: True  # [osx]
+  run_exports:
+    - '{{ pin_subpackage(name, max_pin="x.x") }}'
+
+requirements:
+  build:
+    - coreutils
+    - curl
+
+test:
+  commands:
+    - slivar 2>&1 | grep slivar
+
+about:
+  home: https://github.com/brentp/slivar
+  license: MIT
+  summary: 'filter/annotate variants in VCF/BCF format with simple expressions'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+
+  skip-lints:
+    - should_be_noarch_generic

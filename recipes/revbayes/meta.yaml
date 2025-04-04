@@ -1,0 +1,59 @@
+{% set name = "revbayes" %}
+{% set version = "1.2.5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/revbayes/revbayes/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 547fc4b9f7d3bd9ebc6ea7dd3e2d7ff824955d49a879b47d0bd6018f6e48b9f7
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('revbayes', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
+    - boost-cpp >=1.71
+    - openmpi
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  run:
+    - boost-cpp >=1.71
+    - openmpi
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+
+test:
+  commands:
+    - rb -h
+    - rb-mpi -h
+
+about:
+  home: "https://revbayes.github.io"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language."
+  dev_url: "https://github.com/revbayes/revbayes"
+  doc_url: "https://revbayes.github.io/tutorials"
+
+extra:
+  container:
+    # openmpi needs ssh/rsh
+    extended-base: True
+  identifiers:
+    - biotools:revbayes
+    - doi:10.1093/sysbio/syw021
+    - doi:10.1093/sysbio/syu039
+  #additional-platforms:
+    # Times out
+    #- osx-arm64
+    #- linux-aarch64

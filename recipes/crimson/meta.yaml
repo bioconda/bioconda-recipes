@@ -1,0 +1,40 @@
+package:
+  name: crimson
+  version: 1.1.1
+
+source:
+  url: https://files.pythonhosted.org/packages/d3/4c/5cae5b14b05e34db95b6438372f83b663afbf175e0e7d8c15332e2a30aaa/crimson-1.1.1.tar.gz
+  sha256: bdc54961dbb29cfd9479c310f382475820e80f7158ebc2a732f756dc72b7978d
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - crimson=crimson.cli:main
+  # click needs to be patched in order to properly detect unicode in py3k
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+
+requirements:
+  host:
+    - python
+    - pip
+    - poetry
+  run:
+    - python
+    - click >=6.6
+    - pyyaml >=3.11
+    - single-source
+
+test:
+  imports:
+    - crimson
+
+  commands:
+    # click requires a unicode locale
+    - LANG=C.UTF-8 crimson --help
+
+about:
+  home: https://github.com/bow/crimson
+  license: BSD License
+  summary: 'Bioinformatics tool outputs converter to JSON or YAML.'
+  license_family: BSD

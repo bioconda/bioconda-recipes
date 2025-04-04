@@ -1,0 +1,48 @@
+{% set name = "gffutils" %}
+{% set version = "0.13" %}
+{% set sha256 = "b0d52f35c014cc0330fb5c4e3c6fea127c90ccf4c5384a825cdb5c8ff330d4eb" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "{{ sha256 }}"
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - argcomplete >=1.9.4
+    - argh >=0.26.2
+    - pyfaidx >=0.5.5.2
+    - python
+    - simplejson
+
+test:
+  imports:
+    - gffutils
+  commands:
+    - gffutils-cli -h
+
+about:
+  home: "https://github.com/daler/gffutils"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Work with GFF and GTF files in a flexible database framework"
+  doc_url: http://daler.github.io/gffutils/
+  dev_url: https://github.com/daler/gffutils
+
+extra:
+  identifiers:
+    - biotools:GFFutils

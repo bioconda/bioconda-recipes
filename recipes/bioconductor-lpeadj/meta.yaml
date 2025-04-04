@@ -1,0 +1,46 @@
+{% set version = "1.62.0" %}
+{% set name = "LPEadj" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: ebb9c5bc6d113688787fadb2739bc75a
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-lpeadj", max_pin="x.x") }}'
+  noarch: generic
+requirements:
+  host:
+    - 'bioconductor-lpe >=1.76.0,<1.77.0'
+    - r-base
+  run:
+    - 'bioconductor-lpe >=1.76.0,<1.77.0'
+    - r-base
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: LGPL
+  summary: 'A correction of the local pooled error (LPE) method to replace the asymptotic variance adjustment with an unbiased adjustment based on sample size.'
+  description: 'Two options are added to the LPE algorithm. The original LPE method sets all variances below the max variance in the ordered distribution of variances to the maximum variance. in LPEadj this option is turned off by default.  The second option is to use a variance adjustment based on sample size rather than pi/2.  By default the LPEadj uses the sample size based variance adjustment.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+extra:
+  identifiers:
+    - biotools:lpeadj
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-lpeadj
+    path: recipes/bioconductor-lpeadj
+    version: 1.40.0
+

@@ -1,0 +1,52 @@
+{% set version = "1.6.0" %}
+{% set name = "DNAZooData" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: DNAZooData is a data package giving programmatic access to genome assemblies and Hi-C contact matrices uniformly processed by the [DNA Zoo Consortium](https://www.dnazoo.org/). The matrices are available in the multi-resolution `.hic` format. A URL to corrected genome assemblies in `.fastq` format is also provided to the end-user.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: DNA Zoo data package
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-dnazoodata", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: dplyr, testthat, methods, BiocStyle, knitr, rmarkdown
+requirements:
+  host:
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-hicexperiment >=1.6.0,<1.7.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-rjson
+  run:
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-hicexperiment >=1.6.0,<1.7.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-rjson
+    - curl
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: ebf660c8af5efe9626a5e9a80c8a897f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

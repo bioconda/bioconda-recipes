@@ -1,0 +1,93 @@
+{% set name = "nordic" %}
+{% set ucname = "NORDic" %}
+{% set version = "2.6.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  - url: "https://github.com/sysbio-curie/MaBoSS-env-2.0/archive/refs/heads/master.tar.gz"
+    sha256: 5f72eb66b4f464d85895a847834338da14d24b6477bb0ec721254b01f1e252e9
+    folder: "MaBoSS-2.0"
+  - url: "https://files.pythonhosted.org/packages/62/16/3796afbdedd99a5c8a7f47bbbeacd6d9f0aa8c403e9e85274ce3724d6e2c/mpbn-3.8.tar.gz"
+    sha256: 0ec869578bf210756f1dda42427780c9ad1133ec33efad8971124fc4f72136ea
+    folder: "mpbn-3.8"
+  - url: "https://files.pythonhosted.org/packages/5b/b7/bfcd17d1893f3ce69011fb4414e455ad97342a7801f3fbfef0d4f6e2f27f/bonesis-0.6.7.tar.gz"
+    sha256: 4290ee9fa9b1981dfcc0931b8cc954a229aab4e7e9ce1803ef232d27cda5c3f1
+    folder: "bonesis-0.6.7"
+  - url: "https://files.pythonhosted.org/packages/68/8a/342098673c715a44de230eedd6f6b0f019b2905638fcd4d60d9cb14b5538/{{ name }}-{{ version }}.tar.gz"
+    sha256: 7f3bd164bc5ea4df2c93b93004cbd7a210df25de6d6ac093606b937b7579b6ef
+    folder: "{{ ucname }}-{{ version }}"
+
+build:
+  number: 0
+  skip: True  # [py < 38]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - flex
+    - bison
+    - make
+  host:
+    - python
+    - pip
+    - clingo >=5.6.1
+    - cmappy >=4.0.1
+    - graphviz >=0.20.1
+    - matplotlib-base
+    - omnipath
+    - openpyxl >=3.0.10
+    - qnorm >=0.5.1
+    - quadprog >=0.1.11
+    - scikit-learn >=1.1.2
+    - scipy >=1.6.2
+    - seaborn >=0.12.1
+    - tqdm >=4.62.3
+    - numpy <2.0.0,>=1.22.4
+  run:
+    - python
+    - clingo >=5.6.1
+    - cmappy >=4.0.1
+    - graphviz >=0.20.1
+    - matplotlib-base
+    - omnipath
+    - openpyxl >=3.0.10
+    - qnorm >=0.5.1
+    - quadprog >=0.1.11
+    - scikit-learn >=1.1.2
+    - scipy >=1.6.2
+    - seaborn >=0.12.1
+    - tqdm >=4.62.3
+    - numpy <2.0.0,>=1.22.4
+
+test:
+  imports:
+    - NORDic
+    - NORDic.NORDic_DR
+    - NORDic.NORDic_DS
+    - NORDic.NORDic_NI
+    - NORDic.NORDic_PMR
+    - NORDic.UTILS
+
+about:
+  home: "https://github.com/clreda/NORDic"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "NORDic: a Network-Oriented package for the Repurposing of Drugs"
+  doc_url: "https://github.com/clreda/NORDic/blob/main/README.md"
+  dev_url: "https://github.com/clreda/NORDic"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - clreda
+  identifiers:
+    - doi:10.5281/zenodo.7239047

@@ -1,0 +1,71 @@
+{% set name = "frogs" %}
+{% set version = "5.0.1" %}
+{% set phyloseq_extended_version = "0.99" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: true # [osx]
+  run_exports:
+    - {{ pin_subpackage('frogs', max_pin="x") }}
+
+
+source:
+  - url: https://github.com/geraldinepascal/FROGS/archive/v{{ version }}.tar.gz 
+    md5: 64319c67c40c6c0aa5e4eac44847b209
+  - url: https://github.com/mahendra-mariadassou/phyloseq-extended/archive/v{{ phyloseq_extended_version }}.tar.gz
+    md5: 1ec072751503eebb791e876a60433120
+    folder: lib/external-lib
+
+requirements:
+  run:
+      - perl
+      - perl-io-zlib
+      - perl-perlio-gzip
+      - rdptools =2.0.3
+      - scipy >=1.1.0
+      - python <=3.7.0
+      - pandas >=1.1.5
+
+test:
+  commands:
+    - denoising.py --help
+    - remove_chimera.py --help
+    - cluster_filters.py --help
+    - itsx.py --help
+    - taxonomic_affiliation.py --help
+    - affiliation_filters.py --help
+    - affiliation_postprocess.py --help
+    - cluster_stats.py --help
+    - affiliation_stats.py --help
+    - biom_to_tsv.py --help
+    - biom_to_stdBiom.py --help
+    - tree.py --help
+    - phyloseq_import_data.py --help
+    - phyloseq_composition.py --help
+    - phyloseq_alpha_diversity.py --help
+    - phyloseq_beta_diversity.py --help
+    - phyloseq_clustering.py --help
+    - phyloseq_structure.py --help
+    - phyloseq_manova.py --help
+    - deseq2_preprocess.py --help
+    - deseq2_visualisation.py --help
+    - frogsfunc_placeseqs.py --help
+    - frogsfunc_functions.py --help
+    - frogsfunc_pathways.py --help
+    - java -jar $PREFIX/bin/classifier.jar -h
+
+
+about:
+  home: https://github.com/geraldinepascal/FROGS
+  license: 'GNU GPL v3'
+  summary: 'FROGS is a workflow designed to metabarcoding sequence analysis'
+  description: 'FROGS produces an ASVs count matrix from high depth sequencing amplicon data. This is the official release 5.0.1 of FROGS.
+  To fully install FROGS dependencies, please refer to the frogs-conda-requirements.txt and frogsfunc-conda-requirements.txt available at https://github.com/geraldinepascal/FROGS'
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic

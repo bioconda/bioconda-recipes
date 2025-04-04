@@ -1,0 +1,53 @@
+{% set name = "biobambam" %}
+{% set version = "2.0.185" %}
+{% set datestamp = "20221211202123" %}
+{% set sha256 = "e405421e869ac7220c3a7e5da0d24a3c7b4c7b1807e044a439fe68efc88a1f2a" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://gitlab.com/german.tischler/biobambam2/-/archive/{{ version }}-release-{{ datestamp }}/biobambam2-{{ version }}-release-{{ datestamp }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+  host:
+    - libmaus2 >=2.0.813
+    - gmp
+    - xerces-c
+    - zlib
+  run:
+    - libmaus2 >=2.0.813
+
+test:
+  commands:
+    - bamsormadup --help
+    - bamtofastq --help
+
+about:
+  home: https://gitlab.com/german.tischler/biobambam2
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: GPLv3
+  summary: "Tools for early stage alignment file processing."
+  dev_url: https://gitlab.com/german.tischler/biobambam2
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:biobambam

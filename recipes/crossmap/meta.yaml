@@ -1,0 +1,55 @@
+{% set name = "CrossMap" %}
+{% set version = "0.7.0" %}
+{% set sha256 = "fec5bc7537c6f767e39f7b8a176ceb522e10de4a79ebdd0d645ea0af948c4bd4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/liguowang/CrossMap/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - CrossMap = cmmodule:crossmap
+  run_exports:
+    - {{ pin_subpackage('crossmap', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+    - numpy
+    - pysam >=0.15
+    - bx-python
+    - ucsc-wigtobigwig
+    - pybigwig
+
+test:
+  commands:
+    - CrossMap bed -h
+    - CrossMap vcf -h
+
+about:
+  home: https://crossmap.sourceforge.net
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE.txt
+  summary: "CrossMap is a program for convenient conversion of genome coordinates and genomeannotation files between assemblies."
+  dev_url: https://github.com/liguowang/CrossMap
+  doc_url: https://crossmap.readthedocs.io/en/latest/
+
+extra:
+  identifiers:
+    - usegalaxy-eu:crossmap_bam
+    - usegalaxy-eu:crossmap_bed
+    - usegalaxy-eu:crossmap_vcf
+    - usegalaxy-eu:crossmap_wig
+    - usegalaxy-eu:crossmap_gff
+    - doi:10.1093/bioinformatics/btt730
+    - biotools:crossmap

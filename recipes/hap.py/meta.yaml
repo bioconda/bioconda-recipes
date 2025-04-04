@@ -1,0 +1,68 @@
+{% set version = "0.3.15" %}
+{% set sha256 = "838912f1ab805224110af3c1035849d5483b5ce4c565ae0f0db7f7284af06676" %}
+
+package:
+  name: hap.py
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/Illumina/hap.py/archive/v{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+  patches:
+    - patch
+
+build:
+  number: 1
+  skip: true # [not py27 or osx]
+
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - autoconf
+    - automake
+  host:
+    - python
+    - setuptools
+    - cython
+    - numpy
+    - pandas
+    - pybedtools
+    - pysam
+    - scipy
+    - nose
+    - bx-python
+    - boost-cpp
+    - htslib
+    - bcftools
+    - samtools
+    - rtg-tools
+  run:
+    - python
+    - numpy
+    - pandas
+    - pybedtools
+    - {{ pin_compatible('pysam') }}
+    - scipy
+    - nose
+    - bx-python
+    - boost-cpp
+    - htslib
+    - bcftools
+    - samtools
+
+
+test:
+  commands:
+    - hap.py -h
+    - som.py -h
+
+about:
+  home: https://github.com/Illumina/hap.py
+  license: BSD-2-Clause
+  license_family: BSD
+  license_file: LICENSE.txt
+  summary: Haplotype VCF comparison tools

@@ -1,0 +1,61 @@
+{% set name = "perl-config-any" %}
+{% set version = "0.33" %}
+
+package:
+  name : {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://cpan.metacpan.org/authors/id/H/HA/HAARG/Config-Any-{{ version }}.tar.gz
+  sha256: c0668eb5f2cd355bf20557f04dc18a25474b7a0bcfa79562e3165d9a3c789333
+
+build:
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  number: 4
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - perl
+    - perl-app-cpanminus
+    - perl-extutils-makemaker
+
+  run:
+    - perl
+    - perl-app-cpanminus
+
+test:
+  # Perl 'use' tests
+  imports:
+    - Config::Any
+    - Config::Any::Base
+    - Config::Any::General
+    - Config::Any::INI
+    - Config::Any::JSON
+    - Config::Any::Perl
+    - Config::Any::XML
+    - Config::Any::YAML
+
+  # You can also put a file called run_test.pl (or run_test.py) in the recipe
+  # that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.  For example
+    # - nose
+
+about:
+  home: http://metacpan.org/pod/Config-Any
+  license: perl_5
+  summary: 'Load configuration from different file formats, transparently'
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
+
+extra:
+  # linux-aarch64 is erroring during build.
+  additional-platforms:
+    - osx-arm64

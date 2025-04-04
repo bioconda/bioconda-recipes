@@ -1,0 +1,45 @@
+{% set name = "SeqAn3" %}
+{% set version = "3.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/seqan/{{ name|lower }}/releases/download/{{ version }}/seqan3-{{ version }}-Source.tar.xz
+  sha256: da2fb621268ebc52b9cc26087e96f4a94109db1f4f28d363d19c7c9cdbd788b1
+  patches:
+    - fix_glibcxx_debug.patch # Fix will be included in 3.4.0
+
+build:
+  noarch: generic
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('seqan3', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - cmake >=3.14
+  run:
+    - bzip2
+    - zlib
+
+test:
+  commands:
+    - test -f $PREFIX/share/cmake/seqan3/seqan3-config.cmake
+    - test -f $PREFIX/include/seqan3/version.hpp
+
+about:
+  home: https://www.seqan.de
+  dev_url: https://github.com/seqan/seqan3
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE.md
+  doc_url: https://docs.seqan.de/seqan/3-master-user/
+  doc_source_url: https://github.com/seqan/seqan3/blob/master/README.md
+  summary: 'SeqAn3 is the new version of the popular SeqAn template library for the analysis of biological sequences.'
+
+extra:
+  maintainers:
+    - eseiler

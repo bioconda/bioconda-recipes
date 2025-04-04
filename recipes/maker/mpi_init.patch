@@ -1,0 +1,34 @@
+--- maker_mpi_init	1970-01-01 01:00:00.000000000 +0100
++++ maker_mpi_init	2018-09-20 17:01:25.041188751 +0200
+@@ -0,0 +1,18 @@
++#!/usr/bin/env perl
++
++use FindBin;
++use lib "$FindBin::RealBin/../src/inc/perl/lib"; #micelaneous
++use lib "$FindBin::RealBin/../lib";
++use lib "$FindBin::RealBin/../perl/lib";
++
++
++#now load everyting else
++use strict "vars";
++use strict "refs";
++use Carp;
++use Parallel::Application::MPI qw(:all);
++
++#--Start MPI
++carp "Calling MPI_Init";
++MPI_Init();
++
+--- src/lib/Parallel/Application/MPI.pm
++++ src/lib/Parallel/Application/MPI.pm
+@@ -232,7 +232,9 @@ sub _bind {
+ 
+     eval{
+ 	#this comment is just a way to force Inline::C to recompile on changing MPICC and MPIDIR
+-	my $comment = "void _comment() {\nchar comment[] = \"MPICC=$mpicc, MPIDIR=$mpidir, CCFLAGSEX=$extra\";\n}\n"; 
++	# Commented for bioconda as 1) MPI directories will be different after installation 2) we're sure we don't want to rebuild it anyway
++	#my $comment = "void _comment() {\nchar comment[] = \"MPICC=$mpicc, MPIDIR=$mpidir, CCFLAGSEX=$extra\";\n}\n";
++    my $comment = "";
+ 	Inline->bind(C => $CODE . $comment,
+ 		     NAME => 'Parallel::Application::MPI',
+ 		     DIRECTORY => $loc,

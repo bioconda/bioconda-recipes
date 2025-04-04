@@ -1,0 +1,43 @@
+{% set name = "PyLiftover" %}
+{% set version = "0.4.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pyliftover-{{ version }}.tar.gz
+  sha256: 33ad187e35d1b6662ba446432f4dd1a808ac2914ce1645eef37598fa5a3860cd
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('pyliftover', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - pytest
+    - pip
+  run:
+    - python
+
+test:
+  imports:
+    - pyliftover
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/konstantint/pyliftover
+  summary: Pure-python implementation of UCSC ``liftOver`` genome coordinate conversion.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - nebfield

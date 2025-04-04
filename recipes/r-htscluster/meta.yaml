@@ -1,0 +1,46 @@
+{% set version = '2.0.11' %}
+
+package:
+  name: r-htscluster
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/HTSCluster_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/HTSCluster/HTSCluster_{{ version }}.tar.gz
+  sha256: 77dd865197c859a3f47f68f5786fa0e24ce06a73ef9801e76c7425453d843a75
+
+build:
+  number: 1
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage("r-htscluster", max_pin="x") }}
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  host:
+    - r-base
+    - r-capushe
+    - bioconductor-edger
+    - r-plotrix
+  run:
+    - r-base
+    - r-capushe
+    - bioconductor-edger
+    - r-plotrix
+
+test:
+  commands:
+    - $R -e "library('HTSCluster')"
+
+about:
+  home: https://CRAN.R-project.org/package=HTSCluster
+  license: GPL (>= 3)
+  summary: A Poisson mixture model is implemented to cluster genes from high- throughput transcriptome
+    sequencing (RNA-seq) data. Parameter estimation is performed using either the EM
+    or CEM algorithm, and the slope heuristics are used for model selection (i.e., to
+    choose the number of clusters).
+  license_family: GPL3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'

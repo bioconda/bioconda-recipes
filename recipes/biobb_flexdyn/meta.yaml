@@ -1,0 +1,59 @@
+{% set name = "biobb_flexdyn" %}
+{% set version = "5.0.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: ae30f8f64e851b1e7546c7c212a079839d1e26cf01fb9d4c88bb0eb1f29f6203 
+
+build:
+  number: 1
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  entry_points:
+    - concoord_dist = biobb_flexdyn.flexdyn.concoord_dist:main
+    - concoord_disco = biobb_flexdyn.flexdyn.concoord_disco:main
+    - imod_imode = biobb_flexdyn.flexdyn.imod_imode:main
+    - imod_imove = biobb_flexdyn.flexdyn.imod_imove:main
+    - imod_imc = biobb_flexdyn.flexdyn.imod_imc:main
+    - nolb_nma = biobb_flexdyn.flexdyn.nolb_nma:main
+    - prody_anm = biobb_flexdyn.flexdyn.prody_anm:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.9,<3.12
+    - pip
+  run:
+    - python >=3.9,<3.12
+    - biobb_common =={{ version }}
+    - scipy >=1.13.0,<1.14.0
+    - concoord
+    - prody
+    - imods
+    - nolb
+
+test:
+  imports:
+    - biobb_flexdyn
+    - biobb_flexdyn.flexdyn
+
+about:
+  home: https://github.com/bioexcel/biobb_flexdyn
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  dev_url: https://github.com/bioexcel/biobb_flexdyn
+  summary: "Biobb_flexdyn is a BioBB category for studies on the conformational landscape of native proteins."
+  description: "# biobb_flexdyn\n\n### Introduction\nBiobb_flexdyn allows the calculation of protein conformational transitions using the GOdMD package. \nBiobb (BioExcel building blocks) packages are Python building blocks that\ncreate\ 
+    \ new layer of compatibility and interoperability over popular\nbioinformatics tools.\nThe latest documentation of this package can be found in our readthedocs site:\n[latest API documentation](http://biobb_ml.readthedocs.io/en/latest/).\n\
+    \n\n### Copyright & Licensing\nThis software has been developed in the [MMB group](https://mmb.irbbarcelona.org) at the [BSC](https://www.bsc.es/) & [IRB](https://www.irbbarcelona.org/) for the [European BioExcel](http://bioexcel.eu/), funded by the European Commission (EU H2020 [823830](http://cordis.europa.eu/projects/823830), EU H2020 [675728](http://cordis.europa.eu/projects/675728)).\
+    \n\n* (c) 2015-2024 [Barcelona Supercomputing Center](https://www.bsc.es/)\n* (c) 2015-2024 [Institute for Research in Biomedicine](https://www.irbbarcelona.org/)\n\
+    Licensed under the\n\
+    [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0), see the file LICENSE for details.\n\
+    \n\
+    ![](https://bioexcel.eu/wp-content/uploads/2019/04/Bioexcell_logo_1080px_transp.png \"Bioexcel\")\n\n\n"

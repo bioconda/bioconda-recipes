@@ -1,0 +1,47 @@
+{% set name = "dudes" %}
+{% set version = "0.10.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/pirovc/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: cb53be14da0c9d40e4ac758a6de7fe98e494c5bff3847d5aa6568a1ea8781180
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed --no-cache-dir -vvv .
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - poetry
+  run:
+    - python >=3.10
+    - matplotlib-base >=3.5.1
+    - numpy >=1.21.0
+    - pandas >=1.4.1
+
+test:
+  commands:
+    - dudes -h
+    - dudesdb -h
+
+about:
+  home: https://github.com/pirovc/dudes
+  summary: "DUDes: a top-down taxonomic profiler for metagenomics and metaproteomics" 
+  license: MIT License
+  license_family: MIT
+  license_file: LICENSE.md
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btw150
+  recipe-maintainers:
+    - pirovc
+    - rababerladuseladim

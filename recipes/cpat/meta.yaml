@@ -1,0 +1,50 @@
+{% set name = "CPAT" %}
+{% set version = "3.0.5" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+build:
+  number: 3
+  skip: True  # [py > 39]
+  run_exports:
+    - {{ pin_subpackage('cpat', max_pin="x") }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: ea7c9216208221f68055f962073622939ff90bbe52ebe36c305ead9f91ed24bc
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - bx-python
+    - pip
+    - nose
+    - python
+    - pysam
+    - numpy
+    - cython
+  run:
+    - bx-python
+    - python
+    - numpy
+    - pysam
+    - r-base
+
+test:
+  commands:
+    - cpat.py -h
+    - make_hexamer_tab.py -h
+    - make_logitModel.py -h
+
+about:
+  home: https://cpat.readthedocs.io/en/latest/
+  license: GPL-2.0-or-later
+  license_file: LICENSE.txt
+  summary: Coding Potential Assessment Tool
+
+extra:
+  additional-platforms:
+    - linux-aarch64

@@ -1,0 +1,53 @@
+{% set version = "0.4.28" %}
+
+package:
+  name: mirtop
+  version: {{ version }}
+
+source:
+  url: https://github.com/miRTop/mirtop/archive/v{{ version }}.tar.gz
+  sha256: 1937ee0e90dd8f00071ebd8f4449709367396bdeb8236dc831122141717438d6
+
+build:
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  noarch: python
+  entry_points:
+    - mirtop=mirtop.command_line:main
+  run_exports:
+    - {{ pin_subpackage('mirtop', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - pysam
+    - pybedtools
+    - pandas
+    - biopython
+
+test:
+  imports:
+    - mirtop
+    - mirtop.bam
+    - mirtop.gff
+    - mirtop.importer
+    - mirtop.libs
+    - mirtop.mirna
+  commands:
+    - mirtop --help
+
+about:
+  home: "https://github.com/mirtop/mirtop"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'Small RNA-seq annotation.'
+  dev_url: "https://github.com/mirtop/mirtop"
+  doc_url: "https://mirtop.readthedocs.io/en/latest"
+
+extra:
+  identifiers:
+    - biotools:mirtop

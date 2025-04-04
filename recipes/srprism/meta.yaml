@@ -1,0 +1,45 @@
+{% set version = "2.4.24" %}
+{% set sha256 = "ad76998cf6db0d76f8b3326f085d6b8c01f57302b5d89fd057669b6390df978f" %}
+
+package:
+  name: srprism
+  version: '{{version}}'
+
+source:
+  url: ftp://ftp.ncbi.nlm.nih.gov/pub/agarwala/bmtagger/src/srprism.tar.gz
+  sha256: '{{sha256}}'
+  patches:
+    - srprism-fix-compilation.patch
+
+build:
+  number: 6
+  skip: true # [osx]
+  run_exports:
+    - {{ pin_subpackage('srprism', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+  host:
+    - bzip2
+    - zlib
+  run:
+    - bzip2
+    - zlib
+
+test:
+  commands:
+    - srprism help
+
+about:
+  home: ftp://ftp.ncbi.nlm.nih.gov/pub/agarwala/srprism/
+  license: Public Domain
+  summary: SRPRISM - Short Read Alignment Tool
+
+extra:
+  additional-platforms:
+    - linux-aarch64

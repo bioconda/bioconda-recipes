@@ -1,0 +1,44 @@
+{% set version = "1.0.7" %}
+{% set name = "rust-ncbitaxonomy" %}
+{% set sha256 = "fc78c0db6b2bac71db449f2da44740f08c192362a5dae516834d8f37fdacd801" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+build:
+  number: 6
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+source:
+  url: "https://github.com/pvanheus/ncbitaxonomy/archive/{{ version }}.tar.gz"
+  sha256: "{{ sha256 }}"
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+  host:
+    - sqlite
+  run:
+    - sqlite
+
+test:
+  commands:
+    - taxonomy_util --help | grep NCBI
+    - taxonomy_filter_refseq --help | grep NCBI
+    - taxonomy_filter_fastq --help | grep FASTQ
+
+about:
+  home: https://github.com/pvanheus/ncbitaxonomy
+  doc_url: "https://docs.rs/crate/ncbitaxonomy/{{ version }}"
+  license: MIT
+  license_file: LICENSE
+  summary: |
+    A Rust crate for working with a local copy of the NCBI Taxonomy database, which provides utilities for taxonomic filtering.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

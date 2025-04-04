@@ -1,0 +1,45 @@
+{% set name = "snakemake-executor-plugin-slurm-jobstep" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/snakemake_executor_plugin_slurm_jobstep-{{ version }}.tar.gz
+  sha256: ebcd374bdde2d4f356e61ac221cd4244566dd980db2de3250780f454e5251c49
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.11,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.11.0,<4.0.0
+    - snakemake-interface-common >=1.13.0,<2.0.0
+    - snakemake-interface-executor-plugins >=9.0.0,<10.0.0
+
+test:
+  imports:
+    - snakemake_executor_plugin_slurm_jobstep
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/snakemake/snakemake-executor-plugin-slurm-jobstep
+  summary: A Snakemake executor plugin for running srun jobs inside of SLURM jobs (meant for internal use by snakemake-executor-plugin-slurm)
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - koesterlab

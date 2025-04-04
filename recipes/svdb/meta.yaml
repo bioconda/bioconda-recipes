@@ -1,0 +1,44 @@
+{% set version = "2.8.2" %}
+{% set sha256 = "99804da6e08c18bac8547bf64d78a3d3127f91a8179497a4e8cda4d3b89e6125" %}
+
+package:
+  name: svdb
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/J35P312/SVDB/archive/{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  entry_points:
+    - svdb = svdb.__main__:main
+  script: python -m pip install --no-deps --ignore-installed .
+  number: 4
+  run_exports:
+    - {{ pin_subpackage('svdb', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - numpy
+    - cython
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+
+test:
+  commands:
+    - svdb --help
+
+about:
+  home: https://github.com/J35P312/SVDB
+  license: MIT
+  license_family: MIT
+  summary: structural variant database software
+
+extra:
+  additional-platforms:
+    - linux-aarch64

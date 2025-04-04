@@ -1,0 +1,77 @@
+{% set name = "mitos" %}
+{% set version = "2.1.9" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 88fc8980c815ae8497518ee7ff58ff69e51b1a35c1efe2ae9b0925b7c4f364f5
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('mitos', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3
+  run:
+    - biopython <1.82
+    - python >=3
+    - blast >=2.9
+    - hmmer =3.2
+    - infernal >=1.1.5
+    - viennarna
+    - r-base
+    - r-ggplot2
+    - r-reshape2
+    - openjdk >8
+    - reportlab
+    # - does not work with newest libtiff 
+    # - force to not install it from defaults
+    # xref https://github.com/conda-forge/pillow-feedstock/issues/135
+    - conda-forge::pillow
+    - conda-forge::libtiff
+
+test:
+  imports:
+    - mitos
+    - mitos.bedfile
+    - mitos.blast
+    - mitos.draw
+    - mitos.extprog
+    - mitos.feature
+    - mitos.gb
+    - mitos.gfffile
+    - mitos.mergefeature
+    - mitos.mitfi
+    - mitos.mito
+    - mitos.mitofile
+    - mitos.rna
+    - mitos.sequence
+    - mitos.tax
+    - mitos.tbl
+    - mitos.trna
+    - mitos.update
+    - mitos.webserver
+  commands:
+    - runmitos.py -h
+    - 'R -e "library(''reshape2'')"'
+    - 'R -e "library(''ggplot2'')"'
+
+about:
+  home: http://mitos.bioinf.uni-leipzig.de
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE 
+  summary: MITOS is a tool for the annotation of metazoan mitochondrial genomes.
+  dev_url: https://gitlab.com/Bernt/MITOS 
+
+extra:
+  recipe-maintainers:
+    - bernt-matthias

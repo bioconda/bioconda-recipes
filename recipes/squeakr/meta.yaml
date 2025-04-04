@@ -1,0 +1,43 @@
+{% set version = "0.7" %}
+{% set name = "squeakr" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/splatlab/{{ name|lower }}/archive/V{{ version }}.tar.gz
+  sha256: 61f0493e5d27a7d629a87841052d174491018bb81e1876879f402d3b6885a9ff
+
+build:
+  number: 2
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('squeakr', max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - bzip2
+    - zlib
+    - boost-cpp
+    - openssl
+    - pthread-stubs
+  run:
+    - boost-cpp
+    - openssl  
+    - pthread-stubs
+
+test:
+  commands:
+    - squeakr help -v
+
+about:
+  home: https://github.com/splatlab/squeakr
+  license: BSD-3-Clause
+  license_family: BSD
+  summary: "An Exact and Approximate k-mer Counting System"
+  dev_url: https://github.com/splatlab/squeakr

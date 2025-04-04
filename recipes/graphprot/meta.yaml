@@ -1,0 +1,100 @@
+{% set version = "1.1.7" %}
+{% set sha256 = "663ae26b8f14bcce645a64c5f83e6a0b634bea8fda94f2cab21482b42cace1b0" %}
+
+package:
+  name: graphprot
+  version: {{ version }}
+
+source:
+  url: https://github.com/dmaticzka/GraphProt/archive/v{{ version }}.tar.gz
+  sha256: "{{ sha256 }}"
+  patches:
+    # don't fix C and CXX vars in Makefile
+    make.patch
+
+build:
+  number: 5
+  skip: True # [osx]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - openmp
+    - zlib
+    - make
+    - gawk
+    - pytest
+    - coreutils
+    - scripttest
+    - rnashapes <3
+    - weblogo >=3
+    - libsvm
+    - perl-getopt-long
+    - r-plyr
+    - r-prroc
+  run:
+    - openmp
+    - zlib
+    - make
+    - coreutils
+    - gawk
+    - rnashapes <3
+    - weblogo >=3
+    - libsvm
+    - perl-getopt-long
+    - r-plyr
+    - r-prroc
+    - curl
+
+test:
+  commands:
+    # get test files
+    - curl -O https://raw.githubusercontent.com/dmaticzka/GraphProt/v{{ version }}/tests/testclip.train.negatives.fa
+    - curl -O https://raw.githubusercontent.com/dmaticzka/GraphProt/v{{ version }}/tests/testclip.train.positives.fa
+    - curl -O https://raw.githubusercontent.com/dmaticzka/GraphProt/v{{ version }}/tests/test_data_full_A.train.fa
+    - curl -O https://raw.githubusercontent.com/dmaticzka/GraphProt/v{{ version }}/tests/test_data_full_A.train.affys
+    - curl -O https://raw.githubusercontent.com/dmaticzka/GraphProt/v{{ version }}/tests/CL_ls.params
+    - curl -O https://raw.githubusercontent.com/dmaticzka/GraphProt/v{{ version }}/tests/CL_train.model
+    - curl -O https://raw.githubusercontent.com/dmaticzka/GraphProt/v{{ version }}/tests/REG_ls.params
+    # classification, linesearch
+    - GraphProt.pl
+      -mode classification -action ls --onlyseq \
+      -fasta testclip.train.positives.fa \
+      -negfasta testclip.train.negatives.fa \
+    # classification, crossvalidation
+    - GraphProt.pl \
+      -mode classification -action cv --onlyseq
+      -fasta testclip.train.positives.fa
+      -negfasta testclip.train.negatives.fa
+      -params CL_ls.params
+    # classification, train
+    - GraphProt.pl -mode classification -action train
+      -fasta testclip.train.positives.fa
+      -negfasta testclip.train.negatives.fa
+      -abstraction 1 -R 0 -D 0 -epochs 2 -lambda 0.1 -bitsize 10
+    # classification, motif
+    - GraphProt.pl -mode classification -action motif
+      -fasta testclip.train.positives.fa
+      -model CL_train.model
+      -abstraction 1 -R 0 -D 0 -epochs 2 -lambda 0.1 -bitsize 10
+    # regression, linesearch
+    - GraphProt.pl -mode regression -action ls --onlyseq
+      -fasta test_data_full_A.train.fa
+      -affinities test_data_full_A.train.affys
+      -abstraction 1 -R 0 -D 0 -epsilon 0.11 -c 11 -bitsize 10
+    # regression, crossvalidation
+    - GraphProt.pl -mode regression -action cv --onlyseq
+      -fasta test_data_full_A.train.fa
+      -affinities test_data_full_A.train.affys
+      -params REG_ls.params
+    # regression, train
+    - GraphProt.pl -mode regression -action train
+      -fasta test_data_full_A.train.fa
+      -affinities test_data_full_A.train.affys
+      -abstraction 1 -R 0 -D 0 -epsilon 0.11 -c 11 -bitsize 10
+
+about:
+  home: https://github.com/dmaticzka/graphprot
+  license: MIT
+  summary: GraphProt is a tool for modelling binding preferences of RNA-binding proteins from high-throughput experiments such as CLIP-seq and RNAcompete.

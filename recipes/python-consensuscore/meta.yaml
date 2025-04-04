@@ -1,0 +1,46 @@
+{% set name = "python-consensuscore" %}
+{% set version = "1.1.1" %}
+{% set sha256 = "f40bf93ebee60c83637af01d9bd3cbd21f00498b54aa1b74304b4a14446ded43" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PacificBiosciences/ConsensusCore/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  skip: True # [not py27]
+  number: 6
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - meson >=0.48.1
+    - ninja
+    - pkg-config
+    - swig
+  host:
+    - python
+    - boost-cpp
+    - numpy
+  run:
+    - python
+    - numpy
+
+test:
+  imports:
+    - ConsensusCore
+  commands:
+    - python -c 'import ConsensusCore; ConsensusCore.Version.VersionString()'
+
+about:
+  home: https://github.com/PacificBiosciences/pbbioconda
+  license: BSD-3-Clause-Clear
+  summary: PacBio Quiver Consensus library for RSII data
+
+extra:
+  recipe-maintainers:
+    - pb-dseifert
+    - mhsieh

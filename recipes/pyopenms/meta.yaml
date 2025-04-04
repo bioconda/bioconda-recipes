@@ -1,0 +1,82 @@
+{% set name = "pyopenms" %}
+{% set version = "3.3.0" %} # if ends with 'dev' it is considered a development release and pulled from GitHub
+package:
+  name: {{ name|lower  }}
+  version: {{ version  }}
+
+{% if 'dev' in version %}
+source:
+  git_url: https://github.com/OpenMS/OpenMS.git
+  git_rev: develop
+  git_depth: 1 # (Defaults to -1/not shallow)
+{% else %}
+source:
+  url: https://github.com/OpenMS/OpenMS/releases/download/release%2F3.3.0/OpenMS-3.3.tar.gz # since we discarded the trailing 0 during the GHA we have to hard code this, fix it next release
+  md5: 7a5839e307801a7c9a02258f9da61357
+{% endif %}
+
+build:
+  number: 5
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage("pyopenms", max_pin="x.x") }}  
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake
+    - sysroot_linux-64 =2.17 # [linux]
+  host:
+    - eigen >=3.3.4
+    - libopenms >={{ version }}
+    - llvm-openmp # [osx]
+    - libsvm
+    - xerces-c
+    - boost-cpp
+    - qt-main >=5.15.8
+    - python
+    - cython >=0.25.2
+    - autowrap >=0.22.10
+    - setuptools
+    - wheel
+    - pip
+    - numpy >=1.23.*
+    - pandas
+    - matplotlib-base
+    - sysroot_linux-64 =2.17 # [linux]
+    - icu >=75.1,<76.0a0
+  run: # run_exports in libopenms should take care of the libraries. But it does not because of bugs. So copy everthing again and again
+    - libopenms >={{ version }}
+    - llvm-openmp # [osx]
+    - libsvm
+    - xerces-c
+    - boost-cpp
+    - qt-main >=5.15.8
+    - eigen >=3.3.4
+    - python >=3.9
+    - numpy >=1.23.*
+    - pandas
+    - matplotlib-base
+    - sysroot_linux-64 =2.17 # [linux]
+test:
+  commands:
+    - python -c "import pyopenms; print(pyopenms.__version__)"
+    # We cant use the PYTHON variable since it does not exist on the biocontainer?!
+    # TODO run the full test suite?
+
+about:
+  home: https://github.com/OpenMS/OpenMS
+  license: BSD
+  license_file: LICENSE
+  summary: python bindings for OpenMS, an open-source software C++ library for LC-MS data management and analyses
+
+extra:
+    {% if 'dev' in version %}
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash
+  {% endif %}
+  identifiers:  
+    - biotools:openms
+    - doi:10.1038/nmeth.3959

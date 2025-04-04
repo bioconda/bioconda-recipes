@@ -1,0 +1,87 @@
+{% set name = "MEME" %}
+{% set version = "5.5.7" %}
+{% set sha256 = "1dca8d0e6d1d36570c1a88ab8dbe7e4b177733fbbeacaa2e8c4674febf57aaf4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://meme-suite.org/meme/meme-software/{{ version }}/meme-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage("meme", max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+    - autoconf
+    - automake
+    - libtool
+  host:
+    - nodejs >=16.4.1
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - icu
+    - ghostscript
+    - zlib
+    - libxslt
+    - libxml2
+    - expat
+    - perl
+  run:
+    - python >=3.7
+    - perl
+    - perl-app-cpanminus
+    - perl-module-build
+    - perl-yaml
+    - perl-cgi
+    - perl-math-cdf
+    - perl-log-log4perl
+    - perl-xml-simple
+    - perl-xml-parser
+    - perl-file-which
+    - perl-html-parser
+    - perl-html-template
+    - perl-html-tree
+    - perl-json
+    - perl-sys-info
+
+test:
+  commands:
+    - meme -version
+    - streme -version
+    - xstreme -version
+    - meme-chip -version
+    - glam2 -version
+    - tomtom -version
+    - centrimo -version
+    - ame 2>&1 | grep -i usage
+    - spamo -version
+    - gomo -version
+    - fimo -version
+    - mast -version
+    - mcast -version
+    - glam2scan -version
+    - momo simple -version
+    - getsize -version
+    - dreme -version
+
+about:
+  home: "https://meme-suite.org"
+  license: Custom
+  license_file: COPYING
+  summary: "Motif-based sequence analysis tools."
+  doc_url: "https://meme-suite.org/meme/doc/overview.html"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:meme_suite
+    - usegalaxy-eu:meme_dreme
+    - doi:10.1093/nar/gkv416

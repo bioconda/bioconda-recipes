@@ -1,0 +1,46 @@
+{% set name = "daligner" %}
+  # DALIGNER author does not create versioned releases. This is the
+  # recommended version format from the software README, based on date of
+  # commit
+{% set version = "1.0.20230620" %}
+{% set commit = "f9a35a82855abaddd49d509a75904dbf0fc46d60" %}
+{% set sha256 = "3cf7e92a83c346aa7bb2bcaec640f73891c9d90583c1c3e28016670313b50215" %}
+
+
+package:
+  name: {{ name }}
+  # DALIGNER author does not create versioned releases. This is the
+  # recommended version format from the software README, based on date of
+  # commit
+  version: {{ version }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin=None) }}
+source:
+  sha256: {{ sha256 }}
+  url: https://github.com/thegenemyers/DALIGNER/archive/{{ commit }}.tar.gz
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  run:
+
+test:
+  commands:
+    - daligner 2>&1 | grep Usage
+    - LAsort 2>&1 | grep Usage
+    - LAmerge 2>&1 | grep Usage
+    - LAshow 2>&1 | grep Usage
+    - LAcat 2>&1 | grep Usage
+    - LAsplit 2>&1 | grep Usage
+    - LAcheck 2>&1 | grep Usage
+    - HPC.daligner 2>&1 | grep Usage
+
+about:
+  home: 'https://github.com/thegenemyers/DALIGNER'
+  license: Custom
+  license_file: LICENSE
+  summary: "DALIGNER: Find all significant local alignments between reads"

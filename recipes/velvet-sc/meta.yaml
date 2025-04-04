@@ -1,0 +1,38 @@
+{% set version = "0.7.62" %}
+{% set sha256 = "cb65fad163ef307d829d91236f49b055986af6b5198fb49bea1fa6c3d1cfc0fc" %}
+
+package:
+  name: velvet-sc
+  version: {{ version }}
+
+source:
+  url: http://bix.ucsd.edu/projects/singlecell/velvet-sc.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Replace-hardcoded-perl-path-in-shebangs.patch
+
+build:
+  skip: True  # [osx]
+  number: 6
+
+requirements:
+  build:
+    - make
+    - {{ compiler("c") }}
+  host:
+    - zlib
+  run:
+    - perl
+
+test:
+  commands:
+    - velvetg --help
+    - velveth --help
+    - shuffleSequences_fasta.pl
+    - shuffleSequences_fastq.pl
+
+about:
+  home: http://bix.ucsd.edu/projects/singlecell/
+  license: GPL-2.0
+  license_family: GPL
+  summary: Efficient de novo assembly of single-cell bacterial genomes from short-read data sets

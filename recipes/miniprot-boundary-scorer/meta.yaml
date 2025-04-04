@@ -1,0 +1,36 @@
+{% set name = "miniprot-boundary-scorer" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/tomasbruna/miniprot-boundary-scorer/releases/download/v{{ version }}/{{ name }}.tgz
+  sha256: 9a5f3babd6db07b673589f2bb8de9436fd9a9c844483ce893d27de0d79ed79e8
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  
+test:
+  commands:
+    - miniprot_boundary_scorer 2>&1 | grep "^Usage:" > /dev/null
+
+about:
+  home: https://github.com/tomasbruna/miniprot-boundary-scorer
+  license: Artistic-1.0
+  summary: Miniprot boundary scorer parses introns, starts, stops and exons from miniprot's alignment output and scores them
+  dev_url: https://github.com/tomasbruna/miniprot-boundary-scorer
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

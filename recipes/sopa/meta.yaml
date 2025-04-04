@@ -1,0 +1,70 @@
+{% set name = "sopa" %}
+{% set version = "1.1.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/sopa-{{ version }}.tar.gz
+  sha256: f2b7265b5d231bdcca49185e8b2015fea34ea53404336165befb920fb3427fc6
+
+build:
+  entry_points:
+    - sopa = sopa.main:app
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('sopa', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9,<3.12
+    - poetry-core >=1.0.0
+    - pip
+  run:
+    - python >=3.9,<3.12
+    - spatialdata >=0.2.0
+    - spatialdata-io >=0.1.3
+    - scanpy >=1.9.8
+    - botocore 1.34.19
+    - typer >=0.9.0
+    - flake8 >=7.0.0,<8.0.0
+  run_constrained:
+    - cellpose >=3.0.5
+    - opencv >=4.8.0.76
+    - pytorch >=2.0.0,!=2.0.1,!=2.1.0
+    - toml >=0.10.2
+    - loompy >=3.0.7
+    - tangram-sc >=1.0.4
+    - snakemake-minimal >=7.32.4,<8.0.0,<8.1.3
+    - pulp >=2.3.1,<3.0.0,<2.8
+    - tiffslide >=2.3.1,<3.0.0
+    - black >=22.8.0,<23.0.0
+    - isort >=5.10.1,<6.0.0
+    - pytest >=7.1.3,<8.0.0
+    - ipykernel >=6.25.2,<7.0.0
+    - mkdocs-material >=9.3.2,<10.0.0
+    - mkdocs-jupyter >=0.24.6,<0.25.0
+    - mkdocstrings >=0.23.0,<0.24.0
+    - mkdocstrings-python >=1.7.3,<2.0.0
+    - flake8 >=7.0.0,<8.0.0
+
+test:
+  imports:
+    - sopa
+  commands:
+    - sopa --help
+
+about:
+  home: https://gustaveroussy.github.io/sopa
+  summary: "Spatial-omics pipeline and analysis."
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  dev_url: https://gustaveroussy.github.io/sopa
+
+extra:
+  recipe-maintainers:
+    - quentinblampey

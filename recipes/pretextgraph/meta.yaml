@@ -1,0 +1,38 @@
+{% set name = "PretextGraph" %}
+{% set version = "0.0.8" %}
+{% set sha256 = "ea541f35750bacc5d8cdcae2d02242128da9a0466530062274d877c24f6b6ff5" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/sanger-tol/PretextGraph/releases/download/{{ version }}/{{ name|lower }}-{{ version }}.tar.xz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0 # the build number should be incremented if the same version of the package is built with different build settings
+  run_exports:
+    - {{ pin_subpackage('pretextgraph', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - clang >=11.0.1 # [linux] 
+    - clangxx >=11.0.1 # [linux]
+    - meson >=0.57.1
+
+test:
+  commands:
+    - {{ name }}
+
+about:
+  home: https://github.com/wtsi-hpag/PretextGraph
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Embeds bedgraph data into Pretext contact maps.
+  description: >
+    This is a tool for converting data from a bedgraph format and embedding into a Hi-C contact map in the Pretext format.
+    The graph data can then be displayed alongside the contact map using the PretextView desktop software (https://github.com/wtsi-hpag/PretextView).
+    See https://github.com/wtsi-hpag/PretextMap for how to generate Pretext contact maps, or search for pretextmap on bioconda.

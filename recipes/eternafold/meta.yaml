@@ -1,0 +1,50 @@
+# Jinja variables help maintain the recipe as you'll update the version only here.
+# Using the name variable with the URL in line 16 is convenient
+# when copying and pasting from another recipe, but not really needed.
+{% set name = "eternafold" %}
+{% set version = "1.3.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/eternagame/EternaFold/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 8aa00b81b6068bff02954ef1621e7aa92f48aadcb3e89b322af46433553691b5
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('eternafold', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+
+test:
+  commands:
+    - test -f $PREFIX/bin/eternafold  # [unix]
+    # - if not exist %PREFIX%\bin\eternafold exit 1  # [win]
+    - eternafold  # [unix]
+
+about:
+  home: https://github.com/eternagame/EternaFold
+  summary: 'RNA structure prediction algorithm improved through crowdsourced training data'
+  description: |
+    EternaFold performs multitask learning to improve RNA structure prediction. 
+    Its training tasks include 1) predicting single structures, 2) maximizing the 
+    likelihood of structure probing data, and 3) predicting experimentally-measured 
+    affinities of RNA molecules to proteins and small molecules. Described in the paper 
+    https://www.nature.com/articles/s41592-022-01605-0
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  doc_url: https://eternagame.github.io/EternaFold
+  dev_url: https://github.com/eternagame/EternaFold
+
+extra:
+  recipe-maintainers:
+    # GitHub IDs for maintainers of the recipe.
+    - DasLab
+    - eternagame

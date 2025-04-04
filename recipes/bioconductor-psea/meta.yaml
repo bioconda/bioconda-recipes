@@ -1,0 +1,48 @@
+{% set version = "1.36.0" %}
+{% set name = "PSEA" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: c8f9f8210c265d722d76668e19a6fd7c
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-psea", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocStyle
+requirements:
+  host:
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
+    - r-base
+    - r-mass
+  run:
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
+    - r-base
+    - r-mass
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'Population-Specific Expression Analysis.'
+  description: 'Deconvolution of gene expression data by Population-Specific Expression Analysis (PSEA).'
+extra:
+  identifiers:
+    - biotools:psea
+    - doi:10.1038/scibx.2011.1159
+  parent_recipe:
+    name: bioconductor-psea
+    path: recipes/bioconductor-psea
+    version: 1.14.0
+

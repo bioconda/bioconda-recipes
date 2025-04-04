@@ -1,0 +1,65 @@
+{% set version = "0.4.3" %}
+{% set build = 0 %}
+
+package:
+  name: sierrapy
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/47/10/205237e2430afcccf8132f8c2d51841f01001adc68aefac630a595abe20d/sierrapy-0.4.3.tar.gz
+  sha256: 74081ec5abf0946c41809e67521c3f563c389a84ca3a2f97166a747b2eb28661
+
+build:
+  noarch: python
+  script: python -m pip install --no-deps --ignore-installed .
+  entry_points:
+    - sierrapy = sierrapy.cmds:main
+  number: 0
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+
+  run:
+    - python
+    - backoff >=1.6.0
+    - certifi >=2022.9.24
+    - charset-normalizer >=2.1.1
+    - click >=8.1.3
+    - gql >=3.4.0
+    - graphql-core >=3.2.3
+    - idna >=3.4
+    - more-itertools >=8.14.0
+    - multidict >=6.0.2
+    - promise >=2.3
+    - requests-toolbelt >=0.8.0
+    - requests >=2.28.1
+    - six >=1.16.0
+    - tqdm >=4.64.1
+    - urllib3 >=1.25.8
+    - voluptuous >=0.13.1
+    - yarl >=1.8.1
+
+test:
+  imports:
+    - sierrapy
+    - sierrapy.commands
+    - sierrapy.fragments
+    - sierrapy.recipes
+
+  commands:
+    - sierrapy --help
+    - sierrapy --version | grep {{ version }}
+
+about:
+  home: https://github.com/hivdb/sierra-client/tree/master/python
+  license: MIT License
+  summary: 'A Client of HIVdb Sierra GraphQL Webservice.'
+  license_family: MIT
+
+extra:
+  container:
+    # click needs locale
+    extended-base: True

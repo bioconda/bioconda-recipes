@@ -1,0 +1,58 @@
+{% set mothurVersion = "1.48.0" %}
+{% set mothurSha256 = "9494406abd8d14b821782ab9db811f045ded9424f28f01234ee6764d4e78941d" %}
+{% set vsearchVersion = "2.15.2" %}
+
+package:
+  name: mothur
+  version: {{ mothurVersion }}
+
+source:
+  url: https://github.com/mothur/mothur/archive/refs/tags/v{{ mothurVersion }}.tar.gz
+  sha256: {{ mothurSha256 }}
+  patches:
+    - makefile.patch
+
+build:
+  number: 3
+
+requirements:
+  build:
+    - make==4.2.1
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - blast-legacy
+    - boost-cpp
+    - gsl
+    - hdf5
+    - readline
+    - sra-tools
+    - vsearch ={{ vsearchVersion }}
+    - zlib
+  run:
+    - blast-legacy
+    - boost-cpp
+    - gsl
+    - hdf5
+    - readline
+    - sra-tools
+    - vsearch ={{ vsearchVersion }}
+    - zlib
+
+test:
+  commands:
+    - mothur "#help()"
+    - uchime --version
+
+about:
+  home: http://www.mothur.org
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE.md
+  summary: This project seeks to develop a single piece of open-source, expandable software to fill the bioinformatics needs of the microbial ecology community.
+  dev_url: https://github.com/mothur/mothur
+
+extra:
+  identifiers:
+    - doi:10.1128/AEM.01541-09
+    - usegalaxy-eu:mothur_get_label

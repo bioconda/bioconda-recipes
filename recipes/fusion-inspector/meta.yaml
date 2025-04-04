@@ -1,0 +1,51 @@
+{% set name = "fusion-inspector" %}
+{% set version = "2.10.0" %}
+{% set build = "1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/FusionInspector/FusionInspector/releases/download/FusionInspector-v{{ version }}/FusionInspector-v{{ version }}.tar.gz
+  sha256: 25b7bfc4944eced2f26530254b6dab5b7a11c7c9310bea25f08f2eca4f03a3d2
+
+build:
+  noarch: generic
+  number: {{ build }}
+  run_exports:
+    - {{ pin_subpackage('fusion-inspector', max_pin="x") }}
+
+# Trinity is needed for the build, because we have to set its location in an environment variable.
+# We need HTSLIB >=1.3, but was complaining about unpinned. CONDA_HTSLIB is 1.6.
+requirements:
+  host:
+    - htslib
+    - trinity >=2.15.1
+  run:
+    - python >=3
+    - requests >=2.19.1
+    - bzip2
+    - htslib
+    - samtools >=1.3
+    - perl
+    - perl-uri
+    - perl-set-intervaltree
+    - perl-db_file
+    - gmap >=2017.11.15
+    - star >=2.6.1b
+    - trinity >=2.15.1
+
+test:
+  commands:
+    - FusionInspector --help 2>&1
+    # The following command(s) need to be invoked from where they are located.
+    # FusionInspector runs them from that location. These tests invoke them that way.
+    # There are quite a few files in the directory. I just run one of them to make sure it is there.
+    - "$PREFIX/share/{{ name }}-{{ version  }}-{{ build }}/util/retrieve_fusion_junction_reads_by_accession.pl --help 2>&1 | grep usage"
+
+about:
+  home: "https://github.com/FusionInspector/FusionInspector"
+  license: BSD-3-Clause
+  license_file: LICENSE.txt
+  summary: "FusionInspector is a component of the Trinity Cancer Transcriptome Analysis Toolkit (CTAT). FusionInspector assists in fusion transcript discovery by performing a supervised analysis of fusion predictions, attempting to recover and re-score evidence for such predictions. - https://github.com/FusionInspector/FusionInspector/wiki"

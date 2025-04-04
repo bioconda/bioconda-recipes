@@ -1,0 +1,67 @@
+{% set version = "1.2.2" %}
+
+package:
+  name: seq2science
+  version: {{ version }}
+
+source:
+  url: https://github.com/vanheeringen-lab/seq2science/archive/v{{ version }}.tar.gz
+  sha256: 5adbaf1689e8f302ec2d5c98f85a206b51f17d0e70e3fc0f16d872ae2099fdc5
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("seq2science", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - toml
+    - setuptools =59.4.0
+  run:
+    - python =3.10
+    - snakemake-minimal =7.25.0
+    - conda =23.1.0
+    - mamba =1.2.0
+    - genomepy =0.16.1
+    - conda-forge::biopython =1.81
+    - filelock =3.10.7
+    - pyyaml =6.0
+    - pandas_schema =0.3.5
+    - pandas =1.5.3
+    - trackhub =0.1.2019.12.24
+    - pysradb =2.0.1
+    - matplotlib-base =3.7.1
+    - xdg =6.0.0
+    - argcomplete =3.0.5
+    - tabulate =0.9.0
+    - conda-ecosystem-user-package-isolation =1.0
+
+test:
+  commands:
+    - which seq2science
+    - conda config --set channel_priority strict
+    - seq2science --help
+    - seq2science init atac-seq
+    - mkdir --parents results/fastq; touch results/fastq/GSM28374{88,89,90,91,92,93}.fastq.gz  # no lookup online for layout
+    - mkdir --parents genomes/Bl71nemr; touch genomes/Bl71nemr/Bl71nemr{.fa,.fa.sizes,.gaps.bed,.annotation.gtf,.annotation.bed}
+    - echo -e "chr1\t100000" > genomes/Bl71nemr/Bl71nemr.fa.sizes
+    - seq2science run atac-seq --dryrun --snakemakeOptions resources={mem_gb:100} quiet=True
+    - chmod -R 777 .   # make sure everything can be deleted
+    - deseq2science -v 
+
+about:
+  home: https://vanheeringen-lab.github.io/seq2science
+  license: MIT
+  license_file: LICENSE
+  license_family: MIT
+  summary: "Automated preprocessing of Next-Generation-Sequencing data."
+  dev_url: https://github.com/vanheeringen-lab/seq2science
+  doc_url: https://vanheeringen-lab.github.io/seq2science
+
+extra:
+  recipe-maintainers:
+    - Maarten-vd-Sande
+    - siebrenf

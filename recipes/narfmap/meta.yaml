@@ -1,0 +1,43 @@
+{% set name = "narfmap" %}
+{% set version = "1.4.2" %}
+{% set sha256 = "ffb2d92c9a953c28ebd433cec055a8368453077e99457c978f05d2ac5b36a9d6" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bioinformaticsorphanage/NARFMAP/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 4
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage("narfmap", max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    # Last version of conda-forge::boost that included static files (.a)
+    - boost >=1.69, <=1.71
+    - boost-cpp >=1.69, <=1.71  # last version to have static libs
+  run:
+    - zlib
+    # Last version of conda-forge::boost that included static files (.a)
+    - boost >=1.69, <=1.71
+    - boost-cpp >=1.69, <=1.71  # last version to have static libs
+
+test:
+  commands:
+    - dragen-os -h
+
+about:
+  home: https://github.com/bioinformaticsorphanage/NARFMAP
+  license: GPL-3
+  licence_file: COPYRIGHT
+  summary: "NARFMAP is a fork of the Dragen mapper/aligner Open Source Software."

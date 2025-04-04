@@ -1,0 +1,54 @@
+{% set name = "vcfsim" %}
+{% set version = "1.0.16.alpha" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Pie115/VCFSimulator-SamukLab/archive/{{ version }}.tar.gz
+  sha256: 385640fdee385c6710ba7bda68cedd28f665f3b0d950d400662f3d5aa374ccfa
+
+build:
+  noarch: python
+  entry_points:
+    - vcfsim=vcfsim.__main__:main
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('vcfsim', max_pin="x") }} 
+    
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - setuptools
+    - numpy
+    - pandas
+    - msprime
+    - ipython  # Include this only if IPython features are used outside notebooks
+
+  run:
+    - python >=3.6
+    - numpy
+    - pandas
+    - msprime
+    - ipython  # Include this only if IPython features are used outside notebooks
+
+test:
+  imports:
+    - vcfsim
+  commands:
+    - vcfsim --help
+
+about:
+  home: https://github.com/Pie115/VCFSimulator-SamukLab
+  license: MIT
+  license_file: LICENSE.txt
+  summary: "Script for generating simulated VCF's leveraging a coalescent simulating backend."
+  description: |
+      "VCFSim is a new command-line tool for generating simulated VCF's(variant call format files for encoding genetic data). Leveraging a coalescent simulating backend and providing an interface from Msprime coalescent simulating package to pandas. VCF's can now be easily simulated with just a few command line arguments!"
+
+extra:
+  recipe-maintainers:
+    - Pie115

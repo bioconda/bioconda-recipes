@@ -1,0 +1,63 @@
+--- Makefile	2020-02-28 15:33:54.000000000 +0100
++++ Makefile	2020-09-05 18:37:47.000000000 +0200
+@@ -3,47 +3,22 @@
+ 
+ OS := $(shell uname)
+ 
+-all: 	src/fragSim src/deamSim src/adptSim src/fasta2fastas art_src_MountRainier/art_illumina_src/art_illumina.o
++all: 	src/fragSim src/deamSim src/adptSim src/fasta2fastas
+ 
+-src/fragSim: libgab/utils.o bamtools/lib/libbamtools.so
+-	make -C src
++src/fragSim: libgab/utils.o 
++	make -C src CXX=$(CC)
+ 
+-src/fasta2fastas: libgab/utils.o bamtools/lib/libbamtools.so
+-	make -C src
++src/fasta2fastas: libgab/utils.o
++	make -C src CXX=$(CC
+ 
+-src/deamSim: libgab/utils.o bamtools/lib/libbamtools.so
+-	make -C src
+-
+-src/adptSim: libgab/utils.o bamtools/lib/libbamtools.so
+-	make -C src
+-
+-libgab/utils.h:
+-	rm -rf libgab/
+-	git clone --depth 1 --recursive https://github.com/grenaud/libgab.git
+-
+-libgab/utils.o: bamtools/lib/libbamtools.so  libgab/utils.h
+-	make -C libgab
+-
+-bamtools/src/api/BamAlignment.h:
+-	rm -rf bamtools/
+-	git clone  --recursive https://github.com/pezmaster31/bamtools.git && cd bamtools/ && git reset --hard d24d850de17134fe4e7984b26493c5c0a1844b35
+-
+-bamtools/lib/libbamtools.so: bamtools/src/api/BamAlignment.h
+-	cd bamtools/ && mkdir -p build/  && cd build/ && cmake .. && make && cd ../..
+-
+-art_src_MountRainier/art_illumina_src/art_illumina.o: #todo: add wget after rm 
+-	rm -rf art_src_MountRainier/ art_src_MountRainier_Linux/ art_src_MountRainier_MacOS/ artsrcmountrainier20160605linuxtgz.tgz artsrcmountrainier20160605macostgz.tgz
+-ifeq ($(OS),Darwin)
+-	wget -O artsrcmountrainier20160605macostgz.tgz https://www.dropbox.com/s/6zjipl74de9akg5/artsrcmountrainier2016.06.05macos.tgz?dl=0 
+-	tar xvfz artsrcmountrainier20160605macostgz.tgz
+-	cd art_src_MountRainier_MacOS/ && ./configure && make && cd ..
+-	ln -s art_src_MountRainier_MacOS  art_src_MountRainier
+-else
+-	wget -O artsrcmountrainier20160605linuxtgz.tgz https://www.dropbox.com/s/wf8441vslu1f1nd/artsrcmountrainier20160605linuxtgz.tgz?dl=0
+-	tar xvfz artsrcmountrainier20160605linuxtgz.tgz
+-	cd art_src_MountRainier_Linux/ && ./configure && make && cd ..
+-	ln -s art_src_MountRainier_Linux  art_src_MountRainier
+-endif
++src/deamSim: libgab/utils.o
++	make -C src CXX=$(CC)
++
++src/adptSim: libgab/utils.o
++	make -C src CXX=$(CC)
++
++libgab/utils.o: libgab/utils.h
++	make -C libgab CXX=$(CC)
+ 
+ bacterialex:
+ 	mkdir -p bactDBexample

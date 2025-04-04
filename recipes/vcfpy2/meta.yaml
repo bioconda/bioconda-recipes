@@ -1,0 +1,38 @@
+{% set name = "vcfpy2" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 18928d49109477e05dcb7a29d7b175ee3dcf313dfc2ebfd9c2fe16ba26db6904
+
+build:
+  number: 0
+  noarch: python
+  # the setup.py is incorrectly written
+  script: sed -i.bak "s/pytest-runner//g" setup.py; {{ PYTHON }} -m pip install --no-deps --ignore-installed -vv .
+
+requirements:
+  host:
+    - pip >=21.3.1
+    - python >=3.6
+  run:
+    - pysam >=0.19.0
+    - python >=3.6
+
+test:
+  imports:
+    - vcfpy2
+
+about:
+  home: "https://github.com/robertopreste/vcfpy2"
+  license: MIT
+  license_family: MIT
+  summary: "Python 3 VCF library, based on vcfpy."
+
+extra:
+  recipe-maintainers:
+    - sysbiocoder
