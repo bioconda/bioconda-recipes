@@ -2,7 +2,7 @@
 
 set -o pipefail
 
-pip install . -vv
+pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
 
 mkdir -p "${PREFIX}/bin"
 cat > "${PREFIX}/bin/Yleaf" << 'EOF'
