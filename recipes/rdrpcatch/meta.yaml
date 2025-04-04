@@ -1,0 +1,62 @@
+{% set name = "rdrpcatch" %}
+{% set version = "0.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/dimitris-karapliafis/RdRpCATCH/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 6454b1a6f98e461ca82d181b1595e5f06448786540b6daa2c4de31c38b255412
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  run_exports:
+    - {{ pin_compatible('matplotlib-base', max_pin='x.x') }}
+    - {{ pin_compatible('pyhmmer', max_pin='x.x') }}
+    - {{ pin_compatible('polars', max_pin='x.x') }}
+    - {{ pin_compatible('altair', max_pin='x.x.x') }}
+  entry_points:
+    - rdrpcatch = rdrpcatch.cli.args:cli
+
+requirements:
+  host:
+    - python >=3.12
+    - hatchling
+    - pip
+  run:
+    - python >=3.12
+    - mmseqs2 ==17.b804f
+    - seqkit ==2.10.0
+    - pyhmmer ==0.11.0
+    - needletail ==0.6.3
+    - polars ==1.26.0
+    - rich ==13.9.4
+    - rich-click ==1.8.8
+    - upsetplot ==0.9.0
+    - matplotlib-base ==3.10.1
+    - altair ==5.5.0
+
+test:
+  commands:
+    - rdrpcatch --help
+    - rdrpcatch scan --help
+    - rdrpcatch download --help
+
+about:
+  home: https://github.com/dimitris-karapliafis/RdRpCATCH
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: RNA virus RdRp sequence scanner
+  description: |
+    RdRpCATCH (RNA-dependent RNA polymerase Collaborative Analysis Tool with Collections of pHMMs) 
+    is a tool for scanning sequences for RNA-dependent RNA polymerases (RdRps) using profile HMMs.
+  dev_url: https://github.com/dimitris-karapliafis/RdRpCATCH
+
+extra:
+  recipe-maintainers:
+    - dimitris-karapliafis
+    - uneri
