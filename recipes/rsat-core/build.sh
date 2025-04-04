@@ -54,4 +54,6 @@ perl-scripts/configure_rsat.pl -auto \
   rsat_www=auto \
   ucsc_tools=0 \
   ensembl_tools=0 \
+  mail_supported=no \
+  variations_tools=0 \
   LOGO_PROGRAM=weblogo
