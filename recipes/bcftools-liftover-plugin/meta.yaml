@@ -1,0 +1,50 @@
+{% set name = "bcftools-liftover-plugin" %}
+{% set version = "1.21" %}
+{% set sha256 = "bdfcd293656a540648056f69ab240260ab7ba04288e2f7c5f2abd208e7a53302" %}
+{% set git_commit = "db4da22" %}
+
+package:
+  name: {{name|lower}}
+  version: {{version}}
+
+source:
+  - folder: liftover
+    url: https://github.com/freeseek/score/archive/{{git_commit}}.tar.gz
+    sha256: {{sha256}}
+  - folder: bcftools
+    url: https://github.com/samtools/bcftools/releases/download/{{version}}/bcftools-{{version}}.tar.bz2
+    sha256: "528a4cc1d3555368db75a700b22a3c95da893fd1827f6d304716dfd45ea4e282"
+
+build:
+  number: 0
+  skip: true  # [osx]
+  run_exports:
+    - {{ pin_subpackage("bcftools-liftover-plugin", max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - autoconf
+  host:
+    - gsl
+    - zlib
+    - {{ pin_compatible('bcftools') }}
+    - {{ pin_compatible('htslib') }}
+  run:
+    - gsl
+    - zlib
+    - {{ pin_compatible('bcftools') }}
+    - {{ pin_compatible('htslib') }}
+test:
+  commands:
+    - bcftools plugin -lv | grep liftover
+
+about:
+  home: https://github.com/freeseek/score
+  license: MIT
+  summary: Tools to work with GWAS-VCF summary statistics files (liftover plugin only)
+
+extra:
+  additional-platforms:
+    - linux-aarch64
