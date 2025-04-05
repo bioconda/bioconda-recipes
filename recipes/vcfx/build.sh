@@ -1,6 +1,10 @@
 #!/bin/bash
-set -x  # Print commands as they are executed
-# Do not use "set -e" to avoid early termination, instead check each step manually
+
+# Stop the script if any command returns a non-zero exit status
+set -e
+
+# Print each command as it is executed
+set -x
 
 echo "======== Starting build script ========"
 echo "Build environment:"
@@ -40,8 +44,8 @@ echo "CMAKE_LIBRARY_PATH: $CMAKE_LIBRARY_PATH"
 echo "CMAKE_INCLUDE_PATH: $CMAKE_INCLUDE_PATH"
 
 echo "======== Creating build directory ========"
-mkdir -p build || { echo "Failed to create build directory"; exit 1; }
-cd build || { echo "Failed to change to build directory"; exit 1; }
+mkdir -p build
+cd build
 echo "Now in directory: $(pwd)"
 
 echo "======== Running CMake ========"
