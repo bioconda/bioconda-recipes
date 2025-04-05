@@ -1,0 +1,63 @@
+{% set version = "0.5.0" %}
+{% set sha256 = "f6b170c4f4c23c4982c2ccb5c9d94a594c336e3c1f473abc9f28ec6138506e63" %}
+
+package:
+  name: stemcnv-check
+  version: {{ version }}
+
+source:
+  url: https://github.com/bihealth/StemCNV-check/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - stemcnv-check=stemcnv_check.__main__:main
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv
+  run_exports:
+    - {{ pin_subpackage('stemcnv-check', max_pin="x") }}
+  always_include_files:
+    - app
+    - control_files
+    - envs
+    - rules
+    - scripts
+    - supplemental-files  
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - setuptools
+    - setuptools-scm
+  run:
+    - python >=3.12
+    - snakemake-minimal >=8,<9
+    - ruamel.yaml >=0.18
+    - loguru >=0.7
+    - pandas >=2.2
+    - openpyxl >=3.1
+    - xlsxwriter >=3.2
+    - pydantic >=2.8
+    - deepdiff >=8.0
+    - apptainer
+
+test:
+  # imports:
+  #   - stemcnv_check
+  commands:
+    - stemcnv-check --help
+    - stemcnv-check setup-files
+
+about:
+  home: https://github.com/bihealth/StemCNV-check
+  license: MIT License
+  summary: 'StemCNV-check: CNV Based Quality Control Workflow for Stem Cell SNP Array Data'
+  license_family: MIT
+  license_file: LICENSE
+  # doc_url: https://...
+
+# extra:
+#   identifiers:
+#      - doi:...
