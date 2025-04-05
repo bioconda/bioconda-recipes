@@ -1,0 +1,64 @@
+{% set version = "2.1.20" %}
+{% set sha256 = "f4784e0c8863c266c2b826078bfe46fca4943fcde5799337891c333c9e0d29b4" %}
+
+package:
+  name: dashing
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True # [osx]  
+  script_env:
+    - C_INCLUDE_PATH=$PREFIX/include
+    - CPLUS_INCLUDE_PATH=$PREFIX/include
+    - LIBRARY_PATH=$PREFIX/lib
+      # 启用 GNU 扩展并指定 C11 标准
+    - "CFLAGS=-D_GNU_SOURCE -std=c11"
+    # 指定 C++17 标准
+    - "CXXFLAGS=-std=c++17"
+  ignore_system_dependencies: true
+  run_exports:
+    - {{ pin_subpackage('dashing', max_pin="x.x") }}
+
+source:
+  git_url: https://github.com/dnbaker/dashing2
+  sha256: {{sha256}},
+
+requirements:
+  build:
+    - pkg-config
+    - {{ compiler('c') }}   # 必须同时声明 C 和 C++ 编译器
+    - {{ compiler('cxx') }}
+    - fmt >=8.0.0
+    - zlib
+    - make
+  host:
+    - zlib
+    - fmt
+    - libgomp      # [linux]
+  run:
+    - zlib
+    - fmt
+    - libgomp      # [linux]
+
+test:
+  commands:
+    - test -f $PREFIX/bin/dashing2
+    - $PREFIX/bin/dashing2 sketch -h || true
+
+about:
+  home: https://github.com/dnbaker/dashing2
+  license: GPL-3
+  summary: Fast and accurate genomic distances using HyperLogLog
+  license_file: LICENSE
+
+extra:
+  identifiers:
+    - doi:10.1101/501726
+  recipe-maintainers:
+    - silask
+    - dnbaker
+  skip-lints:
+    - uses_vcs_url
+  additional-platforms:
+    - linux-aarch64
