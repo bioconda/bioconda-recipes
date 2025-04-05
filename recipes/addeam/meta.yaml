@@ -1,0 +1,69 @@
+{% set name = "addeam" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "a93f302e3be9d4b35a80ddf73d7ed7143cc3f00638e93bf782154c2ed454899d" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/LouisPwr/AdDeam/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage("addeam", max_pin="x") }}  
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - gxx >=12.0
+  host:
+    - cython
+    - zlib
+    - xz
+    - curl
+    - ncurses
+    - bzip2
+    - gsl
+    - ncurses
+  run:
+    - python
+    - zlib
+    - xz
+    - curl
+    - ncurses
+    - bzip2
+    - gsl
+    - ncurses
+    - numpy >=2
+    - pandas
+    - matplotlib-base
+    - scikit-learn
+    - scipy
+    - opencv
+    - pypdf2
+    - bottleneck
+
+
+test:
+  commands:
+    - addeam-bam2prof.py --help | grep "Python wrapper for bam2prof"
+    - addeam-cluster.py --help | grep "Cluster and plot damage profiles."
+
+
+about:
+  home: "https://github.com/LouisPwr/AdDeam"
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  summary: "A Fast and Scalable Tool for Estimating and Clustering Reference-Level Damage Profiles."
+
+extra:
+  identifiers:
+    - biotools:addeam
+  recipe-maintainers:
+    - gabriel-renaud
+    - louis-kraft
