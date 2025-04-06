@@ -7,8 +7,8 @@ mkdir -p "${PREFIX}/bin"
 make -C novo2maq \
     CC="${CC}" \
     CXX="${CXX}" \
-    CFLAGS="${CFLAGS} ${CPPFLAGS} -g -Wall -O2 -m64 ${LDFLAGS}" \
-    CXXFLAGS="${CXXFLAGS} ${CPPFLAGS} -g -Wall -O2 -m64 -fpermissive ${LDFLAGS}"
+    CFLAGS="${CFLAGS} ${CPPFLAGS} -g -Wall -O2 ${LDFLAGS}" \
+    CXXFLAGS="${CXXFLAGS} ${CPPFLAGS} -g -Wall -O2 -fpermissive ${LDFLAGS}"
 cp novo2maq/novo2maq ${PREFIX}/bin
 
 # Install all executables
