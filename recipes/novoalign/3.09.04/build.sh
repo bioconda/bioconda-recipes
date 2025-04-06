@@ -2,7 +2,7 @@
 set -eu
 
 # Compile and install novo2maq
-make -C novo2maq CC="$CC" CXX="$CXX" CFLAGS="-g -Wall -O2 -fpermissive -isystem $PREFIX/include" LIBS="-L${PREFIX}/lib -lz -lm"
+make  -j ${CPU_COUNT} -C novo2maq CC="$CC" CXX="$CXX" CFLAGS="-g -Wall -O2 -fpermissive -isystem $PREFIX/include" LIBS="-L${PREFIX}/lib -lz -lm"
 cp novo2maq/novo2maq ${PREFIX}/bin
 
 # Install all executables
