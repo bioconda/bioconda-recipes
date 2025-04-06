@@ -4,6 +4,8 @@ set -eo pipefail
 
 mkdir -p "${PREFIX}bin"
 
+hash -r
+
 case $(uname -m) in
     aarch64 | arm64)
         cmake -DCMAKE_BUILD_TYPE=Release -S . -B build_cmake
