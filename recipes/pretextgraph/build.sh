@@ -2,12 +2,13 @@
 
 set -eo pipefail
 
-mkdir -p "${PREFIX}bin"
+mkdir -p "${PREFIX}/bin"
 
 hash -r
 
 case $(uname -m) in
     aarch64 | arm64)
+	cp -rfv ${RECIPE_DIR}/sse2neon.h ${SRC_DIR}
         cmake -DCMAKE_BUILD_TYPE=Release -S . -B build_cmake
         cmake --build build_cmake -j"${CPU_COUNT}"
         install -v -m 0755 build_cmake/PretextGraph "${PREFIX}/bin"
