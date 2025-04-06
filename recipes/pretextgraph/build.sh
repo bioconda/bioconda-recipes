@@ -14,9 +14,9 @@ case $(uname -m) in
         ;;
     *)
         if [[ `uname` == "Darwin" ]]; then
-            meson setup --buildtype=release --prefix="${PREFIX}" --unity on builddir
+            meson setup --buildtype=release --prefix="${PREFIX}" --strip --unity on builddir
         else
-            env CC="${CC}" CXX="${CXX}" meson setup --buildtype=release --prefix="${PREFIX}" --unity on builddir
+            env CC="${CC}" CXX="${CXX}" meson setup --buildtype=release --prefix="${PREFIX}" --strip --unity on builddir
         fi
 
         cd builddir
