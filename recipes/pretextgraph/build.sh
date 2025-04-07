@@ -4,6 +4,9 @@ set -eo pipefail
 
 mkdir -p "${PREFIX}/bin"
 
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
 hash -r
 
 case $(uname -m) in
