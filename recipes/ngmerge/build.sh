@@ -4,10 +4,9 @@ export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 if [[ "$(uname)" == "Darwin" ]]; then
-    export CFLAGS="-I${PREFIX}/lib/clang/${version}/include ${CFLAGS}"
-    export LDFLAGS="-lomp ${LDFLAGS}"
+    export LDFLAGS="${LDFLAGS} -lomp"
 else
-    export CFLAGS="-fopenmp ${CFLAGS}"
+    export CFLAGS="${CFLAGS} -fopenmp"
 fi 
 
 make -j"${CPU_COUNT}"
