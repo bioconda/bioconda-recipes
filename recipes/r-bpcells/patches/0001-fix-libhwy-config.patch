@@ -1,0 +1,34 @@
+From 468ddae9b94e02ab87ce95479995fc6ee189fce3 Mon Sep 17 00:00:00 2001
+From: Mervin Fansler <mervin.fansler@bric.ku.dk>
+Date: Mon, 7 Apr 2025 10:56:19 +0200
+Subject: [PATCH] fix libhwy config
+
+---
+ r/configure | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/r/configure b/r/configure
+index 685c7cb7..f1cdb304 100755
+--- a/r/configure
++++ b/r/configure
+@@ -156,9 +156,9 @@ fi
+ ############################
+ printf "\nTesting availability of highway SIMD library..."
+ HWY_OK=""
+-HWY_CFLAGS="-Ibpcells-cpp"
++HWY_CFLAGS=""
+ HWY_LIBS="-lhwy"
+-$CXX tools/hwy-test.cpp $CXXFLAGS $LDFLAGS 2>&3 && HWY_OK="yes";
++$CXX tools/hwy-test.cpp $CXXFLAGS $LDFLAGS $HWY_CFLAGS $HWY_LIBS 2>&3 && HWY_OK="yes";
+ if [ -z $HWY_OK ]; then
+     if [ ! -f tools/highway/lib/libhwy.a ]; then
+         printf "\nBuilding highway SIMD library from source\n"
+@@ -170,7 +170,7 @@ if [ -z $HWY_OK ]; then
+     HWY_CFLAGS="$HWY_CFLAGS -I../tools/highway/include"
+     HWY_LIBS="-L../tools/highway/lib -lhwy"
+ fi
+-if [ -z $CXX17_OK ]; then
++if [ -z $HWY_OK ]; then
+     printf "\n\nUnable to build highway SIMD library from source\n"
+     exit 1
+ fi
