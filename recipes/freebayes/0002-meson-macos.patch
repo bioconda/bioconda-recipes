@@ -1,0 +1,41 @@
+diff --git a/meson.build b/meson.build
+index ac5ca5d..474ae5e 100644
+--- a/meson.build
++++ b/meson.build
+@@ -15,7 +15,7 @@
+ 
+ project('freebayes', ['cpp', 'c'],
+         version : '1.3.9',
+-        default_options : ['warning_level=1', 'cpp_std=c++17', 'optimization=3'])
++        default_options : ['warning_level=1', 'cpp_std=c++14', 'optimization=3'])
+ static_build = get_option('static')
+ 
+ # used by Debian: add_global_arguments('-D_GLIBCXX_ASSERTIONS=1', language : 'cpp')
+@@ -28,8 +28,8 @@ wfa2lib_dep = cc.find_library('wfa2') # need to link for vcflib code
+ zlib_dep = dependency('zlib', static: static_build)
+ htslib_dep = dependency('htslib', static: static_build, required: false)
+ vcflib_dep = cc.find_library('vcflib', required: false)
+-seqlib_dep = dependency('libseqlib', static: static_build, required: false)
+-tabixpp_dep = cc.find_library('tabixpp', required: false, static: static_build)
++seqlib_dep = cc.find_library('seqlib', required: false)
++tabixpp_dep = cc.find_library('tabixpp', required: false)
+ 
+ # later versions of vcflib have Variant.hpp in a system subdirectory
+ fs = import('fs')
+@@ -146,6 +146,7 @@ extra_cpp_args = cc.get_supported_arguments(
+     '-Wno-sign-compare',
+     '-Wno-unused-variable',
+     '-Wno-unused-but-set-variable',
++    '-Wno-deprecated-declarations',
+     )
+ 
+ freebayes_lib = static_library(
+@@ -161,7 +162,7 @@ freebayes_lib = static_library(
+ if static_build
+   link_arguments = '-static'
+ else
+-  link_arguments = ['-ltabixpp', '-lwfa2', '-lvcflib']
++  link_arguments = ['-ltabixpp', '-lwfa2', '-lvcflib', '-lz', '-lhts', '-pthread']
+ endif
+ 
+ executable('freebayes',
