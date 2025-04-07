@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -g -Wall -std=gnu99 -O3 -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 if [[ "$(uname)" == "Darwin" ]]; then
@@ -9,5 +9,5 @@ else
     export CFLAGS="${CFLAGS} -fopenmp"
 fi 
 
-make -j"${CPU_COUNT}"
+make CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
 make install PREFIX="${PREFIX}"
