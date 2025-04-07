@@ -29,7 +29,7 @@ mv weights "$INSTALL_DIR"
 # Create wrapper bash scripts in bin/
 mkdir -p "${PREFIX}/bin"
 
-cat <<EOF > "${PREFIX}/bin/run_s4pred"
+cat <<EOF > "${PREFIX}/bin/run_model"
 #!/bin/bash
 exec python "${INSTALL_DIR}/run_model.py" "\$@"
 EOF
@@ -44,7 +44,7 @@ cat <<EOF > "${PREFIX}/bin/network"
 exec python "${INSTALL_DIR}/network.py" "\$@"
 EOF
 
-chmod +x "${PREFIX}/bin/run_s4pred"
+chmod +x "${PREFIX}/bin/run_model"
 chmod +x "${PREFIX}/bin/utilities"
 chmod +x "${PREFIX}/bin/network"
 
