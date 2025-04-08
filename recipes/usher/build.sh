@@ -26,13 +26,13 @@ pushd build
 cmake -S .. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-    -DTBB_DIR=${PWD}/../$tbb_root \
-    -DCMAKE_PREFIX_PATH=${PWD}/../$tbb_root/cmake \
+    -DTBB_DIR="${PWD}/../$tbb_root" \
+    -DCMAKE_PREFIX_PATH="${PWD}/../$tbb_root/cmake" \
     "${CONFIG_ARGS}"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # omit ripples-fast due to problems building on Mac
-    make -j"${CPU_COUNT}" usher matUtils matOptimize usher-sampled ripples
+    make -j1 usher matUtils matOptimize usher-sampled ripples
     cat > ripples-fast <<EOF
 #!/bin/bash
 # This is a placeholder for the program ripples-fast on Mac where the build is currently failing.
@@ -46,20 +46,20 @@ echo ""
 EOF
     chmod a+x ripples-fast
 else
-    cmake --build . --target install -j "${CPU_COUNT}"
+    cmake --build . --target install -j 1
 fi
 
-install -v -m 0755 ./usher ${PREFIX}/bin/
-install -v -m 0755 ./matUtils ${PREFIX}/bin/
-install -v -m 0755 ./matOptimize ${PREFIX}/bin/
+install -v -m 0755 ./usher ${PREFIX}/bin
+install -v -m 0755 ./matUtils ${PREFIX}/bin
+install -v -m 0755 ./matOptimize ${PREFIX}/bin
 if [[ -f "usher-sampled" ]]; then
-    install -v -m 0755 ./usher-sampled ${PREFIX}/bin/
+    install -v -m 0755 ./usher-sampled ${PREFIX}/bin
 fi
 if [[ -f "ripples" ]]; then
-    install -v -m 0755 ./ripples ${PREFIX}/bin/
+    install -v -m 0755 ./ripples ${PREFIX}/bin
 fi
 if [[ -f "ripples-fast" ]]; then
-    install -v -m 0755 ./ripples-fast ${PREFIX}/bin/
+    install -v -m 0755 ./ripples-fast ${PREFIX}/bin
 fi
 if [ -d ./tbb_cmake_build ]; then
     cp -rf ./tbb_cmake_build/tbb_cmake_build_subdir_release/* ${PREFIX}/lib/
