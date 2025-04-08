@@ -1,22 +1,22 @@
+{% set name = "mimeo" %}
+{% set version = "1.2.0" %}
+
 package:
-  name: mimeo
-  version: "1.1.2"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/4e/7c/e2f51b7f98a35a8af8627db183aa8013a34ac153385993a20b0d2a537fb2/mimeo-1.1.2.tar.gz
-  sha256: 29a08af948affc0b9cbac214f9a27aa84fc5b53e33f99282bb7865b3e0c4b8f6
+  url: https://files.pythonhosted.org/packages/9c/d9/afe37b2fc91ad97ff2d2c2d47ee0da206f887d688af3e633c61fca6a7740/mimeo-1.2.0.tar.gz
+  sha256: d799bb0c295e2f4109dfcab53333e69f6f7cf653a4b2de0210669eade87a6fb8
 
 build:
   noarch: python
   number: 0
   script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
   entry_points:
-    - mimeo-self=mimeo.run_self:main
-    - mimeo-x=mimeo.run_interspecies:main
-    - mimeo-map=mimeo.run_map:main
-    - mimeo-filter=mimeo.run_filter:main
+    - mimeo = mimeo.app:main
   run_exports:
-    - {{ pin_subpackage('mimeo', max_pin="x") }}
+    - {{ pin_subpackage('mimeo', max_pin="x.x") }}
 
 requirements:
   host:
@@ -28,17 +28,17 @@ requirements:
     - python >=3.8
     - pandas >=0.20.3
     - biopython >=1.70
-    #- argparse-tui
+    - rich
 
 test:
   imports:
     - mimeo
 
   commands:
-    - mimeo-self --help
-    - mimeo-x --help
-    - mimeo-map --help
-    - mimeo-filter --help
+    - mimeo self --help
+    - mimeo x --help
+    - mimeo map --help
+    - mimeo filter --help
 
 about:
   home: https://github.com/Adamtaranto/mimeo
@@ -46,3 +46,4 @@ about:
   summary: 'Scan genomes for internally repeated sequences, elements which are repetitive in another species, or high-identity HGT candidate regions between species.'
   license_family: MIT
   dev_url: https://github.com/Adamtaranto/mimeo
+  doc_url: https://adamtaranto.github.io/mimeo
