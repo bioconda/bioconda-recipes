@@ -4,7 +4,9 @@ mkdir -p $PREFIX/bin
 
 files=(polap
 	polap-ncbitools
+	polap-batch-v0.sh
 	polap-batch-v2.sh
+	polap-data-v0.sh
 	polap-data-v1.sh
 	polap-data-v2.sh
 	polap-data-v3.sh
