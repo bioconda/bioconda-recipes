@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+
 if [[ `uname` == "Darwin" ]]; then
   export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
