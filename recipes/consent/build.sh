@@ -3,10 +3,12 @@
 OS=$(uname)
 ARCH=$(uname -m)
 cp -rf ${RECIPE_DIR}/sse2neon.h BMEAN/Complete-Striped-Smith-Waterman-Library/src/
+# Fixes CONSENT-correct Segmentation fault: https://github.com/morispi/CONSENT/issues/32#issuecomment-1063116181
+cp -rf src/robin_hood.h BMEAN/
 
 # Fix zlib error
-export CFLAGS="$CFLAGS -O3 -I$PREFIX/include"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 # Fix some error can't be patch before
 if [[ "$(uname)" == "Darwin" ]]; then
