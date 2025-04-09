@@ -1,5 +1,5 @@
 {% set name = "bbmapy" %}
-{% set version = "0.0.44" %}
+{% set version = "0.0.46" %}
 
 package:
   name: {{ name|lower }}
@@ -7,55 +7,48 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/bbmapy-{{ version }}.tar.gz
-  sha256: 31161dcf2cc9dad1ace68333b40935499812d1d396b93077261d272d53944db9
+  sha256: 8e223fab7fdabdbe8eb3a81adf6c526be36144b0b7298474bd506f6bd081780c
 
 build:
-  noarch: python
-  number: 0
-  script: |
-    {{ PYTHON }} -m pip install . -vvv
-  binary_relocation: false 
   entry_points:
-    - bbmapy-test=bbmapy.test:main
-    - bbmapy-ensure-java-on-build=bbmapy.update:ensure_java_availability_on_build
-  ignore_run_exports:
-    - python
-    - rich
-    - install-jdk
+    - bbmapy-ensure-java = bbmapy.update:ensure_java_availability
+    - bbmapy-test = bbmapy.test:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv 
+  number: 0
   run_exports:
-    - {{ pin_subpackage("bbmapy", max_pin="x.x") }}
+    - {{ pin_subpackage("bbmapy", max_pin="x.x") }}  
 
 requirements:
   build:
     - python >=3.9
-    - patchelf
-    - pip
     - hatchling
+    - pip
     - install-jdk
+    - patchelf
   host:
     - python >=3.9
     - hatchling
     - pip
-    - install-jdk
-    - rich
   run:
     - python >=3.9
     - rich
     - install-jdk
+
 test:
   imports:
     - bbmapy
   commands:
     - pip check
-    - python -c "from bbmapy.update import ensure_java_availability_on_build; ensure_java_availability_on_build()"
-    - bbmapy-test --help
+    - bbmapy-test 
   requires:
     - pip
+    - install-jdk
 
 about:
   home: https://github.com/urineri/bbmapy
   license: custom
-  license_file: LICENSE
+  license_file: bbmapy/vendor/bbmap/license.txt
   summary: 'A Python wrapper for BBTools'
   description: |
     bbmapy is a Python wrapper for BBTools, a suite of bioinformatics tools.
