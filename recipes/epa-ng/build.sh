@@ -7,7 +7,16 @@ export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
 
-make  
+export CXXFLAGS="${CXXFLAGS} -fsigned-char"
+
+make build/CMakeCache.txt
+
+patch -p1 < ${RECIPE_DIR}/genesis.patch
+patch -p1 < ${RECIPE_DIR}/pll_modules.patch
+
+make run_make || echo first pass, known to error
+make run_make CXXFLAGS="${CXXFLAGS}
+
 
 mkdir -p $PREFIX/bin
 
