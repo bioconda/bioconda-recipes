@@ -14,10 +14,11 @@ build:
   number: 0
   script: |
     {{ PYTHON }} -m pip install . -vv
-    {{ PYTHON }} -c "from bbmapy.update import ensure_java_availability_on_build; ensure_java_availability_on_build()"
+  binary_relocation: false 
   entry_points:
     - bbmapy-test=bbmapy.test:main
-    - bbmapy-ensure-java=bbmapy.update:ensure_java_availability_on_build
+    - bbmapy-ensure-java-on-build=bbmapy.update:ensure_java_availability_on_build
+    - bbmapy-ensure-java-on-run=bbmapy.update:ensure_java_availability_on_run
   ignore_run_exports:
     - python
     - rich
@@ -28,25 +29,24 @@ build:
 requirements:
   build:
     - python >=3.9
+    - patchelf
     - pip
     - hatchling
-    - install-jdk
   host:
     - python >=3.9
     - hatchling
     - pip
     - rich
-    - install-jdk
   run:
     - python >=3.9
     - rich
     - install-jdk
-
 test:
   imports:
     - bbmapy
   commands:
     - pip check
+    - python -c "from bbmapy.update import ensure_java_availability_on_run; ensure_java_availability_on_run()"
     - bbmapy-test --help
   requires:
     - pip
