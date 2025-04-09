@@ -1,8 +1,9 @@
+{% set name = "pastrami" %}
 {% set version = "1.0.0" %}
 
 package:
-  name: pastrami
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: "https://github.com/healthdisparities/pastrami/archive/v{{ version }}.tar.gz"
@@ -12,13 +13,14 @@ build:
   noarch: python
   number: 0
   script:
-    - cp -f outsourcedOptimizer.R
+    - mkdir -p "${PREFIX}/bin"
+    - cp -fv outsourcedOptimizer.R "${PREFIX}/bin"
     - chmod 0755 pastrami.py
-    - cp -f pastrami.py ${PREFIX}/bin/pastrami
-    - cp -f pastrami.py ${PREFIX}/bin
+    - cp -fv pastrami.py ${PREFIX}/bin/pastrami
+    - cp -fv pastrami.py "${PREFIX}/bin"
     - chmod 0755 simulation/simulate_individuals.py
-    - cp -f simulation/simulate_individuals.py ${PREFIX}/bin
-    - cp -rf map_data ${PREFIX}/bin
+    - cp -fv simulation/simulate_individuals.py "${PREFIX}/bin"
+    - cp -rfv map_data "${PREFIX}/bin"
   run_exports:
     - {{ pin_subpackage('pastrami', max_pin="x") }}
 
