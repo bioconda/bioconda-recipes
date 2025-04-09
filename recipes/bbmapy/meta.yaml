@@ -12,11 +12,16 @@ source:
 build:
   noarch: python
   number: 0
-  script:
-   {{ PYTHON }} -m pip install . -vv  &&  {{ PYTHON }} -c "from bbmapy.update import ensure_java_availability_on_build; ensure_java_availability_on_build()"
+  script: |
+    {{ PYTHON }} -m pip install . -vv
+    {{ PYTHON }} -c "from bbmapy.update import ensure_java_availability_on_build; ensure_java_availability_on_build()"
   entry_points:
     - bbmapy-test=bbmapy.test:main
-    - bbmapy-ensure-java = "bbmapy.update:ensure_java_availability_on_build"
+    - bbmapy-ensure-java=bbmapy.update:ensure_java_availability_on_build
+  ignore_run_exports:
+    - python
+    - rich
+    - install-jdk
   run_exports:
     - {{ pin_subpackage("bbmapy", max_pin="x.x") }}
 
@@ -25,7 +30,6 @@ requirements:
     - python >=3.9
     - pip
     - hatchling
-    - rich
     - install-jdk
   host:
     - python >=3.9
