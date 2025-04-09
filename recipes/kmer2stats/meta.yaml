@@ -1,0 +1,41 @@
+{% set name = "kmer2stats" %}
+{% set version = "1.0.1" %}
+{% set sha256 = "3b7b136335d4a2019a7db4b3eb3ce7c299bf41378df36ed4c4dcb8a65df273b7" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage("kmer2stats", max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - python
+    - pandas >=2.2.2
+    - numpy >=1.26.4
+    - scikit-bio >=0.6.3
+    - argparse >=1.4.0
+
+test:
+  commands:
+    - kmer2stats.py --help
+    - kmer2stats.py --version
+
+about:
+  home: https://github.com/SantaMcCloud/kmer2stats
+  license: GPL-3.0
+  license_family: GPL-3.0
+  license_file: LICENSE
+  summary: "A tool for creating data files for statistic based on kmers"
