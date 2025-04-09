@@ -1,0 +1,32 @@
+--- a/build/genesis_unity_sources/lib/all.cpp	2025-04-09 17:31:38.561723818 +0000
++++ b/build/genesis_unity_sources/lib/all.cpp	2025-04-09 17:32:43.551173673 +0000
+@@ -27567,7 +27567,9 @@
+ #   include <io.h>
+ #   include <windows.h>
+ #else
++#ifndef __aarch64__
+ #   include <cpuid.h>
++#endif
+ #   include <stdio.h>
+ #   include <sys/ioctl.h>
+ #   include <unistd.h>
+@@ -27656,7 +27658,10 @@
+ 
+ bool Options::hyperthreads_enabled() const
+ {
+-    // Get CPU info.
++#ifdef __aarch64__
++  return false;
++#else
++  // Get CPU info.
+     int32_t info[4];
+     #ifdef _WIN32
+         __cpuid( info, 1 );
+@@ -27665,6 +27670,7 @@
+     #endif
+ 
+     return (bool) (info[3] & (0x1 << 28));
++#endif
+ }
+ 
+ unsigned int Options::guess_number_of_threads( bool use_openmp ) const
