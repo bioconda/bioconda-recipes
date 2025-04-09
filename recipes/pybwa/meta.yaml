@@ -1,5 +1,5 @@
 {% set name = "pybwa" %}
-{% set version = "1.4.6" %}
+{% set version = "2.0.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/fulcrumgenomics/{{ name }}/releases/download/{{ version }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 1e2f870cb7b53cdf4321deffeb0ae376ae961de357261f6a5a3495a6c821dfc8
+  sha256: 568d24748b111613536a554769dd259073922f85e67897c5048c7a3fce427f6f
 
 build:
   number: 0
@@ -15,22 +15,34 @@ build:
   script: {{ PYTHON }} -m pip install . -vvv --no-deps
   run_exports:
     - {{ pin_subpackage('pybwa', max_pin="x") }}
+  script_env:
+    - M4=$BUILD_PREFIX/bin/m4  # [osx and arm64]
 
 requirements:
   build:
     - {{ compiler('c') }}
     - make
+    - autoconf
+    - automake
+    - libtool
   host:
     - cython
     - pip
     - python
     - poetry-core
     - zlib
+    - xz
+    - bzip2
+    - libdeflate
+    - libcurl
+    - openssl  # [not osx]
+    - pysam >=0.22.1
+
   run:
     - python
     - fgpyo >=0.7.0
     - pysam >=0.22.1
-    - typing-extensions >=3.7.4  # [py < 312]
+    - typing-extensions >=3.7.4  # [py < 313]
 
 test:
   imports:
@@ -51,3 +63,5 @@ extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
+  identifier:
+    - DOI:10.5281/zenodo.15029038
