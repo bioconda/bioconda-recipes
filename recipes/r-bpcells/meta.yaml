@@ -10,7 +10,10 @@ source:
   url: {{ github }}/archive/refs/tags/v{{ version }}.tar.gz
   sha256: 231e91a3d60d2bc400324c5b60fb4644fda16261048d6b1a49bfac4aa269cd1f
   patches:
+    # track: https://github.com/bnprks/BPCells/issues/228
     - patches/0001-fix-libhwy-config.patch
+    # from: https://github.com/bnprks/BPCells/pull/231
+    - patches/0002-granges-conversion.patch
 
 build:
   number: 0
@@ -26,6 +29,7 @@ requirements:
     - cross-r-base {{ r_base }}  # [build_platform != target_platform]
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - make
   host:
     - r-base
     - r-dplyr >=1.0.0
@@ -83,9 +87,8 @@ test:
     - macs2
   commands:
     - $R -e "library('BPCells')"
-    ## NB: this tightly-couples to `macs2` coming from `test.requires` and avoids running against the container;
-    ## NB: ideally `stop_on_failure` should be `TRUE` - see https://github.com/bnprks/BPCells/issues/229
-    - if command -v macs2; then $R -e "testthat::test_package('BPCells', stop_on_failure=FALSE)"; fi
+    ## NB: this tightly-couples to `macs2` coming from `test.requires` and avoids running against the container
+    - if command -v macs2; then $R -e "testthat::test_package('BPCells', stop_on_failure=TRUE)"; fi
 
 about:
   home: https://bnprks.github.io/BPCells
