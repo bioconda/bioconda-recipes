@@ -1,5 +1,7 @@
 #!/bin/bash
 
+$PYTHON -m pip install --no-deps --ignore-installed -vv . 
+
 mkdir -p ${PREFIX}/bin
 
 # copy script to download database
