@@ -1,16 +1,21 @@
-{% set version = "2020.02.29" %}
+{% set version = "2025.04.04" %} 
+{% set sha256 = "e1391de42c9115f1675f6399f02b5e364fc229d4ae185643a78ac75d1fe97c62" %}
 
 package:
   name: rsat-core
   version: {{ version }}
 
 build:
-  number: 1
+  run_exports:
+    - {{ pin_subpackage('rsat-core', max_pin="x.x") }}
+  number: 0
   skip: True  # [py2k]
+  script_env:
+   - LC_ALL=POSIX
 
 source:
-  url: http://pedagogix-tagc.univ-mrs.fr/download_rsat/rsat-core_{{ version }}.tar.gz
-  sha256: e964d960f8fa57d39f1add2763ea6cb5eef12beae54c01dc1fd7c50c1f01aaa6
+  url: https://github.com/rsa-tools/rsat-code/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 requirements:
   build:
@@ -18,22 +23,21 @@ requirements:
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
     - make
-  host:
-    - r-base
-    - python
-    - perl
+    - r-base      
+
   run:
-    ## Python dependencies
+    ## Python3      
     - python
     - numpy
     - scipy
-    - matplotlib
+    - matplotlib-base
     - httplib2
     - pygraphviz
     - snakemake
     - pyyaml
+    - opencv
 
-    ## R dependencies
+    ## R and BioConductor dependencies
     - r-base
     - r-gplots
     - r-jpeg
@@ -52,13 +56,12 @@ requirements:
     - r-rjsonio
     - r-dplyr
     - r-data.table
-    
-    ## R BioConductor dependencies
     - bioconductor-ctc
     - bioconductor-qvalue
 
-    ##  PERL dependencies
+    ## Perl dependencies
     - perl
+    - perl-app-cpanminus
     - perl-bioperl
     - perl-bio-das
     - perl-yaml
@@ -76,7 +79,7 @@ requirements:
     - perl-gd
     - perl-dbi
     - perl-dbd-mysql
-    - perl-db-file
+    - perl-db_file
     - perl-lwp-simple
     - perl-json
     - perl-soap-lite
@@ -85,21 +88,19 @@ requirements:
     - perl-xml-parser
     - perl-log-log4perl
     - perl-number-format
-    - perl-ole-storage_lite
-    - perl-spreadsheet-writeexcel
     - perl-readonly
     - perl-rest-client
     - perl-http-tiny
     - perl-lockfile-simple
-#    - perl-postscript-simple  ## TO DO: PACKAGE Perl::Postscript::Simple
     - perl-util-properties
     - perl-ensembl-api
     - perl-ensembl-genomes
-#    - perl-sender-simple ## TO DO : PACKAGE Perl::Sender::Simple
     - perl-parallel-forkmanager
     - perl-mce-shared
+    - perl-postscript-simple
+    - perl-email-simple
 
-    ## Stand-alone tools
+    ## Standalone tools
     - seqlogo
     - weblogo
     - bedtools
@@ -109,33 +110,39 @@ requirements:
     - gnuplot
     - vmatch
 
-    ## For the web server only?
-    - perl-email-simple
-
 test:
   commands:
-    - "rsat --help"   ## test the RSAT command
-    - "rsat oligo-analysis -h" ## Test a subcommand running a Perl script
-    - "rsat random-seq -l 100 -n 2" ## Test a perl script
-    - "rsat random-seq -l 100 -n 2 | rsat purge-sequence" ## Check the vmatch dependency of purge-sequence
+    - "rsat -h"   ## test the RSAT command
+    - "rsat oligo-analysis -h" 
+    - "rsat random-seq -l 100 -n 2" 
+    - "rsat random-seq -l 100 -n 2 | rsat purge-sequence" ## Check pipe
     - "rsat random-motif -l 10" ## Test a subcommand running a python script
     - "rsat feature-map -h" ## check the GD dependency for feature-map
-    ## Check that the compiled executable are running (compiled C program, in the bin folder)
     - "rsat info-gibbs -h"
     - "rsat count-words -h"
     - "rsat matrix-scan-quick -h"
-    - "rsat matrix-clustering -h" # Test if the specific Perl dependencies have been successfully included for this tool
-#    - "make -f ${PREFIX}/share/rsat/makefiles/subcommand_tests.mk randseq" ## Quick test for one Perl script
-#    - "make -f ${PREFIX}/share/rsat/makefiles/subcommand_tests.mk xygraph" ## test GD dependency
+    - "rsat matrix-clustering -h"
 
 about:
-  home: http://rsat.eu/
-  summary: Detection of regulatory signals in non-coding sequences.
-  license: AGPL-3
+  home: "http://rsat.eu"
+  summary: "Regulatory Sequence Analysis Tools (RSAT)"
+  license: "GNU Affero General Public License v3"
   license_file: LICENSE.txt
+  description: "Detection and analysis of regulatory signals in non-coding sequences."
 
 extra:
   identifiers:
     - biotools:rsat
     - doi:10.1093/nar/gky317
+  notes: |
+    This package installs RSAT tools to analyse cis-regulatory elements, supporting:
+    * motif discovery (support genome-wide data sets like ChIP-seq)
+    * transcription factor binding motif analysis (quality assessment, comparisons and clustering)
+    * comparative genomics
+    * analysis of regulatory variations
 
+    Documentation can be found at https://rsa-tools.github.io/installing-RSAT
+
+    Note that this package does not include genome sequences nor DNA motif collections, 
+    please check https://rsa-tools.github.io/installing-RSAT/RSAT-Docker/RSAT-Docker-tuto.html
+    to learn how to add them in your system.
