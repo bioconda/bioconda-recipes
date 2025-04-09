@@ -13,22 +13,18 @@ build:
   noarch: python
   number: 0
   script:
-   {{ PYTHON }} -m pip install . -vv  && {{ PYTHON }} -c "from bbmapy.update import ensure_java_availability_on_build; ensure_java_availability_on_build()"
-
-entry_points:
-  - bbmapy-test=bbmapy.test:main
-  - bbmapy-ensure-java = "bbmapy.update:ensure_java_availability_on_build"
-
-run_exports:
-    - {{ pin_subpackage("bbmapy", max_pin=None) }}
+   {{ PYTHON }} -m pip install . -vv  &&  {{ PYTHON }} -c "from bbmapy.update import ensure_java_availability_on_build; ensure_java_availability_on_build()"
+  entry_points:
+    - bbmapy-test=bbmapy.test:main
+    - bbmapy-ensure-java = "bbmapy.update:ensure_java_availability_on_build"
+  run_exports:
+    - {{ pin_subpackage("bbmapy", max_pin="x.x") }}
 
 requirements:
   build:
     - python >=3.9
     - pip
-    - git
     - hatchling
-    - wget
     - rich
     - install-jdk
   host:
@@ -36,9 +32,11 @@ requirements:
     - hatchling
     - pip
     - rich
+    - install-jdk
   run:
     - python >=3.9
     - rich
+    - install-jdk
 
 test:
   imports:
@@ -46,13 +44,12 @@ test:
   commands:
     - pip check
     - bbmapy-test --help
-    - bbmapy-ensure-java --help
   requires:
     - pip
 
 about:
   home: https://github.com/urineri/bbmapy
-  license: MIT
+  license: custom
   license_file: LICENSE
   summary: 'A Python wrapper for BBTools'
   description: |
