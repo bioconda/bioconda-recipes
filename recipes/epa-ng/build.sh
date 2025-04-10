@@ -9,7 +9,7 @@ export CXX_INCLUDE_PATH=${PREFIX}/include
 
 export CXXFLAGS="${CXXFLAGS} -fsigned-char"
 
-make build/CMakeCache.txt
+make build/CMakeCache.txt CXXFLAGS=${CXXFLAGS}
 
 patch -p1 < ${RECIPE_DIR}/genesis.patch
 patch -p1 < ${RECIPE_DIR}/pll_modules.patch
