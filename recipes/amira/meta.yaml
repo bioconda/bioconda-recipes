@@ -21,13 +21,15 @@ build:
       cd pandora
       git checkout f7e06605d54981edbeebd8935bd1a6fd47a31fbc
 
-      # Patch CMake to disable Hunter's Boost and use Conda's Boost instead
+      # Cleanly remove HunterGate block (multiline-safe)
+      sed -i '/HunterGate(/,/)/d' CMakeLists.txt
+
+      # Also remove any leftover quotes (like the one causing the parse error)
+      sed -i '/cpp-pm.*hunter/d' CMakeLists.txt
+
+      # And make sure Boost is found without hunter
       sed -i '/hunter_add_package(Boost)/d' CMakeLists.txt
       sed -i 's/find_package(Boost CONFIG REQUIRED)/find_package(Boost REQUIRED)/' CMakeLists.txt
-
-      # Optional: if HunterGate or other hunter-specific logic exists, disable or bypass it
-      sed -i '/HunterGate/d' CMakeLists.txt
-      sed -i '/hunter_add_package/d' CMakeLists.txt
 
       mkdir -p build
       cd build
