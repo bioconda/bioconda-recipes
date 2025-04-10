@@ -1,0 +1,44 @@
+{% set name = "scanpy-cli" %}
+{% set version = "0.1.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/scanpy_cli-{{ version }}.tar.gz
+  sha256: bacaaca0b747f8af0325c248f53705ea7d80297640aff7ec92e6e499e025b736
+
+build:
+  entry_points:
+    - scanpy-cli = scanpy_cli:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{pin_subpackage("scanpy-cli", max_pin="x.x")}}
+
+requirements:
+  host:
+    - python >=3.12
+    - hatchling
+    - pip
+  run:
+    - python >=3.12
+    - python-igraph >=0.11.8
+    - leidenalg >=0.10.2
+    - rich-click >=1.8.8
+    - scanpy >=1.11.0
+
+test:
+  commands:
+    - scanpy-cli --help
+
+about:
+  summary: CLI for Scanpy
+  license: MIT
+  home: https://github.com/nictru/scanpy-cli
+
+extra:
+  recipe-maintainers:
+    - nictru
