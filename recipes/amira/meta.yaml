@@ -13,17 +13,20 @@ build:
   number: 0
   script:
     - |
-      # Make sure conda-installed cmake is used (not system one)
       export PATH="$(dirname $(which cmake)):$PATH"
-      cmake --version  # Sanity check
-      # Install Pandora
+      cmake --version
       git clone --single-branch https://github.com/rmcolq/pandora.git --recursive
       cd pandora
       git checkout f7e06605d54981edbeebd8935bd1a6fd47a31fbc
+
+      # Patch CMake to avoid Hunter building Boost
       sed -i 's/cmake_minimum_required(VERSION 3.12)/cmake_minimum_required(VERSION 3.5)/' CMakeLists.txt
+      sed -i '/hunter_add_package(Boost)/d' CMakeLists.txt
+      sed -i '/find_package(Boost CONFIG REQUIRED)/c\find_package(Boost REQUIRED)' CMakeLists.txt
+
       mkdir -p build
       cd build
-      cmake -DHUNTER_JOBS_NUMBER=$(nproc) -DCMAKE_BUILD_TYPE=Release ..
+      cmake -DCMAKE_BUILD_TYPE=Release ..
       make -j$(nproc)
       make install
       cd ../..
