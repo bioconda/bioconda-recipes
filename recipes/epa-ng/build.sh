@@ -14,7 +14,6 @@ make build/CMakeCache.txt CXXFLAGS="${CXXFLAGS}"
 patch -p1 < ${RECIPE_DIR}/genesis.patch
 patch -p1 < ${RECIPE_DIR}/pll_modules.patch
 
-make run_make || echo first pass, known to error
 make run_make CXXFLAGS="${CXXFLAGS}"
 
 
