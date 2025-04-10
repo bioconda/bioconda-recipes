@@ -18,9 +18,17 @@ build:
       cd pandora
       git checkout f7e06605d54981edbeebd8935bd1a6fd47a31fbc
 
-      # Patch Boost to use shared libs
-      find . -type f \( -name 'CMakeLists.txt' -o -name '*.cmake' \) \
-        -exec sed -i 's/Boost_USE_STATIC_LIBS *ON/Boost_USE_STATIC_LIBS OFF/g' {} +
+       # Remove hunter and boost-related Hunter stuff
+      sed -i '/hunter_add_package\s*(/d' CMakeLists.txt
+      sed -i '/HunterGate(/,/)/d' CMakeLists.txt
+      sed -i '/cpp-pm.*hunter/d' CMakeLists.txt
+      sed -i '/hunter_add_package(Boost)/d' CMakeLists.txt
+      sed -i 's/find_package(Boost CONFIG REQUIRED)/find_package(Boost REQUIRED)/' CMakeLists.txt
+
+      # Remove GTest dependency entirely
+      sed -i '/find_package(GTest REQUIRED)/d' CMakeLists.txt
+      sed -i '/find_package(GTest CONFIG REQUIRED)/d' CMakeLists.txt
+      sed -i '/find_package(GTest)/d' CMakeLists.txt
 
       mkdir -p build && cd build
       cmake -DCMAKE_BUILD_TYPE=Release -DHUNTER_JOBS_NUMBER=$(nproc) -DBoost_USE_STATIC_LIBS=OFF -DBOOST_ROOT=$PREFIX ..
