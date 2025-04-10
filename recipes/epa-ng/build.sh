@@ -7,14 +7,12 @@ export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
 
-export CXXFLAGS="${CXXFLAGS} -fsigned-char"
-
-make build/CMakeCache.txt CXXFLAGS="${CXXFLAGS}"
+make build/CMakeCache.txt 
 
 patch -p1 < ${RECIPE_DIR}/genesis.patch
 patch -p1 < ${RECIPE_DIR}/pll_modules.patch
 
-make run_make CXXFLAGS="${CXXFLAGS}"
+make -j ${CPU_COUNT} run_make 
 
 
 mkdir -p $PREFIX/bin
