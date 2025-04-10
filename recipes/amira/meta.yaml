@@ -15,23 +15,30 @@ build:
     - |
       export PATH="$(dirname $(which cmake)):$PATH"
       cmake --version
+
+      # Clone Pandora
       git clone --single-branch https://github.com/rmcolq/pandora.git --recursive
       cd pandora
       git checkout f7e06605d54981edbeebd8935bd1a6fd47a31fbc
 
-      # Patch CMake to avoid Hunter building Boost
-      sed -i 's/cmake_minimum_required(VERSION 3.12)/cmake_minimum_required(VERSION 3.5)/' CMakeLists.txt
+      # Patch CMake to disable Hunter's Boost and use Conda's Boost instead
       sed -i '/hunter_add_package(Boost)/d' CMakeLists.txt
-      sed -i '/find_package(Boost CONFIG REQUIRED)/c\find_package(Boost REQUIRED)' CMakeLists.txt
+      sed -i 's/find_package(Boost CONFIG REQUIRED)/find_package(Boost REQUIRED)/' CMakeLists.txt
+
+      # Optional: if HunterGate or other hunter-specific logic exists, disable or bypass it
+      sed -i '/HunterGate/d' CMakeLists.txt
+      sed -i '/hunter_add_package/d' CMakeLists.txt
 
       mkdir -p build
       cd build
+
+      # Build with Conda's Boost
       cmake -DCMAKE_BUILD_TYPE=Release ..
       make -j$(nproc)
       make install
       cd ../..
 
-      # Install Python package
+      # Install Amira Python package
       {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   entry_points:
     - amira = amira.__main__:main
