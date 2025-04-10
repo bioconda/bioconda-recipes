@@ -1,9 +1,8 @@
 #!/bin/bash
 
-mkdir -p ${PREFIX}/bin
+$PYTHON -m pip install --no-deps --ignore-installed --no-cache-dir -vv . 
 
-chmod +x virulencefinder.py
-cp virulencefinder.py ${PREFIX}/bin/virulencefinder.py
+mkdir -p ${PREFIX}/bin
 
 # copy script to download database
 chmod +x ${RECIPE_DIR}/download-virulence-db.sh
