@@ -24,7 +24,9 @@ build:
       sed -i '/cpp-pm.*hunter/d' CMakeLists.txt
       sed -i '/hunter_add_package(Boost)/d' CMakeLists.txt
       sed -i 's/find_package(Boost CONFIG REQUIRED)/find_package(Boost REQUIRED)/' CMakeLists.txt
-      sed -i '1i set(Boost_NO_BOOST_CMAKE ON)' CMakeLists.txt
+      # Completely remove Boost's broken CMake config usage
+      sed -i '/find_package(Boost.*)/d' CMakeLists.txt
+
 
       # Remove GTest dependency entirely
       sed -i '/find_package(GTest REQUIRED)/d' CMakeLists.txt
@@ -35,16 +37,8 @@ build:
       export BOOST_INCLUDEDIR=$PREFIX/include
       export BOOST_LIBRARYDIR=$PREFIX/lib
 
-      rm -rf $PREFIX/lib/cmake/Boost*
       mkdir -p build && cd build
-      cmake .. \
-      -DCMAKE_INSTALL_PREFIX=$PREFIX \
-      -DCMAKE_BUILD_TYPE=Release \
-      -DBoost_NO_SYSTEM_PATHS=ON \
-      -DBOOST_ROOT=$PREFIX \
-      -DBoost_USE_STATIC_LIBS=OFF \
-      -DBoost_USE_MULTITHREADED=ON
-    
+      cmake -DHUNTER_JOBS_NUMBER=$(nproc) -DCMAKE_BUILD_TYPE=Release ..
       make -j$(nproc)
       make install
       cd ../..
