@@ -1,0 +1,306 @@
+diff -ru a/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/eKLIPse_circos.py b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/eKLIPse_circos.py
+--- a/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/eKLIPse_circos.py	2022-02-03 14:22:07.000000000 +0000
++++ b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/eKLIPse_circos.py	2025-04-10 15:58:20.935598659 +0000
+@@ -91,7 +91,7 @@
+         CIRCOS1 = open(pathSCblastCircos1,'w')
+         CIRCOS2 = open(pathSCblastCircos2,'w')
+         CIRCOS3 = open(pathSCblastCircos3,'w')        
+-        for key in dicoDel.keys():
++        for key in list(dicoDel.keys()):
+             start = int(split(key,"-")[0])
+             end = int(split(key,"-")[1])
+             meanFreq = (dicoDel[key]['freqF']+dicoDel[key]['freqR'])/2.0
+Only in b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c: eKLIPse_circos.py.bak
+diff -ru a/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/eKLIPse_fct.py b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/eKLIPse_fct.py
+--- a/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/eKLIPse_fct.py	2022-02-03 14:22:07.000000000 +0000
++++ b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/eKLIPse_fct.py	2025-04-10 15:58:20.951598708 +0000
+@@ -50,10 +50,10 @@
+ def byteify(input):
+     if isinstance(input, dict):
+         return {byteify(key): byteify(value)
+-                for key, value in input.iteritems()}
++                for key, value in input.items()}
+     elif isinstance(input, list):
+         return [byteify(element) for element in input]
+-    elif isinstance(input, unicode):
++    elif isinstance(input, str):
+         return input.encode('utf-8')
+     else:
+         return input
+Only in b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c: eKLIPse_fct.py.bak
+diff -ru a/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/eKLIPse_init.py b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/eKLIPse_init.py
+--- a/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/eKLIPse_init.py	2022-02-03 14:22:07.000000000 +0000
++++ b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/eKLIPse_init.py	2025-04-10 15:58:21.014598903 +0000
+@@ -221,7 +221,7 @@
+     else:
+         # Copy circos conf files
+         headerBool = False
+-        for titleBam in dicoInit["dicoBam"].keys():
++        for titleBam in list(dicoInit["dicoBam"].keys()):
+             # Test bai
+             if not os.path.isfile(dicoInit['dicoBam'][titleBam]['path']+".bai"):
+                 cmd_index = dicoInit['pathSamtools']+" index "+dicoInit['dicoBam'][titleBam]['path']
+@@ -302,7 +302,7 @@
+ #=================================================================================================================================================#
+ 
+ def config_display(dicoInit):
+-    print "\n"
++    print("\n")
+     format_time = time.strftime('%d/%m/%y %H:%M:%S',time.localtime(dicoInit['startTime']))
+     printcolor("    Start time           : ","bold white",dicoInit['boolColor'])
+     printcolor(format_time+"\n","white",dicoInit['boolColor']) ; time.sleep(0.1)
+Only in b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c: eKLIPse_init.py.bak
+diff -ru a/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/eKLIPse_sc.py b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/eKLIPse_sc.py
+--- a/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/eKLIPse_sc.py	2022-02-03 14:22:07.000000000 +0000
++++ b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/eKLIPse_sc.py	2025-04-10 15:58:21.083599116 +0000
+@@ -36,7 +36,7 @@
+                         except: pass # None case
+                     # Count softclipped (right soft-clipping)
+                     length, operation = alignment.sam_cigar_list[len(alignment.sam_cigar_list)-1]
+-                    if alignment.sam_qname=="MG1U0:00377:02144": print 
++                    if alignment.sam_qname=="MG1U0:00377:02144": print() 
+                     if operation=="S":
+                         # dicoBam[lastMappedPos]['nb_sc_reads_F']+=1
+                         # Write to Fasta (apply filter) / not consider 'N'
+@@ -158,12 +158,12 @@
+         #**** SHIFT Deletions *****#
+         # Block one position and apply shift
+         dico_shift_del = {}
+-        for delName in dicoDel.keys():
++        for delName in list(dicoDel.keys()):
+             start = int(split(delName,"-")[0])
+             end = int(split(delName,"-")[1])
+             dico_index = len(dico_shift_del)
+             dico_shift_del[dico_index] = [delName]
+-            for delName2 in dicoDel.keys():
++            for delName2 in list(dicoDel.keys()):
+                 if delName!=delName2:
+                     start2 = int(split(delName2,"-")[0])
+                     end2 = int(split(delName2,"-")[1])
+@@ -171,14 +171,14 @@
+                     if (start==start2 and (abs(end-end2)<=dicoInit["delShift"])) or (end==end2 and (abs(start-start2)<=dicoInit["delShift"])):
+                         dico_shift_del[dico_index].append(delName2)
+         # Merge set
+-        for key in dico_shift_del.keys():
+-            for key2 in dico_shift_del.keys():
++        for key in list(dico_shift_del.keys()):
++            for key2 in list(dico_shift_del.keys()):
+                 if key!=key2:
+                     if len(set(dico_shift_del[key]).intersection(set(dico_shift_del[key2])))>0:
+                         dico_shift_del[key] = set(dico_shift_del[key]).union(set(dico_shift_del[key2]))
+                         dico_shift_del[key2] = set()
+         # Merge to one maximal blast position
+-        for key in dico_shift_del.keys():
++        for key in list(dico_shift_del.keys()):
+             if len(dico_shift_del[key])>0:
+                 nbBlast_F = 0 ; nbBlast_R = 0
+                 lst_start_sc_fasta = [] ; lst_end_sc_fasta = []
+@@ -221,7 +221,7 @@
+                                                              'freqF':0.0, 'freqR':0.0 }
+ 
+         #***** COMPUTE Frequencies *****#
+-        for delName in dicoDel.keys():
++        for delName in list(dicoDel.keys()):
+             # FILTERs 
+             if dicoInit["bilateral"]==True and (dicoDel[delName]['scrF']['nbBlast']<dicoInit["minblast"] or dicoDel[delName]['scrR']['nbBlast']<dicoInit["minblast"]): del(dicoDel[delName])
+             elif dicoInit["bilateral"]==False and dicoDel[delName]['scrF']['nbBlast']<dicoInit["minblast"] and dicoDel[delName]['scrR']['nbBlast']<dicoInit["minblast"]: del(dicoDel[delName])
+@@ -266,11 +266,11 @@
+ 
+         #***** CUMULATIVE Frequency *****#
+         dicoCumulFreq = {}
+-        for delPos in dicoDel.keys():
++        for delPos in list(dicoDel.keys()):
+             start = int(split(delPos,"-")[0])
+             end = int(split(delPos,"-")[1])
+-            if start<end: posRange = range(start,end+1,1)
+-            else: posRange = range(start,dicoInit["dicoGbk"]['refLength']+1,1) ; posRange.extend(range(1,end+1,1))
++            if start<end: posRange = list(range(start,end+1,1))
++            else: posRange = list(range(start,dicoInit["dicoGbk"]['refLength']+1,1)) ; posRange.extend(list(range(1,end+1,1)))
+             for pos in posRange:
+                 if pos in dicoCumulFreq: dicoCumulFreq[pos]+=(dicoDel[delPos]['freqF']+dicoDel[delPos]['freqR'])/200.0
+                 else: dicoCumulFreq[pos] = (dicoDel[delPos]['freqF']+dicoDel[delPos]['freqR'])/200.0
+@@ -301,12 +301,12 @@
+     headerDel = "\"Title\";\"5' breakpoint\";\"3' breakpoint\";\"Freq\";\"Freq For\";\"Freq Rev\";\"5' Blast\";\"3' Blast\";\"5' Depth\";\"3' Depth\";\"Repetition\"\n"
+     OUTDEL.write(headerDel)
+     headerGenes = "\"Gene\";\"Start\";\"End\";\"Type\""
+-    for titleBam in dicoInit["dicoBam"].keys(): headerGenes = headerGenes+",\""+titleBam+"\""
++    for titleBam in list(dicoInit["dicoBam"].keys()): headerGenes = headerGenes+",\""+titleBam+"\""
+     OUTGENES.write(headerGenes+"\n")
+ 
+     #***** BROWSE input alignments *****#
+     dico_max_gene = {}
+-    for titleBam in dicoInit["dicoBam"].keys():
++    for titleBam in list(dicoInit["dicoBam"].keys()):
+         # Load json results files
+         dicoDel = load_json(os.path.join(dicoInit['pathTmpDir'],titleBam+"_BLAST.json"))
+         dicoCumulFreq = load_json(os.path.join(dicoInit['pathTmpDir'],titleBam+"_cumul.json"))
+@@ -314,15 +314,15 @@
+         #***** DELETIONS Results File *****#
+         # Sort deletion by deletion start and stop
+         dicoSortDel = {}
+-        for deletion in dicoDel.keys():
++        for deletion in list(dicoDel.keys()):
+             start = int(split(deletion,"-")[0])
+             end = int(split(deletion,"-")[1])
+             if start in dicoSortDel: dicoSortDel[start][end] = deletion
+             else: dicoSortDel[start] = { end:deletion }
+-        lst_start = dicoSortDel.keys() ; lst_start.sort()
++        lst_start = list(dicoSortDel.keys()) ; lst_start.sort()
+         # Browse sorted deletions
+         for start in lst_start:
+-            lst_end = dicoSortDel[start].keys() ; lst_end.sort()
++            lst_end = list(dicoSortDel[start].keys()) ; lst_end.sort()
+             for end in lst_end:
+                 # Search repetition (right)
+                 repetition_right = "" ; cpt_right = 0
+@@ -353,13 +353,13 @@
+         for features in dicoInit["dicoGbk"]['lstGene']:
+             try: dico_max_gene[features[0]][titleBam] = 0.0
+             except:  dico_max_gene[features[0]] = { titleBam:0.0 }
+-            for pos in dicoCumulFreq.keys():
++            for pos in list(dicoCumulFreq.keys()):
+                 if int(pos)>=features[1] and int(pos)<=features[2]: dico_max_gene[features[0]][titleBam] = max(dico_max_gene[features[0]][titleBam],dicoCumulFreq[pos])
+             
+     #***** GENES Results File *****#
+     for features in dicoInit["dicoGbk"]['lstGene']:
+         ToWrite = "\""+features[0]+"\";\""+str(features[1])+"\";\""+str(features[2])+"\";\""+features[3]+"\""
+-        for titleBam in dicoInit["dicoBam"].keys():
++        for titleBam in list(dicoInit["dicoBam"].keys()):
+             ToWrite = ToWrite+";\""+str(dico_max_gene[features[0]][titleBam]*100.0).replace(".",",")+"\""
+         OUTGENES.write(ToWrite+"\n")
+ 
+Only in b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c: eKLIPse_sc.py.bak
+diff -ru a/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/eKLIPse_threading.py b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/eKLIPse_threading.py
+--- a/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/eKLIPse_threading.py	2022-02-03 14:22:07.000000000 +0000
++++ b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/eKLIPse_threading.py	2025-04-10 15:58:21.098599162 +0000
+@@ -14,7 +14,7 @@
+     lstThreadcopy = []
+     PrevNbFinishThread = 0
+     # One thread per BAM
+-    for titleBam in dicoInit["dicoBam"].keys():
++    for titleBam in list(dicoInit["dicoBam"].keys()):
+         if target_fct=="Alignment_downsampling":
+             if dicoInit['dicoBam'][titleBam]['nbReads']>dicoInit['downCov']: lstThread.append(threading.Thread(target=Alignment_downsampling, args=(titleBam,dicoInit,lstError), name=thread_nameformat+titleBam))
+             else: dicoInit['dicoBam'][titleBam]['path_downsampling'] = dicoInit['dicoBam'][titleBam]['path']
+@@ -56,7 +56,7 @@
+     lst_progress = []
+     PrevNbFinishThread = 0
+     # One thread per BAM
+-    for titleBam in dicoInit["dicoBam"].keys():
++    for titleBam in list(dicoInit["dicoBam"].keys()):
+         if target_fct=="Alignment_downsampling":
+             if dicoInit['dicoBam'][titleBam]['nbReads']>dicoInit['downCov']: lstThread.append(threading.Thread(target=Alignment_downsampling, args=(titleBam,dicoInit,lstError), name=thread_nameformat+titleBam))
+             else: dicoInit['dicoBam'][titleBam]['path_downsampling'] = dicoInit['dicoBam'][titleBam]['path']
+Only in b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c: eKLIPse_threading.py.bak
+diff -ru a/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/pybam.py b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/pybam.py
+--- a/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/pybam.py	2022-02-03 14:22:07.000000000 +0000
++++ b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/pybam.py	2025-04-10 15:58:21.176599403 +0000
+@@ -140,7 +140,7 @@
+             else:
+                 for field in fields:
+                     if field.startswith('sam') or field.startswith('bam'):
+-                        if field not in parse_codes.keys():
++                        if field not in list(parse_codes.keys()):
+                             raise PybamError('\n\nStatic parser field "' + str(field) + '" from fields ' + str(fields) + ' is not known to this version of pybam!\nPrint "pybam.wat" to see available field names with explinations.\n')
+                     else:
+                         raise PybamError('\n\nStatic parser field "' + str(field) + '" from fields ' + str(fields) + ' does not start with "sam" or "bam" and thus is not an avaliable field for the static parsing.\nPrint "pybam.wat" in interactive python to see available field names with explinations.\n')
+@@ -573,7 +573,7 @@
+                 'py4py':py4py,
+                 'cigar_codes':cigar_codes
+             }
+-            exec code in exec_dict            # exec() compiles "code" to real code, creating the "parser" function and adding it to exec_dict['parser']
++            exec(code, exec_dict)            # exec() compiles "code" to real code, creating the "parser" function and adding it to exec_dict['parser']
+             return exec_dict['parser']
+ 
+         if fields:
+@@ -671,10 +671,10 @@
+                 offset_end = offset+8+(unpack('<i',self.bam[offset+4:offset+8])[0]*py4py[self.bam[offset+3]])
+                 tag_data = array(self.bam[offset+3] , self.bam[offset+8:offset_end] )
+             else:
+-                print 'PYBAM ERROR: I dont know how to parse BAM tags in this format: ',repr(tag_type)
+-                print '             This is simply because I never saw this kind of tag during development.'
+-                print '             If you could mail the following chunk of text to john at john.uk.com, ill fix this up :)'
+-                print repr(tag_type),repr(self.bam[offset+3:end])
++                print('PYBAM ERROR: I dont know how to parse BAM tags in this format: ',repr(tag_type))
++                print('             This is simply because I never saw this kind of tag during development.')
++                print('             If you could mail the following chunk of text to john at john.uk.com, ill fix this up :)')
++                print(repr(tag_type),repr(self.bam[offset+3:end]))
+                 exit()
+             result.append((tag_name,tag_type,tag_data))
+             offset = offset_end
+Only in b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c: pybam.py.bak
+diff -ru a/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/tabulate.py b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/tabulate.py
+--- a/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/tabulate.py	2022-02-03 14:22:07.000000000 +0000
++++ b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c/tabulate.py	2025-04-10 15:58:21.269599690 +0000
+@@ -2,22 +2,22 @@
+ 
+ """Pretty-print tabular data."""
+ 
+-from __future__ import print_function
+-from __future__ import unicode_literals
++
++
+ from collections import namedtuple, Iterable
+ from platform import python_version_tuple
+ import re
+ 
+ 
+ if python_version_tuple()[0] < "3":
+-    from itertools import izip_longest
++    from itertools import zip_longest
+     from functools import partial
+     _none_type = type(None)
+     _bool_type = bool
+     _int_type = int
+-    _long_type = long
++    _long_type = int
+     _float_type = float
+-    _text_type = unicode
++    _text_type = str
+     _binary_type = str
+ 
+     def _is_file(f):
+@@ -725,8 +725,8 @@
+         # dict-like and pandas.DataFrame?
+         if hasattr(tabular_data.values, "__call__"):
+             # likely a conventional dict
+-            keys = tabular_data.keys()
+-            rows = list(izip_longest(*tabular_data.values()))  # columns have to be transposed
++            keys = list(tabular_data.keys())
++            rows = list(zip_longest(*list(tabular_data.values())))  # columns have to be transposed
+         elif hasattr(tabular_data, "index"):
+             # values is a property, has .index => it's likely a pandas.DataFrame (pandas 0.11.0)
+             keys = list(tabular_data)
+@@ -769,11 +769,11 @@
+             keys = [] # storage for set
+             if headers == "firstrow":
+                 firstdict = rows[0] if len(rows) > 0 else {}
+-                keys.extend(firstdict.keys())
++                keys.extend(list(firstdict.keys()))
+                 uniq_keys.update(keys)
+                 rows = rows[1:]
+             for row in rows:
+-                for k in row.keys():
++                for k in list(row.keys()):
+                     #Save unique items in input order
+                     if k not in uniq_keys:
+                         keys.append(k)
+@@ -804,7 +804,7 @@
+ 
+         elif headers == "keys" and len(rows) > 0:
+             # keys are column indices
+-            headers = list(map(_text_type, range(len(rows[0]))))
++            headers = list(map(_text_type, list(range(len(rows[0])))))
+ 
+     # take headers from the first row if necessary
+     if headers == "firstrow" and len(rows) > 0:
+@@ -1128,7 +1128,7 @@
+         width_fn = len
+ 
+     # format rows and columns, convert numeric values to strings
+-    cols = list(izip_longest(*list_of_lists))
++    cols = list(zip_longest(*list_of_lists))
+     numparses = _expand_numparse(disable_numparse, len(cols))
+     coltypes = [_column_type(col, numparse=np) for col, np in
+                 zip(cols, numparses)]
+Only in b/eKLIPse-3606cb2edac983d2623ddc667b49206c3d01373c: tabulate.py.bak
