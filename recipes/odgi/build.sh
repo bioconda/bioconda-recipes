@@ -13,11 +13,11 @@ else
 	export CONFIG_ARGS=""
 fi
 
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Generic \
+cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -S . -B build -DCMAKE_BUILD_TYPE=Generic \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DEXTRA_FLAGS='-march=sandybridge -Ofast' \
 	"${CONFIG_ARGS}"
-cmake --build build --target install -j "${CPU_COUNT}" -v
+cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 --build build --target install -j "${CPU_COUNT}" -v
 
 PYVER=`python -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version_info[1]))'`
 mkdir -p "${PREFIX}/lib/python${PYVER}/site-packages"
