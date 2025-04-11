@@ -1,0 +1,53 @@
+{% set name = "epicore" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/epicore-{{ version }}.tar.gz
+  sha256: aa11dce7c5c924bf07fba88ad2ebf6245816c2110baa766f885fba971cf913e4
+
+build:
+  entry_points:
+    - epicore = epicore_utils.epicore_main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0  
+  run_exports: 
+    - {{ pin_subpackage('epicore', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - setuptools >=61.0
+    - wheel
+    - pip
+  run:
+    - python >=3.12
+    - biopython >=1.80
+    - click >=8.1
+    - matplotlib-base >=3.4
+    - numpy >=2
+    - pandas >=2
+    - pyyaml >=6.0.2
+
+test:
+  imports:
+    - epicore_utils
+  commands:
+    - pip check
+    - epicore --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/AG-Walz/epicore
+  summary: Compute core epitopes from multiple overlapping peptides.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - janaHoffmann1
