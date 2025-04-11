@@ -41,6 +41,18 @@ build:
       # Remove test-only source files if they're not needed
       rm -f src/Maths.cpp src/compare_main.cpp
 
+      # Remove gtest headers and references
+      rm -f include/Maths.h
+      rm -f src/Maths.cpp src/compare_main.cpp
+
+      # Clean up fs::ofstream usage
+      find src/ -name '*.cpp' -exec sed -i 's/fs::ofstream/std::ofstream/g' {} +
+      find include/ -name '*.h' -exec sed -i 's/fs::ofstream/std::ofstream/g' {} +
+
+      # Also check and clean gtest in any sub-CMakeLists
+      find . -name 'CMakeLists.txt' -exec sed -i '/find_package(GTest/d' {} +
+
+
       # Fix fs::ofstream -> std::ofstream
       sed -i 's/fs::ofstream/std::ofstream/g' src/estimate_parameters.cpp
 
