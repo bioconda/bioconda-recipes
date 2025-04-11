@@ -30,6 +30,14 @@ build:
       export BOOST_INCLUDEDIR=$PREFIX/include
       export BOOST_LIBRARYDIR=$PREFIX/lib
 
+      # In build section of meta.yaml (before cmake call)
+      git clone https://github.com/google/googletest.git
+      cd googletest
+      cmake -DCMAKE_INSTALL_PREFIX=$PREFIX -DBUILD_GMOCK=ON -DBUILD_GTEST=ON .
+      make -j$(nproc)
+      make install
+      cd ..
+
       mkdir -p build && cd build
       cmake -DCMAKE_BUILD_TYPE=Release -DBoost_USE_STATIC_LIBS=OFF -DCMAKE_VERBOSE_MAKEFILE=ON ..
       make -j$(nproc)
@@ -47,7 +55,6 @@ requirements:
   build:
     - {{ compiler('cxx') }}
     - boost-cpp <1.82
-    - gtest
 
   host:
     - python ==3.10
