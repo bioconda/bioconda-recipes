@@ -13,56 +13,15 @@ build:
   number: 0
   script:
     - |
-      set -euxo pipefail
-      git clone --single-branch --recursive https://github.com/rmcolq/pandora.git
+      git clone --single-branch https://github.com/rmcolq/pandora.git --recursive
       cd pandora
       git checkout f7e06605d54981edbeebd8935bd1a6fd47a31fbc
-
-      # Remove hunter and boost-related Hunter stuff
-      sed -i '/hunter_add_package\s*(/d' CMakeLists.txt
-      sed -i '/HunterGate(/,/)/d' CMakeLists.txt
-      sed -i '/cpp-pm.*hunter/d' CMakeLists.txt
-      sed -i '/hunter_add_package(Boost)/d' CMakeLists.txt
-
-      sed -i 's/set(Boost_USE_STATIC_LIBS ON)/set(Boost_USE_STATIC_LIBS OFF)/' CMakeLists.txt
-
-      export BOOST_ROOT=$PREFIX
-      export BOOST_INCLUDEDIR=$PREFIX/include
-      export BOOST_LIBRARYDIR=$PREFIX/lib
-
-      # Remove all GTest mentions in CMakeLists.txt
-      sed -i '/find_package(GTest CONFIG REQUIRED)/d' CMakeLists.txt
-      sed -i '/find_package(GTest REQUIRED)/d' CMakeLists.txt
-      sed -i '/find_package(GTest)/d' CMakeLists.txt
-
-      # Remove include from header
-      sed -i '/#include "gtest\/gtest.h"/d' include/Maths.h
-
-      # Remove test-only source files if they're not needed
-      rm -f src/Maths.cpp src/compare_main.cpp
-
-      # Remove gtest headers and references
-      rm -f include/Maths.h
-      rm -f src/Maths.cpp src/compare_main.cpp
-
-      # Clean up fs::ofstream usage
-      find src/ -name '*.cpp' -exec sed -i 's/fs::ofstream/std::ofstream/g' {} +
-      find include/ -name '*.h' -exec sed -i 's/fs::ofstream/std::ofstream/g' {} +
-
-      # Also check and clean gtest in any sub-CMakeLists
-      find . -name 'CMakeLists.txt' -exec sed -i '/find_package(GTest/d' {} +
-
-      find . -type f -name '*.[ch]pp' -exec sed -i '/#include "Maths.h"/d' {} +
-
-      # Fix fs::ofstream -> std::ofstream
-      sed -i 's/fs::ofstream/std::ofstream/g' src/estimate_parameters.cpp
-
-      mkdir -p build && cd build
-      cmake -DCMAKE_BUILD_TYPE=Release -DBoost_USE_STATIC_LIBS=OFF -DCMAKE_VERBOSE_MAKEFILE=ON ..
+      mkdir -p build
+      cd build
+      cmake -DHUNTER_JOBS_NUMBER=$(nproc) -DCMAKE_BUILD_TYPE=Release ..
       make -j$(nproc)
-      make install
-      cd ../..
-
+      ctest -VV
+      cd ..
       {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
 
   entry_points:
@@ -73,14 +32,13 @@ build:
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - boost-cpp <1.82
+    - cmake ==3.12
 
   host:
     - python ==3.10
     - pip
     - poetry-core >=1.0.0
     - cmake ==3.12
-    - boost-cpp <1.82
     - make
     - git
 
@@ -90,7 +48,6 @@ requirements:
     - racon ==1.4.10
     - minimap2 ==2.17
     - kmer-jellyfish ==2.3.0
-    - boost-cpp <1.82
 
 test:
   imports:
