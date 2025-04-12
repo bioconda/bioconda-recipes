@@ -9,6 +9,7 @@ else
   export CONFIG_ARGS=""
 fi
 
+# Refer to https://github.com/rlabduke/reduce/issues/60 for `-DHET_DICTIONARY` and `-DHET_DICTOLD` flags
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_BUILD_TYPE=Release \
   -DHET_DICTIONARY="${PREFIX}/reduce_wwPDB_het_dict.txt" \
