@@ -4,6 +4,7 @@ set -euo pipefail
 
 LDFLAGS="${LDFLAGS} -L${BUILD_PREFIX}/lib -lpopt"
 make -j${CPU_COUNT} LDFLAGS="${LDFLAGS}"
+PREFIX=${PREFIX} make install
 
 mkdir -p ${PREFIX}/etc/conda/activate.d
 mkdir -p ${PREFIX}/etc/conda/deactivate.d
