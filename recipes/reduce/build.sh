@@ -11,5 +11,7 @@ fi
 
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_BUILD_TYPE=Release \
+  -DHET_DICTIONARY="${PREFIX}/reduce_wwPDB_het_dict.txt" \
+  -DHET_DICTOLD="${PREFIX}/reduce_get_dict.txt" \
   "${CONFIG_ARGS}"
 cmake --build build/ --target install -j "${CPU_COUNT}"
