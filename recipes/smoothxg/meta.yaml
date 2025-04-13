@@ -15,21 +15,27 @@ build:
   skip: True  # [osx]
   number: 0
   run_exports:
-    - {{ pin_subpackage('smoothxg', max_pin="x") }}
+    - {{ pin_subpackage('smoothxg', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - llvm-openmp  # [osx]
     - cmake
     - make
+    - pkg-config
   host:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
     - zlib
     - zstd
     - jemalloc
+    - gsl
+    - sdsl-lite
   run:
     - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+    - sdsl-lite
 
 test:
   commands:
@@ -38,11 +44,16 @@ test:
 about:
   home: https://github.com/pangenome/smoothxg
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: Local reconstruction of variation graphs using partial order alignment
+  summary: "Local reconstruction of variation graphs using partial order alignment."
+  dev_url: https://github.com/pangenome/smoothxg
+  doc_url: "https://github.com/pangenome/smoothxg/blob/v{{ version }}/README.md"
 
 extra:
-  skip-lints:
-    - uses_vcs_url
+  additional-platforms::
+    - linux-aarch64
   recipe-maintainers:
     - AndreaGuarracino
+  identifiers:
+    - doi:10.1038/s41592-024-02430-3
