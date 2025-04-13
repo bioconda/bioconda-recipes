@@ -10,6 +10,8 @@ sed -i.bak -e 's/-msse4.1/-march=sandybridge -Ofast/g' deps/spoa/CMakeLists.txt
 sed -i.bak -e 's/-march=native/-march=sandybridge -Ofast/g' deps/spoa/CMakeLists.txt
 sed -i.bak -e 's/-march=native/-march=sandybridge -Ofast/g' deps/abPOA/CMakeLists.txt
 sed -i.bak -e 's|VERSION 3.16 FATAL_ERROR|VERSION 3.5|' CMakeLists.txt
+sed -i.bak -e 's|VERSION 3.2 FATAL_ERROR|VERSION 3.5|' deps/WFA/CMakeLists.txt
+sed -i.bak -e 's|VERSION 3.2|VERSION 3.5|' deps/abPOA/CMakeLists.txt
 rm -rf deps/spoa/*.bak
 rm -rf deps/abPOA/*.bak
 rm -rf *.bak
