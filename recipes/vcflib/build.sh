@@ -25,12 +25,20 @@ if [[ `uname` == "Darwin" ]]; then
 	export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lhts -ltabixpp -lpthread -lz -lm -llzma -lbz2 -fopenmp -lwfa2"
 	sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' contrib/smithwaterman/Makefile
 	sed -i.bak 's/-std=c++0x/-std=c++17 -stdlib=libc++/g' contrib/intervaltree/Makefile
+	rm -rf contrib/smithwaterman/*.bak
+	rm -rf contrib/intervaltree/*.bak
+	rm -rf contrib/filevercmp/*.bak
+	rm -rf contrib/multichoose/*.bak
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DWFA_GITMODULE=OFF"
 else
 	export LIBPATH="-L${PREFIX}/lib -L. -Lhtslib -Ltabixpp"
 	export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lhts -ltabixpp -lpthread -lz -lm -llzma -lbz2 -fopenmp"
-    export CONFIG_ARGS="-DWFA_GITMODULE=ON"
+ 	export CONFIG_ARGS="-DWFA_GITMODULE=ON"
+	rm -rf contrib/smithwaterman/*.bak
+	rm -rf contrib/intervaltree/*.bak
+	rm -rf contrib/filevercmp/*.bak
+	rm -rf contrib/multichoose/*.bak
 fi
 
 cmake -S . -B build \
@@ -40,6 +48,7 @@ cmake -S . -B build \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-DPROFILING=ON "${CONFIG_ARGS}"
+	-DPROFILING=ON -DGPROF=ON -DASAN=ON \
+	"${CONFIG_ARGS}"
 
 cmake --build build --target install -j "${CPU_COUNT}"
