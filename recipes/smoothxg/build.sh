@@ -1,7 +1,11 @@
 #!/bin/bash
 
+# export INCLUDE is for abPOA compilation
+export INCLUDE="-I${PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
 
 mkdir -p "${PREFIX}/bin"
@@ -28,7 +32,6 @@ sed -i.bak -e 's|VERSION 2.4.4|VERSION 3.5|' deps/odgi/deps/sdsl-lite/external/l
 sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' deps/odgi/deps/sdsl-lite/external/googletest/CMakeLists.txt
 sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' deps/odgi/deps/sdsl-lite/external/googletest/googletest/CMakeLists.txt
 sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' deps/odgi/deps/sdsl-lite/external/googletest/googlemock/CMakeLists.txt
-sed -i.bak -e 's|VERSION 2.4.4|VERSION 3.5|' deps/odgi/deps/sdsl-lite/external/libdivsufsort/CMakeLists.txt
 sed -i.bak -e 's|VERSION 2.6 FATAL_ERROR|VERSION 3.5|' deps/odgi/deps/libbf/CMakeLists.txt
 sed -i.bak -e 's|VERSION 3.2|VERSION 3.5|' deps/odgi/deps/args/CMakeLists.txt
 rm -rf deps/spoa/*.bak
