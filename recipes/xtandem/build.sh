@@ -7,9 +7,10 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 
 mkdir -p "${PREFIX}/bin"
 
-cp -rfv ${RECIPE_DIR}/*.patch .
 dos2unix src/*
-patch -p1 < *.patch
+patch -p1 < ${RECIPE_DIR}/0001-Makefile.patch
+patch -p1 < ${RECIPE_DIR}/0002-Fix-missing-pointer-deref.patch
+patch -p1 < ${RECIPE_DIR}/0003.patch
 
 cd src/
 
