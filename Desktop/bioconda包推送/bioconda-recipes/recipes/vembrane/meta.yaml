@@ -1,0 +1,50 @@
+{% set version = "1.0.7" %}
+
+package:
+  name: vembrane
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/v/vembrane/vembrane-{{ version }}.tar.gz
+  sha256: 4e94ff702662d2b2cd3043525500c250661a51a39dec69ca4ef94d17ceb51892
+
+build:
+  number: 0
+  entry_points:
+    - vembrane = vembrane.cli:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  run_exports:
+    - {{ pin_subpackage('vembrane', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - poetry >=1.5.1
+    - python >=3.8
+  run:
+    - asttokens >=2.0,<3.0
+    - intervaltree >=3.0,<4.0
+    - numpy >=1.23,<2.0
+    - pysam >=0.20,<0.21
+    - python >=3.8
+    - pyyaml >=6.0,<7
+
+test:
+  imports:
+    - vembrane
+  commands:
+    - vembrane --help
+    - vembrane --version
+
+about:
+  home: https://github.com/vembrane/vembrane
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Filter VCF/BCF files with Python expressions.
+
+extra:
+  recipe-maintainers:
+    - felixmoelder
+    - mbargull

@@ -1,0 +1,45 @@
+package:
+  name: snns
+  version: 4.3
+
+build:
+  skip: True  # [not linux]
+  number: 3
+
+source:
+  # Original URL http://www.ra.cs.uni-tuebingen.de/downloads/SNNS/SNNSv4.3.tar.gz
+  # TravisCI was having trouble with this, so switched to Galaxy's mirror:
+  url: https://depot.galaxyproject.org/software/SNNS/SNNS_4.3_linux_x64.tar.gz
+  sha256: 54bf92d23e9198f9030a3c3d2b741472e9b8660b27d3b419ade6393b1ebf6f62
+
+requirements:
+  run:
+    - xorg-libxaw3d
+    - bison
+    - flex
+
+about:
+  home: http://www.ra.cs.uni-tuebingen.de/SNNS/
+  license: LGPL v2.1
+  license_file: Readme.license
+  summary: "Stuttgart Neural Network Simulator (SNNS)"
+
+test:
+  commands:
+    # This is most of the command line tools, others seem to
+    # have no default help page nor easy way to run-and-quit.
+    # None of them seem to have a --version switch or similar.
+    - analyze -i 2>&1 | grep usage
+    - batchman -h 2>&1 | grep SNNS
+    - convert2snns -i 2>&1 | grep Network
+    - ff_bignet 2>&1 | grep usage
+    - linknets 2>&1 | grep usage
+    - mkhead 2>&1 | grep usage
+    - mkout 2>&1 | grep usage
+    - mkpat 2>&1 | grep usage
+    - snns2c 2>&1 | grep usage
+    - td_bignet 2>&1 | grep usage
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic

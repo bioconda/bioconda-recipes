@@ -1,0 +1,47 @@
+{% set version = '2.3.3' %}
+
+package:
+  name: dsk
+  version: {{ version }}
+
+source:
+  url: https://github.com/GATB/dsk/archive/v{{ version }}.tar.gz
+  sha256: b74b44eb233937223c3b0c2c00053d88c8d89c5b84e20fcda589a5e5c5a52a36
+  patches:
+    - install_paths.patch
+
+build:
+  number: 6
+  # Requires clang>=4.5
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('dsk', max_pin='x') }}
+
+requirements:
+  build:
+    - make
+    - cmake
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - cppunit
+  run:
+    - zlib
+
+test:
+  commands:
+    - dsk -help
+
+about:
+  home: https://github.com/GATB/dsk/
+  license: AGPL-3.0
+  license_file: LICENSE
+  summary: DSK is a k-mer counter for reads or genomes.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:dsk
+    - doi:10.1093/bioinformatics/btt020

@@ -1,0 +1,48 @@
+{% set name = "pbbam" %}
+{% set version = "2.4.0" %}
+{% set sha256 = "a386a5231b06b0ea660d81abe8081041c200d1817710b89bc9888b485a7aab26" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PacificBiosciences/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 2
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('pbbam', max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - meson >=0.57.0
+    - ninja
+    - pkg-config
+  host:
+    - boost-cpp
+    - zlib
+    - htslib
+    - pbcopper 2.3.*
+  run:
+    - htslib
+    - pbtk
+
+about:
+  home: https://github.com/PacificBiosciences/pbbam
+  license: BSD-3-Clause-Clear
+  summary: PacBio BAM C++ library
+
+extra:
+  recipe-maintainers:
+    - pb-dseifert
+    - mhsieh
+    - pezmaster31
+    - armintoepfer
+
+test:
+  commands:
+    - test -f $PREFIX/lib/libpbbam*  # [unix]

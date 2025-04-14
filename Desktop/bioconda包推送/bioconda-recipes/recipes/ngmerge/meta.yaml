@@ -1,0 +1,52 @@
+{% set name = "ngmerge" %}
+{% set version = "0.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('ngmerge', max_pin="x.x") }}
+
+source:
+  url: https://github.com/jsh58/NGmerge/archive/v{{ version }}.tar.gz
+  sha256: fbd6e2a8a9a02cfb127499770127cb892995e7d593992bc7d35d4363e4951d3f
+  patches:
+    - 0001-Makefile.patch
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - openmpi
+    - zlib
+  run:
+    - openmpi
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+
+about:
+  home: "https://github.com/jsh58/NGmerge"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Merging paired-end reads and removing sequencing adapters."
+  dev_url: "https://github.com/jsh58/NGmerge"
+  doc_url: "https://github.com/jsh58/NGmerge/blob/v{{ version }}/README.md"
+
+test:
+  commands:
+    - NGmerge 2>&1 | grep "Usage"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:ngmerge
+    - doi:10.1186/s12859-018-2579-2

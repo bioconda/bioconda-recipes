@@ -1,0 +1,114 @@
+{% set version = "0.16.4" %}
+{% set sha256 = "d2624dd09dd04a7d27a38bbfb90e8ae5bf554bdc2e0b1e6a9484ab979a56e1ea" %}
+{% set name = "sequana" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/s/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  preserve_egg_dir: True
+  number: 0
+  noarch: python
+  entry_points:
+    - sequana=sequana.scripts.main.main:main
+    - sequana_taxonomy=sequana.scripts.taxonomy:main
+    - sequana_coverage=sequana.scripts.coverage:main
+    - sequana_start_pipeline=sequana.scripts.start_pipeline:main
+    - sequana_substractor=sequana.scripts.substractor:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('sequana', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - adjusttext
+    - bioservices >=1.10.0
+    - brokenaxes
+    - bx-python
+    - click >=8.1.0
+    - colorlog >=3.1.0
+    - colormap
+    - cookiecutter <2
+    - cython
+    - deprecated
+    - docutils
+    - easydev >=0.11.1
+    - gseapy
+    - itolapi
+    - lxml
+    - matplotlib-base <3.6
+    - matplotlib-venn
+    - mock
+    - multiqc <=1.11
+    - packaging
+    - pandas >=0.22
+    - plotly
+    - psutil
+    - pykwalify
+    - pysam >=0.16
+    - python >=3.8
+    - rich-click
+    - ruamel.yaml >=0.16.0
+    - scikit-learn
+    - scipy
+    - selenium
+    - snakemake-minimal >=7.16
+    - seaborn
+    - statsmodels
+    - tqdm
+    - UpSetPlot
+    - vcfpy
+    - xlrd
+
+test:
+  imports:
+    - sequana
+    - sequana.enrichment
+    - sequana.kraken
+    - sequana.modules_report
+    - sequana.multiqc
+    - sequana.plots
+    - sequana.resources
+    - sequana.resources.canvas
+    - sequana.resources.css
+    - sequana.resources.data
+    - sequana.resources.doc
+    - sequana.resources.doc.rnadiff_compare
+    - sequana.resources.examples
+    - sequana.resources.images
+    - sequana.resources.js
+    - sequana.resources.snpeff
+    - sequana.resources.templates
+    - sequana.resources.testing
+    - sequana.scripts
+    - sequana.utils
+    - sequana.viz
+  commands:
+    - {{ name }} --version > /dev/null
+    - {{ name }} --version | grep {{ version }}
+    - {{ name }} --help
+
+about:
+  home: "http://sequana.readthedocs.io/"
+  license: "BSD-3-Clause"
+  summary: "A set of standalone application and snakemake pipelines dedicated to NGS (new generation sequencing) analysis"
+  license_family: BSD
+  license_file: LICENSE
+  doc_url: "https://sequana.readthedocs.io"
+  dev_url: https://github.com/sequana/sequana
+
+extra:
+  container:
+    extended-base: true
+  recipe-maintainers:
+    - cokelaer
+  skip-lints:
+    - cython_must_be_in_host

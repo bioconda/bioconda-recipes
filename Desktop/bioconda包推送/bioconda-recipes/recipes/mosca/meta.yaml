@@ -1,0 +1,58 @@
+{% set name = "mosca" %}
+{% set version = "2.3.0" %}
+{% set sha256 = "1eba9c082273dd46badd2d5ff8df56aabdc496214e337331d000f54399893a94" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/iquasere/MOSCA/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("mosca", max_pin="x.x") }}
+  script: >
+    mkdir -p $PREFIX/share/MOSCA $PREFIX/bin && 
+    cp -r workflow/* resources/*.json resources/*.txt $PREFIX/share/MOSCA && 
+    chmod +x $PREFIX/share/MOSCA/mosca.py && 
+    ln -s $PREFIX/share/MOSCA/mosca.py $PREFIX/bin/mosca
+
+requirements:
+  run:
+    - python >=3.9, <3.12
+    - pandas
+    - snakemake <8
+
+test:
+  commands:
+    - mosca -v
+
+about:
+  home: https://github.com/iquasere/MOSCA
+  license: GPL-3.0-or-later
+  license_family: GPL
+  license_file: LICENSE
+  summary: 'MOSCA - Meta-Omics Software for Community Analysis'
+  description: |
+    MOSCA (portuguese for fly) is a pipeline designed for performing metagenomics (MG),
+    metatranscriptomics (MT) and metaproteomics (MP) integrated data analysis, 
+    in a mostly local and fully automated workflow. Metagenomics is used to build 
+    a reference database for MT and MP, beginning with preprocessing of data for
+    removal of Illumina adapters and lower quality regions, folowed by assembly
+    of reads into contigs, gene calling on the contigs and homology-based and 
+    domain-based annotation of identified proteins, using the UniProt and COG 
+    databases, respectively. If available, MT reads are then aligned to the ORFs 
+    for gene expression quantification, and MP spectra are submitted for
+    Peptide-to-Spectrum matching, with the annotated ORFs as reference database.
+    Final steps include differential expression analysis for both MT and MP, and
+    metabolic pathways analysis through KEGG Pathways.
+  doc_url: https://github.com/iquasere/MOSCA/wiki
+  dev_url: https://github.com/iquasere/MOSCA
+
+extra:
+  recipe-maintainers:
+    - iquasere

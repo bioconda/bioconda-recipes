@@ -1,0 +1,107 @@
+diff --git a/gatb-core/CMakeLists.txt b/gatb-core/CMakeLists.txt
+index fdd63db..dc337ab 100644
+--- a/gatb-core/CMakeLists.txt
++++ b/gatb-core/CMakeLists.txt
+@@ -219,7 +219,7 @@ set (gatb-core-flags ${LIBRARY_COMPILE_DEFINITIONS})
+ set (gatb-core-includes ${PROJECT_BINARY_DIR}/include  ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE} ${PROJECT_SOURCE_DIR}/src  ${PROJECT_SOURCE_DIR}/thirdparty ${gatb-core-extra-libraries-inc})
+
+ # We define the libraries used for linking binary based on gatb core
+-set (gatb-core-libraries   gatbcore-static  dl  pthread  z hdf5-static ${gatb-core-extra-libraries})
++set (gatb-core-libraries   gatbcore-static  dl  pthread  z hdf5 ${gatb-core-extra-libraries})
+
+ # We define the directory where to find cmake helpers
+ set (gatb-core-cmake  ${CMAKE_MODULE_PATH})
+@@ -255,7 +255,7 @@ ADD_SUBDIRECTORY(thirdparty)
+ #  DEPENDENCIES 
+ ################################################################################
+ # we must be sure that hdf5 is built and installed before building gatb-core
+-ADD_DEPENDENCIES (gatbcore-static hdf5-static hdf5_postbuild)
++#ADD_DEPENDENCIES (gatbcore-static hdf5-static hdf5_postbuild)
+ 
+ ################################################################################
+ #  DOCUMENTATION GENERATION 
+@@ -296,7 +296,7 @@ IF (NOT DEFINED GATB_CORE_INSTALL_EXCLUDE)
+     INSTALL (FILES ${PROJECT_SOURCE_DIR}/doc/misc/README.txt  DESTINATION . OPTIONAL)
+     INSTALL (FILES ${PROJECT_SOURCE_DIR}/LICENCE              DESTINATION . OPTIONAL)
+     INSTALL (FILES ${PROJECT_SOURCE_DIR}/THIRDPARTIES.md      DESTINATION . OPTIONAL)
+-    INSTALL (DIRECTORY ${PROJECT_SOURCE_DIR}/thirdparty/boost DESTINATION ./include)
++    #INSTALL (DIRECTORY ${PROJECT_SOURCE_DIR}/thirdparty/boost DESTINATION ./include)
+ ENDIF()
+
+ ################################################################################
+diff --git a/gatb-core/thirdparty/CMakeLists.txt b/gatb-core/thirdparty/CMakeLists.txt
+index 6e0b5c4..bd366e7 100644
+--- a/gatb-core/thirdparty/CMakeLists.txt
++++ b/gatb-core/thirdparty/CMakeLists.txt
+@@ -1,69 +1,7 @@
+-################################################################################
+-#  HDF5 GENERATION 
+-################################################################################
+-
+-#SET (HDF5_ENABLE_THREADSAFE       ON)
+-#SET (H5_HAVE_THREADSAFE 1)
+-
+-##########  MOMENTARY DEACTIVATED => CRASH ON MACOS TO BE INVESTIGATED  ##########
+-SET (HDF5_BUILD_TOOLS             ON CACHE BOOL "Build HDF5 Tools")
+-#SET (CMAKE_EXE_LINKER_FLAGS       "-lpthread -lz")
+-
+-SET (HDF5_EXTERNALLY_CONFIGURED     ON)
+-
+-#SET (HDF5_INSTALL_BIN_DIR           ${PROJECT_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE})
+-#SET (HDF5_INSTALL_LIB_DIR           ${PROJECT_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE})
+-SET (HDF5_INSTALL_BIN_DIR           bin)
+-SET (HDF5_INSTALL_LIB_DIR           lib)
+-
+-SET (HDF5_INSTALL_INCLUDE_DIR       ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE}/hdf5)
+-SET (HDF5_INSTALL_DATA_DIR          ${PROJECT_BINARY_DIR}/share/${CMAKE_BUILD_TYPE})
+-SET (HDF5_INSTALL_CMAKE_DIR         ${PROJECT_BINARY_DIR}/share/${CMAKE_BUILD_TYPE})
+-
+-IF (NOT DEFINED GATB_CORE_INSTALL_EXCLUDE)
+-    SET (HDF5_EXPORTED_TARGETS          "gatb-hdf5")
+-ENDIF()
+-
+-IF (NOT DEFINED GATB_CORE_EXCLUDE_HDF5_ZLIB)
+-	OPTION (HDF5_ENABLE_Z_LIB_SUPPORT "Enable Zlib Filters" ON)
+-ENDIF()
+-
+-# We don't want warnings from HDF5 compilation
+-set (COMPILE_DEFINITIONS  "${COMPILE_DEFINITIONS}  -w")
+-add_definitions (${COMPILE_DEFINITIONS})
+-
+-# add HDF5 generation
+-ADD_SUBDIRECTORY (hdf5)
+-
+-# We add a custom target for copying header files.
+-add_custom_target (hdf5_postbuild ALL)
+-
+-# We build the output directory
+-add_custom_command (TARGET hdf5_postbuild POST_BUILD  COMMAND ${CMAKE_COMMAND} -E make_directory ${HDF5_INSTALL_INCLUDE_DIR})
+-
+-# We define all the header files to be copied
+-file (GLOB headerfiles ${PROJECT_SOURCE_DIR}/thirdparty/hdf5/src/*.h ${PROJECT_BINARY_DIR}/thirdparty/hdf5/H5pubconf.h)
+-
+-# We copy each header file
+-foreach (header ${headerfiles})
+-  add_custom_command (TARGET hdf5_postbuild POST_BUILD  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${header} ${HDF5_INSTALL_INCLUDE_DIR}  )
+-endforeach()
+-
+-# include other smaller libraries (json, Boophf)
+-
+-add_custom_target (thirdparty_copy ALL)
+-add_custom_command (TARGET thirdparty_copy COMMAND ${CMAKE_COMMAND} -E
+-    make_directory ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE}/json)
+-add_custom_command (TARGET thirdparty_copy COMMAND ${CMAKE_COMMAND} -E
+-    make_directory ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE}/BooPHF)
+-add_custom_command (TARGET thirdparty_copy  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PROJECT_SOURCE_DIR}/thirdparty/BooPHF/BooPHF.h ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE}/BooPHF/)
+-add_custom_command (TARGET thirdparty_copy  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PROJECT_SOURCE_DIR}/thirdparty/json/json.hpp   ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE}/json/)
+-
+ ################################################################################
+ #  INSTALL 
+ ################################################################################
+ IF (NOT DEFINED GATB_CORE_INSTALL_EXCLUDE)
+-    INSTALL (DIRECTORY ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE}/hdf5 DESTINATION include)
+-    INSTALL (DIRECTORY ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE}/json DESTINATION include)
+-    INSTALL (DIRECTORY ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE}/BooPHF DESTINATION include)
++    #INSTALL (DIRECTORY ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE}/json DESTINATION include)
++    #INSTALL (DIRECTORY ${PROJECT_BINARY_DIR}/include/${CMAKE_BUILD_TYPE}/BooPHF DESTINATION include)
+ ENDIF ()

@@ -1,0 +1,44 @@
+{% set name = "vcf2cytosure" %}
+{% set version = "0.9.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 96e89005869cf6cfa42bba30f6063721326107a490efca150cf65cc65eb0e9d6
+
+build:
+  noarch: python
+  number: 1
+  entry_points:
+    - vcf2cytosure=vcf2cytosure.vcf2cytosure:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage("vcf2cytosure", max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - cyvcf2
+    - lxml
+    - pandas
+    - python
+
+test:
+  imports:
+    - tests
+    - vcf2cytosure
+    - vcf2cytosure.constants
+  commands:
+    - vcf2cytosure --help
+
+about:
+  home: "https://github.com/NBISweden/vcf2cytosure"
+  license: MIT
+  license_family: MIT
+  summary: "Convert VCF with structural variations to CytoSure format"
+

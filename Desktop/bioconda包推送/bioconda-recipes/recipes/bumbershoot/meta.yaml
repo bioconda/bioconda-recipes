@@ -1,0 +1,40 @@
+{% set version = "3_0_21142_0e4f4a4" %}
+{% set buildid = "1417605" %}
+{% set root = "pwiz_tools/Bumbershoot/" %}
+{% set targets = root~"myrimatch//install "~root~"directag//install "~root~"tagrecon//install "~root~"idpicker//install "~root~"pepitome//install "~root~"quameter//install" %}
+
+package:
+  name: bumbershoot
+  version: {{ version }}
+
+source:
+  url: http://teamcity.labkey.org/guestAuth/repository/download/ProteoWizard_BumbershootUpdateBioconda/{{ buildid }}:id/bumbershoot-src-without-t-{{ version }}.tar.bz2
+  sha256: 6f81767c3d382cc07203a298f14d1cbdda2f6ff9efa1a109cbb7e89fca7db7fd
+
+build:
+  number: 1
+  script:
+    - 'echo "using gcc : : ${GXX} ;" > site-config.jam'
+    - "./quickbuild.sh -j{{ CPU_COUNT }} address-model=64 runtime-link=shared {{ targets }} --site-config=site-config.jam"
+    - "mkdir -p $PREFIX/bin"
+    - "cp build-linux-x86_64/gcc-release-x86_64/* $PREFIX/bin"
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  run:
+
+
+about:
+  home: https://proteowizard.sourceforge.net
+  license: Apache 2.0
+  summary: The Bumbershoot tool suite for analyzing shotgun proteomic data
+
+test:
+  commands:
+    - myrimatch --help
+    - directag --help
+    - quameter --help
+    - pepitome --help
+    - idpQuery 2>&1 | grep "Not enough arguments"

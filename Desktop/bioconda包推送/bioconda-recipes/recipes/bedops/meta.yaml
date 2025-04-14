@@ -1,0 +1,39 @@
+{% set version = "2.4.42" %}
+
+package:
+  name: bedops
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("bedops", max_pin="x.x.x") }}  
+
+source:
+  url: https://github.com/bedops/bedops/archive/v{{ version }}.tar.gz
+  sha256: 9daa0c098e37490a07f84664d2c61ff8909689995cf7e1673d259ccd4f1c453c
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  run:
+    # seems to be needed for bam2bed
+    - samtools
+
+test:
+  commands:
+    - bedops --help
+    - gtf2bed --help
+
+about:
+  home: http://bedops.readthedocs.io
+  license: GPLv2
+  summary: High-performance genomic feature operations.
+
+extra:
+  identifiers:
+    - biotools:Bedops
+    - doi:10.1093/bioinformatics/bts277
+  additional-platforms:
+    - linux-aarch64

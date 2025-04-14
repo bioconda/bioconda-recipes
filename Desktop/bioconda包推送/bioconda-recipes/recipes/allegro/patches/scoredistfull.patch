@@ -1,0 +1,20 @@
+--- src/scoredistfull.cc	2015-08-26 17:42:24.000000000 +0200
++++ src/scoredistfull.cc	2017-10-14 11:37:13.915003466 +0200
+@@ -244,7 +244,7 @@
+   assertinternal(man->size < int(MAXBITS));
+ 
+   for (Uint a = 0; a < (1U << curfamily()->nasymmetricfoundercouples()); a++) {
+-    LevelProb levels[man->size];
++    LevelProb * levels = new LevelProb[man->size];
+     LevelProb const_level;
+ 
+     DdNode *S = calcscore->S[a].getNode();
+@@ -297,6 +297,8 @@
+           addToProb(levels[cuddI(man, Sn_E->index)], man, Sn_E, p_E, S_level);
+       }
+ 
++    delete [] levels;
++
+     for (LevelProb::iterator li = const_level.begin();
+          li != const_level.end(); li++) {
+       const double Sv = cuddV(li->first);

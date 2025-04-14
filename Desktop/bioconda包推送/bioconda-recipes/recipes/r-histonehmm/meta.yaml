@@ -1,0 +1,53 @@
+{% set version = "1.8" %}
+
+package:
+  name: "r-histonehmm"
+  version: {{ version }}
+
+source:
+  url: https://github.com/matthiasheinig/histoneHMM/archive/v{{ version }}.tar.gz
+  sha256: 89f420e9f705594af57301d07c2136e2b56079aa3e93d9723dd0ba3a686ce3ee
+  patches:
+    - patch
+
+build:
+  skip: True  # [osx]
+  number: 7
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+  host:
+    - r-base
+    - r-rcpp
+    - bioconductor-genomicranges
+    - bioconductor-rsamtools
+    - r-mvtnorm
+    - r-optparse
+    - bioconductor-biocstyle
+  run:
+    - r-base
+    - r-rcpp
+    - bioconductor-genomicranges
+    - bioconductor-rsamtools
+    - r-mvtnorm
+    - r-optparse
+    - bioconductor-biocstyle
+
+test:
+  commands:
+    - $R -e "library('histoneHMM')"
+
+about:
+  home: http://histonehmm.molgen.mpg.de/
+  dev_url: https://github.com/matthiasheinig/histoneHMM
+  license: GPL
+  summary: histoneHMM is a software to analyse ChIP-seq data of histone modifications
+    with broad genomic footprints like H3K27me3. It allows for calling modified regions
+    in single samples as well as for calling differentially modified regions in a
+    comparison of two samples

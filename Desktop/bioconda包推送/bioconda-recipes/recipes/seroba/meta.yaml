@@ -1,0 +1,69 @@
+{% set name = "SeroBA" %}
+{% set version = "1.0.2" %}
+{% set sha256sum = "bdf9481131e7dbc1d0aa560c8f7e904e9658d552ef99654aacd63f0bb282fcbd" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/sanger-pathogens/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256sum }}
+  patches:
+    - default_db.patch
+    - kmc_memory.patch
+    - temp_dir_path.patch
+
+build:
+  number: 1
+  noarch: python
+
+requirements:
+  host:
+    - python >=3
+    - pip
+    - setuptools
+    - ariba >=2.9.1
+    - bcftools <=1.14
+    - biopython >=1.68,<1.78  # seroba 1.0.2 and earlier use Bio.Alphabet, removed in biopython 1.78
+    - bowtie2
+    - cd-hit
+    - kmc >=3.2.1
+    - mummer
+    - pyfastaq >=3.14.0
+    - pymummer >=0.11.0
+    - pysam >=0.15.3,<=0.18.0 # older versions have wrong openssl pinning
+    - pyyaml >=3.12
+  run:
+    - python >=3
+    - ariba >=2.9.1
+    - bcftools <=1.14
+    - biopython >=1.68,<1.78  # seroba 1.0.2 and earlier use Bio.Alphabet, removed in biopython 1.78
+    - bowtie2
+    - cd-hit
+    - kmc >=3.2.1
+    - mummer
+    - pyfastaq >=3.14.0
+    - pymummer >=0.11.0
+    - pysam >=0.15.3,<=0.18.0 # older versions have wrong openssl pinning
+    - pyyaml >=3.12
+
+test:
+  commands:
+    # request agg Matplolib backend to avoid dependency on libGL.so.1
+    - MPLBACKEND=agg seroba -h
+
+about:
+  home: https://github.com/sanger-pathogens/seroba
+  license: GPL3.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: 'SeroBA is a k-mer based Pipeline to identify the Serotype from Illumina NGS reads for given references.'
+  description: |
+      SeroBA is a k-mer based Pipeline to identify the Serotype from Illumina NGS reads for given references. 
+      You can use SeroBA to download references from (https://github.com/phe-bioinformatics/PneumoCaT) 
+      to do identify the capsular type of Streptococcus pneumoniae.
+
+extra:  
+  skip-lints:
+    - uses_setuptools  # seroba uses pkg_resources

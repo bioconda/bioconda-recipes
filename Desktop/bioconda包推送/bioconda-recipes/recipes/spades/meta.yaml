@@ -1,0 +1,77 @@
+{% set name = "spades" %}
+{% set version = "4.1.0" %}
+{% set sha256 = "997b066e157efd079f8c63229df85a9c7b81c3f626059a68669283049ab175f9" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ablab/spades/releases/download/v{{version}}/SPAdes-{{version}}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-change-verbosity-remove-expr.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('spades', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - pkg-config
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+    - zlib
+    - bzip2
+  run:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+    - python >=3.8
+
+test:
+  commands:
+    - spades.py --version 2>&1 | grep {{ version }}
+    - rnaspades.py --version 2>&1 | grep {{ version }}
+    - metaspades.py --version 2>&1 | grep {{ version }}
+    - plasmidspades.py --version 2>&1 | grep {{ version }}
+    - spades-kmercount -h 2>&1 | grep spades-kmercount
+    - spades-gmapper 2>&1 | grep spades-gmapper
+    - spades-gbuilder 2>&1 | grep spades-gbuilder
+    - spades.py --test && rm -rf spades_test
+
+about:
+  home: "https://github.com/ablab/spades"
+  license: "GPL-2.0-only"
+  license_family: GPL
+  license_file: LICENSE
+  summary: "SPAdes (St. Petersburg genome assembler) is intended for both standard isolates and single-cell MDA bacteria assemblies."
+  description: |
+    SPAdes (St. Petersburg genome assembler) is a genome assembly algorithm which was designed for
+    single cell and multi-cells bacterial data sets. However, it might not be suitable for large
+    genomes projects.
+
+    SPAdes works with Ion Torrent, PacBio, Oxford Nanopore, and Illumina paired-end, mate-pairs and
+    single reads.
+  dev_url: "https://github.com/ablab/spades"
+  doc_url: "https://ablab.github.io/spades"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - druvus
+    - notestaff
+    - chrisjackson-pellicle
+  identifiers:
+    - biotools:spades
+    - usegalaxy-eu:spades
+    - doi:10.1089/cmb.2012.0021
+    - doi:10.1101/gr.213959.116
+    - doi:10.1093/gigascience/giz100
+    - doi:10.1093/bioinformatics/btz349

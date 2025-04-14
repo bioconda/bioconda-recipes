@@ -1,0 +1,40 @@
+{% set name = "TransComb" %}
+{% set version = "1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 1
+
+source:
+  url: https://sourceforge.net/projects/transcriptomeassembly/files/TransComb/TransComb_v.{{ version }}.tar.gz
+  md5: fc9589b8ebb6bde76a7bc1cc138b22bb
+  patches:
+    - CMakeLists.txt.patch
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - bamtools
+    - cmake
+  host:
+    - boost-cpp
+    - samtools 0.1.19
+    - zlib
+  run:
+    - boost-cpp
+    - samtools 0.1.19
+    - zlib
+
+test:
+  commands:
+    - TransComb -h | grep "TransComb -b file.bam -s unstranded"
+    - CorrectName -h | grep "CorrectName fq reads_1.fq reads_2.fq"
+
+about:
+  home: https://github.com/yechengxi/SparseAssembler
+  summary: A sparse k-mer graph based, memory-efficient genome assembler
+  license: Unknown

@@ -1,0 +1,45 @@
+{% set razer_version = "3.5.8" %}
+{% set seqan_version = "2.4.0" %}
+
+package:
+  name: razers3
+  version: {{ razer_version }}
+
+source:
+  url: http://packages.seqan.de/seqan-src/seqan-src-{{ seqan_version }}.tar.gz
+  sha256: d7084d17729214003e84818e0280a16f223c8f1c6a30eeef040c27e0c0047bd7
+
+build:
+  number: 6
+  run_exports:
+    - {{ pin_subpackage('razers3', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - cmake
+    - llvm-openmp  # [osx]
+  host:
+    - zlib
+    - bzip2
+  run:
+    - zlib
+    - bzip2
+
+test:
+  commands:
+    - razers3 --help
+
+
+about:
+  home: http://www.seqan.de/projects/razers/
+  license: GPL-3.0-only
+  license_file: LICENSE
+  license_family: GPL
+  summary: RazerS 3 - Faster, fully sensitive read mapping
+  dev_url: https://github.com/seqan/seqan/tree/main/apps/razers3
+
+extra:
+  additional-platforms:
+    - linux-aarch64

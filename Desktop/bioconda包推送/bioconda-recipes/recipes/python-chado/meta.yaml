@@ -1,0 +1,68 @@
+{% set name = "python-chado" %}
+{% set version = "2.3.9" %}
+{% set sha256 = "baccb6adb7fa50b34a5c6ec5c94cc103845b500bfe88af41ebd855503b4cb1e1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/c/chado/chado-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - chakin=chakin.cli:chakin
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - bcbio-gff ==0.6.4
+    - biopython
+    - click
+    - future
+    - psycopg2
+    - python
+    - pyyaml
+    - sqlalchemy
+    - wrapt
+
+test:
+  imports:
+    - chado
+    - chado.analysis
+    - chado.export
+    - chado.expression
+    - chado.feature
+    - chado.organism
+    - chado.phylogeny
+    - chado.util
+    - chakin
+    - chakin.commands
+    - chakin.commands.analysis
+    - chakin.commands.export
+    - chakin.commands.expression
+    - chakin.commands.feature
+    - chakin.commands.organism
+    - chakin.commands.phylogeny
+    - chakin.commands.util
+  commands:
+    - chakin --help
+    - chakin analysis --help
+
+about:
+  home: https://github.com/galaxy-genome-annotation/python-chado
+  license: MIT
+  license_family: MIT
+  icense_file: '{{ environ["RECIPE_DIR"] }}/LICENSE.txt'
+  summary: "A Python library for interacting with Chado database."
+
+extra:
+  container:
+    # unicode problem with click
+    extended-base: true

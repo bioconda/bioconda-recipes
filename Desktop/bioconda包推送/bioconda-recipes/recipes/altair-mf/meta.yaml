@@ -1,0 +1,45 @@
+# This file created by conda-build 3.23.3
+# meta.yaml template
+# ------------------------------------------------
+{% set version = "1.0.1" %}
+
+package:
+  name: altair-mf
+  version: {{ version }}
+
+build:
+   # Passes some invalid flags for clang
+   skip: True  # [osx]
+   number: 4
+   run_exports:
+    - {{ pin_subpackage("altair-mf", max_pin="x.x.x") }}  
+
+source:
+  url: https://github.com/cobilab/altair/archive/v{{ version }}.tar.gz
+  sha256: 06e1efb396d4df4ea8a894d608d36ea3fdb3c4118e02c00281785a747a97c9ed
+
+requirements:
+  build:
+    - make  
+    - {{ compiler('cxx') }}
+    - cmake >=2.8.4
+  host:
+    - zlib
+  run:
+    - zlib
+
+
+test:
+  commands:
+    - AltaiR --help # Test that altair can be run with the --help flag
+
+about:
+  home: https://cobilab.github.io/altair/
+  license: GPL v3 License
+  license_file: LICENSE
+  license_family: GPL
+  summary: Software for alignment-free and spatial-temporal analysis of multi-FASTA data
+
+extra:
+  additional-platforms:
+    - linux-aarch64

@@ -1,0 +1,80 @@
+{% set name = "Comparative-Annotation-Toolkit" %}
+{% set version = "0.1" %}
+{% set commit = "29cae89f9430ecede91427b0655597d950159099" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ComparativeGenomicsToolkit/Comparative-Annotation-Toolkit/archive/{{ commit }}.tar.gz
+  sha256: 96e130393d40a2c6e10aa7aa61e00273fb4b14d62de8a259eb7c8342aae3736b
+
+build:
+  noarch: python
+  number: 3
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed -vv .
+
+requirements:
+  host:
+    - python 2.7
+    - pip
+  run:
+    - python 2.7
+    - pyfasta >=0.5.2
+    - toil >=3.5,<3.20
+    - luigi >=2.5
+    - seaborn >=0.7
+    - pandas >=0.18
+    - frozendict
+    - configobj >=5.0
+    - sqlalchemy >=1.0
+    - ete3
+    - pysam >=0.10
+    - numpy >=1.10
+    - scipy >=0.18.1
+    - bx-python >=0.7.1
+    - bamtools
+    - samtools >=1.3
+    - augustus >=3.3
+    - ucsc-fatotwobit
+    - ucsc-gff3togenepred
+    - ucsc-genepredtobed
+    - ucsc-genepredtofakepsl
+    - ucsc-bamtopsl
+    - ucsc-transmappsltogenepred
+    - ucsc-pslpostarget
+    - ucsc-axtchain
+    - ucsc-chainmergesort
+    - ucsc-pslmap
+    - ucsc-pslrecalcmatch
+    - ucsc-pslmappostchain
+    - ucsc-gtftogenepred
+    - ucsc-genepredtogtf
+    - ucsc-pslcheck
+    - ucsc-pslcdnafilter
+    - ucsc-clustergenes
+    - ucsc-psltobigpsl
+    - ucsc-bedsort
+    - ucsc-bedtobigbed
+    - ucsc-blat
+
+test:
+  imports:
+    - cat
+  commands:
+    - luigi --module cat RunCat --local-scheduler --help | grep "RUNCAT_HAL" &> /dev/null
+
+about:
+  home: https://github.com/ComparativeGenomicsToolkit/Comparative-Annotation-Toolkit
+  license: Apache 2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: 'A straightforward end-to-end pipeline that takes as input a HAL-format
+            multiple whole genome alignment as well as a GFF3 file representing
+            annotations on one high quality assembly in the HAL alignment, and
+            produces a output GFF3 annotation on all target genomes chosen'
+
+extra:
+  identifiers:
+    - doi:10.1101/231118

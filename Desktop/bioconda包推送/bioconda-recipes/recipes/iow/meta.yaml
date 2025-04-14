@@ -1,0 +1,57 @@
+{% set version = "1.0.7" %}
+{% set name_pypi = "iow" %}
+
+package:
+  name: iow
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/i/{{ name_pypi }}/{{ name_pypi }}-{{ version }}.tar.gz
+  sha256: 149219bf78b2d5ae076fa85822c73a39e17b982233d6710c250295e9803388ed
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('iow', max_pin='x') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - python
+    - pip
+    - cython >=0.28.3
+    - numpy >=1.12.1
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+    - {{ pin_compatible('h5py', max_pin='x') }}
+    - scikit-bio >=0.5.1
+    - click
+    - pandas
+
+test:
+  imports:
+    - bp
+  commands:
+    - bp --help
+  
+about:
+  home: https://github.com/biocore/improved-octo-waddle
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: 'Implementation of Balanced Parentheses'
+  description: |
+    An implementation of the balanced parentheses tree structure as described by
+    [Cordova and Navarro](http://www.dcc.uchile.cl/~gnavarro/ps/tcs16.2.pdf). 
+  doc_url: https://github.com/biocore/improved-octo-waddle
+  dev_url: https://github.com/biocore/improved-octo-waddle
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - wasade

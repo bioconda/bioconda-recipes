@@ -1,0 +1,39 @@
+{% set name = "gorpipe" %}
+{% set version = "4.5.0" %}
+{% set sha256hash = "09f96aa55cbad852c45f201d18e2a95b64549959e6a4803d9be811a4cb26ff17" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  noarch: generic
+  number: 0
+  # dscript: ln -s $(readlink -f bin/gorpipe) $PREFIX/gorpipe
+
+source:
+  url: https://github.com/gorpipe/gor/releases/download/v{{ version }}/gorscripts-{{ version }}-dist.zip
+  sha256: {{ sha256hash }}
+
+requirements:
+  run:
+    - openjdk >=17
+
+about:
+  home: https://github.com/gorpipe/gor
+  license: AGPL >=3
+  license_file: LICENSE
+  summary: A query tool for working with sequence data based on a Genomic Ordered Relations (GOR)
+
+test:
+  commands:
+    - gorpipe help
+    # test if gorpipe can generate gor rows
+    - gorpipe "gorrows -p chr1:1-4"
+
+extra:
+  identifiers:
+    - biotools:{{ name }}
+    #- usegalaxy-eu:{{ name }}
+  recipe-maintainers:
+    - gorpipe

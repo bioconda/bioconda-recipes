@@ -1,0 +1,48 @@
+{% set name = "biobb_flexserv" %}
+{% set version = "5.0.0" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 90c2b03541d144026f2f6866e8fd166b0440f73a7c34c83f49b81dd826374edc 
+
+build:
+  number: 1
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools
+    - biobb_common ==5.0.0
+    - flexserv ==1.0.2
+    - pcasuite ==1.0.0
+    - perl
+  run:
+    - python >=3.8
+    - biobb_common ==5.0.0
+    - flexserv ==1.0.2
+    - pcasuite ==1.0.0
+    - perl
+
+test:
+  imports:
+    - biobb_flexserv
+    - biobb_flexserv.flexserv
+    - biobb_flexserv.pcasuite
+
+about:
+  home: https://github.com/bioexcel/biobb_flexserv
+  license: Apache Software License
+  license_family: APACHE
+  license_file: ''
+  summary: Biobb_flexserv is the Biobb module collection for biomolecular flexibility studies on protein 3D structures.
+  description: "biobb_flexserv allows the generation of protein conformational ensembles from 3D structures and the analysis of its molecular flexibility. It is based on the work included in the FlexServ server (https://mmb.irbbarcelona.org/FlexServ/, Camps et. al., FlexServ: an integrated tool for the analysis of protein flexibility, Bioinformatics, Volume 25, Issue 13, 1 July 2009, Pages 1709–1710, https://doi.org/10.1093/bioinformatics/btp304).\nBiobb (BioExcel building blocks) packages are Python\
+    \ building blocks that\ncreate new layer of compatibility and interoperability over popular\n
+    \ bioinformatics tools.\nThe latest documentation of this package can be found in our readthedocs site: http://biobb_vs.readthedocs.io/en/latest/).\n"

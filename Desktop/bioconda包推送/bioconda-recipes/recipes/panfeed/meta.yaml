@@ -1,0 +1,56 @@
+{% set version = "1.7.0" %}
+{% set name = "panfeed" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: dd75396f5fd6cbb27163559f813ea7c2802e2d4444271a2e30190727785811e2
+
+build:
+  entry_points:
+    - panfeed = panfeed.__main__:main
+    - panfeed-get-clusters = panfeed.get_clusters:main
+    - panfeed-get-kmers = panfeed.get_kmers:main
+    - panfeed-plot = panfeed.plot:main
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('panfeed', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.6
+    - hatchling
+    - pip
+  run:
+    - python >=3.6
+    - numpy
+    - pandas
+    - pyfaidx
+    - matplotlib-base
+    - seaborn-base
+
+test:
+  imports:
+    - panfeed
+  commands:
+    - panfeed --help
+    - panfeed-get-clusters --help
+    - panfeed-get-kmers --help
+    - panfeed-plot --help
+
+about:
+  home: https://github.com/microbial-pangenomes-lab/panfeed
+  summary: 'Compute gene-cluster specific k-mers over a pangenome'
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  dev_url: https://github.com/microbial-pangenomes-lab/panfeed
+
+extra:
+  recipe-maintainers:
+    - mgalardini

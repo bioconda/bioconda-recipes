@@ -1,0 +1,70 @@
+{% set version = '2.0.3' %}
+
+package:
+  name: r-grbase
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/gRbase_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/gRbase/gRbase_{{ version }}.tar.gz
+  sha256: 2ac60cbf683f1bebd3fbc50f3e71d76ff9e0b1daa441c397b0b7c43b326f1ba2
+
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage('r-grbase', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - r-base
+    - r-igraph
+    - r-magrittr
+    - r-matrix
+    - r-rcpp >=0.11.1
+    - r-rcppeigen
+    - r-rcpparmadillo
+    - libblas
+    - liblapack
+  run:
+    - r-base
+    - r-igraph
+    - r-magrittr
+    - r-matrix
+    - r-rcpp >=0.11.1
+    - r-rcppeigen
+    - r-rcpparmadillo
+
+test:
+  commands:
+    - $R -e "library('gRbase')"
+
+about:
+  home: http://people.math.aau.dk/~sorenh/software/gR/
+  license: GPL-2.0-or-later
+  summary: "The 'gRbase' package provides graphical modelling features used by e.g. the packages
+    'gRain', 'gRim' and 'gRc'. 'gRbase' implements graph algorithms including (i) maximum
+    cardinality search (for marked and unmarked graphs). (ii) moralization, (iii) triangulation,
+    (iv) creation of junction tree. 'gRbase' facilitates array operations, 'gRbase'
+    implements functions for testing for conditional independence. 'gRbase' illustrates
+    how hierarchical log-linear models may be implemented and describes concept of graphical
+    meta data. The facilities of the package are documented in the book by H\xF8jsgaard,
+    Edwards and Lauritzen (2012, <doi:10.1007/978-1-4614-2299-0>) and in the paper by
+    Dethlefsen and H\xF8jsgaard, (2005, <doi:10.18637/jss.v014.i17>). Please see 'citation(\"gRbase\")'
+    for citation details. NOTICE  'gRbase' requires that the packages graph, 'Rgraphviz'
+    and 'RBGL' are installed from 'bioconductor'; for installation instructions please
+    refer to the web page given below."
+  license_family: GPL2
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
+extra:
+  additional-platforms:
+    - linux-aarch64

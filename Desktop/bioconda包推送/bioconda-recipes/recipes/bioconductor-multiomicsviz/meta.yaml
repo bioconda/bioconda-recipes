@@ -1,0 +1,47 @@
+{% set version = "1.24.0" %}
+{% set name = "multiOmicsViz" %}
+{% set bioc = "3.17" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: a051b5e32c72385f4463cbe1751c1484
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: BiocGenerics
+requirements:
+  host:
+    - 'bioconductor-summarizedexperiment >=1.30.0,<1.31.0'
+    - r-base
+    - r-doparallel
+    - r-foreach
+  run:
+    - 'bioconductor-summarizedexperiment >=1.30.0,<1.31.0'
+    - r-base
+    - r-doparallel
+    - r-foreach
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: LGPL
+  summary: 'Plot the effect of one omics data on other omics data along the chromosome'
+  description: 'Calculate the spearman correlation between the source omics data and other target omics data, identify the significant correlations and plot the significant correlations on the heat map in which the x-axis and y-axis are ordered by the chromosomal location.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+extra:
+  parent_recipe:
+    name: bioconductor-multiomicsviz
+    path: recipes/bioconductor-multiomicsviz
+    version: 1.4.0
+

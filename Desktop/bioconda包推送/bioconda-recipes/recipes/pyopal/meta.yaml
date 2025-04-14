@@ -1,0 +1,55 @@
+{% set name = "pyopal" %}
+{% set version = "0.7.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: db6bb2ad4f1c76d892ff6974e8eef0f5cf9a0881924b9bd7b96fbd9606a11af4
+
+build:
+  number: 0
+  skip: True  #[py2k]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+  host:
+    - python
+    - pip
+    - cython
+    - scikit-build-core
+    - scoring-matrices >=0.2
+  run:
+    - python
+    - archspec
+    - scoring-matrices >=0.2
+
+test:
+  imports:
+    - {{ name }}
+  commands:
+    - python -m unittest -vv {{ name }}.tests
+
+about:
+  home: https://github.com/althonos/pyopal
+  license: MIT
+  license_family: MIT
+  license_file: COPYING
+  summary: Cython bindings and Python interface to Opal, a SIMD-accelerated pairwise aligner.
+  doc_url: https://pyopal.readthedocs.org
+  dev_url: https://github.com/althonos/pyopal
+
+extra:
+  recipe-maintainers:
+    - althonos
+  additional-platforms:
+    - linux-aarch64

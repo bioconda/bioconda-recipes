@@ -1,0 +1,92 @@
+{% set name = "Trinity" %}
+{% set version = "2.15.2" %}
+{% set sha256 = "baab87e4878ad097e265c46de121414629bf88fa9342022baae5cac12432a15c" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/trinityrnaseq/trinityrnaseq/releases/download/Trinity-v{{ version }}/trinityrnaseq-v{{ version }}.FULL.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - makefile.patch
+    - cflags-remove-m64.patch 
+
+build:
+  number: 3
+  run_exports:
+    - {{ pin_subpackage('trinity', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - zlib
+    - htslib
+    - perl
+  run:
+    - openjdk >=17
+    - perl
+    - perl-db_file
+    - python >=3.7
+    - numpy
+    - trimmomatic >=0.39
+    - bowtie2 >=2.3.0
+    - kmer-jellyfish >=2.3
+    - samtools >=1.14
+    - salmon
+    - kallisto
+    - coreutils
+    - r-base
+    - r-cluster
+    - r-gplots
+    - r-fastcluster
+    - r-argparse
+    - r-ape
+    - r-phangorn
+    - r-gplots
+    - r-tidyverse
+    - r-sm
+    - r-vioplot
+    - bioconductor-qvalue
+    - bioconductor-ctc
+    - bioconductor-edger
+    - bioconductor-goseq
+    - bioconductor-go.db
+    - bioconductor-dexseq
+
+test:
+  commands:
+    - "Trinity --cite"
+    - "align_and_estimate_abundance.pl --help || [[ \"$?\" == 255 ]]"
+    - "abundance_estimates_to_matrix.pl --help || [[ \"$?\" == 255 ]]"
+    - "run_DE_analysis.pl -h || [[ \"$?\" == 255 ]]"
+    - "analyze_diff_expr.pl -h || [[ \"$?\" == 255 ]]"
+    - "PtR --help || [[ \"$?\" == 255 ]]"
+    - "TrinityStats.pl 2>&1 | grep \"usage:\""
+    - "define_clusters_by_cutting_tree.pl 2>&1 | grep \"define K clusters via k-means algorithm\""
+    - "Trinity_gene_splice_modeler.py --help"
+
+about:
+  home: "https://github.com/trinityrnaseq/trinityrnaseq"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: LICENSE
+  summary: "Trinity assembles transcript sequences from Illumina RNA-Seq data."
+  doc_url: "https://github.com/trinityrnaseq/trinityrnaseq/wiki"
+  dev_url: "https://github.com/trinityrnaseq/trinityrnaseq"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+
+  identifiers:
+    - biotools:trinity
+    - usegalaxy-eu:trinity
+    - doi:10.1038/nbt.1883
+    - doi:10.1038/nprot.2013.084

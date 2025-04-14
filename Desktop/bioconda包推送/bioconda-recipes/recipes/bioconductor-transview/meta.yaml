@@ -1,0 +1,64 @@
+{% set version = "1.46.0" %}
+{% set name = "TransView" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 39d2c9d2471bb732b294b68f3997eab2
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-transview", max_pin="x.x") }}'
+# Suggests: RUnit, pasillaBamSubset, BiocManager
+# SystemRequirements: GNU make
+requirements:
+  host:
+    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
+    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
+    - 'bioconductor-iranges >=2.36.0,<2.37.0'
+    - 'bioconductor-rhtslib >=2.4.0,<2.5.0'
+    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - 'bioconductor-zlibbioc >=1.48.0,<1.49.0'
+    - r-base
+    - r-gplots
+    - libblas
+    - liblapack
+  run:
+    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
+    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
+    - 'bioconductor-iranges >=2.36.0,<2.37.0'
+    - 'bioconductor-rhtslib >=2.4.0,<2.5.0'
+    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - 'bioconductor-zlibbioc >=1.48.0,<1.49.0'
+    - r-base
+    - r-gplots
+  build:
+    - {{ compiler('c') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Read density map construction and accession. Visualization of ChIPSeq and RNASeq data sets'
+  description: 'This package provides efficient tools to generate, access and display read densities of sequencing based data sets such as from RNA-Seq and ChIP-Seq.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+extra:
+  identifiers:
+    - biotools:transview
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-transview
+    path: recipes/bioconductor-transview
+    version: 1.24.0
+

@@ -1,0 +1,45 @@
+{% set version = "0.7.19" %}
+{% set sha256 = "cdff5db67652c5b805a3df08c4e813a822c65791913eccfb3cf7d528588f37bc" %}
+
+package:
+  name: bwa
+  version: {{ version }}
+
+source:
+  url: https://github.com/lh3/bwa/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("bwa", max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - zlib
+  run:
+    - perl
+
+test:
+  commands:
+    - bwa 2>&1 | grep "index sequences in the"
+    - which xa2multi.pl
+    - which qualfa2fq.pl
+
+about:
+  home: https://github.com/lh3/bwa
+  license: GPL3
+  license_file: COPYING
+  summary: The BWA read mapper.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:bwa
+    - usegalaxy-eu:bwa_mem
+    - usegalaxy-eu:bwa

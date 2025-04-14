@@ -1,0 +1,62 @@
+{% set name = "tbpore" %}
+{% set version = "0.7.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url:    https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: c48b1aa71a4f9e5c74d12b652e08f098b6fbccfef098be0923b41a788b817c02
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - tbpore = tbpore.tbpore:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('tbpore', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - poetry-core >=1.0.0
+    - pip
+  run:
+    - python >=3.8
+    - mykrobe =0.12
+    - rasusa =2
+    - samtools =1.13
+    - bcftools =1.13
+    - minimap2 =2.22
+    - seqkit =2
+    - psdm =0.1
+    - click >=8.0.3,<9.0
+    - cyvcf2 >=0.30,<1.0
+    - loguru >=0.5.3,<1.0
+    - pyyaml >=6.0
+    - pandas >=1.4.2,<2.0
+    - pysam <1.0
+    - networkx >=2.8,<3.0
+    - nanoq =0.9
+
+test:
+  imports:
+    - tbpore
+  commands:
+    - tbpore --help
+
+about:
+  home: https://github.com/mbhall88/tbpore
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Mycobacterium tuberculosis genomic analysis from Nanopore sequencing data
+
+extra:
+  recipe-maintainers:
+    - mbhall88
+    - leoisl
+  identifiers:
+    - doi:10.1016/S2666-5247(22)00301-9

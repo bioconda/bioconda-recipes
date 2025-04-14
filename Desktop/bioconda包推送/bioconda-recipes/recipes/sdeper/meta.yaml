@@ -1,0 +1,66 @@
+# This is the recipe file to publish SDePER to Bioconda
+
+{% set name = "sdeper" %}
+{% set version = "1.6.3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 2b77042525519a1de5c07956e562fe2f0173e411a921826c4ab6b6ca1f5d6e10
+
+build:
+  number: 0
+  entry_points:
+    - runDeconvolution = cvaeglrm:main
+    - runImputation = imputation:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('sdeper', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9,<=3.10
+    - pip
+  run:
+    - distinctipy ==1.2.2
+    - matplotlib-base ==3.5.2
+    - networkx ==2.8.4
+    - numba ==0.59.1
+    - numpy ==1.26.4
+    - openpyxl ==3.0.10
+    - pandas ==1.4.3
+    - python >=3.9,<=3.10
+    - reportlab ==4.1.0
+    - scanpy ==1.9.1
+    - scikit-learn ==1.1.1
+    - scikit-misc ==0.1.4
+    - scipy ==1.11.4
+    - seaborn ==0.13.2
+    - tensorflow-base 2.15.0 cpu_*  # explicitly specify to use cpu version out from cpu_, cuda, eigen_, gpu_, or mkl_ in conda packages
+    - umap-learn ==0.5.3
+    - libopencv ==4.9.0 headless_* # install opencv in conda requires installing these 3 packages, headless version is used
+    - opencv ==4.9.0
+    - py-opencv ==4.9.0
+
+test:
+  commands:
+    - runDeconvolution --help
+    - runImputation --help
+
+about:
+  home: "https://az7jh2.github.io/SDePER/"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Spatial Deconvolution method with Platform Effect Removal"
+  doc_url: "https://sdeper.readthedocs.io/en/latest/"
+  dev_url: "https://github.com/az7jh2/SDePER"
+  description: "SDePER (Spatial Deconvolution method with Platform Effect Removal) is a hybrid machine learning and regression method to deconvolve Spatial barcoding-based transcriptomic data using reference single-cell RNA sequencing data, considering platform effects removal, sparsity of cell types per capture spot and across-spots spatial correlation in cell type compositions. SDePER is also able to impute cell type compositions and gene expression at unmeasured locations in a tissue map with enhanced resolution."
+
+extra:
+  recipe-maintainers:
+    - az7jh2

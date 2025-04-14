@@ -1,0 +1,49 @@
+{% set name = "mimeo" %}
+{% set version = "1.2.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/38/74/4bd3bbbc6e4cd83f515cf224effc752c97f1f01b6d40b01cea31c266c60b/mimeo-1.2.1.tar.gz
+  sha256: 0e45192d4533038d6053e0a12057175e9835efce231922d96bf011e9ff5a5d02
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  entry_points:
+    - mimeo = mimeo.app:main
+  run_exports:
+    - {{ pin_subpackage('mimeo', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - hatchling
+    - hatch-vcs
+  run:
+    - python >=3.8
+    - pandas >=0.20.3
+    - biopython >=1.70
+    - rich
+
+test:
+  imports:
+    - mimeo
+
+  commands:
+    - mimeo self --help
+    - mimeo x --help
+    - mimeo map --help
+    - mimeo filter --help
+
+about:
+  home: https://github.com/Adamtaranto/mimeo
+  license: MIT
+  summary: 'Scan genomes for internally repeated sequences, elements which are repetitive in another species, or high-identity HGT candidate regions between species.'
+  license_family: MIT
+  dev_url: https://github.com/Adamtaranto/mimeo
+  doc_url: https://adamtaranto.github.io/mimeo

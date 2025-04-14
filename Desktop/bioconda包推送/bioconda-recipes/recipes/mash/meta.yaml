@@ -1,0 +1,61 @@
+{% set name = "Mash" %}
+{% set version = "2.3" %}
+{% set sha256 = "f96cf7305e010012c3debed966ac83ceecac0351dbbfeaa6cd7ad7f068d87fe1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/marbl/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - limits.patch
+    - memcpy-no-wrap.patch
+    
+build:
+  number: 9
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin='x') }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - libtool
+  host:
+    - zlib >=1.3
+    - libzlib
+    - capnproto
+    - gsl
+    - libcblas
+  run:
+    - capnproto
+    - gsl
+    - libcblas
+
+test:
+  commands:
+    - mash -h
+    - mash --version | grep '{{ version }}'
+
+about:
+  home: https://github.com/marbl/{{ name }}
+  license: "https://github.com/marbl/{{ name }}/blob/master/LICENSE.txt"
+  license_file: "LICENSE.txt"
+  summary: "Fast sequence distance estimator that uses MinHash."
+  dev_url: https://github.com/marbl/{{ name }}
+  doc_url: "https://mash.readthedocs.io/en/latest"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:mash
+    - usegalaxy-eu:mash_screen
+    - usegalaxy-eu:mash_sketch
+    - doi:10.1186/s13059-016-0997-x
+    - doi:10.1186/s13059-019-1841-x

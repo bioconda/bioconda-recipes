@@ -1,0 +1,42 @@
+{% set name = "EvidenceModeler" %}
+{% set version = "2.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/EVidenceModeler/EVidenceModeler/releases/download/EVidenceModeler-v{{ version }}/EVidenceModeler-v{{ version }}.tar.gz
+  sha256: 3ee69ad822a35204ff02b670fe047d8b0da250cf9f43ebabbe33ce47f498e668
+
+build:
+  number: 4
+  run_exports:
+    - {{ pin_subpackage('evidencemodeler', max_pin='x') }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  run:
+    - perl
+    - perl-carp
+    - perl-uri
+    - perl-dbi
+    - perl-db_file
+
+test:
+  commands:
+    - "EVidenceModeler --version"
+
+about:
+  home: https://github.com/EVidenceModeler/EVidenceModeler
+  license: BSD 3-Clause
+  license_file: LICENSE.txt
+  license_family: BSD
+  summary: 'Evidence Modeler combines ab intio gene predictions, protein alignments, and transcript alignments into weighted consensus gene structures'
+

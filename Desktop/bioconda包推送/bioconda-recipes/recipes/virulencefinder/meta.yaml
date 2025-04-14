@@ -1,0 +1,50 @@
+{% set name = "VirulenceFinder" %}
+{% set version = "3.1.0" %}
+{% set sha256 = "5106428c239dd9c232bd5f65ae18b765d8f5a1578332d06148f01bd067fd8620" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0]|lower }}/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('virulencefinder', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - pdm-backend
+  run:
+    - python >=3.10
+    - kma
+    - biopython >=1.79
+    - tabulate >=0.8.9
+    - cgecore >=2.0.0
+    - blast
+    - pandas >=1.4.2
+    - wget
+    - git
+
+test:
+  imports:
+    - virulencefinder
+  
+  commands:
+    - python -m virulencefinder --version
+
+about:
+  home: https://bitbucket.org/genomicepidemiology/virulencefinder
+  license: Apache-2.0
+  license_family: APACHE
+  summary: "VirulenceFinder identifies virulence genes in total or partial sequenced isolates of bacteria"
+
+extra:
+  identifiers:
+    - doi:10.1128/JCM.03617-13

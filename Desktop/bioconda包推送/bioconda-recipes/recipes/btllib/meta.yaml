@@ -1,0 +1,66 @@
+{% set name = "btllib" %}
+{% set version = "1.7.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bcgsc/btllib/releases/download/v{{ version }}/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: 31e7124e1cda9eea6f27b654258a7f8d3dea83c828f0b2e8e847faf1c5296aa3
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('btllib', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - meson
+    - ninja
+  host:
+    - python
+    - pip
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - samtools
+    - swig
+    - doxygen
+  run:
+    - python
+    - samtools
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - pigz
+    - gzip  # alternative to pigz
+    - tar
+    - bzip2
+    - xz
+    - lrzip # [not arm64]
+    - zip
+    - wget
+
+test:
+  commands:
+    - indexlr --help
+  imports:
+    - btllib
+
+about:
+  home: https://github.com/bcgsc/btllib
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: 'Bioinformatics common code library in C++ with Python wrappers, from Bioinformatics Technology Lab'
+  doc_url: https://bcgsc.github.io/btllib/
+  dev_url: https://github.com/bcgsc/btllib
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.21105/joss.04720
+    - doi:10.1093/bioadv/vbad162

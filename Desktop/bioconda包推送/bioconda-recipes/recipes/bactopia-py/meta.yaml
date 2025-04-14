@@ -1,0 +1,64 @@
+{% set name = "bactopia-py" %}
+{% set version = "1.5.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/bactopia/bactopia-{{ version }}.tar.gz
+  sha256: 67b4fdd470ec5456add90736dafa71f15904cc965dc4269dd13251b232e46997
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.8,<3.12
+    - poetry =1.3
+    - pip
+  run:
+    - python >=3.8,<3.12
+    - blast
+    - executor
+    - nextflow >=21.10.0
+    - pandas >=1.5.3,<2.0.0
+    - pyyaml
+    - rauth
+    - requests
+    - rich-click >=1.6.0
+    - tqdm
+
+test:
+  imports:
+    - bactopia
+  commands:
+    - pip check
+    - bactopia-citations --help
+    - bactopia-citations --version
+    - bactopia-datasets --help
+    - bactopia-datasets --version
+    - bactopia-download --help
+    - bactopia-prepare --help
+    - bactopia-search --help
+    - bactopia-summary --help
+    - bactopia-atb-formatter --help
+    - bactopia-atb-downloader --help
+    - bactopia-pubmlst-setup --help
+    - bactopia-pubmlst-build --help
+  requires:
+    - pip
+
+about:
+  home: https://bactopia.github.io/
+  summary: A Python package for working with Bactopia
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - rpetit3

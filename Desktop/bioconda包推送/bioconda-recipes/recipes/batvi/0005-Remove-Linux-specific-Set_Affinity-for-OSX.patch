@@ -1,0 +1,109 @@
+--- batindel/src/penguin.cpp
++++ batindel/src/penguin.cpp
+@@ -144,7 +144,6 @@
+ void Mode_Parameters(BATPARAMETERS BP);
+ void Set_Force_Indel(bool & Force_Indel,int Last_Mis,Hit_Info & H,int Avg_Q);
+ int Calculate_Average_Quality(READ & R);
+-void Set_Affinity();
+ Alignment RealignFast(Hit_Info &  H,int StringLength, READ & R,int OFF,int Filter,bool Do_Filter);
+ Alignment RealignFastMinus(Hit_Info &  H,BATREAD & Read,int StringLength, READ & R,int OFF,int Filter,bool Do_Filter);
+ void FreeQ(std::priority_queue <Alignment,std::vector <Alignment>,Comp_Alignment>  & t );
+@@ -290,7 +289,6 @@
+ 	}
+ 	else
+ 	{
+-		Set_Affinity();
+ 		ESTIMATE=false;
+ 		Map_And_Pair_Solexa(NULL);
+ 	}
+@@ -1244,36 +1242,6 @@
+ }
+ 
+ 
+-void Set_Affinity()
+-{
+-	cpu_set_t Set;
+-	CPU_ZERO(&Set);
+-
+-	if(sched_getaffinity(0,sizeof(cpu_set_t),&Set)<0)
+-	{
+-		printf("Affinity could not be get..\n");
+-	}
+-	else
+-	{
+-		for (int i=0;i<CPU_SETSIZE;i++)
+-		{
+-			if(CPU_ISSET(i,&Set))
+-			{
+-				printf("Bound to %d\n",i);
+-				CPU_ZERO(&Set);
+-				CPU_SET(i, &Set);
+-				if(sched_setaffinity(0, sizeof(Set), &Set)<0)
+-				{
+-					printf("Affinity could not be set..\n");
+-				}
+-				return;
+-			}
+-		}
+-	}
+-
+-}
+-
+-
+ bool Map_One_Seg(READ & R,BATREAD & B,unsigned & Conversion_Factor,MEMX & MF,MEMX & MC,LEN & L,unsigned & Actual_Tag,Final_Hit &  Single_File,FILE* Mishit_File,std::priority_queue <Alignment,std::vector <Alignment>,Comp_Alignment> & Alignments,std::priority_queue <Alignment,std::vector <Alignment>,Comp_Alignment> & Good_Alignments,Pair* & Pairs,bool PRINT,Hit_Info & H,int & Quality_Score,int Segment_Length,int SEG_SIZE,int SHIFT_SEG_SIZE)
+ {
+ 		READ RTemp=R;BATREAD BTemp=B;
+--- batindel/src/penguin-s.cpp
++++ batindel/src/penguin-s.cpp
+@@ -97,7 +97,6 @@
+ void Mode_Parameters(BATPARAMETERS BP);
+ void Set_Force_Indel(bool & Force_Indel,int Last_Mis,Hit_Info & H,int Avg_Q);
+ int Calculate_Average_Quality(READ & R);
+-void Set_Affinity();
+ Alignment RealignFast(Hit_Info &  H,BATREAD & Read,int StringLength, READ & R,int OFF,int Filter,bool Do_Filter);
+ Alignment RealignFastMinus(Hit_Info &  H,BATREAD & Read,int StringLength, READ & R,int OFF,int Filter,bool Do_Filter);
+ void FreeQ(std::priority_queue <Alignment,std::vector <Alignment>,Comp_Alignment>  & t );
+@@ -202,7 +201,6 @@
+ 	}
+ 	else
+ 	{
+-		Set_Affinity();
+ 		Map_And_Pair_Solexa(NULL);
+ 	}
+ 
+@@ -2072,35 +2070,6 @@
+ }
+ 
+ 
+-void Set_Affinity()
+-{
+-	cpu_set_t Set;
+-	CPU_ZERO(&Set);
+-
+-	if(sched_getaffinity(0,sizeof(cpu_set_t),&Set)<0)
+-	{
+-		printf("Affinity could not be get..\n");
+-	}
+-	else
+-	{
+-		for (int i=0;i<CPU_SETSIZE;i++)
+-		{
+-			if(CPU_ISSET(i,&Set))
+-			{
+-				printf("Bound to %d\n",i);
+-				CPU_ZERO(&Set);
+-				CPU_SET(i, &Set);
+-				if(sched_setaffinity(0, sizeof(Set), &Set)<0)
+-				{
+-					printf("Affinity could not be set..\n");
+-				}
+-				return;
+-			}
+-		}
+-	}
+-
+-}
+-
+ bool Report_Single(READ & R,FILE* Single_File,const int StringLength,BATREAD & Read,bool & Print_Status,int Clip_H,int Clip_T,Alignment & A)
+ {
+ 	Ann_Info Ann;

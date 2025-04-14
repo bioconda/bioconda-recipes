@@ -1,0 +1,40 @@
+--- Makefile.PL.orig	2016-03-08 12:27:04.095817000 -0600
++++ Makefile.PL	2016-03-08 12:31:13.867817000 -0600
+@@ -3,28 +3,20 @@
+ use File::Path;
+ require 5.8.0;
+ 
+-my $choice;
+-while (!$choice) {
+-  $reply = prompt(
+-		  "\nWhat do you want to build?\n\n" .
+-		  "  1) Interface to Ace socket server and local databases (pure Perl)\n" .
+-		  "  2) The above plus XS optimizations (requires C compiler)\n" .
+-		  "  3) The above plus RPC server interface (requires C compiler)\n\n" .
+-		  "Enter your choice: ", "1");
+-  if ($reply =~ /(\d+)/) {
+-    $choice = $1;
+-    die "invalid choice: $choice!" if $choice < 1  ||  $choice > 3;
+-  }
+-}
+-$choice ||= 1; # safe default
+-
++# Choices for what to build (must be a string); normally gotten through
++# interactive prompt, but we're building on headless machines.
++#   1) Interface to Ace socket server and local databases (pure Perl)
++#   2) The above plus XS optimizations (requires C compiler)
++#   3) The above plus RPC server interface (requires C compiler)
++my $choice = "2";     # force XS optimizations
+ 
+ my @extlib = ();
+ push @extlib,'Freesubs' if $choice >= 2;
+ push @extlib,'RPC'      if $choice >= 3;
+ 
+-print "\n";
+-setup_sitedefs() if prompt("Do you want to install Ace::Browser? ","n") =~ /[yY]/;
++# BioBuilds doesn't come with a web browser, so skip Ace::Browser package
++#print "\n";
++#setup_sitedefs() if prompt("Do you want to install Ace::Browser? ","n") =~ /[yY]/;
+ 
+ my $headers  = "./acelib/wh";
+ WriteMakefile(

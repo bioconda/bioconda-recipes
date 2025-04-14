@@ -1,0 +1,48 @@
+{% set version = "0.2.3" %}
+{% set sha256 = "112adec97fbc7c6011e910848e4d40920e68f74de0b5d4b9958be2d40f42fd26" %}
+
+package:
+  name: pylibseq
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/p/pylibseq/pylibseq-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - patch
+
+build:
+  number: 8
+  skip: True  # [osx]
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  run_exports:
+      - {{ pin_subpackage('pylibseq', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+  host:
+    - pip
+    - python
+    - pybind11 >=2.2.3
+    - msprime >=0.7.0
+  run:
+    - python
+    - msprime >=0.7.0
+
+test:
+  imports:
+    - libsequence
+
+about:
+  home: http://pypi.python.org/pypi/pylibseq
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: COPYING
+  summary: 'A Python interface to libsequence'
+
+extra:
+  additional-platforms:
+    - linux-aarch64

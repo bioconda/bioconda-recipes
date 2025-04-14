@@ -1,0 +1,62 @@
+{% set version = "1.0.10" %} # Remember to update sha256 below
+
+package:
+  name: biophi
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/Merck/BioPhi/archive/v{{ version }}.tar.gz
+  sha256: '553c238753281be106b9ad5d470fce71b3d79517734e0ebb85ffd15b4eb7dfe7'
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - biophi = biophi.common.cli.main:main
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage("biophi", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip <24.1  # due to error in omegaconf (dependency of fairseq)
+    - pytest
+  run:
+    - python >=3.8
+    - abnumber ==0.3.2
+    - anarci ==2020.04.23
+    - hmmer >=3.1
+    - click >=7
+    - sqlalchemy <2  # BioPhi is currently incompatible with SQLAlchemy 2.0 Engine
+    - flask <3
+    - werkzeug <3
+    - redis-py
+    - celery
+    - requests
+    - tqdm
+    - xlsxwriter
+    - humanize
+    - sapiens >=1.0.4
+    - pandas <2.2
+
+test:
+  imports:
+    - biophi
+  commands:
+    - biophi --help
+    - biophi sapiens --help
+    - biophi oasis --help
+
+about:
+  home: "https://github.com/Merck/BioPhi"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "BioPhi open-source antibody design platform."
+  dev_url: "https://github.com/Merck/BioPhi"
+  doc_url: "https://biophi.dichlab.org"
+
+extra:
+  identifiers:
+    - biotools:biophi

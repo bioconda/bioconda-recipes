@@ -1,0 +1,58 @@
+{% set name = "Trinotate" %}
+{% set version = "4.0.2" %}
+{% set sha256 = "2f633df2e05e5d22e19159aa147060be7884a057314cad3e6db91dba8910fad1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Trinotate/Trinotate/archive/refs/tags/Trinotate-v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  # patches:
+      # - trinotate.patch
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('trinotate', max_pin="x") }}
+
+requirements:
+  host:
+    - perl
+    - perl-app-cpanminus
+    - perl-module-build
+    - perl-dbi
+    - perl-dbd-sqlite
+    - perl-file-find-rule
+  run:
+    - perl
+    - sqlite
+    - perl-app-cpanminus
+    - perl-module-build
+    - perl-dbi
+    - perl-dbd-sqlite
+    - blast
+    - hmmer
+    - perl-file-find-rule
+    - wget
+    - diamond
+    - infernal
+
+test:
+  commands:
+    - Trinotate --help 2>&1 | grep "Trinotate --db <sqlite.db>"
+
+about:
+  home: https://trinotate.github.io/
+  license: 'BSD-3-Clause'
+  license_file: LICENSE.txt
+  summary: 'Trinotate is a comprehensive annotation suite designed for automatic
+    functional annotation of transcriptomes, particularly de novo assembled
+    transcriptomes, from model or non-model organisms'
+
+extra:
+  identifiers:
+    - biotools:trinotate
+    - usegalaxy-eu:trinotate

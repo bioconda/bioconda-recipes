@@ -1,0 +1,53 @@
+{% set version = "3.1.4" %}
+{% set name = "calisp" %}
+{% set sha256 = "136a9e751685cfad99485097072f854b8a28dccc2c9184e38417b84d9c93b6f7" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  entry_points:
+    - calisp=calisp.main:main
+    - calisp_filter_patterns=calisp.calisp_filter_patterns:main
+    - calisp_compute_medians=calisp.calisp_compute_medians:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+    - setuptools
+  run:
+    - python >=3.6
+    - numpy
+    - scipy
+    - pandas
+    - tqdm
+    - pymzml
+    - pyarrow
+
+test:
+  commands:
+    - calisp -h
+  import:
+    - calisp
+
+about:
+  home: https://github.com/kinestetika/Calisp
+  license: MIT
+  license_file: LICENSE.txt
+  summary: "Estimate isotopic composition of peptides from proteomics mass spectrometry data."
+  dev_url: https://github.com/kinestetika/Calisp
+
+extra:
+  recipe-maintainers:
+    - bernt-matthias

@@ -1,0 +1,88 @@
+{% set name = "RMBlast" %}
+{% set version = "2.14.1" %}
+{% set sha256 = "712c2dbdf0fb13cc1c2d4f4ef5dd1ce4b06c3b57e96dfea8f23e6e99f5b1650e" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    #- isb-{{ version }}+-{{ name }}.patch # Needs the -p1 option, applied in build.sh
+    # patch taken from http://www.repeatmasker.org/rmblast/isb-2.14.1+-rmblast.patch.gz
+    - isb-2.14.1+-rmblast.patch
+    - configurellvm.patch
+    - get_species_taxids.patch
+    - phonehome.patch
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('rmblast', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - bzip2
+    - entrez-direct
+    - pcre
+    - curl
+    - time
+    - ncbi-vdb
+    - sqlite =3
+  run:
+    - entrez-direct
+    - ncbi-vdb
+    - perl
+    - perl-list-moreutils
+    - perl-archive-tar
+    - perl-json
+
+test:
+  commands:
+    - rmblastn -help > /dev/null
+    - makeblastdb -help > /dev/null
+    - blastn -help
+    - blastp -help
+    - makeblastdb -help
+    - blastdb_aliastool -version > /dev/null
+    - blastdbcheck -version > /dev/null
+    - blastdbcmd -version > /dev/null
+    - blastn -version > /dev/null
+    - blastp -version > /dev/null
+    - blastx -version > /dev/null
+    - convert2blastmask -version > /dev/null
+    - dustmasker -version > /dev/null
+    - makeblastdb -version > /dev/null
+    - makembindex -version > /dev/null
+    - psiblast -version > /dev/null
+    - rpsblast -version > /dev/null
+    - rpstblastn -version > /dev/null
+    - segmasker -version > /dev/null
+    - tblastn -version > /dev/null
+    - tblastx -version > /dev/null
+    - windowmasker -version > /dev/null
+    - update_blastdb.pl --version > /dev/null
+    - get_species_taxids.sh -h > /dev/null
+    # test that BLAST ignores LD_LIBRARY_PATH
+    - touch libstdc++.so.6; LD_LIBRARY_PATH=. makeblastdb -help && rm libstdc++.so.6
+    - update_blastdb.pl --help
+
+about:
+  home: https://www.repeatmasker.org/rmblast
+  license: OSL-2.1
+  summary: RMBlast is a RepeatMasker compatible version of the standard NCBI BLAST+ suite.
+  doc_url: https://www.repeatmasker.org/rmblast
+
+extra:
+  identifiers:
+    - biotools:rmblast
+  recipe-maintainers:
+    - mencian
+  additional-platforms:
+    - linux-aarch64

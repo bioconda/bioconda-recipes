@@ -1,0 +1,56 @@
+{% set version = "5.1" %}
+
+# Note that the script to install homer is always the same (configureHomer.pm)
+# but its content changes. Behind the scene a specific version is downloaded
+# For instance for version 4.10, this file is downloaded and installed
+# http://homer.ucsd.edu/homer/data/software/homer.v4.10.zip
+
+package:
+  name: homer
+  version: '{{ version }}'
+
+source:
+  - url: http://homer.ucsd.edu/homer/configureHomer.pl
+    sha256: ccdaa3004a0e0df0882634671d4a1acc88364761e0e6c7ea329ebbf1eb729537
+
+build:
+  number: 0
+  # Ships pre-built binaries that install_name_tool isn't able to fix.
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('homer', max_pin="x") }}
+
+# Dependencies according to http://homer.ucsd.edu/homer/introduction/install.html
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - 'perl =5.26'
+    - wget
+    - unzip
+    - zip
+  run:
+    - perl
+    - wget
+    - unzip
+
+test:
+  commands:
+    - annotatePeaks.pl -h > /dev/null 2>&1
+    - findMotifs.pl -h > /dev/null 2>&1
+    - homer2 > /dev/null 2>&1
+    - GenomeOntology.pl > /dev/null 2>&1
+    - makeTagDirectory > /dev/null 2>&1
+
+about:
+  home: 'http://homer.ucsd.edu/homer/index.html'
+  license: "GNU General Public v3 (GPLv3)"
+  license_family: "GPL3"
+  license_file: "LICENSE.txt"
+  summary: 'Software for motif discovery and next generation sequencing analysis'
+  maintainer: BioNinja, cokelaer, simonvh, r78v10a07
+
+extra:
+  additional-platforms:
+    - linux-aarch64

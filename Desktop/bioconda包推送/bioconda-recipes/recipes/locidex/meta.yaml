@@ -1,0 +1,55 @@
+{% set name = "locidex" %}
+{% set version = "0.3.0" %}
+{% set sha256 = "6d36ccf9b2b41e98842e93e8e36bce8186f0cf1c46b404380d94c213e5cb4742" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/locidex-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  entry_points:
+    - locidex=locidex.main:main
+
+requirements:
+  host:
+    - python >=3.8,<4
+    - pip
+    - pytest-runner
+    - setuptools
+  run:
+    - python >=3.8,<4
+    - numpy >=1.24.4
+    - pandas >=2.0.2
+    - numba >=0.57.1
+    - pytables >=3.8
+    - six >=1.16
+    - pyrodigal >=3.0
+    - biopython >=1.83
+    - mafft
+    - blast >=2.9.0
+
+test: 
+  commands:
+    - locidex -h
+    - locidex search -h
+    - locidex extract  -h
+    - locidex report -h
+    - locidex merge -h
+    - locidex format -h
+    - locidex build  -h
+
+about:
+  home: 'https://pypi.org/project/locidex'
+  summary: 'Locidex: Common search engine for similarity based typing applications.'
+  license: Apache-2.0
+  license_family: APACHE
+  dev_url: 'https://github.com/phac-nml/locidex'

@@ -1,0 +1,41 @@
+{% set name = 'barrnap' %}
+{% set version = '0.0.5' %}
+
+package:
+  name: barrnap-python
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: acac783c1f93e8e9585017be9e128f7f95d8ae77a9ed3b3656fa53d5043e0e21
+
+build:
+  noarch: python
+  number: 2
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+
+requirements:
+  host:
+    - python >=3
+    - pip
+  run:
+    # we rely on having the original version installed to A) give credit and
+    # B) ensure the most updated HMM database is included from barrnap
+    - barrnap >=0.8
+    - python >=3
+
+test:
+  commands:
+    - barrnap.py -h
+
+about:
+  home: https://github.com/nickp60/barrnap-python
+  license: GNU General Public License v3.0
+  summary: "python package for Torsten Seemann's barrnap package for annotating rRNAs"
+  license_family: GPL3
+  description: 'Original Perl code can be found at the projects homepage here: https://github.com/tseemann/barrnap'
+  dev_url: 'https://github.com/nickp60/barrnap-python'
+
+extra:
+  recipe-maintainers:
+    - nickp60

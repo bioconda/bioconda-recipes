@@ -1,0 +1,77 @@
+{% set name = "FragPipe" %}
+{% set version = "22.0" %}
+{% set philosopher_version = "5.1.0" %}
+
+# These keys were generated ONLY for the testing of this bioconda package.
+# Users must generate their own key by agreeing to the terms at https://msfragger-upgrader.nesvilab.org/upgrader/ and https://msfragger.arsci.com/ionquant/.
+{% set msfragger_academic_use_only_key = "f28c4be2-759b0a11-6c1ea652-1240565a" %}
+{% set ionquant_academic_use_only_key = "b6c0ad83-9a4e8900-3e83d29c-aeba3bfb" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+source:
+  - url: https://github.com/Nesvilab/{{ name }}/releases/download/{{ version }}/{{ name }}-{{ version }}.zip
+    sha256: 6966e811688eb83f5b47443d37396e07aa4e7339533dc82a8a302c30f86403c9
+    folder: fragpipe_source
+  - url: https://github.com/Nesvilab/philosopher/releases/download/v{{ philosopher_version }}/philosopher_v{{ philosopher_version }}_linux_amd64.zip
+    sha256: cf15a2d6321ecb530170b2410f5873f89e283b52d5f1ab0f27eebc124f4f4a1a
+    folder: philosopher_source
+
+requirements:
+  run:
+    - openjdk >=9
+    - python =3.9
+    - msfragger >=4.1
+    - ionquant >=1.10.27
+    - easypqp >=0.1.34
+    - zlib >=1.2.13
+    - lxml
+
+test:
+  commands:
+    - fragpipe --msfragger_key {{ msfragger_academic_use_only_key }} --ionquant_key {{ ionquant_academic_use_only_key }} --help | grep "FragPipe v{{ version }}"
+
+about:
+  home: https://github.com/Nesvilab/FragPipe
+  license: GPL-3.0 + LICENSE files
+  license_file:
+    - licenses/proteowizard_LICENSE.txt
+    - licenses/crystal-c_LICENSE.txt
+    - licenses/fragpipe-pdv_LICENSE.txt
+    - licenses/fragpipe_LICENSE.txt
+    - licenses/msbooster_LICENSE.txt
+    - licenses/ptm-shepherd_LICENSE.txt
+    - licenses/diann_LICENSE.txt
+    - licenses/dia-umpire_LICENSE.txt
+    - licenses/easypqp_LICENSE.txt
+    - philosopher_source/License
+  summary:  Pipeline for comprehensive analysis of shotgun proteomics data
+  description: |
+    FragPipe is a Java Graphical User Interface (GUI) for a suite of computational tools
+    enabling comprehensive analysis of mass spectrometry-based proteomics data.
+    It is powered by MSFragger - an ultrafast proteomic search engine suitable
+    for both conventional and "open" (wide precursor mass tolerance) peptide identification.
+    FragPipe includes the Philosopher toolkit for downstream post-processing of
+    MSFragger search results (PeptideProphet, iProphet, ProteinProphet), FDR filtering,
+    label-based quantification, and multi-experiment summary report generation.
+    Crystal-C and PTM-Shepherd are included to aid interpretation of open search results.
+    Also included in FragPipe binary are TMT-Integrator for TMT/iTRAQ isobaric
+    labeling-based quantification, IonQuant for label-free quantification with
+    match-between-run (MBR) functionality, spectral library building with EasyPQP,
+    and MSFragger-DIA and DIA-Umpire SE modules for direct analysis of data independent
+    acquisition (DIA) data.
+
+extra:
+  recipe-maintainers:
+    - reid-wagner
+  identifiers:
+    - biotools:fragpipe
+    - doi:10.1074/mcp.TIR120.002048

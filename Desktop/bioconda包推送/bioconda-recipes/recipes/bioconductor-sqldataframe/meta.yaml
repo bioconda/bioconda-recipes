@@ -1,0 +1,54 @@
+{% set version = "1.20.0" %}
+{% set name = "SQLDataFrame" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: Implements bindings for SQL tables that are compatible with Bioconductor S4 data structures, namely the DataFrame and DelayedArray. This allows SQL-derived data to be easily used inside other Bioconductor objects (e.g., SummarizedExperiments) while keeping everything on disk.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL (>= 3); File LICENSE
+  license_file: LICENSE
+  summary: Representation of SQL tables in DataFrame metaphor
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-sqldataframe", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, BiocStyle, testthat
+requirements:
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-dbi
+    - r-duckdb
+    - r-rsqlite
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-dbi
+    - r-duckdb
+    - r-rsqlite
+
+source:
+  md5: 2448466a5203b92539fe0e1b7522379b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

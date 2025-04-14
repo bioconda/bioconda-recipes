@@ -1,0 +1,39 @@
+package:
+  name: bioconda-repodata-patches
+  version: 20241219  # ensure that this is the "current" date, and always higher than the latest version in master
+
+source:
+  path: .
+
+build:
+  noarch: generic
+  number: 1
+  run_exports:
+    - {{ pin_subpackage("bioconda-repodata-patches", max_pin=None) }}
+
+requirements:
+  build:
+    - python 3.*
+    - setuptools
+    - requests
+    - tqdm
+  host:
+  run:
+
+test:
+  commands:
+    {% for subdir in ("noarch", "linux-64", "osx-64") %}
+    - test -e $PREFIX/{{ subdir }}/patch_instructions.json
+    {% endfor %}
+
+about:
+  summary: generate tweaks to index metadata, hosted separately from anaconda.org index
+  home: https://github.com/bioconda/bioconda-recipes
+  license: CC-PDDC
+
+extra:
+  recipe-maintainers:
+    - bioconda/core
+  skip-lints:
+    - missing_hash
+    - should_be_noarch_python

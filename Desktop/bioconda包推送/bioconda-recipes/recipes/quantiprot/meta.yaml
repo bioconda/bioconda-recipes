@@ -1,0 +1,45 @@
+{% set name = "quantiprot" %}
+{% set version = "0.2.5" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "3fd64270399fcd764c3bf150993ab54b4f6d386e1145df97924799b1c53975fd"
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  host:
+    - numpy >=1.11.0
+    - pip
+    - python
+    - requests >=2.10.0
+  run:
+    - numpy >=1.11.0
+    - python
+    - requests >=2.10.0
+
+test:
+  imports:
+    - quantiprot
+    - quantiprot.analysis
+    - quantiprot.metrics
+    - quantiprot.utils
+
+about:
+  home: "https://git.e-science.pl/wdyrka/quantiprot"
+  license: "MIT"
+  license_family: "MIT"
+  summary: "Quantiprot is a Python package for quantitative analysis of protein sequences"
+
+extra:
+  recipe-maintainers:
+    - jaidevjoshi83

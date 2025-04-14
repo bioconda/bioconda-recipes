@@ -1,0 +1,42 @@
+{% set version = "0.11" %}
+{% set sha256 = "5cf7c52adb49682e62ac82fb65884203488f5ac4f82db730c29e378f8c7ec93c" %}
+
+package:
+  name: microhapdb
+  version: '{{version}}'
+
+source:
+  url: https://github.com/bioforensics/MicroHapDB/archive/{{ version }}.tar.gz
+  sha256: '{{sha256}}'
+
+build:
+  run_exports:
+    - {{ pin_subpackage("microhapdb", max_pin="x.x") }}
+  noarch: python
+  entry_points:
+    - microhapdb = microhapdb.cli:main
+  script: python -m pip install --no-deps --ignore-installed .
+  number: 0
+
+requirements:
+  host:
+    - python >=3.7,<3.12
+    - pip
+  run:
+    - python >=3.7,<3.12
+    - pandas >=1.2
+    - pyfaidx >=0.7
+
+test:
+  imports:
+    - microhapdb
+  requires:
+    - pytest
+    - pytest-cov
+
+about:
+  home: https://github.com/bioforensics/MicroHapDB/
+  license: BSD License
+  license_family: BSD
+  summary: Portable database of microhaplotype marker and allele frequency data.
+  dev_url: https://github.com/bioforensics/MicroHapDB/

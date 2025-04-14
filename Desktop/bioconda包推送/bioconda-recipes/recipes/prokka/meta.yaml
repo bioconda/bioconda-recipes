@@ -1,0 +1,62 @@
+{% set name = "prokka" %}
+{% set version = "1.14.6" %}
+{% set sha256 = "f730b5400ea9e507bfe6c5f3d22ce61960a897195c11571c2e1308ce2533faf8" %}
+
+package:
+  name: '{{ name }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/tseemann/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 5
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+    
+requirements:
+  host:
+    - perl
+    - perl-bioperl >=1.7.2
+    - perl-xml-simple
+    - blast >=2.7.1
+    - infernal >=1.1.2
+    - hmmer >=3.1b2
+  run:
+    - perl
+    - aragorn >=1.2
+    - barrnap >=0.7
+    - blast >=2.7.1
+    - hmmer >=3.1b2
+    - infernal >=1.1.2
+    - minced >=0.3
+    - parallel >=20180522
+    - perl-bioperl >=1.7.2
+    - perl-xml-simple
+    - prodigal >=2.6
+    - tbl2asn-forever >=25.7
+
+test:
+  commands:
+    - prokka --listdb
+    - prokka --version
+    - blastp -help
+    - barrnap --help 2>&1 | grep Options
+    - prodigal -h
+    - tbl2asn --help
+
+about:
+  home: https://github.com/tseemann/{{ name }}
+  license: GPL-3.0-only
+  license_family: GPL
+  license_file: 'doc/LICENSE.Prokka'
+  summary: Rapid annotation of prokaryotic genomes
+  dev_url: https://github.com/tseemann/{{ name }}
+
+extra:
+  identifiers:
+    - biotools:{{ name }}
+    - doi:10.1093/bioinformatics/btu153
+    - usegalaxy-eu:{{ name }}

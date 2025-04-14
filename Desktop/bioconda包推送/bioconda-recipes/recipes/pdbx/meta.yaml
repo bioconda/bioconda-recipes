@@ -1,0 +1,56 @@
+{% set name = "pdbx" %}
+{% set org = "soedinglab" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/eunos-1128/pdbx/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 6b2c9e632b9b9ad1ac7a2683f9e3a50c778dda559507072839924ae0b2bea6a3
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - cmake
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}  # [linux]
+  host:
+    - python >=3.7,<3.12
+  run:
+    - python >=3.7,<3.12
+
+test:
+  imports:
+    - {{ name }}
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/{{ org }}/{{ name }}
+  summary: pdbx is a parser module in python for structures of the protein data bank in the mmcif format
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  description: |
+    Proper recognition to the [Protein Data Bank](http://mmcif.wwpdb.org/docs/sw-examples/python/html/index.html)
+    where this library for protein structures in the mmCIF format initially came from.
+    We modified the original library to support python3.
+    This fork is used by scripts in the HHsuite [on GitHub](https://github.com/soedinglab/hh-suite).
+  doc_url: https://github.com/{{ org }}/{{ name }}#readme
+  dev_url: https://github.com/{{ org }}/{{ name }}
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - eunos-1128

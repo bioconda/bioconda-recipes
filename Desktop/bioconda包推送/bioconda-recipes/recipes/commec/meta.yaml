@@ -1,0 +1,64 @@
+{% set name = "commec" %}
+{% set version = "0.3.2" %}
+{% set sha256 = "85615bff70649b3680310888956c733f461b73d8367c38c68a7512650ec58266" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  #path: /root/CondaRecipe/common-mechanism/
+  url: https://github.com/ibbis-screening/common-mechanism/archive/refs/tags/v{{version}}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('commec', max_pin="x.x.x") }}
+
+requirements:
+  build:
+    - python >=3.10
+    - pip
+    - setuptools
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+  run:
+    - python >=3.10
+    # Runtime Python dependencies
+    - biopython
+    - numpy
+    - pandas
+    - pytaxonkit
+    - pyyaml
+    # Runtime non-Python dependencies
+    - blast >=2.16
+    - emboss
+    - diamond >=2.1
+    - hmmer
+    - infernal
+    - wget
+
+test:
+  commands:
+    - commec screen --help
+    - commec flag --help
+    - commec split --help
+
+about:
+  home: https://github.com/ibbis-screening/common-mechanism
+  license: MIT
+  license_family: MIT
+  doc_url: https://github.com/ibbis-screening/common-mechanism/wiki
+  summary: "commec: a free, open-source, globally available tool for DNA sequence screening"
+  dev_url: https://github.com/ibbis-screening/common-mechanism
+
+extra:
+  identifiers:
+    - biotools:commec
+  container:
+    image: "quay.io/biocontainers/commec"

@@ -1,0 +1,50 @@
+{% set name = "blockclust" %}
+{% set version = "1.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/pavanvidem/blockclust/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 80ee2b32085b93966254083574b2bf3988771ffe28d73775be96a16cfda5579b
+
+build:
+  number: 2
+  skip: True  # [osx or py2k]
+  run_exports:
+    - {{ pin_subpackage('blockclust', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - r-base
+  run:
+    - python
+    - r-base
+    - scikit-learn >=0.20.0
+    - r-dendextend >=1.8.0
+    - mcl >=14.137
+    - eden 1.1
+    - pysam >=0.15.0
+    - wget
+    - cloudpickle 0.5.6
+
+test:
+  commands:
+    - blockclust 2>&1 | grep classification
+
+about:
+  home: https://github.com/pavanvidem/blockclust
+  license: GPL-2.0-or-later
+  license_family: GPL2
+  license_file: LICENSE
+  summary: Efficient clustering and classification of non-coding RNAs from short read RNA-seq profiles.
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btu270
+

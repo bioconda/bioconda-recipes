@@ -1,0 +1,101 @@
+--- scripts/hist_plot.py.old	2022-12-28 10:05:15.188474669 -0600
++++ scripts/hist_plot.py	2022-12-28 10:06:16.140714191 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python3
++#!/opt/anaconda1/anaconda2anaconda3/bin/python
+ # read depth histogram plot
+ 
+ import matplotlib as mpl
+--- scripts/pd_config.py.old	2022-12-28 10:06:21.460735098 -0600
++++ scripts/pd_config.py	2022-12-28 10:06:35.399789874 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python3
++#!/opt/anaconda1/anaconda2anaconda3/bin/python
+ #generate a config.*.json used for run_purge_dups.py, just work for our directory structure 
+ import sys, os,json
+ import argparse
+--- scripts/run_busco2.old	2022-12-28 19:27:12.729377331 -0600
++++ scripts/run_busco2	2022-12-28 19:38:50.508148463 -0600
+@@ -5,11 +5,11 @@
+ lineage=$4
+ tmpdir=$5
+ 
+-export PATH=/software/ensembl/compara/ncbi-blast-2.2.30+/bin:${PATH}
+-export PATH=/software/vertres/bin-external/augustus-3.3/bin:${PATH}
+-export PATH=/software/vertres/bin-external/augustus-3.3/scripts:${PATH}
+-export PYTHONPATH=/nfs/users/nfs_d/dg30/luster_dg30/dg30/projects/vgp/tools/busco-master/src/:${PYTHONPATH}
+-export PATH=/nfs/users/nfs_d/dg30/luster_dg30/dg30/projects/vgp/tools/busco-master/scripts:${PATH}
+-export AUGUSTUS_CONFIG_PATH=/nfs/users/nfs_d/dg30/luster_dg30/pub/august_config/augustus-3.3/config
+-export BUSCO_CONFIG_FILE=/software/vertres/bin-external/busco-3.02/config/config.ini
++#export PATH=/software/ensembl/compara/ncbi-blast-2.2.30+/bin:${PATH}
++#export PATH=/software/vertres/bin-external/augustus-3.3/bin:${PATH}
++#export PATH=/software/vertres/bin-external/augustus-3.3/scripts:${PATH}
++#export PYTHONPATH=/nfs/users/nfs_d/dg30/luster_dg30/dg30/projects/vgp/tools/busco-master/src/:${PYTHONPATH}
++#export PATH=/nfs/users/nfs_d/dg30/luster_dg30/dg30/projects/vgp/tools/busco-master/scripts:${PATH}
++export AUGUSTUS_CONFIG_PATH=${PREFIX}/config
++export BUSCO_CONFIG_FILE=${PREFIX}/config/config.ini
+ run_BUSCO.py -f --in $fasta --cpu $cpus --out $output_prefix --mode genome --lineage_path /lustre/scratch116/vr/ref/busco/v2/datasets/"$lineage"_odb9/ --tmp_path $tmpdir --tarzip
+--- scripts/run_kcm.old	2022-12-28 19:20:26.338753411 -0600
++++ scripts/run_kcm	2022-12-28 19:21:41.473053643 -0600
+@@ -13,26 +13,26 @@
+ 	outprefix=$6
+ 	tmp=$7
+ 	mkdir -p $tmp
+-	$kmc_dir/bin/kmc -ci0 -cs5000 -t$cpu -m$mem -k$kmer @$reads "$outprefix"_reads $tmp	
++	kmc -ci0 -cs5000 -t$cpu -m$mem -k$kmer @$reads "$outprefix"_reads $tmp	
+ 	if [ $? -ne 0 ]
+ 	then
+ 		echo "Fail to generate k-mers for reads"
+ 		exit 1
+ 	fi
+-	$kmc_dir/bin/kmc -ci0 -t$cpu -fm -m$mem -k$kmer $ref "$outprefix"_ref $tmp 
++	kmc -ci0 -t$cpu -fm -m$mem -k$kmer $ref "$outprefix"_ref $tmp 
+ 	if [ $? -ne 0 ]
+ 	then
+ 		echo "Fail to generate k-mers for reference"
+ 		exit 1
+ 	fi
+ 		
+-	$kmc_dir/bin/kmc_tools analyze "$outprefix"_reads "$outprefix"_ref "$outprefix".matrix
++	kmc_tools analyze "$outprefix"_reads "$outprefix"_ref "$outprefix".matrix
+ 	if [ $? -ne 0 ]
+ 	then
+ 		echo "Fail to compare k-mers on reads and reference"
+ 		exit 1
+ 	fi
+-	python3 $kmc_dir/spectra.py $outprefix.matrix $outprefix.spectra.png
++	spectra.py $outprefix.matrix $outprefix.spectra.png
+ 	if [ $? -ne 0 ]
+ 	then
+ 		echo "Fail to generate k-mer spectra"
+--- scripts/run_purge_dups.py.old	2022-12-28 10:06:48.615841805 -0600
++++ scripts/run_purge_dups.py	2022-12-28 10:06:57.821877987 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python3
++#!/opt/anaconda1/anaconda2anaconda3/bin/python
+ 
+ from runner.manager import manager
+ from runner.hpc import hpc
+--- scripts/run_busco.old	2022-12-28 19:38:57.524176123 -0600
++++ scripts/run_busco	2022-12-28 19:40:10.331463132 -0600
+@@ -7,13 +7,13 @@
+ 	lineage=$4
+ 	tmpdir=$5
+ 
+-	export PATH=/software/ensembl/compara/ncbi-blast-2.2.30+/bin:${PATH}
+-	export PATH=/software/vertres/bin-external/augustus-3.3/bin:${PATH}
+-	export PATH=/software/vertres/bin-external/augustus-3.3/scripts:${PATH}
+-	export PYTHONPATH=/nfs/users/nfs_d/dg30/luster_dg30/dg30/projects/vgp/tools/busco-master/src/:${PYTHONPATH}
+-	export PATH=/nfs/users/nfs_d/dg30/luster_dg30/dg30/projects/vgp/tools/busco-master/scripts:${PATH}
+-	export AUGUSTUS_CONFIG_PATH=/nfs/users/nfs_d/dg30/luster_dg30/pub/august_config/augustus-3.3/config
+-	export BUSCO_CONFIG_FILE=/software/vertres/bin-external/busco-3.02/config/config.ini
++	#export PATH=/software/ensembl/compara/ncbi-blast-2.2.30+/bin:${PATH}
++	#export PATH=/software/vertres/bin-external/augustus-3.3/bin:${PATH}
++	#export PATH=/software/vertres/bin-external/augustus-3.3/scripts:${PATH}
++	#export PYTHONPATH=/nfs/users/nfs_d/dg30/luster_dg30/dg30/projects/vgp/tools/busco-master/src/:${PYTHONPATH}
++	#export PATH=/nfs/users/nfs_d/dg30/luster_dg30/dg30/projects/vgp/tools/busco-master/scripts:${PATH}
++	export AUGUSTUS_CONFIG_PATH=${PREFIX}/config
++	export BUSCO_CONFIG_FILE=${PREFIX}/config/config.ini
+ 	run_BUSCO.py -f --in $fasta --cpu $cpus --out $output_prefix --mode genome --lineage_path /lustre/scratch116/vr/ref/busco/v2/datasets/"$lineage"_odb9/ --tmp_path $tmpdir --tarzip
+ }
+ 

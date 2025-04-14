@@ -1,0 +1,89 @@
+package:
+  name: bcbio-nextgen
+  version: '1.2.9'
+
+build:
+  number: 3
+  # Currently hitting conda errors on OSX
+  # ERROR:conda.core.link:An error occurred while installing package
+  # FileNotFoundError(2, "No such file or directory: '_placehold_pl/bin/python3.7'
+  # https://circleci.com/gh/bioconda/bioconda-recipes/50729
+  noarch: python
+
+source:
+  url: https://github.com/bcbio/bcbio-nextgen/archive/refs/tags/v1.2.9.tar.gz
+  sha256: c372f24bc9bf2723d339483c1074d34fd6ca4f6cd448250b1160b882b4819d73
+
+requirements:
+  host:
+    - python >=3.7
+    - setuptools
+    - pip
+  run:
+    - python
+    - arrow
+    - beautifulsoup4
+    - bioblend
+    - biopython
+    - boto
+    - cyvcf2
+    - dnapi
+    - fadapa
+    - geneimpacts
+    - gffutils
+    - h5py
+    - htslib
+    - ipyparallel=6.3.0
+    - ipython-cluster-helper=0.6.4=py_0
+    - joblib >=0.12
+    - logbook
+    - matplotlib-base
+    - mock
+    - msgpack-python
+    - openssl <3.0.0
+    - pandas
+    - pip
+    - py
+    - pycrypto
+    - pytest
+    - pytest-cov >=2.6.1
+    - pytest-mock
+    - psutil
+    - python-dateutil >=2.5.0
+    - pybedtools
+    - pysam >=0.13.0
+    - pyvcf
+    - pyyaml
+    - requests
+    - scipy >=1.3.0
+    - seaborn
+    - seqcluster
+    - statsmodels
+    - tabulate
+    - toolz
+    - yamllint
+
+test:
+  imports:
+    - bcbio.distributed.multi
+    - bcbio.pipeline.main
+    - bcbio.provenance.do
+    # causes failure on OSX
+    # ImportError: dlopen(zmq/backend/cython/constants.so, 2): Library not loaded: @rpath/./libzmq.4.dylib
+    #   Referenced from: /zmq/backend/cython/constants.so
+    #     Reason: image not found
+    - bcbio.distributed.ipython # [not osx]
+  commands:
+    # click requires a unicode locale
+    - LANG=C.UTF-8 bcbio_nextgen.py -h
+    - LANG=C.UTF-8 bcbio_setup_genome.py -h
+    - LANG=C.UTF-8 bcbio_prepare_samples.py -h
+
+about:
+  home: https://github.com/bcbio/bcbio-nextgen
+  license: MIT
+  summary: Validated, scalable, community developed variant calling, RNA-seq and small RNA analysis
+
+extra:
+  identifiers:
+    - biotools:bcbio-nextgen

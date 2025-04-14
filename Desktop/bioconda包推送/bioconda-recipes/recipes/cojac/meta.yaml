@@ -1,0 +1,61 @@
+{% set name = "cojac" %}
+{% set version = "0.9.3" %}
+{% set sha256 = "90ca88854e4b2c82fc5422d3a40d7fe23ec6d1a886d5d1db7c4b8189a95c8f83" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/cbg-ethz/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script:
+    - {{ PYTHON }} -m pip install . --ignore-installed --no-deps -v
+    - mkdir -p ${PREFIX}/share/{{ name }}/
+    - cp -vr *insert* voc  ${PREFIX}/share/{{ name }}/
+
+requirements:
+  host:
+    - python
+    - pip
+    - poetry-core >=1.0.8
+    - poetry-dynamic-versioning
+  run:
+    - python
+    - pysam >=0.17
+    - pandas
+    - numpy
+    - pyyaml
+    - strictyaml
+    - requests
+    - click
+
+test:
+  commands:
+    - cojac cooc-mutbamscan --help
+    - cojac cooc-colourmut --help
+    - cojac cooc-pubmut --help
+    - cojac cooc-curate --help
+    - cojac phe2cojac --help
+    # quick tests
+    - cojac cooc-mutbamscan -m ${CONDA_PREFIX}/share/{{ name }}/voc/ -b ${CONDA_PREFIX}/share/{{ name }}/nCoV-2019.insert.V3.bed -A amplicons.v3.yaml
+
+about:
+  home: https://github.com/cbg-ethz/cojac
+  license: GNU General Public License v3 or later (GPLv3+)
+  summary: 'Command-line tools to analyse co-occurrence of mutations on amplicons.'
+  license_family: GPL3
+  license_file: LICENSE.md
+
+extra:
+  recipe-maintainers:
+    - DrYak
+  identifiers:
+    - biotools:cojac
+    - doi:10.1038/s41564-022-01185-x

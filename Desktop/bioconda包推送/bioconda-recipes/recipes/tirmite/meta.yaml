@@ -1,0 +1,52 @@
+{% set name = "tirmite" %}
+{% set version = "1.2.0" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "10c7fb7724d1c9841a363b5db7121a88377284a1be4792bc498a4a31e6e6779e" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - tirmite=tirmite.cmd_tirmite:main
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('tirmite', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - hatchling
+    - hatch-vcs
+  run:
+    - python >=3.8
+    - pandas >=0.23.4
+    - biopython >=1.70
+    - pymummer >=0.10.3
+
+test:
+  imports:
+    - tirmite
+  commands:
+    - tirmite --help
+
+about:
+  home: https://github.com/Adamtaranto/TIRmite
+  dev_url: https://github.com/Adamtaranto/TIRmite
+  license: MIT
+  license_family: MIT
+  summary: "Map TIR-pHMM models to genomic sequences for annotation of MITES and complete DNA-Transposons."
+  description: "Build profile Hidden Markov Models for Terminal Inverted repeat families (TIR-pHMMs) and map to genomic sequences for annotation of MITES and complete DNA-Transposons with variable internal sequence composition."
+
+extra:
+  recipe-maintainers:
+    - Adamtaranto

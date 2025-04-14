@@ -1,0 +1,57 @@
+{% set name = "r-quilt" %}
+{% set version = "2.0.1" %}
+{% set sha256 = "6e0f041641c96014b879a7fea6c0cc21351a83e8ba938c828c07a0c297574eba" %}
+
+package:
+  name: '{{ name }}'
+  version: '{{ version }}'
+
+source:
+  - url: https://github.com/rwdavies/QUILT/archive/refs/tags/{{ version }}.tar.gz
+    sha256: '{{ sha256 }}'
+
+build:
+  number: 1
+  run_exports:
+        - {{ pin_subpackage('r-quilt', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - r-base
+    - r-rcpp <=1.0.12
+    - r-rcppeigen
+    - r-rrbgen >=0.0.6
+    - r-stitch >=1.7.0
+    - r-mspbwt >=0.1.0
+  run:
+    - r-base
+    - r-rcpp <=1.0.12
+    - r-rcppeigen
+    - r-rrbgen >=0.0.6
+    - r-stitch >=1.7.0
+    - r-mspbwt >=0.1.0
+    - r-optparse
+
+test:
+  commands:
+    - $R -e "library('QUILT');  testthat::test_package('QUILT', stop_on_failure = TRUE, stop_on_warning = TRUE, filter = 'acceptance-one', reporter = 'summary')"
+    - 'QUILT.R --help'
+
+about:
+  home: https://github.com/rwdavies/quilt
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Rapid and accurate genotype imputation from low coverage short read, long read, and cell free DNA sequence."
+  doc_url: https://github.com/rwdavies/quilt
+  dev_url: https://github.com/rwdavies/quilt
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - Zilong-Li
+    - rwdavies

@@ -1,0 +1,62 @@
+diff -Naur a/scripts/fasta_clipping_histogram.pl b/scripts/fasta_clipping_histogram.pl
+--- a/scripts/fasta_clipping_histogram.pl	2014-01-05 16:10:49.000000000 -0500
++++ b/scripts/fasta_clipping_histogram.pl	2018-04-24 14:55:17.509357447 -0400
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ #    FASTX-toolkit - FASTA/FASTQ preprocessing tools.
+ #    Copyright (C) 2009-2013  A. Gordon (assafgordon@gmail.com)
+diff -Naur a/scripts/fastx_barcode_splitter.pl b/scripts/fastx_barcode_splitter.pl
+--- a/scripts/fastx_barcode_splitter.pl	2014-01-05 16:10:49.000000000 -0500
++++ b/scripts/fastx_barcode_splitter.pl	2018-04-24 14:55:07.909304624 -0400
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ #    FASTX-toolkit - FASTA/FASTQ preprocessing tools.
+ #    Copyright (C) 2009-2013  A. Gordon (assafgordon@gmail.com)
+diff -Naur a/src/libfastx/fastx.c b/src/libfastx/fastx.c
+--- a/src/libfastx/fastx.c	2014-01-05 16:10:49.000000000 -0500
++++ b/src/libfastx/fastx.c	2018-04-24 14:53:55.188903629 -0400
+@@ -126,7 +126,7 @@
+ 
+ 	for (i=0; i<strlen(ascii_quality_scores); i++) {
+ 		pFASTX->quality[i] = (int) (ascii_quality_scores[i] - pFASTX->fastq_ascii_quality_offset ) ;
+-		if (pFASTX->quality[i] < -15 || pFASTX->quality[i] > 93) 
++		if (pFASTX->quality[i] < MIN_QUALITY_VALUE || pFASTX->quality[i] > MAX_QUALITY_VALUE) 
+ 			errx(1, "Invalid quality score value (char '%c' ord %d quality value %d) on line %lld",
+ 				ascii_quality_scores[i], ascii_quality_scores[i],
+ 				pFASTX->quality[i], pFASTX->input_line_number );
+diff --git a/src/libfastx/fastx.h b/src/libfastx/fastx.h
+index 5a8639d..ed9c81d 100644
+--- a/src/libfastx/fastx.h
++++ b/src/libfastx/fastx.h
+@@ -25,8 +25,8 @@ extern "C" {
+ /* for PATH_MAX */
+ #include <limits.h>
+ 
+-#define MIN_QUALITY_VALUE (-50)
+-#define MAX_QUALITY_VALUE 50
++#define MIN_QUALITY_VALUE (-15)
++#define MAX_QUALITY_VALUE 93
+ #define QUALITY_VALUES_RANGE (MAX_QUALITY_VALUE-MIN_QUALITY_VALUE)
+ 
+ 
+@@ -58,7 +58,7 @@ typedef enum {
+ 	OUTPUT_SAME_AS_INPUT=3
+ } OUTPUT_FILE_TYPE;
+ 
+-#pragma pack(1) 
++#pragma pack(push,1)
+ typedef struct 
+ {
+ 	/* Record data - common for FASTA/FASTQ */
+@@ -115,6 +115,7 @@ typedef struct
+ 	FILE*	input;
+ 	FILE*	output;
+ } FASTX ;
++#pragma pack(pop)
+ 
+ 
+ void fastx_init_reader(FASTX *pFASTX, const char* filename, 

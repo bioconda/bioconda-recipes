@@ -1,0 +1,51 @@
+# only bump even releases, odd are for developement
+{% set version = "0.940" %}
+{% set sha256 = "11c18e8c239b9ffbbfac317008582e63cddeda85f57b8ea4e6fbcae00415dfac"%}
+
+package:
+  name: angsd
+  version: {{ version }}
+
+source:
+  url: http://popgen.dk/software/download/angsd/angsd{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+
+build:
+  number: 4
+  run_exports:
+    - {{ pin_subpackage("angsd", max_pin="x.x") }}  
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - zlib
+    - bzip2
+    - xz
+    - htslib
+  run:
+    - htslib
+    - zlib
+    - bzip2
+    - xz
+
+test:
+  commands:
+    - angsd 2>&1 | grep "angsd version"
+    - thetaStat 2>&1 | grep "neutrality test"
+
+about:
+  home: http://www.popgen.dk/angsd/index.php/ANGSD
+  license: GPLv3, MIT
+  summary: "ANGSD: Analysis of next generation Sequencing Data"
+
+extra:
+  identifiers:
+    - biotools:angsd
+    - doi:10.1186/s12859-014-0356-4
+  additional-platforms:
+    - linux-aarch64

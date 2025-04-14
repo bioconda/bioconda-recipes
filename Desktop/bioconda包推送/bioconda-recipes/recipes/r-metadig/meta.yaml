@@ -1,0 +1,73 @@
+{% set name = "r-metadig" %}
+{% set version = "0.2.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/NCEAS/metadig-r/archive/refs/tags/v0.2.1.tar.gz
+  sha256: 031afbd61cd120b9b6428858e0a4d8a2c4bf0b89d2e1abb783bba8b6479ad585
+
+build:
+  merge_build_host: True  # [win]
+  noarch: generic
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
+  host:
+   - r-base
+   - r-digest
+   - r-httr
+   - r-xml2
+  run:
+   - r-base
+   - r-digest
+   - r-httr
+   - r-xml2
+
+test:
+ commands:
+    - $R -e "library('metadig')"           # [not win]
+    - "\"%R%\" -e \"library('metadig')\""  # [win]
+
+about:
+  home: https://github.com/NCEAS/metadig-r/
+  license: Apache-2.0
+  summary: A set of utility methods for authoring MetaDIG checks in R.
+  license_family: Apache
+  license_file:
+    - LICENSE
+    
+extra:
+  recipe-maintainers:
+    - conda-forge/r
+    - TanguyGen
+
+#Package: metadig
+#Type: Package
+#Title: Author MetaDIG checks in R
+#Version: 0.2.1
+#Description: A set of utility methods for authoring MetaDIG checks in R.
+#Authors@R: c(
+#  person("Bryce", "Mecum", role = "aut", email = "mecum@nceas.ucsb.edu", comment=c(ORCID = "0000-0002-0381-3766")),
+#  person("Peter", "Slaughter", role = "aut", email = "slaughter@nceas.ucsb.edu", comment=c(ORCID = "0000-0002-2192-403X")),
+#  person("Matthew B.", "Jones", role = c("aut","cre"), email = "jones@nceas.ucsb.edu", comment=c(ORCID = "0000-0003-0077-4738"))
+#  )
+#License: Apache License (== 2.0)
+#URL: https://github.com/NCEAS/metadig-r/
+#BugReports: https://github.com/NCEAS/metadig-r/issues
+#Encoding: UTF-8
+#Imports: digest, httr, xml2
+#Suggests: knitr, testthat
+#Packaged: 2023-07-05 12:35:19 UTC; tangu
+#Author: Bryce Mecum [aut] (<https://orcid.org/0000-0002-0381-3766>),
+#  Peter Slaughter [aut] (<https://orcid.org/0000-0002-2192-403X>),
+#  Matthew B. Jones [aut, cre] (<https://orcid.org/0000-0003-0077-4738>)
+#Maintainer: Matthew B. Jones <jones@nceas.ucsb.edu>
+#Built: R 4.3.1; ; 2023-07-05 12:35:20 UTC; windows

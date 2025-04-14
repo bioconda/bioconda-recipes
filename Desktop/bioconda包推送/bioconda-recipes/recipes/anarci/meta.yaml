@@ -1,0 +1,53 @@
+{% set name = "anarci" %}
+{% set version = "2024.05.21" %}
+{% set commit = "79f6c575056dedef86cb8f405ebb039197923eec" %}
+{% set sha256 = "805f227cd165dd1930871ef98de48c30eaa24b4597be501a26d69e4d09a2d54e" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/oxpig/ANARCI/archive/{{ commit }}.zip
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script:
+    # unfortunately, at the time of writing this fails to build the HMMs
+    #   {{ PYTHON }} -m pip install . -vv --no-deps
+    # (likely an issue with upstream)
+    - "{{ PYTHON }} setup.py install"
+    # muscle is not needed at runtime but:
+    #  - patching setup.py to remove these binaries will make the building pipeline to fail
+    #  - these binaries make the package "noarch impossible"
+    #  - these binaries would clash with the "muscle" package
+    # solution: remove them after the build pipeline has run,
+    #           so they do not make it to the final package
+    - rm -f ${PREFIX}/bin/muscle ${PREFIX}/bin/muscle_macOS
+  run_exports:
+    - {{ pin_subpackage('anarci', max_pin='x') }}
+
+requirements:
+  build:
+    - hmmer >=3.3.2
+  host:
+    - python <=3.11
+  run:
+    - hmmer >=3.3.2
+    - biopython
+
+test:
+  imports:
+    - anarci
+  commands:
+    - ANARCI -h
+    - ANARCI --restrict heavy -i NLLESGGGLVKPGGSLRLSCEGSGFLFSHYYMSWIRQGPEKRLELVAYISSNSTAFYYADSVKGRFTVSKDDAKKSVFLQMTSVSSDDTATYYCATGDWSRTNNFDTWGQGTQVIVS
+
+about:
+  home: http://opig.stats.ox.ac.uk/webapps/newsabdab/sabpred/anarci/
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENCE
+  summary: 'ANARCI: Antibody Numbering and Antigen Receptor ClassIfication'

@@ -1,0 +1,63 @@
+{% set name = "Gap2Seq" %}
+{% set version = "3.1.1a" %}
+{% set git_rev = "0e1b35b0b8b26c561b0aa65031289f1b7353c423" %}
+{% set sha256 = "d8bcd2c25d98c4f26e14fa17a34b15d247094feecd07bdcb4516d41b54e6d5cf" %}
+{% set gatb_core_version = "1.4.1" %}
+{% set gatb_core_sha256 = "2a20b8ec21d2876dbeffd43de894f7d43f8b62d4431f0c7ae41b630d3d387188" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 5
+  skip: True  # [osx or py2k]
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+source:
+  #- url: https://github.com/rikuu/{{ name }}/archive/v{{ version }}.tar.gz
+  #  sha256: {{ sha256 }}
+  - url: https://github.com/rikuu/{{ name }}/archive/{{ git_rev }}.zip
+    sha256: {{ sha256 }}
+  - url: https://github.com/GATB/gatb-core/archive/v{{ gatb_core_version }}.tar.gz
+    sha256: {{ gatb_core_sha256 }}
+    folder: thirdparty/gatb-core
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - pkg-config
+    - cmake
+    - make
+    - perl
+    - coreutils
+    - binutils
+  host:
+    - boost-cpp
+    - python
+    - htslib
+    - zlib
+  run:
+    - zlib
+    - python
+
+test:
+  commands:
+    - 'GapMerger -help 2>&1 | grep "GapMerger options"  > /dev/null'
+    - 'GapCutter -help 2>&1 | grep "GapCutter options"  > /dev/null'
+    - 'Gap2Seq-core -help 2>&1 | grep "Gap2Seq options"  > /dev/null'
+    - 'Gap2Seq -h 2>&1 | grep "usage: Gap2Seq"  > /dev/null'
+
+about:
+  home: https://www.cs.helsinki.fi/u/lmsalmel/Gap2Seq/
+  license: GPLv3
+  license_file: LICENCE
+  summary: Gap2Seq is a tool for filling gaps between contigs in genome assemblies.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - notestaff

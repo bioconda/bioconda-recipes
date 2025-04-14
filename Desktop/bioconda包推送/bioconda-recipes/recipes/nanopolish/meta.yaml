@@ -1,0 +1,51 @@
+{% set name = "nanopolish" %}
+{% set version = "0.14.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 5
+
+source:
+  git_url: https://github.com/jts/nanopolish
+  git_rev: 'v{{ version }}'
+  sha256: bcc1a7e2d23941592d817da3af9165b3843ae52b11a3ca5983d6417f1614ef78
+  patches:
+    - nanopolish.patch
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - eigen
+  host:
+    - htslib
+    - hdf5
+    - zlib
+    - eigen
+  run:
+    - biopython
+    - python
+    - ont_vbz_hdf_plugin
+
+test:
+  commands:
+    - nanopolish --help
+    - nanopolish --version
+
+about:
+  home: https://github.com/jts/nanopolish
+  license: MIT
+  license_file: LICENSE
+  summary: 'Signal-level algorithms for MinION data.'
+
+extra:
+  skip-lints:
+    - uses_vcs_url
+  identifiers:
+    - usegalaxy-eu:nanopolish_eventalign

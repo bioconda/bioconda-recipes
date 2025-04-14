@@ -1,0 +1,47 @@
+{% set version = "1.76.0" %}
+{% set name = "macat" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: cad43ea7bcc92da57a4e5918581d0143
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-macat", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: hgu95av2.db, stjudem
+requirements:
+  host:
+    - 'bioconductor-annotate >=1.80.0,<1.81.0'
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
+    - r-base
+  run:
+    - 'bioconductor-annotate >=1.80.0,<1.81.0'
+    - 'bioconductor-biobase >=2.62.0,<2.63.0'
+    - r-base
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'MicroArray Chromosome Analysis Tool'
+  description: 'This library contains functions to investigate links between differential gene expression and the chromosomal localization of the genes. MACAT is motivated by the common observation of phenomena involving large chromosomal regions in tumor cells. MACAT is the implementation of a statistical approach for identifying significantly differentially expressed chromosome regions. The functions have been tested on a publicly available data set about acute lymphoblastic leukemia (Yeoh et al.Cancer Cell 2002), which is provided in the library ''stjudem''.'
+extra:
+  identifiers:
+    - biotools:macat
+  parent_recipe:
+    name: bioconductor-macat
+    path: recipes/bioconductor-macat
+    version: 1.54.0
+
