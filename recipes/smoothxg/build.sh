@@ -30,6 +30,7 @@ sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' deps/odgi/deps/sdsl-lite/external/g
 sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' deps/odgi/deps/sdsl-lite/external/googletest/googlemock/CMakeLists.txt
 sed -i.bak -e 's|VERSION 2.4.4|VERSION 3.5|' deps/odgi/deps/sdsl-lite/external/libdivsufsort/CMakeLists.txt
 sed -i.bak -e 's|VERSION 2.6 FATAL_ERROR|VERSION 3.5|' deps/odgi/deps/libbf/CMakeLists.txt
+sed -i.bak -e 's|VERSION 3.2|VERSION 3.5|' deps/odgi/deps/args/CMakeLists.txt
 rm -rf deps/spoa/*.bak
 rm -rf deps/abPOA/*.bak
 rm -rf deps/libbf/*.bak
@@ -39,6 +40,6 @@ rm -rf *.bak
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Generic \
   -DCMAKE_CXX_COMPILER="${CXX}" \
   -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-  -DEXTRA_FLAGS="-march=sandybridge -Ofast"
+  -DEXTRA_FLAGS="-march=sandybridge -Ofast" -Wno-dev
 cmake --build build -j "${CPU_COUNT}"
 install -v -m 0755 bin/* "${PREFIX}/bin"
