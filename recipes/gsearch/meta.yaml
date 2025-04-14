@@ -1,14 +1,15 @@
+{% set name = "gsearch" %}
 {% set version = "0.2.6" %}
 
 package:
-  name: gsearch
+  name: {{ name }}
   version: {{ version }}
 
 build:
   number: 0
   run_exports:
       - {{ pin_subpackage('gsearch', max_pin="x.x") }}
-  skip: True  # [osx]
+
 source:
   url: https://github.com/jianshu93/gsearch/archive/v{{ version }}.tar.gz
   sha256: 4f463434c72a433ce22d160a74cb12754885dbb353724826486268095c3fdfda
@@ -18,20 +19,36 @@ requirements:
     - {{ compiler("cxx") }}
     - {{ compiler('c') }}
     - {{ compiler('rust') }}
+    - cargo-bundle-licenses
     - make
     - cmake
+    - pkg-config
+  host:
+    - openblas
+    - openssl
+  run:
+    - openblas
+    - openssl
 
 test:
   commands:
     - gsearch -h
 
 about:
-  home: https://github.com/jean-pierreBoth/gsearch
+  home: https://github.com/jianshu93/gsearch
+  dev_url: https://github.com/jianshu93/gsearch
+  doc_url: "https://github.com/jianshu93/gsearch/blob/v{{ version }}/README.md"
   license: MIT
-  summary: gsearch is an ultra-fast and scalable microbial genome search program based on MinHash-like metrics and graph-based approximate nearest neighbor search
+  license_family: MIT
+  license_file: "LICENSE-MIT"
+  summary: "gsearch is an ultra-fast and scalable microbial genome search program based on MinHash-like metrics and graph-based approximate nearest neighbor search."
+
 extra:
-  maintainers:
-   - Jean Pierre-Both
-   - Jianshu Zhao
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+   - jean-pierreBoth
+   - jianshu93 
   identifiers:
    - doi:10.1093/nar/gkae609
