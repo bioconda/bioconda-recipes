@@ -30,6 +30,9 @@ else
     exit 1
 fi
 
+curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --profile=minimal -y
+export PATH="$HOME/.cargo/bin:$PATH"
+
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # build statically linked binary with Rust
