@@ -16,11 +16,20 @@ sed -i.bak -e 's|VERSION 2.6 FATAL_ERROR|VERSION 3.5|' deps/libbf/CMakeLists.txt
 sed -i.bak -e 's|VERSION 2.8.11|VERSION 3.5|' deps/sdsl-lite/CMakeLists.txt
 sed -i.bak -e 's|VERSION 2.4.4|VERSION 3.5|' deps/sdsl-lite/external/libdivsufsort/CMakeLists.txt
 sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' deps/sdsl-lite/external/googletest/CMakeLists.txt
+sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' deps/sdsl-lite/external/googletest/googletest/CMakeLists.txt
+sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' deps/sdsl-lite/external/googletest/googlemock/CMakeLists.txt
 sed -i.bak -e 's|VERSION 3.6|VERSION 3.5|' deps/sautocorr/CMakeLists.txt
 sed -i.bak -e 's|VERSION 3.1|VERSION 3.5|' deps/mmmulti/CMakeLists.txt
 sed -i.bak -e 's|VERSION 3.2 FATAL_ERROR|VERSION 3.5|' deps/edlib/CMakeLists.txt
 sed -i.bak -e 's|VERSION 3.1|VERSION 3.5|' deps/atomicbitvector/CMakeLists.txt
 sed -i.bak -e 's|VERSION 3.2|VERSION 3.5|' deps/args/CMakeLists.txt
+sed -i.bak -e 's|VERSION 2.8.11|VERSION 3.5|' deps/odgi/deps/sdsl-lite/CMakeLists.txt
+sed -i.bak -e 's|VERSION 2.4.4|VERSION 3.5|' deps/odgi/deps/sdsl-lite/external/libdivsufsort/CMakeLists.txt
+sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' deps/odgi/deps/sdsl-lite/external/googletest/CMakeLists.txt
+sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' deps/odgi/deps/sdsl-lite/external/googletest/googletest/CMakeLists.txt
+sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' deps/odgi/deps/sdsl-lite/external/googletest/googlemock/CMakeLists.txt
+sed -i.bak -e 's|VERSION 2.4.4|VERSION 3.5|' deps/odgi/deps/sdsl-lite/external/libdivsufsort/CMakeLists.txt
+sed -i.bak -e 's|VERSION 2.6 FATAL_ERROR|VERSION 3.5|' deps/odgi/deps/libbf/CMakeLists.txt
 rm -rf deps/spoa/*.bak
 rm -rf deps/abPOA/*.bak
 rm -rf deps/libbf/*.bak
