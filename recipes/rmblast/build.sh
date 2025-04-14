@@ -98,13 +98,13 @@ cd Release
 
 # The "datatool" binary needs the libs at build time, create
 # link from final install path to lib build dir:
-ln -s ${SRC_DIR}/c++/Release/lib ${LIB_INSTALL_DIR}
+ln -sf ${SRC_DIR}/c++/Release/lib ${LIB_INSTALL_DIR}
 
 cd build
-make -j"${CPU_COUNT}" -f Makefile.flat all_projects="${projects}"
+make -f Makefile.flat all_projects="${projects}" -j"${CPU_COUNT}"
 
 # remove temporary link
-rm ${LIB_INSTALL_DIR}
+rm -rf ${LIB_INSTALL_DIR}
 
 mkdir -p ${PREFIX}/bin ${LIB_INSTALL_DIR}
 chmod +x ${SRC_DIR}/c++/Release/bin/*
