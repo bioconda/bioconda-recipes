@@ -10,16 +10,16 @@ ARCH=$(uname -m)
 FEATURES=""
 if [[ "${OS}" == "Linux" ]]; then
     if [[ "${ARCH}" == "x86_64" ]]; then
-        FEATURES="annembed_intel-mkl,simdeez_f"
+        export FEATURES="annembed_intel-mkl,simdeez_f"
     elif [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
-        FEATURES="annembed_openblas-system,stdsimd_f"
+        export FEATURES="annembed_openblas-system,stdsimd_f"
     else
         echo "Unsupported architecture '${ARCH}' on Linux."
         exit 1
     fi
 elif [[ "${OS}" == "Darwin" ]]; then
     if [[ "${ARCH}" == "x86_64" || "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
-        FEATURES="annembed_openblas-system,stdsimd_f"
+        export FEATURES="annembed_openblas-system,stdsimd_f"
         export CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion"
     else
         echo "Unsupported architecture '${ARCH}' on Darwin."
@@ -37,4 +37,4 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
-cargo install --features "${FEATURES}" --verbose --no-track --path . --root "${PREFIX}"
+cargo install --features "${FEATURES}" --verbose --no-track --locked --path . --root "${PREFIX}"
