@@ -1,12 +1,13 @@
 #!/bin/bash
 
-# export INCLUDE is for abPOA compilation
-export INCLUDE="-I${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
 export LIBPATH="-L${PREFIX}/lib"
+export CPATH="${PREFIX}/include"
+export C_INCLUDE_PATH="${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
 mkdir -p "${PREFIX}/bin"
 
