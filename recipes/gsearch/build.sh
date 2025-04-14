@@ -1,8 +1,37 @@
 #!/bin/bash -euo
 
-# Add workaround for SSH-based Git connections from Rust/cargo.  See https://github.com/rust-lang/cargo/issues/2078 for details.
-# We set CARGO_HOME because we don't pass on HOME to conda-build, thus rendering the default "${HOME}/.cargo" defunct.
-export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3"
+
+OS=$(uname -s)
+ARCH=$(uname -m)
+# Determine features based on platform
+FEATURES=""
+if [[ "${OS}" == "Linux" ]]; then
+    if [[ "${ARCH}" == "x86_64" ]]; then
+        FEATURES="annembed_intel-mkl,simdeez_f"
+    elif [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
+        FEATURES="annembed_openblas-system,stdsimd_f"
+    else
+        echo "Unsupported architecture '${ARCH}' on Linux."
+        exit 1
+    fi
+elif [[ "${OS}" == "Darwin" ]]; then
+    if [[ "${ARCH}" == "x86_64" || "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
+        FEATURES="annembed_openblas-system,stdsimd_f"
+        export CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion"
+    else
+        echo "Unsupported architecture '${ARCH}' on Darwin."
+        exit 1
+    fi
+else
+    echo "Unsupported operating system '${OS}'."
+    exit 1
+fi
+
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # build statically linked binary with Rust
-RUST_BACKTRACE=1 cargo install --features simdeez_f,annembed_intel-mkl --verbose --path . --root $PREFIX
+RUST_BACKTRACE=1
+cargo install --features "${FEATURES}" --verbose --no-track --path . --root "${PREFIX}"
