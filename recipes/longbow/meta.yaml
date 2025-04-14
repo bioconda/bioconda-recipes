@@ -1,0 +1,41 @@
+{% set name = "longbow" %}
+{% set version = "2.3.0" %}
+{% set sha256hash = "A0877D44BE8F8F251C0FDB0C2CBFBE1AA1EFA51542DD84B609010648EDFBE290" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/JMencius/LongBow/releases/download/v{{ version }}/LongBow{{ version }}.zip
+  sha256: {{ sha256hash|lower }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  entry_points: 
+    - longbow = longbow:main
+
+requirements:
+  host: 
+    - python >=3.7
+    - pip
+  run:
+    - python >=3.7
+    - pyfastx >=2.0.2
+    - statsmodels >=0.13.5
+    - numpy >=1.21.6
+    - psutil
+    - pytest
+
+test:
+  commands:
+    - longbow --version
+
+about:
+  home: https://github.com/JMencius/longbow
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  summary: "A Python program for nanopore sequencing basecalling configuration prediction"
