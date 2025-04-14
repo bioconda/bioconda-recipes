@@ -1,0 +1,42 @@
+{% set name = "gcluster" %}
+{% set version = "2.0.7" %}
+{% set sha256 = "190ccf3f357d153dfb05d216a9793ce035f0512a666465bdbe5479679eda0d85" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+  
+source:
+    url: https://www.microbialgenomic.cn/gz/gcluster-v{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('gcluster', max_pin="x") }}
+
+requirements:
+  run:
+    - mcl
+    - blast
+    - perl-gd
+    - perl-gd-svg
+    - perl-svg
+    - perl-bioperl-core
+    #- git
+    
+test:
+  commands:
+    - Gcluster -h
+    - interested_gene_generation -h
+    - blastp -h
+    - makeblastdb -h
+    - mcl --help
+
+about:
+  home: 'https://www.microbialgenomic.cn/Gcluster_tool.html'
+  summary: 'Gcluster is a simple-to-use tool for visualizing and comparing genome contexts for numerous genomes.'
+  description: 'Gcluster is a stand-alone Perl application, which requires MCL, NCBI BLAST+ and several Perl Modules (GD, GD::SVG) to be installed before use.'
+  doc_url: 'https://github.com/Xiangyang1984/Gcluster'
+  license: GNU General Public License v3.0 or any later version (GPL-3.0-or-later)
