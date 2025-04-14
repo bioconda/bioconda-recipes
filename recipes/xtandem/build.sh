@@ -21,4 +21,4 @@ make CXX="${CXX}" \
 	-j"${CPU_COUNT}"
 
 install -v -m 0755 ../bin/tandem.exe "${PREFIX}/bin"
-ln -sf "${PREFIX}/bin/tandem.exe" "${PREFIX}/bin/tandem"
+ln -sf "${PREFIX}/bin/tandem.exe" "${PREFIX}/bin/xtandem"
