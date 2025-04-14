@@ -1,14 +1,22 @@
 #!/bin/bash
 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
 # Build
 mkdir -p "${PREFIX}/bin"
-mkdir -p build
-cp ${RECIPE_DIR}/CMakeLists.txt $SRC_DIR/CMakeLists.txt
-cd build || exit 1
-# wget https://github.com/oneapi-src/oneTBB/archive/2019_U9.tar.gz
-# tar -xvzf 2019_U9.tar.gz
-cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DCMAKE_PREFIX_PATH=$PREFIX
-# cmake -DCMAKE_INSTALL_PREFIX=$PREFIX -DTBB_DIR=$SRC_DIR/build/oneTBB-2019_U9 -DCMAKE_PREFIX_PATH=$SRC_DIR/build/oneTBB-2019_U9/cmake ..
-make -j
-cp twilight ${PREFIX}/bin
-twilight --help
+cp -rf ${RECIPE_DIR}/CMakeLists.txt $SRC_DIR/CMakeLists.txt
+
+if [[ `uname` == "Darwin" ]]; then
+  export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+else
+  export CONFIG_ARGS=""
+fi
+
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+  -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
+  "${CONFIG_ARGS}" -Wno-dev
+
+cmake --build build -j "${CPU_COUNT}"
+install -v -m 0755 build/twilight ${PREFIX}/bin
