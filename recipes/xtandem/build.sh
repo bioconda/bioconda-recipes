@@ -7,7 +7,9 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 
 mkdir -p "${PREFIX}/bin"
 
+cp -rfv ${RECIPE_DIR}/*.patch .
 dos2unix src/*
+patch -p1 < *.patch
 
 cd src/
 
