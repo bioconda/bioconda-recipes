@@ -16,8 +16,8 @@ cd src/
 
 # without -fpermissive, this fails with GCC7 due to bad style
 make CXX="${CXX}" \
-	CXXFLAGS+="${CXXFLAGS} -Wno-conversion-null -Wno-unused-result -Wno-register -Wno-aggressive-loop-optimizations" \
-	LDFLAGS+='${LDFLAGS} -pthread -lm -lexpat' \
+	CXXFLAGS+="-Wno-conversion-null -Wno-unused-result -Wno-register -Wno-aggressive-loop-optimizations" \
+	LDFLAGS+="-pthread -lm -lexpat" \
 	-j"${CPU_COUNT}"
 
 install -v -m 0755 ../bin/tandem.exe "${PREFIX}/bin"
