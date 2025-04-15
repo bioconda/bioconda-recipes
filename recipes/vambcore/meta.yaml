@@ -10,29 +10,27 @@ source:
   sha256: 10f19ba46fa87f64ce4f7449e1643792f8e0208e303ff08c6deafe82204a118c
 
 build:
-  number: 0
+  number: 1
+  skip: True  # [py < 310]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
   script:
-    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --disable-pip-version-check
     - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --disable-pip-version-check -vvv
 
 requirements:
   build:
-    - python >=3.10                       # [build_platform != target_platform]
-    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
-    - crossenv                            # [build_platform != target_platform]
-    - maturin >=1.8,<2                    # [build_platform != target_platform]
     - {{ compiler("c") }}
     - {{ compiler("rust") }}
     - {{ stdlib("c") }}
     - cargo-bundle-licenses
+    - pkg-config
   host:
-    - python >=3.10
+    - python
     - pip
     - maturin >=1.8,<2
   run:
-    - python >=3.10
+    - python
 
 test:
   imports:
@@ -43,7 +41,8 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: Performant backend functions for the Vamb binning tool
+  summary: "Performant backend functions for the Vamb binning tool."
+  dev_url: https://github.com/jakobnissen/vambcore
 
 extra:
   additional-platforms:
