@@ -10,10 +10,10 @@ mkdir -p "${PREFIX}/bin"
 
 # On x86 use -DIQTREE_FLAGS=avx, on arm use -DIQTREE_FLAGS=sse4
 if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
-    DCMAKE_ARGS+=(-DIQTREE_FLAGS="omp")
+    DCMAKE_ARGS+=(-DIQTREE_FLAGS=omp)
     EXE_NAME=mpboot
 elif [[ "$(uname -m)" == "x86_64" ]]; then
-    DCMAKE_ARGS+=(-DIQTREE_FLAGS="avx omp")
+    DCMAKE_ARGS+=(-DIQTREE_FLAGS=avx omp)
     EXE_NAME=mpboot-avx
 else
     echo "Unsupported architecture: $(uname -m)"
@@ -36,6 +36,7 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_C_COMPILER="${CC}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_C_FLAGS="${CFLAGS}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
+	"${DCMAKE_ARGS[@]}" \
 	"${CONFIG_ARGS}"
 
 # Detect if we are running on CircleCI's arm.medium VM
