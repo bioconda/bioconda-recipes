@@ -1,7 +1,8 @@
 #!/bin/bash
 
-export CC=$(which gcc)
-export CXX=$(which g++)
+export CC=$(basename ${C_COMPILER})
+export CXX=$(basename ${CXX_COMPILER})
+gcc --version
 cd FM/
 make
 cd ../semiWFA/
