@@ -1,0 +1,53 @@
+{% set name = "ervmancer" %}
+{% set version = "0.0.1" %}
+{% set sha256 = "3d2bb53380aad443332578768ddf0f651b5e170df4621c334d60cdd738479d34" %}
+
+package:
+  name: {{ name | lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/AuslanderLab/ERVmancer/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps -v"
+  entry_points:
+    - ervmancer = ervmancer.main:main
+
+requirements:
+  channels:
+    - conda-forge
+    - bioconda
+    - defaults
+  host:
+    - python>=3.8
+    - setuptools
+  run:
+    - python>=3.8
+    - bowtie2
+    - samtools
+    - bedtools
+    - setuptools
+    - numpy
+    - pandas
+    - tqdm
+    - regex
+
+test:
+  commands:
+    - ervmancer --help
+
+about:
+  home: https://github.com/AuslanderLab/ervmancer
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "ERVmancer is a bioinformatics tool to quantify Human Endogenous Retrovirus (HERV) short read RNA sequencing expression data by aligning short reads to a curated subset of HERVs and then resolving ambiguity in alignment using a pre-computed HERV phylogenetic tree."
+
+extra:
+  recipe-maintainers:
+    - RNAPolymerase12
+    - bryantduong
