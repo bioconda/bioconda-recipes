@@ -41,8 +41,6 @@ if [ ! -d "workflow/scripts/lastz_32" ]; then
     cd ../../../../
 fi
 
-mkdir -p pasta
-
 # Debugging: Print current directory and list its contents before copying
 echo "Current directory before copying ROADIES: $(pwd)"
 echo "Contents before copying ROADIES:"
