@@ -1,31 +1,43 @@
 {% set name = "VirulenceFinder" %}
-{% set version = "2.0.4" %}
-{% set sha256 = "2ec47b79fc34b6c89f416771ac9af9f405c64da82f98c05c528fb2ddc728a8dc" %}
+{% set version = "3.1.0" %}
+{% set sha256 = "5106428c239dd9c232bd5f65ae18b765d8f5a1578332d06148f01bd067fd8620" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://bitbucket.org/genomicepidemiology/{{ name|lower }}/get/{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0]|lower }}/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   number: 0
-  noarch: generic
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('virulencefinder', max_pin="x") }}
 
 requirements:
+  host:
+    - python >=3.10
+    - pip
+    - pdm-backend
   run:
-    - python >=3
+    - python >=3.10
     - kma
-    - biopython
-    - tabulate
-    - cgecore
+    - biopython >=1.79
+    - tabulate >=0.8.9
+    - cgecore >=2.0.0
     - blast
+    - pandas >=1.4.2
+    - wget
+    - git
 
 test:
+  imports:
+    - virulencefinder
+  
   commands:
-    - virulencefinder.py --help
+    - python -m virulencefinder --version
 
 about:
   home: https://bitbucket.org/genomicepidemiology/virulencefinder

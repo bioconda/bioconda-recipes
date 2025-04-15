@@ -1,26 +1,30 @@
 {% set name = "taxonomy" %}
-{% set version = "0.9.0" %}
+{% set version = "0.10.0" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://github.com/onecodex/taxonomy/archive/v{{ version }}.tar.gz
-  sha256: 3d9fb6604ce119bd46635eb1ab43212f9da591f0b6fc53cfcd8c97598025d159
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/taxonomy-{{ version }}.tar.gz
+  sha256: 3ff7e2299c9554b8b8be2f00bb4cd9722d0ae820e8a271aaf1390a7e790c3f51
+  patches:
+    - pyproject.patch
 
 build:
-  number: 1
-  skip: True  # [py < 37]
+  number: 3
+  run_exports:
+    - {{ pin_subpackage('taxonomy', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ compiler('rust') }}
   host:
+    - python
     - pip
     - cffi
     - maturin
-    - python
   run:
     - python
     - cffi
@@ -31,8 +35,7 @@ test:
 
 about:
   home: https://github.com/onecodex/taxonomy/
-  license: MIT License
+  license: MIT
   license_family: MIT
   license_file: LICENSE
   summary: "Python and Rust library for loading, saving, and manipulating taxonomic trees"
-

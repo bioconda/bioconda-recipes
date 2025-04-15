@@ -1,42 +1,41 @@
+{% set name = "crabs" %}
+{% set version = "1.0.7" %}
+{% set sha256 = "24c8fe8a1d2dd8b47c4d8818ecdcfd908f10ceafd8c1a21d9f255d10927a3535" %}
+
 package:
-  name: crabs
-  version: "0.1.1"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/gjeunen/reference_database_creator/files/8028374/crabs_v0.1.1.tar.gz
-  md5: 6c2e82fb5e191cb750c5d6a41fa24b61
+  url: https://github.com/gjeunen/reference_database_creator/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
-  build:
-
   host:
-    - python >=3.6.10
+    - python >=3.6
     - pip
-    - argparse
-    - biopython =1.78
-    - tqdm
-    - numpy
-    - pandas >=0.23.4
-    - matplotlib-base
-    - wget
-
+    - setuptools
   run:
-    - python >=3.6.10
-    - argparse
-    - biopython =1.78
+    - python >=3.6
+    - biopython
     - tqdm
     - numpy
     - pandas >=0.23.4
     - matplotlib-base
     - wget
-    - muscle >=3.8.31
+    - muscle
     - cutadapt >=3.4
     - vsearch >=2.13.3
+    - rich
+    - rich-click
+    - requests
 
 test:
   commands:
@@ -44,6 +43,8 @@ test:
 
 about:
   home: https://github.com/gjeunen/reference_database_creator
-  license: MIT License
-  summary: Crabs (Creating Reference databases for Amplicon-Based Sequencing) is a program to download and curate reference databases for eDNA metabarcoding analyses
-
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Crabs (Creating Reference databases for Amplicon-Based Sequencing) is a program to download and curate reference databases for eDNA metabarcoding analyses."
+  dev_url: https://github.com/gjeunen/reference_database_creator

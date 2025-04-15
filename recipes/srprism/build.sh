@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 # https://bioconda.github.io/troubleshooting.html#zlib-errors
 export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
@@ -15,5 +17,5 @@ autoheader
 automake -a -c
 autoconf
 ./configure --prefix=$PREFIX
-make
+make -j ${CPU_COUNT}
 make install

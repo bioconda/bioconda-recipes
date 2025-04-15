@@ -1,43 +1,54 @@
 #!/bin/bash
 
-export CMAKE_BUILD_PARALLEL_LEVEL=${CPU_COUNT}
+export CONAN_NON_INTERACTIVE=1
+
+export CMAKE_BUILD_PARALLEL_LEVEL="${CPU_COUNT}"
 
 scratch=$(mktemp -d)
-export CONAN_HOME="$scratch/conan"
+export CONAN_HOME="${scratch}/conan"
 
 # shellcheck disable=SC2064
-trap "rm -rf '$scratch'" EXIT
+trap "rm -rf '${scratch}'" EXIT
 
-declare -a CMAKE_PLATFORM_FLAGS
-if [[ ${HOST} =~ .*darwin.* ]]; then
-  export MACOSX_DEPLOYMENT_TARGET=10.15  # Required to use std::filesystem
-  CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
-  conan_profile='apple-clang'
+declare -a CMAKE_ARGS
+if [[ "${OSTYPE}" =~ .*darwin.* ]]; then
+  # https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
+  export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+  CMAKE_ARGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
 else
-  CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
-  conan_profile='gcc'
+  # Workaround missing LLVMgold.so on Linux (setting CMAKE_LINKER_TYPE does not seem to work)
+  export CXXFLAGS="${CXXFLAGS} -fuse-ld=lld"
 fi
 
-# Remember to update these profiles when bioconda's compiler toolchains are updated
-mkdir -p "$CONAN_HOME/profiles/"
-ln -s "${RECIPE_DIR}/conan_profiles/$conan_profile" "$CONAN_HOME/profiles/default"
+# Remove unnecessary dependencies from conanfile.py
+patch conanfile.py < "${RECIPE_DIR}/conanfile.py.patch"
 
-# Remove unnecessary dependencies from conanfile.txt
-patch conanfile.txt < "${RECIPE_DIR}/conanfile.txt.patch"
+conan profile detect
 
-# Install header-only deps
-conan install conanfile.txt \
-       --build="*" \
-       --output-folder=build/
+# Build hictkpy as a shared library
+HICTKPY_BUILD_SHARED_LIBS=ON
 
+# See https://github.com/conda-forge/conda-forge.github.io/pull/2321
+Python_INCLUDE_DIR="$("${PYTHON}" -c 'import sysconfig; print(sysconfig.get_path("include"))')"
+Python_NumPy_INCLUDE_DIR="$("${PYTHON}" -c 'import numpy; print(numpy.get_include())')"
 
-CMAKE_ARGS="-DCMAKE_PREFIX_PATH=$PWD/build"
-CMAKE_ARGS+=" ${CMAKE_PLATFORM_FLAGS[*]}"
-CMAKE_ARGS+=" -DPython_EXECUTABLE=$PYTHON"
+CMAKE_ARGS+=(-DPython_EXECUTABLE:PATH="${PYTHON}")
+CMAKE_ARGS+=(-DPython_INCLUDE_DIR:PATH="${Python_INCLUDE_DIR}")
+CMAKE_ARGS+=(-DPython_NumPy_INCLUDE_DIR="${Python_NumPy_INCLUDE_DIR}")
+CMAKE_ARGS+=(-DPython3_EXECUTABLE:PATH="${PYTHON}")
+CMAKE_ARGS+=(-DPython3_INCLUDE_DIR:PATH="${Python_INCLUDE_DIR}")
+CMAKE_ARGS+=(-DPython3_NumPy_INCLUDE_DIR="${Python_NumPy_INCLUDE_DIR}")
 
-echo "$CMAKE_ARGS"
-export CMAKE_ARGS
+# shellcheck disable=SC2001,SC2178
+CMAKE_ARGS="$(echo "${CMAKE_ARGS[*]}" | sed 's/-DCMAKE_LINKER[^ ]\+//')"
 
-HICTKPY_SETUP_SKIP_CONAN=1 \
-"$PYTHON" -m pip install . -v
+echo "CFLAGS='${CFLAGS}'"
+echo "CXXFLAGS='${CXXFLAGS}'"
+# shellcheck disable=SC2128
+echo "CMAKE_ARGS='${CMAKE_ARGS}'"
+
+export CMAKE_ARGS CMAKE_BUILD_PARALLEL_LEVEL CFLAGS CXXFLAGS HICTKPY_BUILD_SHARED_LIBS
+
+SETUPTOOLS_SCM_PRETEND_VERSION="${PKG_VERSION}" \
+"${PYTHON}" -m pip install "${SRC_DIR}" -vv
 

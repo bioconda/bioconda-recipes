@@ -1,29 +1,32 @@
-{% set version = "1.14.0" %}
+{% set version = "1.20.0" %}
 {% set name = "TOAST" %}
-{% set bioc = "3.17" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 43fb520992045f40b5a505dcc9f20468
+about:
+  description: This package is devoted to analyzing high-throughput data (e.g. gene expression microarray, DNA methylation microarray, RNA-seq) from complex tissues. Current functionalities include 1. detect cell-type specific or cross-cell type differential signals 2. tree-based differential analysis 3. improve variable selection in reference-free deconvolution 4. partial reference-free deconvolution with prior knowledge.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Tools for the analysis of heterogeneous tissues
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-toast", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, knitr, rmarkdown, gplots, matrixStats, Matrix
 requirements:
   host:
-    - 'bioconductor-epidish >=2.16.0,<2.17.0'
-    - 'bioconductor-limma >=3.56.0,<3.57.0'
-    - 'bioconductor-summarizedexperiment >=1.30.0,<1.31.0'
+    - bioconductor-epidish >=2.22.0,<2.23.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-corpcor
     - r-doparallel
@@ -33,9 +36,9 @@ requirements:
     - r-quadprog
     - r-tidyr
   run:
-    - 'bioconductor-epidish >=2.16.0,<2.17.0'
-    - 'bioconductor-limma >=3.56.0,<3.57.0'
-    - 'bioconductor-summarizedexperiment >=1.30.0,<1.31.0'
+    - bioconductor-epidish >=2.22.0,<2.23.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-corpcor
     - r-doparallel
@@ -44,13 +47,16 @@ requirements:
     - r-nnls
     - r-quadprog
     - r-tidyr
+
+source:
+  md5: c912d3bf2b4154775188ab78f35dc5b7
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Tools for the analysis of heterogeneous tissues'
-  description: 'This package is devoted to analyzing high-throughput data (e.g. gene expression microarray, DNA methylation microarray, RNA-seq) from complex tissues. Current functionalities include 1. detect cell-type specific or cross-cell type differential signals 2. tree-based differential analysis 3. improve variable selection in reference-free deconvolution 4. partial reference-free deconvolution with prior knowledge.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+    - $R -e "library('{{ name }}')"
 

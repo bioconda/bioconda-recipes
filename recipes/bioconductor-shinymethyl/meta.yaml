@@ -1,51 +1,21 @@
-{% set version = "1.36.0" %}
+{% set version = "1.42.0" %}
 {% set name = "shinyMethyl" %}
-{% set bioc = "3.17" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 5f8531aa5c428db361db5abf32e59111
+about:
+  description: Interactive tool for visualizing Illumina methylation array data. Both the 450k and EPIC array are supported.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Interactive visualization for Illumina methylation arrays
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: shinyMethylData, minfiData, BiocStyle, knitr, testthat
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.60.0,<2.61.0'
-    - 'bioconductor-biocgenerics >=0.46.0,<0.47.0'
-    - 'bioconductor-matrixgenerics >=1.12.0,<1.13.0'
-    - 'bioconductor-minfi >=1.46.0,<1.47.0'
-    - r-base
-    - r-htmltools
-    - r-rcolorbrewer
-    - r-shiny
-  run:
-    - 'bioconductor-biobase >=2.60.0,<2.61.0'
-    - 'bioconductor-biocgenerics >=0.46.0,<0.47.0'
-    - 'bioconductor-matrixgenerics >=1.12.0,<1.13.0'
-    - 'bioconductor-minfi >=1.46.0,<1.47.0'
-    - r-base
-    - r-htmltools
-    - r-rcolorbrewer
-    - r-shiny
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Interactive visualization for Illumina methylation arrays'
-  description: 'Interactive tool for visualizing Illumina methylation array data. Both the 450k and EPIC array are supported.'
+  run_exports: '{{ pin_subpackage("bioconductor-shinymethyl", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:shinymethyl
@@ -53,4 +23,41 @@ extra:
     name: bioconductor-shinymethyl
     path: recipes/bioconductor-shinymethyl
     version: 1.16.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: shinyMethylData, minfiData, BiocStyle, knitr, testthat
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-minfi >=1.52.0,<1.53.0
+    - r-base
+    - r-htmltools
+    - r-rcolorbrewer
+    - r-shiny
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-minfi >=1.52.0,<1.53.0
+    - r-base
+    - r-htmltools
+    - r-rcolorbrewer
+    - r-shiny
+
+source:
+  md5: cf500be83d4657e46813a8d9102e3a26
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

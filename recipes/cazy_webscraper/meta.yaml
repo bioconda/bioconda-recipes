@@ -1,6 +1,6 @@
 {% set name = "cazy_webscraper" %}
-{% set version = "2.3.0" %}
-{% set sha256 = "08a12134f124622069d4259c55d0bafc618e4f1d4872992529cd495d782fd21e" %}
+{% set version = "2.3.0.4" %}
+{% set sha256 = "4333de1d4f1742798281a2e55c24a2d10c54a708f1908bb31ac02adafbd06e90" %}
 
 package:
   name: {{ name|lower }}
@@ -13,7 +13,7 @@ source:
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   entry_points:
     - cazy_webscraper = cazy_webscraper.cazy_scraper:main
     - cw_get_genbank_seqs = cazy_webscraper.expand.genbank.sequences.get_genbank_sequences:main
@@ -25,11 +25,14 @@ build:
     - cw_get_pdb_structures = cazy_webscraper.expand.pdb.get_pdb_structures:main
     - cw_query_database = cazy_webscraper.api.cw_query_database:main
     - cw_get_db_schema = cazy_webscraper.sql.get_schema:main
+  run_exports:
+    - {{ pin_subpackage('cazy_webscraper', max_pin="x") }}
 
 requirements:
   host:
     - python >=3.8
     - pip
+    - setuptools
   run:
     - python >=3.8
     - beautifulsoup4
@@ -53,11 +56,13 @@ test:
     - cazy_webscraper --help
 
 about:
-  home: "https://hobnobmancer.github.io/cazy_webscraper/"
+  home: "https://github.com/HobnobMancer/cazy_webscraper"
   dev_url: "https://github.com/HobnobMancer/cazy_webscraper"
   summary: "A tool to automate retrieving data from CAZy, build a local CAZyme SQL database, and throughly interrogating the data. Also, automate retrieving protein data, sequences, EC numbers and structure files for specific datasets in the CAZyme database from UniProt, GenBank and PDB."
   license: MIT
+  license_family: MIT
   license_file: LICENSE
+  doc_url: "https://hobnobmancer.github.io/cazy_webscraper"
 
 extra:
   identifiers:

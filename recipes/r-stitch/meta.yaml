@@ -1,22 +1,19 @@
-{% set version = "1.6.10" %}
-{% set sha256_package = "1e432655e299bb5941104c2645ed3a6b3c2c4a44b583c5aaa2b20d2538875f9e" %}
-{% set sha256_script = "0c61d79cf519e5c5ae33807725577da3d1599bcc89413c3a6bce3fb7c99090c7" %}
+{% set name = "r-stitch" %}
+{% set version = "1.7.3" %}
+{% set sha256 = "cad4cc5a7858d82fe04d9ccc70e65aa88a5cbfca124bce6691faf0307043e0c4" %}
 
 package:
-  name: r-stitch
+  name: '{{ name }}'
   version: '{{ version }}'
 
 source:
-  - url: https://github.com/rwdavies/stitch/releases/download/{{ version }}/STITCH_{{ version }}.tar.gz
-    sha256: '{{ sha256_package }}'
-  - url: https://raw.githubusercontent.com/rwdavies/STITCH/{{ version }}/STITCH.R
-    sha256: '{{ sha256_script }}'
+  - url: https://github.com/rwdavies/STITCH/archive/refs/tags/{{ version }}.tar.gz
+    sha256: '{{ sha256 }}'
 
 build:
   number: 0
-  script: 
-    - 'mkdir -p $PREFIX/bin && cp STITCH.R $PREFIX/bin'
-    - '$R CMD INSTALL --build --install-tests .'
+  run_exports:
+    - {{ pin_subpackage('r-stitch', max_pin="x") }}
 
 requirements:
   build:
@@ -26,9 +23,10 @@ requirements:
     - automake
     - pkg-config
     - make
+    - libcxx >=16  # [osx]
   host:
     - r-base
-    - r-rcpp >=0.12.18
+    - r-rcpp <=1.0.12
     - r-rcpparmadillo >=0.8.600.0.0
     - r-data.table >=1.11.8
     - r-rrbgen >=0.0.6
@@ -38,6 +36,7 @@ requirements:
     - mpc >=1.1.0
     - libblas
     - zlib
+    - libcxx >=16  # [osx]
   run:
     - r-base
     - r-rcpp >=0.12.18
@@ -45,15 +44,10 @@ requirements:
     - r-data.table >=1.11.8
     - r-rrbgen >=0.0.6
     - r-optparse
-    - xz
-    - gmp
-    - mpfr
-    - mpc >=1.1.0
     - r-testthat >=2.0.0
     - htslib >=1.4
     - samtools >=1.4
     - rsync
-    - zlib
 
 test:
   commands:
@@ -62,13 +56,16 @@ test:
 
 about:
   home: https://github.com/rwdavies/stitch
-  license: GPL3
+  license: GPL-3.0-only
   license_family: GPL3
   license_file: LICENSE
-  summary: STITCH - Sequencing To Imputation Through Constructing Haplotypes
+  summary: "STITCH - Sequencing To Imputation Through Constructing Haplotypes."
   doc_url: https://github.com/rwdavies/stitch
   dev_url: https://github.com/rwdavies/stitch
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
+    - Zilong-Li
     - rwdavies

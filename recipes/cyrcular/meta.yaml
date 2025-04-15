@@ -1,0 +1,49 @@
+{% set version = "0.3.0" %}
+{% set sha256 = "eba1dea2e13601b5bc18183fff7d5bf3c07e9ed98f62272453a5473e7bbd36cb" %}
+
+package:
+  name: cyrcular
+  version: {{ version }}
+
+source:
+  url: https://github.com/tedil/cyrcular/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  skip: True  # [osx]
+  number: 1
+  run_exports:
+    - {{ pin_subpackage("cyrcular", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cmake
+    - make
+    - pkg-config
+  host:
+    - clangdev
+    - openssl
+    - zlib
+    - xz
+    - bzip2
+    - gsl
+    - libcblas
+    - blis
+
+test:
+  commands:
+    - cyrcular -h
+
+about:
+  home: https://github.com/tedil/cyrcular
+  license: MIT
+  license_family: MIT
+  summary: Tool for calling circles from nanopore reads
+  dev_url: https://github.com/tedil/cyrcular
+
+extra:
+  additional-platforms:
+    - linux-aarch64

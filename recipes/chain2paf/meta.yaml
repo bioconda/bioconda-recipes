@@ -1,0 +1,50 @@
+{% set name = "chain2paf" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/AndreaGuarracino/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: d5a3fe9aa72372b6b868665e56b1ebf6f1e07dea056c5203c9232284ece07e31 
+
+build:
+  number: 0
+  run_exports:
+      - {{ pin_subpackage(name, max_pin='x.x') }}
+  script:
+      - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+      - cargo install -v --locked --no-track --root $PREFIX --path .
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - cmake
+    - make
+    - pkg-config
+    - clangdev
+    - {{ compiler('c') }}      # For zlib-ng compilation
+    - {{ compiler('cxx') }}    # For C++ dependencies if any
+
+test:
+  commands:
+    - chain2paf --help
+
+about:
+  home: https://github.com/AndreaGuarracino/{{ name }}
+  license: MIT
+  license_family: MIT
+  license_file: 
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "convert CHAIN format to PAF format"
+  dev_url: https://github.com/AndreaGuarracino/{{ name }}
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - AndreaGuarracino

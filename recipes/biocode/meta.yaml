@@ -1,5 +1,5 @@
 {% set name = "biocode" %}
-{% set version = "0.10.0" %}
+{% set version = "0.12.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,19 +7,19 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: ab48e0ea92f52c7fe48c6c947d4d5aa43437f16cd42a804546c71ef0e5ba2265
-  patches: biocode.patch
+  sha256: 42e6713223521337c04e3a7f92e1ae6229c5e00999b05a95a6c20643649475e2
 
 build:
   noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
-  
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 requirements:
   host:
     - pip
     - python >=3.6
-
+    - setuptools
   run:
     - jinja2
     - matplotlib-base

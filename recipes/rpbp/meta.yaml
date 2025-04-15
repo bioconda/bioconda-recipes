@@ -1,17 +1,19 @@
-{% set version = "3.0.2" %}
+{% set name = "rpbp" %}
+{% set version = "3.0.4" %}
+{% set sha256 = "f449f130383f0f82c728ac47ca8bfd3d4bcf4e4d7fbc256a7be922fbcf4be473" %}
 
 package:
-  name: rpbp
-  version: '{{version}}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/dieterich-lab/rp-bp/archive/{{version}}.tar.gz
-  sha256: dbc72c8dba6f33478089ec9ac7ca9b29092887c3d196af4bd3565491851da7a2
+  url: https://github.com/dieterich-lab/rp-bp/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv && compile-rpbp-models"
-  number: 1
-  skip: True  # [py27 or py36]
+  number: 2
+  skip: True  # [py >= 311 ]
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv && compile-rpbp-models"
   entry_points:
     - extract-orf-coordinates = rpbp.reference_preprocessing.extract_orf_coordinates:main
     - label-orfs = rpbp.reference_preprocessing.label_orfs:main
@@ -41,14 +43,16 @@ build:
     - compile-rpbp-models = rpbp.ribo_utils.compile_rpbp_models:main
     - create-read-length-orf-profiles = rpbp.analysis.profile_construction.create_read_length_orf_profiles:main
     - collect-read-length-orf-profiles = rpbp.analysis.profile_construction.collect_read_length_orf_profiles:main
+  run_exports:
+    - {{ pin_subpackage('rpbp', max_pin='x') }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
   host:
     - python
-    - cmdstanpy >=1.0.0
     - pip
+    - cmdstanpy >=1.0.0
   run:
     - python
     - biopython
@@ -62,7 +66,7 @@ requirements:
     - joblib
     - numpy
     - pandas
-    - pbiotools >=4.0.1
+    - pbiotools >=4.0.2
     - pyyaml
     - samtools
     - scipy
@@ -109,8 +113,14 @@ test:
     - collect-read-length-orf-profiles --help
 
 about:
-  home: https://github.com/dieterich-lab/rp-bp
+  home: "https://github.com/dieterich-lab/rp-bp"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: Ribosome profiling with Bayesian predictions (Rp-Bp)
+  summary: "Ribosome profiling with Bayesian predictions (Rp-Bp)"
+  dev_url: "https://github.com/dieterich-lab/rp-bp"
+  doc_url: "https://rp-bp.readthedocs.io/en/latest"
+
+extra:
+  identifiers:
+    - doi:10.1093/nar/gkw1350

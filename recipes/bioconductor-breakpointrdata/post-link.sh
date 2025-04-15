@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "breakpointrdata-1.18.0"
+installBiocDataPackage.sh "breakpointrdata-1.24.0"

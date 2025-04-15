@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "singlecellmultimodal-1.12.2"
+installBiocDataPackage.sh "singlecellmultimodal-1.18.0"

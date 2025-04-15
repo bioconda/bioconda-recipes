@@ -1,0 +1,51 @@
+{% set version = "1.0.0" %}
+{% set sha256 = "e10ed2b344bff8b10a4334fd8d1d9d108104f6d1395bb50828edd78b82cdca5b" %}
+
+package:
+  name: phyloaln
+  version: "{{ version }}"
+source:
+  url: https://github.com/huangyh45/PhyloAln/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('phyloaln', max_pin='x') }}
+
+requirements:
+  run:
+    - biopython >=1.77
+    - ete3 >=3.1.2
+    - hmmer >=3.1
+    - mafft >=7.467
+    - perl >=5.26.2
+    - perl-bioperl >=1.7.2
+    - perl-parallel-forkmanager >=2.02
+    - python >=3.7.4
+
+test:
+  commands:
+    - PhyloAln -h
+    - hmmbuild -h
+    - hmmsearch -h
+    - merge_seqs.py -h
+    - root_tree.py -h
+    - select_seqs.py -h
+    - test_effect.py -h
+    - trim_matrix.py -h
+    - perl -MBio::SeqIO -e 1
+    - perl -MBio::DB::Fasta -e 1
+    - perl -MParallel::ForkManager -e 1
+    - mafft --version
+
+about:
+  home: https://github.com/huangyh45/PhyloAln
+  license: MIT
+  license_file: LICENSE
+  summary: "PhyloAln: a reference-based multiple sequence alignment tool for phylogeny"
+
+extra:
+  identifiers:
+    - doi:10.1093/molbev/msae150

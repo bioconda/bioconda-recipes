@@ -1,0 +1,61 @@
+{% set version = "1.4.0" %}
+{% set name = "beachmat.hdf5" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: Extends beachmat to support initialization of tatami matrices from HDF5-backed arrays. This allows C++ code in downstream packages to directly call the HDF5 C/C++ library to access array data, without the need for block processing via DelayedArray. Some utilities are also provided for direct creation of an in-memory tatami matrix from a HDF5 file.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: beachmat bindings for HDF5-backed matrices
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-beachmat.hdf5", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, BiocStyle, knitr, rmarkdown, rhdf5, Matrix
+# SystemRequirements: C++17, GNU make
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-assorthead >=1.0.0,<1.1.0
+    - bioconductor-beachmat >=2.22.0,<2.23.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-hdf5array >=1.34.0,<1.35.0
+    - bioconductor-rhdf5lib >=1.28.0,<1.29.0
+    - r-base
+    - r-rcpp
+    - libblas
+    - liblapack
+    - zlib
+  run:
+    - bioconductor-assorthead >=1.0.0,<1.1.0
+    - bioconductor-beachmat >=2.22.0,<2.23.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-hdf5array >=1.34.0,<1.35.0
+    - bioconductor-rhdf5lib >=1.28.0,<1.29.0
+    - r-base
+    - r-rcpp
+
+source:
+  md5: 92056406f63cce411dad2a915b700533
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

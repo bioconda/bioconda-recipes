@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "somaticadata-1.38.0"
+installBiocDataPackage.sh "somaticadata-1.44.0"

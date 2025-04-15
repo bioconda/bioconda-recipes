@@ -1,0 +1,64 @@
+{% set name = "doubletdetection" %}
+{% set version = "4.3.0.post1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/doubletdetection-{{ version }}.tar.gz
+  sha256: c03a1138c15d4b0f918dbddd0887e8c9464af8e68f42c63f05b82790e2038a6b
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('doubletdetection', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - hatchling
+    - pip
+  run:
+    - python >=3.10
+    - anndata >=0.8
+    - ipywidgets
+    - leidenalg
+    - louvain
+    - matplotlib-base >=3.6
+    - numpy >=1.24
+    - pandas >=0.22.0
+    - phenograph
+    - scanpy >1.10.0
+    - scipy >=1.8
+    - tqdm
+  run_constrained:
+    - black >=20.8b1
+    - flake8 >=3.7.7
+    - furo *
+    - myst-parser *
+    - nbsphinx *
+    - nbsphinx-link *
+    - pre-commit >=2.7.1
+    - pytest >=4.4
+    - sphinx >=4.1,<4.4
+    - sphinx-autodoc-typehints *
+
+test:
+  imports:
+    - doubletdetection
+
+about:
+  home: https://github.com/JonathanShor/DoubletDetection
+  summary: "Method to detect and enable removal of doublets from single-cell RNA-sequencing."
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  dev_url: https://github.com/JonathanShor/DoubletDetection
+  doc_url: https://doubletdetection.readthedocs.io
+
+extra:
+  recipe-maintainers:
+    - LeonHafner

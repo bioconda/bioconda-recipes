@@ -1,0 +1,50 @@
+{% set name = "vitap" %}
+{% set version = "1.7.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/DrKaiyangZheng/VITAP/archive/refs/tags/v.{{ version }}.tar.gz
+  sha256: 3f4492d86a4b6b380f1584890af673994d814ddab90a0c4c06a89a819249bf9b
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('vitap', max_pin='x') }}
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+
+requirements:
+  host:
+    - pip
+    - python
+    - setuptools-markdown
+  run:
+    - python >=3.9
+    - networkx >=3.1
+    - scipy >=1.10
+    - pandas >=1.5
+    - numpy >=1.25
+    - biopython >=1.78
+    - tqdm >=4.65
+    - diamond >=0.9
+    - entrez-direct =16.2
+    - seqkit >=2.5.1
+    - prodigal >=2.6
+
+test:
+  commands:
+    - VITAP upd -h
+    - VITAP assignment -h
+
+about:
+  home: https://github.com/DrKaiyangZheng/VITAP/
+  license: GPL-3.0-only
+  license_file: LICENSE
+  license_family: GPL
+  summary: Viral Taxonomic Assignment Pipeline
+  doc_url: https://github.com/DrKaiyangZheng/VITAP/blob/main/README.md
+  description: Viral Taxonomic Assignment Pipeline (VITAP) is a cutting-edge tool designed to address the growing need for accurate and comprehensive taxonomic assignments of DNA and RNA viral sequences. By integrating alignment-based techniques with graph theory, VITAP achieves high precision in classifying viral sequences, including those as short as 1000 base pairs, down to the genus level.
+  

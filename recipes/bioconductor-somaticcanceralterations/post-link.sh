@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "somaticcanceralterations-1.36.0"
+installBiocDataPackage.sh "somaticcanceralterations-1.42.0"

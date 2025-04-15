@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "panther.db-1.0.11"
+installBiocDataPackage.sh "panther.db-1.0.12"

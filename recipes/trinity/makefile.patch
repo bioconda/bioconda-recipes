@@ -98,36 +98,28 @@
  htslib/version.h :
 --- a/trinity-plugins/bamsifter/build_htslib.sh
 +++ b/trinity-plugins/bamsifter/build_htslib.sh
-@@ -2,14 +2,10 @@
- 
- set -e -v
- 
--tar xvf htslib-1.16.tar.bz2
--mv htslib-1.16 htslib
- cd htslib
--mkdir -p build
--#autoheader
--#autoconf
+@@ -6,9 +6,7 @@ cd htslib
+ git submodule init && git submodule update
+ mkdir -p build
+ autoheader
+-autoconf
 -./configure --prefix=`pwd`/build/
-+autoheader
 +autoreconf
-+./configure --prefix=`pwd`/build/ CXXFLAGS="-I${PREFIX}/include ${LDFLAGS}" CFLAGS="-I${PREFIX}/include ${LDFLAGS}"
++./configure --prefix=`pwd`/build/ CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include ${LDFLAGS}" CFLAGS="${CFLAGS} ${LDFLAGS}"
  make
  make install
- 
 -
-
-
+-
 --- a/trinity-plugins/bamsifter/sift_bam_max_cov.cpp
 +++ b/trinity-plugins/bamsifter/sift_bam_max_cov.cpp
-@@ -2,6 +2,7 @@
- #include <stdio.h>
- // #include <unistd.h>
- #include <stdlib.h>
-+#include <string>
- #include <string.h>
- #include <cstring>
- #include <getopt.h>
--- 
-2.40.0
+@@ -14,8 +14,8 @@
+ #include <vector>
+ #include <string>
 
+-#include "htslib/sam.h"
+-#include "htslib/bgzf.h"
++#include "htslib/htslib/sam.h"
++#include "htslib/htslib/bgzf.h"
+
+
+ enum test_op {

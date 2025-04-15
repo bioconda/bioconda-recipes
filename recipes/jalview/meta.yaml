@@ -1,16 +1,19 @@
-{% set version = "2.11.2.7" %}
+{% set name = "jalview" %}
+{% set version = "2.11.4.1" %}
 
 package:
-  name: jalview
+  name: {{ name|lower }}
   version: {{ version }}
 
 build:
   number: 0
   noarch: generic
+  run_exports:
+    - {{ pin_subpackage( name, max_pin="x.x") }}
 
 source:
   url: https://www.jalview.org/source/jalview_{{ version|replace(".", "_") }}.tar.gz
-  sha256: "a71c3bfff51c85ccd9080dd123b09131faa262c307fc887c0fe0c53ca5a19579"
+  sha256: "5361bb63ac83cc1f7e56204ed08c413ef6f942d1e64f67325b8ab463a3a943fb"
 
 requirements:
   build:
@@ -20,16 +23,16 @@ requirements:
     - openjdk 11
     - xorg-libxtst
   run:
-    # Jalview 2.11.1.4 can run as 1.8 or java 11+
+    # Jalview 2.11.* can run as 1.8/8 or java 11
     # Version number reference: https://github.com/conda/conda/issues/6948#issuecomment-369360906
     # A bug with OpenJDK 11.0.9.1+1 makes Jalview crash on macOS. Fixed with later versions of OpenJDK.
-    - openjdk >=8.0.192,!=11.0.9.*,<12
+    - openjdk >=8.0.192,!=9.*,!=10.*,!=11.0.9.*,<12
     - xorg-libxtst
     - psutil
 
 test:
   commands:
-    - jalview -help
+    - jalview --help
 
 
 about:
@@ -46,7 +49,9 @@ about:
 
 extra:
   notes: |
-    This wrapper and installation is primarily for commandline-only use.
+    This wrapper and installation is primarily for commandline use.
     Set JALVIEW_JRE=j1.8 or JALVIEW_JRE=j11 to specify the java runtime if you need jalview to start up as quickly as possible
     Set JALVIEW_MAXMEM=2g to restrict jalviews maximal memory consumption (here to 2G RAM). Otherwise 90% of physical memory
-    (capped at 32G) is allocated.  Memory allocation can also be set in Tools->Preferences->Startup.
+    (capped at 32G) is allocated.  Memory allocation can also be set in Tools->Preferences->Startup or specified with command-
+    line arguments --jvmmempc=90 (percentage of total physical memory, default 90) and --jvmmemmax=2g (set a different cap,
+    default 32G if total physical memory can be detected or 8G if total physical memory cannot be detected).

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "elmer.data-2.24.0"
+installBiocDataPackage.sh "elmer.data-2.30.0"

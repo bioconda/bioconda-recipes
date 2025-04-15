@@ -1,4 +1,4 @@
 #!/bin/bash
-chmod a+x golef*
+chmod a+x goleft*
 mkdir -p $PREFIX/bin
 cp goleft* $PREFIX/bin/goleft

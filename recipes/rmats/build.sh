@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 mkdir $PREFIX/rMATS
 
 GSL_LDFLAGS="$(gsl-config --libs)"
@@ -8,7 +10,15 @@ export GSL_LDFLAGS
 export GSL_CFLAGS
 export LD_LIBRARY_PATH=${PREFIX}/lib
 
-make
+case $(uname -m) in
+    aarch64)
+        sed -i.bak -e "s/-msse2//" rMATS_C/Makefile
+        ;;
+    *)
+        ;;
+esac
+
+make -j ${CPU_COUNT}
 
 cp rmats.py $PREFIX/rMATS
 cp cp_with_prefix.py $PREFIX/rMATS

@@ -1,0 +1,32 @@
+{% set name = "tcfinder" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "70bc354bdccddc91217d4a6b3d7ed9847ef5a9b279500ddd0cb9f5f51b705db9" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: "https://github.com/PathoGenOmics-Lab/{{ name }}/archive/v{{ version }}.tar.gz"
+  sha256: "{{ sha256 }}"
+
+build:
+  number: 0
+  script: "cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
+  run_exports:
+    - pin_subpackage(name, max_pin="x.x")
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+
+test:
+  commands:
+    - tcfinder --version
+
+about:
+  home: "https://github.com/PathoGenOmics-Lab/tcfinder"
+  license: "GPL-3.0-only"
+  license_file: LICENSE
+  license_family: GPL3
+  summary: "A lightweight tool to find clusters of samples within a phylogeny."

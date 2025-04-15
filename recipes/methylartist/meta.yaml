@@ -1,5 +1,5 @@
 {% set name = "methylartist" %}
-{% set version = "1.2.7" %}
+{% set version = "1.4.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,12 +7,12 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 23005b717a317aa1aea813703f3d7011592d58268b16f111275df2d8694c41a4
+  sha256: 82adfe013b045d4262760f27da9dc58e4a616deacb9086609fb8614445db0919
 
 build:
   noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
@@ -23,7 +23,8 @@ test:
 requirements:
   host:
     - pip
-    - python >=3.8
+    - python >=3.7
+    - setuptools
   run:
     - bx-python >=0.8.11
     - matplotlib-base >=3.4.3
@@ -35,15 +36,19 @@ requirements:
     - scikit-bio >=0.5.6
     - scipy >=1.7.1
     - seaborn >=0.11.2
+    - tqdm
 
 about:
   home: "https://github.com/adamewing/methylartist"
   license: MIT
   license_family: MIT
-  summary: "Tools for parsing and plotting nanopore methylation data"
+  license_file: LICENSE
+  summary: "Tools for parsing and plotting nanopore methylation data."
 
 extra:
   recipe-maintainers:
     - adamewing
   container:
     extended-base: True
+  identifiers:
+    - doi:10.1093/bioinformatics/btac292

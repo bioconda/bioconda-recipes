@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "mvoutdata-1.36.0"
+installBiocDataPackage.sh "mvoutdata-1.42.0"

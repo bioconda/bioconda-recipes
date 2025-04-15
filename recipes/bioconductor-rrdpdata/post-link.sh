@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "rrdpdata-1.20.0"
+installBiocDataPackage.sh "rrdpdata-1.26.0"

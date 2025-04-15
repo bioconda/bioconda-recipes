@@ -1,0 +1,46 @@
+{% set name = "rmath4" %}
+{% set version = "4.3.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/Rmath4-{{ version }}.tar.gz
+  sha256: c39a75e1c883fd6f5d6b6677213b4e0704ce014f060d0d00b89f5ff608b72300
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 2
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - setuptools
+    - wheel
+    - pip
+  run:
+    - python
+
+test:
+  imports:
+    - Rmath4
+  commands:
+    - pip check
+    - python -c "import Rmath4; assert 0<=Rmath4.unif_rand()<1"
+  requires:
+    - pip
+
+about:
+  home: https://github.com/alex-wave/Rmath-python
+  summary: standalone Rmath library from R
+  license: GPL-2.0
+  license_file: COPYING
+
+extra:
+  recipe-maintainers:
+    - alpae

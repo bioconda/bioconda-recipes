@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "scthi.data-1.12.0"
+installBiocDataPackage.sh "scthi.data-1.18.0"

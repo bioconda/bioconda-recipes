@@ -1,33 +1,28 @@
 {% set name = "magus-msa" %}
-{% set version = "0.1.2" %}
-{% set sha256 = "9ee1156921dba68b55d6d737aab75e68f6f3b29d76ce31a9a30cb3dcb69b2eb8" %}
+{% set version = "0.2.0" %}
+{% set sha256 = "4152ab0d5cedfe0691dc1a3fce2cd38e3549bcd0883227a346cc47f093570141" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  #  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   url: https://github.com/vlasmirnov/MAGUS/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   noarch: python
   number: 0
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  entry_points:
+    - magus = magus.main:main
   run_exports:
-    - {{ pin_subpackage('magus-msa', max_pin="x") }}
+    - {{ pin_subpackage('magus-msa', max_pin="x.x") }}
 
 requirements:
   host:
     - python >=3.6
     - pip
-    - setuptools
-    - mafft
-    - mcl
-    - fasttree
-    - clustalo
-    - hmmer
   run:
     - python >=3.6
     - dendropy >=4.5.2
@@ -39,22 +34,30 @@ requirements:
 
 test:
   imports:
-    - magus_align
-    - magus_align.decompose
-    - magus_align.merge
-    - magus_align.merge.graph_build
-    - magus_align.merge.graph_cluster
-    - magus_align.merge.graph_trace
-    - magus_helpers
-    - magus_tasks
-    - magus_tools
+    - magus
+    - magus.align
+    - magus.align.decompose
+    - magus.align.merge
+    - magus.align.merge.graph_build
+    - magus.align.merge.graph_cluster
+    - magus.align.merge.graph_trace
+    - magus.helpers
+    - magus.tasks
+    - magus.tools
   commands:
     - magus --help
 
 about:
   home: "https://github.com/vlasmirnov/MAGUS"
   license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
   summary: "Multiple Sequence Alignment using Graph Clustering"
   doc_url: "https://github.com/vlasmirnov/MAGUS/blob/master/README.md"
   dev_url: "https://github.com/vlasmirnov/MAGUS"
 
+
+extra:
+  identifiers:
+    - biotools:magus
+    - doi:10.1093/bioinformatics/btaa992

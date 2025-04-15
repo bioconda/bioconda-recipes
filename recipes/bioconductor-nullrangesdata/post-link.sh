@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "nullrangesdata-1.6.0"
+installBiocDataPackage.sh "nullrangesdata-1.12.0"

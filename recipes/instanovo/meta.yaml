@@ -1,0 +1,65 @@
+{% set name = "instanovo" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/instanovo-{{ version }}.tar.gz
+  sha256: fd9cfc377d9f8da5272f96b2eb4c14c08b579d7a65466aa402601ec6c4b42672
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name | lower, max_pin="x.x") }}
+
+
+requirements:
+  host:
+    - python >=3.10,<3.12
+    - setuptools >=69.1.1
+    - pip
+  run:
+    - click
+    - datasets
+    - hydra-core
+    - jaxtyping
+    - jiwer
+    - matchms
+    - neptune
+    - numpy
+    - omegaconf
+    - pandas
+    - polars
+    - pyopenms
+    - python-dotenv
+    - pytorch-lightning
+    - s3fs
+    - scikit-learn
+    - spectrum_utils
+    - tensorboard
+    - pytorch
+    - tqdm
+
+test:
+  imports:
+    - instanovo
+  commands:
+    - python -c "import instanovo; print(instanovo.__version__)"
+  requires:
+    - pip
+
+about:
+  home: https://github.com/instadeepai/instanovo
+  summary: De novo peptide sequencing with InstaNovo
+  license: Apache-2.0
+  license_file: LICENSE.md
+
+extra:
+  recipe-maintainers:
+    - BioGeek
+  identifiers:
+    - doi:10.1101/2023.08.30.555055 

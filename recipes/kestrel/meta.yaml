@@ -1,0 +1,38 @@
+{% set name = "kestrel" %}
+{% set version = "1.0.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/paudano/{{ name }}/releases/download/{{ version }}/{{ name }}-{{ version }}-linux.tar.gz
+  sha256: 992c579fc52dce7b9d80e6232914da02663a2480d28b672277d80fdfcdda33e3
+
+build:
+  noarch: generic
+  detect_binary_files_with_prefix: true
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('kestrel', max_pin="x") }}
+
+requirements:
+  run:
+    # Enforce a version requirement on openjdk to ensure
+    # it comes from the conda-forge channel and not default.
+    # Many yaks were shaved to bring us this information.
+    # Version number reference: https://github.com/conda/conda/issues/6948#issuecomment-369360906
+    - openjdk >=8.0.144
+
+test:
+  commands:
+    - kestrel
+    - kestrel -h 
+
+about:
+  home: 'https://github.com/paudano/kestrel'
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: COPYING
+  summary: 'Mapping-free variant caller for short-read Illumina data'
+

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "go.db-3.17.0"
+installBiocDataPackage.sh "go.db-3.20.0"

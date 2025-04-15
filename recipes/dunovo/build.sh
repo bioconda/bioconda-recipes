@@ -2,9 +2,9 @@ SubModules="bfx kalign utillib ET"
 
 # Compile binaries and move them to lib.
 if [ "x$CC" = x ]; then
-  make
+  make -j ${CPU_COUNT}
 else
-  make "CC=$CC"
+  make "CC=$CC" -j ${CPU_COUNT}
 fi
 mkdir -p "$PREFIX/lib"
 mv *.so "$PREFIX/lib"

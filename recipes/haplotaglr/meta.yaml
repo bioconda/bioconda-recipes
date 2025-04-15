@@ -1,0 +1,46 @@
+{% set name = "HaplotagLR" %}
+{% set version = "1.1.10" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: e6084d66275683a71ba15908dc42ebe86c9c531c21ec1f3e3de2a3c773ae8546
+
+build:
+  number: 0
+  entry_points:
+    - HaplotagLR = HaplotagLR.cli:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('haplotaglr', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.7,<3.13
+    - pip
+  run:
+    - python >=3.7,<3.13
+    - biopython >=1.78
+    - numpy >=1.20.1
+    - powerlaw >=1.4.6
+    - pyliftover >=0.4
+    - pysam >=0.16.0.1
+    - powerlaw >=1.4.6
+    - requests >=2.26.0
+
+test:
+  imports:
+    - HaplotagLR
+  commands:
+    - HaplotagLR --help
+
+about:
+  home: "https://github.com/Boyle-Lab/HaplotagLR.git"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Haplotagging individual long reads using known haplotype information."

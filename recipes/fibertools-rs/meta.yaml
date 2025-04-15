@@ -1,61 +1,56 @@
-{% set version = "0.3.2" %}
+{% set version = "0.6.4" %}
 {% set name = "fibertools-rs" %}
 {% set build_number = "0" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
+  
+source:  
+  url: https://github.com/fiberseq/fibertools-rs/archive/v{{ version }}.tar.gz
+  sha256: e6b0817e770f0db3dd3fcc01f196ba438384cdfaa9b33495058f0b450d747198
 
 build:
   run_exports:
-    - {{ pin_subpackage('fibertools-rs', max_pin="x") }}
+    - {{ pin_subpackage('fibertools-rs', max_pin="x.x") }}
   number: {{ build_number }}
-  detect_binary_files_with_prefix: False
-  # skip: True # [osx]
-  rpaths:
-    - lib/
-    - share/{{ name }}-{{ version }}-{{ build_number }}/lib/
-  missing_dso_whitelist:
-    - share/{{ name }}-{{ version }}-{{ build_number }}/lib/*
-    - "$RPATH/libgomp-a34b3233.so.1"
-    - "$RPATH/libcudart-d0da41ae.so.11.0"
-  #runpath_whitelist:
-  #  - share/{{ name }}-{{ version }}-{{ build_number }}/lib/*
-  # overlinking_ignore_patterns:
-  #   - share/{{ name }}-{{ version }}-{{ build_number }}/lib/*
-  
-
-source:
-  url: https://github.com/fiberseq/fibertools-rs/archive/v{{ version }}.tar.gz
-  sha256: 3607996fce7fe009e31b80b2f7d6fd6ddd152537428aa6506c24190c6f89d329
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('rust') }}
+    - cargo-bundle-licenses
     - make
     - cmake
+  # all the host and run requirements match those needed for htslib
+  host:
+    - libcurl
+    - bzip2
+    - xz
+    - zlib
+    - libdeflate
+    - openssl  # [not osx]
     - unzip
     - curl
-  host:
   run:
-
-# libz
-# $RPATH/libcuda.so.1
-# Needed DSO lib/libgomp.so.1 
+    - openssl  # [not osx]
 
 test:
   commands:
     - ft help
 
-
 about:
-  home: https://github.com/fiberseq/fibertools-rs
+  home: "https://github.com/fiberseq/fibertools-rs"
   license: MIT
-  summary: Mitchell Vollger's rust tools for fiberseq data.
-
+  license_family: MIT
+  summary: "Mitchell Vollger's rust tools for fiberseq data."
+  dev_url: "https://github.com/fiberseq/fibertools-rs"
+  doc_url: "https://fiberseq.github.io/fibertools/fibertools.html"
 
 extra:
   recipe-maintainers:
     - mrvollger
+  additional-platforms:
+    - osx-arm64
+    # - linux-aarch64 # Dependency issue, see https://github.com/bioconda/bioconda-recipes/pull/48868

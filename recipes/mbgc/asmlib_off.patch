@@ -1,0 +1,113 @@
+Subject: [PATCH] turned off asmlib for mac to avoid build problems
+---
+Index: mbgccoder/MBGC_Encoder.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/mbgccoder/MBGC_Encoder.cpp b/mbgccoder/MBGC_Encoder.cpp
+--- a/mbgccoder/MBGC_Encoder.cpp	(revision 3f75674bef8463fbfb38e5c13b2760001c82db2a)
++++ b/mbgccoder/MBGC_Encoder.cpp	(date 1728303373036)
+@@ -15,7 +15,7 @@
+     ( params->checkIfDNAisWellFormed ? (seq->dnaLineLen == DNA_NOT_WELLFORMED ? 0 : seq->dnaLineLen )  \
+         : seq->maxLastDnaLineLen ) : 0)
+ 
+-#if !defined(__arm__) && !defined(__aarch64__) && !defined(__ARM_ARCH)
++#if false
+ #include "../libs/asmlib.h"
+ #endif
+ #include "../coders/PropsLibrary.h"
+Index: matching/SlidingWindowSparseEMMatcher.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/matching/SlidingWindowSparseEMMatcher.cpp b/matching/SlidingWindowSparseEMMatcher.cpp
+--- a/matching/SlidingWindowSparseEMMatcher.cpp	(revision 3f75674bef8463fbfb38e5c13b2760001c82db2a)
++++ b/matching/SlidingWindowSparseEMMatcher.cpp	(date 1728303373000)
+@@ -28,7 +28,7 @@
+ * ================================================================= */
+ 
+ #include "SlidingWindowSparseEMMatcher.h"
+-#if !defined(__arm__) && !defined(__aarch64__) && !defined(__ARM_ARCH)
++#if false
+ #include "../libs/asmlib.h"
+ #endif
+ #include <algorithm>
+Index: mbgccoder/MBGC_Decoder.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/mbgccoder/MBGC_Decoder.cpp b/mbgccoder/MBGC_Decoder.cpp
+--- a/mbgccoder/MBGC_Decoder.cpp	(revision 3f75674bef8463fbfb38e5c13b2760001c82db2a)
++++ b/mbgccoder/MBGC_Decoder.cpp	(date 1728303418036)
+@@ -1,7 +1,7 @@
+ #include "MBGC_Decoder.h"
+ 
+ #include "../coders/CodersLib.h"
+-#if !defined(__arm__) && !defined(__aarch64__) && !defined(__ARM_ARCH)
++#if false
+ #include "../libs/asmlib.h"
+ #endif
+ #include "../matching/SimpleSequenceMatcher.h"
+Index: utils/helper.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/utils/helper.h b/utils/helper.h
+--- a/utils/helper.h	(revision 3f75674bef8463fbfb38e5c13b2760001c82db2a)
++++ b/utils/helper.h	(date 1728303373072)
+@@ -338,7 +338,7 @@
+ 
+ }
+ 
+-#if defined(__arm__) || defined(__aarch64__) || defined(__ARM_ARCH)
++#if true
+ 
+ void A_memcpy(void *dest, const void *src, size_t n);
+ 
+Index: utils/helper.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/utils/helper.cpp b/utils/helper.cpp
+--- a/utils/helper.cpp	(revision 3f75674bef8463fbfb38e5c13b2760001c82db2a)
++++ b/utils/helper.cpp	(date 1728303373058)
+@@ -582,7 +582,7 @@
+ #endif
+ }
+ 
+-#if defined(__arm__) || defined(__aarch64__) || defined(__ARM_ARCH)
++#if true
+ 
+ void A_memcpy(void *dest, const void *src, size_t n) {
+     memcpy(dest, src, n);
+Index: CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	(revision 3f75674bef8463fbfb38e5c13b2760001c82db2a)
++++ b/CMakeLists.txt	(date 1728303558182)
+@@ -99,17 +99,6 @@
+     set(CMAKE_BUILD_TYPE Release)
+ endif()
+ 
+-if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|AMD64)")
+-    if(CYGWIN OR MINGW)
+-        set(ASM_LIB ${CMAKE_SOURCE_DIR}/libs/libacof64.lib)
+-    elseif(UNIX AND NOT APPLE)
+-        set(ASM_LIB ${CMAKE_SOURCE_DIR}/libs/libaelf64.a)
+-    elseif(APPLE)
+-        set(ASM_LIB ${CMAKE_SOURCE_DIR}/libs/libamac64.a)
+-    endif()
+-    link_libraries(${ASM_LIB})
+-endif()
+-
+ link_libraries(pthread)
+ 
+ if(CYGWIN OR MINGW)

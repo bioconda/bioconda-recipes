@@ -1,0 +1,72 @@
+{% set name = "hicberg" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 8ce20f1fa8b15244d880544de214adf6105432cebfab4c0eb6b4448d329f5b91
+
+build:
+  number: 0
+  noarch: generic
+  entry_points:
+    - hicberg=hicberg.__main__:cli
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage('hicberg', max_pin="x") }}  # Added missing closing brace
+
+requirements:
+  host:
+    - bioframe
+    - biopython
+    - click
+    - cooler
+    - funcy
+    - hicstuff
+    - matplotlib-base
+    - numpy
+    - pandas
+    - pip
+    - pysam
+    - python
+    - scikit-learn
+    - scipy
+    - statsmodels
+  run:
+    - bioframe
+    - biopython
+    - click
+    - cooler
+    - funcy
+    - hicstuff
+    - matplotlib-base
+    - numpy
+    - pandas
+    - pysam
+    - python
+    - scikit-learn
+    - scipy
+    - statsmodels
+
+test:
+  imports:
+    - hicberg
+    - tests
+  commands:
+    - hicberg --help
+
+about:
+  home: "https://github.com/sebgra/hicberg"
+  license: MIT
+  license_family: MIT
+  license_file:  LICENSE
+  summary: "Statistical profiling based tool for contact data (Hi-C, ChIA-PET, Capture-C, etc.) and genomics data reconstruction"
+  doc_url:   # Empty string is valid YAML
+  dev_url:  "https://github.com/sebgra/hicberg"
+
+extra:
+  recipe-maintainers:
+    - sebgra

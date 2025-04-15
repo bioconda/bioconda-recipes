@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "regparallel-1.18.0"
+installBiocDataPackage.sh "regparallel-1.24.0"

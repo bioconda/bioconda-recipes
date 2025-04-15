@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "grndata-1.32.0"
+installBiocDataPackage.sh "grndata-1.38.0"

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "cnvgsadata-1.36.0"
+installBiocDataPackage.sh "cnvgsadata-1.42.0"

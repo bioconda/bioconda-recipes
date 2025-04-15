@@ -1,6 +1,9 @@
+{% set version = "3.3" %}
+
 package:
   name: submission-excel2xml
-  version: "2.0.0"
+  version: {{ version }}
+
 build:
   number: 0
   noarch: generic
@@ -8,26 +11,25 @@ build:
     - {{ pin_subpackage('submission-excel2xml', max_pin="x") }}
 
 source:
-  url: https://github.com/ddbj/submission-excel2xml/archive/refs/heads/master.zip
-  md5: 746ef9a1e1bd13f20a0b348fd080eb45 
-  patches:
-    - patch
+  url: https://github.com/ddbj/submission-excel2xml/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: adf438b072511d7dc16de7f18486d19a8f890171f26899b73a5af200f9ee6a47 
 
 requirements:
-  build:
-    - make
   host:
-    - ruby 3.2.2
+    - make
+    - ruby >=3.0
     - compilers
-    - libxml2
   run:
-    - ruby 3.2.2
-    - compilers
+    - ruby >=3.0
     - libxml2
 
 test:
   commands:
-    - "excel2xml_jga.rb -h"
+    # - excel2xml_dra -h
+    # - excel2xml_jga -h
+    - excel2xml_dra -a example -i 0001 -p PRJDB7252  ${XDG_DATA_HOME}/submission-excel2xml/example/example-0001_dra_metadata.xlsx && validate_meta_dra -a example -i 0001
+    - excel2xml_dra -a example -i 0002 -p PRJDB7252 -c "National Institute of Genetics" ${XDG_DATA_HOME}/submission-excel2xml/example/example-0002_dra_metadata.xlsx && validate_meta_dra -a example -i 0002
+    - excel2xml_jga -j JSUB999999 ${XDG_DATA_HOME}/submission-excel2xml/example/JSUB999999_jga_metadata.xlsx && validate_meta_jga -j JSUB999999
 
 about:
   home: https://github.com/ddbj/submission-excel2xml

@@ -1,0 +1,43 @@
+{% set name = "comparem2" %}
+{% set version = "2.13.1" %}
+{% set sha256 = "b3a0e74de55ecb1d8b1e01821d916203645fb76cd20035aa0df671f7fd2c3acd" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/cmkobel/CompareM2/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('comparem2', max_pin="x") }}
+
+requirements:
+  run:
+    - snakemake-minimal <8
+    - pulp <2.8
+    - python <3.12
+    - mamba <2 # Necessary for snakemake to install child environments during development.
+    - pandas
+  
+
+test:
+  commands:
+    - "touch dummy.fa; comparem2 --help"
+
+about:
+  home: "https://github.com/cmkobel/comparem2"
+  summary: 'CompareM2 genomes-to-report pipeline'
+  license_family: GPL3
+  license: "GPL-3.0-or-later"
+  license_file: LICENSE
+  dev_url: "https://github.com/cmkobel/comparem2"
+  doc_url: "https://comparem2.readthedocs.io"
+
+extra:
+  recipe-maintainers:
+    - cmkobel
