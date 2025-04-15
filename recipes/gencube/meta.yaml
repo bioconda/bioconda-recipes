@@ -1,0 +1,52 @@
+{% set name = "gencube" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/gencube-{{ version }}.tar.gz
+  sha256: 42871ce501775b423a652eba0deec8298380c00efd3b56b06bdbba5fe22ec36a
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - gencube = gencube.__main__:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage("gencube", max_pin="x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+  run:
+    - python
+    - biopython >=1.79
+    - pandas >=1.0.0
+    - numpy >=1.21.0,<2
+    - requests >=2.25.1
+    - urllib3 >=1.26.5
+    - xmltodict >=0.12.0
+    - beautifulsoup4 >=4.9.3
+    - tqdm >=4.61.2
+    - tabulate >=0.8.9
+
+test:
+  imports:
+    - gencube
+
+about:
+  home: "https://github.com/snu-cdrc/gencube"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "GenCube enables researchers to search for, download, retrieve metadata, and unify genome assemblies and diverse types of annotations for sequencing-based experimental data."
+  dev_url: "https://github.com/snu-cdrc/gencube"
+
+extra:
+  recipe-maintainers:
+    - keun-hong
