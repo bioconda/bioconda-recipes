@@ -13,7 +13,7 @@ if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
     DCMAKE_ARGS+=(-DIQTREE_FLAGS=omp)
     EXE_NAME=mpboot
 elif [[ "$(uname -m)" == "x86_64" ]]; then
-    DCMAKE_ARGS+=(-DIQTREE_FLAGS=avx omp)
+    DCMAKE_ARGS+=(-DIQTREE_FLAGS="avx omp")
     EXE_NAME=mpboot-avx
 else
     echo "Unsupported architecture: $(uname -m)"
@@ -46,7 +46,9 @@ if [[ "$(uname -m)" == "aarch64" ]] && [[ "${CPU_COUNT}" -lt 4 ]]; then
 	JOBS=1  # CircleCI's arm.medium VM runs out of memory with higher values
 fi
 
-cmake --build build/ -j "${JOBS}" -v
+cd build
+VERBOSE=1 make -j"${JOBS}"
+cd ..
 
 # install
 install -v -m 0755 "${SRC_DIR}/build/${EXE_NAME}" "${PREFIX}/bin"
