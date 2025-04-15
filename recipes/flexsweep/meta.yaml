@@ -13,39 +13,40 @@ source:
 
 build:
   noarch: python
-  script: |
-    {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   entry_points:
     - flexsweep = flexsweep.main:cli
   number: 0
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}a
 
 requirements:
   host:
-    - python {{ python_min }}
+    - python >={{ python_min }},<{{ python_max }}
     - pip
     - poetry-core
   run:
     - python >={{ python_min }},<{{ python_max }}
-    - tensorflow
-    - scipy <2.0.0,>=1.14.0
-    - scikit-allel <2.0.0,>=1.3.8
-    - scikit-learn <2.0.0,>=1.5.1
-    - joblib <2.0.0,>=1.4.2
-    - threadpoolctl <4.0.0,>=3.5.0
-    - click <9.0.0,>=8.1.7
+    - tensorflow 2.17
+    - scipy >=1.14.0,<2.0.0
+    - scikit-allel >=1.3.8,<2.0.0
+    - scikit-learn >=1.5.1,<2.0.0
+    - joblib >=1.4.2,<2.0.0
+    - threadpoolctl >=3.5.0,<4.0.0
+    - click >=8.1.7,<9.0.0
     - numpy ==1.26.4
-    - numba <0.61.0,>=0.60.0
-    - demes <0.3.0,>=0.2.3
-    - pyarrow <18.0.0,>=17.0.0
-    - matplotlib-base <4.0.0,>=3.9.2
-    - polars <2.0.0,>=1.14.0
+    - numba >=0.60.0,<0.61.0
+    - demes >=0.2.3,<0.3.0
+    - pyarrow >=17.0.0,<18.0.0
+    - matplotlib-base >=3.9.2,<4.0.0
+    - polars >=1.14.0,<2.0.0
     - cudatoolkit >=11.2,<12
 
 test:
   imports:
     - flexsweep
+  commands:
+    - flexsweep --help
 
 about:
   home: https://github.com/jmurga/flexsweep
