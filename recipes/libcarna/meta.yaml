@@ -1,0 +1,48 @@
+{% set name = "libcarna" %}
+{% set version = "3.3.3.beta1" %}
+{% set repo_url = "https://github.com/kostrykin/Carna" %}
+{% set docs_url = "https://kostrykin.github.io/Carna/html" %}
+
+package:
+  name: libcarna
+  version: '3.3.3'
+
+source:
+  url: "{{ repo_url }}/archive/refs/tags/{{ version }}.zip"
+  sha256: 53b6295b8ff3b7c438779544aa3da61bebfc81f9f545a6e7d6bd25b1000cd557
+
+build:
+  number: 0
+  skip: true # [not linux]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ cdt('mesa-libgl-devel') }}      # [linux]
+    - {{ cdt('mesa-libglu-devel') }}     # [linux]
+    - {{ cdt('mesa-libegl-devel') }}     # [linux]
+    - {{ cdt('libx11-devel') }}          # [linux]
+    - {{ cdt('xorg-x11-proto-devel') }}  # [linux]
+    - cmake >=2.8, <=3.28.3
+    - eigen >=3.0.5
+    - boost-cpp
+  host:
+  run:
+
+test:
+  files:
+    - 'Carna.h'
+
+about:
+  home: "{{ repo_url }}"
+  license: 'BSD-3'
+  summary: 'Real-time 3D visualization of biomedical data and beyond'
+  dev_url: "{{ repo_url }}"
+  doc_url: "{{ docs_url }}"
+
+extra:
+  recipe-maintainers:
+    - kostrykin
