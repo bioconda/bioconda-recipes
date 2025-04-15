@@ -4,7 +4,7 @@ set -ex
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-deprecated-declarations -Wno-ignored-attributes -Wno-unused-result -Wno-deprecated"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-deprecated-declarations -Wno-ignored-attributes -Wno-unused-result -Wno-deprecated -Wno-deprecated-non-prototype"
 
 mkdir -p "${PREFIX}/bin"
 
@@ -53,3 +53,7 @@ cd ..
 
 # install
 install -v -m 0755 "${SRC_DIR}/build/${EXE_NAME}" "${PREFIX}/bin"
+
+if [[ "$(uname -m)" == "x86_64" ]]; then
+	ln -sf "${PREFIX}/bin/${EXE_NAME}" "${PREFIX}/bin/mpboot"
+fi
