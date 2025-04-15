@@ -1,0 +1,53 @@
+{% set name = "cleanifier" %}
+{% set version = "0.2.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/cleanifier-{{ version }}.tar.gz
+  sha256: b36bc13a482bef535a6f6ca65c1cf714a89966a7cec96609edc6a6b4ecb8d123
+
+build:
+  entry_points:
+    - cleanifier = cleanifier.cleanifier.cleanifier_main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - setuptools >=69.0.3
+    - pip
+  run:
+    - python >=3.12
+    - numpy
+    - numba
+    - pytest
+    - jsonargparse >=4.29.0
+    - llvmlite
+    - clangdev
+
+test:
+  imports:
+    - cleanifier
+  commands:
+    - cleanifier --help
+    - cleanifier index --help
+    - cleanifier filter --help
+
+about:
+  summary: "A fast lightweight tool to remove contamination using k-mers."
+  home: https://gitlab.com/rahmannlab/cleanifier
+  dev_url: https://gitlab.com/rahmannlab/cleanifier
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - JZentgraf
