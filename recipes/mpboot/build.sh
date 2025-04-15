@@ -22,6 +22,7 @@ fi
 
 if [[ `uname` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	export CFLAGS="${CFLAGS} -fno-define-target-os-macros"
 else
 	export CONFIG_ARGS=""
 fi
@@ -51,4 +52,4 @@ VERBOSE=1 make -j"${JOBS}"
 cd ..
 
 # install
-install -v -m 0755 "${SRC_DIR}/${EXE_NAME}" "${PREFIX}/bin"
+install -v -m 0755 "${SRC_DIR}/build/${EXE_NAME}" "${PREFIX}/bin"
