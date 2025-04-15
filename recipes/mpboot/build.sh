@@ -13,7 +13,7 @@ if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
     DCMAKE_ARGS+=(-DIQTREE_FLAGS=omp)
     EXE_NAME=mpboot
 elif [[ "$(uname -m)" == "x86_64" ]]; then
-    DCMAKE_ARGS+=(-DIQTREE_FLAGS="avx omp")
+    DCMAKE_ARGS+=(-DIQTREE_FLAGS=avx)
     EXE_NAME=mpboot-avx
 else
     echo "Unsupported architecture: $(uname -m)"
