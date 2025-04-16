@@ -9,6 +9,9 @@ else
 	export CONFIG_ARGS=""
 fi
 
+sed -i.bak 's|VERSION 2.6|VERSION 3.5|' CMakeLists.txt
+rm -rf *.bak
+
 cmake -S. -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
