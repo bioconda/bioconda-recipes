@@ -1,11 +1,18 @@
-#!/bin/bash -e
+#!/bin/bash -xeuo
 
-# TODO: Remove the following export when pinning is updated and we use
-#       {{ compiler('rust') }} in the recipe.
-export \
-    CARGO_NET_GIT_FETCH_WITH_CLI=true \
-    CARGO_HOME="${BUILD_PREFIX}/.cargo"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration -Wno-int-conversion"
 
-export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+# Make sure bindgen passes on our compiler flags.
+export BINDGEN_EXTRA_CLANG_ARGS="${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
 
-cargo install --no-track --verbose --root "${PREFIX}" --path .
+rm .cargo/config.toml  # remove custom config.toml for now
+# export ROCKSDB_LIB_DIR="${PREFIX}/lib"
+# export SNAPPY_LIB_DIR="${PREFIX}/lib"
+
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+
+# build statically linked binary with Rust
+cargo install --no-track --locked --root "${PREFIX}" --path .
+
