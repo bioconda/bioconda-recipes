@@ -9,7 +9,7 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 if [[ "$(uname -m)" == "aarch64" ]]; then
-  sed -i.bak -e 's|0.45.0|0.47.0|' Cargo.toml
+  sed -i.bak -e 's|0.20.3|0.21.2|' Cargo.toml
   rm -rf *.bak
 fi
 
