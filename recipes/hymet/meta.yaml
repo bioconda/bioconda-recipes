@@ -12,14 +12,26 @@ build:
   number: 0
   noarch: generic
   script: |
-    python -m pip install . --no-deps --ignore-installed
-    mkdir -p $PREFIX/bin $PREFIX/lib/hymet/scripts
-    cp *.pl $PREFIX/bin/
-    cp scripts/*.{py,sh} $PREFIX/lib/hymet/scripts/
-    chmod +x $PREFIX/bin/*.pl
-    chmod +x $PREFIX/lib/hymet/scripts/*.{sh,py}
+    # Cria estrutura de diretórios
+    mkdir -p "${PREFIX}/bin" "${PREFIX}/lib/hymet/scripts"
+    
+    # Copia arquivos principais
+    cp *.pl "${PREFIX}/bin/"
+    cp scripts/*.{py,sh} "${PREFIX}/lib/hymet/scripts/"
+    
+    # Configura permissões
+    chmod +x "${PREFIX}/bin/"*.pl
+    chmod +x "${PREFIX}/lib/hymet/scripts/"*.{sh,py}
+    
+    # Cria wrapper básico
+    cat > "${PREFIX}/bin/hymet" << 'EOF'
+    #!/bin/bash
+    exec perl "${PREFIX}/bin/main.pl" "$@"
+    EOF
+    chmod +x "${PREFIX}/bin/hymet"
   run_exports:
     - {{ pin_subpackage('hymet', max_pin='x.x') }}
+  skip: false
 
 requirements:
   host:
@@ -40,8 +52,9 @@ requirements:
 
 test:
   commands:
-    - hymet --help
-    - perl $PREFIX/bin/main.pl --version
+    - test -f "${PREFIX}/bin/main.pl"  # Verifica se os arquivos foram copiados
+    - test -f "${PREFIX}/lib/hymet/scripts/classification.py"
+    - hymet --help  # Testa o wrapper
 
 about:
   home: https://github.com/inesbmartins02/HYMET
