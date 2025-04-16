@@ -1,9 +1,10 @@
-echo "
-#include <Carna/Carna.h>
+set -xe
 
-int main()
-{
-}
-" > test.cpp
+mkdir -p test/build
+cd test/build
 
-${CXX} test.cpp -I${CONDA_PREFIX}/include -L${CONDA_PREFIX}/lib -lGLU -lCarna-3.3.3  # TODO: replace by {{ version }}
+cmake -DCMAKE_MODULE_PATH="${CONDA_PREFIX}/share/cmake/Modules" ..
+make
+
+ls -al
+./test
