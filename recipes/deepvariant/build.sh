@@ -3,21 +3,21 @@ set -eu -o pipefail
 
 # ## Binary install with wrappers
 
-SHAREDIR="share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
-TGT="$PREFIX/$SHAREDIR"
-[ -d "$TGT" ] || mkdir -p "$TGT"
+SHAREDIR="share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
+TGT="${PREFIX}/${SHAREDIR}"
+[ -d "${TGT}" ] || mkdir -p "${TGT}"
 [ -d "${PREFIX}/bin" ] || mkdir -p "${PREFIX}/bin"
 
-mv binaries $TGT
-mv models $TGT
+#mv binaries $TGT
+#mv models $TGT
 
-cd $PREFIX
-BINARY_DIR=`ls -d $SHAREDIR/binaries/DeepVariant/*/DeepVariant*`
-WGS_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*wgs_standard`
-WES_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*wes_standard`
-PACBIO_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*pacbio_standard`
-HYBRID_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*hybrid_standard`
-cd $SRC_DIR
+cd ${PREFIX}
+#BINARY_DIR=`ls -d $SHAREDIR/binaries/DeepVariant/*/DeepVariant*`
+#WGS_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*wgs_standard`
+#WES_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*wes_standard`
+#PACBIO_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*pacbio_standard`
+#HYBRID_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*hybrid_standard`
+cd ${SRC_DIR}
 
 # TF slim is difficult because there is an existing tf-slim package in conda-forge
 # https://github.com/conda-forge/tf-slim-feedstock
@@ -25,10 +25,10 @@ cd $SRC_DIR
 # This appears to be a temporary situation: https://github.com/google-research/tf-slim/issues/6
 # so temporarily install via pip in the build.sh to avoid conflicts
 # https://github.com/google/deepvariant/blob/4b937f03a1336d1dc6fd4c0eef727e1f83d2152a/run-prereq.sh#L109
-pip install --no-deps --no-build-isolation --no-cache-dir git+https://github.com/google-research/tf-slim.git
+${PYTHON} -m pip install --no-deps --no-build-isolation --no-cache-dir -vvv "git+https://github.com/google-research/tf-slim.git"
 
 # models installed in post-link script
-rm -rf $TGT/models
+#rm -rf $TGT/models
 
 # Fix hardcoded python inside binary directories
 for ZIPBIN in make_examples call_variants postprocess_variants
