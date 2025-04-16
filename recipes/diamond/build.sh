@@ -19,7 +19,7 @@ cmake -S. -B build -DCMAKE_BUILD_TYPE=Release \
 	-DWITH_ZSTD=ON -DSTATIC_LIBGCC=ON -DSTATIC_LIBSTDC++=ON \
 	-DZSTD_LIBRARY="${PREFIX}/lib/libzstd.a" \
 	-DZSTD_INCLUDE_DIR="${PREFIX}/include" \
-	-DBLAST_INCLUDE_DIR="${PREFIX}/include/ncbi" \
+	-DBLAST_INCLUDE_DIR="${PREFIX}/include" \
 	-DBLAST_LIBRARY_DIR="${PREFIX}/lib/ncbi-blast+" \
 	-DCMAKE_OSX_DEPLOYMENT_TARGET="" \
 	"${CONFIG_ARGS}"
