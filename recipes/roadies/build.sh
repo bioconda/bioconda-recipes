@@ -7,25 +7,15 @@ ls -al
 
 mkdir -p $PREFIX/ROADIES
 
-# Download and setup ASTER repository if not already done
-if [[ ! -d "ASTER-Linux" ]]; then
-    wget -q https://github.com/chaoszhang/ASTER/archive/refs/heads/Linux.zip -O Linux.zip
-    unzip -q Linux.zip
-    cd ASTER-Linux
-    ${CXX} -D CASTLES -std=gnu++11 -march=native -Ofast -pthread src/astral-pro.cpp -o bin/astral-pro3
-    cd ..
-fi
-
 # Build sampling code
 if [[ ! -d "workflow/scripts/sampling/build" ]]; then
     cd workflow/scripts/sampling
     mkdir -p build
     cd build
     cmake .. -DCMAKE_INSTALL_PREFIX="${PREFIX}"
-    make
+    make -j"${CPU_COUNT}"
     cd ../../../..
 fi
-
 
 # Debugging: Print current directory and list its contents before copying
 echo "Current directory before copying ROADIES: $(pwd)"
