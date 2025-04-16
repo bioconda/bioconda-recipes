@@ -1,4 +1,15 @@
-mkdir -pv $PREFIX/bin
-make CC="${CXX}" LINKER="${CXX}" -j ${CPU_COUNT}
-cp cdbfasta $PREFIX/bin
-cp cdbyank $PREFIX/bin
+#!/bin/bash
+
+mkdir -pv ${PREFIX}/bin
+
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
+if [[ `uname` == "Darwin" ]]; then
+  export CXXFLAGS="${CXXFLAGS} -Wno-register -Wno-unused-but-set-variable -Wno-misleading-indentation"
+fi
+
+make CC="${CXX}" LINKER="${CXX}" -j"${CPU_COUNT}"
+install -v -m 0755 cdbfasta "${PREFIX}/bin"
+install -v -m 0755 cdbyank "${PREFIX}/bin"
