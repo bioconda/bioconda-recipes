@@ -6,39 +6,16 @@ package:
 
 build:
   number: 0
-  noarch: generic  # Mudado de 'python' para 'generic' (pois não é só Python)
+  noarch: generic
   script: |
-    # Instala dependências Python
     {{ PYTHON }} -m pip install pandas numpy biopython tqdm
-    
-    # Cria estrutura de diretórios
     mkdir -p $PREFIX/bin $PREFIX/lib/hymet/scripts
-    
-    # Copia arquivos principais
     cp *.pl $PREFIX/bin/
     cp scripts/*.{py,sh} $PREFIX/lib/hymet/scripts/
-    
-    # Dá permissões
     chmod +x $PREFIX/bin/*.pl
     chmod +x $PREFIX/lib/hymet/scripts/*.{sh,py}
-    
-    # Cria um wrapper Python (opcional)
-    cat > $PREFIX/bin/hymet << 'EOF'
-    #!/usr/bin/env python3
-    import subprocess
-    import sys
-    from pathlib import Path
-    
-    def run():
-        if len(sys.argv) > 1:
-            subprocess.run([str(Path(__file__).parent / "main.pl"] + sys.argv[1:])
-        else:
-            print("Use: hymet [comando]")
-    
-    if __name__ == "__main__":
-        run()
-    EOF
-    chmod +x $PREFIX/bin/hymet
+  run_exports:  # <-- ADICIONE ESTA SEÇÃO
+    - {{ pin_subpackage('hymet', max_pin='x.x') }}
   skip: False
 
 source:
@@ -64,8 +41,8 @@ requirements:
 
 test:
   commands:
-    - hymet --help  # Testa se o wrapper funciona
-    - perl $PREFIX/bin/main.pl --version  # Testa o script Perl
+    - hymet --help
+    - perl $PREFIX/bin/main.pl --version
 
 about:
   home: https://github.com/inesbmartins02/HYMET
