@@ -5,6 +5,7 @@ sed -i.bak 's/-march=native/-march=x86-64/' CMakeLists.txt
 mkdir build
 cd build
 
+export CXXFLAGS="${CXXFLAGS} -std=c++14"
 
 cmake .. \
       -DCMAKE_INSTALL_PREFIX=$PREFIX \
