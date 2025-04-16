@@ -4,10 +4,10 @@ mkdir -pv ${PREFIX}/bin
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-register"
 
 if [[ `uname` == "Darwin" ]]; then
-  export CXXFLAGS="${CXXFLAGS} -Wno-register -Wno-unused-but-set-variable -Wno-misleading-indentation"
+  export CXXFLAGS="${CXXFLAGS} -Wno-unused-but-set-variable -Wno-misleading-indentation"
 fi
 
 make CC="${CXX}" LINKER="${CXX}" -j"${CPU_COUNT}"
