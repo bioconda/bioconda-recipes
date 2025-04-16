@@ -4,23 +4,22 @@ package:
   name: hymet
   version: {{ version }}
 
+source:
+  url: https://github.com/inesbmartins02/HYMET/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b4985691ab6f813bc919449a9d6bcb05ef02980bca05260cd3c3418530a927b7
+
 build:
   number: 0
   noarch: generic
   script: |
-    {{ PYTHON }} -m pip install pandas numpy biopython tqdm
+    python -m pip install . --no-deps --ignore-installed
     mkdir -p $PREFIX/bin $PREFIX/lib/hymet/scripts
     cp *.pl $PREFIX/bin/
     cp scripts/*.{py,sh} $PREFIX/lib/hymet/scripts/
     chmod +x $PREFIX/bin/*.pl
     chmod +x $PREFIX/lib/hymet/scripts/*.{sh,py}
-  run_exports:  # <-- ADICIONE ESTA SEÇÃO
+  run_exports:
     - {{ pin_subpackage('hymet', max_pin='x.x') }}
-  skip: False
-
-source:
-  url: https://github.com/inesbmartins02/HYMET/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: b4985691ab6f813bc919449a9d6bcb05ef02980bca05260cd3c3418530a927b7
 
 requirements:
   host:
@@ -47,7 +46,7 @@ test:
 about:
   home: https://github.com/inesbmartins02/HYMET
   license: GPL-3.0-only
-  license_file: LICENSE  
+  license_file: LICENSE
   summary: "Hybrid Metagenomic Tool for advanced sequence analysis"
   doc_url: https://github.com/inesbmartins02/HYMET/blob/main/README.md
   dev_url: https://github.com/inesbmartins02/HYMET
