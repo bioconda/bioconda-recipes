@@ -8,6 +8,7 @@ export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration -Wno-int-convers
 export BINDGEN_EXTRA_CLANG_ARGS="${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
 echo "BINDGEN_EXTRA_CLANG_ARGS=${BINDGEN_EXTRA_CLANG_ARGS}"
 
+rm .cargo/config.toml  # remove custom config.toml for now
 # export ROCKSDB_LIB_DIR="${PREFIX}/lib"
 # export SNAPPY_LIB_DIR="${PREFIX}/lib"
 # echo "ROCKSDB_LIB_DIR=${ROCKSDB_LIB_DIR}"
