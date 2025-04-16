@@ -7,7 +7,9 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3 -Wno-register"
 
 if [[ `uname` == "Darwin" ]]; then
-  export CXXFLAGS="${CXXFLAGS} -Wno-unused-but-set-variable -Wno-misleading-indentation"
+  export CXXFLAGS="${CXXFLAGS} -Wno-unused-but-set-variable"
+else
+  export CXXFLAGS="${CXXFLAGS} -Wno-misleading-indentation"
 fi
 
 make CC="${CXX}" LINKER="${CXX}" -j"${CPU_COUNT}"
