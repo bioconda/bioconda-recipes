@@ -1,0 +1,46 @@
+{% set name = "pytantan" %}
+{% set version = "0.1.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pytantan-{{ version }}.tar.gz
+  sha256: b1f8addeeb7955a1a7ca57f08415bcc7a36f95f30d23d477f6075d2cce025c4a
+
+build:
+  skip: true  # [py<37]
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.7
+    - scikit-build-core
+    - cython >=3.0
+    - scoring-matrices >=0.3.0,<0.4.dev0
+    - pip
+  run:
+    - python >=3.7
+    - archspec >=0.2,<1.dev0
+    - scoring-matrices >=0.3.0,<0.4.dev0
+
+test:
+  imports:
+    - pytantan
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  summary: Cython bindings and Python interface to Tantan, a fast method for identifying repeats in DNA and protein sequences.
+  license: GPL-3.0
+  license_file:
+    - COPYING
+    - vendor/tantan/COPYING.txt
+
+extra:
+  recipe-maintainers:
+    - althonos
