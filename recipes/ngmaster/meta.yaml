@@ -1,29 +1,34 @@
 {% set name = "ngmaster" %}
-{% set version = "1.0.0" %}
+{% set version = "1.1.1" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://files.pythonhosted.org/packages/b2/93/1e7b3a86c0df54b2b1a3a540ccf8a149f262fe350707d4a86b5fd3206302/ngmaster-1.0.0.tar.gz"
-  sha256: 4629c051b7133241afd8bdea9e152bcbabea62f908a66d2fc688f0415029c94c
+  url: "https://files.pythonhosted.org/packages/17/9d/fd8ab3326d2c09d3d0025f2fc1fbc4bfc10113e175f5d0ff3335018d2bfb/ngmaster-1.1.1.tar.gz"
+  sha256: 538149cf2b2f43db42b6cb5389a0388f9a41aa44757f02873a85d92c9f581fcc
 
 build:
   number: 0
   noarch: python
   entry_points:
     - ngmaster=ngmaster.run_ngmaster:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir"
+  run_exports:
+    - {{ pin_subpackage('ngmaster', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.7,<=3.9
+    - python >=3.6
     - pip
+    - setuptools
   run:
-    - python >=3.7,<=3.9
+    - python >=3.6
     - biopython
+    - bs4
     - requests
+    - setuptools
     - mlst
 
 test:
@@ -32,15 +37,13 @@ test:
   commands:
     - ngmaster --help
     - ngmaster --version
-    - mlst --version
-    - mlst --help
 
 about:
   home: "https://github.com/MDU-PHL/ngmaster"
-  license: "GNU General Public License v3.0 only"
+  license: "GPL-3.0-only"
   license_family: "GPL3"
   license_file: "LICENSE"
-  summary: "In silico multi-antigen sequence typing for Neisseria gonorrhoeae (NG-MAST) and Neisseria gonorrhoeae sequence typing for antimicrobial resistance (NG-STAR)"
+  summary: "In silico multi-antigen sequence typing for Neisseria gonorrhoeae (NG-MAST) and Neisseria gonorrhoeae sequence typing for antimicrobial resistance (NG-STAR)."
   doc_url: "https://github.com/MDU-PHL/ngmaster/blob/master/README.md"
   dev_url: "https://github.com/MDU-PHL/ngmaster"
 
