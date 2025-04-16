@@ -1,11 +1,7 @@
 #!/bin/bash
 
-export ROOT="$(pwd)"
+export CMAKE_ARGS="-DCMAKE_INSTALL_PREFIX=\"$PREFIX\" -DCMAKE_INSTALL_LIBDIR=\"$PREFIX\""
+INSTALL=off BUILD=only_release ./linux_build-egl.bash
 
-INSTALL=off ./linux_build-egl.bash
-
-cd "$ROOT/build/make_debug"
-make install
-
-cd "$ROOT/build/make_release"
+cd "build/make_release"
 make install
