@@ -1,0 +1,50 @@
+diff --git a/Makefile b/Makefile
+index 42754b5..f36eef6 100644
+--- a/Makefile
++++ b/Makefile
+@@ -3,9 +3,9 @@
+ THISCODEDIR := .
+ GCLDIR := ./gclib
+ # Directory where libz.a can be found
+-ZDIR := ../zlib
++ZDIR := ${PREFIX}/lib
+ # Directories to search for header files
+-SEARCHDIRS := -I${ZDIR} -I${THISCODEDIR} -I${GCLDIR}
++SEARCHDIRS := -I${PREFIX}/include -I${THISCODEDIR} -I${GCLDIR}
+ 
+ 
+ SYSTYPE :=     $(shell uname)
+@@ -16,12 +16,12 @@ ifeq ($(MACHTYPE), i686)
+     MARCH = -march=i686
+ else
+     MARCH = 
+-endif    
++endif
+ 
+-CC      := g++
+-BASEFLAGS  = -Wall ${SEARCHDIRS} $(MARCH) -DENABLE_COMPRESSION=0 -D_FILE_OFFSET_BITS=64 \
++CC      := ${CXX}
++BASEFLAGS  = -Wall ${SEARCHDIRS} $(MARCH) -DENABLE_COMPRESSION=1 -D_FILE_OFFSET_BITS=64 \
+ -D_LARGEFILE_SOURCE -fno-exceptions -fno-rtti -fno-strict-aliasing \
+--D_REENTRANT 
++-D_REENTRANT -O3 -Wno-register -Wno-misleading-indentation -Wno-maybe-uninitialized -Wno-format -Wno-register
+ 
+ 
+ ifeq ($(findstring debug,$(MAKECMDGOALS)),)
+@@ -55,13 +55,13 @@ endif
+ 
+ # C/C++ linker
+ 
+-LINKER    := g++
+-LDFLAGS    = -lz
++LINKER    := ${CXX}
++LDFLAGS    = -L${PREFIX}/lib -lz
+ #if ENABLE_COMPRESSION is not needed,
+ # LDFLAGS = 
+ 
+ .PHONY : all
+-all:    cdbfasta cdbyank 
++all:    cdbfasta cdbyank
+ debug:  all
+ nommap: all
+ cdbfasta:  ./cdbfasta.o ./gcdbz.o $(LIBS) ${GCLDIR}/gcdb.o ${GCLDIR}/GBase.o ${GCLDIR}/GStr.o ${GCLDIR}/GArgs.o
