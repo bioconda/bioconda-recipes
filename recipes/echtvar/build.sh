@@ -12,4 +12,4 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 # build statically linked binary with Rust
 export RUSTC_BOOTSTRAP=1
 export LD=$CC
-C_INCLUDE_PATH=$PREFIX/include LIBRARY_PATH=$PREFIX/lib RUST_BACKTRACE=1 cargo install --verbose --root $PREFIX --path . --no-track
+C_INCLUDE_PATH=$PREFIX/include LIBRARY_PATH=$PREFIX/lib RUST_BACKTRACE=1 cargo install --verbose --root $PREFIX --path . --target x86_64-unknown-linux-gnu
