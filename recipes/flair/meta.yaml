@@ -1,6 +1,9 @@
+{% set name = "flair" %}
+{% set version = "2.1.2" %}
+
 package:
-  name: flair
-  version: 2.1.2
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://files.pythonhosted.org/packages/3e/17/fbccc3a27558c746761cedff82e9871d5b4b708e33c9b9781725ea710fbc/flair_brookslab-2.1.2.tar.gz
@@ -8,15 +11,36 @@ source:
 
 build:
   noarch: python
-  number: 1
-  script: {{ PYTHON }} -m pip install --ignore-installed --no-deps --no-cache-dir -vv .
-
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  entry_points:
+    - flair = flair.flair_cli:main
+    - assign_variants_to_transcripts = flair.assign_variants_to_transcripts:main
+    - junctions_from_sam = flair.junctions_from_sam:main
+    - mark_intron_retention = flair.mark_intron_retention:main
+    - mark_productivity = flair.mark_productivity:main
+    - normalize_counts_matrix = flair.normalize_counts_matrix:main
+    - bam2Bed12 = flair.bam2Bed12:main
+    - plot_isoform_usage = flair.plot_isoform_usage:main
+    - predictProductivity = flair.predictProductivity:main
+    - sam_to_map = flair.sam_to_map:main
+    - fasta_seq_lengths = flair.fasta_seq_lengths:main
+    - gtf_to_bed = flair.gtf_to_bed:main
+    - bed_to_sequence = flair.bed_to_sequence:main
+    - identify_annotated_gene = flair.identify_annotated_gene:main
+    - identify_gene_isoform = flair.identify_gene_isoform:main
+    - diff_iso_usage = flair.diff_iso_usage:main
+    - diffsplice_fishers_exact = flair.diffsplice_fishers_exact:main
+    - flair_combine = flair.flair_combine:main
+    - bed_to_gtf = flair.bed_to_gtf:main
+  run_exports:
+    - {{ pin_subpackage('flair', max_pin="x") }}
+>>>>>>> 5d20c9b15f (Update flair to 2.1.1 (#54956))
 
 requirements:
   host:
     - python >=3.12,<3.13
     - pip
-    - wget
     - poetry-core
   run:
     - python >=3.12,<3.13
@@ -39,10 +63,14 @@ test:
     - flair align --help
 
 about:
-  home: https://github.com/BrooksLabUCSC/flair 
-  license: BSD-3
-  summary: Correction, isoform definition, and alternative splicing analysis of noisy reads (ONT and PacBio).
+  home: "https://github.com/BrooksLabUCSC/flair"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: "LICENSE.txt"
+  summary: "Correction, isoform definition, and alternative splicing analysis of noisy reads (ONT and PacBio)."
+  dev_url: "https://github.com/BrooksLabUCSC/flair"
+  doc_url: "https://flair.readthedocs.io"
 
 extra:
   identifiers:
-    - doi:10.1101/410183
+    - doi:10.1038/s41467-020-15171-6
