@@ -44,15 +44,15 @@ ${PYTHON} -m pip install --no-deps --no-build-isolation --no-cache-dir -vvv "git
 #done
 
 # Copy wrapper scripts, pointing to internal binary and model directories
-cp -rf ${RECIPE_DIR}/dv_make_examples.py $PREFIX/bin
+install -v -m 0755 ${RECIPE_DIR}/dv_make_examples.py "${PREFIX}/bin"
 #sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_make_examples.py
-cp -rf ${RECIPE_DIR}/dv_call_variants.py $PREFIX/bin
+install -v -m 0755 ${RECIPE_DIR}/dv_call_variants.py "${PREFIX}/bin"
 #sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_call_variants.py
 #sed -i.bak "s|WGSMODELSUB|${WGS_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
 #sed -i.bak "s|WESMODELSUB|${WES_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
 #sed -i.bak "s|PACBIOMODELSUB|${PACBIO_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
 #sed -i.bak "s|HYBRIDMODELSUB|${HYBRID_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
-cp -rf ${RECIPE_DIR}/dv_postprocess_variants.py $PREFIX/bin
+install -v -m 0755 ${RECIPE_DIR}/dv_postprocess_variants.py "${PREFIX}/bin"
 #sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_postprocess_variants.py
 #rm -rf $PREFIX/bin/*.bak
 
