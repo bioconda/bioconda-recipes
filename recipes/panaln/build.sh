@@ -1,14 +1,11 @@
 #!/bin/bash
 
-export CC=$(basename ${C_COMPILER})
-export CXX=$(basename ${CXX_COMPILER})
-gcc --version
 cd FM/
-make
+make CC="$CC" CXX="$CXX"
 cd ../semiWFA/
-make
+make CC="$CC" CXX="$CXX"
 cd ../
-make
+make CC="$CC" CXX="$CXX"
 mkdir -p $PREFIX/bin
 cp panaln $PREFIX/bin
 
