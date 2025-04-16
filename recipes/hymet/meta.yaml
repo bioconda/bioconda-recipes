@@ -6,11 +6,40 @@ package:
 
 build:
   number: 0
-  noarch: python  
-  script: "bash build.sh"  # Remove o pip install, substitui por build.sh
+  noarch: generic  # Mudado de 'python' para 'generic' (pois não é só Python)
+  script: |
+    # Instala dependências Python
+    {{ PYTHON }} -m pip install pandas numpy biopython tqdm
+    
+    # Cria estrutura de diretórios
+    mkdir -p $PREFIX/bin $PREFIX/lib/hymet/scripts
+    
+    # Copia arquivos principais
+    cp *.pl $PREFIX/bin/
+    cp scripts/*.{py,sh} $PREFIX/lib/hymet/scripts/
+    
+    # Dá permissões
+    chmod +x $PREFIX/bin/*.pl
+    chmod +x $PREFIX/lib/hymet/scripts/*.{sh,py}
+    
+    # Cria um wrapper Python (opcional)
+    cat > $PREFIX/bin/hymet << 'EOF'
+    #!/usr/bin/env python3
+    import subprocess
+    import sys
+    from pathlib import Path
+    
+    def run():
+        if len(sys.argv) > 1:
+            subprocess.run([str(Path(__file__).parent / "main.pl"] + sys.argv[1:])
+        else:
+            print("Use: hymet [comando]")
+    
+    if __name__ == "__main__":
+        run()
+    EOF
+    chmod +x $PREFIX/bin/hymet
   skip: False
-  run_exports:
-    - {{ pin_subpackage('hymet', max_pin='x.x') }}
 
 source:
   url: https://github.com/inesbmartins02/HYMET/archive/refs/tags/v{{ version }}.tar.gz
@@ -20,6 +49,7 @@ requirements:
   host:
     - python >=3.8
     - pip
+    - perl
   run:
     - python >=3.8
     - perl
@@ -34,8 +64,8 @@ requirements:
 
 test:
   commands:
-    - python -c "import hymet"  # Verifique se este módulo existe!
-    - python -c "import biopython"
+    - hymet --help  # Testa se o wrapper funciona
+    - perl $PREFIX/bin/main.pl --version  # Testa o script Perl
 
 about:
   home: https://github.com/inesbmartins02/HYMET
