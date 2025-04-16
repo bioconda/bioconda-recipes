@@ -14,5 +14,4 @@ rm .cargo/config.toml  # remove custom config.toml for now
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # build statically linked binary with Rust
-RUST_BACKTRACE=1
-cargo install --verbose --no-track --locked --root "${PREFIX}" --path .
+cargo install --no-track --locked --root "${PREFIX}" --path .
