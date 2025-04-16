@@ -12,7 +12,7 @@ export CFLAGS="${CFLAGS} -O3"
 sed -i.bak -e 's|gcc|${CC}|' src/Makefile
 rm -rf src/*.bak
 
-make clean
+make CC="${CC}" clean
 # Build lastz and lastz_D (lastz_D uses floating-point scores
 make CC="${CC}" -j"${CPU_COUNT}"
 # Build lastz_32, which uses 32-bit and 40-bit positions indices and can handle genomes larger than 2Gb and 8Gb, respectively.
