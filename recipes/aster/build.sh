@@ -10,23 +10,24 @@ do
 	cp -rf "${RECIPE_DIR}/${CHANGE}.sh" "${PREFIX}/etc/conda/${CHANGE}.d/${PKG_NAME}_${CHANGE}.sh"
 done
 
-sed -i.bak 's|-O2|-O3|' makefile
-rm -rf *.bak
-
-if [[ `uname -m` != "aarch64" ]]; then
+if [[ `uname -m` == "x86_64" ]]; then
 	sed -i.bak 's/-march=native/-march=x86-64 -mtune=generic/g' makefile
-	rm -rf *.bak
+elif [[ `uname -m` == "arm64" ]]; then
+	sed -i.bak 's/-march=native/-mtune=generic/g' makefile
 fi
 
 if [[ "$(uname)" == "Darwin" ]]; then
-	sed -i.bak2 's/g++/${CXX}/g' makefile
-	rm -rf *.bak
+	sed -i.bak 's/g++/${CXX}/g' makefile
+	sed -i.bak 's/g++/${CXX}/g' makefile
 	make -j"${CPU_COUNT}" mac
 else
-	sed -i.bak2 's/g++/${CXX}/g' makefile
-	rm -rf *.bak
+	sed -i.bak 's/g++/${CXX}/g' makefile
+	sed -i.bak 's/g++/${CXX}/g' makefile
 	make -j"${CPU_COUNT}"
 fi
+
+sed -i.bak 's|-O2|-O3|' makefile
+rm -rf *.bak
 
 [[ ! -d ${PREFIX}/bin ]] && mkdir -p "${PREFIX}/bin"
 
