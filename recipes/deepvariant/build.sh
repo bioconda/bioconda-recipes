@@ -8,15 +8,15 @@ TGT="${PREFIX}/${SHAREDIR}"
 [ -d "${TGT}" ] || mkdir -p "${TGT}"
 [ -d "${PREFIX}/bin" ] || mkdir -p "${PREFIX}/bin"
 
-mv binaries $TGT
-mv models $TGT
+#mv binaries $TGT
+#mv models $TGT
 
 cd ${PREFIX}
-BINARY_DIR=`ls -d $SHAREDIR/binaries/DeepVariant/*/DeepVariant*`
-WGS_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*wgs_standard`
-WES_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*wes_standard`
-PACBIO_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*pacbio_standard`
-HYBRID_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*hybrid_standard`
+#BINARY_DIR=`ls -d $SHAREDIR/binaries/DeepVariant/*/DeepVariant*`
+#WGS_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*wgs_standard`
+#WES_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*wes_standard`
+#PACBIO_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*pacbio_standard`
+#HYBRID_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*hybrid_standard`
 cd ${SRC_DIR}
 
 # TF slim is difficult because there is an existing tf-slim package in conda-forge
@@ -28,33 +28,33 @@ cd ${SRC_DIR}
 ${PYTHON} -m pip install --no-deps --no-build-isolation --no-cache-dir -vvv "git+https://github.com/google-research/tf-slim.git"
 
 # models installed in post-link script
-rm -rf $TGT/models
+#rm -rf $TGT/models
 
 # Fix hardcoded python inside binary directories
-for ZIPBIN in make_examples call_variants postprocess_variants
-do
-	unzip -d $ZIPBIN $PREFIX/$BINARY_DIR/$ZIPBIN.zip
-	sed -i.bak "s|PYTHON_BINARY = '/usr/bin/python3.6'|PYTHON_BINARY = sys.executable|" $ZIPBIN/__main__.py
-	rm -rf $ZIPBIN/*.bak
-	rm -rf $ZIPBIN.zip
-	cd $ZIPBIN
-	zip -q --symlinks -r ../$ZIPBIN.zip *
-	cd ..
-	mv $ZIPBIN.zip $PREFIX/$BINARY_DIR
-done
+#for ZIPBIN in make_examples call_variants postprocess_variants
+#do
+#	unzip -d $ZIPBIN $PREFIX/$BINARY_DIR/$ZIPBIN.zip
+#	sed -i.bak "s|PYTHON_BINARY = '/usr/bin/python3.6'|PYTHON_BINARY = sys.executable|" $ZIPBIN/__main__.py
+#	rm -rf $ZIPBIN/*.bak
+#	rm -rf $ZIPBIN.zip
+#	cd $ZIPBIN
+#	zip -q --symlinks -r ../$ZIPBIN.zip *
+#	cd ..
+#	mv $ZIPBIN.zip $PREFIX/$BINARY_DIR
+#done
 
 # Copy wrapper scripts, pointing to internal binary and model directories
 cp -rf ${RECIPE_DIR}/dv_make_examples.py $PREFIX/bin
-sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_make_examples.py
+#sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_make_examples.py
 cp -rf ${RECIPE_DIR}/dv_call_variants.py $PREFIX/bin
-sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_call_variants.py
-sed -i.bak "s|WGSMODELSUB|${WGS_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
-sed -i.bak "s|WESMODELSUB|${WES_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
-sed -i.bak "s|PACBIOMODELSUB|${PACBIO_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
-sed -i.bak "s|HYBRIDMODELSUB|${HYBRID_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
+#sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_call_variants.py
+#sed -i.bak "s|WGSMODELSUB|${WGS_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
+#sed -i.bak "s|WESMODELSUB|${WES_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
+#sed -i.bak "s|PACBIOMODELSUB|${PACBIO_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
+#sed -i.bak "s|HYBRIDMODELSUB|${HYBRID_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
 cp -rf ${RECIPE_DIR}/dv_postprocess_variants.py $PREFIX/bin
-sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_postprocess_variants.py
-rm -rf $PREFIX/bin/*.bak
+#sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_postprocess_variants.py
+#rm -rf $PREFIX/bin/*.bak
 
 # ## Work in progress to build from source
 # Trouble using pre-built clif so use binaries
