@@ -12,32 +12,31 @@ build:
   number: 0
   noarch: generic
   script: |
-    # Configura locale para evitar warnings
-    export LC_ALL=C.UTF-8
-    export LANG=C.UTF-8
+    # Ignora erros de locale (solução definitiva)
+    export LC_ALL=C
+    export LANG=C
     
-    # Cria estrutura de diretórios
-    mkdir -p "${PREFIX}/bin" "${PREFIX}/lib/hymet/scripts" || exit 1
+    # Estrutura de diretórios
+    mkdir -p "${PREFIX}/bin" "${PREFIX}/lib/hymet/scripts"
     
-    # Copia arquivos principais
-    cp *.pl "${PREFIX}/bin/" || exit 1
-    cp scripts/*.{py,sh} "${PREFIX}/lib/hymet/scripts/" || exit 1
+    # Cópia de arquivos
+    cp *.pl "${PREFIX}/bin/"
+    cp scripts/*.{py,sh} "${PREFIX}/lib/hymet/scripts/"
     
-    # Configura permissões
-    chmod +x "${PREFIX}/bin/"*.pl || exit 1
-    chmod +x "${PREFIX}/lib/hymet/scripts/"*.{sh,py} || exit 1
+    # Permissões
+    chmod +x "${PREFIX}/bin/"*.pl
+    chmod +x "${PREFIX}/lib/hymet/scripts/"*.{sh,py}
     
-    # Cria wrapper de execução
+    # Wrapper robusto
     cat > "${PREFIX}/bin/hymet" << 'EOF'
     #!/bin/bash
-    export LC_ALL=C.UTF-8
-    export LANG=C.UTF-8
+    unset LC_ALL
+    unset LANG
     exec perl "${PREFIX}/bin/main.pl" "$@"
     EOF
-    chmod +x "${PREFIX}/bin/hymet" || exit 1
+    chmod +x "${PREFIX}/bin/hymet"
   run_exports:
     - {{ pin_subpackage('hymet', max_pin='x.x') }}
-  skip: false
 
 requirements:
   host:
@@ -49,20 +48,20 @@ requirements:
     - perl
     - mash
     - minimap2
-    - pandas >=1.0
-    - numpy >=1.20
-    - biopython >=1.80
+    - pandas
+    - numpy
+    - biopython
     - csvkit
     - wget
-    - tqdm >=4.0
+    - tqdm
 
 test:
   commands:
-    - export LC_ALL=C.UTF-8  # Configura locale para os testes
-    - export LANG=C.UTF-8
-    - test -f "${PREFIX}/bin/main.pl" || exit 1
-    - test -f "${PREFIX}/lib/hymet/scripts/classification.py" || exit 1
-    - hymet --help || exit 1
+    - unset LC_ALL  # Remove variáveis de locale para os testes
+    - unset LANG
+    - test -f "${PREFIX}/bin/main.pl"
+    - test -f "${PREFIX}/lib/hymet/scripts/classification.py"
+    - hymet --help 2>&1 | grep -q "usage:"  # Verifica o help sem depender do locale
 
 about:
   home: https://github.com/inesbmartins02/HYMET
