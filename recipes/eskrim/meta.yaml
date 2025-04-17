@@ -11,26 +11,31 @@ source:
 
 build:
   noarch: python
-  number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  number: 1
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  entry_points:
+    - eskrim = eskrim.eskrim:main
   run_exports:
-    - {{ pin_subpackage('eskrim', max_pin="x.x") }}
+    - {{ pin_subpackage('eskrim', max_pin="x") }}
 
 requirements:
     host:
-        - python >=3.12
-        - poetry
+        - python >=3.12,<3.13
+        - poetry-core
+        - pip
     run:
-        - python >=3.12
+        - python >=3.12,<3.13
         - kmer-jellyfish >=2.3.1
+
 test:
     commands:
         - eskrim -h
 
 about:
   home: https://forgemia.inra.fr/metagenopolis/eskrim
-  license: GPL-3.0-or-later
+  dev_url: https://github.com/metagenopolis/ESKRIM
+  license: "GPL-3.0-or-later"
   license_file: COPYING
-  summary: 'ESKRIM: EStimate with K-mers the RIchness in a Microbiome'
-  description: ESKRIM is a reference-free tool that compares microbial richness in shotgun metagenomic samples by counting k-mers
+  summary: 'ESKRIM: EStimate with K-mers the RIchness in a Microbiome.'
+  description: "ESKRIM is a reference-free tool that compares microbial richness in shotgun metagenomic samples by counting k-mers."
   license_family: GPL3
