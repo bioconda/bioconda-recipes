@@ -1,3 +1,4 @@
 #!/bin/sh
 
-export RBT_ROOT=${PREFIX}/rDock
+export RBT_ROOT=${CONDA_PREFIX}/share/rDock
+
