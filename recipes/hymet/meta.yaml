@@ -12,36 +12,24 @@ build:
   number: 0
   noarch: generic
   script: |
-    # Ignora erros de locale (solução definitiva)
-    export LC_ALL=C
-    export LANG=C
-    
-    # Estrutura de diretórios
+    # Instalação robusta
     mkdir -p "${PREFIX}/bin" "${PREFIX}/lib/hymet/scripts"
-    
-    # Cópia de arquivos
     cp *.pl "${PREFIX}/bin/"
-    cp scripts/*.{py,sh} "${PREFIX}/lib/hymet/scripts/"
-    
-    # Permissões
-    chmod +x "${PREFIX}/bin/"*.pl
+    cp scripts/* "${PREFIX}/lib/hymet/scripts/"
+    chmod +x "${PREFIX}/bin/main.pl"
     chmod +x "${PREFIX}/lib/hymet/scripts/"*.{sh,py}
-    
-    # Wrapper robusto
+
+    # Wrapper inteligente
     cat > "${PREFIX}/bin/hymet" << 'EOF'
     #!/bin/bash
-    unset LC_ALL
-    unset LANG
-    exec perl "${PREFIX}/bin/main.pl" "$@"
+    BASE_DIR="$(dirname "$(dirname "$(realpath "$0")")")"
+    exec perl "$BASE_DIR/bin/main.pl" "$@"
     EOF
     chmod +x "${PREFIX}/bin/hymet"
-  run_exports:
-    - {{ pin_subpackage('hymet', max_pin='x.x') }}
 
 requirements:
   host:
     - python >=3.8
-    - pip
     - perl
   run:
     - python >=3.8
@@ -51,25 +39,25 @@ requirements:
     - pandas
     - numpy
     - biopython
-    - csvkit
     - wget
-    - tqdm
 
 test:
   commands:
-    - unset LC_ALL  # Remove variáveis de locale para os testes
-    - unset LANG
+    # Testes estruturais
     - test -f "${PREFIX}/bin/main.pl"
     - test -f "${PREFIX}/lib/hymet/scripts/classification.py"
-    - hymet --help 2>&1 | grep -q "usage:"  # Verifica o help sem depender do locale
+    
+    # Testes de execução (sem interação)
+    - perl "${PREFIX}/bin/main.pl" --version
+    - hymet --help
+    - hymet --dry-run
 
 about:
   home: https://github.com/inesbmartins02/HYMET
   license: GPL-3.0-only
   license_file: LICENSE
-  summary: "Hybrid Metagenomic Tool for advanced sequence analysis"
+  summary: "Hybrid Metagenomic Analysis Pipeline"
   doc_url: https://github.com/inesbmartins02/HYMET/blob/main/README.md
-  dev_url: https://github.com/inesbmartins02/HYMET
 
 extra:
   recipe-maintainers:
