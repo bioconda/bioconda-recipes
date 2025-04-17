@@ -11,7 +11,11 @@ source:
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
+  skip: True  # [py > 311]
+  entry_points:
+    - syri = syri.scripts.syri:main
+    - chroder = syri.scripts.chroder:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   run_exports:
     - {{ pin_subpackage('syri', max_pin="x") }}
 
@@ -20,24 +24,23 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - python >=3.8,<=3.10
+    - python
+    - pip
     - setuptools
-    - numpy >=1.21.2
+    - numpy
     # Please review cython pinning on future releases
     # see: https://github.com/schneebergerlab/syri/pull/217
     - cython
-    - libxcrypt
   run:
-    - python >=3.8,<=3.10
-    - numpy >=1.21.2
-    - pandas >=1.2.4
-    - scipy >=1.6.2
-    - psutil >=5.8
-    - python-igraph >=0.9.1
-    - pysam >=0.16.0.1
+    - python
+    - numpy
+    - pandas
+    - scipy
+    - psutil
+    - python-igraph
+    - pysam
     - longestrunsubsequence
     - pulp
-
 
 test:
   commands:
@@ -46,10 +49,16 @@ test:
 
 about:
   home: https://github.com/schneebergerlab/syri
-  license: MIT License
+  license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: Synteny and rearrangement identifier between whole-genome assemblies
+  summary: "Synteny and rearrangement identifier between whole-genome assemblies."
+  dev_url: https://github.com/schneebergerlab/syri
+  doc_url: "https://schneebergerlab.github.io/syri"
 
 extra:
-  maintainers:
+  recipe-maintainers:
     - mnshgl0110
+  identifiers:
+    - doi:10.1186/s13059-019-1911-0
+    - biotools:SyRI
