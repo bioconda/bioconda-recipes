@@ -2,11 +2,9 @@
 
 set -euo pipefail
 
-# poptのインクルードとライブラリパスの設定
 export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-# Makefileの修正
 sed -i.bak -e "s|INCLUDE\s*:=|INCLUDE := -I${PREFIX}/include |" \
            -e "s|LIB_DEPENDENCIES\s*:=\s*-lpopt|LIB_DEPENDENCIES := -L${PREFIX}/lib -lpopt|" \
            Makefile
