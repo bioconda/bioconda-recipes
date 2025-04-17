@@ -12,23 +12,29 @@ build:
   number: 0
   noarch: generic
   script: |
+    # Configura locale para evitar warnings
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+    
     # Cria estrutura de diretórios
-    mkdir -p "${PREFIX}/bin" "${PREFIX}/lib/hymet/scripts"
+    mkdir -p "${PREFIX}/bin" "${PREFIX}/lib/hymet/scripts" || exit 1
     
     # Copia arquivos principais
-    cp *.pl "${PREFIX}/bin/"
-    cp scripts/*.{py,sh} "${PREFIX}/lib/hymet/scripts/"
+    cp *.pl "${PREFIX}/bin/" || exit 1
+    cp scripts/*.{py,sh} "${PREFIX}/lib/hymet/scripts/" || exit 1
     
     # Configura permissões
-    chmod +x "${PREFIX}/bin/"*.pl
-    chmod +x "${PREFIX}/lib/hymet/scripts/"*.{sh,py}
+    chmod +x "${PREFIX}/bin/"*.pl || exit 1
+    chmod +x "${PREFIX}/lib/hymet/scripts/"*.{sh,py} || exit 1
     
-    # Cria wrapper básico
+    # Cria wrapper de execução
     cat > "${PREFIX}/bin/hymet" << 'EOF'
     #!/bin/bash
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
     exec perl "${PREFIX}/bin/main.pl" "$@"
     EOF
-    chmod +x "${PREFIX}/bin/hymet"
+    chmod +x "${PREFIX}/bin/hymet" || exit 1
   run_exports:
     - {{ pin_subpackage('hymet', max_pin='x.x') }}
   skip: false
@@ -43,18 +49,20 @@ requirements:
     - perl
     - mash
     - minimap2
-    - pandas
-    - numpy
-    - biopython
+    - pandas >=1.0
+    - numpy >=1.20
+    - biopython >=1.80
     - csvkit
     - wget
-    - tqdm
+    - tqdm >=4.0
 
 test:
   commands:
-    - test -f "${PREFIX}/bin/main.pl"  # Verifica se os arquivos foram copiados
-    - test -f "${PREFIX}/lib/hymet/scripts/classification.py"
-    - hymet --help  # Testa o wrapper
+    - export LC_ALL=C.UTF-8  # Configura locale para os testes
+    - export LANG=C.UTF-8
+    - test -f "${PREFIX}/bin/main.pl" || exit 1
+    - test -f "${PREFIX}/lib/hymet/scripts/classification.py" || exit 1
+    - hymet --help || exit 1
 
 about:
   home: https://github.com/inesbmartins02/HYMET
