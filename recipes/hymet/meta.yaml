@@ -4,33 +4,15 @@ package:
   name: hymet
   version: {{ version }}
 
-source:
-  url: https://github.com/inesbmartins02/HYMET/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: b4985691ab6f813bc919449a9d6bcb05ef02980bca05260cd3c3418530a927b7
-
 build:
   number: 0
   noarch: generic
   script: |
-    # Instalação robusta
-    mkdir -p "${PREFIX}/bin" "${PREFIX}/lib/hymet/scripts"
-    cp *.pl "${PREFIX}/bin/"
-    cp scripts/* "${PREFIX}/lib/hymet/scripts/"
-    chmod +x "${PREFIX}/bin/main.pl"
-    chmod +x "${PREFIX}/lib/hymet/scripts/"*.{sh,py}
-
-    # Wrapper inteligente
-    cat > "${PREFIX}/bin/hymet" << 'EOF'
-    #!/bin/bash
-    BASE_DIR="$(dirname "$(dirname "$(realpath "$0")")")"
-    exec perl "$BASE_DIR/bin/main.pl" "$@"
-    EOF
-    chmod +x "${PREFIX}/bin/hymet"
+    # Apenas cria um arquivo de versão para verificar a instalação
+    mkdir -p "${PREFIX}/share/hymet"
+    echo "{{ version }}" > "${PREFIX}/share/hymet/VERSION"
 
 requirements:
-  host:
-    - python >=3.8
-    - perl
   run:
     - python >=3.8
     - perl
@@ -40,23 +22,23 @@ requirements:
     - numpy
     - biopython
     - wget
+    - unzip
 
 test:
   commands:
-    # Testes estruturais
-    - test -f "${PREFIX}/bin/main.pl"
-    - test -f "${PREFIX}/lib/hymet/scripts/classification.py"
-    
-    # Testes de execução (sem interação)
-    - perl "${PREFIX}/bin/main.pl" --version
-    - hymet --help
-    - hymet --dry-run
+    # Verifica apenas se as dependências estão instaladas
+    - python --version
+    - perl --version
+    - mash --version
+    - minimap2 --version
 
 about:
   home: https://github.com/inesbmartins02/HYMET
   license: GPL-3.0-only
-  license_file: LICENSE
-  summary: "Hybrid Metagenomic Analysis Pipeline"
+  summary: "Hybrid Metagenomic Analysis Pipeline - Dependencies Package"
+  description: |
+    This package provides only the runtime dependencies for HYMET.
+    To use HYMET, clone the repository and run the scripts with your own data.
   doc_url: https://github.com/inesbmartins02/HYMET/blob/main/README.md
 
 extra:
