@@ -1,5 +1,5 @@
-{% set version = "3.1.0" %}
-{% set sha256 = "6b994fc545b80f7a30a426837eb023c4c03c3ffb5807f8513b7e176c3dd5f5ba" %}
+{% set version = "3.2.3" %}
+{% set sha256 = "66d85437d21ad851e9d21a6e49e1d4e7d3982a42413c55620b55e6aa936992ad" %}
 
 package:
   name: nanosim
@@ -11,23 +11,33 @@ source:
 
 build:
   noarch: generic
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('nanosim', max_pin="x") }}
 
 requirements:
   run:
     - python
-    - numpy >=1.13.3
+    # The maximum constraint avoids "module 'numpy' has no attribute 'float'", see:
+    # https://stackoverflow.com/a/74861894
+    - numpy >=1.13.3,<1.24 
     - scipy >=1.0.0
-    - scikit-learn >=0.20.0
+    # pre-trained models seem very tightly coupled to particular scikit-learn
+    # models, so this pinning syncs it to the currently stated version
+    # https://github.com/bcgsc/NanoSim/blob/bdcafb09a8fb8bfd6f3706423c8e69ef766e6a4a/README.md?plain=1#L95-L99
+    - scikit-learn ~=0.23.2
     - joblib
     - six >=1.10.0
     - pybedtools >=0.7.10
     - pysam >=0.13
     - htseq >=0.9.1
-    - minimap2
+    - minimap2 >=2.18
     - last
     - samtools
     - genometools-genometools
+    - regex
+    - piecewise-regression
+    - sam2pairwise
 
 test:
   commands:
@@ -36,11 +46,11 @@ test:
 
 about:
   home: https://github.com/bcgsc/NanoSim
-  license: GPL-3.0
-  license_file:
-    - COPYRIGHT
-    - LICENSE
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: LICENSE
   summary: 'NanoSim is a fast and scalable read simulator for Nanopore sequencing data.'
+  dev_url: https://github.com/bcgsc/NanoSim
 
 extra:
   identifiers:

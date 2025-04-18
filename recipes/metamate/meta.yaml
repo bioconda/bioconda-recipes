@@ -1,0 +1,69 @@
+{% set name = "metamate" %}
+{% set version = "0.4.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/tjcreedy/metamate/archive/v{{ version }}.tar.gz
+  sha256: e86a26643f770dae3739d8bd70f1db1a0561ad4554113a5d60b007fd0089cfe3
+
+build:
+  noarch: python
+  entry_points:
+    - metamate = metamate.metamate:main
+    - metaMATE = metamate.metamate:main
+    - filtertranslate = metamate.filtertranslate:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports: {{ pin_subpackage("metamate", max_pin="x") }}
+  number: 0
+
+requirements:
+  build:
+    - python
+    - mafft
+    - pysam
+    - bbmap
+    - r-base
+    - biopython
+    - r-getopt
+    - r-ape
+    - r-fastcluster
+    - r-cluster
+  host:
+    - python
+    - bbmap
+    - pysam
+    - mafft
+    - r-base
+    - r-getopt
+    - r-ape
+    - r-fastcluster
+    - r-cluster
+  run:
+    - python >=3.6
+    - biopython >=1.76
+    - scipy >=1.4.1
+    - pysam
+    - r-base
+    - bbmap
+    - mafft
+test:
+  imports:
+    - metamate
+  commands:
+    - metamate --help
+    - metaMATE --help
+    - filtertranslate --help
+
+about:
+  home: https://github.com/tjcreedy/metamate
+  license: GPL-3.0
+  license_file: LICENSE
+  summary: 'metaMATE: your metabarcoding friend!'
+
+extra:
+  recipe-maintainers:
+    - tjcreedy
+    - johnrandallia

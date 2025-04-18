@@ -1,6 +1,6 @@
 {% set name = "hictk" %}
-{% set version = "0.0.6" %}
-{% set sha256 = "5913792f858304ff82996c9e9720442736b443d56c53aa8eb2a1ac2ae8ccc88f" %}
+{% set version = "2.1.1" %}
+{% set sha256 = "0a00eb9cc599fa80f4d6edafd4f0bc4db75863e7d11337775fc3f2547aa7c829" %}
 
 package:
   name: {{ name|lower }}
@@ -9,7 +9,7 @@ package:
 build:
   number: 0
   run_exports:
-    - {{ pin_subpackage('hictk', max_pin='x.x') }}
+    - {{ pin_subpackage('hictk', max_pin='x') }}
 
 source:
   url: https://github.com/paulsengroup/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
@@ -22,23 +22,31 @@ requirements:
     - cmake >=3.25
     - conan >=2
     - make
-    - cli11 >=2.3
+    - catch2 >=3.8
+    - cli11 >=2.5
     - eigen >=3.4
-    - fast_float >=5
-    - fmt >=10
-    - highfive >=2.8
-    - spdlog >=1.12
+    - fast_float >=8
+    - fmt >=11
+    - highfive >=2.10
+    - libopentelemetry-cpp-headers >=1
+    - nlohmann_json >=3.11
+    - spdlog >=1.15
+    - tomlplusplus >=3.3
 
   host:
-    - boost-cpp >=1.80
     - hdf5 >=1.12
-    - libdeflate
+    - libarchive >=3
+    - libarrow >=16
+    - libdeflate >=1
+    - libopentelemetry-cpp >=1
     - zstd >=1.5
 
   run:
-    - libboost >=1.80
     - hdf5 >=1.12
-    - libdeflate
+    - libarchive >=3
+    - libarrow >=16
+    - libdeflate >=1
+    - libopentelemetry-cpp >=1
     - zstd >=1.5
 
 about:
@@ -47,37 +55,18 @@ about:
   license_file: LICENSE
   summary: Blazing fast toolkit to work with .hic and .cool files
   dev_url: https://github.com/paulsengroup/{{ name }}
-  doc_url: https://github.com/paulsengroup/{{ name }}#readme
+  doc_url: https://{{ name }}.readthedocs.io/en/stable/
 
 test:
   requires:
+    - python >=3.11,<3.14
+    - pip
     - curl
-    - cooler>=0.9.3
-    - openjdk>=11
     - perl-digest-sha1
-    - xz
+    - zstd
   source_files:
     - cmake/FetchTestDataset.cmake
-    - test/scripts/hictk_balance.sh
-    - test/scripts/hictk_convert_hic2cool.sh
-    - test/scripts/hictk_convert_cool2hic.sh
-    - test/scripts/hictk_dump_cells.sh
-    - test/scripts/hictk_dump_normalizations.sh
-    - test/scripts/hictk_dump_resolutions.sh
-    - test/scripts/hictk_dump_chroms.sh
-    - test/scripts/hictk_dump_bins.sh
-    - test/scripts/hictk_dump_gw.sh
-    - test/scripts/hictk_dump_cis.sh
-    - test/scripts/hictk_dump_trans.sh
-    - test/scripts/hictk_dump_balanced.sh
-    - test/scripts/hictk_fix_mcool.sh
-    - test/scripts/hictk_load_coo.sh
-    - test/scripts/hictk_load_bg2.sh
-    - test/scripts/hictk_load_4dn.sh
-    - test/scripts/hictk_merge.sh
-    - test/scripts/hictk_rename_chromosomes.sh
-    - test/scripts/hictk_validate.sh
-    - test/scripts/hictk_zoomify.sh
+    - test/integration/
   commands:
     - hictk --help
     - hictk --version
@@ -89,3 +78,6 @@ extra:
   identifiers:
     - biotools:hictk
     - doi:10.5281/zenodo.8214221
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

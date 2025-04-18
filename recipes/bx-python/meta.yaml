@@ -1,19 +1,22 @@
 {% set name = "bx-python" %}
-{% set version = "0.10.0" %}
-{% set sha256 = "bfe9541d7b18a98e907b085e31f58d3989fbca4dc667c4ae48c33b753e0e2da8" %}
+{% set version = "0.13.0" %}
+{% set sha256 = "ce04696543367efc6b7995d9463efeda691b9a58f6f55a7bd831e642159b0644" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/bx-python-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/bx_python-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 0
-  skip: True  # [py < 37]
-  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps -vvv
+  number: 1
+  script:
+    - {{ PYTHON }} setup.py build_ext --force  # [py<39]
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin='x.x') }}
 
 requirements:
   build:
@@ -21,15 +24,15 @@ requirements:
   host:
     - python
     - cython
+    - numpy  # [py<39]
+    - numpy >=1.25  # [py>=39]
     - pip
     - setuptools
-    - wheel
-    - python-lzo
-    - numpy
     - zlib
   run:
     - python
     - {{ pin_compatible('numpy') }}
+    - pyparsing
 
 test:
   imports:
@@ -48,6 +51,7 @@ test:
     - bx.motif.io
     - bx.motif.logo
     - bx.phylo
+    - bx.phylo.newick
     - bx.pwm
     - bx.seq
     - bx.tabular
@@ -60,8 +64,13 @@ about:
   license_family: MIT
   license_file: LICENSE
   doc_url: 'https://buildmedia.readthedocs.org/media/pdf/bx-python/latest/bx-python.pdf'
-  dev_url: 'https://pypi.org/project/bx-python/'
+  dev_url: 'https://github.com/bxlab/bx-python'
 
 extra:
   identifiers:
     - biotools:bx-python
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - nsoranzo

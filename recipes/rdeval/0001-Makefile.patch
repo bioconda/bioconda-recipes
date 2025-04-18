@@ -1,0 +1,34 @@
+diff --git a/Makefile b/Makefile
+index 1682ec3..d9991ae 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,5 +1,5 @@
+-CXX ?= g++
+-INCLUDE_DIR += -I./include -I./gfalibs/include
++CXX ?= $(CXX)
++INCLUDE_DIR += -I./include -I./gfalibs/include -I$(PREFIX)/include
+ WARNINGS = -Wall -Wextra
+ 
+ CXXFLAGS = -g -std=gnu++14 -O3 $(INCLUDE_DIR) $(WARNINGS) $(CFLAGS)
+@@ -12,7 +12,11 @@ SOURCE = src
+ INCLUDE = include
+ BINDIR := $(BUILD)/.o
+ 
+-LDFLAGS += -pthread
++ifeq ($(origin LDFLAGS), undefined)
++	LDFLAGS := -pthread
++else
++	LDFLAGS := $(LDFLAGS) -pthread
++endif
+ LIBS = -lz -lcrypto -lhts
+ 
+ OBJS := main input reads
+@@ -30,7 +34,7 @@ head: $(BINS) gfalibs | $(BUILD)
+ all: head validate regenerate
+ 
+ $(BINDIR)%: $(SOURCE)/%.cpp $(INCLUDE)/%.h | $(BINDIR)
+-	$(CXX) $(CXXFLAGS) $(EVP) -c $(SOURCE)/$(notdir $@).cpp -o $@
++	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) $(EVP) -c $(SOURCE)/$(notdir $@).cpp -o $@
+ 
+ .PHONY: gfalibs
+ gfalibs:

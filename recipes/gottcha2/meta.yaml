@@ -1,0 +1,54 @@
+{% set name = "GOTTCHA2" %}
+{% set version = "2.1.9" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install -vvv --no-deps --no-build-isolation --no-cache-dir .
+  entry_points:
+    - gottcha2 = gottcha.scripts.cmd:gottcha2_command
+  run_exports:
+    - {{ pin_subpackage('gottcha2', max_pin='x') }}
+
+source:
+  url: https://github.com/poeli/GOTTCHA2/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 97a087fc7d4e1dce6042e9a697cbc99e1aac52d3c85a21410772daf08644fc04
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - setuptools
+    - pandas
+  run:
+    - python >=3.6
+    - minimap2 >=2.17
+    - gawk
+    - biom-format >=2.1.7
+    - numpy
+    - pandas
+    - requests
+    - tqdm
+
+test:
+  commands:
+    - minimap2 -h
+    - gawk -h
+    - gottcha2.py --version
+
+about:
+  home: https://github.com/poeli/GOTTCHA2
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: 'Genomic Origin Through Taxonomic CHAllenge (GOTTCHA) v2.'
+  dev_url: https://github.com/poeli/GOTTCHA2
+  doc_url: https://github.com/poeli/GOTTCHA2/wiki
+
+extra:
+  identifiers:
+    - biotools:gottcha2

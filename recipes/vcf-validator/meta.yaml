@@ -1,0 +1,54 @@
+{% set name = "vcf-validator" %}
+{% set version = "0.10.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/EBIvariation/vcf-validator/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b46117700445644e6fc5a6d2655b477902c67aba0e7abe8a62df6cb49f923fff
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage("vcf-validator", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+    - cmake >=2.8
+  host:
+    - libboost-devel
+    - libcurl
+    - libtool
+    - zstd
+    - c-ares
+    - openssl
+    - bzip2
+    - libzlib
+  run:
+    - zstd
+    - libcurl
+
+test:
+  commands:
+    - vcf_validator --help
+    - vcf_assembly_checker --help
+
+about:
+  home: https://github.com/EBIVariation/vcf-validator
+  summary: EBI EVA - Validation tool for VCF file format compliance
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - apriltuesday
+    - tcezard
+    - ebi-variation

@@ -1,0 +1,63 @@
+{% set name = "cobrar" %}
+{% set version = '0.1.2' %}
+{% set github = "https://github.com/Waschina/cobrar" %}
+{% set sha256 = '497e37334b4f5b33f35a8128eb9ac66e455fa509f3f51ece3aca47576e705cce' %}
+
+package:
+  name: r-{{ name }}
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ github }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  script: R CMD INSTALL --build .
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage("r-cobrar", max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - glpk >=4.65
+    - libsbml >=5.18.0
+    - r-base
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-matrix
+  run:
+    - glpk >=4.65
+    - libsbml >=5.18.0
+    - r-base
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-matrix
+
+test:
+  commands:
+    - $R -e "library('cobrar')"
+
+about:
+  home: https://github.com/Waschina/cobrar
+  license: GPL-3.0-or-later
+  summary: COnstraint-based Reconstruction and Analysis (COBRA) of metabolic networks in R
+  license_family: GPL3
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  doc_url: https://waschina.github.io/cobrar/
+  dev_url: https://github.com/Waschina/cobrar
+  
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - Waschina
+

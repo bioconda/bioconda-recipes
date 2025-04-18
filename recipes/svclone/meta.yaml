@@ -1,19 +1,22 @@
-{% set version = "1.1.2" %}
+{% set name = "svclone" %}
+{% set version = "1.1.3" %}
 
 package:
-  name: svclone
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/mcmero/SVclone/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 806e7e31498a084a353a39f98d8d35712d96f182feb6d077d364a2a7100e123e
+  sha256: ca2a9b2817e25ae4e3e1ae6cf2de71e70772e5f4a8f58a649518b82079ff12d4
 
 build:
-  number: 1
+  number: 0
   noarch: python
   entry_points:
     - svclone = SVclone.cli:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('svclone', max_pin="x") }}
 
 requirements:
   host:
@@ -45,7 +48,8 @@ about:
   description: |
     A computational method for inferring the cancer cell
     fraction of tumour structural variation from whole-genome
-    sequencing data. 
+    sequencing data.
+  dev_url: https://github.com/mcmero/SVclone 
 
 extra:
   identifiers:

@@ -1,20 +1,26 @@
-{% set version = "3.0" %}
-{% set system = "linux"%}  # [linux]
-{% set system = "mac"%}  # [osx]
-{% set sha256 = "3ee3245e556221d246f9afe5d9ad86888f4eb5aea6b10f621241c3170ef8835e" %}  # [linux]
-{% set sha256 = "3d68b6b76948b6d9a36c4e848e37969eda6ae0ec1abace4ca61a7cc585dcdabf" %}  # [osx]
+{% set version = "3.2" %}
+
 package:
   name: agc
   version: {{ version }}
+
 build:
   number: 0
   script: "mkdir -p ${PREFIX}/bin; cp agc ${PREFIX}/bin"
+  run_exports:
+    - {{ pin_subpackage('agc', max_pin="x") }}
 source:
-  url: https://github.com/refresh-bio/agc/releases/download/v{{ version }}/agc-{{ version }}_x64-{{ system }}.tar.gz
-  sha256: {{ sha256 }}
+  - url: https://github.com/refresh-bio/agc/releases/download/v{{ version }}.1/agc-{{ version }}_arm_linux.tar.gz # [aarch64]
+    sha256: 279fd46b4e764ec14617fdc9d88b847becf4ff3008588cb919480316099be264                                           # [aarch64]
+  - url: https://github.com/refresh-bio/agc/releases/download/v{{ version }}.1/agc-{{ version }}_x64_linux.tar.gz   # [linux64]
+    sha256: f9ed0132dd198f566aa0854a688bebe980945ff8ee5082e12a72a374221a224c                                           # [linux64]
+  - url: https://github.com/refresh-bio/agc/releases/download/v{{ version }}.1/agc-{{ version }}_x64_mac.tar.gz       # [osx and x86_64]
+    sha256: 310e3dbb9983494c4e88dd96cfe0a79f31d2a842e62791e74708be3ecebcd358                                           # [osx and x86_64]
+  - url: https://github.com/refresh-bio/agc/releases/download/v{{ version }}.1/agc-{{ version }}_m1_mac.tar.gz       # [osx and arm64]
+    sha256: 2c6ac2870d601ae309d368c79917df940f2ee9b4f1d700a0bf194aa0ad8f545f                                           # [osx and arm64]
 requirements:
   build:
-  run:
+  run: 
 about:
   home: https://github.com/refresh-bio/agc
   summary: "Assembled Genomes Compressor (AGC) is a tool designed to compress collections of de-novo assembled genomes. It can be used for various types of datasets: short genomes (viruses) as well as long (humans)."
@@ -23,6 +29,9 @@ test:
   commands:
     - agc
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   skip-lints:
     - should_be_noarch_generic
     - should_not_be_noarch_source

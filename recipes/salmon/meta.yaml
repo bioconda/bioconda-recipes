@@ -1,35 +1,50 @@
-{% set version="1.10.2" %}
+{% set name = "salmon" %}
+{% set version = "1.10.3" %}
+{% set sha256 = "a053fba63598efc4ade3684aa2c8e8e2294186927d4fcdf1041c36edc2aa0871" %}
 
 package:
-  name: salmon
+  name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 0
-
 source:
-  url: https://github.com/COMBINE-lab/salmon/archive/v{{ version }}.tar.gz
-  sha256: 976989182160fef3afb4429ee8b85d8dd39ed6ca212bb14d6a65cde0e985fb98
+  url: https://github.com/COMBINE-lab/salmon/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-CMakeLists.patch
 
+build:
+  number: 4
+  run_exports:
+    - {{ pin_subpackage("salmon", max_pin="x") }}
 
 requirements:
   build:
+    - {{ compiler('cxx') }}
     - autoconf
+    - automake
+    - libtool
     - cmake
     - make
-    - {{ compiler('cxx') }}
-    - {{ compiler('c') }}
+    - pkg-config
   host:
     - boost-cpp
-    - icu 
-    - zlib
-    - bzip2
-    - unzip
     - jemalloc >=5.1.0
     - tbb-devel >=2021.4.0
+    - staden_io_lib >=1.15.0
+    - libgff
+    - cereal
+    - libcurl
+    - libiconv
+    - libdeflate
+    - xz
+    - zlib
+    - zstd
+    - bzip2
+    - unzip
   run:
     - boost-cpp
-    - tbb >=2021.4.0
+    - icu
+    - staden_io_lib >=1.15.0
 
 test:
   source_files:
@@ -38,17 +53,25 @@ test:
     - salmon --help
 
 about:
-  home: https://github.com/COMBINE-lab/salmon
-  license: GPLv3
+  home: "https://github.com/COMBINE-lab/salmon"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using selective alignment
+  summary: "Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using selective alignment."
+  dev_url: "https://github.com/COMBINE-lab/salmon"
+  doc_url: "https://combine-lab.github.io/salmon"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - rob-p
     - k3yavi
+    - mjsteinbaugh
   identifiers:
     - biotools:salmon
     - usegalaxy-eu:salmon
+    - usegalaxy-eu:salmonquantmerge
     - usegalaxy-eu:alevin
     - doi:10.1038/nmeth.4197

@@ -1,5 +1,12 @@
 {% set name = "OpenMS" %}
-{% set version = "3.1.0" %} # if ends with 'dev' it is considered a development release and pulled from GitHub
+{% set version = "3.3.0" %} # if ends with 'dev' it is considered a development release and pulled from GitHub
+
+# Note: to create a new release: 
+# - version number
+# - reset build number to 0
+# - url and md5 
+# need to be updated.
+
 package:
   name: {{ name|lower  }}-meta
   version: {{ version  }}
@@ -11,13 +18,12 @@ source:
   git_depth: 1 # (Defaults to -1/not shallow)
 {% else %}
 source:
-  url: https://github.com/OpenMS/OpenMS/releases/download/Release{{ version }}/OpenMS-{{ version }}-src.tar.gz
-  md5: 6a60ef1a95c7ce915cc3a02e5bccd593
+  url: https://github.com/OpenMS/OpenMS/releases/download/release%2F3.3.0/OpenMS-3.3.tar.gz # since we discarded the trailing 0 during the GHA we have to hard code this, fix it next release
+  md5: 7a5839e307801a7c9a02258f9da61357
 {% endif %}
 
 build:
-  number: 3
-  skip: True  # [osx]
+  number: 8
 
 # Try this when building with GUI
 #extra:
@@ -39,13 +45,14 @@ requirements:
       - libtool
       - xerces-c
       - boost-cpp
-      - eigen >=3.3.2
+      - eigen >=3.3.4
       - hdf5 >=1.10
       - bzip2
       - qt-main
       - libsvm
       - coinmp
       - sysroot_linux-64 =2.17 # [linux]
+      - yaml-cpp
 
 test:
   commands:
@@ -70,13 +77,15 @@ outputs:
           - libtool
           - xerces-c
           - boost-cpp
-          - eigen >=3.3.2
+          - eigen >=3.3.4
           - hdf5 >=1.10
           - bzip2
           - qt-main
           - libsvm
           - coinmp
           - sysroot_linux-64 =2.17 # [linux]
+          - yaml-cpp
+
     build:
       run_exports:
           - {{ pin_compatible('llvm-openmp', max_pin='x.x') }} # [osx]
@@ -111,13 +120,15 @@ outputs:
         - libtool
         - xerces-c
         - boost-cpp
-        - eigen >=3.3.2
+        - eigen >=3.3.4
         - hdf5 >=1.10
         - bzip2
         - qt-main
         - libsvm
         - coinmp
         - sysroot_linux-64 =2.17 # [linux]
+        - yaml-cpp
+
       run:
         - {{ pin_subpackage('libopenms', exact=True) }}
         - {{ pin_compatible('llvm-openmp', max_pin='x.x') }} # [osx]
@@ -143,14 +154,14 @@ outputs:
     requirements:
      run:
        - {{ pin_subpackage('openms', exact=True) }}
-       - comet-ms ==2023010
+       - comet-ms ==2023012
        - luciphor2 ==2020_04_03
        - msgf_plus ==2023.01.1202
        - percolator ==3.5
-       - conda-forge::sirius-ms ==5.8.2
+       - sirius-ms ==5.8.2
        - thermorawfileparser ==1.4.3
        - xtandem ==15.12.15.2
-       - sage-proteomics ==0.14.4
+       - sage-proteomics ==0.14.7
        - gnuplot
        - r-gplots
     test:

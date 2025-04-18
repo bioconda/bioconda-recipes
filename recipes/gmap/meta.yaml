@@ -1,19 +1,20 @@
 {% set name = "GMAP" %}
-{% set version = "2023.10.10" %}
-{% set sha256 = "f76cc3d0024c6c963ea1c13e46236b62a548d965ad8e295a181f138b82aca36e" %}
+{% set version = "2024.11.20" %}
+{% set sha256 = "6bdae5fb469ff9e1e4344a4071747ffc301aec3ea82ee9dd9319ca98c1ecac97" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: http://research-pub.gene.com/gmap/src/gmap-gsnap-{{ version | replace(".", "-") }}.tar.gz
+  url: http://research-pub.gene.com/gmap/src/gmap-gsnap-{{ version | replace(".", "-") }}.v2.tar.gz
   sha256: {{ sha256 }}
   patches:
     - single_quote_paths.patch
+    - 0002-genome_sites.patch  # [osx]
 
 build:
-  number: 1
+  number: 3
   run_exports:
     - {{ pin_subpackage('gmap', max_pin=None) }}
 
@@ -22,8 +23,10 @@ requirements:
     - make
     - {{ compiler('c') }}
     - autoconf
-    - perl
+    - automake
+    - libtool
   host:
+    - perl
     - zlib
     - bzip2
   run:
@@ -36,13 +39,18 @@ test:
     - "gsnap --help"
 
 about:
-  home: "http://research-pub.gene.com/gmap/"
+  home: "http://research-pub.gene.com/gmap"
   license: "Apache-2.0"
   license_family: APACHE
   license_file: LICENSE
   summary: "Genomic mapping and alignment program for mRNA and EST sequences."
+  dev_url: "http://research-pub.gene.com/gmap"
+  doc_url: "http://research-pub.gene.com/gmap"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    #- osx-arm64
   identifiers:
     - biotools:gmap
     - biotools:gsnap

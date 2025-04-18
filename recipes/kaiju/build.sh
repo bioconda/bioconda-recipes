@@ -11,7 +11,7 @@ mkdir -p $PREFIX/bin
 
 cd $SRC_DIR/src/
 
-make CC=${CC} CXX=${CXX}
+make CC=${CC} CXX=${CXX} -j ${CPU_COUNT}
 
 cd $SRC_DIR/bin/
 cp kaiju* $PREFIX/bin

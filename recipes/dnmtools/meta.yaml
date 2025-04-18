@@ -1,18 +1,18 @@
-{% set version = "1.4.2" %}
+{% set version = "1.4.4" %}
 
 package:
   name: dnmtools
   version: {{ version }}
 
+source:
+  url: https://github.com/smithlabcode/dnmtools/releases/download/v{{ version }}/dnmtools-{{ version }}.tar.gz
+  sha256: 56fc62ef1d41cdafa30c98d6cfbcb3707a125921618a1808075eaafb29d22edf
+
 build:
-  number: 0
+  number: 1
   run_exports:
     # dnmtools is currently not intended to be stable between minor versions (x.x).
     - {{ pin_subpackage('dnmtools', max_pin="x.x") }}
-
-source:
-  url: https://github.com/smithlabcode/dnmtools/releases/download/v{{ version }}/dnmtools-{{ version }}.tar.gz
-  sha256: 0b712d4635a6924f0f230206b999db3d6e3a98b0d330640f3fd5cf4930eaf127
 
 requirements:
   build:
@@ -20,28 +20,37 @@ requirements:
     - {{ compiler('cxx') }}
     - autoconf
     - automake
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
+    - libtool
   host:
+    - zlib
     - htslib
     - gsl
+    - llvm-openmp  # [osx]  
+    - libgomp      # [linux]
   run:
     - htslib
     - gsl
+    - llvm-openmp  # [osx]  
+    - libgomp      # [linux]
+
+test:
+  commands:   
+    - dnmtools
 
 about:
   home: https://github.com/smithlabcode/dnmtools
-  license: GPL-3.0-or-later
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
   summary: |
-    dnmtools is a set of tools for analyzing DNA methylation data from bisulfite sequencing
-  doc_url: 'https://dnmtools.readthedocs.io/'
-
-test:
-  commands:
-    - dnmtools
+    dnmtools is a set of tools for analyzing DNA methylation data from bisulfite sequencing.
+  doc_url: 'https://dnmtools.readthedocs.io'
+  dev_url: "https://github.com/smithlabcode/dnmtools"
 
 extra:
   recipe-maintainers:
     - andrewdavidsmith
     - guilhermesena1
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

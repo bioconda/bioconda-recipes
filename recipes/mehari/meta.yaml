@@ -1,9 +1,15 @@
-{% set version = "0.21.1" %}
-{% set sha256 = "6dcdd453ca44a531e4b4903ebf32921707bebe9d51f389a463dc2df3b3042f12" %}
+{% set version = "0.35.0" %}
+{% set sha256 = "43b449ca62fe21b7fce3c93213487eccac73296fe18e5178e632ad896a6b9abc" %}
 
 package:
   name: mehari
   version: {{ version }}
+
+source:
+  url: https://github.com/varfish-org/mehari/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - fix-release-profile.patch
 
 build:
   skip: True  # [osx]
@@ -11,25 +17,23 @@ build:
   run_exports:
     - {{ pin_subpackage("mehari", max_pin="x.x") }}
 
-source:
-  url: https://github.com/bihealth/mehari/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
-
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('rust') }}
     - cmake
-    - protobuf
     - make
+    - cargo-bundle-licenses
     - pkg-config
-    - rust >=1.64
   host:
     - clangdev
+    - llvmlite
     - openssl
-    - sqlite
+    - protobuf
+    - libprotobuf
     - zlib
+    - sqlite
   run:
     - sqlite
 
@@ -38,6 +42,16 @@ test:
     - mehari -h
 
 about:
-  home: https://github.com/bihealth/mehari
+  home: "https://github.com/varfish-org/mehari"
   license: MIT
-  summary: VEP-like tool for sequence ontology and HGVS annotation of VCF files written in Rust.
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  summary: "VEP-like tool for sequence ontology and HGVS annotation of VCF files written in Rust."
+  dev_url: "https://github.com/varfish-org/mehari"
+  doc_url: "https://github.com/varfish-org/mehari/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - doi:10.5281/zenodo.10603122

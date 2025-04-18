@@ -6,16 +6,26 @@ on:
   push:
     branches:
       - master
+      - bulk
     paths:
       - "**build_failure.*.yaml"
 
 jobs:
   update-build-failure-page:
     name: Update build failure page
-    if: github.repository == 'bioconda/bioconda-recipes'
-    runs-on: ubuntu-latest
+    if: ${{ github.repository == 'bioconda/bioconda-recipes' && !contains(github.event.head_commit.message, '[ci skip]') }}
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - name: Fetch commits through the merge base
+        uses: fulcrumgenomics/fetch-through-merge-base@v1
+        with:
+          base-ref: master
+          head-ref: ${{ github.sha }}
+          fallback-base-ref: master
+          fallback-fetch-all: true
+
       - name: set path
         run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
 
@@ -25,7 +35,7 @@ jobs:
 
       - name: Restore cache
         id: cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /opt/mambaforge
           key: ${{ runner.os }}--master--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
@@ -48,13 +58,19 @@ jobs:
           set -e
           eval "$(conda shell.bash hook)"
           conda activate bioconda
-
+          branch=${{ github.ref_name }}
           mkdir build-failures
-          md=build-failures/build-failures.md
-          echo "# Build failures" > $md
-          echo "Automatically updated (nightly) list of build failures that currently block builds from the listed recipes. Please help with fixing them!" >> $md
-          bioconda-utils list-build-failures recipes --output-format markdown --link-prefix https://github.com/bioconda/bioconda-recipes/blob/master >> $md
-
+          if [[ -z $branch || $branch == "master" ]] ; then
+            md=build-failures/build-failures.md
+            echo "# Build failures" > $md
+            echo "Automatically updated (nightly) list of build failures that currently block builds from the listed recipes. Please help with fixing them!" >> $md
+            bioconda-utils list-build-failures recipes --output-format markdown --link-prefix https://github.com/bioconda/bioconda-recipes/blob/master >> $md
+          else
+            md="build-failures/build-failures-${branch}.md"
+            echo "# Build failures on \`${branch}\`" > $md
+            echo "Automatically updated list of build failures that currently block builds from the listed recipes on the \`${branch}\` branch." >> $md
+            bioconda-utils list-build-failures recipes --git-range origin/"$GITHUB_BASE_REF" HEAD --output-format markdown --link-prefix https://github.com/bioconda/bioconda-recipes/blob/$branch >> $md
+          fi
       - name: Upload build failure to wiki
         uses: docker://decathlon/wiki-page-creator-action:latest
         env:
@@ -64,4 +80,3 @@ jobs:
           OWNER: bioconda
           REPO_NAME: bioconda-recipes
           MD_FOLDER: build-failures
-          
