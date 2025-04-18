@@ -12,23 +12,19 @@ source:
 build:
   number: 0
   binary_relocation: false
-  noarch: generic
-  run_exports:
-    - {{ pin_subpackage('pandepth', max_pin='x') }}
-  ignore_run_exports:
-    - libstdc++.so.6
-    - libm.so.6
-    - libgcc_s.so.1
-    - libpthread.so.0
-    - libc.so.6
+  skip: true
   script: |
     mkdir -p $PREFIX/bin
     cp pandepth $PREFIX/bin/
     chmod +x $PREFIX/bin/pandepth
+    patchelf --set-rpath $PREFIX/lib $PREFIX/bin/pandepth
 
 requirements:
+  host:
+    - patchelf
   run:
-
+    - libgcc-ng
+    - libstdcxx-ng
 test:
   commands:
     - pandepth --help
