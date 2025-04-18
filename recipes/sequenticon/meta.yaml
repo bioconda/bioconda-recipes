@@ -1,0 +1,57 @@
+{% set name = "sequenticon" %}
+{% set version = "0.1.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Edinburgh-Genome-Foundry/sequenticon/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 918d125e1ff3afe876cfc45bfa41e461f90550f703d1b41ad924e7e8d95fefd7
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install -vv ."
+  run_exports: 
+    - {{ pin_subpackage('sequenticon', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - pip
+  run:
+    - python
+    - conda-forge::Biopython
+    - conda-forge::pydenticon
+    - conda-forge::snapgene-reader
+    - conda-forge::flametree  
+    - pytest
+    - pdf_reports
+
+test:
+  source_files: 
+    - tests/
+  imports:
+    - {{ name|lower }}
+  requires:
+    - matplotlib
+    - pytest
+    - pytest-cov
+    - pytest-mock
+
+
+about:
+  home: https://github.com/Edinburgh-Genome-Foundry/sequenticon
+  summary: "generate identicons for DNA sequences"
+  license: MIT
+  license_file: LICENCE.txt
+
+
+extra:
+  recipe-maintainers:
+    - ramez17khaled
+    - tduigou
+    - breakthewall 
+
