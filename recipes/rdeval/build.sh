@@ -20,3 +20,4 @@ make CXX="${CXX}" CPPFLAGS="${CPPFLAGS}" -j"${CPU_COUNT}"
 
 install -d "$PREFIX/bin"
 install -v -m 0755 build/bin/rdeval "$PREFIX/bin"
+install -v -m 0644 figures.Rmd "$PREFIX/bin"
