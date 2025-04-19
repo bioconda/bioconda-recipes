@@ -11,7 +11,8 @@ source:
 
 build:
   number: 0
-  binary_relocation: false
+  binary_relocation: true
+  skip: true
   noarch: generic
   run_exports:
     - {{ pin_subpackage('pandepth', max_pin='x') }}
@@ -19,16 +20,12 @@ build:
     mkdir -p $PREFIX/bin
     cp pandepth $PREFIX/bin/
     chmod +x $PREFIX/bin/pandepth
+    patchelf --set-rpath '/lib64:/usr/lib64:$ORIGIN/../lib' $PREFIX/bin/pandepth
 
 requirements:
-  host:
-    - _libgcc_mutex =0.1
-    - libgcc-ng =8.4.0
-    - libstdcxx-ng =8.4.0
-  run:
-    - _libgcc_mutex =0.1
-    - libgcc-ng =8.4.0
-    - libstdcxx-ng =8.4.0
+  run_constrained:
+    - __glibc >=2.17
+
 test:
   commands:
     - command -v pandepth
