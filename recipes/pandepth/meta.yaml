@@ -11,7 +11,6 @@ source:
 
 build:
   number: 0
-  binary_relocation: false
   noarch: generic
   run_exports:
     - {{ pin_subpackage('pandepth', max_pin='x') }}
@@ -21,15 +20,19 @@ build:
     chmod +x $PREFIX/bin/pandepth
 
 requirements:
-  host:
+ host:
     - libgcc-ng
     - libstdcxx-ng
   run:
     - libgcc-ng
     - libstdcxx-ng
+    - {{ pin_compatible('libstdcxx-ng') }}
 test:
   commands:
-    - pandepth --help | grep -i "pandepth"
+    - command -v pandepth
+    - test -f $PREFIX/bin/pandepth
+    - ldd $(which pandepth)
+    - pandepth --help
 
 about:
   home: https://github.com/HuiyangYu/PanDepth
