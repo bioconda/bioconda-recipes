@@ -5,8 +5,6 @@ set -euo pipefail
 # configure
 meson setup \
 	--buildtype=release \
-	--default-library=static \
-	--wrap-mode=forcefallback \
 	--prefix="$PREFIX" \
 	-Db_ndebug=true \
 	builddir
