@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-# Boost Filesystem include 修正
 sed -i 's|<boost/filesystem/convenience.hpp>|<boost/filesystem.hpp>|' modules/seq/alg/src/hmm_pseudo_counts.cc
-
-# Python パッケージを pip でインストール
-$PYTHON -m pip install --prefix "${PREFIX}" numpy pandas scipy networkx OpenMM
 
 # ビルド用ディレクトリ作成
 mkdir build
