@@ -1,0 +1,70 @@
+{% set name = "OpenStructure" %}
+{% set version = "2.9.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  - url: https://git.scicore.unibas.ch/schwede/{{ name|lower }}/-/archive/{{ version }}/openstructure-{{ version }}.tar.gz
+    sha256: b5958ada252a3912a71da0cefb0313a4291ac6b17c93d6e0a61d361ee62de92e
+  - url: https://files.wwpdb.org/pub/pdb/data/monomers/components.cif.gz
+    sha256: 9efba276fc378cde50a2e3dfe27390f0737059c29ea12019d20cfc978f76bf74
+    folder: components
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - boost
+    - eigen
+    - fftw
+    - libpng
+    - libtiff
+    - parasail
+    - python
+    - pip
+    - sqlite
+    - sip
+  host:
+    - numpy
+    - pandas
+    - scipy
+    - networkx
+    - openmm
+    - voronota
+  run:
+    - boost
+    - eigen
+    - fftw
+    - libpng
+    - libtiff
+    - parasail
+    - python
+    - voronota
+
+about:
+  home: https://openstructure.org
+  license: LGPL-3.0-or-later
+  summary: "Modular software framework for molecular modelling and visualization"
+
+test:
+  requires:
+    - grep
+  commands:
+    - ost -h | grep Usage
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1107/S0907444913007051
+  recipe-maintainers:
+    - eunos-1128
