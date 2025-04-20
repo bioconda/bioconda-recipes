@@ -5,9 +5,14 @@ mkdir build
 cd build
 
 cmake .. \
-  -DCMAKE_INSTALL_PREFIX=${PREFIX} \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_CXX_COMPILER=${CXX}
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+    -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_COMPILER=${CXX} \
+    -DEXPANSION_JS=ON \
+    -DEXPANSION_LT=ON \
+    -DEXPANSION_GL=ON \
+    -DENABLE_MPI=OFF
 
 make -j${CPU_COUNT}
 make install
