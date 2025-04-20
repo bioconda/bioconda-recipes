@@ -1,0 +1,21 @@
+diff --git a/src/utils.c b/src/utils.c
+index 04c4389..fad3189 100644
+--- a/src/utils.c
++++ b/src/utils.c
+@@ -228,6 +228,16 @@ xasprintf_concat (char **strp, const char *fmt, ...)
+ 	return ret;
+ }
+ 
++#ifdef __APPLE__
++char *
++secure_getenv (const char *name)
++{
++	return issetugid ()
++		?  NULL
++		: getenv (name);
++}
++#endif
++
+ int
+ which (const char *cmd)
+ {
