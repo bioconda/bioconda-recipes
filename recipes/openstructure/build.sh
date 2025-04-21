@@ -3,11 +3,9 @@ set -euxo pipefail
 
 sed -i 's|<boost/filesystem/convenience.hpp>|<boost/filesystem.hpp>|' modules/seq/alg/src/hmm_pseudo_counts.cc
 
-# ビルド用ディレクトリ作成
 mkdir build
 cd build
 
-# Python バージョン取得(<major>.<minor>)
 PYVER=$($PYTHON -c 'import sys; print(f"{sys.version_info[0]}.{sys.version_info[1]}")')
 
 cmake .. \
