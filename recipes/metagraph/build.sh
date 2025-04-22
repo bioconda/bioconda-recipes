@@ -8,6 +8,7 @@ ARCH=$(uname -m)
 
 sed -i.bak 's|VERSION 2.8.2|VERSION 3.5|' metagraph/CMakeLists.txt.in
 sed -i.bak 's|VERSION 2.8.12|VERSION 3.5|' metagraph/CMakeListsKMC.txt.in
+sed -i.bak 's|"-mavx"|""|' metagraph/CMakeListsKMC.txt.in
 sed -i.bak 's|VERSION 2.8.11|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/CMakeLists.txt
 sed -i.bak 's|VERSION 2.4.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/libdivsufsort/CMakeLists.txt
 sed -i.bak 's|VERSION 2.6.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/googletest/CMakeLists.txt
@@ -83,7 +84,6 @@ CMAKE_PARAMS="-DBUILD_KMC=OFF \
 
 if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
 	CMAKE_PARAMS="${CMAKE_PARAMS} -DWITH_MSSE42=OFF"
-	sed -i.bak 's|"-mavx"|""|' metagraph/CMakeListsKMC.txt.in
 fi
 
 cmake -S .. -B . ${CMAKE_PARAMS}
