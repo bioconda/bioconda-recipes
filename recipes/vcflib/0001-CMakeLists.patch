@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 55c3f4d..e2089f2 100644
+index 55c3f4d..3aed5db 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -67,11 +67,6 @@ if(NOT CMAKE_BUILD_TYPE)
@@ -14,7 +14,28 @@ index 55c3f4d..e2089f2 100644
  if ((${CMAKE_BUILD_TYPE} MATCHES Release) OR (${CMAKE_BUILD_TYPE} MATCHES RelWithDebInfo))
    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_FLAGS}")
    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_FLAGS}")
-@@ -320,6 +315,10 @@ set(SCRIPTS
+@@ -177,13 +172,19 @@ set(vcflib_SOURCE
+ 
+ if (tabixpp_LOCAL) # add the tabixpp source file
+     list(APPEND vcflib_SOURCE ${tabixpp_SOURCE})
+-    list(APPEND INCLUDES ${TABIXPP_LOCAL}/tabix.hpp)
++    list(APPEND INCLUDES ${tabixpp_LOCAL}/tabix.hpp)
+ endif()
+ 
+ add_library(vcflib
+     ${vcflib_SOURCE}
+     )
+ 
++target_link_libraries(vcflib PUBLIC
++    tabixpp
++    wfa2
++    hts
++    )
++
+ set(BINS
+     vcfecho
+     dumpContigsFromHeader
+@@ -320,6 +321,10 @@ set(SCRIPTS
  file (STRINGS "VERSION" BUILD_NUMBER)
  add_definitions(-DVCFLIB_VERSION="${BUILD_NUMBER}")
  add_definitions(-DVERSION="${BUILD_NUMBER}")
@@ -25,7 +46,7 @@ index 55c3f4d..e2089f2 100644
  
  # ---- Build htslib
  #
-@@ -331,11 +330,11 @@ if (htslib_LOCAL)
+@@ -331,11 +336,11 @@ if (htslib_LOCAL)
  
    include_directories(${htslib_LOCAL})
  
@@ -40,7 +61,28 @@ index 55c3f4d..e2089f2 100644
      INSTALL_COMMAND ""
      BUILD_IN_SOURCE ON
      BUILD_COMMAND $(MAKE) CFLAGS=${flags} lib-static
-@@ -594,6 +593,8 @@ if(WFA_GITMODULE)
+@@ -429,20 +434,6 @@ if (ZIG)
+ endif()
+ 
+ 
+-if (htslib_LOCAL)
+-  target_link_libraries(vcflib htslib)
+-else (htslib_LOCAL)
+-  target_link_libraries(vcflib PkgConfig::htslib)
+-endif()
+-
+-if (NOT tabixpp_LOCAL)
+-  target_link_libraries(vcflib PkgConfig::tabixpp)
+-endif()
+-
+-if(OPENMP)
+-  target_link_libraries(vcflib OpenMP::OpenMP_CXX)
+-endif()
+-
+ # ---- Build all
+ 
+ if (BUILD_SHARED_LIBS)
+@@ -594,6 +585,8 @@ if(WFA_GITMODULE)
    install(TARGETS ${WFALIB} ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})
  endif(WFA_GITMODULE)
  
