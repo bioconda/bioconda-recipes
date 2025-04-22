@@ -20,20 +20,22 @@ sed -i.bak 's|VERSION 3.1|VERSION 3.5|' metagraph/external-libraries/hopscotch-m
 sed -i.bak 's|VERSION 3.1|VERSION 3.5|' metagraph/external-libraries/ordered-map/CMakeLists.txt
 
 if [[ `uname -m` == "aarch64" ]]; then
-    sed -i.bak 's|g++|${CXX}|' metagraph/external-libraries/KMC/makefile
-    sed -i.bak 's|/usr/local/gcc-6.3.0/bin/g++|${CXX}|' metagraph/external-libraries/KMC/makefile_mac
-    sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile
-    sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile_mac
-    rm -rf metagraph/external-libraries/KMC/*.bak
+	sed -i.bak 's|g++|${CXX}|' metagraph/external-libraries/KMC/makefile
+	sed -i.bak 's|/usr/local/gcc-6.3.0/bin/g++|${CXX}|' metagraph/external-libraries/KMC/makefile_mac
+	sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile
+	sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile_mac
+	sed -i.bak 's|-m64||' metagraph/CMakeListsKMC.txt.in
+	rm -rf metagraph/external-libraries/KMC/*.bak
 fi
 
 if [[ `uname -m` == "arm64" ]]; then
-    sed -i.bak 's|g++|${CXX}|' metagraph/external-libraries/KMC/makefile
-    sed -i.bak 's|/usr/local/gcc-6.3.0/bin/g++|${CXX}|' metagraph/external-libraries/KMC/makefile_mac
-    sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile
-    sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile_mac
-    rm -rf metagraph/external-libraries/KMC/*.bak
-    export CXXFLAGS="${CXXFLAGS} -stdlib=libc++"
+	sed -i.bak 's|g++|${CXX}|' metagraph/external-libraries/KMC/makefile
+	sed -i.bak 's|/usr/local/gcc-6.3.0/bin/g++|${CXX}|' metagraph/external-libraries/KMC/makefile_mac
+	sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile
+	sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile_mac
+	sed -i.bak 's|-m64||' metagraph/CMakeListsKMC.txt.in
+	rm -rf metagraph/external-libraries/KMC/*.bak
+	export CXXFLAGS="${CXXFLAGS} -stdlib=libc++"
 fi
 
 sed -i.bak 's|-O2|-O3|' metagraph/CMakeLists.txt
@@ -76,6 +78,10 @@ CMAKE_PARAMS="-DBUILD_KMC=OFF \
             -DCMAKE_INSTALL_PREFIX=${PREFIX} \
             -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
             ${CONFIG_ARGS}"
+
+if [[ $OSTYPE == darwin* ]]; then                                                                                         CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"                                                       export CXXFLAGS="${CXXFLAGS} -Wno-implicit-function-declaration -Wno-suggest-destructor-override -Wno-error=depreca>    export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	CMAKE_PARAMS="${CMAKE_PARAMS} -DCMAKE_CXX_FLAGS=${CXXFLAGS}"
+fi
 
 cmake -S .. -B . ${CMAKE_PARAMS}
 
