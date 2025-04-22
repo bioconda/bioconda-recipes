@@ -18,12 +18,22 @@ sed -i.bak 's|VERSION 2.8.11|VERSION 3.5|' metagraph/external-libraries/eigen/CM
 sed -i.bak 's|VERSION 3.0.2|VERSION 3.5|' metagraph/external-libraries/folly/CMakeLists.txt
 sed -i.bak 's|VERSION 3.1|VERSION 3.5|' metagraph/external-libraries/hopscotch-map/CMakeLists.txt
 sed -i.bak 's|VERSION 3.1|VERSION 3.5|' metagraph/external-libraries/ordered-map/CMakeLists.txt
+sed -i.bak 's|-O2|-O3|' metagraph/CMakeLists.txt
 
 if [[ `uname -m` == "aarch64" ]]; then
+    sed -i.bak 's|g++|${CXX}|' metagraph/external-libraries/KMC/makefile
+    sed -i.bak 's|/usr/local/gcc-6.3.0/bin/g++|${CXX}|' metagraph/external-libraries/KMC/makefile_mac
     sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile
+    sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile_mac
+    rm -rf metagraph/external-libraries/KMC/*.bak
 fi
 
 if [[ `uname -m` == "arm64" ]]; then
+    sed -i.bak 's|g++|${CXX}|' metagraph/external-libraries/KMC/makefile
+    sed -i.bak 's|/usr/local/gcc-6.3.0/bin/g++|${CXX}|' metagraph/external-libraries/KMC/makefile_mac
+    sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile
+    sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile_mac
+    rm -rf metagraph/external-libraries/KMC/*.bak
     export CXXFLAGS="${CXXFLAGS} -stdlib=libc++"
 fi
 
@@ -54,14 +64,14 @@ export PIP_NO_INDEX="False"
 
 CMAKE_PARAMS="-DBUILD_KMC=OFF \
             -DBOOST_ROOT=${PREFIX} \
-            -DBoost_NO_SYSTEM_PATHS=ON \
-            -DBoost_DEBUG=ON \
             -DJEMALLOC_ROOT=${PREFIX} \
             -DOMP_ROOT=${PREFIX} \
             -DCMAKE_PREFIX_PATH=${PREFIX} \
             -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib \
             -DCMAKE_BUILD_TYPE=Release \
             ${CMAKE_PLATFORM_FLAGS} \
+            -DCMAKE_CXX_COMPILER=${CXX} \
+            -DCMAKE_CXX_FLAGS=${CXXFLAGS} \
             -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=1 \
             -DCMAKE_INSTALL_PREFIX=${PREFIX} \
             -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
