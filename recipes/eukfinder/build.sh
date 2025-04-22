@@ -9,4 +9,4 @@ chmod +x $PREFIX/bin/plast
 
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 $PYTHON -m pip install . --no-deps --ignore-installed -vv
-$PYTHON -m pip install ete3==3.1.3
+$PYTHON -m pip install ete3==3.1.3 --no-deps
