@@ -89,7 +89,6 @@ CMAKE_PARAMS="-DBUILD_KMC=OFF \
             -DCMAKE_INSTALL_PREFIX=${PREFIX} \
             -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 	    -DWITH_AVX=OFF \
-            -DBOOST_ALL_NO_LIB \
             ${CONFIG_ARGS}"
 
 if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
