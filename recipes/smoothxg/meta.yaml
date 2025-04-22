@@ -1,5 +1,5 @@
 {% set name = "smoothxg" %}
-{% set version = "0.8.0" %}
+{% set version = "0.8.1" %}
 
 package:
   name: "{{ name }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/pangenome/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
-  sha256: b2b1402971c2e5cf85b318ab98583bf33f78cee33c4bcd8faa140624a76e84be
+  sha256: e95ff0d0d3ab9ac6f8502a346ef7d5c2df1de4a5b2e32873473ed3fdb8225863
   patches:
     - CMakeLists.patch
 
@@ -15,21 +15,31 @@ build:
   skip: True  # [osx]
   number: 0
   run_exports:
-    - {{ pin_subpackage('smoothxg', max_pin="x") }}
+    - {{ pin_subpackage('smoothxg', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - llvm-openmp  # [osx]
     - cmake
     - make
+    - pkg-config
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
   host:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
     - zlib
     - zstd
     - jemalloc
+    - gsl
+    - sdsl-lite
+    - pybind11
   run:
     - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+    - sdsl-lite
+    - jemalloc
 
 test:
   commands:
@@ -38,11 +48,14 @@ test:
 about:
   home: https://github.com/pangenome/smoothxg
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: Local reconstruction of variation graphs using partial order alignment
+  summary: "Local reconstruction of variation graphs using partial order alignment."
+  dev_url: https://github.com/pangenome/smoothxg
+  doc_url: "https://github.com/pangenome/smoothxg/blob/v{{ version }}/README.md"
 
 extra:
-  skip-lints:
-    - uses_vcs_url
   recipe-maintainers:
     - AndreaGuarracino
+  identifiers:
+    - doi:10.1038/s41592-024-02430-3

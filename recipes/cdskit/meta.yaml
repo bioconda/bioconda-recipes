@@ -1,0 +1,43 @@
+{% set name = "cdskit" %}
+{% set version = "0.14.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/kfuku52/cdskit/archive/{{ version }}.tar.gz
+  sha256: eb4e02d14710f7180f060d9a22aec3a6500df079c9142c6284d0da08bf0bdc0b
+  
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('cdskit', max_pin="x.x") }}
+  noarch: python
+  script:
+    - "{{ PYTHON }} -m pip install . -vv --ignore-installed --no-deps"
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.8
+
+test:
+  imports:
+    - cdskit
+  commands:
+    - cdskit --help
+
+about:
+  home: "https://github.com/kfuku52/cdskit"
+  license: "BSD-3-Clause"
+  license_file: LICENSE
+  summary: "CDSKIT processes protein-coding sequences."
+
+extra:
+  recipe-maintainers:
+    - kfuku52
