@@ -63,7 +63,7 @@ if [[ "${target_platform}" == "osx-64" ]]; then
 fi
 
 # needed for setting up python based integration test environment
-export PIP_NO_INDEX="False"
+export PIP_NO_INDEX=False
 
 CMAKE_PARAMS="-DBUILD_KMC=OFF \
             -DBOOST_ROOT=${PREFIX} \
@@ -79,7 +79,7 @@ CMAKE_PARAMS="-DBUILD_KMC=OFF \
             -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
             ${CONFIG_ARGS}"
 
-if [[ $OSTYPE == darwin* ]]; then                                                                                         CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"                                                       export CXXFLAGS="${CXXFLAGS} -Wno-implicit-function-declaration -Wno-suggest-destructor-override -Wno-error=depreca>    export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+if [[ $OSTYPE == darwin* ]]; then
 	CMAKE_PARAMS="${CMAKE_PARAMS} -DCMAKE_CXX_FLAGS=${CXXFLAGS}"
 fi
 
