@@ -36,6 +36,8 @@ if [[ `uname -m` == "arm64" ]]; then
     export CXXFLAGS="${CXXFLAGS} -stdlib=libc++"
 fi
 
+sed -i.bak 's|-O2|-O3|' metagraph/CMakeLists.txt
+
 pushd metagraph/external-libraries/sdsl-lite
 ./install.sh $PWD
 popd
@@ -70,7 +72,6 @@ CMAKE_PARAMS="-DBUILD_KMC=OFF \
             -DCMAKE_BUILD_TYPE=Release \
             ${CMAKE_PLATFORM_FLAGS} \
             -DCMAKE_CXX_COMPILER=${CXX} \
-            -DCMAKE_CXX_FLAGS=${CXXFLAGS} \
             -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=1 \
             -DCMAKE_INSTALL_PREFIX=${PREFIX} \
             -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
