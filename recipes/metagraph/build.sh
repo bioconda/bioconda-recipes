@@ -18,7 +18,6 @@ sed -i.bak 's|VERSION 2.8.11|VERSION 3.5|' metagraph/external-libraries/eigen/CM
 sed -i.bak 's|VERSION 3.0.2|VERSION 3.5|' metagraph/external-libraries/folly/CMakeLists.txt
 sed -i.bak 's|VERSION 3.1|VERSION 3.5|' metagraph/external-libraries/hopscotch-map/CMakeLists.txt
 sed -i.bak 's|VERSION 3.1|VERSION 3.5|' metagraph/external-libraries/ordered-map/CMakeLists.txt
-sed -i.bak 's|-O2|-O3|' metagraph/CMakeLists.txt
 
 if [[ `uname -m` == "aarch64" ]]; then
     sed -i.bak 's|g++|${CXX}|' metagraph/external-libraries/KMC/makefile
