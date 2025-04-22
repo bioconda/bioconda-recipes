@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# ---- Exit on error ----
-set -euo pipefail
-
-
 # ---- Build and install ----
 mkdir -p "${PREFIX}/bin"
 cp -rf ${RECIPE_DIR}/CMakeLists.txt $SRC_DIR/CMakeLists.txt
