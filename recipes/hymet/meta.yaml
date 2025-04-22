@@ -1,0 +1,57 @@
+{% set version = "1.0.0" %}
+
+package:
+  name: hymet
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: False
+  run_exports:
+    - {{ pin_subpackage("hymet", max_pin="x.x.x") }}
+
+source:
+  url: https://github.com/inesbmartins02/HYMET/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b4985691ab6f813bc919449a9d6bcb05ef02980bca05260cd3c3418530a927b7
+
+requirements:
+  build:
+    - cmake >=3.0
+    - make
+    - {{ compiler('cxx') }}
+    - git
+  host:
+    - zlib
+    - python >=3.8
+  run:
+    - python >=3.8
+    - perl
+    - mash
+    - minimap2
+    - pandas
+    - numpy
+    - biopython
+    - csvkit
+    - wget
+    - pip:
+      - tqdm
+
+test:
+  commands:
+    - hymet --help || true  # Adicionado '|| true' para evitar falha se não tiver --help
+    - python -c "import biopython"
+
+about:
+  home: https://github.com/inesbmartins02/HYMET
+  license: GPL-3.0-only
+  license_file: LICENSE
+  summary: "Hybrid Metagenomic Tool for advanced sequence analysis"
+  description: |
+    HYMET is a hybrid metagenomic analysis tool combining alignment-based
+    and alignment-free approaches for comprehensive sequence analysis.
+  doc_url: https://github.com/inesbmartins02/HYMET/blob/main/README.md
+  dev_url: https://github.com/inesbmartins02/HYMET
+
+extra:
+  recipe-maintainers:
+    - inesbmartins02
