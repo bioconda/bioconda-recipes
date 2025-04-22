@@ -47,15 +47,16 @@ CMAKE_PARAMS="-DBUILD_KMC=OFF \
             -DCMAKE_PREFIX_PATH=${PREFIX} \
             -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib \
             -DCMAKE_BUILD_TYPE=Release \
+            ${CMAKE_PLATFORM_FLAGS} \
             -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=1 \
             -DCMAKE_INSTALL_PREFIX=${PREFIX} \
-            ${CMAKE_PLATFORM_FLAGS}"
+            ${CONFIG_ARGS}"
 
-cmake -S .. -B . "${CMAKE_PARAMS}" "${CONFIG_ARGS}"
+cmake -S .. -B . ${CMAKE_PARAMS}
 
 BUILD_CMD="make VERBOSE=1 -j $(($(getconf _NPROCESSORS_ONLN) - 1)) metagraph"
 
-"${BUILD_CMD}"
+${BUILD_CMD}
 
 make install
 
@@ -63,9 +64,9 @@ make install
 
 make clean
 
-cmake -S .. -B . -DCMAKE_DBG_ALPHABET=Protein "${CMAKE_PARAMS}" "${CONFIG_ARGS}"
+cmake -S .. -B . ${CMAKE_PARAMS} -DCMAKE_DBG_ALPHABET=Protein
 
-"${BUILD_CMD}"
+${BUILD_CMD}
 
 make install
 
