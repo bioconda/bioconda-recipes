@@ -11,7 +11,7 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-OS=$(uname)
+OS=$(uname -s)
 ARCH=$(uname -m)
 
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
@@ -38,9 +38,9 @@ sed -i.bak 's/g++/$(CXX) $(CXXFLAGS)/g' contrib/multichoose/Makefile
 sed -i.bak 's/g++/$(CXX) $(CXXFLAGS)/g' contrib/intervaltree/Makefile
 
 # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14
-if [[ `uname` == "Darwin" ]]; then
+if [[ "${OS}" == "Darwin" ]]; then
 	export LIBPATH="-L${PREFIX}/lib -L. -Lhtslib -Ltabixpp -Lwfa2"
-	export LDFLAGS="${LDFLAGS} -lhts -ltabixpp -lpthread -lz -lm -llzma -lbz2 -fopenmp -lwfa2"
+	export LDFLAGS="${LDFLAGS} -lhts -ltabixpp -lpthread -lz -lm -llzma -lbz2 -lcurl -fopenmp -lwfa2"
 	sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' contrib/smithwaterman/Makefile
 	sed -i.bak 's/-std=c++0x/-std=c++17 -stdlib=libc++/g' contrib/intervaltree/Makefile
 	rm -rf contrib/smithwaterman/*.bak
@@ -51,7 +51,7 @@ if [[ `uname` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DWFA_GITMODULE=OFF"
 else
 	export LIBPATH="-L${PREFIX}/lib -L. -Lhtslib -Ltabixpp"
-	export LDFLAGS="${LDFLAGS} -lhts -ltabixpp -lpthread -lz -lm -llzma -lbz2 -fopenmp"
+	export LDFLAGS="${LDFLAGS} -lhts -ltabixpp -lpthread -lz -lm -llzma -lbz2 -lcurl -fopenmp"
  	export CONFIG_ARGS="-DWFA_GITMODULE=ON"
 	rm -rf contrib/smithwaterman/*.bak
 	rm -rf contrib/intervaltree/*.bak
@@ -63,7 +63,7 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-DOPENMP=ON \
+	-DOPENMP=ON -DPROFILING=ON -DZIG=ON \
 	"${CONFIG_ARGS}"
 
 cmake --build build --target install -j "${CPU_COUNT}"
