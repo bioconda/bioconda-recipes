@@ -19,6 +19,14 @@ sed -i.bak 's|VERSION 3.0.2|VERSION 3.5|' metagraph/external-libraries/folly/CMa
 sed -i.bak 's|VERSION 3.1|VERSION 3.5|' metagraph/external-libraries/hopscotch-map/CMakeLists.txt
 sed -i.bak 's|VERSION 3.1|VERSION 3.5|' metagraph/external-libraries/ordered-map/CMakeLists.txt
 
+if [[ `uname -m` == "aarch64" ]]; then
+    sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile
+fi
+
+if [[ `uname -m` == "arm64" ]]; then
+    export CXXFLAGS="${CXXFLAGS} -stdlib=libc++"
+fi
+
 pushd metagraph/external-libraries/sdsl-lite
 ./install.sh $PWD
 popd
@@ -39,10 +47,6 @@ fi
 
 if [[ "${target_platform}" == "osx-64" ]]; then
     export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-fi
-
-if [[ `uname -m` == "aarch64" ]]; then
-    sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile
 fi
 
 # needed for setting up python based integration test environment
