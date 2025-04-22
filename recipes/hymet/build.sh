@@ -7,11 +7,11 @@ mkdir -p $PREFIX/bin/output
 mkdir -p $PREFIX/bin/taxonomy_files
 
 # Copy main scripts to bin directory
-cp config.pl $PREFIX/bin/
-cp main.pl $PREFIX/bin/
+cp -rf config.pl $PREFIX/bin/
+cp -rf main.pl $PREFIX/bin/
 
 # Copy all scripts from scripts directory
-cp scripts/*.py scripts/*.sh $PREFIX/bin/scripts/
+cp -rf scripts/*.py scripts/*.sh $PREFIX/bin/scripts/
 
 # Make all scripts executable
 chmod +x $PREFIX/bin/config.pl
