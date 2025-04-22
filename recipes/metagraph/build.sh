@@ -8,8 +8,6 @@ export JEMALLOC_INCLUDE_DIR="${PREFIX}/include"
 export BOOST_INCLUDEDIR="${PREFIX}/include"
 export BOOST_LIBRARYDIR="${PREFIX}/lib"
 
-ARCH=$(uname -m)
-
 sed -i.bak 's|VERSION 2.8.2|VERSION 3.5|' metagraph/CMakeLists.txt.in
 sed -i.bak 's|VERSION 2.8.12|VERSION 3.5|' metagraph/CMakeListsKMC.txt.in
 sed -i.bak 's|VERSION 2.8.11|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/CMakeLists.txt
@@ -25,53 +23,44 @@ sed -i.bak 's|VERSION 3.0.2|VERSION 3.5|' metagraph/external-libraries/folly/CMa
 sed -i.bak 's|VERSION 3.1|VERSION 3.5|' metagraph/external-libraries/hopscotch-map/CMakeLists.txt
 sed -i.bak 's|VERSION 3.1|VERSION 3.5|' metagraph/external-libraries/ordered-map/CMakeLists.txt
 
+ARCH=$(uname -m)
+OS=$(uname -s)
+
 if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
 	sed -i.bak 's|"-mavx"|""|' metagraph/CMakeListsKMC.txt.in
 	sed -i.bak 's|-mavx2||' metagraph/CMakeListsKMC.txt.in
 	sed -i.bak 's|-mfma||' metagraph/CMakeListsKMC.txt.in
-fi
-
-if [[ `uname -m` == "aarch64" ]]; then
-	sed -i.bak 's|g++|${CXX}|' metagraph/external-libraries/KMC/makefile
-	sed -i.bak 's|/usr/local/gcc-6.3.0/bin/g++|${CXX}|' metagraph/external-libraries/KMC/makefile_mac
-	sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile
-	sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile_mac
+	sed -i.bak 's|"-msse2"|""|' metagraph/CMakeListsKMC.txt.in
+	sed -i.bak 's|"-msse4.1"|""|' metagraph/CMakeListsKMC.txt.in
 	sed -i.bak 's|-m64||' metagraph/CMakeListsKMC.txt.in
+	sed -i.bak 's|g++|${CXX}|' metagraph/external-libraries/KMC/makefile
+	sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile
 	rm -rf metagraph/external-libraries/KMC/*.bak
 fi
 
-if [[ `uname -m` == "arm64" ]]; then
-	sed -i.bak 's|g++|${CXX}|' metagraph/external-libraries/KMC/makefile
+if [[ "${OS}" == "Linux" ]]; then
+	CMAKE_PLATFORM_FLAGS=""
+	export CXXFLAGS="${CXXFLAGS} -Wno-attributes -Wno-narrowing"
+	export CONFIG_ARGS=""
+elif [[ "${OS}" == "Darwin" ]]; then
 	sed -i.bak 's|/usr/local/gcc-6.3.0/bin/g++|${CXX}|' metagraph/external-libraries/KMC/makefile_mac
-	sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile
-	sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile_mac
-	sed -i.bak 's|-m64||' metagraph/CMakeListsKMC.txt.in
+ 	sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile_mac
 	rm -rf metagraph/external-libraries/KMC/*.bak
+	CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
+	export CXXFLAGS="${CXXFLAGS} -Wno-implicit-function-declaration -Wno-suggest-destructor-override -Wno-error=deprecated-copy -D_LIBCPP_DISABLE_AVAILABILITY"
+	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 fi
 
 sed -i.bak 's|-O2|-O3|' metagraph/CMakeLists.txt
+rm -rf metagraph/*.bak
 
 pushd metagraph/external-libraries/sdsl-lite
-./install.sh $PWD
+./install.sh ${PWD}
 popd
 
 [[ ! -d metagraph/build ]]  || rm -r metagraph/build
 mkdir -p metagraph/build
 cd metagraph/build
-
-if [[ $OSTYPE == linux* ]]; then
-    CMAKE_PLATFORM_FLAGS=""
-    export CXXFLAGS="${CXXFLAGS} -Wno-attributes -Wno-narrowing"
-    export CONFIG_ARGS=""
-elif [[ $OSTYPE == darwin* ]]; then
-    CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
-    export CXXFLAGS="${CXXFLAGS} -Wno-implicit-function-declaration -Wno-suggest-destructor-override -Wno-error=deprecated-copy"
-    export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
-fi
-
-if [[ "${target_platform}" == "osx-64" ]]; then
-    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-fi
 
 # needed for setting up python based integration test environment
 export PIP_NO_INDEX=False
