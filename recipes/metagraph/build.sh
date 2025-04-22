@@ -41,13 +41,19 @@ if [[ "${target_platform}" == "osx-64" ]]; then
     export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
 
+if [[ `uname -m` == "aarch64" ]]; then
+    sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile
+fi
+
 # needed for setting up python based integration test environment
 export PIP_NO_INDEX="False"
 
 CMAKE_PARAMS="-DBUILD_KMC=OFF \
-            -DBOOST_ROOT=${BUILD_PREFIX} \
-            -DJEMALLOC_ROOT=${BUILD_PREFIX} \
-            -DOMP_ROOT=${BUILD_PREFIX} \
+            -DBOOST_ROOT=${PREFIX} \
+            -DBoost_NO_SYSTEM_PATHS=ON \
+            -DBoost_DEBUG=ON \
+            -DJEMALLOC_ROOT=${PREFIX} \
+            -DOMP_ROOT=${PREFIX} \
             -DCMAKE_PREFIX_PATH=${PREFIX} \
             -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib \
             -DCMAKE_BUILD_TYPE=Release \
