@@ -4,7 +4,7 @@ set -ex
 cp -rf "${RECIPE_DIR}/vcflib.pc.in" "${SRC_DIR}"
 
 export M4="${BUILD_PREFIX}/bin/m4"
-export PATH="$(which zig):${PATH}"
+#export PATH="$(which zig):${PATH}"
 
 export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Itabixpp -Iwfa2 -I\$(INC_DIR)"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
@@ -16,12 +16,15 @@ ARCH=$(uname -m)
 
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
 	echo $(pwd)/zig-macos-x86_64-*
+	export PATH="$(pwd)/zig-macos-x86_64-0.15.0-dev/lib:${PATH}"
 	export PATH="$(pwd)/zig-macos-x86_64-0.15.0-dev:${PATH}"
 elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	echo $(pwd)/zig-macos-aarch64-*
+	export PATH="$(pwd)/zig-macos-aarch64-0.15.0-dev/lib:${PATH}"
 	export PATH="$(pwd)/zig-macos-aarch64-0.15.0-dev:${PATH}"
 else
 	echo $(pwd)/zig-linux-${ARCH}-*
+	export PATH="$(pwd)/zig-linux-${ARCH}-0.15.0-dev/lib:${PATH}"
 	export PATH="$(pwd)/zig-linux-${ARCH}-0.15.0-dev:${PATH}"
 fi
 
@@ -56,14 +59,11 @@ else
 	rm -rf contrib/multichoose/*.bak
 fi
 
-cmake -S . -B build \
-	-DZIG=ON -DOPENMP=ON \
-	-DCMAKE_BUILD_TYPE=Release \
-	-DBUILD_SHARED_LIBS=ON \
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-DPROFILING=ON \
+	-DOPENMP=ON \
 	"${CONFIG_ARGS}"
 
 cmake --build build --target install -j "${CPU_COUNT}"
