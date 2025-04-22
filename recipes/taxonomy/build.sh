@@ -9,7 +9,6 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
-maturin build --find-interpreter --release --strip -b cffi
-# --interpreter "${PYTHON}"
+maturin build --interpreter "${PYTHON}" --release --strip -b pyo3
 
 ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
