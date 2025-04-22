@@ -7,6 +7,11 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 sed -i.bak 's|VERSION 2.8.2|VERSION 3.5|' metagraph/CMakeLists.txt.in
 sed -i.bak 's|VERSION 2.8.12|VERSION 3.5|' metagraph/CMakeListsKMC.txt.in
 sed -i.bak 's|VERSION 2.8.11|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/CMakeLists.txt
+sed -i.bak 's|VERSION 2.4.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/libdivsufsort/CMakeLists.txt
+sed -i.bak 's|VERSION 2.6.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/googletest/CMakeLists.txt
+sed -i.bak 's|VERSION 2.6.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/googletest/googletest/CMakeLists.txt
+sed -i.bak 's|VERSION 2.6.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/googletest/googlemock/CMakeLists.txt
+
 rm -rf metagraph/*.bak
 rm -rf metagraph/external-libraries/sdsl-lite/*.bak
 
