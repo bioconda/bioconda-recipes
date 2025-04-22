@@ -14,4 +14,4 @@ make install
 install -v -m 0755 ../bin/* "${PREFIX}/bin"
 
 # add read permissions to LICENSE
-chmod a+r LICENSE
+chmod a+r "${SRC_DIR}/LICENSE"
