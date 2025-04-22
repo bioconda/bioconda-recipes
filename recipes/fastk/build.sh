@@ -8,12 +8,12 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -I$SRC_DIR -I$SRC_DIR/HTSLIB -I
 
 # build HTSLIB
 cd HTSLIB
-make -j"${CPU_COUNT}" lib-static
+make CC="${CC}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}" lib-static
 cd -
 # build LIBDEFLATE
 cd LIBDEFLATE
-make -j"${CPU_COUNT}"
+make CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
 cd -
 # build fastk
-make -j"${CPU_COUNT}"
+make CC="${CC}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
 make install
