@@ -1,19 +1,24 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 pushd metagraph/external-libraries/sdsl-lite
 ./install.sh $PWD
 popd
 
-[ ! -d metagraph/build ]  || rm -r metagraph/build
+[[ ! -d metagraph/build ]]  || rm -r metagraph/build
 mkdir -p metagraph/build
 cd metagraph/build
 
 if [[ $OSTYPE == linux* ]]; then
     CMAKE_PLATFORM_FLAGS=""
-    export CXXFLAGS="${CXXFLAGS} -Wno-attributes"
+    export CXXFLAGS="${CXXFLAGS} -O3 -Wno-attributes"
+    export CONFIG_ARGS=""
 elif [[ $OSTYPE == darwin* ]]; then
     CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
-    export CXXFLAGS="${CXXFLAGS} -Wno-suggest-destructor-override -Wno-error=deprecated-copy"
+    export CXXFLAGS="${CXXFLAGS} -O3 -Wno-implicit-function-declaration -Wno-suggest-destructor-override -Wno-error=deprecated-copy"
+    export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 fi
 
 if [[ "${target_platform}" == "osx-64" ]]; then
@@ -30,15 +35,15 @@ CMAKE_PARAMS="-DBUILD_KMC=OFF \
             -DCMAKE_PREFIX_PATH=${PREFIX} \
             -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib \
             -DCMAKE_BUILD_TYPE=Release \
-            ${CMAKE_PLATFORM_FLAGS} \
             -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=1 \
-            -DCMAKE_INSTALL_PREFIX=${PREFIX}"
+            -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+            ${CMAKE_PLATFORM_FLAGS}"
 
-cmake ${CMAKE_PARAMS} ..
+cmake -S .. -B . "${CMAKE_PARAMS}" "${CONFIG_ARGS}"
 
 BUILD_CMD="make VERBOSE=1 -j $(($(getconf _NPROCESSORS_ONLN) - 1)) metagraph"
 
-${BUILD_CMD}
+"${BUILD_CMD}"
 
 make install
 
@@ -46,15 +51,15 @@ make install
 
 make clean
 
-cmake ${CMAKE_PARAMS} -DCMAKE_DBG_ALPHABET=Protein ..
+cmake -S .. -B . -DCMAKE_DBG_ALPHABET=Protein "${CMAKE_PARAMS}" "${CONFIG_ARGS}"
 
-${BUILD_CMD}
+"${BUILD_CMD}"
 
 make install
 
 ### Adding symlink to default DNA binary version
 
 pushd ${PREFIX}/bin
-ln -s metagraph_DNA metagraph
+chmod 0755 metagraph_DNA
+ln -sf metagraph_DNA metagraph
 popd
-
