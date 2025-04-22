@@ -12,9 +12,12 @@ sed -i.bak 's|VERSION 2.6.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite
 sed -i.bak 's|VERSION 2.6.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/googletest/googletest/CMakeLists.txt
 sed -i.bak 's|VERSION 2.6.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/googletest/googlemock/CMakeLists.txt
 sed -i.bak 's|VERSION 2.6|VERSION 3.5|' metagraph/external-libraries/DYNAMIC/CMakeLists.txt
-
-rm -rf metagraph/*.bak
-rm -rf metagraph/external-libraries/sdsl-lite/*.bak
+sed -i.bak 's|VERSION 2.8.12|VERSION 3.5|' metagraph/external-libraries/zlib/CMakeLists.txt
+sed -i.bak 's|VERSION 3.1.3|VERSION 3.5|' metagraph/external-libraries/caches/CMakeLists.txt
+sed -i.bak 's|VERSION 2.8.11|VERSION 3.5|' metagraph/external-libraries/eigen/CMakeLists.txt
+sed -i.bak 's|VERSION 3.0.2|VERSION 3.5|' metagraph/external-libraries/folly/CMakeLists.txt
+sed -i.bak 's|VERSION 3.1|VERSION 3.5|' metagraph/external-libraries/hopscotch-map/CMakeLists.txt
+sed -i.bak 's|VERSION 3.1|VERSION 3.5|' metagraph/external-libraries/ordered-map/CMakeLists.txt
 
 pushd metagraph/external-libraries/sdsl-lite
 ./install.sh $PWD
@@ -51,6 +54,7 @@ CMAKE_PARAMS="-DBUILD_KMC=OFF \
             ${CMAKE_PLATFORM_FLAGS} \
             -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=1 \
             -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
             ${CONFIG_ARGS}"
 
 cmake -S .. -B . ${CMAKE_PARAMS}
