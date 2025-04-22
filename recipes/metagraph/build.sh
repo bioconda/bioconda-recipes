@@ -12,7 +12,6 @@ ARCH=$(uname -m)
 
 sed -i.bak 's|VERSION 2.8.2|VERSION 3.5|' metagraph/CMakeLists.txt.in
 sed -i.bak 's|VERSION 2.8.12|VERSION 3.5|' metagraph/CMakeListsKMC.txt.in
-sed -i.bak 's|"-mavx"|""|' metagraph/CMakeListsKMC.txt.in
 sed -i.bak 's|VERSION 2.8.11|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/CMakeLists.txt
 sed -i.bak 's|VERSION 2.4.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/libdivsufsort/CMakeLists.txt
 sed -i.bak 's|VERSION 2.6.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/googletest/CMakeLists.txt
@@ -25,6 +24,12 @@ sed -i.bak 's|VERSION 2.8.11|VERSION 3.5|' metagraph/external-libraries/eigen/CM
 sed -i.bak 's|VERSION 3.0.2|VERSION 3.5|' metagraph/external-libraries/folly/CMakeLists.txt
 sed -i.bak 's|VERSION 3.1|VERSION 3.5|' metagraph/external-libraries/hopscotch-map/CMakeLists.txt
 sed -i.bak 's|VERSION 3.1|VERSION 3.5|' metagraph/external-libraries/ordered-map/CMakeLists.txt
+
+if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
+	sed -i.bak 's|"-mavx"|""|' metagraph/CMakeListsKMC.txt.in
+	sed -i.bak 's|-mavx2||' metagraph/CMakeListsKMC.txt.in
+	sed -i.bak 's|-mfma||' metagraph/CMakeListsKMC.txt.in
+fi
 
 if [[ `uname -m` == "aarch64" ]]; then
 	sed -i.bak 's|g++|${CXX}|' metagraph/external-libraries/KMC/makefile
