@@ -2,6 +2,13 @@
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
+sed -i.bak 's|VERSION 2.8.2|VERSION 3.5|' metagraph/CMakeLists.txt.in
+sed -i.bak 's|VERSION 2.8.12|VERSION 3.5|' metagraph/CMakeListsKMC.txt.in
+sed -i.bak 's|VERSION 2.8.11|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/CMakeLists.txt
+rm -rf metagraph/*.bak
+rm -rf metagraph/external-libraries/sdsl-lite/*.bak
 
 pushd metagraph/external-libraries/sdsl-lite
 ./install.sh $PWD
@@ -13,11 +20,11 @@ cd metagraph/build
 
 if [[ $OSTYPE == linux* ]]; then
     CMAKE_PLATFORM_FLAGS=""
-    export CXXFLAGS="${CXXFLAGS} -O3 -Wno-attributes"
+    export CXXFLAGS="${CXXFLAGS} -Wno-attributes"
     export CONFIG_ARGS=""
 elif [[ $OSTYPE == darwin* ]]; then
     CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
-    export CXXFLAGS="${CXXFLAGS} -O3 -Wno-implicit-function-declaration -Wno-suggest-destructor-override -Wno-error=deprecated-copy"
+    export CXXFLAGS="${CXXFLAGS} -Wno-implicit-function-declaration -Wno-suggest-destructor-override -Wno-error=deprecated-copy"
     export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 fi
 
@@ -26,7 +33,7 @@ if [[ "${target_platform}" == "osx-64" ]]; then
 fi
 
 # needed for setting up python based integration test environment
-export PIP_NO_INDEX=False
+export PIP_NO_INDEX="False"
 
 CMAKE_PARAMS="-DBUILD_KMC=OFF \
             -DBOOST_ROOT=${BUILD_PREFIX} \
