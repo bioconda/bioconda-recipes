@@ -11,6 +11,7 @@ sed -i.bak 's|VERSION 2.4.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite
 sed -i.bak 's|VERSION 2.6.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/googletest/CMakeLists.txt
 sed -i.bak 's|VERSION 2.6.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/googletest/googletest/CMakeLists.txt
 sed -i.bak 's|VERSION 2.6.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/googletest/googlemock/CMakeLists.txt
+sed -i.bak 's|VERSION 2.6|VERSION 3.5|' metagraph/external-libraries/DYNAMIC/CMakeLists.txt
 
 rm -rf metagraph/*.bak
 rm -rf metagraph/external-libraries/sdsl-lite/*.bak
@@ -71,7 +72,6 @@ ${BUILD_CMD}
 make install
 
 ### Adding symlink to default DNA binary version
-
 pushd ${PREFIX}/bin
 chmod 0755 metagraph_DNA
 ln -sf metagraph_DNA metagraph
