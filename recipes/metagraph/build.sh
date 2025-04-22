@@ -4,6 +4,8 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
+ARCH=$(uname -m)
+
 sed -i.bak 's|VERSION 2.8.2|VERSION 3.5|' metagraph/CMakeLists.txt.in
 sed -i.bak 's|VERSION 2.8.12|VERSION 3.5|' metagraph/CMakeListsKMC.txt.in
 sed -i.bak 's|VERSION 2.8.11|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/CMakeLists.txt
@@ -50,7 +52,7 @@ cd metagraph/build
 
 if [[ $OSTYPE == linux* ]]; then
     CMAKE_PLATFORM_FLAGS=""
-    export CXXFLAGS="${CXXFLAGS} -Wno-attributes"
+    export CXXFLAGS="${CXXFLAGS} -Wno-attributes -Wno-narrowing"
     export CONFIG_ARGS=""
 elif [[ $OSTYPE == darwin* ]]; then
     CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
@@ -77,10 +79,15 @@ CMAKE_PARAMS="-DBUILD_KMC=OFF \
             -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=1 \
             -DCMAKE_INSTALL_PREFIX=${PREFIX} \
             -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+	    -DWITH_AVX=OFF \
             ${CONFIG_ARGS}"
 
 if [[ $OSTYPE == darwin* ]]; then
 	CMAKE_PARAMS="${CMAKE_PARAMS} -DCMAKE_CXX_FLAGS=${CXXFLAGS}"
+fi
+
+if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
+	CMAKE_PARAMS="${CMAKE_PARAMS} -DWITH_MSSE42=OFF"
 fi
 
 cmake -S .. -B . ${CMAKE_PARAMS}
