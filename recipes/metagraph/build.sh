@@ -37,7 +37,6 @@ if [[ `uname -m` == "arm64" ]]; then
 	sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile_mac
 	sed -i.bak 's|-m64||' metagraph/CMakeListsKMC.txt.in
 	rm -rf metagraph/external-libraries/KMC/*.bak
-	export CXXFLAGS="${CXXFLAGS} -stdlib=libc++"
 fi
 
 sed -i.bak 's|-O2|-O3|' metagraph/CMakeLists.txt
@@ -82,12 +81,9 @@ CMAKE_PARAMS="-DBUILD_KMC=OFF \
 	    -DWITH_AVX=OFF \
             ${CONFIG_ARGS}"
 
-if [[ $OSTYPE == darwin* ]]; then
-	CMAKE_PARAMS="${CMAKE_PARAMS} -DCMAKE_CXX_FLAGS=${CXXFLAGS}"
-fi
-
 if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
 	CMAKE_PARAMS="${CMAKE_PARAMS} -DWITH_MSSE42=OFF"
+	sed -i.bak 's|"-mavx"|""|' metagraph/CMakeListsKMC.txt.in
 fi
 
 cmake -S .. -B . ${CMAKE_PARAMS}
