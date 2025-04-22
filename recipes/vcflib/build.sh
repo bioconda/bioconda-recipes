@@ -7,8 +7,23 @@ export M4="${BUILD_PREFIX}/bin/m4"
 export PATH="$(which zig):${PATH}"
 
 export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Itabixpp -Iwfa2 -I\$(INC_DIR)"
-export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64 -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+OS=$(uname)
+ARCH=$(uname -m)
+
+if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
+	echo $(pwd)/zig-macos-x86_64-*
+	export PATH="$(pwd)/zig-macos-x86_64-0.15.0-dev:${PATH}"
+elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
+	echo $(pwd)/zig-macos-aarch64-*
+	export PATH="$(pwd)/zig-macos-aarch64-0.15.0-dev:${PATH}"
+else
+	echo $(pwd)/zig-linux-${ARCH}-*
+	export PATH="$(pwd)/zig-linux-${ARCH}-0.15.0-dev:${PATH}"
+fi
 
 sed -i.bak 's/CFFFLAGS:= -O3/CFFFLAGS=-O3 -D_FILE_OFFSET_BITS=64/' contrib/smithwaterman/Makefile
 sed -i.bak 's/CFLAGS/CXXFLAGS/g' contrib/smithwaterman/Makefile
