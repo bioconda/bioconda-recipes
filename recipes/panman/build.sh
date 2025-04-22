@@ -5,11 +5,21 @@ set -euo pipefail
 
 
 # ---- Build and install ----
+mkdir -p "${PREFIX}/bin"
 cp -rf ${RECIPE_DIR}/CMakeLists.txt $SRC_DIR/CMakeLists.txt
 mkdir -p build
-cd build
 
-cmake -S $SRC_DIR -B . \
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
+if [[ `uname` == "Darwin" ]]; then
+  export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+else
+  export CONFIG_ARGS=""
+fi
+
+cmake -S $SRC_DIR -B build \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_PREFIX_PATH="${PREFIX}" \
     -DCMAKE_BUILD_TYPE=Release \
@@ -17,5 +27,5 @@ cmake -S $SRC_DIR -B . \
     -DTBB_DIR="${PREFIX}/lib/cmake/TBB" \
     ${CMAKE_ARGS} -Wno-dev
 
-make -j$(nproc)
-make install
+cmake --build build -j "${CPU_COUNT}"
+install -v -m 0755 build/panmanUtils ${PREFIX}/bin
