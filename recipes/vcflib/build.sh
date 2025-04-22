@@ -4,7 +4,7 @@ set -ex
 cp -rf "${RECIPE_DIR}/vcflib.pc.in" "${SRC_DIR}"
 
 export M4="${BUILD_PREFIX}/bin/m4"
-#export PATH="$(which zig):${PATH}"
+export PATH="$(which zig):${PATH}"
 
 export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Itabixpp -Iwfa2 -I\$(INC_DIR)"
 export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64 -I${PREFIX}/include"
@@ -42,12 +42,13 @@ else
 fi
 
 cmake -S . -B build \
-	-DZIG=OFF -DOPENMP=ON \
+	-DZIG=ON -DOPENMP=ON \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DBUILD_SHARED_LIBS=ON \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-DPROFILING=ON "${CONFIG_ARGS}"
+	-DPROFILING=ON \
+	"${CONFIG_ARGS}"
 
 cmake --build build --target install -j "${CPU_COUNT}"

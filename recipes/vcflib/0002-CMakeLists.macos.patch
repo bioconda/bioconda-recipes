@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 7e90114..83c8cb9 100644
+index 55c3f4d..7421fcb 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -69,11 +69,6 @@ if(NOT CMAKE_BUILD_TYPE)
+@@ -67,11 +67,6 @@ if(NOT CMAKE_BUILD_TYPE)
            "Choose the type of build, options are: Release|Debug|RelWithDebInfo (for distros)." FORCE)
  endif()
  
@@ -14,11 +14,11 @@ index 7e90114..83c8cb9 100644
  if ((${CMAKE_BUILD_TYPE} MATCHES Release) OR (${CMAKE_BUILD_TYPE} MATCHES RelWithDebInfo))
    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_FLAGS}")
    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_FLAGS}")
-@@ -186,10 +181,14 @@ if (TABIXPP_LOCAL) # add the tabixpp source file
-     list(APPEND vcflib_SOURCE ${tabixpp_SOURCE})
+@@ -180,10 +175,14 @@ if (tabixpp_LOCAL) # add the tabixpp source file
+     list(APPEND INCLUDES ${TABIXPP_LOCAL}/tabix.hpp)
  endif()
  
--add_library(vcflib STATIC
+-add_library(vcflib
 +add_library(vcflib SHARED
      ${vcflib_SOURCE}
      )
@@ -30,7 +30,7 @@ index 7e90114..83c8cb9 100644
  set(BINS
      vcfecho
      dumpContigsFromHeader
-@@ -326,6 +325,10 @@ set(SCRIPTS
+@@ -320,6 +319,10 @@ set(SCRIPTS
  file (STRINGS "VERSION" BUILD_NUMBER)
  add_definitions(-DVCFLIB_VERSION="${BUILD_NUMBER}")
  add_definitions(-DVERSION="${BUILD_NUMBER}")
@@ -41,23 +41,26 @@ index 7e90114..83c8cb9 100644
  
  # ---- Build htslib
  #
-@@ -337,7 +340,7 @@ if (HTSLIB_LOCAL)
+@@ -331,11 +334,11 @@ if (htslib_LOCAL)
  
-   include_directories(${HTSLIB_LOCAL})
+   include_directories(${htslib_LOCAL})
  
 -  set(flags "-O2 -g -fPIC")
 +  set(flags "-O3 -g -fPIC")
    ExternalProject_Add(htslib-EXT
-     SOURCE_DIR "${CMAKE_SOURCE_DIR}/${HTSLIB_LOCAL}"
-     UPDATE_COMMAND autoreconf -i
-@@ -595,8 +598,9 @@ endif (PANDOC)
- # ---- Install
- 
- install(TARGETS vcflib ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})
--install(TARGETS ${WFALIB} ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})
+     SOURCE_DIR "${CMAKE_SOURCE_DIR}/${htslib_LOCAL}"
+-    UPDATE_COMMAND autoreconf -i
+-    CONFIGURE_COMMAND ./configure --disable-s3
++    UPDATE_COMMAND autoreconf -if
++    CONFIGURE_COMMAND ./configure --disable-s3 CC=${CC}
+     INSTALL_COMMAND ""
+     BUILD_IN_SOURCE ON
+     BUILD_COMMAND $(MAKE) CFLAGS=${flags} lib-static
+@@ -595,5 +598,7 @@ if(WFA_GITMODULE)
+ endif(WFA_GITMODULE)
  
  install(FILES ${INCLUDES} DESTINATION include/vcflib)
 +configure_file(${CMAKE_CURRENT_SOURCE_DIR}/vcflib.pc.in ${CMAKE_CURRENT_BINARY_DIR}/vcflib.pc @ONLY)
 +install(FILES ${CMAKE_CURRENT_BINARY_DIR}/vcflib.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
  
- install(DIRECTORY ${CMAKE_SOURCE_DIR}/man/ DESTINATION ${CMAKE_INSTALL_PREFIX}/man/man1)
+ install(DIRECTORY ${CMAKE_SOURCE_DIR}/man/ DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
