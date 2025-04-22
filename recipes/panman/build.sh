@@ -3,10 +3,6 @@
 # ---- Exit on error ----
 set -euo pipefail
 
-# ---- Debugging: List TBB include directory ----
-echo "Listing contents of $PREFIX/include/tbb:"
-ls -l "$PREFIX/include/tbb"
-
 
 # ---- Build and install ----
 cp -rf ${RECIPE_DIR}/CMakeLists.txt $SRC_DIR/CMakeLists.txt
