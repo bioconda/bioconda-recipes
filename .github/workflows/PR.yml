@@ -60,6 +60,27 @@ jobs:
       max-parallel: 13
     needs: lint
     steps:
+      - name: Free space
+        # HACK fixes 'No space left on device'
+        # see:
+        # - https://github.com/orgs/community/discussions/25678#discussioncomment-5242449
+        # - https://github.com/galaxyproteomics/tools-galaxyp/blob/master/.github/workflows/pr.yaml#L293
+        # NOTE we don't use those, bioconda-utils run everything inside conda environment, anyway
+        run: |
+          sudo rm -rf \
+            /opt/hostedtoolcache \
+            /opt/google/chrome \
+            /opt/microsoft/msedge \
+            /opt/microsoft/powershell \
+            /opt/pipx \
+            /usr/local/julia* \
+            /usr/local/lib/android \
+            /usr/local/lib/node_modules \
+            /usr/local/share/chromium \
+            /usr/local/share/powershell \
+            /usr/share/dotnet \
+            /usr/share/swift
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
