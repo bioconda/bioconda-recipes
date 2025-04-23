@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 55c3f4d..d505cf5 100644
+index 55c3f4d..df70644 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -9,29 +9,37 @@
@@ -179,24 +179,34 @@ index 55c3f4d..d505cf5 100644
  
  if (NOT tabixpp_LOCAL)
    target_link_libraries(vcflib PkgConfig::tabixpp)
-@@ -448,6 +445,7 @@ endif()
+@@ -446,8 +443,9 @@ endif()
+ # ---- Build all
+ 
  if (BUILD_SHARED_LIBS)
-   target_link_libraries(vcflib PUBLIC ${vcflib_LIBS} ${WFALIB})
+-  target_link_libraries(vcflib PUBLIC ${vcflib_LIBS} ${WFALIB})
++  target_link_libraries(vcflib ${vcflib_LIBS} ${WFALIB})
  endif()
 +
  if (NOT BUILD_ONLY_LIB)
    foreach(BIN ${BINS})
      add_executable(${BIN} src/${BIN}.cpp)
-@@ -460,24 +458,29 @@ if (NOT BUILD_ONLY_LIB)
+@@ -460,24 +458,36 @@ if (NOT BUILD_ONLY_LIB)
      target_link_libraries(${WFBIN} PUBLIC ${vcflib_LIBS} vcflib)
      target_link_libraries(${WFBIN} PUBLIC ${vcflib_LIBS} ${WFALIB})
    endforeach(WFBIN ${BINS})
 +  if (ZIG)
 +    # list(APPEND vcflib_LIBS ${ZIG_LINK_LIBRARIES})
-+    target_link_libraries(vcfcreatemulti PUBLIC ${vcflib_LIBS} ${ZIG_LINK_LIBRARIES} vcflib)
-+    target_link_libraries(vcfecho PUBLIC ${vcflib_LIBS} ${ZIG_LINK_LIBRARIES} vcflib)
-+    target_link_libraries(bFst PUBLIC ${vcflib_LIBS} ${ZIG_LINK_LIBRARIES} vcflib)
-+    target_link_libraries(dumpContigsFromHeader PUBLIC ${vcflib_LIBS} ${ZIG_LINK_LIBRARIES} vcflib)
++    foreach(BIN ${BINS})
++      add_executable(${BIN} src/${BIN}.cpp)
++      add_dependencies(${BIN} vcflib)
++      target_link_libraries(${BIN} PUBLIC ${vcflib_LIBS} ${ZIG_LINK_LIBRARIES} vcflib)
++    endforeach(BIN ${BINS})
++    foreach(WFBIN ${WFBINS})
++      add_executable(${WFBIN} src/${WFBIN}.cpp ${vcfwfa_SOURCE})
++      add_dependencies(${WFBIN} vcflib)
++      target_link_libraries(${WFBIN} PUBLIC ${vcflib_LIBS} ${ZIG_LINK_LIBRARIES} vcflib)
++      target_link_libraries(${WFBIN} PUBLIC ${vcflib_LIBS} ${ZIG_LINK_LIBRARIES} ${WFALIB})
++    endforeach(WFBIN ${BINS})
 +  endif()
    install(TARGETS ${BINS} ${WFBINS} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
  
@@ -226,7 +236,7 @@ index 55c3f4d..d505cf5 100644
  
  function(add_pytest TEST_FILE)
    add_test(
-@@ -486,7 +489,7 @@ function(add_pytest TEST_FILE)
+@@ -486,7 +496,7 @@ function(add_pytest TEST_FILE)
        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test
    )
    SET_TESTS_PROPERTIES(${TEST_FILE}
@@ -235,7 +245,7 @@ index 55c3f4d..d505cf5 100644
  endfunction()
  
  function(add_pydoctest TEST_FILE)
-@@ -497,10 +500,9 @@ function(add_pydoctest TEST_FILE)
+@@ -497,10 +507,9 @@ function(add_pydoctest TEST_FILE)
    )
    SET_TESTS_PROPERTIES(${TEST_FILE}
        # PROPERTIES ENVIRONMENT "ASAN_OPTIONS=detect_leaks=1:symbolize=1;LSAN_OPTIONS=verbosity=2:log_threads=1:suppressions=../test/libasan-suppress.txt")
@@ -247,7 +257,7 @@ index 55c3f4d..d505cf5 100644
  function(add_doctest TEST_FILE)
    add_test(
        NAME ${TEST_FILE}
-@@ -543,7 +545,7 @@ endif (ZIG)
+@@ -543,7 +552,7 @@ endif (ZIG)
  add_pydoctest(vcfnulldotslashdot)
  add_doctest(doc/vcfintersect)
  
@@ -256,7 +266,7 @@ index 55c3f4d..d505cf5 100644
  #
  # Generates man pages for the python doctests. Don't need
  # to run every time so it is a separate command. For pandoc logic see
-@@ -594,6 +596,8 @@ if(WFA_GITMODULE)
+@@ -594,6 +603,8 @@ if(WFA_GITMODULE)
    install(TARGETS ${WFALIB} ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})
  endif(WFA_GITMODULE)
  
