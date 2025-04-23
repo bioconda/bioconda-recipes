@@ -1,0 +1,41 @@
+{% set name = "minipileup" %}
+{% set version = "1.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/lh3/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 86f071849a59e19626744a5a162417968595cb0fe81c54349c953e20fd49826b
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - zlib
+
+test:
+  commands:
+    - minipileup 2>&1 | grep 'Usage'
+
+about:
+  home: "https://github.com/lh3/minipileup"
+  license: MIT
+  license_family: MIT
+  ##license_file: "LICENSE.txt"
+  summary: 'Minipileup is a simple pileup-based variant caller. It takes a reference FASTA and one or multiple alignment BAM as input, and outputs a multi-sample VCF along with allele counts.'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:{{ name| lower }}
+
