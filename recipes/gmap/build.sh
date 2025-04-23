@@ -11,8 +11,9 @@ export LC_ALL=en_US.UTF-8
 
 if [[ "$(uname)" == "Darwin" ]]; then
     # for Mac OSX
-    export LDFLAGS="${LDFLAGS} -Wl,-dead_strip_dylibs -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names"
-    export CFLAGS="${CFLAGS} -m64 -fno-define-target-os-macros -Wno-implicit-function-declaration -Wno-deprecated-non-prototype -Wno-asm-operand-widths"
+    # -m64
+    export LDFLAGS="${LDFLAGS} -headerpad_max_install_names -Wl,-dead_strip_dylibs -Wl,-rpath,${PREFIX}/lib -L${PREFIX}/lib"
+    export CFLAGS="${CFLAGS} -fno-define-target-os-macros -Wno-implicit-function-declaration -Wno-deprecated-non-prototype -Wno-asm-operand-widths"
     export LC_ALL=C
 fi
 
@@ -40,20 +41,22 @@ autoreconf -if
 	--with-simd-level="${SIMD_LEVEL}" \
 	--disable-option-checking --disable-dependency-tracking --enable-silent-rules
 
+make clean
 make -j"${CPU_COUNT}"
 make install
-make clean
 
 # Fix perl shebang
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/dbsnp_iit
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/ensembl_genes
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/fa_coords
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/gff3_exons
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/gff3_genes
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/gff3_introns
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/gff3_splicesites
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/gmap_build
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/gmap_cat
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/gmap_process
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/gtf_exons
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/gtf_genes
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/gtf_introns
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/gtf_splicesites

@@ -1,0 +1,164 @@
+{% set version = '0.3.0' %}
+{% set github = 'https://github.com/bnprks/BPCells' %}
+{% set posix = 'm2-' if win else '' %}
+
+package:
+  name: r-bpcells
+  version: {{ version|replace('-', '_') }}
+
+source:
+  url: {{ github }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 231e91a3d60d2bc400324c5b60fb4644fda16261048d6b1a49bfac4aa269cd1f
+  patches:
+    # track: https://github.com/bnprks/BPCells/issues/228
+    - patches/0001-fix-libhwy-config.patch
+    # from: https://github.com/bnprks/BPCells/pull/231
+    - patches/0002-granges-conversion.patch
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage('r-bpcells', max_pin='x.x') }}
+  skip: true  # [not linux]
+
+requirements:
+  build:
+    - cross-r-base {{ r_base }}  # [build_platform != target_platform]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - r-base
+    - r-dplyr >=1.0.0
+    - r-ggplot2 >=3.4.0
+    - r-ggrepel
+    - r-hexbin
+    - r-lifecycle
+    - r-magrittr
+    - r-matrix
+    - r-patchwork
+    - r-rcolorbrewer
+    - r-rcpp
+    - r-rcppeigen
+    - r-readr
+    - r-rlang
+    - r-scales
+    - r-scattermore
+    - r-stringr
+    - r-tibble
+    - r-tidyr
+    - r-vctrs
+    - hdf5
+    - libhwy
+    - zlib
+  run:
+    - r-base
+    - r-dplyr >=1.0.0
+    - r-ggplot2 >=3.4.0
+    - r-ggrepel
+    - r-hexbin
+    - r-lifecycle
+    - r-magrittr
+    - r-matrix
+    - r-patchwork
+    - r-rcolorbrewer
+    - r-rcpp
+    - r-readr
+    - r-rlang
+    - r-scales
+    - r-scattermore
+    - r-stringr
+    - r-tibble
+    - r-tidyr
+    - r-vctrs
+
+test:
+  requires:
+    - r-testthat
+    - bioconductor-genomicranges
+    - bioconductor-iranges
+    - r-igraph
+    - r-matrixstats
+    - r-rspectra
+    - r-withr
+    - macs3
+  commands:
+    - $R -e "library('BPCells')"
+    ## NB: this tightly-couples to `macs2` coming from `test.requires` and avoids running against the container
+    - if command -v macs3; then $R -e "testthat::test_package('BPCells', stop_on_failure=TRUE)"; fi
+
+about:
+  home: https://bnprks.github.io/BPCells
+  dev_url: {{ github }}
+  license: Apache-2.0 or MIT
+  summary: Efficient operations for single cell ATAC-seq fragments and
+    RNA counts matrices. Interoperable with standard file formats, and introduces
+    efficient bit-packed formats that allow large storage savings and increased
+    read speeds.
+  license_family: MIT
+  license_file:
+    - COPYRIGHT
+    - LICENSE-APACHE
+    - LICENSE-MIT
+
+extra:
+  recipe-maintainers:
+    - mfansler
+
+# Package: BPCells
+# Title: Single Cell Counts Matrices to PCA
+# Version: 0.3.0
+# Authors@R: c(
+#     person(given = "Benjamin",
+#            family = "Parks",
+#            role = c("aut", "cre", "cph"),
+#            email = "bparks@alumni.stanford.edu",
+#            comment = c(ORCID = "0000-0002-0261-7472")),
+#     person("Immanuel", "Abdi", role = "aut"),
+#     person("Stanford University", role=c("cph", "fnd")),
+#     person("Genentech, Inc.", role=c("cph", "fnd")))
+# Description: > Efficient operations for single cell ATAC-seq fragments and
+#     RNA counts matrices. Interoperable with standard file formats, and introduces
+#     efficient bit-packed formats that allow large storage savings and increased
+#     read speeds.
+# License: Apache-2.0 or MIT
+# Encoding: UTF-8
+# LazyData: true
+# RoxygenNote: 7.3.2
+# Roxygen: list(markdown = TRUE)
+# URL: https://bnprks.github.io/BPCells, https://github.com/bnprks/BPCells
+# LinkingTo: 
+#     Rcpp,
+#     RcppEigen
+# Imports: 
+#     methods,
+#     grDevices,
+#     magrittr,
+#     Matrix,
+#     Rcpp,
+#     rlang,
+#     vctrs,
+#     lifecycle,
+#     stringr,
+#     tibble,
+#     dplyr (>= 1.0.0),
+#     tidyr,
+#     readr,
+#     ggplot2 (>= 3.4.0),
+#     scales,
+#     patchwork,
+#     scattermore,
+#     ggrepel,
+#     RColorBrewer,
+#     hexbin
+# Suggests:
+#     IRanges,
+#     GenomicRanges,
+#     matrixStats,
+#     igraph
+# Depends: 
+#     R (>= 3.5.0)
+# Config/Needs/website: pkgdown, devtools, uwot, irlba, RcppHNSW, igraph, BiocManager, bioc::BSgenome.Hsapiens.UCSC.hg38, github::GreenleafLab/motifmatchr, github::GreenleafLab/chromVARmotifs

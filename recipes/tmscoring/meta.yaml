@@ -1,0 +1,50 @@
+{% set name = "tmscoring" %}
+{% set version = "0.4.post0" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: 7cabd668e4db548719e840ceb188b197f93cd77cb6c6db81a22ed045300e92be
+
+build:
+  number: 0
+  script: 
+    - {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+  noarch: python
+
+requirements:
+  host:
+    - python <3.12
+    - numpy
+    - iminuit <2
+    - biopython
+
+  run:
+    - python <3.12
+    - numpy
+    - iminuit <2
+    - biopython
+
+test:
+  imports:
+    - tmscoring
+
+
+about:
+  home: https://github.com/Dapid/tmscoring
+  license: BSD 3-Clause
+  license_family: BSD
+  summary: Python implementation of the TMscore program.
+  description: "# tmscoring\nPython implementation of the [TMscore](https://zhanglab.ccmb.med.umich.edu/TM-score/) program to compare structures of the same protein."
+  doc_url: 'https://github.com/Dapid/tmscoring/blob/master/README.md'
+  dev_url: 'https://github.com/Dapid/tmscoring'
+
+extra:
+  recipe-maintainers:
+    - RubenChM
+    - Dapid

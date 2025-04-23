@@ -23,6 +23,8 @@ mkdir -p $PREFIX/share/pasta/data/
 cp -v data/small.fasta $PREFIX/share/pasta/data/
 
 # install pasta itself
+sed -i.bak 's/^.*import imp/#&/g' pasta/__init__.py
+sed -i.bak 's/^.*imp.is_frozen.*/#&/g' pasta/__init__.py
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 cp bin/treeshrink $PREFIX/bin/treeshrink
 

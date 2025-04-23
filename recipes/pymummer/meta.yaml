@@ -1,6 +1,6 @@
 {% set name = "pymummer" %}
-{% set version = "0.11.0" %}
-{% set sha256 = "199b8391348ff83760e9f63fdcee6208f8aa29da6506ee1654f1933e60665259" %}
+{% set version = "0.12.0" %}
+{% set sha256 = "98568b9e616d95241ceda580be4bdca569379d91990d9b4acca0a4b97f17a694" %}
 
 package:
   name: {{ name }}
@@ -9,35 +9,35 @@ package:
 source:
   url: https://pypi.io/packages/source/p/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - temp_dir_path.patch
 
 build:
   noarch: python
-  number: 1
-  script: python -m pip install --no-deps --ignore-installed .
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('pymummer', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3
+    - python >=3.8
+    - hatchling
+    - hatch-vcs
     - pip
-    - setuptools
-    - pyfastaq >=3.10.0
-    - mummer
   run:
-    - python >=3
+    - python >=3.8
     - pyfastaq >=3.10.0
     - mummer
 
 test:
   imports:
     - pymummer
-
   requires:
     - nose >=1.3
 
 about:
   home: https://github.com/sanger-pathogens/pymummer
-  license: GNU General Public License v3 (GPLv3)
-  summary: 'Wrapper for MUMmer'
-
+  dev_url: https://github.com/sanger-pathogens/pymummer
+  license:  GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: 'Wrapper for MUMmer.'
