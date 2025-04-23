@@ -1,37 +1,51 @@
 {% set name = "csubst" %}
-{% set version = "1.4.17" %}
+{% set version = "0.14.2" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://github.com/kamome1201/csubst/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: "a670de28db2a6ef3d1e49f1ff11391789cea709dd6bb957003ad03ede3b38ef3"
+  url: https://github.com/kfuku52/csubst/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 2d49d684c9934208854cfb4ef0f05b2f4a0d09e57af517b659cbe01e5045120b
 
 build:
   number: 0
-  noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv --ignore-installed --no-deps"
+  script: "{{ PYTHON }} setup.py build_ext --inplace && {{ PYTHON }} -m pip install . -vv"
   run_exports:
-    - {{ pin_subpackage("csubst", max_pin="x") }}
+    - {{ pin_subpackage("csubst", max_pin="x.x") }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
     - python >=3.8
     - pip
-    - setuptools
-    - wheel
     - cython
+    - setuptools >=18.0
   run:
     - python >=3.8
+    - ete3
+    - numpy
+    - scipy
+    - pandas
+    - joblib
+    - matplotlib-base
+    - threadpoolctl
 
 test:
+  commands:
+    - csubst --help
   imports:
     - csubst
 
 about:
   home: "https://github.com/kfuku52/csubst"
   license: "BSD-3-Clause"
-  license_file: "LICENSE"
-  summary: "CSUBST () is a tool for analyzing Combinatorial SUBSTitutions of codon sequences in phylogenetic trees."
+  summary: "Tool for analyzing combinatorial codon substitutions in DNA sequences."
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - kfuku52
