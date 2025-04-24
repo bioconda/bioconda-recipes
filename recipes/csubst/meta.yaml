@@ -11,7 +11,12 @@ source:
   
 build:
   number: 0
-  script: "{{ PYTHON }} setup.py build_ext --inplace && {{ PYTHON }} -m pip install . -vv"
+  script_env:
+    - CPPFLAGS
+  script: >
+    export CPPFLAGS="${CPPFLAGS} -I$(python -c 'import numpy; print(numpy.get_include())')"
+    && {{ PYTHON }} setup.py build_ext --inplace
+    && {{ PYTHON }} -m pip install . -vv
   run_exports:
     - {{ pin_subpackage("csubst", max_pin="x.x") }}
 
