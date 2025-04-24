@@ -3,6 +3,9 @@ set -ex
 
 cp -rf "${RECIPE_DIR}/vcflib.pc.in" "${SRC_DIR}"
 
+sed -i.bak -e 's|mem.split|mem.splitSequence|' src/zig/samples.zig
+rm -rf src/zig/*.bak
+
 export M4="${BUILD_PREFIX}/bin/m4"
 #export PATH="$(which zig):${PATH}"
 
