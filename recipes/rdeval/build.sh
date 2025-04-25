@@ -1,13 +1,16 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 set -o errexit
 set -o nounset
 
-if [ -e "$PREFIX/include" ]; then
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+if [[ -e "$PREFIX/include" \]; then
     export CPPFLAGS="${CPPFLAGS:+$CPPFLAGS }-I${PREFIX}/include"
 fi
 
-if [ -e "$PREFIX/lib" ]; then
+if [[ -e "$PREFIX/lib" ]]; then
     export LDFLAGS="${LDFLAGS:+$LDFLAGS }-L${PREFIX}/lib"
 fi
 

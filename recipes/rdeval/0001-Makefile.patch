@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index 1682ec3..8cdffca 100644
+index 2fbed66..b23ccb3 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,5 +1,10 @@
@@ -8,7 +8,7 @@ index 1682ec3..8cdffca 100644
  INCLUDE_DIR += -I./include -I./gfalibs/include
 +
 +ifneq ($(origin PREFIX), undefined)
-+    INCLUDE_DIR += -I$(PREFIX)/include
++	INCLUDE_DIR += -I$(PREFIX)/include
 +endif
 +
  WARNINGS = -Wall -Wextra
@@ -21,17 +21,17 @@ index 1682ec3..8cdffca 100644
 -LDFLAGS += -pthread
 -LIBS = -lz -lcrypto -lhts
 +ifeq ($(origin LDFLAGS), undefined)
-+    LDFLAGS := -pthread
++	LDFLAGS := -pthread
 +else
-+    LDFLAGS := $(LDFLAGS) -pthread
++	LDFLAGS := $(LDFLAGS) -pthread
 +endif
 +
 +SSL_LIBS = -lcrypto
 +LIBS = -lz $(SSL_LIBS) -lhts -lpthread
  
- OBJS := main input reads
- BINS := $(addprefix $(BINDIR)/, $(OBJS))
-@@ -30,7 +41,7 @@ head: $(BINS) gfalibs | $(BUILD)
+ # Static linking settings
+ ifeq ($(UNAME_S),Linux)
+@@ -52,7 +63,7 @@ debug-pkg:
  all: head validate regenerate
  
  $(BINDIR)%: $(SOURCE)/%.cpp $(INCLUDE)/%.h | $(BINDIR)
