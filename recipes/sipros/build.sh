@@ -12,13 +12,11 @@ cp -r V4Scripts "$PREFIX"
 
 cp -r configTemplates "$PREFIX"
 
-for script in sipros_prepare_protein_database.py sipros_psm_tabulating.py sipros_ensemble_filtering.py sipros_peptides_assembling.py ClusterSip.py; do
+for script in sipros_prepare_protein_database.py sipros_psm_tabulating.py sipros_ensemble_filtering.py sipros_peptides_assembling.py; do
     baseName=$(basename $script .py)
     sed -i '1i#!/usr/bin/env python\n' "$PREFIX/EnsembleScripts/$script"
     ln -s "$PREFIX/EnsembleScripts/$script" "$PREFIX/bin/EnsembleScripts_$baseName"
 done
-chmod ugo+x "$PREFIX/EnsembleScripts/runSiprosFiltering.sh"
-ln -s "$PREFIX/EnsembleScripts/runSiprosFiltering.sh" "$PREFIX/bin/EnsembleScripts_runSiprosFiltering.sh"
 
 for script in sipros_peptides_filtering.py sipros_peptides_assembling.py ClusterSip.py; do
     baseName=$(basename $script .py)
