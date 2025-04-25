@@ -11,13 +11,11 @@ cp ${RECIPE_DIR}/config.* .
 
 # Regenerate configure to fix flat namespace errors on macOS 11+
 autoreconf -fvi
-./configure \
-    --prefix="${PREFIX}" \
-    --without-x \
-    --disable-debug \
-    --disable-dependency-tracking \
-    --enable-64 \
-    --with-thread 
+./configure --prefix="${PREFIX}" \
+    --without-x --disable-debug --disable-dependency-tracking \
+    --enable-64 --with-thread CC="${CC}" CFLAGS="${CFLAGS}" \
+    LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include" \
+    CXX="${CXX}"
 
 make -j"${CPU_COUNT}"
 make install
