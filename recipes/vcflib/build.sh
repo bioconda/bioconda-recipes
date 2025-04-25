@@ -3,12 +3,6 @@ set -ex
 
 cp -rf "${RECIPE_DIR}/vcflib.pc.in" "${SRC_DIR}"
 
-sed -i.bak -e 's|mem.split|mem.splitSequence|' src/zig/samples.zig
-rm -rf src/zig/*.bak
-
-sed -i.bak -e 's|-fPIC|-fPIC -Wno-int-conversion -Wno-deprecated-declarations -Wno-absolute-value -Wno-unused-comparison|' CMakeLists.txt
-rm -rf *.bak
-
 export M4="${BUILD_PREFIX}/bin/m4"
 export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Itabixpp -Iwfa2 -I\$(INC_DIR)"
 export CFLAGS="${CFLAGS} -O3"
@@ -18,6 +12,12 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 OS=$(uname -s)
 ARCH=$(uname -m)
+
+sed -i.bak -e 's|mem.split|mem.splitSequence|' src/zig/samples.zig
+rm -rf src/zig/*.bak
+
+sed -i.bak -e 's|-fPIC|-fPIC -Wno-int-conversion -Wno-deprecated-declarations -Wno-absolute-value -Wno-unused-comparison|' CMakeLists.txt
+rm -rf *.bak
 
 if [[ "${OS}" == "Darwin" ]]; then
 	sed -i.bak 's|HTSCODECS_VERSION_TEXT|HTSCODECS_VERSION|' contrib/tabixpp/htslib/htscodecs/htscodecs/htscodecs.c
@@ -75,14 +75,17 @@ fi
 
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
 	export CONFIG_ARGS="${CONFIG_ARGS} -DCMAKE_OSX_SYSROOT=/Applications/Xcode_15.2.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
+	export CFLAGS="${CFLAGS} -mmacosx-version-min=11.0 -fno-define-target-os-macros"
 fi
 
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-DCMAKE_C_COMPILER="${CC}" \
+	-DCMAKE_C_FLAGS="${CFLAGS}" \
 	-DOPENMP=ON -DPROFILING=ON -DZIG=ON -DBUILD_SHARED_LIBS=ON \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
-cmake --build build --target install -j "${CPU_COUNT}"
+cmake --build build --clean-first --target install -j "${CPU_COUNT}"
