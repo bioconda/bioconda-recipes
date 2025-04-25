@@ -1,8 +1,9 @@
 #!/bin/bash
 
+export M4="${BUILD_PREFIX}/bin/m4"
+
 # use newer config.guess and config.sub that support osx-arm64
 cp ${RECIPE_DIR}/config.* .
-
 
 # Regenerate configure to fix flat namespace errors on macOS 11+
 autoreconf -fvi
