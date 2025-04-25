@@ -28,6 +28,12 @@ if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
 	echo $(pwd)/zig-macos-x86_64-*
 	export PATH="$(pwd)/zig-macos-x86_64-0.15.0-dev/lib:${PATH}"
 	export PATH="$(pwd)/zig-macos-x86_64-0.15.0-dev:${PATH}"
+	wget https://github.com/alexey-lysiuk/macos-sdk/releases/download/13.3/MacOSX13.3.tar.xz
+	tar -xf MacOSX13.3.tar.xz
+	cp -rH MacOSX13.3.sdk /Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
+	export SDKROOT="/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
+	export MACOSX_DEPLOYMENT_TARGET=13.0
+	export MACOSX_SDK_VERSION=13.0
 elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	echo $(pwd)/zig-macos-aarch64-*
 	export PATH="$(pwd)/zig-macos-aarch64-0.15.0-dev/lib:${PATH}"
@@ -65,6 +71,10 @@ else
 	export LIBPATH="-L${PREFIX}/lib -L. -Lhtslib -Ltabixpp"
 	export LDFLAGS="${LDFLAGS} -lhts -ltabixpp -pthread -lz -lm -llzma -lbz2 -lcurl -fopenmp"
  	export CONFIG_ARGS="-DWFA_GITMODULE=ON"
+fi
+
+if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
+	export CONFIG_ARGS="${CONFIG_ARGS} -DCMAKE_OSX_SYSROOT=/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
 fi
 
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
