@@ -9,13 +9,14 @@ export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
+export COPT="${COPT} ${CFLAGS}"
 export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include ${LDFLAGS}"
 export L="${LDFLAGS}"
 mkdir -p "${BINDIR}"
-(cd kent/src/lib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}" VERBOSE=1)
-(cd kent/src/htslib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}" VERBOSE=1)
-(cd kent/src/jkOwnLib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}" VERBOSE=1)
-(cd kent/src/hg/lib && make USE_HIC=0 CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}" VERBOSE=1)
-(cd kent/src/hg/liftOver && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}" VERBOSE=1)
+(cd kent/src/lib && make CC="${CC}" COPT="${COPT}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
+(cd kent/src/htslib && make CC="${CC}" COPT="${COPT}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
+(cd kent/src/jkOwnLib && make CC="${CC}" COPT="${COPT}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
+(cd kent/src/hg/lib && make USE_HIC=0 CC="${CC}" COPT="${COPT}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
+(cd kent/src/hg/liftOver && make CC="${CC}" COPT="${COPT}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
 cp bin/liftOver "${PREFIX}/bin"
 chmod 0755 "${PREFIX}/bin/liftOver"
