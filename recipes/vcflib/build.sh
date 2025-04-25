@@ -7,7 +7,7 @@ sed -i.bak -e 's|mem.split|mem.splitSequence|' src/zig/samples.zig
 rm -rf src/zig/*.bak
 
 export M4="${BUILD_PREFIX}/bin/m4"
-#export PATH="$(which zig):${PATH}"
+# export PATH="$(which zig):${PATH}"
 
 export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Itabixpp -Iwfa2 -I\$(INC_DIR)"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
@@ -16,6 +16,11 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 OS=$(uname -s)
 ARCH=$(uname -m)
+
+if [[ "${OS}" == "Darwin" ]]; then
+	sed -i.bak 's|HTSCODECS_VERSION_TEXT|HTSCODECS_VERSION|' contrib/tabixpp/htslib/htscodecs/htscodecs/htscodecs.c
+	rm -rf contrib/tabixpp/htslib/htscodecs/htscodecs/*.bak
+fi
 
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
 	echo $(pwd)/zig-macos-x86_64-*
@@ -43,7 +48,7 @@ sed -i.bak 's/g++/$(CXX) $(CXXFLAGS)/g' contrib/intervaltree/Makefile
 # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14
 if [[ "${OS}" == "Darwin" ]]; then
 	export LIBPATH="-L${PREFIX}/lib -L. -Lhtslib -Ltabixpp -Lwfa2"
-	export LDFLAGS="${LDFLAGS} -lhts -ltabixpp -lpthread -lz -lm -llzma -lbz2 -lcurl -fopenmp -lwfa2"
+	export LDFLAGS="${LDFLAGS} -lhts -ltabixpp -pthread -lz -lm -llzma -lbz2 -lcurl -fopenmp -lwfa2"
 	sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' contrib/smithwaterman/Makefile
 	sed -i.bak 's/-std=c++0x/-std=c++17 -stdlib=libc++/g' contrib/intervaltree/Makefile
 	rm -rf contrib/smithwaterman/*.bak
@@ -54,7 +59,7 @@ if [[ "${OS}" == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DWFA_GITMODULE=OFF"
 else
 	export LIBPATH="-L${PREFIX}/lib -L. -Lhtslib -Ltabixpp"
-	export LDFLAGS="${LDFLAGS} -lhts -ltabixpp -lpthread -lz -lm -llzma -lbz2 -lcurl -fopenmp"
+	export LDFLAGS="${LDFLAGS} -lhts -ltabixpp -pthread -lz -lm -llzma -lbz2 -lcurl -fopenmp"
  	export CONFIG_ARGS="-DWFA_GITMODULE=ON"
 	rm -rf contrib/smithwaterman/*.bak
 	rm -rf contrib/intervaltree/*.bak

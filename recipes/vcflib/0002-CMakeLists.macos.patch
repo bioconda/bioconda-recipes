@@ -1,32 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0ead7e4..aaabf52 100644
+index 0ead7e4..460e509 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -63,7 +63,13 @@ set_package_properties(ZLIB PROPERTIES TYPE REQUIRED)
- find_package(Threads)
- set_package_properties(Threads PROPERTIES TYPE REQUIRED)
- 
--pkg_check_modules(htslib IMPORTED_TARGET htslib)   # Optionally builds from contrib/
-+# find htslib
-+find_package(HTSlib)
-+if(HTSlib_FOUND)
-+  message(STATUS "HTSlib_USE_STATIC_LIBS: ${HTSlib_USE_STATIC_LIBS}")
-+endif()
-+
-+#pkg_check_modules(htslib IMPORTED_TARGET htslib)   # Optionally builds from contrib/
- pkg_check_modules(tabixpp IMPORTED_TARGET tabixpp) # Optionally builds from contrib/
- 
- # ---- Build switches
-@@ -114,7 +120,7 @@ include_directories(contrib/smithwaterman)
- include_directories(contrib/filevercmp)
- include_directories(contrib/c-progress-bar)
- 
--if(NOT htslib_FOUND)
-+if(NOT HTSlib_FOUND)
-   message(STATUS "Using included htslib")
-   include(FindCURL) # for htslib
-   set(htslib_LOCAL contrib/tabixpp/htslib)
-@@ -335,11 +341,11 @@ if (htslib_LOCAL)
+@@ -335,11 +335,11 @@ if (htslib_LOCAL)
  
    include_directories(${htslib_LOCAL})
  
@@ -36,7 +12,7 @@ index 0ead7e4..aaabf52 100644
      SOURCE_DIR "${CMAKE_SOURCE_DIR}/${htslib_LOCAL}"
 -    UPDATE_COMMAND autoreconf -if
 -    CONFIGURE_COMMAND ./configure --disable-s3 CC=${CC}
-+    UPDATE_COMMAND cd htscodecs && autoupdate && autoreconf -if && cd ../ && autoupdate && autoreconf -if
++    UPDATE_COMMAND cd htscodecs && autoupdate && autoreconf -i && cd ../ && autoupdate && autoreconf -i
 +    CONFIGURE_COMMAND ./configure --disable-s3
      INSTALL_COMMAND ""
      BUILD_IN_SOURCE ON
