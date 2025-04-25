@@ -1,5 +1,5 @@
 {% set name = "dashing2" %}
-{% set version = "2.1.19" %}
+{% set version = "2.1.20" %}
 
 package:
   name: {{ name }}
@@ -7,27 +7,29 @@ package:
 
 build:
   number: 0
-   run_exports:
+  skip: True  # [osx]
+  run_exports:
     - {{ pin_subpackage('dashing2', max_pin="x") }}
 
 source:
-  git_url: https://github.com/dnbaker/dashing2.git
-  git_rev: v{{ version }}
+  git_url: https://github.com/dnbaker/{{ name }}.git
+  git_rev: 3906ebde218144eef2bf1455b15e2241f7b09f8c
   sha256: unused
   patches:
     - 0001-Makefile.patch
-    - 0002-tmpseqs.patch
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
     - make
+    - pkg-config
   host:
     - zlib
     - zstd
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
+    - fmt
   run:
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
@@ -48,7 +50,7 @@ about:
 extra:
   additional-platforms:
     - linux-aarch64
-    - osx-arm64
+    #- osx-arm64
   identifiers:
     - doi:10.1101/501726
   recipe-maintainers:
