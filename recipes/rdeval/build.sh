@@ -6,7 +6,7 @@ set -o nounset
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-if [[ -e "$PREFIX/include" \]; then
+if [[ -e "$PREFIX/include" ]]; then
     export CPPFLAGS="${CPPFLAGS:+$CPPFLAGS }-I${PREFIX}/include"
 fi
 
