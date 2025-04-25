@@ -61,7 +61,7 @@ rm -rf contrib/intervaltree/*.bak
 if [[ "${OS}" == "Darwin" ]]; then
 	export LIBPATH="-L${PREFIX}/lib -L. -Lhtslib -Ltabixpp -Lwfa2"
 	export LDFLAGS="${LDFLAGS} -lhts -ltabixpp -pthread -lz -lm -llzma -lbz2 -lcurl -fopenmp -lwfa2"
-	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+	export CXXFLAGS="${CXXFLAGS}"
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DWFA_GITMODULE=OFF"
 	sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' contrib/smithwaterman/Makefile
 	sed -i.bak 's/-std=c++0x/-std=c++17 -stdlib=libc++/g' contrib/intervaltree/Makefile
