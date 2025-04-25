@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 $PYTHON -m pip install . --ignore-installed --no-deps -vv
 
 mkdir -p ${PREFIX}/bin

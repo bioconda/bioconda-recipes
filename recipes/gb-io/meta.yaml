@@ -1,28 +1,34 @@
 {% set name = "gb-io" %}
-{% set version = "0.3.2" %}
+{% set version = "0.3.5" %}
 
 package:
   name: "{{ name }}"
   version: "{{ version }}"
 
 build:
-  number: 1
+  number: 0
+  script:
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --disable-pip-version-check
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
   run_exports:
-    - {{ pin_subpackage('gb-io', max_pin="x.x") }}
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 5bf0a5b2755e5e4aa928184043a44c28e2658158965901abb003ede8c794ad6e
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/gb_io-{{ version }}.tar.gz
+  sha256: 8e7a959ebcbffda8d898c3fa6c6517c3957dac4b373c6edf1e058eefb756edde
 
 requirements:
   build:
-    - {{ compiler('rust') }}
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
+    - {{ compiler("rust") }}
+    - python                              # [build_platform != target_platform]
+    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+    - crossenv                            # [build_platform != target_platform]
+    - maturin >=1.2,<2
+    - cargo-bundle-licenses
   host:
-    - pip
     - python
-    - setuptools-rust
+    - pip
+    - maturin >=1.2,<2
   run:
     - python
 
@@ -33,5 +39,15 @@ test:
 about:
   home: https://github.com/althonos/gb-io.py
   license: MIT
-  license_file: COPYING
+  license_family: MIT
+  license_file: 
+    - COPYING
+    - THIRDPARTY.yml
   summary: A Python interface to gb-io, a fast GenBank parser and serializer written in Rust.
+  dev_url: https://github.com/althonos/gb-io.py
+  doc_url: https://gb-io.readthedocs.io/
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

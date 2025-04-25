@@ -1,0 +1,51 @@
+{% set name = "micomplete" %}
+{% set version = "1.1.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 6fd2b6c4ec06c316799b19829c0b24944c367ae12be2658f1bc43becb78e0321
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - miComplete = micomplete.micomplete:main
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage("micomplete", max_pin="x") }}
+
+requirements:
+  host:
+    - python <3.12
+    - pip
+    - numpy >=1.13
+    - biopython <=1.80
+    - matplotlib-base >=2.0.2
+  run:
+    - python <3.12
+    - numpy >=1.13
+    - biopython <=1.80
+    - matplotlib-base >=2.0.2
+
+test:
+  imports:
+    - micomplete
+  commands:
+    - miComplete --help
+
+about:
+  home: "https://bitbucket.org/evolegiolab/micomplete"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Quality control of assembled genomes"
+  doc_url: "https://bitbucket.org/evolegiolab/micomplete/src/master/README.rst"
+  dev_url: "https://bitbucket.org/evolegiolab/micomplete"
+
+extra:
+  recipe-maintainers:
+    - js2264

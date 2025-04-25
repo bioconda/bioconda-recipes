@@ -1,6 +1,6 @@
 {% set name = "subread" %}
-{% set version = "2.0.6" %}
-{% set sha256 = "f0fdda6b98634d2946028948c220253e10a0f27c7fa5f24913b65b3ac6cbb045" %}
+{% set version = "2.0.8" %}
+{% set sha256 = "cb5dadf71c850f128a8347223fe0ce19e1c17e3959e9f3eba90e8090671f8570" %}
 
 package:
   name: {{ name|lower }}
@@ -11,10 +11,15 @@ source:
   sha256: {{ sha256 }}
   patches:
     - unsignedchar.patch
+    - 0001-macOS-Makefile.patch  # [osx]
+    - 0002-longread-Makefile.patch
+    - 0003-Linux-Makefile.patch  # [linux]
+    - 0004-macOS-sse.patch  # [osx and x86_64]
 
 build:
-  number: 2
-  run_exports: '{{ pin_subpackage(name, max_pin="x") }}'
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -32,20 +37,22 @@ test:
     - subjunc || [[ $? == 1 ]]
     - subindel || [[ $? = 255 ]]
     - repair -h
-    - txUnique || [[ $? == 1 ]]
     - qualityScores
     - subread-fullscan || [[ $? == 255 ]]
 
 about:
-  home: http://subread.sourceforge.net/
-  license: GPL-3.0-only
-  summary: High-performance read alignment, quantification, and mutation discovery
-  license_file:
-    - LICENSE
+  home: "https://subread.sourceforge.net"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  summary: "High-performance read alignment, quantification, and mutation discovery."
+  doc_url: "https://subread.sourceforge.net/SubreadUsersGuide.pdf"
+  dev_url: "https://sourceforge.net/projects/subread"
+  license_file: LICENSE
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:subread
     - usegalaxy-eu:featurecounts

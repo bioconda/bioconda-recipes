@@ -1,5 +1,5 @@
 {% set name = "gsmap" %}
-{% set version = "1.71.1" %}
+{% set version = "1.73.2" %}
 
 package:
   name: {{ name }}
@@ -7,23 +7,25 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/gsMap/{{ name }}-{{ version }}.tar.gz"
-  sha256: f81debacf46d3e26614411d938a27345fcb42999a8ef2b740d134e910c2d0bcd
+  sha256: 20995b45806bf1c507719f2f3ea165ba6eda0f25a3fe195eed0f557a6a491515
 
 build:
   noarch: python
   number: 0
+  entry_points:
+    - gsmap = gsMap.main:main
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.8
+    - python >=3.10
     - pip
     - flit-core >=3.2,<4
   run:
-    - python >=3.8
-    - numpy
+    - python >=3.10
+    - numpy <2.0.0
     - pandas
     - scipy
     - scikit-learn
@@ -35,24 +37,25 @@ requirements:
     - pyranges
     - pyfiglet
     - plotly
-    - kaleido-core
+    - python-kaleido
     - jinja2
     - scanpy >=1.8
     - zarr
     - bitarray
     - pyarrow
     - scikit-misc
+    - psutil
 
 test:
   commands:
     - gsmap --help
 
 about:
-  home: https://github.com/LeonSong1995/gsMap
+  home: "https://github.com/LeonSong1995/gsMap"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: "gsMap (genetically informed spatial mapping of cells for complex traits)"
+  summary: "gsMap (genetically informed spatial mapping of cells for complex traits)."
   description: |
     gsMap integrates spatial transcriptomics (ST) data with genome-wide association study (GWAS) summary statistics to map cells to human complex traits, including diseases, in a spatially resolved manner.
   authors:
