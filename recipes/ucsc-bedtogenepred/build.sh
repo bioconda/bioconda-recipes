@@ -10,7 +10,7 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include ${LDFLAGS}"
 export USE_HIC=0
 
-sed -i.bak -e 's|-ldl -lm -lc|-ldl -lm -lc -lhts|' kent/src/inc/common.mk
+sed -i.bak -e 's|-ldl -lm -lc|-ldl -lm -lc -lhts -lcurl|' kent/src/inc/common.mk
 rm -rf kent/src/inc/*.bak
 
 mkdir -p "${PREFIX}/bin"
