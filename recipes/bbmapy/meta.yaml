@@ -1,0 +1,54 @@
+{% set name = "bbmapy" %}
+{% set version = "0.0.46" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/bbmapy-{{ version }}.tar.gz
+  sha256: 8e223fab7fdabdbe8eb3a81adf6c526be36144b0b7298474bd506f6bd081780c
+
+build:
+  entry_points:
+    - generate-bbmapy-commands = bbmapy.scanner:main
+    - bbmapy-test = bbmapy.test:main
+    - bbmapy-ensure-java = bbmapy.update:ensure_java_availability
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-build-isolation -vvv 
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("bbmapy", max_pin="x.x") }}  
+
+requirements:
+  host:
+    - python >=3.9
+    - hatchling
+    - pip
+  run:
+    - python >=3.9
+    - rich
+    - install-jdk
+
+test:
+  imports:
+    - bbmapy
+  commands:
+    - bbmapy-test 
+  requires:
+    - install-jdk
+
+about:
+  home: https://github.com/urineri/bbmapy
+  license: Custom
+  license_file: "bbmapy/vendor/bbmap/license.txt"
+  summary: 'A Python wrapper for BBTools.'
+  description: |
+    bbmapy is a Python wrapper for BBTools, a suite of bioinformatics tools.
+    It provides a convenient interface to use BBTools from Python scripts.
+  doc_url: https://github.com/urineri/bbmapy
+  dev_url: https://github.com/urineri/bbmapy
+
+extra:
+  recipe-maintainers:
+    - urineri 
