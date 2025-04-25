@@ -6,10 +6,14 @@ cp -rf "${RECIPE_DIR}/vcflib.pc.in" "${SRC_DIR}"
 sed -i.bak -e 's|mem.split|mem.splitSequence|' src/zig/samples.zig
 rm -rf src/zig/*.bak
 
+sed -i.bak -e 's|-fPIC|-fPIC -Wno-int-conversion|' CMakeLists.txt
+rm -rf *.bak
+
 export M4="${BUILD_PREFIX}/bin/m4"
-# export PATH="$(which zig):${PATH}"
+#export PATH="$(which zig):${PATH}"
 
 export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Itabixpp -Iwfa2 -I\$(INC_DIR)"
+export CFLAGS="${CFLAGS} -O3 -Wno-int-conversion"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
