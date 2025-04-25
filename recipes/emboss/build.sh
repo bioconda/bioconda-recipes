@@ -7,7 +7,9 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
 
 # use newer config.guess and config.sub that support osx-arm64
-cp ${RECIPE_DIR}/config.* .
+cp -f ${RECIPE_DIR}/config.* .
+
+mv configure.in configure.ac
 
 # Regenerate configure to fix flat namespace errors on macOS 11+
 autoreconf -fvi
