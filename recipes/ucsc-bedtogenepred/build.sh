@@ -9,6 +9,9 @@ export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include ${LDFLAGS}"
 
+sed -i.bak -e 's|-ldl -lm -lc|-ldl -lm -lc -lhts|' kent/src/inc/common.mk
+rm -rf kent/src/inc/*.bak
+
 mkdir -p "${PREFIX}/bin"
 export MACHTYPE=$(uname -m)
 export BINDIR=$(pwd)/bin
