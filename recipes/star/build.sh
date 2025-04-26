@@ -5,7 +5,7 @@ export LIBPATH="-L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -std=c++17 -O3 -I${PREFIX}/include -fopenmp"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-if [[ "$(uname)" == "Darwin" ]]; then
+if [[ "$(uname)" == "Darwin"  ]] && [[ "$(uname -m)" == "x86_64" ]]; then
     echo "Installing STAR for OSX."
     mkdir -p $PREFIX/bin
     install -v -m 0755 bin/MacOSX_x86_64/STAR $PREFIX/bin
