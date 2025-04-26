@@ -11,7 +11,7 @@ if [[ "$(uname)" == "Darwin"  ]] && [[ "$(uname -m)" == "x86_64" ]]; then
     install -v -m 0755 bin/MacOSX_x86_64/STAR $PREFIX/bin
     install -v -m 0755 bin/MacOSX_x86_64/STARlong $PREFIX/bin
 else 
-    echo "Building STAR for Linux"
+    echo "Building STAR from source"
     mkdir -p $PREFIX/bin
     cd source
 
@@ -19,7 +19,7 @@ else
 
     if [[ "$(arch)" == "x86_64" ]]; then
         for SIMD in ${AMD64_SIMD_LEVELS[@]}; do
-            make -j"$(nproc)" CXX="${CXX}" CXXFLAGSextra="-m$SIMD" CXXFLAGS="${CXXFLAGS}" STAR STARlong
+            make -j"${CPU_COUNT}" CXX="${CXX}" CXXFLAGSextra="-m$SIMD" CXXFLAGS="${CXXFLAGS}" STAR STARlong
             cp -rf STAR $PREFIX/bin/STAR-$SIMD
             cp -rf STARlong $PREFIX/bin/STARlong-$SIMD
 	    chmod 0755 $PREFIX/bin/STAR-$SIMD
@@ -33,7 +33,7 @@ else
         cp -rf ../simd-dispatch.sh $PREFIX/bin/STARlong
 	chmod 0755 $PREFIX/bin/STAR-plain $PREFIX/bin/STARlong-plain
     else
-        make -pj"$(nproc)" CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" STAR STARlong
+        make VERBOSE=1 -j "${CPU_COUNT}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" STAR STARlong
         install -v -m 0755 STAR $PREFIX/bin
         install -v -m 0755 STARlong $PREFIX/bin
     fi
