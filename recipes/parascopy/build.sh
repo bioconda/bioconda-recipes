@@ -2,6 +2,8 @@
 
 set -xe
 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export PKG_CONFIG_PATH="$BUILD_PREFIX/lib/pkgconfig"
 export M4="${BUILD_PREFIX}/bin/m4"
 
