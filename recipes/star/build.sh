@@ -33,7 +33,7 @@ else
         cp -rf ../simd-dispatch.sh $PREFIX/bin/STARlong
 	chmod 0755 $PREFIX/bin/STAR-plain $PREFIX/bin/STARlong-plain
     else
-        make VERBOSE=1 -j "${CPU_COUNT}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" STAR STARlong
+        make VERBOSE=1 -j "${CPU_COUNT}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -DSHM_NORESERVE=0" STAR STARlong 
         install -v -m 0755 STAR $PREFIX/bin
         install -v -m 0755 STARlong $PREFIX/bin
     fi
