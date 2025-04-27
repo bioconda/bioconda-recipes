@@ -1,23 +1,25 @@
+{% set name = "alignoth" %}
 {% set version = "0.13.0" %}
 
 package:
-  name: alignoth
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 2
-  run_exports:
-    - {{ pin_subpackage('alignoth', max_pin="x") }}
 
 source:
   url: https://github.com/alignoth/alignoth/archive/v{{ version }}.tar.gz
   sha256: a955e762d3593ac572424dbe775f1c554bb5ab10f391fb643c7d613cca416cc4
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('alignoth', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler("cxx") }}
     - {{ compiler('rust') }}
+    - cargo-bundle-licenses
     - clangdev
     - pkg-config
     - make
@@ -27,19 +29,23 @@ requirements:
     - libcurl
     - openssl
 
-
 test:
   commands:
     - alignoth --help
 
 about:
-  home: https://alignoth.github.io
+  home: "https://alignoth.github.io"
   license: MIT
-  summary: A tool for creating alignment plots from bam files
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A tool for creating alignment plots from bam files."
+  dev_url: "https://github.com/alignoth/alignoth"
+  doc_url: "https://github.com/alignoth/alignoth/blob/v{{ version }}/README.md"
 
 extra:
   recipe-maintainers:
     - fxwiegand
     - johanneskoester
-  additional-platforms:  #add aarch64
+  additional-platforms:
     - linux-aarch64
+    - osx-arm64
