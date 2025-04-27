@@ -13,9 +13,9 @@ autoreconf -if
 	CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include" \
 	--enable-build-libxml2 --enable-build-libxslt
 
-make clean
 make AM_CFLAGS='-DNAN="(0.0/0.0)"' -j"${CPU_COUNT}"
 make install
+make clean
 
 ln -sf ${PREFIX}/libexec/${PKG_NAME}-${PKG_VERSION}/* ${PREFIX}/bin/
 
