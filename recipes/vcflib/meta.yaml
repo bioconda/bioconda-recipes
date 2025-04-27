@@ -1,37 +1,35 @@
 {% set name = "vcflib" %}
-{% set version = "1.0.10" %}
-{% set sha256 = "unused" %}
+{% set version = "1.0.13" %}
+{% set sha256 = "059d8b0c1f9bdb21929c672e4b1dc2a80730c38e696d2edec18f442b395532bc" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-- git_url: https://github.com/vcflib/vcflib.git
-  git_rev: v{{ version }}
+- url: https://github.com/vcflib/vcflib/releases/download/v{{ version }}/{{ name }}-{{ version }}-src.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - pkg-config.patch
-    - shared_lib.patch
-    - backport_pr_394.patch  # TODO remove once PR https://github.com/vcflib/vcflib/pull/394 is merged and released
-    - tabix.patch
-    - march_native.patch  # Disable march=native to build a generic executable, see https://github.com/vcflib/vcflib/issues/401
-    - 0006-wfa2-lib.patch
-- url: https://ziglang.org/download/0.10.1/zig-linux-x86_64-0.10.1.tar.xz  # [linux and x86_64]
-  sha256: 6699f0e7293081b42428f32c9d9c983854094bd15fee5489f12c4cf4518cc380  # [linux and x86_64]
-  folder: zig-linux-x86_64-0.10.1  # [linux and x86_64]
-- url: https://ziglang.org/download/0.10.1/zig-linux-aarch64-0.10.1.tar.xz  # [linux and aarch64]
-  sha256: db0761664f5f22aa5bbd7442a1617dd696c076d5717ddefcc9d8b95278f71f5d  # [linux and aarch64]
-  folder: zig-linux-aarch64-0.10.1  # [linux and aarch64]
-- url: https://ziglang.org/download/0.10.1/zig-macos-x86_64-0.10.1.tar.xz  # [osx and x86_64]
-  sha256: 02483550b89d2a3070c2ed003357fd6e6a3059707b8ee3fbc0c67f83ca898437  # [osx and x86_64]
-  folder: zig-macos-x86_64-0.10.1  # [osx and x86_64]
-- url: https://ziglang.org/download/0.10.1/zig-macos-aarch64-0.10.1.tar.xz  # [osx and arm64]
-  sha256: b9b00477ec5fa1f1b89f35a7d2a58688e019910ab80a65eac2a7417162737656  # [osx and arm64]
-  folder: zig-macos-aarch64-0.10.1  # [osx and arm64]
+    - 0001-CMakeLists.patch
+    - 0002-CMakeLists.macos.patch  # [osx]
+    - 0003-tabix.patch
+- url: https://ziglang.org/builds/zig-linux-x86_64-0.15.0-dev.377+f01833e03.tar.xz  # [linux and x86_64]
+  sha256: 1e556712dbcdcb73a7d7d592311ea25c88c4c9134ed8b0cc42f18a0eddb03789  # [linux and x86_64]
+  folder: zig-linux-x86_64-0.15.0-dev  # [linux and x86_64]
+- url: https://ziglang.org/builds/zig-linux-aarch64-0.15.0-dev.377+f01833e03.tar.xz  # [linux and aarch64]
+  sha256: 9f79d60852df62dd60fb7648321518965125e6c4edc89506b5f9245253b12dcb  # [linux and aarch64]
+  folder: zig-linux-aarch64-0.15.0-dev  # [linux and aarch64]
+- url: https://ziglang.org/builds/zig-macos-x86_64-0.15.0-dev.377+f01833e03.tar.xz  # [osx and x86_64]
+  sha256: 36b91b9de6f1a1b529dd44c5be37492216527f79c90a356f903243f9364da2b2  # [osx and x86_64]
+  folder: zig-macos-x86_64-0.15.0-dev  # [osx and x86_64]
+- url: https://ziglang.org/builds/zig-macos-aarch64-0.15.0-dev.377+f01833e03.tar.xz  # [osx and arm64]
+  sha256: f64b2b1d23355862ac2561944f808e47bb20a2036c400d62cca66a085adef0ac  # [osx and arm64]
+  folder: zig-macos-aarch64-0.15.0-dev  # [osx and arm64]
 
 build:
-  number: 1
+  number: 0
+  # Undefined symbols for architecture x86_64: "___ulock_wait2", referenced from: _Thread.Futex.DarwinImpl.wait in libzig.a(libzig.a.o)
+  skip: True  # [osx and x86_64]
   run_exports:
     - {{ pin_subpackage('vcflib', max_pin="x") }}
 
@@ -40,27 +38,36 @@ requirements:
     - {{ compiler('cxx') }}
     - make
     - cmake
-    - pybind11-global
     # python really only used as a build tool; no ${PREFIX}/bin/python needed.
     - python >=3
     - pkg-config
+    - autoconf
+    - automake
+    - libtool
+    - pybind11
   host:
     - libgomp  # [linux]
     - llvm-openmp  # [osx]
-    - zlib
     - htslib
     - tabixpp
-    - wfa2-lib
+    - wfa2-lib  # [osx]
     - pandoc
+    - zlib
+    - bzip2
+    - xz
+    - libcurl
+    - libdeflate
+    - fastahack
   run:
     - python >=3
     - perl
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - htslib
     - tabixpp
-    - wfa2-lib
-    - eigen
-    - jsoncpp
+    - wfa2-lib  # [osx]
     - wget
+    - fastahack
 
 test:
   requires:
@@ -83,15 +90,12 @@ about:
   doc_url: "https://github.com/vcflib/vcflib/blob/v{{ version }}/README.md"
 
 extra:
-  skip-lints:
-    # uses submodules
-    - uses_vcs_url
   additional-platforms:
     - linux-aarch64
-    #zig osx-arm64 error: error(link): undefined reference to symbol 'dyld_stub_binder'
-    #- osx-arm64
+    - osx-arm64
   recipe-maintainers:
     - jpuritz
+    - mencian
   identifiers:
     - biotools:vcflib
     - doi:10.1371/journal.pcbi.1009123

@@ -1,5 +1,5 @@
 {% set name = "freebayes" %}
-{% set version = "1.3.8" %}
+{% set version = "1.3.9" %}
 
 package:
   name: {{ name }}
@@ -8,11 +8,11 @@ package:
 source:
   - folder: freebayes
     url: https://github.com/freebayes/freebayes/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: d1c24b1d1b35277e7403cd67063557998218a105c916b01a745e7704715fce67
+    sha256: 41ed3074c7648375286168a6708e02dac6788eaca4ca6039ff5a7ed91f257b53
     patches:
       - 0001-make-meson-build-conda-friendly.patch
-      - 0002-fix-intervaltree-include-path.patch
-      - 0003-meson-macos.patch  # [osx]
+      - 0002-meson-macos.patch  # [osx]
+      - 0003-version.patch
   - folder: freebayes/contrib/smithwaterman
     url: https://github.com/ekg/smithwaterman/archive/2610e259611ae4cde8f03c72499d28f03f6d38a7.tar.gz
     sha256: 8e1b37ab0e8cd9d3d5cbfdba80258c0ebd0862749b531e213f44cdfe2fc541d8
@@ -24,32 +24,31 @@ source:
     sha256: cc1c04729b0c8ba3647cbb7e15e2b490ce701d73773f30f5892d68c36a1dceae
 
 build:
-  number: 2
+  number: 0
   run_exports:
     - {{ pin_subpackage("freebayes", max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - meson
     - ninja
+    - cmake
     - bc
+    - clangdev  # [osx]
     - pkg-config
   host:
-    - bzip2
     - htslib
-    - tabixpp
     - vcflib
     - simde
+    - wget
     - zlib
-    - wfa2-lib
+    - xz
+    - bzip2
   run:
     - parallel
     - samtools
-    - tabixpp
     - vcflib
-    - wfa2-lib
 
 test:
   commands:
@@ -68,9 +67,11 @@ about:
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:freebayes
     - usegalaxy-eu:freebayes
     - doi:10.48550/arXiv.1207.3907
   recipe-maintainers:
     - jpuritz
+    - mencian

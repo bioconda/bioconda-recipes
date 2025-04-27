@@ -11,7 +11,7 @@ then
   fi
   export MACOSX_DEPLOYMENT_TARGET=10.15
   export MACOSX_SDK_VERSION=10.15
-  export CFLAGS="${CFLAGS} -fcommon -D_LIBCPP_DISABLE_AVAILABILITY"
+  export CFLAGS="${CFLAGS} -fcommon -D_LIBCPP_DISABLE_AVAILABILITY -fno-define-target-os-macros"
   export CXXFLAGS="${CXXFLAGS} -fcommon -D_LIBCPP_DISABLE_AVAILABILITY"
 else 
   export CFLAGS="${CFLAGS} -fcommon"
