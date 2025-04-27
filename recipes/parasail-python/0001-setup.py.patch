@@ -1,20 +1,16 @@
 diff --git a/setup.py b/setup.py
-index 4465048..79cb7fa 100644
+index 4465048..ef9b031 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -239,9 +239,10 @@ def build_autotools(patch_m4=False):
+@@ -239,6 +239,7 @@ def build_autotools(patch_m4=False):
              print("{} already exists! Skipping build.".format(binary))
          else:
              os.chdir(os.path.join(top,tdir))
 +            subprocess.run('cp -rfv ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/', shell=True, executable="/bin/bash")
              CPPFLAGS=""
              if tool == 'm4' and patch_m4:
--                CPPFLAGS="CPPFLAGS=-D_IO_IN_BACKUP=0x100"
-+                CPPFLAGS="CPPFLAGS=-D_IO_IN_BACKUP=0x100 -I${PREFIX}/include"
-                 for filename in ['lib/freading.c', 'lib/fseeko.c', 'lib/fpurge.c', 'lib/freadahead.c', 'lib/fflush.c']:
-                     with open(filename, "r") as source:
-                         lines = source.readlines()
-@@ -265,12 +266,14 @@ def build_autotools(patch_m4=False):
+                 CPPFLAGS="CPPFLAGS=-D_IO_IN_BACKUP=0x100"
+@@ -265,12 +266,15 @@ def build_autotools(patch_m4=False):
                  os.chdir(save_cwd)
                  return False
              print("making and installing {}".format(tool))
@@ -22,11 +18,12 @@ index 4465048..79cb7fa 100644
 -                'make', '-j', str(cpu_count()), 'install'
 -                ], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 -            stdout,stderr = proc.communicate()
++            #subprocess.run('ln -sf $(which make) /Applications/Xcode-15.4.app/Contents/Developer/usr/bin/', shell=True, executable="/bin/bash")
 +            subprocess.run('cp -rf ${BUILD_PREFIX}/bin/make ${PREFIX}/bin/make', shell=True, executable="/bin/bash")
 +            subprocess.run('export PATH=${PREFIX}/bin:${PATH}', shell=True, executable="/bin/bash")
 +            proc = subprocess.run([
-+                '/bin/bash make -j${CPU_COUNT} install',
-+                ], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
++                'make -j${CPU_COUNT} install',
++                ], shell=True, executable="/bin/bash", capture_output=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 +            #stdout,stderr = proc.communicate()
              if 0 != proc.returncode:
 -                print(stdout)
@@ -34,7 +31,7 @@ index 4465048..79cb7fa 100644
                  print("make of {} failed".format(tool))
                  os.chdir(save_cwd)
                  return False
-@@ -324,14 +327,14 @@ def build_parasail(libname):
+@@ -324,14 +328,14 @@ def build_parasail(libname):
          # on OSX, homebrew perl might not support threading and automake
          # build will fail
          print('Prepending /usr/bin to PATH')
