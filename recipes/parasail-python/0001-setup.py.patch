@@ -1,5 +1,5 @@
 diff --git a/setup.py b/setup.py
-index 4465048..c898801 100644
+index 4465048..63d66ef 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -239,9 +239,10 @@ def build_autotools(patch_m4=False):
@@ -14,18 +14,23 @@ index 4465048..c898801 100644
                  for filename in ['lib/freading.c', 'lib/fseeko.c', 'lib/fpurge.c', 'lib/freadahead.c', 'lib/fflush.c']:
                      with open(filename, "r") as source:
                          lines = source.readlines()
-@@ -265,9 +266,11 @@ def build_autotools(patch_m4=False):
+@@ -265,12 +266,14 @@ def build_autotools(patch_m4=False):
                  os.chdir(save_cwd)
                  return False
              print("making and installing {}".format(tool))
 -            proc = subprocess.Popen([
 -                'make', '-j', str(cpu_count()), 'install'
 -                ], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+-            stdout,stderr = proc.communicate()
 +            subprocess.run('cp -rf ${BUILD_PREFIX}/bin/make ${PREFIX}/bin/make', shell=True, executable="/bin/bash")
 +            subprocess.run('export PATH=${PREFIX}/bin:${PATH}', shell=True, executable="/bin/bash")
 +            proc = subprocess.run([
 +                'make -j${CPU_COUNT} install',
 +                ], shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-             stdout,stderr = proc.communicate()
++            #stdout,stderr = proc.communicate()
              if 0 != proc.returncode:
-                 print(stdout)
+-                print(stdout)
++                print(proc.stdout)
+                 print("make of {} failed".format(tool))
+                 os.chdir(save_cwd)
+                 return False
