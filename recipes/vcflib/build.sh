@@ -13,9 +13,6 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 OS=$(uname -s)
 ARCH=$(uname -m)
 
-sed -i.bak -e 's|mem.split|mem.splitSequence|' src/zig/samples.zig
-rm -rf src/zig/*.bak
-
 sed -i.bak -e 's|-fPIC|-fPIC -Wno-int-conversion -Wno-deprecated-declarations -Wno-absolute-value -Wno-unused-comparison|' CMakeLists.txt
 rm -rf *.bak
 
