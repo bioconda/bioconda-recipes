@@ -31,11 +31,11 @@ fi
 # build statically linked binary with Rust
 export RUSTC_BOOTSTRAP=1
 ##RUST_BACKTRACE=1 cargo install --features "${FEATURES}" --verbose --path . --root $PREFIX
-export CARGO_TARGET_DIR="${PWD}/target"
+export CARGO_TARGET_DIR="${PWD}"
 cargo build --workspace --release --features "${FEATURES}" 
 cargo metadata --format-version 1 --no-deps \
   | tr '\n' ' ' \
   | sed 's/}[[:space:]]*,[[:space:]]*{/\n{/g' \
   | awk '/"kind"[[:space:]]*:[^]]*"bin"/{match($0,/"name"[[:space:]]*:[[:space:]]*"[^"]+"/); n=substr($0,RSTART,RLENGTH); sub(/.*:"/,"",n); sub(/"$/,"",n); print n}' \
-  | xargs -r -I{} install -m0755 "${CARGO_TARGET_DIR}/release/{}" "$PREFIX/bin/"
+  | xargs -r -I{} install -m0755 "${CARGO_TARGET_DIR}/target/release/{}" "$PREFIX/bin/"
 
