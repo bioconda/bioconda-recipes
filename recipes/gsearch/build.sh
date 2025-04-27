@@ -30,4 +30,9 @@ fi
 
 # build statically linked binary with Rust
 export RUSTC_BOOTSTRAP=1
-RUST_BACKTRACE=1 cargo install --features "${FEATURES}" --verbose --path . --root $PREFIX
+##RUST_BACKTRACE=1 cargo install --features "${FEATURES}" --verbose --path . --root $PREFIX
+cargo build --workspace --release --features "${FEATURES}" 
+cargo metadata --format-version 1 --no-deps \
+  | jq -r '.packages[].targets[] | select(.kind[]=="bin") | .name' \
+  | xargs -I{} install -m 0755 "target/release/{}" "$PREFIX/bin/"
+
