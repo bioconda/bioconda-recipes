@@ -2,7 +2,6 @@
 
 mkdir -p ${PREFIX}/bin
 
-cd freebayes
 mkdir build
 
 export C_INCLUDE_PATH="${PREFIX}/include"
@@ -27,7 +26,7 @@ sed -i.bak -e 's|<IntervalTree.h>|<vcflib/IntervalTree.h>|' src/BedReader.cpp
 
 rm -rf src/*.bak
 
-OS=$(uname)
+OS=$(uname -s)
 ARCH=$(uname -m)
 
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
@@ -42,18 +41,14 @@ CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" meson setup --buildtype
 	--libdir "${PREFIX}/lib" build/
 
 cd build
-ninja -v
 
+ninja -v
 ninja -v install
 
 ## Copy scripts over to ${PREFIX}/bin ##
-chmod 0755 ../scripts/*.py
-chmod 0755 ../scripts/*.sh
-chmod 0755 ../scripts/*.pl
-cp -nf ../scripts/*.py ${PREFIX}/bin
-cp -nf ../scripts/*.sh ${PREFIX}/bin
-cp -nf ../scripts/*.pl ${PREFIX}/bin
-cp -nf ../scripts/freebayes-parallel ${PREFIX}/bin
+install -v -m 0755 ../scripts/*.py "${PREFIX}/bin"
+install -v -m 0755 ../scripts/*.sh "${PREFIX}/bin"
+install -v -m 0755 ../scripts/*.pl "${PREFIX}/bin"
+install -v -m 0755 ../scripts/freebayes-parallel "${PREFIX}/bin"
 
-chmod 0755 ${PREFIX}/bin/freebayes
-chmod 0755 ${PREFIX}/bin/freebayes-parallel
+chmod 0755 "${PREFIX}/bin/freebayes"
