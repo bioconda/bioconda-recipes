@@ -1,6 +1,5 @@
 {% set name = "dnachisel" %}
-{% set version = "3.2.12" %}
-
+{% set version = "3.2.15" %}
 
 package:
   name: {{ name|lower }}
@@ -8,26 +7,32 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/dnachisel-{{ version }}.tar.gz
-  sha256: b9e62c876390567b4317ad5111f3edbf5e0457e8ca910bf272dcefc2f9772b8d
+  sha256: 367ee9f963b9d33305512a9a759eab1b617a0b30c8c6072e56ed95a8a3bbbaa0
 
 build:
   number: 0
+  noarch: python
+  script:
+    - sed -i.bak -e 's|"MIT"|{file = "LICENCE.txt"}|' pyproject.toml
+    - rm -rf *.bak
+    - {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  entry_points:
+    - dnachisel = dnachisel.cli:main
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
 
 requirements:
   host:
     - pip
     - python
+    - setuptools
   run:
+    - python
     - biopython
     - docopt
     - flametree
     - numpy
     - proglog
-    - python
     - python-codon-tables
 
 test:
@@ -35,15 +40,16 @@ test:
     - dnachisel
     - dnachisel.DnaOptimizationProblem
   commands:
-    - pip check
-  requires:
-    - pip
+    - dnachisel --help
 
 about:
-  home: https://github.com/Edinburgh-Genome-Foundry/DnaChisel
-  summary: Optimize DNA sequences under constraints.
+  home: "https://github.com/Edinburgh-Genome-Foundry/DnaChisel"
+  summary: "Optimize DNA sequences under constraints."
   license: MIT
-  license_file: LICENCE.txt
+  license_family: MIT
+  license_file: "LICENCE.txt"
+  dev_url: "https://github.com/Edinburgh-Genome-Foundry/DnaChisel"
+  doc_url: "https://edinburgh-genome-foundry.github.io/DnaChisel"
 
 extra:
   recipe-maintainers:

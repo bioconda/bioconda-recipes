@@ -1,14 +1,23 @@
 #!/usr/bin/env bash
-
 set -xeu -o pipefail
 
-mkdir build && cd build
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export INCLUDES="-I${PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
 
-cmake \
-  -DCMAKE_BUILD_TYPE=RELEASE \
-  -DCMAKE_INSTALL_PREFIX=${PREFIX} \
-  -DCMAKE_LIBRARY_PATH=${PREFIX}/lib \
-  -DCMAKE_INCLUDE_PATH=${PREFIX}/include ..
+if [[ `uname` == "Darwin" ]]; then
+	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+else
+	export CONFIG_ARGS=""
+fi
 
-make -j1
-make install
+cmake -S . -B build \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+	-DCMAKE_CXX_COMPILER="${CXX}" \
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include" \
+	-DBOOST_ROOT="${PREFIX}" \
+	-DBoost_NO_SYSTEM_PATHS=ON \
+	"${CONFIG_ARGS}"
+
+cmake --build build --target install -j 1

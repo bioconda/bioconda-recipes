@@ -1,0 +1,53 @@
+{% set name = "PlasmidCommunity" %} 
+{% set version = "1.0.2" %}
+
+package:
+  name: plasmidcommunity
+  version: 1.0.2
+
+source:
+  url: "https://github.com/wuxinmiao5/PlasmidCommunity/archive/refs/tags/v1.0.2.tar.gz"
+  sha256: "66a35412e70cb2c47323b15e610ef807655f601381bc357ca051693c7ffd6204"
+
+build:
+  number: 0
+  noarch: generic
+  script:
+    - mkdir -p ${PREFIX}/bin
+    - mkdir -p ${PREFIX}/data
+    - cp ${SRC_DIR}/assignCommunity/* ${PREFIX}/bin/
+    - cp ${SRC_DIR}/PlasmidCommunity/* ${PREFIX}/bin/
+    - cp ${SRC_DIR}/PlasmidTransModel/* ${PREFIX}/bin/
+    - cp ${SRC_DIR}/data/* ${PREFIX}/data/
+    - chmod +x ${PREFIX}/bin/*.sh
+    - chmod +x ${PREFIX}/bin/*.R
+  run_exports:
+    - r-base
+
+requirements:
+  host:
+    - r-base >=4.3
+  run:
+    - util-linux
+    - bash
+    - r-base >=4.3
+    - r-tidyverse >=2.0.0
+    - r-readr >=2.1.5
+    - r-readxl >=1.4.3
+    - bioconductor-biostrings >=2.70.3
+    - r-seqinr >=4.2.36
+    - prodigal >=2.6.3
+    - fastani >=1.33
+    - blast >=2.1.2
+
+test:
+  commands:
+    - plasmidCommunity.sh --help
+    - assignCommunity.sh --help
+    - PlasmidTransModel.sh --help
+
+about:
+  home: "https://github.com/wuxinmiao5/PlasmidCommunity"
+  license: GPL-3.0
+  summary: "Klebsiella pneumoniae Plasmid Classification, Assignment, and Transmission Risk Prediction"
+  doc_url: "https://github.com/wuxinmiao5/PlasmidCommunity/blob/main/README.md"
