@@ -33,6 +33,8 @@ export RUSTC_BOOTSTRAP=1
 ##RUST_BACKTRACE=1 cargo install --features "${FEATURES}" --verbose --path . --root $PREFIX
 cargo build --workspace --release --features "${FEATURES}" 
 cargo metadata --format-version 1 --no-deps \
-  | jq -r '.packages[].targets[] | select(.kind[]=="bin") | .name' \
-  | xargs -I{} install -m 0755 "target/release/{}" "$PREFIX/bin/"
+  | tr '\n' ' ' \
+  | sed 's/}[[:space:]]*,[[:space:]]*{/\n{/g' \
+  | awk '/"kind"[[:space:]]*:[^]]*"bin"/{match($0,/"name"[[:space:]]*:[[:space:]]*"[^"]+"/); n=substr($0,RSTART,RLENGTH); sub(/.*:"/,"",n); sub(/"$/,"",n); print n}' \
+  | xargs -r -I{} install -m0755 "target/release/{}" "$PREFIX/bin/"
 
