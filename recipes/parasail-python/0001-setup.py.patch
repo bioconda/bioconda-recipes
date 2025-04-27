@@ -1,5 +1,5 @@
 diff --git a/setup.py b/setup.py
-index 4465048..0873d1f 100644
+index 4465048..6b6b9d6 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -239,6 +239,7 @@ def build_autotools(patch_m4=False):
@@ -10,3 +10,18 @@ index 4465048..0873d1f 100644
              CPPFLAGS=""
              if tool == 'm4' and patch_m4:
                  CPPFLAGS="CPPFLAGS=-D_IO_IN_BACKUP=0x100"
+@@ -265,8 +266,13 @@ def build_autotools(patch_m4=False):
+                 os.chdir(save_cwd)
+                 return False
+             print("making and installing {}".format(tool))
++            subprocess.run('ln -sf ${BUILD_PREFIX}/bin/make ${PREFIX}/bin/', shell=True)
++            subprocess.run('ln -sf ${BUILD_PREFIX}/bin/make .', shell=True)
++            makep = subprocess.Popen(['which', 'make'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
++            out,err = makep.communicate()
++            print(out)
+             proc = subprocess.Popen([
+-                'make', '-j', str(cpu_count()), 'install'
++                makep.split(), 'install', '-j', str(cpu_count())
+                 ], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+             stdout,stderr = proc.communicate()
+             if 0 != proc.returncode:
