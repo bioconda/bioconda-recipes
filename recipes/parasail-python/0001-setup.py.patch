@@ -1,25 +1,27 @@
 diff --git a/setup.py b/setup.py
-index 4465048..d0b980c 100644
+index 4465048..9aa6d68 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -239,6 +239,7 @@ def build_autotools(patch_m4=False):
+@@ -239,7 +239,8 @@ def build_autotools(patch_m4=False):
              print("{} already exists! Skipping build.".format(binary))
          else:
              os.chdir(os.path.join(top,tdir))
-+            subprocess.run('cp -rfv ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/', shell=True)
-             CPPFLAGS=""
+-            CPPFLAGS=""
++            subprocess.run('cp -rfv ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/', shell=True, executable="/bin/bash")
++            CPPFLAGS="-I${PREFIX}/include"
              if tool == 'm4' and patch_m4:
                  CPPFLAGS="CPPFLAGS=-D_IO_IN_BACKUP=0x100"
-@@ -265,9 +266,10 @@ def build_autotools(patch_m4=False):
+                 for filename in ['lib/freading.c', 'lib/fseeko.c', 'lib/fpurge.c', 'lib/freadahead.c', 'lib/fflush.c']:
+@@ -265,9 +266,11 @@ def build_autotools(patch_m4=False):
                  os.chdir(save_cwd)
                  return False
              print("making and installing {}".format(tool))
-+            make_command = "make"
++            subprocess.run('ln -sf ${BUILD_PREFIX}/bin/make ${PREFIX}/bin/make', shell=True, executable="/bin/bash")
++            subprocess.run('export PATH=${PREFIX}/bin:${PATH}', shell=True, executable="/bin/bash")
              proc = subprocess.Popen([
--                'make', '-j', str(cpu_count()), 'install'
+                 'make', '-j', str(cpu_count()), 'install'
 -                ], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-+                make_command, '-j', str(cpu_count()), 'install'
-+                ], shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
++                ], shell=False, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
              stdout,stderr = proc.communicate()
              if 0 != proc.returncode:
                  print(stdout)
