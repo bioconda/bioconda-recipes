@@ -23,6 +23,7 @@ sed -i.bak -e 's|"multichoose.h"|<vcflib/multichoose.h>|' src/*.cpp
 sed -i.bak -e 's|<Variant.h>|<vcflib/Variant.h>|' src/*.h
 sed -i.bak -e 's|<intervaltree/IntervalTree.h>|<vcflib/IntervalTree.h>|' src/BedReader.h
 sed -i.bak -e 's|<IntervalTree.h>|<vcflib/IntervalTree.h>|' src/BedReader.cpp
+sed -i.bak -e 's|<Fasta.h>|"Fasta.h"|' $PREFIX/include/vcflib/Variant.h
 
 rm -rf src/*.bak
 
