@@ -4,8 +4,6 @@ set -o xtrace -o nounset -o pipefail -o errexit
 
 export CARGO_PROFILE_RELEASE_STRIP=symbols
 export CARGO_PROFILE_RELEASE_LTO=fat
-export OPENSSL_DIR=${PREFIX}
-export OPENSSL_NO_VENDOR=1
 export RUSTC_BOOTSTRAP=1
 
 cargo-bundle-licenses \
