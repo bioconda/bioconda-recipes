@@ -1,15 +1,16 @@
-#!/bin/bash -euo
+#!/usr/bin/env bash
 
-set -xe
+set -o xtrace -o nounset -o pipefail -o errexit
 
-export CFLAGS="${CFLAGS} -fcommon"
-export CXXFLAGS="${CFLAGS} -fcommon"
+export CARGO_PROFILE_RELEASE_STRIP=symbols
+export CARGO_PROFILE_RELEASE_LTO=fat
+export OPENSSL_DIR=${PREFIX}
+export OPENSSL_NO_VENDOR=1
+export RUSTC_BOOTSTRAP=1
 
-export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
-
-cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+cargo-bundle-licenses \
+    --format yaml \
+    --output THIRDPARTY.yml
 
 # build statically linked binary with Rust
-export RUSTC_BOOTSTRAP=1
-export LD=$CC
-C_INCLUDE_PATH=$PREFIX/include LIBRARY_PATH=$PREFIX/lib RUST_BACKTRACE=1 cargo install --verbose --root $PREFIX --path . --target x86_64-unknown-linux-gnu
+cargo install --bins --all-features --no-track --locked --root ${PREFIX} --path .
