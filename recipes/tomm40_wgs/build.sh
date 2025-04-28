@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/opt/TOMM40_WGS/
 
