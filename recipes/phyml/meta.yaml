@@ -10,9 +10,8 @@ source:
   url: https://github.com/stephaneguindon/{{ name|lower }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - phytime.patch
-    - Makefile.patch
-    - phyml-aarch64.patch # [linux and aarch64]
+    - 0001-Makefile.patch
+    - 0002-phytime.patch
 
 build:
   number: 0
@@ -26,10 +25,14 @@ requirements:
     - autoconf
     - automake
     - libtool
-  host:
-    - openmpi
     - pkg-config
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - openmpi
   run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - openmpi
 
 test:
@@ -42,13 +45,13 @@ test:
     - phytime --help | grep "PhyTime {{ version }}"
 
 about:
-  home: 'http://www.atgc-montpellier.fr/phyml/'
-  dev_url: 'https://github.com/stephaneguindon/phyml/'
-  doc_url: 'https://github.com/stephaneguindon/phyml/blob/master/doc/phyml-manual.pdf'
-  license: GPL-3.0-only
-  license_family: GPL
+  home: 'http://www.atgc-montpellier.fr/phyml'
+  dev_url: 'https://github.com/stephaneguindon/phyml'
+  doc_url: 'https://github.com/stephaneguindon/phyml/blob/v{{ version }}/doc/phyml-manual.pdf'
+  license: "GPL-3.0-only"
+  license_family: GPL3
   license_file: COPYING
-  summary: 'Phylogenetic estimation using (Maximum) Likelihood'
+  summary: 'Phylogenetic estimation using (Maximum) Likelihood.'
   description: |
     PhyML is a software that estimates maximum likelihood phylogenies from
     alignments of nucleotide or amino acid sequences. The main strength of
@@ -64,8 +67,12 @@ about:
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:phyml
+    - usegalaxy-eu:phyml
     - doi:10.1093/sysbio/syq010
-  maintainers:
+    - doi:10.1016/j.tpb.2016.05.002
+    - doi:10.1093/sysbio/syy003
+  recipe-maintainers:
     - epruesse

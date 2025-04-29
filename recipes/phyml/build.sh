@@ -3,8 +3,9 @@ set -xe
 
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
-
-export CFLAGS="${CFLAGS} -O3 -fomit-frame-pointer -funroll-loops"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -fomit-frame-pointer -funroll-loops -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 # needed to fix version
 sh ./autogen.sh
@@ -29,14 +30,16 @@ case $(uname -m) in
 esac
 
 # Adding -v to make breaks compilation on Microsoft Azure CI
-for binary in phyml-mpi phyml phytime; do
+for binary in phyml-mpi phyml phytime rwrap rf evolve date phyrexsim; do
 	echo ${binary}
 	./configure \
 		--disable-dependency-tracking \
+		--enable-silent-rules \
 		--prefix="${PREFIX}" \
 		--enable-${binary} \
-		LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-	make -j"${CPU_COUNT}" CFLAGS="${CFLAGS} ${ARCH_OPTS}"
+		CC="${CC}" CPPFLAGS="${CPPFLAGS}" \
+		LDFLAGS="${LDFLAGS}" CFLAGS="${CFLAGS}"
+	make CFLAGS="${CFLAGS} ${ARCH_OPTS}" -j"${CPU_COUNT}"
 	make install
 	make clean
 done
