@@ -23,9 +23,13 @@ done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 JAR_DIR="$DIR"
-ENV_PREFIX="$(dirname "$(dirname "${DIR}")")"
+
 # Use Java installed with conda to ensure correct version
-java="$ENV_PREFIX/bin/java"
+if [[ -n "${JAVA_HOME}" ]]; then
+    java=${JAVA_HOME}/bin/java   # point to the installed Java
+else
+    java=/opt/anaconda1anaconda2anaconda3/bin/java   # default old-style where anaconda installed Java
+fi
 
 ### NOTE: always force the conda-installed java version
 # # if JAVA_HOME is set (non-empty), use it. Otherwise keep "java"
