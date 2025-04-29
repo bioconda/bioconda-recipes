@@ -30,7 +30,8 @@ esac
 autoreconf -if
 
 # Adding -v to make breaks compilation on Microsoft Azure CI
-for binary in phyml phyml-mpi phytime rf; do
+# phyml-mpi error: mpi_boot.c:215:100: error: 'struct __Optimiz' has no member named 'opt_bl'
+for binary in phyml phytime rf; do
 	echo ${binary}
 	./configure \
 		--disable-dependency-tracking \
