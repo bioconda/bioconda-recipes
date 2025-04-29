@@ -6,6 +6,7 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3 -fomit-frame-pointer -funroll-loops -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export LC_ALL="en_US.UTF-8"
 
 # PhyML builds different binaries depending on configure flags.
 # We build
@@ -26,11 +27,10 @@ case $(uname -m) in
 esac
 
 # needed to fix version
-sh ./autogen.sh
-autoupdate
+autoreconf -if
 
 # Adding -v to make breaks compilation on Microsoft Azure CI
-for binary in phyml-mpi phyml phytime rwrap rf evolve date phyrexsim; do
+for binary in phyml phyml-mpi phytime rf; do
 	echo ${binary}
 	./configure \
 		--disable-dependency-tracking \
