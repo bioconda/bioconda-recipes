@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -fPIE -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -fPIC -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
 if [[ `uname` == "Darwin" ]]; then
@@ -27,5 +27,3 @@ cmake -S . -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     "${CONFIG_ARGS}"
 cmake --build . --target HYPHYMPI -j "${CPU_COUNT}"
 cmake --build . --target install -j "${CPU_COUNT}"
-#make hyphy HYPHYMPI -j"${CPU_COUNT}"
-#make install
