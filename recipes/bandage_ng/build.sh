@@ -16,14 +16,14 @@ fi
 
 cmake -S .. -B .
   -DCMAKE_PREFIX_PATH="${PREFIX}" \
-  -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+  -DCMAKE_CXX_FLAGS="${CXXFLAGS} -D__STDC_FORMAT_MACROS" \
   -DEGL_INCLUDE_DIR:PATH="${BUILD_PREFIX}/${HOST}/sysroot/usr/include" \
   -DEGL_LIBRARY:FILEPATH="${BUILD_PREFIX}/${HOST}/sysroot/usr/lib/libEGL.so.1" \
   -DOPENGL_egl_LIBRARY:FILEPATH="${BUILD_PREFIX}/${HOST}/sysroot/usr/lib/libEGL.so.1" \
   -DEGL_opengl_LIBRARY:FILEPATH="${BUILD_PREFIX}/${HOST}/sysroot/usr/lib64/libGL.so" \
   -DOPENGL_opengl_LIBRARY:FILEPATH="${BUILD_PREFIX}/${HOST}/sysroot/usr/lib64/libGL.so" \
-  -D__STDC_FORMAT_MACROS \
-  "${CONFIG_ARGS}"
+  "${CONFIG_ARGS}" \
+  "${CMAKE_ARGS}"
 cmake --build . --target install -j "${CPU_COUNT}"
 
 # Install
