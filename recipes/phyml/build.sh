@@ -7,10 +7,6 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3 -fomit-frame-pointer -funroll-loops -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-# needed to fix version
-sh ./autogen.sh
-autoupdate
-
 # PhyML builds different binaries depending on configure flags.
 # We build
 #   - phyml (enable-phyml),
@@ -29,6 +25,10 @@ case $(uname -m) in
 		;;
 esac
 
+# needed to fix version
+sh ./autogen.sh
+autoupdate
+
 # Adding -v to make breaks compilation on Microsoft Azure CI
 for binary in phyml-mpi phyml phytime rwrap rf evolve date phyrexsim; do
 	echo ${binary}
@@ -38,7 +38,7 @@ for binary in phyml-mpi phyml phytime rwrap rf evolve date phyrexsim; do
 		--prefix="${PREFIX}" \
 		--enable-${binary} \
 		CC="${CC}" CPPFLAGS="${CPPFLAGS}" \
-		LDFLAGS="${LDFLAGS}" CFLAGS="${CFLAGS}"
+		LDFLAGS="${LDFLAGS}" CFLAGS="${CFLAGS} ${ARCH_OPTS}"
 	make CFLAGS="${CFLAGS} ${ARCH_OPTS}" -j"${CPU_COUNT}"
 	make install
 	make clean
