@@ -1,7 +1,17 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -fPIE -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
+if [[ `uname` == "Darwin" ]]; then
+    export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+else
+    export CONFIG_ARGS=""
+fi
 
 case $(uname -m) in
-    aarch64) 
+    aarch64|arm64) 
         HYPHY_OPTS=""
         ;;
     *)
@@ -9,6 +19,13 @@ case $(uname -m) in
         ;;
 esac
 
-cmake -DCMAKE_INSTALL_PREFIX=$PREFIX ${HYPHY_OPTS} .
-make hyphy HYPHYMPI
-make install
+cmake -S . -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+    -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+    -Wno-dev -Wno-deprecated --no-warn-unused-cli \
+    "${HYPHY_OPTS}" \
+    "${CONFIG_ARGS}"
+cmake --build . --target HYPHYMPI -j "${CPU_COUNT}"
+cmake --build . --target install -j "${CPU_COUNT}"
+#make hyphy HYPHYMPI -j"${CPU_COUNT}"
+#make install
