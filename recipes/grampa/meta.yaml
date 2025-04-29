@@ -1,5 +1,5 @@
 {% set name = "GRAMPA" %}
-{% set version = "1.4.3" %}
+{% set version = "1.4.4" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,19 +7,13 @@ package:
 
 source:
   url: "https://github.com/gwct/grampa/archive/refs/tags/v{{ version }}.tar.gz"
-  sha256: 93fbf70cf1f0f6681d18a55c1aa08b14c022e3e8ef2fd9941ce2a2cd7804fa70
+  sha256: 81325b44291227f9cd4e93da98909f103a0c99123e08f39adf795a334465b578
 
 build:
   number: 0
   noarch: python
   run_exports:
     - {{ pin_subpackage('grampa', max_pin="x") }}  
-  script:
-    - cp -f grampa.py ${PREFIX}/bin
-    - chmod 0755 ${PREFIX}/bin/grampa.py
-    - ln -sf ${PREFIX}/bin/grampa.py ${PREFIX}/bin/grampa
-    - mkdir -p ${SP_DIR}
-    - cp -Rf grampa_lib ${SP_DIR}/grampa_lib
 
 requirements:
   host:
@@ -28,8 +22,9 @@ requirements:
     - python >=3
 
 test:
-  commands:
-    - "grampa.py --version 2>&1 | grep -q GRAMPA"
+  requires:
+    - wget
+    - unzip
 
 about:
   home: https://gwct.github.io/grampa

@@ -1,9 +1,9 @@
 set -e
 
 # Configuration
-N_FILES_IN_TAR=241860
-DB_URL="https://data.gtdb.ecogenomic.org/releases/release220/220.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r220_data.tar.gz"
-TARGET_TAR_NAME="gtdbtk_r220_data.tar.gz"
+N_FILES_IN_TAR=307538
+DB_URL="https://data.gtdb.ecogenomic.org/releases/release226/226.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r226_data.tar.gz"
+TARGET_TAR_NAME="gtdbtk_r226_data.tar.gz"
 
 # Script variables (no need to configure)
 TARGET_DIR=${1:-$GTDBTK_DATA_PATH}
@@ -34,7 +34,7 @@ echo "[INFO] - The GTDB-Tk database has been successfully downloaded and extract
 if conda env config vars set GTDBTK_DATA_PATH="$TARGET_DIR"; then
   echo "[INFO] - Added GTDBTK_DATA_PATH ($TARGET_DIR) to the GTDB-Tk conda environment."
 else
-  echo "[INFO] - Conda not found in PATH, please be sure to set the GTDBTK_DATA_PATH envrionment variable"
+  echo "[INFO] - Conda not found in PATH, please be sure to set the GTDBTK_DATA_PATH environment variable"
   echo "export GTDBTK_DATA_PATH=$TARGET_DIR before running GTDB-Tk. "
 fi
 
