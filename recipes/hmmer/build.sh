@@ -17,7 +17,7 @@ autoreconf -if
 	CFLAGS="${CFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}"
 make -j"${CPU_COUNT}"
 make install
-(cd "${SRC_DIR}/easel" && make install)
+(cd "${SRC_DIR}/easel" && make install -j"${CPU_COUNT}")
 
 # keep easel lib for other rcipes (e.g sfld)
 mkdir -p $PREFIX/share
