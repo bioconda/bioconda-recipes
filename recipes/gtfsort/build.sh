@@ -6,6 +6,8 @@ export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
 
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
+cd gtfsort
+
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
-cargo install --verbose --no-track --path gtfsort --root "${PREFIX}"
+cargo install --verbose --no-track --path . --root "${PREFIX}"
