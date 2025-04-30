@@ -14,7 +14,6 @@ else
 fi
 
 cmake -S . -B build
-  -DCMAKE_PREFIX_PATH="${PREFIX}" \
   -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_CXX_FLAGS="${CXXFLAGS} -D__STDC_FORMAT_MACROS" \
   -DEGL_INCLUDE_DIR:PATH="${BUILD_PREFIX}/${HOST}/sysroot/usr/include" \
