@@ -22,17 +22,6 @@ sed -i.bak -e 's|-lpthread|-pthread|' kent/src/inc/common.mk
 
 rm -rf kent/src/inc/*.bak
 
-cd kent/src/htslib
-autoreconf -if
-./configure --prefix=`$(pwd)` \
-  --enable-libcurl --enable-plugins --disable-option-checking \
-  CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" \
-  CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-
-make clean
-make -j"${CPU_COUNT}"
-cd ../../../
-
 (cd kent/src/lib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
 (cd kent/src/htslib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
 (cd kent/src/jkOwnLib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
