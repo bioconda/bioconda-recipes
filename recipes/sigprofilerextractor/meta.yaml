@@ -1,0 +1,54 @@
+{% set name = "sigprofilerextractor" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/sigprofilerextractor-{{ version }}.tar.gz
+  sha256: 3d675e6e9083b45ded40e312624a493500428aa8fd74c321e7992f037a212bcd
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  entry_points:
+    - SigProfilerExtractor=SigProfilerExtractor.sigprofilerextractor_cli:main_function
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+  run:
+    - python >=3.9
+    - scipy >=1.6.3
+    - pytorch >=1.8.1
+    - numpy >=2.0.0
+    - pandas >=2.0.0
+    - nimfa >=1.1.0
+    - sigprofilerplotting >=1.4.0
+    - sigprofilermatrixgenerator >=1.3.0
+    - sigprofilerassignment >=0.2.0
+    - statsmodels >=0.9.0
+    - scikit-learn >=0.24.2
+    - psutil >=5.6.1
+
+test:
+  imports:
+    - SigProfilerExtractor
+  commands:
+    - pip check
+    - SigProfilerExtractor --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/AlexandrovLab/SigProfilerExtractor.git
+  summary: Extracts mutational signatures from mutational catalogues
+  license: BSD-2-Clause
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - nh13
