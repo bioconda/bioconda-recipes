@@ -3,7 +3,7 @@ set -ex
 
 mkdir -p $PREFIX/bin
 
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-macro-redefined"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
