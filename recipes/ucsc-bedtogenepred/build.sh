@@ -19,7 +19,7 @@ mkdir -p "${BINDIR}"
 
 #sed -i.bak -e 's|-ldl -lm -lc|-ldl -lm -lc -lhts -lcurl|' kent/src/inc/common.mk
 #sed -i.bak -e 's|-lstdc++ -lrt|-lstdc++ -lrt -lhts -lcurl|' kent/src/inc/common.mk
-sed -i.bak -e 's|${LINKLIBS} ${L}|${LINKLIBS} ${L} -lcurl -lhts -ldl -lm -lc -liconv|' kent/src/inc/userApp.mk
+sed -i.bak -e 's|${LINKLIBS} ${L}|${LINKLIBS} ${L} -lcurl -ldl -lm -lc -liconv|' kent/src/inc/userApp.mk
 #sed -i.bak -e 's|${MYSQLLIBS}|${MYSQLLIBS} ${PREFIX}/lib/libhts.a|' kent/src/inc/userApp.mk
 sed -i.bak -e 's|-lpthread|-pthread|' kent/src/inc/common.mk
 
