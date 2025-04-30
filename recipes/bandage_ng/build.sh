@@ -14,7 +14,7 @@ else
   export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 fi
 
-cmake -S .. -B .
+cmake -S . -B build
   -DCMAKE_PREFIX_PATH="${PREFIX}" \
   -DCMAKE_CXX_FLAGS="${CXXFLAGS} -D__STDC_FORMAT_MACROS" \
   -DEGL_INCLUDE_DIR:PATH="${BUILD_PREFIX}/${HOST}/sysroot/usr/include" \
@@ -24,7 +24,7 @@ cmake -S .. -B .
   -DOPENGL_opengl_LIBRARY:FILEPATH="${BUILD_PREFIX}/${HOST}/sysroot/usr/lib64/libGL.so" \
   "${CONFIG_ARGS}" \
   "${CMAKE_ARGS}"
-cmake --build . --target install -j "${CPU_COUNT}"
+cmake --build build --target install -j "${CPU_COUNT}"
 
 # Install
 #install -v -m 0755 BandageNG $PREFIX/bin/Bandage
