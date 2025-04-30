@@ -22,6 +22,7 @@ cmake -S . -B build
   -DOPENGL_egl_LIBRARY:FILEPATH="${BUILD_PREFIX}/${HOST}/sysroot/usr/lib/libEGL.so.1" \
   -DEGL_opengl_LIBRARY:FILEPATH="${BUILD_PREFIX}/${HOST}/sysroot/usr/lib64/libGL.so" \
   -DOPENGL_opengl_LIBRARY:FILEPATH="${BUILD_PREFIX}/${HOST}/sysroot/usr/lib64/libGL.so" \
+  -DQT_HOST_PATH="${PREFIX}/include/qt6" \
   "${CONFIG_ARGS}" \
   "${CMAKE_ARGS}"
 cmake --build build --target install -j "${CPU_COUNT}"
