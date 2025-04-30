@@ -10,12 +10,12 @@ export CFLAGS="-Wall -O3 -Wno-unused-variable -Wno-unused-function -Wno-misleadi
 OS=$(uname -s)
 ARCH=$(uname -m)
 
-ARCH_BUILD=""
-case $(uname -m) in
-	arm64) ARCH_BUILD="armv8=1" ;;
-	aarch64) ARCH_BUILD="aarch64=1" ;;
-esac
+# ARCH_BUILD=""
+# case $(uname -m) in
+# 	arm64) ARCH_BUILD="armv8=1" ;;
+# 	aarch64) ARCH_BUILD="aarch64=1" ;;
+# esac
 
-make "${ARCH_BUILD}" CC="${CC}" \
+make CC="${CC}" \
 	CFLAGS="${CFLAGS}" INCLUDE="-I${PREFIX}/include" \
 	PREFIX="${PREFIX}" -j"${CPU_COUNT}"
