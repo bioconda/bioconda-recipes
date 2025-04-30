@@ -18,7 +18,7 @@ mkdir -p "${PREFIX}/bin"
 mkdir -p "${BINDIR}"
 
 #sed -i.bak -e 's|-ldl -lm -lc|-ldl -lm -lc -lhts -lcurl|' kent/src/inc/common.mk
-sed -i.bak -e 's|-lstdc++ -lrt|-lstdc++ -lrt -lhts|' kent/src/inc/common.mk
+sed -i.bak -e 's|-lstdc++ -lrt|-lstdc++ -lrt -lhts -lcurl|' kent/src/inc/common.mk
 
 rm -rf kent/src/inc/*.bak
 
