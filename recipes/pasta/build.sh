@@ -30,6 +30,6 @@ $PYTHON -m pip install --no-deps --no-build-isolation --no-cache-dir --use-pep51
 cp -f bin/treeshrink $PREFIX/bin/treeshrink
 
 # "rename" raxml binaries, after pasta's setup.py did copy bundled raxml versions into bin/
-rm -fv $PREFIX/bin/raxml $PREFIX/bin/raxmlp
+rm -fv $PREFIX/bin/raxml #$PREFIX/bin/raxmlp
 cp -fv $PREFIX/bin/raxmlHPC $PREFIX/bin/raxml && chmod 0755 $PREFIX/bin/raxml
 #cp -fv $PREFIX/bin/raxmlHPC-PTHREADS $PREFIX/bin/raxmlp && chmod 0755 $PREFIX/bin/raxmlp
