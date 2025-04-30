@@ -14,8 +14,8 @@ sed -i.bak "124d" configure.ac
 sed -i.bak 's|'3.5'|'3.10'|' configure.ac
 rm -rf *.bak
 
-#./autogen.sh
-#export PYTHON_NOVERSION_CHECK="3.10.0"
+./autogen.sh
+export PYTHON_NOVERSION_CHECK="3.9.0"
 ./configure --prefix="${PREFIX}" CC="${CC}" CXX="${CXX}" \
   CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}" \
   PYTHON="${PYTHON}" --enable-silent-rules --disable-dependency-tracking \
