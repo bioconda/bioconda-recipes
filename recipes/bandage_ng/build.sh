@@ -22,6 +22,7 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
   -DEGL_opengl_LIBRARY:FILEPATH="${BUILD_PREFIX}/${HOST}/sysroot/usr/lib64/libGL.so" \
   -DOPENGL_opengl_LIBRARY:FILEPATH="${BUILD_PREFIX}/${HOST}/sysroot/usr/lib64/libGL.so" \
   -DQT_HOST_PATH="${BUILD_PREFIX}" -DQT_HOST_PATH_CMAKE_DIR="${PREFIX}" \
+  -Wno-dev -Wno-deprecated --no-warn-unused-cli \
   "${CONFIG_ARGS}"
 cmake --build build --target install -j "${CPU_COUNT}"
 
