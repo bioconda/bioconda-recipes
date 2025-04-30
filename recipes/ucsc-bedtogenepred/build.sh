@@ -34,7 +34,6 @@ autoreconf -if
 
 make clean
 make -j"${CPU_COUNT}"
-make install
 cd ../../../
 
 (cd kent/src/lib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" COPT="${COPT}" -j"${CPU_COUNT}")
