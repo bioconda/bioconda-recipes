@@ -6,8 +6,6 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
 mkdir -p ${PREFIX}/bin
-rm -rf deps/jellyfish-2.2.0
-mv deps/jellyfish-2.3.1 deps/jellyfish-2.2.0
 
 #importing matplotlib fails, likely due to X
 sed -i.bak "124d" configure.ac
