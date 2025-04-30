@@ -25,10 +25,11 @@ cp -fv data/small.fasta $PREFIX/share/pasta/data/
 # install pasta itself
 sed -i.bak 's/^.*import imp/#&/g' pasta/__init__.py
 sed -i.bak 's/^.*imp.is_frozen.*/#&/g' pasta/__init__.py
-$PYTHON -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+rm -rf pasta/*.bak
+$PYTHON -m pip install --no-deps --no-build-isolation --no-cache-dir --use-pep517 . -vvv
 cp -f bin/treeshrink $PREFIX/bin/treeshrink
 
 # "rename" raxml binaries, after pasta's setup.py did copy bundled raxml versions into bin/
-rm -f -v $PREFIX/bin/raxml $PREFIX/bin/raxmlp
-ln -sf $PREFIX/bin/raxmlHPC $PREFIX/bin/raxml
-ln -sf $PREFIX/bin/raxmlHPC-PTHREADS $PREFIX/bin/raxmlp
+rm -fv $PREFIX/bin/raxml $PREFIX/bin/raxmlp
+cp -fv $PREFIX/bin/raxmlHPC $PREFIX/bin/raxml && chmod 0755 $PREFIX/bin/raxml
+cp -fv $PREFIX/bin/raxmlHPC-PTHREADS $PREFIX/bin/raxmlp && chmod 0755 $PREFIX/bin/raxmlp
