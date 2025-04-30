@@ -24,3 +24,7 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
   -DQT_HOST_PATH="${BUILD_PREFIX}" -DQT_HOST_PATH_CMAKE_DIR="${PREFIX}" \
   "${CONFIG_ARGS}"
 cmake --build build --target install -j "${CPU_COUNT}"
+
+if [[ $(uname) == "Darwin" ]]; then
+  ln -sf $PREFIX/bin/BandageNG.app/Contents/MacOS/BandageNG $PREFIX/bin/BandageNG
+fi
