@@ -2,6 +2,7 @@
 
 set -e -u -x
 
+export M4="${BUILD_PREFIX}/bin/m4"
 export CFLAGS="${CFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
