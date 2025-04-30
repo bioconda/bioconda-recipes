@@ -6,7 +6,6 @@ export MACHTYPE=$(uname -m)
 export BINDIR=$(pwd)/bin
 
 export INCLUDE_PATH="${PREFIX}/include"
-export C_INCLUDE_PATH
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export L="${LDFLAGS}"
@@ -18,7 +17,9 @@ export USE_HIC=0
 mkdir -p "${PREFIX}/bin"
 mkdir -p "${BINDIR}"
 
-sed -i.bak -e 's|-ldl -lm -lc|-ldl -lm -lc -lhts -lcurl|' kent/src/inc/common.mk
+#sed -i.bak -e 's|-ldl -lm -lc|-ldl -lm -lc -lhts -lcurl|' kent/src/inc/common.mk
+sed -i.bak -e 's|-lstdc++ -lrt|-lstdc++ -lrt -lhts|' kent/src/inc/common.mk
+
 rm -rf kent/src/inc/*.bak
 
 (cd kent/src/lib && make CC="${CC}" COPT="${COPT}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" L="${L}" -j"${CPU_COUNT}")
