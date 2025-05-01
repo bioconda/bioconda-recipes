@@ -2,52 +2,62 @@
 {% set version = "4.0" %}
 
 package:
-  name: {{ name }}
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/hsgweon/pipits/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 87193cbb3f8ae5f060bb580627184780a3fc6785672f801b4c104b8ad265fd51
+  url: https://github.com/hsgweon/pipits/archive/v{{ version }}.tar.gz
+  sha256: 46266e772e3c8f2b1e6949c1489fbe5bf1f0e494f149e4e5a0cbef643eb0346a
 
 build:
-  number: 2
+  number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  entry_points:
+    - pipits_createreadpairslist = pipits.bin.pipits_createreadpairslist:main
+    - pipits_prep = pipits.bin.pipits_prep:main
+    - pipits_funits = pipits.bin.pipits_funits:main
+    - pipits_process = pipits.bin.pipits_process:main
   run_exports:
-    - {{ pin_subpackage('pipits', max_pin="x") }}
+    pass
 
 requirements:
   host:
-    - python >=3
-    - setuptools
+    - python >=3.10
     - pip
+    - setuptools
   run:
-    - python >=3
+    - python >=3.10
     - vsearch
-    - fastx_toolkit
-    - hmmer
     - itsx
-    - biom-format
-    - rdptools
-    - numpy
-    - progressbar2
-    - requests
+    - fastx-toolkit
     - seqkit
+    - rdp_classifier
+    - openjdk
+    - biom-format >=2.1.7
 
 test:
+  imports:
+    - pipits
+    - pipits.bin
   commands:
-    - python -m pipits.bin.pipits_funits -h > /dev/null
-    - python -m pipits.bin.pipits_process -h > /dev/null
+    - pipits_createreadpairslist --help
+    - pipits_prep --help
+    - pipits_funits --help
+    - pipits_process --help
+    - pipits_createreadpairslist --version
+    - pipits_prep --version
+    - pipits_funits --version
+    - pipits_process --version
 
 about:
-  home: "https://github.com/hsgweon/pipits"
-  summary: "PIPITS: An automated pipeline for analyses of fungal internal transcribed spacer (ITS) sequences from the Illumina sequencing platform."
-  license: "GPL-3.0-or-later"
-  license_family: GPL3
+  home: https://github.com/hsgweon/pipits
+  summary: PIPITS: An automated pipeline for analyses of fungal internal transcribed spacer (ITS) sequences from the Illumina sequencing platform
+  license: GPL-3.0-or-later
   license_file: LICENSE
-  dev_url: "https://github.com/hsgweon/pipits"
-  doc_url: "https://github.com/hsgweon/pipits/blob/{{ version }}/README.md"
+  dev_url: https://github.com/hsgweon/pipits
+  doc_url: https://github.com/hsgweon/pipits/blob/master/README.md
 
 extra:
-  identifiers:
-    - doi:10.1111/2041-210X.12399
+  recipe-maintainers:
+    - hsgweon
