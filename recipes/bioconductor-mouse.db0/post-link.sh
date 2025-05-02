@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "mouse.db0-3.17.0"
+installBiocDataPackage.sh "mouse.db0-3.20.0"

@@ -1,0 +1,65 @@
+{% set name = "eva-sub-cli" %}
+{% set version = "0.4.6" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/EBIvariation/eva-sub-cli/archive/v{{version}}.tar.gz
+  sha256: 029f9b4bcbf958d2ec660578a53d5f82882d4aabbad287e80b55b5d35e5c63a5
+
+build:
+  number: 0
+  noarch: generic
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - nextflow >=21.10.0
+    - python >=3.8
+    - nodejs >=10.19.1
+    - vcf-validator >=0.10.0
+    - ebi-eva-common-pyutils >=0.6.1
+    - pyyaml
+    - jinja2
+    - openpyxl
+    - requests
+    - jsonschema
+    - unzip
+    - setuptools-scm
+    - packaging
+  run:
+    - nextflow >=21.10.0
+    - python >=3.8
+    - nodejs >=10.19.1
+    - vcf-validator >=0.10.0
+    - ebi-eva-common-pyutils >=0.6.1
+    - pyyaml
+    - jinja2
+    - openpyxl
+    - requests
+    - jsonschema
+    - packaging
+
+test:
+  imports:
+    - eva_sub_cli
+  commands:
+    - biovalidator --help
+    - eva-sub-cli.py --help
+
+about:
+  home: https://github.com/EBIvariation/eva-sub-cli
+  summary: EVA Submission Command Line Interface
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - apriltuesday
+    - tcezard
+    - ebi-variation

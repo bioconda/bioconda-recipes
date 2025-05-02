@@ -1,4 +1,3 @@
-#!/bin/bash
 set -e
 
 export R_LIBS_USER=$PREFIX/lib/R/library

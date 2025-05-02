@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "droplettestfiles-1.10.0"
+installBiocDataPackage.sh "droplettestfiles-1.16.0"

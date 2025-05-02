@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "gdnainrnaseqdata-1.0.0"
+installBiocDataPackage.sh "gdnainrnaseqdata-1.6.0"

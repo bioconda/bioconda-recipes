@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "geuvadistranscriptexpr-1.28.0"
+installBiocDataPackage.sh "geuvadistranscriptexpr-1.34.0"

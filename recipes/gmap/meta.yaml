@@ -1,6 +1,6 @@
 {% set name = "GMAP" %}
-{% set version = "2023.10.10" %}
-{% set sha256 = "f76cc3d0024c6c963ea1c13e46236b62a548d965ad8e295a181f138b82aca36e" %}
+{% set version = "2025.04.18" %}
+{% set sha256 = "5f92cbbec97dfa5b0180ed527278b99e36585e807507488c6cbff086d60325a4" %}
 
 package:
   name: {{ name|lower }}
@@ -11,6 +11,7 @@ source:
   sha256: {{ sha256 }}
   patches:
     - single_quote_paths.patch
+    - 0002-genome_sites.patch  # [osx]
 
 build:
   number: 0
@@ -22,8 +23,10 @@ requirements:
     - make
     - {{ compiler('c') }}
     - autoconf
-    - perl
+    - automake
+    - libtool
   host:
+    - perl
     - zlib
     - bzip2
   run:
@@ -36,13 +39,19 @@ test:
     - "gsnap --help"
 
 about:
-  home: "http://research-pub.gene.com/gmap/"
+  home: "http://research-pub.gene.com/gmap"
   license: "Apache-2.0"
   license_family: APACHE
   license_file: LICENSE
   summary: "Genomic mapping and alignment program for mRNA and EST sequences."
+  dev_url: "http://research-pub.gene.com/gmap"
+  doc_url: "http://research-pub.gene.com/gmap"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    # bitpack64-access.c:2231:9: error: unrecognized instruction mnemonic, did you mean: abs, asr, b, blr, br, brk, bsl, lsr, msr, sri, str?
+    #- osx-arm64
   identifiers:
     - biotools:gmap
     - biotools:gsnap

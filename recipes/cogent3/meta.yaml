@@ -1,5 +1,5 @@
 {% set name = "cogent3" %}
-{% set version = "2023.9.22a1" %}
+{% set version = "2025.3.22a4" %}
 
 package:
   name: {{ name|lower }}
@@ -7,40 +7,49 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: b842df9ca55f9bb8bcc4d66787ddf25afd796f88d22663c3d14c0954c115ffcb
+  sha256: d7a13284414ba4cba9172b55f2b4930773d8df285929fd2b8d5bd82d0bb9df3a
 
 build:
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   number: 0
   run_exports:
   - {{ pin_subpackage(name, max_pin=None) }}
 
 requirements:
   host:
-    - python >=3.8, <3.12
+    - python >=3.10,<3.14
     - pip
-    - flit-core >=3.2, <4
+    - flit-core >=3.2,<4
   run:
-    - python >=3.8, <3.12
+    - python >=3.10,<3.14
     - scipy
     - chardet
+    - clangdev
+    - llvmlite
+    - loky !=3.5.0
     - numpy
-    - numba >0.48.0
+    - numba >=0.55.0
+    - numba >=0.59.0  # [ py == 312 ]
+    - numba >=0.61.0  # [ py == 313 ]
     - scitrack
     - tqdm
     - tinydb
     - typing_extensions
+    - stevedore
 
 test:
   imports:
     - cogent3
 
 about:
-  home: https://pypi.org/project/cogent3/
+  home: "https://github.com/cogent3/cogent3"
   summary: 'COmparative GENomics Toolkit 3: genomic sequence analysis within notebooks or on compute systems with 1000s of CPUs.'
-  license: BSD-3-Clause
+  license: "BSD-3-Clause"
+  license_family: BSD
   license_file: LICENSE
+  dev_url: "https://github.com/cogent3/cogent3"
+  doc_url: "https://github.com/cogent3/cogent3/blob/{{ version }}/README.md"
 
 extra:
   recipe-maintainers:

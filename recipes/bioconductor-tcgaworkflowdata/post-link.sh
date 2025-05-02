@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "tcgaworkflowdata-1.24.0"
+installBiocDataPackage.sh "tcgaworkflowdata-1.30.0"

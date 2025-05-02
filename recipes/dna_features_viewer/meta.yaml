@@ -1,5 +1,5 @@
 {% set name = "dna_features_viewer" %}
-{% set version = "3.1.2" %}
+{% set version = "3.1.4" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,12 +7,17 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: b8b2b7657e2a9f165edd6f68fb679abfa0c2fdeb887cbd04c22b514997f52d12
+  sha256: e844c2e23c775d16d7599d1e26dd2a830cad2c9d3b7d16e3b6b76db4e0164c29
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script:
+    - sed -i.bak -e 's|"MIT"|{file = "LICENCE.txt"}|' pyproject.toml
+    - rm -rf *.bak
+    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('dna_features_viewer', max_pin="x") }}
 
 requirements:
   host:
@@ -36,7 +41,7 @@ about:
   home: "https://github.com/Edinburgh-Genome-Foundry/DnaFeaturesViewer"
   license: MIT
   license_family: MIT
-  license_file: LICENSE
-  summary: "Plot features from DNA sequences (e.g. Genbank) with Python"
-  doc_url: https://edinburgh-genome-foundry.github.io/DnaFeaturesViewer/
-  dev_url: https://github.com/Edinburgh-Genome-Foundry/DnaFeaturesViewer
+  license_file: "LICENCE.txt"
+  summary: "Plot features from DNA sequences (e.g. Genbank) with Python."
+  doc_url: "https://edinburgh-genome-foundry.github.io/DnaFeaturesViewer"
+  dev_url: "https://github.com/Edinburgh-Genome-Foundry/DnaFeaturesViewer"

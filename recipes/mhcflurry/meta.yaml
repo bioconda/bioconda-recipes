@@ -1,5 +1,5 @@
 {% set name = "mhcflurry" %}
-{% set version = "2.0.6" %}
+{% set version = "2.1.5" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 06f68b39a4d8cfd181bccbc8d1ef1b961658e5fb1068a5fc174f1dadd8ddc741
+  sha256: 7536096d59dd72d9f6a7014f01c3461df52adc6b925c20568cc17a774b2229ae
 
 build:
   number: 0
@@ -25,23 +25,25 @@ build:
     - mhcflurry-calibrate-percentile-ranks = mhcflurry.calibrate_percentile_ranks_command:run
     - mhcflurry-class1-train-presentation-models = mhcflurry.train_presentation_models_command:run
     - mhcflurry-cluster-worker-entry-point = mhcflurry.cluster_parallelism:worker_entry_point
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('mhcflurry', max_pin="x") }}
 
 requirements:
   host:
     - python
     - pip
   run:
-    - appdirs
-    - mhcgnomes >=0.8.4
-    - np_utils
-    - pandas >=0.20.3
-    - python
-    - pyyaml
-    - scikit-learn
     - six
-    - tensorflow >=2.2.0
+    - pandas >=0.20.3
+    - appdirs
+    - scikit-learn
+    - mhcgnomes >=0.8.4
+    - pyyaml
     - tqdm
+    - tensorflow >=2.12.0
+    - np_utils
+    - tf-keras    
 
 test:
   imports:
@@ -62,8 +64,9 @@ test:
 
 about:
   home: "https://github.com/openvax/mhcflurry"
-  license: Apache Software
+  license: Apache-2.0
   license_family: APACHE
+  license_file: LICENSE
   summary: "MHC Binding Predictor"
 
 extra:

@@ -1,6 +1,6 @@
 {% set name = "proteinortho" %}
-{% set version = "6.3.0" %}
-{% set sha256 = "9b0142d29d22a35732b17be2ce125ccbc7d711edc4bb8caf1ffc808eb16975f1" %}
+{% set version = "6.3.5" %}
+{% set sha256 = "1b477657c44eeba304d3ec6d5179733d4c2b3857ad92dcbfe151564790328ce0" %}
 
 package:
   name: {{ name }}
@@ -11,25 +11,29 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('proteinortho', max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-    - {{ compiler('fortran') }}  
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]  
+    - {{ compiler('fortran') }}
     - cmake
   host:
-    - liblapack
-    - blis
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - liblapacke
+    - libblas
   run:
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
     - perl
     - python
     - diamond >=0.9.29
-    - liblapack
-    - blis
+    - liblapacke
+    - libblas
  
 test:
   commands:
@@ -39,8 +43,21 @@ test:
     - proteinortho_grab_proteins.pl -help
 
 about:
-  home: https://gitlab.com/paulklemm_PHD/proteinortho/
+  home: "https://gitlab.com/paulklemm_PHD/proteinortho"
   license: GPL-3.0-only
   license_family: GPL
   license_file: LICENSE
   summary: "Proteinortho is a tool to detect orthologous genes within different species."
+  dev_url: "https://gitlab.com/paulklemm_PHD/proteinortho"
+  doc_url: "https://gitlab.com/paulklemm_PHD/proteinortho/-/blob/master/README.md"
+
+extra:
+  identifiers:
+    - biotools:proteinortho
+    - doi:10.3389/fbinf.2023.1322477
+    - usegalaxy-eu:proteinortho
+    - usegalaxy-eu:proteinortho_summary
+    - usegalaxy-eu:proteinortho_grab_proteins
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64

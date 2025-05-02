@@ -1,33 +1,59 @@
+{% set version = "1.9.2" %}
+{% set sha256 = "06c20f022765d2c1daab13a916ec2ea2277c5ef43afcf3e54c6a7ade7aed0944" %}
+
 package:
   name: pasta
-  version: "1.7.8"
+  version: {{ version }}
 
 source:
-  url: https://github.com/smirarab/pasta/archive/43076b8.tar.gz
-  sha256: 5eecec1710790df642696d1a52ecf723e5f02dd94e971427117344342a7c2a42
+  url: https://github.com/smirarab/pasta/archive/v{{version}}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - fix_tooldir.patch  # ensure PASTA "knows" where to find third party tools
+    - mpstart.patch  # issue in OSX py38 (not in Linux nor OSX py37): RuntimeError: An attempt has been made to start a new process before the current process has finished its bootstrapping phase.
 
 build:
-  number: 4
+  number: 5
+  run_exports:
+    - {{ pin_subpackage('pasta', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-
   host:
     - python
-    - setuptools
-    - dendropy >=4.1.0
+    - pip
+    - dendropy
     - wget
     - openjdk
     - pcre
-    - pymongo >=3.3.0
-
+    - pymongo
+    - clustalw
+    - fasttree
+    - raxml
+    - muscle <4  # later versions expects other cmd argument names
+    - mafft
+    - hmmer
+    - prank
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - openmpi
   run:
     - python
-    - dendropy >=4.1.0
+    - dendropy
     - openjdk
     - pcre
-    - pymongo >=3.3.0
+    - pymongo
+    - clustalw
+    - fasttree
+    - raxml
+    - muscle <4  # later versions expects other cmd argument names
+    - mafft
+    - hmmer
+    - prank
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - openmpi
 
 test:
   imports:
@@ -37,12 +63,25 @@ test:
     - clustalw2 -help | grep OPTIONS
     - hmmalign -h | grep HMMER
     - hmmbuild -h | grep HMMER
-    - muscle -version | grep MUSCLE
+    - muscle -version | grep -i MUSCLE
     - prank -help | grep prank
-    - raxml -h | grep raxmlHPC
-    - raxmlp -h | grep raxmlHPC
+    - raxml -h | grep -i raxml
+    - export PASTA_LOGGING_LEVEL=DEBUG; export PASTA_LOGGING_FORMAT=RICH; run_pasta.py -i $PREFIX/share/pasta/data/small.fasta
+    # we need support from upstream to fix this special execution for OSX specific - export PASTA_LOGGING_LEVEL=DEBUG; export PASTA_LOGGING_FORMAT=RICH; run_pasta.py -i $PREFIX/share/pasta/data/small.fasta --tree-estimator raxml
 
 about:
-  home: https://github.com/smirarab/pasta
-  license: GNU General Public License v3 or later (GPLv3+)
-  summary: 'An implementation of the PASTA (Practical Alignment using Sate and TrAnsitivity) algorithm'
+  home: "https://github.com/smirarab/pasta"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: 'An implementation of the PASTA (Practical Alignment using Sate and TrAnsitivity) algorithm.'
+  dev_url: "https://github.com/smirarab/pasta"
+  doc_url: "https://github.com/smirarab/pasta/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1007/978-3-319-05269-4_15
+    - doi:10.1089/cmb.2014.0156

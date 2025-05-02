@@ -1,6 +1,6 @@
 {% set name = "antiSMASH" %}
-{% set version = "6.1.1" %}
-{% set sha256 = "38c9fa8d34dea2552d3b21e3cb2ca293864f2f53d381764de9dd3d5f0b40139e" %}
+{% set version = "8.0.0" %}
+{% set sha256 = "4dca221db6f5952f60f6d5a05b527593dfa694df4805f0a44cd65d0d71904c8d" %}
 
 package:
   name: {{ name|lower }}
@@ -9,38 +9,45 @@ package:
 build:
   number: 0
   noarch: python
+  entry_points:
+    - download-antismash-databases = antismash.download_databases:_main
+    - antismash = antismash.__main__:entrypoint
+  run_exports:
+    - {{ pin_subpackage('antismash', max_pin="x") }}
 
 source:
-  url: https://dl.secondarymetabolites.org/releases/{{ version }}/antismash-{{ version }}.tar.gz
+  url: https://github.com/antismash/antismash/archive/{{ version | replace(".", "-") }}.tar.gz
   sha256: {{ sha256 }}
 
 requirements:
   host:
-    - python >=3.7 
+    - python >=3.11
     - pip
+    - pytest
+    - setuptools
   run:
-    - python >=3.7
+    - python >=3.11
+    - brawn >=1.0.2
     - numpy
-    - biopython 1.78
-    - helperlibs >=0.2.0
+    - biopython >=1.78,<1.81
+    - helperlibs >=0.2.1
     - jinja2
     - joblib
     - jsonschema
-    - markupsafe >=2.0
-    - pysvg-py3
+    - markupsafe >=3.0.2
+    - nrpys >=0.1.1
     - bcbio-gff
-    - pyscss
+    - libsass
     - matplotlib-base
+    - orjson >=3.10.16
     - scipy
-    - openjdk
-    - scikit-learn >=0.19
-    - diamond 0.9.*
+    - scikit-learn >=1.6.1
+    - moods >=1.9.4.2
+    - diamond
     - fasttree 2.1.*
-    - glimmerhmm ==3.0.*
     - hmmer2
-    - hmmer ==3.1b2
-    - meme <=4.11.2
-    - muscle 3.8.*
+    - hmmer >=3.1b2
+    - meme 5.5.*
     - blast
     - prodigal
 
@@ -52,16 +59,16 @@ test:
     - diamond --help 2>&1 > /dev/null
 
 about:
-  home: https://docs.antismash.secondarymetabolites.org/intro/
-  license: AGPL-3.0
+  home: "https://docs.antismash.secondarymetabolites.org/intro"
+  license: "AGPL-3.0-or-later"
   license_family: AGPL
-  license_file: LICENSE.txt
-  summary: antiSMASH - the antibiotics and Secondary Metabolite Analysis SHell
+  license_file: "LICENSE.txt"
+  summary: "antiSMASH - the antibiotics and Secondary Metabolite Analysis SHell."
   description: |
         antiSMASH allows the rapid genome-wide identification,
         annotation and analysis of secondary metabolite biosynthesis gene clusters.
-  dev_url: https://github.com/antismash/antismash
-  doc_url: https://docs.antismash.secondarymetabolites.org
+  dev_url: "https://github.com/antismash/antismash"
+  doc_url: "https://docs.antismash.secondarymetabolites.org"
 
 extra:
   identifiers:
@@ -72,4 +79,5 @@ extra:
     - doi:10.1093/nar/gkx319
     - doi:10.1093/nar/gkz310
     - doi:10.1093/nar/gkab335
+    - doi:10.1093/nar/gkad344
     - usegalaxy-eu:antismash

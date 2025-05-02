@@ -1,0 +1,51 @@
+{% set name = "beacon2-import" %}
+{% set version = "2.2.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/beacon2_import-{{ version }}.tar.gz
+  sha256: 238fe76cc0a82ff1c3881ea4a376f664885761e0e211477064147209442f7201
+
+build:
+  entry_points:
+    - beacon2-import = beacon2_import.beacon2_import:beacon2_import
+    - beacon2-search = beacon2_search.beacon2_search:beacon_query
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('beacon2-import', max_pin="x") }}
+
+requirements:
+  host:
+    - python <3.12
+    - pip
+  run:
+    - python <3.12
+    - jsonschema
+    - dataclasses
+    - bioblend =0.10.0
+    - cyvcf2
+    - pymongo
+
+test:
+  imports:
+    - beacon2_import
+    - beacon2_search
+  commands:
+    - beacon2-import --help
+    - beacon2-search --help
+
+about:
+  home: https://pypi.org/project/beacon2-import/
+  summary: Seamlessly import and query genomic variant data from a beacon
+  description: "Effortlessly import genetic variants from targeted Galaxy histories or local repositories into your beacon instance with our utility. Simplify querying and analysis of genetic data, enabling comprehensive genetic inquiries with ease"
+  license: CC-BY-NC-4.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - khaled196

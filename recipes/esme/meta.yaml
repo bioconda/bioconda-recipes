@@ -1,0 +1,320 @@
+{% set esme_version = "1.0.1" %}
+{% set pnetcdf_version = "1.14.0" %}
+{% set hdf5_version = "1.14.5" %}
+{% set netcdf_c_version = "4.9.2" %}
+{% set netcdf_fortran_version = "4.6.1" %}
+{% set pio_version = "2.6.5" %}
+{% set pio_pkg_version = pio_version.replace('.', '_') %}
+{% set esmf_version = "8.8.0" %}
+{% set omb_version = "7.5" %}
+{% set build = 0 %}
+
+{% set mpi_name, mpi_version = mpi.split('=') if '=' in mpi else (mpi, '') %}
+{% set mpi_version_name = mpi_version | replace('.', '_') %}
+
+package:
+  name: esme_psmpi_{{ mpi_version_name }}
+  version: {{ esme_version }}
+
+build:
+  number: {{ build }}
+  string: {{ mpi_name }}_h{{ PKG_HASH }}_{{ build }}
+  skip: true  # [win or osx]
+  ignore_run_exports:
+    - libacl
+    - libstdcxx
+    - zlib
+  run_exports:
+    - {{ pin_compatible('esme_mvapich', max_pin='x.x.x') }}
+
+source:
+  - url: https://parallel-netcdf.github.io/Release/pnetcdf-{{ pnetcdf_version }}.tar.gz
+    sha256: 575f189fb01c53f93b3d6ae0e506f46e19694807c81af0b9548e947995acf704  # 1.14.0
+    folder: esme_pnetcdf
+  - url: https://github.com/HDFGroup/hdf5/releases/download/hdf5_{{ hdf5_version }}/hdf5-{{ hdf5_version }}.tar.gz
+    sha256: ec2e13c52e60f9a01491bb3158cb3778c985697131fc6a342262d32a26e58e44  # 1.14.5
+    folder: esme_hdf5
+  - url: https://github.com/Unidata/netcdf-c/archive/refs/tags/v{{ netcdf_c_version }}.tar.gz
+    sha256: bc104d101278c68b303359b3dc4192f81592ae8640f1aee486921138f7f88cb7  # 4.9.2
+    folder: esme_netcdf-c
+  - url: https://github.com/Unidata/netcdf-fortran/archive/refs/tags/v{{ netcdf_fortran_version }}.tar.gz
+    sha256: 40b534e0c81b853081c67ccde095367bd8a5eead2ee883431331674e7aa9509f  # 4.6.1
+    folder: esme_netcdf-fortran
+  - url: https://github.com/NCAR/ParallelIO/archive/refs/tags/pio{{ pio_pkg_version }}.tar.gz
+    sha256: 6ae51aa3f76e597a3a840a292ae14eca21359b1a4ea75e476a93aa2088c0677a  # 2.6.5
+    folder: esme_pio
+  - url: https://github.com/esmf-org/esmf/archive/refs/tags/v{{ esmf_version }}.tar.gz
+    sha256: f89327428aeef6ad34660b5b78f30d1c55ec67efb8f7df1991fdaa6b1eb3a27c  # 8.8.0
+    folder: esme_esmf
+  - url: https://mvapich.cse.ohio-state.edu/download/mvapich/osu-micro-benchmarks-{{ omb_version }}.tar.gz
+    sha256: 1cf84ac5419456202757a757c5f9a4f5c6ecd05c65783c7976421cfd6020b3b3  # 7.5
+    folder: esme_omb
+
+requirements:
+  run:
+    - cmake
+    - esme_esmf_{{ mpi_name }}_{{ mpi_version_name }}
+    - make
+    - esme_omb_{{ mpi_name }}_{{ mpi_version_name }}
+    - perl-xml-libxml
+    - python=3.8
+test:
+  commands:
+    - echo "Skipping ESME tests, since individual packages were already tested"
+
+outputs:
+
+  - name: esme_pnetcdf_{{ mpi_name }}_{{ mpi_version_name }}
+    version: {{ pnetcdf_version }}
+    script: build_pnetcdf.sh
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - {{ compiler('fortran') }}
+        - make
+        - m4
+      host:
+        - {{ mpi_name }} {% if mpi_version %}={{ mpi_version }}{% endif %}
+    test:
+      commands:
+        - export PATH=$PATH:${PREFIX}/bin
+        - pnetcdf-config --all
+    build:
+      string: h{{ PKG_HASH }}_{{ build }}
+    about:
+      home: https://parallel-netcdf.github.io/
+      license: PnetCDF License
+      license_family: OTHER
+      license_file: LICENSE_PNETCDF
+      summary: PnetCDF - Parallel netCDF
+      description: |
+        PnetCDF is a high-performance parallel I/O library for accessing files in netCDF formats.
+
+  - name: esme_hdf5_{{ mpi_name }}_{{ mpi_version_name }}
+    version: {{ hdf5_version }}
+    script: build_hdf5.sh
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - {{ compiler('fortran') }}
+        - make
+      host:
+        - libaec
+        - libacl
+        - {{ mpi_name }} {% if mpi_version %}={{ mpi_version }}{% endif %}
+        - zlib
+      run:
+        - libaec
+        - zlib
+    test:
+      commands:
+        - export PATH=$PATH:${PREFIX}/bin
+        - h5pfc -showconfig
+    build:
+      string: h{{ PKG_HASH }}_{{ build }}
+    about:
+      home: https://www.hdfgroup.org/
+      license: BSD-3-Clause
+      license_family: BSD
+      license_file: LICENSE_HDF5
+      summary: HDF5 - Hierarchical Data Format 5
+      description: |
+        HDF5 (Hierarchical Data Format 5) is a file format and set of tools designed for managing, storing, and organizing large and complex data.
+
+  - name: esme_netcdf-c_{{ mpi_name }}_{{ mpi_version_name }}
+    version: {{ netcdf_c_version }}
+    script: build_netcdf-c.sh
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - make
+        - m4
+      host:
+        - esme_hdf5_{{ mpi_name }}_{{ mpi_version_name }}
+        - libcurl
+        - libxml2
+        - {{ mpi_name }} {% if mpi_version %}={{ mpi_version }}{% endif %}
+        - esme_pnetcdf_{{ mpi_name }}_{{ mpi_version_name }}
+        - zlib
+    test:
+      commands:
+        - export PATH=$PATH:${PREFIX}/bin
+        - nc-config --all
+    build:
+      string: h{{ PKG_HASH }}_{{ build }}
+    about:
+      home: http://www.unidata.ucar.edu/software/netcdf/
+      license: MIT
+      license_family: MIT
+      license_file: COPYRIGHT_NETCDF-C
+      summary: NetCDF-C - netCDF interface for C
+      description: |
+        NetCDF-C is the C implementation of the Unidata's network Common Data Form (netCDF), providing an interface for storing, accessing, and sharing array-oriented scientific data in a platform-independent format.
+
+  - name: esme_netcdf-fortran_{{ mpi_name }}_{{ mpi_version_name }}
+    version: {{ netcdf_fortran_version }}
+    script: build_netcdf-fortran.sh
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - {{ compiler('fortran') }}
+        - make
+        - m4
+      host:
+        - esme_hdf5_{{ mpi_name }}_{{ mpi_version_name }}
+        - {{ mpi_name }} {% if mpi_version %}={{ mpi_version }}{% endif %}
+        - esme_netcdf-c_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_pnetcdf_{{ mpi_name }}_{{ mpi_version_name }}
+    test:
+      commands:
+        - export PATH=$PATH:${PREFIX}/bin
+        - nf-config --all
+    build:
+      string: h{{ PKG_HASH }}_{{ build }}
+    about:
+      home: http://www.unidata.ucar.edu/software/netcdf/
+      license: MIT
+      license_family: MIT
+      license_file: COPYRIGHT_NETCDF-FORTRAN
+      summary: NetCDF-Fortran - netCDF interface for Fortran
+      description: |
+        NetCDF-Fortran provides Fortran language bindings for the NetCDF library, allowing Fortran programs to read and write scientific data in netCDF format.
+
+  - name: esme_pio_{{ mpi_name }}_{{ mpi_version_name }}
+    version: {{ pio_version }}
+    script: build_pio.sh
+    requirements:
+      build:
+        - autoconf
+        - automake
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - {{ compiler('fortran') }}
+        - libtool
+        - make
+        - m4
+        - pkg-config
+      host:
+        - esme_hdf5_{{ mpi_name }}_{{ mpi_version_name }}
+        - {{ mpi_name }} {% if mpi_version %}={{ mpi_version }}{% endif %}
+        - esme_netcdf-c_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_netcdf-fortran_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_pnetcdf_{{ mpi_name }}_{{ mpi_version_name }}
+    test:
+      commands:
+        - test -f ${PREFIX}/include/pio.h
+    build:
+      string: h{{ PKG_HASH }}_{{ build }}
+    about:
+      home: https://github.com/NCAR/ParallelIO
+      license: Apache-2.0
+      license_family: Apache
+      license_file: LICENSE_PIO
+      summary: ParallelIO - High-level parallel I/O library
+      description: |
+        A high-level Parallel I/O Library for structured grid applications.
+
+  - name: esme_esmf_{{ mpi_name }}_{{ mpi_version_name }}
+    version: {{ esmf_version }}
+    script: build_esmf.sh
+    requirements:
+      build:
+        - cmake
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - {{ compiler('fortran') }}
+        - make
+      host:
+        - esme_hdf5_{{ mpi_name }}_{{ mpi_version_name }}
+        - {{ mpi_name }} {% if mpi_version %}={{ mpi_version }}{% endif %}
+        - esme_netcdf-c_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_netcdf-fortran_{{ mpi_name }}_{{ mpi_version_name }}
+        - openblas
+        - esme_pio_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_pnetcdf_{{ mpi_name }}_{{ mpi_version_name }}
+      run:
+        - esme_hdf5_{{ mpi_name }}_{{ mpi_version_name }}
+        - {{ mpi_name }} {% if mpi_version %}={{ mpi_version }}{% endif %}
+        - esme_netcdf-c_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_netcdf-fortran_{{ mpi_name }}_{{ mpi_version_name }}
+        - openblas
+        - esme_pio_{{ mpi_name }}_{{ mpi_version_name }}
+        - esme_pnetcdf_{{ mpi_name }}_{{ mpi_version_name }}
+    test:
+      commands:
+        - if test -f ${ESMFMKFILE}; then echo "ESMF makefile found"; else echo "ESMF makefile not found"; exit 1; fi
+    build:
+      string: h{{ PKG_HASH }}_{{ build }}
+    about:
+      home: http://earthsystemmodeling.org/
+      license: ESMF License
+      license_family: OTHER
+      license_file: LICENSE_ESMF
+      summary: ESMF - Earth System Modeling Framework
+      description: |
+        The Earth System Modeling Framework (ESMF) is a suite of software tools for developing high-performance, multi-component Earth science modeling applications.
+
+  - name: esme_omb_{{ mpi_name }}_{{ mpi_version_name }}
+    version: {{ omb_version }}
+    script: build_omb.sh
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - make
+      host:
+        - {{ mpi_name }} {% if mpi_version %}={{ mpi_version }}{% endif %}
+      run:
+        - {{ mpi_name }} {% if mpi_version %}={{ mpi_version }}{% endif %}
+        - openssh  # [mpi_name == 'openmpi']
+    test:
+      commands:
+        {% if mpi_name == "psmpi" %}
+          - echo "PSMPI does not have mpiexec, skipping test."
+        {% elif mpi_name == "openmpi" %}
+          - echo "Setting plm_rsh_agent and allowing root execution for OpenMPI"
+          - export OMPI_MCA_plm_rsh_agent=$(command -v ssh)
+          - echo "Allow root execution for OpenMPI"
+          - mpiexec --allow-run-as-root -n 2 $PREFIX/libexec/osu-micro-benchmarks/mpi/pt2pt/osu_latency -m 1024:1024
+        {% else %}
+          - mpiexec -n 2 $PREFIX/libexec/osu-micro-benchmarks/mpi/pt2pt/osu_latency -m 1024:1024
+        {% endif %}
+    build:
+      string: h{{ PKG_HASH }}_{{ build }}
+#     skip: true  # [mpi_name == "mvapich"]
+    about:
+      home: https://mvapich.cse.ohio-state.edu/
+      license: BSD-3-Clause
+      license_family: BSD
+      license_file: LICENSE_OMB
+      summary: OSU Micro Benchmarks
+      description: |
+        The OSU Micro Benchmarks (OMB) is a suite of performance measurement tools developed by The Ohio State University.
+
+about:
+  home: https://github.com/j34ni/bioconda-recipes
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE_ESME
+  summary: Earth System Modelling Environment (ESME) - A bundle for scientific computing packages for climate modelling with MPI support.
+  description: |
+    ESME (Earth System Modelling Environment) is a package designed to facilitate the installation and management of various scientific computing libraries with support for multiple MPI implementations (namely MPIch, OpenMPI, MVAPIch and ParaStationMPI). This bundle currently includes:
+    - PnetCDF: Version {{ pnetcdf_version }}
+    - HDF5: Version {{ hdf5_version }}
+    - netCDF_C: Version {{ netcdf_c_version }}
+    - netCDF_Fortran: Version {{ netcdf_fortran_version }}
+    - ParallelIO: Version {{ pio_version }} 
+    - ESMF: Version {{ esmf_version }}
+    - OSU_Micro_Benchmarks: Version {{ omb_version }}
+
+extra:
+  recipe-maintainers:
+    - j34ni
+  skip-lints:
+    - version_constraints_missing_whitespace
+    - compilers_must_be_in_build
+    - folder_and_package_name_must_match

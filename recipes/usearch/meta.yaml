@@ -1,0 +1,43 @@
+{% set name = "usearch" %}
+{% set version = "12.0-beta" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: {{ version |replace("-", "_") }}
+
+source:
+  - url: https://github.com/rcedgar/{{ name }}12/releases/download/v{{ version }}1/usearch_linux_x86_{{ version }} # [linux and x86_64]
+    sha256: 4193abead8c7e1609dd28148bb36ad9667c67647c6f784f2bdd72af9de27f3dc # [linux and x86_64]
+  - url: https://github.com/rcedgar/{{ name }}12/releases/download/v{{ version }}1/usearch_linux_arch64_{{ version }} # [linux and aarch64]
+    sha256: 435ac47a1eb1e555b3c7cdfda706f0d01e8b1fe517fb18bf6732a91a6ce9b6ba # [linux and aarch64]
+  - url: https://github.com/rcedgar/{{ name }}12/releases/download/v{{ version }}1/usearch_osx_x86_{{ version }} # [osx]
+    sha256: 49e50a72707ae81be960e1b3dbba5b4cf82e7d73511a23a35497a60b926cb100 # [osx]
+
+build:
+  number: 1
+  script:
+    - mkdir -p ${PREFIX}/bin
+    - cp usearch_* ${PREFIX}/bin/usearch
+    - chmod +x ${PREFIX}/bin/usearch
+  run_exports:
+    - {{ pin_subpackage('usearch', max_pin="x") }}
+
+test:
+  commands:
+    - usearch -closed_ref 2>&1 | grep -o 'missing value'
+
+about:
+  home: "https://github.com/rcedgar/usearch12"
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  summary: USEARCH is a unique sequence analysis tool which offers search and clustering algorithms that are often orders of magnitude faster than BLAST.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  skip-lints:
+    - should_be_noarch_generic
+    - gpl_requires_license_distributed
+    - long_summary
+  recipe-maintainers:
+    - thanhleviet

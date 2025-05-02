@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "affycompdata-1.38.0"
+installBiocDataPackage.sh "affycompdata-1.44.0"

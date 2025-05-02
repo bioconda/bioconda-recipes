@@ -1,5 +1,5 @@
-{% set version = "23.0.5" %}
-{% set sha256 = "8133b8ce27cf7e89c966f5c06e52911b8fa714c5f125edbd9642fc4c209c4bcd" %}
+{% set version = "24.2.3" %}
+{% set sha256 = "b1550a4648e251e55da0bd27410f8a1680e4b846f11e56c3a34a5712beed869f" %}
 {% set galaxy_version = version.split(".")[:2]|join(".") %}
 
 package:
@@ -7,18 +7,21 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/g/galaxy-files/galaxy-files-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/g/galaxy-files/galaxy_files-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    -{{ pin_subpackage('galaxy-files', max_pin="x") }}
 
 requirements:
   host:
     - pip
     - python >=3.7
+    - setuptools
   run:
     - galaxy-util >={{ galaxy_version }}
     - fs

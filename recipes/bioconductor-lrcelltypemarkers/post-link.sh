@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "lrcelltypemarkers-1.8.0"
+installBiocDataPackage.sh "lrcelltypemarkers-1.14.0"

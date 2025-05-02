@@ -1,4 +1,11 @@
 #!/bin/sh
+
+set -xe
+
+# Download newer config.{sub,guess} files
+wget "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD" -O config.guess
+wget "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD" -O config.sub
+
 mkdir -p ${PREFIX}/bin
 
 export CFLAGS="-I$PREFIX/include"

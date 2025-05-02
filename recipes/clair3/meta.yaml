@@ -1,5 +1,5 @@
 {% set name = "clair3" %}
-{% set version = "1.0.4" %}
+{% set version = "1.1.0" %}
 
 package:
   name: {{ name }}
@@ -7,11 +7,13 @@ package:
 
 source:
   url: http://www.bio8.cs.hku.hk/clair3/bioconda/Clair3_v{{ version }}.zip
-  sha256: aa7b7d7db44488c58122f12fec73ea0ca1feea0c6bd10199ca18a00b9308330d
+  sha256: ec05bd70fe9d29d8d4defe0d6d0af2fbd9cdfbe9c532f3d0090f8ad947a7d1f5
 
 build:
-  number: 2
+  number: 0
   skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -36,7 +38,7 @@ requirements:
     - samtools 1.15.1
     - whatshap 1.7
     - pigz
-    - parallel 20191122
+    - parallel
     - zstd
     - openssl 1.1.1
     - cffi 1.14.4
@@ -47,6 +49,9 @@ test:
     - longphase --version
     - which clair3.py
     - run_clair3.sh -v
+extra:
+  container:
+    extended-base: true
 
 about:
   home: 'https://github.com/HKU-BAL/Clair3'

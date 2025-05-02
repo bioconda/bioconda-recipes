@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "optimalflowdata-1.12.0"
+installBiocDataPackage.sh "optimalflowdata-1.18.0"

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "predasampledata-0.40.0"
+installBiocDataPackage.sh "predasampledata-0.46.0"

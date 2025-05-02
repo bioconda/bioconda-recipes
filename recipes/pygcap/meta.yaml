@@ -1,0 +1,49 @@
+{% set name = "pygcap" %}
+{% set version = "1.2.6" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pygcap-{{ version }}.tar.gz
+  sha256: 172aa62ec82bab05713f573e7920e65bd38ace3341f4ea4b6f8f000733c3d170
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  entry_points:
+    - pygcap=pygcap.cli:main
+  run_exports:
+    - {{ pin_subpackage('pygcap', max_pin="x") }}
+
+requirements:
+  build:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - pandas
+    - matplotlib-base
+    - requests
+    - ruamel.yaml 0.16.12
+
+test:
+  imports:
+    - pygcap
+  commands:
+    - pygcap --help
+
+about:
+  home: "https://github.com/jrim42/pyGCAP"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Python package for probe-based gene cluster finding in large microbial genome database."
+  description: "Python package for probe-based gene cluster finding in large microbial genome database."
+  dev_url: "https://github.com/jrim42/pyGCAP"
+
+extra:
+  recipe-maintainers:
+    - jsrim

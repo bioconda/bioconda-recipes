@@ -1,5 +1,5 @@
 {% set name = "expam" %}
-{% set version = "1.2.2.3" %}
+{% set version = "1.4.0.6" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,12 +7,17 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 1a57cd160115ead399bd1b577dd071e0142d31e09df982c83c017e6ddfabcf96
+  sha256: a2a59b2c35e47562522316beb59bfd29337c4d43496179d3a5470aff573e680b
 
 build:
   number: 0
-  skip: true  # [py < 38]
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  skip: True  # [osx]
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  entry_points:
+    - expam=expam.main:main
+    - expam_limit=expam.sandbox.main:main
+  run_exports:
+    - {{ pin_subpackage('expam', max_pin="x") }}
 
 requirements:
   build:
@@ -22,9 +27,9 @@ requirements:
     - python
     - cython
     - numpy >=1.22.0
-    - setuptools >=46.4
   run:
     - python
+    - ete3
     - numpy >=1.22.0
     - matplotlib-base
     - multiprocess
@@ -45,8 +50,11 @@ about:
   license_family: BSD
   license_file: LICENSE
   summary: "Metagenomic profiling using a reference phylogeny"
-  doc_url: https://expam.readthedocs.io/en/latest/
+  doc_url: https://expam.readthedocs.io/en/latest
+  dev_url: https://github.com/seansolari/expam
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
     - seansolari

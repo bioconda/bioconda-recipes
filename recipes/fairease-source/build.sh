@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-$PYTHON -m pip install --no-deps .
+$PYTHON -m pip install --no-deps --no-build-isolation . -vvv
 
 # Copy/link executables somewhere on the path
 python_path=$(find $PREFIX -name SOURCE)

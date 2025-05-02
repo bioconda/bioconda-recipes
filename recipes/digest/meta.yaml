@@ -1,0 +1,53 @@
+{% set name = "digest" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/VeryAmazed/digest/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: a3464dde4d4f6c1fc4808e53894383e9fa3cd3fd41471efe9a7bc955eb0ec91d
+
+build:
+  number: 0
+  pkg_format: '.conda'
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - meson
+    - ninja
+    - pybind11
+    - python
+  host:
+    - python
+    - pip
+    - pybind11
+  run:
+    - python
+    - pybind11
+
+test:
+  imports:
+    - digest
+  commands:
+    - python -c "from digest import window_minimizer, syncmer, modimizer"
+
+about:
+  home: https://github.com/VeryAmazed/digest
+  summary: Fast, multi-use k-mer sub-sampling library
+  description: |
+    A C++ library that supports various sub-sampling schemes for k-mers in DNA sequences.
+    Includes Python bindings that allow users to run functions from the C++ library in Python.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - vikshiv
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

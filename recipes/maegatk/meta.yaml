@@ -1,0 +1,68 @@
+{% set name = "maegatk" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/maegatk-{{ version }}.tar.gz
+  sha256: fce1ec287914e03ce2b317a4f6a338f1806cd82e5c77f4e4cb1efbd48c87bdda
+
+build:
+  number: 2
+  noarch: python
+  entry_points:
+    - maegatk = maegatk.cli:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('maegatk', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3
+    - pip
+  run:
+    - python >=3
+    - click
+    - pysam
+    - pytest
+    - snakemake-minimal <8
+    - pulp <2.8
+    - biopython
+    - optparse-pretty
+    - regex
+    - ruamel.yaml 0.16.12
+    - openjdk
+    - fgbio-minimal
+    - bwa
+    - samtools
+    - freebayes
+    - r-base
+    - r-dplyr
+    - r-data.table
+    - r-matrix
+    - bioconductor-genomicranges
+    - bioconductor-summarizedexperiment
+
+test:
+  imports:
+    - maegatk
+  commands:
+    - maegatk --help
+
+about:
+  home: "https://github.com/caleblareau/maegatk"
+  summary: "Mitochondrial Alteration Enrichment and Genome Analysis Toolkit."
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  description: Processing and quality control of mitochondrial genome variants from MAESTER data.
+  dev_url: "https://github.com/caleblareau/maegatk"
+  doc_url: "https://github.com/caleblareau/maegatk/wiki"
+
+extra:
+  recipe-maintainers:
+    - mencian
+  identifiers:
+    - doi:10.1038/s41587-022-01210-8

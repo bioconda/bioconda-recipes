@@ -1,28 +1,32 @@
 {% set name = "GraphBin" %}
-{% set version = "1.7.1" %}
+{% set version = "1.7.4" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://github.com/metagentools/{{ name }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 605de80cd132c349ffd0dffbece4cd265f120df19d9258a79cfea1e73276fa6c
+  url: "https://github.com/metagentools/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: b1c7080aa61535fb3112e4fe3aae186b346a0074eec6e93650564a3b349cc69c
 
 build:
   number: 0
   noarch: python
+  entry_points:
+    - graphbin = graphbin.cli:main
   script:
-    - "{{ PYTHON }} -m pip install . -vv"
+    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('graphbin', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.7,<3.11
     - flit-core
   run:
     - cairocffi
-    - python >=3.7.1,<3.11
+    - python >=3.7,<3.11
     - python-igraph
     - tqdm
     - click
@@ -35,6 +39,7 @@ test:
 about:
   home: "https://github.com/Vini2/GraphBin"
   license: BSD-3
+  license_family: BSD
   license_file: LICENSE
   summary: "GraphBin: Refined binning of metagenomic contigs using assembly graphs"
   description: |

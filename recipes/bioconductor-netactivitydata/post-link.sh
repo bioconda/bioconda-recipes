@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "netactivitydata-1.2.0"
+installBiocDataPackage.sh "netactivitydata-1.8.0"

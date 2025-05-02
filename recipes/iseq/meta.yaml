@@ -1,0 +1,41 @@
+{% set name = "iSeq" %}
+{% set version = "1.9.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/BioOmics/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
+  sha256: 796a3e2def29b731f86612c08307ec144a9fea8cba6cbde871ddedba86683540
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  host:
+    - bash
+  run:
+    - pigz
+    - wget
+    - axel
+    - aspera-cli =4.14.0
+    - sra-tools >=2.11.0
+
+test:
+  commands:
+    - iseq --help
+
+about:
+  home: https://github.com/BioOmics/iSeq
+  license: MIT
+  license_family: MIT
+  summary: "iSeq is a Bash script that allows you to download sequencing data and metadata from GSA, SRA, ENA, and DDBJ databases."
+  dev_url: https://github.com/BioOmics/iSeq
+
+extra:
+  recipe-maintainers:
+    - BioOmics

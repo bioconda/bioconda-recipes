@@ -1,28 +1,35 @@
-{% set version = "1.18.1" %}
+{% set version = "1.24.0" %}
 {% set name = "bayNorm" %}
-{% set bioc = "3.17" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 4a17fbe6ef50d0b03b97ab29c7fa085c
+about:
+  description: bayNorm is used for normalizing single-cell RNA-seq data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Single-cell RNA sequencing data normalization
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-baynorm", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, BiocStyle, devtools, testthat
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - 'bioconductor-biocparallel >=1.34.0,<1.35.0'
-    - 'bioconductor-singlecellexperiment >=1.22.0,<1.23.0'
-    - 'bioconductor-summarizedexperiment >=1.30.0,<1.31.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-bb
     - r-dosnow
@@ -32,15 +39,15 @@ requirements:
     - r-locfit
     - r-mass
     - r-matrix
-    - 'r-rcpp >=0.12.12'
+    - r-rcpp >=0.12.12
     - r-rcpparmadillo
     - r-rcppprogress
     - libblas
     - liblapack
   run:
-    - 'bioconductor-biocparallel >=1.34.0,<1.35.0'
-    - 'bioconductor-singlecellexperiment >=1.22.0,<1.23.0'
-    - 'bioconductor-summarizedexperiment >=1.30.0,<1.31.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-bb
     - r-dosnow
@@ -50,20 +57,19 @@ requirements:
     - r-locfit
     - r-mass
     - r-matrix
-    - 'r-rcpp >=0.12.12'
+    - r-rcpp >=0.12.12
     - r-rcpparmadillo
     - r-rcppprogress
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: 6bf2ec12971ed9837cabe1a3225f95c0
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Single-cell RNA sequencing data normalization'
-  description: 'bayNorm is used for normalizing single-cell RNA-seq data.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

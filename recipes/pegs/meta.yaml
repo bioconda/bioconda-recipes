@@ -1,21 +1,23 @@
 {% set name = "pegs" %}
-{% set version = "0.6.5" %}
+{% set version = "0.6.6" %}
 
 package:
-  name: "{{ name|lower }}" 
+  name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 33bbb01db501edba4081bb0970297f9abfd130623e5a11e821bb0369ee1f978c
+  sha256: b19059cb2de25ec3c9cbeafb333ffbac417fcd28ccf64680e7bb42ecacb4d467
 
 build:
   number: 0
   entry_points:
     - pegs = pegs.cli:pegs
     - mk_pegs_intervals = pegs.cli:mk_pegs_intervals
-  script: "{{ PYTHON }} -m pip install . -vv"
-  noarch: python 
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('pegs', max_pin="x.x") }}
 
 requirements:
   host:
@@ -42,7 +44,7 @@ test:
 
 about:
   home: "https://github.com/fls-bioinformatics-core/pegs"
-  license: BSD
+  license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE
   summary: "Peak-set Enrichment of Gene-Sets (PEGS)"

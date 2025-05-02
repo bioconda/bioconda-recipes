@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "egseadata-1.28.0"
+installBiocDataPackage.sh "egseadata-1.34.0"

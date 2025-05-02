@@ -1,5 +1,5 @@
 {% set name = "tajimas_d" %}
-{% set version = "2.0.0" %}
+{% set version = "2.0.2" %}
 
 package:
   name: {{ name }}
@@ -7,12 +7,16 @@ package:
 
 source:
   url: https://github.com/not-a-feature/tajimas_d/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: c877bc1e1ca78c2e8bd4b4f5fd37aa40fcd5a91880e508c9038eb5f8479015e9
+  sha256: 899cf84e8e89ecccc9fbd106c21ee2777bc7736c163b5470e4cce3b843cbe36a
 
 build:
   noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  entry_points:
+    - tajimas_d = tajimas_d._tajimas_d:run_cli
+  run_exports:
+    - {{ pin_subpackage('tajimas_d', max_pin="x") }}
 
 requirements:
   host:
@@ -24,16 +28,13 @@ requirements:
 test:
   imports:
     - tajimas_d
-  commands:
-    - pip check
   requires:
-    - pip
     - miniFasta
 
 about:
   home: https://github.com/not-a-feature/tajimas_d
   license: GPL-3.0-or-later
-  license_family: GPL
+  license_family: GPL3
   license_file: LICENSE
   summary: 'Computes Tajimas D, the Pi- or Watterson-Estimator for multiple sequences.'
   description: |

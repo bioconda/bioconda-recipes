@@ -1,6 +1,6 @@
 {% set name = "CrossMap" %}
-{% set version = "0.6.5" %}
-{% set sha256hash = "b16a942b38bf7f26e9b53bc6cddd5cfa7dee98e97f7ee8bb0dc699a4340aafbf" %}
+{% set version = "0.7.0" %}
+{% set sha256 = "fec5bc7537c6f767e39f7b8a176ceb522e10de4a79ebdd0d645ea0af948c4bd4" %}
 
 package:
   name: {{ name|lower }}
@@ -8,23 +8,22 @@ package:
 
 source:
   url: https://github.com/liguowang/CrossMap/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256hash }}
+  sha256: {{ sha256 }}
 
 build:
   number: 0
   noarch: python
+  entry_points:
+    - CrossMap = cmmodule:crossmap
+  run_exports:
+    - {{ pin_subpackage('crossmap', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3
-    - cython >=0.17
-    - numpy
-    - nose >=0.10.4
-    - pysam >=0.15
-    - bx-python
+    - python >=3.8
+    - pip
   run:
-    - python >=3
-    - cython >=0.17
+    - python >=3.8
     - numpy
     - pysam >=0.15
     - bx-python
@@ -33,23 +32,24 @@ requirements:
 
 test:
   commands:
-    - CrossMap.py bed -h
-    - CrossMap.py vcf -h
+    - CrossMap bed -h
+    - CrossMap vcf -h
 
 about:
-  home: http://crossmap.sourceforge.net
+  home: https://crossmap.sourceforge.net
   license: GPL-3.0-or-later
-  license_family: GPL
+  license_family: GPL3
   license_file: LICENSE.txt
   summary: "CrossMap is a program for convenient conversion of genome coordinates and genomeannotation files between assemblies."
+  dev_url: https://github.com/liguowang/CrossMap
+  doc_url: https://crossmap.readthedocs.io/en/latest/
 
 extra:
-  skip-lints:
-    - cython_needs_compiler
-    - cython_must_be_in_host
   identifiers:
     - usegalaxy-eu:crossmap_bam
     - usegalaxy-eu:crossmap_bed
     - usegalaxy-eu:crossmap_vcf
     - usegalaxy-eu:crossmap_wig
     - usegalaxy-eu:crossmap_gff
+    - doi:10.1093/bioinformatics/btt730
+    - biotools:crossmap

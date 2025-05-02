@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "tinesath1cdf-1.38.0"
+installBiocDataPackage.sh "tinesath1cdf-1.44.0"

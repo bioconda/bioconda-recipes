@@ -1,14 +1,14 @@
 {% set name = "recetox-aplcms" %}
-{% set version = "0.12.0" %}
-{% set github = "https://github.com/RECETOX" %}
+{% set version = "0.13.4" %}
+{% set github = "https://github.com/RECETOX/recetox-aplcms" %}
 
 package:
   name: "r-{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "{{ github }}/recetox-aplcms/archive/refs/tags/v{{ version }}.tar.gz"
-  sha256: c76715e50a442b45f46f79120af6f382965f9a8de63bf0f624eb132478b6ed2c
+  url: "https://github.com/RECETOX/recetox-aplcms/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: c6c08d7e0def2b4df9f5ae366e0f69bf982d271bb8a4aec165e66c373d45c791
 
 build:
   number: 1
@@ -17,48 +17,46 @@ build:
     - lib/R/lib/
     - lib/
   script_env:
-    - RGL_USE_NULL=TRUE # avoid warning at test-time
-  script: R CMD INSTALL --build . 
-  
+    - RGL_USE_NULL=TRUE  # avoid warning at test-time
+  script: ${R} CMD INSTALL --build . ${R_ARGS}
+  run_exports:
+    - {{ pin_subpackage('r-recetox-aplcms', max_pin="x.x") }}
+
 requirements:
   host:
-    - r-base =4.2
+    - r-base
     - r-mass
-    - bioconductor-mzr
+    - bioconductor-mzr ==2.36.0
     - r-splines2
     - r-doparallel
     - r-foreach
     - r-iterators
     - r-snow
     - r-rcpp
-    - r-arrow >=7.0.0,<10.0.0
+    - r-arrow
     - r-dplyr
     - r-tidyr
     - r-stringr
-    # TODO work around bug in conda mambabuild that takes this from defaults instead of conda-forge
-    # can be removed once conda mambabuild properly respects strict priorities.
-    # See https://github.com/mamba-org/boa/issues/115
-    - r-stringi >=1.7.12 
+    - r-stringi
     - r-tibble
+    - r-plyr
   run:
-    - r-base =4.2
+    - r-base
     - r-mass
-    - bioconductor-mzr
+    - bioconductor-mzr ==2.36.0
     - r-splines2
     - r-doparallel
     - r-foreach
     - r-iterators
     - r-snow
     - r-rcpp
-    - r-arrow >=7.0.0,<10.0.0
+    - r-arrow
     - r-dplyr
     - r-tidyr
     - r-stringr
-    # TODO work around bug in conda mambabuild that takes this from defaults instead of conda-forge
-    # can be removed once conda mambabuild properly respects strict priorities.
-    # See https://github.com/mamba-org/boa/issues/115
-    - r-stringi >=1.7.12
+    - r-stringi
     - r-tibble
+    - r-plyr
 
 test:
   commands:
@@ -66,9 +64,11 @@ test:
 
 about:
   home: "{{ github }}"
-  license: GPL-2.0
+  license: "GPL-2.0-or-later"
   license_file: LICENSE
-  summary: apLCMS is a software which generates a feature table from a batch of LC/MS spectra. A modified fork of the original apLCMS by Tianwei Yu.
+  summary: "apLCMS is a software which generates a feature table from a batch of LC/MS spectra. A modified fork of the original apLCMS by Tianwei Yu."
+  dev_url: "{{ github }}"
+  doc_url: "https://mypage.cuhk.edu.cn/academics/yutianwei/apLCMS"
 
 extra:
   recipe-maintainers:

@@ -1,0 +1,61 @@
+{% set name = "hymet" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/inesbmartins02/HYMET/archive/v{{ version }}.tar.gz
+  sha256: b4985691ab6f813bc919449a9d6bcb05ef02980bca05260cd3c3418530a927b7
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  run:
+    - perl
+    - python >=3.8
+    - mash
+    - minimap2
+    - wget
+    - pandas
+    - numpy
+    - biopython
+    - tqdm
+    - csvkit
+
+test:
+  commands:
+    - test -f $PREFIX/bin/config.pl
+    - test -f $PREFIX/bin/main.pl
+    - test -f $PREFIX/bin/scripts/mash.sh
+    - test -f $PREFIX/bin/scripts/minimap2.sh
+    - test -f $PREFIX/bin/scripts/downloadDB.py
+    - test -f $PREFIX/bin/scripts/classification.py
+    - test -f $PREFIX/bin/scripts/taxonomy_hierarchy.py
+    - perl -c $PREFIX/bin/config.pl
+    - perl -c $PREFIX/bin/main.pl
+
+about:
+  home: https://github.com/inesbmartins02/HYMET
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "HYMET (Hybrid Metagenomic Tool) for taxonomic identification of metagenomic sequences."
+  description: |
+    HYMET is a taxonomic identification tool designed for metagenomic sequence analysis. 
+    It uses a combination of tools including Mash, Minimap2, and custom classification 
+    algorithms to identify the taxonomic origin of metagenomic sequences with high accuracy.
+  dev_url: https://github.com/inesbmartins02/HYMET
+  doc_url: https://github.com/inesbmartins02/HYMET
+
+extra:
+  recipe-maintainers:
+    - inesbmartins02
+    - jorgeMFS
+  identifiers:
+    - biotools:hymet 

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "dlbcl-1.40.0"
+installBiocDataPackage.sh "dlbcl-1.46.0"
