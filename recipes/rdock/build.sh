@@ -1,30 +1,32 @@
-#!/bin/bash
+cd build
+chmod +x p4utils.pl
 
-if [ $PY3K -eq 1 ]; then
-    2to3 -w -n build/test/RBT_HOME/check_test.py
-fi
-export C_INCLUDE_PATH=${PREFIX}/include
-export CPP_INCLUDE_PATH=${PREFIX}/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export CXX_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
+# Needs -std=c++14 because of
+#   error: ISO C++17 does not allow dynamic exception specifications
+export CXXFLAGS="${CXXFLAGS} -std=c++14"
 
-cd build/
-make linux-g++-64
-make test
+sed -i \
+  -e "/^TMAKE_CC\s*=/          s|=.*|= ${CC}|" \
+  -e "/^TMAKE_CXX\s*=/         s|=.*|= ${CXX}|" \
+  -e "/^TMAKE_LINK\s*=/        s|=.*|= ${CXX}|" \
+  -e "/^TMAKE_LINK_SHLIB\s*=/  s|=.*|= ${CXX}|" \
+  -e "/^TMAKE_CFLAGS\s*=/      s|=\s*|&${CFLAGS} |" \
+  -e "/^TMAKE_CXXFLAGS\s*=/    s|=\s*|&${CXXFLAGS} |" \
+  -e "/^TMAKE_LFLAGS\s*=/      s|=\s*|&${LDFLAGS} |" \
+  tmakelib/linux-g++-64/tmake.conf
 
-cd ..
-cp lib/libRbt.so.rDock_2013.1_src "${PREFIX}/lib/"
-PERL_INSTALLSITELIB=$(perl -e 'use Config; print "$Config{installsitelib}"')
-mkdir -p "${PERL_INSTALLSITELIB}" "${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/bin"
-cp lib/*.pl lib/*.pm "${PERL_INSTALLSITELIB}"
-mv data/ "${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/"
-# Create wrappers for binaries that need RBT_ROOT to be in the environment
-for f in rbcalcgrid rbcavity rbdock rblist rbmoegrid; do
-    mv "bin/$f" "${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/bin/"
-    sed -e "s|CHANGEME|${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}|" "$RECIPE_DIR/wrapper.sh" > "${PREFIX}/bin/$f"
-    chmod +x "${PREFIX}/bin/$f"
-done
-# Remove unused to_unix
-rm bin/to_unix
-cp bin/* "${PREFIX}/bin/"
+make linux-g++-64 BINDIR=$PREFIX/bin LIBDIR=$PREFIX/lib
+
+# compiled binaries are in bin, cp the scripts over too
+cp ../bin/* $PREFIX/bin
+mkdir -p $PREFIX/lib/perl5/vendor_perl
+cp ../lib/* $PREFIX/lib/perl5/vendor_perl
+
+# so the perl lib files are accessible
+#mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
+
+#echo "export PERL5LIB=$PERL5LIB:$PREFIX/lib" > ${PREFIX}/etc/conda/activate.d/rdock-perl5lib.sh
+#chmod a+x ${PREFIX}/etc/conda/activate.d/rdock-perl5lib.sh
+
+#echo "unset PERL5LIB" > ${PREFIX}/etc/conda/deactivate.d/rdock-perl5lib.sh
+#chmod a+x ${PREFIX}/etc/conda/deactivate.d/rdock-perl5lib.sh
