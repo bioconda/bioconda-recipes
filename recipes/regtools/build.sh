@@ -10,6 +10,9 @@ export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
 mkdir -p "${PREFIX}/bin"
 mv src/utils/bedtools/gzstream/version src/utils/bedtools/gzstream/version.txt
 
+sed -i.bak 's|VERSION 2.8.12|VERSION 3.5|' CMakeLists.txt
+rm -rf *.bak
+
 if [[ `uname` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
