@@ -13,10 +13,20 @@ if [[ "${OS}" == "Linux" ]]; then
         FEATURES="intel-mkl-static,simdeez_f"
     elif [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
         FEATURES="openblas-system,stdsimd"
-    else
+    else 
         echo "Unsupported architecture '${ARCH}' on Linux."
         exit 1
     fi
+elif [[ "${OS}" == "Darwin" ]]; then
+    if [[ "${ARCH}" == "x86_64" || "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
+        FEATURES="openblas-system,stdsimd"
+    else
+        echo "Unsupported architecture '${ARCH}' on Darwin."
+        exit 1
+    fi
+else
+    echo "Unsupported operating system '${OS}'."
+    exit 1
 fi
 
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
