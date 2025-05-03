@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
+
 set -euo pipefail
 
 export CXXFLAGS="${CXXFLAGS} -I/${PREFIX}/include"
-export LDFLAGS="${LDFLAGS} -L/${PREFIX}/lib -lGL"
+export LDFLAGS="${LDFLAGS} -L/${PREFIX}/lib"
 
 mkdir build
 cd build
