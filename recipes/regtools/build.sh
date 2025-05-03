@@ -11,7 +11,9 @@ mkdir -p "${PREFIX}/bin"
 mv src/utils/bedtools/gzstream/version src/utils/bedtools/gzstream/version.txt
 
 sed -i.bak 's|VERSION 2.8.12|VERSION 3.5|' CMakeLists.txt
+sed -i.bak 's|VERSION 2.6.2|VERSION 3.5|' src/utils/gtest-1.7.0/CMakeLists.txt
 rm -rf *.bak
+rm -rf src/utils/gtest-1.7.0/*.bak
 
 if [[ `uname` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
