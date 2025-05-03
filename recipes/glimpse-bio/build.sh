@@ -8,7 +8,11 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 ARCH=$(uname -m)
 
 if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
-	sed -i.bak 's|-mavx2 -mfma||' phase/makefile
+	sed -i.bak 's|-mavx2 -mfma||' */makefile
+	cp -rf ${RECIPE_DIR}/sse2neon.h phase/src/models/
+	export EXTRA_ARGS=""
+else
+	export EXTRA_ARGS="-mavx2 -mfma"
 fi
 
 sed -i.bak 's|g++ -std=c++17|$(CXX) -std=c++17|' */makefile
@@ -21,7 +25,7 @@ do
     # Build the binaries
     make CXX="${CXX} -std=c++17" \
         DYN_LIBS="-lz -pthread -lbz2 -llzma -lcurl -lhts -ldeflate -lm" \
-        CXXFLAG="${CXXFLAGS} ${PREFIX} -D__COMMIT_ID__='\"${COMMIT_VERS}\"' -D__COMMIT_DATE__='\"${COMMIT_DATE}\"' -Wno-ignored-attributes -O3" \
+        CXXFLAG="${CXXFLAGS} ${PREFIX} -D__COMMIT_ID__='\"${COMMIT_VERS}\"' -D__COMMIT_DATE__='\"${COMMIT_DATE}\"' -Wno-ignored-attributes -O3 ${EXTRA_ARGS}" \
         LDFLAG="${LDFLAGS}" \
 	HTSSRC="${PREFIX}" \
         HTSLIB_INC="${PREFIX}/include" \
