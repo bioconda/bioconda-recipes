@@ -1,15 +1,18 @@
+{% set name = "glimpse-bio" %}
 {% set version = "2.0.1" %}
 
 package:
-  name: glimpse-bio
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 3
 
 source:
   url: https://github.com/odelaneau/GLIMPSE/archive/refs/tags/v{{ version }}.tar.gz
   sha256: dcdc06fc85ca9bae6a2255caf3f985a5e6ccab5a99a0c3fe4c2fd7f8d27b0b8e
+
+build:
+  number: 4
+  run_exports:
+    - {{ pin_subpackage('glimpse-bio', max_pin="x") }}
 
 requirements:
   build:
@@ -18,13 +21,17 @@ requirements:
     - {{ compiler('cxx') }}
   host:
     - htslib >=1.7
+    - xz
     - bzip2
     - zlib
+    - curl
+    - libdeflate
     - boost-cpp >=1.65
     - openssl
     - pthread-stubs
   run:
-    - boost-cpp
+    - htslib >=1.7
+    - boost-cpp >=1.65
     - openssl
     - pthread-stubs
 
@@ -37,7 +44,19 @@ test:
     - GLIMPSE2_phase --help
 
 about:
-  home: https://odelaneau.github.io/GLIMPSE/
+  home: "https://odelaneau.github.io/GLIMPSE"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: GLIMPSE is a phasing and imputation method for large-scale low-coverage sequencing studies.
+  summary: "GLIMPSE is a phasing and imputation method for large-scale low-coverage sequencing studies."
+  dev_url: "https://github.com/odelaneau/glimpse"
+  doc_url: "https://odelaneau.github.io/GLIMPSE"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1038/s41588-020-00756-0
+    - doi:10.1038/s41588-023-01438-3
+    - biotools:glimpse2
