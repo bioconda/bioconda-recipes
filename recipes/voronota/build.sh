@@ -2,8 +2,7 @@
 
 set -euo pipefail
 
-export CXXFLAGS="${CXXFLAGS} -I/${PREFIX}/include"
-export LDFLAGS="${LDFLAGS} -L/${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -fopenmp"
 
 mkdir build
 cd build
@@ -13,7 +12,7 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=${PREFIX} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_COMPILER=${CXX} \
-    -DCMAKE_CXX_FLAGS="${CXXFLAGS} -fopenmp" \
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" \
     -DEXPANSION_JS=ON \
     -DEXPANSION_LT=ON \
