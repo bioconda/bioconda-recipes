@@ -2,6 +2,8 @@
 
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-inconsistent-missing-override"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 mkdir -p $PREFIX/bin
@@ -17,11 +19,9 @@ fi
 ./regenerate.sh -mpi true
 
 ./build.sh -mpi true -help2yml true \
-	-DCMAKE_BUILD_TYPE=Release \
-	-DCMAKE_PREFIX_PATH="${PREFIX}" \
-	-DCMAKE_CXX_COMPILER="${CXX}" \
-	-boost_root "${PREFIX}" \
-	-j "${CPU_COUNT}" \
+	-DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${PREFIX}" \
+	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" -boost_root "${PREFIX}" \
+	-j "${CPU_COUNT}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
 install -v -m 0755 build-mpi/rb-mpi rb-mpi-help2yml "${PREFIX}/bin"
@@ -33,12 +33,10 @@ rm -rf build-mpi
 ./regenerate.sh
 
 ./build.sh -mpi false -help2yml true \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_PREFIX_PATH="${PREFIX}" \
-        -DCMAKE_CXX_COMPILER="${CXX}" \
-        -boost_root "${PREFIX}" \
-        -j "${CPU_COUNT}" \
-        "${CONFIG_ARGS}"
+	-DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${PREFIX}" \
+	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" -boost_root "${PREFIX}" \
+	-j "${CPU_COUNT}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
+	"${CONFIG_ARGS}"
 
 install -v -m 0755 build/rb rb-help2yml "${PREFIX}/bin"
 
