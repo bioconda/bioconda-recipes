@@ -9,10 +9,11 @@ ARCH=$(uname -m)
 
 if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
 	sed -i.bak 's|-mavx2 -mfma||' phase/makefile
-	sed -i.bak 's|g++ -std=c++17|$(CXX) -std=c++17|' */makefile
-	sed -i.bak 's|-lpthread|-pthread|' */makefile
-	rm -rf */*.bak
 fi
+
+sed -i.bak 's|g++ -std=c++17|$(CXX) -std=c++17|' */makefile
+sed -i.bak 's|-lpthread|-pthread|' */makefile
+rm -rf */*.bak
 
 for subdir in chunk concordance split_reference phase ligate
 do
