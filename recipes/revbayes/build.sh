@@ -3,7 +3,7 @@
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3 -Wno-inconsistent-missing-override"
+export CXXFLAGS="${CXXFLAGS} -Wno-inconsistent-missing-override"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 mkdir -p $PREFIX/bin
@@ -17,7 +17,6 @@ fi
 
 # MPI version
 ./regenerate.sh -mpi true
-
 ./build.sh -mpi true -help2yml true \
 	-DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" -boost_root "${PREFIX}" \
@@ -31,7 +30,6 @@ install -v -m 0755 build-mpi/rb-mpi rb-mpi-help2yml "${PREFIX}/bin"
 rm -rf build-mpi
 
 ./regenerate.sh
-
 ./build.sh -mpi false -help2yml true \
 	-DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" -boost_root "${PREFIX}" \
