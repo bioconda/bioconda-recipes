@@ -5,6 +5,16 @@ export COMMIT_DATE="$(date -Idate -u)"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
+ARCH=$(uname -m)
+
+if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
+	sed -i.bak 's|-mavx2 -mfma||' chunk/makefile
+	sed -i.bak 's|-mavx2 -mfma||' concordance/makefile
+	sed -i.bak 's|-mavx2 -mfma||' split_reference/makefile
+	sed -i.bak 's|-mavx2 -mfma||' phase/makefile
+	sed -i.bak 's|-mavx2 -mfma||' ligate/makefile
+fi
+
 for subdir in chunk concordance split_reference phase ligate
 do
     pushd $subdir
