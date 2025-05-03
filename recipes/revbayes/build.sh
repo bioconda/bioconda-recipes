@@ -18,9 +18,12 @@ fi
 # MPI version
 ./regenerate.sh -mpi true
 ./build.sh -mpi true -help2yml true \
-	-DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${PREFIX}" \
-	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" -boost_root "${PREFIX}" \
-	-j "${CPU_COUNT}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
+	-DCMAKE_BUILD_TYPE=Release \
+ 	-DCMAKE_PREFIX_PATH="${PREFIX}" \
+	-DCMAKE_CXX_COMPILER="${CXX}" \
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-boost_root "${PREFIX}" \
+	-j "${CPU_COUNT}" \
 	"${CONFIG_ARGS}"
 
 install -v -m 0755 build-mpi/rb-mpi rb-mpi-help2yml "${PREFIX}/bin"
