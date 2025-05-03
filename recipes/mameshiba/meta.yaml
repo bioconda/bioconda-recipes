@@ -1,13 +1,26 @@
+{% set name = "mameshiba" %}
+{% set version = "0.6.0" %}
+
 package:
-  name: mameshiba
-  version: "0.1.0"
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Sika-Zheng-Lab/Shiba/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 739585d33c8ae62a4069c0667ed1eb7ee0fa9c5a96dc46eb3c4b72d8e0c54e5e
 
 build:
   number: 0
   noarch: generic
+  script:
+    - echo "Dependency-only package for MameShiba."
+    - mkdir -p ${PREFIX}/bin
+    - mkdir -p ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
+    - cp -rf ${SRC_DIR}/* ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/
+    - chmod 0755 ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/shiba.py
+    - ln -sf ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/shiba.py ${PREFIX}/bin/shiba.py
   run_exports:
     - {{ pin_subpackage("mameshiba", max_pin="x.x") }}
-  script: echo "Dependency-only package for MameShiba."
 
 requirements:
   host:
@@ -27,17 +40,21 @@ requirements:
 
 test:
   commands:
-    - python -c "import pandas, statsmodels.api, numexpr, pysam, scanpy, numpy, yaml"
+    #- python -c "import pandas, statsmodels.api, numexpr, pysam, scanpy, numpy, yaml"
+    - shiba.py -h
 
 about:
   home: https://github.com/Sika-Zheng-Lab/Shiba
   license: MIT
+  license_family: MIT
+  license_file: LICENSE
   summary: "mameshiba installs only the dependencies needed to run MameShiba."
   description: |
     mameshiba is a minimal conda meta-package that installs all dependencies required
     for running MameShiba (https://github.com/Sika-Zheng-Lab/Shiba). After installing, clone
     the Shiba GitHub repository and run 'python shiba.py'.
-  dev_url: https://github.com/Sika-Zheng-Lab/Shiba
+  dev_url: "https://github.com/Sika-Zheng-Lab/Shiba"
+  doc_url: "https://sika-zheng-lab.github.io/Shiba"
 
 extra:
   recipe-maintainers:
