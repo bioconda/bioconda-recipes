@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
+export CPU_COUNT=1
 export CXXFLAGS="${CXXFLAGS} -fopenmp"
 
 mkdir build
