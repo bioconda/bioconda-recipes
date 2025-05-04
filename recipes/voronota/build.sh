@@ -7,8 +7,9 @@ export CXXFLAGS="${CXXFLAGS} -fopenmp"
 
 if [ "$(uname)" == "Darwin" ]; then
     # c++11 compatibility
-    export CXXFLAGS="$CXXFLAGS -stdlib=libc++ -std=c++11 -I${PREFIX}/include"
     export CXX=clang++
+    export CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -std=c++11 -I${PREFIX}/include"
+    export LDFLAGS="${LDFLAGS} -stdlib=libc++ -lGLEW -lglfw -framework OpenGL"
 fi
 
 mkdir build
