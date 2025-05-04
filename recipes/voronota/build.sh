@@ -7,7 +7,7 @@ export CXXFLAGS="${CXXFLAGS} -fopenmp"
 
 if [ "$(uname)" == "Darwin" ]; then
     # c++11 compatibility
-    export CXX=clang++
+    export CXX="${BUILD_PREFIX}/bin/clang++"
     export CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -std=c++11"
     export LDFLAGS="${LDFLAGS} -lGLEW -lglfw"
 fi
@@ -25,8 +25,7 @@ cmake .. \
     -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" \
     -DEXPANSION_JS=ON \
     -DEXPANSION_LT=ON \
-    -DEXPANSION_GL=ON \
-    -DENABLE_MPI=ON
+    -DEXPANSION_GL=ON
 
 make -j"${CPU_COUNT}"
 make install
