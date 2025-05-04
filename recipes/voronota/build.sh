@@ -3,13 +3,16 @@
 set -euo pipefail
 
 export CPU_COUNT=1
-export CXXFLAGS="${CXXFLAGS} -fopenmp"
 
-if [ "$(uname)" == "Darwin" ]; then
+if [[ "$(uname)" == "Darwin" ]]; then
     # c++11 compatibility
     export CXX="${BUILD_PREFIX}/bin/clang++"
-    export CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -std=c++11"
-    export LDFLAGS="${LDFLAGS} -lGLEW -lglfw -framework OpenGL"
+    export CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -std=c++11 -Xpreprocessor -fopenmp -lomp"
+    export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lomp -L${PREFIX}/lib -lGLEW -L${PREFIX}/lib -lglfw -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo"
+elif [[ "$(uname)" == "Linux" ]]; then
+    export CXX="${BUILD_PREFIX}/bin/g++"
+    export CXXFLAGS="${CXXFLAGS} -fopenmp"
+    export LDFLAGS="${LDFLAGS} -lGLEW -lglfw -lGL -lGLU -lOpenGL"
 fi
 
 mkdir build
