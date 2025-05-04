@@ -9,7 +9,7 @@ if [ "$(uname)" == "Darwin" ]; then
     # c++11 compatibility
     export CXX="${BUILD_PREFIX}/bin/clang++"
     export CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -std=c++11"
-    export LDFLAGS="${LDFLAGS} -lGLEW -lglfw"
+    export LDFLAGS="${LDFLAGS} -lGLEW -lglfw -framework OpenGL"
 fi
 
 mkdir build
@@ -19,7 +19,7 @@ cmake .. \
     -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_FIND_FRAMEWORK=LAST \
+    -DCMAKE_FIND_FRAMEWORK=FIRST \
     -DCMAKE_CXX_COMPILER="${CXX}" \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" \
