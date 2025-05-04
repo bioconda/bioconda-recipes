@@ -4,6 +4,12 @@ set -euo pipefail
 
 export CXXFLAGS="${CXXFLAGS} -fopenmp"
 
+if [ "$(uname)" == "Darwin" ]; then
+    # c++11 compatibility
+    export CXXFLAGS="$CXXFLAGS -stdlib=libc++ -std=c++11 -I${PREFIX}/include"
+    export CXX=clang++
+fi
+
 mkdir build
 cd build
 
