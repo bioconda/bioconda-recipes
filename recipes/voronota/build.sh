@@ -3,13 +3,13 @@
 set -euo pipefail
 
 export CPU_COUNT=1
-export CXXFLAGS="${CXXFLAGS} -fopenmp"
+export CXXFLAGS="${CXXFLAGS} -fopenmp -I${PREFIX}/include"
 
 if [ "$(uname)" == "Darwin" ]; then
     # c++11 compatibility
     export CXX=clang++
     export CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -std=c++11 -I${PREFIX}/include"
-    export LDFLAGS="${LDFLAGS} -stdlib=libc++ -lGLEW -lglfw -framework OpenGL"
+    export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lGLEW -lglfw -framework OpenGL"
 fi
 
 mkdir build
