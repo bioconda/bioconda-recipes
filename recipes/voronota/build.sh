@@ -2,7 +2,6 @@
 
 set -exou pipefail
 
-export CPU_COUNT=1
 
 if [[ "$(uname)" == "Darwin" ]]; then
     # c++11 compatibility
@@ -10,13 +9,13 @@ if [[ "$(uname)" == "Darwin" ]]; then
     export LDFLAGS="${LDFLAGS} -lomp -lGLEW -lglfw -framework OpenGL"
 elif [[ "$(uname)" == "Linux" ]]; then
     export CXXFLAGS="${CXXFLAGS} -fopenmp"
-    export LDFLAGS="${LDFLAGS} -lGLEW -lglfw -lGL -lGLU -lOpenGL"
+    export LDFLAGS="${LDFLAGS} -lGLEW -lglfw -lGL -lGLU"
 fi
 
 mkdir build && cd build
 
 cmake .. \
-    "${CMAKE_ARGS}" \
+    ${CMAKE_ARGS} \
     -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
     -DCMAKE_CXX_COMPILER="${CXX}" \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
