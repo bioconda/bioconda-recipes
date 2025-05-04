@@ -3,13 +3,13 @@
 set -euo pipefail
 
 export CPU_COUNT=1
-export CXXFLAGS="${CXXFLAGS} -fopenmp -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -fopenmp"
 
 if [ "$(uname)" == "Darwin" ]; then
     # c++11 compatibility
     export CXX=clang++
-    export CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -std=c++11 -I${PREFIX}/include"
-    export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lGLEW -lglfw -framework OpenGL"
+    export CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -std=c++11"
+    export LDFLAGS="${LDFLAGS} -lGLEW -lglfw"
 fi
 
 mkdir build
@@ -19,6 +19,7 @@ cmake .. \
     -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_FIND_FRAMEWORK=LAST \
     -DCMAKE_CXX_COMPILER="${CXX}" \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" \
