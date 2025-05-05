@@ -14,8 +14,13 @@ build:
   number: 0
   script: |
     set -eux
-    # Install EGAP package structure
-    cd $SRC_DIR/EGAP-{{ version }}
+    # Find the extracted source directory dynamically
+    SRC_SUBDIR=$(find $SRC_DIR -maxdepth 1 -type d -name "EGAP*" | head -n 1)
+    if [ -z "$SRC_SUBDIR" ]; then
+      echo "Error: Could not find EGAP source directory in $SRC_DIR"
+      exit 1
+    fi
+    cd "$SRC_SUBDIR"
     # Update shebang to use Conda Python
     sed -i '1s|^.*$|#!/usr/bin/env python|' EGAP.py
     # Copy entire package to lib/egap for module access
