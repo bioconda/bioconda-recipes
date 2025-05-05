@@ -11,7 +11,8 @@ cmake .. \
     -DENABLE_GUI=OFF \
     -DENABLE_GFX=OFF \
     -DENABLE_INFO=OFF \
-    -DUSE_RPATH=ON
+    -DUSE_RPATH=ON \
+    -DCMAKE_VERBOSE_MAKEFILE=ON
 
 make VERBOSE=1 -j"${CPU_COUNT}"
 
@@ -40,6 +41,7 @@ cmake .. \
     -DOPEN_MM_LIBRARY=${PREFIX}/lib/libOpenMM.${SHLIB_EXT} \
     -DOPEN_MM_INCLUDE_DIR=${PREFIX}/include \
     -DOPEN_MM_PLUGIN_DIR=${PREFIX}/lib/plugins \
+    -DCMAKE_VERBOSE_MAKEFILE=ON
 
 make VERBOSE=1 -j"${CPU_COUNT}"
 make check
