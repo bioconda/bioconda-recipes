@@ -16,6 +16,7 @@ elif [[ "$(uname)" == "Linux" ]]; then
     export LDFLAGS="${LDFLAGS} -lGLEW -lglfw -lGL -lGLU"
 fi
 
+# Allow CMake to find framework OpenGL on MacOS
 sed -i.bak \
     -e '/target_link_libraries(voronota-gl m GL GLEW glfw)/i\
 find_package(OpenGL REQUIRED)
