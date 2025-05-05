@@ -2,6 +2,12 @@
 
 set -euxo pipefail
 
+if [[ "$(uname)" == "Darwin" ]]; then
+  export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic"
+elif [[ "$(uname)" == "Linux" ]]; then
+  export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined,--export-dynamic"
+fi
+
 mkdir -p build && cd build
 
 cmake .. \
