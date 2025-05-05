@@ -17,7 +17,7 @@ cmake .. \
 
 make VERBOSE=1 -j"${CPU_COUNT}"
 
-cp ../components/components.cif.gz .
+cp ../monomers/components.cif.gz .
 stage/bin/chemdict_tool create components.cif.gz compounds.chemlib pdb -i
 stage/bin/chemdict_tool update ../modules/conop/data/charmm.cif compounds.chemlib charmm
 
