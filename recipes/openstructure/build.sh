@@ -34,7 +34,7 @@ cmake .. \
     -DBOOST_ROOT=${PREFIX} \
     -DCOMPOUND_LIB=${SRC_DIR}/build/compounds.chemlib \
     -DPARASAIL_INCLUDE_DIR=${SP_DIR}/parasail/include \
-    -DPARASAIL_LIBRARY=${SP_DIR}/parasail/lib/libparasail.${SHLIB_EXT} \
+    -DPARASAIL_LIBRARY=${SP_DIR}/parasail/libparasail.${SHLIB_EXT} \
     -DUSE_RPATH=ON \
     -DOPTIMIZE=ON \
     -DENABLE_PARASAIL=ON \
