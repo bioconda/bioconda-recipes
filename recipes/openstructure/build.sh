@@ -15,6 +15,10 @@ cmake .. \
     -DCMAKE_PREFIX_PATH=${PREFIX} \
     -DCMAKE_CXX_STANDARD=17 \
     -DBOOST_ROOT=${PREFIX} \
+    -DBOOST_INCLUDEDIR="${PREFIX}/include/boost" \
+    -DBOOST_LIBRARYDIR="${PREFIX}/lib" \
+    -DPython_ROOT_DIR=${PREFIX} \
+    -DPython_EXECUTABLE=${PYTHON} \
     -DENABLE_GUI=OFF \
     -DENABLE_GFX=OFF \
     -DENABLE_INFO=OFF \
@@ -31,7 +35,10 @@ cmake .. \
     ${CMAKE_ARGS} \
     -DCMAKE_PREFIX_PATH=${PREFIX} \
     -DCMAKE_CXX_STANDARD=17 \
+    -DSYS_ROOT=${PREFIX} \
     -DBOOST_ROOT=${PREFIX} \
+    -DPython_ROOT_DIR=${PREFIX} \
+    -DPython_EXECUTABLE=${PYTHON} \
     -DCOMPOUND_LIB=${SRC_DIR}/build/compounds.chemlib \
     -DPARASAIL_INCLUDE_DIR=${SP_DIR}/parasail/include \
     -DPARASAIL_LIBRARY=${SP_DIR}/parasail/libparasail.${SHLIB_EXT} \
