@@ -1,48 +1,50 @@
-{% set name = "Replidec" %}
-{% set version = "0.3.1.1" %}
+{% set name = "replidec" %}
+{% set version = "0.3.4" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://files.pythonhosted.org/packages/31/2a/eb6b903693c8bfc74086ca72976d700b73e9990058b24daecc0435f49f41/{{ name }}-{{ version }}.tar.gz"
-  sha256: 9152f2fa410b8206a23f5af5ac94747c1e876a7b32ac67ec9bea8d9faa5bd5d4
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/replidec-{{ version }}.tar.gz
+  sha256: 67b1cf133b4441a98cee62ec781b8aad50840778299e11537317b992cc75bb25
 
 build:
   number: 0
   entry_points:
-    - Replidec=Replidec.Replidec_cmdline:main
-  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+    - Replidec = Replidec.Replidec_cmdline:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   noarch: python
-  
+  run_exports:
+    - {{ pin_subpackage('replidec', max_pin="x.x") }}
+
 requirements:
   host:
-    - python >=3.9
-    - biopython 
-    - numpy >=1.23.1
+    - python >=3.8
     - pip
+    - setuptools
   run:
-    - python >=3.9
-    - biopython 
-    - numpy >=1.23.1
-    - mmseqs2
+    - python >=3.8
+    - biopython >=1.77
+    - future >=0.18.2
+    - numpy >=1.21
     - blast
     - hmmer
+    - mmseqs2
     - prodigal
 
 test:
   commands:
     - Replidec --help
-    - python -m Replidec.Replidec_cmdline -h
-  requires:
-    - pip
 
 about:
   home: "https://github.com/deng-lab/Replidec"
   license: MIT
   license_family: MIT
-  summary: "Replication Cycle Decipher for Phages"
+  license_file: LICENSE
+  summary: "Replication Cycle Decipher for Phages."
+  doc_url: "https://github.com/pengSherryYel/Replidec/blob/v.{{ version }}/README.md"
+  dev_url: "https://github.com/pengSherryYel/Replidec"
 
 extra:
   recipe-maintainers:
