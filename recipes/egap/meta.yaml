@@ -14,15 +14,30 @@ source:
 build:
   noarch: python
   number: 0
-  script:
-    - $PYTHON -m pip install . --no-deps --ignore-installed -vv
+  script: |
+    set -eux
+    echo "Contents of $SRC_DIR:"
+    ls -R "$SRC_DIR"
+
+    # Copy everything (EGAP.py, bin/, etc.) into a private lib folder
+    mkdir -p "${PREFIX}/lib/egap"
+    cp -r ./* "${PREFIX}/lib/egap/"
+
+    # Create launcher that ensures PYTHONPATH points at that folder
+    mkdir -p "${PREFIX}/bin"
+    cat <<'EOF' > "${PREFIX}/bin/EGAP"
+#!/usr/bin/env bash
+export PYTHONPATH="${PREFIX}/lib/egap"
+exec python "${PREFIX}/lib/egap/EGAP.py" "$@"
+EOF
+    chmod +x "${PREFIX}/bin/EGAP"
+
   run_exports:
     - {{ pin_subpackage('egap', max_pin="x") }}
 
 requirements:
   host:
     - python >=3.8,<3.9
-    - pip
   run:
     - python >=3.8,<3.9
     - masurca >=4.1.2
@@ -98,7 +113,8 @@ about:
 
 extra:
   notes: |
-    Installs a console script `EGAP` via pip. External tools like exonerate,
-    centrifuge, and trinity are *not* bundled—install them separately if needed.
+    This recipe installs your code under lib/egap and a small launcher script
+    in bin/EGAP that sets PYTHONPATH appropriately so your
+    `from bin.utilities import …` imports work out of the box.
   recipe-maintainers:
     - iPsychonaut
