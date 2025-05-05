@@ -9,18 +9,27 @@ source:
   - url: https://github.com/iPsychonaut/EGAP/archive/refs/tags/v{{ version }}.tar.gz
     sha256: 2011e6d361a1e223e57d71220b994e4199c4b476ad76af64fb5aaace4c36229b
 
-  - url: https://github.com/iPsychonaut/runner/archive/refs/tags/v0.0.0.tar.gz
-    sha256: 4e67bb1e970dadb86425cb2698e0e2e34f70d78cbf77a32f73c13f66dffb55fc
-
 build:
   noarch: python
   number: 0
   script: |
     set -eux
-    mkdir -p "${PREFIX}/bin"
-    # Copy your script to $PREFIX/bin, rename to "EGAP"
-    cp EGAP.py "${PREFIX}/bin/EGAP"
+    # Install EGAP package structure
+    cd $SRC_DIR/EGAP-{{ version }}
+    # Update shebang to use Conda Python
+    sed -i '1s|^.*$|#!/usr/bin/env python|' EGAP.py
+    # Copy entire package to lib/egap for module access
+    mkdir -p "${PREFIX}/lib/egap"
+    cp -r ./* "${PREFIX}/lib/egap/"
+    # Create executable symlink for CLI access
+    ln -s "${PREFIX}/lib/egap/EGAP.py" "${PREFIX}/bin/EGAP"
     chmod +x "${PREFIX}/bin/EGAP"
+    # Create Trimmomatic adapter symlinks
+    ln -sf "${PREFIX}/share/trimmomatic-0.39-2/adapters/TruSeq3-PE.fa" "${PREFIX}/bin/TruSeq3-PE.fa" || true
+    ln -sf "${PREFIX}/share/trimmomatic-0.39-2/adapters/TruSeq3-SE.fa" "${PREFIX}/bin/TruSeq3-SE.fa" || true
+    # Handle clobbering conflicts
+    rm -f "${PREFIX}/bin/annotate" || true
+    find "${PREFIX}" -name "LICENSE" -not -path "${PREFIX}/share/doc/*" -exec mv {} {}.bak \; || true
   run_exports:
     - {{ pin_subpackage('egap', max_pin="x") }}
 
@@ -33,14 +42,13 @@ requirements:
     - masurca >=4.1.2
     - quast >=5.2.0
     - compleasm >=0.2.7
-    - busco >=5.8.3
+    - busco >=5.8.2
     - biopython >=1.81
     - ragtag >=2.1.0
     - nanoplot >=1.43.0
     - termcolor >=2.3.0
     - minimap2 >=2.28
-    - bwa >=0.7.18
-    - samtools >=1.21
+    - bwa-mem2 >=2.2.1
     - bamtools >=2.5.2
     - tgsgapcloser >=1.2.1
     - abyss >=2.0.2
@@ -49,7 +57,7 @@ requirements:
     - beautifulsoup4 >=4.12.3
     - ncbi-datasets-cli >=16.39.0
     - matplotlib-base >=3.7.3
-    - trimmomatic >=0.39
+    - trimmomatic ==0.39
     - pilon >=1.22
     - fastqc >=0.12.1
     - bbmap >=39.15
@@ -63,10 +71,33 @@ requirements:
     - gfatools >=0.5
     - bifrost >=1.3.5
     - ratatosk >=0.9.0
+    - mafft
+    - iqtree
+    - ete3
+    - trimal
+    - filtlong
+    - pandas
+    - gffutils
+    - pysam
+    - scipy
+    - clinker-py
+    - packaging
+    - meson
+    - pigz ==2.8
+    - sra-tools ==3.1.1
+  run_constrained:
+    - libgd  # Allow libgd but don’t enforce its binaries
 
 test:
   commands:
     - EGAP --help
+    - which masurca
+    - which quast
+    - which minimap2
+    - which bwa-mem2
+    - which trimmomatic
+    - which sra-tools
+    - which pigz
 
 about:
   home: https://github.com/iPsychonaut/EGAP
@@ -82,7 +113,9 @@ about:
 
 extra:
   notes: |
-    This package installs a custom executable named "EGAP" in $PREFIX/bin.
-    Please refer to the upstream GitHub page for usage instructions.
+    This package installs a custom executable named "EGAP" in $PREFIX/bin, along with
+    dependencies callable via CLI. Source-installed tools like exonerate, centrifuge,
+    and trinity are not included and must be installed separately for full functionality
+    in a Singularity container. Refer to the upstream GitHub page for usage instructions.
   recipe-maintainers:
     - iPsychonaut
