@@ -1,0 +1,55 @@
+{% set name = "r-vcfppr" %}
+{% set posix = "m2-" if win else "" %}
+{% set native = "m2w64-" if win else "" %}
+
+package:
+  name: r-{{ name }}
+  version: '{{ version }}'
+
+source:
+  url: https://cran.r-project.org/src/contrib/vcfppR_{{ version }}.tar.gz
+  sha256: 097a35773c044199e036a5ea42c418153f5360f9bf83db0a5e111a92d8477844
+
+build:
+  number: 0
+  merge_build_host: true
+  script: R CMD INSTALL --build .
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - cross-r-base {{ r_base }}  # [build_platform != target_platform]
+    - autoconf  # [unix]
+    - "{{ compiler('c') }}"  # [unix]
+    - "{{ compiler('m2w64_c') }}"  # [win]
+    - "{{ compiler('cxx') }}"  # [unix]
+    - "{{ compiler('m2w64_cxx') }}"  # [win]
+    - posix  # [win]
+  host:
+    - r-Rcpp
+    - r-base
+    - r-methods
+    - r-stats
+    - r-utils
+  run:
+    - r-Rcpp
+    - r-base
+    - r-methods
+    - r-stats
+    - r-utils
+
+test:
+  commands:
+    - $R -e "library('vcfppr')"  # [not win]
+    - "\"%R%\" -e \"library('vcfppr')\""  # [win]
+
+about:
+  home: https://github.com/Zilong-Li/vcfppR
+  summary: The 'vcfpp.h' (<https://github.com/Zilong-Li/vcfpp>) provides an easy-to-use 'C++' 'API' of 'htslib', offering full functionality for manipulating Variant Call Format (VCF) files. The 'vcfppR' package serves as the R bindings of the 'vcfpp.h' library, enabling rapid processing of both compressed and uncompressed VCF files. Explore a range of powerful features for efficient VCF data manipulation.
+  license: MIT
+
+extra:
+  recipe-maintainers:
+    - Zilong-Li
