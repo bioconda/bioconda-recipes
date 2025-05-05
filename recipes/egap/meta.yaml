@@ -10,26 +10,26 @@ source:
     sha256: 2011e6d361a1e223e57d71220b994e4199c4b476ad76af64fb5aaace4c36229b
   - url: https://github.com/iPsychonaut/runner/archive/refs/tags/v0.0.0.tar.gz
     sha256: 4e67bb1e970dadb86425cb2698e0e2e34f70d78cbf77a32f73c13f66dffb55fc
-
+    
 build:
   noarch: python
   number: 0
   script: |
     set -eux
+
+    # show what's in the source directory
     echo "Contents of $SRC_DIR:"
     ls -R "$SRC_DIR"
 
-    # Copy everything (EGAP.py, bin/, etc.) into a private lib folder
+    # install code under lib/egap
     mkdir -p "${PREFIX}/lib/egap"
     cp -r ./* "${PREFIX}/lib/egap/"
 
-    # Create launcher that ensures PYTHONPATH points at that folder
+    # create a small wrapper in bin/EGAP that sets PYTHONPATH
     mkdir -p "${PREFIX}/bin"
-    cat <<'EOF' > "${PREFIX}/bin/EGAP"
-#!/usr/bin/env bash
-export PYTHONPATH="${PREFIX}/lib/egap"
-exec python "${PREFIX}/lib/egap/EGAP.py" "$@"
-EOF
+    echo '#!/usr/bin/env bash' > "${PREFIX}/bin/EGAP"
+    echo 'export PYTHONPATH="${PREFIX}/lib/egap"' >> "${PREFIX}/bin/EGAP"
+    echo 'exec python "${PREFIX}/lib/egap/EGAP.py" "$@"' >> "${PREFIX}/bin/EGAP"
     chmod +x "${PREFIX}/bin/EGAP"
 
   run_exports:
@@ -87,7 +87,7 @@ requirements:
     - pigz ==2.8
     - sra-tools ==3.1.1
   run_constrained:
-    - libgd  # allow libgd but don’t enforce binaries
+    - libgd  # allow libgd but don’t enforce its binaries
 
 test:
   commands:
@@ -108,13 +108,12 @@ about:
   description: |
     EGAP (Entheome Genome Assembly Pipeline) is a versatile bioinformatics pipeline
     for hybrid genome assembly from Oxford Nanopore, Illumina, and PacBio data.
-    It supports multiple input modes and assembly methods, and selects the best
+    It supports multiple input modes and assembly methods, selecting the best
     assembly based on metrics like BUSCO completeness, contig count, N50/L50, and GC%.
 
 extra:
   notes: |
-    This recipe installs your code under lib/egap and a small launcher script
-    in bin/EGAP that sets PYTHONPATH appropriately so your
-    `from bin.utilities import …` imports work out of the box.
+    Installs your code under lib/egap and places a small launcher script in bin/EGAP
+    which sets PYTHONPATH so that imports like `from bin.utilities` resolve correctly.
   recipe-maintainers:
     - iPsychonaut
