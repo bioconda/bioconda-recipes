@@ -15,7 +15,10 @@ build:
   entry_points:
     - bio = biorun.__main__:run
     - fasta_filter.py = biorun.scripts.fasta_filter:run
-  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  script: |
+    mkdir src
+    mv biorun src/biorun
+    {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   run_exports:
     - {{ pin_subpackage('bio', max_pin="x") }}
 
@@ -35,10 +38,11 @@ requirements:
     - gprofiler-official
 
 test:
+  imports:
+    - biorun
   commands:
     - pip check
-    - bio --help
-    - fasta_filter.py --help
+    - bio test
 
 about:
   home: https://github.com/ialbert/bio
