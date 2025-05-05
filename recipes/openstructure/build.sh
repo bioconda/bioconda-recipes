@@ -44,7 +44,6 @@ cmake .. \
     -DENABLE_INFO=ON \
     -DUSE_SHADER=ON \
     -DUSE_DOUBLE_PRECISION=OFF \
-    -DCMAKE_INSTALL_LIBDIR=lib \
     -DENABLE_MM=ON \
     -DOPEN_MM_LIBRARY=${PREFIX}/lib/libOpenMM.${SHLIB_EXT} \
     -DOPEN_MM_INCLUDE_DIR=${PREFIX}/include \
