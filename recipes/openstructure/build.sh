@@ -4,11 +4,9 @@ set -euxo pipefail
 
 mkdir -p build && cd build
 
-PYVER=$(${PYTHON} -c 'import sys; print(f"{sys.version_info[0]}.{sys.version_info[1]}")')
-
 cmake .. \
+    ${CMAKE_ARGS} \
     -DCMAKE_CXX_STANDARD=17 \
-    -DCMAKE_PREFIX_PATH=${PREFIX} \
     -DBOOST_ROOT=${PREFIX} \
     -DENABLE_GUI=OFF \
     -DENABLE_GFX=OFF \
@@ -22,9 +20,8 @@ stage/bin/chemdict_tool create components.cif.gz compounds.chemlib pdb -i
 stage/bin/chemdict_tool update ../modules/conop/data/charmm.cif compounds.chemlib charmm
 
 cmake .. \
-    -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+    ${CMAKE_ARGS} \
     -DCMAKE_CXX_STANDARD=17 \
-    -DCMAKE_PREFIX_PATH=${PREFIX} \
     -DBOOST_ROOT=${PREFIX} \
     -DCOMPOUND_LIB=${SRC_DIR}/build/compounds.chemlib \
     -DPARASAIL_INCLUDE_DIR=${PREFIX}/include \
