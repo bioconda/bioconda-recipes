@@ -12,6 +12,7 @@ mkdir -p build && cd build
 
 cmake .. \
     ${CMAKE_ARGS} \
+    -DCMAKE_PREFIX_PATH=${PREFIX} \
     -DCMAKE_CXX_STANDARD=17 \
     -DBOOST_ROOT=${PREFIX} \
     -DENABLE_GUI=OFF \
@@ -28,6 +29,7 @@ stage/bin/chemdict_tool update ../modules/conop/data/charmm.cif compounds.chemli
 
 cmake .. \
     ${CMAKE_ARGS} \
+    -DCMAKE_PREFIX_PATH=${PREFIX} \
     -DCMAKE_CXX_STANDARD=17 \
     -DBOOST_ROOT=${PREFIX} \
     -DCOMPOUND_LIB=${SRC_DIR}/build/compounds.chemlib \
