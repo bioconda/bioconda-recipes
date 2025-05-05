@@ -10,12 +10,26 @@ source:
   url: https://pypi.io/packages/source/{{ name[0] }}/parasail/parasail-{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
+    - 0001-setup.py.patch
     - darwin-libtool-name.patch
 
 build:
-  number: 3
+  number: 4
   skip: True  # [py < 37]
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  script:
+    - export LC_ALL="en_US.UTF-8"
+    - export M4="${BUILD_PREFIX}/bin/m4"
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
+    - sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/aclocal  # [osx and arm64]
+    - sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/automake  # [osx and arm64]
+    - sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autom4te  # [osx and arm64]
+    - sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoheader  # [osx and arm64]
+    - sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoreconf  # [osx and arm64]
+    - sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/ifnames  # [osx and arm64]
+    - sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoscan  # [osx and arm64]
+    - sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoupdate  # [osx and arm64]
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
     - {{ pin_subpackage('parasail-python', max_pin="x") }}
 
@@ -23,11 +37,12 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - m4
     - make
     - autoconf
     - automake
     - libtool
+    - pkg-config
+    - gnuconfig
   host:
     - python
     - pip
@@ -41,15 +56,17 @@ test:
     - parasail
 
 about:
-  home: https://github.com/jeffdaily/parasail-python
+  home: "https://github.com/jeffdaily/parasail-python"
   summary: "Python bindings for the parasail C library containing implementations of pairwise sequence alignment algorithms."
-  license: BSD-3-Clause
+  license: "BSD-3-Clause"
   license_family: BSD
   license_file: COPYING
-  dev_url: https://github.com/jeffdaily/parasail-python
+  dev_url: "https://github.com/jeffdaily/parasail-python"
+  doc_url: "https://github.com/jeffdaily/parasail-python/blob/v{{ version }}c1/README.rst"
 
 extra:
   identifiers:
     - doi:10.1186/s12859-016-0930-z
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
