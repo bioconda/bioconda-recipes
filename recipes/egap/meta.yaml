@@ -8,28 +8,14 @@ package:
 source:
   - url: https://github.com/iPsychonaut/EGAP/archive/refs/tags/v{{ version }}.tar.gz
     sha256: 2011e6d361a1e223e57d71220b994e4199c4b476ad76af64fb5aaace4c36229b
+  - url: https://github.com/iPsychonaut/runner/archive/refs/tags/v0.0.0.tar.gz
+    sha256: 4e67bb1e970dadb86425cb2698e0e2e34f70d78cbf77a32f73c13f66dffb55fc
 
 build:
   noarch: python
   number: 0
-  script: |
-    set -eux
-    # Debug: List contents of $SRC_DIR
-    echo "Contents of $SRC_DIR:"
-    ls -l $SRC_DIR
-    # Work directly in $SRC_DIR since files are extracted there
-    cd $SRC_DIR
-    # Update shebang to use Conda Python
-    sed -i '1s|^.*$|#!/usr/bin/env python|' EGAP.py
-    # Copy entire package to lib/egap for module access
-    mkdir -p "${PREFIX}/lib/egap"
-    cp -r ./* "${PREFIX}/lib/egap/"
-    # Create executable symlink for CLI access
-    ln -s "${PREFIX}/lib/egap/EGAP.py" "${PREFIX}/bin/EGAP"
-    chmod +x "${PREFIX}/bin/EGAP"
-    # Handle clobbering conflicts
-    rm -f "${PREFIX}/bin/annotate" || true
-    find "${PREFIX}" -name "LICENSE" -not -path "${PREFIX}/share/doc/*" -exec mv {} {}.bak \; || true
+  script:
+    - $PYTHON -m pip install . --no-deps --ignore-installed -vv
   run_exports:
     - {{ pin_subpackage('egap', max_pin="x") }}
 
@@ -86,7 +72,7 @@ requirements:
     - pigz ==2.8
     - sra-tools ==3.1.1
   run_constrained:
-    - libgd  # Allow libgd but don’t enforce its binaries
+    - libgd  # allow libgd but don’t enforce binaries
 
 test:
   commands:
@@ -101,24 +87,18 @@ test:
 
 about:
   home: https://github.com/iPsychonaut/EGAP
-  license: "BSD 3-Clause License"
+  license: BSD 3-Clause License
   license_file: LICENSE
   summary: "EGAP pipeline for genome assembly and QC analysis"
   description: |
     EGAP (Entheome Genome Assembly Pipeline) is a versatile bioinformatics pipeline
     for hybrid genome assembly from Oxford Nanopore, Illumina, and PacBio data.
-    It supports multiple input modes and assembly methods and determines the best 
-    based on multiple metrics: BUSCO Completeness (Single + Duplicated), Assembly 
-    Contig Count, Assembly N50, Assembly L50, and Assembly GC-content.
+    It supports multiple input modes and assembly methods, and selects the best
+    assembly based on metrics like BUSCO completeness, contig count, N50/L50, and GC%.
 
 extra:
   notes: |
-    This package installs a custom executable named "EGAP" in $PREFIX/bin, along with
-    dependencies callable via CLI. Source-installed tools like exonerate, centrifuge,
-    and trinity are not included and must be installed separately for full functionality
-    in a Singularity container. Trimmomatic adapter files are available in
-    $PREFIX/share/trimmomatic-0.39-2/adapters/. Ensure EGAP scripts reference these
-    files directly or create symlinks in $PREFIX/bin/ if required by your workflow.
-    Refer to the upstream GitHub page for usage instructions.
+    Installs a console script `EGAP` via pip. External tools like exonerate,
+    centrifuge, and trinity are *not* bundled—install them separately if needed.
   recipe-maintainers:
     - iPsychonaut
