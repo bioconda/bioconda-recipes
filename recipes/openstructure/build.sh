@@ -17,11 +17,11 @@ cmake .. \
     ${CMAKE_ARGS} \
     -DCMAKE_PREFIX_PATH=${PREFIX} \
     -DCMAKE_CXX_COMPILER=${CXX} \
-    -DCXX_FLAGS=${CXXFLAGS} \
+    -DCMAKE_CXX_FLAGS=${CXXFLAGS} \
     -DCMAKE_CXX_STANDARD=17 \
     -DBOOST_ROOT=${PREFIX} \
-    -DBOOST_INCLUDEDIR="${PREFIX}/include/boost" \
-    -DBOOST_LIBRARYDIR="${PREFIX}/lib" \
+    -DBoost_INCLUDE_DIR="${PREFIX}/include/boost" \
+    -DBoost_LIBRARY_DIR="${PREFIX}/lib" \
     -DPython_ROOT_DIR=${PREFIX} \
     -DPython_EXECUTABLE=${PYTHON} \
     -DENABLE_GUI=OFF \
@@ -38,11 +38,13 @@ stage/bin/chemdict_tool update ../modules/conop/data/charmm.cif compounds.chemli
 
 cmake .. \
     ${CMAKE_ARGS} \
-    -DCMAKE_CXX_COMPILER=${CXX} \
-    -DCXX_FLAGS=${CXXFLAGS} \
     -DCMAKE_PREFIX_PATH=${PREFIX} \
+    -DCMAKE_CXX_COMPILER=${CXX} \
+    -DCMAKE_CXX_FLAGS=${CXXFLAGS} \
     -DCMAKE_CXX_STANDARD=17 \
     -DBOOST_ROOT=${PREFIX} \
+    -DBoost_INCLUDE_DIR="${PREFIX}/include/boost" \
+    -DBoost_LIBRARY_DIR="${PREFIX}/lib" \
     -DPython_ROOT_DIR=${PREFIX} \
     -DPython_EXECUTABLE=${PYTHON} \
     -DCOMPOUND_LIB=${SRC_DIR}/build/compounds.chemlib \
