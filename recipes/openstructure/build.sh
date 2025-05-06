@@ -2,7 +2,6 @@
 
 set -euxo pipefail
 
-
 if [[ "$(uname)" == "Darwin" ]]; then
   export CXX="${BUILD_PREFIX}/bin/clang++"
   export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic"
@@ -15,15 +14,15 @@ mkdir -p build && cd build
 
 cmake .. \
     ${CMAKE_ARGS} \
-    -DCMAKE_PREFIX_PATH=${PREFIX} \
-    -DCMAKE_CXX_COMPILER=${CXX} \
-    -DCMAKE_CXX_FLAGS=${CXXFLAGS} \
+    -DCMAKE_PREFIX_PATH="${PREFIX}" \
+    -DCMAKE_CXX_COMPILER="${CXX}" \
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DCMAKE_CXX_STANDARD=17 \
-    -DBOOST_ROOT=${PREFIX} \
+    -DBOOST_ROOT="${PREFIX}" \
     -DBoost_INCLUDE_DIR="${PREFIX}/include/boost" \
     -DBoost_LIBRARY_DIR="${PREFIX}/lib" \
-    -DPython_ROOT_DIR=${PREFIX} \
-    -DPython_EXECUTABLE=${PYTHON} \
+    -DPython_ROOT_DIR="${PREFIX}" \
+    -DPython_EXECUTABLE="${PYTHON}" \
     -DENABLE_GUI=OFF \
     -DENABLE_GFX=OFF \
     -DENABLE_INFO=OFF \
@@ -38,18 +37,18 @@ stage/bin/chemdict_tool update ../modules/conop/data/charmm.cif compounds.chemli
 
 cmake .. \
     ${CMAKE_ARGS} \
-    -DCMAKE_PREFIX_PATH=${PREFIX} \
-    -DCMAKE_CXX_COMPILER=${CXX} \
-    -DCMAKE_CXX_FLAGS=${CXXFLAGS} \
+    -DCMAKE_PREFIX_PATH="${PREFIX}" \
+    -DCMAKE_CXX_COMPILER="${CXX}" \
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DCMAKE_CXX_STANDARD=17 \
-    -DBOOST_ROOT=${PREFIX} \
+    -DBOOST_ROOT="${PREFIX}" \
     -DBoost_INCLUDE_DIR="${PREFIX}/include/boost" \
     -DBoost_LIBRARY_DIR="${PREFIX}/lib" \
-    -DPython_ROOT_DIR=${PREFIX} \
-    -DPython_EXECUTABLE=${PYTHON} \
-    -DCOMPOUND_LIB=${SRC_DIR}/build/compounds.chemlib \
-    -DPARASAIL_INCLUDE_DIR=${SP_DIR}/parasail/include \
-    -DPARASAIL_LIBRARY=${SP_DIR}/parasail/libparasail.${SHLIB_EXT} \
+    -DPython_ROOT_DIR="${PREFIX}" \
+    -DPython_EXECUTABLE="${PYTHON}" \
+    -DCOMPOUND_LIB="${SRC_DIR}/build/compounds.chemlib" \
+    -DPARASAIL_INCLUDE_DIR="${SP_DIR}/parasail/include" \
+    -DPARASAIL_LIBRARY="${SP_DIR}/parasail/libparasail.${SHLIB_EXT}" \
     -DUSE_RPATH=ON \
     -DOPTIMIZE=ON \
     -DENABLE_PARASAIL=ON \
@@ -60,9 +59,9 @@ cmake .. \
     -DUSE_SHADER=ON \
     -DUSE_DOUBLE_PRECISION=OFF \
     -DENABLE_MM=ON \
-    -DOPEN_MM_LIBRARY=${PREFIX}/lib/libOpenMM.${SHLIB_EXT} \
-    -DOPEN_MM_INCLUDE_DIR=${PREFIX}/include \
-    -DOPEN_MM_PLUGIN_DIR=${PREFIX}/lib/plugins \
+    -DOPEN_MM_LIBRARY="${PREFIX}/lib/libOpenMM.${SHLIB_EXT}" \
+    -DOPEN_MM_INCLUDE_DIR="${PREFIX}/include" \
+    -DOPEN_MM_PLUGIN_DIR="${PREFIX}/lib/plugins" \
     -DCMAKE_VERBOSE_MAKEFILE=ON
 
 make VERBOSE=1 -j"${CPU_COUNT}"
