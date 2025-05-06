@@ -19,3 +19,6 @@ ${PYTHON} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
 mkdir -p ${PREFIX}/bin
 mv hic_qc.py ${PREFIX}/bin
 chmod a+x ${PREFIX}/bin/hic_qc.py
+
+mkdir -p ${PREFIX}/bin/collateral
+cp -r collateral/* ${PREFIX}/bin/collateral/
