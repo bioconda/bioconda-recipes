@@ -1,0 +1,58 @@
+diff --git a/src/classify.cc b/src/classify.cc
+index 069dd21..c6aa5cf 100644
+--- a/src/classify.cc
++++ b/src/classify.cc
+@@ -936,6 +936,21 @@ void AddHitlistString(ostringstream &oss, vector<taxid_t> &taxa,
+   }
+ }
+ 
++ofstream *OpenOutputStream(const std::string &filename) {
++  ofstream *out = new ofstream();
++  out->exceptions(std::ios::badbit | std::ios::failbit);
++  try {
++    out->open(filename);
++  } catch(std::exception &e) {
++    std::cerr << '\r' << "Unable to open file: " << filename
++              << ", reason: " << strerror(errno) << std::endl;
++    delete out;
++    exit(EXIT_FAILURE);
++  }
++
++  return out;
++}
++
+ void InitializeOutputs(Options &opts, OutputStreamData &outputs, SequenceFormat format) {
+   #pragma omp critical(output_init)
+   {
+@@ -951,8 +966,8 @@ void InitializeOutputs(Options &opts, OutputStreamData &outputs, SequenceFormat
+             errx(EX_DATAERR, "Paired filename format has >1 # character: %s",
+                  opts.classified_output_filename.c_str());
+           }
+-          outputs.classified_output1 = new ofstream(fields[0] + "_1" + fields[1]);
+-          outputs.classified_output2 = new ofstream(fields[0] + "_2" + fields[1]);
++          outputs.classified_output1 = OpenOutputStream(fields[0] + "_1" + fields[1]);
++          outputs.classified_output2 = OpenOutputStream(fields[0] + "_2" + fields[1]);
+         }
+         else
+           outputs.classified_output1 = new ofstream(opts.classified_output_filename);
+@@ -969,8 +984,8 @@ void InitializeOutputs(Options &opts, OutputStreamData &outputs, SequenceFormat
+             errx(EX_DATAERR, "Paired filename format has >1 # character: %s",
+                  opts.unclassified_output_filename.c_str());
+           }
+-          outputs.unclassified_output1 = new ofstream(fields[0] + "_1" + fields[1]);
+-          outputs.unclassified_output2 = new ofstream(fields[0] + "_2" + fields[1]);
++          outputs.unclassified_output1 = OpenOutputStream(fields[0] + "_1" + fields[1]);
++          outputs.unclassified_output2 = OpenOutputStream(fields[0] + "_2" + fields[1]);
+         }
+         else
+           outputs.unclassified_output1 = new ofstream(opts.unclassified_output_filename);
+@@ -980,7 +995,8 @@ void InitializeOutputs(Options &opts, OutputStreamData &outputs, SequenceFormat
+         if (opts.kraken_output_filename == "-")  // Special filename to silence Kraken output
+           outputs.kraken_output = nullptr;
+         else {
+-          outputs.kraken_output = new ofstream(opts.kraken_output_filename);
++          // outputs.kraken_output = new ofstream(opts.kraken_output_filename);
++          outputs.kraken_output = OpenOutputStream(opts.kraken_output_filename);
+         }
+       }
+       outputs.initialized = true;

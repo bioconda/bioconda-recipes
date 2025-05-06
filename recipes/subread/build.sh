@@ -24,7 +24,7 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export C="${CC}"
 
-make -f $MAKEFILE CC_EXEC="$C -L$PREFIX/lib -fcommon" -j"${CPU_COUNT}"
+make -f "${MAKEFILE}" CC_EXEC="${C} -L${PREFIX}/lib -fcommon" -j"${CPU_COUNT}"
 
 cd ..
 install -v -m 0755 bin/utilities/flattenGTF bin/utilities/genRandomReads \
@@ -35,7 +35,7 @@ rm -rf bin/utilities
 
 install -v -m 0755 bin/exactSNP bin/featureCounts bin/subindel bin/subjunc \
 	bin/sublong bin/subread-align bin/subread-buildindex "${PREFIX}/bin"
-cp -rf annotation/* $PREFIX/annotation
+cp -rf annotation/* "${PREFIX}/annotation"
 
 # add read permissions to LICENSE
 chmod a+r LICENSE

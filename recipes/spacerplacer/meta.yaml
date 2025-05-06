@@ -1,0 +1,55 @@
+{% set name = "SpacerPlacer" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name|lower }}       # Name of your package
+  version: {{ version }}      # Version of your package
+
+source:
+  url: https://github.com/fbaumdicker/SpacerPlacer/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 015def4681efb9114dfc94d529d707e2978de4a531ed7e8688884ca6ca4163c8
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - spacerplacer = spacerplacer:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('spacerplacer', max_pin="x") }}
+
+requirements:
+  build:
+    - python <3.13
+    - setuptools
+    - pip
+  run:
+    - python <3.13 # need this due to ete3 cgi package issue
+    - numpy >=1.21.4
+    - pandas >=1.3.4
+    - seaborn-base >=0.11.2
+    - matplotlib-base >=3.4.3
+    - scipy >=1.7.1
+    - ete3 >=3.1.2
+    - palettable >=3.3.0
+    - graphviz >=0.20.1
+    - sympy >=1.11.1
+    - mafft >=7.490
+    - biopython >=1.79
+    - python-graphviz >=0.17
+    - dill >=0.3.5.1
+
+test:
+  imports:
+    - spacerplacer
+    - sp_model
+  commands:
+    - spacerplacer -h
+
+about:
+  home: https://github.com/fbaumdicker/SpacerPlacer  # URL for the project
+  license: GPL-3.0-only                              # License for your package
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "SpacerPlacer is a powerful software for reconstructing ancestral CRISPR spacer arrays."
+  dev_url: https://github.com/fbaumdicker/SpacerPlacer
