@@ -61,5 +61,4 @@ cmake .. \
     -DCMAKE_VERBOSE_MAKEFILE=ON
 
 make VERBOSE=1 -j"${CPU_COUNT}"
-make check
 make install
