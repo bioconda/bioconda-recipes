@@ -1,0 +1,57 @@
+{% set name = "genedom" %}
+{% set version = "0.2.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Edinburgh-Genome-Foundry/genedom/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 2b10083590aecfbfa1faaab55074ecf837931cfa3f33758f9124e915f2aaa549
+  patches: patches/0001-restrict-installed-modules.patch
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports: 
+    - {{ pin_subpackage('genedom', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python 
+    - setuptools
+    - pip
+  run:
+    - python
+    - openpyxl
+    - pandas
+    - dnachisel
+    - pydenticon
+    - dna_features_viewer
+    - snapgene-reader
+    - flametree
+    - pdf-reports
+
+test:
+  source_files: 
+    - tests/
+  imports:
+    - {{ name|lower }}
+  requires:
+    ## NB: python constraint is temp workaround; please try removing in future builds
+    - python
+    - matplotlib
+    - pytest
+  commands:
+    - pytest tests/
+
+about:
+  home: https://github.com/Edinburgh-Genome-Foundry/genedom#
+  summary: "Genetic part standardization"
+  license: MIT
+  license_file: LICENCE.txt
+
+extra:
+  recipe-maintainers:
+    - ramez17khaled
