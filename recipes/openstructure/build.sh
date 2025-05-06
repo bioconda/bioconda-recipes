@@ -44,7 +44,7 @@ cmake .. \
     -DPython_EXECUTABLE="${PYTHON}" \
     -DCOMPOUND_LIB="${SRC_DIR}/build/compounds.chemlib" \
     -DPARASAIL_INCLUDE_DIR="${SP_DIR}/parasail/include" \
-    -DPARASAIL_LIBRARY="${SP_DIR}/parasail/libparasail.${SHLIB_EXT}" \
+    -DPARASAIL_LIBRARY="${SP_DIR}/parasail/libparasail${SHLIB_EXT}" \
     -DUSE_RPATH=ON \
     -DOPTIMIZE=ON \
     -DENABLE_PARASAIL=ON \
@@ -55,7 +55,7 @@ cmake .. \
     -DUSE_SHADER=ON \
     -DUSE_DOUBLE_PRECISION=OFF \
     -DENABLE_MM=ON \
-    -DOPEN_MM_LIBRARY="${PREFIX}/lib/libOpenMM.${SHLIB_EXT}" \
+    -DOPEN_MM_LIBRARY="${PREFIX}/lib/libOpenMM${SHLIB_EXT}" \
     -DOPEN_MM_INCLUDE_DIR="${PREFIX}/include" \
     -DOPEN_MM_PLUGIN_DIR="${PREFIX}/lib/plugins" \
     -DCMAKE_VERBOSE_MAKEFILE=ON
