@@ -77,11 +77,18 @@ requirements:
     - xorg-libxrender  # [linux]
     - xorg-libxt  # [linux]
     - xorg-libxxf86vm  # [linux]
+
 test:
-    requires:
-      - grep
-    commands:
-      - ost -h | grep Usage
+  source_files:
+    - examples
+
+  commands:
+    - ost -h || true
+    - ost compare-structures \
+      -m examples/scoring/model.pdb \
+      -r examples/scoring/reference.cif.gz \
+      --lddt --local-lddt --qs-score
+    - test -f out.json
 
 about:
   home: https://openstructure.org
