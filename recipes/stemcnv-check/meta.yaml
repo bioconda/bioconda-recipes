@@ -11,7 +11,7 @@ source:
 
 build:
   number: 1
-  skip: true  # [osx]
+  noarch: python
   entry_points:
     - stemcnv-check=stemcnv_check.__main__:main
   script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv
@@ -33,6 +33,7 @@ requirements:
     - setuptools-scm
   run:
     - python >=3.12
+    # These are also all in the pyproject.toml
     - snakemake-minimal >=8,<9
     - ruamel.yaml >=0.18
     - loguru >=0.7
@@ -41,7 +42,10 @@ requirements:
     - xlsxwriter >=3.2
     - pydantic >=2.8
     - deepdiff >=8.0
-    - apptainer
+    # Unsure if this is inherited from snakemake-minimal or not, but it is needed for the app
+    - apptainer >=1.3
+    # Add this to implement runtime dependency on bcftools & therefore linux-64
+    - bcftools-gtc2vcf-plugin =1.16 # [osx]  
 
 test:
   # imports:
