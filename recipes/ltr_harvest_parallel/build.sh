@@ -1,15 +1,12 @@
 #!/bin/sh
 set -x -e
 
-LTR_HARVEST_PARALLEL_DIR=${PREFIX}/share/LTR_HARVEST_parallel
-
 mkdir -p ${PREFIX}/bin
-mkdir -p ${LTR_HARVEST_PARALLEL_DIR}
-cp -r bin/LTR_HARVEST_parallel/* ${LTR_HARVEST_PARALLEL_DIR}
 
-cat <<END >>${PREFIX}/bin/LTR_HARVEST_parallel
-#!/bin/bash
-perl ${LTR_HARVEST_PARALLEL_DIR}/LTR_HARVEST_parallel \$@
-END
-
+cp -r LTR_HARVEST_parallel ${PREFIX}/bin
 chmod a+x ${PREFIX}/bin/LTR_HARVEST_parallel
+cp -r bin/cut.pl ${PREFIX}/bin
+chmod a+x ${PREFIX}/bin/cut.pl
+
+# change the path to cut.pl in LTR_HARVEST_parallel
+sed -i 's|my \$cut = "\$script_path/bin/cut.pl"; #the program to cut sequence|my \$cut = "cut.pl"; #the program to cut sequence|' ${PREFIX}/bin/cut.pl
