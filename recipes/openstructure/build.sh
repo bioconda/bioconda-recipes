@@ -34,6 +34,13 @@ cp ../monomers/components.cif.gz .
 stage/bin/chemdict_tool create components.cif.gz compounds.chemlib pdb -i
 stage/bin/chemdict_tool update ../modules/conop/data/charmm.cif compounds.chemlib charmm
 
+# Fix RPATH to contain parasail library
+LIB_DIR="${PREFIX}/lib"
+LIBPARASAIL_DIR="${SP_DIR}/parasail"
+sed -i.bak \
+    "s|CMAKE_INSTALL_RPATH \"\$ORIGIN/../\${LIB_DIR}\"|CMAKE_INSTALL_RPATH ${LIB_DIR};${LIBPARASAIL_DIR}|g" \
+    "${SRC_DIR}/CMakeLists.txt"
+
 cmake .. \
     ${CMAKE_ARGS} \
     -DCMAKE_PREFIX_PATH="${PREFIX}" \
