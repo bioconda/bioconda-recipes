@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euxo pipefail
+set -exo pipefail
 
 export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${SP_DIR}/parasail/libparasail${SHLIB_EXT}"
 
