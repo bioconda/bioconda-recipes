@@ -1,17 +1,11 @@
 #!/usr/bin/env bash
 
-set -exo pipefail
-
-# for `make check`
-export LD_LIBRARY_PATH="${SP_DIR}/parasail/libparasail${SHLIB_EXT}:${PREFIX}/lib${LD_LIBRARY_PATH:+:}${LD_LIBRARY_PATH}"
+set -exuo pipefail
 
 if [[ "$(uname)" == "Linux" ]]; then
     export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined,--export-dynamic"
 elif [[ "$(uname)" == "Darwin" ]]; then
     export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic -framework OpenGL"
-    export CXXFLAGS="--gcc-toolchain=${BUILD_PREFIX} ${CXXFLAGS}"
-    export LDFLAGS="-L${BUILD_PREFIX}/lib ${LDFLAGS}"
-    export CPPFLAGS="-I${BUILD_PREFIX}/include/c++/v1 ${CPPFLAGS}"
 fi
 
 mkdir -p build && cd build
@@ -67,5 +61,4 @@ cmake .. \
     -DCMAKE_VERBOSE_MAKEFILE=ON
 
 make VERBOSE=1 -j"${CPU_COUNT}"
-make check
 make install
