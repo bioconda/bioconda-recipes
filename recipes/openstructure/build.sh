@@ -5,6 +5,8 @@ set -exuo pipefail
 if [[ "$(uname)" == "Linux" ]]; then
     export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined,--export-dynamic"
 elif [[ "$(uname)" == "Darwin" ]]; then
+    SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
+    export CXXFLAGS="${CXXFLAGS} -isysroot ${SDKROOT}"
     export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic -framework OpenGL"
 fi
 
