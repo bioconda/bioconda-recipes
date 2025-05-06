@@ -2,7 +2,8 @@
 
 set -exo pipefail
 
-export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${SP_DIR}/parasail/libparasail${SHLIB_EXT}"
+# for `make check`
+export LD_LIBRARY_PATH="${SP_DIR}/parasail/libparasail${SHLIB_EXT}:${PREFIX}/lib${LD_LIBRARY_PATH:+:}${LD_LIBRARY_PATH}"
 
 if [[ "$(uname)" == "Linux" ]]; then
     export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined,--export-dynamic"
