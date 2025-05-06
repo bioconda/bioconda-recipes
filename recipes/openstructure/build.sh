@@ -10,7 +10,7 @@ elif [[ "$(uname)" == "Darwin" ]]; then
     export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic -framework OpenGL"
     export CXXFLAGS="--gcc-toolchain=${BUILD_PREFIX} ${CXXFLAGS}"
     export LDFLAGS="-L${BUILD_PREFIX}/lib ${LDFLAGS}"
-    export CPPFLAGS="-I${BUILD_PREFIX}/include/c++/v1 ${CXXFLAGS} "
+    export CPPFLAGS="-I${BUILD_PREFIX}/include/c++/v1 ${CPPFLAGS}"
 fi
 
 mkdir -p build && cd build
