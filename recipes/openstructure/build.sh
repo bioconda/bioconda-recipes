@@ -2,9 +2,12 @@
 
 set -euxo pipefail
 
+
 if [[ "$(uname)" == "Darwin" ]]; then
+  export CXX="${BUILD_PREFIX}/bin/clang++"
   export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic"
 elif [[ "$(uname)" == "Linux" ]]; then
+  export CXX="${BUILD_PREFIX}/bin/g++"
   export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined,--export-dynamic"
 fi
 
@@ -13,6 +16,8 @@ mkdir -p build && cd build
 cmake .. \
     ${CMAKE_ARGS} \
     -DCMAKE_PREFIX_PATH=${PREFIX} \
+    -DCMAKE_CXX_COMPILER=${CXX} \
+    -DCXX_FLAGS=${CXXFLAGS} \
     -DCMAKE_CXX_STANDARD=17 \
     -DBOOST_ROOT=${PREFIX} \
     -DBOOST_INCLUDEDIR="${PREFIX}/include/boost" \
@@ -33,9 +38,10 @@ stage/bin/chemdict_tool update ../modules/conop/data/charmm.cif compounds.chemli
 
 cmake .. \
     ${CMAKE_ARGS} \
+    -DCMAKE_CXX_COMPILER=${CXX} \
+    -DCXX_FLAGS=${CXXFLAGS} \
     -DCMAKE_PREFIX_PATH=${PREFIX} \
     -DCMAKE_CXX_STANDARD=17 \
-    -DSYS_ROOT=${PREFIX} \
     -DBOOST_ROOT=${PREFIX} \
     -DPython_ROOT_DIR=${PREFIX} \
     -DPython_EXECUTABLE=${PYTHON} \
