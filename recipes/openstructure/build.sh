@@ -16,7 +16,7 @@ cmake .. \
     ${CMAKE_ARGS} \
     -DCMAKE_PREFIX_PATH="${PREFIX}" \
     -DCMAKE_CXX_COMPILER="${CXX}" \
-    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+    -DCXX_FLAGS="${CXXFLAGS}" \
     -DCMAKE_CXX_STANDARD=17 \
     -DBOOST_ROOT="${PREFIX}" \
     -DBoost_INCLUDE_DIR="${PREFIX}/include/boost" \
@@ -39,7 +39,7 @@ cmake .. \
     ${CMAKE_ARGS} \
     -DCMAKE_PREFIX_PATH="${PREFIX}" \
     -DCMAKE_CXX_COMPILER="${CXX}" \
-    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+    -DCXX_FLAGS="${CXXFLAGS}" \
     -DCMAKE_CXX_STANDARD=17 \
     -DBOOST_ROOT="${PREFIX}" \
     -DBoost_INCLUDE_DIR="${PREFIX}/include/boost" \
