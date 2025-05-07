@@ -1,5 +1,5 @@
 diff --git a/install.sh b/install.sh
-index e8d9eca..646d54f 100755
+index e8d9eca..12e5465 100755
 --- a/install.sh
 +++ b/install.sh
 @@ -1,4 +1,4 @@
@@ -8,16 +8,27 @@ index e8d9eca..646d54f 100755
  
  set -xe
  
-@@ -16,9 +16,9 @@ ln -sf $ROOT/PkgConfig.pm $ROOT/dist-bin/pkg-config
+@@ -9,16 +9,16 @@ ROOT=`pwd -P`
+ # Check for gmake #
+ ###################
+ mkdir -p dist-bin
+-PATH=$PATH:$ROOT/dist-bin
++PATH="$PATH:$ROOT/dist-bin"
+ ln -sf $(which make) $ROOT/dist-bin/gmake
+ ln -sf $ROOT/PkgConfig.pm $ROOT/dist-bin/pkg-config
+ 
  export NUM_THREADS=`grep -c '^processor' /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1`;
- BINDIR=$DEST/bin
- LIBDIR=$DEST/lib
+-BINDIR=$DEST/bin
+-LIBDIR=$DEST/lib
 -export PKG_CONFIG_PATH=$LIBDIR/pkgconfig:$PKG_CONFIG_PATH
 -(cd global-1 && ./configure --prefix=$DEST --bindir=$BINDIR --libdir=$LIBDIR && make -j $NUM_THREADS install-special)
-+export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH
-+(cd global-1 && autoreconf -if && ./configure --prefix=$DEST --bindir=$BINDIR --libdir=$LIBDIR && make -j $NUM_THREADS install-special)
++export BINDIR="$DEST/bin"
++export LIBDIR="$DEST/lib"
++export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
++(cd global-1 && autoreconf -if && ./configure --prefix="${DEST}" --bindir="${BINDIR}" --libdir="${LIBDIR}" && make -j"${NUM_THREADS}" install-special)
  echo "creating example config file masurca_config_example.txt"
- $BINDIR/masurca -g masurca_config_example.txt
+-$BINDIR/masurca -g masurca_config_example.txt
++$PREFIX/bin/masurca -g masurca_config_example.txt
  
 -(cd Flye && make && cp -a ../Flye $DEST);
-+(cd Flye && make -j$CPU_COUNT && cp -arf ../Flye $DEST);
++(cd Flye && make -j"${CPU_COUNT}" && cp -arf ../Flye "${DEST}");
