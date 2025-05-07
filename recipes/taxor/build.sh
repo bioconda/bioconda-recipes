@@ -4,7 +4,7 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+cmake -S src -B build -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_CXX_COMPILER="${CXX}" \
   -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
   -Wno-dev -Wno-deprecated --no-warn-unused-cli
