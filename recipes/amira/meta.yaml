@@ -1,0 +1,59 @@
+{% set version = "0.8.0" %}
+{% set name = "Amira" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Danderson123/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 46af33fab66ce18c8b9f950531b94fd4253a58e88af9a4d3db8dc553aa6e12a8
+
+build:
+  number: 0
+  script:
+    - |
+      poetry install
+
+  entry_points:
+    - amira = amira.__main__:main
+  run_exports:
+    - {{ pin_subpackage("amira", max_pin="x.x") }}
+
+requirements:
+  build:
+    - poetry-core >=1.0.0
+    - python ==3.10
+
+  host:
+    - python ==3.10
+    - pip
+    - poetry-core >=1.0.0
+    - make
+    - git
+
+  run:
+    - python ==3.10
+    - samtools ==1.18
+    - racon ==1.4.10
+    - minimap2 ==2.17
+    - kmer-jellyfish ==2.3.0
+
+test:
+  imports:
+    - amira
+  commands:
+    - amira --help
+
+about:
+  home: "https://github.com/Danderson123/Amira"
+  summary: 'A tool to detect acquired AMR genes directly from long read sequencing data.'
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: LICENSE
+  dev_url: "https://github.com/Danderson123/Amira"
+  doc_url: "https://github.com/Danderson123/Amira/blob/main/README.md"
+
+extra:
+  recipe-maintainers:
+    - Danderson123
