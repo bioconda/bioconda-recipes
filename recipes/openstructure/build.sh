@@ -51,7 +51,7 @@ cmake .. \
     -DUSE_RPATH=ON \
     -DOPTIMIZE=ON \
     -DENABLE_PARASAIL=ON \
-    -DCOMPILE_TMTOOLS=OFF \
+    -DCOMPILE_TMTOOLS=ON \
     -DENABLE_GFX=ON \
     -DENABLE_GUI=ON \
     -DENABLE_INFO=ON \
@@ -65,4 +65,5 @@ cmake .. \
     ${extra_cmake_args}
 
 make VERBOSE=1 -j"${CPU_COUNT}"
+make check
 make install
