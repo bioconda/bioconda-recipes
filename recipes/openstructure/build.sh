@@ -35,13 +35,6 @@ cp ../monomers/components.cif.gz .
 stage/bin/chemdict_tool create components.cif.gz compounds.chemlib pdb -i
 stage/bin/chemdict_tool update ../modules/conop/data/charmm.cif compounds.chemlib charmm
 
-# Fix RPATH to contain parasail library
-LIB_DIR="${PREFIX}/lib"
-LIBPARASAIL_DIR="${SP_DIR}/parasail"
-sed -i.bak \
-    "s|CMAKE_INSTALL_RPATH \"\$ORIGIN/../\${LIB_DIR}\"|CMAKE_INSTALL_RPATH ${LIB_DIR};${LIBPARASAIL_DIR}|g" \
-    "${SRC_DIR}/CMakeLists.txt"
-
 cmake .. \
     ${CMAKE_ARGS} \
     -DCMAKE_PREFIX_PATH="${PREFIX}" \
@@ -53,11 +46,11 @@ cmake .. \
     -DPython_ROOT_DIR="${PREFIX}" \
     -DPython_EXECUTABLE="${PYTHON}" \
     -DCOMPOUND_LIB="${SRC_DIR}/build/compounds.chemlib" \
-    -DPARASAIL_INCLUDE_DIR="${SP_DIR}/parasail/include" \
-    -DPARASAIL_LIBRARY="${SP_DIR}/parasail/libparasail${SHLIB_EXT}" \
+    -DPARASAIL_INCLUDE_DIR="${PREFIX}/include" \
+    -DPARASAIL_LIBRARY="${PREFIX}/lib/libparasail${SHLIB_EXT}" \
     -DUSE_RPATH=ON \
     -DOPTIMIZE=ON \
-    -DENABLE_PARASAIL=OFF \
+    -DENABLE_PARASAIL=ON \
     -DCOMPILE_TMTOOLS=OFF \
     -DENABLE_GFX=ON \
     -DENABLE_GUI=ON \
