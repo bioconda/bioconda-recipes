@@ -18,8 +18,14 @@ sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' googletest/googlemock/CMakeLists.tx
 sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' googletest/googletest/CMakeLists.txt
 
 rm -rf *.bak
+rm -rf googletest/*.bak
+rm -rf googletest/googlemock/*.bak
+rm -rf googletest/googletest/*.bak
 
-if [[ $TARGET_PLATFORM = "Linux" ]]; then
+OS=$(uname -s)
+ARCH=$(uname -m)
+
+if [[ "${OS}" == "Linux" && "${ARCH}" == "x86_64" ]]; then
     mkdir -p build/{sse2,sse4.1,avx2,avx512}
 
     # SSE2
@@ -61,13 +67,22 @@ if [[ $TARGET_PLATFORM = "Linux" ]]; then
     # wrapper script
     cp -f "${RECIPE_DIR}/anchorwave" "${PREFIX}/bin/anchorwave"
     chmod +x "${PREFIX}/bin/anchorwave"
-elif [[ $TARGET_PLATFORM = "macOS" ]]; then
+elif [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
     mkdir -p build/macOS
 
     # macOS (SSE4.1)
     rm CMakeLists.txt
     ln -sf CMakeLists_MACOSX86.txt CMakeLists.txt
     cd build/macOS
+    cmake -S ../.. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" -Wno-dev -Wno-deprecated --no-warn-unused-cli "${CONFIG_ARGS}"
+    cmake --build . --clean-first --target install -j "${CPU_COUNT}"
+elif [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
+    mkdir -p build/arm64
+
+    # arm64
+    rm CMakeLists.txt
+    ln -sf CMakeLists_arm.txt CMakeLists.txt
+    cd build/arm64
     cmake -S ../.. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" -Wno-dev -Wno-deprecated --no-warn-unused-cli "${CONFIG_ARGS}"
     cmake --build . --clean-first --target install -j "${CPU_COUNT}"
 else
