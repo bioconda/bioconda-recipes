@@ -6,8 +6,9 @@ extra_cmake_args=
 if [[ "$(uname)" == "Linux" ]]; then
     export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined,--export-dynamic"
 elif [[ "$(uname)" == "Darwin" ]]; then
-    extra_cmake_args="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
+    export CXX=${BUILD_PREFIX}/bin/clang++
     export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic -framework OpenGL"
+    extra_cmake_args="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
 fi
 
 mkdir -p build && cd build
@@ -15,6 +16,7 @@ mkdir -p build && cd build
 cmake .. \
     ${CMAKE_ARGS} \
     -DCMAKE_PREFIX_PATH="${PREFIX}" \
+    -DCMAKE_CXX_COMPILER="${CXX}" \
     -DCXX_FLAGS="${CXXFLAGS}" \
     -DCMAKE_CXX_STANDARD=17 \
     -DBOOST_ROOT="${PREFIX}" \
@@ -39,6 +41,7 @@ stage/bin/chemdict_tool update ../modules/conop/data/charmm.cif compounds.chemli
 cmake .. \
     ${CMAKE_ARGS} \
     -DCMAKE_PREFIX_PATH="${PREFIX}" \
+    -DCMAKE_CXX_COMPILER="${CXX}" \
     -DCXX_FLAGS="${CXXFLAGS}" \
     -DCMAKE_CXX_STANDARD=17 \
     -DBOOST_ROOT="${PREFIX}" \
