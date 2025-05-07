@@ -1,0 +1,40 @@
+{% set version = "0.1.0-alpha" %}
+{% set name = "dampa" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/MultipathogenGenomics/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 685018ab7da2c3e384969e8c16008c2ad60118e6682ecc33fbe3257887d650cc
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+  run:
+    - python >=3.10
+    - biopython >=1.84
+    - pandas >=2.0
+    - matplotlib >= 3.10
+    - seaborn >=0.13
+    - blast >=2.16
+    - vsearch >=2
+
+test:
+  commands:
+    - dampa --help
+
+about:
+  home: https://github.com/MultipathogenGenomics/dampa
+  license: MIT
+  license_file: LICENSE
+  summary: DAMPA designs probes for use in targetted metagenomics. It leverages pangenome graphs to increase speed and accuracy.
