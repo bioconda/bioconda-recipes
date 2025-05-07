@@ -2,11 +2,11 @@
 
 set -exuo pipefail
 
+extra_cmake_args=
 if [[ "$(uname)" == "Linux" ]]; then
     export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined,--export-dynamic"
 elif [[ "$(uname)" == "Darwin" ]]; then
-    SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
-    export CXXFLAGS="${CXXFLAGS} -isysroot ${SDKROOT}"
+    extra_cmake_args="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
     export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic -framework OpenGL"
 fi
 
@@ -26,7 +26,8 @@ cmake .. \
     -DENABLE_GFX=OFF \
     -DENABLE_INFO=OFF \
     -DUSE_RPATH=ON \
-    -DCMAKE_VERBOSE_MAKEFILE=ON
+    -DCMAKE_VERBOSE_MAKEFILE=ON \
+    ${extra_cmake_args}
 
 make VERBOSE=1 -j"${CPU_COUNT}"
 
@@ -67,7 +68,8 @@ cmake .. \
     -DOPEN_MM_LIBRARY="${PREFIX}/lib/libOpenMM${SHLIB_EXT}" \
     -DOPEN_MM_INCLUDE_DIR="${PREFIX}/include" \
     -DOPEN_MM_PLUGIN_DIR="${PREFIX}/lib/plugins" \
-    -DCMAKE_VERBOSE_MAKEFILE=ON
+    -DCMAKE_VERBOSE_MAKEFILE=ON \
+    ${extra_cmake_args}
 
 make VERBOSE=1 -j"${CPU_COUNT}"
 make install
