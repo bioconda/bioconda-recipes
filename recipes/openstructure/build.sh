@@ -35,6 +35,7 @@ cp ../monomers/components.cif.gz .
 stage/bin/chemdict_tool create components.cif.gz compounds.chemlib pdb -i
 stage/bin/chemdict_tool update ../modules/conop/data/charmm.cif compounds.chemlib charmm
 
+# TODO: Enable parasail
 cmake .. \
     ${CMAKE_ARGS} \
     -DCMAKE_PREFIX_PATH="${PREFIX}" \
@@ -50,7 +51,7 @@ cmake .. \
     -DPARASAIL_LIBRARY="${PREFIX}/lib/libparasail${SHLIB_EXT}" \
     -DUSE_RPATH=ON \
     -DOPTIMIZE=ON \
-    -DENABLE_PARASAIL=ON \
+    -DENABLE_PARASAIL=OFF \
     -DCOMPILE_TMTOOLS=ON \
     -DENABLE_GFX=ON \
     -DENABLE_GUI=ON \
