@@ -1,14 +1,23 @@
 diff --git a/install.sh b/install.sh
-index c30290e..0bce5d1 100755
+index e8d9eca..646d54f 100755
 --- a/install.sh
 +++ b/install.sh
-@@ -17,7 +17,7 @@ export NUM_THREADS=`grep -c '^processor' /proc/cpuinfo 2>/dev/null || sysctl -n
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ 
+ set -xe
+ 
+@@ -16,9 +16,9 @@ ln -sf $ROOT/PkgConfig.pm $ROOT/dist-bin/pkg-config
+ export NUM_THREADS=`grep -c '^processor' /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1`;
  BINDIR=$DEST/bin
  LIBDIR=$DEST/lib
- export PKG_CONFIG_PATH=$LIBDIR/pkgconfig:$PKG_CONFIG_PATH
+-export PKG_CONFIG_PATH=$LIBDIR/pkgconfig:$PKG_CONFIG_PATH
 -(cd global-1 && ./configure --prefix=$DEST --bindir=$BINDIR --libdir=$LIBDIR && make -j $NUM_THREADS install-special)
++export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH
 +(cd global-1 && autoreconf -if && ./configure --prefix=$DEST --bindir=$BINDIR --libdir=$LIBDIR && make -j $NUM_THREADS install-special)
  echo "creating example config file masurca_config_example.txt"
  $BINDIR/masurca -g masurca_config_example.txt
+ 
 -(cd Flye && make && cp -a ../Flye $DEST);
-+(cd Flye && make && cp -arf ../Flye $DEST);
++(cd Flye && make -j$CPU_COUNT && cp -arf ../Flye $DEST);
