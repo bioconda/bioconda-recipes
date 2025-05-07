@@ -27,7 +27,7 @@ if [[ $TARGET_PLATFORM = "Linux" ]]; then
     ln -sf CMakeLists_sse2.txt CMakeLists.txt
     cd build/sse2
     cmake -S ../.. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" -Wno-dev -Wno-deprecated --no-warn-unused-cli "${CONFIG_ARGS}"
-    cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+    cmake --build . --clean-first --target install -j "${CPU_COUNT}"
     mv "${PREFIX}/bin/anchorwave" "${PREFIX}/bin/anchorwave_sse2"
     cd ../..
 
@@ -36,7 +36,7 @@ if [[ $TARGET_PLATFORM = "Linux" ]]; then
     ln -sf CMakeLists_sse4.1.txt CMakeLists.txt
     cd build/sse4.1
     cmake -S ../.. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" -Wno-dev -Wno-deprecated --no-warn-unused-cli "${CONFIG_ARGS}"
-    cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+    cmake --build . --clean-first --target install -j "${CPU_COUNT}"
     mv "${PREFIX}/bin/anchorwave" "${PREFIX}/bin/anchorwave_sse4.1"
     cd ../..
 
@@ -45,7 +45,7 @@ if [[ $TARGET_PLATFORM = "Linux" ]]; then
     ln -sf CMakeLists_avx2.txt CMakeLists.txt
     cd build/avx2
     cmake -S ../.. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" -Wno-dev -Wno-deprecated --no-warn-unused-cli "${CONFIG_ARGS}"
-    cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+    cmake --build . --clean-first --target install -j "${CPU_COUNT}"
     mv "${PREFIX}/bin/anchorwave" "${PREFIX}/bin/anchorwave_avx2"
     cd ../..
 
@@ -54,7 +54,7 @@ if [[ $TARGET_PLATFORM = "Linux" ]]; then
     ln -sf CMakeLists_avx512.txt CMakeLists.txt
     cd build/avx512
     cmake -S ../.. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" -Wno-dev -Wno-deprecated --no-warn-unused-cli "${CONFIG_ARGS}"
-    cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+    cmake --build . --clean-first --target install -j "${CPU_COUNT}"
     mv "${PREFIX}/bin/anchorwave" "${PREFIX}/bin/anchorwave_avx512"
     cd ../..
 
@@ -69,7 +69,7 @@ elif [[ $TARGET_PLATFORM = "macOS" ]]; then
     ln -sf CMakeLists_MACOSX86.txt CMakeLists.txt
     cd build/macOS
     cmake -S ../.. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" -Wno-dev -Wno-deprecated --no-warn-unused-cli "${CONFIG_ARGS}"
-    cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+    cmake --build . --clean-first --target install -j "${CPU_COUNT}"
 else
     echo "TARGET_PLATFORM must be Linux or macOS" >&2
     exit 1
