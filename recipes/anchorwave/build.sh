@@ -12,6 +12,13 @@ else
     export CONFIG_ARGS=""
 fi
 
+sed -i.bak -e 's|VERSION 3.0|VERSION 3.5|' CMakeLists*.txt
+sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' googletest/CMakeLists.txt
+sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' googletest/googlemock/CMakeLists.txt
+sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' googletest/googletest/CMakeLists.txt
+
+rm -rf *.bak
+
 if [[ $TARGET_PLATFORM = "Linux" ]]; then
     mkdir -p build/{sse2,sse4.1,avx2,avx512}
 
