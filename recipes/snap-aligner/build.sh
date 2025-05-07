@@ -1,8 +1,12 @@
 #!/bin/bash
-
 set -xe
 
-CXXFLAGS="${CXXFLAGS} -std=c++03" \
-    make CXX="${CXX}" -j ${CPU_COUNT}
-install -d "${PREFIX}/bin"
-install snap-aligner "${PREFIX}/bin/"
+mkdir -p "${PREFIX}/bin"
+
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
+make CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -std=c++03" \
+	-j"${CPU_COUNT}"
+install -v -m 0755 snap-aligner "${PREFIX}/bin"
