@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+export LANG=C.UTF-8
+export LC_ALL=C.UTF-8
+
 if [[ "$(uname)" == "Linux" ]]; then
     sed -i.bak 's/ref_trace_table = parasail_result/ref_trace_table = (int8_t *)parasail_result/' tests/test_verify_traces.c
     sed -i.bak 's/size_a, size_b, ref_trace_table, trace_table/size_a, size_b, (int8_t *)ref_trace_table, (int8_t *)trace_table/' tests/test_verify_traces.c
