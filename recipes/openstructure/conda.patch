@@ -767,43 +767,6 @@ index 4c2afae41..4e4c73b38 100644
            PyErr_Clear();
          }
        } catch(bp::error_already_set&) {
-diff --git a/modules/img/base/pymod/export_phase.cc b/modules/img/base/pymod/export_phase.cc
-index d65b81737..37fbf7513 100644
---- a/modules/img/base/pymod/export_phase.cc
-+++ b/modules/img/base/pymod/export_phase.cc
-@@ -22,12 +22,23 @@
-   Author: Andreas Schenk
- */
- 
-+#include <boost/math/special_functions/sign.hpp>
- #include <boost/python.hpp>
- 
- using namespace boost::python;
- 
- #include <ost/img/phase.hh>
- 
-+namespace boost { namespace math { namespace detail {
-+
-+template<>
-+inline int signbit_impl<ost::img::Phase>(ost::img::Phase x, generic_tag<true> const&)
-+{
-+    using Real = double;
-+    return static_cast<Real>(x) < static_cast<Real>(0);
-+}
-+
-+}}}
- 
- void export_Phase()
- {
-@@ -45,7 +56,7 @@ void export_Phase()
-     .def(self/=Real())
-     .def(self*Real())
-     .def(self/Real())
--    .def(float_(self)) 
-+    .def(float_(self))
-     .def(self_ns::str(self))
-     ;
- }
 diff --git a/modules/img/base/src/phase.cc b/modules/img/base/src/phase.cc
 index 8c61d6e34..35049327d 100644
 --- a/modules/img/base/src/phase.cc
