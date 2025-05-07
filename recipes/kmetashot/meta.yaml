@@ -1,0 +1,70 @@
+{% set name = "kmetashot" %}
+{% set version = "0.0.0+master" %}
+
+package:
+  name: {{ name|lower }}
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/gdefazio/kMetaShot/archive/refs/heads/master.zip
+  sha256: 6114b27f78262e58b54e92ba693ab6f33c0999c3a28ba90e0a721ccd74942b07
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_compatible('python') }}
+  script: |
+    cat << 'EOF' > setup.py
+    from setuptools import setup, find_packages
+
+    setup(
+        name="kmetashot",
+        version="{{ version }}",
+        packages=find_packages(),
+        install_requires=[
+            "numpy",
+            "pandas",
+            "h5py",
+            "argcomplete"
+        ],
+        entry_points={
+            "console_scripts": [
+                "kmetashot=kMetaShot_package.kMetaShot_classifier_NV:main"
+            ]
+        },
+        author="Giuseppe Defazio",
+        license="GPL-3.0-only",
+        url="https://github.com/gdefazio/kMetaShot",
+        description="Fast taxonomic classifier per metagenome bins basato su k-mer/minimizer",
+    )
+    EOF
+    $PYTHON -m pip install . --no-deps -vv
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools-scm
+  run:
+    - python >=3.8
+    - numpy
+    - pandas
+    - h5py
+    - argcomplete
+
+test:
+  imports:
+    - kMetaShot_package
+
+about:
+  home: https://github.com/gdefazio/kMetaShot
+  license: GPL-3.0-only
+  license_file: LICENSE
+  summary: "Fast taxonomic classifier for metagenome bins basato su k-mer/minimizer"
+  doc_url: https://github.com/gdefazio/kMetaShot#readme
+
+extra:
+  recipe-maintainers:
+    - gdefazio
+
