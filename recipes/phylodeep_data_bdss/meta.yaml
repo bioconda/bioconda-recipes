@@ -1,0 +1,42 @@
+{% set name = "phylodeep_data_bdss" %}
+{% set version = "0.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 2b97fb01e3babb969e786ba85074ab6799466903bbd351b3675b7099c3e17277
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage('phylodeep_data_bdss', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3
+  run:
+    - python >=3
+    - pandas >=1.0.0
+
+test:
+  imports:
+    - phylodeep_data_bdss
+  commands:
+    - bdss_ci_paths --help
+
+about:
+  home: "https://github.com/evolbioinfo/phylodeep_data_bdss"
+  summary: "Package containing data for the phylodeep package."
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - annazhukova

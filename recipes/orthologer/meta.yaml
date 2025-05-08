@@ -1,0 +1,71 @@
+{% set name = "orthologer" %}
+{% set version = "3.5.0" %}
+{% set sha256 = "76bd68cd73d5989d658a6ba0ecefec84e674f85878b75904c76fa557ce5dd2b5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('orthologer', max_pin="x") }}
+
+source:
+  url: https://data.orthodb.org/current/download/software/orthologer_{{ version }}.tgz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - cmake
+    - make
+    - bash >=4.1
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - rsync
+    - wget
+    - bash >=4.1
+  run:
+    - bash >=4.1
+    - python >=3.4
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - rsync
+    - wget
+    - blast
+    - mmseqs2
+    - cd-hit
+    - diamond
+    - biopython
+    - numpy
+    - busco >=5.7.0
+
+test:
+  commands:
+    - ALLOW_RUNAS_ROOT=1 orthologer -h
+
+about:
+  home: https://orthologer.ezlab.org
+  license: GPL3
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Establish orthology among fasta files.
+  description: Map genes to OrthoDB as well as finding orthology among a set of fasta files.
+  dev_url: https://gitlab.com/ezlab/orthologer_container
+  doc_url: https://orthologer.ezlab.org/#on-orthodb-data
+
+extra:
+  container:
+    # Necessary to allow Orthologer to download files from the internet when used with Singularity
+    # and default bind paths (see also https://github.com/bioconda/bioconda-recipes/issues/11583).
+    # Should be removed again when the base container is fixed. Not yet...
+    extended-base: True
+  identifiers:
+    - biotools:orthologer
+    - doi:10.1093/nar/gkac996
+    - PMID:36350662
+  recipe-maintainers:
+    - ftegenfe

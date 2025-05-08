@@ -1,0 +1,39 @@
+{% set version = "0.3.0" %}
+{% set sha256 = "0ac796a2c8af21904f3b9a489a9afc4f765c76e9153f48e4bc6172014bf9515c" %}
+{% set name = "nail" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/TravisWheelerLab/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  script: cargo install --no-track --locked --verbose --root "${PREFIX}" --path nail
+  run_exports:
+    - {{ pin_subpackage('nail', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+  run:
+    - mmseqs2
+
+test:
+  commands:
+    - nail --help
+
+about:
+  home: https://github.com/TravisWheelerLab/nail
+  license: BSD-3-Clause
+  license_family: BSD
+  # license_file: LICENSE
+  summary: "Profile Hidden Markov Model (pHMM) biological sequence alignment tool"
+  dev_url: https://github.com/TravisWheelerLab/nail
+
+extra:
+  identifiers:
+    - doi:10.1101/2024.01.27.577580

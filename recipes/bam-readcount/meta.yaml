@@ -1,36 +1,62 @@
+{% set name = "bam-readcount" %}
+{% set version = "1.0.1" %}
+
 package:
-  name: bam-readcount
-  version: "0.8"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/genome/bam-readcount/archive/v0.8.0.tar.gz
-  md5: 58d72588866f16f658ce4f40a3809af9
+  git_url: https://github.com/genome/bam-readcount.git
+  git_commit: 944c11fe08ca7330fbf7a5783aff75976714c0d4
+  patches:
+    - 0001_configure_boost_toolset.patch  # [linux]
+    - 0002_configure_boost_toolset_macOS.patch  # [osx]
+    - 0003-BuildSamtools.cmake.patch  # [osx]
 
 build:
-  number: 5
+  number: 3
+  run_exports:
+    - {{ pin_subpackage('bam-readcount', max_pin="x") }}
 
 requirements:
   build:
     - make
-    - cmake >=2.8.3
-    - {{ compiler('c') }}
+    - cmake
     - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - clangdev  # [osx]
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
   host:
-    - zlib
-    - ncurses
-    - perl
-    - python
+    - pthread-stubs
+    - wget
+    - icu
+    - tar
   run:
     - python
-    - zlib
-    - ncurses
-    - perl
 
 test:
   commands:
-    - bam-readcount 2>&1 | grep bam-readcount > /dev/null
+    - "bam-readcount 2>&1 | grep bam-readcount > /dev/null"
 
 about:
-  home: https://github.com/genome/bam-readcount
+  home: "https://github.com/genome/bam-readcount"
   license: MIT
-  summary: bam-readcount generates metrics at single nucleotide positions.
+  license_family: MIT
+  license_file: LICENSE
+  summary: "bam-readcount generates metrics at single nucleotide positions."
+  dev_url: "https://github.com/genome/bam-readcount"
+  doc_url: "https://github.com/genome/bam-readcount/blob/v{{ version }}/README.md"
+
+extra:
+  identifiers:
+    - doi:10.21105/joss.03722
+    - biotools:bam-readcount
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

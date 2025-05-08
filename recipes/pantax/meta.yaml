@@ -1,0 +1,54 @@
+{% set name = "pantax" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/LuoGroup2023/PanTax/releases/download/v{{ version }}/{{ name }}.tar.gz  
+    sha256: 2ca6c057c5f09ef49f7ae41111fd1b5d3690d1afdfac86a704be6236eea103ed
+
+build:
+  skip: True  # [osx]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}   
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+  host:
+    - python ==3.10
+    - pip
+  run:
+    - python =3.10
+    - r-base >=4.2
+    - samtools =1.19.2
+    - bcftools =1.19
+    - htslib =1.19.1
+    - pggb >=0.6.0
+    - vg >=1.59
+    - graphaligner =1.0.17 
+    - sylph
+    - h5py =3.10.0
+    - pandas =2.2.0
+    - tqdm
+    - numpy =1.26.3
+    - networkx =3.2.1
+    - pyarrow =14.0.2
+
+test:
+  commands:
+    - pantax -h
+
+about:
+  home: https://github.com/LuoGroup2023/PanTax
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  license_family: GPL3
+  summary: Strain-level metagenomic profiling using pangenome graphs with PanTax
+
+extra:
+  skip-lints:
+    - should_be_noarch_python

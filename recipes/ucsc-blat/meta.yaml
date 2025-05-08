@@ -1,37 +1,39 @@
 {% set package = "ucsc-blat" %}
 {% set program = "blat" %}
-{% set version = "468" %}
-{% set sha256 = "f57b49be7e4eeb0719ac9414ca8878f93916fc3eb8dd408c8f7e076a999d1ca8" %}
+{% set version = "472" %}
+{% set sha256 = "26d126c51d0ba3165519b116b6461af8bfd938505f6c0871cb325a7ab82368f2" %}
 
 package:
-  name: {{ package }}
-  version: {{ version }}
+  name: "{{ package }}"
+  version: "{{ version }}"
 
 source:
-  url: https://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz
-  sha256: {{ sha256 }}
+  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
+  sha256: "{{ sha256 }}"
   patches:
-    - include.patch
+    - include.patch  # [linux]
+    - include.macos.patch  # [osx]
 
 build:
-  number: 0
+  number: 1
   run_exports:
-    - {{ pin_subpackage('ucsc-blat', max_pin=None) }}
+    - {{ pin_subpackage(package, max_pin=None) }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
   host:
     - libpng
     - libuuid
     - mysql-connector-c
     - libopenssl-static
+    - clangdev  # [osx]
     - zlib
   run:
     - libpng
     - libuuid
+    - mysql-connector-c
     - libopenssl-static
 
 test:
@@ -40,12 +42,15 @@ test:
     - test -x ${PREFIX}/bin/{{ program }}
 
 about:
-  home: "https://hgdownload.cse.ucsc.edu/admin/exe/"
+  home: "https://hgdownload.cse.ucsc.edu/admin/exe"
   license: "Varies; see https://genome.ucsc.edu/license"
-  summary: "Standalone BLAT v. 39x1 fast sequence search command line tool"
+  summary: "Standalone BLAT v. 39x1 fast sequence search command line tool."
   dev_url: "https://github.com/ucscGenomeBrowser/kent"
   doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/v{{ version }}_base/README"
 
 extra:
+  identifiers:
+    - biotools:UCSC_Genome_Browser_Utilities
+    - doi:10.1093/bib/bbs038
   additional-platforms:
     - linux-aarch64

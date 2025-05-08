@@ -1,0 +1,47 @@
+{% set name = "ensembl-py" %}
+{% set version = "2.1.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/ensembl_py-{{ version }}.tar.gz
+  sha256: cbf6a9279fc3888acc53cd7ee70727da07265d79386e1bce9b0a40e36cba12ad
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools-scm
+    - pip
+  run:
+    - python >=3.10
+    - sqlalchemy >=1.4.45
+
+test:
+  imports:
+    - ensembl.core
+    - ensembl.ncbi_taxonomy
+    - ensembl.xrefs
+
+about:
+  home: https://www.ensembl.org/
+  summary: Ensembl Python base library
+  license: Apache-2.0
+  license_file:
+    - NOTICE
+    - LICENSE
+  license_family: APACHE
+  doc_url: https://ensembl.github.io/ensembl-py/
+  dev_url: "https://github.com/Ensembl/ensembl-py"
+
+extra:
+  identifiers:
+    - biotools:Ensembl

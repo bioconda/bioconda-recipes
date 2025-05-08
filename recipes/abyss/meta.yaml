@@ -1,5 +1,5 @@
 {% set name = "abyss" %}
-{% set version = "2.3.8" %}
+{% set version = "2.3.10" %}
  
 package:
   name: {{ name|lower }}
@@ -12,20 +12,22 @@ build:
 
 source:
   url: https://github.com/bcgsc/abyss/releases/download/{{ version }}/abyss-{{ version }}.tar.gz
-  sha256: 3c262269043f619c79ec3dcd91f5595cb141229f9a13d1a76a952b9a0bfb0d84
-  patches:
-    - config.patch
+  sha256: bbe42e00d1ebb53ec6afaad07779baaaee994aa5c65b9a38cf4ad2011bb93c65
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - make
+    - automake
+    - autoconf
+    - libtool
   host:
     - boost-cpp
     - sparsehash
     - openmpi
     - btllib
   run:
+    - boost-cpp
     - openmpi
     - make
     - util-linux  # [linux]
@@ -38,12 +40,13 @@ test:
     - abyss-pe help | grep -q "Assemble reads into contigs and scaffolds"
 
 about:
-  home: http://www.bcgsc.ca/platform/bioinfo/software/abyss
-  license: GPL-3.0-only
+  home: "https://www.bcgsc.ca/platform/bioinfo/software/abyss"
+  license: "GPL-3.0-only"
+  license_family: GPL3
   license_file: LICENSE
-  summary: Assembly By Short Sequences - a de novo, parallel, paired-end short read sequence assembler
-  dev_url: https://github.com/bcgsc/abyss
-  doc_url: https://github.com/bcgsc/abyss#readme
+  summary: "Assembly By Short Sequences - a de novo, parallel, paired-end short read sequence assembler."
+  dev_url: "https://github.com/bcgsc/abyss"
+  doc_url: "https://github.com/bcgsc/abyss/blob/v{{ version }}/README.md"
 
 extra:
   additional-platforms:
@@ -54,5 +57,6 @@ extra:
     extended-base: true
   identifiers:
     - biotools:abyss
+    - usegalaxy-eu:abyss-pe
     - doi:10.1101/gr.214346.116
     - doi:10.1101/gr.089532.108
