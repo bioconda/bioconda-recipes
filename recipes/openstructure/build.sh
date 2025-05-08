@@ -12,7 +12,10 @@ if [[ "$(uname)" == "Linux" ]]; then
     export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined,--export-dynamic"
 elif [[ "$(uname)" == "Darwin" ]]; then
     export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic -framework OpenGL"
-    export CXXFLAGS="${CXXFLAGS} -idirafter ${PREFIX}/include"
+    export CXXFLAGS="$(echo "$CXXFLAGS" | sed -E 's|-isystem[[:space:]]+[^[:space:]]+||g')"
+    export CPPFLAGS="$(echo "$CPPFLAGS" | sed -E 's|-isystem[[:space:]]+[^[:space:]]+||g')"
+    export CXXFLAGS="$CXXFLAGS -idirafter $PREFIX/include"
+    export CPPFLAGS="$CPPFLAGS -idirafter $PREFIX/include"
     extra_cmake_args="-DCMAKE_OSX_SYSROOT=$(xcrun --sdk macosx --show-sdk-path) -DCMAKE_INCLUDE_SYSTEM_FLAG_CXX=-idirafter"
 fi
 
