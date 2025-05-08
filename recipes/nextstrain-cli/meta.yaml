@@ -1,7 +1,8 @@
+{% set name = "nextstrain-cli" %}
 {% set version = "10.0.0" %}
 
 package:
-  name: nextstrain-cli
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -13,7 +14,7 @@ build:
   noarch: python
   entry_points:
     - nextstrain = nextstrain.cli.__main__:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   run_exports:
     - {{ pin_subpackage('nextstrain-cli', max_pin='x') }}
 
@@ -26,14 +27,15 @@ requirements:
     - python >=3.8
     - docutils
     - fasteners
-    - importlib_resources >=5.3.0 # [py<311]
-    - packaging >=3.0.0
+    - importlib_resources >=5.3.0  # [py < 311]
+    - packaging
     - pyjwt >=2.0.0
     # Required for pyjwt digital signature support. Replicates "pip install pyjwt[crypto]".
     - cryptography
-    - pyparsing
+    - pyparsing >=3.0.0
+    - pyyaml >=5.3.1
     - requests
-    - typing_extensions >=3.6.4
+    - typing_extensions >=3.7.4
     - wcmatch >=6.0
     - wrapt
     # nextstrain-cli requires boto3 but does not directly declare this
@@ -44,7 +46,7 @@ requirements:
     - fsspec !=2023.9.1
     - boto3
     - s3fs >=2021.04.0,!=2023.9.1
-    - urllib3 >=2.0.0 # [py>=310]
+    - urllib3 >=2.0.0  # [py >= 310]
 
 test:
   requires:
@@ -56,11 +58,11 @@ test:
     - nextstrain.cli
 
 about:
-  home: https://docs.nextstrain.org/projects/cli/
-  dev_url: https://github.com/nextstrain/cli
-  doc_url: https://docs.nextstrain.org/projects/cli/
+  home: "https://docs.nextstrain.org/projects/cli"
+  dev_url: "https://github.com/nextstrain/cli"
+  doc_url: "https://docs.nextstrain.org/projects/cli"
   license: MIT
-  summary: The Nextstrain command-line interface (CLI)
+  summary: "The Nextstrain command-line interface (CLI)."
   description: >
     The Nextstrain command-line interface (CLI)—a program called
     nextstrain—aims to provide a consistent way to run and visualize pathogen
@@ -76,5 +78,4 @@ extra:
     - genehack
     - victorlin
   identifiers:
-    - doi:10.1093/bioinformatics/bty407 
-
+    - doi:10.1093/bioinformatics/bty407
