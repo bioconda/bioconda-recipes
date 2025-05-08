@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -exuo pipefail
+set -exo pipefail
 
 extra_cmake_args=
 if [[ "$(uname)" == "Linux" ]]; then
