@@ -1,0 +1,243 @@
+diff --git a/scripts/k2 b/scripts/k2
+index 4d4008d..3ce49e0 100755
+--- a/scripts/k2
++++ b/scripts/k2
+@@ -14,14 +14,15 @@ import io
+ import itertools
+ import json
+ import logging
++import logging.handlers
+ import lzma
+ import math
++import multiprocessing
+ import os
+ import pty
+ import random
+ import re
+ import shutil
+-import signal
+ import subprocess
+ import sys
+ import tarfile
+@@ -381,6 +382,13 @@ def construct_seed_template(args):
+     )
+ 
+ 
++def copy_globals(queue, level, script_pathname):
++    global LOG
++    global SCRIPT_PATHNAME
++    LOG = Logger.setup_queue_logger(queue, level)
++    SCRIPT_PATHNAME = script_pathname
++
++
+ def future_raised_exception(future):
+     return future.done() and future.result() is None
+ 
+@@ -491,7 +499,12 @@ def remove_files(filepaths, forked=False):
+ def remove_files_parallel(filepaths):
+     total_size = 0
+ 
+-    with concurrent.futures.ProcessPoolExecutor(max_workers=4) as pool:
++    initargs = (LOG.get_queue(), LOG.get_level(), SCRIPT_PATHNAME)
++    with concurrent.futures.ProcessPoolExecutor(
++            max_workers=4,
++            initializer=copy_globals,
++            initargs=initargs
++    ) as pool:
+         futures = []
+         for fname in filepaths:
+             if not os.path.exists(fname):
+@@ -755,8 +768,11 @@ def add_to_library(args):
+     if os.path.exists("added.md5"):
+         with open("added.md5", "r") as in_file:
+             hashes = dict([line.split()[:2] for line in in_file.readlines()])
++    initargs = (LOG.get_queue(), LOG.get_level(), SCRIPT_PATHNAME)
+     with concurrent.futures.ProcessPoolExecutor(
+-        max_workers=args.threads
++            max_workers=args.threads,
++            initializer=copy_globals,
++            initargs=initargs
+     ) as pool:
+         futures = []
+         files = map(lambda f: glob.glob(f, recursive=True), args.files)
+@@ -1239,7 +1255,12 @@ def assign_taxid_to_sequences(args,
+ 
+     LOG.debug("{:s}\r".format(out_line))
+     filepaths = sorted(manifest_to_taxid)
+-    with concurrent.futures.ProcessPoolExecutor(max_workers=args.threads) as pool:
++    initargs = (LOG.get_queue(), LOG.get_level(), SCRIPT_PATHNAME)
++    with concurrent.futures.ProcessPoolExecutor(
++            max_workers=args.threads,
++            initializer=copy_globals,
++            initargs=initargs
++    ) as pool:
+         futures = []
+         max_out_line_len = 0
+         for filepath in filepaths:
+@@ -1666,7 +1687,12 @@ def download_taxonomy(args):
+     os.chdir(taxonomy_path)
+     futures = []
+ 
+-    with concurrent.futures.ProcessPoolExecutor(max_workers=2) as pool:
++    initargs = (LOG.get_queue(), LOG.get_level(), SCRIPT_PATHNAME)
++    with concurrent.futures.ProcessPoolExecutor(
++            max_workers=2,
++            initializer=copy_globals,
++            initargs=initargs
++    ) as pool:
+         if not args.skip_maps:
+             if not args.protein:
+                 for subsection in ["gb", "wgs"]:
+@@ -1922,7 +1948,12 @@ def build_gtdb_database(args):
+             base_accession, accession, taxid, gi = line.split("\t")
+             accession_to_taxid[accession] = taxid
+ 
+-    with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as pool:
++    initargs = (LOG.get_queue(), LOG.get_level(), SCRIPT_PATHNAME)
++    with concurrent.futures.ProcessPoolExecutor(
++            max_workers=workers,
++            initializer=copy_globals,
++            initargs=initargs
++    ) as pool:
+         for remote_filepath in files_needed["fasta"]:
+             os.chdir(db_pathname)
+             futures.append(pool.submit(
+@@ -2062,7 +2093,12 @@ def download_genomic_library(args):
+         with open("manifest.txt", "r") as manifest:
+             filenames = manifest.readlines()
+         filenames = sorted(filenames)
+-        with concurrent.futures.ProcessPoolExecutor(max_workers=args.threads) as pool:
++        initargs = (LOG.get_queue(), LOG.get_level(), SCRIPT_PATHNAME)
++        with concurrent.futures.ProcessPoolExecutor(
++                max_workers=args.threads,
++                initializer=copy_globals,
++                initargs=initargs
++        ) as pool:
+             futures = []
+             for filename in filenames:
+                 filename = filename.strip()
+@@ -3270,7 +3306,7 @@ def classify(args):
+         if args.use_daemon:
+             classify_using_daemon(args, argv)
+         else:
+-            sys.exit(subprocess.call(argv))
++            subprocess.call(argv)
+ 
+ 
+ def inspect_db(args):
+@@ -3988,22 +4024,73 @@ def make_cmdline_parser():
+     return parser
+ 
+ 
+-def setup_logger(filename=None):
+-    logging.StreamHandler.terminator = ""
+-    logger = logging.getLogger("kraken2")
+-    if filename:
+-        logger.setLevel(logging.INFO)
+-        handler = logging.FileHandler(filename)
+-        formatter = logging.Formatter("[%(levelname)s - %(asctime)s]: %(message)s")
+-        handler.setFormatter(formatter)
+-        logger.addHandler(handler)
+-    else:
+-        logger.setLevel(logging.DEBUG)
+-        handler = logging.StreamHandler()
+-        formatter = logging.Formatter("[%(levelname)s - %(asctime)s]: %(message)s")
+-        handler.setFormatter(formatter)
+-        logger.addHandler(handler)
+-    return logger
++class Logger:
++    def __init__(self, filename):
++        self.queue = multiprocessing.Manager().Queue(-1)
++        logging.StreamHandler.terminator = ""
++        self.logger = logging.getLogger("kraken2")
++        if filename:
++            self.logger.setLevel(logging.INFO)
++            handler = logging.FileHandler(filename)
++            formatter = logging.Formatter(
++                "[%(levelname)s - %(asctime)s]: %(message)s"
++            )
++            handler.setFormatter(formatter)
++            self.logger.addHandler(handler)
++        else:
++            self.logger.setLevel(logging.DEBUG)
++            handler = logging.StreamHandler()
++            formatter = logging.Formatter(
++                "[%(levelname)s - %(asctime)s]: %(message)s"
++            )
++            handler.setFormatter(formatter)
++            self.logger.addHandler(handler)
++
++        self.thread = threading.Thread(
++            target=Logger.process_thread, args=(self,)
++        )
++        self.thread.start()
++
++    def debug(self, log):
++        self.logger.debug(log)
++
++    def info(self, log):
++        self.logger.info(log)
++
++    def warning(self, log):
++        self.logger.warning(log)
++
++    def error(self, log):
++        self.logger.error(log)
++
++    def process_thread(self):
++        import queue
++        while True:
++            try:
++                record = self.queue.get()
++                if record is None:
++                    break
++            except queue.Empty:
++                continue
++            self.logger.handle(record)
++
++    def stop_thread(self):
++        self.queue.put(None)
++        self.thread.join()
++
++    def get_queue(self):
++        return self.queue
++
++    def get_level(self):
++        return self.logger.level
++
++    def setup_queue_logger(queue, level):
++        queue_handler = logging.handlers.QueueHandler(queue)
++        logger = logging.getLogger()
++        logger.setLevel(level)
++        logger.addHandler(queue_handler)
++
++        return logger
+ 
+ 
+ def k2_main():
+@@ -4017,7 +4104,7 @@ def k2_main():
+         parser.print_help()
+         sys.exit(1)
+     args = parser.parse_args(sys.argv[1:])
+-    LOG = setup_logger(args.log)
++    LOG = Logger(args.log)
+     task = sys.argv[1]
+     # if task not in ["classify", "inspect"]:
+     #     args.db = os.path.abspath(args.db)
+@@ -4108,10 +4195,10 @@ def k2_main():
+             build_kraken2_db(args)
+ 
+ 
+-def sigint(signum, frame):
+-    sys.exit(1)
+-
+-
+ if __name__ == "__main__":
+-    signal.signal(signal.SIGINT, sigint)
+-    k2_main()
++    try:
++        k2_main()
++    except KeyboardInterrupt:
++        LOG.stop_thread()
++        sys.exit(1)
++    LOG.stop_thread()
