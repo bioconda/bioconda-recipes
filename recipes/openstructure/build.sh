@@ -7,6 +7,7 @@ if [[ "$(uname)" == "Linux" ]]; then
     export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined,--export-dynamic"
 elif [[ "$(uname)" == "Darwin" ]]; then
     export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic -framework OpenGL"
+    CMAKE_ARGS="$(echo "${CMAKE_ARGS}" | sed -E 's|-isysroot[[:space:]]+[^[:space:]]+||g')"
     extra_cmake_args="-DCMAKE_OSX_SYSROOT=$(xcrun --sdk macosx --show-sdk-path)"
 fi
 
@@ -30,7 +31,7 @@ cmake .. \
     -DCMAKE_VERBOSE_MAKEFILE=ON \
     ${extra_cmake_args}
 
-make VERBOSE=1 -j"${CPU_COUNT}"
+make VERBOSE=1 -j1
 
 cp ../monomers/components.cif.gz .
 stage/bin/chemdict_tool create components.cif.gz compounds.chemlib pdb -i
