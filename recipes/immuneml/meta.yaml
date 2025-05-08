@@ -1,5 +1,5 @@
 {% set name = "immuneML" %}
-{% set version = "3.0.12" %}
+{% set version = "3.0.14" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,11 +7,12 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/i/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz"
-  sha256: f238b86d5d4f8fe756970d3f544aa69ca825a57a8883507fd0866f4c02de44d0
+  sha256: a9c15e05339da91215f47b73cbb62d4b85a1782e7d904d9b96d378b902e4aba6
 
 build:
   number: 0
-  skip: True  # [py < 37 or py > 311 or target_platform == "osx-64"]
+  noarch: python
+  #skip: True  # [py < 37 or py > 311 or target_platform == "osx-64"]
   run_exports:
     - {{ pin_subpackage('immuneml', max_pin="x") }}
   entry_points:
@@ -24,12 +25,11 @@ build:
     echo 'Done installing immuneML'
 
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - python
+    - python >=3.7,<3.12
     - pip
   run:
+    - python >=3.7,<3.12
     - numpy <=1.26.4
     - pytest >=4
     - pandas >=2.1.0
@@ -54,6 +54,8 @@ requirements:
     - tensorflow >=2.12.0
     - keras >=2.12.0
     - pytorch >=2.* cpu_*
+    - psutil
+    - python-kaleido
 
 test:
   imports:
@@ -63,18 +65,20 @@ test:
 
 about:
   home: "https://github.com/uio-bmi/immuneML"
-  license: APGL-3.0-only
+  license: "APGL-3.0-only"
   license_family: AGPL
-  license_file: LICENSE.md
+  license_file: "LICENSE.md"
   summary: "immuneML is a software platform for machine learning analysis of immune receptor repertoires."
   doc_url: "https://docs.immuneml.uio.no"
   dev_url: "https://github.com/uio-bmi/immuneML"
 
 extra:
-  skip-lints:
-    - cython_must_be_in_host
   recipe-maintainers:
     - knutwa-ext
-    - BlueBasilisk
     - pavlovicmilena
     - pavelvazquez
+  identifiers:
+    - biotools:immuneml
+    - doi:10.1038/s42256-021-00413-z
+  #skip-lints:
+    #- cython_must_be_in_host
