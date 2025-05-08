@@ -61,7 +61,7 @@ cmake .. \
     -DPARASAIL_LIBRARY="${PREFIX}/lib/libparasail${SHLIB_EXT}" \
     -DUSE_RPATH=ON \
     -DOPTIMIZE=ON \
-    -DENABLE_PARASAIL=OFF \
+    -DENABLE_PARASAIL=ON \
     -DCOMPILE_TMTOOLS=ON \
     -DENABLE_GFX=ON \
     -DENABLE_GUI=ON \
