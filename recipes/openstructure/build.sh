@@ -7,7 +7,6 @@ if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm6
   export CPU_COUNT=1
 fi
 
-extra_cmake_args=
 if [[ "$(uname)" == "Linux" ]]; then
     export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined,--export-dynamic"
 elif [[ "$(uname)" == "Darwin" ]]; then
@@ -31,8 +30,7 @@ cmake .. \
     -DENABLE_GFX=OFF \
     -DENABLE_INFO=OFF \
     -DUSE_RPATH=ON \
-    -DCMAKE_VERBOSE_MAKEFILE=ON \
-    ${extra_cmake_args}
+    -DCMAKE_VERBOSE_MAKEFILE=ON
 
 make VERBOSE=1 -j"${CPU_COUNT}"
 
@@ -40,7 +38,6 @@ cp ../monomers/components.cif.gz .
 stage/bin/chemdict_tool create components.cif.gz compounds.chemlib pdb -i
 stage/bin/chemdict_tool update ../modules/conop/data/charmm.cif compounds.chemlib charmm
 
-# TODO: Enable parasail
 cmake .. \
     ${CMAKE_ARGS} \
     -DCMAKE_PREFIX_PATH="${PREFIX}" \
@@ -68,8 +65,7 @@ cmake .. \
     -DOPEN_MM_LIBRARY="${PREFIX}/lib/libOpenMM${SHLIB_EXT}" \
     -DOPEN_MM_INCLUDE_DIR="${PREFIX}/include" \
     -DOPEN_MM_PLUGIN_DIR="${PREFIX}/lib/plugins" \
-    -DCMAKE_VERBOSE_MAKEFILE=ON \
-    ${extra_cmake_args}
+    -DCMAKE_VERBOSE_MAKEFILE=ON
 
 make VERBOSE=1 -j"${CPU_COUNT}"
 make check
