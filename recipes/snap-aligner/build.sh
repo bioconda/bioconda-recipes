@@ -5,7 +5,7 @@ mkdir -p "${PREFIX}/bin"
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -g -O3 -Wno-format -std=c++03"
+export CXXFLAGS="${CXXFLAGS} -g -O3 -Wno-format -std=c++03 -ISNAPLib -Iapps/snap"
 
 sed -i.bak -e 's|"stdafx.h"|"../SNAPLib/stdafx.h"|' tests/*.cpp
 sed -i.bak -e 's|"AffineGap.h"|"../SNAPLib/AffineGap.h"|' tests/*.cpp
