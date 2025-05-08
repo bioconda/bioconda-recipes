@@ -6,9 +6,8 @@ extra_cmake_args=
 if [[ "$(uname)" == "Linux" ]]; then
     export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined,--export-dynamic"
 elif [[ "$(uname)" == "Darwin" ]]; then
-    export CXX=${BUILD_PREFIX}/bin/clang++
     export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic -framework OpenGL"
-    extra_cmake_args="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
+    extra_cmake_args="-DCMAKE_OSX_SYSROOT=$(xcrun --sdk macosx --show-sdk-path)"
 fi
 
 mkdir -p build && cd build
