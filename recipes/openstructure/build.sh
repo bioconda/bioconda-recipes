@@ -2,6 +2,11 @@
 
 set -exo pipefail
 
+# Prevent build failures due to insufficient memory in the CI environment
+if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm64" ]]; then
+  export CPU_COUNT=1
+fi
+
 extra_cmake_args=
 if [[ "$(uname)" == "Linux" ]]; then
     export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined,--export-dynamic"
@@ -32,7 +37,7 @@ cmake .. \
     -DCMAKE_VERBOSE_MAKEFILE=ON \
     ${extra_cmake_args}
 
-make VERBOSE=1 -j1
+make VERBOSE=1 -j"${CPU_COUNT}"
 
 cp ../monomers/components.cif.gz .
 stage/bin/chemdict_tool create components.cif.gz compounds.chemlib pdb -i
