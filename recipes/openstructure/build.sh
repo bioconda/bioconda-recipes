@@ -3,7 +3,7 @@
 set -exo pipefail
 
 # Prevent build failures due to insufficient memory in the CI environment
-if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm64" ]]; then
+if [[ "${build_platform}" == "linux-aarch64" ]]; then
   export CPU_COUNT=1
 fi
 
