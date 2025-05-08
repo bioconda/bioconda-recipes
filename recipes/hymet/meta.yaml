@@ -7,10 +7,22 @@ package:
 build:
   number: 0
   noarch: generic
-  run_exports:
-    - {{ pin_subpackage('hymet', max_pin='x.x') }}
   script: |
-    mkdir -p "${PREFIX}/share/hymet"
+    # Cria estrutura de diretórios necessária
+    mkdir -p "${PREFIX}/bin"
+    mkdir -p "${PREFIX}/share/hymet/scripts"
+    mkdir -p "${PREFIX}/share/hymet/data"
+    mkdir -p "${PREFIX}/share/hymet/output"
+    
+    # Instala os componentes principais
+    cp -r ${SRC_DIR}/scripts/* "${PREFIX}/share/hymet/scripts/"
+    cp ${SRC_DIR}/main.pl "${PREFIX}/bin/hymet.pl"
+    
+    # Cria wrapper de execução
+    echo '#!/bin/bash' > "${PREFIX}/bin/hymet"
+    echo 'exec perl "${CONDA_PREFIX}/bin/hymet.pl" "$@"' >> "${PREFIX}/bin/hymet"
+    chmod +x "${PREFIX}/bin/hymet"
+    
     echo "{{ version }}" > "${PREFIX}/share/hymet/VERSION"
 
 requirements:
@@ -27,20 +39,16 @@ requirements:
 
 test:
   commands:
-    - python --version
-    - perl --version
-    - mash --version
-    - minimap2 --version
-
+    - hymet --help
+    - test -f "${PREFIX}/share/hymet/scripts/mash.sh"
 
 about:
   home: https://github.com/inesbmartins02/HYMET
   license: GPL-3.0-only
-  license_file: LICENSE  # Certifique-se que este arquivo existe
-  summary: "Hybrid Metagenomic Analysis Pipeline - Dependencies Package"
+  license_file: LICENSE
+  summary: "Hybrid Metagenomic Analysis Pipeline"
   description: |
-    This package provides only the runtime dependencies for HYMET.
-    To use HYMET, clone the repository and run the scripts with your own data.
+    HYMET is a hybrid metagenomic analysis pipeline.
   doc_url: https://github.com/inesbmartins02/HYMET/blob/main/README.md
 
 extra:
