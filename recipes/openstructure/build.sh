@@ -13,9 +13,7 @@ if [[ "$(uname)" == "Linux" ]]; then
 elif [[ "$(uname)" == "Darwin" ]]; then
     export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic -framework OpenGL"
     export CXXFLAGS="${CXXFLAGS} -idirafter ${PREFIX}/include"
-    CMAKE_ARGS="$(echo "${CMAKE_ARGS}" | sed -E 's|-isystem[[:space:]]+[^[:space:]]+||g')"
-    CMAKE_ARGS="$(echo "${CMAKE_ARGS}" | sed -E 's|-isysroot[[:space:]]+[^[:space:]]+||g')"
-    extra_cmake_args="-DCMAKE_OSX_SYSROOT=$(xcrun --sdk macosx --show-sdk-path)"
+    extra_cmake_args="-DCMAKE_OSX_SYSROOT=$(xcrun --sdk macosx --show-sdk-path) -DCMAKE_INCLUDE_SYSTEM_FLAG_CXX=-idirafter"
 fi
 
 mkdir -p build && cd build
