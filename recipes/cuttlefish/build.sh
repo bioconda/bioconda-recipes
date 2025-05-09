@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
