@@ -3,7 +3,7 @@
 {% set galaxy_version = version.split(".")[:2]|join(".") %}
 
 package:
-  name: galaxy-files
+  name: galaxy-files-full
   version: {{ version }}
 
 source:
@@ -15,18 +15,21 @@ build:
   number: 0
   script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
   run_exports:
-    -{{ pin_subpackage('galaxy-files', max_pin="x") }}
+    -{{ pin_subpackage('galaxy-files-full', max_pin="x") }}
 
 requirements:
-  host:
-    - pip
-    - python >=3.7
-    - setuptools
   run:
     - galaxy-util >={{ galaxy_version }}
     - fs
     - typing-extensions
-    - python >=3.7
+    - python >={{ python_min }}
+    - fs.webdavfs
+    - webdavclient3
+    - fs.sshfs
+    - fs.googledrivefs
+    - fs-gcsfs
+    - google-cloud-storage
+    
 
 test:
   imports:
@@ -35,7 +38,7 @@ test:
 
 about:
   home: https://galaxyproject.org
-  license: AFL-3.0
+  license: MIT
   license_file: LICENSE.txt
   summary: The Galaxy file sources framework and default plugins.
   doc_url: https://docs.galaxyproject.org
@@ -47,3 +50,4 @@ extra:
     - doi:10.1093/nar/gky379
   recipe-maintainers:
     - bernt-matthias
+    - bgruening
