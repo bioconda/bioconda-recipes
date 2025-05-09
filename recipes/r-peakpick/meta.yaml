@@ -1,0 +1,56 @@
+{% set version = "0.11" %}
+
+package:
+  name: r-peakpick
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url: https://github.com/cran/peakPick/releases/download/0.11/peakPick-0.11.tar.gz
+  sha256: 2eb557bd5d61a11c529e9637fca5abe179bd90ba71f65082fcfcbdcf0f513449
+
+build: 
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('r-peakpick', max_pin="x.x") }}
+  rpaths:
+    - lib/R/lib/
+    - lib/  
+  script: R CMD INSTALL --build --no-test-load .
+
+requirements:
+  build:
+    - git
+
+  host:
+    - r-base
+    - r-roxygen2 
+    - r-matrixStats
+    - r-parallel
+
+  run:
+    - r-base
+    - r-roxygen2 
+    - r-matrixStats
+    - r-parallel
+
+test:
+  commands:
+    - $R -e "library('peakPick')"
+    - "\"%R%\" -e \"library(peakPick)\""
+
+about:
+  home: https://github.com/cran/peakPick
+  license: MIT
+  summary: "Peak Picking Methods Inspired by Biological Data"
+  description: |
+    Biologically inspired methods for
+    detecting peaks in one-dimensional data, such as time series or genomics data.
+    The algorithms were originally designed by Weber, Ramachandran, and Henikoff,
+    see documentation.
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - vvvirgy
