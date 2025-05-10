@@ -1,6 +1,25 @@
 #!/bin/bash
-./configure --prefix=$PREFIX --without-x
-make
+
+export M4="${BUILD_PREFIX}/bin/m4"
+export INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3"
+
+# use newer config.guess and config.sub that support osx-arm64
+cp -f ${RECIPE_DIR}/config.* .
+
+mv configure.in configure.ac
+
+# Regenerate configure to fix flat namespace errors on macOS 11+
+autoreconf -fvi
+./configure --prefix="${PREFIX}" \
+    --without-x --disable-debug --disable-dependency-tracking \
+    --enable-64 --with-thread CC="${CC}" CFLAGS="${CFLAGS}" \
+    LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include" \
+    CXX="${CXX}"
+
+make -j"${CPU_COUNT}"
 make install
 
 python $RECIPE_DIR/fix_acd_path.py $PREFIX/bin
