@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+export M4="$(command -v m4)"
+
 autoreconf -fvi
 
 ./configure \
