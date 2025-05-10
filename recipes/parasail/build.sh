@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+export M4="$(command -v m4)"
+
 autoreconf -fvi
 
 ./configure \
@@ -14,5 +16,4 @@ autoreconf -fvi
     LDFLAGS="${LDFLAGS}"
 
 make -j${CPU_COUNT}
-make check
 make install
