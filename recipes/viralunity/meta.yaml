@@ -1,0 +1,53 @@
+{% set name = "viralunity" %}
+{% set version = "1.0.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/filiperomero2/ViralUnity/archive/v{{ version }}.tar.gz
+  sha256: db49093572a85330b4a71b40adfc3871c1d82ab1d43c465ae4e3c54bbe8550f1
+
+build:
+  entry_points:
+    - viralunity=viralunity.viralunity_cli:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python ~=3.7
+    - pip
+  run:
+    - python ~=3.7
+    - pandas ~=2.0.3
+    - biopython ~=1.81
+    - snakemake ~=7.32
+    - fastqc ~=0.11
+    - trimmomatic ~=0.39
+    - multiqc ~=1.15
+    - minimap2 ~=2.17
+    - samtools ~=1.17
+    - bedtools ~=2.31
+    - ivar ~=1.4
+    - gofasta ~=1.2
+    - kraken2 ~=2.1
+    - krona ~=2.8
+
+test:
+  imports:
+    - viralunity
+  commands:
+    - viralunity --help
+  requires:
+    - pip
+
+about:
+  summary: A simple tool to perform analysis of viral high-throughput sequencing data
+  home: https://github.com/filiperomero2/ViralUnity
+  license: MIT
+  license_file: LICENSE
