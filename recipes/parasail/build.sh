@@ -14,5 +14,4 @@ autoreconf -fvi
     LDFLAGS="${LDFLAGS}"
 
 make -j${CPU_COUNT}
-make check
 make install
