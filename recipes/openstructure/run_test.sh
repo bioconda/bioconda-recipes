@@ -3,4 +3,4 @@ ost compare-structures \
     -r examples/scoring/reference.cif.gz \
     --lddt --local-lddt --qs-score
 
-cat out.json | grep -q '>reference:A\nLALSLTADQMVSALL'
+cat out.json | grep -q 'VYTF--STLKSLEEKDHIHRV'
