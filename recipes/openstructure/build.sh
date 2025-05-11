@@ -69,7 +69,7 @@ cmake .. \
 
 make VERBOSE=1 -j"${CPU_COUNT}"
 
-# GFX-related CI test times out for CI check on linux-aarch64
+# GFX-related tests times out for CI check on linux-aarch64
 if [[ "${build_platform}" != "linux-aarch64" ]]; then
     make check
 fi
