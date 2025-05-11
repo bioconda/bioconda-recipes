@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 ost compare-structures \
     -m examples/scoring/model.pdb \
     -r examples/scoring/reference.cif.gz \
