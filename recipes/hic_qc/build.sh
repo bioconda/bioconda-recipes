@@ -4,14 +4,11 @@
 # -x = print every executed command
 set -ex
 
-export VERSION=1.2.913c977
-
-
 cat <<EOF > pyproject.toml
 [project]
 name = "hic_qc"
 description = "Quality assessment for Hi-C libraries"
-version = "$VERSION"
+version = "${PKG_VERSION}"
 EOF
 
 ${PYTHON} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
