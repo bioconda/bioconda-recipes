@@ -8,7 +8,7 @@ sed -i.bak 's|maturin>=0.13,<0.14|maturin>=1.8.0,<2.0.0|' rust/pyproject.toml
 rm -rf rust/*.bak
 
 RUST_BACKTRACE=full
-cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
+RUSTFLAGS="-C linker=${CC}" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
 
 cd rust
 maturin build -f --release --strip -b pyo3
