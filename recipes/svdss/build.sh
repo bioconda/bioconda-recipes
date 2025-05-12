@@ -24,7 +24,7 @@ cmake -S. -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_C_FLAGS="${CFLAGS}" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
-cmake --build build --clean-first -j "${CPU_COUNT}"
+cmake --build build -j "${CPU_COUNT}"
 
 install -v -m 0755 SVDSS ${PREFIX}/bin
 install -v -m 0755 run_svdss ${PREFIX}/bin
