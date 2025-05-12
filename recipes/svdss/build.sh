@@ -17,8 +17,11 @@ cmake -S. -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCONDAPREFIX="${PREFIX}" -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DCMAKE_C_COMPILER="${CC}" \
 	-DCMAKE_C_FLAGS="${CFLAGS}" \
+        -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 	"${CONFIG_ARGS}"
 cmake --build build -j "${CPU_COUNT}" -v
 
 chmod 0755 SVDSS
 mv SVDSS ${PREFIX}/bin
+chmod 0755 run_svdss
+mv run_svdss ${PREFIX}/bin
