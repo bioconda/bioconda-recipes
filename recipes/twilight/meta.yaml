@@ -1,6 +1,5 @@
 {% set name = "twilight" %}
 {% set version = "0.1.3" %}
-{% set build_type = "gpu" if cuda_variant == "gpu" else "cpu" %}
 
 package:
   name: {{ name }}
@@ -15,7 +14,6 @@ build:
   number: 1
   run_exports:
     - {{ pin_subpackage("twilight", max_pin="x.x") }}
-  string: "{{ build_type }}_{{ PKG_BUILDNUM }}"
   skip: true # [win]
 
 
@@ -25,11 +23,9 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake
     - make
-    {% if cuda_variant == "gpu" %}
-    - cuda-nvcc
-    - cuda-cudart-dev    
-    - cuda-version >=12.2
-    {% endif %}    
+    - cuda-nvcc # [linux]
+    - cuda-cudart-dev # [linux]
+    - cuda-version >=12.2 # [linux]
   host:
     - zlib
     - boost-cpp
