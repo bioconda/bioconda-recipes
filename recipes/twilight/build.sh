@@ -16,7 +16,7 @@ fi
 
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
-  "${CONFIG_ARGS}" -Wno-dev
+  "${CONFIG_ARGS}" -Wno-dev -Wno-deprecated --no-warn-unused-cli
 
-cmake --build build -j "${CPU_COUNT}"
+cmake --build build --clean-first -j "${CPU_COUNT}"
 install -v -m 0755 build/twilight ${PREFIX}/bin
