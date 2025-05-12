@@ -12,6 +12,7 @@ if [[ `uname` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 	sed -i.bak 's|libhts.so|libhts.dylib|' CMakeLists.txt
 	sed -i.bak 's|libdeflate.so|libdeflate.dylib|' CMakeLists.txt
+	sed -i.bak 's|sed -i|sed -i.bak|' CMakeLists.txt
 	rm -rf *.bak
 else
 	export CONFIG_ARGS=""
