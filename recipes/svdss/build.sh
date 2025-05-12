@@ -10,6 +10,9 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 
 if [[ `uname` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	sed -i.bak 's|libhts.so|libhts.dylib|' CMakeLists.txt
+	sed -i.bak 's|libdeflate.so|libdeflate.dylib|' CMakeLists.txt
+	rm -rf *.bak
 else
 	export CONFIG_ARGS=""
 fi
@@ -17,7 +20,7 @@ fi
 cmake -S. -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCONDAPREFIX="${PREFIX}" -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DCMAKE_C_COMPILER="${CC}" \
-	-DCMAKE_C_FLAGS="${CFLAGS}" -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+	-DCMAKE_C_FLAGS="${CFLAGS}" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 cmake --build build --clean-first -j "${CPU_COUNT}"
