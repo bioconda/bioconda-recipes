@@ -3,7 +3,7 @@
 # Make sure bindgen passes on our compiler flags.
 export BINDGEN_EXTRA_CLANG_ARGS="${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
 export HDF5_DIR=${PREFIX}
-export RUSTFLAGS="-L${PREFIX}/lib -C link-args=-Wl,-rpath,$HDF5_DIR/lib"
+export RUSTFLAGS="-C link-args=-Wl,-rpath,$HDF5_DIR/lib"
 
 if [ "${target_platform}" = "${build_platform}" ]; then
   export PYO3_PYTHON="${PYTHON}"
