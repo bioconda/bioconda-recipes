@@ -1,0 +1,47 @@
+{% set name = "starcatpy" %}
+{% set version = "1.0.9" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/starcatpy-{{ version }}.tar.gz
+  sha256: fc6053c41b906fb30e53cd0e59c2e463f628aa2a2d80d1789a5a086613e42cfa
+
+build:
+  entry_points:
+    - starcat = starcat:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('starcatpy', max_pin="x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - scikit-learn >=1.0
+    - anndata
+    - pandas
+    - numpy
+    - scipy
+    - pyyaml
+    - requests
+
+test:
+  imports:
+    - starcat
+  commands:
+    - starcat --help
+
+about:
+  home: https://github.com/immunogenomics/starCAT
+  summary: "Implements *CellAnnotator (aka *CAT/starCAT), annotating scRNA-Seq with predefined gene expression programs."
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/immunogenomics/starCAT

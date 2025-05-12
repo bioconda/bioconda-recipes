@@ -1,0 +1,78 @@
+{% set name = "Voronota" %}
+{% set version = "1.29.4370" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/kliment-olechnovic/{{ name|lower }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: c7b55f1de0a36502121d87d5fe980dbc13223e0323c86a644cf1f3b39de52eda
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - cmake
+    - make
+    - pkg-config
+  host:
+    - glew
+    - glfw
+    - glm
+    - libgl  # [linux]
+    - libegl-devel  # [linux]
+    - libgl-devel  # [linux]
+    - libglx-devel  # [linux]
+    - libgles-devel  # [linux]
+    - libxcb  # [linux]
+    - mesalib  # [linux]
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  run:
+    - glew
+    - glfw
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - voronota --help 2>&1 | grep -q 'Voronota version 1.29'
+
+about:
+  home: https://www.voronota.com/
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  summary: "Compute Voronoi diagram vertices for macromolecular structures"
+  description: |
+    The analysis of macromolecular structures often requires a comprehensive definition of atomic neighborhoods.
+    Such a definition can be based on the Voronoi diagram of balls, where each ball represents an atom of some van der Waals radius.
+    Voronota is a software tool for finding all the vertices of the Voronoi diagram of balls.
+    Such vertices correspond to the centers of the empty tangent spheres defined by quadruples of balls.
+    Voronota is especially suitable for processing three-dimensional structures of biological macromolecules such as proteins and RNA.
+
+    Since version 1.2 Voronota also uses the Voronoi vertices to construct inter-atom contact surfaces and solvent accessible surfaces.
+    Voronota provides tools to query contacts, generate contacts graphics, compare contacts and evaluate quality of protein structural models using contacts.
+
+    Most of the new developments are happening in the expansions of Voronota: Voronota-JS, Voronota-LT and Voronota-GL.
+
+    Voronota and its expansions are developed by Kliment Olechnovic (https://www.kliment.lt).
+  doc_url: https://www.voronota.com/
+  dev_url: https://github.com/kliment-olechnovic/voronota
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  container:
+    # needs libGL.so.1
+    extended-base: True
+  identifiers:
+    - doi:10.1002/jcc.23538
+  recipe-maintainers:
+    - eunos-1128
