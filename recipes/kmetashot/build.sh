@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -euxo pipefail
 
-# ricava la versione da PKG_VERSION
-cat << 'EOF' > setup.py
+
+cat << EOF > setup.py
 from setuptools import setup, find_packages
 
 setup(
     name="kmetashot",
-    version="${PKG_VERSION}",
+    version="${PKG_VERSION}",   #  0.1.0
     packages=find_packages(),
     install_requires=[
         "numpy",
@@ -22,11 +22,10 @@ setup(
     },
     author="Giuseppe Defazio",
     license="GPL-3.0-only",
-    url="https://github.com/gdefazio/kMetaShot",
+    url="https://github.com/LuigiMansi1/kMetaShot",
     description="Fast taxonomic classifier per metagenome bins basato su k-mer/minimizer",
 )
 EOF
 
-# installa con pip
 $PYTHON -m pip install . --no-deps -vv
 
