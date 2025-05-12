@@ -5,7 +5,6 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
 # Build
-echo "Build variant is: $IS_GPU_BUILD"
 mkdir -p "${PREFIX}/bin"
 
 if [[ `uname` == "Darwin" ]]; then
