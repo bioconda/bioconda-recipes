@@ -37,12 +37,12 @@ ${PERL} -MCPAN -e 'install Mock::Config' || true
 # Unset conflicting variables
 unset build_alias host_alias
 
-# Build and install HEAsoft with minimal components
+# Build and install HEAsoft
 cd heasoft/BUILD_DIR
-./configure --prefix="${PREFIX}/x86_64-pc-linux-gnu-libc2.17" \
+./configure --prefix="${PREFIX}" \
     --x-includes="${PREFIX}/include" \
     --x-libraries="${PREFIX}/lib" \
     --enable-static=no \
-    --with-components="heacore ftools Xspec"
+    --with-components="heacore ftools Xspec nustar suzaku swift integral ixpe heasim heagen heatools attitude"
 make -j1
 make install
