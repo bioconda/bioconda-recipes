@@ -4,8 +4,9 @@ mkdir -p ${PREFIX}/bin
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3 -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
 if [[ `uname` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
@@ -16,12 +17,10 @@ fi
 cmake -S. -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCONDAPREFIX="${PREFIX}" -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DCMAKE_C_COMPILER="${CC}" \
-	-DCMAKE_C_FLAGS="${CFLAGS}" \
-        -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+	-DCMAKE_C_FLAGS="${CFLAGS}" -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
-cmake --build build -j "${CPU_COUNT}" -v
+cmake --build build --clean-first -j "${CPU_COUNT}"
 
-chmod 0755 SVDSS
-mv SVDSS ${PREFIX}/bin
-chmod 0755 run_svdss
-mv run_svdss ${PREFIX}/bin
+install -v -m 0755 SVDSS ${PREFIX}/bin
+install -v -m 0755 run_svdss ${PREFIX}/bin
