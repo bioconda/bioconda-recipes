@@ -11,29 +11,29 @@ sed -i.bak 's|"0.18.1"|"0.21.2"|' rust/Cargo.toml
 sed -i.bak 's|"0.18.3"|"0.21.2"|' rust/Cargo.toml
 rm -rf rust/*.bak
 
-curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable --profile=minimal -y
+curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --profile=minimal -y
 export PATH="${HOME}/.cargo/bin:${PATH}"
 
 OS=$(uname -s)
 ARCH=$(uname -m)
 
 if [[ "${OS}" == "Linux" && "${ARCH}" == "x86_64" ]]; then
-	export CARGO_BUILD_TARGET="x86_64-unknown-linux-musl"
+	export CARGO_BUILD_TARGET="x86_64-unknown-linux-gnu"
 elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
-	export CARGO_BUILD_TARGET="aarch64-unknown-linux-musl"
+	export CARGO_BUILD_TARGET="aarch64-unknown-linux-gnu"
+elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
+	export CARGO_BUILD_TARGET="arm64e-apple-darwin"
+else
+	export CARGO_BUILD_TARGET="x86_64-apple-darwin"
 fi
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
 cd rust
-RUSTFLAGS="-C target-feature=-crt-static" maturin build --interpreter "${PYTHON}" --release --strip -b pyo3 --target "${CARGO_BUILD_TARGET}"
+if [[ "${OS}" == "Linux" ]]; then
+	RUSTFLAGS="-C target-feature=-crt-static -L ${PREFIX}/lib64" maturin build --interpreter "${PYTHON}" --release --strip -b pyo3 --target "${CARGO_BUILD_TARGET}"
+else
+	RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" maturin build --interpreter "${PYTHON}" --release --strip -b pyo3 --target "${CARGO_BUILD_TARGET}"
+fi
 
 ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
-
-# build statically linked binary with Rust
-#RUST_BACKTRACE=1
-#if [[ "${OS}" == "Darwin" ]]; then
-  #RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
-#else
-  #RUSTFLAGS="-C target-feature=-crt-static -L ${PREFIX}/lib64" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
-#fi
