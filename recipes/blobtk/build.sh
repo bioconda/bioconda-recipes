@@ -29,6 +29,7 @@ fi
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
+export LD="${CC}"
 cd rust
 if [[ "${OS}" == "Linux" ]]; then
 	RUSTFLAGS="-C target-feature=+crt-static -L ${PREFIX}/lib64" maturin build --interpreter "${PYTHON}" --release --strip -b pyo3 --target="${CARGO_BUILD_TARGET}"
