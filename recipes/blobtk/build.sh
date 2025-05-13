@@ -7,8 +7,8 @@ export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
 
 sed -i.bak 's|maturin>=0.13,<0.14|maturin>=1.8.0,<2.0.0|' rust/pyproject.toml
 sed -i.bak 's|"0.40.2"|"0.47.1"|' rust/Cargo.toml
-sed -i.bak 's|"0.18.1"|"0.22.6"|' rust/Cargo.toml
-sed -i.bak 's|"0.18.3"|"0.22.6"|' rust/Cargo.toml
+sed -i.bak 's|"0.18.1"|"0.21.2"|' rust/Cargo.toml
+sed -i.bak 's|"0.18.3"|"0.21.2"|' rust/Cargo.toml
 rm -rf rust/*.bak
 
 curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --profile=minimal -y
