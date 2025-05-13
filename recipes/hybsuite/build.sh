@@ -14,7 +14,7 @@ cp -r dependencies/* $PREFIX/share/${PKG_NAME}/dependencies/
 
 # 设置执行权限
 chmod +x $PREFIX/bin/HybSuite.sh
-chmod -R 755 $PREFIX/share/${PKG_NAME}/
+chmod -R 777 $PREFIX/share/${PKG_NAME}/
 
 # 创建符号链接
 ln -s $PREFIX/bin/HybSuite.sh $PREFIX/bin/hybsuite
