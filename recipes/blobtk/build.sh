@@ -17,8 +17,15 @@ export PATH="${HOME}/.cargo/bin:${PATH}"
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
-if [[ "$unamestr" == "Darwin" ]]; then
-  RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
-else
-  RUSTFLAGS="-C target-feature=-crt-static -L ${PREFIX}/lib64" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
-fi
+cd rust
+maturin build --interpreter "${PYTHON}" --release --strip -b pyo3
+
+${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+
+# build statically linked binary with Rust
+#RUST_BACKTRACE=1
+#if [[ "$unamestr" == "Darwin" ]]; then
+  #RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
+#else
+  #RUSTFLAGS="-C target-feature=-crt-static -L ${PREFIX}/lib64" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
+#fi
