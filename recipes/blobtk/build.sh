@@ -3,12 +3,12 @@
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
-export PYO3_PYTHON="${PYTHON}"
+#export PYO3_PYTHON="${PYTHON}"
 
 sed -i.bak 's|maturin>=0.13,<0.14|maturin>=1.8.0,<2.0.0|' rust/pyproject.toml
-sed -i.bak 's|"0.40.2"|"0.47.0"|' rust/Cargo.toml
-sed -i.bak 's|"0.18.1"|"0.21.2"|' rust/Cargo.toml
-sed -i.bak 's|"0.18.3"|"0.21.2"|' rust/Cargo.toml
+sed -i.bak 's|"0.40.2"|"0.49.0"|' rust/Cargo.toml
+sed -i.bak 's|"0.18.1"|"0.22.6"|' rust/Cargo.toml
+sed -i.bak 's|"0.18.3"|"0.22.6"|' rust/Cargo.toml
 rm -rf rust/*.bak
 
 curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --profile=minimal -y
@@ -22,7 +22,7 @@ if [[ "${OS}" == "Linux" && "${ARCH}" == "x86_64" ]]; then
 elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
 	export CARGO_BUILD_TARGET="aarch64-unknown-linux-gnu"
 elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
-	export CARGO_BUILD_TARGET="arm64e-apple-darwin"
+	export CARGO_BUILD_TARGET="aarch64-apple-darwin"
 else
 	export CARGO_BUILD_TARGET="x86_64-apple-darwin"
 fi
