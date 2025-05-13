@@ -21,7 +21,7 @@ else
 	export CONFIG_ARGS=""
 fi
 
-cmake -S .. -B . -DCMAKE_BUILD_TYPE="Release" \
+cmake -S .. -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
 	-DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
 	-DOPENMS_GIT_SHORT_SHA1="27e3601" -DOPENMS_CONTRIB_LIBS="$SRC_DIR/contrib-build" \
 	-DCMAKE_PREFIX_PATH="${PREFIX}" -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
@@ -34,7 +34,8 @@ cmake -S .. -B . -DCMAKE_BUILD_TYPE="Release" \
 
 # limit concurrent build jobs due to memory usage on CI
 #make OpenMS TOPP -j1
-cmake --build . --clean-first --target OpenMS -j 1
-cmake --build . --clean-first --target TOPP -j 1
+ninja -j"${CPU_COUNT}"
+#cmake --build . --clean-first --target OpenMS -j 1
+#cmake --build . --clean-first --target TOPP -j 1
 # The subpackages will do the installing of the parts
 #make install
