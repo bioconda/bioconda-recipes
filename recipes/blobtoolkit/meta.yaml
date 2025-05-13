@@ -1,0 +1,79 @@
+{% set name = "blobtoolkit" %}
+{% set version = "4.4.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/genomehubs/blobtoolkit/archive/{{ version }}.tar.gz
+  sha256: 04235c8bf15e9850858416caf92a939d396648580d25b74a8923441b773d511a
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - blobtools = blobtools:cli
+    - btk = btk:cli
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('blobtoolkit', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9,<3.14
+    - setuptools >=42
+    - pip
+  run:
+    - python >=3.9,<3.14
+    - blobtk >=0.5.3
+    - chromedriver-autoinstaller >=0.6.2
+    - docopt >=0.6.2
+    - python-fastjsonschema ==2.21.1
+    #- geckodriver-autoinstaller >=0.1.0
+    - psutil ==5.9.4
+    - pyvirtualdisplay ==3.0
+    - pyyaml
+    - selenium >=4.10.0
+    - tolkein >=0.5.0
+    - tqdm ==4.64.1
+    - ujson >=5.7.0
+    - firefox
+    - geckodriver
+
+test:
+  imports:
+    - api
+    - blobtoolkit-host
+    - blobtoolkit-pipeline
+    - blobtools
+    - btk
+    - data
+    - demo
+    - docker
+    - packaged-viewer
+    - viewer
+  commands:
+    - blobtools --help
+    - btk --help
+
+about:
+  home: "https://github.com/blobtoolkit/blobtoolkit"
+  summary: "Interactive quality assessment of genome assemblies."
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - src/viewer/LICENSE
+  dev_url: "https://github.com/blobtoolkit/blobtoolkit"
+  doc_url: "https://blobtoolkit.genomehubs.org"
+
+extra:
+  additional-platforms:
+    - osx-arm64
+    #- linux-aarch64
+  identifiers:
+    - doi:10.1534/g3.119.400908
+    - biotools:BlobToolKit
+    - usegalaxy-eu:blobtoolkit
+    - usegalaxy-eu:interactive_tool_blobtoolkit
