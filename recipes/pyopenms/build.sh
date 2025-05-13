@@ -5,6 +5,8 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${RPATH}"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
 
+2to3 -w ${SP_DIR}/autowrap/PXDParser.py
+
 mkdir build
 cd build
 
@@ -26,6 +28,7 @@ cmake -S ../src/pyOpenMS -B . -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}
   -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON -DCMAKE_BUILD_WITH_INSTALL_NAME_DIR=ON \
   -DPython_EXECUTABLE="${PYTHON}" -DPython_FIND_STRATEGY="LOCATION" \
   -DPY_NUM_MODULES=20 -DNO_DEPENDENCIES=ON -DNO_SHARE=ON -DPYOPENMS=ON \
+  -Wno-dev -Wno-deprecated --no-warn-unused-cli \
   "${CONFIG_ARGS}"
 
 # NO_DEPENDENCIES since conda takes over re-linking etc
