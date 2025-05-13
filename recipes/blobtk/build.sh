@@ -2,7 +2,7 @@
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CFLAGS="${CFLAGS} -O3"
+export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
 export PYO3_PYTHON="${PYTHON}"
 unamestr=`uname`
 
@@ -20,7 +20,7 @@ RUST_BACKTRACE=1
 if [[ "$unamestr" == "Darwin" ]]; then
   RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
 else
-  RUSTFLAGS="-L ${PREFIX}/lib" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
+  RUSTFLAGS="-C target-feature=-crt-static -L ${PREFIX}/lib64" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
 fi
 
 #cd rust
