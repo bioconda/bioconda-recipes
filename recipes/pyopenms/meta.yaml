@@ -1,15 +1,17 @@
 {% set name = "pyopenms" %}
 {% set version = "3.4.0" %} # if ends with 'dev' it is considered a development release and pulled from GitHub
-package:
-  name: {{ name|lower  }}
-  version: {{ version  }}
 
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
 {% if 'dev' in version %}
+
 source:
   git_url: https://github.com/OpenMS/OpenMS.git
   git_rev: develop
   git_depth: 1 # (Defaults to -1/not shallow)
 {% else %}
+
 source:
   url: https://github.com/OpenMS/OpenMS/releases/download/release%2F{{ version }}/OpenMS-{{ version.split('.')[0] }}.{{ version.split('.')[1] }}.tar.gz
   md5: b4125500bd1180f222d3640588b45b8a
@@ -17,7 +19,7 @@ source:
 
 build:
   number: 0
-  skip: True  # [osx]
+  skip: True  # [osx or py < 39]
   run_exports:
     - {{ pin_subpackage("pyopenms", max_pin="x.x") }}  
 
@@ -26,39 +28,41 @@ requirements:
     - {{ compiler('cxx') }}
     - make
     - cmake
-    - sysroot_linux-64 =2.17 # [linux]
+    - sysroot_linux-64 =2.17  # [linux]
   host:
-    - eigen >=3.3.4
-    - libopenms >={{ version }}
-    - llvm-openmp # [osx]
-    - libsvm
-    - xerces-c
-    - boost-cpp
-    - qt6-main
     - python
-    - cython >=0.25.2
-    - autowrap >=0.22.10
-    - setuptools
-    - wheel
     - pip
-    - numpy >=1.23.*
+    - cython >=3.0.11
+    - eigen >=3.3.4
+    - libopenms >={{ version }}
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - libsvm
+    - xerces-c
+    - boost-cpp
+    - qt6-main
+    - autowrap >=0.22.11
+    - numpy >=2.0
     - pandas
     - matplotlib-base
-    - sysroot_linux-64 =2.17 # [linux]
+    - sysroot_linux-64 =2.17  # [linux]
     - icu >=75.1,<76.0a0
-  run: # run_exports in libopenms should take care of the libraries. But it does not because of bugs. So copy everthing again and again
+    - pytest
+  run:  # run_exports in libopenms should take care of the libraries. But it does not because of bugs. So copy everthing again and again
+    - python
     - libopenms >={{ version }}
-    - llvm-openmp # [osx]
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - libsvm
     - xerces-c
     - boost-cpp
     - qt6-main
     - eigen >=3.3.4
-    - python >=3.9
-    - numpy >=1.23.*
+    - numpy >=2.0
     - pandas
     - matplotlib-base
-    - sysroot_linux-64 =2.17 # [linux]
+    - sysroot_linux-64 =2.17  # [linux]
+
 test:
   commands:
     - python -c "import pyopenms; print(pyopenms.__version__)"
@@ -66,10 +70,13 @@ test:
     # TODO run the full test suite?
 
 about:
-  home: https://github.com/OpenMS/OpenMS
-  license: BSD
+  home: "https://github.com/OpenMS/OpenMS"
+  license: "BSD-3-Clause"
+  license_family: BSD
   license_file: LICENSE
-  summary: python bindings for OpenMS, an open-source software C++ library for LC-MS data management and analyses
+  summary: "Python bindings for OpenMS, an open-source software C++ library for LC-MS data management and analyses."
+  dev_url: "https://github.com/OpenMS/OpenMS"
+  doc_url: "https://openms.readthedocs.io/en/latest"
 
 extra:
     {% if 'dev' in version %}
