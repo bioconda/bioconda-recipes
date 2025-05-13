@@ -23,7 +23,7 @@ else
   RUSTFLAGS="-L ${PREFIX}/lib" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
 fi
 
-cd rust
-maturin build --interpreter "${PYTHON}" --release --strip -b pyo3
+#cd rust
+#maturin build --interpreter "${PYTHON}" --release --strip -b pyo3
 
-${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+#${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
