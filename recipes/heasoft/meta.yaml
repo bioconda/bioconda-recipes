@@ -91,7 +91,10 @@ requirements:
 
 test:
   commands:
-    - echo "Finished"
+    - export HEADAS=$(ls -d "${PREFIX}/x86_64-pc-linux-gnu-libc"*/ | head -n 1)
+    - source $HEADAS/headas-init.sh
+    - export LHEAPERL=$PREFIX/bin/perl
+    - fversion
 
 about:
   home: https://heasarc.gsfc.nasa.gov/lheasoft/
@@ -101,6 +104,24 @@ about:
   description: |
     HEAsoft is a unified release of FTOOLS and XANADU software packages
     for high energy astrophysics data analysis, including tools like XSPEC.
+    
+    After installation, users should initialize the HEAsoft environment with:
+    
+    ```
+    export HEADAS=$(ls -d "${CONDA_PREFIX}/x86_64-pc-linux-gnu-libc"*/ | head -n 1)
+    source ${HEADAS}/headas-init.sh
+    export LHEAPERL=${CONDA_PREFIX}/bin/perl
+    ```
+    
+    This setup configures numerous environment variables required for HEAsoft, including:
+    PATH, LD_LIBRARY_PATH, PFILES, PERL5LIB, PYTHONPATH, and various component-specific
+    variables like PGPLOT_DIR, XANADU, and POW_LIBRARY.
+    
+    Note that LHEAPERL needs to be manually set to point to your Conda environment's
+    Perl interpreter after sourcing headas-init.sh.
+    
+    For mission-specific functionality (e.g., Swift, NuSTAR, IXPE), additional 
+    environment setup may be needed. See the HEAsoft documentation for details.
   doc_url: https://heasarc.gsfc.nasa.gov/docs/software/heasoft/
 
 extra:
