@@ -14,6 +14,7 @@ build:
   script:
     - sed -i.bak "s#CONDA_PREFIX#PREFIX#g" setup.py
     - rm -rf *.bak
+    - export OMP_NUM_THREADS="${CPU_COUNT}"
     - {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage("unifrac", max_pin="x") }}
@@ -32,6 +33,8 @@ requirements:
     - scikit-bio >=0.6.0
     - unifrac-binaries >={{ version }}
     - iow
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
   run:
     - python
     - {{ pin_compatible('numpy') }}
@@ -41,6 +44,8 @@ requirements:
     - scikit-bio >=0.6.0
     - unifrac-binaries >={{ version }}
     - iow
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
 
 test:
   imports:
@@ -67,8 +72,6 @@ about:
   dev_url: "https://github.com/biocore/unifrac"
 
 extra:
-  additional-platforms:
-    - osx-arm64
   recipe-maintainers:
     - wasade
     - sfiligoi
