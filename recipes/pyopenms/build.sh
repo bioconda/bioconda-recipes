@@ -5,7 +5,7 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${RPATH}"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
 
-2to3 -w ${SP_DIR}/autowrap/PXDParser.py
+2to3 -w ${SP_DIR}/autowrap/*.py
 
 mkdir build
 cd build
@@ -27,7 +27,7 @@ cmake -S ../src/pyOpenMS -B . -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}
   -DCMAKE_INSTALL_RPATH="${RPATH}" -DCMAKE_INSTALL_NAME_DIR="@rpath" \
   -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON -DCMAKE_BUILD_WITH_INSTALL_NAME_DIR=ON \
   -DPython_EXECUTABLE="${PYTHON}" -DPython_FIND_STRATEGY="LOCATION" \
-  -DPY_NUM_MODULES=20 -DNO_DEPENDENCIES=ON -DNO_SHARE=ON -DPYOPENMS=ON \
+  -DPY_NUM_MODULES=20 -DNO_DEPENDENCIES=ON -DNO_SHARE=ON \
   -Wno-dev -Wno-deprecated --no-warn-unused-cli \
   "${CONFIG_ARGS}"
 
@@ -35,4 +35,4 @@ cmake -S ../src/pyOpenMS -B . -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}
 
 # limit parallel jobs to 1 for memory usage since pyopenms has huge cython generated cpp files
 cmake --build . --clean-first --target pyopenms -j 1
-${PYTHON} -m pip install ./pyOpenMS/dist/*.whl --no-binary=pyopenms --no-build-isolation --no-deps --no-cache-dir -vvv
+${PYTHON} -m pip install ./pyOpenMS/dist/*.whl --no-build-isolation --no-deps --no-cache-dir --no-binary=pyopenms -vvv
