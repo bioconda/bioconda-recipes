@@ -1,0 +1,46 @@
+{% set name = "sunbeamlib" %}
+{% set version = "5.0.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: bbf06a4f2571ee62fb3ea8a78eef66f0f7fc1fee209cab3d50587c4f7eec3754
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage('sunbeamlib', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - setuptools
+    - python >=3.11
+  run:
+    - python >=3.11
+    - snakemake ==9.3.3
+    - more-itertools ==10.7.0
+    - pyyaml ==6.0.2
+    - pandas ==2.2.3
+
+test:
+  imports:
+    - sunbeam
+  commands:
+    - sunbeam --help
+
+about:
+  home: https://github.com/sunbeam-labs/sunbeam
+  license: MIT
+  summary: "A robust, extensible metagenomic sequencing pipeline"
+  dev_url: https://github.com/sunbeam-labs/sunbeam
+  doc_url: https://sunbeam.readthedocs.io/
+
+extra:
+  recipe-maintainers:
+    - Ulthran
