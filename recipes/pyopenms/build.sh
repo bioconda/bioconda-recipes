@@ -4,8 +4,9 @@
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${RPATH}"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
+export LC_ALL=en_US.UTF-8
 
-2to3 -w ${SP_DIR}/autowrap/*.py
+#2to3 -w ${SP_DIR}/autowrap/*.py
 
 mkdir build
 cd build
@@ -21,7 +22,7 @@ else
 fi
 
 cmake -S ../src/pyOpenMS -B . -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
-  -DOPENMS_GIT_SHORT_SHA1="b59e0c3" -DCMAKE_BUILD_TYPE="Release" \
+  -DOPENMS_GIT_SHORT_SHA1="27e3601" -DCMAKE_BUILD_TYPE="Release" \
   -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
   -DCMAKE_PREFIX_PATH="${PREFIX}" -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_INSTALL_RPATH="${RPATH}" -DCMAKE_INSTALL_NAME_DIR="@rpath" \
