@@ -1,16 +1,19 @@
 #!/bin/bash
 
 # Not sure if those are needed 
-export LIBRARY_PATH="${PREFIX}/lib"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${RPATH}"
-export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
-export LC_ALL=en_US.UTF-8
+export INCLUDES="-I${PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
+export LC_ALL="en_US.UTF-8"
 
 #2to3 -w ${SP_DIR}/autowrap/*.py
 
 if [[ $(uname -s) == "Darwin" ]]; then
   RPATH='@loader_path/../lib'
   export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DCMAKE_MACOSX_RPATH=ON -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
+  export LDFLAGS="${LDFLAGS} -Wl,-rpath,${RPATH}"
 else
   ORIGIN='$ORIGIN'
   export ORIGIN
@@ -18,7 +21,7 @@ else
   export CONFIG_ARGS=""
 fi
 
-cmake -S src -B build -G Ninja -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
+cmake -S . -B build -G Ninja -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
   -DOPENMS_GIT_SHORT_SHA1="27e3601" -DOPENMS_CONTRIB_LIBS="$SRC_DIR/contrib-build" -DCMAKE_BUILD_TYPE="Release" \
   -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
   -DCMAKE_PREFIX_PATH="${PREFIX}" -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
