@@ -18,7 +18,7 @@ OS=$(uname -s)
 ARCH=$(uname -m)
 
 if [[ "${OS}" == "Linux" && "${ARCH}" == "x86_64" ]]; then
-	sed -i.bak 's|"cdylib", "lib"|"lib"|' rust/Cargo.toml
+	sed -i.bak 's|"cdylib", "lib"|"cdylib"|' rust/Cargo.toml
 	rm -rf rust/*.bak
 	export CARGO_BUILD_TARGET="x86_64-unknown-linux-gnu"
 elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
@@ -33,7 +33,7 @@ fi
 RUST_BACKTRACE=1
 cd rust
 if [[ "${OS}" == "Linux" ]]; then
-	RUSTFLAGS="-C target-feature=-crt-static" maturin build --interpreter "${PYTHON}" --release --strip -b pyo3
+	RUSTFLAGS="-C target-feature=-crt-static" maturin build --interpreter "${PYTHON}" --release --strip -b pyo3 --target "${CARGO_BUILD_TARGET}"
 else
 	RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" maturin build --interpreter "${PYTHON}" --release --strip -b pyo3 --target "${CARGO_BUILD_TARGET}"
 fi
