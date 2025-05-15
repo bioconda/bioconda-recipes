@@ -5,8 +5,8 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
 export PYO3_PYTHON="${PYTHON}"
 
-sed -i.bak 's|maturin>=0.13,<0.14|maturin>=1.8.0,<2.0.0|' rust/pyproject.toml
-sed -i.bak 's|"0.40.2"|"0.47.0"|' rust/Cargo.toml
+sed -i.bak 's|maturin>=0.13,<0.14|maturin>=0.14,<0.15|' rust/pyproject.toml
+sed -i.bak 's|"0.40.2"|"0.47.1"|' rust/Cargo.toml
 sed -i.bak 's|"0.18.1"|"0.21.2"|' rust/Cargo.toml
 sed -i.bak 's|"0.18.3"|"0.21.2"|' rust/Cargo.toml
 rm -rf rust/*.bak
@@ -31,7 +31,8 @@ fi
 RUST_BACKTRACE=1
 cd rust
 if [[ "${OS}" == "Linux" ]]; then
-	RUSTFLAGS="-C target-feature=-crt-static" maturin build --interpreter "${PYTHON}" --release --strip -b pyo3 --target "${CARGO_BUILD_TARGET}"
+	#RUSTFLAGS="-C target-feature=-crt-static"
+	maturin build --interpreter "${PYTHON}" --release --strip -b pyo3 --target "${CARGO_BUILD_TARGET}"
 else
 	RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" maturin build --interpreter "${PYTHON}" --release --strip -b pyo3 --target "${CARGO_BUILD_TARGET}"
 fi
