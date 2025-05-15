@@ -23,7 +23,7 @@ fi
 
 cd src/pyOpenMS
 
-cmake -S . -B . -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
+cmake -S . -B . -G Ninja -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
   -DOPENMS_GIT_SHORT_SHA1="27e3601" -DOPENMS_CONTRIB_LIBS="$SRC_DIR/contrib-build" -DCMAKE_BUILD_TYPE="Release" \
   -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
   -DCMAKE_PREFIX_PATH="${PREFIX}" -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
@@ -38,5 +38,6 @@ cmake -S . -B . -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
 # NO_DEPENDENCIES since conda takes over re-linking etc
 
 # limit parallel jobs to 1 for memory usage since pyopenms has huge cython generated cpp files
-cmake --build . --clean-first --target pyopenms -j 1
+#cmake --build . --clean-first --target pyopenms -j 1
+ninja -j"${CPU_COUNT}"
 ${PYTHON} -m pip install ./pyOpenMS/dist/*.whl --no-build-isolation --no-deps --no-cache-dir --no-binary=pyopenms -vvv
