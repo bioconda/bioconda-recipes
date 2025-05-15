@@ -8,6 +8,7 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 sed -i.bak 's|-lpthread|-pthread|' Makefile
+rm -rf *.bak
 
 if [[ $(uname -s) == "Linux" ]]; then
   make clean && make CXX="${CXX}" MKLROOT="${PREFIX}" AVX=0 -j"${CPU_COUNT}" STATIC=1 && mv PCAone "${PREFIX}/bin/PCAone.x64"
