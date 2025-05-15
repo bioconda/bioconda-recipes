@@ -1,5 +1,5 @@
 {% set name = "pyopenms" %}
-{% set version = "3.4.0" %} # if ends with 'dev' it is considered a development release and pulled from GitHub
+{% set version = "3.4.0" %}  # if ends with 'dev' it is considered a development release and pulled from GitHub
 
 package:
   name: {{ name|lower }}
@@ -8,8 +8,8 @@ package:
 
 source:
   git_url: https://github.com/OpenMS/OpenMS.git
-  git_rev: develop
-  git_depth: 1 # (Defaults to -1/not shallow)
+  git_rev: release/{{ version }}
+  md5: unused
 {% else %}
 
 source:
@@ -28,19 +28,26 @@ requirements:
     - {{ compiler('cxx') }}
     - ninja
     - cmake
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - qt6-main
     - sysroot_linux-64 =2.17  # [linux]
   host:
     - python
     - pip
-    - cython >=3.0.11
-    - eigen >=3.3.4
+    - cython
+    - eigen >=3.4.0
     - libopenms >={{ version }}
     - libgomp  # [linux]
     - llvm-openmp  # [osx]
     - libsvm
+    - coinmp
+    - yaml-cpp
+    - doxygen >=1.8.13
     - xerces-c
     - boost-cpp
-    - qt6-main
     - autowrap >=0.22.11
     - numpy >=2.0
     - pandas
@@ -56,8 +63,7 @@ requirements:
     - libsvm
     - xerces-c
     - boost-cpp
-    - qt6-main
-    - eigen >=3.3.4
+    - eigen >=3.4.0
     - numpy >=2.0
     - pandas
     - matplotlib-base
@@ -79,11 +85,12 @@ about:
   doc_url: "https://openms.readthedocs.io/en/latest"
 
 extra:
-    {% if 'dev' in version %}
+  additional-platforms:
+    - linux-aarch64
+{% if 'dev' in version %}
   skip-lints:
     - uses_vcs_url
-    - missing_hash
-  {% endif %}
+{% endif %}
   identifiers:  
     - biotools:openms
     - doi:10.1038/s41592-024-02197-7
