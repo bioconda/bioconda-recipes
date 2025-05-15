@@ -31,7 +31,7 @@ fi
 RUST_BACKTRACE=1
 cd rust
 if [[ "${OS}" == "Linux" ]]; then
-	RUSTFLAGS="-C target-feature=-crt-static -L ${PREFIX}/lib64" maturin build --interpreter "${PYTHON}" --release --strip -b pyo3 --target "${CARGO_BUILD_TARGET}"
+	RUSTFLAGS="-C target-feature=+crt-static" maturin build --interpreter "${PYTHON}" --release --strip -b pyo3 --target "${CARGO_BUILD_TARGET}"
 else
 	RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" maturin build --interpreter "${PYTHON}" --release --strip -b pyo3 --target "${CARGO_BUILD_TARGET}"
 fi
