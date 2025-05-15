@@ -7,9 +7,11 @@ export CPPFLAGS="${CPPFLAGS} -O3 -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
+sed -i.bak 's|-lpthread|-pthread|' Makefile
+
 if [[ $(uname -s) == "Linux" ]]; then
-  make clean && make MKLROOT="${PREFIX}" AVX=0 -j"${CPU_COUNT}" && mv PCAone "${PREFIX}/bin/PCAone.x64"
-  make clean && make MKLROOT="${PREFIX}" AVX=1 -j"${CPU_COUNT}" && mv PCAone "${PREFIX}/bin/PCAone.avx2"
+  make clean && make CXX="${CXX}" MKLROOT="${PREFIX}" AVX=0 -j"${CPU_COUNT}" STATIC=1 && mv PCAone "${PREFIX}/bin/PCAone.x64"
+  make clean && make CXX="${CXX}" MKLROOT="${PREFIX}" AVX=1 -j"${CPU_COUNT}" STATIC=1 && mv PCAone "${PREFIX}/bin/PCAone.avx2"
   cp -f "${PREFIX}/bin/PCAone.avx2" "${PREFIX}/bin/PCAone.avx22"
   export LDFLAGS="${LDFLAGS} -Wl,--no-as-needed -L${PREFIX}/lib"
   echo "#!/usr/bin/env bash
