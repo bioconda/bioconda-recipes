@@ -41,4 +41,4 @@ cmake -S . -B . -G Ninja -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
 # limit parallel jobs to 1 for memory usage since pyopenms has huge cython generated cpp files
 #cmake --build . --clean-first --target pyopenms -j 1
 ninja -j"${CPU_COUNT}"
-${PYTHON} -m pip install ./pyOpenMS/dist/*.whl --no-build-isolation --no-deps --no-cache-dir --no-binary=pyopenms -vvv
+${PYTHON} -m pip install ./dist/*.whl --no-build-isolation --no-deps --no-cache-dir --no-binary=pyopenms -vvv
