@@ -8,7 +8,7 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 export LC_ALL="en_US.UTF-8"
 
-#2to3 -w ${SP_DIR}/autowrap/*.py
+2to3 -w ${SP_DIR}/autowrap/*
 
 if [[ $(uname -s) == "Darwin" ]]; then
   RPATH='@loader_path/../lib'
@@ -21,7 +21,9 @@ else
   export CONFIG_ARGS=""
 fi
 
-cmake -S . -B build -G Ninja -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
+cd src/pyOpenMS
+
+cmake -S . -B . -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
   -DOPENMS_GIT_SHORT_SHA1="27e3601" -DOPENMS_CONTRIB_LIBS="$SRC_DIR/contrib-build" -DCMAKE_BUILD_TYPE="Release" \
   -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
   -DCMAKE_PREFIX_PATH="${PREFIX}" -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
@@ -36,6 +38,5 @@ cmake -S . -B build -G Ninja -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}"
 # NO_DEPENDENCIES since conda takes over re-linking etc
 
 # limit parallel jobs to 1 for memory usage since pyopenms has huge cython generated cpp files
-#cmake --build build --clean-first --target pyopenms -j 1
-cd build && ninja -j"${CPU_COUNT}"
+cmake --build . --clean-first --target pyopenms -j 1
 ${PYTHON} -m pip install ./pyOpenMS/dist/*.whl --no-build-isolation --no-deps --no-cache-dir --no-binary=pyopenms -vvv
