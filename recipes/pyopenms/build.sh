@@ -8,7 +8,7 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 export LC_ALL="en_US.UTF-8"
 
-2to3 -w ${SP_DIR}/autowrap/*
+#2to3 -w ${SP_DIR}/autowrap/*.py
 
 if [[ $(uname -s) == "Darwin" ]]; then
   RPATH='@loader_path/../lib'
