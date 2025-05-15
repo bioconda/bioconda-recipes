@@ -18,7 +18,7 @@ OS=$(uname -s)
 ARCH=$(uname -m)
 
 if [[ "${OS}" == "Linux" && "${ARCH}" == "x86_64" ]]; then
-	sed -i.bak 's|"cdylib", "lib"|"dylib"|' rust/Cargo.toml
+	sed -i.bak 's|"cdylib", "lib"|"lib"|' rust/Cargo.toml
 	rm -rf rust/*.bak
 	export CARGO_BUILD_TARGET="x86_64-unknown-linux-gnu"
 elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
