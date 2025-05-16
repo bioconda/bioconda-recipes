@@ -42,5 +42,5 @@ cmake -S . -B . -G Ninja -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
 #cmake --build . --clean-first --target pyopenms -j 1
 ninja -j"${CPU_COUNT}"
 
-echo "wheels are in `find . | grep whl`"
+echo "wheels are in `find . | grep whl`"  >&2
 ${PYTHON} -m pip install ./dist/*.whl --no-build-isolation --no-deps --no-cache-dir --no-binary=pyopenms -vvv
