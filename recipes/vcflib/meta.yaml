@@ -1,6 +1,6 @@
 {% set name = "vcflib" %}
-{% set version = "1.0.12" %}
-{% set sha256 = "cb1e78d675f06ae3b22ffed7e1dea317e4c7f826e51e5b5dabd80240efbe1019" %}
+{% set version = "1.0.13" %}
+{% set sha256 = "059d8b0c1f9bdb21929c672e4b1dc2a80730c38e696d2edec18f442b395532bc" %}
 
 package:
   name: {{ name }}
@@ -10,12 +10,26 @@ source:
 - url: https://github.com/vcflib/vcflib/releases/download/v{{ version }}/{{ name }}-{{ version }}-src.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - 0001-CMakeLists.patch  # [linux]
+    - 0001-CMakeLists.patch
     - 0002-CMakeLists.macos.patch  # [osx]
-    - tabix.patch
+    - 0003-tabix.patch
+- url: https://ziglang.org/builds/zig-linux-x86_64-0.15.0-dev.377+f01833e03.tar.xz  # [linux and x86_64]
+  sha256: 1e556712dbcdcb73a7d7d592311ea25c88c4c9134ed8b0cc42f18a0eddb03789  # [linux and x86_64]
+  folder: zig-linux-x86_64-0.15.0-dev  # [linux and x86_64]
+- url: https://ziglang.org/builds/zig-linux-aarch64-0.15.0-dev.377+f01833e03.tar.xz  # [linux and aarch64]
+  sha256: 9f79d60852df62dd60fb7648321518965125e6c4edc89506b5f9245253b12dcb  # [linux and aarch64]
+  folder: zig-linux-aarch64-0.15.0-dev  # [linux and aarch64]
+- url: https://ziglang.org/builds/zig-macos-x86_64-0.15.0-dev.377+f01833e03.tar.xz  # [osx and x86_64]
+  sha256: 36b91b9de6f1a1b529dd44c5be37492216527f79c90a356f903243f9364da2b2  # [osx and x86_64]
+  folder: zig-macos-x86_64-0.15.0-dev  # [osx and x86_64]
+- url: https://ziglang.org/builds/zig-macos-aarch64-0.15.0-dev.377+f01833e03.tar.xz  # [osx and arm64]
+  sha256: f64b2b1d23355862ac2561944f808e47bb20a2036c400d62cca66a085adef0ac  # [osx and arm64]
+  folder: zig-macos-aarch64-0.15.0-dev  # [osx and arm64]
 
 build:
-  number: 3
+  number: 0
+  # Undefined symbols for architecture x86_64: "___ulock_wait2", referenced from: _Thread.Futex.DarwinImpl.wait in libzig.a(libzig.a.o)
+  skip: True  # [osx and x86_64]
   run_exports:
     - {{ pin_subpackage('vcflib', max_pin="x") }}
 
@@ -24,14 +38,13 @@ requirements:
     - {{ compiler('cxx') }}
     - make
     - cmake
-    - pybind11
     # python really only used as a build tool; no ${PREFIX}/bin/python needed.
     - python >=3
     - pkg-config
-    #- zig >=0.13.0
     - autoconf
     - automake
     - libtool
+    - pybind11
   host:
     - libgomp  # [linux]
     - llvm-openmp  # [osx]
@@ -42,6 +55,8 @@ requirements:
     - zlib
     - bzip2
     - xz
+    - libcurl
+    - libdeflate
     - fastahack
   run:
     - python >=3
@@ -58,14 +73,11 @@ test:
   requires:
     - wget
   commands:
-    # Some VCF executables are not installed until a working Zig version is released
-    # - "vcfwave -h"
+    - "vcfwave -h"
     - "vcffirstheader < /dev/null"
     - "vcfsort < /dev/null"
-    # On linux: libvcflib.so.1: undefined symbol: strings_padded_delete
     - "vcfstreamsort --help"
     - "wget -O test.vcf https://raw.githubusercontent.com/vcflib/vcflib/a610b7444daab0c9e974d9a001550bf8dd644770/test/data/regression/vcffilter_2.vcf"
-    # On linux: libvcflib.so.1: undefined symbol: strings_padded_delete
     - "vcfuniq test.vcf"
 
 about:
@@ -80,8 +92,6 @@ about:
 extra:
   additional-platforms:
     - linux-aarch64
-    # zig v0.11.0-0.13.0: error: HttpProxyMissingHost
-    # zig osx-arm64 error: error(link): undefined reference to symbol 'dyld_stub_binder'
     - osx-arm64
   recipe-maintainers:
     - jpuritz
