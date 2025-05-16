@@ -1,22 +1,21 @@
 {% set package = "ucsc-pslcdnafilter" %}
 {% set program = "pslCDnaFilter" %}
-{% set version = "472" %}
-{% set sha256 = "26d126c51d0ba3165519b116b6461af8bfd938505f6c0871cb325a7ab82368f2" %}
+{% set version = "481" %}
+{% set sha256 = "0df96181560e2cac3c29628b51140d60a56a0bf088c361bfd5eeb233009f98ec" %}
 
 package:
   name: "{{ package }}"
   version: "{{ version }}"
 
 source:
-  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
+  url: "https://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
   sha256: "{{ sha256 }}"
   patches:
-    - include.patch  # [linux]
-    - include.macos.patch  # [osx]
+    - include.patch
+    - include.linux.patch  # [linux]
 
 build:
-  number: 1
-  skip: True  # [osx]
+  number: 0
   run_exports:
     - {{ pin_subpackage(package, max_pin=None) }}
 
@@ -31,6 +30,8 @@ requirements:
     - libopenssl-static
     - clangdev  # [osx]
     - zlib
+    - bzip2
+    - liblzma-devel
   run:
     - libpng
     - libuuid
@@ -45,16 +46,13 @@ test:
 about:
   home: "https://hgdownload.cse.ucsc.edu/admin/exe"
   license: "Varies; see https://genome.ucsc.edu/license"
-  summary: "
-Filter cDNA alignments in psl format.  Filtering criteria are
-comparative, selecting near best in genome alignments for each given
-cDNA and non-comparative, based only on the quality of an individual
-alignment.
-"
+  summary: "Filter cDNA alignments in psl format. Filtering criteria are comparative, selecting near best in genome alignments for each given cDNA and non-comparative, based only on the quality of an individual alignment."
   dev_url: "https://github.com/ucscGenomeBrowser/kent"
   doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/v{{ version }}_base/README"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:UCSC_Genome_Browser_Utilities
     - doi:10.1093/bib/bbs038
