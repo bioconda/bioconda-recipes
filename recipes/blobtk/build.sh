@@ -6,7 +6,12 @@ export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
 export PYO3_PYTHON="${PYTHON}"
 export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="${CC}"
 export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER="${CC}"
-export PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
+export CC_X86_64_UNKNOWN_LINUX_GNU="${CC}"
+export CXX_X86_64_UNKNOWN_LINUX_GNU="${CXX}"
+export AR_X86_64_UNKNOWN_LINUX_GNU="${AR}"
+
+curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --profile=minimal -y
+export PATH="${HOME}/.cargo/bin:${PATH}"
 
 sed -i.bak 's|maturin>=0.13,<0.14|maturin>=1.8.0,<2.0.0|' rust/pyproject.toml
 sed -i.bak 's|"0.40.2"|"0.47.1"|' rust/Cargo.toml
@@ -14,15 +19,10 @@ sed -i.bak 's|"0.18.1"|"0.21.2"|' rust/Cargo.toml
 sed -i.bak 's|"0.18.3"|"0.21.2"|' rust/Cargo.toml
 rm -rf rust/*.bak
 
-curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --profile=minimal -y
-export PATH="${HOME}/.cargo/bin:${PATH}"
-
 OS=$(uname -s)
 ARCH=$(uname -m)
 
 if [[ "${OS}" == "Linux" && "${ARCH}" == "x86_64" ]]; then
-	sed -i.bak 's|"cdylib", "lib"|"cdylib"|' rust/Cargo.toml
-	rm -rf rust/*.bak
 	export CARGO_BUILD_TARGET="x86_64-unknown-linux-gnu"
 elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
 	export CARGO_BUILD_TARGET="aarch64-unknown-linux-gnu"
