@@ -23,10 +23,10 @@ fi
 sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/lib/makefile
 rm -rf kent/src/lib/*.bak
 
-(cd kent/src/lib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" L="${L}" -j"${CPU_COUNT}")
-(cd kent/src/htslib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" L="${L}" -j"${CPU_COUNT}")
+(cd kent/src/lib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
+(cd kent/src/htslib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
 (cd kent/src/jkOwnLib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" L="${L} -lhts" -j"${CPU_COUNT}")
 (cd kent/src/hg/lib && make USE_HIC=0 CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" L="${L} -lhts" -j"${CPU_COUNT}")
-(cd kent/src/utils/stringify && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" L="${L}" -j"${CPU_COUNT}")
+(cd kent/src/utils/stringify && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
 (cd kent/src/hg/pslCDnaFilter && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" L="${L} -lhts" -j"${CPU_COUNT}")
 install -v -m 0755 bin/pslCDnaFilter "${PREFIX}/bin"
