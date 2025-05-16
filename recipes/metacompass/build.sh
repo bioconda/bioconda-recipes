@@ -6,7 +6,7 @@ mkdir -p ${PREFIX}/lib
 
 cp -r ${SRC_DIR} $PREFIX/lib/metacompass
 
-sed -i 's/g++/${CXX}/g' $PREFIX/lib/metacompass/install.sh
+sed -i.bak 's/g++/${CXX}/g' $PREFIX/lib/metacompass/install.sh
 chmod +x $PREFIX/lib/metacompass/install.sh
 $PREFIX/lib/metacompass/install.sh
 
