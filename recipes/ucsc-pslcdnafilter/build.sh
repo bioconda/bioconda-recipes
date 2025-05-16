@@ -11,7 +11,7 @@ export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include ${LDFLAGS}"
 export CXXFLAGS="${CXXFLAGS} -O3 ${LDFLAGS}"
 export COPT="${COPT} ${CFLAGS}"
 export BINDIR=$(pwd)/bin
-export L="${LDFLAGS} -pthread -lssl -lhts -ldl"
+export L="${LDFLAGS} -lssl -pthread -lhts -ldl"
 
 mkdir -p "${BINDIR}"
 
