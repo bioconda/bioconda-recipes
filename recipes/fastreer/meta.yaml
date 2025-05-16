@@ -1,10 +1,11 @@
 {% set name = "fastreeR" %}
 {% set version = "1.13.20" %}
 {% set sha256 = "81216e03072d4aca37f920fc4c882d04db16b288157d48674e6a3d192c39a901" %}
+{% set python_min = "3.7" %}
 
 about:
   home: https://github.com/gkanogiannis/fastreeR
-  license: GPL-3
+  license: GPL-3.0-only
   license_family: GPL
   license_file: LICENSE.md
   summary: "Phylogenetic, distance, and tree-building utilities for VCF and FASTA files"
@@ -20,7 +21,7 @@ build:
   noarch: python
   number: 0
   run_exports:
-    - {{ pin_subpackage('fastreer', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 source:
   url: https://github.com/gkanogiannis/fastreeR/archive/refs/tags/{{ version }}.zip
@@ -28,21 +29,20 @@ source:
 
 requirements:
   build:
-    - python >=3.7
+    - python {{ python_min }}
     - openjdk >=8.0.144
   run:
-    - python >=3.7
+    - python >={{ python_min }}
     - openjdk >=8.0.144
 
 test:
   commands:
     - fastreeR --version
     - fastreeR --help
+    - fastreeR --check
 
 extra:
   recipe-maintainers:
     - gkanogiannis
   identifiers:
     - doi:10.1186/s12859-016-1186-3
-  skip-lints:
-    - missing_tests  # CLI-only tool
