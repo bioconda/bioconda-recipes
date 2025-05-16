@@ -1,18 +1,18 @@
 {% set name = "ribotin" %}
-{% set version = "1.3" %}
+{% set version = "1.4" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/maickrau/{{ name }}/files/14571457/{{ name }}.tar.gz
-  sha256: 7eda750e4fd1064eedf3016f5a49d6b6994e336619fc3b5e4afe4655b2873b70
+  git_url: https://github.com/maickrau/{{name}}
+  git_rev: v{{version}}
   patches:
     - makefile.patch
 
 build:
-  number: 1
+  number: 0
   skip: True # [osx]
   run_exports:
     - {{ pin_subpackage('ribotin', max_pin="x.x") }}
@@ -22,12 +22,15 @@ requirements:
     - make
     - {{ compiler('cxx') }}
   host:
-    - zlib
+    - zlib =1.2 # ribotin does not need a specific zlib version. however, the dependency graphaligner needs zlib 1.2, and if the zlib version is not specified here then conda's environment resolve fails with an incompatible package error.
     - pkg-config
+    - bamtools
   run:
     - graphaligner
     - mbg
     - liftoff =1.6.3 # Use a specific version to make sure the annotation index files are compatible
+    - winnowmap
+    - samtools
 
 test:
   commands:
@@ -42,3 +45,6 @@ about:
 extra:
   maintainers:
     - maickrau
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

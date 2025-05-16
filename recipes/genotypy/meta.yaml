@@ -1,0 +1,46 @@
+{% set version = "0.3.4" %}
+
+package:
+  name: genotypy
+  version: {{ version }}
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  number: 0
+  entry_points:
+    - genotypy = genotypy.main:main
+  run_exports:
+    - {{ pin_subpackage("genotypy", max_pin="x.x") }}
+
+source:
+  url: https://gitbio.ens-lyon.fr/LBMC/yvertlab/vortex/plasticity_mutation/colony_rnaseq_bioinformatics/genotypy/-/archive/{{ version }}/genotypy-{{ version }}.tar.gz
+  sha256: 9b704bca44e1022a82f859be35d1210c3cd6dbb896326551d605610dc8cc24a6
+
+requirements:
+  host:
+    - python >=3.10,<3.12
+    - pip
+    - poetry-core >=2.0
+  run:
+    - python >=3.10,<3.12
+    - pysam >=0.22
+    - levenshtein >=0.26
+    - bowtie2 >=2.5.4
+    - samtools >=1.21
+
+test:
+  commands:
+    - genotypy --version
+    - genotypy --help
+
+about:
+  home: https://gitbio.ens-lyon.fr/LBMC/yvertlab/vortex/plasticity_mutation/colony_rnaseq_bioinformatics/genotypy
+  license: CeCiLL 2.1
+  license_file: LICENSE
+  summary: "Automatically detect genomic barcodes integrated into loci of interest from sequencing data"
+
+extra:
+  recipe-maintainers:
+    - axbazin
+    - Duveau
