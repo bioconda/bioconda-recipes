@@ -1,26 +1,30 @@
+{% set name = "MSMS" %}
 {% set version = "2.6.1" %}
-{% set url_base = "http://mgltools.scripps.edu/downloads/tars/releases/MSMSRELEASE" %}
 
 package:
-  name: msms
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  - url: {{ url_base }}/REL{{ version }}/msms_i86_64Linux2_{{ version }}.tar.gz  # [linux]
-    md5: 650d8c6fd49d9ce291f30ed530d5f313  # [linux]
-    patches:  # [linux]
-      - pdb_to_xyzr.patch  # [linux]
-      - pdb_to_xyzrn.patch  # [linux]
-  - url: {{ url_base }}/REL{{ version }}/msms_MacOSX_{{ version }}.tar.gz      # [osx]
-    md5: 36bd8447908d12a8703f458564cbe74b  # [osx]
-    patches:  # [osx]
-      - pdb_to_xyzr.patch  # [osx]
-      - pdb_to_xyzrn.patch  # [osx]
+  - url: https://ccsb.scripps.edu/{{ name }}/download/933/  # [linux and x86_64]
+    sha256: 5f0ca50360b5938e74c538e0399d582abc4a40ef4cf410e66f31a1f91e6e3e1f  # [linux and x86_64]
+    patches:  # [linux and x86_64]
+      - pdb_to_xyzr.patch  # [linux and x86_64]
+      - pdb_to_xyzrn.patch  # [linux and x86_64]
+  - url: https://ccsb.scripps.edu/{{ name }}/download/950/ # [osx and x86_64]
+    sha256: aa9c6fcdffd78f20a48990d7ce6cbe19394bb88071e2a9cc26c675171eccfcc8  # [osx and x86_64]
+    patches:  # [osx and x86_64]
+      - pdb_to_xyzr.patch  # [osx and x86_64]
+      - pdb_to_xyzrn.patch  # [osx and x86_64]
+  - url: https://ccsb.scripps.edu/{{ name }}/download/942/  # [osx and arm64]
+    sha256: 87679f0666b388dfcf022ee2e8caace93d5953ef3d67689fd3fafc33eb9c25d3  # [osx and arm64]
+    patches:  # [osx and arm64]
+      - pdb_to_xyzr.patch  # [osx and arm64]
+      - pdb_to_xyzrn.patch  # [osx and arm64]
 
 build:
   binary_relocation: False
-  skip: True  # [osx]
-  number: 3
+  number: 4
   has_prefix_files:
     - bin/pdb_to_xyzr
     - bin/pdb_to_xyzrn
@@ -30,11 +34,21 @@ test:
     - msms -h
 
 about:
-  home: http://mgltools.scripps.edu/packages/MSMS/
-  license: Free for academic use.
-  summary: MSMS is a program written in the C programming language to compute molecular surfaces.
+  home: https://ccsb.scripps.edu/msms/
+  doc_url: https://ccsb.scripps.edu/msms/documentation/
+  license: "Free for academic use (research-only license)"
+  summary: "Fast algorithm for computing molecular surfaces"
+  description: |
+    MSMS is a fast algorithm for computing molecular surfaces.
+    It was developed by Dr. Michel F. Sanner as part of his PhD thesis.
+    It has been widely used for computing and displaying Solvent Excluded Surfaces for proteins.
+    MSMS is used by various molecular visualization programs including VMD, Chimera, and PMV.
 
 extra:
   skip-lints:
     - should_be_noarch_generic
     - should_not_be_noarch_source
+  additional-platforms:
+    - osx-arm64
+  identifiers:
+    - doi: 10.1002/(SICI)1097-0282(199603)38:3<305::AID-BIP4>3.0.CO;2-Y
