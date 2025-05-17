@@ -2,6 +2,8 @@
 
 set -euxo pipefail
 
+ls -al
+
 mkdir -p "${PREFIX}/bin"
 mkdir -p "${PREFIX}/share/msms"
 mkdir -p "${PREFIX}/man/man1"
