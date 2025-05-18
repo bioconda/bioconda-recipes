@@ -49,6 +49,7 @@ To get `taxa.sqlite`, follow the "NCBI Example" instructions at:
 
 https://etetoolkit.github.io/ete/tutorial/tutorial_taxonomy.html#setting-up-local-copies-of-the-ncbi-and-gtdb-taxonomy-databases
 
-mount the file into the container and provide it via the `-t` flag
+provide it to the cmd via the `-t` flag. If you are using this in a container,
+be sure to mount the directory containing the taxadb.
 
 EOF
