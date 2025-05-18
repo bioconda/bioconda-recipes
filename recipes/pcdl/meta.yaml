@@ -10,7 +10,8 @@ source:
   sha256: 0227f14d6890c6a6aa7f7646b4fcc89b2be2e9b8c8416dc7ebbddc3577ea32a5
 
 build:
-  run_exports:
+  number: 0
+  noarch: python
   entry_points:
     - pcdl_get_version = pcdl.pyCLI:get_version
     - pcdl_get_unit_dict = pcdl.pyCLI:get_unit_dict
@@ -30,9 +31,9 @@ build:
     - pcdl_plot_timeseries = pcdl.pyCLI:plot_timeseries
     - pcdl_make_gif = pcdl.pyCLI:make_gif
     - pcdl_make_movie = pcdl.pyCLI:make_movie
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  number: 0
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('pcdl', max_pin="x") }}
 
 requirements:
   host:
@@ -55,7 +56,6 @@ test:
   imports:
     - pcdl
   commands:
-    - pip check
     - pcdl_get_version --help
     - pcdl_get_unit_dict --help
     - pcdl_get_substrate_list --help
@@ -74,16 +74,16 @@ test:
     - pcdl_plot_timeseries --help
     - pcdl_make_gif --help
     - pcdl_make_movie --help
-  requires:
-    - pip
 
 about:
-  summary: physicell data loader (pcdl) provides a platform independent, python3 based, pip installable interface to transform output, generated with the PhysiCell agent based modeling framework, into standard formats.
-  home: https://github.com/elmbeech/physicelldataloader
-  dev_url: https://github.com/elmbeech/physicelldataloader
-  license: BSD-3-Clause
+  summary: "physicell data loader (pcdl) provides a platform independent, python3 based, pip installable interface to transform output, generated with the PhysiCell agent based modeling framework, into standard formats."
+  home: "https://github.com/elmbeech/physicelldataloader"
+  dev_url: "https://github.com/elmbeech/physicelldataloader"
+  license: "BSD-3-Clause"
+  license_family: BSD
   license_file: LICENSE
+  doc_url: "https://github.com/elmbeech/physicelldataloader/blob/v{{ version }}/README.md"
 
 extra:
   recipe-maintainers:
-    - Elmar Bucher
+    - elmbeech
