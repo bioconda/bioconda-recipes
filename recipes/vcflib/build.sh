@@ -3,9 +3,6 @@ set -ex
 
 cp -rf "${RECIPE_DIR}/vcflib.pc.in" "${SRC_DIR}"
 
-sed -i.bak -e 's|mem.split|mem.splitSequence|' src/zig/samples.zig
-rm -rf src/zig/*.bak
-
 sed -i.bak -e 's|-fPIC|-fPIC -Wno-int-conversion -Wno-deprecated-declarations -Wno-absolute-value -Wno-unused-comparison|' CMakeLists.txt
 rm -rf *.bak
 
