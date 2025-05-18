@@ -11,7 +11,9 @@ autoreconf -if
 	CFLAGS="${CFLAGS} -O3" \
 	LDFLAGS="${LDFLAGS} -L${PREFIX}/lib" \
 	CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include" \
-	--enable-build-libxml2 --enable-build-libxslt
+	--enable-build-libxml2 --enable-build-libxslt \
+	--with-mpidir="${PREFIX}" --disable-option-checking \
+	--enable-silent-rules --disable-dependency-tracking
 
 make AM_CFLAGS='-DNAN="(0.0/0.0)"' -j"${CPU_COUNT}"
 make install
