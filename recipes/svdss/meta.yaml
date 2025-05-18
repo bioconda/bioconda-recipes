@@ -1,5 +1,5 @@
-{% set version = "2.0.0" %}
-{% set sha256 = "825324dbdd70474b2a527925a25dea94b597ef579dee117645f285d678985652" %}
+{% set version = "2.1.0" %}
+{% set sha256 = "32dc3cdb3c8aec25a855b9dbcd09a7274a0bd95a94db11fb4f94567f35b98b90" %}
 
 package:
   name: svdss
@@ -8,9 +8,11 @@ package:
 source:
   url: https://github.com/Parsoa/SVDSS/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - cmake.patch
 
 build:
-  number: 1
+  number: 0
   skip: True  # [osx]
   run_exports:
     - {{ pin_subpackage('svdss', max_pin="x") }}
@@ -19,11 +21,11 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - cmake =3.31.6
     - make
     - automake
     - autoconf
     - libtool
-    - cmake
     - git
   host:
     - libgomp  # [linux]
@@ -38,10 +40,12 @@ requirements:
     - llvm-openmp  # [osx]
     - samtools >=1.9
     - bcftools >=1.9
+    - kanpig
 
 test:
   commands:
     - SVDSS --version
+    - run_svdss -v
 
 about:
   home: "https://github.com/Parsoa/SVDSS"
