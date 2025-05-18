@@ -5,6 +5,7 @@ export M4="${BUILD_PREFIX}/bin/m4"
 export MEME_ETC_DIR="${PREFIX}/etc"
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
+export LC_ALL="en_US.UTF-8"
 
 autoreconf -if
 ./configure --prefix="${PREFIX}" CC="${CC}" \
