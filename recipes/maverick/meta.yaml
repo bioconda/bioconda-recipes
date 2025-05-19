@@ -1,0 +1,41 @@
+{% set name = "MavericK" %}
+{% set version = "1.0.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bobverity/MavericK/archive/v{{ version }}.tar.gz
+  sha256: 8f333495e4ce97c99edb504dadc0d3ab85173f163693455fa1e02eeb84f799a3
+
+build:
+  run_exports:
+    - {{ pin_subpackage('maverick', max_pin="x") }}
+  script: |
+    mkdir -p $PREFIX/bin
+    make && cp MavericK $PREFIX/bin/
+    chmod +x $PREFIX/bin/MavericK
+  number: 0
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - gsl
+  run:
+    - gsl
+
+test:
+  commands:
+    - which MavericK
+
+about:
+  home: https://github.com/bobverity/MavericK
+  license: MIT
+  license_family: MIT
+  summary: "Bayesian clustering for genetic data"
+  description: |
+    MavericK is a C++ program for model-based clustering of population-genetic data using Bayesian inference.
+  dev_url: https://github.com/bobverity/MavericK
