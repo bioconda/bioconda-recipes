@@ -47,8 +47,8 @@ binary = ProjFileName.replace(".vcxproj", "")
 sys.stderr.write("binary=" + binary + "\n")
 
 #-march=native
-compiler_opts = "-ffast-math -O3 -I${PREFIX}/include"
-linker_opts = "-ffast-math -L${PREFIX}/lib"
+compiler_opts = "-ffast-math -mtune=generic -O3 -I${PREFIX}/include"
+linker_opts = "-ffast-math -mtune=generic -L${PREFIX}/lib"
 #-march=native
 
 if std:
