@@ -13,14 +13,19 @@ build:
   run_exports:
     - {{ pin_subpackage('maverick', max_pin="x") }}
   script: |
+    if [[ "$(uname)" == "Darwin" ]]; then
+      sed -i '' 's/\bg++\b/$(CXX)/g' Makefile
+    else
+      sed -i.bak 's/\bg++\b/$(CXX)/g' Makefile
+    fi
     mkdir -p $PREFIX/bin
-    make && cp MavericK $PREFIX/bin/
+    make CXX=$CXX CXXFLAGS="$CXXFLAGS" -j${CPU_COUNT}
+    cp MavericK $PREFIX/bin/
   number: 0
 
 requirements:
   build:
     - make
-    - gxx
     - {{ compiler('cxx') }}
   host:
     - gsl
