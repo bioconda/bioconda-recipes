@@ -20,7 +20,7 @@ cmake . -GNinja \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     "${CONFIG_ARGS}"
 
-ninja || exit 1
+ninja -v -j"${CPU_COUNT}" || exit 1
 
 mkdir -p ${PREFIX}/bin
 install -v -m 0755 TreeSwirl ${PREFIX}/bin || exit 1
