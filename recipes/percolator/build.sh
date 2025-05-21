@@ -20,7 +20,7 @@ cmake -S . -B percobuild \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" -DXML_SUPPORT=ON \
 	-DCMAKE_PREFIX_PATH="${PREFIX}" -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
-	-DGOOGLE_TEST=ON -DPROFILING=ON "${CONFIG_ARGS}"
+	-DGOOGLE_TEST=ON "${CONFIG_ARGS}"
 cmake --build percobuild/ --clean-first --target install -j "${CPU_COUNT}"
 
 # First make sure we dont get problems with truncated PREFIX due to null terminators:
@@ -34,7 +34,7 @@ cmake -S ${SRC_DIR}/src/converters -B converterbuild \
 	-DBOOST_LIBRARYDIR="${PREFIX}/lib" -DSERIALIZE="Boost" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DCMAKE_PREFIX_PATH="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
-	-DXML_SUPPORT=ON -DPROFILING=ON "${CONFIG_ARGS}"
+	-DXML_SUPPORT=ON "${CONFIG_ARGS}"
 cmake --build converterbuild/ --clean-first --target install -j "${CPU_COUNT}"
 
 mkdir -p $PREFIX/testdata
