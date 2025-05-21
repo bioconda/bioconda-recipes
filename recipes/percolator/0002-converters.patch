@@ -1,0 +1,41 @@
+diff --git a/src/converters/CMakeLists.txt b/src/converters/CMakeLists.txt
+index a78af60..6d9e9f9 100644
+--- a/src/converters/CMakeLists.txt
++++ b/src/converters/CMakeLists.txt
+@@ -154,12 +154,35 @@ elseif(TOKYODB)
+   endif()
+ endif()
+ 
++# When user specifies boost paths to use, we need to disable searching from the
++# environment and from using cmake's internal boost variables.
++if (BOOST_ROOT OR BOOST_INCLUDEDIR OR BOOST_LIBRARYDIR OR DEFINED ENV{BOOST_ROOT} OR DEFINED ENV{BOOST_INCLUDEDIR} OR DEFINED ENV{BOOST_LIBRARYDIR})
++  # Don't search for system include dirs for boost
++  set(Boost_NO_SYSTEM_PATHS ON)
++  # Disable excessive warning messages when using multiple boost versions
++  set(Boost_NO_WARN_NEW_VERSION ON)
++endif()
++
++# Use the OLD way of looking for Boost
++# The NEW way only respects BOOST_ROOT, not these more-specific variables.
++if (BOOST_INCLUDEDIR OR BOOST_LIBRARYDIR OR DEFINED ENV{BOOST_INCLUDEDIR} OR DEFINED ENV{BOOST_LIBRARYDIR})
++  # Ignore cmake boost variables
++  set(Boost_NO_BOOST_CMAKE ON)
++endif()
++
++set( Boost_USE_STATIC_LIBS OFF )
++set( Boost_USE_MULTITHREADED TRUE )
++set( Boost_DEBUG ON )
++
+ if(BOOSTDB)
+   find_package(Boost ${BOOST_MIN_VERSION} COMPONENTS serialization filesystem system REQUIRED)
+ else(BOOSTDB)
+   find_package(Boost ${BOOST_MIN_VERSION} COMPONENTS filesystem system REQUIRED)
+ endif()
+-include_directories(${Boost_INCLUDE_DIRS})
++if(Boost_FOUND)
++        include_directories(${Boost_INCLUDE_DIRS})
++        LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
++endif()
+ 
+ 
+ FIND_PACKAGE ( Threads REQUIRED )
