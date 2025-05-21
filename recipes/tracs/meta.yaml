@@ -1,0 +1,70 @@
+{% set version = "1.0.1" %} 
+{% set name = "tracs" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/gtonkinhill/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: ea54a443c2a1a2bda7bb4dc9b79f79ffe5bfffc340ef8e6cc61f1df249ba4e5c
+
+build:
+  number: 1
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('tracs', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }} 
+  host:
+    - python >=3.12
+    - pip
+    - pybind11
+    - boost-cpp
+    - zlib
+    - libgomp # [linux]
+    - llvm-openmp # [osx]
+  run:
+    - python >=3.12
+    - numpy
+    - pandas
+    - sourmash
+    - joblib
+    - ncbi-genome-download
+    - pyfastx
+    - tqdm
+    - scipy
+    - plotly
+    - samtools
+    - htsbox
+    - minimap2
+
+test:
+  imports:
+  - tracs
+  commands:
+  - tracs --help
+  - tracs --version
+  - tracs align --help 
+  - tracs combine --help 
+  - tracs distance --help 
+  - tracs threshold --help 
+  - tracs cluster --help
+  - tracs build-db --help
+  - tracs pipe --help
+
+about:
+  home: https://github.com/gtonkinhill/tracs
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'Tracs - Fast pairwise transmission inference from single genome and/or metagenomic data'
+  doc_url: https://github.com/gtonkinhill/tracs/tree/main/docs
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

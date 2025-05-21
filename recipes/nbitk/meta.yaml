@@ -1,0 +1,47 @@
+{% set name = "nbitk" %}
+{% set version = "0.5.7" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/nbitk-{{ version }}.tar.gz
+  sha256: 62c6f4e9ee0f429a7775d9071c1ab124aa05c80a51ece2643daa59942c56cdc3
+
+build:
+  number: 0
+  noarch: python
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('nbitk', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools-scm
+  run:
+    - python >=3.9
+    - biopython
+    - pandas
+    - openpyxl
+    - ete4
+    - requests
+    - minio
+    - pyyaml
+
+test:
+  imports:
+    - nbitk
+
+about:
+  home: https://pypi.org/project/nbitk/
+  license: Apache-2.0
+  summary: 'nbitk: Naturalis BioInformatics ToolKit'
+  license_family: APACHE
+  license_file: LICENSE
+  doc_url: https://pypi.org/project/nbitk/
+

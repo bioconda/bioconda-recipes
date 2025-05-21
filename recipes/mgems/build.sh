@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 mkdir -p $PREFIX/bin
 
 mkdir build

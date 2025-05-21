@@ -1,5 +1,5 @@
 {% set name = "zol" %}
-{% set version = "1.4.4" %}
+{% set version = "1.5.14" %}
 
 package:
   name: {{ name|lower }}
@@ -7,13 +7,13 @@ package:
 
 source:
   url: https://github.com/Kalan-Lab/zol/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: aa18952bc5c7a699603b5415ec87c594bfc297bfadb35b558dc85e2cd6d96cb8
+  sha256: e4b5ab0d6f873df9e0712d61eae11e6c445e582ac1ee0d8b1778374d90ca18aa
 
 build:
   number: 0
-  skip: True # [py <= 39]
+  skip: True # [py != 310]
   run_exports:
-    - {{ pin_subpackage('zol', max_pin='x.x') }}
+    - {{ pin_subpackage('zol', max_pin='x') }}
 
 requirements:
   build:
@@ -22,17 +22,17 @@ requirements:
     - python
     - setuptools
     - pip
-    - axel
   run:
-    - python =3.10
-    - biopython =1.79
-    - muscle
-    - setuptools 
+    - python >=3.10
+    - r-base 
+    - biopython 
+    - muscle >=5.0,<=5.1 [osx]
+    - muscle >=5.0 [not osx]
     - mcl
     - pal2nal >=14.1
     - hmmer >=3.0.0
-    - fasttree >=2.0.0
-    - diamond =2.0.15
+    - fasttree
+    - diamond >=2.1.7
     - pyrodigal
     - prodigal
     - prodigal-gv
@@ -41,29 +41,32 @@ requirements:
     - xlsxwriter >=3.0.3
     - scikit-learn
     - axel
-    - hyphy =2.5.14
-    - pomegranate >0.13,<=0.14.8
+    - hyphy >=2.5.14
+    - pomegranate >=1.0.0
     - cd-hit
-    - ncbi-genome-download
-    - r-base
     - r-ggplot2
     - r-cowplot
     - r-gggenes
     - r-gridextra
-    - skani
+    - skani >=0.2.2
     - slclust
     - trimal
     - gzip
-    - miniprot =0.7
+    - miniprot =0.13 # [x86_64]
+    - miniprot >=0.13 # [aarch64]
     - bioconductor-ggtree
     - ete3
     - codoff
+    - gravis
+    - colour
+    - rich-argparse
+    - tqdm
+    - aiofile
+    - aiohttp
 
 test:
   commands:
-    - prepTG -v
-    - fai -v
-    - zol -v
+    - zol -h
 
 about:
   home: https://github.com/Kalan-Lab/zol
@@ -73,3 +76,8 @@ about:
   summary: "zol (& fai): large-scale targeted detection and evolutionary investigation of gene clusters."
   dev_url: https://github.com/Kalan-Lab/zol
   
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - raufs

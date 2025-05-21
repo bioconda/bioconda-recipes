@@ -9,3 +9,7 @@ RUST_BACKTRACE=1 \
  C_INCLUDE_PATH=$PREFIX/include \
  LIBRARY_PATH=$PREFIX/lib \
  cargo install --verbose --root $PREFIX --path .
+
+# colorid_bv is exactly the same as colorid except it lets you multithread
+# and so just symlink to colorid
+ln -sv $PREFIX/bin/colorid_bv $PREFIX/bin/colorid

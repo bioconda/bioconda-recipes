@@ -1,54 +1,55 @@
 {% set name = "amdirt" %}
-{% set version = "1.6.0" %}
+{% set version = "1.6.5" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/AMDirT-{{ version }}.tar.gz
-  sha256: 15feb7872d98e73225886a81a6b7b1af0e6a962e9a398d6e0343c31adeb9640c
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/amdirt-{{ version }}.tar.gz
+  sha256: 907c06035768dea2ee9d9ea4d681872880c30c064fdfb9ac173a68512203ce5b
 
 build:
   entry_points:
-    - AMDirT = AMDirT.cli:cli
+    - amdirt = amdirt.cli:cli
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
   run_exports:
-    - {{ pin_subpackage("amdirt", max_pin="x.x") }}
+    - {{ pin_subpackage("amdirt", max_pin="x") }}
 
 requirements:
   host:
+    - python >=3.9
     - pip
-    - python >=3.9
+    - setuptools
   run:
-    - click
-    - colorlog
-    - jsonschema
-    - defusedxml
-    - numpy
-    - pandas
     - python >=3.9
-    - requests
-    - rich
-    - streamlit >=1.21.0
-    - streamlit-aggrid
+    - click
+    - pandas
     - tabulate
+    - jsonschema
+    - rich
+    - streamlit <=1.35.0
+    - streamlit-aggrid
+    - numpy
+    - requests
+    - colorlog
+    - protobuf <=3.20
 
 test:
   imports:
-    - AMDirT
+    - amdirt
   commands:
     - pip check
-    - AMDirT --help
+    - amdirt --help
   requires:
     - pip
 
 about:
-  home: https://github.com/SPAAM-community/AMDirT
-  summary: 'AMDirT: AncientMetagenomeDir Toolkit'
-  license: GPL-3.0-or-later
+  home: https://github.com/SPAAM-community/amdirt
+  summary: 'amdirt: AncientMetagenomeDir Toolkit'
+  license: GPL-3.0
   license_file: LICENSE
 
 extra:

@@ -1,17 +1,18 @@
-{% set version = "2.54.1" %}
+{% set version = "2.62.0" %}
+{% set name = "auspice" %}
 
 package:
-  name: auspice
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://registry.npmjs.org/auspice/-/auspice-{{ version }}.tgz
-  sha256: 67533ac3545089f200ef44598ab12d4a937b7018cc8c4c192e0516ab6081731b
+  url: https://registry.npmjs.org/{{ name }}/-/{{ name }}-{{ version }}.tgz
+  sha256: 23b78a713aa6197fbccfa528d1dd73fa120d350021688aedeb1c59abd12206d9
 
 build:
   number: 0
   run_exports:
-    - {{ pin_subpackage("auspice", max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
@@ -19,18 +20,19 @@ requirements:
     # vary across platforms.
     - "{{ compiler('c') }}"
     - "{{ compiler('cxx') }}"
-    - nodejs 16.*|18.*|20.*
-    - python *
+    - nodejs 16.*|18.*|20.*|22.*
+    - python
     - pkg-config
     - yarn 1.*
   host:
     - icu
   run:
-    - nodejs 16.*|18.*|20.*
+    - nodejs 16.*|18.*|20.*|22.*
 
 test:
   commands:
     - auspice --help
+    - auspice -v
 
 about:
   home: https://docs.nextstrain.org/projects/auspice/
@@ -42,8 +44,12 @@ about:
   license_family: AGPL
 
 extra:
+  identifiers:
+    # Generic Nextstrain paper, for lack of specific Auspice one
+    - doi:10.1093/bioinformatics/bty407
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - jameshadfield
     - victorlin

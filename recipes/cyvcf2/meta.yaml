@@ -1,6 +1,6 @@
 {% set name = "cyvcf2" %}
-{% set version = "0.31.0" %}
-{% set sha256 = "1480091ad055e8715e8fbbd9a93f3c10655d87a1716ffd122657f42355a23ea4" %}
+{% set version = "0.31.1" %}
+{% set sha256 = "00bd0e09a3719d29fbc02bc8a40a690ac2c475e91744648750907d1816558fc5" %}
 
 package:
   name: {{ name }}
@@ -14,9 +14,12 @@ source:
     - patches/setup.py.patch
 
 build:
-  number: 0
+  number: 2
   skip: True  # [py < 37]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  script_env:
+    - CFLAGS=-Wno-implicit-function-declaration -Wno-int-conversion  # [osx and py == 38]
+    - M4=$BUILD_PREFIX/bin/m4  # [osx and arm64]
   entry_points:
     - cyvcf2 = cyvcf2.__main__:cli
   run_exports:
@@ -36,7 +39,8 @@ requirements:
     - zlib
     - htslib >=1.10
     - openssl
-    - numpy
+    - numpy >=2.0.0  # [py >= 39]
+    - numpy  # [py < 39]
   run:
     - python
     - coloredlogs
@@ -64,3 +68,4 @@ extra:
     - biotools:cyvcf2
   additional-platforms:
     - linux-aarch64
+    - osx-arm64

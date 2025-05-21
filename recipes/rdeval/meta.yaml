@@ -1,0 +1,61 @@
+{% set name = "rdeval" %}
+{% set version = "0.0.7" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/vgl-hub/{{ name }}/releases/download/v{{ version }}/{{ name }}.v{{ version }}-with_submodules.zip
+  sha256: 9dde177af3a17b684b15876217e63431bbf14ebae354c1a441c5cff81bfa954b
+  patches:
+    - 0001-Makefile.patch
+    - 0002-gfalibs-Makefile.patch
+
+build: 
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - htslib
+    - openssl
+    - r-base
+    - r-bit64
+    - r-ggextra
+    - r-plotly
+    - r-rmarkdown
+    - r-tidyverse
+    - zlib
+  run:
+    - htslib
+    - openssl
+    - pandoc
+    - r-base
+    - r-bit64
+    - r-ggextra
+    - r-plotly
+    - r-rmarkdown
+    - r-tidyverse
+
+test:
+  commands:
+    - rdeval --help
+
+about:
+  home: "https://github.com/vgl-hub/{{ name }}"
+  summary: "A general purpose, multithreaded read analysis and manipulation tool."
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: "https://github.com/vgl-hub/{{ name }}"
+  doc_url: "https://github.com/vgl-hub/rdeval/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

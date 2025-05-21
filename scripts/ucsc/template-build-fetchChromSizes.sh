@@ -1,4 +1,6 @@
 #!/bin/bash
 
-cp kent/src/utils/userApps/fetchChromSizes $PREFIX/bin
-chmod +x $PREFIX/bin/fetchChromSizes
+set -xe
+
+cp kent/src/utils/userApps/fetchChromSizes ${{PREFIX}}/bin
+chmod 0755 ${{PREFIX}}/bin/fetchChromSizes

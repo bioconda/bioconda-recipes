@@ -1,8 +1,9 @@
-{% set version = "4.0.0" %}
-{% set sha256 = "07c02eb1d9d90f611ac73bdd30ddc242ed51b00c8a3757189e8a8137ad8cfb8b" %}
+{% set name = "spades" %}
+{% set version = "4.2.0" %}
+{% set sha256 = "043322129f8536411f1172b7d1c9adfcb6d49d152c10066ccc03e86b6f615a6b" %}
 
 package:
-  name: spades
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -18,25 +19,24 @@ build:
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - llvm-openmp  # [osx]
-    - libgomp  # [linux]
     - cmake
     - make
     - pkg-config
-    - sysroot_linux-64 =2.17 # [linux]
+    - bison
+    - flex
   host:
     - llvm-openmp  # [osx]
     - libgomp  # [linux]
+    - openmpi
+    - doxygen
     - zlib
     - bzip2
-    - sysroot_linux-64 =2.17 # [linux]
   run:
     - llvm-openmp  # [osx]
     - libgomp  # [linux]
-    - python >3.9
-    - sysroot_linux-64 =2.17 # [linux]
+    - openmpi
+    - python >=3.8
 
 test:
   commands:
@@ -49,28 +49,26 @@ test:
     - spades-gbuilder 2>&1 | grep spades-gbuilder
     - spades.py --test && rm -rf spades_test
 
-
 about:
-  home: http://ablab.github.io/spades/
-  license: GPL-2.0-only
+  home: "https://github.com/ablab/spades"
+  license: "GPL-2.0-only"
   license_family: GPL
   license_file: LICENSE
-  summary: SPAdes (St. Petersburg genome assembler) is intended for both standard isolates and single-cell MDA bacteria assemblies.
+  summary: "SPAdes (St. Petersburg genome assembler) is intended for both standard isolates and single-cell MDA bacteria assemblies."
   description: |
     SPAdes (St. Petersburg genome assembler) is a genome assembly algorithm which was designed for
     single cell and multi-cells bacterial data sets. However, it might not be suitable for large
     genomes projects.
 
     SPAdes works with Ion Torrent, PacBio, Oxford Nanopore, and Illumina paired-end, mate-pairs and
-    single reads
-
-  dev_url: https://github.com/ablab/spades
-  doc_url: http://ablab.github.io/spades/
-
+    single reads.
+  dev_url: "https://github.com/ablab/spades"
+  doc_url: "https://ablab.github.io/spades"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - druvus
     - notestaff
@@ -82,5 +80,3 @@ extra:
     - doi:10.1101/gr.213959.116
     - doi:10.1093/gigascience/giz100
     - doi:10.1093/bioinformatics/btz349
-  skip-lints:
-    - should_not_be_noarch_source

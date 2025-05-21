@@ -1,45 +1,58 @@
 {% set package = "ucsc-blat" %}
 {% set program = "blat" %}
-{% set version = "445" %}
-{% set sha256 = "c7abb5db6a5e16a79aefcee849d2b59dbc71ee112ca1e41fea0afb25229cf56c" %}
+{% set version = "481" %}
+{% set sha256 = "0df96181560e2cac3c29628b51140d60a56a0bf088c361bfd5eeb233009f98ec" %}
 
 package:
   name: "{{ package }}"
   version: "{{ version }}"
 
 source:
-- url: "https://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
+  url: "https://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
   sha256: "{{ sha256 }}"
   patches:
-    - "include.patch"
+    - include.patch
+    - include.linux.patch  # [linux]
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage(package, max_pin=None) }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
   host:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
     - libopenssl-static
+    - clangdev  # [osx]
     - zlib
+    - bzip2
+    - liblzma-devel
   run:
     - libpng
     - libuuid
-    - openssl
-    - zlib
+    - mysql-connector-c
+    - libopenssl-static
 
 test:
   commands:
-    # just check for existence, because the individual packages have no unified behavior
-    - which {{ program }}
+    # just check for existence and exec bit, because the individual packages have no unified behavior
+    - test -x ${PREFIX}/bin/{{ program }}
 
 about:
-  home: "https://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "varies; see https://genome.ucsc.edu/license"
-  summary: "Standalone BLAT v. 37x1 fast sequence search command line tool"
+  home: "https://hgdownload.cse.ucsc.edu/admin/exe"
+  license: "Varies; see https://genome.ucsc.edu/license"
+  summary: "Standalone BLAT v. 39x1 fast sequence search command line tool."
+  dev_url: "https://github.com/ucscGenomeBrowser/kent"
+  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/v{{ version }}_base/README"
+
+extra:
+  identifiers:
+    - biotools:UCSC_Genome_Browser_Utilities
+    - doi:10.1093/bib/bbs038
+  additional-platforms:
+    - linux-aarch64

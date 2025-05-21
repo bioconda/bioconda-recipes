@@ -1,7 +1,9 @@
 #!/bin/bash
 
+set -xe
+
 # compile Arriba
-make CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/htslib" LDFLAGS="$LDFLAGS" CXX=$CXX bioconda
+make -j ${CPU_COUNT} CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/htslib" LDFLAGS="$LDFLAGS" CXX=$CXX bioconda
 
 # copy executables
 mkdir -p "$PREFIX/bin"
