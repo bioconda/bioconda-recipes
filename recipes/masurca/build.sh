@@ -12,14 +12,14 @@ export CFLAGS="${CFLAGS} -O3 -std=gnu90"
 export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
 export LC_ALL="en_US.UTF-8"
 
-ROOT="${PREFIX}"
-[ -z "$DEST" ] && DEST="$ROOT"
+ROOT=`pwd -P`
+[ -z "${DEST}" ] && DEST="${ROOT}"
 
 ###################
 # Check for gmake #
 ###################
 mkdir -p dist-bin
-PATH="$PATH:$ROOT/dist-bin"
+PATH="${PATH}:${ROOT}/dist-bin"
 ln -sf $(which make) ${ROOT}/dist-bin/gmake
 ln -sf ${ROOT}/PkgConfig.pm ${ROOT}/dist-bin/pkg-config
 
@@ -31,7 +31,7 @@ export PKG_CONFIG_PATH="${LIBDIR}/pkgconfig:${PKG_CONFIG_PATH}"
 cd global-1
 
 autoreconf -if
-./configure --prefix="${DEST}" --bindir="${BINDIR}" --libdir="${LIBDIR}" \
+./configure --prefix="${PREFIX}" --bindir="${BINDIR}" --libdir="${LIBDIR}" \
         --enable-swig --enable-silent-rules --disable-option-checking \
         --disable-dependency-tracking CC="${CC}" CXX="${CXX}" CPPFLAGS="${CPPFLAGS}" \
         LDFLAGS="${LDFLAGS}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" \
@@ -41,7 +41,9 @@ make install-special -j"${CPU_COUNT}"
 echo "creating example config file masurca_config_example.txt"
 masurca -g masurca_config_example.txt
 
-(cd Flye && make && cp -af ../Flye "${DEST}");
+cd ${SRC_DIR}/Flye
+make -j"${CPU_COUNT}"
+install -v -m 0755 ../Flye "${DEST}
 
 ls ${SRC_DIR}
 ls ${SRC_DIR}/bin
