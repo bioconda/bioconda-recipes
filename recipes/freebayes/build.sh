@@ -44,6 +44,9 @@ CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" meson setup --buildtype
 
 cd build
 
+sed -i.bak -e 's|-I../src|-I../src -I../contrib/SeqLib|' build.ninja
+rm -rf *.bak
+
 ninja -v -j"${CPU_COUNT}"
 ninja install -v -j"${CPU_COUNT}"
 
