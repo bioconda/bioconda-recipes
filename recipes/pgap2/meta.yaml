@@ -1,0 +1,92 @@
+{% set name = "pgap2" %}
+{% set version = "1.0.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pgap2-{{ version }}.tar.gz
+  sha256: f8fd711faad9755cf02f919d207086ee0669598feba0dbae1cc0ae9076ddb688
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - pgap2 = pgap2.main:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('pgap2', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools
+    - pip
+  run:
+    - python >=3.10
+    - biopython ==1.82
+    - networkx ==3.3
+    - pyfastani ==0.5.1
+    - python-edlib ==1.3.9
+    - loguru ==0.6.0
+    - numpy ==1.23.3
+    - pandas ==1.5.0
+    - pyecharts ==2.0.8
+    - scikit-learn ==1.1.2
+    - scipy ==1.9.1
+    - tqdm ==4.64.1
+    - minifasta
+    - tajimas_d
+
+    - cd-hit
+    - mmseqs2
+
+    - diamond
+    - blast
+
+    - raxml-ng
+    - iqtree
+    - fasttree
+
+    - muscle
+    - mafft
+    - perl-bio-tools-run-alignment-tcoffee
+
+    - seqtk
+    - mcl
+
+    - miniprot
+    - clipkit
+    - clonalframeml
+
+    - prodigal
+
+    - htslib
+
+    - r-base
+    - r-ggpubr
+    - r-ggrepel
+    - r-dplyr
+    - r-tidyr
+    - r-patchwork
+    - r-optparse
+    - r-fastbaps
+
+test:
+  commands:
+    - pgap2 -h
+    - Rscript -e "library(ggpubr)"
+    - Rscript -e "library(ggrepel)"
+    - Rscript -e "library(dplyr)"
+    - Rscript -e "library(tidyr)"
+    - Rscript -e "library(patchwork)"
+    - Rscript -e "library(optparse)"
+
+about:
+  home: "https://github.com/bucongfan/PGAP2"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "PGAP2: a comprehensive pan-genome analysis pipeline for prokaryotic genomes."
+  dev_url: "https://github.com/bucongfan/PGAP2"

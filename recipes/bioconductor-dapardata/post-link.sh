@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "dapardata-1.32.0"
+installBiocDataPackage.sh "dapardata-1.36.0"
