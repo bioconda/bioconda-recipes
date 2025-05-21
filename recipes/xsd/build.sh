@@ -6,6 +6,7 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-deprecated-declarations"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 if [[ `uname -s` == "Darwin" ]]; then
+  mv libxsd-frontend/version libxsd-frontend/VERSION
   export CXXFLAGS="${CXXFLAGS} -O3 -std=libc++ -std=c++14"
 else
   export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
