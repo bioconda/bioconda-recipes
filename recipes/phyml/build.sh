@@ -4,7 +4,7 @@ set -xe
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CFLAGS="${CFLAGS} -O3 -fomit-frame-pointer -funroll-loops -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -fomit-frame-pointer -funroll-loops -Wno-implicit-function-declaration -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export LC_ALL="en_US.UTF-8"
 
@@ -31,7 +31,7 @@ autoreconf -if
 
 # Adding -v to make breaks compilation on Microsoft Azure CI
 # phyml-mpi error: mpi_boot.c:215:100: error: 'struct __Optimiz' has no member named 'opt_bl'
-for binary in phyml phyml-mpi phytime rf; do
+for binary in phyrex phyml phyml-mpi phytime rf; do
 	echo ${binary}
 	./configure \
 		--disable-dependency-tracking \
