@@ -5,5 +5,10 @@ export LIBPATH="-L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-deprecated-declarations"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-make CC="${CC}" CXX="${CXX}" AR="${AR}" RANLIB="${RANLIB}" CPPFLAGS="${CPPFLAGS}" CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-terminate -Wno-deprecated" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
+if [[ `uname -s` == "Darwin" ]]; then
+  export CXXFLAGS="${CXXFLAGS} -O3 -std=libc++ -std=c++14"
+else
+  export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
+
+make CC="${CC}" CXX="${CXX}" AR="${AR}" RANLIB="${RANLIB}" CPPFLAGS="${CPPFLAGS}" CXXFLAGS="${CXXFLAGS} -Wno-terminate -Wno-deprecated" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
 make install_prefix="${PREFIX}" install
