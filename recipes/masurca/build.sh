@@ -8,9 +8,13 @@ export INCLUDE_PATH="${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPATH="${PREFIX}/include"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CFLAGS="${CFLAGS} -O3 -std=gnu99 -Wno-unused-result"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-use-after-free -Wno-misleading-indentation"
+export CFLAGS="${CFLAGS} -O3 -std=gnu99"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-use-after-free -Wno-misleading-indentation -Wno-unused-result"
 export LC_ALL="en_US.UTF-8"
+
+sed -i.bak 's|-O2|-O3|' Flye/lib/minimap2/Makefile
+sed -i.bak 's|-lpthread|-pthread|' Flye/lib/minimap2/Makefile
+rm -rf Flye/lib/minimap2/*.bak
 
 ROOT=`pwd -P`
 [ -z "${DEST}" ] && DEST="${ROOT}"
@@ -38,11 +42,9 @@ autoreconf -if
         BOOST_ROOT="${PREFIX}" YAGGO="$(which yaggo)"
 make install-special -j"${CPU_COUNT}"
 
-echo "creating example config file masurca_config_example.txt"
+echo "Creating example config file masurca_config_example.txt:"
 masurca -g masurca_config_example.txt
 
 cd ${SRC_DIR}/Flye
 make -j"${CPU_COUNT}"
-install -v -m 0755 ../Flye "${PREFIX}/bin"
-
-ls ${SRC_DIR}/Flye/bin
+install -v -m 0755 bin/flye* "${PREFIX}/bin"
