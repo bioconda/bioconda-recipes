@@ -6,6 +6,9 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -std=c++14 -O3"
 
+sed -i.bak 's|VERSION 2.6|VERSION 3.5|' src/converters/CMakeLists.txt
+rm -rf src/converters/*.bak
+
 if [[ `uname` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
