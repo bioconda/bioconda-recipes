@@ -1,5 +1,5 @@
-{% set version = "1.11" %}
-{% set sha256 = "e48308505e8ef9e6be2fdce8cb449f9fffe1aabcf1fb6b6e2aba94a8b00ccc71" %}
+{% set version = "2.2" %}
+{% set sha256 = "53585aeeea52a80227f1caab72230db30fee327868ec3cef7241e387623bd42e" %}
 
 package:
   name: harpy
@@ -11,14 +11,13 @@ source:
 
 build:
   number: 0
-  skip: True  # [osx or py < 39]
+  noarch: python
   script_env:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   run_exports:
     - {{ pin_subpackage('harpy', max_pin="x") }}
   script: |
     mkdir -p ${PREFIX}/bin
-    "${CXX}" harpy/bin/extractReads.cpp -O3 -o ${PREFIX}/bin/extractReads
     ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
     chmod 0755 harpy/bin/* 
     cp -rf harpy/bin/* ${PREFIX}/bin/
@@ -26,8 +25,6 @@ build:
     - harpy = harpy.__main__:cli
 
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
     - python
     - pip
@@ -36,13 +33,13 @@ requirements:
     - apptainer
     - bcftools =1.20
     - conda >24.7
-    - pysam
-    - python
+    - htslib =1.20
+    - pysam =0.22
+    - python >=3.11
     - rich-click
-    - snakemake-minimal >7
+    - snakemake-minimal =9
     - samtools =1.20
     - seqtk
-    - tabix
 
 test:
   commands:
@@ -66,7 +63,5 @@ about:
   dev_url: "https://github.com/pdimens/harpy"
 
 extra:
-  additional-platforms:
-    - linux-aarch64
   recipe-maintainers:
     - pdimens

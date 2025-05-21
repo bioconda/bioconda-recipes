@@ -10,8 +10,9 @@ DEFAULT_LINUX_VERSION="cos7"
 # * node-18.20.x can be compiled on MacOS but not on CentOS 7 because it
 #   includes an updated c-ares library which is incompatible with glibc on CentOS 7
 if [[ "$(uname)" == "Darwin" ]]; then
-	NODE_VERSION="18.20.4"
+	NODE_VERSION="18.20.5"
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
+	export CFLAGS="${CFLAGS} -fno-define-target-os-macros"
 else
 	NODE_VERSION="18.19.1"
 fi
@@ -47,8 +48,7 @@ sed -i.bak 's/LIBS=/LIBS?=/' Makefile
 rm -rf *.bak
 
 # Then compile k8
-NODE_SRC="node-v${NODE_VERSION}" CXXFLAGS="${CXXFLAGS} -std=c++17 -g -O3 -Wall" LIBS="${LDFLAGS} -pthread" make
+NODE_SRC="node-v${NODE_VERSION}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -std=c++17 -g -O3 -Wall" LIBS="${LDFLAGS} -pthread" make -j"${CPU_COUNT}"
 
-mkdir -p $PREFIX/bin
-chmod 0755 k8
-cp -f k8 $PREFIX/bin/
+install -d "${PREFIX}/bin"
+install -v -m 0755 k8 "${PREFIX}/bin"
