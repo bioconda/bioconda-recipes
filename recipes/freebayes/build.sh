@@ -38,9 +38,9 @@ elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 fi
 
 CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" meson setup --buildtype release \
-	--prefix "${PREFIX}" --strip \
-	--includedir "${PREFIX}/include" \
-	--libdir "${PREFIX}/lib" build/
+	--prefix "${PREFIX}" --strip --includedir "${PREFIX}/include" \
+	--libdir "${PREFIX}/lib" -Dc_args="-I${PREFIX}/include" \
+	-Dc_link_args="-L${PREFIX}/lib" build/
 
 cd build
 
