@@ -8,8 +8,8 @@ export INCLUDE_PATH="${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPATH="${PREFIX}/include"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CFLAGS="${CFLAGS} -O3 -std=gnu99"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
+export CFLAGS="${CFLAGS} -O3 -std=gnu99 -Wno-unused-result"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-use-after-free -Wno-misleading-indentation"
 export LC_ALL="en_US.UTF-8"
 
 ROOT=`pwd -P`
