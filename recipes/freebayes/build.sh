@@ -12,6 +12,7 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 wget -O src/multipermute.h https://raw.githubusercontent.com/ekg/multipermute/refs/heads/master/multipermute.h
 
+sed -i.bak -e 's|v1.3.10|v1.3.9|' src/version_git.h
 sed -i.bak -e 's|"split.h"|<vcflib/split.h>|' src/*.h
 sed -i.bak -e 's|"split.h"|<vcflib/split.h>|' src/*.cpp
 sed -i.bak -e 's|"convert.h"|<vcflib/convert.h>|' src/*.h
@@ -23,7 +24,7 @@ sed -i.bak -e 's|"multichoose.h"|<vcflib/multichoose.h>|' src/*.cpp
 sed -i.bak -e 's|<Variant.h>|<vcflib/Variant.h>|' src/*.h
 sed -i.bak -e 's|<intervaltree/IntervalTree.h>|<vcflib/IntervalTree.h>|' src/BedReader.h
 sed -i.bak -e 's|<IntervalTree.h>|<vcflib/IntervalTree.h>|' src/BedReader.cpp
-sed -i.bak -e 's|<Fasta.h>|"Fasta.h"|' $PREFIX/include/vcflib/Variant.h
+sed -i.bak -e 's|<Fasta.h>|"Fasta.h"|' ${PREFIX}/include/vcflib/Variant.h
 
 rm -rf src/*.bak
 
@@ -37,14 +38,14 @@ elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 fi
 
 CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" meson setup --buildtype release \
-	--prefix "${PREFIX}" --strip \
+	--prefix "${PREFIX}" -Dstatic=true --strip \
 	--includedir "${PREFIX}/include" \
 	--libdir "${PREFIX}/lib" build/
 
 cd build
 
-ninja -v
-ninja -v install
+ninja -v -j"${CPU_COUNT}"
+ninja install -v -j"${CPU_COUNT}"
 
 ## Copy scripts over to ${PREFIX}/bin ##
 install -v -m 0755 ../scripts/*.py "${PREFIX}/bin"
