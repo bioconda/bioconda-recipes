@@ -1,0 +1,62 @@
+{% set version = "1.0.5" %}
+  {% set name = "r-saccharis" %}
+  {% set build_number = 0%}
+  {% set filehash = "187B8244DD2357D7B1ED448AC72A5F172086CC823816A7149274A6AB469AF7C3"%}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url:
+    - 'https://github.com/saccharis/rsaccharis/releases/download/{{ version }}/rsaccharis_{{ version }}.tar.gz'
+  sha256: {{ filehash|lower}}
+
+build:
+  noarch: generic
+  number: {{ build_number }}
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage("r-saccharis", max_pin="x.x") }}
+
+requirements:
+  host:
+    - r-base
+    - r-jsonlite
+    - r-ape
+    - r-stringr
+    - r-knitr
+    - r-dplyr
+    - r-magrittr
+    - r-rcolorbrewer
+    - r-ggnewscale
+    - r-ggplot2
+    - bioconductor-ggtree
+  run:
+    - r-base
+    - r-jsonlite
+    - r-ape
+    - r-stringr
+    - r-knitr
+    - r-dplyr
+    - r-magrittr
+    - r-rcolorbrewer
+    - r-ggnewscale
+    - r-ggplot2
+    - bioconductor-ggtree
+
+test:
+  commands:
+    - 'Rscript -e "library(rsaccharis)"'
+
+about:
+  home: 'https://github.com/saccharis/rsaccharis'
+  license: 'GPL-3.0-or-later'
+  license_family: GPL
+  summary: 'A rendering package for creating phylogenetic trees from SACCHARIS .json and .tree files, in the R statistical computing language.'
+  description: 'This package will use metadata .json and .tree files output from SACCHARIS v2 to generate annotated phylogenetic tree PDF files.
+    Highly customizable, as the formatting of the tree is done using ggplot2. Of course plotting functions can easily be manipulated as desired.
+    To use, call A_load_data() and B_plots_all() and follow prompts. Our default plots used for publication are domain_ECno_numeric.'
+  license_file: LICENSE.md

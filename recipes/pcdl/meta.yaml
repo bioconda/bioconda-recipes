@@ -1,0 +1,89 @@
+{% set name = "pcdl" %}
+{% set version = "3.3.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pcdl-{{ version }}.tar.gz
+  sha256: 0227f14d6890c6a6aa7f7646b4fcc89b2be2e9b8c8416dc7ebbddc3577ea32a5
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - pcdl_get_version = pcdl.pyCLI:get_version
+    - pcdl_get_unit_dict = pcdl.pyCLI:get_unit_dict
+    - pcdl_get_substrate_list = pcdl.pyCLI:get_substrate_list
+    - pcdl_get_conc_attribute = pcdl.pyCLI:get_conc_attribute
+    - pcdl_get_conc_df = pcdl.pyCLI:get_conc_df
+    - pcdl_plot_contour = pcdl.pyCLI:plot_contour
+    - pcdl_make_conc_vtk = pcdl.pyCLI:make_conc_vtk
+    - pcdl_get_celltype_list = pcdl.pyCLI:get_celltype_list
+    - pcdl_get_cell_attribute_list = pcdl.pyCLI:get_cell_attribute_list
+    - pcdl_get_cell_attribute = pcdl.pyCLI:get_cell_attribute
+    - pcdl_get_cell_df = pcdl.pyCLI:get_cell_df
+    - pcdl_get_anndata = pcdl.pyCLI:get_anndata
+    - pcdl_make_graph_gml = pcdl.pyCLI:make_graph_gml
+    - pcdl_plot_scatter = pcdl.pyCLI:plot_scatter
+    - pcdl_make_cell_vtk = pcdl.pyCLI:make_cell_vtk
+    - pcdl_plot_timeseries = pcdl.pyCLI:plot_timeseries
+    - pcdl_make_gif = pcdl.pyCLI:make_gif
+    - pcdl_make_movie = pcdl.pyCLI:make_movie
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('pcdl', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8,<4.0
+    - hatchling
+    - pip
+  run:
+    - python >=3.8,<4.0
+    - anndata >=0.10.8
+    - matplotlib-base
+    - numpy >=2.0.0
+    - pandas >=2.2.2
+    - requests
+    - scipy >=1.13.0
+    - vtk
+    - imagemagick
+    - ffmpeg
+
+test:
+  imports:
+    - pcdl
+  commands:
+    - pcdl_get_version --help
+    - pcdl_get_unit_dict --help
+    - pcdl_get_substrate_list --help
+    - pcdl_get_conc_attribute --help
+    - pcdl_get_conc_df --help
+    - pcdl_plot_contour --help
+    - pcdl_make_conc_vtk --help
+    - pcdl_get_celltype_list --help
+    - pcdl_get_cell_attribute_list --help
+    - pcdl_get_cell_attribute --help
+    - pcdl_get_cell_df --help
+    - pcdl_get_anndata --help
+    - pcdl_make_graph_gml --help
+    - pcdl_plot_scatter --help
+    - pcdl_make_cell_vtk --help
+    - pcdl_plot_timeseries --help
+    - pcdl_make_gif --help
+    - pcdl_make_movie --help
+
+about:
+  summary: "physicell data loader (pcdl) provides a platform independent, python3 based, pip installable interface to transform output, generated with the PhysiCell agent based modeling framework, into standard formats."
+  home: "https://github.com/elmbeech/physicelldataloader"
+  dev_url: "https://github.com/elmbeech/physicelldataloader"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: LICENSE
+  doc_url: "https://github.com/elmbeech/physicelldataloader/blob/v{{ version }}/README.md"
+
+extra:
+  recipe-maintainers:
+    - elmbeech

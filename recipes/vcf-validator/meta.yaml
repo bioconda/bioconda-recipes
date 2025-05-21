@@ -1,25 +1,37 @@
 {% set name = "vcf-validator" %}
-{% set version = "0.9.7" %}
+{% set version = "0.10.0" %}
 
 package:
-  name: {{ name }}
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  - url: https://github.com/EBIvariation/vcf-validator/releases/download/v{{ version }}/vcf_validator_linux               # [linux]
-    sha256: 49aef4841cd7d0913ba12020465830b834ccfe20f2094222c8c41511f6c801ac                                              # [linux]
-  - url: https://github.com/EBIvariation/vcf-validator/releases/download/v{{ version }}/vcf_assembly_checker_linux        # [linux]
-    sha256: a9a00303c05c1fb5a33a5bd1f5c74fb5d8097f92a1f3ee815e19c137c0e26f13                                              # [linux]
-  - url: https://github.com/EBIvariation/vcf-validator/releases/download/v{{ version }}/vcf_validator_macos_x64           # [osx and x86]
-    sha256: 0b97a34fac6cf23951ffc33cdfb7b0602a89b4d5390564c8d816cb83019a3ffc                                              # [osx and x86]
-  - url: https://github.com/EBIvariation/vcf-validator/releases/download/v{{ version }}/vcf_assembly_checker_macos_x64    # [osx and x86]
-    sha256: 1b5404a4239da9f5e5e39bece975e4eea55d87c486121a076226829b79477bc3                                              # [osx and x86]
+  url: https://github.com/EBIvariation/vcf-validator/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b46117700445644e6fc5a6d2655b477902c67aba0e7abe8a62df6cb49f923fff
 
 build:
-  script:
-  number: 0
+  number: 2
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
+    - {{ pin_subpackage("vcf-validator", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+    - cmake >=2.8
+  host:
+    - libboost-devel
+    - libcurl
+    - libtool
+    - zstd
+    - c-ares
+    - openssl
+    - bzip2
+    - libzlib
+  run:
+    - zstd
+    - libcurl
 
 test:
   commands:
@@ -28,17 +40,15 @@ test:
 
 about:
   home: https://github.com/EBIVariation/vcf-validator
-  summary: EBI EVA - Validation tool to ensure VCF specification compliance
+  summary: EBI EVA - Validation tool for VCF file format compliance
   license: Apache-2.0
-  license_file:
-   - LICENSE
-   - LICENSE_ODB
+  license_file: LICENSE
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - apriltuesday
     - tcezard
     - ebi-variation
-  skip-lints:
-    - should_be_noarch_generic
-    - should_not_be_noarch_source

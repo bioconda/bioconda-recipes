@@ -1,0 +1,58 @@
+{% set name = "snipe" %}
+{% set version = "0.1.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/snipe-bio/snipe/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 6847a51dbfca18442681f7981483401741a9860c0399f3f2592bb3894227afb8
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  run_exports:
+    - {{ pin_subpackage('snipe', max_pin="x") }}
+  entry_points:
+  - snipe = snipe.cli.main:cli
+
+requirements:
+  host:
+    - python <3.12
+    - pip
+    - hatchling
+  run:
+    - python >=3.7,<3.12
+    - requests >=2.25.1
+    - click >=8.0.0
+    - numpy >=1.22,<2
+    - pathos
+    - pandas
+    - tqdm
+    - lzstring
+    - rapidfuzz
+    - zlib
+    - pyfastx >=2.1.0,<3.0a0
+    - sourmash >=4.8.11
+
+test:
+  requires:
+    - pytest
+  imports:
+    - snipe
+
+about:
+  home: "https://github.com/snipe-bio/snipe"
+  summary: "SRA-Scale sequence QC and analysis"
+  license: "AGPL-3.0-or-later"
+  license_family: "AGPL"
+  license_file: "LICENSE.txt"
+
+extra:
+  recipe-maintainers:
+    - mr-eyes
+  authors:
+    - mr-eyes
+    - drtamermanosur

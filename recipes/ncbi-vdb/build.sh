@@ -24,6 +24,7 @@ end-of-patch
 
 if [[ "$(uname)" == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	export CFLAGS="${CFLAGS} -fno-define-target-os-macros"
 else
 	export CONFIG_ARGS=""
 fi
