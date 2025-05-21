@@ -23,5 +23,4 @@ cmake . -GNinja \
 ninja || exit 1
 
 mkdir -p ${PREFIX}/bin
-cp TreeSwirl ${PREFIX}/bin || exit 1
-chmod +x ${PREFIX}/bin/TreeSwirl
+install -v -m 0755 TreeSwirl ${PREFIX}/bin || exit 1
