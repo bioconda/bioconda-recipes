@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x -e
+set -xe
 
 export PERL_EXT_CPPFLAGS="-D_REENTRANT -D_GNU_SOURCE -fwrapv -fno-strict-aliasing -pipe -fstack-protector"
 export PERL_EXT_LDFLAGS="-shared -O3 -fstack-protector"
@@ -43,8 +43,6 @@ masurca -g masurca_config_example.txt
 
 cd ${SRC_DIR}/Flye
 make -j"${CPU_COUNT}"
-install -v -m 0755 ../Flye "${DEST}
+install -v -m 0755 ../Flye "${PREFIX}/bin"
 
-ls ${SRC_DIR}
-ls ${SRC_DIR}/bin
-ls ${SRC_DIR}/src
+ls ${SRC_DIR}/Flye/bin
