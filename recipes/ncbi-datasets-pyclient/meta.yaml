@@ -1,0 +1,50 @@
+{% set name = "ncbi-datasets-pyclient" %}
+{% set version = "18.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/ncbi_datasets_pyclient-{{ version }}.tar.gz
+  sha256: 129a433752307ae0d6833c798a04a194a4c12f5627dcc5619db730b718232d67
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - poetry-core
+    - pip
+  run:
+    - python >=3.8.0,<4.0.0
+    - urllib3 >=1.25.3,<3.0.0
+    - python-dateutil >=2.8.2
+    - pydantic >=2
+    - typing_extensions >=4.7.1
+
+test:
+  imports:
+    - ncbi
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://www.ncbi.nlm.nih.gov/datasets
+  summary: NCBI Datasets API
+  license: BSD-3-Clause
+  license_file: LICENSE
+  doc_url: https://github.com/misialq/ncbi-datasets-pyclient
+  dev_url: https://github.com/ncbi/datasets
+
+extra:
+  recipe-maintainers:
+    - misialq

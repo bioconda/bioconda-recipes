@@ -1,12 +1,13 @@
 #!/bin/bash
 
+set -xe
+
 export C_INCLUDE_PATH=$C_INCLUDE_PATH:${PREFIX}/include
 export LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
 
 cd src 
-make CC=$CC CFLAGS="$CFLAGS -fcommon"
+make -j"${CPU_COUNT}" CC=$CC CFLAGS="$CFLAGS -fcommon"
 mkdir -p ${PREFIX}/bin
-make
 
 mv extra/ ${PREFIX}/bin
 mv JARVIS3.sh ${PREFIX}/bin

@@ -1,5 +1,5 @@
 {% set name = "pyhmmer" %}
-{% set version = "0.10.15" %}
+{% set version = "0.11.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: bf8e97ce8da6fb5850298f3074640f3e998d5a655877f865c1592eb057dc7921
+  sha256: f83e9a7d80f31713c52291b5c888dddb98c1e765222e064c40d56e87ad91cc4e
 
 build:
   number: 0
@@ -19,20 +19,26 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
+    - cmake >=3.20
+    - make
   host:
-    - python
+    - python {{ python_min }}
     - pip
-    - cython
+    - cython >=3.0
+    - scikit-build-core
   run:
-    - python
-    - psutil >=5.8
+    - python >={{ python_min }}
+    - psutil >=6.0,<8.0
 
 test:
   requires:
+    - python {{ python_min }}
     - importlib_resources #[py36 or py37 or py38]
+    - pip
   imports:
     - {{ name }}
   commands:
+    - pip check
     - python -m unittest -vv {{ name }}.tests
 
 about:

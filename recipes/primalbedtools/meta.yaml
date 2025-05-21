@@ -1,0 +1,46 @@
+{% set name = "primalbedtools" %}
+{% set version = "0.8.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/primalbedtools-{{ version }}.tar.gz
+  sha256: 65cca08936256310c5f6310c1de752c45cfc2890ab0632b8c75199333d642e46
+
+build:
+  entry_points:
+    - primalbedtools = primalbedtools.main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('primalbedtools', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.9.0,<4.0.0
+
+test:
+  imports:
+    - primalbedtools
+  commands:
+    - pip check
+    - primalbedtools --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/ChrisgKent/primalbedtools
+  summary: A collection of tools for working with primer.bed files
+  license: MPL-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - chriskent

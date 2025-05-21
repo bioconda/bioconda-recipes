@@ -1,0 +1,155 @@
+diff --git i/SoftSV_1.4.2/makefile w/SoftSV_1.4.2/makefile
+index da3a2b0..0294964 100644
+--- i/SoftSV_1.4.2/makefile
++++ w/SoftSV_1.4.2/makefile
+@@ -2,7 +2,7 @@
+ 
+ # You may need to modify the following paths:
+ # 1. The path to your C++ compiler:
+-CC=g++
++CXX?=g++
+ 
+ # External libraries:
+ # 2. Please specify the base directory of your BamTools installation.
+@@ -22,7 +22,7 @@ SEQAN=/YourPath/seqan
+ src/%.o: src/%.cpp
+ 	@echo 'Building file: $<'
+ 	@echo 'Invoking: GCC C++ Compiler'
+-	$(CC) -I${BAMTOOLS}/include -I${BAMTOOLS}/include/shared -I${SEQAN}/include -O3 -Wall -c -fmessage-length=0 -std=c++0x -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
++	$(CXX) -std=c++14 -I${PREFIX}/include/bamtools -I${PREFIX}/include/bamtools/shared -I${PREFIX}/include -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+ 	@echo 'Finished building: $<'
+ 	@echo ' '
+ 
+@@ -42,7 +42,7 @@ OBJS += \
+ SoftSV: $(OBJS)
+ 	@echo 'Building target: $@'
+ 	@echo 'Invoking: GCC C++ Linker'
+-	$(CC)  -o $@ $(OBJS) -lboost_program_options -lboost_system -lboost_filesystem -lbamtools -L${BAMTOOLS}/lib 
++	$(CXX) -std=c++14 -o $@ $(OBJS) -Wl,--copy-dt-needed-entries -lboost_program_options -lboost_system -lboost_filesystem -lbamtools -L${PREFIX}/lib 
+ 	@echo 'Finished building target: $@'
+ 	@echo ' '
+ 
+diff --git i/SoftSV_1.4.2/src/Deletions.cpp w/SoftSV_1.4.2/src/Deletions.cpp
+index 8ea7345..d44297d 100644
+--- i/SoftSV_1.4.2/src/Deletions.cpp
++++ w/SoftSV_1.4.2/src/Deletions.cpp
+@@ -20,6 +20,8 @@
+  * @date 2015/09/09
+  */
+ 
++#include <cmath>
++
+ #include "Deletions.hpp"
+ 
+ void Deletions::detection ( const std::string& outputFile, const std::string& outputFile_insertion, BamTools::BamReader& reader, bool verbose ){
+@@ -119,7 +121,7 @@ void Deletions::buildGraph_edges(){
+ 							&&
+ 							scGraph[read2].is5primeBp != scGraph[read2].scIs5primeBp
+ 							&&
+-							abs(scGraph[read1].scPos - scGraph[read2].scPos) <= scBPtol
++							std::abs(scGraph[read1].scPos - scGraph[read2].scPos) <= scBPtol
+ 						)
+ 					{
+ 						scMatch = softClipsMatch(scGraph[read1].scSeq, scGraph[read2].scSeq);
+@@ -141,7 +143,7 @@ void Deletions::buildGraph_edges(){
+ 								scGraph[read2].scPos < (scGraph[read1].scPos + scGraph[read1].scLength)
+ 							){
+ 
+-							int scDist = abs(scGraph[read2].scPos - scGraph[read1].scPos) + 1;
++							int scDist = std::abs(scGraph[read2].scPos - scGraph[read1].scPos) + 1;
+ 							if(scDist >= 5){
+ 								std::string interScSeq1 = scGraph[read1].scSeq.substr(0, scDist);
+ 								std::string interScSeq2 = scGraph[read2].scSeq.substr(scGraph[read2].scLength - scDist, scDist);
+@@ -211,7 +213,7 @@ std::string Deletions::generateOutput(const rangeDef& sv, BamTools::BamReader& r
+ 	uint medianBpPos1 =  medianBp1.first;
+ 	uint medianBpPos2 =  medianBp2.first;
+ 
+-	uint svSize = abs(medianBpPos2-(medianBpPos1+1))+1;
++	uint svSize = std::abs((int) (medianBpPos2-(medianBpPos1+1)))+1;
+ 
+ 	std::stringstream output, bpSeq;
+ 
+diff --git i/SoftSV_1.4.2/src/Inversions.cpp w/SoftSV_1.4.2/src/Inversions.cpp
+index 207a774..ff4f8d9 100644
+--- i/SoftSV_1.4.2/src/Inversions.cpp
++++ w/SoftSV_1.4.2/src/Inversions.cpp
+@@ -20,6 +20,8 @@
+  * @date 2015/09/09
+  */
+ 
++#include <cmath>
++
+ #include "Inversions.hpp"
+ 
+ // seqaln
+@@ -111,7 +113,7 @@ void Inversions::buildGraph_edges(){
+ 						&&
+ 						scGraph[read1].scIs5primeBp == scGraph[read2].scIs5primeBp
+ 						&&
+-						abs(scGraph[read1].scPos - scGraph[read2].scPos) <= scBPtol
++						std::abs(scGraph[read1].scPos - scGraph[read2].scPos) <= scBPtol
+ 						)
+ 				{
+ 					scMatch = softClipsMatch(scGraph[read1].scSeq, scGraph[read2].scSeq);
+@@ -127,7 +129,7 @@ void Inversions::buildGraph_edges(){
+ 						&&
+ 						scGraph[read1].scIs5primeBp != scGraph[read2].scIs5primeBp
+ 						&&
+-						abs(scGraph[read1].scPos - scGraph[read2].scPos) <= scBPtol )
++						std::abs(scGraph[read1].scPos - scGraph[read2].scPos) <= scBPtol )
+ 				{
+ 					scMatch = true;
+ 					weight = edgeWeight4;
+@@ -255,7 +257,7 @@ std::string Inversions::generateOutput(const rangeDef& sv, BamTools::BamReader&
+ 		bpSeq2 << "";
+ 	}
+ 
+-	uint svSize = abs(medianBpPos2-(medianBpPos1+1))+1;
++	uint svSize = std::abs((int) (medianBpPos2-(medianBpPos1+1)))+1;
+ 
+ 	// Outpu format:
+ 	// Chr	Start	End	Support(PE)	Support(SC)	Upstream-breakpoint-sequence	Downstream-breakpoint-sequence
+diff --git i/SoftSV_1.4.2/src/Misc.cpp w/SoftSV_1.4.2/src/Misc.cpp
+index bd10001..e0b460a 100644
+--- i/SoftSV_1.4.2/src/Misc.cpp
++++ w/SoftSV_1.4.2/src/Misc.cpp
+@@ -32,6 +32,8 @@
+ 
+ // Misc. basics
+ #include <algorithm>
++#include <math.h>
++#include <numeric>
+ 
+ /**
+  * @brief Returns the total length of small deletions within the CIGAR string of an alignment.
+diff --git i/SoftSV_1.4.2/src/Tandems.cpp w/SoftSV_1.4.2/src/Tandems.cpp
+index e6546af..7af0834 100644
+--- i/SoftSV_1.4.2/src/Tandems.cpp
++++ w/SoftSV_1.4.2/src/Tandems.cpp
+@@ -20,6 +20,8 @@
+  * @date 2015/09/09
+  */
+ 
++#include <cmath>
++
+ #include "Tandems.hpp"
+ 
+ 
+@@ -107,7 +109,7 @@ void Tandems::buildGraph_edges(){
+ 						&&
+ 						scGraph[read2].is5primeBp == scGraph[read2].scIs5primeBp
+ 						&&
+-						abs(scGraph[read1].scPos - scGraph[read2].scPos) <= scBPtol
++						std::abs(scGraph[read1].scPos - scGraph[read2].scPos) <= scBPtol
+ 						)
+ 				{
+ 					scMatch = softClipsMatch(scGraph[read1].scSeq, scGraph[read2].scSeq);
+@@ -174,7 +176,7 @@ std::string Tandems::generateOutput(const rangeDef& sv, BamTools::BamReader& rea
+ 	uint medianBpPos1 =  medianBp1.first;
+ 	uint medianBpPos2 =  medianBp2.first;
+ 
+-	uint svSize = abs(medianBpPos2-(medianBpPos1+1))+1;
++	uint svSize = std::abs((int) (medianBpPos2-(medianBpPos1+1)))+1;
+ 
+ 	std::stringstream output, bpSeq;
+ 
