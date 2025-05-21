@@ -16,7 +16,7 @@ else
 fi
 
 cmake -S . -B percobuild \
-	-DTARGET_ARCH=$(uname -m) -DCMAKE_BUILD_TYPE=Release \
+	-DTARGET_ARCH="$(uname -m)" -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" -DXML_SUPPORT=ON \
 	-DCMAKE_PREFIX_PATH="${PREFIX}" -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
@@ -29,12 +29,12 @@ sed -i.bak '54s/WRITABLE_DIR/std::string(WRITABLE_DIR).c_str()/' $SRC_DIR/src/Gl
 rm -rf $SRC_DIR/src/*.bak
 
 cmake -S ${SRC_DIR}/src/converters -B converterbuild \
-	-DTARGET_ARCH=$(uname -m) -DCMAKE_BUILD_TYPE=Release \
+	-DTARGET_ARCH="$(uname -m)" -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" -DBOOST_ROOT="${PREFIX}" \
 	-DBOOST_LIBRARYDIR="${PREFIX}/lib" -DSERIALIZE="Boost" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DCMAKE_PREFIX_PATH="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
-	-DXML_SUPPORT=ON "${CONFIG_ARGS}"
+	"${CONFIG_ARGS}"
 cmake --build converterbuild/ --clean-first --target install -j "${CPU_COUNT}"
 
 mkdir -p $PREFIX/testdata
