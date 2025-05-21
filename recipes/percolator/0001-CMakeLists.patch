@@ -1,0 +1,61 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 3a836c4..bf879c0 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -58,14 +58,42 @@ if(APPLE AND OPENMP_FOUND)
+   include_directories(${OpenMP_CXX_INCLUDE_DIRS})
+ endif(APPLE AND OPENMP_FOUND)
+ 
++# When user specifies boost paths to use, we need to disable searching from the
++# environment and from using cmake's internal boost variables.
++if (BOOST_ROOT OR BOOST_INCLUDEDIR OR BOOST_LIBRARYDIR OR DEFINED ENV{BOOST_ROOT} OR DEFINED ENV{BOOST_INCLUDEDIR} OR DEFINED ENV{BOOST_LIBRARYDIR})
++  # Don't search for system include dirs for boost
++  set(Boost_NO_SYSTEM_PATHS ON)
++  # Disable excessive warning messages when using multiple boost versions
++  set(Boost_NO_WARN_NEW_VERSION ON)
++endif()
++
++# Use the OLD way of looking for Boost
++# The NEW way only respects BOOST_ROOT, not these more-specific variables.
++if (BOOST_INCLUDEDIR OR BOOST_LIBRARYDIR OR DEFINED ENV{BOOST_INCLUDEDIR} OR DEFINED ENV{BOOST_LIBRARYDIR})
++  # Ignore cmake boost variables
++  set(Boost_NO_BOOST_CMAKE ON)
++endif()
++
++set( Boost_USE_STATIC_LIBS OFF )
++set( Boost_USE_MULTITHREADED TRUE )
++set( Boost_DEBUG ON )
++
+ # Boost header libraries only for async io header library (asio.hpp)
+ find_package(Boost ${BOOST_MIN_VERSION} COMPONENTS filesystem system REQUIRED)
++if(Boost_FOUND)
++        include_directories(${Boost_INCLUDE_DIRS})
++        LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
++endif()
+ add_definitions(-DBOOST_SYSTEM_NO_DEPRECATED)
+ add_definitions(-DBOOST_ERROR_CODE_HEADER_ONLY)
+ if(WIN32)
+   add_definitions(-DBOOST_ALL_NO_LIB) # disable autolinking in boost
+ endif(WIN32)
+-include_directories(${Boost_INCLUDE_DIRS})
++
++MESSAGE("Boost configuration results:")
++MESSAGE("  Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIR}")
++MESSAGE("  Boost_LIBRARY_DIRS: ${Boost_LIBRARY_DIRS}")
++MESSAGE("  Boost_LIBRARIES: ${Boost_LIBRARIES}")
+ 
+ #########################################
+ # COMPILE BLAS
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 588d9c3..bed0ba7 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2,7 +2,7 @@
+ # NAME AND VERSION
+ ###############################################################################
+ 
+-cmake_minimum_required (VERSION 2.8.11)
++cmake_minimum_required (VERSION 3.5)
+ 
+ if(NOT CRUX AND APPLE AND ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} VERSION_GREATER 3.0)
+   # Identify AppleClang's COMPILER_ID as AppleClang instead of just Clang
