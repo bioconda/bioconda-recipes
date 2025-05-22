@@ -1,6 +1,6 @@
 {% set name = "deepvariant" %}
-{% set version = "1.8.0" %}
-{% set sha256 = "b9f29cd14142f401066cbc46bf130bfaac5b0e38ddc3447062e34d16779a5bd9" %}
+{% set version = "1.9.0" %}
+{% set sha256 = "6f7f413bb2feced916553b9dc0957369545883f67b4777280f1dabcd9fd2ab3b" %}
 # When updating, also need to update model reference in post-link.sh
 
 package:
@@ -18,29 +18,35 @@ package:
 source:
   url: https://github.com/google/deepvariant/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - settings.patch
+    - build_and_test.patch
 
 build:
   number: 0
-  noarch: python
+  skip: True  # [py > 310]
   run_exports:
     - {{ pin_subpackage("deepvariant", max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - pkg-config
   host:
-    - python <3.11
+    - python
     - pip
-    - setuptools
     - unzip
     - zip
     - zlib
     - curl
+    - wget
     # Needed for non-binary build
     # - google-cloud-sdk
-    # - bazel
+    - bazel
   run:
     # NB: maintainers, check versions with upstream's settings.sh
     - openjdk 11.0.*
-    - python <3.11
+    - python
     # TF slim is difficult because there is an existing tf-slim package in conda-forge
     # https://github.com/conda-forge/tf-slim-feedstock
     # which is different than the google one: https://github.com/google-research/tf-slim
@@ -52,8 +58,8 @@ requirements:
     - boost-cpp
     - htslib
     - numpy >=1.21.2
-    - tensorflow 2.11.*
-    - tensorflow-estimator 2.11.*
+    - tensorflow 2.13.*
+    - tensorflow-estimator 2.13.*
     - protobuf
     - contextlib2
     - intervaltree
@@ -70,9 +76,9 @@ requirements:
 test:
   commands:
     # Pre-built binaries need GLIBC 2.16 and 2.23 (htslib) so fail
-    # - dv_make_examples.py -h
-    # - dv_call_variants.py -h
-    # - dv_postprocess_variants.py -h
+    #- dv_make_examples.py -h
+    #- dv_call_variants.py -h
+    #- dv_postprocess_variants.py -h
 
 about:
   home: "https://github.com/google/deepvariant"
@@ -86,3 +92,8 @@ about:
 extra:
   skip-lints:
     - missing_tests
+  identifiers:
+    - doi:10.1038/nbt.4235
+    - doi:10.1093/bioinformatics/btaa1081
+    - biotools:deepvariant
+    - usegalaxy-eu:deepvariant

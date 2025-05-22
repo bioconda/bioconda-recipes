@@ -1,0 +1,27 @@
+diff --git a/build_and_test.sh b/build_and_test.sh
+index 9bdc676..a20b994 100755
+--- a/build_and_test.sh
++++ b/build_and_test.sh
+@@ -48,19 +48,20 @@ TF_CFLAGS=( $(python3 -c 'import tensorflow as tf; print(" ".join(tf.sysconfig.g
+ TF_LFLAGS=( $(python3 -c 'import tensorflow as tf; print(" ".join(tf.sysconfig.get_link_flags()))') )
+ 
+ # shellcheck disable=SC2068
+-g++ -std=c++14 -shared \
++${CXX} -std=c++17 -shared \
+         deepvariant/stream_examples_kernel.cc  \
+         deepvariant/stream_examples_ops.cc \
+         -o deepvariant/examples_from_stream.so \
+         -fPIC \
+         -l:libtensorflow_framework.so.2  \
+         -I. \
++	-I${PREFIX}/include \
+         ${TF_CFLAGS[@]} \
+         ${TF_LFLAGS[@]} \
+         -D_GLIBCXX_USE_CXX11_ABI=1 \
+         --std=c++17 \
+         -DEIGEN_MAX_ALIGN_BYTES=64 \
+-        -O2
++        -O3
+ 
+ # Run all deepvariant tests.  Take bazel options from args, if any.
+ # Note: If running with GPU, tests must be executed serially due to a GPU
