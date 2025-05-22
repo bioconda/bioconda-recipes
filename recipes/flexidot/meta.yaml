@@ -1,0 +1,54 @@
+{% set name = "flexidot" %}
+{% set version = "2.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: c1897ccd52824cf04a2900a7ad12a52fe595a6f3d402674be733d7de376b5693
+
+build:
+  run_exports:
+    - {{ pin_subpackage('flexidot', max_pin="x.x") }}
+  entry_points:
+    - flexidot = flexidot.app:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.8
+    - hatchling
+    - hatch-vcs
+    - pip
+  run:
+    - "biopython"
+    - "colormap"
+    - "colour"
+    - "easydev"
+    - "matplotlib"
+    - "numpy"
+    - "regex"
+    - "rich"
+
+test:
+  imports:
+    - flexidot
+  commands:
+    - pip check
+    - flexidot --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/flexidot-bio/flexidot
+  summary: Flexible dotplotting of genomic sequences.
+  license: GNU Lesser General Public License v3 (LGPLv3)
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - Adamtaranto
