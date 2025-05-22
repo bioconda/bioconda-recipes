@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "smokingmouse-1.0.0"
+installBiocDataPackage.sh "smokingmouse-1.4.0"

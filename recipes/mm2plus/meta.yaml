@@ -1,0 +1,42 @@
+{% set version = "1.1" %}
+
+package:
+  name: mm2plus
+  version: {{ version }}
+
+source:
+  url: "https://github.com/at-cg/mm2-plus/releases/download/v{{ version }}/mm2-plus-{{ version }}_x64-linux.tar.bz2"
+  sha256: "9a2cd922fe10fe67539606e231d228068219291c74d1ce6519186807872752dc"
+
+build:
+  number: 0
+  skip: True  # [not linux]
+  run_exports:
+    - {{ pin_subpackage("mm2plus", max_pin="x") }}
+
+requirements:
+  host:
+    - libgomp # [linux]
+    - llvm-openmp # [osx]
+
+test:
+  commands:
+    - mm2plus --version
+    - mm2plus.sse4.1 --version
+    - mm2plus.sse4.2 --version
+    - mm2plus.avx --version
+    - mm2plus.avx2 --version
+    - mm2plus.avx512 --version
+
+about:
+  home: https://github.com/at-cg/mm2-plus
+  license: MIT
+  license_file: LICENSE.txt
+  summary: Fast long-read mapper and whole-genome aligner (accelerated version of minimap2)
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic
+    - should_not_be_noarch_source
+  identifiers:
+    - doi:10.1101/2024.11.25.625328

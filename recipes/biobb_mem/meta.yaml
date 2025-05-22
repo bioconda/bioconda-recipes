@@ -1,49 +1,62 @@
 {% set name = "biobb_mem" %}
-{% set version = "5.0.1" %}
+{% set version = "5.0.6" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: bb82d828a3be20ca577162aca4ae9a7073598a08f181e079277c7f13f1e1950c
+  - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: 15bed68daa641fbf8a95ace24cdf0d1eada9e22590984152d2bbedd869cf43e4
+  - url: https://files.pythonhosted.org/packages/3f/bb/d2d63385cb16e8db530cab3375c9c94ebb5bc1a7d9eac9649bae0443fa0e/fatslim-0.2.2.tar.gz
+    sha256: 6f82cd73387b8fe046c08e00029ed07f0cb449f4ecf407e5cca9fa5bfc423ba9
 
 build:
   number: 0
-  noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  script: 
+    - {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
-    - python >=3.9
+    - python {{ python }}
+    - cython
+    - pip
     - setuptools
     - biobb_common ==5.0.0
     - lipyphilic ==0.10.0
     - ambertools >=22.5
     - gromacs
-    - hole2
+    - mdahole2
+    - numpy ==1.23.5
   run:
-    - python >=3.9
+    - python
+    - pip
     - biobb_common ==5.0.0
     - lipyphilic ==0.10.0
     - ambertools >=22.5
     - gromacs
-    - hole2
+    - mdahole2
+    - numpy ==1.23.5
+
 test:
+  commands:
+    - fatslim -h 
   imports:
     - biobb_mem
-    - biobb_mem.mdanalysis_biobb
-    - biobb_mem.lipyphilic_biobb
     - biobb_mem.ambertools
+    - biobb_mem.fatslim
+    - biobb_mem.lipyphilic_biobb
+    - biobb_mem.mdanalysis_biobb
 
 about:
   home: https://github.com/bioexcel/biobb_mem
   license: Apache Software License
   license_family: APACHE
-  license_file: ''
+  license_file: LICENSE
   summary: Biobb_mem is the Biobb module for membrane structure analysis.
   description: "# biobb_mem\n\n### Introduction\nBiobb_mem is the Biobb module for membrane structure analysis.\nBiobb (BioExcel building blocks) packages are Python building blocks that\ncreate\
     \ new layer of compatibility and interoperability over popular\nbioinformatics tools.\nThe latest documentation of this package can be found in our readthedocs site:\n[latest API documentation](http://biobb_analysis.readthedocs.io/en/latest/).\n\
@@ -53,8 +66,9 @@ about:
     [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0), see the file LICENSE for details.\n\
     \n\
     ![](https://bioexcel.eu/wp-content/uploads/2019/04/Bioexcell_logo_1080px_transp.png \"Bioexcel\")\n\n\n"
-  doc_url: ''
-  dev_url: ''
+  doc_url: 'http://biobb-mem.readthedocs.io/en/latest/'
+  dev_url: 'https://github.com/bioexcel/biobb_mem'
 
 extra:
-  recipe-maintainers: ''
+  recipe-maintainers:
+    - RubenChM

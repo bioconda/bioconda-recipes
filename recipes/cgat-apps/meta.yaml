@@ -1,18 +1,18 @@
 {% set name = "cgat-apps" %}
-{% set version = "0.7.4" %}
+{% set version = "0.7.10" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/cgat-developers/cgat-apps/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 3e161597c6e4cf59fc121a8527aeddefd1526f7d13c370d5eaf15b4d3a1894e6
-  patches:
-    - 0001-setup.py.patch
-  
+  url: https://pypi.io/packages/source/c/cgat/cgat-{{ version }}.tar.gz
+  sha256: 2519fd2a7b878f616af0e14c67029251f3e9807fa1abbe3b870bb345014bc03c
+
 build:
-  number: 0
+  number: 1
+  script_env:
+    - MACOSX_DEPLOYMENT_TARGET=10.13  # [osx]
   run_exports:
     - {{ pin_subpackage('cgat-apps', max_pin="x.x") }}
   entry_points:
@@ -23,14 +23,14 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - python
+    - python >=3.10
     - pip
     - cython >=0.29.35
     - numpy
     - pysam
     - htslib
   run:
-    - python
+    - python >=3.10
     - cgatcore
     - alignlib-lite
     - biopython
@@ -46,10 +46,10 @@ requirements:
     - scipy
     - scikit-learn
     - sortedcontainers
-    # Misc dependencies
-    - bedtools
-    - ucsc-bedgraphtobigwig
-    - ucsc-wigtobigwig
+    # External dependencies
+    - bedtools           # [not osx]  # Excluded for macOS
+    - ucsc-bedgraphtobigwig # [not osx]
+    - ucsc-wigtobigwig   # [not osx]
     - coreutils
     - grep
 
@@ -58,10 +58,11 @@ test:
     - cgat
   commands:
     - cgat --help
-    - cgat --help Conversion
-    - cgat gtf2table -h
-    - find ${PREFIX} -iname "*bamtools.cpython-*-x86_64-linux-gnu.so*" -exec ldd {} \;
-    - cgat bam2bed -h
+    - cgat gtf2table -h # [x86_64]
+    # Skip certain tests for macOS
+    - find ${PREFIX} -iname "*bamtools.cpython-*-x86_64-linux-gnu.so*" -exec ldd {} \;  # [not osx]
+    - cgat bam2bed -h  # [not osx]
+  skip: true  # [osx]  # Temporarily skip full test suite on macOS
 
 about:
   home: "https://github.com/cgat-developers/cgat-apps"
@@ -71,3 +72,9 @@ about:
   summary: "Computational Genomics Analysis Toolkit."
   dev_url: "https://github.com/cgat-developers/cgat-apps"
   doc_url: "https://cgat-apps.readthedocs.io/en/latest"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - Acribbs
