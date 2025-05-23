@@ -42,7 +42,7 @@ autoreconf -if
 make install-special -j"${CPU_COUNT}"
 
 echo "Creating example config file masurca_config_example.txt:"
-masurca -g masurca_config_example.txt
+${BINDIR}/masurca -g masurca_config_example.txt
 
 cd ${SRC_DIR}/Flye
 make -j"${CPU_COUNT}"
