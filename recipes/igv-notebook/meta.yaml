@@ -1,0 +1,45 @@
+{% set name = "igv-notebook" %}
+{% set version = "0.6.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/igv-notebook-{{ version }}.tar.gz
+  sha256: 24c3990872851701bf17e7479180b02b63ab988e35b59859b294acae36eccc21
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('igv-notebook', max_pin="x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - ipykernel
+    - ipython
+    - requests
+
+test:
+  imports:
+    - igv_notebook
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/igvteam/igv-notebook
+  summary: Package for embedding the igv.js genome visualization in IPython notebooks
+  license: MIT
+  license_file: LICENSE.md
+
+extra:
+  recipe-maintainers:
+    - gshiba
