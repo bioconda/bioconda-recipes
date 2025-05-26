@@ -8,6 +8,9 @@ export CMAKE_GENERATOR=Ninja
 sed -i.bak 's|-flto||g' CMakeLists.txt
 
 sed -i.bak -E \
+    's|SET\(CMAKE_AR[[:space:]]+"gcc-ar"\)|SET(CMAKE_AR "$ENV{AR}" CACHE FILEPATH "")|' \
+    CMakeLists.txt
+sed -i.bak -E \
     's|cmake_minimum_required\(VERSION .*\)|cmake_minimum_required(VERSION 3.5)|' \
     CMakeLists.txt
 sed -i.bak -E \
