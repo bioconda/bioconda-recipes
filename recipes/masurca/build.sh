@@ -24,8 +24,8 @@ ROOT=`pwd -P`
 ###################
 mkdir -p dist-bin
 PATH="${PATH}:${ROOT}/dist-bin"
-ln -sf $(which make) ${ROOT}/dist-bin/gmake
-ln -sf ${ROOT}/PkgConfig.pm ${ROOT}/dist-bin/pkg-config
+ln -sf $(which make) "${ROOT}/dist-bin/gmake"
+ln -sf "${ROOT}/PkgConfig.pm" "${ROOT}/dist-bin/pkg-config"
 
 export NUM_THREADS=`grep -c '^processor' /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1`;
 BINDIR="${PREFIX}/bin"
@@ -36,14 +36,13 @@ cd global-1
 
 autoreconf -if
 ./configure --prefix="${PREFIX}" --bindir="${BINDIR}" --libdir="${LIBDIR}" \
-        --enable-swig --enable-silent-rules --disable-option-checking \
-        --disable-dependency-tracking CC="${CC}" CXX="${CXX}" CPPFLAGS="${CPPFLAGS}" \
-        LDFLAGS="${LDFLAGS}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" \
-        BOOST_ROOT="${PREFIX}" YAGGO="$(which yaggo)"
+	--enable-silent-rules --disable-option-checking --disable-dependency-tracking \
+	CC="${CC}" CXX="${CXX}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" \
+	CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" BOOST_ROOT="${PREFIX}"
 make install-special -j"${CPU_COUNT}"
 
 echo "Creating example config file masurca_config_example.txt:"
-masurca -g masurca_config_example.txt
+${BINDIR}/masurca -g masurca_config_example.txt
 
 cd ${SRC_DIR}/Flye
 make -j"${CPU_COUNT}"
