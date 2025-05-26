@@ -12,7 +12,9 @@ source:
 build:
   entry_points:
     - build_dict_cli=mmcif.io.BuildDictionaryExec:main
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script:
+    - sed -i.bak 's|^cmake_minimum_required(VERSION .*)$|cmake_minimum_required(VERSION 3.5...3.22)|' CMakeLists.txt
+    - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin="x.x") }}
@@ -44,7 +46,12 @@ test:
 
 about:
   home: http://mmcif.wwpdb.org
-  summary: mmCIF Core Access Library
+  dev_url: https://github.com/rcsb/py-mmcif
+  doc_url: https://github.com/rcsb/py-mmcif#mmcif-core-access-library
+  summary: "mmCIF Core Access Library"
+  description: |
+    This module includes a native Python mmCIF API for data files
+    and dictionaries along with pybind11 wrappers for the PDB C++ Core mmCIF Library.
   license: BSD-3-Clause AND Apache-2.0
   license_file:
     - LICENSE
