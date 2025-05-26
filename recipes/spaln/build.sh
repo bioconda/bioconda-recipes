@@ -5,20 +5,22 @@ mkdir -p "${PREFIX}/bin"
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
+export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
 
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${SRC_DIR}/perl/*.pl
-rm -rf ${SRC_DIR}/perl/*.bak
-cp -rf ${SRC_DIR}/perl/*.pl "${PREFIX}/bin"
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' perl/*.pl
+rm -rf perl/*.bak
+install -v -m 0755 perl/*.pl "${PREFIX}/bin"
 
 cd src
 
-./configure --exec_prefix="${PREFIX}/bin" --table_dir="${PREFIX}/share/spaln/table" \
-	--alndbs_dir="${PREFIX}/share/spaln/alndbs"
+CXX="${CXX}" CFLAGS="${CFLAGS}" ./configure --exec_prefix="${PREFIX}/bin" \
+	--table_dir="${PREFIX}/share/spaln/table" --alndbs_dir="${PREFIX}/share/spaln/alndbs"
 
-make CFLAGS="${CFLAGS}" AR="${AR:-ar} rc" LDFLAGS="${LDFLAGS}" -j4
+sed -i.bak 's|-lpthread|-pthread|' Makefile
+rm -rf *.bak
+
+make CXX="${CXX}" CFLAGS="${CFLAGS}" AR="${AR:-ar} rcs" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
 make install
 
 make clearall
