@@ -11,24 +11,31 @@ source:
 
 build:
   number: 0
-  script: "cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
+  script:
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - export export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - "RUST_BACKTRACE=1 cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('rust') }}
+    - cargo-bundle-licenses
 
 test:
   commands:
     - fastlin -h
 
 about:
-   home: https://github.com/rderelle/fastlin
+   home: "https://github.com/rderelle/fastlin"
    license: MIT
    license_family: MIT
    license_file: LICENSE
-   summary: fastlin, ultra-fast MTBC lineage typing
+   summary: "fastlin, ultra-fast MTBC lineage typing."
+   dev_url: "https://github.com/rderelle/fastlin"
+   doc_url: "https://github.com/rderelle/fastlin/blob/{{ version }}/README.md"
 
 extra:
   additional-platforms:
