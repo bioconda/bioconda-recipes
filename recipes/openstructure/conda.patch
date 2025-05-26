@@ -1,17 +1,17 @@
 diff --git a/cmake_support/OST.cmake b/cmake_support/OST.cmake
-index 3456bc0dc..74b5509a5 100644
+index 445913457..9ecbc0c2b 100644
 --- a/cmake_support/OST.cmake
 +++ b/cmake_support/OST.cmake
-@@ -549,7 +549,7 @@ macro(pymod)
+@@ -542,7 +542,7 @@ macro(pymod)
        set(_PARENT_LIB_NAME "${_PARENT_NAME}")
      endif()
      target_link_libraries("_${_LIB_NAME}" ${_PARENT_LIB_NAME} 
--                          ${Python_LIBRARIES} ${BOOST_PYTHON_LIBRARIES})
-+                          ${BOOST_PYTHON_LIBRARIES})
+-                          ${Python_LIBRARIES} Boost::python)
++                          Boost::python)
  
      set_target_properties("_${_LIB_NAME}"
                            PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PYMOD_STAGE_DIR})
-@@ -864,14 +864,8 @@ macro(setup_stage)
+@@ -857,14 +857,8 @@ macro(setup_stage)
    if (UNIX AND NOT APPLE)
      check_architecture()
    endif()
@@ -29,31 +29,19 @@ index 3456bc0dc..74b5509a5 100644
      set(LIBEXEC_PATH ${LIB_DIR}/openstructure/libexec  )
      set(LIBEXEC_STAGE_PATH ${LIB_STAGE_PATH}/openstructure/libexec  )
 diff --git a/modules/conop/src/chemdict_tool.cc b/modules/conop/src/chemdict_tool.cc
-index 08b11ae0d..4527b2be2 100644
+index 479d84682..592994f11 100644
 --- a/modules/conop/src/chemdict_tool.cc
 +++ b/modules/conop/src/chemdict_tool.cc
-@@ -24,7 +24,7 @@
+@@ -24,6 +24,7 @@
  #include <iostream>
  #include <fstream>
  #include <boost/algorithm/string.hpp>
--#include <boost/filesystem/convenience.hpp>
 +#include <boost/filesystem.hpp>
  #include <boost/iostreams/filtering_stream.hpp>
  #include <boost/iostreams/filter/gzip.hpp>
  
-@@ -93,7 +93,9 @@ int main(int argc, char const *argv[])
-                 << strerror(errno) << std::endl;
-       return 1;
-   }
--  if (boost::iequals(".gz", boost::filesystem::extension(argv[2]))) {
-+
-+  boost::filesystem::path file_path(argv[2]);
-+  if (boost::iequals(file_path.extension().string(), ".gz")) {
-     filtered_istream.push(boost::iostreams::gzip_decompressor());
-   }
-   filtered_istream.push(istream);
 diff --git a/modules/gui/src/CMakeLists.txt b/modules/gui/src/CMakeLists.txt
-index e475fbdde..62adf70e3 100644
+index 5c2fd044e..2ada820d7 100644
 --- a/modules/gui/src/CMakeLists.txt
 +++ b/modules/gui/src/CMakeLists.txt
 @@ -452,7 +452,6 @@ module(NAME gui SOURCES ${OST_GUI_MOCS} ${OST_GUI_SOURCES}
@@ -61,21 +49,21 @@ index e475fbdde..62adf70e3 100644
         DEPENDS_ON ost_gfx ost_io ost_mol_alg ost_seq_alg
         LINK ${QT_LIBRARIES}
 -            ${Python_LIBRARIES} 
-             ${BOOST_PYTHON_LIBRARIES}
+             Boost::python
              ${SPNAV_LIBRARIES}
          NO_STATIC)
 @@ -469,10 +468,17 @@ qt5_wrap_cpp(OST_GOSTY_MOC "gosty.hh"
               OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED
                       -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
  
--set(LINK LINK ${QT_LIBRARIES} ${BOOST_PROGRAM_OPTIONS_LIBRARIES})
+-set(LINK LINK ${QT_LIBRARIES} Boost::program_options)
 +find_package(Python 3 COMPONENTS Interpreter Development REQUIRED)
  
 -executable_libexec(NAME gosty SOURCES gosty.cc ${OST_GOSTY_MOC}
 -                   ${OST_QT_RESOURCE} DEPENDS_ON ost_gui ${LINK})
 +set(GOSTY_LINK_LIBS
 +    ${QT_LIBRARIES}
-+    ${BOOST_PROGRAM_OPTIONS_LIBRARIES}
++    Boost::program_options
 +    Python::Python)
 +
 +executable_libexec(NAME gosty
@@ -114,28 +102,6 @@ index 4c2afae41..740dbdc6a 100644
  #include <ost/log.hh>
  
  #include <QFile>
-diff --git a/modules/io/src/img/map_io_dx_handler.cc b/modules/io/src/img/map_io_dx_handler.cc
-index ef43ef502..5e8dc4ed1 100644
---- a/modules/io/src/img/map_io_dx_handler.cc
-+++ b/modules/io/src/img/map_io_dx_handler.cc
-@@ -28,7 +28,7 @@
- #include <boost/iostreams/filter/gzip.hpp>
- #include <boost/iostreams/filtering_stream.hpp>
- #include <boost/filesystem/fstream.hpp>
--#include <boost/filesystem/convenience.hpp>
-+#include <boost/filesystem.hpp>
- #include <boost/lexical_cast.hpp>
- #include <boost/algorithm/string.hpp>
- #include <boost/algorithm/string/trim.hpp>
-@@ -94,7 +94,7 @@ void MapIODxHandler::Import(img::MapHandle& mh, const bf::path& loc,const ImageF
-     throw IOException("could not open "+loc.string());
-   }
-   boost::iostreams::filtering_stream<boost::iostreams::input> in;
--  if (boost::iequals(".gz", boost::filesystem::extension(loc))) {
-+  if (boost::iequals(".gz", boost::filesystem::path(loc).extension().string())) {
-     in.push(boost::iostreams::gzip_decompressor());
-   }
-   in.push(infile);
 diff --git a/modules/io/src/mol/dcd_io.cc b/modules/io/src/mol/dcd_io.cc
 index d70074433..54499a420 100644
 --- a/modules/io/src/mol/dcd_io.cc
@@ -150,7 +116,7 @@ index d70074433..54499a420 100644
  #include <ost/stdint.hh>
  #include <ost/log.hh>
 diff --git a/modules/io/src/mol/entity_io_crd_handler.cc b/modules/io/src/mol/entity_io_crd_handler.cc
-index 1c2c2327e..a7824cd97 100644
+index 7956df8ca..aa106024e 100644
 --- a/modules/io/src/mol/entity_io_crd_handler.cc
 +++ b/modules/io/src/mol/entity_io_crd_handler.cc
 @@ -24,7 +24,7 @@
@@ -162,17 +128,8 @@ index 1c2c2327e..a7824cd97 100644
  #include <boost/algorithm/string.hpp>
  #include <boost/lexical_cast.hpp>
  #include <boost/format.hpp>
-@@ -60,7 +60,7 @@ CRDReader::CRDReader(const boost::filesystem::path& loc):
-   infile_(loc),
-   in_()
- {
--  if (boost::iequals(".gz", boost::filesystem::extension(loc))) {
-+  if (boost::iequals(".gz", boost::filesystem::path(loc).extension().string())) {
-     in_.push(boost::iostreams::gzip_decompressor());    
-   }
-   in_.push(infile_);  
 diff --git a/modules/io/src/mol/entity_io_mae_handler.cc b/modules/io/src/mol/entity_io_mae_handler.cc
-index 98e4a830f..072083b88 100644
+index 22d6d6634..b692daaa5 100644
 --- a/modules/io/src/mol/entity_io_mae_handler.cc
 +++ b/modules/io/src/mol/entity_io_mae_handler.cc
 @@ -28,7 +28,7 @@
@@ -184,15 +141,6 @@ index 98e4a830f..072083b88 100644
  #include <boost/algorithm/string.hpp>
  #include <boost/format.hpp>
  #include <boost/regex.hpp>
-@@ -57,7 +57,7 @@ MAEReader::MAEReader(const boost::filesystem::path& loc):
-   infile_(loc),
-   in_()
- {
--  if (boost::iequals(".gz", boost::filesystem::extension(loc))) {
-+  if (boost::iequals(".gz", boost::filesystem::path(loc).extension().string())) {
-     in_.push(boost::iostreams::gzip_decompressor());    
-   }
-   in_.push(infile_);  
 diff --git a/modules/io/src/mol/entity_io_mmcif_handler.cc b/modules/io/src/mol/entity_io_mmcif_handler.cc
 index fe5674788..7538e3d63 100644
 --- a/modules/io/src/mol/entity_io_mmcif_handler.cc
@@ -207,7 +155,7 @@ index fe5674788..7538e3d63 100644
  #include <boost/lexical_cast.hpp>
  
 diff --git a/modules/io/src/mol/entity_io_pdb_handler.cc b/modules/io/src/mol/entity_io_pdb_handler.cc
-index f9f76eca6..a53e94cdc 100644
+index 82f6c957d..c56f6356c 100644
 --- a/modules/io/src/mol/entity_io_pdb_handler.cc
 +++ b/modules/io/src/mol/entity_io_pdb_handler.cc
 @@ -24,7 +24,7 @@
@@ -219,17 +167,8 @@ index f9f76eca6..a53e94cdc 100644
  #include <boost/format.hpp>
  #include <boost/lexical_cast.hpp>
  
-@@ -49,7 +49,7 @@ void EntityIOPDBHandler::Export(const mol::EntityView& ent,
-                                 const boost::filesystem::path& loc) const 
- {
-   PDBWriter writer(loc, IOProfileRegistry::Instance().GetDefault());
--  if (boost::iequals(boost::filesystem::extension(loc), ".pqr")) {
-+  if (boost::iequals(boost::filesystem::path(loc).extension().string(), ".pqr")) {
-     writer.SetIsPQR(true);
-   }
-   writer.Write(ent);
 diff --git a/modules/io/src/mol/entity_io_pqr_handler.cc b/modules/io/src/mol/entity_io_pqr_handler.cc
-index ada62fb92..9dadb9708 100644
+index ccd96a48d..b0d775ab7 100644
 --- a/modules/io/src/mol/entity_io_pqr_handler.cc
 +++ b/modules/io/src/mol/entity_io_pqr_handler.cc
 @@ -25,7 +25,7 @@
@@ -241,17 +180,8 @@ index ada62fb92..9dadb9708 100644
  #include <boost/algorithm/string.hpp>
  #include <boost/lexical_cast.hpp>
  #include <boost/format.hpp>
-@@ -58,7 +58,7 @@ PQRReader::PQRReader(const boost::filesystem::path& loc):
-   infile_(loc),
-   in_()
- {
--  if (boost::iequals(".gz", boost::filesystem::extension(loc))) {
-+  if (boost::iequals(".gz", boost::filesystem::path(loc).extension().string())) {
-     in_.push(boost::iostreams::gzip_decompressor());    
-   }
-   in_.push(infile_);  
 diff --git a/modules/io/src/mol/pdb_reader.cc b/modules/io/src/mol/pdb_reader.cc
-index af1e5f729..0a8934226 100644
+index d6bdda56c..6523e9d22 100644
 --- a/modules/io/src/mol/pdb_reader.cc
 +++ b/modules/io/src/mol/pdb_reader.cc
 @@ -17,7 +17,7 @@
@@ -263,26 +193,8 @@ index af1e5f729..0a8934226 100644
  #include <boost/algorithm/string.hpp>
  #include <boost/algorithm/string/trim.hpp>
  
-@@ -88,7 +88,7 @@ void PDBReader::Init(const boost::filesystem::path& loc)
-   warned_rule_based_=false;
-   charmm_style_=profile_.dialect=="CHARMM";
-   num_model_records_=0;
--  if (boost::iequals(".gz", boost::filesystem::extension(loc))) {
-+  if (boost::iequals(".gz", boost::filesystem::path(loc).extension().string())) {
-     in_.push(boost::iostreams::gzip_decompressor());
-   }
-   in_.push(instream_);
-@@ -96,7 +96,7 @@ void PDBReader::Init(const boost::filesystem::path& loc)
-                      std::string(strerror(errno)) +
-                      ": '" + loc.string() + "'");
-   line_num_=0;
--  if(boost::iequals(boost::filesystem::extension(loc), ".pqr")) {
-+  if(boost::iequals(boost::filesystem::path(loc).extension().string(), ".pqr")) {
-     is_pqr_=true;
-   } else {
-     is_pqr_=false;
 diff --git a/modules/io/src/mol/pdb_writer.cc b/modules/io/src/mol/pdb_writer.cc
-index 265a8a024..0ff4d4469 100644
+index 538804525..d383d5a48 100644
 --- a/modules/io/src/mol/pdb_writer.cc
 +++ b/modules/io/src/mol/pdb_writer.cc
 @@ -25,7 +25,7 @@
@@ -294,34 +206,8 @@ index 265a8a024..0ff4d4469 100644
  #include <boost/algorithm/string.hpp>
  
  #include <ost/base.hh>
-@@ -392,10 +392,10 @@ PDBWriter::PDBWriter(const boost::filesystem::path& filename,
-   charmm_style_(profile.dialect=="CHARMM"), is_pqr_(false),
-   profile_(profile), filename_("")
- {
--  if (boost::iequals(".pqr", boost::filesystem::extension(filename))) {
-+  if (boost::iequals(".pqr", boost::filesystem::path(filename).extension().string())) {
-     is_pqr_=true;
-   }
--  if (boost::iequals(".gz", boost::filesystem::extension(filename))) {
-+  if (boost::iequals(".gz", boost::filesystem::path(filename).extension().string())) {
-     out_.push(boost::iostreams::gzip_compressor());
-   }
-   out_.push(outstream_);
-@@ -411,10 +411,10 @@ PDBWriter::PDBWriter(const String& filename, const IOProfile& profile):
-                       std::string(strerror(errno)) +
-                       ": '" + filename + "'");
-   }
--  if (boost::iequals(".pqr", boost::filesystem::extension(filename))) {
-+  if (boost::iequals(".pqr", boost::filesystem::path(filename).extension().string())) {
-     is_pqr_=true;
-   }
--  if (boost::iequals(".gz", boost::filesystem::extension(filename))) {
-+  if (boost::iequals(".gz", boost::filesystem::path(filename).extension().string())) {
-     out_.push(boost::iostreams::gzip_compressor());
-   }
-   out_.push(outstream_);
 diff --git a/modules/io/src/mol/sdf_reader.cc b/modules/io/src/mol/sdf_reader.cc
-index edafc0ff1..9699125f2 100644
+index 31efdd764..ed9102ad2 100644
 --- a/modules/io/src/mol/sdf_reader.cc
 +++ b/modules/io/src/mol/sdf_reader.cc
 @@ -21,7 +21,7 @@
@@ -333,15 +219,6 @@ index edafc0ff1..9699125f2 100644
  #include <boost/format.hpp>
  #include <boost/iostreams/filter/gzip.hpp>
  #include <boost/lexical_cast.hpp>
-@@ -122,7 +122,7 @@ void SDFReader::Import(mol::EntityHandle& ent)
- 
- void SDFReader::ClearState(const boost::filesystem::path& loc)
- {
--  if (boost::iequals(".gz", boost::filesystem::extension(loc))) {
-+  if (boost::iequals(".gz", boost::filesystem::path(loc).extension().string())) {
-     in_.push(boost::iostreams::gzip_decompressor());
-   }
-   in_.push(instream_);
 diff --git a/modules/io/src/mol/sdf_writer.hh b/modules/io/src/mol/sdf_writer.hh
 index 929be1d35..36cc8bd29 100644
 --- a/modules/io/src/mol/sdf_writer.hh
@@ -355,21 +232,8 @@ index 929be1d35..36cc8bd29 100644
  #include <boost/algorithm/string.hpp>
  #include <boost/lexical_cast.hpp>
  #include <boost/format.hpp>
-diff --git a/modules/io/src/mol/star_writer.cc b/modules/io/src/mol/star_writer.cc
-index 73ff08f94..f426848f3 100644
---- a/modules/io/src/mol/star_writer.cc
-+++ b/modules/io/src/mol/star_writer.cc
-@@ -49,7 +49,7 @@ void StarWriter::Write(const String& data_name, const String& filename) {
-                         ": '" + filename + "'");
-   }
-   boost::iostreams::filtering_stream<boost::iostreams::output> stream;
--  if (boost::iequals(".gz", boost::filesystem::extension(filename))) {
-+  if (boost::iequals(".gz", boost::filesystem::path(filename).extension().string())) {
-     stream.push(boost::iostreams::gzip_compressor());
-   }
-   stream.push(fstream);
 diff --git a/modules/io/src/mol/surface_io_msms_handler.cc b/modules/io/src/mol/surface_io_msms_handler.cc
-index 25c45b925..19cc7d766 100644
+index 9c10752b3..02384a225 100644
 --- a/modules/io/src/mol/surface_io_msms_handler.cc
 +++ b/modules/io/src/mol/surface_io_msms_handler.cc
 @@ -22,7 +22,7 @@
@@ -381,20 +245,6 @@ index 25c45b925..19cc7d766 100644
  #include "surface_io_msms_handler.hh"
  
  namespace bf = boost::filesystem;
-@@ -33,8 +33,11 @@ namespace {
- 
- std::pair<bf::path,bf::path> detect_files(const bf::path& loc)
- {
--  return std::make_pair(bf::change_extension(loc, ".vert"),
--                        bf::change_extension(loc, ".face"));
-+  bf::path v = loc;
-+  v.replace_extension(".vert");
-+  bf::path f = loc;
-+  f.replace_extension(".face");
-+  return std::make_pair(v, f);
- }
- 
- }
 diff --git a/modules/io/src/seq/clustal_io_handler.cc b/modules/io/src/seq/clustal_io_handler.cc
 index 8eb8eb650..d4d30a83e 100644
 --- a/modules/io/src/seq/clustal_io_handler.cc
@@ -422,7 +272,7 @@ index 61bb43ba0..c35119c53 100644
  #include <boost/format.hpp>
  
 diff --git a/modules/io/src/seq/hhm_io_handler.cc b/modules/io/src/seq/hhm_io_handler.cc
-index 3d976a571..2cb2d7ef8 100644
+index 9f69691a5..507f655b1 100644
 --- a/modules/io/src/seq/hhm_io_handler.cc
 +++ b/modules/io/src/seq/hhm_io_handler.cc
 @@ -24,7 +24,7 @@
@@ -434,15 +284,6 @@ index 3d976a571..2cb2d7ef8 100644
  #include <boost/filesystem/fstream.hpp>
  #include <boost/iostreams/filter/gzip.hpp>
  #include <boost/iostreams/filtering_stream.hpp>
-@@ -130,7 +130,7 @@ void HhmIOHandler::Import(seq::ProfileHandle& prof,
-     throw IOException("Could not open " + loc.string());
-   }
-   // add unzip if necessary
--  if (boost::iequals(".gz", boost::filesystem::extension(loc))) {
-+  if (boost::iequals(".gz", boost::filesystem::path(loc).extension().string())) {
-     in.push(boost::iostreams::gzip_decompressor());
-   }
-   in.push(stream);
 diff --git a/modules/io/src/seq/pir_io_handler.cc b/modules/io/src/seq/pir_io_handler.cc
 index a84710b7c..34ba6f287 100644
 --- a/modules/io/src/seq/pir_io_handler.cc
@@ -470,7 +311,7 @@ index 612ca2b10..3c402913e 100644
  #include <boost/format.hpp>
  #include <boost/algorithm/string/erase.hpp>
 diff --git a/modules/io/src/seq/pssm_io_handler.cc b/modules/io/src/seq/pssm_io_handler.cc
-index 892bf10c7..c7813dfe4 100644
+index ba0b898b7..205eece7b 100644
 --- a/modules/io/src/seq/pssm_io_handler.cc
 +++ b/modules/io/src/seq/pssm_io_handler.cc
 @@ -24,7 +24,7 @@
@@ -482,15 +323,6 @@ index 892bf10c7..c7813dfe4 100644
  #include <boost/filesystem/fstream.hpp>
  #include <boost/iostreams/filter/gzip.hpp>
  #include <boost/iostreams/filtering_stream.hpp>
-@@ -44,7 +44,7 @@ void PssmIOHandler::Import(seq::ProfileHandle& prof,
-     throw IOException("Could not open " + loc.string());
-   }
-   // add unzip if necessary
--  if (boost::iequals(".gz", boost::filesystem::extension(loc))) {
-+  if (boost::iequals(".gz", boost::filesystem::path(loc).extension().string())) {
-     in.push(boost::iostreams::gzip_decompressor());
-   }
-   in.push(stream);
 diff --git a/modules/mol/alg/src/entity_to_density.cc b/modules/mol/alg/src/entity_to_density.cc
 index b6ac49efc..201b7dfc8 100644
 --- a/modules/mol/alg/src/entity_to_density.cc
@@ -505,7 +337,7 @@ index b6ac49efc..201b7dfc8 100644
  
  #include <ost/log.hh>
 diff --git a/modules/mol/alg/src/lddt.cc b/modules/mol/alg/src/lddt.cc
-index 4b913efdb..07c01826b 100644
+index e76621b05..07c01826b 100644
 --- a/modules/mol/alg/src/lddt.cc
 +++ b/modules/mol/alg/src/lddt.cc
 @@ -24,7 +24,7 @@
@@ -517,17 +349,6 @@ index 4b913efdb..07c01826b 100644
  #include <ost/base.hh>
  #include <ost/boost_filesystem_helper.hh>
  #include <ost/mol/chain_view.hh>
-@@ -135,8 +135,8 @@ CompoundLibPtr load_compound_lib(const String& custom_path)
-        "look for compounds.chemlib in the current working directory" << std::endl;
-   } else {
-     fs::path path_and_exe(exe_path);
--    fs::path path_only=path_and_exe.branch_path();
--    fs::path share_path = path_only.branch_path();
-+    fs::path path_only=path_and_exe.parent_path();
-+    fs::path share_path = path_only.parent_path();
-     share_path = share_path / "share" / "openstructure" / "compounds.chemlib";
- 
-     String share_path_string=BFPathToString(share_path);
 diff --git a/modules/mol/alg/src/local_dist_diff_test.cc b/modules/mol/alg/src/local_dist_diff_test.cc
 index 1182dc375..caf6f7bca 100644
 --- a/modules/mol/alg/src/local_dist_diff_test.cc
@@ -541,28 +362,6 @@ index 1182dc375..caf6f7bca 100644
  #include <ost/mol/alg/consistency_checks.hh>
  
  namespace ost { namespace mol { namespace alg {
-diff --git a/modules/seq/alg/src/hmm_pseudo_counts.cc b/modules/seq/alg/src/hmm_pseudo_counts.cc
-index 37d2d490b..16e0bfd9e 100644
---- a/modules/seq/alg/src/hmm_pseudo_counts.cc
-+++ b/modules/seq/alg/src/hmm_pseudo_counts.cc
-@@ -1,7 +1,7 @@
- #include <ost/seq/alg/hmm_pseudo_counts.hh>
- 
- #include <boost/algorithm/string/predicate.hpp>
--#include <boost/filesystem/convenience.hpp>
-+#include <boost/filesystem.hpp>
- #include <boost/filesystem/fstream.hpp>
- #include <boost/iostreams/filter/gzip.hpp>
- #include <boost/iostreams/filtering_stream.hpp>
-@@ -143,7 +143,7 @@ ContextProfileDBPtr ContextProfileDB::FromCRF(const String& filename) {
-     throw Error("Could not open " + filename);
-   }
-   // add unzip if necessary
--  if(boost::iequals(".gz", boost::filesystem::extension(filename))) {
-+  if (boost::iequals(".gz", boost::filesystem::path(filename).extension().string())) {
-     in.push(boost::iostreams::gzip_decompressor());
-   }
-   in.push(stream);
 diff --git a/scripts/dng.in b/scripts/dng.in
 index 93e7d862e..624ec98b1 100755
 --- a/scripts/dng.in
@@ -642,7 +441,7 @@ index b85886a39..fc48014e0 100755
  export OST_EXEC_DIR
  
 diff --git a/tools/molck/main.cc b/tools/molck/main.cc
-index efed0e21f..c6dd83e13 100644
+index b855dc5dd..c6dd83e13 100644
 --- a/tools/molck/main.cc
 +++ b/tools/molck/main.cc
 @@ -1,7 +1,7 @@
@@ -654,14 +453,3 @@ index efed0e21f..c6dd83e13 100644
  #include <ost/base.hh>
  #include <ost/boost_filesystem_helper.hh>
  #include <ost/platform.hh>
-@@ -116,8 +116,8 @@ ost::conop::CompoundLibPtr load_compound_lib(const String& custom_path)
-              "look for compounds.chemlib in the current working directory");
-   } else {
-     fs::path path_and_exe(exe_path);
--    fs::path path_only=path_and_exe.branch_path();
--    fs::path share_path = path_only.branch_path();
-+    fs::path path_only=path_and_exe.parent_path();
-+    fs::path share_path = path_only.parent_path();
-     share_path = share_path / "share" / "openstructure" / "compounds.chemlib";
- 
-     String share_path_string=BFPathToString(share_path);
