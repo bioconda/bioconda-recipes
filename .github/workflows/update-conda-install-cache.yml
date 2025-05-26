@@ -2,8 +2,8 @@ name: Keep the cache entry for the conda install scripts up-to-date
 
 on:
   schedule:
-    # Run daily at 23:00 (1h before nightly.yml)
-    - cron: "0 23 * * *"
+    # Run every hour
+    - cron: "0 */1 * * *"
   workflow_dispatch:
     inputs:
       ref:
@@ -14,14 +14,14 @@ on:
 jobs:
   cache-bioconda-common-scripts-schedule:
     name: Cache bioconda/bioconda-common scripts (schedule)
-    if: github.event_name == 'workflow_dispatch'
-    uses: bioconda/bioconda-recipes/.github/workflows/fetch-conda-install-script.yml@02ca87034ae53807685333342fd90abe4a65685a
+    if: github.event_name == 'schedule'
+    uses: bioconda/bioconda-recipes/.github/workflows/fetch-conda-install-script.yml@6a472404ba03004bd49256d2f8f831656440367a
     with:
       ref: c7f3f523b39481225f912cbfc3937682b4342c4e
 
   cache-bioconda-common-scripts-manual:
     name: Cache bioconda/bioconda-common scripts (manual)
     if: github.event_name == 'workflow_dispatch'
-    uses: bioconda/bioconda-recipes/.github/workflows/fetch-conda-install-script.yml@02ca87034ae53807685333342fd90abe4a65685a
+    uses: bioconda/bioconda-recipes/.github/workflows/fetch-conda-install-script.yml@6a472404ba03004bd49256d2f8f831656440367a
     with:
       ref: ${{ inputs.ref }}
