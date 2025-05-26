@@ -1,0 +1,69 @@
+name: Fetch conda install scripts
+
+on:
+  workflow_call:
+    outputs:
+      cache-key:
+        description: "Key to restore the cached install scripts."
+        value: ${{ jobs.fetch-bioconda-common.outputs.cache-key }}
+
+    inputs:
+      repository:
+        default: "bioconda/bioconda-common"
+        type: string
+        required: false
+        description: "Repository name with owner. For example, bioconda/bioconda-common."
+      ref:
+        type: string
+        required: true
+        description: "The branch, tag or SHA to checkout."
+
+jobs:
+  fetch-bioconda-common:
+    name: Fetch conda install scripts
+    if: github.repository == 'bioconda/bioconda-recipes'
+    runs-on: ubuntu-latest
+
+    outputs:
+      cache-key: ${{ steps.generate-cache-key.outputs.key }}
+
+    steps:
+      - name: Generate cache key
+        id: generate-cache-key
+        run: |
+          repository="$(echo '${{ inputs.repository }}' | tr -c '[:alnum:]._-' '-' | sed 's/-\+/-/g' | sed 's/-$//')"
+          ref="$(echo '${{ inputs.ref }}' | tr -c '[:alnum:]._-' '-' | sed 's/-\+/-/g' | sed 's/-$//')"
+          
+          echo "key=conda-install-scripts-$repository-$ref" | tee -a "$GITHUB_OUTPUT"
+
+      - name: Lookup cache key
+        id: lookup-cache
+        uses: actions/cache/restore@v4
+        with:
+          key: ${{ steps.generate-cache-key.outputs.key }}
+          path: |
+            common.sh
+            configure-conda.sh
+            install-and-set-up-conda.sh
+          lookup-only: true
+
+      - name: Checkout bioconda-common repo
+        if: steps.lookup-cache.outputs.cache-hit != 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.repository }}
+          ref: ${{ inputs.ref }}
+          sparse-checkout: |
+            common.sh
+            configure-conda.sh
+            install-and-set-up-conda.sh
+
+      - name: Save cache
+        if: steps.lookup-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          key: ${{ steps.generate-cache-key.outputs.key }}
+          path: |
+            common.sh
+            configure-conda.sh
+            install-and-set-up-conda.sh
