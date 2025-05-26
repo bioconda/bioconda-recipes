@@ -1,0 +1,58 @@
+{% set name = "suvtk" %}
+{% set version = "0.1.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/suvtk-{{ version }}.tar.gz
+  sha256: 963fd8124ea9ec2f014d01b2752c0348d055c484730703018d2fa2129847a099
+
+build:
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  entry_points:
+    - suvtk = suvtk.cli:cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.9
+    - setuptools
+    - pip
+  run:
+    - python >=3.9
+    - biopython >=1.83
+    - click
+    - numpy >1.24.4
+    - pandas >=2.0.3
+    - pyrodigal-gv >=0.3.2
+    - requests >=2.32.3
+    - scipy >=1.13.1
+    - taxopy >=0.14.0
+    - mmseqs2 >=17.b804f
+    - table2asn >=1.28.1094
+
+test:
+  imports:
+    - suvtk
+  commands:
+    - pip check
+    - suvtk --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/LanderDC/suvtk
+  summary: Tool to submit viral sequences to Genbank.
+  license: Apache-2.0
+  license_file: LICENSE
+  doc_url: https://landerdc.github.io/suvtk/
+
+
+extra:
+  recipe-maintainers:
+    - LanderDC

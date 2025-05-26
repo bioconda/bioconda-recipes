@@ -1,0 +1,58 @@
+{% set name = "MPRAlib" %}
+{% set version = "0.6.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/mpralib-{{ version }}.tar.gz
+  sha256: fcf4425dddfae1971187350d75a9fe35366579a18fd5f68671dd6bba45b0be31
+
+build:
+  run_exports:
+    - {{ pin_subpackage('mpralib', max_pin="x.x") }}
+  entry_points:
+    - mpralib = mpralib.cli:cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools
+    - wheel
+    - pip
+  run:
+    - python >=3.8
+    - numpy
+    - pandas
+    - pysam
+    - click
+    - scikit-learn
+    - scipy
+    - anndata
+    - seaborn
+    - matplotlib-base
+    - jsonschema
+    - tqdm
+
+test:
+  imports:
+    - mpralib
+  commands:
+    - pip check
+    - mpralib --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/kircherlab/MPRAlib
+  summary: Library to analyze count data of MPRA experiments.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - visze
