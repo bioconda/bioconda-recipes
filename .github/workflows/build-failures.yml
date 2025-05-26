@@ -11,10 +11,16 @@ on:
       - "**build_failure.*.yaml"
 
 jobs:
+  cache-bioconda-common-scripts:
+    name: Cache bioconda/bioconda-common scripts
+    uses: bioconda/bioconda-recipes/.github/workflows/fetch-conda-install-script.yml@02ca87034ae53807685333342fd90abe4a65685a
+    with:
+      ref: c7f3f523b39481225f912cbfc3937682b4342c4e
   update-build-failure-page:
     name: Update build failure page
     if: ${{ github.repository == 'bioconda/bioconda-recipes' && !contains(github.event.head_commit.message, '[ci skip]') }}
     runs-on: ubuntu-22.04
+    needs: [ cache-bioconda-common-scripts ]
     steps:
       - uses: actions/checkout@v4
 
@@ -29,9 +35,14 @@ jobs:
       - name: set path
         run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
 
-      - name: Fetch conda install script
-        run: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
+      - name: Fetch conda install scripts
+        uses: actions/cache/restore@v4
+        with:
+          key: ${{ needs.cache-bioconda-common-scripts.outputs.cache-key }}
+          path: |
+            common.sh
+            configure-conda.sh
+            install-and-set-up-conda.sh
 
       - name: Restore cache
         id: cache
