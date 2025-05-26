@@ -1,0 +1,123 @@
+{% set version = "6.35.1" %}
+{% set build = 0 %}
+
+package:
+  name: heasoft
+  version: {{ version }}
+
+source:
+  url: https://heasarc.gsfc.nasa.gov/FTP/software/lheasoft/lheasoft{{ version }}/heasoft-{{ version }}src.tar.gz
+  sha256: 60515214c01dbf3bea13fce27b5a2335f0be051172c745922cfe4c0be442bbbb
+  folder: heasoft
+
+build:
+  number: {{ build }}
+  skip: true  # [win or osx]
+  string: h{{ PKG_HASH }}_{{ build }}
+  run_exports:
+    - {{ pin_subpackage('heasoft', max_pin='x.y') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+    - make
+    - perl >=5.32.1
+    - pip
+    - pkg-config
+    - python >=3.12
+    - setuptools >=61.0
+    - wheel
+  host:
+    - astropy >=6.1.4
+    - astropy-iers-data
+    - curl
+    - gsl =2.7
+    - libgcc-ng
+    - libgfortran-ng
+    - libpng
+    - libstdcxx-ng
+    - matplotlib-base >=3.9.2
+    - ncurses
+    - numpy >=2.1.2
+    - pip
+    - python >=3.12
+    - readline
+    - scipy >=1.14.1
+    - setuptools >=61.0
+    - wheel
+    - xorg-inputproto
+    - xorg-kbproto
+    - xorg-libx11
+    - xorg-libxext
+    - xorg-libxt
+    - xorg-util-macros
+    - xorg-xextproto
+    - xorg-xf86vidmodeproto
+    - xorg-xproto
+    - zlib
+  run:
+    - astropy >=6.1.4
+    - astropy-iers-data
+    - {{ pin_compatible('curl') }}
+    - {{ pin_compatible('gsl') }}
+    - {{ pin_compatible('libgcc-ng') }}
+    - {{ pin_compatible('libgfortran-ng') }}
+    - {{ pin_compatible('libpng') }}
+    - {{ pin_compatible('libstdcxx-ng') }}
+    - matplotlib-base >=3.9.2
+    - {{ pin_compatible('ncurses') }}
+    - {{ pin_compatible('numpy') }}
+    - perl >=5.32.1
+    - python >=3.12
+    - {{ pin_compatible('readline') }}
+    - scipy >=1.14.1
+    - {{ pin_compatible('xorg-libx11') }}
+    - {{ pin_compatible('xorg-libxext') }}
+    - {{ pin_compatible('xorg-libxt') }}
+    - {{ pin_compatible('xorg-xproto') }}
+    - {{ pin_compatible('zlib') }}
+
+test:
+  commands:
+    {% if target_platform == "linux-64" %}
+    - export HEADAS=$(ls -d "${PREFIX}/x86_64-pc-linux-gnu-libc"*/ | head -n 1)
+    - source $HEADAS/headas-init.sh
+    - export LHEAPERL=$PREFIX/bin/perl
+    - fversion
+    {% else %}
+    - echo "Tests skipped on non-Linux-64 platforms"
+    {% endif %}
+
+about:
+  home: https://heasarc.gsfc.nasa.gov/lheasoft/
+  license: Clear BSD License
+  license_file: LICENSE
+  summary: NASA High Energy Astrophysics Software (HEAsoft)
+  description: |
+    HEAsoft is a unified release of FTOOLS and XANADU software packages
+    for high energy astrophysics data analysis, including tools like XSPEC.
+    
+    After installation, users should initialize the HEAsoft environment with:
+    
+    ```
+    export HEADAS=$(ls -d "${CONDA_PREFIX}/x86_64-pc-linux-gnu-libc"*/ | head -n 1)
+    source ${HEADAS}/headas-init.sh
+    export LHEAPERL=${CONDA_PREFIX}/bin/perl
+    ```
+    
+    This setup configures numerous environment variables required for HEAsoft, including:
+    PATH, LD_LIBRARY_PATH, PFILES, PERL5LIB, PYTHONPATH, and various component-specific
+    variables like PGPLOT_DIR, XANADU, and POW_LIBRARY.
+    
+    Note that LHEAPERL needs to be manually set to point to your Conda environment's
+    Perl interpreter after sourcing headas-init.sh.
+    
+    For mission-specific functionality (e.g., Swift, NuSTAR, IXPE), additional 
+    environment setup may be needed. See the HEAsoft documentation for details.
+  doc_url: https://heasarc.gsfc.nasa.gov/docs/software/heasoft/
+
+extra:
+  recipe-maintainers:
+    - j34ni

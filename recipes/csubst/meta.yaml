@@ -1,0 +1,64 @@
+{% set name = "csubst" %}
+{% set version = "1.4.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/kfuku52/csubst/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 2d49d684c9934208854cfb4ef0f05b2f4a0d09e57af517b659cbe01e5045120b
+  
+build:
+  number: 1
+  script_env:
+    - CPPFLAGS
+  script: >
+    export CPPFLAGS="${CPPFLAGS} -I$(python -c 'import numpy; print(numpy.get_include())')"
+    && {{ PYTHON }} setup.py build_ext --inplace
+    && {{ PYTHON }} -m pip install . -vv
+  run_exports:
+    - {{ pin_subpackage("csubst", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - python >=3.8
+    - pip
+    - cython
+    - setuptools >=18.0
+    - numpy  
+  run:
+    - python >=3.8
+    - ete3
+    - numpy
+    - scipy
+    - pandas
+    - joblib
+    - matplotlib-base
+    - threadpoolctl
+    - iqtree >=2.0.0  # required
+    - pyvolve         # optional: for csubst simulate
+    - biopython       # optional: for csubst site --pdb besthit
+    - pymol-open-source  # optional: for csubst site --pdb
+    - mafft           # optional: for alignment (CLI)
+
+
+
+test:
+  commands:
+    - csubst --help
+  imports:
+    - csubst
+
+about:
+  home: "https://github.com/kfuku52/csubst"
+  license: "BSD-3-Clause"
+  summary: "Tool for analyzing combinatorial codon substitutions in DNA sequences."
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - kfuku52

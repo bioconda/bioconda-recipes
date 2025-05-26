@@ -1,0 +1,180 @@
+diff --git a/meson.build b/meson.build
+index d7b253a..61b1b23 100644
+--- a/meson.build
++++ b/meson.build
+@@ -9,62 +9,82 @@
+ #
+ # to build static binary for release
+ #
+-#     meson build -Dstatic=true -Dprefer_system_deps=false --buildtype release
++#      meson setup build/ -Dstatic=true -Dprefer_system_deps=false --buildtype release
++#
++# or for debugging
++#
++#      meson setup build/ --buildtype debug --wipe -Dprefer_system_deps=false -Dstatic=true
+ #
+ # See also meson_options.txt and contrib/README.md
++#
++# We use guix.scm for development -- see the header of the guix.scm file
+ 
+ project('freebayes', ['cpp', 'c'],
+         version : '1.3.9',
+         default_options : ['warning_level=1', 'cpp_std=c++17', 'optimization=3'])
++add_global_arguments('-Wno-maybe-uninitialized', language : 'cpp') # for ttmath warnings
++
+ static_build = get_option('static')
+ 
+ # used by Debian: add_global_arguments('-D_GLIBCXX_ASSERTIONS=1', language : 'cpp')
+ 
+ cc = meson.get_compiler('cpp')
+ 
+-# fastahack_dep = cc.find_library('libfastahack')
+ lzma_dep = dependency('liblzma', static: static_build)
+ thread_dep = dependency('threads', static: static_build)
+-wfa2lib_dep = cc.find_library('libwfa2') # need to link for vcflib code
++wfa2lib_dep = cc.find_library('wfa2', required: false) # need to link for vcflib code
+ zlib_dep = dependency('zlib', static: static_build)
+ htslib_dep = dependency('htslib', static: static_build, required: false)
+-vcflib_dep = cc.find_library('libvcflib', required: false)
+-seqlib_dep = dependency('libseqlib', static: static_build, required: false)
+-tabixpp_dep = cc.find_library('tabixpp', required: false, static: static_build)
++vcflib_dep = cc.find_library('vcflib', required: false)
++seqlib_dep = cc.find_library('seqlib', required: false)
++tabixpp_dep = cc.find_library('tabixpp', required: false)
+ 
+ # later versions of vcflib have Variant.hpp in a system subdirectory
+ fs = import('fs')
+-if fs.is_dir('/usr/include/vcflib')
+-  message('Using /usr/include/vcflib dir')
+-  vcflib_inc = include_directories('/usr/include/vcflib')
++if fs.is_dir('${PREFIX}/include/vcflib')
++  message('Using ${PREFIX}/include/vcflib dir')
++  vcflib_inc = include_directories('${PREFIX}/include/vcflib')
+ else
+   vcflib_inc = files()
+ endif
+ 
+-
+-if get_option('prefer_system_deps') # defaults to true, otherwise use git modules and local sources
+-  fastahack_dep = cc.find_library('libfastahack', required: true) # also link in for vcflib
+-  smithwaterman_dep = cc.find_library('libsmithwaterman')
+-  if fs.is_dir('/usr/include/fastahack')
+-    message('Using /usr/include/fastahack dir')
+-    fastahack_inc = include_directories('/usr/include/fastahack')
++if get_option('prefer_system_deps')
++  fastahack_dep = cc.find_library('libfastahack', required: false) # also link in for vcflib
++  fastahack_src = files()
++  smithwaterman_dep = cc.find_library('libsmithwaterman', required: false)
++  if fs.is_dir('${SRC_DIR}/freebayes/contrib/fastahack')
++    message('Using ${SRC_DIR}/freebayes/contrib/fastahack dir')
++    fastahack_inc = include_directories('${SRC_DIR}/freebayes/contrib/fastahack')
+   else
+     fastahack_inc = files()
+   endif
+-
++  multichoose_inc = files()
++  vcflib_inc = files()
++  vcflib_src = files()
++  smithwaterman_inc = files()
++  smithwaterman_src = files()
+ else
+   # uses the minimal local git submodules or checkout trees in ./contrib/
+   # see `git submodule`
+   # htslib and vcflib have to come from the underlying distro
+-  fastahack_dep = dependency('', required : false)
++
++  vcflib_dep = dependency('', required : false) # from this tree
++  fastahack_dep = dependency('', required : false) # from this tree
++  smithwaterman_dep = dependency('', required : false) # from this tree
++  smithwaterman_dep = dependency('', required : false)
++
++  vcflib_inc = include_directories('contrib/vcflib-min/include')
++  vcflib_src = files(
++      'contrib/vcflib-min/src/Variant.cpp',
++      'contrib/vcflib-min/src/ssw_cpp.cpp',
++      'contrib/vcflib-min/src/cigar.cpp',
++      'contrib/vcflib-min/src/allele.cpp'
++  )
+ 
+   fastahack_inc = include_directories('contrib/fastahack')
+   fastahack_src = files(
+       'contrib/fastahack/Fasta.cpp',
+-  )
+-
+-  multichoose_inc = include_directories('contrib/multichoose')
+-  multichoose_src = files(
++      'contrib/fastahack/split.cpp',
+   )
+ 
+   smithwaterman_inc = include_directories('contrib/smithwaterman')
+@@ -74,6 +94,7 @@ else
+       'contrib/smithwaterman/Repeats.cpp',
+       'contrib/smithwaterman/LeftAlign.cpp',
+       'contrib/smithwaterman/IndelAllele.cpp',
++      # 'contrib/smithwaterman/SWMain.cpp',
+   )
+ 
+ endif # build git modules
+@@ -130,9 +151,13 @@ freebayes_common_src = files(
+     'src/SegfaultHandler.cpp',
+     'src/Utility.cpp',
+     )
++
+ freebayes_src = files('src/freebayes.cpp')
+ bamleftalign_src = files('src/bamleftalign.cpp')
+ 
++freebayes_common_src += vcflib_src
++freebayes_common_src += smithwaterman_src
++
+ # Include paths
+ incdir = include_directories(
+     'src',
+@@ -149,36 +174,38 @@ extra_cpp_args = cc.get_supported_arguments(
+ 
+ freebayes_lib = static_library(
+     'freebayes_common',
+-    freebayes_common_src,
+-    include_directories : [incdir, vcflib_inc, fastahack_inc],
++    [freebayes_common_src, fastahack_src],
++    pic: false,
++    include_directories : [incdir, vcflib_inc, smithwaterman_inc, fastahack_inc, multichoose_inc],
+     cpp_args : extra_cpp_args,
+-    dependencies : [zlib_dep, lzma_dep, thread_dep, htslib_dep, tabixpp_dep,
+-                    vcflib_dep, wfa2lib_dep, seqlib_dep],
++    dependencies : [vcflib_dep, zlib_dep, lzma_dep, thread_dep, htslib_dep, tabixpp_dep,
++                    wfa2lib_dep, seqlib_dep],
+     install : false,
+     )
+ 
+ if static_build
+   link_arguments = '-static'
+ else
+-  link_arguments = []
++  link_arguments = ['-ltabixpp', '-lwfa2', '-lvcflib']
+ endif
+ 
+ executable('freebayes',
+            [freebayes_src],
+-           include_directories : [incdir, vcflib_inc, fastahack_inc],
++           include_directories : [incdir, vcflib_inc, fastahack_inc, multichoose_inc],
+            cpp_args : extra_cpp_args,
+            link_args: link_arguments,
+            dependencies: [zlib_dep,
+                           lzma_dep,
++                          wfa2lib_dep,
++                          vcflib_dep,
+                           thread_dep,
+                           htslib_dep,
+                           tabixpp_dep,
+-                          vcflib_dep,
+                           seqlib_dep,
+                           fastahack_dep, # for vcflib
+-                          smithwaterman_dep, # for vcflib
+-                          wfa2lib_dep],
+-           link_with : freebayes_lib,
++                          smithwaterman_dep # for vcflib
++                          ],
++           link_with : [freebayes_lib],
+            install: true
+           )
+ 

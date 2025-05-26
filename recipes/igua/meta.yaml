@@ -1,0 +1,64 @@
+{% set name = "igua" %}
+{% set version = "0.1.0" %}
+{% set dlversion = "0.1.0.post1" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+build:
+  number: 0
+  script:
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --disable-pip-version-check
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ dlversion }}.tar.gz
+  sha256: 778eba93c6637b4be94c9d67f2f40a19d4eba75c9d6be81432783df0777cebb7
+
+requirements:
+  build:
+    - {{ compiler("rust") }}
+    - python                              # [build_platform != target_platform]
+    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+    - crossenv                            # [build_platform != target_platform]
+    - maturin >=1.2,<2
+    - cargo-bundle-licenses
+  host:
+    - python
+    - pip
+    - maturin >=1.2,<2
+  run:
+    - python
+    - scipy >=1.4,<2
+    - gb-io >=0.3.0,<0.4.0
+    - rich >=12.6,<15.0
+    - numpy >=1.0,<3.0
+    - pandas >=1.3,<3.0
+    - anndata >=0.8,<0.12
+    - biopython >=1.79,<2.0
+    - mmseqs2
+
+test:
+  imports:
+    - igua
+  commands:
+    - igua --version
+    - igua --help
+
+about:
+  home: https://github.com/zellerlab/IGUA
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: 
+    - COPYING
+    - THIRDPARTY.yml
+  summary: Iterative Gene clUster Analysis, a high-throughput method for gene cluster family identification.
+  dev_url: https://github.com/zellerlab/IGUA
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -5,13 +5,15 @@ export M4="${BUILD_PREFIX}/bin/m4"
 export MEME_ETC_DIR="${PREFIX}/etc"
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
+export LC_ALL="en_US.UTF-8"
 
 autoreconf -if
 ./configure --prefix="${PREFIX}" CC="${CC}" \
 	CFLAGS="${CFLAGS} -O3" \
 	LDFLAGS="${LDFLAGS} -L${PREFIX}/lib" \
 	CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include" \
-	--enable-build-libxml2 --enable-build-libxslt
+	--enable-build-libxml2 --enable-build-libxslt \
+	--disable-option-checking --enable-silent-rules --disable-dependency-tracking
 
 make AM_CFLAGS='-DNAN="(0.0/0.0)"' -j"${CPU_COUNT}"
 make install

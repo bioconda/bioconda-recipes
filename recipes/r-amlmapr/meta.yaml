@@ -1,0 +1,49 @@
+{% set name = "r-amlmapr" %}
+{% set version = "0.1.0" %}  
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+    url: https://github.com/ramin-shirali/AMLmapR/archive/refs/tags/v0.1.0.tar.gz
+    sha256: 60b3caaf14c51b65f807f9aeabafef9831195824b554f2ffaa8114c9a339a005
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  script: R CMD INSTALL --build .
+  run_exports:
+    - {{ pin_subpackage('r-amlmapr', max_pin='x.x') }}
+
+requirements:
+  build:
+    - r-base >=4.2
+    - r-devtools
+    - r-remotes
+    - r-caret
+    - r-kernlab
+  run:
+    - r-base >=4.2
+    - r-devtools
+    - r-remotes
+    - r-caret
+    - r-kernlab
+
+test:
+  commands:
+    - $R -e "library('AMLmapR')"  # adjust if the actual package name is different
+
+about:
+  home: https://github.com/jeppeseverens/AMLmapR
+  summary: "R package for visualizing and analyzing AML transcriptome data"
+  license: CC-BY-NC-SA-4.0
+
+extra:
+  recipe-maintainers:
+    - ramin-shirali
+  run_exports:
+    - {{ pin_subpackage('r-amlmapr', max_pin="x.x") }}
+
