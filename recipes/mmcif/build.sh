@@ -5,7 +5,11 @@ set -exuo pipefail
 export CMAKE_GENERATOR=Ninja
 
 if [[ $(uname) == "Linux" ]]; then
-    export AR="${BUILD_PREFIX}/bin/gcc-ar"
+    export AR=$(command -v gcc-ar)
+    export RANLIB=$(command -v gcc-ranlib)
+    export NM=$(command -v gcc-nm)
+    export LTO_PLUGIN=$(gcc -print-file-name=liblto_plugin.so)
+    export LD_PLUGIN_PATH=$(dirname "$LTO_PLUGIN")
 fi
 
 # Disable LTO
