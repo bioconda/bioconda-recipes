@@ -47,6 +47,21 @@ jobs:
             install-and-set-up-conda.sh
           lookup-only: true
 
+      - name: Check files exist
+        if: steps.lookup-cache.outputs.cache-hit != 'true'
+        run: |
+          ok=true
+          for f in common.sh configure-conda.sh install-and-set-up-conda.sh; do
+            if [ ! -f "$f" ]; then
+              1>&2 echo "File \"$f\" is missing!"
+              ok=false
+            fi
+          done
+
+          if [ "$ok" != true ]; then
+            exit 1
+          fi
+
       - name: Checkout bioconda-common repo
         if: steps.lookup-cache.outputs.cache-hit != 'true'
         uses: actions/checkout@v4
