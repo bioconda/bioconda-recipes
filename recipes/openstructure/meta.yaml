@@ -1,0 +1,99 @@
+{% set name = "OpenStructure" %}
+{% set version = "2.10.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  - url: https://git.scicore.unibas.ch/schwede/{{ name|lower }}/-/archive/{{ version }}/{{ name|lower }}-{{ version }}.tar.gz
+    sha256: 88009b3d5b477f753e4ce1c731da19fb733aea4ed4ccac6c5fbaf6e1359a9560
+    patches: conda.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - {{ compiler("fortran") }}  # for `tmalign` and `tmscore` implemented in Fortran
+    - cmake
+    - make
+    - pkg-config
+    - wget
+  host:
+    - boost ==1.85.0
+    - eigen
+    - fftw
+    - glew
+    - glfw
+    - glm
+    - libegl-devel  # [linux]
+    - libgl-devel  # [linux]
+    - libglx-devel  # [linux]
+    - libgles-devel  # [linux]
+    - libxcb  # [linux]
+    - libpng
+    - libtiff
+    - mesalib  # [linux]
+    - ocl-icd  # [linux]
+    - opencl-headers  # [linux]
+    - parasail
+    - python >=3.10
+    - numpy >=1,<2
+    - pandas >=1
+    - scipy >=1,<2
+    - networkx >=2,<3
+    - sqlite >=3,<4
+    - openmm >=7  # Officially uses 7.7.0, but relaxes the requirement to use Python >= 3.10
+    - qt >=5,<6
+    - pyqt >=5,<6
+    - pyqt5-sip
+    - voronota
+    - zlib
+  run:
+    - {{ pin_compatible("python") }}
+    - {{ pin_compatible("numpy") }}
+    - {{ pin_compatible("pandas") }}
+    - {{ pin_compatible("scipy") }}
+    - {{ pin_compatible("networkx") }}
+    - clustalw
+    - libboost ==1.85.0
+    - libboost-python ==1.85.0
+    - libgl  # [linux]
+
+test:
+  source_files:
+    - examples/scoring/model.pdb
+    - examples/scoring/reference.cif.gz
+
+  commands:
+    - ost -h 2>&1 | grep -q Usage
+    - lddt --help 2>&1 | grep -q usage
+    - molck --help
+    - ost compare-ligand-structures --help
+    - ost compare-structures --help
+    - ost compare-structures-legacy --help
+
+about:
+  home: https://openstructure.org
+  dev_url: https://git.scicore.unibas.ch/schwede/openstructure
+  doc_url: https://openstructure.org/docs
+  license: LGPL-3.0-or-later
+  license_family: LGPL
+  license_file: LICENSE.txt
+  summary: "Open-Source Computational Structural Biology Framework"
+  description: |
+    This project aims to provide an open-source, modular, flexible, molecular modelling and visualization environment.
+    It is targeted at interested method developers in the field of structural bioinformatics.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  # TODO: Add DOIs for the publications on the various tools
+  identifiers:
+    - biotools:openstructure
+    - doi:10.1107/S0907444913007051
