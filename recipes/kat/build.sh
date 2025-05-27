@@ -19,11 +19,11 @@ sed -i.bak 's|'3.5'|'3.10'|' configure.ac
 rm -rf *.bak
 
 ./autogen.sh
-export PYTHON_NOVERSION_CHECK="3.9.0"
+export PYTHON_NOVERSION_CHECK="3.9.22"
 ./configure --prefix="${PREFIX}" CC="${CC}" CXX="${CXX}" \
   CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}" \
-  PYTHON="${PYTHON}" --enable-silent-rules --disable-dependency-tracking \
-  --disable-option-checking
+  PYTHON="${PYTHON}" PYTHON_VERSION="3.9.22" LIBS="-lz -lboost_program_options -lboost_filesystem -lboost_timer" \
+  --enable-silent-rules --disable-dependency-tracking --disable-option-checking
 make -j"${CPU_COUNT}"
 make install
 
