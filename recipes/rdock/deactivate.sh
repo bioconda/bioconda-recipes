@@ -1,0 +1,1 @@
+unset RBT_ROOT
