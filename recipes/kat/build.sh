@@ -1,13 +1,16 @@
 #!/bin/bash
 set -x -e
 
+export INCLUDES="-I${PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
 mkdir -p ${PREFIX}/bin
-rm -rf deps/jellyfish-2.2.0
-mv deps/jellyfish-2.2.10 deps/jellyfish-2.2.0
+
+# https://stackoverflow.com/questions/22401500/autoconf-error-possibly-undefined-macro-ac-libobj
+cd deps/jellyfish-2.2.0 && aclocal && cd ../../
 
 #importing matplotlib fails, likely due to X
 sed -i.bak "124d" configure.ac
