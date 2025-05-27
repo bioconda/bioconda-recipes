@@ -19,13 +19,16 @@ else
 	export EXTRA_ARGS="--host=x86_64"
 fi
 
+if [[ "${OS}" == "Darwin" ]]; then
+	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
+fi
+
 ./configure --prefix="${PREFIX}" CXX="${CXX}" \
 	CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" \
-	LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib" \
-	PYTHON_VERSION="${PY_VER}" --enable-python-binding \
-	--enable-perl-binding --with-sse --enable-python-deprecated \
-	--disable-option-checking --enable-silent-rules --disable-dependency-tracking \
-	"${EXTRA_ARGS}"
+	LDFLAGS="${LDFLAGS}" PYTHON_VERSION="${PY_VER}" \
+ 	--enable-python-binding --enable-perl-binding --with-sse \
+	--disable-option-checking --enable-silent-rules \
+	--disable-dependency-tracking "${EXTRA_ARGS}"
 
 make -j"${CPU_COUNT}"
 make install
