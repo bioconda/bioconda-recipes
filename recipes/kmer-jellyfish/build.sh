@@ -26,7 +26,7 @@ fi
 ./configure --prefix="${PREFIX}" CXX="${CXX}" \
 	CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" \
 	LDFLAGS="${LDFLAGS}" PYTHON_VERSION="${PY_VER}" \
- 	--enable-python-binding --enable-perl-binding --with-sse \
+ 	--enable-python-binding="user" --enable-perl-binding --with-sse \
 	--disable-option-checking --enable-silent-rules \
 	--disable-dependency-tracking "${EXTRA_ARGS}"
 
