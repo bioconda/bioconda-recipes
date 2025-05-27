@@ -6,6 +6,7 @@ export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
+export LC_ALL="en_US.UTF-8"
 
 mkdir -p ${PREFIX}/bin
 
