@@ -12,7 +12,10 @@ mkdir -p $PREFIX/bin
 # $IGDATA to point to those data files.
 mkdir -p $SHARE_DIR/bin
 
-if [[ $(uname) == Linux ]]; then
+uname_str=$(uname)
+arch_str=$(uname -m)
+
+if [[ "$uname_str" == "Linux" || ("$uname_str" == "Darwin" && "$arch_str" == "arm64") ]]; then
     export AR="$AR rcs"
 
     cd c++
@@ -27,9 +30,12 @@ if [[ $(uname) == Linux ]]; then
     # Move one up so it looks like the binary release
     mv ReleaseMT/bin .
     mv src/app/igblast/{internal_data,optional_file} $SHARE_DIR
-else
-    # On macOS, prebuilt binaries are used
+elif [[ "$uname_str" == "Darwin" && "$arch_str" == "x86_64" ]]; then
+    # On Intel macOS, use prebuilt binaries
     mv internal_data optional_file $SHARE_DIR
+else
+    echo "Unsupported OS or architecture: $uname_str $arch_str"
+    exit 1
 fi
 mv bin/makeblastdb $PREFIX/bin/
 mv bin/{igblastn,igblastp} $SHARE_DIR/bin/
