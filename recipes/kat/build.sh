@@ -5,7 +5,7 @@ export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-unused-but-set-variable -Wno-vla-cxx-extension -Wno-sizeof-pointer-div"
 export LC_ALL="en_US.UTF-8"
 
 mkdir -p ${PREFIX}/bin
@@ -19,10 +19,10 @@ sed -i.bak 's|'3.5'|'3.10'|' configure.ac
 rm -rf *.bak
 
 ./autogen.sh
-export PYTHON_NOVERSION_CHECK="3.9.22"
+export PYTHON_NOVERSION_CHECK="${PY_VER}"
 ./configure --prefix="${PREFIX}" CC="${CC}" CXX="${CXX}" \
   CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}" \
-  PYTHON="${PYTHON}" PYTHON_VERSION="3.9.22" LIBS="-lz -lboost_program_options -lboost_filesystem -lboost_timer" \
+  PYTHON="${PYTHON}" PYTHON_VERSION="${PY_VER}" LIBS="-lz -lboost_program_options -lboost_filesystem -lboost_timer" \
   --enable-silent-rules --disable-dependency-tracking --disable-option-checking
 make -j"${CPU_COUNT}"
 make install
