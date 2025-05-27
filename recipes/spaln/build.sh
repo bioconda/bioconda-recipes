@@ -4,7 +4,6 @@ mkdir -p "${PREFIX}/bin"
 
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
-export CPATH="${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
@@ -15,13 +14,13 @@ install -v -m 0755 perl/*.pl "${PREFIX}/bin"
 
 cd src
 
-CXX="${CXX}" CFLAGS="${CFLAGS}" ./configure --exec_prefix="${PREFIX}/bin" \
+CXX="${CXX}" ./configure --exec_prefix="${PREFIX}/bin" \
 	--table_dir="${PREFIX}/share/spaln/table" --alndbs_dir="${PREFIX}/share/spaln/alndbs"
 
 sed -i.bak 's|-lpthread|-pthread|' Makefile
 rm -rf *.bak
 
-make CXX="${CXX}" CFLAGS="${CFLAGS}" AR="${AR:-ar} rcs" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
+make CFLAGS="${CFLAGS}" AR="${AR:-ar} rcs" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
 make install
 
 make clearall
