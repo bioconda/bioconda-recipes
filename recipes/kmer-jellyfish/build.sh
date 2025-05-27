@@ -26,9 +26,10 @@ fi
 ./configure --prefix="${PREFIX}" CXX="${CXX}" \
 	CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" \
 	LDFLAGS="${LDFLAGS}" PYTHON_VERSION="${PY_VER}" \
- 	--enable-python-binding="${SP_DIR}" --enable-perl-binding --with-sse \
-	--disable-option-checking --enable-silent-rules \
-	--disable-dependency-tracking "${EXTRA_ARGS}"
+ 	--enable-python-binding="${SP_DIR}/dna_jellyfish" \
+	--enable-perl-binding --with-sse --disable-option-checking \
+	--enable-silent-rules --disable-dependency-tracking \
+	"${EXTRA_ARGS}"
 
 make -j"${CPU_COUNT}"
 make install
