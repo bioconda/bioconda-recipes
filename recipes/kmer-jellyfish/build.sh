@@ -6,7 +6,7 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-cp -rf ${PREFIX}/share/gnuconfig/config.* .
+cp -rf ${BUILD_PREFIX}/share/gnuconfig/config.* .
 
 OS=$(uname -s)
 ARCH=$(uname -m)
