@@ -3,7 +3,7 @@
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-implicit-const-int-float-conversion -Wno-vla-cxx-extensio"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
 cp -rf ${BUILD_PREFIX}/share/gnuconfig/config.* .
@@ -29,10 +29,10 @@ fi
  	--enable-python-binding="${SP_DIR}/dna_jellyfish" \
 	--enable-perl-binding --with-sse --disable-option-checking \
 	--enable-silent-rules --disable-dependency-tracking \
-	"${EXTRA_ARGS}"
+	--enable-python-deprecated "${EXTRA_ARGS}"
 
 make -j"${CPU_COUNT}"
 make install
 
 cd swig/python
-${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
