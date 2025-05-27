@@ -22,10 +22,9 @@ fi
 ./configure --prefix="${PREFIX}" CXX="${CXX}" \
 	CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" \
 	LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib" \
-	PYTHON_VERSION="${PY_VER}" --enable-python-binding=sys \
-	--enable-ruby-binding --enable-perl-binding --with-sse \
-	--enable-python-deprecated --disable-option-checking \
-	--enable-silent-rules --disable-dependency-tracking \
+	PYTHON_VERSION="${PY_VER}" --enable-python-binding \
+	--enable-perl-binding --with-sse --enable-python-deprecated \
+	--disable-option-checking --enable-silent-rules --disable-dependency-tracking \
 	"${EXTRA_ARGS}"
 
 make -j"${CPU_COUNT}"
