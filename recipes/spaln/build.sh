@@ -4,9 +4,10 @@ mkdir -p "${PREFIX}/bin"
 
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
+export CPATH="${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
 
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' perl/*.pl
 rm -rf perl/*.bak
