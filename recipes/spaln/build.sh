@@ -18,6 +18,7 @@ CXX="${CXX}" ./configure --exec_prefix="${PREFIX}/bin" \
 	--table_dir="${PREFIX}/share/spaln/table" --alndbs_dir="${PREFIX}/share/spaln/alndbs"
 
 sed -i.bak 's|-lpthread|-pthread|' Makefile
+sed -i.bak 's|-O2|-O3|' Makefile
 rm -rf *.bak
 
 make CFLAGS="${CFLAGS}" AR="${AR:-ar} rcs" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
