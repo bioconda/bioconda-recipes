@@ -2,41 +2,43 @@
 {% set version = "2.18" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://bitbucket.org/berkeleylab/metabat/get/v{{ version }}.tar.bz2
   sha256: 7decee72535c75c390e8ddfb84e2e4d23bab9a4c2c85438e2270b19a7f3e568a
   patches:
     - cmake.patch
-    - cmake-htslib.patch # [linux and aarch64]
+    - cmake-htslib.patch  # [linux and aarch64]
 
 build:
   number: 0
-  skip: True # [osx]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - make
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
     - cmake
+    - make
     - autoconf
     - automake
     - libtool
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
+    - pkg-config
   host:
     - zlib
     - htslib
     - boost-cpp
     - libdeflate
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
   run:
-    - perl >=5
+    - perl
     - boost-cpp
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
 
 test:
   commands:
@@ -46,11 +48,19 @@ test:
     - contigOverlaps -h
 
 about:
-  home: https://bitbucket.org/berkeleylab/metabat
-  license: BSD-3-Clause-LBNL
-  license_file: license.txt
-  summary: "Metagenome binning"
+  home: "https://bitbucket.org/berkeleylab/metabat"
+  license: "BSD-3-Clause-LBNL"
+  license_family: BSD
+  license_file: "license.txt"
+  summary: "Metagenome binning."
+  dev_url: "https://bitbucket.org/berkeleylab/metabat"
+  doc_url: "https://bitbucket.org/berkeleylab/metabat/src/v{{ version }}/README.md"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.7717/peerj.1165
+    - biotools:MetaBAT_2
+    - usegalaxy-eu:metabat2
