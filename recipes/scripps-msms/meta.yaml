@@ -1,0 +1,62 @@
+{% set name = "scripps-MSMS" %}
+{% set version = "2.6.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  - url: https://ccsb.scripps.edu/msms/download/933/{{ name }}-{{ version }}.tar.gz  # [linux and x86_64]
+    sha256: 5f0ca50360b5938e74c538e0399d582abc4a40ef4cf410e66f31a1f91e6e3e1f  # [linux and x86_64]
+    patches:  # [linux and x86_64]
+      - pdb_to_xyzr.patch  # [linux and x86_64]
+      - pdb_to_xyzrn.patch  # [linux and x86_64]
+  - url: https://ccsb.scripps.edu/msms/download/950/{{ name }}-{{ version }}.tar.gz  # [osx and x86_64]
+    sha256: aa9c6fcdffd78f20a48990d7ce6cbe19394bb88071e2a9cc26c675171eccfcc8  # [osx and x86_64]
+    patches:  # [osx and x86_64]
+      - pdb_to_xyzr.patch  # [osx and x86_64]
+      - pdb_to_xyzrn.patch  # [osx and x86_64]
+  - url: https://ccsb.scripps.edu/msms/download/942/{{ name }}-{{ version }}.tar.gz  # [osx and arm64]
+    sha256: 87679f0666b388dfcf022ee2e8caace93d5953ef3d67689fd3fafc33eb9c25d3  # [osx and arm64]
+    patches:  # [osx and arm64]
+      - pdb_to_xyzr.patch  # [osx and arm64]
+      - pdb_to_xyzrn.patch  # [osx and arm64]
+
+build:
+  binary_relocation: False
+  number: 0
+  has_prefix_files:
+    - bin/pdb_to_xyzr
+    - bin/pdb_to_xyzrn
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+  requirements:
+    run:
+      - awk  # [linux]
+
+test:
+  source_files:
+    - 1crn.pdb
+    - 1crn.xyzr
+  commands:
+    - msms -h
+
+about:
+  home: https://ccsb.scripps.edu/msms/
+  doc_url: https://ccsb.scripps.edu/msms/documentation/
+  license: "Free for academic use (research-only license)"
+  summary: "Fast algorithm for computing molecular surfaces"
+  description: |
+    MSMS is a fast algorithm for computing molecular surfaces.
+    It was developed by Dr. Michel F. Sanner as part of his PhD thesis.
+    It has been widely used for computing and displaying Solvent Excluded Surfaces for proteins.
+    MSMS is used by various molecular visualization programs including VMD, Chimera, and PMV.
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic
+    - should_not_be_noarch_source
+  additional-platforms:
+    - osx-arm64
+  identifiers:
+    - "doi:10.1002/(SICI)1097-0282(199603)38:3<305::AID-BIP4>3.0.CO;2-Y"

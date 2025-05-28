@@ -1,0 +1,243 @@
+From f46af728b0b10a1b00ee54d279ef6e18efc64b60 Mon Sep 17 00:00:00 2001
+From: Roberto Rossini <71787608+robomics@users.noreply.github.com>
+Date: Mon, 26 May 2025 10:15:02 +0200
+Subject: [PATCH 1/2] Make mapping numeric Python types to C++ types more
+ robust
+
+For some odd resons, for certain combinations of Python
+versions/distribution and platforms, calling something like
+
+```python3
+f = hictkpy.File(...)
+with pytest.raises(TypeError):
+    f.fetch(count_type=str)
+```
+
+could lead to UnicodeDecodeError exceptions with the previous logic.
+This likely occurred when falling back to parsing the string representation
+of a type when inferring the C++ type from the Python type.
+---
+ src/type.cpp | 132 +++++++++++++++++++++++++--------------------------
+ 1 file changed, 66 insertions(+), 66 deletions(-)
+
+diff --git a/src/type.cpp b/src/type.cpp
+index 0c1b77b..0265a00 100644
+--- a/src/type.cpp
++++ b/src/type.cpp
+@@ -19,99 +19,99 @@ namespace hictkpy {
+ 
+ namespace nb = nanobind;
+ 
+-[[noreturn]] static void throw_exception(std::string_view dtype) {
+-  static const auto msg =
++[[nodiscard]] static std::string dtype_object_to_str(const nb::type_object& dtype) {
++  try {
++#ifdef _MSC_VER
++    const auto dtype_mod = nb::str(nb::handle(dtype.attr("__module__")));
++    const auto dtype_name = nb::str(nb::handle(dtype.attr("__name__")));
++#else
++    const auto dtype_mod = nb::str(dtype.attr("__module__"));
++    const auto dtype_name = nb::str(dtype.attr("__name__"));
++#endif
++
++    if (std::string_view{dtype_mod.c_str()}.empty()) {
++      return dtype_name.c_str();
++    }
++    return fmt::format(FMT_STRING("{}.{}"), dtype_mod.c_str(), dtype_name.c_str());
++  } catch (const std::exception&) {
++    return "unknown";
++  }
++}
++
++[[noreturn]] static void throw_exception(std::string_view dtype, const char* msg = nullptr) {
++  const auto s =
+       fmt::format(FMT_STRING("Unable to map \"{}\" to a numeric C++ type.\n"
+                              "Valid types are: uint, int, float, double, uint8, uint16, uint32, "
+-                             "uint64, int8, int16, int32, int64, float32, and float64."),
+-                  dtype);
+-  throw nb::type_error(msg.c_str());
++                             "uint64, int8, int16, int32, int64, float32, and float64.{}{}"),
++                  dtype, msg ? "\n" : "", msg ? msg : "");
++
++  throw nb::type_error(s.c_str());
+ }
+ 
+-[[nodiscard]] static nb::type_object get_dtype(const nb::module_& m, const char* name) {
+-  return m.attr(name);
++[[noreturn]] static void throw_exception(const nb::type_object& dtype, const char* msg = nullptr) {
++  throw_exception(dtype_object_to_str(dtype), msg);
+ }
+ 
+-[[nodiscard]] static hictk::internal::NumericVariant map_py_type_to_cpp_type(
+-    const nb::module_& m, const nb::type_object& dtype) {
+-  if (dtype.is(get_dtype(m, "uint8"))) {
++template <std::size_t I>
++[[nodiscard]] static std::optional<hictk::internal::NumericVariant> map_py_type_to_cpp_type_helper(
++    const nb::object& x) {
++  using Var = hictk::internal::NumericVariant;
++  if constexpr (I < std::variant_size_v<Var>) {
++    using N = std::variant_alternative_t<I, Var>;
++    if (nb::isinstance<N>(x)) {
++      return N{};
++    }
++    return map_py_type_to_cpp_type_helper<I + 1>(x);
++  }
++
++  return {};
++}
++
++[[nodiscard]] static bool issubdtype(const nb::module_& np, const nb::type_object& dtype1,
++                                     const char* dtype2) {
++  return nb::cast<bool>(np.attr("issubdtype")(dtype1, np.attr(dtype2)));
++}
++
++hictk::internal::NumericVariant map_py_type_to_cpp_type(const nb::type_object& dtype) {
++  const auto np = import_module_checked("numpy");
++  if (!issubdtype(np, dtype, "number")) {
++    throw_exception(dtype, "Not a subdtype of numpy.number.");
++  }
++
++  if (issubdtype(np, dtype, "uint8")) {
+     return std::uint8_t{};
+   }
+-  if (dtype.is(get_dtype(m, "uint16"))) {
++  if (issubdtype(np, dtype, "uint16")) {
+     return std::uint16_t{};
+   }
+-  if (dtype.is(get_dtype(m, "uint32"))) {
++  if (issubdtype(np, dtype, "uint32")) {
+     return std::uint32_t{};
+   }
+-  if (dtype.is(get_dtype(m, "uint64"))) {
++  if (issubdtype(np, dtype, "uint64")) {
+     return std::uint64_t{};
+   }
+ 
+-  if (dtype.is(get_dtype(m, "int8"))) {
++  if (issubdtype(np, dtype, "int8")) {
+     return std::int8_t{};
+   }
+-  if (dtype.is(get_dtype(m, "int16"))) {
++  if (issubdtype(np, dtype, "int16")) {
+     return std::int16_t{};
+   }
+-  if (HICTKPY_LIKELY(dtype.is(get_dtype(m, "int32")))) {
++  if (HICTKPY_LIKELY(issubdtype(np, dtype, "int32"))) {
+     return std::int32_t{};
+   }
+-  if (HICTKPY_LIKELY(dtype.is(get_dtype(m, "int64")))) {
++  if (HICTKPY_LIKELY(issubdtype(np, dtype, "int64"))) {
+     return std::int64_t{};
+   }
+ 
+-  if (dtype.is(get_dtype(m, "float16"))) {
+-    return float{};
+-  }
+-  if (dtype.is(get_dtype(m, "float32"))) {
++  if (issubdtype(np, dtype, "float32")) {
+     return float{};
+   }
+-  if (HICTKPY_LIKELY(dtype.is(get_dtype(m, "float64")))) {
++  if (HICTKPY_LIKELY(issubdtype(np, dtype, "float64"))) {
+     return double{};
+   }
+ 
+-  const auto dtype_str = nb::str(dtype);
+-  throw_exception(dtype_str.c_str());
+-}
+-
+-[[nodiscard]] static std::string nb_type_object_to_str(const nb::type_object& dtype) {
+-#ifdef _MSC_VER
+-  const auto dtype_mod = nb::str(nb::handle(dtype.attr("__module__")));
+-  const auto dtype_name = nb::str(nb::handle(dtype.attr("__name__")));
+-#else
+-  const auto dtype_mod = nb::str(dtype.attr("__module__"));
+-  const auto dtype_name = nb::str(dtype.attr("__name__"));
+-#endif
+-
+-  if (std::string_view{dtype_mod.c_str()}.empty()) {
+-    return dtype_name.c_str();
+-  }
+-  return fmt::format(FMT_STRING("{}.{}"), dtype_mod.c_str(), dtype_name.c_str());
+-}
+-
+-hictk::internal::NumericVariant map_py_type_to_cpp_type(const nb::type_object& dtype) {
+-  if (HICTKPY_LIKELY(dtype.is(nb::type<nb::int_>()))) {
+-    return std::int32_t{};
+-  }
+-  if (HICTKPY_LIKELY(dtype.is(nb::type<nb::float_>()))) {
+-    return double{};
+-  }
+-
+-  auto np = import_module_checked("numpy");
+-  std::string_view exc_msg{};
+-  try {
+-    return map_py_type_to_cpp_type(np, dtype);
+-  } catch (const std::exception& e) {
+-    exc_msg = e.what();
+-  }
+-
+-  // Sometimes checking Python's built-in types fails.
+-  // When this happens, fallback on comparisons based on type names
+-  try {
+-    return map_py_type_to_cpp_type(nb_type_object_to_str(dtype));
+-  } catch (const std::exception&) {
+-    throw nb::type_error(exc_msg.data());  // NOLINT(*-suspicious-stringview-data-usage)
+-  }
++  throw_exception(dtype);
+ }
+ 
+ hictk::internal::NumericVariant map_py_type_to_cpp_type(std::string_view dtype) {
+@@ -125,8 +125,8 @@ hictk::internal::NumericVariant map_py_type_to_cpp_type(std::string_view dtype)
+   if (const auto pos = dtype.rfind('.'); pos != std::string_view::npos) {
+     try {
+       return map_py_type_to_cpp_type(dtype.substr(pos + 1));
+-    } catch (const std::exception&) {
+-      throw_exception(dtype);
++    } catch (const std::exception& e) {
++      throw_exception(dtype, e.what());
+     }
+   }
+ 
+-- 
+2.49.0
+
+
+From 39fb5e32b194552d4bb41d2adb22644ebb61c01b Mon Sep 17 00:00:00 2001
+From: Roberto Rossini <71787608+robomics@users.noreply.github.com>
+Date: Mon, 26 May 2025 10:28:45 +0200
+Subject: [PATCH 2/2] Remove unused code
+
+---
+ src/type.cpp | 15 ---------------
+ 1 file changed, 15 deletions(-)
+
+diff --git a/src/type.cpp b/src/type.cpp
+index 0265a00..a9f8e8b 100644
+--- a/src/type.cpp
++++ b/src/type.cpp
+@@ -52,21 +52,6 @@ namespace nb = nanobind;
+   throw_exception(dtype_object_to_str(dtype), msg);
+ }
+ 
+-template <std::size_t I>
+-[[nodiscard]] static std::optional<hictk::internal::NumericVariant> map_py_type_to_cpp_type_helper(
+-    const nb::object& x) {
+-  using Var = hictk::internal::NumericVariant;
+-  if constexpr (I < std::variant_size_v<Var>) {
+-    using N = std::variant_alternative_t<I, Var>;
+-    if (nb::isinstance<N>(x)) {
+-      return N{};
+-    }
+-    return map_py_type_to_cpp_type_helper<I + 1>(x);
+-  }
+-
+-  return {};
+-}
+-
+ [[nodiscard]] static bool issubdtype(const nb::module_& np, const nb::type_object& dtype1,
+                                      const char* dtype2) {
+   return nb::cast<bool>(np.attr("issubdtype")(dtype1, np.attr(dtype2)));
+-- 
+2.49.0
+
