@@ -8,28 +8,17 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 export CFLAGS="${CFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LC_ALL="en_US.UTF-8"
 
 # use newer config.guess and config.sub that support osx-arm64
 cp -rf ${BUILD_PREFIX}/share/gnuconfig/config.* cimfomfa/
 cp -rf ${BUILD_PREFIX}/share/gnuconfig/config.* autofoo/
 
-OS=$(uname -s)
-ARCH=$(uname -m)
-
-if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
-	export EXTRA_ARGS="--host=arm64"
-elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
-	export EXTRA_ARGS="--host=aarch64"
-else
-	export EXTRA_ARGS="--host=x86_64"
-fi
-
 cd cimfomfa
 autoreconf -if
 ./configure --prefix="${PREFIX}" CC="${CC}" CFLAGS="${CFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" --disable-shared \
-	--enable-silent-rules --disable-dependency-tracking --disable-option-checking \
-	"${EXTRA_ARGS}"
+	--enable-silent-rules --disable-dependency-tracking --disable-option-checking
 make -j"${CPU_COUNT}"
 make install
 make clean
@@ -38,8 +27,7 @@ cd ..
 autoreconf -if
 ./configure --prefix="${PREFIX}" CC="${CC}" CFLAGS="${CFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" --enable-rcl \
-	--enable-silent-rules --disable-dependency-tracking --disable-option-checking \
-	"${EXTRA_ARGS}"
+	--enable-silent-rules --disable-dependency-tracking --disable-option-checking
 make -j"${CPU_COUNT}"
 make install
 make clean
