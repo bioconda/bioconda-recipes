@@ -10,8 +10,8 @@ export CXXFLAGS=-ldeflate
 cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DBOOST_ROOT=$PREFIX
 
 # Fix the version
-make check_git_repository
-sed -i.bak 's/GIT-NOTFOUND/'$PKG_VERSION' (Bioconda)/'  ../metabat_version.h
+# make check_git_repository
+sed -i.bak 's/GIT-NOTFOUND/'$PKG_VERSION' (Bioconda)/'  ../version.h
 
 # Build & install
 make VERBOSE=1 -j ${CPU_COUNT}
