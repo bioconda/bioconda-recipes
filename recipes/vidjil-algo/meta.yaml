@@ -1,0 +1,46 @@
+{% set version = "2025.02" %}
+{% set name = "vidjil-algo" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://gitlab.inria.fr/vidjil/vidjil/-/archive/release-{{ version }}/vidjil-release-{{ version }}.tar.gz
+  sha256: 9a600472005bf7ef188849d61a5b4c9517bc911a9cb23509f628350738defd53
+
+build:
+  number: 0
+  script:
+    - mkdir -p "$PREFIX"/bin
+    - make
+    - mv "$SRC_DIR"/vidjil-algo "$PREFIX"/bin/vidjil-algo
+    - chmod +x "$PREFIX"/bin/vidjil-algo
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+    - zlib
+  host:
+    - zlib
+  run:
+    - zlib
+
+test:
+  commands:
+    - vidjil-algo --help
+
+about:
+  home: https://gitlab.inria.fr/vidjil/vidjil
+  license: GPL-3.0
+  license_file: LICENSE
+  summary: >-
+    Vidjil-algo processes high-throughput sequencing data to extract V(D)J
+    junctions and gather them into clones. Vidjil-algo starts
+    from a set of reads and detects "windows" overlapping the actual CDR3.
+    This is based on an fast and reliable seed-based heuristic and allows
+    to output all sequenced clones. The analysis is extremely fast
+    because, in the first phase, no alignment is performed with database
+    germline sequences.
