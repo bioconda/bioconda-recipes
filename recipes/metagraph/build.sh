@@ -55,6 +55,7 @@ fi
 
 sed -i.bak 's|-O2|-O3|' metagraph/CMakeLists.txt
 sed -i.bak 's|-lpthread|-pthread|' metagraph/CMakeLists.txt
+sed -i.bak 's|-std=c++11|-std=c++14|' metagraph/CMakeListsKMC.txt.in
 rm -rf metagraph/*.bak
 
 pushd metagraph/external-libraries/sdsl-lite
