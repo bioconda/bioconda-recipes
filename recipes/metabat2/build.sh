@@ -6,6 +6,7 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
 # Fix the version
+sed -i.bak 's|2.17|2.18|' VERSION
 # make check_git_repository
 sed -i.bak 's/GIT-NOTFOUND/'$PKG_VERSION' (Bioconda)/' version.h
 
