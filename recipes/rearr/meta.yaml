@@ -1,0 +1,83 @@
+{% set name = "rearr" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ljw20180420/sx_lcy/archive/refs/tags/conda_pkg.tar.gz
+  sha256: 6f3d15d029dc05bb02ce8f2a21eec4054c7abc86bcfb59520b649ab04647cfef
+
+build:
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script:
+    # install rearrangement
+    - mkdir -p core/Rearrangement/build
+    - cd core/Rearrangement/build
+    - cmake -DCMAKE_BUILD_TYPE=Release ..
+    - make
+    - mkdir -p $PREFIX/bin
+    - cp ./rearrangement $PREFIX/bin/
+    - cd $SRC_DIR
+    - mkdir -p $PREFIX/share/awk/
+    - cp core/Rearrangement/correct_micro_homology.awk $PREFIX/share/awk/
+    # install removeDup
+    - cp core/removeDuplicates.md $PREFIX/bin/
+    # install demultiplex
+    - cp core/demultiplex/demultiplex.md $PREFIX/bin/
+    - cp core/demultiplex/getAlignPos.awk $PREFIX/share/awk/
+    # install getSxCsvFileRef
+    - cp sx/getSxCsvFileRef/getSxCsvFileRef.md $PREFIX/bin/
+    - cp sx/getSxCsvFileRef/getSxCsvFileTarget.pl $PREFIX/bin/
+    - cp sx/getSxCsvFileRef/getSxRefFile.pl $PREFIX/bin/
+    - cp sx/getSxCsvFileRef/sxTargetSam2Bed.awk $PREFIX/share/awk/
+    # install cutR2Adapter
+    - cp sx/sxCutR2AdapterFilterCumulate/sxCutR2AdapterFilterCumulate.md $PREFIX/bin/
+    - cp sx/sxCutR2AdapterFilterCumulate/sxCumulateToMapCutAdaptSpliter.awk $PREFIX/share/awk/
+    # install sxInderSpliter
+    - cp sx/sxExtractSpliter.md $PREFIX/bin/
+    # install workflow
+    - mkdir -p $PREFIX/share/rearr
+    - cp workFlow.mak $PREFIX/share/rearr/
+    - cp runWorkFlow.md $PREFIX/bin/
+  number: 0
+  skip: True # [not linux]
+
+requirements:
+  build:
+    - make
+    - cmake
+    - {{ compiler('cxx') }}
+  run:
+    - make
+    - gawk
+    - perl
+    - samtools
+    - bedtools
+    - bowtie2
+    - python
+    - cutadapt
+    - numpy
+
+test:
+  commands:
+    - python -m unittest test.test_suite_no_genome
+  source_files:
+    - test
+
+about:
+  home: https://github.com/ljw20180420/sx_lcy
+  summary: 'Chimeric alignment of CRISPR-seq'
+  description: |
+    rearr is a package to demultiplex and align CRISPR-seq data.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.md
+  doc_url: https://ljw20180420.github.io/sx_lcy
+  dev_url: https://github.com/ljw20180420/sx_lcy
+
+extra:
+  recipe-maintainers:
+    - ljw
