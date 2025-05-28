@@ -8,7 +8,7 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 if [[ `uname -s` == "Darwin" ]]; then
   mv libxsd-frontend/version libxsd-frontend/VERSION
-  export CXXFLAGS="${CXXFLAGS} -O3 -std=libc++"
+  export CXXFLAGS="${CXXFLAGS} -O3"
 else
   export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
 fi
