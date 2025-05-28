@@ -39,3 +39,6 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     "${ARCH_BUILD}" "${CONFIG_ARGS}"
 
 cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+
+# Move the `reformat.pl` script to ${PREFIX}/bin to ensure it's available in the PATH
+install -v -m 0755 ${SRC_DIR}/scripts/reformat.pl ${PREFIX}/bin
