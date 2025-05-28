@@ -37,8 +37,6 @@ if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
 	sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile
 	rm -rf metagraph/external-libraries/KMC/*.bak
 	sed -i.bak 's|-mcx16||' metagraph/CMakeLists.txt
-	sed -i.bak 's|-O2|-O3|' metagraph/CMakeLists.txt
-	sed -i.bak 's|-lpthread|-pthread|' metagraph/CMakeLists.txt
 	rm -rf metagraph/*.bak
 fi
 
@@ -56,6 +54,7 @@ elif [[ "${OS}" == "Darwin" ]]; then
 fi
 
 sed -i.bak 's|-O2|-O3|' metagraph/CMakeLists.txt
+sed -i.bak 's|-lpthread|-pthread|' metagraph/CMakeLists.txt
 rm -rf metagraph/*.bak
 
 pushd metagraph/external-libraries/sdsl-lite
