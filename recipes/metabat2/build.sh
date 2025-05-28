@@ -10,6 +10,7 @@ export CXXFLAGS="${CXXFLAGS} -O3 -ldeflate"
 sed -i.bak 's/GIT-NOTFOUND/'$PKG_VERSION' (Bioconda)/' version.h
 
 sed -i.bak 's|VERSION 3.5.1|VERSION 3.5|' CMakeLists.txt
+sed -i.bak 's|17|14|' CMakeLists.txt
 rm -rf *.bak
 
 if [[ `uname` == "Darwin" ]]; then
