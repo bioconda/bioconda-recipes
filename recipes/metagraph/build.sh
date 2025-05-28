@@ -3,6 +3,7 @@
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
+export CFLAGS="${CFLAGS} -O3"
 export JEMALLOC_LIBRARY="${PREFIX}/lib"
 export JEMALLOC_INCLUDE_DIR="${PREFIX}/include"
 export BOOST_INCLUDEDIR="${PREFIX}/include"
@@ -57,32 +58,35 @@ sed -i.bak 's|-O2|-O3|' metagraph/CMakeLists.txt
 sed -i.bak 's|-lpthread|-pthread|' metagraph/CMakeLists.txt
 sed -i.bak 's|-std=c++11|-std=c++14|' metagraph/CMakeListsKMC.txt.in
 rm -rf metagraph/*.bak
+sed -i.bak 's|-std=c++11|-std=c++14|' metagraph/external-libraries/sdsl-lite/CMakeLists.txt
+rm -rf metagraph/external-libraries/sdsl-lite/*.bak
 
 pushd metagraph/external-libraries/sdsl-lite
-./install.sh ${PWD}
+./install.sh "${PWD}"
 popd
 
-[[ ! -d metagraph/build ]] || rm -r metagraph/build
+[[ ! -d metagraph/build ]] || rm -rf metagraph/build
 mkdir -p metagraph/build
 cd metagraph/build
 
 # needed for setting up python based integration test environment
 export PIP_NO_INDEX=False
 
-CMAKE_PARAMS="-DBUILD_KMC=OFF \
+CMAKE_PARAMS="-DCMAKE_BUILD_TYPE=Release \
             -DBOOST_ROOT=${PREFIX} \
             -DJEMALLOC_ROOT=${PREFIX} \
             -DOMP_ROOT=${PREFIX} \
             -DCMAKE_PREFIX_PATH=${PREFIX} \
             -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib \
-            -DCMAKE_BUILD_TYPE=Release \
-            ${CMAKE_PLATFORM_FLAGS} \
             -DCMAKE_CXX_COMPILER=${CXX} \
-            -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=1 \
+            -DCMAKE_CXX_FLAGS=${CXXFLAGS} \
+            -DCMAKE_C_COMPILER=${CC} \
+            -DCMAKE_C_FLAGS=${CFLAGS} \
             -DCMAKE_INSTALL_PREFIX=${PREFIX} \
-            -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
-	    -DWITH_AVX=OFF \
-            ${CONFIG_ARGS}"
+            -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=1 \
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DBUILD_KMC=OFF \
+	    -DWITH_AVX=OFF -Wno-dev -Wno-deprecated --no-warn-unused-cli \
+            ${CMAKE_PLATFORM_FLAGS} ${CONFIG_ARGS}"
 
 if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
 	CMAKE_PARAMS="${CMAKE_PARAMS} -DWITH_MSSE42=OFF"
@@ -90,7 +94,7 @@ fi
 
 cmake -S .. -B . ${CMAKE_PARAMS}
 
-BUILD_CMD="make VERBOSE=1 -j $(($(getconf _NPROCESSORS_ONLN) - 1)) metagraph"
+BUILD_CMD="make metagraph -j${CPU_COUNT}"
 
 ${BUILD_CMD}
 
