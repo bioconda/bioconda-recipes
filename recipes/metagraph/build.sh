@@ -1,8 +1,8 @@
 #!/bin/bash
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-deprecated-declarations"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-deprecated-declarations"
 export JEMALLOC_LIBRARY="${PREFIX}/lib"
 export JEMALLOC_INCLUDE_DIR="${PREFIX}/include"
 export BOOST_INCLUDEDIR="${PREFIX}/include"
