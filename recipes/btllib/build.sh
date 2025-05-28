@@ -6,11 +6,12 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -D_LIBCPP_DISABLE_AVAILABILITY"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
-CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" meson setup --buildtype release --prefix "${PREFIX}" --strip build/ -Db_coverage=false
+CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" meson setup --buildtype release \
+	--prefix "${PREFIX}" --strip -Db_coverage=false build/
 
 cd build
 
-ninja -v install
+ninja install -v -j"${CPU_COUNT}"
 
 # python wrappers:
-$PYTHON -m pip install "${PREFIX}/lib/btllib/python" --no-deps --no-build-isolation --no-cache-dir -vvv
+${PYTHON} -m pip install "${PREFIX}/lib/btllib/python" --no-deps --no-build-isolation --no-cache-dir -vvv
