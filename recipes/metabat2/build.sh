@@ -2,8 +2,9 @@
 set -xe
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -ldeflate"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-deprecated-declarations"
 export CXXFLAGS="${CXXFLAGS} -O3"
+export CFLAGS="${CFLAGS} -O3"
 
 # Fix the version
 sed -i.bak 's|2.17|2.18|' VERSION
@@ -15,6 +16,8 @@ rm -rf *.bak
 
 if [[ `uname` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	export CXXFLAGS="${CXXFLAGS} -std=c++14 -D_LIBCPP_DISABLE_AVAILABILITY"
+	export CFLAGS="${CFLAGS} -fno-define-target-os-macros"
 else
 	export CONFIG_ARGS=""
 fi
