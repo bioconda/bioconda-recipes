@@ -1,0 +1,42 @@
+{% set version = "0.1" %}
+{% set sha256 = "b9d2d2629c43b7b877c0f0286e9805e20623ab8851a8a5ca8e23522831def94f" %}
+
+package:
+  name: ezfastq
+  version: '{{version}}'
+
+source:
+  url: https://github.com/bioforensics/ezfastq/archive/{{ version }}.tar.gz
+  sha256: '{{sha256}}'
+
+build:
+  run_exports:
+    - {{ pin_subpackage("ezfastq", max_pin="x.x") }}
+  noarch: python
+  entry_points:
+    - ezfastq = ezfastq.cli:main
+  script: python -m pip install --no-deps --ignore-installed .
+  number: 0
+
+requirements:
+  host:
+    - python >=3.10,<3.14
+    - pip
+    - setuptools
+  run:
+    - python >=3.10,<3.14
+    - rich
+
+test:
+  imports:
+    - ezfastq
+  requires:
+    - pytest
+    - pytest-cov
+
+about:
+  home: https://github.com/bioforensics/ezfastq/
+  license: BSD License
+  license_family: BSD
+  summary: Organize FASTQs by sample for analysis
+  dev_url: https://github.com/bioforensics/ezfastq/
