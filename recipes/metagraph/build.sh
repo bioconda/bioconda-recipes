@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-deprecated-declarations"
 export CXXFLAGS="${CXXFLAGS} -O3"
 export JEMALLOC_LIBRARY="${PREFIX}/lib"
 export JEMALLOC_INCLUDE_DIR="${PREFIX}/include"
@@ -42,7 +42,7 @@ fi
 
 if [[ "${OS}" == "Linux" ]]; then
 	CMAKE_PLATFORM_FLAGS=""
-	export CXXFLAGS="${CXXFLAGS} -Wno-attributes -Wno-narrowing"
+	export CXXFLAGS="${CXXFLAGS} -Wno-attributes -Wno-narrowing -Wno-type-limits"
 	export CONFIG_ARGS=""
 elif [[ "${OS}" == "Darwin" ]]; then
 	sed -i.bak 's|/usr/local/gcc-6.3.0/bin/g++|${CXX}|' metagraph/external-libraries/KMC/makefile_mac
