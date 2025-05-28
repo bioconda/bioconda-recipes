@@ -36,6 +36,10 @@ if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
 	sed -i.bak 's|g++|${CXX}|' metagraph/external-libraries/KMC/makefile
 	sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile
 	rm -rf metagraph/external-libraries/KMC/*.bak
+	sed -i.bak 's|-mcx16||' metagraph/CMakeLists.txt
+	sed -i.bak 's|-O2|-O3|' metagraph/CMakeLists.txt
+	sed -i.bak 's|-lpthread|-pthread|' metagraph/CMakeLists.txt
+	rm -rf metagraph/*.bak
 fi
 
 if [[ "${OS}" == "Linux" ]]; then
@@ -58,7 +62,7 @@ pushd metagraph/external-libraries/sdsl-lite
 ./install.sh ${PWD}
 popd
 
-[[ ! -d metagraph/build ]]  || rm -r metagraph/build
+[[ ! -d metagraph/build ]] || rm -r metagraph/build
 mkdir -p metagraph/build
 cd metagraph/build
 
