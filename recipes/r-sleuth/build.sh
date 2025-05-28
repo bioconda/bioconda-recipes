@@ -1,1 +1,1 @@
-$R CMD INSTALL --build .
+$R CMD INSTALL --build . ${R_ARGS}
