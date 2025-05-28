@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -Wno-deprecated-declarations -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3"
 export CFLAGS="${CFLAGS} -O3"
@@ -39,6 +39,3 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     "${ARCH_BUILD}" "${CONFIG_ARGS}"
 
 cmake --build build --clean-first --target install -j "${CPU_COUNT}"
-
-# Move the `reformat.pl` script to ${PREFIX}/bin to ensure it's available in the PATH
-install -v -m 0755 ${SRC_DIR}/scripts/reformat.pl ${PREFIX}/bin
