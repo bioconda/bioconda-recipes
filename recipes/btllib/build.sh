@@ -12,10 +12,14 @@ else
 	export CONFIG_ARGS=""
 fi
 
+sed -i.bak 's|VERSION 3.1.0|VERSION 3.5|' subprojects/cpptoml/CMakeLists.txt
+sed -i.bak 's|VERSION 2.8.11|VERSION 3.5|' subprojects/sdsl-lite/CMakeLists.txt
+rm -rf subprojects/cpptoml/*.bak
+rm -rf subprojects/sdsl-lite/*.bak
+
 CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" meson setup --buildtype release \
 	--prefix "${PREFIX}" --strip -Db_coverage=false \
-	-Dcmake_args="${CONFIG_ARGS} -DCMAKE_POLICY_VERSION_MINIMUM=3.5" \
-	build/
+	-Dcmake_args="${CONFIG_ARGS}" build/
 
 cd build
 
