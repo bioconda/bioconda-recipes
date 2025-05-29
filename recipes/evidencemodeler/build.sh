@@ -8,10 +8,15 @@ export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
 export CFLAGS="${CFLAGS} -O3"
 
 BINARY_HOME="${PREFIX}/bin"
-EVM_HOME="${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}"
+export EVM_HOME="${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}"
+export LC_ALL="en_US.UTF-8"
 
 sed -i.bak 's|v2.0.0|v2.1.0|' EVidenceModeler
 rm -rf *.bak
+sed -i.bak 's|-m64||' ParaFly/configure.ac
+rm -rf ParaFly/*.bak
+sed -i.bak 's|$accession >|'$accession' >|' EvmUtils/convert_EVM_outputs_to_GFF3.pl
+rm -rf EvmUtils/*.bak
 
 OS=$(uname -s)
 ARCH=$(uname -m)
@@ -26,8 +31,11 @@ autoreconf -if
 
 if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
 	sed -i.bak 's|-m64||' Makefile
-	rm -rf *.bak
 fi
+
+sed -i.bak 's|-O2|-O3|' Makefile
+rm -rf *.bak
+
 make install -j"${CPU_COUNT}" && cd "${SRC_DIR}"
 
 mkdir -p ${EVM_HOME}
