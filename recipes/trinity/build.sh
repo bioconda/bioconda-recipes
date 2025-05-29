@@ -4,10 +4,9 @@ export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -fopenmp"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3 -Wno-unused-parameter -Wno-sign-compare -Wno-deprecated-declarations"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-unused-parameter -Wno-sign-compare -Wno-deprecated-declarations -Wno-unused-variable -Wno-char-subscripts -Wno-cpp -Wno-maybe-uninitialized"
 
 export BINARY_HOME="${PREFIX}/bin"
-export LC_ALL="en_US.UTF-8"
 
 if [[ "$(uname)" == "Darwin" ]]; then
 	# for Mac OSX
@@ -50,6 +49,7 @@ ln -sf util/misc/contig_ExN50_statistic.pl .
 cp -rf trinity-plugins/BIN/seqtk-trinity .
 
 # Find real path when executing from a symlink
+export LC_ALL=C
 find ${BINARY_HOME} -type f -print0 | xargs -0 sed -i.bak 's/FindBin::Bin/FindBin::RealBin/g'
 
 # Replace hard coded path to deps
