@@ -1,0 +1,56 @@
+{% set name = "td2" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Markusjsommer/TD2/archive/refs/tags/v1.0.2.tar.gz
+  sha256: 74c1661cc2a7d32dd319d757000e929a167f975cbf360077029afe62d80c7695
+
+build:
+  noarch: python
+  entry_points:
+    - TD2 = TD2.help:main
+    - TD2.LongOrfs = TD2.LongOrfs:main
+    - TD2.Predict = TD2.Predict:main
+  script: python -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_compatible('td2', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9,<3.13
+    - pip
+  run:
+    - python >=3.9,<3.13
+    - pytorch >=2.1.2
+    - torchvision >=0.16.2
+    - torchaudio >=2.1.2
+    - typing_extensions >=4.9.0
+    - tqdm >=4.66.1
+    - scipy >=1.10.1
+    - numpy >=1.24.4,<2
+    - pandas >=2.0.3
+    - setuptools
+    - psauron >=1.0.5
+
+test:
+  commands:
+    - pip check
+    - TD2 --help
+    - TD2.LongOrfs --help
+    - TD2.Predict --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/Markusjsommer/TD2
+  license: MIT
+  summary: 'TD2: a tool to find protein coding regions in transcripts'
+  license_family: MIT
+  license_file: LICENSE.txt
+  doc_url: https://github.com/Markusjsommer/TD2
+
