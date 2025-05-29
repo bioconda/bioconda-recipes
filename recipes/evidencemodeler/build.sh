@@ -10,6 +10,9 @@ export CFLAGS="${CFLAGS} -O3"
 BINARY_HOME="${PREFIX}/bin"
 EVM_HOME="${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}"
 
+OS=$(uname -s)
+ARCH=$(uname -m)
+
 cd plugins/ParaFly
 autoreconf -if
 ./configure --prefix="${PREFIX}" \
@@ -17,6 +20,11 @@ autoreconf -if
 	LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}" \
 	--disable-option-checking --enable-silent-rules \
 	--disable-dependency-tracking
+
+if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
+	sed -i.bak 's|-m64||' Makefile
+	rm -rf *.bak
+fi
 make install -j"${CPU_COUNT}" && cd "${SRC_DIR}"
 
 mkdir -p ${EVM_HOME}
