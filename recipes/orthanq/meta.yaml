@@ -1,4 +1,4 @@
-{% set version = "1.8.0" %}
+{% set version = "1.13.0" %}
 
 package:
   name: orthanq
@@ -6,13 +6,14 @@ package:
 
 build:
   number: 0
-  skip: True  # [osx]
+  # skip osx: https://github.com/conda-forge/datavzrd-feedstock/blob/6a8fc6b189db007492f00c0397dd9a2fabbd0424/recipe/meta.yaml#L14
+  skip: True  # [osx or arm64]
   run_exports:
-    - {{ pin_subpackage("orthanq", max_pin="x") }}
+    - {{ pin_subpackage("orthanq", max_pin="x.x") }}
 
 source:
   url: https://github.com/orthanq/orthanq/archive/v{{ version }}.tar.gz
-  sha256: 61a76e04c6015efd6d8767000c4190a9ab6ab818e59a0016857fd3a39dc2e522
+  sha256: 97a45b00e025357bad57fefef5a8fdbe7df53f7082be4ce4498fc133fa56a9de
 
 requirements:
   build:
@@ -23,22 +24,28 @@ requirements:
     - make
     - cmake
     - perl-findbin
+    #datavzrd dependencies
+    - python >=3.10 # [build_platform != target_platform] 
+    - cross-python_{{ target_platform }} # [build_platform != target_platform]
+    - nodejs
+    - pnpm
   host:
     - gsl
     - libcblas
-    - openssl
+    - openssl # [not osx]
     - zlib
     - bzip2
     - xz
     - clangdev
     - coincbc
-    - hdf5 =1.10.5
     - fontconfig
     - htslib
-    - varlociraptor =8.4.7
-    - samtools =1.19
-    - vg =1.56
+    - varlociraptor ==8.4.7
+    - samtools ==1.19
+    - vg ==1.63.1
     - minimap2
+    #required for datavzrd
+    - python >=3.10
     - bwa
   run:
     - gsl
@@ -46,8 +53,9 @@ requirements:
     - openssl
     - clangdev
     - coincbc
-    - hdf5 =1.10.5
     - fontconfig
+    - python >=3.10
+    - yte
 
 test:
   commands:
@@ -61,6 +69,7 @@ about:
   summary: "Uncertainty aware HLA typing and general haplotype quantification."
   dev_url: https://github.com/orthanq/orthanq
 
-extra:
-  additional-platforms:
-    - linux-aarch64
+# will add soon when the python conflict is resolved on arm64
+# extra:
+#   additional-platforms:
+#     - linux-aarch64

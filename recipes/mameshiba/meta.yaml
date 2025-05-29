@@ -1,0 +1,57 @@
+{% set name = "mameshiba" %}
+{% set version = "0.6.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Sika-Zheng-Lab/Shiba/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: a068e833fd3943663cea919b0b8f6da7e21b6e12985ab203b3efd8df1098cdd0
+
+build:
+  number: 0
+  noarch: generic
+  script:
+    - echo "Dependency-only package for MameShiba."
+    - mkdir -p ${PREFIX}/bin
+    - mkdir -p ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
+    - cp -rf ${SRC_DIR}/* ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/
+    - chmod 0755 ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/shiba.py
+    - ln -sf ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/shiba.py ${PREFIX}/bin/shiba.py
+  run_exports:
+    - {{ pin_subpackage("mameshiba", max_pin="x.x") }}
+
+requirements:
+  run:
+    - python =3.11.0
+    - pandas ==1.5.3
+    - statsmodels ==0.13.5
+    - numexpr ==2.8.4
+    - pysam ==0.23.0
+    - scanpy ==1.9.5
+    - numpy ==1.26.4
+    - pyyaml ==6.0.2
+    - regtools ==1.0.0
+    - subread ==2.0.8
+    - stringtie ==3.0.0
+
+test:
+  commands:
+    - shiba.py -h > /dev/null
+
+about:
+  home: "https://github.com/Sika-Zheng-Lab/Shiba"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "mameshiba installs only the dependencies needed to run MameShiba."
+  description: |
+    mameshiba is a minimal conda meta-package that installs all dependencies required
+    for running MameShiba (https://github.com/Sika-Zheng-Lab/Shiba).
+  dev_url: "https://github.com/Sika-Zheng-Lab/Shiba"
+  doc_url: "https://sika-zheng-lab.github.io/Shiba"
+
+extra:
+  recipe-maintainers:
+    - NaotoKubota

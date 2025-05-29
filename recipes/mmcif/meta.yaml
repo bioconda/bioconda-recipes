@@ -1,0 +1,69 @@
+{% set name = "mmcif" %}
+{% set version = "0.91.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/mmcif-{{ version }}.tar.gz
+  sha256: 2a1f15c12aa013144e0d0bbeb7f927654ee6f1bfc5eab15cf2f9485a47ee930c
+
+build:
+  number: 0
+  script_env:
+    - MACOSX_DEPLOYMENT_TARGET=10.15  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+  entry_points:
+    - build_dict_cli=mmcif.io.BuildDictionaryExec:main
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - {{ compiler("cxx") }}
+    - bison
+    - cmake
+    - flex
+    - ninja
+    - pkg-config
+  host:
+    - python
+    - setuptools >=42
+    - pip
+  run:
+    - python
+    - future
+    - six
+    - requests >=2.25
+    - msgpack-python
+
+test:
+  imports:
+    - mmcif
+  commands:
+    - pip check
+    - build_dict_cli --help
+  requires:
+    - pip
+
+about:
+  home: http://mmcif.wwpdb.org
+  dev_url: https://github.com/rcsb/py-mmcif
+  doc_url: https://github.com/rcsb/py-mmcif#mmcif-core-access-library
+  summary: "mmCIF Core Access Library"
+  description: |
+    This module includes a native Python mmCIF API for data files
+    and dictionaries along with pybind11 wrappers for the PDB C++ Core mmCIF Library.
+  license: BSD-3-Clause AND Apache-2.0
+  license_file:
+    - LICENSE
+    - modules/pybind11/LICENSE
+    - modules/pybind11_2_6_3_dev1/LICENSE
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - eunos-1128
