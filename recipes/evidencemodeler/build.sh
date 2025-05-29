@@ -15,8 +15,6 @@ sed -i.bak 's|v2.0.0|v2.1.0|' EVidenceModeler
 rm -rf *.bak
 sed -i.bak 's|-m64||' plugins/ParaFly/configure.ac
 rm -rf plugins/ParaFly/*.bak
-sed -i.bak "s|$accession >|'$accession' >|" EvmUtils/convert_EVM_outputs_to_GFF3.pl
-rm -rf EvmUtils/*.bak
 
 OS=$(uname -s)
 ARCH=$(uname -m)
