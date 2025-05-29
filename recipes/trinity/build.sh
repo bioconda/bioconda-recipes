@@ -3,38 +3,31 @@
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -fopenmp"
-
-export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include ${LDFLAGS}"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
 export BINARY_HOME="${PREFIX}/bin"
 export TRINITY_HOME="${PREFIX}/opt/trinity-${PKG_VERSION}"
 
-if [ "$(uname)" == "Darwin" ]; then
-    # for Mac OSX
-    export CXXFLAGS="${CXXFLAGS} -std=c++14"
+if [[ "$(uname)" == "Darwin" ]]; then
+	# for Mac OSX
+	export CXXFLAGS="${CXXFLAGS} -std=c++14"
 fi
 
-make CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}" plugins
-make CXX="${CXX}" CXXFLAGS="${CXXFLAGS}"
+sed -i.bak 's|VERSION 3.1|VERSION 3.5|' Chrysalis/CMakeLists.txt
+sed -i.bak 's|-O2|-O3|' Chrysalis/CMakeLists.txt
+sed -i.bak 's|VERSION 3.1|VERSION 3.5|' Inchworm/CMakeLists.txt
+sed -i.bak 's|-O2|-O3|' Inchworm/CMakeLists.txt
+rm -rf Chrysalis/*.bak
+rm -rf Inchworm/*.bak
+
+make CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}" plugins
+make CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}"
+
+make install
 
 # remove the sample data
 rm -rf ${SRC_DIR}/sample_data
-
-# reproduce make install without the wrapper script
-mkdir -p ${PREFIX}/bin
-mkdir -p ${TRINITY_HOME}/Butterfly
-chmod 0755 Trinity
-cp -rf Trinity ${TRINITY_HOME}/
-mv Analysis ${TRINITY_HOME}/
-cp -rf Butterfly/Butterfly.jar ${TRINITY_HOME}/Butterfly
-mkdir -p ${TRINITY_HOME}/Chrysalis
-cp -LR Chrysalis/bin ${TRINITY_HOME}/Chrysalis
-mkdir -p ${TRINITY_HOME}/Inchworm
-cp -LR Inchworm/bin ${TRINITY_HOME}/Inchworm
-cp -LR PerlLib ${TRINITY_HOME}/
-cp -LR PyLib ${TRINITY_HOME}/
-cp -LR trinity-plugins ${TRINITY_HOME}/
-cp -LR util ${TRINITY_HOME}/
 
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${TRINITY_HOME}/util/*.pl
 rm -rf ${TRINITY_HOME}/util/*.bak
@@ -58,7 +51,7 @@ ln -sf ${TRINITY_HOME}/util/misc/contig_ExN50_statistic.pl
 cp -rf ${TRINITY_HOME}/trinity-plugins/BIN/seqtk-trinity .
 
 # Find real path when executing from a symlink
-export LC_ALL=C
+export LC_ALL="en_US.UTF-8"
 find ${TRINITY_HOME} -type f -print0 | xargs -0 sed -i.bak 's/FindBin::Bin/FindBin::RealBin/g'
 
 # Replace hard coded path to deps
