@@ -1,46 +1,43 @@
-{% set name = "hAMRonization" %}
-{% set version = "1.1.4" %}
+{% set name = "hamronization" %}
+{% set version = "1.1.9" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 2f70bdf9ea2bd1faee59c99979cf14928bfb18015e9237a9790fe72fe3bf8544
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/hamronization-{{ version }}.tar.gz
+  sha256: 5ad9c4c4790929cc2faad5de7cccda6fdb5b81a34ef99ad1734a0e65e377a902
 
 build:
-  noarch: python
-  number: 0
   entry_points:
     - hamronize = hAMRonization.hamronize:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
-  run_exports:
-    - {{ pin_subpackage('hamronization', max_pin="x") }}
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
 
 requirements:
   host:
-    - pandas
+    - python >=3.7
     - pip
-    - python >=3.7
   run:
-    - pandas
     - python >=3.7
+    - pandas
 
 test:
   imports:
     - hAMRonization
   commands:
+    - pip check
     - hamronize --help
+  requires:
+    - pip
 
 about:
-  home: "https://github.com/pha4ge/hAMRonization"
-  license: "GNU Lesser General Public v3 (LGPLv3)"
-  license_family: LGPL
+  home: https://github.com/pha4ge/hAMRonization
+  summary: Tool to convert and summarize AMR gene detection outputs using the hAMRonization specification
+  license: LGPL-3.0-only
   license_file: LICENSE.txt
-  summary: "Tool to convert and summarize AMR gene detection outputs using the hAMRonization specification"
-  doc_url: "https://github.com/pha4ge/hAMRonization/blob/master/README.md"
-  dev_url: "https://github.com/pha4ge/hAMRonization"
 
 extra:
   recipe-maintainers:
