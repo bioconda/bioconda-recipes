@@ -4,11 +4,14 @@ set -o errexit -o nounset
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
 export CFLAGS="${CFLAGS} -O3"
 
 BINARY_HOME="${PREFIX}/bin"
 EVM_HOME="${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}"
+
+sed -i.bak 's|v2.0.0|v2.1.0|' EVidenceModeler
+rm -rf *.bak
 
 OS=$(uname -s)
 ARCH=$(uname -m)
