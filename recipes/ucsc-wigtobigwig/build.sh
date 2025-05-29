@@ -2,8 +2,9 @@
 set -xe
 
 mkdir -p "${PREFIX}/bin"
-mkdir -p "$(pwd)/bin"
 export MACHTYPE="$(uname -m)"
+export BINDIR="$(pwd)/bin"
+mkdir -p "$(pwd)/bin"
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
