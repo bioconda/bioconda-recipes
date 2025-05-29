@@ -1,41 +1,50 @@
-{% set version = "3.2a0" %}
-{% set name = "reditools3" %}
+{% set name = "REDItools3" %}
+{% set version = "3.4" %}
 
 package:
-  name: {{ name }}
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  # Download the source tarball from GitHub for the v3.2-alpha release.
-  url: https://github.com/BioinfoUNIBA/REDItools3/archive/refs/tags/v3.2-alpha.tar.gz
-  sha256: 7528eef40b842d1b9b90d99ee851aeabffa0040d4d2611c3d9aa3ae257a18ad6
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/reditools3-{{ version }}.tar.gz
+  sha256: 27f278c704b3e460c93f0f5ac33b0bbe77262c50a6fb17bb4bea9ecb9c120792
 
 build:
-  noarch: python
   number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   run_exports:
-    - {{ pin_subpackage("reditools3", max_pin="3.2") }}
+    - {{ pin_subpackage('reditools3', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.7
+    - setuptools >=68.2.2
+    - pysam >=0.22.0
+    - sortedcontainers >=2.4.0
     - pip
-    - setuptools
   run:
-    - python >=3.6
+    - python >=3.7
     - pysam >=0.22.0
     - sortedcontainers >=2.4.0
 
 test:
+  imports:
+    - reditools
   commands:
     - reditools3 analyze --help
 
 about:
-  home: https://github.com/BioinfoUNIBA/REDItools3
-  license: GPL-3.0
+  home: "https://github.com/BioinfoUNIBA/REDItools3"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
   summary: "REDItools3 is an RNA editing detection tool implemented in Python3 for analyzing RNA-seq data."
+  dev_url: "https://github.com/BioinfoUNIBA/REDItools3"
 
 extra:
   recipe-maintainers:
     - jemunro
+  identifiers:
+    - doi:10.1093/bib/bbaf107
+    - doi:10.1093/bioinformatics/btt287
