@@ -1,21 +1,23 @@
-#!/bin/sh
+#!/bin/bash
 
 set -o errexit -o nounset
 
-export INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
+export CFLAGS="${CFLAGS} -O3"
 
-export LDFLAGS="-L${PREFIX}/lib"
-export CPPFLAGS="-I${PREFIX}/include -I${BUILD_PREFIX}/include ${LDFLAGS}"
-export CXXFLAGS="-I${PREFIX}/include -I${BUILD_PREFIX}/include ${LDFLAGS}"
-export CFLAGS="-I${PREFIX}/include -I${BUILD_PREFIX}/include ${LDFLAGS}"
-
-BINARY_HOME=${PREFIX}/bin
-EVM_HOME=${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}
+BINARY_HOME="${PREFIX}/bin"
+EVM_HOME="${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}"
 
 cd plugins/ParaFly
-./configure --prefix=${PREFIX} CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS} -fopenmp" CXXFLAGS="${CXXFLAGS} -fopenmp"
-make install && cd ${SRC_DIR}
+autoreconf -if
+./configure --prefix="${PREFIX}" \
+	CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -fopenmp" \
+	LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}" \
+	--disable-option-checking --enable-silent-rules \
+	--disable-dependency-tracking
+make install -j"${CPU_COUNT}" && cd "${SRC_DIR}"
 
 mkdir -p ${EVM_HOME}
 mkdir -p ${PREFIX}/bin
