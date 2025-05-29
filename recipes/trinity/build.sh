@@ -36,6 +36,19 @@ make install
 # remove the sample data
 rm -rf ${SRC_DIR}/sample_data
 
+# add link to Trinity from bin so in PATH
+cd ${BINARY_HOME}
+ln -sf util/*.pl .
+ln -sf Analysis/DifferentialExpression/PtR .
+ln -sf Analysis/DifferentialExpression/run_DE_analysis.pl .
+ln -sf Analysis/DifferentialExpression/analyze_diff_expr.pl .
+ln -sf Analysis/DifferentialExpression/define_clusters_by_cutting_tree.pl .
+ln -sf Analysis/SuperTranscripts/Trinity_gene_splice_modeler.py .
+ln -sf Analysis/SuperTranscripts/extract_supertranscript_from_reference.py .
+ln -sf util/support_scripts/get_Trinity_gene_to_trans_map.pl .
+ln -sf util/misc/contig_ExN50_statistic.pl .
+cp -rf trinity-plugins/BIN/seqtk-trinity .
+
 # Find real path when executing from a symlink
 find ${BINARY_HOME} -type f -print0 | xargs -0 sed -i.bak 's/FindBin::Bin/FindBin::RealBin/g'
 
