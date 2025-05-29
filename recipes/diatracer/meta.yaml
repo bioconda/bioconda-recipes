@@ -1,0 +1,54 @@
+{% set name = "diaTracer" %}
+{% set version = "1.2.5" %}
+
+# This key was generated ONLY for the testing of this bioconda package.
+# Users must generate their own key by agreeing to the terms at https://msfragger.arsci.com/diatracer/LICENSE-ACADEMIC.pdf.
+{% set academic_use_only_key = "8de4daf3-a090ed0d-0acdb00a-1485d8a7" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+# This URL was generated building of this bioconda package.
+# Users must generate their own download URL by agreeing to the terms at https://msfragger.arsci.com/diatracer/LICENSE-ACADEMIC.pdf.
+source:
+  url: https://msfragger-upgrader.nesvilab.org/diatracer/download.php?token=0000000&download=1.2.5%24zip
+  sha256: 293a9faac5b9fac7b13965d3bd0f7da2b2d1f4a284b0b5fd04cd864b38bfbfb9
+
+build:
+  skip: True # [not linux64]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  host:
+    - python =3.11
+    - unzip
+  run:
+    - openjdk >=11
+    - msfragger >=4.2
+
+test:
+  commands:
+    - diatracer --key {{ academic_use_only_key }} -Xms512m -Xmx1g --help | grep 'License key verified'
+
+about:
+  home: https://github.com/Nesvilab/diaTracer
+  license: Academic License
+  summary: A diaPASEF spectrum-centric analysis tool
+  license_file:
+    - licenses/LICENSE-ACADEMIC.pdf
+  description: |
+    diaTracer is a computational tool that enables spectrum-centric analysis of Bruker’s diaPASEF data-independent acquisition proteomics data,
+    facilitating direct (“spectral-library free”) peptide identification and quantification
+
+    diaTracer is available freely for academic research and educational purposes only, in accordance with the terms at https://msfragger.arsci.com/diatracer/LICENSE-ACADEMIC.pdf.
+
+extra:
+  recipe-maintainers:
+    - reid-wagner
+  notes: |
+    The "diatracer" command runs the diaTracer java program.
+  identifiers:
+    - doi:10.1038/s41467-024-55448-8
