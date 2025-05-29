@@ -10,7 +10,7 @@ export CC_x86_64_unknown_linux_gnu="${CC}"
 export CXX_x86_64_unknown_linux_gnu="${CXX}"
 export AR_x86_64_unknown_linux_gnu="${AR}"
 
-curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable --profile=minimal -y
+curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --profile=minimal -y
 export PATH="${HOME}/.cargo/bin:${PATH}"
 
 sed -i.bak 's|maturin>=0.13,<0.14|maturin>=1.8.0,<2.0.0|' rust/pyproject.toml
@@ -24,8 +24,10 @@ ARCH=$(uname -m)
 
 if [[ "${OS}" == "Linux" && "${ARCH}" == "x86_64" ]]; then
 	export TARG="x86_64-unknown-linux-gnu"
+	rustup target add x86_64-unknown-linux-gnu
 elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
 	export TARG="aarch64-unknown-linux-gnu"
+	rustup target add aarch64-unknown-linux-gnu
 elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	export TARG="aarch64-apple-darwin"
 else
@@ -36,7 +38,7 @@ fi
 RUST_BACKTRACE=1
 cd rust
 if [[ "${OS}" == "Linux" ]]; then
-	RUSTFLAGS="-C target-feature=-crt-static" maturin build --interpreter "${PYTHON}" --release --strip -b pyo3 --target "${TARG}"
+	RUSTFLAGS="-C target-feature=+crt-static" maturin build --interpreter "${PYTHON}" --release --strip -b pyo3 --target "${TARG}"
 else
 	RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" maturin build --interpreter "${PYTHON}" --release --strip -b pyo3 --target "${TARG}"
 fi
