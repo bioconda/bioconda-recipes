@@ -7,26 +7,27 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/targetDB-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/targetDB-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps -vvv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   entry_points:
-    - target_DB=targetDB.druggability_DB:entry_point
-    - targetDB=targetDB.druggability_report:entry_point_gui
+    - target_DB = targetDB.druggability_DB:entry_point
+    - targetDB = targetDB.druggability_report:entry_point_gui
   run_exports:
     - {{ pin_subpackage('targetdb', max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.4
     - pip
+    - setuptools
   run:
-    - python
-    - biopython <=1.78.0
+    - python >=3.4
+    - biopython <1.77
     - scipy
     - matplotlib-base
     - pandas >=0.21.0
@@ -42,10 +43,13 @@ test:
     - targetDB --help
 
 about:
-  home: https://github.com/sdecesco/targetDB
-  summary: "Package with an application to generate report on potential drug targets"
-  license: GPL-3.0-or-later
+  home: "https://github.com/sdecesco/targetDB"
+  summary: "Package with an application to generate report on potential drug targets."
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
+  dev_url: "https://github.com/sdecesco/targetDB"
+  doc_url: "https://github.com/sdecesco/targetDB/blob/master/README.md"
 
 extra:
   recipe-maintainers:
