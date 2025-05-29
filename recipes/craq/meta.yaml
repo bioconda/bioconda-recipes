@@ -1,0 +1,43 @@
+{% set name = "CRAQ" %}
+{% set version = "1.0.9" %}
+{% set sha256 = "83eaa8964fe62241caef334986bdeda0d45d3c4be2416351257c9599264d664d" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/JiaoLaboratory/CRAQ/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('craq', max_pin="x") }}
+
+requirements:
+  run:
+    - perl >=5
+    - python >=3.7
+    - minimap2 >=2.17
+    - python_circos
+
+test:
+  commands:
+    - craq -h | grep Usage
+
+about:
+  home: https://github.com/JiaoLaboratory/CRAQ
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Pinpoint assembly errors for genomic assessing and correcting.
+  description: |
+    CRAQ (Clipping Reveals Assembly Quality) is a reference-free genome assembly evaluator that can assess the accuracy of assembled genomic sequences and provide detailed assembly quality assessment from multiple perspectives. It can report precise locations of small-scale Clip-based Regional Errors (CREs), large-scale Clip-based Structural Errors (CSEs), as well as regional and overall AQI metrics (R-AQI & S-AQI) for assembly evaluation. Through evaluating a large set of genome assemblies with different qualities, we classified genomes as following: AQI > 90, reference quality; AQI from 80-90, high quality; AQI from 60-80, draft quality; and AQI < 60, low quality. CRAQ also considered haplotype features which is important for identifying true misassembly. It can output coordinates of regional heterozygous variants (CRHs) and coordinates of structural heterozygous variants (CSHs) based on the ratio of clipped alignments and mapping coverage. Moreover, CRAQ detects potential chimeric contigs and break them at conflict breakpoints for assembly correction. This document has the information on how to run CRAQ.
+  doc_url: https://github.com/JiaoLaboratory/CRAQ
+  dev_url: https://github.com/JiaoLaboratory/CRAQ
+
+extra:
+  recipe-maintainers:
+    - juke34

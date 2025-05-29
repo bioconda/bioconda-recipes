@@ -1,0 +1,87 @@
+{% set name = "latch" %}
+{% set version = "2.62.3" %}
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps  --no-build-isolation
+  entry_points:
+    - latch=latch_cli.main:main
+  run_exports:
+    - {{ pin_subpackage('latch', max_pin="x") }}
+    
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/latch-{{ version }}.tar.gz
+  sha256: 9e119541272e1fc5ab76d9ba398a8029a43f839578f71d89ecbdd4456206a962
+
+requirements:
+  host:
+    - python >=3.9,<3.13
+    - hatchling >=1.27.0
+    - pip
+  run:
+    - python >=3.9
+    - aioconsole ==0.6.1
+    - apscheduler >=3.10.0
+    - asyncssh ==2.13.2
+    - boto3 >=1.26.0
+    - click >=8.0
+    - dill >=0.4.0
+    - docker-py >=7.1.0
+    - gitpython ==3.1.40
+    - gql ==3.5.0
+    - graphql-core ==3.2.3
+    - latch-persistence >=0.1.5
+    - lytekit ==0.15.28
+    - lytekitplugins-pods ==0.7.4
+    - orjson >=3.10.12
+    - paramiko >=3.4.0
+    - pyjwt >=0.2.0
+    - python-dateutil >=2.8
+    - python-kubernetes >=24.2.0
+    - pyxattr >=0.8.1
+    - requests >=2.28.1
+    - requests-toolbelt >=1.0.0,<2
+    - scp >=0.14.0
+    - setuptools >=75.3.0
+    - tqdm >=4.63.0
+    - typing-extensions >=4.12.0
+    - watchfiles ==0.19.0
+    - websockets ==11.0.3
+
+test:
+  imports:
+    - latch
+    - latch_cli
+  commands:
+    - latch --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/latchbio/latch
+  summary: The Latch python bioinformatics framework
+  description: |
+    It takes months to build infrastructure with the compute, storage, and user-friendly interface necessary to run bioinformatics pipelines at scale.
+
+    The Latch SDK is an open-source toolchain to define serverless bioinformatics workflows with plain python and deploy associated no-code interfaces using single command.
+
+    Bioinformatics workflows developed with the SDK automatically receive:
+      * Instant no-code interfaces for accessibility and publication
+      * First class static typing
+      * Containerization and versioning of every registered change
+      * Reliable and scalable managed cloud infrastructure
+      * Single line definition of arbitrary resource requirements (eg. CPU, GPU) for serverless execution
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - nh13
+  skip-lints:
+    - uses_setuptools
+

@@ -1,5 +1,5 @@
 {% set name = "itolparser" %}
-{% set version = "0.1.6" %}
+{% set version = "0.2.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,12 +7,14 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: ecb810be727d5984d7b7098927f3841e034a25ad6c09f1716ce1956c3ad435e0
+  sha256: 8699adea2caf5ea1c645c5bc1abf4be8aa232a7c6c51f8a1f229c465408b6570
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('itolparser', max_pin="x") }}
 
 requirements:
   host:
@@ -27,14 +29,12 @@ requirements:
 test:
   commands:
     - itolparser -h
-  imports:
-    - itolparser_functions
 
 about:
   home: "https://github.com/boasvdp/itolparser"
   license: MIT
   license_family: MIT
-  license_file: LICENSE 
+  license_file: LICENSE
   summary: "Small script to produce iTOL colorstrip metadata files from a table"
 
 extra:

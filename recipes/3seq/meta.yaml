@@ -1,0 +1,39 @@
+{% set name = "3seq" %}
+{% set version = "1.8" %}
+{% set sha256 = "c76b1b7d172fdc7521265a7fda07b8e5122701a918168f03bce84f1921c3caa1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 5
+  run_exports:
+    - {{ pin_subpackage("3seq", max_pin="x") }}  
+
+source:
+  url: https://gitlab.com/lamhm/{{ name|lower }}/-/archive/v{{ version }}/3seq-v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - make
+    - cmake
+    - {{ compiler('cxx') }}
+  host:
+    - wget
+    - coreutils
+
+test:
+  commands:
+    - 3seq -h
+
+about:
+  home: https://mol.ax/software/3seq/
+  license: CC-BY-NC-SA-4.0
+  license_file: LICENSE.md
+  summary: '3SEQ tests all sequence triplets in an alignment for a mosaic recombination signal.'
+
+extra:
+  additional-platforms:
+    - linux-aarch64

@@ -1,18 +1,24 @@
 {% set name = "jcvi" %}
-{% set version = "1.1.19" %}
+{% set version = "1.5.4" %}
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: bbe3f75d26c621ef1bc3c1ae067a707576fc677479f55addc6c9f0b6d2d8951d
+  sha256: 865974660e0cebfabe79e86bdb82d8454f01830b4bfd0f6ff2c8da6d33b0d756
 
 build:
-  skip: True  # [py2k]
   number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  skip: True  # [osx or py > 312]
+  entry_points:
+    - jcvi = jcvi.cli:main
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
   build:
@@ -20,33 +26,46 @@ requirements:
   host:
     - python
     - pip
-    - numpy 
+    - setuptools-scm
     - cython
+    - numpy
+    - hatchling
+    - hatch-vcs
   run:
     - python
     - biopython
     - boto3
     - brewer2mpl
-    - coveralls
+    - crossmap
     - deap
     - ete3
+    - ftpretty
+    #- genomepy
     - gffutils
     - goatools
-    - graphviz
+    - python-graphviz
     - jinja2
+    - imagemagick
+    - libmagic
     - matplotlib-base
+    - more-itertools
     - natsort
     - networkx
     - numpy
-    - pypdf2
-    - pytest
-    - pytest-benchmark
-    - pytest-cov
-    - pyyaml
+    #- ortools-python
+    - pybedtools
+    - pyefd
+    - pypdf
+    - pytesseract
     - rich
+    - scikit-image
     - scipy
-    - seaborn
-    #- texlive-core
+    - seaborn-base
+    - wand
+    - webcolors
+    - last
+    - r-ggplot2
+    - r-tinytex
     - ucsc-liftover
 
 test:
@@ -64,11 +83,20 @@ test:
     - jcvi.utils.data
     - jcvi.variation
   commands:
-    - python -m jcvi.apps 2>&1 | grep "JCVI utility libraries"
+    - jcvi --help
 
 about:
-  home: http://github.com/tanghaibao/jcvi
-  license: BSD-2-Clause
+  home: "https://github.com/tanghaibao/jcvi"
+  license: "BSD-2-Clause"
   license_family: BSD
-  summary: Python utility libraries on genome assembly, annotation and comparative genomics
+  license_file: LICENSE
+  summary: "Python utility libraries on genome assembly, annotation, and comparative genomics."
   description: "JCVI utility libraries"
+  dev_url: "https://github.com/tanghaibao/jcvi"
+  doc_url: "https://github.com/tanghaibao/jcvi/wiki"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - doi:10.1002/imt2.211

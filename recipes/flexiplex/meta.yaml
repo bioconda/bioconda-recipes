@@ -1,0 +1,49 @@
+{% set version = "1.01" %}
+
+package:
+  name: flexiplex
+  version: {{ version }}
+
+source:
+  url: https://github.com/DavidsonGroup/flexiplex/releases/download/v{{ version }}/flexiplex-{{ version }}.tar.gz
+  sha256: a5b3391aded069e15422a0c201d94ca1fdc02e9fec488608b082ff2f43ca3ec7
+
+build:
+  number: 2
+  entry_points:
+    - flexiplex-filter = flexiplex_filter.main:cli
+  run_exports:
+    - {{ pin_subpackage("flexiplex", max_pin=None) }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - pip
+    - setuptools  # to install flexiplex-filter
+  run:
+    - python
+    - numpy
+    - pandas
+    - matplotlib-base
+    
+test:
+  commands:
+    - flexiplex -h
+    - flexiplex-filter -h
+
+about:
+  home: https://github.com/DavidsonGroup/flexiplex/
+  license: MIT License
+  summary: 'flexiplex: the flexible demultiplexer'
+  description: |
+    Flexiplex is a fast and versatile sequence searching and demultiplexing tool 
+    for omics data. For more information, see the accompanying bioRxiv preprint
+    "Davidson et al. Flexiplex: A versatile demultiplexer and search tool for omics data."
+  license_family: MIT
+
+extra:
+  identifiers:
+    - doi:10.1101/2023.08.21.554084 # bioRxiv preprint

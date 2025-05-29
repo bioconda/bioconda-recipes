@@ -1,0 +1,53 @@
+{% set name = "bio" %}
+{% set version = "1.8.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/bio-{{ version }}.tar.gz
+  sha256: b15bc8cd9b93bdaed83a9da57ac92708216beade2d4351d782f70da3868f95a5
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - bio = biorun.__main__:run
+    - fasta_filter.py = biorun.scripts.fasta_filter:run
+  script: |
+    mkdir src
+    mv biorun src/biorun
+    {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('bio', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - hatchling
+    - pip
+  run:
+    - python >=3.10
+    - biopython >=1.80
+    - requests
+    - tqdm
+    - mygene
+    - pandas
+    - pooch
+    - gprofiler-official
+
+test:
+  imports:
+    - biorun
+  commands:
+    - pip check
+    - bio 2>&1 | grep '^bio'
+
+about:
+  home: https://github.com/ialbert/bio
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Command-line utilities to make bioinformatics explorations more enjoyable."
+  dev_url: https://github.com/ialbert/bio

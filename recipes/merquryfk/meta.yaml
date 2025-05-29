@@ -1,0 +1,56 @@
+{% set name = "MERQURYFK" %}
+{% set version = "1.1.2" %}
+{% set sha256 = "838529d92ec175f55de95ab0bed4d3cb7b0793aae297e770c0f5848ec12aed80" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/thegenemyers/MERQURY.FK/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("merquryfk", max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - bzip2
+    - zlib
+    - libcurl
+  run:
+    - fastk
+    - r-base >=4
+    - r-argparse >=2.0.1
+    - r-ggplot2 >=3.3.2
+    - r-scales >=1.1.1
+
+test:
+  commands:
+    - 'HAPmaker 2>&1 >/dev/null | grep "Usage: HAPmaker"'
+    - 'ASMplot 2>&1 >/dev/null | grep "Usage: ASMpLot"'
+    - 'CNplot 2>&1 >/dev/null | grep "Usage: CNpLot"'
+    - 'HAPplot 2>&1 >/dev/null | grep "Usage: HAPpLot"'
+    - 'MerquryFK 2>&1 >/dev/null | grep "Usage: MerquryFK"'
+    - 'KatComp 2>&1 >/dev/null | grep "Usage: KatComp"'
+    - 'KatGC 2>&1 >/dev/null | grep "Usage: KatGC"'
+
+about:
+  license: "https://github.com/thegenemyers/MERQURY.FK/blob/main/LICENSE"
+  summary: "MerquryFK replaces meryl with the FastK k-mer counter suite to considerably speed up analyses."
+  home: "https://github.com/thegenemyers/MERQURY.FK"
+  dev_url: "https://github.com/thegenemyers/MERQURY.FK"
+  doc_url: "https://github.com/thegenemyers/MERQURY.FK/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

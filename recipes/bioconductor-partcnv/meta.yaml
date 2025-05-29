@@ -1,0 +1,58 @@
+{% set version = "1.4.0" %}
+{% set name = "partCNV" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: This package uses a statistical framework for rapid and accurate detection of aneuploid cells with local copy number deletion or amplification. Our method uses an EM algorithm with mixtures of Poisson distributions while incorporating cytogenetics information (e.g., regional deletion or amplification) to guide the classification (partCNV). When applicable, we further improve the accuracy by integrating a Hidden Markov Model for feature selection (partCNVH).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Infer locally aneuploid cells using single cell RNA-seq data
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-partcnv", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: rmarkdown, knitr, IRanges, testthat (>= 3.0.0)
+requirements:
+  host:
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - r-base
+    - r-data.table
+    - r-depmixs4
+    - r-magrittr
+    - r-seurat
+  run:
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - r-base
+    - r-data.table
+    - r-depmixs4
+    - r-magrittr
+    - r-seurat
+
+source:
+  md5: 38b2a9c8ba2b0072bd80170e683d94b2
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

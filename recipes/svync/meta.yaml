@@ -1,0 +1,36 @@
+{% set version = '0.2.0' %}
+{% set name = 'svync' %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/nvnieuwk/svync/releases/download/{{ version }}/svync-{{ version }}-darwin-amd64.tar.gz # [osx-amd64]
+    md5: d8a65c4a33c4bfd80bbfdbbbe5773679 # [osx]
+  - url: https://github.com/nvnieuwk/svync/releases/download/{{ version }}/svync-{{ version }}-linux-amd64.tar.gz # [linux]
+    md5: 6668160e5708fdbbc12e362225e79155 # [linux]
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  run:
+    - tabix
+
+test:
+  commands:
+    - "{{ name }} --help"
+    - bgzip -h
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic  # uses per platform binaries
+    - should_not_be_noarch_source  # uses binaries
+
+about:
+  home: https://github.com/nvnieuwk/svync
+  license: MIT
+  summary: A tool to standardize VCF files from structural variant callers

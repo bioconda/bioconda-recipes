@@ -1,0 +1,60 @@
+{% set name = "MSFragger" %}
+{% set version = "4.1" %}
+
+# This key was generated ONLY for the testing of this bioconda package.
+# Users must generate their own key by agreeing to the terms at https://msfragger.arsci.com/upgrader/MSFragger-LICENSE.pdf.
+{% set academic_use_only_key = "f28c4be2-759b0a11-6c1ea652-1240565a" %}
+{% set sha256sum = "27c2553c5c4fee3f63e1a393275d785b510ee4b7cd407fae9ea877676f73c1bb" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+  script_env:
+    - SHA256SUM={{ sha256sum }}
+
+requirements:
+  host:
+    - python >3.9
+    - unzip
+  run:
+    - openjdk >=11
+    - python >=3.9
+    - mono >=5, <6
+    - zlib >=1.2.13
+
+test:
+  commands:
+    - msfragger --key {{ academic_use_only_key }} -Xms512m -Xmx1g --help | grep 'License key verified'
+
+about:
+  home: https://github.com/Nesvilab/MSFragger
+  license: Academic License
+  license_file:
+    - licenses/MSFragger-LICENSE-3RD-PARTY.txt
+    - licenses/MSFragger-LICENSE.pdf
+    - licenses/RawFileRdr_License_Agreement_RevA.pdf
+    - licenses/THIRD-PARTY-LICENSE-README.txt
+  summary: Ultrafast, comprehensive peptide identification for mass spectrometry–based proteomics
+  description: |
+    MSFragger is an ultrafast database search tool for peptide identification in mass spectrometry-based proteomics.
+    It has demonstrated excellent performance across a wide range of datasets and applications.
+    MSFragger is suitable for standard shotgun proteomics analyses as well as large datasets (including timsTOF PASEF data),
+    enzyme unconstrained searches (e.g., peptidome),
+    open database searches (e.g., precursor mass tolerance set to hundreds of Daltons) for identification
+    of modified peptides, and glycopeptide identification (N-linked and O-linked).
+
+    MSFragger is available freely for academic research and educational purposes only, in accordance with the terms at https://msfragger.arsci.com/upgrader/MSFragger-LICENSE.pdf.
+
+extra:
+  notes: |
+    The "msfragger" command runs the MSFragger java program.
+  identifiers:
+    - doi:10.1038/nmeth.4256
+    - doi:10.1038/s41467-020-17921-y
+    - doi:10.1038/s41592-020-0967-9

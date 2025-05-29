@@ -1,0 +1,67 @@
+{% set name = "amalgkit" %}
+{% set version = "0.12.17" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/kfuku52/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: a8c1651554296a23b6f6d85489dbb061c485204023f1e0e98d96b0956431cecd
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-build-isolation --no-use-pep517 -vv"
+  run_exports:
+    - {{ pin_subpackage("amalgkit", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools
+    - wheel
+
+  run:
+    - python >={{ python_min }}
+    - biopython
+    - numpy
+    - pandas
+    - lxml
+    # Additional dependencies for amalgkit
+    - seqkit
+    - parallel-fastq-dump
+    - fastp
+    - kallisto
+    - r-base
+    - bioconductor-edger
+    - r-ggplot2
+    - bioconductor-pcamethods
+    - r-colorspace
+    - r-rcolorbrewer
+    - bioconductor-sva
+    - bioconductor-ruvseq
+    - r-mass
+    - r-nmf
+    - r-dendextend
+    - r-amap
+    - r-pvclust
+    - r-rtsne
+    - r-patchwork
+
+test:
+  commands:
+    - amalgkit --help
+  imports:
+    - amalgkit
+
+about:
+  home: "https://github.com/kfuku52/amalgkit"
+  license: "BSD-3-Clause"
+  license_file: LICENSE
+  summary: "Tools for transcriptome amalgamation"
+
+extra:
+  recipe-maintainers:
+    - kfuku52

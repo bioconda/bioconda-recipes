@@ -1,0 +1,79 @@
+{% set name = "beav" %}
+{% set version = "1.4.0" %}
+{% set sha256 = "fb76843ea670121f901af3c1fb1c7742f0523b47c18dd633c3477802fc2d4c81" %}
+{% set dbscan_git = "condabeav0.5" %}
+{% set dbscan_sha256 = "2fe08873026fe63a9992bfb997e59fecce7facb903778983dc6917c962573463" %}
+{% set gapmind_git = "Beav0.5.1conda" %}
+{% set gapmind_sha256 = "a5d0c4855d65355fa4675172a65b97cb03d4ec2e5098a08bece84f677e48a244" %}
+{% set pycirclize_git = "v0.5.3_beav1.1.1" %}
+{% set pycirclize_sha256 = "a38e4e003782ed3da270503416e5f15b6c01147033eeccbcbe4b4ec86c3b4bdb" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/weisberglab/{{ name }}/archive/v{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+  - url: https://github.com/weisberglab/DBSCAN-SWA/archive/refs/tags/{{ dbscan_git }}.tar.gz
+    folder: DBSCAN-SWA
+    sha256: {{ dbscan_sha256 }}
+  - url: https://github.com/weisberglab/PaperBLAST_Beav/archive/refs/tags/{{ gapmind_git }}.tar.gz
+    folder: PaperBLAST
+    sha256: {{ gapmind_sha256 }}
+  - url: https://github.com/acarafat/pyCirclize/archive/refs/tags/{{ pycirclize_git }}.tar.gz
+    folder: PyCirclize
+    sha256: {{pycirclize_sha256}}
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("beav", max_pin='x.x') }}
+
+requirements:
+  run:
+    - python >=3.7,<=3.10
+    - perl >=5.22.0
+    - hmmer >=3.3.2
+    - bakta >=1.6
+    - integron_finder =2.0.2
+    - macsyfinder
+    - defense-finder
+    - fastani
+    - emboss
+    - blast >=2.6.0
+    - prokka >=1.11
+    - bedtools >=2.27.1
+    - trnascan-se >=2.0.2
+    - infernal >=1.1.2
+    - blast-legacy
+    - bbmap
+    - tqdm
+    - pftools
+    - numpy >=1.19.4,<=1.22.1
+    - biopython >=1.78,<=1.79
+    - scikit-learn
+    - antismash-lite
+    - pandas >=1.1.5,<=1.4.0
+    - gzip
+    - perl-dbi
+    - perl-findbin
+    - perl-getopt-long
+    - perl-dbd-sqlite
+    - perl-file-spec
+    - perl-ipc-run3
+
+variables:
+  BEAV_DIR: {{ PREFIX }}/share/{{ name }}-{{ version }}
+
+test:
+  commands:
+    - beav -h
+
+about:
+  home: https://github.com/weisberglab/beav
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: "beav: Bacterial genome and mobile element annotation pipeline"

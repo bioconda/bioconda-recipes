@@ -5,11 +5,17 @@ package:
 source:
   - url: ftp://ftp.ncbi.nlm.nih.gov/pub/agarwala/bmtagger/bmtools.tar.gz # [linux]
     md5: 719474a0e3b54449cbe06f6e442994dd # [linux]
+    patches: # [linux]
+      - 0001-Cast-getline-stream-to-bool.patch  # [linux]
+      - bmtool-cplusplus-template.patch # [linux]
+      - bmtool-fix-ctime.patch # [linux]
   - url: ftp://ftp.ncbi.nlm.nih.gov/pub/agarwala/bmtagger/mac-os/bmfilter # [osx]
     md5: ef79071be499ed23e9f3a19c9c323775 # [osx]
 
 build:
-  number: 4
+  number: 6
+  run_exports:
+    - {{ pin_subpackage('bmfilter', max_pin="x") }}
 
 requirements:
   build:
@@ -27,6 +33,8 @@ about:
   summary: "bmfilter is part of BMTagger aka Best Match Tagger, for removing human reads from metagenomics datasets"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   skip-lints:
     - should_not_be_noarch_source
     - should_be_noarch_generic

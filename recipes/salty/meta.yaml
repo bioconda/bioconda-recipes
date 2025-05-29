@@ -1,0 +1,38 @@
+{% set version = "1.0.6" %}
+{% set name = "salty" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/LanLab/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 85c7fd21665606e9e31807c36a6e6edf5dd77a41a3929eb10c94291cede6ff4b
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+  run:
+    - python >=3.7
+    - kma >=1.4.9
+    - pandas >=2.0
+    - mlst >=2.23.0
+
+test:
+  commands:
+    - salty --help
+    - salty --version
+
+about:
+  home: https://github.com/LanLab/salty
+  license: GPL3
+  license_file: LICENSE
+  summary: SaLTy assigns a lineage to Staphylococcus aureus WGS data and is suitable for describing large-scale S. aureus genomic epidemiology.

@@ -1,0 +1,48 @@
+{% set name = "mSWEEP" %}
+{% set version = "2.2.1" %}
+{% set sha256 = "16928507cdd62643b1e4d112fbc5757ef27c9d1f42fadfdd5c947894b2614382" %}
+{% set user = "PROBIC" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  skip: true  # [osx]
+  run_exports:
+    - {{ pin_subpackage('msweep', max_pin='x') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - git >=2.10.0
+    - cmake >=3.0.0
+    - make
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - zlib >=1.2.0
+    - xz >=5.2.0
+    - bzip2 >=1.0.6
+
+test:
+  commands:
+    - mSWEEP --help 2>&1 | grep cite
+
+about:
+  home: https://github.com/PROBIC/mSWEEP
+  license: MIT
+  license_file: LICENSE
+  summary: 'mSWEEP - bacterial community composition estimation from pseudoalignments'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - doi:10.12688/wellcomeopenres.15639.2

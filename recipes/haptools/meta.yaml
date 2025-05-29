@@ -1,0 +1,59 @@
+{% set name = "haptools" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/haptools-{{ version }}.tar.gz
+  sha256: c5ab4dc4b309b7f15cec9cca4716259f8794c57e603e1ecacfb588a636cbac8d
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - haptools = haptools.__main__:main
+  script: {{ PYTHON }} -m pip install . -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip >=19.0.3
+    - poetry-core >=1.0.0
+    - python >=3.7,<4.0
+  run:
+    - click >=8.0.3
+    - cyvcf2 >=0.30.14
+    - matplotlib-base >=3.5.1
+    - numpy >=1.20.0
+    - pgenlib >=0.90.1
+    - pysam >=0.19.0
+    - python >=3.7,<4.0
+
+test:
+  imports:
+    - haptools
+    - haptools.data
+  commands:
+    - pip check
+    - haptools --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/cast-genomics/haptools
+  summary: Ancestry and haplotype aware simulation of genotypes and phenotypes for complex trait analysis
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: https://haptools.readthedocs.io
+  dev_url: https://github.com/cast-genomics/haptools
+
+extra:
+  recipe-maintainers:
+    - aryarm
+  identifiers:
+    - doi:10.1093/bioinformatics/btad104
+    - biotools:haptools

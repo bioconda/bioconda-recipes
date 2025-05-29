@@ -1,5 +1,6 @@
 {% set name = "regenie" %}
-{% set version = "1.0.6.9" %}
+{% set version = "4.1" %}
+{% set sha256 = "a7d8ad321ca66bd10fa5ed651c63069886f5cb5ef8e900ca9a0c5b7e3dfc7da5" %}
 
 package:
   name: {{ name|lower }}
@@ -7,39 +8,37 @@ package:
 
 source:
   url: https://github.com/rgcgithub/regenie/archive/v{{ version }}.tar.gz
-  sha256: ac17d01438467daa379a80eeafe391f124ea9f6a26365a8602e3788bbe3ec967
+  sha256: {{ sha256 }}
   patches:
     # Fixing postrelease issues
-    # - patches/0001-use-shared-cxxopts.patch
-    # - patches/0002-import-shared-Eigen3.patch
-    - patches/0003-use-conda-cmakelists.patch
-    # - patches/0004-fix-fail-exit-on-help.patch
+    - patches/0015-update-cmakelist.txt-for-v3.6.patch
 
 build:
-  number: 1
-
-
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('regenie', max_pin="x") }}
+    
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
-    - cmake >=3.15
+    - binutils >=2.33.1  # [linux]
+    - cmake >=3.13
     - make
     - llvm-openmp  # [osx]
     - libgomp  # [linux]
   host:
     - bgenix >=1.1.7
-    - boost-cpp
-    - libblas
+    - boost-cpp 1.74
     - liblapack * *mkl
-    - cxxopts
-    - eigen
+    - mkl >=2020.4
+    - mkl-include
     - zlib
     - zstd
   run:
-    - bgenix >=1.1.7
-    - boost-cpp
+    - boost-cpp 1.74
+    - mkl >=2020.4
     - sqlite
     - zlib
     - zstd
@@ -48,10 +47,12 @@ test:
   commands:
     - test -f ${PREFIX}/bin/regenie  # [linux]
     - regenie --help
+    - regenie --version
 
 about:
   home: https://rgcgithub.github.io/regenie/
   license: MIT
+  license_family: MIT
   license_file: LICENSE
   summary: 'Regenie is a C++ program for whole genome regression modelling of large genome-wide association studies (GWAS).'
   dev_url: https://github.com/rgcgithub/regenie
@@ -60,3 +61,4 @@ about:
 extra:
   recipe-maintainers:
     - matuskosut
+    - joellembatchou
