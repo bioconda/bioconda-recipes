@@ -66,3 +66,6 @@ echo "export TRINITY_HOME=${BINARY_HOME}" > ${PREFIX}/etc/conda/activate.d/${PKG
 
 mkdir -p ${PREFIX}/etc/conda/deactivate.d/
 echo "unset TRINITY_HOME" > ${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}-${PKG_VERSION}.sh
+
+rm -rf trinityrnaseq.wiki sample_data WDL Docker
+rm -rf *.patch LICENSE* README* developer.notes Changelog.txt Makefile
