@@ -12,7 +12,7 @@ ARCH=$(uname -m)
 if [[ "${OS}" == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DBUILD_CUDA=OFF -DBUILD_OPENCL=OFF"
 else
-	export CONFIG_ARGS="-DBUILD_OPENCL=OFF"
+	export CONFIG_ARGS=""
 fi
 
 if [[ "${ARCH}" == "arm64" ]]; then
