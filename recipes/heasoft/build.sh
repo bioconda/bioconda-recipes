@@ -46,3 +46,6 @@ cd heasoft/BUILD_DIR
     --with-components="heacore ftools Xspec nustar suzaku swift integral ixpe heasim heagen heatools attitude"
 make -j1
 make install
+
+# Remove modelData to reduce package size
+rm -rf $PREFIX/spectral/modelData
