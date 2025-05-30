@@ -23,6 +23,6 @@ make CC="${CC}" CXX="${CXX}" INCLUDES="-I${PREFIX}/include" -j"${CPU_COUNT}"
 
 install -v -m 0755 bin/* "${PREFIX}/bin"
 
-mv ${SRC_DIR}/* ${OUTDIR}
+cp -rf ${SRC_DIR}/* ${OUTDIR}
 chmod 0755 ${OUTDIR}/nextDenovo
 ln -sf ${OUTDIR}/nextDenovo ${PREFIX}/bin/nextDenovo
