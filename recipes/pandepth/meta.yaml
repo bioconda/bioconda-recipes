@@ -1,0 +1,44 @@
+{% set name = "pandepth" %}
+{% set version = "2.26" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/HuiyangYu/PanDepth/releases/download/v{{ version }}/PanDepth-{{ version }}-Linux-x86_64.tar.gz
+  sha256: "3c5e6b3cb093c25c9d20795efdf3a3c7685d7a35abc6abd328021732f00acde5"
+
+build:
+  number: 0
+  binary_relocation: true
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('pandepth', max_pin='x') }}
+  script: |
+    mkdir -p $PREFIX/bin
+    cp pandepth $PREFIX/bin/
+    chmod +x $PREFIX/bin/pandepth
+    patchelf --set-rpath '/lib64:/usr/lib64:$ORIGIN/../lib' $PREFIX/bin/pandepth
+
+requirements:
+  run_constrained:
+    - __glibc >=2.17
+
+test:
+  commands:
+    - command -v pandepth
+    - ldd $(which pandepth)
+    - pandepth --help
+
+about:
+  home: https://github.com/HuiyangYu/PanDepth
+  license: MIT
+  summary: "PanDepth, an ultrafast and efficient genomic tool for coverage calculation"
+  description: |
+    PanDepth is an ultrafast and memory-efficient tool for calculating 
+    genome coverage depth from sequencing data.
+    Note: Requires Linux with glibc >=2.17.
+  doc_url: https://github.com/HuiyangYu/PanDepth#readme
+  dev_url: https://github.com/HuiyangYu/PanDepth
+  cite: "Yu H, Shi C, He W, et al. PanDepth, an ultrafast and efficient genomic tool for coverage calculation[J]. Briefings in Bioinformatics, 2024, 25(3): bbae197."
