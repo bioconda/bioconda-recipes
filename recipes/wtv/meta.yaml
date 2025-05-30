@@ -1,0 +1,46 @@
+{% set name = "wtv" %}
+{% set version = "0.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/wtv-{{ version }}.tar.gz
+  sha256: 68a59193d9eef19b56e4db9ee8774e206c31502262cd57c40fcdaee4971bd00d
+
+build:
+  entry_points:
+    - wtv-cli = src.cli:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.9,<3.13
+    - poetry-core
+    - pip
+  run:
+    - python >=3.9,<3.13
+    - numpy >=1.26.4,<2.0.0
+    - pandas >=2.2.3,<3.0.0
+    - matchms >=0.27.0,<0.28.0
+
+test:
+  imports:
+    - wtv
+  commands:
+    - pip check
+    - wtv-cli --help
+  requires:
+    - pip
+
+about:
+  summary: A library and CLI for ion selection in mass spectrometry data.
+  license: GPL-3.0-only
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - acquayefrank
