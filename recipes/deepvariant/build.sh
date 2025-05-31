@@ -1,17 +1,24 @@
 #!/bin/bash
 set -eu -o pipefail
 
-# ## Binary install with wrappers
+### Binary install with wrappers ###
 
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations"
+export CXXFLAGS="${CXXFLAGS} -O3"
 SHAREDIR="share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 TGT="${PREFIX}/${SHAREDIR}"
 [ -d "${TGT}" ] || mkdir -p "${TGT}"
 [ -d "${PREFIX}/bin" ] || mkdir -p "${PREFIX}/bin"
 
+
+CXX="${CXX}" PREFIX="${PREFIX}" ./build_and_test.sh
+
 #mv binaries $TGT
 #mv models $TGT
 
-cd ${PREFIX}
+#cd ${PREFIX}
 #BINARY_DIR=`ls -d $SHAREDIR/binaries/DeepVariant/*/DeepVariant*`
 #WGS_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*wgs_standard`
 #WES_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*wes_standard`
@@ -66,15 +73,15 @@ install -v -m 0755 ${RECIPE_DIR}/dv_postprocess_variants.py "${PREFIX}/bin"
 # sed -i.bak "s|\.\./tensorflow|${SRC_DIR}/tensorflow|g" ${SRC_DIR}/WORKSPACE
 # cd tensorflow
 # echo | ./configure
-# 
+#
 # # clif for building
 # gsutil cp gs://deepvariant/packages/oss_clif/oss_clif.ubuntu-14.latest.tgz .
 # tar -xzpf oss_clif*.tgz
 # sed -i.bak "s|#!/usr/local|#!${SRC_DIR}/usr/local|" usr/local/clif/bin/pyclif
 # sed -i.bak "s|#!/usr/local|#!${SRC_DIR}/usr/local|" usr/local/clif/bin/pyclif_proto
-# 
+#
 # export PATH=$PATH:${SRC_DIR}/usr/local/clif/bin
-# 
+#
 # cd ..
 # source settings.sh
 # bazel build -c opt ${DV_COPT_FLAGS} deepvariant:binaries
