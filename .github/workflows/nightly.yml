@@ -3,10 +3,16 @@ on:
   schedule:
     - cron: "0 0 * * *"
 jobs:
+  cache-bioconda-common-scripts:
+    name: Cache bioconda/bioconda-common scripts
+    uses: bioconda/bioconda-recipes/.github/workflows/fetch-conda-install-script.yml@6a472404ba03004bd49256d2f8f831656440367a
+    with:
+      ref: c7f3f523b39481225f912cbfc3937682b4342c4e
   nightly-osx-arm:
     name: Nightly OSX-ARM64 Builds
     if: github.repository == 'bioconda/bioconda-recipes'
     runs-on: macOS-14 # M1
+    needs: [ cache-bioconda-common-scripts ]
     strategy:
       fail-fast: false
       max-parallel: 4
@@ -16,9 +22,15 @@ jobs:
       - name: set path
         run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
 
-      - name: Fetch conda install script
-        run: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
+      - name: Fetch conda install scripts
+        uses: actions/cache/restore@v4
+        with:
+          key: ${{ needs.cache-bioconda-common-scripts.outputs.cache-key }}
+          path: |
+            common.sh
+            configure-conda.sh
+            install-and-set-up-conda.sh
+          fail-on-cache-miss: true
 
       - name: Set up bioconda-utils
         run: bash install-and-set-up-conda.sh
