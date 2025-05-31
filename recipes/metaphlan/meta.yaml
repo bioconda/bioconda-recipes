@@ -1,5 +1,5 @@
 {% set name = "metaphlan" %}
-{% set version = "4.1.1" %}
+{% set version = "4.2.0" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/biobakery/MetaPhlAn/archive/{{version}}.tar.gz
-  sha256: 41529191c93b260842c6362952d46f3a22df1477e127277dab1f9abb09d2d84e
+  sha256: c9b09f850a9ea66de85f6dd68a0103faf64fa8e8945f1b405ee1121abff34fc1
 
 build:
   noarch: python
@@ -31,15 +31,18 @@ build:
     - create_toy_database.py = metaphlan.utils.create_toy_database:main
     - fix_relab_mpa4.py = metaphlan.utils.fix_relab_mpa4:main
   run_exports:
-    - {{ pin_subpackage('metaphlan', max_pin='x') }}
+    - {{ pin_subpackage('metaphlan', max_pin='x.x') }}
 
 requirements:
   host:
     - python >=3.7
+    - setuptools
+    - cython
     - pip
   run:
     - python >=3.7
     - bowtie2 >=2.3.0
+    - minimap2 >=2.26
     - dendropy
     - numpy
     - phylophlan >=3.1
@@ -63,7 +66,6 @@ requirements:
     - r-compositions
     - r-biocmanager
     - bioconductor-microbiome
-    - hclust2
 
 test:
   commands:
@@ -78,7 +80,6 @@ test:
     - strain_transmission.py -h
     - sgb_to_gtdb_profile.py -h
     - metaphlan2krona.py -h    
-    - hclust2.py -h
     - run_treeshrink.py -h
     - treeshrink.py -h
     - create_toy_database.py -h
