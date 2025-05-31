@@ -1,0 +1,20 @@
+Conda's macOS build environment uses an old macOS SDK from Xcode 15.4 in which
+defining _POSIX_C_SOURCE stops <fcntl.h> from defining O_DIRECTORY.
+
+Work around this by including <fcntl.h> before <config.h> defines _XOPEN_SOURCE
+(which in turn is what causes _POSIX_C_SOURCE to be defined).
+
+--- a/ref_cache/main.c
++++ b/ref_cache/main.c
+@@ -22,6 +22,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ DEALINGS IN THE SOFTWARE.  */
+ 
++#ifdef __APPLE__
++// Work around Xcode 15.4 SDK bug where defining _POSIX_C_SOURCE disables O_DIRECTORY
++#include <fcntl.h>
++#endif
++
+ #include <config.h>
+ 
+ #include <stdlib.h>
