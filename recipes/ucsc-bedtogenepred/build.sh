@@ -2,20 +2,29 @@
 
 set -xe
 
-mkdir -p "${PREFIX}/bin"
 export MACHTYPE=$(uname -m)
 export BINDIR=$(pwd)/bin
+
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
-export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include ${LDFLAGS}"
 export L="${LDFLAGS}"
+export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
+export COPT="${COPT} ${CFLAGS}"
+export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
+
+mkdir -p "${PREFIX}/bin"
 mkdir -p "${BINDIR}"
-(cd kent/src/lib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
-(cd kent/src/htslib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
-(cd kent/src/jkOwnLib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
-(cd kent/src/hg/lib && make USE_HIC=0 CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
-(cd kent/src/hg/bedToGenePred && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j "${CPU_COUNT}")
-cp bin/bedToGenePred "${PREFIX}/bin"
-chmod 0755 "${PREFIX}/bin/bedToGenePred"
+
+sed -i.bak -e 's|${LINKLIBS} ${L}|${LINKLIBS} ${L} -ldl -lm -lc -liconv|' kent/src/inc/userApp.mk
+sed -i.bak -e 's|${CC} ${COPT}|${CC} ${LDFLAGS} $(CPPFLAGS) ${COPT}|' kent/src/inc/userApp.mk
+sed -i.bak -e 's|-lpthread|-pthread|' kent/src/inc/common.mk
+
+rm -rf kent/src/inc/*.bak
+
+(cd kent/src/lib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
+(cd kent/src/htslib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
+(cd kent/src/jkOwnLib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
+(cd kent/src/hg/lib && make USE_HIC=0 CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
+(cd kent/src/hg/bedToGenePred && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
+install -v -m 0755 bin/bedToGenePred "${PREFIX}/bin"
