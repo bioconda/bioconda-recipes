@@ -1,0 +1,83 @@
+diff --git a/meson.build b/meson.build
+index 9e2062e..dd44c19 100644
+--- a/meson.build
++++ b/meson.build
+@@ -51,6 +51,11 @@ cmake_options = cmake.subproject_options()
+ cmake_options.set_override_option('werror', 'false')
+ cmake_options.set_install(false)
+ 
++if host_machine.cpu_family() == 'aarch64'
++  cmake_options.add_cmake_defines({'ENABLE_LIBCXX': false})
++  cmake_options.add_cmake_defines({'CPPTOML_BUILD_EXAMPLES': false})
++endif
++
+ cpptoml_subproject = cmake.subproject('cpptoml', options : cmake_options)
+ cpptomp_dep = cpptoml_subproject.dependency('cpptoml')
+ 
+diff --git a/tests/mi_bloom_filter.cpp b/tests/mi_bloom_filter.cpp
+index 383d747..18f72d5 100644
+--- a/tests/mi_bloom_filter.cpp
++++ b/tests/mi_bloom_filter.cpp
+@@ -43,22 +43,21 @@ main()
+   int expected_id_count = dna_length / 4;
+   double tolerance = 0.1;
+ 
+-  int counter = 0;
+   btllib::MIBloomFilter<uint8_t> mi_bf_2(256 * 1024 * 1024, 1, "ntHash");
+-  for(btllib::NtHash nthash(random_dna, 1, 15); nthash.roll(); counter++){
++  for(btllib::NtHash nthash(random_dna, 1, 15); nthash.roll();){
+ 	mi_bf_2.insert_bv(nthash.hashes());
+   }
+   mi_bf_2.complete_bv_insertion();
+   uint8_t ID_array[4] = {0, 1, 2, 3};
+   for(auto& id : ID_array){
+   	uint8_t ID = id;
+-	for(btllib::NtHash nthash(random_dna, 1, 15); nthash.roll(); counter++){
++	for(btllib::NtHash nthash(random_dna, 1, 15); nthash.roll();){
+ 		mi_bf_2.insert_id(nthash.hashes(), ID);
+   	}
+   }
+   std::vector<uint8_t> results_2(1);
+   std::vector<uint32_t> total_counter(4, 0);
+-  for(btllib::NtHash nthash(random_dna, 1, 15); nthash.roll(); counter++){
++  for(btllib::NtHash nthash(random_dna, 1, 15); nthash.roll();){
+   	results_2 = mi_bf_2.get_id(nthash.hashes());
+   	for(auto& res : results_2){
+ 	      	total_counter[res]++;
+@@ -79,7 +78,7 @@ main()
+   btllib::MIBloomFilter<uint8_t> mi_bf_3("test.mibf");
+   
+   std::vector<uint32_t> total_counter_2(4, 0);
+-  for(btllib::NtHash nthash(random_dna, 1, 15); nthash.roll(); counter++){
++  for(btllib::NtHash nthash(random_dna, 1, 15); nthash.roll();){
+         results_2 = mi_bf_3.get_id(nthash.hashes());
+         for(auto& res : results_2){
+                 total_counter_2[res]++;
+@@ -91,7 +90,7 @@ main()
+   }
+   // Test mi-Bf is still insertable.
+   uint8_t ID = 3;
+-  for(btllib::NtHash nthash(random_dna, 1, 15); nthash.roll(); counter++){
++  for(btllib::NtHash nthash(random_dna, 1, 15); nthash.roll();){
+   	mi_bf_3.insert_id(nthash.hashes(), ID);
+   }
+ 
+diff --git a/tests/python/test_seq_reader.py b/tests/python/test_seq_reader.py
+index d3a48b5..888e396 100644
+--- a/tests/python/test_seq_reader.py
++++ b/tests/python/test_seq_reader.py
+@@ -9,11 +9,11 @@ class SeqReaderTests(unittest.TestCase):
+         self.base_dir = os.path.dirname(__file__)
+ 
+     def test_seq_reader_single_seq(self):
+-        seq = 'CGCGTGAAAGCAAAACAAGA'
++        true_seq = ['CGCGTGAAAGCAAAACAAGA']
+         path = os.path.join(self.base_dir, 'single_seq.fa')
+         with btllib.SeqReader(path, btllib.SeqReaderFlag.SHORT_MODE) as reader:
+-            read = [record.seq for record in reader]
+-        self.assertListEqual([seq], read)
++            for record, seq in zip(reader, true_seq):
++                self.assertEqual(record.seq, seq)
+         
+     def test_fasta_reader(self):
+         ids = ["asdf", "ghjk"]
