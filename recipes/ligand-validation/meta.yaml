@@ -1,0 +1,55 @@
+{% set name = "ligand-validation" %}
+{% set version = "0.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  git_url: https://git.scicore.unibas.ch/schwede/{{ name|lower }}.git
+  git_rev: e0a55d61
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation --no-cache-dir
+  scripts:
+    - bin/PDBValidation
+    - bin/PDBValidationExtract
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x.x") }}
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - pip
+  run:
+    - python
+    - lxml
+    - pandas
+    - mmcif
+    - openstructure
+
+test:
+  imports:
+    - PDBValidation
+  commands:
+    - pip check
+    - PDBValidation --help
+    - PDBValidationExtract --help
+  requires:
+    - pip
+
+about:
+  home: https://git.scicore.unibas.ch/schwede/ligand-validation
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: "Extract ligand and binding site information from PDB X-ray validation reports"
+  description: |
+    This project contains script for the validation of the quality of a PDB entry, ligand and binding site
+    based on the PDB Validation pipeline.
+  dev_url: https://git.scicore.unibas.ch/schwede/ligand-validation
+  doc_url: https://git.scicore.unibas.ch/schwede/ligand-validation/-/blob/master/README.md
+
+extra:
