@@ -22,7 +22,6 @@ sed -i.bak -e 's|<Variant.h>|<vcflib/Variant.h>|' src/*.h
 sed -i.bak -e 's|<intervaltree/IntervalTree.h>|<vcflib/IntervalTree.h>|' src/BedReader.h
 sed -i.bak -e 's|<IntervalTree.h>|<vcflib/IntervalTree.h>|' src/BedReader.cpp
 sed -i.bak -e 's|<Fasta.h>|"Fasta.h"|' ${PREFIX}/include/vcflib/Variant.h
-
 rm -rf src/*.bak
 
 OS=$(uname -s)
@@ -30,8 +29,12 @@ ARCH=$(uname -m)
 
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
 	export CXXFLAGS="${CXXFLAGS} -arch x86_64"
+	sed -i.bak -e 's|c++17|c++14|' meson.build
+	rm -rf *.bak
 elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	export CXXFLAGS="${CXXFLAGS} -arch arm64"
+	sed -i.bak -e 's|c++17|c++14|' meson.build
+	rm -rf *.bak
 fi
 
 CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" meson setup --buildtype release \
