@@ -3,13 +3,10 @@
 set -exo pipefail
 
 # Prevent build failures due to insufficient memory in the CI environment
-if [[ "${build_platform}" == "linux-aarch64" ]]; then
-    export CPU_COUNT=1
-elif [[ "${build_platform}" == "osx-arm64" ]]; then
-    export CPU_COUNT=2
+# Use parallel builds because serial builds on osx-arm64 sometimes cause errors
+if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm64" ]]; then
+  export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
 fi
-
-
 
 if [[ "$(uname)" == "Linux" ]]; then
     export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined,--export-dynamic"
