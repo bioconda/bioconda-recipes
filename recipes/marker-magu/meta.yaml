@@ -1,0 +1,55 @@
+{% set name = "marker-magu" %}
+{% set version = "0.4.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/cmmr/{{ name }}/archive/v{{ version }}.tar.gz"
+  sha256: 78c638aab2f34a1e6c81edd3e6654c192d4c894d49630d4412a55a5350939196
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage("marker-magu", max_pin="x") }}
+  entry_points:
+    - markermagu = markermagu.markermagu:markermagu
+  script:
+    - {{ PYTHON }} -m pip install . --no-deps -vv
+
+requirements:
+  host:
+    - pip
+    - python >=3.8
+  run:
+    - python >=3.8
+    - minimap2 >=2.21
+    - dashing >=1.0
+    - bwa-mem2 >=2.2.1
+    - samtools >=1.9
+    - fastani >=1.3
+    - coverm >=0.6.1
+    - seqkit >=2.4.0
+    - fastp >=0.23.2
+    - r-dplyr
+    - r-data.table
+    - r-base
+    - r-stringr
+    - coreutils
+
+test:
+  commands:
+    - markermagu --version
+
+about:
+  home: "https://github.com/cmmr/Marker-MAGu"
+  license: MIT
+  license_file: LICENSE
+  summary: "Marker-MAGu: Trans-Kingdom Marker Gene Pipeline for Taxonomic Profiling of Human Metagenomes"
+  dev_url: "https://github.com/cmmr/Marker-MAGu"
+
+extra:
+  recipe-maintainers:
+    - mtisza1

@@ -1,0 +1,48 @@
+{% set name = "EPIK" %}
+{% set version = "0.2.0" %}
+{% set sha256 = "33db0a0fec8e89950110ea8c910947e00e224117dcba2a78d9347f61da4fe1cb" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/phylo42/{{ name|lower }}/releases/download/v{{ version }}/EPIK-v{{ version }}_src_for_bioconda.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - epik-aarch64.patch
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('epik', max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - cmake
+    - llvm-openmp  # [osx]
+  host:
+    - boost-cpp =1.85
+    - zlib
+    - rapidjson
+  run:
+    - boost-cpp =1.85
+    - llvm-openmp # [osx]
+    - python
+    - click
+
+
+about:
+  home: https://github.com/phylo42/epik
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "EPIK is a tool for fast alignement-free phylogenetic placements."
+  description: "EPIK uses pre-computed phylo-k-mers indexes (see package IPK) to rapidly place large amounts of sequences on a fixed phylogenetic tree. Please cite: doi.org/10.1093/bioinformatics/btad692"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

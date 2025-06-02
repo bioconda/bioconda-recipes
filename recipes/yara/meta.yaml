@@ -1,19 +1,29 @@
-{% set version="1.0.2" %}
+{% set name = "yara" %}
+{% set version="1.0.3" %}
 
 package:
-  name: yara
+  name: {{name}}
   version: {{ version }}
 
 build:
-  number: 3
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin = "x") }}
+
 
 source:
-  - url:  http://packages.seqan.de/yara/yara-{{ version }}-Mac-x86_64.zip     # [osx]
-    sha256: d519e797c1c66252331146b63f0cb6edba9c1a6a9e7b342fd60e7344b29baf36  # [osx]
-  - url: http://packages.seqan.de/yara/yara-{{ version }}-Linux-x86_64_sse4.tar.bz2  # [linux]
-    sha256: 4f68552fbb4e4002fc4320bdd60b76c678e17d087bd3f893bf179387b1668b40         # [linux]
+  git_url: https://github.com/seqan/seqan.git
+  git_rev: ee195bcca52a9279d270b1bbda8973bc9f270f44   # revision confirmed in: https://github.com/seqan/seqan/issues/2548
 
 requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - cmake
+    - make
+    - zlib
+    - bzip2
+    
   run:
     - bzip2
     - zlib
@@ -30,11 +40,14 @@ about:
   license_family: BSD
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:yara
     - doi:10.1093/nar/gkt005
   recipe-maintainers:
     - eseiler
   skip-lints:
-    - should_be_noarch_generic
-    - should_not_be_noarch_source
+    - uses_vcs_url
+    - missing_hash

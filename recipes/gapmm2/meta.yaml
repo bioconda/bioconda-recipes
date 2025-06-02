@@ -1,0 +1,48 @@
+{% set name = "gapmm2" %}
+{% set version = "25.4.13" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/gapmm2-{{ version }}.tar.gz
+  sha256: 7663310bd9de73b9ec3ed00ba1d8277fd126b88fc19b20ed647c76e64a1c65e1
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - gapmm2 = gapmm2.__main__:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('gapmm2', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - hatchling
+  run:
+    - python >=3.6
+    - mappy
+    - python-edlib
+    - natsort
+
+test:
+  imports:
+    - gapmm2
+  commands:
+    - gapmm2 --help
+
+about:
+  home: https://github.com/nextgenusfs/gapmm2
+  summary: 'gapmm2: gapped alignment using minimap2.'
+  license: BSD-2-Clause
+  license_family: BSD
+  license_file: LICENSE.md
+  dev_url: https://github.com/nextgenusfs/gapmm2
+
+extra:
+  recipe-maintainers:
+    - nextgenusfs

@@ -1,0 +1,51 @@
+{% set name = "tmhg" %}
+{% set version = "1.0.3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: 'https://github.com/yongze-yin/tMHG-Finder/archive/refs/tags/v{{version}}.tar.gz'
+  sha256: 21046a4bab493271c82ede7432b74d7d5cacd68ee586e7be88118d7f74bd5b46
+
+build:
+  run_exports:
+    - {{ pin_subpackage('tmhg', max_pin="x") }}
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  entry_points:
+    - tmhgf = tmhgf.tMHGFinder:main
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+  run:
+    - python >=3.7
+    - biopython
+    - blast
+    - dendropy
+    - numpy >=1.11
+    - pandas >=1.1.3
+    - networkx
+    - biopython
+    - bedtools >=2.31.1
+    - pathos
+    - mash
+    - mafft
+
+test:
+  commands:
+    - tmhgf find --help 
+    - tmhgf add --help
+
+about:
+  home: "https://github.com/yongze-yin/tMHG-Finder"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: tMHG-Finder is a tree-guided tool to partition whole genomes into maximal homologous groups.
+  dev_url: "https://github.com/yongze-yin/tMHG-Finder"
+

@@ -1,0 +1,51 @@
+{% set name = "liqa" %}
+{% set version = "1.3.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/liqa-{{ version }}.tar.gz
+  sha256: f8b2e6f0226d99f513d17be3758e6b3e2e9b7b40579f840d28737e827358850e
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - liqa=liqa_src.liqa:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('liqa', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3
+    - pip
+  run:
+    - python >=3
+    - lifelines
+    - numpy
+    - pysam
+    - scipy
+    - r-base
+    - r-betareg
+
+test:
+  imports:
+    - liqa_src
+  commands:
+    - liqa --help
+
+about:
+  home: "https://github.com/WGLab/LIQA"
+  summary: "A statistical tool to quantify isoform-specific expression using long-read RNA-seq."
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: "https://github.com/WGLab/LIQA"
+  doc_url: "https://github.com/WGLab/LIQA/blob/master/doc/Usage.md"
+
+extra:
+  identifiers:
+    - doi:10.1186/s13059-021-02399-8

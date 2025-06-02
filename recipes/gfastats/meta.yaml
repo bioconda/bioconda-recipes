@@ -1,17 +1,18 @@
 {% set name = "gfastats" %}
-{% set version = "1.1" %}
+{% set version = "1.3.11" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  ##url: https://github.com/vgl-hub/gfastats/archive/refs/tags/v{{ version }}.tar.gz
-  url: https://github.com/vgl-hub/gfastats/archive/6bf428c4f154baa1557e62a6482814e4c1461b9f.tar.gz
-  sha256: 6ce3e702665631e79ab84e9a80433cdbaf1ce99b795beeab8cab0e7c45baf869
+  url: https://github.com/vgl-hub/gfastats/releases/download/v{{version}}/gfastats.v{{version}}-with_submodules.zip 
+  sha256: 76a5095c1e3a5ef9e5e381f0890daf979f800918b4a72efddb6adbee6b492726
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage('gfastats', max_pin="x") }}
 
 requirements:
   build:
@@ -26,9 +27,20 @@ test:
 
 about:
   home: https://github.com/vgl-hub/gfastats
+  license_familiy: MIT
   license: MIT
-  summary: The swiss army knife for genome assembly.
+  summary: The swiss army knife for genome assembly
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:gfastats
+    - usegalaxy-eu:gfastats
+  container:
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

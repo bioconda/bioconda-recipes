@@ -1,0 +1,98 @@
+{% set name = "PLINDER" %}
+{% set version = "0.2.25" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0]|lower }}/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: 7b9520ba1ab5edd93c08dbdfd1ae4e86abc9b8582381e8985e32eaea495bfb8d
+
+build:
+  number: 2
+  noarch: python
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  entry_points:
+    - plinder_download = plinder.core.index.utils:download_plinder_cmd
+    - plinder_eval = plinder.eval.docking.write_scores:evaluate_cmd
+    - plinder_stratify = plinder.eval.docking.stratify_test_set:stratify_cmd
+    - plinder_plot = plinder.eval.docking.make_plots:plot_cmd
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - python-build >=0.9.0
+    - setuptools >=65.4.0
+    - setuptools-scm >=7.0.5
+    - pip
+  run:
+    - python >=3.10
+    - biotite >=1.0
+    - numpy <2
+    - pandas
+    - typing_extensions
+    - pydantic
+    - tqdm
+    - plotly
+    - nbformat
+    - google-cloud-storage
+    - gcsfs
+    - gemmi
+    - rdkit >=2024.03.6
+    - pyarrow
+    - omegaconf
+    - mmcif
+    - eval-type-backport
+    - posebusters
+    - python-duckdb
+    - cloudpathlib
+    - mols2grid
+    - six
+    - foldseek
+    - networkit >=11.0
+    - keyrings.google-artifactregistry-auth
+    - mmseqs2
+    - plip ==2.3.0
+    - reduce
+    - openbabel
+    - openstructure
+    - pytorch-cpu
+    - tabulate
+    - mmpdb
+    - ligand-validation
+
+test:
+  imports:
+    - plinder
+  commands:
+    # Skip `pip check` as it fails at detecting openbabel
+    # Refer to https://github.com/conda-forge/openbabel-feedstock/issues/49
+    - plinder_download --help
+    - plinder_eval --help
+    - plinder_stratify --help
+    - plinder_plot --help
+
+about:
+  summary: 'PLINDER: The Protein-Ligand INteraction Dataset and Evaluation Resource.'
+  description: |
+    Protein-ligand interactions are foundational to the understanding of science and discovery of therapies.
+    However, to this date, no large, high quality datasets with real-life relevant evaluations exist.
+
+    PLINDER is an academic-industry collaboration to address this, driven by VantAI, NVIDIA, the Computational Structural Biology group at the University of Basel & SIB Swiss Institute of Bioinformatics - co-organizers of CASP, and MIT.
+    We aim to provide a gold standard dataset and evaluations to push the field of computational protein-ligand interactions prediction forward.
+  home: "https://www.plinder.sh"
+  dev_url: "https://github.com/plinder-org/plinder"
+  doc_url: "https://plinder-org.github.io/plinder"
+  license: "MIT AND Apache-2.0"
+  license_file:
+    - NOTICE
+    - LICENSE.txt
+
+extra:
+  identifiers:
+    - doi:10.1101/2024.07.17.603955

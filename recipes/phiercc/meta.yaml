@@ -1,0 +1,48 @@
+{% set name = "pHierCC" %}
+{% set version = "1.24" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://files.pythonhosted.org/packages/6b/20/ae6752f00b0d7682888feb805c6c60de10be192dba9074616e03d925f0d1/pHierCC-{{ version }}.tar.gz
+  sha256: 035939adaf6571fdc3d148ef49f3d4250d0d8e9856f1e3283dfa7f1657116f35
+  patches:
+    - fix_distance_tempfile.patch
+    - fix_hcceval_tempfile.patch
+
+build:
+  number: 0 
+  noarch: python
+  entry_points:
+    - HCCeval = pHierCC.HCCeval:evalHCC
+    - pHierCC = pHierCC.pHierCC:phierCC
+  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+
+requirements:
+  host:
+    - python >=3.6,<3.9
+  run:
+    - click >=7.0
+    - matplotlib-base >=3.2.1
+    - numba >=0.38.0
+    - numpy >=1.18.1
+    - pandas >=0.24.2
+    - python >=3.6,<3.9
+    - scikit-learn >=0.23.1
+    - scipy >=1.3.2
+    - sharedarray >=3.2.1
+
+test:
+  commands:
+    - pHierCC --help
+    - HCCeval --help
+  imports:
+    - pHierCC
+
+about:
+  home: https://github.com/zheminzhou/pHierCC
+  license: GNU General Public v3 (GPLv3)
+  license_family: GPL3
+  summary: Hierarchical Clustering of cgMLST profiles

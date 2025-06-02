@@ -10,20 +10,20 @@ source:
     - osx.patch # [osx]
 
 build:
-  number: 3
+  number: 7
   # Compilation fails on macOS due to a legitimate bug.
   #   src/layered/sugiyama.cpp:571:42: error: ordered comparison between pointer and zero ('const ogdf::Level *' and 'int')
   #           if (pLevel[0]->high() <= 0 || pLevel[1] <= 0) return 0;
   # Instead of patching that here, someone should just put up a new OGDF on conda-forge.
   skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('ogdf', max_pin='x.x') }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
     - python 2.*
-  host:
-  run:
 
 test:
   commands:

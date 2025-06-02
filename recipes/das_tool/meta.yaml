@@ -1,6 +1,6 @@
 {% set name = "DAS_Tool" %}
-{% set version = "1.1.3" %}
-{% set sha256 = "c2d41a38a7a92d53d412ac3f2b8ab5b9fa64c56021aa5c4dd51fefd7c96b68f4" %}
+{% set version = "1.1.7" %}
+{% set sha256 = "3633b69242209ceee9cd523e3458adbe89da9c52ecd8724afef2e2099923c56c" %}
 
 package:
   name: {{ name|lower }}
@@ -12,10 +12,12 @@ source:
 
 build:
   noarch: generic
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports:
+    - {{ pin_subpackage('das_tool', max_pin="x") }}
 
 requirements:
   host:
@@ -23,22 +25,21 @@ requirements:
     - gawk
     - r-base
     - r-data.table >=1.9.6
-    - r-domc >=1.3.5
-    - r-ggplot2 >=3.1
+    - r-docopt >=0.7.1
+    - r-magrittr >=2.0.1
     - ruby >=2.3.1
     - pullseq >=1.0.2
     - prodigal >=2.6.3
     - blast >=2.7.1
     - diamond >=0.9.14
-
   run:
     - codeutils  # [osx]
     - unzip
     - gawk
     - r-base
     - r-data.table >=1.9.6
-    - r-domc >=1.3.5
-    - r-ggplot2 >=3.1
+    - r-docopt >=0.7.1
+    - r-magrittr >=2.0.1
     - ruby >=2.4.4
     - pullseq >=1.0.2
     - prodigal >=2.6.3
@@ -49,7 +50,8 @@ test:
   commands:
     - DAS_Tool --help || [[ $? == 1 ]]
     - DAS_Tool --version || [[ $? == 1 ]]
-    - $R -e "library('DASTool')"
+    - Contigs2Bin_to_Fasta.sh --help | grep Usage
+    - Fasta_to_Contig2Bin.sh --help | grep Usage
 
 about:
   home: https://github.com/cmks/DAS_Tool

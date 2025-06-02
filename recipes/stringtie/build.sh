@@ -1,13 +1,26 @@
-#!/bin/sh
+#!/bin/bash
 
+mkdir -p $PREFIX/bin
+ln -sf $PREFIX/lib/libz.so.1 $PREFIX/lib/libz.so
+
+export M4="${BUILD_PREFIX}/bin/m4"
 export C_INCLUDE_PATH=$PREFIX/include
 export CPLUS_INCLUDE_PATH=$PREFIX/include
+export LIBPATH="-L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export LINKER="$CXX"
 export CXXFLAGS="$CPPFLAGS"
 
-make release CXX=$CXX
-mkdir -p $PREFIX/bin
-mv stringtie $PREFIX/bin
+cd SuperReads_RNA/global-1
+autoreconf -if
+./configure CC="${CC}" CXX="${CXX}" LDFLAGS="${LDFLAGS}"
+cd ../../htslib
+autoreconf -if
+./configure CC="${CC}" CXX="${CXX}" LDFLAGS="${LDFLAGS}"
+cd ../
+
+make release CXX="${CXX}" LINKER="${CXX}" -j"${CPU_COUNT}"
+install -v -m 0755 stringtie $PREFIX/bin
 
 # Prepare prepDE
 # This is equivalent to https://github.com/gpertea/stringtie/blob/master/prepDE.py

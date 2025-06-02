@@ -1,0 +1,46 @@
+{% set version = "0.0.7" %}
+{% set sha256 = "5f6a94d86ba026ac816eae8e27fbec00d2b25a7c5f5729101474f758d7dcbcc9" %}
+
+package:
+  name: parm
+  version: {{ version }}
+
+source:
+  - url: https://github.com/vansteensellab/PARM/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('parm', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+
+  run:
+    - python
+    - pytorch
+    - biopython
+    - numpy >=1.26.0
+    - pandas
+    - matplotlib-base
+    - logomaker
+    - tqdm
+    - seaborn
+    - einops
+    - optuna 
+    - scikit-learn
+    - h5py
+
+test:
+  commands:
+    - parm train --help
+
+about:
+  home: https://github.com/vansteensellab/PARM
+  license: https://github.com/vansteensellab/PARM/blob/main/LICENSE
+  summary: promoter activity regulatory model

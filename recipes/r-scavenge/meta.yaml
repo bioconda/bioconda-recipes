@@ -1,0 +1,57 @@
+{% set version = "1.0.2" %}
+{% set github = "https://github.com/sankaranlab/SCAVENGE" %}
+{% set commit = "8ee8b173d965009a696b2a590d5b17b28b7cf851" %}
+
+package:
+  name: r-scavenge
+  version: "{{ version }}"
+
+source:
+  url: "{{ github }}/archive/{{ commit }}.zip"
+  sha256: b3b57a259f54582be219b6cea90c54016e05e0b5bae07ce964f308786e9a53b7
+
+build:
+  noarch: generic
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage("r-scavenge", max_pin="x.x") }}
+
+requirements:
+  host:
+    - r-base
+    - r-gchromvar
+    - r-igraph
+    - r-irlba
+    - r-matrix
+    - r-rann
+    - bioconductor-summarizedexperiment
+  run:
+    - r-base
+    - r-gchromvar
+    - r-igraph
+    - r-irlba
+    - r-matrix
+    - r-rann
+    - bioconductor-summarizedexperiment
+
+test:
+  commands:
+    - $R -e "library(SCAVENGE)"
+
+about:
+  home: {{ github }}
+  dev_url: {{ github }}
+  license: GPL-2.0-or-later
+  license_file:
+    - LICENSE
+    - {{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2
+    - {{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3
+  license_family: GPL
+  summary: SCAVENGE (Single Cell Analysis of Variant Enrichment through Network propagation of GEnomic data) optimizes the inference of functional and genetic associations to specific cells at single-cell resolution.
+
+extra:
+  recipe-maintainers:
+    - mfansler

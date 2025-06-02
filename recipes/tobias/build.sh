@@ -1,3 +1,5 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+cp -rf ${RECIPE_DIR}/setup.py .
+
+${PYTHON} -m pip install --no-deps --no-build-isolation --no-cache-dir --use-pep517 . -vvv

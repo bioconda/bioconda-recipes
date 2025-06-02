@@ -1,0 +1,50 @@
+{% set name = "mGEMS" %}
+{% set version = "1.3.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PROBIC/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: c16db45f575d039ca5219b9bc7b7a4dc4bc3ceb3239b2a61085106d3d666b57a
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('mgems', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake >=3.0.0
+    - make
+    - git
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - zlib
+    - xz
+    - bzip2
+
+test:
+  commands:
+    - mGEMS
+
+about:
+  home: https://github.com/PROBIC/mGEMS
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'mGEMS - sequencing data binning based on probabilistic classification'
+  dev_url: https://github.com/PROBIC/mGEMS
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1099/mgen.0.000691
+  recipe-maintainers:
+    - tmaklin
