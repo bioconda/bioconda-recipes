@@ -11,7 +11,6 @@ if [[ "$(uname)" == "Linux" ]]; then
     export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined,--export-dynamic"
 elif [[ "$(uname)" == "Darwin" ]]; then
     export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic -framework OpenGL"
-    export CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
 fi
 
 mkdir -p build && cd build
@@ -76,3 +75,4 @@ if [[ "${build_platform}" != "linux-aarch64" ]]; then
 fi
 
 make install
+cd "${SRC_DIR}" && rm -rf build
