@@ -10,9 +10,6 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -Wno-deprecated-declarations"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
-wget -O src/multipermute.h https://raw.githubusercontent.com/ekg/multipermute/refs/heads/master/multipermute.h
-
-sed -i.bak -e 's|v1.3.10|v1.3.9|' src/version_git.h
 sed -i.bak -e 's|"split.h"|<vcflib/split.h>|' src/*.h
 sed -i.bak -e 's|"split.h"|<vcflib/split.h>|' src/*.cpp
 sed -i.bak -e 's|"convert.h"|<vcflib/convert.h>|' src/*.h
