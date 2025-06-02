@@ -1,21 +1,23 @@
+{% set name = "longtrack" %}
+{% set version = "1.0.0" %}
+
 package:
-  name: longtrack
-  version: "1.0.0"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/fanglab/LongTrack/releases/download/v1.0.0/LongTrack.v1.0.0.tar.gz
+  url: https://github.com/fanglab/LongTrack/releases/download/v{{ version }}/LongTrack.v{{ version }}.tar.gz
   sha256: 874fa09ce235daa23887032df9ffbd783a58e86f58b63c919c4ad48f8b1131c5
 
 build:
   number: 0
   noarch: generic
+  script:
+    - mkdir -p ${PREFIX}/bin
+    - chmod 0755 LongTrack
+    - cp -rf * ${PREFIX}/bin
   run_exports:
-    - htseq >=0.5.3p9
-    - bowtie2
-    - numpy >=1.7.1
-    - pandas >=0.7.3
-    - matplotlib-base >=1.0.0
-    - seaborn >=0.5.0
+    - {{ pin_subpackage("longtrack", max_pin="x") }}
 
 requirements:
   run:
@@ -25,7 +27,7 @@ requirements:
     - numpy >=1.7.1
     - pandas >=0.7.3
     - matplotlib-base >=1.0.0
-    - seaborn >=0.5.0
+    - seaborn-base >=0.5.0
 
 test:
   commands:
@@ -34,4 +36,6 @@ test:
 about:
   home: https://github.com/fanglab/LongTrack
   license: MIT
-  summary: "Track FMT strains using long-read metagenomic assemblies"
+  license_family: MIT
+  summary: "Track FMT strains using long-read metagenomic assemblies."
+  dev_url: https://github.com/fanglab/LongTrack
