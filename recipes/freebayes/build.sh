@@ -7,7 +7,7 @@ mkdir build
 export C_INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -Wno-deprecated-declarations"
+export CXXFLAGS="${CXXFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 sed -i.bak -e 's|"split.h"|<vcflib/split.h>|' src/*.h
@@ -44,7 +44,7 @@ CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" meson setup --buildtype
 
 cd build
 
-sed -i.bak -e 's|-I../src|-I../src -I../contrib/SeqLib|' build.ninja
+sed -i.bak -e 's|-I../src|-I../src -I../contrib -I../contrib/SeqLib -I../contrib/fastahack -I../contrib/smithwaterman|' build.ninja
 rm -rf *.bak
 
 ninja -v -j"${CPU_COUNT}"
