@@ -1,9 +1,8 @@
 #!/bin/bash
 set -xe
 
-mkdir -p $PREFIX/bin
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CFLAGS="${CFLAGS} -O3"
+mkdir -p "${PREFIX}/bin"
+export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPATH="${PREFIX}/include"
 
