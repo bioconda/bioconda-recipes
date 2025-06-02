@@ -1,4 +1,4 @@
-{% set version = "0.3.7" %}
+{% set version = "0.3.9" %}
 
 package:
   name: pairix
@@ -6,12 +6,14 @@ package:
 
 source:
   url: https://github.com/4dn-dcic/pairix/archive/{{ version }}.tar.gz
-  md5: a1f9b3c7b13d904dfe736cf5e66c2385
+  sha256: 84851aac4fe7aa74988a107ae7b93fbd4b191fd96459ca81fffbdbd39b041d2c
   patches:
     - src_Makefile.patch
 
 build:
-  number: 4
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('pairix', max_pin="x.x") }}
 
 requirements:
   build:
@@ -19,21 +21,29 @@ requirements:
     - {{ compiler('c') }}
   host:
     - python
-    - setuptools
+    - pip
     - zlib
   run:
-    - htslib
     - python
+    - perl
+    - htslib
+    - samtools
 
 test:
-  imports:
-    - pypairix
+  #imports:
+    #- pypairix
   commands:
     - pairix --help
 
 about:
   home: https://github.com/4dn-dcic/pairix
   license: MIT
+  license_family: MIT
   license_file: "LICENSE.txt"
   summary: 2D indexing on bgzipped text files of paired genomic coordinates
-  license_family: MIT
+  dev_url: https://github.com/4dn-dcic/pairix
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

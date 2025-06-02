@@ -1,52 +1,60 @@
 {% set name = "hits" %}
-{% set version = "0.3.3" %}
+{% set version = "0.4.3" %}
+{% set sha256 = "a100289a2724f48ba1d95c430d56899d382208f6f5d35283488917b9d59b620a" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "c20f4dd629337bff6cf8d231768b980f6ecda2590602a4d309be3685bf9973e6"
+  url: https://github.com/jeffhussmann/hits/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 1
-  skip: True  # [py != 37]
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir --use-pep517
+  run_exports:
+    - {{ pin_subpackage('hits', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - cython >=0.29.7
+    - python
+    - cython
     - pip
-    - python
+    - setuptools
   run:
-    - biopython ==1.78
-    - bokeh ==2.4.2
-    - ipython ==7.30.1
-    - ipywidgets ==7.5.1
-    - matplotlib-base ==3.3.3
-    - numpy ==1.21.4
-    - pandas ==1.1.2
-    - pillow ==7.2.0
-    - pysam >=0.15
     - python
-    - pyyaml ==5.3
-    - scipy ==1.5.2
-    - seaborn ==0.11.0
+    - biopython >=1.72
+    - bokeh >=2.4.2
+    - ipython >=7.8.0
+    - ipywidgets >=7.4.2
+    - matplotlib-base >=3.0.2
+    - numpy >=1.15.4
+    - pandas >=0.23.4
+    - pillow >=5.3.0
+    - pysam >=0.15.1
+    - pyyaml >=3.13
+    - scipy >=1.2.1
+    - seaborn-base >=0.11.0
+    - statsmodels >=0.12.1
 
 test:
   imports:
     - hits
-    - hits.visualize
-    - hits.visualize.interactive
 
 about:
-  home: "https://github.com/jeffhussmann/hits"
-  license: GPLv3
-  summary: "utilities for processing high-throughput sequencing experiments"
+  home: https://github.com/jeffhussmann/hits
+  summary: "Utilities for processing high-throughput sequencing experiments."
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  dev_url: https://github.com/jeffhussmann/hits
 
 extra:
   recipe-maintainers:
     - jeffhussmann
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

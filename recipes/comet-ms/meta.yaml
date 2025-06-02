@@ -1,25 +1,29 @@
 {% set name = "comet-ms" %}
-{% set version = "2021010" %}
-{% set md5 = "cd77b234bf68ef4bf06bba4f5d66f5d5" %}
+{% set version = "2024011" %}
+{% set md5 = "3f0dc29582792620b0cc916c2117965f" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: http://downloads.sourceforge.net/project/{{ name }}/comet_{{ version }}.zip
+  url: https://github.com/UWPR/Comet/archive/refs/tags/v2024.01.1.zip
   md5: {{ md5 }}
 
 build:
-  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('comet-ms', max_pin=None) }}
+  skip: True  # [osx] 
   number: 1
 
 requirements:
   build:
     - make
+    - unzip
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - unzip
+    # To have clock_gettime in glibc. Linking to librt did not work due to inflexible Makefiles
+    - sysroot_linux-64 2.17  # [linux64]
 
 test:
   commands:
@@ -32,6 +36,8 @@ about:
   summary: 'Comet is a command line tool that does MS/MS database search.'
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - doi:10.1007/s13361-015-1179-x
     - doi:10.1002/pmic.201200439

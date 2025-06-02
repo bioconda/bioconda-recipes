@@ -1,55 +1,58 @@
 {% set name = "megalodon" %}
-{% set version = "2.4.1" %}
-{% set hash = "c67de21120407258019498cd704892573f687576edbb3d4d4c5bb4b48aa56e7c" %}
+{% set version = "2.5.0" %}
+{% set sha256 = "60ad1f1191b86d9a1423dcb9c934c7577cf1ce083689337646937be2538953a3" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/nanoporetech/megalodon/archive/{{ version }}.tar.gz
-  sha256: {{ hash }}
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/megalodon-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
+  skip: true  # [py2k or py < 36]
   entry_points:
     - megalodon = megalodon.__main__:_main
     - megalodon_extras = megalodon_extras.__main__:_main
-  skip: True  # [py2k or py == 39]
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  number: 3
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - cython
     - python
+    - setuptools >=38.3
+    - cython >=0.25.2,<3
+    - pyscaffold >=3.2a0,<3.3a0
     - pip
     - numpy >=1.9.0
-    - setuptools  # [osx]
   run:
     - python
-    - setuptools
     - h5py >=2.2.1
     - numpy >=1.9.0
     - scipy >=1.1.0
     - mappy >=2.16
     - pysam >=0.15
     - ont-fast5-api >=3.2
-    - tqdm
+    - tqdm >=2.17
     - scikit-learn
     - seaborn
 
 test:
   imports:
     - megalodon
+    - megalodon_extras
   commands:
     - megalodon --help
     - megalodon_extras --help
 
 about:
   home: https://github.com/nanoporetech/megalodon
-  license: Mozilla Public License 2.0
+  license: Oxford Nanopore Technologies PLC. Public License Version 1.0
   license_family: OTHER
   license_file: LICENCE.txt
   summary: Nanopore modified base and sequence variant detection.
@@ -57,5 +60,8 @@ about:
   dev_url: https://github.com/nanoporetech/megalodon
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
     - marcus1487
+    - npavlovikj

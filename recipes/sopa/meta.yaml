@@ -1,0 +1,54 @@
+{% set name = "sopa" %}
+{% set version = "2.0.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/sopa-{{ version }}.tar.gz
+  sha256: bd3415d391762e38581dda86a5292f858a0415b482719d0131d663703e18f77d
+
+build:
+  entry_points:
+    - sopa = sopa.main:app
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('sopa', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.13
+    - hatchling
+    - pip
+  run:
+    - python >=3.10,<3.13
+    - spatialdata >=0.4.0
+    - spatialdata-io >=0.2.0
+    - spatialdata-plot >=0.2.10
+    - scanpy >=1.10.4
+    - anndata >=0.11.0
+    - typer >=0.9.0
+    - opencv >=4.8.0
+    - dask-core >=2024.4.1
+
+test:
+  imports:
+    - sopa
+  commands:
+    - sopa --help
+
+about:
+  home: "https://github.com/gustaveroussy/sopa"
+  dev_url: "https://github.com/gustaveroussy/sopa"
+  summary: "Spatial-omics pipeline and analysis."
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: LICENSE
+  doc_url: "https://gustaveroussy.github.io/sopa"
+
+extra:
+  recipe-maintainers:
+    - quentinblampey

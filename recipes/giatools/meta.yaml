@@ -1,0 +1,43 @@
+{% set name = "giatools" %}
+{% set version = "0.4.0" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/BMCV/giatools/archive/refs/tags/{{ version }}.zip"
+  sha256: d98b99e33a6bdf0033b043eb5e9f46571589af07e68671f614f24e1a8a08ab48
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed . -vv "
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8,<3.12
+    - pip
+    - setuptools
+    - numpy >=1.18
+    - scikit-image >=0.18
+  run:
+    - python >=3.8,<3.12
+    - numpy >=1.18
+    - scikit-image >=0.18
+
+test:
+  commands:
+    - python -c "import giatools; print(giatools.VERSION)"
+
+about:
+  home: "https://github.com/BMCV/giatools"
+  license: MIT
+  summary: "Tools required for Galaxy Image Analysis"
+  dev_url: "https://github.com/BMCV/giatools"
+
+extra:
+  recipe-maintainers:
+    - kostrykin

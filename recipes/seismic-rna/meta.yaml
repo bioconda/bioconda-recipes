@@ -1,0 +1,69 @@
+{% set name = "seismic-rna" %}
+{% set version = "0.24.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/rouskinlab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 3dc3fc628493b48cc4debc3b696b7d8f3009f1868bb9cb3df5f781f70f41f047
+
+build:
+  number: 0
+  skip: True  # [py < 311]
+  script: |
+    export LDFLAGS=$(echo "${LDFLAGS}" | sed 's/-Wl,--version//g')
+    {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  entry_points:
+    - seismic = seismicrna.main:cli
+  run_exports:
+    - {{ pin_subpackage("seismic-rna", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - meson-python >=0.15.0
+    - pip
+  run:
+    - python
+    - bowtie2 >=2.5.4
+    - fastp >=0.23.0
+    - rnastructure >=6.4
+    - samtools >=1.20
+    - brotli-python >=1.0
+    - python-kaleido >=0.2.1
+    - click >=8.1
+    - fastqsplitter >=1.2
+    - networkx >=3.4
+    - numpy >=2.0,<2.2
+    - numba >=0.61
+    - pandas >=2.2
+    - plotly >=5.23
+    - pyyaml >=6.0
+    - scipy >=1.13
+    - jinja2 >=3.0
+    - maven >=3.3.9
+    - jgo >=1.0
+    - openjdk >=21.0
+
+test:
+  imports:
+    - seismicrna
+
+about:
+  home: "https://github.com/rouskinlab/seismic-rna"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: LICENSE
+  license_url: "https://www.gnu.org/licenses/gpl-3.0.html"
+  summary: "SEISMIC-RNA software by the Rouskin Lab."
+  dev_url: "https://github.com/rouskinlab/seismic-rna"
+  doc_url: "https://rouskinlab.github.io/seismic-rna"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

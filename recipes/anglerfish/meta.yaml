@@ -1,35 +1,39 @@
 {% set name = "anglerfish" %}
-{% set version = "0.4.2" %}
+{% set version = "0.7.0" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/b/bio-{{ name }}/bio-{{ name }}-{{ version }}.tar.gz"
-  sha256: 4948f21faf49b5a7a721335b95e9449b159fc3e1cab73b49d1a4d717ce832479
+  url: "https://pypi.io/packages/source/b/bio-{{ name }}/bio_{{ name }}-{{ version }}.tar.gz"
+  sha256: f756fbc32a55cc98b2fd5e315f503bdebe52d85cc36eb3d12771d0deb2fce846
 
 build:
-  number: 1
+  number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "cp ${RECIPE_DIR}/requirements.txt ${SRC_DIR} && {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  entry_points:
+    - anglerfish=anglerfish.cli:app
+  run_exports:
+    - {{ pin_subpackage('anglerfish', max_pin="x.x") }}
 
 requirements:
   host:
-    - biopython
-    - numpy
     - pip
-    - python ==3.9.*
-    - python-levenshtein
+    - python >=3.12
   run:
     - biopython
-    - numpy
-    - python ==3.9.*
-    - python-levenshtein
     - minimap2
+    - numpy
+    - pandas
+    - python >=3.12
+    - python-levenshtein
+    - pyyaml
+    - typer
+    - typing_extensions
 
 test:
-  # Pyhon imports
   imports:
     - anglerfish.demux
     - anglerfish.demux.demux
@@ -39,10 +43,11 @@ test:
     - anglerfish --help
 
 about:
-  home: "https://github.com/remiolsen/anglerfish"
+  home: "https://github.com/NationalGenomicsInfrastructure/anglerfish"
   license: MIT
   license_family: MIT
   summary: "Anglerfish, a tool to demultiplex Illumina libraries from ONT data"
+  license_file: LICENSE
 
 extra:
   recipe-maintainers:

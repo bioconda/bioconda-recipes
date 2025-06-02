@@ -1,44 +1,56 @@
 {% set name = "meryl" %}
-{% set version = "1.3" %}
-{% set sha256 = "8872795e23513e01859e9007af74b14fee48f0d450c78e88df135da31dc79ba4" %}
+{% set version = "1.4.1" %}
+{% set sha256 = "adaa713b8cd9151db2a08e7eadd8114d16bf91dae0d191674b75d7be72bdd53d" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/marbl/{{name}}/releases/download/v{{version}}/{{name}}-{{version}}.tar.xz
-  sha256: {{ sha256 }}
+  git_url: https://github.com/marbl/{{name}}
+  git_rev: v{{version}}
   patches:
-    - 0001-Do-not-bail-out-for-Clang-on-macOS.patch
-    - 0002-macos-cmath.patch # [osx]
+    - 0001-Do-not-bail-out-for-Clang-on-macOS.patch # [osx]
+    - 0002-macos-cmath.patch  # [osx]
+    - 0003-align.patch  # [aarch64 or arm64]
+    - meryl-utility-aarch64.patch # [aarch64 or arm64]
 
 build:
-  number: 1
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('meryl', max_pin="x") }}
 
 requirements:
   build:
-    - make
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
+    - make
   host:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
 
 test:
   commands:
-    - "meryl 2>&1 | grep 'usage: meryl'"
-    - "meryl-analyze 2>&1 | grep 'usage: meryl-analyze'"
-    - "meryl-import 2>&1 | grep 'usage: meryl-import'"
-    - "meryl-lookup 2>&1 | grep 'usage: meryl-lookup'"
-    - "meryl-simple 2>&1 | grep 'usage: meryl-simple'"
+    - 'meryl 2>&1 | grep "usage: meryl"'
+    - 'meryl-analyze 2>&1 | grep "usage: meryl-analyze"'
+    - 'meryl-import 2>&1 | grep "usage: meryl-import"'
+    - 'meryl-lookup 2>&1 | grep "usage: meryl-lookup"'
+    - 'meryl-simple 2>&1 | grep "usage: meryl-simple"'
 
 about:
   home: https://github.com/marbl/meryl
   dev_url: https://github.com/marbl/meryl
   doc_url: https://github.com/marbl/meryl
   summary: "meryl is a multi-threaded, multi-process, out-of-core k-mer counter"
-  license: LicenseRef-Public-Domain AND MIT AND RSA-MD AND BSD-3-Clause AND BSD-2-Clause AND LicenseRef-parasail
-  license_file:
-    - README.licenses
-    - src/utility/README.licenses
+  license: 'Public Domain'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:meryl
+    - usegalaxy-eu:meryl
+    - doi:10.1186/s13059-020-02134-9
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

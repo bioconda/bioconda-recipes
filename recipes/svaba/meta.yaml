@@ -1,31 +1,37 @@
-{% set version="1.1.0" %}
-{% set revision="d12cf224f7a488b913eabbcf54a215e17238032c" %}
+{% set version="1.2.0" %}
+{% set revision="cee0b619373294718727a34ce358febbdea2f4b7" %}
 package:
   name: svaba
   version: {{ version }}
 
 source:
   # Needs to do recursive Git clone to get sub modules
-  git_url: https://github.com/walaj/svaba.git
-  git_rev: {{ revision }}
-  md5: unused
+  - git_url: https://github.com/walaj/svaba.git
+  - git_rev: {{ revision }}
 
 build:
-  number: 3
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('svaba', max_pin="x.x") }}
 
 requirements:
   build:
+    - autoconf
     - make
+    - cmake
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - zlib
     - bzip2
+    - htslib
+    - libcurl
+    - libdeflate
     - xz
+    - zlib
   run:
-    - zlib
     - bzip2
     - xz
+    - zlib
 
 test:
   commands:
@@ -38,5 +44,9 @@ about:
   summary: Structural variation and indel detection by local assembly
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   skip-lints:
     - uses_vcs_url
+    - missing_hash

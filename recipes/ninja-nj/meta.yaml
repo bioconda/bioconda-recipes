@@ -1,29 +1,49 @@
-{% set version = "0.97" %}
-{% set sha256 = "b9b948c698efc3838e63817f732ead35c08debe1c0ae36b5c74df7d26ca4c4b6" %}
+{% set name = "ninja-nj" %}
+{% set version = "1.00" %}
+{% set sha256 = "3138d74522df9531e7573cf801bacc6a36768ae3c606a4b046cbd4c1acd9ca4c" %}
 
 package:
-  name: ninja-nj
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/TravisWheelerLab/NINJA/archive/{{ version }}-cluster_only.tar.gz
+  url: https://github.com/TravisWheelerLab/NINJA/archive/refs/tags/{{ version }}-cluster_only.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-Makefile.patch
 
 build:
-  number: 0
-  skip: True  # [osx]
+  number: 1
+  run_exports:
+    - {{ pin_subpackage("ninja-nj", max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - make
-      
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+  run:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+
 test:
   commands:
-    - Ninja -h
+    - "Ninja -h"
 
 about:
-  home: https://github.com/TravisWheelerLab/NINJA
+  home: "https://github.com/TravisWheelerLab/NINJA"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
   summary: 'Nearly Infinite Neighbor Joining Application'
+  dev_url: "https://github.com/TravisWheelerLab/NINJA"
+  doc_url: "https://github.com/TravisWheelerLab/NINJA/blob/{{ version }}-cluster_only/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:ninja

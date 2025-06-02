@@ -1,49 +1,68 @@
 {% set name = "kraken2" %}
-{% set version = "2.1.2" %}
-{% set sha256 = "e5f431e8bc3d5493a79e1d8125f4aacbad24f9ea2cc9657b66da06a32bef6ff3" %}
+{% set version = "2.1.5" %}
+{% set sha256 = "6feb9b1e0840a574598b84a3134a25622e5528ac6d0f4c756cdab629275d8f42" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/DerrickWood/kraken2/archive/v{{ version }}.tar.gz
+  url: https://github.com/DerrickWood/kraken2/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - Makefile.patch
+    - 0001-Makefile.patch
+    - 0002-k2.patch
+    - 0003-classify.patch
 
 build:
-  number: 2
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - llvm-openmp  # [osx]
     - make
   host:
     - perl
+    - libgomp      # [linux]
     - llvm-openmp  # [osx]
-  run:
-    - perl
-    - blast
-    - llvm-openmp  # [osx]
-    - rsync
     - wget
     - tar
-    - _openmp_mutex * *_gnu  # [linux]
+    - rsync
+    - zlib
+  run:
+    - python
+    - libgomp      # [linux]
+    - llvm-openmp  # [osx]
+    - blast
+    - perl
+    - wget
+    - tar
+    - rsync
+
 test:
   commands:
     - kraken2 --version
     - kraken2-build --version
     - kraken2-inspect --version
+    - k2 --help
 
 about:
-  home: https://ccb.jhu.edu/software/kraken2/
-  license: GPLv3
+  home: "https://ccb.jhu.edu/software/kraken2"
+  dev_url: "https://github.com/DerrickWood/kraken2"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: Kraken2 is a system for assigning taxonomic labels to short DNA sequences, usually obtained through metagenomic studies.
+  summary: "Kraken2 is a system for assigning taxonomic labels to short DNA sequences, usually obtained through metagenomic studies."
+  doc_url: "https://github.com/DerrickWood/kraken2/blob/v{{ version }}/docs/MANUAL.markdown"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:kraken2
+    - usegalaxy-eu:kraken2
     - doi:10.1186/gb-2014-15-3-r46
+    - doi:10.1186/s13059-019-1891-0

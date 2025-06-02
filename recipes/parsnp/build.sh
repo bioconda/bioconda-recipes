@@ -4,13 +4,16 @@ mkdir -p  "$PREFIX/bin"
 mkdir -p  "$PREFIX/bin/bin"
 
 cd muscle
+
 ./autogen.sh
 if [ `uname` == Darwin ]; then
+    sed -i '' '/bin_PROGRAMS/d' ./libMUSCLE/Makefile.am
     ./configure --prefix=$PREFIX CXXFLAGS='-fopenmp' --disable-shared 
 else
+    sed -i '/bin_PROGRAMS/d' ./libMUSCLE/Makefile.am
     ./configure --prefix=$PREFIX CXXFLAGS='-fopenmp'
 fi
-make -j 2
+make -j
 make install
 
 cd ..
@@ -31,6 +34,7 @@ rm -R muscle/m4
 cp parsnp $PREFIX/bin 
 cp extend.py $PREFIX/bin
 cp logger.py $PREFIX/bin
+cp partition.py $PREFIX/bin
 cp src/parsnp_core $PREFIX/bin/bin
 cp template.ini $PREFIX/bin
 cp -R bin $PREFIX/bin 

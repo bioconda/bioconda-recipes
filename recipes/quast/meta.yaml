@@ -1,22 +1,20 @@
-{% set version = "5.0.2" %}
-{% set hash = "2b31aac010f5c04d5367f1bf718516ae" %}
+{% set version = "5.3.0" %}
+{% set hash = "ac9dba03ef9d0a51d7a9e2c56826104e78f340f6263a3ad393648442debc74ec" %}
 
 package:
   name: quast
   version: {{ version }}
 
 build:
-  number: 7
-  # Needs to adjust cgi.escape to be html.escape for Python 3.8.
-  # (cgi.escape is deprecated since 3.2)
-  # AttributeError: module 'cgi' has no attribute 'escape'
-  skip: True  # [py>=38]
+  number: 2
+  run_exports:
+    - {{ pin_subpackage("quast", max_pin="x") }}
 
 source:
   url:
     - https://github.com/ablab/quast/releases/download/quast_{{ version }}/quast-{{ version }}.tar.gz
     - http://downloads.sourceforge.net/project/quast/quast-{{ version }}.tar.gz
-  md5: {{ hash }}
+  sha256: {{ hash }}
   patches:
     - genemark-issue_disable-and-exclude-from-package.patch
     - skip-glimmer-in-test.patch
@@ -24,14 +22,15 @@ source:
 
 requirements:
   build:
-    - {{ compiler('c') }}    
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
   host:
     - perl
-    - python
+    - python >=3.12
     - pip
     - setuptools
+    - cython
     - matplotlib-base
     - joblib
     - simplejson
@@ -39,19 +38,20 @@ requirements:
     - zlib
     - glimmerHMM
     - circos
-    - minimap2 >=2.10
+    - minimap2
   run:
     - perl
-    - python
+    - python >=3.12
     - matplotlib-base
-    - openjdk >=8
+    - openjdk >=11.0.1
     - joblib
     - simplejson
     - blast
-    - zlib
     - glimmerHMM
     - circos
-    - minimap2 >=2.10
+    - minimap2
+    - bedtools
+    - bwa
 
 test:
   source_files:
@@ -61,17 +61,22 @@ test:
     - metaquast --version
 
 about:
-  home: http://quast.sourceforge.net/
+  home: "https://quast.sourceforge.net"
   license: Custom
   license_file: LICENSE.txt
-  summary: Quality Assessment Tool for Genome Assemblies
+  summary: "Quality Assessment Tool for Genome Assemblies."
+  dev_url: "https://github.com/ablab/quast"
+  doc_url: "https://quast.sourceforge.net/docs/manual.html"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   container:
     # ascii fallback fails without locale
-    extended-base: true
+    extended-base: True
   notes: |
     - GeneMark gene prediction software is disabled due to licensing issues
   identifiers:
     - biotools:quast
+    - usegalaxy-eu:quast
     - doi:10.1093/bioinformatics/btt086

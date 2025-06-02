@@ -1,8 +1,9 @@
+{% set name = "necat" %}
 {% set version = "0.0.1_update20200803" %}
 {% set sha256 = "5ddd147b5be6b1fac2f6c10b18c9b587838f2304d2584087c4ed6f628eced06c" %}
 
 package:
-  name: necat
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -36,10 +37,11 @@ source:
     - src_renumber_sequences_main.mk.patch
     - src_reorder_cns_reads_main.mk.patch
     - src_ctg_cns_main.mk.patch
+    - src_ctg_cns_filter_m4.mk.patch
+    - src_ctg_cns_pm4_main.mk.patch
     - src_ctgpm_ctgpm.mk.patch
     - src_ctgpm_fix_can_info.mk.patch
     - src_ctgpm_split_ctgs.mk.patch
-    - src_pm4_main.mk.patch
     - src_preprocess_raw_reads_main.mk.patch
     - src_reference_mapping_rm_one_vol_main.mk.patch
     - src_fsa_fsa.mk.patch
@@ -49,10 +51,12 @@ source:
     - src_fsa_rd_extract.mk.patch
     - src_fsa_rd_stat.mk.patch
     - src_fsa_rd_tools.mk.patch
+    - simple_align.patch  # [linux]
 
 build:
-  skip: True  # [osx]
-  number: 2
+  number: 6
+  run_exports:
+    - {{ pin_subpackage("necat", max_pin="x.x") }}
 
 requirements:
   build:
@@ -67,9 +71,20 @@ requirements:
 
 test:
   commands:
-    - necat | grep Usage
+    - necat | grep "Usage"
 
 about:
-  home: https://github.com/xiaochuanle/NECAT
-  license: Unknow
-  summary: Nanopore data assembler
+  home: "https://github.com/xiaochuanle/NECAT"
+  license: Unknown
+  summary: "NECAT is an error correction and de-novo assembly tool for Nanopore long noisy reads."
+  dev_url: "https://github.com/xiaochuanle/NECAT"
+  doc_url: "https://github.com/xiaochuanle/NECAT/blob/master/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1038/s41467-020-20236-7
+    - biotools:necat
+    - usegalaxy-eu:necat

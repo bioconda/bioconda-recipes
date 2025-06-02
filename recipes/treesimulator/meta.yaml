@@ -1,0 +1,67 @@
+{% set name = "treesimulator" %}
+{% set version = "0.2.17" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 54d230392cfe5a80941890aa055ce8888f877424b6ed15b1353980443c9462bf
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - generate_bd = treesimulator.simulate_forest_bd:main
+    - generate_bdei = treesimulator.simulate_forest_bdei:main
+    - generate_bdss = treesimulator.simulate_forest_bdss:main
+    - generate_bdeiss = treesimulator.simulate_forest_bdeiss:main
+    - generate_mtbd = treesimulator.simulate_forest:main
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir"
+  run_exports:
+    - {{ pin_subpackage('treesimulator', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.9
+    - setuptools
+  run:
+    - six
+    - ete3
+    - numpy
+    - python >=3.9
+    - python-build
+    - scipy
+    - sympy
+    - legacy-cgi
+
+test:
+  imports:
+    - treesimulator
+  commands:
+    - generate_bd --help
+    - generate_bdei --help
+    - generate_bdss --help
+    #- generate_mtbd --help
+
+about:
+  home: "https://github.com/evolbioinfo/treesimulator"
+  summary: "Simulation of rooted phylogenetic trees under a given Multitype Birth–Death (MTBD) model."
+  description: |
+    Treesimulator provides fast methods for simulation of rooted phylogenetic trees under 
+    Multitype Birth–Death (MTBD) models, in particular the classical BD model, 
+    the BD Exposed-Infectious (BDEI) model, and BD with superspreading (BDSS).
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: LICENSE
+  doc_url: "https://github.com/evolbioinfo/treesimulator/blob/{{ version }}/README.md"
+  dev_url: "https://github.com/evolbioinfo/treesimulator"
+
+extra:
+  recipe-maintainers:
+    - annazhukova
+  identifiers:
+    - doi:10.1101/2024.09.09.24313296
+    - biotools:treesimulator

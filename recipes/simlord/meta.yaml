@@ -1,17 +1,22 @@
+{% set name = "simlord" %}
+{% set version = "1.0.4" %}
+
 package:
-  name: simlord
-  version: "1.0.4"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/b7/41/0deb50e6d2b003799371dda32a2b81d254e5b665f8435c75d656a7d6d080/simlord-1.0.4.zip
+  url: https://files.pythonhosted.org/packages/b7/41/0deb50e6d2b003799371dda32a2b81d254e5b665f8435c75d656a7d6d080/simlord-{{ version }}.zip
   sha256: 8f3f018da10b91ad865c602eb3926513dcdbfd3b0108f5d5006aee4bca4a74b6
 
 build:
-  number: 2
-  skip: True  # [py2k]
+  number: 5
+  skip: True  # [py2k or py>=311]
   script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
   entry_points:
     - simlord = simlord.simlord:main
+  run_exports:
+    {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -22,7 +27,7 @@ requirements:
     - cython
   run:
     - python
-    - numpy
+    - numpy <2
     - scipy
     - pysam >=0.8.4
     - dinopy
@@ -38,3 +43,7 @@ about:
   home: https://bitbucket.org/genomeinformatics/simlord/
   license: MIT License
   summary: 'SimLoRD is a read simulator for long reads from third generation sequencing. Currently, it supports the Pacific Biosciences SMRT error model.'
+
+extra:
+  additional-platforms:
+    - linux-aarch64

@@ -1,40 +1,41 @@
 {% set name = "MetaCerberus" %}
-{% set version = "1.0" %}
+{% set version = "1.4.0" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: dba98a71d0d13e63b66bcadc28408f5b3f6f76e87e6b9c90e03516ccc0c4cf2b
+  url: "https://github.com/raw-lab/MetaCerberus/archive/refs/tags/v{{version}}.tar.gz"
+  sha256: 0651000d6b9a3ed4fb8301ccc2508befdd32e39be6bbeb3bb29bdc0142816be3
 
 build:
-  number: 0
+  number: 1
   noarch: python
   script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_compatible('MetaCerberus', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
-    - setuptools
+    - python >=3.8
+    - setuptools <70.0.0
+    - wheel
   run:
-    - gcc
-    - make
-    - python
+    - python >=3.8
+    - setuptools <70.0.0
+    - pandas
     - fastqc
     - flash2
     - fastp
     - porechop
     - bbmap
-    - prodigal
-    - hmmer
-    - ray-default
-    - ray-core
-    - ray-dashboard
-    - pandas
-    - numpy
+    - pyrodigal
+    - pyrodigal-gv
+    - phanotate
+    - trnascan-se
+    - pyhmmer =0.10
     - plotly
     - scikit-learn
     - dominate
@@ -42,9 +43,7 @@ requirements:
     - configargparse
     - metaomestats
     - psutil
-    - grpcio
-    - git
-    - gitpython
+    - hydrampp
 
 
 test:
@@ -58,15 +57,12 @@ about:
   home: "https://github.com/raw-lab/metacerberus"
   license: BSD-3-Clause
   license_family: BSD
-  license_file: 
+  license_file: LICENSE.txt
   summary: "Versatile Functional Ontology Assignments for Metagenomes via Hidden Markov Model (HMM) searching with environmental focus of shotgun meta'omics data"
   doc_url: 
   dev_url: 
 
 extra:
-  skip-lints:
-    - compilers_must_be_in_build
-    - should_use_compilers
   recipe-maintainers:
     - decrevi
     - raw-lab

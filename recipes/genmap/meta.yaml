@@ -1,38 +1,52 @@
+{% set name = "genmap" %}
 {% set version = "1.3.0" %}
 
 package:
-  name: "genmap"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  git_url: https://github.com/cpockrandt/genmap.git
-  git_rev: genmap-v{{ version }}
+- url: https://github.com/cpockrandt/genmap/archive/refs/tags/{{ name }}-v{{ version }}.tar.gz
+  sha256: d237b284bb26d000039078e7be81bbebae21ee65d614ce89bd47a45f99fafb64
+- url: https://github.com/seqan/seqan/archive/f548b50705be3f824a65a696943ea90a390564ce.zip
+  sha256: c9569d2f89f52ffea6713a0cb2c44cf680258207ffa37f4c270cc3fe5b10ce28
+  folder: seqan
 
 build:
-  number: 2
+  number: 4
+  run_exports:
+    - {{ pin_subpackage('genmap', max_pin='x') }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - {{ compiler('c') }}
     - cmake >=3.0
     - make
   host:
-    - openmp
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
   run:
-    - openmp
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
 
 test:
   commands:
       - genmap > /dev/null
 
 about:
-  home: https://github.com/cpockrandt/genmap
-  license: BSD
-  license_file: LICENSE.rst
+  home: "https://github.com/cpockrandt/genmap"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: "LICENSE.rst"
   summary: 'Ultra-fast computation of genome mappability.'
+  dev_url: "https://github.com/cpockrandt/genmap"
+  doc_url: "https://github.com/cpockrandt/genmap/blob/genmap-v{{ version }}/README.rst"
 
 extra:
   skip-lints:
     - uses_vcs_url
-    - missing_hash
+  identifiers:
+    - doi:10.1093/bioinformatics/btaa222
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

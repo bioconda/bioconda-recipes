@@ -1,20 +1,28 @@
+{% set name = "clustalw" %}
+{% set version = "2.1" %}
+
 package:
-  name: clustalw
-  version: 2.1
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: http://www.clustal.org/download/current/clustalw-2.1.tar.gz
-  md5: 144df8440a0ae083d5167616c8ceeb41
+  url: http://www.clustal.org/download/current/{{ name }}-{{ version }}.tar.gz
+  sha256: e052059b87abfd8c9e695c280bfba86a65899138c82abccd5b00478a80f49486
   patches:
     - patch  # [osx]
 
 build:
-  number: 7
+  number: 12
+  run_exports:
+    - {{ pin_subpackage('clustalw', max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - libtool
 
 test:
   commands:
@@ -22,14 +30,22 @@ test:
     - clustalw H 2>&1 | grep "CLUSTAL 2.1"
 
 about:
-  home: http://www.clustal.org/clustal2/
-  license: "GNU Lesser GPL"
-  summary: ClustalW2 is a general purpose multiple sequence alignment program for DNA or proteins.
+  home: "http://www.clustal.org/clustal2"
+  license: "LGPL-3.0-or-later"
+  license_family: LGPL
+  license_file: "COPYING.LESSER"
+  summary: "ClustalW2 is a general purpose multiple sequence alignment program for DNA or proteins."
+  doc_url: "http://www.clustal.org/download/clustalw_help.txt"
 
 extra:
-  skip-lints:
-    - should_not_be_noarch_source
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
-    - biotools:trinity
-    - doi:10.1038/nbt.1883
+    - biotools:clustalw_biolib
+    - biotools:ClustalW2_Phylogeny_API_EBI
+    - biotools:clustalw2_phylogeny_ebi
+    - biotools:clustalw2_ebi
+    - doi:10.1093/bioinformatics/btm404
+    - doi:10.1093/nar/22.22.4673
     - usegalaxy-eu:clustalw

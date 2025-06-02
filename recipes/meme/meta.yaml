@@ -1,71 +1,55 @@
 {% set name = "MEME" %}
-{% set version = "5.4.1" %}
+{% set version = "5.5.8" %}
+{% set sha256 = "1b4a1753795c09b1d46de6c4a3f04b33c1bcc3e41bbcf4e6e14220e8ad76743b" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: http://meme-suite.org/meme-software/{{ version }}/meme-{{ version }}.tar.gz
-  sha256: c07fb8afafa60fc5e84ca24493c82fa6f4bd1df1a2622102edbf86a1c30fd11f
+  url: https://meme-suite.org/meme/meme-software/{{ version }}/meme-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 2
-  detect_binary_files_with_prefix: True
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("meme", max_pin="x") }}
 
 requirements:
   build:
-    - make
     - {{ compiler('c') }}
-    - nodejs
+    - make
+    - autoconf
+    - automake
+    - libtool
   host:
-    - yaml
+    - nodejs >=16.4.1
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - icu
-    - python
-    - perl
     - ghostscript
     - zlib
-    - xz
     - libxslt
     - libxml2
     - expat
-    - perl-xml-parser
+    - perl
+  run:
+    - python >=3.7
+    - perl
     - perl-app-cpanminus
     - perl-module-build
     - perl-yaml
-    - perl-xml-simple
-    - perl-html-template
     - perl-cgi
-    - perl-html-parser
-    - perl-html-tree
     - perl-math-cdf
     - perl-log-log4perl
-    - perl-json
-    - perl-file-which
-    - openmpi
-  run:
-    - yaml
-    - icu
-    - expat
-    - python
-    - perl
-    - zlib
-    - xz
-    - libxslt
-    - libxml2
-    - ghostscript
+    - perl-xml-simple
     - perl-xml-parser
-    - perl-yaml
-    - perl-xml-simple
-    - perl-html-template
-    - perl-cgi
-    - perl-html-parser
-    - perl-html-tree
-    - perl-math-cdf
-    - perl-log-log4perl
-    - perl-json
     - perl-file-which
-    - openmpi
+    - perl-html-parser
+    - perl-html-template
+    - perl-html-tree
+    - perl-json
+    - perl-sys-info
 
 test:
   commands:
@@ -76,7 +60,7 @@ test:
     - glam2 -version
     - tomtom -version
     - centrimo -version
-    - ame --version 2>&1 | grep -i usage
+    - ame 2>&1 | grep -i usage
     - spamo -version
     - gomo -version
     - fimo -version
@@ -88,15 +72,17 @@ test:
     - dreme -version
 
 about:
-  home: http://meme-suite.org
+  home: "https://meme-suite.org"
   license: Custom
   license_file: COPYING
-  summary: Motif based sequence Analysis tools
+  summary: "Motif-based sequence analysis tools."
+  doc_url: "https://meme-suite.org/meme/doc/overview.html"
 
 extra:
-  container:
-    # openmpi needs ssh/rsh
-    extended-base: true
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:meme_suite
     - usegalaxy-eu:meme_dreme
+    - doi:10.1093/nar/gkv416

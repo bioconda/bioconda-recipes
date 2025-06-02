@@ -1,5 +1,5 @@
 {% set name = "PaReBrick" %}
-{% set version = "0.3.7" %}
+{% set version = "0.5.7" %}
 
 package:
   name: {{ name|lower }}
@@ -7,29 +7,31 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/PaReBrick-{{ version }}.tar.gz
-  sha256: b53bebf4db9e82726096cd2a3157874f324ed35ebd5cf95b8d63f3c2ff82ba54
+  sha256: 87aea585e0bc340abad2a4a37d532b5be75872284cabf3c9ad0be83ef372f0e4
 
 build:
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin='x.x') }}
   entry_points:
     - PaReBrick=parebrick.main:main
     - parebrick=parebrick.main:main
     - PaReBrick-Charts=parebrick.drawer:main
     - parebrick-charts=parebrick.drawer:main
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   number: 0
 
 requirements:
   host:
     - pip
-    - python >=3.6,<4.0
+    - python >=3.6,<3.9
   run:
     - bg
     - ete3
     - pyqt
-    - python >=3.6,<4.0
+    - python >=3.6,<3.9
     - scikit-learn
-    - seaborn >=0.11.0
+    - seaborn-base >=0.11.0
 
 test:
   imports:
@@ -42,10 +44,11 @@ test:
 
 about:
   home: https://github.com/ctlab/parallel-rearrangements
-  summary: A bioinf tool for finding genome rearrangements in bacterial genomes
+  summary: "A bioinf tool for finding genome rearrangements in bacterial genomes."
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-
+  dev_url: https://github.com/ctlab/parallel-rearrangements
 
 extra:
   container:

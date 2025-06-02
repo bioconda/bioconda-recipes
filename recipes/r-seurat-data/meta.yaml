@@ -1,0 +1,42 @@
+{% set version = '0.2.1' %}
+package:
+  name: r-seurat-data
+  version: {{ version|replace("-", "_") }}
+source:
+  url: https://github.com/satijalab/seurat-data/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 134b0dbc113e3533494461646c8362189b2bdf8940050de3561bcd488d905438
+build:
+  script: $R CMD INSTALL --build .
+  run_exports:
+    - {{ pin_subpackage("r-seurat-data", max_pin="x.x.x") }}
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+requirements:
+  build:
+  host:
+    - r-base
+    - r-cli
+    - r-crayon
+    - r-rappdirs
+  run:
+    - r-base
+    - r-cli
+    - r-crayon
+    - r-rappdirs
+test:
+  commands:
+    - $R -e "library('SeuratData')"
+about:
+  home: http://www.satijalab.org/seurat
+  dev_url: https://github.com/satijalab/seurat-data
+  license: GPL-3.0-only
+  summary: Single cell RNA sequencing datasets can be large, consisting of matrices that contain
+    expression data for several thousand features across several thousand cells. This
+    package is designed to easily install, manage, and learn about various single-cell
+    datasets, provided Seurat objects and distributed as independent packages.
+  license_family: GPL3
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - LICENSE

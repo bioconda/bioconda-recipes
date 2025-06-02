@@ -13,37 +13,17 @@ mkdir -p $PREFIX/bin
 mkdir -p $SHARE_DIR/bin
 
 if [[ $(uname) == Linux ]]; then
-    export CPPFLAGS="$CPPFLAGS -I$PREFIX/include/ncbi-vdb"
-    export CC_FOR_BUILD=$CC
     export AR="$AR rcs"
 
     cd c++
 
-    # IgBLAST is based on the BLAST source code and building it produces
-    # a similar set of shared libraries if --with-dll is used. To avoid
-    # conflicts when installing IgBLAST and BLAST simultaneously,
-    # we link IgBLAST statically.
-    ./configure.orig \
-        --with-static-exe \
-        --with-mt \
-        --with-openmp \
-        --without-autodep \
-        --without-makefile-auto-update \
-        --with-flat-makefile \
-        --with-caution \
-        --without-lzo \
-        --without-debug \
-        --with-strip \
-        --with-z=$PREFIX \
-        --with-bz2=$PREFIX \
-        --with-vdb=$PREFIX \
-        --without-krb5 \
-        --without-openssl \
-        --without-gnutls \
-        --without-gcrypt \
-        --with-build-root=ReleaseMT \
-        --prefix=$PREFIX
+    ./configure \
+         --with-z=$PREFIX \
+         --with-bz2=$PREFIX \
+         --with-vdb=$PREFIX
+
     make -j2
+
     # Move one up so it looks like the binary release
     mv ReleaseMT/bin .
     mv src/app/igblast/{internal_data,optional_file} $SHARE_DIR

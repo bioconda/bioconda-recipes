@@ -1,15 +1,18 @@
-{% set version = "2.37.1" %}
+{% set version = "2.63.0" %}
+{% set name = "auspice" %}
 
 package:
-  name: auspice
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://registry.npmjs.org/auspice/-/auspice-{{ version }}.tgz
-  sha256: 35a96de216bdaa3f8a7561d2b4373355c115533b9ed72673add7648292600894
+  url: https://registry.npmjs.org/{{ name }}/-/{{ name }}-{{ version }}.tgz
+  sha256: b5f0d67d8535ef972e6137255bb7fb377eef4a135d0a5db4b1bc27ce11f2b892
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
@@ -17,29 +20,39 @@ requirements:
     # vary across platforms.
     - "{{ compiler('c') }}"
     - "{{ compiler('cxx') }}"
-    - nodejs >=10
-    - python *
+    - nodejs 20.*|22.*
+    - python
     - pkg-config
-    - yarn
+    - yarn 1.*
+  host:
+    - icu
   run:
-    - nodejs >=10
+    - nodejs 20.*|22.*
 
 test:
   commands:
     - auspice --help
+    - auspice -v
 
 about:
   home: https://docs.nextstrain.org/projects/auspice/
   doc_url: https://docs.nextstrain.org/projects/auspice/
   dev_url: https://github.com/nextstrain/auspice
   summary: Auspice is an open-source interactive tool for visualising phylogenomic data
-  license: AGPL-3.0
+  license: AGPL-3.0-only
   license_file: LICENSE.txt
   license_family: AGPL
 
 extra:
+  identifiers:
+    # Generic Nextstrain paper, for lack of specific Auspice one
+    - doi:10.1093/bioinformatics/bty407
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - jameshadfield
     - victorlin
     - tsibley
     - huddlej
+    - corneliusroemer

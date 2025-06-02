@@ -1,5 +1,5 @@
 {% set name = "graphtyper" %}
-{% set version = "2.7.2" %}
+{% set version = "2.7.7" %}
 
 package:
   name: {{ name }}
@@ -9,11 +9,15 @@ source:
   # git_url is required for submodule retrieval
   git_url: https://github.com/DecodeGenetics/{{ name }}.git
   git_rev: v{{ version }}
+  patches:
+    - arm_hwcap.patch # [aarch64]
 
 build:
   number: 1
   #binary_relocation: false
   skip: true  # [not linux]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -47,6 +51,8 @@ about:
   summary: Population-scale genotyping using pangenome graphs
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   skip-lints:
     - uses_vcs_url
     - missing_hash

@@ -1,5 +1,6 @@
+{% set name = "perl-bio-samtools" %}
 package:
-  name: perl-bio-samtools
+  name: {{ name }}
   version: "1.43"
 
 source:
@@ -9,7 +10,10 @@ source:
     - build-pl.patch
 
 build:
-  number: 3
+  number: 5
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -19,7 +23,7 @@ requirements:
     - perl
     - perl-bioperl-core
     - perl-module-build
-    - samtools <=0.1.17
+    - samtools =0.1.19  # 0.1.18 is broken - missing files;  0.1.19 has diff directory structure to 0.1.17
     - zlib
 
   run:
@@ -37,6 +41,12 @@ test:
     - Bio::DB::Bam::Target
     - Bio::DB::Sam
     - Bio::DB::Sam::Constants
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    # requires perl-data-dumper, perl-db_file
+    #    - osx-arm64
 
 about:
   home: 'http://search.cpan.org/~lds/Bio-SamTools-1.43/'

@@ -9,12 +9,16 @@ package:
 source:
   url: https://github.com/OSU-SRLab/MANTIS/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - Makefile.patch
 
 build:
-  number: 0
-  noarch: python
+  number: 3
 
 requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
   run:
     - python >=3.6
     - numpy >=1.11
@@ -23,6 +27,8 @@ requirements:
 test:
   commands:
     - mantis-msi.py --help
+    - RepeatFinder -m 5 -i <(echo -e ">1\nACGTAAAAAAAAAAAAAGT") -o /dev/null
+
 
 about:
   home: "https://github.com/OSU-SRLab/MANTIS/"

@@ -1,31 +1,63 @@
+{% set name = "MuSE" %}
+{% set version = "2.1.2" %}
+{% set sha256 = "48df7ec3f64244400243163b48eb658105854b7b0d6287af98242dd89f396f59" %}
+
 package:
-  name: muse
-  version: 1.0.rc
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  md5: c63fdb48c041f6f9545879f1a7e4da58
-  url: https://github.com/danielfan/MuSE/archive/v1.0-rc.tar.gz
+- url: https://github.com/wwylab/MuSE/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
   patches:
-    - 0001-add-LDFLAGS.patch
+    - 0001-Makefile.patch
+    - fix-install_muse.sh.patch
+    - version.patch
+- url: https://github.com/boostorg/boost/releases/download/boost-1.87.0.beta1/boost-1.87.0.beta1-b2-nodocs.tar.gz
+  sha256: f12e906fde4c9d04d88c3aa821f00501817a37503441cbca8ce7852a2194aeb0
+  folder: boost-1.87.0.beta1
 
 build:
-  number: 6
+  number: 3
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('muse', max_pin="x") }}
 
 requirements:
   build:
-    - make
     - {{ compiler('cxx') }}
-    - {{ compiler('c') }}
+    - make
+    - autoconf
+    - automake
+    - libtool
   host:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+    - libcurl
+    - icu
+    - bzip2
+    - xz
     - zlib
   run:
-    - zlib
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
 
 test:
   commands:
-    - MuSE 2>&1 | grep Version > /dev/null
+    - 'MuSE 2>&1 | grep "Version"'
 
 about:
-  home: "http://bioinformatics.mdanderson.org/main/MuSE"
-  license: "https://github.com/danielfan/MuSE/blob/master/LICENSE"
-  summary: Somatic point mutation caller
+  home: "https://bioinformatics.mdanderson.org/public-software/muse"
+  license: "GPL-2.0-or-later"
+  license_family: GPL
+  license_file: "LICENSE"
+  summary: "An accurate and ultra-fast somatic point mutation calling tool for whole-genome sequencing (WGS) and whole-exome sequencing (WES) data from heterogeneous tumor samples."
+  doc_url: "https://github.com/wwylab/MuSE/blob/v{{ version }}/README.md"
+  dev_url: "https://github.com/wwylab/MuSE"
+
+extra:
+  identifiers:
+    - doi:10.1101/gr.278456.123
+    - doi:10.1186/s13059-016-1029-6
+  additional-platforms:
+    - linux-aarch64

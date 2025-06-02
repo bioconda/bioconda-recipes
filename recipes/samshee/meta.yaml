@@ -1,0 +1,46 @@
+{% set name = "samshee" %}
+{% set version = "0.2.10" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/32/d0/75aaf4d9e4b4c98326ed178e2bb8ae9a167ca72591008ce240a7d27bd439/samshee-0.2.10.tar.gz
+  sha256: bd586b79aad71c2e390ff03dcd3b3a23bc161fd034d9c6d4ca311dbc64aef9c2
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('samshee', max_pin="x.x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - setuptools >=61.0
+    - pip
+  run:
+    - python >=3.9
+    - jsonschema >=4.19
+    - requests >=2.31.0
+
+test:
+  imports:
+    - samshee
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/lit-regensburg/samshee
+  summary: A schema-agnostic parser and writer for illumina sample sheets v2.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - j4cko
+    - nschcolnicov

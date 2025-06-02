@@ -1,37 +1,44 @@
-{% set version="0.9.9" %}
+{% set name = "cnvkit" %}
+{% set version = "0.9.12" %}
+
 package:
-  name: cnvkit
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/etal/cnvkit/archive/v{{ version }}.tar.gz
-  sha256: 8c8c94d0f2736bf98c32853926dbcdb93633c21a05c737f0920d714a5a07b054
+  sha256: 39d65ba3d9c541dfd80986ace298b2d521067d1b81edef7169196b8dcc5d63d5
 
 build:
   noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  entry_points:
+    - cnvkit.py = cnvlib.cnvkit:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('cnvkit', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.5
+    - python >=3.8
     - pip
+    - setuptools
   run:
-    - python >=3.5
+    - python >=3.8
     - bioconductor-dnacopy
-    - biopython >=1.62
-    - joblib <1.0
-    - matplotlib-base >=1.3.1
+    - biopython >=1.80
+    - matplotlib-base >=3.5.2
     - networkx >=2.4
-    - numpy >=1.9
-    - pandas >=0.23.3
-    - pomegranate >=0.9.0
-    - pyfaidx >=0.4.7
-    - pysam >=0.10.0
+    - numpy >=1.24.2
+    - pandas >=1.5.3
+    - pomegranate >=0.14.8,<=0.14.9
+    - pyfaidx >=0.7.1
+    - pysam >=0.20.0
     - r-base >=3.4.1
     - r-cghflasso
-    - reportlab >=3.0
-    - scipy >=0.15.0
+    - reportlab >=3.6.12
+    - scikit-learn >=1.1.0
+    - scipy >=1.10.1
 
 test:
   imports:
@@ -43,11 +50,32 @@ test:
     - cnvkit.py -h
 
 about:
-  home: https://github.com/etal/cnvkit
-  license: Apache-2.0
-  summary: Copy number variant detection from high-throughput sequencing
+  home: "https://github.com/etal/cnvkit"
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: LICENSE
+  summary: "Copy number variant detection from high-throughput sequencing."
+  dev_url: "https://github.com/etal/cnvkit"
+  doc_url: "https://cnvkit.readthedocs.io/en/stable"
 
 extra:
   identifiers:
     - biotools:cnvkit
     - doi:10.1371/journal.pcbi.1004873
+    - usegalaxy-eu:cnvkit_access
+    - usegalaxy-eu:cnvkit_antitarget
+    - usegalaxy-eu:cnvkit_autobin
+    - usegalaxy-eu:cnvkit_batch
+    - usegalaxy-eu:cnvkit_call
+    - usegalaxy-eu:cnvkit_coverage
+    - usegalaxy-eu:cnvkit_diagram
+    - usegalaxy-eu:cnvkit_fix
+    - usegalaxy-eu:cnvkit_heatmap
+    - usegalaxy-eu:cnvkit_reference
+    - usegalaxy-eu:cnvkit_scatter
+    - usegalaxy-eu:cnvkit_segment
+    - usegalaxy-eu:cnvkit_target
+    - usegalaxy-eu:cnvkit_breaks
+    - usegalaxy-eu:cnvkit_genemetrics
+    - usegalaxy-eu:cnvkit_segmetrics
+    - usegalaxy-eu:cnvkit_sex

@@ -1,41 +1,47 @@
+{% set name = "khmer" %}
 {% set version = "3.0.0a3" %}
 {% set sha256 = "9850baec8b905c0896f00d0e427d4564f4c87dd7f1abae64734ad0361678e620" %}
 
 package:
-  name: khmer
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/dib-lab/khmer/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
+    # https://github.com/dib-lab/khmer/compare/master...mr-c:khmer:python_3.10+.patch
+    - 0000-Upgrade-to-python3.10.patch
     - 0001-Inject-compiler-and-flags-for-third-party-compilation.patch
+    - 0002-remove-m64.patch
+    - 0003-enable-aarch64.patch
+    - 0004-arm64.patch  # [osx and arm64]
 
 build:
-  number: 3
-  skip: True  # [py<30 or py>38 or osx]
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  number: 7
+  skip: True  # [py > 311]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  run_exports:
+    - {{ pin_subpackage('khmer', max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler("c") }}
     - {{ compiler("cxx") }}
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
     - make
   host:
     - python
     - pip
-    - setuptools >=18.0
-    - Cython >=0.25.2
+    - setuptools >=62.1
+    - cython
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
     - bzip2
     - zlib
   run:
     - python
     - screed >=1.0
-    - bz2file
-    - bzip2
-    - zlib
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
 
 test:
   imports:
@@ -44,13 +50,26 @@ test:
     - oxli
 
 about:
-  home: https://khmer.readthedocs.io/
-  license: BSD License
+  home: "https://github.com/dib-lab/khmer"
+  license: "BSD-3-License"
   license_family: BSD
-  summary: khmer k-mer counting library
-  dev_url: https://github.com/dib-lab/khmer
+  license_file: LICENSE
+  summary: "khmer k-mer counting library."
+  dev_url: "https://github.com/dib-lab/khmer"
+  doc_url: "https://khmer.readthedocs.io"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:khmer
     - doi:10.12688/f1000research.6924.1
+    - usegalaxy-eu:khmer_filter_abundance
+    - usegalaxy-eu:khmer_filter_below_abundance_cutoff
+    - usegalaxy-eu:khmer_extract_partitions
+    - usegalaxy-eu:khmer_abundance_distribution
+    - usegalaxy-eu:khmer_count_median
+    - usegalaxy-eu:khmer_partition
+    - usegalaxy-eu:khmer_normalize_by_median
+    - usegalaxy-eu:khmer_abundance_distribution_single

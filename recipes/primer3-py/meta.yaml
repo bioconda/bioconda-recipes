@@ -1,36 +1,49 @@
 {% set name = "primer3-py" %}
-{% set version = "0.6.1" %}
+{% set version = "2.0.3" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/35/54/d8dafa51e82ea68f725f898c55d828b12833f8692c2238e1772d065d128b/{{name|lower}}-{{version}}.tar.gz
-  sha256: 2d26671017d57ee37c5d5c430eb1545d8765f3d31782e9d7c0cdd9b5a22b2b8b
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/primer3-py-{{ version }}.tar.gz
+  sha256: 1ec6ce99ea149b1c82361c654a0eab824e698ce32d5f9ed2dd8f8f37564b3f5f
 
 build:
-  number: 1
+  number: 4
+  run_exports:
+    - {{ pin_subpackage('primer3-py', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - make
+    - llvm-openmp  # [osx]
   host:
     - python
-    - setuptools
     - cython
+    - setuptools >=65.6.3
+    - pip
   run:
     - python
 
 test:
-  # Python imports
   imports:
     - primer3
 
 about:
-  home: https://libnano.github.io/primer3-py/
-  license: GPLv2
+  home: https://github.com/libnano/primer3-py
+  summary: Python bindings for Primer3
+  license: GPL-2.0-only
+  license_family: GPL2
   license_file: LICENSE
-  summary: 'Primer3-py is a Python-abstracted API for the popular Primer3 library.'
+  doc_url: https://libnano.github.io/primer3-py/
 
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - bgruening
+    - akikuno

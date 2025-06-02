@@ -1,35 +1,52 @@
 {% set name = "PretextGraph" %}
-{% set version = "0.0.6" %}
-{% set sha256 = "94e69e9c99f62d6112a8e48db4cf9ff92102c2704dacff01924cce5799a6807f" %}
+{% set version = "0.0.9" %}
+{% set sha256 = "7658c58ee8f5a6335a361462bb8dc14a1e8b509bca38aa5b757daab4b4497a88" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://github.com/wtsi-hpag/{{ name }}/releases/download/{{ version }}/{{ name }}-{{ version }}.tar.xz
+  url: https://github.com/sanger-tol/PretextGraph/releases/download/{{ version }}/{{ name|lower }}-{{ version }}.tar.xz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-PretextGraph-aarch64.patch  # [aarch64 or arm64]
+    - 0002-CMakeLists-aarch64.patch  # [aarch64 or arm64]
 
 build:
-  number: 1
+  number: 1  # the build number should be incremented if the same version of the package is built with different build settings
+  run_exports:
+    - {{ pin_subpackage('pretextgraph', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - clang>=9.0.1 # [linux] 
-    - meson>=0.57.1
+    - cmake
+    - make
+    - clangdev
+    - meson
+  host:
+    - libdeflate  # [aarch64 or arm64]
 
 test:
   commands:
     - {{ name }}
 
 about:
-  home: https://github.com/wtsi-hpag/PretextGraph
+  home: https://github.com/sanger-tol/PretextGraph
+  dev_url: https://github.com/sanger-tol/PretextGraph
+  doc_url: "https://github.com/sanger-tol/PretextGraph/blob/{{ version }}/README.md"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: Embeds bedgraph data into Pretext contact maps.
+  summary: "Embeds bedgraph data into Pretext contact maps."
   description: >
     This is a tool for converting data from a bedgraph format and embedding into a Hi-C contact map in the Pretext format.
-    The graph data can then be displayed alongside the contact map using the PretextView desktop software (https://github.com/wtsi-hpag/PretextView).
-    See https://github.com/wtsi-hpag/PretextMap for how to generate Pretext contact maps, or search for pretextmap on bioconda.
+    The graph data can then be displayed alongside the contact map using the PretextView desktop software (https://github.com/sanger-tol/PretextView).
+    See https://github.com/sanger-tol/PretextMap for how to generate Pretext contact maps, or search for pretextmap on bioconda.
+
+#extra:
+  #additional-platforms:
+    # cpuid.h is only available on x86_64
+    #- linux-aarch64
+    #- osx-arm64

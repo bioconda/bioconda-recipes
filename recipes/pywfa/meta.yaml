@@ -1,0 +1,46 @@
+{% set name = "pywfa" %}
+{% set version = "0.5.1" %}
+{% set sha256hash = "cdfa67af3e0572a85302ef473ce49dce54d5e41b19b482f4682c1064013db8c0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+ 
+source:
+  url: https://github.com/kcleal/pywfa/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256hash }}
+
+build:
+  number: 3
+  skip: True  # [py < 37 or py > 39]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  binary_relocation: False
+  script: $PYTHON -m pip install --no-deps --ignore-installed .
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - pip
+    - python
+    - cython
+    - setuptools
+  run:
+    - python
+  
+test:
+  imports:
+    - pywfa
+
+about:
+  summary: A python wrapper for wavefront alignment using WFA2-lib
+  home: https://github.com/kcleal/pywfa
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - kcleal
+    

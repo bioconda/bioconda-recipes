@@ -1,6 +1,7 @@
 {% set name = "LinearFold" %}
-{% set version = "1.0" %}
-{% set sha256 = "2ae56b5f183472c2de96782e770a91e57f82e0ab511dfc0d9d612aa4e6155f60" %}
+{% set git_sha1 = "c3ee9bd80c06c2fc39a7bb7ae5e77b9566227cac" %}
+{% set version = "1.0.1.dev20220829" %}
+{% set sha256 = "cad8b93ba961820ca3701a1d931944bd307b1d1f92d74e1b02d5bd34d4ffe998" %}
 
 package:
   name: {{ name | lower }}
@@ -9,9 +10,11 @@ package:
 build:
   number: 1
   skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name | lower, max_pin="x.x.x") }}
 
 source:
-  url: https://github.com/{{ name }}/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  url: https://github.com/{{ name }}/{{ name }}/archive/{{ git_sha1 }}.tar.gz
   sha256: {{ sha256 }}
   patches:
     - 0001-FIX-command-broken-with-symbolic-link.patch
@@ -23,7 +26,7 @@ requirements:
 
   run:
     - python-gflags
-    - python=2.7
+    - python >=3,<4
 
 test:
   source_files:

@@ -1,18 +1,22 @@
-{% set version = "11.6" %}
+{% set name = "control-freec" %}
+{% set version = "11.6b" %}
+{% set sha256 = "be3927307f632b7f70513dc9d5851685e03d25a1b26b52e1f996f92a89ab3c6d" %}
 
 package:
-  name: control-freec
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
   url: https://github.com/BoevaLab/FREEC/archive/v{{ version }}.tar.gz
-  sha256: 36564f86a01236e720cf412780e87eb24f224470f5bae45a99edb2d4a3cd1734
+  sha256: {{ sha256 }}
   patches:
     - makeGraph_Chromosome.R.patch
     - perl_shebang.patch
 
 build:
   number: 2
+  run_exports:
+    - {{ pin_subpackage('control-freec', max_pin="x") }}
 
 requirements:
   build:
@@ -29,15 +33,17 @@ test:
     - freec
     - freec2bed.pl
     - freec2circos.pl
-    - which get_fasta_lengths.pl
-    - which makeGraph.R
-    - which makeGraph_Chromosome.R
+    - test -x ${PREFIX}/bin/get_fasta_lengths.pl
+    - test -x ${PREFIX}/bin/makeGraph.R
+    - test -x ${PREFIX}/bin/makeGraph_Chromosome.R
     - vcf2snpFreec.pl
-    - which assess_significance.R
+    - test -x ${PREFIX}/bin/assess_significance.R
+    - test -x ${PREFIX}/bin/makeGraph2.0.R
 
 about:
   home: https://github.com/BoevaLab/FREEC
-  license: GPL (>=2)
+  license: GPL-2.0-or-later
+  license_family: GPL2
   summary: |
     Copy number and genotype annotation from whole genome and whole exome
     sequencing data.
@@ -50,3 +56,5 @@ extra:
     command line as well.
   identifiers:
     - biotools:freec
+  additional-platforms:
+    - linux-aarch64

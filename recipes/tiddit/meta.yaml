@@ -1,49 +1,53 @@
-{% set version = "3.0.0" %}
+{% set name = "tiddit" %}
+{% set version = "3.9.3" %}
 
 package:
-  name: tiddit
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/J35P312/TIDDIT/archive/TIDDIT-{{ version }}.tar.gz
-  sha256: 92b0ff9e8c85c172b2a0bae52d6623f3f16b926302ddd2c5b96a6119562f994b
+  url: https://github.com/SciLifeLab/TIDDIT/archive/TIDDIT-{{ version }}.tar.gz
+  sha256: 6343a4785e81812057ede262e01a5b4fda6971de911c6a759333098010564b41
 
 build:
-  number: 1
+  number: 0
   entry_points:
     - tiddit = tiddit.__main__:main
-  script: python -m pip install --no-deps --ignore-installed .
-  skip: True  # [osx]
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  run_exports:
+    - {{ pin_subpackage('tiddit', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - python >=3.1
+    - python
     - cython
     - numpy
-    - pysam
-    - fermi2
     - pip
-    - bwa
-    - ropebwt2
-
+    - pysam
   run:
-    - python >=3.1
-    - numpy
+    - python
+    - {{ pin_compatible('numpy') }}
     - pysam
     - fermi2
     - bwa
     - ropebwt2
+    - joblib
 
 test:
   commands:
     - tiddit --help
-    - fermi2 2>&1 | grep "^Usage:"
-    - ropebwt2 -h /dev/null 2>&1 | grep ropebwt2
-    - bwa 2>&1 | grep "index sequences in the"
+
 about:
-  home: https://github.com/J35P312/TIDDIT
-  license: GPL-3.0-only
+  home: "https://github.com/SciLifeLab/TIDDIT"
+  license: "GPL-3.0-only"
+  license_family: GPL3
   license_file: LICENSE
   summary: "TIDDIT - structural variant calling."
+  dev_url: "https://github.com/SciLifeLab/TIDDIT"
+  doc_url: "https://github.com/SciLifeLab/TIDDIT/blob/TIDDIT-{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64

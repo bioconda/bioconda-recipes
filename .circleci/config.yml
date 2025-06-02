@@ -1,369 +1,345 @@
-version: 2
-# trigger cache invalidation: 2018-09-16T22:39+00:00
+# .circleci/config.yml
+version: 2.1
 
-variables:
-  restore_cache: &restore_cache
-    restore_cache:
-      keys:
-        - miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ checksum ".circleci/config.yml" }}-{{ arch }}
-  save_cache: &save_cache
-    save_cache:
-      key: miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ checksum ".circleci/config.yml" }}-{{ arch }}
-      paths:
-        - miniconda
-  common: &common
-    run:
-      name: Download common definitions
-      command: |
-        curl -s https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh > .circleci/common.sh
-  setup: &setup
-    run:
-      name: Setup bioconda-utils
-      command: .circleci/setup.sh
-  setup_macos_sdk: &setup_macos_sdk
-    run:
-      name: Run run_conda_forge_build_setup
-      command: |
-        # download SDK and setup sysroot on macOS
-        #  primarily, run_conda_forge_build_setup does the following:
-        #   - download/setup SDK:
-        #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L21-L26
-        #   - add activation script to set MACOSX_DEPLOYMENT_TARGET and CONDA_BUILD_SYSROOT:
-        #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L60-L63
-        conda activate base
-        # use "CONFIG=" to avoid writing ./.ci_support/${CONFIG}.yaml which we don't need/use.
-        CONFIG= OSX_FORCE_SDK_DOWNLOAD=1 MACOSX_DEPLOYMENT_TARGET=10.13 run_conda_forge_build_setup
-        conda_forge_ci_setup_activate_sh="${CONDA_PREFIX}/etc/conda/activate.d/conda-forge-ci-setup-activate.sh"
-        sed -Ei.bak "s/^(export MACOSX_DEPLOYMENT_TARGET)=.*$/\\1='10.9'/" "${conda_forge_ci_setup_activate_sh}"
-        rm "${conda_forge_ci_setup_activate_sh}".bak
-        cat "${conda_forge_ci_setup_activate_sh}"
-        grep -qFx "export MACOSX_DEPLOYMENT_TARGET='10.9'" "${conda_forge_ci_setup_activate_sh}"
-  macos: &macos
+executors:
+  osx-arm64:
     macos:
-      xcode: 11.2.1
-    environment:
-      LC_ALL: en_US.UTF-8
-      LANG: en_US.UTF-8
-  linux: &linux
-    machine: true
-  skip_fork: &skip_fork
-    run:
-      name: Check for fork
-      command: |
-        [[ $CIRCLE_PROJECT_USERNAME == bioconda ]] || (
-            echo "Skipping build for fork '$CIRCLE_PROJECT_USERNAME'"
-            circleci step halt
-        )
-  fail_fork: &fail_fork
-    run:
-      name: Check for fork
-      command: |
-        [[ $CIRCLE_PROJECT_USERNAME == bioconda ]] || (
-            echo "Aborting build for fork '$CIRCLE_PROJECT_USERNAME'"
-            echo "Please use a branch other than 'master' or 'bulk' on your fork"
-            exit 1
-        )
-  store_built_packages: &store_built_packages
-    run:
-      name: Copying packages
-      when: always
-      no_output_timeout: 20m
-      command: |
-        (
-        # Run in subshell just to be safe. Don't want workflows to fail because of this.
-        mkdir -p /tmp/artifacts/packages
-        cd miniconda/conda-bld || exit 0
-        find -name .cache | xargs rm -rf || true
-        for n in rss.xml index.html channeldata.json linux-64 osx-64 noarch broken; do
-          cp -rv $n /tmp/artifacts/packages || true
-        done
-        if command -V docker >/dev/null; then
-          mkdir -p /tmp/artifacts/images
-          cd /tmp/artifacts/images
-          docker image ls --format='{{.Repository}}:{{.Tag}}' | \
-            { grep biocontainers || true ; } | \
-            xargs -n1 -P4 bash -c '
-              test -n "${1+x}" || exit 0
-              echo "Start compressing docker image ${1} ..."
-              docker save "${1}" | gzip -c > "${1##*/}.tar.gz"
-              echo "Finished compressing docker image ${1} ."
-              ' --
-        fi
-        ) || true
+      xcode: 15.4.0
+    resource_class: macos.m1.medium.gen1
+  linux-aarch64:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: arm.large
 
-  store_artifacts: &store_artifacts
-    store_artifacts:
-      path: /tmp/artifacts
-
-
-jobs:
-  # When running CircleCI locally, we put everything in one job.
-  build:
-    docker:
-      - image: bioconda/bioconda-utils-build-env
+jobs: # a basic unit of work in a run
+  build_and_test:
+    parameters:
+      os:
+        type: executor
+    executor: << parameters.os >>
     steps:
       - checkout
+
       - run:
-          name: Setup ssh
+          name: Check for Additional Platforms
           command: |
-            mkdir -p ~/.ssh
-            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-      - run: echo ". /opt/conda/etc/profile.d/conda.sh" >> $BASH_ENV
-      - run: echo "conda activate" >> $BASH_ENV
-      - *common
-      - *setup
+            result=$(./scripts/check-for-additional-platforms.sh "origin/master...HEAD" "build_and_test" "${CIRCLE_JOB}")
+            if [[ ${result} != "build" ]]
+            then
+                echo "No recipes using this platform, skipping rest of job."
+                circleci-agent step halt
+            fi
+
       - run:
-          name: Linting
-          command: |
-            bioconda-utils lint recipes config.yml \
-            --loglevel debug --full-report \
-            --git-range master HEAD
+          name: Fetch bioconda install script
+          command: wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
+
       - run:
-          name: Testing
-          # Currently, using --docker below causes a permission error on Fedora 27,
-          # although it should be supported by the setup_remote_docker directive
-          # above. A workaround or an upstream fix would be welcome.
+          name: Install bioconda-utils
           command: |
+            sudo mkdir -p /opt/
+            sudo chmod o+rwx /opt
+            bash install-and-set-up-conda.sh
+
+      - run:
+          name: Setup PATH
+          command:
+            echo 'export PATH=/opt/mambaforge/bin:"$PATH"' >> "$BASH_ENV"
+
+      - run:
+          name: Configure conda
+          command: bash configure-conda.sh
+
+      - run:
+          name: Build and test
+          command: |
+            set -xe
+            eval "$(conda shell.bash hook)"
+            conda activate bioconda
+            source common.sh
+
+            # Sets up OSX SDK
+            if [[ $(uname) = "Darwin" ]]; then
+              if [[ "${OSX_SDK_DIR:-}" == "" ]]; then
+                  OSX_SDK_DIR="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs"
+              fi
+              sudo chmod o+rwx ${OSX_SDK_DIR}
+              run_conda_forge_build_setup
+            fi
+
+            if command -V docker >/dev/null; then
+              bioconda-utils build recipes config.yml \
+                  --lint --docker --mulled-test \
+                  --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
+                  --git-range origin/master HEAD
+            else
+              bioconda-utils build recipes config.yml \
+                  --lint --git-range origin/master HEAD
+            fi
+
+      - run:
+          name: Prepare artifacts
+          command: |
+            (
+            mkdir -p /tmp/artifacts/packages
+            cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
+            find -name .cache | xargs rm -rf || true
+            for n in index.html channeldata.json linux-aarch64 linux-64 osx-64 osx-arm64 noarch; do
+              cp -rv $n /tmp/artifacts/packages || true
+            done
+            if command -V docker >/dev/null; then
+              mkdir -p /tmp/artifacts/images
+              cd /tmp/artifacts/images
+              docker image ls --format='{{.Repository}}:{{.Tag}}' | \
+                { grep biocontainers || true ; } | \
+                xargs -n1 -P4 bash -c '
+                  test -n "${1+x}" || exit 0
+                  echo "Start compressing docker image ${1} ..."
+                  docker save "${1}" | gzip -c > "${1##*/}.tar.gz"
+                  echo "Finished compressing docker image ${1} ."
+                  ' --
+            fi
+            ) || true
+
+      - store_artifacts:
+          path: /tmp/artifacts
+
+  build_and_upload:
+    parameters:
+      os:
+        type: executor
+    executor: << parameters.os >>
+    steps:
+      - checkout
+
+      - run:
+          name: Check for Additional Platforms
+          command: |
+            result=$(./scripts/check-for-additional-platforms.sh "${CIRCLE_SHA1}~1 ${CIRCLE_SHA1}" "build_and_upload" "${CIRCLE_JOB}")
+            if [[ ${result} != "build" ]]
+            then
+                echo "No recipes using this platform, skipping rest of job."
+                circleci-agent step halt
+            fi
+
+      - run:
+          name: Fetch bioconda install script
+          command: wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
+
+      - run:
+          name: Install bioconda-utils
+          command: |
+            sudo mkdir -p /opt
+            sudo chmod o+rwx /opt
+            bash install-and-set-up-conda.sh
+
+      - run:
+          name: Setup PATH
+          command:
+            echo 'export PATH=/opt/mambaforge/bin:"$PATH"' >> "$BASH_ENV"
+
+      - run:
+          name: Configure conda
+          command: bash configure-conda.sh
+
+      - run:
+          name: Build and push
+          command: |
+            set -xe
+            eval "$(conda shell.bash hook)"
+            conda activate bioconda
+            source common.sh
+
+            # Sets up OSX SDK
+            if [[ $(uname) = "Darwin" ]]; then
+              if [[ "${OSX_SDK_DIR:-}" == "" ]]; then
+                  OSX_SDK_DIR="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs"
+              fi
+              sudo chmod o+rwx ${OSX_SDK_DIR}
+              run_conda_forge_build_setup
+            fi
+
+            bioconda-utils handle-merged-pr recipes config.yml \
+              --repo bioconda/bioconda-recipes \
+              --git-range ${CIRCLE_SHA1}~1 ${CIRCLE_SHA1} \
+              --fallback build \
+              --artifact-source circleci
+
+  bulk_build:
+    parameters:
+      os:
+        type: executor
+      runner:
+        type: integer
+    executor: << parameters.os >>
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - 1e:85:74:42:35:5f:c5:a2:35:c2:ec:b7:80:c0:7c:40
+
+      - checkout
+
+      - run:
+          name: Check for [ci run]
+          command: |
+            commit_message="$(git log --format=oneline -n 1 $CIRCLE_SHA1)"
+            if [[ $commit_message  =~ "[ci run]" ]]; then
+              echo "[ci run] found, continuing."
+            else
+              echo "[ci run] not found, exiting."
+              circleci-agent step halt
+            fi
+
+      - run:
+          name: set git user
+          command: |
+            git config user.name BiocondaBot
+            git config user.email biocondabot@users.noreply.github.com
+            git branch --set-upstream-to=origin/$CIRCLE_BRANCH $CIRCLE_BRANCH
+
+      - run:
+          name: Fetch bioconda install script
+          command: wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
+
+      - run:
+          name: Install bioconda-utils
+          command: |
+            sudo mkdir -p /opt/
+            sudo chmod o+rwx /opt
+            bash install-and-set-up-conda.sh
+
+      - run:
+          name: Setup PATH
+          command:
+            echo 'export PATH=/opt/mambaforge/bin:"$PATH"' >> "$BASH_ENV"
+
+      - run:
+          name: Configure conda
+          command: bash configure-conda.sh
+
+      # For now, do not upload ARM images to biocontainers: --mulled-upload-target biocontainers
+      - run:
+          name: Build and upload
+          command: |
+            set -e
+            eval "$(conda shell.bash hook)"
+            conda activate bioconda
+            source common.sh
+
+            echo '============'
+            conda info --all
+            conda config --show-sources
+            python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+            echo '============'
             bioconda-utils build recipes config.yml \
-            --git-range master HEAD
-
-  lint:
-    <<: *linux
-    steps:
-      - checkout
-      - *common
-      - *restore_cache
-      - *setup
-      - *save_cache
-      - run:
-          name: Linting
-          command: |
-            bioconda-utils lint recipes config.yml \
-            --loglevel debug --full-report \
-            --git-range master HEAD
-
-  # build and test on linux
-  test-linux:
-    <<: *linux
-    steps:
-      - checkout
-      - *common
-      - *restore_cache
-      - *setup
-      - *save_cache
-      - run:
-          name: Building and testing
-          command: |
-            docker pull quay.io/dpryan79/mulled_container:latest
-            bioconda-utils build recipes config.yml \
-              --docker --mulled-test \
-              --git-range master HEAD
-            docker rmi quay.io/dpryan79/mulled_container:latest
-      - *store_built_packages
-      - *store_artifacts
-
-  # build and test on macos
-  test-macos:
-    <<: *macos
-    steps:
-      - checkout
-      - *common
-      - *restore_cache
-      - *setup
-      - *save_cache
-      - *setup_macos_sdk
-      - run:
-          name: Building and testing
-          command: |
-            bioconda-utils build recipes config.yml \
-            --git-range master HEAD
-      - *store_built_packages
-      - *store_artifacts
-
-  # build, test and upload on linux
-  upload-linux:
-    <<: *linux
-    steps:
-      - *fail_fork
-      - checkout
-      - *common
-      - *restore_cache
-      - *setup
-      - *save_cache
-      # build only current commit (since we use squashed merging, this is safe)
-      - run:
-          name: Building, testing, and uploading
-          command: |
-            docker pull quay.io/dpryan79/mulled_container:latest
-            bioconda-utils build recipes config.yml \
-              --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
-              --git-range $CIRCLE_SHA1~1 $CIRCLE_SHA1 \
-              --prelint
-  # build, test and upload on macos
-  upload-macos:
-    <<: *macos
-    steps:
-      - *fail_fork
-      - checkout
-      - *common
-      - *restore_cache
-      - *setup
-      - *save_cache
-      - *setup_macos_sdk
-      # build only current commit (since we use squashed merging, this is safe)
-      - run:
-          name: Building, testing and uploading
-          command: |
-            bioconda-utils build recipes config.yml \
+              --worker-offset << parameters.runner >> --n-workers 6 \
+              --docker --mulled-test --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
               --anaconda-upload \
-              --git-range $CIRCLE_SHA1~1 $CIRCLE_SHA1 \
-              --prelint
+              --record-build-failures \
+              --skiplist-leafs
+            conda clean -y --all
 
-  # build, test and upload for bulk branch on linux
-  bulk-linux:
-    <<: *linux
+  nightly_build:
+    parameters:
+      os:
+        type: executor
+    executor: << parameters.os >>
     steps:
-      - *fail_fork
-      - checkout
-      - *common
-      - *restore_cache
-      - *setup
-      - *save_cache
-      - run:
-          name: Building, testing, and uploading of all unpublished recipes
-          command: |
-            bioconda-utils build recipes config.yml \
-              --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
+      - add_ssh_keys:
+          fingerprints:
+            - 1e:85:74:42:35:5f:c5:a2:35:c2:ec:b7:80:c0:7c:40
 
-  # build, test and upload for bulk branch on macos
-  bulk-macos:
-    <<: *macos
-    steps:
-      - *fail_fork
       - checkout
-      - *common
-      - *restore_cache
-      - *setup
-      - *save_cache
-      - *setup_macos_sdk
-      - run:
-          name: Building, testing and uploading of all unpublished recipes
-          command: |
-            bioconda-utils build recipes config.yml \
-              --anaconda-upload
 
-  # nightly build, test and upload of unpublished recipes on linux
-  nightly-upload-linux:
-    <<: *linux
-    steps:
-      - *skip_fork
-      - checkout
-      - *common
-      - *restore_cache
-      - *setup
-      - *save_cache
       - run:
-          name: Building, testing, and uploading of all unpublished recipes
-          command: |
-            docker pull quay.io/dpryan79/mulled_container:latest
-            bioconda-utils build recipes config.yml \
-              --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
-              --prelint
+          name: Fetch bioconda install script
+          command: wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
 
-  # nightly build, test and upload of unpublished recipes on macos
-  nightly-upload-macos:
-    <<: *macos
-    steps:
-      - *skip_fork
-      - checkout
-      - *common
-      - *restore_cache
-      - *setup
-      - *save_cache
       - run:
-          name: Building, testing and uploading of all unpublished recipes
+          name: Install bioconda-utils
           command: |
-            bioconda-utils build recipes config.yml \
-              --anaconda-upload \
-              --prelint
+            sudo mkdir -p /opt/
+            sudo chmod o+rwx /opt
+            bash install-and-set-up-conda.sh
 
+      - run:
+          name: Setup PATH
+          command:
+            echo 'export PATH=/opt/mambaforge/bin:"$PATH"' >> "$BASH_ENV"
+
+      - run:
+          name: Configure conda
+          command: bash configure-conda.sh
+
+      # For now, do not upload ARM images to biocontainers: --mulled-upload-target biocontainers
+      - run:
+          name: Build and push leftover packages
+          command: |
+            set -e
+            eval "$(conda shell.bash hook)"
+            conda activate bioconda
+            source common.sh
+
+            # build and push all leftover packages
+            bioconda-utils build recipes config.yml \
+                --docker --mulled-test  --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
+                --anaconda-upload \
+                --prelint --exclude bioconda-repodata-patches
 
 workflows:
-  version: 2
-  # workflow for testing pushes and PRs
-  #bioconda-test:
-  #  jobs:
-  #    # Linting is now also performed just before a recipe is built with
-  #    # bioconda-utils build --prelint.
-  #    - lint:
-  #        filters:
-  #          branches:
-  #            ignore:
-  #              - master
-  #              - bulk
-  #    - test-linux:
-  #        requires:
-  #          - lint
-  #        filters:
-  #          branches:
-  #            ignore:
-  #              - master
-  #              - bulk
-  #    - test-macos:
-  #        requires:
-  #          - lint
-  #          - test-linux
-  #        filters:
-  #          branches:
-  #            ignore:
-  #              - master
-  #              - bulk
-  ## workflow for uploading packages from master and bulk branch
-  #bioconda-upload-master:
-  #  jobs:
-  #    - upload-linux:
-  #        filters:
-  #          branches:
-  #            only:
-  #              - master
-  #    - upload-macos:
-  #        filters:
-  #          branches:
-  #            only:
-  #              - master
-  ## workflow for bulk-updates
-  #bioconda-upload-bulk-linux:
-  #  jobs:
-  #    - bulk-linux:
-  #        filters:
-  #          branches:
-  #            only:
-  #              - bulk
-  #bioconda-upload-bulk-macos:
-  #  jobs:
-  #    - bulk-macos:
-  #        filters:
-  #          branches:
-  #            only:
-  #              - bulk
-  # nightly workflow to capture missed recipes
-  #bioconda-nightly-upload-linux:
-  #   triggers:
-  #     - schedule:
-  #         cron: "0 0 * * *"
-  #         filters:
-  #           branches:
-  #             only:
-  #               - master
-  #   jobs:
-  #     - nightly-upload-linux
-  #bioconda-nightly-upload-macos:
-  #   triggers:
-  #     - schedule:
-  #         cron: "0 0 * * *"
-  #         filters:
-  #           branches:
-  #             only:
-  #               - master
-  #   jobs:
-  #     - nightly-upload-macos
+  build and test (ARM):
+    jobs:
+      - build_and_test:
+          filters:
+            branches:
+              ignore:
+                - master
+                - bulk
+          matrix:
+            parameters:
+              os:
+                - osx-arm64
+                - linux-aarch64
+
+  build and upload (ARM):
+    jobs:
+      - build_and_upload:
+          filters:
+            branches:
+              only: master
+          matrix:
+            parameters:
+              os:
+                - osx-arm64
+                - linux-aarch64
+
+  Bulk branch (ARM):
+    jobs:
+      - bulk_build:
+          filters:
+            branches:
+              only: bulk
+          matrix:
+            parameters:
+              os: 
+                # - osx-arm64 Bulk is on GitHub Actions
+                - linux-aarch64
+              runner: [0, 1, 2, 3, 4, 5]
+
+  Nightly (ARM):
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only: master
+    jobs:
+      - nightly_build:
+          filters:
+            branches:
+              only: master
+          matrix:
+            parameters:
+              os:
+                # - osx-arm64 Nightly is on GitHub Actions
+                - linux-aarch64

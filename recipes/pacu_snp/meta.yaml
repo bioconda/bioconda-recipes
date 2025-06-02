@@ -1,0 +1,66 @@
+{% set version = "0.0.7" %}
+
+package:
+  name: pacu_snp
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/p/pacu_snp/pacu_snp-{{ version }}.tar.gz
+  sha256: 271d46551a159bd03bdfe5550c0ba17448c42bfa651e9ac04b85e8428b261d38
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - PACU=pacu.run_pacu:main
+    - PACU_map=pacu.map_to_ref:main
+    - PACU_galaxy=pacu.galaxy:main
+  run_exports:
+    - {{ pin_subpackage("pacu_snp", max_pin="x.x") }}
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+    - biopython >=1.84
+    - pyyaml >=6.0.1
+  run:
+    - bcftools >=1.17
+    - beautifulsoup4 >=4.12.2
+    - bedtools >=2.31.0
+    - biopython >=1.84
+    - bowtie2 >=2.5.1
+    - figtree >=1.4.4
+    - gubbins >=3.3.1
+    - iqtree >=2.2.5
+    - matplotlib-base >=3.8.0
+    - minimap2 >=2.26
+    - pandas >=2.1.0
+    - pyvcf3 >=1.0.3
+    - pyyaml >=6.0.1
+    - samtools >=1.17
+    - seqkit >=2.3.1
+    - snakemake-minimal ==7.32.4
+    - snp-dists >=0.8.2
+    - trimmomatic >=0.39
+    - upsetplot >=0.8.0
+    - yattag >=1.15.1
+
+about:
+  home: https://github.com/BioinformaticsPlatformWIV-ISP/PACU
+  license: GPL-3.0-or-later
+  license_family: GPL
+  license_file: LICENSE
+  summary: PACU is a workflow for whole genome sequencing based phylogeny of Illumina and ONT R9/R10 data.
+  dev_url: https://github.com/BioinformaticsPlatformWIV-ISP/PACU
+
+test:
+  imports:
+    - pacu
+  commands:
+    - PACU -h
+    - PACU_map -h
+    - PACU_galaxy -h
+

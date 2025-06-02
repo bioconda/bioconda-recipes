@@ -1,32 +1,15 @@
-outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+packageName=$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+outdir=$PREFIX/share/$packageName
 
+./gradlew :sirius_dist:sirius_gui_dist:installSiriusDist \
+  -P "build.sirius.location.lib=\$CONDA_PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/app" \
+  -P "build.sirius.starter.jdk.include=false" \
+  -P "build.sirius.native.cbc.exclude=true" \
+  -P "build.sirius.native.openjfx.exclude=false" \
+  -P "build.sirius.platform=$target_platform"
 
-if [[ ${target_platform} =~ linux.* ]] ; then
-    mkdir -p $outdir
-    mkdir -p $PREFIX/bin
-
-    cp -a ./* $outdir/
-    chmod +x $outdir/bin/sirius
-    # protecting libs from being modified by conda-build
-    tar czf $outdir/lib.tgz -C $outdir/lib .
-    rm -r $outdir/lib
-
-    ln -s $outdir/bin/sirius $PREFIX/bin
-    ln -s $outdir/bin/sirius-gui $PREFIX/bin
-
-elif [[ ${target_platform} =~ osx.* ]] ; then
-     mkdir -p $outdir/Contents
-     mkdir -p $PREFIX/bin
-
-     cp -a Contents/. $outdir/Contents
-     chmod +x $outdir/Contents/MacOS/sirius
-
-     # protecting libs from being modified by conda-build
-     tar czf $outdir/Contents/runtime.tgz -C $outdir/Contents/runtime .
-     tar czf $outdir/Contents/native.tgz -C $outdir/Contents/native .
-     rm -r $outdir/Contents/runtime
-     rm -r $outdir/Contents/native
-
-     ln -s $outdir/Contents/MacOS/sirius $PREFIX/bin
-     ln -s $outdir/Contents/MacOS/sirius-gui $PREFIX/bin
-fi
+mkdir -p "${outdir:?}"
+mkdir -p "${PREFIX:?}/bin"
+cp -rp ./sirius_dist/$siriusDistDir/build/install/$siriusDistName/* "${outdir:?}/"
+rm -r "${outdir:?}/bin"
+cp -rp ./sirius_dist/$siriusDistDir/build/install/$siriusDistName/bin/* "${PREFIX:?}/bin/"

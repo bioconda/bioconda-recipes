@@ -1,0 +1,66 @@
+{% set name = "novae" %}
+{% set version = "0.2.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/novae-{{ version }}.tar.gz
+  sha256: 4aef7fb0c90b870869ce38bcac8e4b4f33f5a42fa582357c9b5fbe8d5fc15d46
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('novae', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.13
+    - poetry-core >=1.0.0
+    - pip
+  run:
+    - python >=3.10,<3.13
+    - scanpy >=1.9.8
+    - lightning >=2.2.1
+    - pytorch >=2.2.1
+    - pytorch_geometric >=2.5.2
+    - huggingface_hub >=0.24.0
+    - safetensors >=0.4.3
+    - pandas >=2.0.0
+  run_constrained:
+    - wandb >=0.17.2
+    - black >=22.8.0
+    - flake8 >=7.0.0
+    - isort >=5.10.1
+    - pytest >=7.1.3
+    - pytest-cov >=5.0.0
+    - pyyaml >=6.0.1
+    - ipykernel >=6.22.0
+    - ipywidgets >=8.1.2
+    - mkdocs-material >=8.5.6
+    - mkdocs-jupyter >=0.21.0
+    - mkdocstrings >=0.19.0
+    - mkdocstrings-python >=0.7.1
+    - pydantic >=2.8.2
+    - pre-commit >=3.8.0
+
+test:
+  imports:
+    - novae
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://mics-lab.github.io/novae/
+  summary: Graph-based foundation model for spatial transcriptomics data
+  license: BSD-3-Clause
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - quentinblampey
