@@ -1,44 +1,57 @@
 {% set name = "eva-sub-cli" %}
-{% set version = "0.3" %}
+{% set version = "0.4.7" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/EBIvariation/eva-sub-cli/archive/v{{version}}.tar.gz
-  sha256: bf5e00ffd7f4a290350011ceb626f818111f8646975e5dd7247910555971e1bd
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/eva_sub_cli-{{ version }}.tar.gz
+  sha256: edfe24fd0c6a4b337d9e7d5b70c538f70fa035f95d122b166d2ce561f81c2f87
 
 build:
   number: 0
   noarch: generic
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  entry_points:
+    - eva-sub-cli.py = eva_sub_cli.executables.cli:main
+    - check_fasta_insdc.py = eva_sub_cli.executables.check_fasta_insdc:main
+    - check_metadata_semantics.py = eva_sub_cli.executables.check_metadata_semantics:main
+    - samples_checker.py = eva_sub_cli.executables.samples_checker:main
+    - xlsx2json.py = eva_sub_cli.executables.xlsx2json:main
+    - trim_down.py = eva_sub_cli.executables.trim_down:main
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
-    - nextflow >=21.10.0
-    - python >=3.8
-    - nodejs >=10.19.1
-    - vcf-validator >=0.9.6
-    - ebi-eva-common-pyutils >=0.6.1
+    - python >=3.6
+    - pip
+    - nextflow >=23.10.1
+    - nodejs >=20.1.0
+    - vcf-validator >=0.10.0
+    - ebi-eva-common-pyutils >=0.7.1
     - pyyaml
     - jinja2
     - openpyxl
     - requests
     - jsonschema
     - unzip
+    - setuptools-scm
+    - packaging
   run:
-    - nextflow >=21.10.0
-    - python >=3.8
-    - nodejs >=10.19.1
-    - vcf-validator >=0.9.6
-    - ebi-eva-common-pyutils >=0.6.1
+    - nextflow >=23.10.1
+    - python >=3.6
+    - nodejs >=20.1.0
+    - vcf-validator >=0.10.0
+    - ebi-eva-common-pyutils >=0.7.1
     - pyyaml
     - jinja2
     - openpyxl
     - requests
     - jsonschema
+    - packaging
 
 test:
   imports:
@@ -48,10 +61,13 @@ test:
     - eva-sub-cli.py --help
 
 about:
-  home: https://github.com/EBIvariation/eva-sub-cli
-  summary: EVA Submission Command Line Interface
-  license: Apache-2.0
+  home: "https://github.com/EBIvariation/eva-sub-cli"
+  summary: "EVA Submission Command Line Interface."
+  license: "Apache-2.0"
+  license_family: APACHE
   license_file: LICENSE
+  dev_url: "https://github.com/EBIvariation/eva-sub-cli"
+  doc_url: "https://github.com/EBIvariation/eva-sub-cli/blob/main/docs/Getting_Started_with_eva_sub_cli.md"
 
 extra:
   recipe-maintainers:

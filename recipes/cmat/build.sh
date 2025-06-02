@@ -1,6 +1,6 @@
 #!/bin/bash -euo
 
-$PYTHON -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+$PYTHON -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
 
 CMAT="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
 mkdir -p ${PREFIX}/bin ${CMAT}

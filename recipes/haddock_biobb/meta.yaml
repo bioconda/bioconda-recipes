@@ -1,41 +1,23 @@
 {% set name = "haddock_biobb" %}
-{% set version = "3.0.6" %}
+{% set version = "3.0.7" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
-source:
-  url: https://github.com/haddocking/haddock3/archive/refs/tags/v3.0.0-beta.5.tar.gz
-  sha256: e0651a4913fb659a57e897ac68c4f8e8f29b61e00abfcab3f3bbd623e1977f7b
-
 build:
-  number: 1
+  number: 0
+  noarch: python
   run_exports:
     - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-    - binutils
-    - pip
-    - python
-    - git
-    - setuptools
-
   host:
-    - python
+    - python >=3.9,<3.13
     - setuptools
-    - pip
-    - git
   run:
-    - python 3.8.*  # [py38]
-    - python 3.9.*  # [py39]
-    - python 3.10.*  # [py310]
+    - python >=3.9,<3.13
     - pip
-    - git
     - biopython
     - jsonpickle
     - numpy
@@ -61,10 +43,7 @@ about:
   description: "HADDOCK3 is the next generation integrative modelling software in the long-lasting HADDOCK project. It represents a complete rethinking and rewriting of the HADDOCK2.X series, implementing a new way to interact with HADDOCK and offering new features to users who can now define custom workflows."
 
 extra:
-  skip: true  # [py2k or py3k]
-  # Define build matrix for multiple Python versions
-  build:
-    python:
-      - 3.8
-      - 3.9
-      - 3.10
+  recipe-maintainers: gbayarri
+  notes: >
+    The Haddock3 package requires `gcc` hardcoded in the `setup.py`, which is unavailable in the Bioconda test environment.
+    Therefore, the post-link test is skipped.

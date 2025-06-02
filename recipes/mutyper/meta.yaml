@@ -1,0 +1,60 @@
+{% set name = "mutyper" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 28712852efd635440698ea632ecc4252a0023966d2e428953f08498e889f04e3
+
+build:
+  run_exports:
+    - {{ pin_subpackage('mutyper', max_pin="x") }}
+  number: 2
+  skip: True  # [py < 38 or py > 311]
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  entry_points:
+    - mutyper=mutyper.cli:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - pandas
+    - cyvcf2 >=0.30.15
+    - pyfaidx
+    - biopython
+    - pyliftover
+
+test:
+  imports:
+    - mutyper
+  commands:
+    - mutyper --help
+    - mutyper ancestor --help
+    - mutyper variants --help
+    - mutyper targets --help
+    - mutyper spectra --help
+    - mutyper ksfs --help
+
+about:
+  home: "https://github.com/harrispopgen/mutyper"
+  license: "MIT"
+  license_family: "MIT"
+  license_file: "LICENSE"
+  summary: "A Python package and command line utility for annotating the local ancestral sequence context of biallelic SNPs."
+  doc_url: "https://harrispopgen.github.io/mutyper"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

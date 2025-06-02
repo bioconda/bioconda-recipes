@@ -1,20 +1,20 @@
 {% set package = "ucsc-twobitinfo" %}
 {% set program = "twoBitInfo" %}
-{% set version = "469" %}
-{% set sha256 = "3f95b26ccca854c965c05773481c269f2a0e6fb1906ae8a7fe2437c6ad543963" %}
+{% set version = "481" %}
+{% set sha256 = "0df96181560e2cac3c29628b51140d60a56a0bf088c361bfd5eeb233009f98ec" %}
 
 package:
   name: "{{ package }}"
   version: "{{ version }}"
 
 source:
-  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
+  url: "https://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
   sha256: "{{ sha256 }}"
   patches:
-    - "include.patch"
+    - include.patch
+    - include.linux.patch  # [linux]
 
 build:
-  skip: True  # [osx]
   number: 0
   run_exports:
     - {{ pin_subpackage(package, max_pin=None) }}
@@ -24,18 +24,19 @@ requirements:
     - make
     - {{ compiler('c') }}
   host:
+    - clangdev  # [osx]
     - libpng
     - libuuid
     - mysql-connector-c
     - libopenssl-static
     - zlib
-
+    - bzip2
+    - liblzma-devel
   run:
     - libpng
     - libuuid
     - mysql-connector-c
     - libopenssl-static
-    - zlib
 
 test:
   commands:
@@ -43,11 +44,11 @@ test:
     - test -x ${PREFIX}/bin/{{ program }}
 
 about:
-  home: "https://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "Varies; see http://genome.ucsc.edu/license"
-  summary: "get information about sequences in a .2bit file"
+  home: "https://hgdownload.cse.ucsc.edu/admin/exe"
+  license: "Varies; see https://genome.ucsc.edu/license"
+  summary: "Get information about sequences in a .2bit file."
   dev_url: "https://github.com/ucscGenomeBrowser/kent"
-  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/master/README"
+  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/v{{ version }}_base/README"
 
 extra:
   identifiers:
