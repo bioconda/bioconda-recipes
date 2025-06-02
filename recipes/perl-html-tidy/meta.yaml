@@ -1,5 +1,6 @@
+{% set name = "perl-html-tidy" %}
 package:
-  name: perl-html-tidy
+  name: {{name}}
   version: "1.60"
 
 source:
@@ -9,10 +10,15 @@ source:
     - makefile-pl.patch
 
 build:
-  noarch: generic
-  number: 0
+  number: 6
+  run_exports:
+    - {{ pin_subpackage(name, max_pin = "x") }}
+
 
 requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
   host:
     - perl
     - perl-getopt-long
@@ -43,3 +49,7 @@ about:
   home: http://github.com/petdance/html-tidy
   license: artistic_2
   summary: '(X)HTML validation in a Perl object'
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

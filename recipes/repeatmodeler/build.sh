@@ -1,52 +1,58 @@
-#!/bin/sh
+#!/bin/bash
 set -x -e
 
-RM_DIR=${PREFIX}/share/RepeatModeler
-RM_OTHER_PROGRAMS="BuildDatabase Refiner RepeatClassifier TRFMask LTRPipeline util/dfamConsensusTool.pl util/renameIds.pl util/Linup util/viewMSA.pl"
-RM_PROGRAMS="RepeatModeler $RM_OTHER_PROGRAMS"
-
+RM_DIR="${PREFIX}/share/RepeatModeler"
 mkdir -p ${PREFIX}/bin
 mkdir -p ${RM_DIR}
-cp -r * ${RM_DIR}
+cp -rf * ${RM_DIR}
 
-# Hack J. Dainat - fix path to access the tools through the wrapper in the bin otherwise fails 
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  sed -i '' 's/$FindBin::RealBin\/Refiner/Refiner/'  ${RM_DIR}/RepeatModeler
-  sed -i '' 's/$FindBin::RealBin\/TRFMask/TRFMask/' ${RM_DIR}/RepeatModeler
-  sed -i '' 's/$FindBin::RealBin\/RepeatClassifier/RepeatClassifier/' ${RM_DIR}/RepeatModeler
-  sed -i '' 's/$FindBin::RealBin\/LTRPipeline/LTRPipeline/' ${RM_DIR}/RepeatModeler
+# configure
+cd ${RM_DIR}
+
+# prompt 1: <PRESS ENTER TO CONTINUE>
+# prompt 2: confirm path to running perl interpreter
+# prompt 3: Configure for LTR structural search [y] or n?
+# Answering n, because NINJA is not yet in bioconda
+CONFIG_OPTIONS=" \
+    -cdhit_dir ${PREFIX}/bin \
+    -genometools_dir ${PREFIX}/bin \
+    -ltr_retriever_dir ${PREFIX}/bin \
+    -mafft_dir ${PREFIX}/bin \
+    -recon_dir ${PREFIX}/bin \
+    -repeatmasker_dir ${PREFIX}/share/RepeatMasker \
+    -rmblast_dir ${PREFIX}/bin \
+    -rscout_dir ${PREFIX}/bin \
+    -trf_dir ${PREFIX}/bin \
+    -ucsctools_dir ${PREFIX}/bin"
+    
+if [[ $(uname) == 'Linux' ]]; then
+    LTR_STRUCTURAL_SEARCH="y"
+    CONFIG_OPTIONS+=" \
+    -ninja_dir ${PREFIX}/bin"
 else
-  sed -i 's/$FindBin::RealBin\/Refiner/Refiner/' ${RM_DIR}/RepeatModeler
-  sed -i 's/$FindBin::RealBin\/TRFMask/TRFMask/' ${RM_DIR}/RepeatModeler
-  sed -i 's/$FindBin::RealBin\/LTRPipeline/LTRPipeline/' ${RM_DIR}/RepeatModeler
+    LTR_STRUCTURAL_SEARCH="n"
+    # ninja_dir option not set for osx because package not available in bioconda
 fi
-# END HACK
 
-# Copy edited config file for auto configuration
-cp ${RECIPE_DIR}/RepModelConfig.pm ${RM_DIR}/RepModelConfig.pm
+# prompt 1: <PRESS ENTER TO CONTINUE>
+# prompt 2: confirm path to running perl interpreter
+# prompt 3: Configure for LTR structural search [y] or n?
+# Answering y for linux; n for osx because NINJA is not available for osx in bioconda
+printf "\n\n${LTR_STRUCTURAL_SEARCH}\n" | perl ./configure ${CONFIG_OPTIONS}
 
-# Set env variables for config parameters needed in RepModelConfig.pm
-cat <<END >>${PREFIX}/bin/RepeatModeler
-#!/bin/bash
+# add RepeatModeler
+ln -sf ${RM_DIR}/RepeatModeler ${PREFIX}/bin/RepeatModeler
 
-REPEATMODELER_DIR=${PREFIX}/share/RepeatModeler
-REPEATMASKER_DIR=${PREFIX}/share/RepeatMasker
-ABBLAST_DIR=${PREFIX}/bin
-CDHIT_DIR=${PREFIX}/bin
-GENOMETOOLS_DIR=${PREFIX}/bin
-LTR_RETRIEVER_DIR=${PREFIX}/bin
-MAFFT_DIR=${PREFIX}/bin
-NINJA_DIR=${PREFIX}/bin
-RECON_DIR=${PREFIX}/bin
-RMBLAST_DIR=${PREFIX}/bin
-RSCOUT_DIR=${PREFIX}/bin
-TRF_PRGM=${PREFIX}/bin/trf
-export REPEATMODELER_DIR REPEATMASKER_DIR ABBLAST_DIR TRFMASK_DIR CDHIT_DIR GENOMETOOLS_DIR LTR_RETRIEVER_DIR MAFFT_DIR NINJA_DIR RECON_DIR RMBLAST_DIR RSCOUT_DIR TRF_PRGM
-NAME=\$(basename \$0)
-perl ${RM_DIR}/\${NAME} \$@
-END
+# add other tools
+RM_OTHER_PROGRAMS="BuildDatabase LTRPipeline Refiner RepeatClassifier"
+for name in ${RM_OTHER_PROGRAMS}; do
+  ln -sf ${RM_DIR}/${name} ${PREFIX}/bin/${name}
+done
 
-chmod a+x ${PREFIX}/bin/RepeatModeler
-for name in ${RM_OTHER_PROGRAMS} ; do
-  ln -s ${PREFIX}/bin/RepeatModeler ${PREFIX}/bin/$(basename $name)
+# add utils
+# note that not all utils are linked directly in bin/, but
+# can still be accessed via ${PREFIX}/share/RepeatModeler/util/*.pl
+RM_UTILS="alignAndCallConsensus.pl generateSeedAlignments.pl viewMSA.pl Linup"
+for name in ${RM_UTILS}; do
+  ln -sf ${RM_DIR}/util/${name} ${PREFIX}/bin/${name}
 done

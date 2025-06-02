@@ -1,4 +1,4 @@
-{% set version="0.2.1" %}
+{% set version="0.6.3" %}
 
 package:
   name: usher
@@ -6,14 +6,12 @@ package:
 
 source:
   - url: https://github.com/yatisht/usher/archive/v{{ version  }}.tar.gz
-    sha256: 84f1e18b069173ea8f5307e2c524792fdde76aa4161c26f78d9bf7509e9b3a86
-  - url: https://github.com/oneapi-src/oneTBB/archive/2019_U9.tar.gz
-    folder: oneTBB-2019_U9
-    sha256: 3f5ea81b9caa195f1967a599036b473b2e7c347117330cda99b79cfcf5b77c84
+    sha256: 95aba8f748599915f21f7bdf883c2e532f2d821138f06cb2e4e58d7323019946
 
 build:
-  number: 0
-  skip: true  # [osx]
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('usher', max_pin="x.x") }}
 
 requirements:
   build:
@@ -26,16 +24,21 @@ requirements:
   host:
     - boost-cpp
     - libprotobuf
+    - openmpi =4.1.2
+    - openssh
+    - isa-l
   run:
-    - python
     - mafft
-    - biopython
+    - boost-cpp
     - ucsc-fatovcf
-    - {{ pin_compatible('boost-cpp', max_pin='x.x.x') }}
+    - openmpi =4.1.2
+    - openssh
+    - isa-l
 
 test:
   commands:
     - usher --help
+    - usher-sampled --help
     - matOptimize --help
     - matUtils --help
 
@@ -45,3 +48,10 @@ about:
   license_family: MIT
   license_file: LICENSE
   summary: Ultrafast Sample Placement on Existing Trees (UShER)
+  doc_url: https://usher-wiki.readthedocs.io/en/latest/
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - doi:10.1038/s41588-021-00862-7

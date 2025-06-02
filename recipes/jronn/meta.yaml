@@ -1,0 +1,54 @@
+# no need to update version anywhere else
+{% set version="7.1.0" %}
+
+package:
+  name: jronn
+  version: {{ version }}
+
+build:
+  number: 1
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('jronn', max_pin="x.x") }}
+
+source:
+  path: "./build.gradle"
+  sha256: b554e160a0f7b40a528d2c85c2d9a2e943d42150381ea9290a1df4a2ef0efc91
+
+requirements:
+  build:
+    - gradle =7.4
+  host:
+    - openjdk >=11,<18
+  run:
+    - openjdk >=11
+
+test:
+  commands:
+    - jronn 2>&1 | grep "JRONN version 3.1"
+
+about:
+  home: https://biojava.org/
+  dev_url: https://github.com/biojava/biojava/tree/master/biojava-protein-disorder
+  license: LGPL-2.1
+  summary: "JRONN is based on the C implementation of RONN algorithm."
+  description: >-
+    JRONN is a Java implementation of RONN. JRONN is based on RONN and uses the
+    same model data, therefore gives the same predictions. Main motivation
+    behind JRONN development was providing an implementation of RONN more
+    suitable to use by the automated analysis pipelines and web services.
+    
+    Original version of RONN is described in Yang,Z.R., Thomson,R.,
+    McMeil,P. and Esnouf,R.M. (2005) RONN: the bio-basis function neural network
+    technique applied to the detection of natively disordered regions in proteins
+    Bioinformatics 21: 3369-3376
+    See also http://www.strubi.ox.ac.uk/RONN
+
+extra:
+  notes:
+    JRONN is a Java program that comes with a custom wrapper shell script.
+    The shell wrapper is called "jronn" and is present on $PATH by default.
+    The Java program is executed by jvm pointed to by the $JAVA_HOME variable.
+    Otherwise, a "java" program from the current environment is used.
+  identifiers:
+    - biotools:protein-disorder

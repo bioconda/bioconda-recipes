@@ -2,46 +2,34 @@
 
 set -eu -o pipefail
 
-work_dir=$PREFIX/pasta-build
-install_dir=$PREFIX/bin
-
-mkdir -p $work_dir
-mkdir -p $work_dir/pasta
-
-cp -R ./* $work_dir/pasta
-cd $work_dir
-
+# obtain opal.jar from Siavash's extra repo
 unamestr=`uname`
-if [ $unamestr == 'Linux' ];
+if [[ $unamestr == 'Linux' ]];
 then
-    wget --no-check-certificate https://github.com/smirarab/sate-tools-linux/archive/a3e6f56.tar.gz
-    tar -xzf a3e6f56.tar.gz
-    mv sate-tools-linux-a3e6f56372599ffacf1bd43adb2d67cf361228e2 sate-tools-linux
-    cd pasta
-    $PYTHON setup.py install --single-version-externally-managed --record=/tmp/record.txt
-    mkdir $install_dir/sate-tools-linux
-    cp -R $work_dir/sate-tools-linux/* $install_dir/sate-tools-linux/
-    # Handle a PASTA bug.
-    cp $install_dir/sate-tools-linux/hmmalign $install_dir/sate-tools-linux/hmmeralign
-    cp $install_dir/sate-tools-linux/hmmbuild $install_dir/sate-tools-linux/hmmerbuild
-    # So tools are available in the bin directory.
-    ln -s $install_dir/sate-tools-linux/* $install_dir/
-elif [ $unamestr == 'Darwin' ];
+    wget --no-check-certificate https://github.com/smirarab/sate-tools-linux/raw/master/opal.jar -O $PREFIX/bin/opal.jar
+    mkdir -p ../sate-tools-linux/mafftdir/bin ../sate-tools-linux/mafftdir/libexec  # fake existens of tool collection
+elif [[ $unamestr == 'Darwin' ]];
 then
-    export DYLD_LIBRARY_PATH=$PREFIX/lib
-    wget --no-check-certificate https://github.com/smirarab/sate-tools-mac/archive/0712214.tar.gz
-    tar -xzf 0712214.tar.gz
-    mv sate-tools-mac-0712214e20152b2ec989fc102602afa53d3a7b1a sate-tools-mac
-    cd pasta
-    $PYTHON setup.py install --single-version-externally-managed --record=/tmp/record.txt
-    mkdir $install_dir/sate-tools-mac
-    cp -R $work_dir/sate-tools-mac/* $install_dir/sate-tools-mac/
-    # Handle a PASTA bug.
-    cp $install_dir/sate-tools-mac/hmmalign $install_dir/sate-tools-mac/hmmeralign
-    cp $install_dir/sate-tools-mac/hmmbuild $install_dir/sate-tools-mac/hmmerbuild
-    # So tools are available in the bin directory.
-    ln -s $install_dir/sate-tools-mac/* $install_dir/
+    wget --no-check-certificate  https://github.com/smirarab/sate-tools-mac/raw/master/opal.jar -O $PREFIX/bin/opal.jar
+    mkdir -p ../sate-tools-mac/mafftdir/bin ../sate-tools-mac/mafftdir/libexec  # fake existens of tool collection
 fi
 
-mkdir $install_dir/pasta
-cp -R $work_dir/pasta/* $install_dir/pasta/
+# Handle a PASTA bug.
+ln -sf $PREFIX/bin/hmmalign $PREFIX/bin/hmmeralign
+ln -sf $PREFIX/bin/hmmbuild $PREFIX/bin/hmmerbuild
+
+# copy files for tests to shared conda directory
+mkdir -p $PREFIX/share/pasta/data/
+cp -fv data/small.fasta $PREFIX/share/pasta/data/
+
+# install pasta itself
+sed -i.bak 's/^.*import imp/#&/g' pasta/__init__.py
+sed -i.bak 's/^.*imp.is_frozen.*/#&/g' pasta/__init__.py
+rm -rf pasta/*.bak
+$PYTHON -m pip install --no-deps --no-build-isolation --no-cache-dir --use-pep517 . -vvv
+cp -f bin/treeshrink $PREFIX/bin/treeshrink
+
+# "rename" raxml binaries, after pasta's setup.py did copy bundled raxml versions into bin/
+rm -fv $PREFIX/bin/raxml #$PREFIX/bin/raxmlp
+cp -fv $PREFIX/bin/raxmlHPC $PREFIX/bin/raxml && chmod 0755 $PREFIX/bin/raxml
+#cp -fv $PREFIX/bin/raxmlHPC-PTHREADS $PREFIX/bin/raxmlp && chmod 0755 $PREFIX/bin/raxmlp

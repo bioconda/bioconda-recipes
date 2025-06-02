@@ -1,0 +1,50 @@
+{% set name = "profile_dists" %}
+{% set version = "1.0.6" %}
+{% set sha256 = "ce8325de606a5ba9ce4f1df393a33266a6a26a422f934435029bf1e66c93e4ee" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/profile_dists-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage("profile_dists", max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps --no-cache-dir --no-build-isolation -vvv
+  entry_points:
+    - profile_dists=profile_dists.main:main
+
+requirements:
+  host:
+    - python >=3.8,<3.12
+    - pip
+    - setuptools
+    - pytest-runner
+  run:
+    - python >=3.8,<3.12
+    - pyarrow >=12.0.0
+    - fastparquet >=2023.4.0
+    - numba >=0.57.1,<=0.61.2
+    - numpy >=1.24.4,<2.0.0
+    - pytables >=3.8.0
+    - six >=1.16.0
+    - pandas >=2.0.2,<2.2.0
+    - psutil
+
+test:
+  imports:
+    - profile_dists
+  commands:
+    - profile_dists -h
+
+about:
+  home: 'https://pypi.org/project/profile-dists'
+  summary: 'Profile Dists: Rapid calcualtion of allele profile distances and distance base querying'
+  license: Apache-2.0
+  license_file: LICENSE
+  dev_url: 'https://github.com/phac-nml/profile_dists/'

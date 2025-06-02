@@ -1,0 +1,54 @@
+{% set name = "curare" %}
+{% set version = "0.6.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/pblumenkamp/Curare/archive/refs/tags/{{ version }}.tar.gz
+  sha256: e98935fce614bf0b8b3db4e9c65c9fbba999fab84e69e4158209b6319f59a0da
+
+build:
+  number: 0
+  noarch: python
+  script: python -m pip install --no-deps --ignore-installed .
+  entry_points:
+    - curare = curare.curare:main
+    - curare_wizard = curare.curare_wizard:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+  run:
+    - snakemake =7.32.3
+    - mamba =1.5.3
+    - python =3.10
+    - pyyaml =6.0
+    - docopt =0.6.2
+    - progressbar2 =4.3.2
+    - biopython =1.83
+
+test:
+  imports:
+    - curare
+  commands:
+    - curare --help
+    - curare_wizard --help
+
+about:
+  home: https://github.com/pblumenkamp/Curare
+  license: GPL3
+  license_family: GPL3
+  license_file: LICENSE
+  summary: A Customizable and Reproducible Analysis Pipeline for RNA-Seq Experiments.
+  description: |
+        Curare is a freely available analysis pipeline for reproducible, high-throughput,
+        bacterial RNA-Seq experiments. Define standardized pipelines customized for your
+        specific workflow without the necessity of installing all the tools by yourself.
+        Curare is implemented in Python and uses the power of Snakemake and Conda to build
+        and execute the defined workflows. Its modulized structure and the simplicity of
+        Snakemake enables developers to create new and advanced workflow steps.

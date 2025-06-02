@@ -1,4 +1,4 @@
-{% set version = "1.0.6" %}
+{% set version = "1.1.5" %}
 
 package:
   name: ntjoin
@@ -6,22 +6,21 @@ package:
 
 source:
   url: https://github.com/bcgsc/ntJoin/releases/download/v{{ version }}/ntJoin-{{ version }}.tar.gz 
-  sha256: d8931400c9d90dd355528be6cfd01b3294ef81875d0a718ded3774735060b96b 
+  sha256: 808260e3e8c25121f4b7b88a0dd1766c9da0b59d5ebf843a5ec84efb13944009 
 
 build:
-  number: 1
-  skip: True  # [py<30]
+  number: 2
+  noarch: generic
+  run_exports: 
+    - {{ pin_subpackage("ntjoin", max_pin="x") }}
 
 requirements:
-  build:
-    - {{ compiler('cxx') }}
-    - make
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
   host:
+    - make
     - python
     - pip
     - zlib
+    - btllib
   run:
     - python-igraph
     - pybedtools
@@ -32,12 +31,14 @@ requirements:
     - python
     - zlib
     - make
+    - btllib
+    - packaging
 
 test:
   commands:
     - ntJoin help 
+    - ntJoin check_install
     - samtools --help
-    - ntjoin_assemble.py -h
 
 about:
   home: http://www.bcgsc.ca/platform/bioinfo/software/ntjoin

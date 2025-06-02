@@ -1,7 +1,8 @@
+{% set name = "cnvnator" %}
 {% set version = "0.4.1" %}
 
 package:
-  name: cnvnator
+  name: {{name}}
   version: {{ version }}
 
 source:
@@ -9,12 +10,16 @@ source:
     sha256: a2b3d85909ac5533ed079440000fdbf15aede7a56ec1ca555ae185a4162e8675
     patches:
       - 0001-Add-missing-set-include.patch
+      - 0002-interpreter-paths.patch
   - url: https://github.com/samtools/samtools/releases/download/1.10/samtools-1.10.tar.bz2
     sha256: 7b9ec5f05d61ec17bd9a82927e45d8ef37f813f79eb03fe06c88377f1bd03585
     folder: samtools
 
 build:
-  number: 2
+  number: 11
+  run_exports:
+    - {{ pin_subpackage(name, max_pin = "x.x") }}
+
   skip: True  # [osx]
 
 requirements:
@@ -32,6 +37,10 @@ requirements:
   run:
     - htslib
     - root_base
+    - perl-getopt-long
+    - python
+    - numpy
+    - matplotlib-base
 
 about:
   home: https://github.com/abyzovlab/CNVnator
@@ -41,3 +50,10 @@ about:
 test:
   commands:
     - cnvnator
+    - plotbaf.py --help
+    - plotcircular.py --help
+    - plotrdbaf.py --help
+    - cnvnator2VCF.pl --help
+extra:
+  additional-platforms:
+    - linux-aarch64

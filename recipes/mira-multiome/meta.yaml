@@ -1,0 +1,52 @@
+{% set name = "mira-multiome" %}
+{% set version = "2.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/mira-multiome-{{ version }}.tar.gz
+  sha256: f981bc40542097c3892cb02efca0c25766dfa0bbafcbd4e94ea18b3e5e27157b
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.7,<3.12
+    - wheel
+    - pip
+    - setuptools_scm
+  run:
+    - python >=3.7,<3.12
+    - pytorch >=1.8.0,<2
+    - pyro-ppl >=1.5.2,<2
+    - networkx >=2.3,<3
+    - optuna >=2.8,<3
+    - anndata >=0.7.6,<1
+    - moods >=1.9.4.1
+    - pyfaidx >=0.5,<1
+    - matplotlib-base >=3.4,<4
+    - lisa2 >=2.3.0
+    - requests >=2,<3
+    - tqdm
+    - tensorboard
+
+test:
+  imports:
+    - mira
+
+about:
+  home: https://mira-multiome.readthedocs.io/en/latest/
+  summary: Single-cell multiomics data analysis
+  license: BSD-3-Clause-LBNL
+  license_file: LISCENSE
+
+extra:
+  recipe-maintainers:
+    - allenlynch

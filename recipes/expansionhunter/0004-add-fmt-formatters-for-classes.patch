@@ -1,0 +1,69 @@
+From f564325091e2a61b08a84a998fb938b117418a20 Mon Sep 17 00:00:00 2001
+From: Lightning Auriga <lightning.auriga@gmail.com>
+Date: Mon, 11 Sep 2023 10:02:32 -0400
+Subject: [PATCH 4/4] add fmt formatters for classes
+
+---
+ ehunter/core/GenomicRegion.hh | 12 ++++++++++++
+ ehunter/core/Read.hh          | 10 ++++++++++
+ 2 files changed, 22 insertions(+)
+
+diff --git a/ehunter/core/GenomicRegion.hh b/ehunter/core/GenomicRegion.hh
+index 3c5821d..2035d1a 100644
+--- a/ehunter/core/GenomicRegion.hh
++++ b/ehunter/core/GenomicRegion.hh
+@@ -24,10 +24,14 @@
+ #pragma once
+ 
+ #include <iostream>
++#include <sstream>
+ #include <string>
+ #include <unordered_map>
+ #include <vector>
+ 
++#include <fmt/core.h>
++#include <fmt/format.h>
++
+ #include "core/ReferenceContigInfo.hh"
+ 
+ namespace ehunter
+@@ -79,3 +83,11 @@ std::string encode(const ReferenceContigInfo& contigInfo, const GenomicRegion& r
+ GenomicRegion decode(const ReferenceContigInfo& contigInfo, const std::string& encoding);
+ 
+ }
++
++template <> struct fmt::formatter<ehunter::GenomicRegion> : formatter<string_view> {
++    auto format(const ehunter::GenomicRegion &region, format_context &ctx) const {
++        std::ostringstream o;
++        o << region;
++        return formatter<string_view>::format(o.str(), ctx);
++    }
++};
+diff --git a/ehunter/core/Read.hh b/ehunter/core/Read.hh
+index 3697b24..41be69e 100644
+--- a/ehunter/core/Read.hh
++++ b/ehunter/core/Read.hh
+@@ -28,6 +28,8 @@
+ #include <string>
+ 
+ #include <boost/functional/hash.hpp>
++#include <fmt/core.h>
++#include <fmt/format.h>
+ 
+ #include "alignment/AlignmentClassifier.hh"
+ #include "graphalign/GraphAlignment.hh"
+@@ -166,3 +168,11 @@ using ReadIdToRepeatAlignmentStats = std::unordered_map<std::string, RepeatAlign
+ std::ostream& operator<<(std::ostream& out, const Read& read);
+ 
+ }
++
++template <> struct fmt::formatter<ehunter::ReadId> : formatter<string_view> {
++    auto format(const ehunter::ReadId &readId, format_context &ctx) const {
++        std::ostringstream o;
++        o << readId;
++        return formatter<string_view>::format(o.str(), ctx);
++    }
++};
+-- 
+2.39.1
+

@@ -1,0 +1,60 @@
+{% set name = "DockQ" %}
+{% set version = "2.1.3" %}
+{% set author = "bjornwallner" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0]|lower }}/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: 50c4e2b4bced3bf865b12061ec0b56e23de1383dc70b445441848224f6c72c0d
+
+build:
+  entry_points:
+    - DockQ = DockQ.__main__:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 2
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python >=3.8
+    - setuptools >=68
+    - cython
+    - numpy <2.0
+    - pip
+  run:
+    - python >=3.8
+    - biopython >=1.79
+    - networkx
+    - parallelbar
+    - {{ pin_compatible('numpy') }}
+
+test:
+  imports:
+    - {{ name }}
+  commands:
+    - pip check
+    - {{ name }} --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/{{ author }}/{{ name }}
+  dev_url: https://github.com/{{ author }}/{{ name }}
+  doc_url: https://github.com/{{ author }}/{{ name }}#{{ name|lower }}
+  summary: A Quality Measure for Protein, Nucleic Acids and Small Ligand Docking Modelsc
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - eunos-1128

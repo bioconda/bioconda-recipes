@@ -1,0 +1,80 @@
+{% set name = "BRAKER3" %}
+{% set version = "3.0.8" %}
+{% set sha256 = "f2623290c3007a3e42719a0bb2713bec7226db222bfef742895a9d5d0b4ee526" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+source:
+- url: https://github.com/Gaius-Augustus/BRAKER/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('braker3', max_pin='x') }}
+
+requirements:
+  run:
+    - python >=3.7
+    - biopython
+    - perl
+    - perl-app-cpanminus
+    - perl-data-dumper
+    - perl-hash-merge
+    - perl-parallel-forkmanager
+    - perl-scalar-util-numeric
+    - perl-yaml
+    - perl-yaml-libyaml
+    - perl-class-data-inheritable
+    - perl-exception-class
+    - perl-test-pod
+    - perl-file-homedir
+    - perl-file-which
+    - perl-file-spec
+    - perl-scalar-list-utils
+    - perl-logger-simple
+    - perl-math-utils
+    - perl-module-load-conditional
+    - perl-posix
+    - perl-mce
+    - augustus >=3.5.0
+    - bamtools >=2.5.1
+    - samtools >=1.14
+    - spaln >=2.4.8
+    - exonerate >=2.2.0  # Can be used by braker3, but deprecated in favour of genomethreader
+    - blast >=2.12.0  # Can be used by braker3, but deprecated in favour of diamond
+    - makehub
+    - cdbtools >=0.99
+    - genomethreader >=1.7.0
+    - diamond >=2.1.6
+    - tsebra
+    - compleasm
+      #    - GeneMark-ES/ET/EP+ >=4.64
+      #    - prothint >=2.6.0
+
+test:
+  commands:
+    - braker.pl
+    - downsample_traingenes.pl 2>&1 | grep "downsample_traingenes.pl" > /dev/null
+    - filterGenemark.pl
+    - filterIntronsFindStrand.pl
+    - findGenesInIntrons.pl 2>&1 | grep "findGenesInIntrons.pl" > /dev/null
+    - "fix_gtf_ids.py -h | grep -q usage:"
+    - "tsebra.py -h | grep -q usage:"
+
+about:
+  home: https://github.com/Gaius-Augustus/BRAKER
+  license: Artistic License
+  license_family: Other
+  license_file: LICENSE.TXT
+  summary: "BRAKER3 is the latest pipeline in the BRAKER suite"
+  description: "BRAKER3 enables the usage of RNA-seq and protein data in a fully automated pipeline to train and predict highly reliable genes with GeneMark-ETP and AUGUSTUS. The result of the pipeline is the combined gene set of both gene prediction tools, which only contains genes with very high support from extrinsic evidence."
+
+extra:
+  identifiers:
+    - doi:10.1101/2023.01.13.524024
+  notes:
+    - GeneMark software can be used for free, but requires a license file and should be additionally installed on the machine where the BRAKER3 environment is.
+    - ProtHint software can be used for free, but doesn't allow redistribution and should be additionally installed on the machine where the BRAKER3 environment is.

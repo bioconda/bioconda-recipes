@@ -1,21 +1,31 @@
+{% set name = "RNAstructure" %}
+{% set version = "6.4" %}
+{% set sha256 = "e2a372a739153293185eeffee3d3265f9f50dc6976053a1d013ccf086b06d975" %}
+
 package:
-  name: rnastructure
-  version: '6.1'
+  name: {{ name | lower }}
+  version: {{ version }}
 
 source:
-  sha256: b9a5468a53a6546bcc060d7befc9466a6688f1d1c2611707630d991c69193ed5
-  url: http://rna.urmc.rochester.edu/Releases/6.1/RNAstructureSource.tgz
+  sha256: {{ sha256 }}
+  url: http://rna.urmc.rochester.edu/Releases/{{ version }}/RNAstructureSource.tgz
 
 build:
   number: 2
-  skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage(name | lower, max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  host:
+    - llvm-openmp  # [osx]
   run:
+    - llvm-openmp  # [osx]
 
 # In  version 6.0, several commands are returning exit code 1 when called with
 # the -h option. Therefore, changed the modules that are tested.
@@ -25,7 +35,7 @@ test:
 
 about:
   home: http://rna.urmc.rochester.edu/RNAstructure.html
-  license: GPLv2
+  license: GPL-2.0-only
   license_family: GPL
   license_file: gpl.txt
   summary: 'RNAstructure is a complete package for RNA and DNA secondary structure  prediction
@@ -40,5 +50,8 @@ about:
     enzymatic  mapping, NMR, and SHAPE data.'
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:rnastructure

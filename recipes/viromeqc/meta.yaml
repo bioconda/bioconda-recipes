@@ -1,0 +1,37 @@
+{% set version = "1.0.2" %}
+{% set name = "viromeqc" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/CarsonJM/viromeqc/releases/download/{{ version }}/viromeqc{{ version }}.tar.gz
+  sha256: e4da8944f6213a1a4a0dfaab3cf2661b4b54f53be8a37f06e3c088c660052189
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  noarch: generic
+
+requirements:
+  host:
+    - python
+  run:
+    - python
+    - bowtie2
+    - samtools
+    - biopython
+    - pysam
+    - diamond
+    - pandas
+
+test:
+  commands:
+    - viromeQC.py --help
+
+about:
+  home: https://github.com/SegataLab/viromeqc
+  license: MIT
+  summary: Provides an enrichment score for VLP viromes with respect to metagenomes

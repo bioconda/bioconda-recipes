@@ -1,0 +1,42 @@
+diff -u -r 1.9/plink_rserve.c build/1.9/plink_rserve.c
+--- 1.9/plink_rserve.c	2024-10-21 00:22:32
++++ build/1.9/plink_rserve.c	2025-03-18 11:04:15
+@@ -18,11 +18,11 @@
+ // Rconnection.cc is part of a continuously updated package and uses
+ // C++-specific language constructs, so we omit this module when compiling with
+ // gcc instead of g++.
+-#if defined __cplusplus && !defined _WIN32
+ 
+ #define MAIN
+ #define SOCK_ERRORS
+ #include "sisocks.h"
++#if (defined __cplusplus && !defined _WIN32) 
+ #include "Rconnection.h"
+ 
+ #include "plink_common.h"
+diff -u -r 1.9/sisocks.h build/1.9/sisocks.h
+--- 1.9/sisocks.h	2025-03-18 10:37:51
++++ build/1.9/sisocks.h	2025-03-18 11:01:07
+@@ -251,7 +251,7 @@
+ #endif
+ 
+ #ifdef MAIN
+-struct sockaddr *build_sin(struct sockaddr_in *sa,char *ip,int port) {
++extern struct sockaddr *build_sin(struct sockaddr_in *sa,char *ip,int port) {
+   memset(sa,0,sizeof(struct sockaddr_in));
+   sa->sin_family=AF_INET;
+   sa->sin_port=htons(port);
+@@ -259,9 +259,13 @@
+   return (struct sockaddr*)sa;
+ }
+ #else
++#ifdef __cplusplus 
+ extern "C" {
++#endif
+   struct sockaddr *build_sin(struct sockaddr_in *sa,char *ip,int port);
++#ifdef __cplusplus 
+ }
++#endif
+ #endif
+ 
+ #endif /* __SISOCKS_H__ */

@@ -1,49 +1,58 @@
-{% set version = "3.2.0" %}
+{% set name = "varlociraptor" %}
+{% set version = "8.7.3" %}
 
 package:
-  name: varlociraptor
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 0
-  # Skipping macOS builds due to unresolved linking error:
-  #  Undefined symbols for architecture x86_64:
-  #    "_SSLCopyALPNProtocols", referenced from:
-  #        _sectransp_connect_step2 in libcurl_sys-c372a728cc50d01a.rlib(sectransp.o)
-  #    "_SSLSetALPNProtocols", referenced from:
-  #        _sectransp_connect_common in libcurl_sys-c372a728cc50d01a.rlib(sectransp.o)
-  skip: True  # [osx]
 
 source:
   url: https://github.com/varlociraptor/varlociraptor/archive/v{{ version }}.tar.gz
-  sha256: 07327b0bc280dd44ecf2b65c18314f3b3f76fa3414ad44175b687c100321c1ae
+  sha256: 462d8c3217138ca49d3bdff269f2478c173c200ccf4c803cbc6f7d45e1cb516f
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("varlociraptor", max_pin="x") }}
 
 requirements:
   build:
-    - rust >=1.30
-    - clangdev
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
     - pkg-config
     - make
+    - cmake
   host:
     - gsl
     - libcblas
-    - openssl
+    # try using system openssl on macos
+    - openssl  # [not osx]
     - zlib
     - bzip2
     - xz
     - clangdev
-    - blis
+    - blis  # [not arm64]
   run:
-    - blis
+    - blis  # [not arm64]
 
 test:
   commands:
     - varlociraptor -h
 
 about:
-  home: https://varlociraptor.github.io
-  license: GPLv3
-  license_family: GPL
-  summary: Flexible, uncertainty-aware variant calling with parameter free filtration via FDR control.
+  home: "https://github.com/varlociraptor/varlociraptor"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Flexible, uncertainty-aware variant calling with parameter free filtration via FDR control."
+  dev_url: "https://github.com/varlociraptor/varlociraptor"
+  doc_url: "https://varlociraptor.github.io"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:varlociraptor
+    - doi:10.1186/s13059-020-01993-6

@@ -1,0 +1,60 @@
+{% set name = "clair3" %}
+{% set version = "1.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: http://www.bio8.cs.hku.hk/clair3/bioconda/Clair3_v{{ version }}.zip
+  sha256: 58be0036159e29174960247d74f5ad1c5fa8d15c180374eca8066c8902367f30
+
+build:
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - cffi
+    - bzip2
+    - xz
+    - zlib
+    - python <=3.10.0
+    - automake
+    - make
+    - libcurl
+    - openssl
+  run:
+    - python <=3.10.0
+    - tensorflow <=2.16.0
+    - numpy
+    - pytables
+    - samtools
+    - whatshap
+    - pigz
+    - parallel
+    - zstd
+    - openssl
+    - cffi
+
+test:
+  imports:
+    - tensorflow
+  commands:
+    - longphase --version
+    - which clair3.py
+    - run_clair3.sh -v
+extra:
+  container:
+    extended-base: true
+
+about:
+  home: 'https://github.com/HKU-BAL/Clair3'
+  license: BSD-3-Clause
+  license_file: LICENSE.md
+  summary: "Clair3 is a small variant caller for long-reads. Compare to PEPPER (r0.4), Clair3 (v0.1) shows a better SNP F1-score with ≤30-fold of ONT data (precisionFDA Truth Challenge V2), and a better Indel F1-score, while runs generally four times faster. Clair3 makes the best of both worlds of using pileup or full-alignment as input for deep-learning based long-read small variant calling. Clair3 is simple and modular for easy deployment and integration."

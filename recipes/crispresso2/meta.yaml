@@ -1,17 +1,28 @@
-{% set version = "2.1.0" %}
+{% set version = "2.3.2" %}
 
 package:
   name: crispresso2
   version: {{ version }}
 
 build:
-  number: 1
-  skip: True # [not py27]
+  number: 0
+  script:
+    - export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration -Wno-int-conversion"
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - CRISPResso = CRISPResso2.CRISPRessoCORE:main
+    - CRISPRessoBatch = CRISPResso2.CRISPRessoBatchCORE:main
+    - CRISPRessoPooled = CRISPResso2.CRISPRessoPooledCORE:main
+    - CRISPRessoWGS = CRISPResso2.CRISPRessoWGSCORE:main
+    - CRISPRessoCompare = CRISPResso2.CRISPRessoCompareCORE:main
+    - CRISPRessoPooledWGSCompare = CRISPResso2.CRISPRessoPooledWGSCompareCORE:main
+    - CRISPRessoAggregate = CRISPResso2.CRISPRessoAggregateCORE:main
+  run_exports:
+    - {{ pin_subpackage('crispresso2', max_pin='x') }}
 
 source:
   url: https://github.com/pinellolab/CRISPResso2/archive/v{{ version }}.tar.gz
-  sha256: 379928e551a1cfacf33ad5eed064c38172444ebbbf1a3b4774f1d0849209ef3e
-
+  sha256: 3f786b99bf9832ae46f362bed8159c2b713c133912ba171e53fddecece24b316
 
 requirements:
   build:
@@ -19,32 +30,21 @@ requirements:
   host:
     - python
     - setuptools
+    - pip
     - cython
-    - scipy 1.1.0
-    - numpy >=1.9,<=1.16.6
-    - pandas >=0.15,<=0.24
-    - matplotlib-base >=1.3.1,<=2.2.3
-    - argparse >=1.3,<=1.4
-    - jinja2 ==2.10
-    - trimmomatic
-    - flash
-    - samtools
-    - bowtie2
-    - seaborn >0.7.1,<0.10
+    - numpy
   run:
     - python
-    - scipy 1.1.0
-    - numpy >=1.9,<=1.16.6
-    - pandas >=0.15,<=0.24
-    - matplotlib-base >=1.3.1,<=2.2.3
-    - argparse >=1.3,<=1.4
-    - jinja2 ==2.10
-    - trimmomatic
-    - flash
+    - scipy
+    - numpy
+    - pandas
+    - plotly
+    - matplotlib-base
+    - jinja2
+    - fastp
     - samtools
     - bowtie2
-    - seaborn >0.7.1,<0.10
-
+    - seaborn-base
 
 test:
   imports:
@@ -54,6 +54,16 @@ test:
 
 about:
   home: https://github.com/pinellolab/CRISPResso2
-  license: Partners
+  license: CC0-1.0
   license_file: LICENSE.txt
-  summary: "A software pipeline designed to enable rapid and intuitive interpretation of genome editing experiments"
+  summary: "A software pipeline designed to enable rapid and intuitive interpretation of genome editing experiments."
+  dev_url: https://github.com/pinellolab/CRISPResso2
+  doc_url: https://docs.crispresso.com
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:crispresso2
+    - doi:10.1038/s41587-019-0046-x

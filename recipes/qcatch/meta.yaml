@@ -1,0 +1,54 @@
+{% set name = "qcatch" %}
+{% set version = "0.2.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/qcatch-{{ version }}.tar.gz
+  sha256: 4828aaf310674431fc0ab345e8e20c60477eada20666ce26052ab2bc2f515a06
+
+build:
+  entry_points:
+    - qcatch = qcatch.main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('qcatch', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python ==3.12.9
+    - hatchling
+    - pip
+  run:
+    - python ==3.12.9
+    - numpy ==2.1.3
+    - scipy ==1.15.2
+    - pandas ==2.2.3
+    - beautifulsoup4 ==4.13.3
+    - pyroe ==0.9.0
+    - scanpy ==1.10.4
+    - plotly ==6.0.0
+    - python-igraph ==0.11.8
+    - requests
+
+test:
+  imports:
+    - qcatch
+  commands:
+    - qcatch --help
+
+about:
+  home: "https://github.com/COMBINE-lab/QCatch"
+  summary: "QCatch: Quality Control downstream of alevin-fry / simpleaf."
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: LICENSE
+  dev_url: "https://github.com/COMBINE-lab/QCatch"
+
+extra:
+  recipe-maintainers:
+    - ygao61

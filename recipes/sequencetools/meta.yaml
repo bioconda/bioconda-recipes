@@ -1,26 +1,36 @@
-{% set name = "sequencetools" %}
-{% set version = "1.4.0.6" %}
-{% set md5 = "d3d5e9acf96827050cb234af44398060" %}
+{% set version = "1.6.0.0" %}
 
 package:
-  name: {{ name }}
+  name: sequencetools
   version: {{ version }}
 
 source:
-  url: https://github.com/sequencetoolsconda/sequenceTools/releases/download/v{{ version }}/sequencetools_static.x86_64-linux.tar.gz
-  md5: {{ md5 }}
-
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/pileupCaller-conda-linux # [linux]
+    md5: eb69dd3172c0ca800a2043ed23adf251 # [linux]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/pileupCaller-macOS-X64 # [osx and x86_64]
+    md5: 2eab8ff64a2ac624a2dc201ed139755f # [osx and x86_64]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/pileupCaller-macOS-ARM64 # [osx and arm64]
+    md5: d4d9617e35eabb1c71fe5a01d5c9f4d7 # [osx and arm64]
+  
 build:
-  number: 1
-  skip: True # [osx]
-  binary_relocation: False
+  number: 0
+  script:
+    - "mkdir -p $PREFIX/bin"
+    - "mv pileupCaller* $PREFIX/bin/pileupCaller"
+    - "chmod u+x $PREFIX/bin/pileupCaller"
+  run_exports:
+    - {{ pin_subpackage("sequencetools", max_pin=None) }}
+
 
 requirements:
   build:
+    # Precompiled binaries still link against libgcc
     - {{ compiler('c') }}
+  host:
+    - zlib
+    - gmp
   run:
     - zlib
-    - xz
     - gmp
     - samtools
 
@@ -31,5 +41,8 @@ test:
 about:
   home: https://github.com/stschiff/sequenceTools
   license: MIT
-  summary: Tools for population genetics on sequencing data
+  summary: A tool (pileupCaller) for processing ancient DNA sequencing data
 
+extra:
+  additional-platforms:
+    - osx-arm64

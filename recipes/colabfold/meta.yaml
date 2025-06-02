@@ -1,0 +1,71 @@
+{% set cf_version = "1.5.5" %}
+{% set cf_hash = "7fb0ad263c24ec00d46f2dff1611989234bc1351d71653dd06006f2c88f83dcb" %}
+{% set af_version = "2.3.6" %}
+{% set af_hash = "a5674257d92928511d70f94ec3261e275cb3442a7762b5210e01f445692d2182" %}
+
+package:
+  name: colabfold
+  version: {{ cf_version }}
+
+build:
+  noarch: python
+  script: |
+    python -m pip install --no-deps --ignore-installed colabfold/
+    python -m pip install --no-deps --ignore-installed alphafold/
+  run_exports:
+    - {{ pin_subpackage('colabfold', max_pin="x") }}
+  number: 2
+
+source:
+  - url: https://github.com/sokrypton/ColabFold/archive/refs/tags/v{{ cf_version }}.tar.gz
+    sha256: {{ cf_hash }}
+    folder: colabfold
+  - url: https://github.com/steineggerlab/alphafold/archive/refs/tags/v{{ af_version }}.tar.gz
+    sha256: {{ af_hash }}
+    folder: alphafold
+
+requirements:
+  host:
+    - pip
+    - python
+    - poetry-core >=1.0.0
+  run:
+    - python
+    - absl-py
+    - matplotlib-base
+    - numpy
+    - scipy
+    - requests
+    - tqdm
+    - pandas
+    - appdirs
+    - py3Dmol
+    - dm-tree
+    - ml-collections
+    - importlib-metadata
+    - dm-haiku >=0.0.12
+    - biopython <=1.82
+    - jax >=0.4.23,<0.4.26
+    - jaxlib >=0.4.23,<0.4.26
+    - tensorflow-base >=2.12.1=cpu*
+    - mmseqs2 >=15.6f452
+    - kalign2 >=2.04
+    - hhsuite >=3.3.0
+    - openmm >=7.7.0,<8.1.0
+    - pdbfixer
+
+test:
+  commands:
+    - which colabfold_batch
+
+about:
+  home: https://github.com/sokrypton/ColabFold
+  summary: "ColabFold: making protein folding accessible to all"
+  license: MIT
+
+extra:
+  identifiers:
+    - doi:10.1038/s41592-022-01488-1
+    - biotools:colabfold
+  recipe-maintainers:
+    - milot-mirdita

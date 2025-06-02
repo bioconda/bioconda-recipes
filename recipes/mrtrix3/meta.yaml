@@ -1,0 +1,70 @@
+{% set name = "mrtrix3" %}
+{% set version = "3.0.5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/MRtrix3/mrtrix3/archive/refs/tags/{{ version }}.tar.gz
+  sha256: ee85e1a0e64e81507cb17adbe9c5b4b84b861f1daa2aacad13436801f65a4b06
+
+build:
+  skip: True  # [osx]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - pkg-config
+    - {{ cdt('xorg-x11-proto-devel') }}  # [linux]
+    - {{ cdt('libx11-devel') }}          # [linux]
+    - {{ cdt('libxext-devel') }}         # [linux]
+    - {{ cdt('libxrender-devel') }}      # [linux]
+    - {{ cdt('mesa-libgl-devel') }}      # [linux]
+    - {{ cdt('mesa-libegl-devel') }}     # [linux]
+    - {{ cdt('mesa-dri-drivers') }}      # [linux]
+    - {{ cdt('libxau-devel') }}          # [linux]
+    - {{ cdt('libselinux-devel') }}      # [linux]
+    - {{ cdt('libxdamage') }}            # [linux]
+    - {{ cdt('libxdamage-devel') }}      # [linux]
+    - {{ cdt('libxfixes') }}             # [linux]
+    - {{ cdt('libxfixes-devel') }}       # [linux]
+    - {{ cdt('libxxf86vm') }}            # [linux]
+    - {{ cdt('libxxf86vm-devel') }}      # [linux]
+    - qt >=5.15
+    - python
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  host:
+    - eigen >=3.2
+    - libtiff >=4.0
+    - zlib
+    - fftw >=3.0
+    - libxcb
+  run:
+    - qt >=5.15
+    - zlib 
+    - libtiff >=4.0
+    - fftw >=3.0
+
+test:
+  commands:
+    - mrconvert --help
+
+about:
+  home: https://www.mrtrix.org
+  license: MPL-2.0
+  license_family: MOZILLA
+  license_file: LICENCE.txt
+  summary: A set of tools to perform various advanced diffusion MRI analyses, 
+    including constrained spherical deconvolution (CSD), probabilistic tractography, 
+    track-density imaging, and apparent fibre density
+  dev_url: https://github.com/MRtrix3/mrtrix3
+  doc_url: https://www.mrtrix.org/documentation/
+
+extra:
+  additional-platforms:
+    - linux-aarch64

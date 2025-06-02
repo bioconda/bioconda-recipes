@@ -1,44 +1,57 @@
 {% set name = "pyrodigal" %}
-{% set version = "0.4.7" %}
+{% set version = "3.6.3.post1" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://files.pythonhosted.org/packages/8b/15/b250101954de59b2eaee045f5ad9a7ec19c7b572f03f9373dd2bd25b6086/pyrodigal-0.4.7.tar.gz
-  sha256: 1fadbbf94eabc842ac93158c5ff3f9900e6d16ded21c6ed7ebd1f6045d5bd053
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: f42e8df8062b08796f2e92902800584c0b62ead765945594d06224e0b6c2b96c
 
 build:
   number: 0
-  skip: True  #[py2k]
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv"
+  entry_points:
+    - pyrodigal = pyrodigal.cli:main
+  run_exports:
+    - {{ pin_subpackage("pyrodigal", max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - cmake >=3.20
+    - make
   host:
     - python
     - pip
     - cython
-    - setuptools
+    - scikit-build-core
   run:
     - python
-    - setuptools
+    - archspec >=0.2.0
 
 test:
   imports:
     - {{ name }}
   commands:
+    - pyrodigal --help
     - python -m unittest -vv {{ name }}.tests
 
 about:
-  home: https://github.com/althonos/pyrodigal
-  license: GPL-3
-  license_family: GPL
+  home: "https://github.com/althonos/pyrodigal"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: COPYING
-  summary: Python bindings to Prodigal, an ORF finder for microbial sequences.
+  summary: "Python bindings to Prodigal, an ORF finder for microbial sequences."
+  doc_url: "https://pyrodigal.readthedocs.org"
+  dev_url: "https://github.com/althonos/pyrodigal"
 
 extra:
   recipe-maintainers:
     - althonos
+  identifiers:
+    - doi:10.21105/joss.04296  # JOSS paper
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

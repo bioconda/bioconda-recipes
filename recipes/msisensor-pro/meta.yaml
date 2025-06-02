@@ -1,35 +1,42 @@
-{% set version = "1.1.a" %}
+{% set name = "msisensor-pro" %}
+{% set version = "1.3.0" %}
 
 package:
-  name: msisensor-pro
-  version: {{ version }}
+  name: {{ name }}
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/xjtu-omics/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 30d03841abfe12daee57984bb97687222534b18aeaa17ff7f4d1116dc31cc9c1
+  patches:
+    - buildfixes.patch
 
 build:
   number: 1
-
-source:
-  url: https://github.com/xjtu-omics/msisensor-pro/archive/{{ version }}.tar.gz 
-  sha256: d8666445ca4f2cf73716e7cf3cabe5f6316b0b8e9e7e67d0ec64b9969b2d6028 
+  run_exports:
+    - {{ pin_subpackage('msisensor-pro', max_pin="x") }}
 
 requirements:
   build:
+    - {{ compiler('cxx') }}
     - make
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }} 
-    - llvm-openmp  # [osx]
+  host:    
+    - htslib
+    - llvm-openmp  # [osx]  
     - libgomp      # [linux]
-  host:
+    - libcurl
+    - bzip2
     - zlib
-    - ncurses
   run:
-    - zlib
-    - ncurses
+    - htslib
 
 about:
-  home: https://github.com/xjtu-omics/msisensor-pro
-  license: GPL-3.0
+  home: "https://github.com/xjtu-omics/msisensor-pro"
+  license: "Custom Licence"
   license_file: LICENSE
-  summary: Microsatellite Instability (MSI) detection using high-throughput sequencing data.
+  summary: "Microsatellite Instability (MSI) detection using high-throughput sequencing data."
+  dev_url: "https://github.com/xjtu-omics/msisensor-pro"
+  doc_url: "https://github.com/xjtu-omics/msisensor-pro/wiki"
 
 test:
   commands:
@@ -37,3 +44,11 @@ test:
      - "msisensor-pro baseline -h 2>&1 | grep Usage"
      - "msisensor-pro pro -h 2>&1 | grep Usage"
      - "msisensor-pro msi -h 2>&1 | grep Usage"
+
+extra:
+  identifiers:
+    - biotools:msisensor-pro
+    - doi:10.1016/j.gpb.2020.02.001
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

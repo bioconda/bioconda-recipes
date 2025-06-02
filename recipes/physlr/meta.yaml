@@ -1,0 +1,49 @@
+{% set name = "physlr" %}
+{% set version = "1.0.4" %}
+ 
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 7
+
+source:
+  url: https://github.com/bcgsc/{{ name|lower }}/releases/download/v{{ version }}/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: 48b736d1ab94f9f96986336da6e2091b5480de0d902c444f403add987493a174
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - make
+  host:
+    - Python >=3.6.0
+    - pip
+    - pypy
+    - boost-cpp
+  run:
+    - Python >=3.6.0
+    - pypy
+    - ntCard
+    - ntHits
+    - networkx
+    - numpy
+    - scipy
+    - scikit-learn
+    - tqdm
+    - make
+    - pigz
+    
+test:
+  commands:
+    - physlr version #| grep -q "{{ version }}"
+
+about:
+  home: https://github.com/bcgsc/physlr
+  license: GPL3
+  license_file: LICENSE
+  summary: Physlr; Next-generation Physical Maps
+  dev_url: https://github.com/bcgsc/physlr
+  doc_url: https://github.com/bcgsc/physlr#readme

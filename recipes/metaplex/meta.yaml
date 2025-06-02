@@ -1,0 +1,47 @@
+{% set name = "metaplex" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/Metaplex-{{ version }}.tar.gz
+  sha256: 9b6271e9565be5c1a554b13d11a2abbe2a83e433e0d9dad1d13696fc0357f983
+
+build:
+  entry_points:
+    - Metaplex-remultiplex=metaplex.remultiplexing:main
+    - Metaplex-calculate-IJR=metaplex.index_jump:main
+    - Metaplex-per-sample-filter=metaplex.per_sample_filtering:main
+    - Metaplex-length-filter=metaplex.length_filtering:main
+  script: {{ PYTHON }} -m pip install . -vv
+  noarch: python
+  number: 0
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - biom-format
+    - biopython
+    - cutadapt
+    - samtools
+    - numpy
+    - pandas
+    - python
+
+test:
+  imports:
+    - metaplex
+
+about:
+  home: https://github.com/NGabry/MetaPlex
+  summary: Read Processing and Quality Control Toolkit for Dual-Indexed Metabarcoding
+  license: BSD-3-Clause
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - NGabry

@@ -1,0 +1,126 @@
+{% set name = "rpbp" %}
+{% set version = "3.0.4" %}
+{% set sha256 = "f449f130383f0f82c728ac47ca8bfd3d4bcf4e4d7fbc256a7be922fbcf4be473" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/dieterich-lab/rp-bp/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 2
+  skip: True  # [py >= 311 ]
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv && compile-rpbp-models"
+  entry_points:
+    - extract-orf-coordinates = rpbp.reference_preprocessing.extract_orf_coordinates:main
+    - label-orfs = rpbp.reference_preprocessing.label_orfs:main
+    - prepare-rpbp-genome = rpbp.reference_preprocessing.prepare_rpbp_genome:main
+    - run-rpbp-pipeline = rpbp.run_rpbp_pipeline:main
+    - run-all-rpbp-instances = rpbp.run_all_rpbp_instances:main
+    - create-orf-profiles = rpbp.orf_profile_construction.create_orf_profiles:main
+    - create-base-genome-profile = rpbp.orf_profile_construction.create_base_genome_profile:main
+    - extract-orf-profiles = rpbp.orf_profile_construction.extract_orf_profiles:main
+    - merge-replicate-orf-profiles = rpbp.translation_prediction.merge_replicate_orf_profiles:main
+    - extract-metagene-profiles = rpbp.orf_profile_construction.extract_metagene_profiles:main
+    - estimate-metagene-profile-bayes-factors = rpbp.orf_profile_construction.estimate_metagene_profile_bayes_factors:main
+    - select-periodic-offsets = rpbp.orf_profile_construction.select_periodic_offsets:main
+    - predict-translated-orfs = rpbp.translation_prediction.predict_translated_orfs:main
+    - estimate-orf-bayes-factors = rpbp.translation_prediction.estimate_orf_bayes_factors:main
+    - select-final-prediction-set = rpbp.translation_prediction.select_final_prediction_set:main
+    - summarize-rpbp-profile-construction = rpbp.analysis.profile_construction.summarize_rpbp_profile_construction:main
+    - visualize-metagene-profile-bayes-factor = rpbp.analysis.profile_construction.visualize_metagene_profile_bayes_factor:main
+    - get-all-read-filtering-counts = rpbp.analysis.profile_construction.get_all_read_filtering_counts:main
+    - rpbp-profile-construction-dashboard = rpbp.analysis.profile_construction.dashboard.rpbp_profile_construction_dashboard:main
+    - summarize-rpbp-predictions = rpbp.analysis.rpbp_predictions.summarize_rpbp_predictions:main
+    - visualize-orf-type-metagene-profiles = rpbp.analysis.rpbp_predictions.visualize_orf_type_metagene_profiles:main
+    - rpbp-predictions-dashboard = rpbp.analysis.rpbp_predictions.dashboard.rpbp_predictions_dashboard:main
+    - get-orf-peptide-matches = rpbp.analysis.proteomics.get_orf_peptide_matches:main
+    - get-all-orf-peptide-matches = rpbp.analysis.proteomics.get_all_orf_peptide_matches:main
+    - filter-nonunique-peptide-matches = rpbp.analysis.proteomics.filter_nonunique_peptide_matches:main
+    - compile-rpbp-models = rpbp.ribo_utils.compile_rpbp_models:main
+    - create-read-length-orf-profiles = rpbp.analysis.profile_construction.create_read_length_orf_profiles:main
+    - collect-read-length-orf-profiles = rpbp.analysis.profile_construction.collect_read_length_orf_profiles:main
+  run_exports:
+    - {{ pin_subpackage('rpbp', max_pin='x') }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - pip
+    - cmdstanpy >=1.0.0
+  run:
+    - python
+    - biopython
+    - bowtie2
+    - cmdstanpy >=1.0.0
+    - dash
+    - dash-bio
+    - dash-bootstrap-components
+    - fastqc
+    - flexbar
+    - joblib
+    - numpy
+    - pandas
+    - pbiotools >=4.0.2
+    - pyyaml
+    - samtools
+    - scipy
+    - star
+    - statsmodels
+    - pysam >0.9.1
+
+test:
+  imports:
+    - rpbp
+    - rpbp.analysis
+    - rpbp.orf_profile_construction
+    - rpbp.reference_preprocessing
+    - rpbp.ribo_utils
+    - rpbp.translation_prediction
+  commands:
+    - extract-orf-coordinates --help
+    - label-orfs --help
+    - prepare-rpbp-genome --help
+    - run-rpbp-pipeline --help
+    - run-all-rpbp-instances --help
+    - create-orf-profiles --help
+    - create-base-genome-profile --help
+    - extract-orf-profiles --help
+    - merge-replicate-orf-profiles --help
+    - extract-metagene-profiles --help
+    - estimate-metagene-profile-bayes-factors --help
+    - select-periodic-offsets --help
+    - predict-translated-orfs --help
+    - estimate-orf-bayes-factors --help
+    - select-final-prediction-set --help
+    - summarize-rpbp-profile-construction --help
+    - visualize-metagene-profile-bayes-factor --help
+    - get-all-read-filtering-counts --help
+    - rpbp-profile-construction-dashboard --help
+    - summarize-rpbp-predictions --help
+    - visualize-orf-type-metagene-profiles --help
+    - rpbp-predictions-dashboard --help
+    - get-orf-peptide-matches --help
+    - get-all-orf-peptide-matches --help
+    - filter-nonunique-peptide-matches --help
+    - compile-rpbp-models --help
+    - create-read-length-orf-profiles --help
+    - collect-read-length-orf-profiles --help
+
+about:
+  home: "https://github.com/dieterich-lab/rp-bp"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Ribosome profiling with Bayesian predictions (Rp-Bp)"
+  dev_url: "https://github.com/dieterich-lab/rp-bp"
+  doc_url: "https://rp-bp.readthedocs.io/en/latest"
+
+extra:
+  identifiers:
+    - doi:10.1093/nar/gkw1350

@@ -1,58 +1,26 @@
-{% set version = "13.9" %}
-{% set date = "20200916" %}
-{% set sha256 = "8736d9aede063c9b1df9719d6b2d9d15ae3823fd06adc58d165f64e87e6ebca8" %}
+{% set name = "entrez-direct" %}
+{% set version = "24.0" %}
+{% set date = "20250527" %}
+{% set sha256 = "eb5ac6b1faf33a39cc5b2b2eaa2b6ce5e1c05ac3d00d1be2b70bd6054c44f694" %}
 
 package:
-  name: entrez-direct
+  name: {{ name }}
   version: {{ version }}
 
 build:
-  number: 2
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 source:
-  url: ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/edirect.tar.gz
+  url: https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/edirect.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - xtract.patch
 
 requirements:
   build:
-    # The installer script downloads statically compiled binaries, so this is effectively just avoiding linter errors
     - {{ compiler('go') }}
-  host:
-    - perl
-    - perl-html-parser
-    - perl-html-tagset
-    - perl-html-tree
-    - perl-http-cookies
-    - perl-http-date
-    - perl-http-message
-    - perl-http-negotiate
-    - perl-io-socket-ssl
-    - perl-lwp-mediatypes
-    - perl-lwp-protocol-https
-    - perl-net-http
-    - perl-uri
-    - perl-www-robotrules
-    - perl-mozilla-ca
-    - perl-xml-simple
   run:
-    - perl
-    - perl-html-parser
-    - perl-html-tagset
-    - perl-html-tree
-    - perl-http-cookies
-    - perl-http-date
-    - perl-http-message
-    - perl-http-negotiate
-    - perl-io-socket-ssl
-    - perl-lwp-mediatypes
-    - perl-lwp-protocol-https
-    - perl-net-http
-    - perl-uri
-    - perl-www-robotrules
-    - perl-mozilla-ca
-    - perl-xml-simple
+    - wget
 
 test:
   commands:
@@ -62,17 +30,20 @@ test:
     - einfo --help
     - esearch --help
     - elink --help
-    - espell --help
-    - enotify --help
     - esummary --help
-    - entrez-phrase-search --help
+    - rchive -version
+    - transmute -version
     - xtract -version
 
 about:
-  home: ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/README
-  license: PUBLIC DOMAIN
-  summary: Entrez Direct (EDirect) is an advanced method for accessing the NCBI's set of interconnected databases (publication, sequence, structure, gene, variation, expression, etc.) from a UNIX terminal window. Functions take search terms from command-line arguments. Individual operations are combined to build multi-step queries. Record retrieval and formatting normally complete the process.
+  home: "https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/README"
+  license: "Public Domain"
+  summary: "Entrez Direct (EDirect) is an advanced method for accessing the NCBI's set of interconnected databases (publication, sequence, structure, gene, variation, expression, etc.) from a UNIX terminal window. Functions take search terms from command-line arguments. Individual operations are combined to build multi-step queries. Record retrieval and formatting normally complete the process."
+  doc_url: "https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/README"
 
 extra:
-  container:
-    extended-base: True
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:entrez

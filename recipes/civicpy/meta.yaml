@@ -1,0 +1,51 @@
+{% set name = "civicpy" %}
+{% set version = "4.1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 108e972445c6da2f89b9d54f3c1c782d3bb273cb2e42c7f769353a20bedd82c9
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - civicpy=civicpy.cli:cli
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('civicpy', max_pin="x") }}
+
+requirements:
+  host: 
+    - pip
+    - python >=3.5
+    - setuptools
+  run:
+    - python >=3.5
+    - backports-datetime-fromisoformat =2.0.0
+    - click
+    - deprecation
+    - networkx
+    - obonet =0.2.3
+    - pandas
+    - pysam
+    - requests
+    - vcfpy
+
+test:
+  imports:
+    - civicpy
+  commands:
+    - civicpy --help
+
+about:
+  home: "http://civicpy.org"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "CIViC variant knowledgebase analysis toolkit."
+  doc_url: "https://docs.civicpy.org/en/latest/"
+  dev_url: "https://github.com/griffithlab/civicpy"

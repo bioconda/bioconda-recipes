@@ -1,9 +1,11 @@
 #!/bin/bash
 
+set -xe
+
 ## SET APPROPRIATE ENVIRONMENT VARIABLES AND BUILD
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
-make CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
+make -j ${CPU_COUNT} CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
 
 ## MAKE EXECUTABLES EXECUTABLE!
 chmod a+x ./build/ataqv

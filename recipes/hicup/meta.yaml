@@ -1,4 +1,4 @@
-{% set version = "0.7.3" %}
+{% set version = "0.9.2" %}
 
 package:
   name: hicup
@@ -6,20 +6,24 @@ package:
 
 build:
   number: 1
-  noarch: generic
+  noarch: generic 
 
 source:
-  url: http://www.bioinformatics.babraham.ac.uk/projects/hicup/hicup_v{{ version }}.tar.gz
-  sha256: eea83ea51d84a259621fb4f20f385d74a2b28d89add7471c00e9784fd70a58b5
-  patches:
-    - get_captured_reads.patch
+  url: https://github.com/StevenWingett/HiCUP/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 7f9f65669d14fd2499afc4ac87735834b57b8f30b8e5785c4b406ec206cf9d2a
 
 requirements:
   run:
     - perl
+    - perl-bioperl
     - bowtie2
     - bowtie
     - r-base
+    - r-stringi >=1.7.8
+    - r-rmarkdown
+    - pandoc
+    - r-tidyverse
+    - r-plotly
     - samtools
 
 test:
@@ -34,9 +38,20 @@ test:
     - hicup2gothic
     - hicup2fithic
     - hicup2homer
-    # This one has a different error code
-    - get_captured_reads || [[ $? == 255 ]]
-
+    - hicup2juicer
+    - hicup2ncc
+    # These one have a different error code
+    - hicup_capture || [[ $? == 255 ]]
+    - find_common_fragment_interactions.pl || [[ $? == 255 ]]
+    - make_hic_array.pl || [[ $? == 255 ]]
+    - scribler || [[ $? == 255 ]]
+    - scribl_capture_ditag_sorter.pl || [[ $? == 255 ]]
+    - scribl_capture.pl || [[ $? == 255 ]]
+    - scribl_capture_region_breakdown.pl || [[ $? == 255 ]]
+  files:
+    - hicup_reporter.rmd
+    - test_dataset1_2.ditag_size_distribution_report.txt
+    - test_dataset1_2.hicup.bam.HiCUP_summary_report_xRCWhUMSZD_16-13-38_08-09-2022.txt
 
 about:
   home: 'http://www.bioinformatics.babraham.ac.uk/projects/hicup/'

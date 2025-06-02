@@ -1,0 +1,50 @@
+{% set name = "pastrami" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: "https://github.com/healthdisparities/pastrami/archive/v{{ version }}.tar.gz"
+  sha256: baa71d05517bc5c649d54ea2a30ba1745f8f1c304942d7c53d0eeaf432d39cbd
+
+build:
+  noarch: python
+  number: 0
+  script:
+    - mkdir -p "${PREFIX}/bin"
+    - cp -fv outsourcedOptimizer.R "${PREFIX}/bin"
+    - chmod 0755 pastrami.py
+    - cp -fv pastrami.py ${PREFIX}/bin/pastrami
+    - cp -fv pastrami.py "${PREFIX}/bin"
+    - chmod 0755 simulation/simulate_individuals.py
+    - cp -fv simulation/simulate_individuals.py "${PREFIX}/bin"
+    - cp -rfv map_data/* "${PREFIX}/bin"
+  run_exports:
+    - {{ pin_subpackage('pastrami', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools
+    - pip
+    - bzip2
+  run:
+    - python >=3.8
+    - numpy
+    - pandas
+    - pathos
+    - plink2
+    - scipy
+
+test:
+  commands:
+    - pastrami.py -h
+
+about:
+  home: "https://github.com/healthdisparities/pastrami"
+  license: "CC BY-NC-SA 4.0"
+  summary: "Pastrami is a novel, scalable computational algorithm for rapid human ancestry estimation."
+  dev_url: "https://github.com/healthdisparities/pastrami"
+  doc_url: "https://github.com/healthdisparities/pastrami/blob/v{{ version }}/README.md"

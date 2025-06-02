@@ -1,21 +1,23 @@
 {% set package = "ucsc-wigtobigwig" %}
 {% set program = "wigToBigWig" %}
-{% set version = "377" %}
-{% set sha256 = "932f149c19641064a9cd3f2382cbb54b45a9292b8444792872d531346925d676" %}
+{% set version = "482" %}
+{% set sha256 = "745d0f0a980e9f863373b0b0a6ad7961a1d0f53a9d7c446e92fc28fc4909431a" %}
 
 package:
-  name: "{{ package }}"
-  version: "{{ version }}"
+  name: {{ package }}
+  version: {{ version }}
 
 source:
-  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
-  sha256: "{{ sha256 }}"
+  url: https://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz
+  sha256: {{ sha256 }}
   patches:
-    - "include.patch"
+    - include.patch
+    - include.linux.patch  # [linux]
 
 build:
-  skip: True  # [osx]
-  number: 2
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(package, max_pin=None) }}
 
 requirements:
   build:
@@ -25,22 +27,32 @@ requirements:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
+    - libopenssl-static
+    - clangdev  # [osx]
     - zlib
-
+    - bzip2
+    - liblzma-devel
   run:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
-    - zlib
+    - libopenssl-static
 
 test:
   commands:
-    # just check for existence, because the individual packages have no unified behavior
-    - which {{ program }}
+    # just check for existence and exec bit, because the individual packages have no unified behavior
+    - test -x ${PREFIX}/bin/{{ program }}
 
 about:
-  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "varies; see http://genome.ucsc.edu/license"
-  summary: "Convert ascii format wig file (in fixedStep, variableStep"
+  home: "https://hgdownload.cse.ucsc.edu/admin/exe"
+  license: "Varies; see https://genome.ucsc.edu/license"
+  summary: "Convert ascii format wig file (in fixedStep, variableStep)."
+  dev_url: "https://github.com/ucscGenomeBrowser/kent"
+  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/v{{ version }}_base/README"
+
+extra:
+  identifiers:
+    - biotools:UCSC_Genome_Browser_Utilities
+    - doi:10.1093/bib/bbs038
+  additional-platforms:
+    - linux-aarch64

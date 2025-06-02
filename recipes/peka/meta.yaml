@@ -1,0 +1,55 @@
+{% set name = "PEKA" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/ulelab/peka/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: 1742af7941be04b960e5153ef1eccf40781f72bf9d2a9063a97b54f27b76b01f
+
+build:
+  number: 0
+  entry_points:
+    - peka = peka:main
+  script: "{{ PYTHON }} -m pip install . -vvv --no-build-isolation --no-deps"
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('peka', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+  run:
+    - python >=3.7
+    - matplotlib-base
+    - {{ pin_compatible('numpy') }}
+    - pybedtools
+    - scipy
+    - seaborn
+    - plumbum
+    - scikit-learn
+    - pandas
+    - textdistance
+
+test:
+  commands:
+    - peka --help
+
+about:
+  home: "https://github.com/ulelab/peka"
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Analysis of kmers located around locations of interest"
+  dev_url: "https://github.com/ulelab/peka"
+
+extra:
+  recipe-maintainers:
+    - marc-jones
+    - codeprimate123
+    - kkuret
+  identifiers:
+    - doi:10.1186/s13059-022-02755-2

@@ -1,43 +1,64 @@
-{% set name="moments" %}
-{% set version="1.1.3" %}
+{% set name = "moments" %}
+{% set version = "1.4.3" %}
 
 package:
   name: {{ name }}
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
-  url: https://bitbucket.org/simongravel/{{ name }}/get/{{ name }}-{{ version }}.tar.bz2
-  sha256: a5a711571c9f46ab17b5e853d7ed765efc845c9de1ad7a65a3d0f28ab7c5cff6
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}-popgen/{{ name }}_popgen-{{ version }}.tar.gz
+  sha256: 70eb4b748bada6c6549c26b2ca7d4606002d222bffd8731df3dc49fe40c2028f
 
 build:
   number: 0
+  skip: True  # [py < 310]
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script:
+    - export CFLAGS="${CFLAGS} -O3 -Wno-int-conversion -Wno-implicit-function-declaration"  # [osx]
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - pkg-config
   host:
     - pip
-    - python >=3.6
-    - pkgconfig
-    - numpy
-    - scipy
+    - python
+    - setuptools-scm
+    - numpy ==1.12.1  # [py == 36]
+    - numpy ==1.15.4  # [py == 37]
+    - numpy ==1.17.5  # [py == 38]
+    - numpy ==1.19.5  # [py == 39]
+    - numpy ==1.22.3  # [py == 310]
+    - numpy  # [py >= 311]
     - cython
   run:
     - python
-    - numpy
+    - {{ pin_compatible('numpy') }}
     - scipy
     - mpmath
+    - demes
 
 test:
   imports:
     - moments
 
 about:
-  home: https://bitbucket.org/simongravel/moments
+  home: "https://github.com/MomentsLD/moments"
   license: MIT
+  license_family: MIT
+  license_file: "LICENSE.txt"
   summary: 'Evolutionary inference using SFS and LD statistics.'
+  dev_url: "https://github.com/MomentsLD/moments"
+  doc_url: "https://momentsld.github.io/moments"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.1534/genetics.117.200493 
     - doi:10.1371/journal.pgen.1008204

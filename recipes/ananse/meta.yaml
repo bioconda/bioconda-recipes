@@ -1,17 +1,19 @@
-{% set version = "0.2.0" %}
+{% set version = "0.5.1" %}
 
 package:
   name: ananse
   version: {{ version }}
 
 source:
-  url: https://github.com/vanheeringen-lab/ANANSE/releases/download/v{{ version }}/ANANSE-v{{ version }}.tar.gz
-  sha256: 7683b676c12dd62b0424e3763cec2c31cddf6e1c7f0669e798b56211d5aeebeb
+  url: https://github.com/vanheeringen-lab/ANANSE/releases/download/v{{ version }}/ANANSE-{{ version }}.tar.gz
+  sha256: 3ce5a41dbedb83913fdd451692cbf7df0e4ad3bd102d1ce67f9379329b35142b
 
 build:
   number: 0
   noarch: python
   script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  run_exports:
+    - {{ pin_subpackage("ananse", max_pin="x.x") }}
   
 requirements:
   host:
@@ -20,12 +22,25 @@ requirements:
   run:
     - python >=3.7
     - adjusttext
-    - dask
-    - gimmemotifs>=0.15.3
+    - dask <=2023.9.1
+    - genomepy >=0.14.0
+    - gimmemotifs-minimal >=0.18.0
     - loguru
+    - matplotlib-base >=3.3
     - networkx
-    - pytables
+    - numpy >=1.6
+    - openpyxl
+    - pandas <2
+    - pybedtools
+    - pydot >=1.4.1
+    - pygraphviz >=1.7
     - pyranges
+    - pytables
+    - scikit-learn
+    - scipy >=1.9
+    - seaborn-base
+    - tqdm
+
 test:
   imports:
     - ananse
@@ -34,6 +49,8 @@ test:
     - ananse binding -h
     - ananse network -h
     - ananse influence -h
+    - ananse view -h
+    - ananse plot -h
 
 about:
   home: https://github.com/vanheeringen-lab/ANANSE
@@ -45,5 +62,6 @@ about:
 extra:
   recipe-maintainers:
     - simonvh
+    - siebrenf
   identifiers:
     - biotools:ananse

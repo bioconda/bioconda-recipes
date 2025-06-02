@@ -1,0 +1,38 @@
+{% set version = "20220503" %}
+{% set sha256 = "b04a047fd3b11c0e84718bea20fe7d03f50f80a542d3b18e66c5b95983b9e559" %}
+
+package:
+  name: ale-core
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/sc932/ALE/archive/{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage("ale-core", max_pin=None) }}
+
+requirements:
+  build:
+    - make
+    - '{{ compiler("c") }}'
+  host:
+    - samtools
+    - zlib
+  run:
+    - samtools
+    - zlib
+
+test:
+  commands:
+    - ALE --help
+    - synthReadGen --help
+
+about:
+  home: https://github.com/sc932/ALE
+  license: NCSA
+  summary: 'ALE: Assembly Likelihood Estimator. Core C implemented  scoring programs only without supplementary plotting scripts.'
+  description: |
+    This package is designed to hold the core scoring functionality of ALE without the 10+ year old supplementary python plotting scripts 

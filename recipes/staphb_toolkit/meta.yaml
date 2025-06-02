@@ -1,0 +1,61 @@
+{% set name = "staphb_toolkit" %}
+{% set version = "2.0.1" %}
+{% set sha256 = "2338ab24cec4e0f0b0eb14aa073a69b35effd5c516167361a46457e640667b08" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  entry_points:
+    - staphb-tk = staphb_toolkit.toolkit_main:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+  noarch: python
+
+requirements:
+  host:
+    - python >=3.6
+    - docker-py >=4.1.0
+    - pexpect >=4.8
+    - pip
+    - psutil >=5.6.3
+    - spython >=0.0.73
+  run:
+    - python >=3.6
+    - docker-py >=4.1.0
+    - pexpect >=4.8
+    - psutil >=5.6.3
+    - spython >=0.0.73
+    - openjdk
+    - rich >=12.4.4
+    - pyfiglet >=0.8.post1
+
+test:
+  requires:
+    - singularity
+  imports:
+    - staphb_toolkit
+    - staphb_toolkit.lib.autopath
+    - staphb_toolkit.lib.calldocker
+    - staphb_toolkit.lib.callnextflow
+    - staphb_toolkit.lib.callsing
+    - staphb_toolkit.lib.container_handler
+    - staphb_toolkit.lib.updates
+
+about:
+  home: "https://staphb.org/staphb_toolkit/"
+  license: GPLv3
+  license_family: GPL
+  license_file: LICENSE
+  summary: "A ToolKit of commonly used Public Health Bioinformatics Tools"
+  doc_url: "https://staphb.org/staphb_toolkit"
+  dev_url: "https://github.com/StaPH-B/staphb_toolkit"
+
+extra:
+  recipe-maintainers:
+    - acaprez

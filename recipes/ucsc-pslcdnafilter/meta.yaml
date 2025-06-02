@@ -1,7 +1,7 @@
 {% set package = "ucsc-pslcdnafilter" %}
 {% set program = "pslCDnaFilter" %}
-{% set version = "377" %}
-{% set sha256 = "932f149c19641064a9cd3f2382cbb54b45a9292b8444792872d531346925d676" %}
+{% set version = "472" %}
+{% set sha256 = "26d126c51d0ba3165519b116b6461af8bfd938505f6c0871cb325a7ab82368f2" %}
 
 package:
   name: "{{ package }}"
@@ -11,11 +11,14 @@ source:
   url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
   sha256: "{{ sha256 }}"
   patches:
-    - "include.patch"
+    - include.patch  # [linux]
+    - include.macos.patch  # [osx]
 
 build:
-  skip: True  # [osx]
   number: 1
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(package, max_pin=None) }}
 
 requirements:
   build:
@@ -25,27 +28,33 @@ requirements:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
+    - libopenssl-static
+    - clangdev  # [osx]
     - zlib
-
   run:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
-    - zlib
+    - libopenssl-static
 
 test:
   commands:
-    # just check for existence, because the individual packages have no unified behavior
-    - which {{ program }}
+    # just check for existence and exec bit, because the individual packages have no unified behavior
+    - test -x ${PREFIX}/bin/{{ program }}
 
 about:
-  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "varies; see http://genome.ucsc.edu/license"
+  home: "https://hgdownload.cse.ucsc.edu/admin/exe"
+  license: "Varies; see https://genome.ucsc.edu/license"
   summary: "
 Filter cDNA alignments in psl format.  Filtering criteria are
 comparative, selecting near best in genome alignments for each given
 cDNA and non-comparative, based only on the quality of an individual
 alignment.
 "
+  dev_url: "https://github.com/ucscGenomeBrowser/kent"
+  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/v{{ version }}_base/README"
+
+extra:
+  identifiers:
+    - biotools:UCSC_Genome_Browser_Utilities
+    - doi:10.1093/bib/bbs038

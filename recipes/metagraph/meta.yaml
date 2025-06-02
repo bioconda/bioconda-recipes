@@ -1,37 +1,47 @@
 {% set name = "metagraph" %}
-{% set version = "0.2.0" %}
-{% set sha256 = "8eff1c64b88a36a635542142f47506a21dc9b24642040517bb949dbbea2d1d68" %}
+{% set version = "0.4.3" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/ratschlab/metagraph/releases/download/v{{ version }}/v{{ version }}-sources-with-submodules.tar.gz
-  sha256: {{ sha256 }}
+  git_url: https://github.com/ratschlab/metagraph.git
+  git_tag: v{{ version }}
+  sha256: unused
+  patches:
+    - 0001-boost-cmake.patch
+    - arm_hwcap.patch
 
 build:
   number: 0
-  skip: true  # [win]
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('metagraph', max_pin="x.x") }}
 
 requirements:
   build:
-    - make
     - {{ compiler('cxx') }}
+    - make
     - cmake
-    - llvm-openmp  # [osx]
-    - libgomp  # [linux]
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
   host:
-    - htslib
-    - jemalloc # [linux]
-    - boost
     - bzip2
+    - htslib
+    - jemalloc
+    - boost-cpp ==1.71.0
     - llvm-openmp  # [osx]
     - libgomp  # [linux]
+    - clangdev  # [osx]
+    - llvmlite  # [osx]
+    - doxygen
   run:
     - htslib
-    - jemalloc  # [linux]
-    - bzip2
+    - jemalloc
+    - boost-cpp ==1.71.0
     - llvm-openmp  # [osx]
     - libgomp  # [linux]
 
@@ -42,16 +52,21 @@ test:
     - metagraph --help
 
 about:
-  home: https://github.com/ratschlab/metagraph
+  home: "https://github.com/ratschlab/metagraph"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: 'Ultra Scalable Framework for DNA Search, Alignment, Assembly'
+  summary: "Ultra Scalable Framework for DNA Search, Alignment, Assembly."
   description: |
     The MetaGraph framework allows for indexing and analysis of very large biological sequence collections, producing compressed indexes that can represent several petabases of input data. The indexes can be efficiently queried with any query sequence of interest.
-  doc_url: https://metagraph.ethz.ch
-  dev_url: https://github.com/ratschlab/metagraph
+  doc_url: "https://metagraph.ethz.ch"
+  dev_url: "https://github.com/ratschlab/metagraph"
 
 extra:
   recipe-maintainers:
     - izcram
+    - karasikov
+  additional-platforms:
+    - linux-aarch64
+  skip-lints:
+    - uses_vcs_url

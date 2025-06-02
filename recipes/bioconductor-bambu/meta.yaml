@@ -1,70 +1,92 @@
-{% set version = "1.0.2" %}
+{% set version = "3.8.3" %}
 {% set name = "bambu" %}
-{% set bioc = "3.12" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 969fb4fa7e4e2959276c1c7de7b243a9
+about:
+  description: bambu is a R package for multi-sample transcript discovery and quantification using long read RNA-Seq data. You can use bambu after read alignment to obtain expression estimates for known and novel transcripts and genes. The output from bambu can directly be used for visualisation and downstream analysis such as differential gene expression or transcript usage.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 + file LICENSE
+  license_file: LICENSE
+  summary: Context-Aware Transcript Quantification from Long Read RNA-Seq data
+
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: AnnotationDbi, Biostrings, BiocFileCache, ggplot2, ComplexHeatmap, circlize, ggbio, gridExtra, knitr, testthat, BSgenome.Hsapiens.NCBI.GRCh38, TxDb.Hsapiens.UCSC.hg38.knownGene, ExperimentHub (>= 1.15.3), DESeq2, NanoporeRNASeq, BSgenome, apeglm, utils, DEXSeq
+  run_exports: '{{ pin_subpackage("bioconductor-bambu", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: AnnotationDbi, Biostrings, rmarkdown, BiocFileCache, ggplot2, ComplexHeatmap, circlize, ggbio, gridExtra, knitr, testthat, BSgenome.Hsapiens.NCBI.GRCh38, TxDb.Hsapiens.UCSC.hg38.knownGene, ExperimentHub (>= 1.15.3), DESeq2, NanoporeRNASeq, purrr, apeglm, utils, DEXSeq
 requirements:
-  host:
-    - 'bioconductor-biocgenerics >=0.36.0,<0.37.0'
-    - 'bioconductor-biocparallel >=1.24.0,<1.25.0'
-    - 'bioconductor-genomeinfodb >=1.26.0,<1.27.0'
-    - 'bioconductor-genomicalignments >=1.26.0,<1.27.0'
-    - 'bioconductor-genomicfeatures >=1.42.0,<1.43.0'
-    - 'bioconductor-genomicranges >=1.42.0,<1.43.0'
-    - 'bioconductor-iranges >=2.24.0,<2.25.0'
-    - 'bioconductor-rsamtools >=2.6.0,<2.7.0'
-    - 'bioconductor-s4vectors >=0.28.0,<0.29.0'
-    - 'bioconductor-summarizedexperiment >=1.20.0,<1.21.0'
-    - r-base
-    - r-data.table
-    - r-dplyr
-    - r-glmnet
-    - r-rcpp
-    - r-rcpparmadillo
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biocgenerics >=0.36.0,<0.37.0'
-    - 'bioconductor-biocparallel >=1.24.0,<1.25.0'
-    - 'bioconductor-genomeinfodb >=1.26.0,<1.27.0'
-    - 'bioconductor-genomicalignments >=1.26.0,<1.27.0'
-    - 'bioconductor-genomicfeatures >=1.42.0,<1.43.0'
-    - 'bioconductor-genomicranges >=1.42.0,<1.43.0'
-    - 'bioconductor-iranges >=2.24.0,<2.25.0'
-    - 'bioconductor-rsamtools >=2.6.0,<2.7.0'
-    - 'bioconductor-s4vectors >=0.28.0,<0.29.0'
-    - 'bioconductor-summarizedexperiment >=1.20.0,<1.21.0'
-    - r-base
-    - r-data.table
-    - r-dplyr
-    - r-glmnet
-    - r-rcpp
-    - r-rcpparmadillo
+
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicalignments >=1.42.0,<1.43.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-data.table
+    - r-dplyr
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-tidyr
+    - r-xgboost
+    - libblas
+    - liblapack
+    - libcxx
+
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicalignments >=1.42.0,<1.43.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-data.table
+    - r-dplyr
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-tidyr
+    - r-xgboost
+
+source:
+  sha256: 87eace188139c96c14aedbbb20716de51eeaa784c4db3b2fc367cfce506dbe16
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL-3 + file LICENSE'
-  summary: 'Reference-guided isoform reconstruction and quantification for long read RNA-Seq data'
-  description: 'bambu is a R package for multi-sample transcript discovery and quantification using long read RNA-Seq data. You can use bambu after read alignment to obtain expression estimates for known and novel transcripts and genes. The output from bambu can directly be used for visualisation and downstream analysis such as differential gene expression or transcript usage.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 
+extra:
+  additional-platforms:
+    - linux-aarch64
+  parent_recipe:
+    name: bioconductor-bambu
+    path: recipes/bioconductor-bambu
+    version: 3.8.3
