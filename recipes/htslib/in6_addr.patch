@@ -1,0 +1,19 @@
+Conda-forge's build environment uses sysroot_linux 2.17, which is based on
+the very old glibc 2.17. We use struct in6_addr so must work around BZ16421.
+
+https://sourceware.org/bugzilla/show_bug.cgi?id=16421
+
+--- a/ref_cache/server.c
++++ b/ref_cache/server.c
+@@ -30,8 +30,11 @@ DEALINGS IN THE SOFTWARE.  */
+ #include <fcntl.h>
+ #include <sys/types.h>
+ #include <sys/socket.h>
++// Ensure all in6_addr fields are present (work around glibc BZ16421)
++#define __USE_MISC
+ #include <netdb.h>
+ #include <netinet/in.h>
++#undef __USE_MISC
+ #include <errno.h>
+ #include <string.h>
+ #include <time.h>
