@@ -1,0 +1,46 @@
+{% set name = "uniprot-id-mapper" %}
+{% set version = "1.1.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/uniprot_id_mapper-{{ version }}.tar.gz
+  sha256: c398a03d5cab00254bd72aa43ec3df0f02799a56c7950b7c0cba58ad52cd79a3
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - protmap = UniProtMapper.cli:main
+  run_exports:
+    - {{ pin_subpackage('uniprot-id-mapper', max_pin=None) }}
+
+requirements:
+  host:
+    - python
+    - setuptools >=64
+    - setuptools-scm >=6.2
+    - wheel
+    - pip
+  run:
+    - python
+    - requests
+    - pandas
+    - numpy
+    - tqdm
+
+test:
+  imports:
+    - UniProtMapper
+  commands:
+    - protmap --help
+  requires:
+    - pip
+
+about:
+  summary: A Python wrapper for the UniProt Mapping RESTful API.
+  license: MIT
+  license_file: LICENSE
