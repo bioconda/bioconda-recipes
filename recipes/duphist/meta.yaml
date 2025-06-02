@@ -1,0 +1,45 @@
+package:
+  name: duphist
+  version: "1.0.0"
+
+source:
+  url: https://github.com/minjeongjj/DupHIST/archive/refs/tags/v1.0.0.tar.gz
+  sha256: e84dadffa07f8e157f21784b61fd784275b8836a2dae05faa6126a5fa4c797ad
+
+build:
+  noarch: generic
+  number: 0
+  script: |
+    mkdir -p $PREFIX/bin/scripts
+    cp -r scripts/* $PREFIX/bin/scripts/
+    cp duphist $PREFIX/bin/
+    chmod +x $PREFIX/bin/duphist
+  run_exports:
+    - {{ pin_subpackage("duphist", max_pin="x.x") }}
+
+requirements:
+  run:
+    - perl
+    - perl-config-tiny
+    - perl-data-dumper
+      #    - perl-cwd
+      #    - perl-list-util
+    - r-base
+    - r-cluster
+    - r-desctools
+    - r-nbclust
+    - r-foreach
+    - r-doparallel
+    - r-tictoc
+    - prank
+    # kaks_calculator2는 conda 미등록 상태입니다 (사용자 설치 필요)
+
+test:
+  commands:
+    - duphist --help || true
+
+about:
+  home: https://github.com/minjeongjj/DupHIST
+  summary: "DupHIST: A toolkit for duplication history inference via substitution-based timeframe"
+  license: MIT
+  license_file: LICENSE
