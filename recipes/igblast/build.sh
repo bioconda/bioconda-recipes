@@ -26,12 +26,12 @@ uname_str=$(uname -s)
 arch_str=$(uname -m)
 
 if [[ "$uname_str" == "Linux" ]]; then
-	export CONFIG_ARGS="--with-openmp --with-hard-runpath --with-dll"
+	export CONFIG_ARGS="--with-openmp --with-dll"
 	if [[ "$(uname -m)" == "x86_64" ]]; then
             export CONFIG_ARGS="${CONFIG_ARGS} --with-64"
 	fi
 else
-	export CONFIG_ARGS='--without-openmp --without-dll --without-gcrypt --without-zstd'
+	export CONFIG_ARGS='--with-static --without-openmp --without-dll --without-gcrypt --without-zstd'
 fi
 
 if [[ "$uname_str" == "Linux" || ("$uname_str" == "Darwin" && "$arch_str" == "arm64") ]]; then
@@ -44,7 +44,7 @@ if [[ "$uname_str" == "Linux" || ("$uname_str" == "Darwin" && "$arch_str" == "ar
          CPPFLAGS="${CPPFLAGS}" --with-strip --without-debug \
          --with-bin-release --with-mt --without-autodep --without-makefile-auto-update \
          --with-flat-makefile --without-caution --without-pcre --without-lzo \
-         --with-sqlite3="${PREFIX}" --without-krb5 --without-gnutls --without-boost --with-static \
+         --with-sqlite3="${PREFIX}" --without-krb5 --without-gnutls --without-boost \
 	 ${CONFIG_ARGS}
 
     make -j"${CPU_COUNT}"
