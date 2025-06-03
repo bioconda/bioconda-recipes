@@ -23,7 +23,7 @@ fi
 
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
-	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DCMAKE_C_COMPILER="${CC}" \
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-DUSE_SRA=ON -DUSE_SAIS=ON -Wno-dev -Wno-deprecated \
 	--no-warn-unused-cli "${CONFIG_ARGS}"
 cmake --build build --clean-first --target install -j "${CPU_COUNT}"
