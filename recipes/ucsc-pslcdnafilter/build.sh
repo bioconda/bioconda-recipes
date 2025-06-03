@@ -15,6 +15,8 @@ export L="${LDFLAGS}"
 
 mkdir -p "${BINDIR}"
 
+cp -rf ${RECIPE_DIR}/straw.cpp kent/src/hg/lib/straw/straw.cpp
+
 if [[ "$(uname -s)" == "Darwin" ]]; then
         export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
         export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument"
