@@ -15,7 +15,7 @@ export L="${LDFLAGS}"
 
 mkdir -p "${BINDIR}"
 
-if [[ "$(uname)" == Darwin ]]; then
+if [[ "$(uname -s)" == "Darwin" ]]; then
         export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
         export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument"
 fi
