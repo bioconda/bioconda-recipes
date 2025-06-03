@@ -71,7 +71,7 @@ if Args.openmp:
 
 if Args.pthread:
     compiler_opts += " -pthread"
-    linker_opts += " -lpthread"
+    linker_opts += " -pthread"
 
 rc = os.system('test -z $(git status --porcelain) 2> /dev/null')
 if rc != 0:
@@ -173,9 +173,9 @@ with open("Makefile", "w") as f:
     Out("$(BINPATH) : $(BINDIR)/ $(OBJDIR)/ $(OBJS)")
 
     if len(CXXNames) > 0:
-        Cmd = "\t$(CXX) $(LDFLAGS) $(OBJS) -o $(BINPATH)"
+        Cmd = "\t$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) $(OBJS) -o $(BINPATH)"
     else:
-        Cmd = "\t%(CC) $(LDFLAGS) $(OBJS) -o $(BINPATH)"
+        Cmd = "\t%(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(OBJS) -o $(BINPATH)"
 
     if Args.lrt:
         Cmd += " -lrt -ldl"
