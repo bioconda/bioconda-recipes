@@ -69,7 +69,7 @@ if Args.openmp:
 
 if Args.pthread:
     compiler_opts += " -pthread"
-    linker_opts += " -lpthread"
+    linker_opts += " -pthread"
 
 rc = os.system('test -z $(git status --porcelain) 2> /dev/null')
 if rc != 0:
