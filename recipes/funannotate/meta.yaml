@@ -1,27 +1,28 @@
 {% set name = "funannotate" %}
 {% set version = "1.8.17" %}
+{% set sha256 = "bdadfd7a5636383c1c40c26dab37c5908a77e8c4064adced84f1ba9e86187a04" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/f/funannotate/funannotate-{{ version }}.tar.gz
-  sha256: bdadfd7a5636383c1c40c26dab37c5908a77e8c4064adced84f1ba9e86187a04
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/funannotate-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 2
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   entry_points:
-    - funannotate=funannotate.funannotate:main
+    - funannotate = funannotate.funannotate:main
   run_exports:
     - {{ pin_subpackage('funannotate', max_pin="x") }}
 
 requirements:
   host:
-    - pip
     - python >=3.6,<3.10
+    - pip
   run:
     # python requirements as in setup.py
     - python >=3.6,<3.10
@@ -39,13 +40,13 @@ requirements:
     - distro
 
     # 3rd party requirements (mentioned in code or docker file )
-    - augustus ==3.5.0
+    - augustus >=3.5.0
     - bamtools
     - bedtools
     - blast
     - codingquarry
     - diamond
-    - evidencemodeler ==1.1.1
+    - evidencemodeler =1.1.1
     - ete3
     - exonerate
     - glimmerhmm
@@ -72,6 +73,7 @@ requirements:
     - trnascan-se
     - ucsc-blat
     - ucsc-pslcdnafilter
+
     # 3rd party perl requirements for supplementary script
     - perl
     - perl-math-utils  # Needed by GeneMark
@@ -88,26 +90,26 @@ requirements:
     - perl-db_file
     - perl-local-lib
 
-
 test:
   import:
     - funannotate
   commands:
-    - "funannotate --help | grep \"Funannotate is a genome prediction\""
- 
+    - 'funannotate --help | grep \"Funannotate is a genome prediction\"'
+
 about:
   home: "https://github.com/nextgenusfs/funannotate"
   license: "BSD-2-Clause"
   license_family: "BSD"
   license_file: "LICENSE.md"
-  summary: "funannotate: eukaryotic genome annotation pipeline"
-  doc_url: "https://funannotate.readthedocs.io/en/latest/"
+  summary: "funannotate: eukaryotic genome annotation pipeline."
+  doc_url: "https://funannotate.readthedocs.io/en/latest"
   dev_url: "https://github.com/nextgenusfs/funannotate"
 
 extra:
   recipe-maintainers:
     - nextgenusfs
   identifiers:
+    - doi:10.5281/zenodo.1134477
     - biotools:funannotate
     - usegalaxy-eu:funannotate_compare
     - usegalaxy-eu:funannotate_clean
