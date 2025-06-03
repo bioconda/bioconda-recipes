@@ -23,6 +23,6 @@ fi
 sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/lib/makefile
 rm -rf kent/src/lib/*.bak
 
-(cd kent/src && USE_HIC=1 make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
+(cd kent/src && USE_HIC=1 make libs CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
 (cd kent/src/hg/pslCDnaFilter && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
 install -v -m 0755 bin/pslCDnaFilter "${PREFIX}/bin"
