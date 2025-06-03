@@ -7,7 +7,7 @@ export GOCACHE=$PWD/.cache/
 mkdir -p $GOCACHE
 cd src/github.com/evolbioinfo/${PKG_NAME}
 go get .
-go build -o ${PREFIX}/bin/${PKG_NAME} -ldflags "-X github.com/evolbioinfo/${PKG_NAME}/version.Version=${PKG_VERSION}" github.com/evolbioinfo/${PKG_NAME}
+go build -o ${PREFIX}/bin/${PKG_NAME} -ldflags "-X github.com/evolbioinfo/${PKG_NAME}/cmd.Version=${PKG_VERSION}" github.com/evolbioinfo/${PKG_NAME}
 go test github.com/evolbioinfo/${PKG_NAME}/...
 
 # Gotree test data

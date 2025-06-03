@@ -1,0 +1,67 @@
+{% set version = "10-941cd33" %}
+{% set sha256 = "0db8bf072c9ec895efc6aa3626c746f4ca020acc9b92e9b2292b56c8c9f8a943" %}
+
+package:
+  name: foldseek
+  version: {{ version|replace("-", ".")  }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('foldseek', max_pin="x") }}
+
+source:
+  url: https://github.com/steineggerlab/foldseek/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    # remove for next release
+    - prostt5-memory.patch
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cmake
+    - make
+    - llvm-openmp         # [osx]
+    - libgomp             # [linux]
+    - cuda-nvcc           # [linux]
+    - cuda-cudart-dev     # [linux]
+    - libcublas-dev       # [linux]
+    - libcublas-static    # [linux]
+    - cuda-version >=12.6 # [linux]
+    - perl
+  host:
+    - zlib
+    - bzip2
+  run:
+    - aria2
+    - gawk
+    - zlib
+    - bzip2
+    - __osx >={{ MACOSX_DEPLOYMENT_TARGET|default("10.15") }}  # [osx and arm64]
+
+test:
+  commands:
+    - foldseek > /dev/null
+
+about:
+  home: https://github.com/steineggerlab/foldseek
+  summary: "Foldseek: fast and accurate protein structure search"
+  license: GPL-3
+  license_family: GPL
+  license_file: LICENSE.md 
+
+extra:
+  identifiers:
+    - doi:10.1038/s41587-023-01773-0
+    - doi:10.1038/s41586-023-06510-w
+    - doi:10.1101/2024.04.14.589414
+    - biotools:foldseek
+  recipe-maintainers:
+    - milot-mirdita
+    - martin-steinegger
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,0 +1,42 @@
+{% set version = "0.1.1" %}
+{% set sha256 = "4982a25c7510ee8098a6261be773a5234efb0e199e6c5dd1792ba29619dfb35b" %}
+
+package:
+  name: samcut
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/gshiba/samcut/archive/v{{ version }}.tar.gz
+  sha256: "{{ sha256 }}"
+
+build:
+  number: 3
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - rust >=1.60
+    - pkg-config
+    - make
+    - cmake
+
+test:
+  commands:
+    - samcut -h
+    - |
+      VER=$(samcut -V)
+      if [ "$VER" = "samcut {{ version }}" ]; then
+        echo "Version check: OK"
+      else
+        echo "Version check: FAIL (expected: 'samcut {{ version }}' | actual: '$VER' )"
+        exit 1
+      fi
+
+about:
+  home: https://github.com/gshiba/samcut
+  license: MIT
+  summary: samcut is `cut` for sam. Select (cut) columns from the output of `samtools view` using human-readale field names.
+
+extra:
+  recipe-maintainers:
+    - gshiba

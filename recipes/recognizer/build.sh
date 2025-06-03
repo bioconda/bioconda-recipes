@@ -1,6 +1,0 @@
-mkdir -p "${PREFIX}/share"
-mkdir -p "${PREFIX}/bin"
-cp recognizer.py "${PREFIX}/share"
-cp -r resources/* "${PREFIX}/share"
-chmod +x "${PREFIX}/share/recognizer.py"
-ln -s "${PREFIX}/share/recognizer.py" "${PREFIX}/bin"

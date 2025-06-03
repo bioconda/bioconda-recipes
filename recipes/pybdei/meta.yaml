@@ -1,0 +1,68 @@
+{% set name = "pybdei" %}
+{% set version = "0.13" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pybdei-{{ version }}.tar.gz
+  sha256: 4fcd3950aa60a25538bb8716a88ed5d5b24f63b1deebf1828e2e0ea9ac45441f
+
+build:
+  script_env:
+    - CC=$CXX
+  entry_points:
+    - bdei_infer = pybdei.inference:main
+    - bdei_loglikelihood = pybdei.loglikelihood:main
+    - bdei_u = pybdei.u_calculator:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation --no-binary=pybdei
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('pybdei', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - python >=3.9
+    - setuptools
+    - numpy >=1.24.0
+    - pip
+    - nlopt
+  run:
+    - python >=3.9
+    - ete3 >=3.1.3
+    - scipy >=1.11.1
+    - six >=1.16.0
+    - treesimulator >=0.1.22
+    - {{ pin_compatible('numpy >=1.24.0') }}
+
+test:
+  imports:
+    - pybdei
+  commands:
+    - pip check
+    - bdei_infer --help
+    - bdei_loglikelihood --help
+    - bdei_u --help
+  requires:
+    - pip
+
+about:
+  home: "https://github.com/evolbioinfo/bdei"
+  summary: "Maximum likelihood estimation of Birth-Death Exposed-Infectious (BDEI) epidemiological model parameters from phylogenetic trees."
+  description: |
+    PyBDEI provides tools for fast and accurate maximum likelihood estimation 
+    of Birth-Death Exposed-Infectious (BDEI) epidemiological model parameters 
+    from phylogenetic trees.
+  license: LGPL-2.1
+  license_file: LICENSE
+  license_family: GPL2
+  dev_url: https://github.com/evolbioinfo/bdei
+
+extra:
+  recipe-maintainers:
+    - annazhukova
+  identifiers:
+    - doi:10.1093/sysbio/syad059

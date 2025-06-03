@@ -1,0 +1,45 @@
+{% set version = "0.99.10" %}
+{% set name = "SomaScan.db" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: An R package providing extended biological annotations for the SomaScan Assay, a proteomics platform developed by SomaLogic Operating Co., Inc. The annotations in this package were assembled using data from public repositories. For more information about the SomaScan assay and its data, please reference the 'SomaLogic/SomaLogic-Data' GitHub repository.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Somalogic SomaScan Annotation Data
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-somascan.db", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: annotate, BiocStyle, dplyr, GO.db, KEGGREST, knitr, rmarkdown, SomaDataIO, testthat (>= 3.0.0), tibble, withr
+requirements:
+  host:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - r-base
+    - r-dbi
+  run:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - r-base
+    - r-dbi
+    - curl
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 4a5ba80cc1038c6adeb887147e691ca8
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

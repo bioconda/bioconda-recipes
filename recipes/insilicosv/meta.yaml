@@ -1,0 +1,55 @@
+{% set name = "insilicosv" %}
+{% set version = "0.0.6" %}
+{% set sha256 = "be14fc77d5d53563686328e38657ce84dc34ba46e2e44eb67e4df4e44a4474eb" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "{{ sha256 }}"
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  noarch: python
+  entry_points:
+    - insilicosv=insilicosv.simulate:run_insilicosv
+  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+
+requirements:
+  host:
+    - pip
+    - python =>3.8
+  run:
+    - cycler
+    - kiwisolver
+    - matplotlib-base
+    - numpy
+    - pillow
+    - pyparsing
+    - pysam
+    - python >=3.8
+    - python-dateutil
+    - pyyaml
+    - six
+
+test:
+  imports:
+    - insilicosv
+  commands:
+    - insilicosv --help
+
+about:
+  home: "https://github.com/PopicLab/insilicoSV"
+  license: MIT
+  license_family: MIT
+  summary: "Simulator for complex structural variants"
+
+extra:
+  recipe-maintainers:
+    - notestaff
+    - crohlicek
+    - viq854

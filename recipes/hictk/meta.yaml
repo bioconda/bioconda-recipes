@@ -1,0 +1,83 @@
+{% set name = "hictk" %}
+{% set version = "2.1.2" %}
+{% set sha256 = "6a3d5e30e980d31b99b8be66407d6e54539a6b07f51eed60e60b5fcd297e6e57" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('hictk', max_pin='x') }}
+
+source:
+  url: https://github.com/paulsengroup/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake >=3.25
+    - conan >=2
+    - make
+    - catch2 >=3.8
+    - cli11 >=2.5
+    - eigen >=3.4
+    - fast_float >=8
+    - fmt >=11
+    - highfive >=2.10
+    - libopentelemetry-cpp-headers >=1
+    - nlohmann_json >=3.12
+    - spdlog >=1.15
+    - tomlplusplus >=3.3
+
+  host:
+    - hdf5 >=1.12
+    - libarchive >=3
+    - libarrow >=16
+    - libdeflate >=1
+    - libopentelemetry-cpp >=1
+    - zstd >=1.5
+
+  run:
+    - hdf5 >=1.12
+    - libarchive >=3
+    - libarrow >=16
+    - libdeflate >=1
+    - libopentelemetry-cpp >=1
+    - zstd >=1.5
+
+about:
+  home: https://github.com/paulsengroup/{{ name }}
+  license: MIT
+  license_file: LICENSE
+  summary: Blazing fast toolkit to work with .hic and .cool files
+  dev_url: https://github.com/paulsengroup/{{ name }}
+  doc_url: https://{{ name }}.readthedocs.io/en/stable/
+
+test:
+  requires:
+    - python >=3.11,<3.14
+    - pip
+    - curl
+    - perl-digest-sha1
+    - zstd
+  source_files:
+    - cmake/FetchTestDataset.cmake
+    - test/integration/
+  commands:
+    - hictk --help
+    - hictk --version
+
+extra:
+  recipe-maintainers:
+    - robomics
+    - jonnings
+  identifiers:
+    - biotools:hictk
+    - doi:10.5281/zenodo.8214221
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

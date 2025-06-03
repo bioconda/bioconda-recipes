@@ -1,0 +1,26 @@
+new file mode 100755
+--- /dev/null
++++ simd-dispatch.sh
+@@ -0,0 +1,21 @@
++#!/bin/bash
++
++SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
++DIR=$SCRIPT_DIR
++BASE=${DIR}/$(basename "$0")
++CMDARGS="$@"
++
++function test_and_run () {
++	if grep -q "$1" /proc/cpuinfo && [ -x "${BASE}-$1" ]; then
++		cmd="${BASE}-$1"
++		shift
++		# echo "${cmd}" "$@"
++		"${cmd}" "$@"
++		exit
++	fi
++}
++
++for SIMD in avx2 avx sse4.1 ssse3 sse3 sse2 sse; do test_and_run ${SIMD} "$@"; done
++
++# fallback to plain option
++$BASE-plain "$@"
++

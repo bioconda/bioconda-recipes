@@ -1,0 +1,56 @@
+{% set name = "perl-minion" %}
+{% set version = "10.31" %}
+{% set sha256 = "3068f99033e69df08145b584a91ee224f4e97dc6242e102221e8220a3f28503b" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://cpan.metacpan.org/authors/id/S/SR/SRI/Minion-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+
+build:
+  number: 0
+  run_exports:
+    weak:
+      - {{ name }} ={{ version }}
+  noarch: generic
+
+requirements:
+  host:
+    - perl =>5.32
+    - perl-mojolicious
+    - perl-yaml-libyaml
+    - perl-mojo-pg
+    - make
+
+  run:
+    - perl =>5.32
+    - perl-yaml-libyaml
+    - perl-mojolicious
+    - perl-mojo-pg
+
+test:
+  imports:
+    - Minion
+    - Minion::Backend
+    - Minion::Backend::Pg
+    - Minion::Command::minion
+    - Minion::Command::minion::job
+    - Minion::Command::minion::worker
+    - Minion::Iterator
+    - Minion::Job
+    - Minion::Worker
+
+
+
+about:
+  home: https://mojolicious.org
+  license: Artistic-2.0
+  summary: 'Job queue'
+
+extra:
+  recipe-maintainers:
+    - khaled196

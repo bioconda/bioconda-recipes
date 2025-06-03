@@ -1,20 +1,22 @@
-{% set version = "3.6.3" %}
-{% set sha256 = "81e787f447f869ac89b16bc0f4c22fc2e65843fc99be004792cd946e2026ccfc" %}
+{% set version = "4.1.0" %}
+{% set name = "ms2pip" %}
+{% set sha256 = "0bf6a2161c28bf99b0c25945f524b1373e0b8d8f53f526ff3d134a68bef2c84f" %}
 
 package:
-  name: "ms2pip"
+  name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/m/ms2pip/ms2pip-{{ version }}.tar.gz
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
   sha256: {{ sha256 }}
 
 build:
-  number: 0
-  skip: True  # [py27 or osx]
+  number: 2
+  skip: True  # [osx and x86_64]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
   entry_points:
     - ms2pip=ms2pip.__main__:main
-    - fasta2speclib=fasta2speclib.fasta2speclib:main
   script:
     - "CFLAGS=${CFLAGS//-pipe/}"
     - "DEBUG_CFLAGS=${DEBUG_CFLAGS//-pipe/}"
@@ -24,20 +26,26 @@ requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - cython >=0.29.2,<1
-    - numpy >=1.15,<2
+    - cython
+    - numpy >=2.0
     - pip
     - python
   run:
-    - biopython >=1.74,<2
-    - numpy >=1.16,<2
-    - pandas >=0.24,<2
-    - pyteomics >=3.5,<5
     - python
-    - scipy >=1.2,<2
-    - pytables >=3.4
-    - tqdm >=4,<5
-    - tomlkit >=0.5.11,<1
+    - numpy >=1.25
+    - pandas >=1,<3
+    - pyarrow
+    - pyteomics >=3.5,<5
+    - tomlkit >=0.5,<1
+    - sqlalchemy >=1.3,<2
+    - click >=7,<9
+    - xgboost >=1.3,<3
+    - lxml >=4
+    - rich >=13
+    - pydantic >=2
+    - werkzeug >=2
+    - psm-utils >=1.0
+    - ms2rescore-rs >=0.4,<2
 
 test:
   imports:
@@ -46,14 +54,18 @@ test:
     - ms2pip --help
 
 about:
-  home: http://compomics.github.io/projects/ms2pip_c
+  home: https://github.com/compomics/ms2pip/
   license: Apache-2.0
   license_file: LICENSE
   license_family: APACHE
   summary: "MS²PIP: MS² Peak Intensity Prediction"
-  doc_url: http://compomics.github.io/projects/ms2pip_c
+  doc_url: https://ms2pip.readthedocs.io/
   dev_url: https://github.com/compomics/ms2pip_c
 
 extra:
   recipe-maintainers:
-    - compomics
+    - CompOmics
+    - RalfG
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,7 +1,9 @@
 {% set name = "interproscan" %}
-{% set version_minor = "87.0" %}
-{% set version_major = "5.54" %}
-{% set md5 = "78e4a2a5e17f936a48aad5ee6f4243c4" %}
+# Remember to update db versions in interproscan.properties for each new release
+# Look at ./core/jms-implementation/support-mini-x86-32/interproscan.properties in the archive
+{% set version_minor = "91.0" %}
+{% set version_major = "5.59" %}
+{% set sha256 = "140ab453af8b5f7c36ad607777378027fd018648e56ce915d4a9928f18e06dfc" %}
 
 package:
   name: "{{ name|lower }}"
@@ -9,24 +11,24 @@ package:
 
 source:
   url: https://github.com/ebi-pf-team/interproscan/archive/{{ version_major }}-{{ version_minor }}.tar.gz
-  md5: {{ md5 }}
+  sha256: {{ sha256 }}
   patches:
-    - initial_setup.py.patch
+    - "no_setup.patch"
 
 build:
-  number: 1
+  number: 2
   skip: True  # [osx]
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
-    - openjdk >=11
+    - openjdk >=11,<17
     - maven >=3
   run:
     - python >=3
     - perl >=5.08
-    - openjdk >=11
+    - openjdk >=11,<17
     - cath-tools # for cath-resolve-hits used by CATH-Gene3D
     - pftools # for Pfscan/Pfsearch used by ProSite Profiles, ProSite Patterns and HAMAP
     - hmmer2 # used by SMART
@@ -34,7 +36,7 @@ requirements:
     - emboss #  for getorf for nucleic acid sequence search
 #    - coils # for ncoils used by Coils <= Must used the one shipped with INTERPROSCAN because slighlty modified
     - blast >=2.12 # for rpsblast/rpsbproc used by CDD
-    - sfld # for sfld_preprocess/sfld_postprocess used by SFLD 
+    - sfld # for sfld_preprocess/sfld_postprocess used by SFLD
 #    - fingerprintscan # used by PRINTS <= use the one shipped with INTERPROSCAN because this one is problematic/crash
 
 test:
@@ -48,7 +50,7 @@ test:
     - java -version
     - interproscan.sh | grep XX
     - interproscan.sh | grep Xmx
-    - interproscan.sh --version 
+    - interproscan.sh --version
 #    - interproscan.sh -i test_proteins.fasta -cpu 1 -f tsv -dp -appl sfld, hamap,prints,smart,pfam,pirsf,tigrfam,prositeprofiles,prositepatterns,gene3d,superfamily
 #    - interproscan.sh -i test_proteins.fasta -cpu 1 -f tsv -appl sfld, hamap,prints,smart,pfam,pirsf,tigrfam,prositeprofiles,prositepatterns,gene3d,superfamily
 #    - interproscan.sh -i test_nt_seqs.fasta -cpu 1 -t n -f tsv -dp -appl sfld, hamap,prints,smart,pfam,pirsf,tigrfam,prositeprofiles,prositepatterns,gene3d,superfamily
@@ -64,3 +66,9 @@ about:
   license_file: LICENSE
   summary: InterPro integrates together predictive information about proteins function from a number of partner resources
   dev_url: https://github.com/ebi-pf-team/interproscan
+
+extra:
+  maintainers:
+    - abretaud
+  identifiers:
+    - biotools:interproscan_ebi

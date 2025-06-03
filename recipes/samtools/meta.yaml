@@ -1,4 +1,4 @@
-{% set version = "1.14" %}
+{% set version = "1.22" %}
 
 package:
   name: samtools
@@ -6,20 +6,18 @@ package:
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage("samtools", max_pin="x") }}
 
 source:
   url: https://github.com/samtools/samtools/releases/download/{{ version }}/samtools-{{ version }}.tar.bz2
-  sha256: 9341dabaa98b0ea7d60fd47e42af25df43a7d3d64d8e654cdf852974546b7d74
+  sha256: 4911d01720f246cb97855870b410bbe4d2c2fd7fbf823ea0f7daf0f32545819d
 
 requirements:
   build:
     - make
-    - {{ compiler('c') }}
+    - {{ compiler('c') }} 
   host:
-    - htslib
-    - ncurses
-    - zlib
-  run:
     - htslib
     - ncurses
     - zlib
@@ -37,6 +35,9 @@ test:
     - samtools view 'https://example.com' 2>&1 | grep 'fail to read the header' -q
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:samtools
     - usegalaxy-eu:samtools_flagstat

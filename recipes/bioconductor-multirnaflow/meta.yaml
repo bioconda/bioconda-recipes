@@ -1,0 +1,87 @@
+{% set version = "1.4.0" %}
+{% set name = "MultiRNAflow" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: Our R package MultiRNAflow provides an easy to use unified framework allowing to automatically make both unsupervised and supervised (DE) analysis for datasets with an arbitrary number of biological conditions and time points.  In particular, our code makes a deep downstream analysis of DE information, e.g. identifying temporal patterns across biological conditions and DE genes which are specific to a biological condition for each time.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 | file LICENSE
+  license_file: LICENSE
+  summary: An R package for integrated analysis of temporal RNA-seq data with multiple biological conditions
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-multirnaflow", max_pin="x.x") }}'
+
+extra:
+  container:
+    extended-base: yes
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocGenerics (>= 0.40.0), BiocStyle, e1071 (>= 1.7.12), knitr, rmarkdown, testthat (>= 3.0.0)
+requirements:
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-mfuzz >=2.66.0,<2.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-factoextra >=1.0.7
+    - r-factominer >=2.6
+    - r-ggalluvial >=0.12.3
+    - r-ggplot2 >=3.4.0
+    - r-ggplotify >=0.1.2
+    - r-ggrepel >=0.9.2
+    - r-gprofiler2 >=0.2.1
+    - r-plot3d >=1.4
+    - r-plot3drgl >=1.0.3
+    - r-reshape2 >=1.4.4
+    - r-upsetr >=1.4.0
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-mfuzz >=2.66.0,<2.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-factoextra >=1.0.7
+    - r-factominer >=2.6
+    - r-ggalluvial >=0.12.3
+    - r-ggplot2 >=3.4.0
+    - r-ggplotify >=0.1.2
+    - r-ggrepel >=0.9.2
+    - r-gprofiler2 >=0.2.1
+    - r-plot3d >=1.4
+    - r-plot3drgl >=1.0.3
+    - r-reshape2 >=1.4.4
+    - r-upsetr >=1.4.0
+
+source:
+  md5: 8f256be5013d735dbf6a5d2d0a258cf9
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library('{{ name }}')"
+

@@ -1,0 +1,39 @@
+{% set name = "naibr-plus" %}
+{% set version = "0.5.3" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/pontushojer/NAIBR/releases/download/v{{ version }}/naibr-{{ version }}.tar.gz
+  sha256: 8f1829171ea1abd1e6c9625aa0e17b430401cbec859527a13197f693f8b42c95
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install --no-deps .
+  run_exports:
+    - {{ pin_subpackage('naibr-plus', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.7
+    - setuptools-scm
+    - pip
+  run:
+    - python >=3.7
+    - pysam >=0.15.0
+    - mpmath
+    - numpy
+    - scipy
+    - matplotlib-base
+
+test:
+  commands:
+    - naibr --help
+
+about:
+  home: https://github.com/pontushojer/NAIBR
+  license: MIT
+  summary: "Identify novel adjacencies created by structural variations using linked-read data"
