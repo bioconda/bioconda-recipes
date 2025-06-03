@@ -12,7 +12,7 @@ mkdir -p ${PREFIX}/bin
 cd src || exit 1
 echo "0" > gitver.txt
 
-OS=$(uname)
+OS=$(uname -s)
 
 if [[ "${OS}" == "Darwin" ]]; then
 	cp -rf ${RECIPE_DIR}/vcxproj_make_osx.py .
@@ -21,6 +21,7 @@ if [[ "${OS}" == "Darwin" ]]; then
 elif [[ "${OS}" == "Linux" ]]; then
 	cp -rf ${RECIPE_DIR}/vcxproj_make.py .
 	chmod 0755 vcxproj_make.py
+	export LDFLAGS="${LDFLAGS} -static"
   	python ./vcxproj_make.py --openmp --pthread --lrt --cppcompiler "${CXX}" --ccompiler "${CC}"
 fi
 
