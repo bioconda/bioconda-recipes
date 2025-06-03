@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -xe
 
 mkdir -p "${PREFIX}/bin"
@@ -7,8 +6,8 @@ mkdir -p "${PREFIX}/bin"
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include ${LDFLAGS}"
-export CXXFLAGS="${CXXFLAGS} -O3 ${LDFLAGS}"
+export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
 export COPT="${COPT} ${CFLAGS}"
 export BINDIR="$(pwd)/bin"
 export L="${LDFLAGS}"
