@@ -2,7 +2,7 @@
 set -xe
 
 mkdir -p "${PREFIX}/bin"
-export MACHTYPE="$(uname -m)"
+#export MACHTYPE="$(uname -m)"
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
@@ -11,7 +11,8 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 #export COPT="${COPT} ${CFLAGS}"
 export BINDIR="$(pwd)/bin"
-export L="${LDFLAGS}"
+#export L="${LDFLAGS}"
+export kentSrc="${SRC_DIR}/kent/src"
 
 mkdir -p "${BINDIR}"
 
