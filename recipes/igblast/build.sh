@@ -31,7 +31,7 @@ if [[ "$uname_str" == "Linux" ]]; then
             export CONFIG_ARGS="${CONFIG_ARGS} --with-64"
 	fi
 else
-	export CONFIG_ARGS='--with-static --without-openmp --without-dll --without-gcrypt --without-zstd'
+	export CONFIG_ARGS='--without-openmp --without-dll --without-gcrypt --without-zstd'
 fi
 
 if [[ "$uname_str" == "Linux" || ("$uname_str" == "Darwin" && "$arch_str" == "arm64") ]]; then
