@@ -20,21 +20,10 @@ cp -rf ${RECIPE_DIR}/straw.cpp kent/src/hg/lib/straw/straw.cpp
 cp -rf ${BUILD_PREFIX}/share/gnuconfig/config.* kent/src/htslib
 
 OS=$(uname -s)
-ARCH=$(uname -m)
 
 if [[ "${OS}" == "Darwin" ]]; then
         export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
         export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument"
-fi
-
-if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
-        export EXTRA_ARGS="--host=arm64"
-        mkdir -p kent/src/lib/arm64
-elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
-        export EXTRA_ARGS="--host=aarch64"
-        mkdir -p kent/src/lib/aarch64
-else
-        export EXTRA_ARGS="--host=x86_64"
 fi
 
 sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/lib/makefile
