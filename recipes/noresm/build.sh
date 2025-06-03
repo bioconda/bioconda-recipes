@@ -4,7 +4,7 @@
 # See https://bb.cgd.ucar.edu/cesm/threads/known-issue-running-manage_externals-with-python-3-8-and-later.5072/
 
 rm -rf manage_externals
-git clone -b manic-1.2.25 https://github.com/ESMCI/manage_externals.git
+git clone -b manic-v1.1.8 https://github.com/ESMCI/manage_externals.git
 
 sed -i.bak "s/'checkout'/'checkout', '--trust-server-cert'/" ./manage_externals/manic/repository_svn.py
 ./manage_externals/checkout_externals
