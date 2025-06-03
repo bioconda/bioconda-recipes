@@ -11,8 +11,6 @@ export CFLAGS="${CFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 export kentSrc="${SRC_DIR}/kent/src"
-export AR="${AR}"
-export RANLIB="${RANLIB}"
 #export COPT="${COPT} ${CFLAGS}"
 #export L="${LDFLAGS}"
 
@@ -51,20 +49,6 @@ sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/optimalLeaf/makefile
 sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/hg/cgilib/makefile
 sed -i.bak 's|ld|$(LD)|' kent/src/hg/lib/straw/makefile
 rm -rf kent/src/hg/lib/straw/*.bak
-
-cd kent/src/htslib
-autoreconf -if
-./configure --enable-libcurl --enable-plugins \
-        CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" \
-        CPPFLAGS="${CPPFLAGS}" --disable-option-checking "${EXTRA_ARGS}"
-make clean
-
-sed -i.bak 's|AR     = ar|AR     = $(AR)|' Makefile
-sed -i.bak 's|RANLIB = ranlib|RANLIB = $(RANLIB)|' Makefile
-sed -i.bak 's|$(AR) -rc|$(AR) rcs|' Makefile
-rm -rf *.bak
-
-cd ../../../
 
 (cd kent/src && USE_HIC=1 make libs CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" AR="${AR}" RANLIB="${RANLIB}" -j"${CPU_COUNT}")
 (cd kent/src/hg/pslCDnaFilter && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
