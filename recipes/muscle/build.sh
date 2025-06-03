@@ -21,7 +21,6 @@ if [[ "${OS}" == "Darwin" ]]; then
 elif [[ "${OS}" == "Linux" ]]; then
 	cp -rf ${RECIPE_DIR}/vcxproj_make.py .
 	chmod 0755 vcxproj_make.py
-	export LDFLAGS="${LDFLAGS} -static"
   	python ./vcxproj_make.py --openmp --pthread --lrt --cppcompiler "${CXX}" --ccompiler "${CC}"
 fi
 
@@ -31,4 +30,4 @@ if [[ ! -x ../bin/muscle ]]; then
 	exit 1
 fi
 
-install -v -m 0755 ../bin/muscle ${PREFIX}/bin
+install -v -m 0755 ../bin/muscle "${PREFIX}/bin"
