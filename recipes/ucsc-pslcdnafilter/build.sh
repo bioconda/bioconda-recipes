@@ -2,7 +2,7 @@
 set -xe
 
 mkdir -p "${PREFIX}/bin"
-
+export MACHTYPE="$(uname -m)"
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
