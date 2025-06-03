@@ -43,8 +43,8 @@ if [[ "$uname_str" == "Linux" || ("$uname_str" == "Darwin" && "$arch_str" == "ar
          CPPFLAGS="${CPPFLAGS}" --with-strip --without-debug \
          --with-bin-release --with-mt --without-autodep --without-makefile-auto-update \
          --with-flat-makefile --without-caution --without-pcre --without-lzo \
-         --with-sqlite3="${PREFIX}" --without-krb5 --without-gnutls --without-boost \
-         --with-static "${CONFIG_ARGS}"
+         --with-sqlite3="${PREFIX}" --without-krb5 --without-gnutls --without-boost --with-static \
+	 ${CONFIG_ARGS}
 
     make -j"${CPU_COUNT}"
 
