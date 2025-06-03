@@ -11,6 +11,8 @@ export CFLAGS="${CFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 export kentSrc="${SRC_DIR}/kent/src"
+export AR="${AR}"
+export RANLIB="${RANLIB}"
 #export COPT="${COPT} ${CFLAGS}"
 #export L="${LDFLAGS}"
 
@@ -62,11 +64,8 @@ sed -i.bak 's|RANLIB = ranlib|RANLIB = $(RANLIB)|' Makefile
 sed -i.bak 's|$(AR) -rc|$(AR) rcs|' Makefile
 rm -rf *.bak
 
-make -j"${CPU_COUNT}"
-cp -f libhts.a ../lib/${MACHTYPE}/
-
 cd ../../../
 
-(cd kent/src && USE_HIC=1 make libs CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
+(cd kent/src && USE_HIC=1 make libs CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" AR="${AR}" RANLIB="${RANLIB}" -j"${CPU_COUNT}")
 (cd kent/src/hg/pslCDnaFilter && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
 install -v -m 0755 bin/pslCDnaFilter "${PREFIX}/bin"
