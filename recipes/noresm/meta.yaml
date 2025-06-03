@@ -1,5 +1,5 @@
 {% set name = "noresm" %}
-{% set version = "2.0.5" %}
+{% set version = "2.0.9" %}
 
 package:
   name: {{ name|lower }}
@@ -7,11 +7,13 @@ package:
 
 source:
     url: https://github.com/NorESMhub/NorESM/archive/refs/tags/release-noresm{{ version }}.tar.gz
-    sha256: 350efec62f89d96ee3ff1289780d9340cfb0d0b812d7b68949c3c989f88f8c96
+    sha256: bb2fdab2abbfa3e686813de72e8a06ef6a45227c7e06fd59fb999081df19b7ca
 
 build:
-    skip: True  # [win or osx or py<30]
     number: 0
+    skip: True  # [win or osx or py < 30]
+    run_exports:
+      - {{ pin_subpackage('noresm', max_pin="x") }}
 
 requirements:
     build:
@@ -25,23 +27,15 @@ requirements:
         - netcdf-fortran=*=*mpich*
         - subversion
         - libxml2
+        - libiconv
         - perl
         - perl-xml-libxml
+        - wget
+        - binutils
+        - tcsh
+        - mkl
     run:
         - python
-        - tcsh
-        - binutils
-        - {{ compiler('c') }}
-        - {{ compiler('fortran') }}
-        - netcdf-fortran=*=*mpich*
-        - mpich
-        - libxml2
-        - libiconv
-        - make
-        - cmake
-        - mkl
-        - subversion
-        - wget
         - perl
         - perl-xml-libxml
 
@@ -52,11 +46,11 @@ test:
         - query_testlists --help
 
 about:
-    home: https://github.com/NorESMhub/NorESM
-    license: BSD 3-Clause
+    home: "https://github.com/NorESMhub/NorESM"
+    license: "BSD 3-Clause"
     license_family: BSD
-    license_file: LICENSE.txt
-    summary: The Norwegian Earth System Model (NorESM) is a coupled climate model for simulating Earth’s climate system
+    license_file: "LICENSE.txt"
+    summary: "The Norwegian Earth System Model (NorESM) is a coupled climate model for simulating Earth’s climate system."
     description: |
       "NorESM (Norwegian Earth System Model) is the Norwegian fully-coupled, 
       global climate model that provides state-of-the-art computer simulations
@@ -72,13 +66,11 @@ about:
       mkdir -p $CESM_DATA_ROOT/inputdata
       ```
       "
-    doc_url: https://noresm-docs.readthedocs.io/en/latest
+    doc_url: "https://noresm-docs.readthedocs.io/en/latest"
 
 extra:
   recipe-maintainers:
     - annefou
     - j34ni
-  skip-lints:
-    - compilers_must_be_in_build
   container:
-    extended-base: true
+    extended-base: True
