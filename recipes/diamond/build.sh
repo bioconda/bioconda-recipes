@@ -22,12 +22,23 @@ else
 	export CONFIG_ARGS="-DX86=ON -DBUILD_STATIC=ON -DWITH_AVX512=ON"
 fi
 
+cd ncbi-cxx-toolkit-public
+./cmake-configure --without-debug \
+	--with-projects="objtools/blast/seqdb_reader;objtools/blast/blastdb_format" \
+ 	--with-build-root=build
+
+cd build/build
+make -j"${CPU_COUNT}"
+cp -rf ${SRC_DIR}/ncbi-cxx-toolkit-public/build/inc/ncbiconf_unix.h ${SRC_DIR}/ncbi-cxx-toolkit-public/include
+
+cd ${SRC_DIR}
+
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DWITH_ZSTD=ON \
 	-DZSTD_LIBRARY="${PREFIX}/lib/libzstd.a" -DZSTD_INCLUDE_DIR="${PREFIX}/include" \
-	-DBLAST_INCLUDE_DIR="${PREFIX}/include/ncbi" \
-	-DBLAST_LIBRARY_DIR="${PREFIX}/lib/ncbi-blast+" \
+	-DBLAST_INCLUDE_DIR="${SRC_DIR}/ncbi-cxx-toolkit-public/include" \
+	-DBLAST_LIBRARY_DIR="${SRC_DIR}/ncbi-cxx-toolkit-public/build/lib" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
