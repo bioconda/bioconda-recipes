@@ -5,11 +5,14 @@
 git clone --branch master https://github.com/simd-everywhere/simde-no-tests.git third_party/simde
 git clone https://github.com/ch4rr0/libsais third_party/libsais
 
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-deprecated-declarations"
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
 sed -i.bak 's|3.0.9|3.2.1|' Makefile
+sed -i.bak 's|-lpthread|-pthread|' Makefile
+sed -i.bak 's|-std=c++11|-std=c++14 -O3|' Makefile
+sed -i.bak 's|-O2|-O3|' Makefile
 rm -rf *.bak
 
 LDFLAGS=""
