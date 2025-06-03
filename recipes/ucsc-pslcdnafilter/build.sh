@@ -7,12 +7,12 @@ export BINDIR="$(pwd)/bin"
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
+export kentSrc="${SRC_DIR}/kent/src"
 #export COPT="${COPT} ${CFLAGS}"
 #export L="${LDFLAGS}"
-export kentSrc="${SRC_DIR}/kent/src"
 
 mkdir -p "${BINDIR}"
 
@@ -25,7 +25,6 @@ ARCH=$(uname -m)
 if [[ "${OS}" == "Darwin" ]]; then
         export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
         export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument"
-        LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
 fi
 
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
@@ -42,7 +41,8 @@ sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/lib/makefile
 rm -rf kent/src/lib/*.bak
 sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/hg/lib/makefile
 sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/jkOwnLib/makefile
-sed -i.bak 's|-O -g|-O3 -g|' kent/src/hg/lib/straw/makefile
+sed -i.bak 's|-O -g|-O3 -g|' kent/src/inc/common.mk
+sed -i.bak 's|-lpthread|-pthread|' kent/src/inc/common.mk
 sed -i.bak 's|${XINC}|${XINC} $(LDFLAGS)|' kent/src/jkOwnLib/makefile
 sed -i.bak 's|-o $@ -c $<|-c $< -o $@|' kent/src/jkOwnLib/makefile
 sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/optimalLeaf/makefile
@@ -56,6 +56,12 @@ autoreconf -if
         CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" \
         CPPFLAGS="${CPPFLAGS}" --disable-option-checking "${EXTRA_ARGS}"
 make clean
+
+sed -i.bak 's|AR     = ar|AR     = $(AR)|' Makefile
+sed -i.bak 's|RANLIB = ranlib|RANLIB = $(RANLIB)|' Makefile
+sed -i.bak 's|$(AR) -rc|$(AR) rcs|' Makefile
+rm -rf *.bak
+
 make -j"${CPU_COUNT}"
 cp -f libhts.a ../lib/${MACHTYPE}/
 
