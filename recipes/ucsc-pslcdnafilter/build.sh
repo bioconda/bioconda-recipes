@@ -9,7 +9,7 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
-export COPT="${COPT} ${CFLAGS}"
+#export COPT="${COPT} ${CFLAGS}"
 export BINDIR="$(pwd)/bin"
 export L="${LDFLAGS}"
 
@@ -24,6 +24,13 @@ fi
 
 sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/lib/makefile
 rm -rf kent/src/lib/*.bak
+sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/hg/lib/makefile
+sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/jkOwnLib/makefile
+sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/optimalLeaf/makefile
+sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/hg/encode/lib/makefile
+sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/hg/protein/lib/makefile
+sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/hg/cgilib/makefile
+sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/hg/encode/docId/lib/makefile
 sed -i.bak 's|ld|$(LD)|' kent/src/hg/lib/straw/makefile
 rm -rf kent/src/hg/lib/straw/*.bak
 
