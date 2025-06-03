@@ -26,11 +26,9 @@ sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/lib/makefile
 rm -rf kent/src/lib/*.bak
 sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/hg/lib/makefile
 sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/jkOwnLib/makefile
+sed -i.bak 's|$<|$< ${LDFLAGS}|' kent/src/jkOwnLib/makefile
 sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/optimalLeaf/makefile
-sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/hg/encode/lib/makefile
-sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/hg/protein/lib/makefile
 sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/hg/cgilib/makefile
-sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/hg/encode/docId/lib/makefile
 sed -i.bak 's|ld|$(LD)|' kent/src/hg/lib/straw/makefile
 rm -rf kent/src/hg/lib/straw/*.bak
 
