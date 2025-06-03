@@ -5,11 +5,11 @@ export CPATH="${PREFIX}/include"
 
 export LDFLAGS="-L${PREFIX}/lib"
 
-export CFLAGS="-I${SRC_DIR}/submodules/lib/htslib -I${SRC_DIR}/submodules/lib/samtools -I${SRC_DIR}/submodules/lib/libgab -I${PREFIX}/include"
-export CPPFLAGS="-I${SRC_DIR}/submodules/lib/htslib -I${SRC_DIR}/submodules/lib/samtools -I${SRC_DIR}/submodules/lib/libgab -I${PREFIX}/include"
-export CXXFLAGS="-I${SRC_DIR}/submodules/lib/htslib -I${SRC_DIR}/submodules/lib/samtools -I${SRC_DIR}/submodules/lib/libgab -I${PREFIX}/include"
+export CFLAGS="-I${SRC_DIR}/submodules/lib/libgab -I${PREFIX}/include"
+export CPPFLAGS="-I${SRC_DIR}/submodules/lib/libgab -I${PREFIX}/include"
+export CXXFLAGS="-I${SRC_DIR}/submodules/lib/libgab -I${PREFIX}/include"
 
-ln -s ${PREFIX}/lib/libncurses.so ${PREFIX}/lib/libcurses.so
+#ln -s ${PREFIX}/lib/libncurses.so ${PREFIX}/lib/libcurses.so
 
 mkdir -p "${PREFIX}/bin"
 
