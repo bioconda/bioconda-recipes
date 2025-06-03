@@ -5,6 +5,10 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3"
+export AR="${AR} rcs"
+
+mkdir -p ${PREFIX}/bin
+cp -rf ${BUILD_PREFIX}/share/gnuconfig/config.* c++/src/build-system/
 
 # This script uses ideas from the build script for BLAST. See comments there.
 
@@ -15,17 +19,14 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 SHARE_DIR="${PREFIX}/share/igblast"
 mkdir -p ${SHARE_DIR}/bin
 
-mkdir -p ${PREFIX}/bin
-
 # Work directory
 RESULT_PATH="${SRC_DIR}/c++/Release"
-export AR="${AR} rcs"
 
 uname_str=$(uname -s)
 arch_str=$(uname -m)
 
 if [[ "$uname_str" == "Linux" ]]; then
-	export CONFIG_ARGS="--with-runpath=\"${LIB_INSTALL_DIR}\" --with-openmp --with-hard-runpath --with-dll"
+	export CONFIG_ARGS="--with-openmp --with-hard-runpath --with-dll"
 	if [[ "$(uname -m)" == "x86_64" ]]; then
             export CONFIG_ARGS="${CONFIG_ARGS} --with-64"
 	fi
