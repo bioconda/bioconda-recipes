@@ -24,14 +24,17 @@ ARCH=$(uname -m)
 if [[ "${OS}" == "Darwin" ]]; then
         export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
         export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument"
+        LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
 fi
 
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
-  export EXTRA_ARGS="--host=arm64"
+        export EXTRA_ARGS="--host=arm64"
+        mkdir -p kent/src/lib/arm64
 elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
-  export EXTRA_ARGS="--host=aarch64"
+        export EXTRA_ARGS="--host=aarch64"
+        mkdir -p kent/src/lib/aarch64
 else
-  export EXTRA_ARGS="--host=x86_64"
+        export EXTRA_ARGS="--host=x86_64"
 fi
 
 sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/lib/makefile
@@ -45,9 +48,10 @@ sed -i.bak 's|ld|$(LD)|' kent/src/hg/lib/straw/makefile
 rm -rf kent/src/hg/lib/straw/*.bak
 
 cd kent/src/htslib
+make CC="${CC}" clean
 autoreconf -if
 ./configure --enable-libcurl --enable-plugins \
-        CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS} -Wl,-R${PREFIX}/lib" \
+        CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" \
         CPPFLAGS="${CPPFLAGS}" --disable-option-checking "${EXTRA_ARGS}"
 make -j"${CPU_COUNT}"
 cp -f libhts.a ../lib/${MACHTYPE}/
