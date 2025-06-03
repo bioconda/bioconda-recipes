@@ -26,7 +26,9 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DWITH_ZSTD=ON \
 	-DZSTD_LIBRARY="${PREFIX}/lib/libzstd.a" -DZSTD_INCLUDE_DIR="${PREFIX}/include" \
+	-DBLAST_INCLUDE_DIR="${PREFIX}/include/ncbi" \
 	-DBLAST_LIBRARY_DIR="${PREFIX}/lib/ncbi-blast+" \
-	-Wno-dev -Wno-deprecated --no-warn-unused-cli "${CONFIG_ARGS}"
+	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
+	"${CONFIG_ARGS}"
 
 cmake --build build --clean-first --target install -j "${CPU_COUNT}"
