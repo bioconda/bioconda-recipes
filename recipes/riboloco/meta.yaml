@@ -10,26 +10,29 @@ source:
   sha256: 4cce89522836cc856f155b921a87a11d557a23935f9726868aaaf19925d6662d
 
 build:
-  noarch: python
   number: 0
+  noarch: python
   entry_points:
-    - riboloco=riboloco.__main__:main
-    - riboloco_convert_gtf=riboloco.convert_gtf:main
-    - riboloco_find_orfs=riboloco.find_orfs:main
-  script: "{{ PYTHON }} -m pip install . -vv --no-deps"
+    - riboloco = riboloco.__main__:main
+    - riboloco_convert_gtf = riboloco.convert_gtf:main
+    - riboloco_find_orfs = riboloco.find_orfs:main
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir --use-pep517"
+  run_exports:
+    - {{ pin_subpackage('riboloco', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3
+    - setuptools
   run:
+    - python >=3
     - gffutils
     - matplotlib-base
     - pandas
     - pysam
-    - python
     - scipy
-    - seaborn
+    - seaborn-base
     - scikit-learn
 
 test:
@@ -41,10 +44,11 @@ test:
     - riboloco_find_orfs --help
 
 about:
-  home: "https://github.com/Delayed-Gitification/riboloco.git"
+  home: "https://github.com/Delayed-Gitification/riboloco"
   license: MIT
   license_family: MIT
-  summary: "Riboseq analysis"
+  summary: "Riboseq analysis."
+  dev_url: "https://github.com/Delayed-Gitification/riboloco"
 
 extra:
   recipe-maintainers:
