@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-export CFLAGS="${CFLAGS} -O3"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
