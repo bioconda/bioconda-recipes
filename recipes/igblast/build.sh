@@ -5,10 +5,8 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3"
-export AR="${AR} rcs"
 
 mkdir -p ${PREFIX}/bin
-cp -rf ${BUILD_PREFIX}/share/gnuconfig/config.* c++/src/build-system/
 
 # This script uses ideas from the build script for BLAST. See comments there.
 
@@ -35,29 +33,31 @@ else
 fi
 
 if [[ "$uname_str" == "Linux" || ("$uname_str" == "Darwin" && "$arch_str" == "arm64") ]]; then
-    cd c++
+	cp -rf ${BUILD_PREFIX}/share/gnuconfig/config.* c++/src/build-system/
+	export AR="${AR} rcs"
+ 	cd c++
 
-    ./configure --with-z="${PREFIX}" \
-         --with-bz2="${PREFIX}" --with-vdb="${PREFIX}" \
-         CC="${CC}" CFLAGS="${CFLAGS}" CXX="${CXX}" \
-         CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" \
-         CPPFLAGS="${CPPFLAGS}" --with-strip --without-debug \
-         --with-bin-release --with-mt --without-autodep --without-makefile-auto-update \
-         --with-flat-makefile --without-caution --without-pcre --without-lzo \
-         --with-sqlite3="${PREFIX}" --without-krb5 --without-gnutls --without-boost \
-	 ${CONFIG_ARGS}
+	./configure --with-z="${PREFIX}" \
+		--with-bz2="${PREFIX}" --with-vdb="${PREFIX}" \
+		CC="${CC}" CFLAGS="${CFLAGS}" CXX="${CXX}" \
+		CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" \
+		CPPFLAGS="${CPPFLAGS}" --with-strip --without-debug \
+		--with-bin-release --with-mt --without-autodep --without-makefile-auto-update \
+		--with-flat-makefile --without-caution --without-pcre --without-lzo \
+		--with-sqlite3="${PREFIX}" --without-krb5 --without-gnutls --without-boost \
+		${CONFIG_ARGS}
 
-    make -j"${CPU_COUNT}"
+		make -j"${CPU_COUNT}"
 
-    # Move one up so it looks like the binary release
-    mv ReleaseMT/bin .
-    mv src/app/igblast/{internal_data,optional_file} ${SHARE_DIR}
+		# Move one up so it looks like the binary release
+		mv ReleaseMT/bin .
+		mv src/app/igblast/{internal_data,optional_file} ${SHARE_DIR}
 elif [[ "$uname_str" == "Darwin" && "$arch_str" == "x86_64" ]]; then
-    # On Intel macOS, use prebuilt binaries
-    mv internal_data optional_file ${SHARE_DIR}
+		# On Intel macOS, use prebuilt binaries
+		mv internal_data optional_file ${SHARE_DIR}
 else
-    echo "Unsupported OS or architecture: ${uname_str} ${arch_str}"
-    exit 1
+		echo "Unsupported OS or architecture: ${uname_str} ${arch_str}"
+		exit 1
 fi
 
 install -v -m 0755 bin/makeblastdb ${PREFIX}/bin
