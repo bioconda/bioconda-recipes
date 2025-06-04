@@ -9,7 +9,7 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 ### Compiling mothur
 make clean
-make CXX="${CXX}" -j"${CPU_COUNT}"
+make OPTIMIZE=no CXX="${CXX}" -j"${CPU_COUNT}"
 make install
 install -v -m 0755 uchime "${PREFIX}/bin"
 
