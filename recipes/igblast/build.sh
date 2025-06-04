@@ -32,9 +32,17 @@ else
 	export CONFIG_ARGS='--without-openmp --without-dll --without-gcrypt --without-zstd'
 fi
 
+if [[ "${uname_str}" == "Darwin" && "${arch_str}" == "arm64" ]]; then
+  export EXTRA_ARGS="--host=arm64"
+elif [[ "${uname_str}" == "Linux" && "${arch_str}" == "aarch64" ]]; then
+  export EXTRA_ARGS="--host=aarch64"
+else
+  export EXTRA_ARGS="--host=x86_64"
+fi
+
 if [[ "$uname_str" == "Linux" || ("$uname_str" == "Darwin" && "$arch_str" == "arm64") ]]; then
-	cp -rf ${BUILD_PREFIX}/share/gnuconfig/config.* c++/src/build-system/
 	export AR="${AR} rcs"
+	cp -rf ${BUILD_PREFIX}/share/gnuconfig/config.* c++/src/build-system/
  	cd c++
 
 	./configure --with-z="${PREFIX}" \
@@ -45,7 +53,8 @@ if [[ "$uname_str" == "Linux" || ("$uname_str" == "Darwin" && "$arch_str" == "ar
 		--with-bin-release --with-mt --without-autodep --without-makefile-auto-update \
 		--with-flat-makefile --without-caution --without-pcre --without-lzo \
 		--with-sqlite3="${PREFIX}" --without-krb5 --without-gnutls --without-boost \
-		${CONFIG_ARGS}
+		--without-sse42 --with-build-root="${RESULT_PATH}" --with-experimental=Int8GI \
+		--without-gcrypt ${EXTRA_ARGS} ${CONFIG_ARGS}
 
 		make -j"${CPU_COUNT}"
 
