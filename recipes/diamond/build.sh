@@ -5,12 +5,14 @@ export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
-export CMAKE_ARGS="-S src -B . -GNinja -DCMAKE_BUILD_TYPE=Release -Wno-dev -Wno-deprecated --no-warn-unused-cli"
 export CMAKE_C_COMPILER="${CC}"
 export CMAKE_CXX_COMPILER="${CXX}"
 
 sed -i.bak 's|VERSION 2.6|VERSION 3.5|' CMakeLists.txt
 rm -rf *.bak
+
+cd ncbi-cxx-toolkit-public
+export CMAKE_ARGS="-S src -B . -GNinja -DCMAKE_BUILD_TYPE=Release -Wno-dev -Wno-deprecated --no-warn-unused-cli"
 
 OS=$(uname -s)
 ARCH=$(uname -m)
@@ -27,13 +29,13 @@ else
 	export CONFIG_ARGS="-DX86=ON -DBUILD_STATIC=ON -DWITH_AVX512=ON"
 fi
 
-cd ncbi-cxx-toolkit-public
 ./cmake-configure --without-debug \
 	--with-projects="objtools/blast/seqdb_reader;objtools/blast/blastdb_format" \
  	--with-build-root=build
 
 cd build/build
 ninja -v -j"${CPU_COUNT}"
+
 cp -rf ${SRC_DIR}/ncbi-cxx-toolkit-public/build/inc/ncbiconf_unix.h ${SRC_DIR}/ncbi-cxx-toolkit-public/include
 
 cd ${SRC_DIR}
