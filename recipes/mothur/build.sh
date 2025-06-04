@@ -6,7 +6,6 @@ export LIBPATH="-L${PREFIX}/lib"
 # Linker flags
 unset LDFLAGS
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export TARGET_ARCH="$(uname -m)"
 
 ### Compiling mothur
 make clean
