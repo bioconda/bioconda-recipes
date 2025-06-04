@@ -12,7 +12,7 @@ sed -i.bak 's|VERSION 2.6|VERSION 3.5|' CMakeLists.txt
 rm -rf *.bak
 
 cd ncbi-cxx-toolkit-public
-export CMAKE_ARGS="-S src -B . -GNinja -DCMAKE_BUILD_TYPE=Release -Wno-dev -Wno-deprecated --no-warn-unused-cli"
+export CMAKE_ARGS="-S src -B . -DCMAKE_BUILD_TYPE=Release -Wno-dev -Wno-deprecated --no-warn-unused-cli"
 
 OS=$(uname -s)
 ARCH=$(uname -m)
@@ -33,7 +33,8 @@ fi
 	--with-projects="objtools/blast/seqdb_reader;objtools/blast/blastdb_format" \
  	--with-build-root=build
 
-ninja -C build/build -v -j"${CPU_COUNT}"
+cd build
+cmake --build build --clean-first -j"${CPU_COUNT}"
 
 cp -rf ${SRC_DIR}/ncbi-cxx-toolkit-public/build/inc/ncbiconf_unix.h ${SRC_DIR}/ncbi-cxx-toolkit-public/include
 
