@@ -5,6 +5,9 @@ export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
+export CMAKE_ARGS="-S src -B . -GNinja -DCMAKE_BUILD_TYPE=Release -Wno-dev -Wno-deprecated --no-warn-unused-cli"
+export CMAKE_C_COMPILER="${CC}"
+export CMAKE_CXX_COMPILER="${CXX}"
 
 sed -i.bak 's|VERSION 2.6|VERSION 3.5|' CMakeLists.txt
 rm -rf *.bak
@@ -14,8 +17,10 @@ ARCH=$(uname -m)
 
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	export CONFIG_ARGS="-DARM=ON -DX86=OFF -DCMAKE_OSX_DEPLOYMENT_TARGET="11.0" -DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	export CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 elif [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
 	export CONFIG_ARGS="-DX86=ON -DCMAKE_OSX_DEPLOYMENT_TARGET="10.15" -DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	export CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
 	export CONFIG_ARGS="-DAARCH64=ON -DX86=OFF -DBUILD_STATIC=ON"
 else
@@ -28,7 +33,7 @@ cd ncbi-cxx-toolkit-public
  	--with-build-root=build
 
 cd build/build
-make -j"${CPU_COUNT}"
+ninja -v -j"${CPU_COUNT}"
 cp -rf ${SRC_DIR}/ncbi-cxx-toolkit-public/build/inc/ncbiconf_unix.h ${SRC_DIR}/ncbi-cxx-toolkit-public/include
 
 cd ${SRC_DIR}
