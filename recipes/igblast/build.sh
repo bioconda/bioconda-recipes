@@ -25,7 +25,7 @@ RESULT_PATH="${SRC_DIR}/c++/Release"
 uname_str=$(uname -s)
 arch_str=$(uname -m)
 
-if [[ "$uname_str" == "Linux" ]]; then
+if [[ "$(uname -s)" == "Linux" ]]; then
 	export CONFIG_ARGS="--with-openmp --without-dll"
 	if [[ "$(uname -m)" == "x86_64" ]]; then
             export CONFIG_ARGS="${CONFIG_ARGS} --with-64"
