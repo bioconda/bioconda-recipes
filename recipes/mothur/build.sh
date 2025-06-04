@@ -7,6 +7,12 @@ export LIBPATH="-L${PREFIX}/lib"
 unset LDFLAGS
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
+if [[ "$(uname -s)" == "Darwin" ]]; then
+	sed -i.bak 's/-std=c++14/-std=c++14 -stdlib=libc++/' Makefile
+  sed -i.bak 's/-std=c++14/-std=c++14 -stdlib=libc++/' source/uchime_src/makefile
+  export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names"
+fi
+
 ### Compiling mothur
 make clean
 make OPTIMIZE=no CXX="${CXX}" -j"${CPU_COUNT}"
