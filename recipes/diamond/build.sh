@@ -33,8 +33,7 @@ fi
 	--with-projects="objtools/blast/seqdb_reader;objtools/blast/blastdb_format" \
  	--with-build-root=build
 
-cd build/build
-ninja -v -j"${CPU_COUNT}"
+ninja -C build/build -v -j"${CPU_COUNT}"
 
 cp -rf ${SRC_DIR}/ncbi-cxx-toolkit-public/build/inc/ncbiconf_unix.h ${SRC_DIR}/ncbi-cxx-toolkit-public/include
 
