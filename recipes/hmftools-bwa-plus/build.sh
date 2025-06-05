@@ -14,15 +14,19 @@ sed -i.bak $'1i\\\n#include <stdlib.h>\n' $SRC_DIR/ext/safestringlib/safeclib/ab
 sed -i.bak $'1i\\\n#include <ctype.h>\n'  $SRC_DIR/ext/safestringlib/safeclib/strcasestr_s.c
 sed -i.bak $'1i\\\n#include <ctype.h>\n'  $SRC_DIR/ext/safestringlib/safeclib/strcasecmp_s.c
 
-## Fall back to memset8_s if memset_s is not defined in macOSX
 if [[ "$(uname)" = "Darwin" ]]; then
+    ## Fall back to memset8_s if memset_s is not defined in macOSX
     sed -i.bak "s#extern errno_t memset_s#//xxx extern errno_t memset_s#g" $SRC_DIR/ext/safestringlib/include/safe_mem_lib.h
     sed -i.bak 's/memset_s/memset8_s/g' $SRC_DIR/ext/safestringlib/include/safe_mem_lib.h
     sed -i.bak 's/memset_s/memset8_s/g' $SRC_DIR/ext/safestringlib/safeclib/memset16_s.c
     sed -i.bak 's/memset_s/memset8_s/g' $SRC_DIR/ext/safestringlib/safeclib/memset32_s.c
     sed -i.bak 's/memset_s/memset8_s/g' $SRC_DIR/ext/safestringlib/safeclib/memset_s.c
     sed -i.bak 's/memset_s/memset8_s/g' $SRC_DIR/ext/safestringlib/safeclib/wmemset_s.c
+    CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
 fi
+
+## Bypass "error: ISO C++17 does not allow 'register' storage class specifier"
+export CXXFLAGS="${CXXFLAGS} -std=c++14"
 
 ## Compile
 make -C $SRC_DIR
