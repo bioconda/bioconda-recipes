@@ -9,10 +9,20 @@ cd $SRC_DIR/ext/safestringlib/
 git checkout 245c4b8 ## Ensure updates to safestringlib do not break compilation
 
 ## Fix error "implicit declaration of function" when compiling safestringlib
-## Using -i.bak to make file backup and $'...' C-style escape syntax prevents sed command failing with MacOSX
+## Using -i.bak to make file backup and $'...' C-style escape syntax prevents sed command failing with macOSX
 sed -i.bak $'1i\\\n#include <stdlib.h>\n' $SRC_DIR/ext/safestringlib/safeclib/abort_handler_s.c
 sed -i.bak $'1i\\\n#include <ctype.h>\n'  $SRC_DIR/ext/safestringlib/safeclib/strcasestr_s.c
 sed -i.bak $'1i\\\n#include <ctype.h>\n'  $SRC_DIR/ext/safestringlib/safeclib/strcasecmp_s.c
+
+## Fall back to memset8_s if memset_s is not defined in macOSX
+if [[ "$(uname)" = "Darwin" ]]; then
+    sed -i.bak "s#extern errno_t memset_s#//xxx extern errno_t memset_s#g" $SRC_DIR/ext/safestringlib/include/safe_mem_lib.h
+    sed -i.bak 's/memset_s/memset8_s/g' $SRC_DIR/ext/safestringlib/include/safe_mem_lib.h
+    sed -i.bak 's/memset_s/memset8_s/g' $SRC_DIR/ext/safestringlib/safeclib/memset16_s.c
+    sed -i.bak 's/memset_s/memset8_s/g' $SRC_DIR/ext/safestringlib/safeclib/memset32_s.c
+    sed -i.bak 's/memset_s/memset8_s/g' $SRC_DIR/ext/safestringlib/safeclib/memset_s.c
+    sed -i.bak 's/memset_s/memset8_s/g' $SRC_DIR/ext/safestringlib/safeclib/wmemset_s.c
+fi
 
 ## Compile
 make -C $SRC_DIR
