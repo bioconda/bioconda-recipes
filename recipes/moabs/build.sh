@@ -18,6 +18,13 @@ sed -i.bak 's|-O3 -pipe -std=c++11|-O3 -pipe -std=c++14|' src/mcomp/Makefile
 sed -i.bak 's|-lpthread|-pthread|' src/mcomp/Makefile
 sed -i.bak 's|-std=c++11|-std=c++14|' src/pefilter/Makefile
 sed -i.bak 's|-lpthread|-pthread|' src/pefilter/Makefile
+sed -i.bak 's|-lpthread|-pthread|' src/bsmap/Makefile
+sed -i.bak 's|-std=c++11|-std=c++14|' src/bseqc2/Makefile
+sed -i.bak 's|-lpthread|-pthread|' src/bseqc2/Makefile
+
+case $(uname -m) in
+	aarch64) sed -i.bak 's|-m64||' src/bsmap/Makefile ;;
+esac
 
 make -j"${CPU_COUNT}"
 make install -C src
