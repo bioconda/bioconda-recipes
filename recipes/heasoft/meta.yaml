@@ -81,10 +81,14 @@ requirements:
 
 test:
   commands:
+    {% if target_platform == "linux-64" %}
     - export HEADAS=$(ls -d "${PREFIX}/x86_64-pc-linux-gnu-libc"*/ | head -n 1)
     - source $HEADAS/headas-init.sh
     - export LHEAPERL=$PREFIX/bin/perl
     - fversion
+    {% else %}
+    - echo "Tests skipped on non-Linux-64 platforms"
+    {% endif %}
 
 about:
   home: https://heasarc.gsfc.nasa.gov/lheasoft/
@@ -112,6 +116,25 @@ about:
     
     For mission-specific functionality (e.g., Swift, NuSTAR, IXPE), additional 
     environment setup may be needed. See the HEAsoft documentation for details.
+
+    **Warning for Xspec users**: The /spectral/modelData directory (~5.9GB) is excluded to reduce
+    package size, rendering Xspec unusable without it. 
+    To enable Xspec:
+    1. Download the HEASoft source tarball for the same version as this package ({{ version }}):
+       ```bash
+       wget https://heasarc.gsfc.nasa.gov/FTP/software/lheasoft/lheasoft{{ version }}/heasoft-{{ version }}src.tar.gz
+       ```
+       Replace {{ version }} with the package version (e.g., 6.35.1). 
+    2. Extract:
+       ```bash
+       tar zxf heasoft-{{ version }}src.tar.gz
+       ```
+    3. Copy the modelData directory:
+       ```bash
+       mkdir -p $CONDA_PREFIX/spectral
+       cp -r heasoft-{{ version }}/Xspec/src/spectral/modelData $CONDA_PREFIX/spectral/
+       ```
+
   doc_url: https://heasarc.gsfc.nasa.gov/docs/software/heasoft/
 
 extra:

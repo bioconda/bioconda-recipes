@@ -1,0 +1,51 @@
+{% set name = "crossfilt" %}
+{% set version = "0.1.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/crossfilt-{{ version }}.tar.gz
+  sha256: 172b846c40c057420416ef7e5030407b4fab021ecbc6c6bb787bce8d6809627b
+
+build:
+  entry_points:
+    - crossfilt-lift = crossfilt.liftover_bam:main
+    - crossfilt-split = crossfilt.split_bam:main
+    - crossfilt-filter = crossfilt.identical_reads:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('crossfilt', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools >=77.0.3
+    - pip
+  run:
+    - python >=3.10
+    - pysam
+    - intervaltree
+
+test:
+  imports:
+    - crossfilt
+  commands:
+    - crossfilt-lift --help
+    - crossfilt-split --help
+    - crossfilt-filter --help
+
+about:
+  summary: "Tools to filter reads causing alignment bias in cross-species genomic comparisons."
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: LICENSE
+  home: "https://github.com/kennethabarr/CrossFilt"
+  dev_url: "https://github.com/kennethabarr/CrossFilt"
+
+extra:
+  recipe-maintainers:
+    - kennethabarr
