@@ -1,0 +1,67 @@
+{% set name = "phynteny_transformer" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 89c1aaad4fc095f5f8b188e40b1a08077f20268ca53104642fa6bdf024293241
+
+build:
+  number: 0
+  entry_points:
+    - generate_training_data=train_phynteny.generate_training_data:main
+    - train_model=train_phynteny.train_phyntenty:main
+    - compute_confidence=train_phynteny.compute_confidence:main
+    - install_models=src.install_models:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - biopython
+    - click
+    - loguru
+    - numpy
+    - pandas
+    - pip
+    - python
+    - scikit-learn
+    - torch >=2.0.0
+    - tqdm
+    - transformers
+  run:
+    - biopython
+    - click
+    - loguru
+    - numpy
+    - pandas
+    - python
+    - scikit-learn
+    - torch >=2.0.0
+    - tqdm
+    - transformers
+
+test:
+  imports:
+    - phynteny_utils
+    - src
+  commands:
+    - generate_training_data --help
+    - train_model --help
+    - compute_confidence --help
+    - install_models --help
+
+about:
+  home: "https://github.com/susiegriggo/Phynteny_transformer"
+  license: MIT
+  license_family: MIT
+  license_file: 
+  summary: "Phynteny: Synteny-based prediction of bacteriophage genes"
+  doc_url: 
+  dev_url: 
+
+extra:
+  recipe-maintainers:
+    - susiegriggo
