@@ -9,9 +9,10 @@ cd $SRC_DIR/ext/safestringlib/
 git checkout 245c4b8 ## Ensure updates to safestringlib do not break compilation
 
 ## Fix error "implicit declaration of function" when compiling safestringlib
-sed -i '1i#include <stdlib.h>' $SRC_DIR/ext/safestringlib/safeclib/abort_handler_s.c
-sed -i '1i#include <ctype.h>'  $SRC_DIR/ext/safestringlib/safeclib/strcasestr_s.c
-sed -i '1i#include <ctype.h>'  $SRC_DIR/ext/safestringlib/safeclib/strcasecmp_s.c
+## Using -i.bak to make file backup and $'...' C-style escape syntax prevents sed command failing with MacOSX
+sed -i.bak $'1i\\\n#include <stdlib.h>\n' $SRC_DIR/ext/safestringlib/safeclib/abort_handler_s.c
+sed -i.bak $'1i\\\n#include <ctype.h>\n'  $SRC_DIR/ext/safestringlib/safeclib/strcasestr_s.c
+sed -i.bak $'1i\\\n#include <ctype.h>\n'  $SRC_DIR/ext/safestringlib/safeclib/strcasecmp_s.c
 
 ## Compile
 make -C $SRC_DIR
