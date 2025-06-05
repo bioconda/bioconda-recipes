@@ -2,7 +2,7 @@
 
 export CPATH="${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-register"
 export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
 
