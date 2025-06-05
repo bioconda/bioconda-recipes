@@ -1,0 +1,38 @@
+{% set version = "1.0.0" %}
+{% set sha256 = "254b68b0e968e3c5a688247dbe7974e48e6f1198a476cdf5118082c40bfc2bb0" %}
+
+package:
+  name: hmftools-bwa-plus
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/hartwigmedical/bwa-plus/archive/refs/tags/bwa-plus-v{{ version }}.tar.gz
+
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("hmftools-bwa-plus", max_pin="x.x") }}
+
+requirements:
+  build:
+    - wget
+    - tar
+    - git
+    - zlib
+    - make
+    - {{ compiler('cxx') }}
+  run:
+    - sambamba >=1.0.1
+
+test:
+  commands:
+    - 'bwa-plus version'
+
+about:
+  home: https://github.com/hartwigmedical/bwa-plus
+  license: MIT
+  license_file: LICENSE
+  summary: bwa-mem with extensions for WiGiTS
