@@ -16,12 +16,7 @@ sed -i "1i#include <ctype.h>"  $SRC_DIR/ext/safestringlib/safeclib/strcasecmp_s.
 ## Compile
 make -C $SRC_DIR
 
-## Move binary to final location and clean up
+## Move binary to final location
 mkdir -p $PREFIX/bin
-chmod +x $SRC_DIR/bwa-plus*
 mv $SRC_DIR/bwa-plus* $PREFIX/bin
-
-## Add aliases
-for binary in $PREFIX/bin/bwa-plus*; do
-    ln -sf $binary $(echo $binary | sed "s/bwa-plus/bwa-mem2/")
-done
+chmod +x $PREFIX/bin/bwa-plus*
