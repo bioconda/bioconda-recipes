@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function cmd {
-local f=$PREFIX/bin/$1
+local f=$PREFIX/bin/$1 1
 local url=$2
 local sha256=$3
 local os=$(uname -s)
