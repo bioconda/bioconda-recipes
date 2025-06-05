@@ -11,7 +11,7 @@ source:
   patches: conda.patch
 
 build:
-  number: 2
+  number: 3
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
@@ -29,19 +29,8 @@ requirements:
     - libboost-python-devel >=1.86,<1.87
     - eigen
     - fftw
-    - glew
-    - glfw
-    - glm
-    - libegl-devel  # [linux]
-    - libgl-devel  # [linux]
-    - libglx-devel  # [linux]
-    - libgles-devel  # [linux]
-    - libxcb  # [linux]
     - libpng
     - libtiff
-    - mesalib  # [linux]
-    - ocl-icd  # [linux]
-    - opencl-headers  # [linux]
     - parasail
     - numpy >=1,<2
     - pandas >=1
@@ -50,10 +39,22 @@ requirements:
     - sqlite >=3,<4
     - openmm >=7  # Officially uses 7.7.0, but relaxes the requirement to use Python >= 3.10
     - qt >=5,<6
+    - qt-wayland >=5,<6
     - pyqt >=5,<6
     - pyqt5-sip
     - voronota
     - zlib
+    # OpenCL
+    - khronos-opencl-icd-loader  # [osx]
+    - ocl-icd  # [linux]
+    - opencl-headers  # [linux]
+    # OpenGL
+    - glew
+    - glfw
+    - glm
+    - libglvnd  # [linux]
+    - libxcb  # [linux]
+    - mesalib  # [linux]
   run:
     - python {{ python }}
     - {{ pin_compatible("networkx") }}
@@ -61,14 +62,13 @@ requirements:
     - {{ pin_compatible("openmm") }}
     - {{ pin_compatible("pandas") }}
     - {{ pin_compatible("scipy") }}
-    - clustalw
-    - libgl  # [linux]
+    - ocl-icd-system  # [linux]
+    - ocl_icd_wrapper_apple  # [osx]
 
 test:
   source_files:
     - examples/scoring/model.pdb
     - examples/scoring/reference.cif.gz
-
   commands:
     - ost -h 2>&1 | grep -q Usage
     - lddt --help 2>&1 | grep -q usage
