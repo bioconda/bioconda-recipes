@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export CPLUS_INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 
@@ -15,7 +17,6 @@ else
 fi
 
 sed -i.bak 's/OPTIMIZE ?= yes/OPTIMIZE ?= no/' Makefile
-sed -i.bak 's|mv mothur ${INSTALL_DIR}/mothur|install -v -m 0755 mothur ${INSTALL_DIR}|' Makefile
 rm -rf *.bak
 
 ### Compiling mothur
