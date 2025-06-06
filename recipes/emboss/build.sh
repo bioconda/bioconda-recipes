@@ -39,4 +39,6 @@ autoreconf -if
 make -j"${CPU_COUNT}"
 make install
 
-${PYTHON} ${RECIPE_DIR}/fix_acd_path.py ${PREFIX}/bin
+cp -rf ${RECIPE_DIR}/fix_acd_path.py .
+chmod +rx ./fix_acd_path.py
+${PYTHON} ./fix_acd_path.py "${PREFIX}/bin"
