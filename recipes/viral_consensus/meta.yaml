@@ -1,38 +1,41 @@
+{% set name = "viral_consensus" %}
 {% set version = "1.0.0" %}
 
 package:
-  name: viral_consensus
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 0
-  run_exports:
-    - {{ pin_subpackage('viral_consensus', max_pin="x.x.x") }}
 
 source:
   url: https://github.com/niemasd/ViralConsensus/archive/refs/tags/{{ version }}.tar.gz
   sha256: ec48dde8a6c4228241bd3e84f94f49dbc5cc98a8055696a8bc9b97835b2982d9
 
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('viral_consensus', max_pin="x") }}
+
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
   host:
     - htslib
+    - libcurl
+    - bzip2
+    - xz
     - zlib
-
-about:
-  home: https://niema.net/ViralConsensus/
-  license: GPL-3.0-or-later
-  license_family: GPL3
-  license_file: LICENSE
-  summary: Fast viral consensus genome reconstruction
-  dev_url: https://github.com/niemasd/ViralConsensus
 
 test:
   commands:
     - viral_consensus --version
+
+about:
+  home: "https://niema.net/ViralConsensus"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Fast viral consensus genome reconstruction."
+  dev_url: "https://github.com/niemasd/ViralConsensus"
 
 extra:
   additional-platforms:
@@ -42,5 +45,5 @@ extra:
     - biotools:viral_consensus
     - doi:10.1093/bioinformatics/btad317
     - doi:10.1093/bioinformatics/btae018
-  maintainers:
+  recipe-maintainers:
     - niemasd
