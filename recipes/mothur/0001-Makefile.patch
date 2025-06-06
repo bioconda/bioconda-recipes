@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index 8eb055f..725ce0b 100644
+index 8eb055f..36eb3ea 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -20,21 +20,21 @@
@@ -9,8 +9,7 @@ index 8eb055f..725ce0b 100644
 -INSTALL_DIR ?= "\"Enter_your_mothur_install_path_here\""
 +INSTALL_DIR ?= "$(PREFIX)/bin"
  
--OPTIMIZE ?= yes
-+OPTIMIZE ?= no
+ OPTIMIZE ?= yes
  USEREADLINE ?= yes
 -USEBOOST ?= no
 -USEHDF5 ?= no
@@ -46,28 +45,18 @@ index 8eb055f..725ce0b 100644
  
  ifeq  ($(strip $(MOTHUR_FILES)),"\"Enter_your_default_path_here\"")
  else
-@@ -105,12 +105,18 @@ endif
- #
- #
- 	VPATH=source/calculators:source/chimera:source/classifier:source/clearcut:source/commands:source/communitytype:source/datastructures:source/engines:source/metastats:source/read:source/svm:source/
-+    source := source
-     skipUchime := source/uchime_src/
-+    skipTestMothur := source/TestMothur/
-+    skipSeqnoise := seqnoise.cpp
+@@ -109,8 +109,8 @@ endif
      subdirs :=  $(sort $(dir $(filter-out  $(skipUchime), $(wildcard source/*/))))
-+    subdirs :=  $(filter-out  $(skipTestMothur), $(subdirs))
      subDirIncludes = $(patsubst %, -I %, $(subdirs))
-+    subDirIncludes += $(patsubst %, -I %, $(source))
      subDirLinking =  $(patsubst %, -L%, $(subdirs))
 -    CXXFLAGS += -I. $(subDirIncludes)
 -    LDFLAGS += $(subDirLinking)
-+    subDirLinking +=  $(patsubst %, -L%, $(source))
 +    CXXFLAGS += -I. -Isource $(subDirIncludes)
 +    LDFLAGS += -Lsource $(subDirLinking)
  
  
  #
-@@ -118,6 +124,8 @@ endif
+@@ -118,6 +118,8 @@ endif
  #
      OBJECTS=$(patsubst %.cpp,%.o,$(wildcard $(addsuffix *.cpp,$(subdirs))))
      OBJECTS+=$(patsubst %.c,%.o,$(wildcard $(addsuffix *.c,$(subdirs))))
@@ -76,12 +65,3 @@ index 8eb055f..725ce0b 100644
      OBJECTS+=$(patsubst %.cpp,%.o,$(wildcard *.cpp))
      OBJECTS+=$(patsubst %.c,%.o,$(wildcard *.c))
  
-@@ -132,7 +140,7 @@ install : mothur
- ifeq  ($(strip $(INSTALL_DIR)),"\"Enter_your_mothur_install_path_here\"")
- else
- 	mkdir -p ${INSTALL_DIR}
--	mv mothur ${INSTALL_DIR}/mothur
-+	install -v -m 0755 mothur ${INSTALL_DIR}
- endif
- 
- 	

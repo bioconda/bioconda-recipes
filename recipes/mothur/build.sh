@@ -4,10 +4,7 @@ export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
-	export LDFLAGS="${LDFLAGS} -isysroot $(shell xcrun --show-sdk-path)"
-	export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
-	export CPPFLAGS="${CPPFLAGS} -isysroot $(shell xcrun --show-sdk-path)"
-	export CPPFLAGS="${CPPFLAGS} -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
+	export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names"
 	sed -i.bak 's/-std=c++14/-std=c++14 -stdlib=libc++/' Makefile
  	sed -i.bak 's/-std=c++14/-std=c++14 -stdlib=libc++/' source/uchime_src/makefile
 else
@@ -17,9 +14,15 @@ else
 	export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 fi
 
+sed -i.bak 's/OPTIMIZE ?= yes/OPTIMIZE ?= no/' Makefile
+sed -i.bak 's|mv mothur ${INSTALL_DIR}/mothur|install -v -m 0755 mothur ${INSTALL_DIR}|' Makefile
+rm -rf *.bak
+
 ### Compiling mothur
 make clean
+
 make CXX="${CXX}" -j"${CPU_COUNT}"
+
 make install
 install -v -m 0755 uchime "${PREFIX}/bin"
 
