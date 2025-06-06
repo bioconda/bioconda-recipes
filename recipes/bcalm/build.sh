@@ -3,7 +3,7 @@
 export CPATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-implicit-function-declaration"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
 # we can't build bcalm with avaible gatb, link trouble
@@ -18,10 +18,10 @@ rm -rf *.bak
 
 # avoid gatb example install
 if [[ "$(uname -s)" == "Darwin" ]]; then
-	sed -i '' -e "s/.*INSTALL.*examples.*/#&/" gatb-core/gatb-core/CMakeLists.txt
+	sed -i.bak "s/.*INSTALL.*examples.*/#&/" gatb-core/gatb-core/CMakeLists.txt
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
-	sed -i '' -e "s/.*INSTALL.*examples.*/#&/" gatb-core/gatb-core/CMakeLists.txt
+	sed -i.bak "s/.*INSTALL.*examples.*/#&/" gatb-core/gatb-core/CMakeLists.txt
 	export CONFIG_ARGS=""
 fi
 
