@@ -7,7 +7,7 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
 	export LDFLAGS="${LDFLAGS} -isysroot $(shell xcrun --show-sdk-path)"
 	export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
 	export CPPFLAGS="${CPPFLAGS} -isysroot $(shell xcrun --show-sdk-path)"
-	export CPPFLAGS="${C{{FLAGS} -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
+	export CPPFLAGS="${CPPFLAGS} -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
 	sed -i.bak 's/-std=c++14/-std=c++14 -stdlib=libc++/' Makefile
  	sed -i.bak 's/-std=c++14/-std=c++14 -stdlib=libc++/' source/uchime_src/makefile
 else
