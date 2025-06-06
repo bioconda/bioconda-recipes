@@ -4,7 +4,7 @@ export CPATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration -Wno-incompatible-function-pointer-types"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
 # we can't build bcalm with avaible gatb, link trouble
