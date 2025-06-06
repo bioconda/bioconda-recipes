@@ -3,8 +3,9 @@
 set -exo pipefail
 
 # Prevent build failures due to insufficient memory in the CI environment
+# Use parallel builds because serial builds on osx-arm64 sometimes cause errors
 if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm64" ]]; then
-  export CPU_COUNT=1
+  export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
 fi
 
 if [[ "$(uname)" == "Linux" ]]; then
@@ -75,3 +76,4 @@ if [[ "${build_platform}" != "linux-aarch64" ]]; then
 fi
 
 make install
+cd "${SRC_DIR}" && rm -rf build
