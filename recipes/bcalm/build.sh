@@ -3,7 +3,8 @@
 export CPATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-implicit-function-declaration"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
 # we can't build bcalm with avaible gatb, link trouble
@@ -29,5 +30,6 @@ fi
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DKSIZE_LIST="32 64 96 128 160 192" -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-Wno-dev -Wno-deprecated --no-warn-unused-cli "${CONFIG_ARGS}"
+	-DCMAKE_C_COMPILER="${CC}" -DCMAKE_C_FLAGS="${CFLAGS}" -Wno-dev \
+	-Wno-deprecated --no-warn-unused-cli "${CONFIG_ARGS}"
 cmake --build build --clean-first --target install -j "${CPU_COUNT}"
