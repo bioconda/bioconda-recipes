@@ -7,7 +7,7 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 export CFLAGS="${CFLAGS} -O3"
 
 if [[ $(uname -s) == "Darwin" ]] ; then
-  export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+  export CPPFLAGS="${CPPFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
 
 pushd r/
