@@ -5,9 +5,12 @@ export LIBPATH="-L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
-	export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names"
-	sed -i.bak 's/-std=c++14/-stdlib=libc++ -std=c++14/' Makefile
- 	sed -i.bak 's/-std=c++14/-stdlib=libc++ -std=c++14/' source/uchime_src/makefile
+	export LDFLAGS="${LDFLAGS} -isysroot $(shell xcrun --show-sdk-path)"
+	export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
+	export CXXFLAGS="${CXXFLAGS} -isysroot $(shell xcrun --show-sdk-path)"
+	export CXXFLAGS="${CXXFLAGS} -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
+	sed -i.bak 's/-std=c++14/-std=c++14 -stdlib=libc++/' Makefile
+ 	sed -i.bak 's/-std=c++14/-std=c++14 -stdlib=libc++/' source/uchime_src/makefile
 else
 	### Dumping preset flags because they break the build process on linux
 	# Linker flags
