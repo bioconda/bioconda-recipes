@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -xe
+
 export CPATH=${PREFIX}/include
 #Define the install folder and binary folder and create them
 INSTALL_FOLDER=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
@@ -23,7 +26,7 @@ cp bin/platanus $INSTALL_FOLDER/bin && cp bin/GapCloser $INSTALL_FOLDER/bin && c
 cp -r $INSTALL_FOLDER/bin/* $BIN_FOLDER/
 
 #Compile last and copy its binaries to BIN_FOLDER
-cd $BIN_FOLDER/last/ && make clean && make -j ${CPU_COUNT} && cd ..
+cd $BIN_FOLDER/last/ && make clean && CXXFLAGS="${CXXFLAGS}" make -j ${CPU_COUNT} && cd ..
 cp -t $BIN_FOLDER $BIN_FOLDER/last/bin/*
 
 #Give permissions to test folder in order to run tests if required
