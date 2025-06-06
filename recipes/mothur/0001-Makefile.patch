@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index 8eb055f..36eb3ea 100644
+index 8eb055f..d20d02c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -20,21 +20,21 @@
@@ -40,8 +40,8 @@ index 8eb055f..36eb3ea 100644
  
 -CXXFLAGS += -std=c++11 -pthread -DVERSION=${VERSION} -DRELEASE_DATE=${RELEASE_DATE}
 -LDFLAGS += -std=c++11 -pthread
-+CXXFLAGS += -std=c++14 -pthread -DVERSION=${VERSION} -DRELEASE_DATE=${RELEASE_DATE} -I$(PREFIX)/include
-+LDFLAGS += -std=c++14 -pthread -L$(PREFIX)/lib
++CXXFLAGS += -I$(PREFIX)/include -std=c++14 -pthread -DVERSION=${VERSION} -DRELEASE_DATE=${RELEASE_DATE}
++LDFLAGS += -L$(PREFIX)/lib -std=c++14 -pthread
  
  ifeq  ($(strip $(MOTHUR_FILES)),"\"Enter_your_default_path_here\"")
  else
@@ -56,12 +56,12 @@ index 8eb055f..36eb3ea 100644
  
  
  #
-@@ -118,6 +118,8 @@ endif
- #
-     OBJECTS=$(patsubst %.cpp,%.o,$(wildcard $(addsuffix *.cpp,$(subdirs))))
-     OBJECTS+=$(patsubst %.c,%.o,$(wildcard $(addsuffix *.c,$(subdirs))))
-+    OBJECTS+=$(patsubst %.cpp,%.o,$(wildcard source/*.cpp))
-+    OBJECTS+=$(patsubst %.cpp,%.o,$(wildcard source/*.c))
-     OBJECTS+=$(patsubst %.cpp,%.o,$(wildcard *.cpp))
-     OBJECTS+=$(patsubst %.c,%.o,$(wildcard *.c))
+@@ -132,7 +132,7 @@ install : mothur
+ ifeq  ($(strip $(INSTALL_DIR)),"\"Enter_your_mothur_install_path_here\"")
+ else
+ 	mkdir -p ${INSTALL_DIR}
+-	mv mothur ${INSTALL_DIR}/mothur
++	install -v -m 0755 mothur ${INSTALL_DIR}
+ endif
  
+ 	
