@@ -6,8 +6,8 @@ export LIBPATH="-L${PREFIX}/lib"
 if [[ "$(uname -s)" == "Darwin" ]]; then
 	export LDFLAGS="${LDFLAGS} -isysroot $(shell xcrun --show-sdk-path)"
 	export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
-	export CXXFLAGS="${CXXFLAGS} -isysroot $(shell xcrun --show-sdk-path)"
-	export CXXFLAGS="${CXXFLAGS} -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
+	export CPPFLAGS="${CPPFLAGS} -isysroot $(shell xcrun --show-sdk-path)"
+	export CPPFLAGS="${C{{FLAGS} -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
 	sed -i.bak 's/-std=c++14/-std=c++14 -stdlib=libc++/' Makefile
  	sed -i.bak 's/-std=c++14/-std=c++14 -stdlib=libc++/' source/uchime_src/makefile
 else
@@ -16,9 +16,6 @@ else
 	unset LDFLAGS
 	export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 fi
-
-#sed -i.bak 's/OPTIMIZE ?= yes/OPTIMIZE ?= no/' Makefile
-#rm -rf *.bak
 
 ### Compiling mothur
 make clean
