@@ -1,16 +1,21 @@
 {% set name = "ctyper" %}
 {% set version = "1.0.1" %}
 
+# IMPORTANT: For bioconda::htslib 1.21 (built with a newer gcc) to be used,
+# build this recipe with channel ordering as follows:
+# conda build recipes/ctyper/ -c bioconda -c conda-forge
+
+
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/ChaissonLab/Ctyper/archive/refs/tags/v{{version}}.tar.gz 
+  url: https://github.com/ChaissonLab/Ctyper/archive/refs/tags/v{{ version }}.tar.gz
   sha256: f1651a80f437cb7f9e0f3b8a5b384eb24bd240cb001599d2a025b7b088930e1a
 
 build:
-  number: 0
+  number: 1
   skip: True [osx]
   run_exports:
     - {{ pin_subpackage('ctyper', max_pin='x') }}
@@ -22,13 +27,13 @@ requirements:
     - {{ compiler('cxx') }}
   host:
     - zlib
-    - htslib
+    - bioconda::htslib >=1.21  # Pin to version 1.21 (this package must come from bioconda)
     - boost-cpp
     - eigen
   run:
-    - htslib
+    - bioconda::htslib >=1.21  # Use the same pinning for runtime
     - eigen
-    
+
 test:
   commands:
     - ctyper | grep 'Usage'
@@ -43,3 +48,4 @@ about:
 extra:
   additional-platforms:
     - linux-aarch64
+
