@@ -7,9 +7,12 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 export CFLAGS="${CFLAGS} -O3"
 export LC_ALL="en_US.UTF-8"
 
-if [[ $(uname -s) == "Darwin" ]] ; then
-  sed -i.bak 's|$CXXFLAGS $LDFLAGS $HWY_CFLAGS|$CXXFLAGS -O3 -D_LIBCPP_DISABLE_AVAILABILITY -std=libc++ $LDFLAGS $HWY_CFLAGS|' r/configure
-  rm -rf r/*.bak
+if [[ $(uname -s) == "Darwin" ]]; then
+  sed -i.bak 's|-std=c++17|-O3 -std=c++17 -std=libc++ -D_LIBCPP_DISABLE_AVAILABILITY|' r/src/Makevars.in
+  rm -rf r/src/*.bak
+else
+  sed -i.bak 's|-std=c++17|-O3 -std=c++17|' r/src/Makevars.in
+  rm -rf r/src/*.bak
 fi
 
 pushd r/
