@@ -6,6 +6,8 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-format-overflow"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
+mkdir -p "${PREFIX}/bin"
+
 case $(uname -m) in
 	aarch64|arm64) sed -i.bak 's|-msse2 -mfpmath=sse||' mk && rm -rf *.bak ;;
 esac
