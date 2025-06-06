@@ -1,5 +1,7 @@
---- Makefile.org	2021-07-16 10:32:49.601483436 +0000
-+++ Makefile	2021-07-19 14:38:06.132941601 +0000
+diff --git a/Makefile b/Makefile
+index 8eb055f..d20d02c 100644
+--- a/Makefile
++++ b/Makefile
 @@ -20,21 +20,21 @@
  # GSL_INCLUDE_DIR - location of GSL include files
  # MOTHUR_FILES - The MOTHUR_FILES parameter is optional, but allows you to set a default location for mothur to look for input files it can't find. This is often used for reference files you want to store in one location separate from your data.
@@ -7,8 +9,7 @@
 -INSTALL_DIR ?= "\"Enter_your_mothur_install_path_here\""
 +INSTALL_DIR ?= "$(PREFIX)/bin"
  
--OPTIMIZE ?= yes
-+OPTIMIZE ?= no
+ OPTIMIZE ?= yes
  USEREADLINE ?= yes
 -USEBOOST ?= no
 -USEHDF5 ?= no
@@ -32,4 +33,35 @@
 +GSL_INCLUDE_DIR ?= "$(PREFIX)/include/gsl"
  MOTHUR_FILES="\"Enter_your_default_path_here\""
  MOTHUR_TOOLS="\"Enter_your_mothur_tools_path_here\""
- VERSION = "\"1.45.2\""
+ VERSION = "\"1.48.3\""
+@@ -50,8 +50,8 @@ ifeq  ($(strip $(OPTIMIZE)),yes)
+     CXXFLAGS += -O3
+ endif
+ 
+-CXXFLAGS += -std=c++11 -pthread -DVERSION=${VERSION} -DRELEASE_DATE=${RELEASE_DATE}
+-LDFLAGS += -std=c++11 -pthread
++CXXFLAGS += -I$(PREFIX)/include -std=c++14 -pthread -DVERSION=${VERSION} -DRELEASE_DATE=${RELEASE_DATE}
++LDFLAGS += -L$(PREFIX)/lib -std=c++14 -pthread
+ 
+ ifeq  ($(strip $(MOTHUR_FILES)),"\"Enter_your_default_path_here\"")
+ else
+@@ -109,8 +109,8 @@ endif
+     subdirs :=  $(sort $(dir $(filter-out  $(skipUchime), $(wildcard source/*/))))
+     subDirIncludes = $(patsubst %, -I %, $(subdirs))
+     subDirLinking =  $(patsubst %, -L%, $(subdirs))
+-    CXXFLAGS += -I. $(subDirIncludes)
+-    LDFLAGS += $(subDirLinking)
++    CXXFLAGS += -I. -Isource $(subDirIncludes)
++    LDFLAGS += -Lsource $(subDirLinking)
+ 
+ 
+ #
+@@ -132,7 +132,7 @@ install : mothur
+ ifeq  ($(strip $(INSTALL_DIR)),"\"Enter_your_mothur_install_path_here\"")
+ else
+ 	mkdir -p ${INSTALL_DIR}
+-	mv mothur ${INSTALL_DIR}/mothur
++	install -v -m 0755 mothur ${INSTALL_DIR}
+ endif
+ 
+ 	
