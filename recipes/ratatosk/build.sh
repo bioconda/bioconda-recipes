@@ -23,7 +23,7 @@ esac
 
 if [[ $(uname -s) == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
-	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
+	export CXXFLAGS="${CXXFLAGS} -std=libc++"
 else
 	export CONFIG_ARGS=""
 fi
