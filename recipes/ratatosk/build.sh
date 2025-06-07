@@ -17,6 +17,10 @@ sed -i.bak 's|-std=c++11|-O3 -std=c++14|' Bifrost/CMakeLists.txt
 rm -rf *.bak
 rm -rf Bifrost/*.bak
 
+case $(uname -m) in
+	aarch64|arm64) sed -i.bak 's|-mno-avx2||' Bifrost/CMakeLists.txt && rm -rf Bifrost/*.bak ;;
+esac
+
 if [[ $(uname -s) == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
