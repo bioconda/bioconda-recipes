@@ -11,11 +11,11 @@ export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64"
 sed -i.bak 's|VERSION 2.8.12|VERSION 3.5|' CMakeLists.txt
 sed -i.bak 's|-std=c11|-O3 -std=c11|' CMakeLists.txt
 sed -i.bak 's|-std=c++11|-O3 -std=c++14|' CMakeLists.txt
-sed -i.bak 's|VERSION 2.8.12|VERSION 3.5|' bifrost/CMakeLists.txt
-sed -i.bak 's|-std=c11|-O3 -std=c11|' bifrost/CMakeLists.txt
-sed -i.bak 's|-std=c++11|-O3 -std=c++14|' bifrost/CMakeLists.txt
+sed -i.bak 's|VERSION 2.8.12|VERSION 3.5|' Bifrost/CMakeLists.txt
+sed -i.bak 's|-std=c11|-O3 -std=c11|' Bifrost/CMakeLists.txt
+sed -i.bak 's|-std=c++11|-O3 -std=c++14|' Bifrost/CMakeLists.txt
 rm -rf *.bak
-rm -rf bifrost/*.bak
+rm -rf Bifrost/*.bak
 
 if [[ $(uname -s) == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
