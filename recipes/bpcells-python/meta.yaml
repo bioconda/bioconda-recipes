@@ -1,0 +1,52 @@
+{% set name = "bpcells-python" %}
+{% set version = "0.3.0rc2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/bpcells-{{ version }}.tar.gz
+  sha256: ae8eb70c90f9c9a372ce118db608ffa10a643a2161876ac1fb0588e82552372a
+
+build:
+  number: 0
+  skip: True  # [py < 38]
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage("bpcells-python", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pybind11 >=2.10.0
+    - setuptools-scm >=7.0
+    - pip
+  run:
+    - python
+    - numpy
+    - pandas
+    - scipy
+
+test:
+  imports:
+    - bpcells
+    - bpcells-cpp
+
+about:
+  summary: "BPCells python bindings."
+  license: "MPL-2.0 AND Apache-2.0 AND MIT"
+  license_file:
+    - src/vendor/Spectra/LICENSE
+    - src/vendor/libdivide/LICENSE.txt
+    - src/vendor/dary_heap/LICENSE
+    - src/vendor/highway/LICENSE
+    - src/vendor/highfive/LICENSE
+  home: "https://github.com/bnprks/BPCells"
+  dev_url: "https://github.com/bnprks/BPCells"
+  doc_url: "https://bnprks.github.io/BPCells/python/index.html"
