@@ -1,25 +1,32 @@
+{% set name = "treeshrink" %}
 {% set version = "1.3.9" %}
 
 package:
-  name: treeshrink
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 0
-  noarch: generic
 
 source:
   url: https://github.com/uym2/TreeShrink/archive/refs/tags/v{{ version }}.tar.gz
   sha256: 460894699250b7fc1a7096d84bebb0b52b5551612e9faa283c600a15d3f756a3
+  patches:
+    - 0001-python-3.10.patch
+
+build:
+  number: 1
+  noarch: python
+  script:
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+    - ln -sf ${PREFIX}/bin/run_treeshrink.py ${PREFIX}/bin/run_treeshrink
+  run_exports:
+    - {{ pin_subpackage("treeshrink", max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.6,<=3.9.16
+    - python >=3.6
+    - pip
     - setuptools
-    - r-base
-
   run:
-    - python >=3.6,<=3.9.16
+    - python >=3.6
     - r-base
     - r-bms >=0.3.5
 
@@ -31,8 +38,9 @@ test:
     - run_treeshrink -h
 
 about:
-  home: https://github.com/uym2/TreeShrink
+  home: "https://github.com/uym2/TreeShrink"
   license_file: LICENSE
-  license: GPL-3
-  license_family: GPL
-  summary: an algorithm for detecting (and removing) abnormally long branches in one or more phylogenetic trees
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  summary: "An algorithm for detecting (and removing) abnormally long branches in one or more phylogenetic trees."
+  dev_url: "https://github.com/uym2/TreeShrink"
