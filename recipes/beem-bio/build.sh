@@ -4,4 +4,5 @@ set -xe
 
 make CC=${CXX} BeEM
 
-cp BeEM ${PREFIX}/bin 
+mkdir -p "${PREFIX}/bin"
+cp BeEM "${PREFIX}/bin"
