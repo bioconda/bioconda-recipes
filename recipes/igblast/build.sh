@@ -46,7 +46,7 @@ if [[ "$uname_str" == "Linux" || ("$uname_str" == "Darwin" && "$arch_str" == "ar
  	cd c++
 
 	./configure --with-z="${PREFIX}" \
-		--with-bz2="${PREFIX}" --with-vdb="${PREFIX}" \
+		--with-bz2="${PREFIX}" \
 		CC="${CC}" CFLAGS="${CFLAGS}" CXX="${CXX}" \
 		CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" \
 		CPPFLAGS="${CPPFLAGS}" --with-strip --without-debug \
