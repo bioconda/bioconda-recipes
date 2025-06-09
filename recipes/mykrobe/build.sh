@@ -21,6 +21,11 @@ sed -i.bak 's/LDFLAGS  =/#LDFLAGS  =/' libs/htslib/Makefile
 # gcc is hard-coded into Makefile. Comment out to use the conda gcc
 sed -i.bak 's/^CC/#CC/' libs/htslib/Makefile
 
+sed -i.bak 's|-lpthread|-L$(PREFIX)/lib -pthread|' Makefile
+sed -i.bak 's|-std=c99|-std=c11|' Makefile
+sed -i.bak 's|-D_USESAM=1|-D_USESAM=1 -I$(PREFIX)/include|' Makefile
+rm -rf *.bak
+
 # point some -lz calls to zlib location
 for make_file in libs/string_buffer/Makefile $(find libs/seq_file -name Makefile) $(find libs/seq-align -name Makefile) Makefile; do
     sed -i.bak 's/-lz/-lz $(LDFLAGS)/' "$make_file"
@@ -30,8 +35,8 @@ if [[ $(arch) != "x86_64" ]]; then
     sed -i.bak 's/-m64//' Makefile
 fi
 
-make MAXK=31 -j"${CPU_COUNT}"
-cp -f bin/mccortex31 ../src/mykrobe/cortex/
+make MAXK=31 CC="${CC}" -j"${CPU_COUNT}"
+install -v -m 755 bin/mccortex31 ../src/mykrobe/cortex/
 cd ../ || exit 1
 
 sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
