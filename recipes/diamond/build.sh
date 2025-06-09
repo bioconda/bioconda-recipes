@@ -4,7 +4,7 @@ export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3 -Wno-attributes -Wno-volatile -Wno-inconsistent-missing-override -Wno-deprecated-declarations -Wno-format"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-attributes -Wno-volatile -Wno-inconsistent-missing-override -Wno-deprecated-declarations -Wno-format -Wno-unknown-warning-option"
 export CMAKE_C_COMPILER="${CC}"
 export CMAKE_CXX_COMPILER="${CXX}"
 
@@ -13,10 +13,6 @@ rm -rf *.bak
 
 cd ncbi-cxx-toolkit-public
 export CMAKE_ARGS="-S src -B . -DCMAKE_BUILD_TYPE=Release -Wno-dev -Wno-deprecated --no-warn-unused-cli"
-
-sed -i.bak 's|"-msse4.2"|""|' src/build-system/cmake/toolchains/*.cmake
-sed -i.bak 's|"-msse4.2"|""|' src/build-system/cmake/toolchains/*.in
-rm -rf src/build-system/cmake/toolchains/*.bak
 
 OS=$(uname -s)
 ARCH=$(uname -m)
@@ -29,8 +25,14 @@ elif [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
 	export CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
 	export CONFIG_ARGS="-DAARCH64=ON -DX86=OFF -DBUILD_STATIC=ON"
+	sed -i.bak 's|"-msse4.2"|""|' src/build-system/cmake/toolchains/*.cmake
+	sed -i.bak 's|"-msse4.2"|""|' src/build-system/cmake/toolchains/*.in
+	rm -rf src/build-system/cmake/toolchains/*.bak
 else
 	export CONFIG_ARGS="-DX86=ON -DBUILD_STATIC=ON -DWITH_AVX512=ON"
+	sed -i.bak 's|"-msse4.2"|""|' src/build-system/cmake/toolchains/*.cmake
+	sed -i.bak 's|"-msse4.2"|""|' src/build-system/cmake/toolchains/*.in
+	rm -rf src/build-system/cmake/toolchains/*.bak
 fi
 
 ./cmake-configure --without-debug --with-build-root=build \
