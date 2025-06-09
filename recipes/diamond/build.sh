@@ -14,6 +14,10 @@ rm -rf *.bak
 cd ncbi-cxx-toolkit-public
 export CMAKE_ARGS="-S src -B . -DCMAKE_BUILD_TYPE=Release -Wno-dev -Wno-deprecated --no-warn-unused-cli"
 
+sed -i.bak 's|"-msse4.2"|""|' src/build-system/cmake/toolchains/*.cmake
+sed -i.bak 's|"-msse4.2"|""|' src/build-system/cmake/toolchains/*.in
+rm -rf src/build-system/cmake/toolchains/*.bak
+
 OS=$(uname -s)
 ARCH=$(uname -m)
 
