@@ -26,7 +26,7 @@ for make_file in libs/string_buffer/Makefile $(find libs/seq_file -name Makefile
     sed -i.bak 's/-lz/-lz $(LDFLAGS)/' "$make_file"
 done
 
-if [ $(arch) != "x86_64" ]; then
+if [[ $(arch) != "x86_64" ]]; then
     sed -i.bak 's/-m64//' Makefile
 fi
 
@@ -34,6 +34,9 @@ make MAXK=31 -j"${CPU_COUNT}"
 cp -f bin/mccortex31 ../src/mykrobe/cortex/
 cd ../ || exit 1
 
-"${PYTHON}" -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+rm -rf *.bak
+
+${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
 mykrobe panels update_metadata
 mykrobe panels update_species all
