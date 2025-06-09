@@ -3,8 +3,8 @@
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-deprecated-declarations -Wno-format"
-export CXXFLAGS="${CXXFLAGS} -O3 -Wno-attributes -Wno-volatile -Wno-inconsistent-missing-override"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-attributes -Wno-volatile -Wno-inconsistent-missing-override -Wno-deprecated-declarations -Wno-format"
 export CMAKE_C_COMPILER="${CC}"
 export CMAKE_CXX_COMPILER="${CXX}"
 
@@ -33,16 +33,15 @@ else
 	export CONFIG_ARGS="-DX86=ON -DBUILD_STATIC=ON -DWITH_AVX512=ON"
 fi
 
-./cmake-configure --without-debug \
-	--with-projects="objtools/blast/seqdb_reader;objtools/blast/blastdb_format" \
- 	--with-build-root=build
+./cmake-configure --without-debug --with-build-root=build \
+	--with-projects="objtools/blast/seqdb_reader;objtools/blast/blastdb_format"
 
 cd build
-cmake --build build -j"${CPU_COUNT}"
+cmake --build build --clean-first -j"${CPU_COUNT}"
 
-cp -rf ${SRC_DIR}/ncbi-cxx-toolkit-public/build/inc/ncbiconf_unix.h ${SRC_DIR}/ncbi-cxx-toolkit-public/include
+cp -rf "${SRC_DIR}/ncbi-cxx-toolkit-public/build/inc/ncbiconf_unix.h" "${SRC_DIR}/ncbi-cxx-toolkit-public/include"
 
-cd ${SRC_DIR}
+cd "${SRC_DIR}"
 
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DWITH_ZSTD=ON \
