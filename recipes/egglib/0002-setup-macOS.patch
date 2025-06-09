@@ -1,0 +1,31 @@
+diff --git a/setup.py b/setup.py
+index b090ee3..8aa9f09 100644
+--- a/setup.py
++++ b/setup.py
+@@ -54,7 +54,7 @@ random = setuptools.Extension('egglib.random',
+                     sources = [str(cpath.joinpath('randomwrapper').with_suffix('.c'))],
+                     language='c',
+                     libraries = [lib],
+-                    extra_link_args = ["-Wl,-rpath=$ORIGIN/."])
++                    extra_link_args = ["-Wl,-rpath,${PREFIX}/lib", "-headerpad_max_install_names"])
+ 
+ binding = setuptools.Extension('egglib._eggwrapper',
+                     sources=glob.glob(str(pathlib.Path(cpppath, '*.cpp'))),
+@@ -62,7 +62,7 @@ binding = setuptools.Extension('egglib._eggwrapper',
+                     swig_opts=['-python', '-c++', '-builtin', '-Wall'],
+                     include_dirs = [cpath],
+                     libraries = [lib],
+-                    extra_link_args = ["-Wl,-rpath=$ORIGIN/."])
++                    extra_link_args = ["-Wl,-rpath,${PREFIX}/lib", "-headerpad_max_install_names"])
+ 
+ extensions = [libegglib, binding, random]
+ if HTSLIB != '0':
+@@ -70,7 +70,7 @@ if HTSLIB != '0':
+                         sources = [str(cpath.joinpath('vcfwrapper').with_suffix('.c'))],
+                         language='c',
+                         libraries = [lib, 'hts'],
+-                        extra_link_args = ["-Wl,-rpath=$ORIGIN/.."])
++                        extra_link_args = ["-Wl,-rpath,${PREFIX}/lib", "-headerpad_max_install_names"])
+     extensions.append(vcf)
+ 
+ # set DEBUG mode
