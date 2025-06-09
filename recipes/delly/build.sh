@@ -1,5 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
-mkdir -p "${PREFIX}/bin"
-make all CXX=$CXX CXXFLAGS="-I${PREFIX}/include -L${PREFIX}/lib"
-cp src/delly "${PREFIX}/bin"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
+make CXX="${CXX}" prefix="${PREFIX}" \
+	CXXFLAGS="${CXXFLAGS} -D__STDC_FORMAT_MACROS" \
+	-j"${CPU_COUNT}" install

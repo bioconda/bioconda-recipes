@@ -1,6 +1,5 @@
 {% set name = "IQTREE" %}
-{% set version = "2.3.4" %}
-{% set sha256 = "3c348a937593262c829d47f4a63cf7de1c8230efcdccccc0885a1826eed66172" %}
+{% set version = "2.4.0" %}
 
 package:
   name: {{ name|lower }}
@@ -12,29 +11,41 @@ build:
     - {{ pin_subpackage('iqtree', max_pin="x") }}
 
 source:
-  - url: https://github.com/iqtree/iqtree2/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: {{ sha256 }}
-  - url: https://github.com/tothuhien/lsd2/archive/refs/tags/v.2.4.1.tar.gz
-    sha256: 3d0921c96edb8f30498dc8a27878a76d785516043fbede4a72eefd84b5955458
-    folder: lsd2
+  # using git_url rather than tarball due to use of 2 submodules by iqtree (lsd2, cmaple)
+  # Previously, the submodules were specified as source tarballs themselves
+  # But the submodules weren't updated when iqtree was, hence switch to git_url
+  # see discussion https://github.com/bioconda/bioconda-recipes/pull/49360/files#r1686415630
+  git_url: https://github.com/iqtree/iqtree2.git
+  git_rev: v{{ version }}
+  sha256: unused
+  patches:
+    - patch
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - make
     - cmake
+    - ninja
   host:
     - libgomp  # [linux]
     - llvm-openmp  # [osx]
-    - ld64  # [osx]
     - boost-cpp
     - eigen
-    - zlib
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
 
 test:
+  source_files:
+    - cmaple/example/input.fa
   commands:
     - iqtree
     - iqtree2
+    # Mulled builds don't work with source_files
+    - iqtree --pathogen-force -s cmaple/example/input.fa  # [osx]
+    # Test that the CMAPLE submodule is working
+    - grep -v "not compiled with CMAPLE integrated" cmaple/example/input.fa.log  # [osx]
 
 about:
   home: "http://www.iqtree.org"
@@ -46,12 +57,20 @@ about:
   doc_url: "http://www.iqtree.org/doc"
 
 extra:
+  skip-lints:
+    # uses submodules
+    - uses_vcs_url
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
-    - biotools:iq-tree
+    - biotools:iqtree
     - doi:10.1093/molbev/msu300
     - doi:10.1038/nmeth.4285
     - doi:10.1093/molbev/msx281
     - doi:10.1093/sysbio/syae008
+    # cmaple
+    - doi:10.1093/molbev/msae134
     - usegalaxy-eu:{{ name|lower }}
+  recipe-maintainers:
+    - corneliusroemer

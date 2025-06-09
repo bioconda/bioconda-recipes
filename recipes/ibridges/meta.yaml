@@ -1,0 +1,52 @@
+{% set name = "ibridges" %}
+{% set version = "1.5.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/ibridges-{{ version }}.tar.gz
+  sha256: 541f453bf08076deeb0f436d50c684c07cca952cff5ad97a31e36d9fd4dcde4f
+
+build:
+  number: 0
+  noarch: python
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  entry_points:
+    - ibridges = ibridges.cli.__main__:main
+  run_exports:
+    - {{ pin_subpackage('ibridges', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools >=61.0
+    - setuptools-scm >=6.2
+    - pip
+  run:
+    - python >=3.8
+    - python-irodsclient >=2.0.0
+    - tqdm
+    - importlib-metadata >=4.6  # [py < 310]
+
+test:
+  imports:
+    - ibridges
+  commands:
+    - ibridges --help
+
+about:
+  home: "https://github.com/iBridges-for-iRODS/iBridges"
+  summary: "Package for accessing data and metadata on iRods servers."
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: "https://ibridges.readthedocs.io/en/latest"
+  dev_url: "https://github.com/iBridges-for-iRODS/iBridges"
+
+extra:
+  recipe-maintainers:
+    - Christine Staiger
