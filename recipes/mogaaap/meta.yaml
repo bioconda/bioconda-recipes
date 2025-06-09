@@ -1,0 +1,44 @@
+{% set name = "MoGAAAP" %}
+{% set version = "1.0.2" %}
+{% set sha256 = "5e6c4dd8f33159de9acce1a37ab88489883600e9dde650be06615a82b18fd9bd" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  noarch: python
+  script: python -m pip install --no-deps --ignore-installed . -vvv
+  run_exports:
+    - {{ pin_subpackage('mogaaap', max_pin="x") }}
+  number: 0
+
+source:
+  - url: https://github.com/dirkjanvw/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+
+requirements:
+  host:
+    - pip
+    - python =3.11
+    - poetry-core >=1.0.0
+  run:
+    - apptainer >=1.3
+    - python =3.11
+    - snakemake >=8.0.0
+
+test:
+  commands:
+    - MoGAAAP --version
+    - MoGAAAP --help
+
+about:
+  summary: "MoGAAAP: Modular Genome Assembly, Annotation and quality Assessment Pipeline"
+  home: https://github.com/dirkjanvw/MoGAAAP
+  license: GPL-3.0-only
+  license_family: GPL
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - dirkjanvw
