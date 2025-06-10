@@ -15,6 +15,7 @@ files=(polap
 	polap-data-cflye
 	polap-data-dflye
 	polap-data-taxon
+	polap-figure-latex.sh
 	polap.sh)
 
 for i in "${files[@]}"; do
