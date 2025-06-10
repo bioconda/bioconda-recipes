@@ -20,8 +20,8 @@ rm -rf src/bowtie/*.bak
 sed -i.bak 's|gcc|$(CC)|' samtools-0.1.9/Makefile
 rm -rf samtools-0.1.9/*.bak
 
-if [[ "${OS}" == "Darwin" ]]; then
-  export CFLAGS="${CFLAGS} -fcommon -lstdc++"
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  export CXX="${CXX} -fcommon -lstdc++"
 fi
 
 make CXX="${CXX}" -j"${CPU_COUNT}"
