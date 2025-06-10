@@ -20,4 +20,4 @@ cp -rf resources/Data/FASTA/human_gut_metagenome.fasta $INSTALL_FOLDER/resources
 
 ls -l $INSTALL_FOLDER
 ls -l $BIN_FOLDER
-cp -f $INSTALL_FOLDER/m-party.py $BIN_FOLDER/m-party
+ln -sf $INSTALL_FOLDER/m-party.py $BIN_FOLDER/m-party
