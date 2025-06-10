@@ -1,79 +1,53 @@
-{% set name = "t-coffee" %}
-{% set version = "13.46.1.b8b01e06" %}
+#!/bin/bash
+#
+# CONDA build script variables 
+# 
+# $PREFIX The install prefix
+# $PKG_NAME The name of the package
+# $PKG_VERSION The version of the package
+# $PKG_BUILDNUM The build number of the package
+#
+set -eux -o pipefail
+# silence some LANG perl warning messages:
+export LANG=C.UTF-8
 
-package:
-  name: {{ name }}
-  version: {{ version }}
+SHARE_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
+OS=$(./install get_os)
 
-source:
-  # The latest stable release is at http://www.tcoffee.org/Packages/Stable/Latest/ ,
-  # but is then archived at http://www.tcoffee.org/Packages/Archives/
-  url: https://s3.eu-central-1.amazonaws.com/tcoffee-packages/Archives/T-COFFEE_distribution_Version_{{ version }}.tar.gz
-  sha256: 54d2b00956af79a884fe7174522522c77e65796d5aa08974dad86e061e6d12d1
-  patches:
-    - expose-os-detection.patch
-    - coredump.patch
+# -fsigned-char is needed for aarch64; register needs to be hidden for os-x's C++ compiler
+CFLAGS="${CFLAGS} -fsigned-char -Wno-write-strings -Dregister='' -O0"
 
-build:
-  number: 1
-  run_exports:
-    - {{ pin_subpackage('t-coffee', max_pin="x") }}
+rm -fv bin/${OS}/*			# remove the download binaries - we rebuild
 
-requirements:
-  build:
-    - make
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - {{ compiler('fortran') }}
-    - perl
-    - perl-xml-simple
-  run:
-    - blast
-    - clustalo        ==1.2.4
-    - clustalw        ==2.1
-    - consan          ==1.2  # [not osx]
-    - dialign-tx      >=1.0.2
-    - famsa           ==2.2.3
-    - kalign2         ==2.04
-    - mafft           ==7.526
-    - muscle          ==3.8.1551
-    - mustang         >=3.2.3
-    - pasta           ==1.9.2
-    - phylip          ==3.697
-    - poa             >=2.0  # [not osx]
-    - prank           ==170427
-    - probcons        ==1.12
-    - probconsrna     ==1.10
-    - sap             ==1.1.3
-    - tmalign         ==20170708
-    - viennarna       ==2.7.0
-    
-test:
-  commands:
-    - HOME=/tmp t_coffee -version
-    # what does the package think it has installed:
-    - HOME=/tmp t_coffee 
-    # These messages don't end up getting compiled in correctly under OSX
-    - HOME=/tmp t_coffee 2>&1 | grep "kalign is  Installed"  # [not osx]
-    - HOME=/tmp t_coffee 2>&1 | grep "mafft is  Installed"  # [not osx]
-    - HOME=/tmp t_coffee 2>&1 | grep "probcons is  Installed"  # [not osx]
-    - HOME=/tmp t_coffee 2>&1 | grep "probconsRNA is  Installed"  # [not osx]
-    - HOME=/tmp t_coffee 2>&1 | grep "sap is  Installed"  # [not osx]
+cd t_coffee_source
+make -j ${CPU_COUNT} CFLAGS="${CFLAGS} -fsigned-char -Wno-write-strings -Dregister='' -O0" CC="${CXX}" LDFLAGS="${LDFLAGS}" FCC="${FC}" FFLAGS="${FFLAGS}" all
+cp t_coffee TMalign ../bin/${OS}/ # overwrite the distributed x86 linux binary 
+cd ..
 
-about:
-  home: "https://tcoffee.org/Projects/tcoffee/index.html"
-  license: "GPL-2.0-only"
-  license_family: GPL
-  license_file: "license.txt"
-  summary: "A collection of tools for Multiple Alignments of DNA, RNA, Protein Sequence."
-  dev_url: "https://github.com/cbcrg/tcoffee"
-  doc_url: "https://tcoffee.org/Projects/tcoffee/documentation/index.html"
+mkdir -p "${PREFIX}/bin"
 
-extra:
-  additional-platforms:
-    - linux-aarch64
-    - osx-arm64
-  identifiers:
-    - doi:10.1006/jmbi.2000.4042
-    - biotools:tcoffee
-    - usegalaxy-eu:t_coffee
+./install t_coffee -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS -O3 -Wno-register -L${PREFIX}/lib"
+./install tcoffee -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS -O3 -Wno-register -L${PREFIX}/lib"
+./install rcoffee -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS -O3 -Wno-register -L${PREFIX}/lib"
+./install seq_reformat -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS -O3 -Wno-register -L${PREFIX}/lib"
+./install expresso -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS -O3 -Wno-register -L${PREFIX}/lib"
+./install psicoffee -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS -O3 -Wno-register -L${PREFIX}/lib"
+./install trmsd -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS -O3 -Wno-register -L${PREFIX}/lib"
+./install accurate -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS -O3 -Wno-register -L${PREFIX}/lib"
+./install 3dcoffee -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS -O3 -Wno-register -L${PREFIX}/lib"
+./install mcoffee -tcdir="${SHARE_DIR}" CC="$CXX" CFLAGS="$CFLAGS -O3 -Wno-register -L${PREFIX}/lib"
+
+# llvm-otool -l fails for these plugins on macosx
+if [[ `uname` == "Darwin" ]]; then
+    for bad_plug in probconsRNA prank
+    do
+	rm -f "${SHARE_DIR}/plugins/macosx/${bad_plug}"
+    done
+fi
+
+# The installer may try to update dependencies and install them to bin/,
+# which will cause conflicts with the dependencies as separately packaged.
+# t_coffee itself is not installed here
+# rm -fv ${PREFIX}/bin/*
+
+sed -e "s|CHANGEME|${SHARE_DIR}|" -e "s|__OS__|${OS}|" "$RECIPE_DIR/t_coffee.sh" > "${PREFIX}/bin/t_coffee"
