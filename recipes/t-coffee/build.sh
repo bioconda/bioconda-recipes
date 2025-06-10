@@ -22,7 +22,7 @@ CFLAGS="${CFLAGS} -fsigned-char -Wno-write-strings -Dregister='' -O0"
 rm -fv bin/${OS}/*			# remove the download binaries - we rebuild
 
 cd t_coffee_source
-make CFLAGS="${CFLAGS} -fsigned-char -Wno-write-strings -Dregister='' -O0" CC="${CXX}" LDFLAGS="${LDFLAGS}" FCC="${FC}" FFLAGS="${FFLAGS}" all -j"${CPU_COUNT}"
+make CFLAGS="${CFLAGS} -fsigned-char -Wno-write-strings -Wno-return-type -Dregister='' -O0" CC="${CXX}" LDFLAGS="${LDFLAGS}" FCC="${FC}" FFLAGS="${FFLAGS}" all -j"${CPU_COUNT}"
 cp -f t_coffee TMalign ../bin/${OS}/ # overwrite the distributed x86 linux binary 
 cd ..
 
