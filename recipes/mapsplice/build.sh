@@ -3,7 +3,7 @@
 mkdir -p bin
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CFLAGS="${CXXFLAGS} -I${PREFIX}/include -L${PREFIX}/lib -Wno-format -Wno-unused-result -Wno-unused-local-typedefs -O3 -fpermissive"
+export CFLAGS="-I${PREFIX}/include -L${PREFIX}/lib -Wno-format -Wno-unused-result -Wno-unused-local-typedefs -O3 -fpermissive"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 sed -i.bak 's|g++|$(CXX)|' Makefile
@@ -18,7 +18,7 @@ rm -rf src/bowtie/*.bak
 sed -i.bak 's|gcc|$(CC)|' samtools-0.1.9/Makefile
 rm -rf samtools-0.1.9/*.bak
 
-make CXX="${CXX}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
+make CXX="${CXX}" -j"${CPU_COUNT}"
 
 install -v -m 755 mapsplice.py "${PREFIX}/bin"
 install -v -m 755 bin/* "${PREFIX}/bin"
