@@ -22,3 +22,4 @@ ls -l $INSTALL_FOLDER
 ls -l $BIN_FOLDER
 chmod u+x $INSTALL_FOLDER/m-party.py
 cp -f $INSTALL_FOLDER/m-party.py $BIN_FOLDER/m-party
+cp -f $INSTALL_FOLDER/workflow/scripts/table_report_utils.py $BIN_FOLDER
