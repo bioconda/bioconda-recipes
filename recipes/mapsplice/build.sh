@@ -20,6 +20,10 @@ rm -rf src/bowtie/*.bak
 sed -i.bak 's|gcc|$(CC)|' samtools-0.1.9/Makefile
 rm -rf samtools-0.1.9/*.bak
 
+if [[ "${OS}" == "Darwin" ]]; then
+  export CFLAGS="${CFLAGS} -fcommon -lstdc++"
+fi
+
 make CXX="${CXX}" -j"${CPU_COUNT}"
 
 install -v -m 755 mapsplice.py "${PREFIX}/bin"
