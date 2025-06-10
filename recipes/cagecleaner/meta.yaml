@@ -1,0 +1,53 @@
+{% set name = "cagecleaner" %}
+{% set version = "1.2.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 08096ccb363b80f2ce7b211536f2402e50b01aa060ae250c1cc6284953d52bed
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - cagecleaner = cagecleaner.cagecleaner:main
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir"
+  run_exports:
+    - {{ pin_subpackage('cagecleaner', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - setuptools
+  run:
+    - python >=3.12
+    - biopython
+    - cblaster >=1.3.20
+    - pandas
+    - scipy <=1.14.1
+    - ncbi-datasets-cli
+    - entrez-direct
+    - skder >=1.3.1
+
+test:
+  commands:
+    - cagecleaner -h
+
+about:
+  home: "https://github.com/LucoDevro/CAGEcleaner"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Genomic redundancy removal tool for cblaster hit sets."
+  doc_url: "https://github.com/LucoDevro/CAGEcleaner/wiki"
+  dev_url: "https://github.com/LucoDevro/CAGEcleaner"
+
+extra:
+  recipe-maintainers:
+    - LucoDevro
+  identifiers:
+    - doi:10.1101/2025.02.19.639057
