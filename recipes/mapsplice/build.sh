@@ -6,10 +6,6 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CXXFLAGS} -I${PREFIX}/include -L${PREFIX}/lib -Wno-format -Wno-unused-result -Wno-unused-local-typedefs -O3 -fpermissive"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-if [[ "${PY_VER}" =~ 3 ]]; then
-	2to3 -w -n .
-fi
-
 sed -i.bak 's|g++|$(CXX)|' Makefile
 sed -i.bak 's|-lpthread|-pthread|' Makefile
 sed -i.bak 's|-O3|-O3 -fpermissive -I$(PREFIX)/include|' Makefile
