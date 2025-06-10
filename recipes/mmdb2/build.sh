@@ -2,6 +2,8 @@
 
 set -exo pipefail
 
+cp ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/
+
 ./configure \
     --prefix=${PREFIX} \
     --enable-shared \
