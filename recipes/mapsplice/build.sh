@@ -9,6 +9,8 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 sed -i.bak 's|g++|$(CXX)|' Makefile
 sed -i.bak 's|-lpthread|-pthread|' Makefile
 sed -i.bak 's|-O3|-O3 -fpermissive -I$(PREFIX)/include|' Makefile
+sed -i.bak 's|cd ./samtools-0.1.9;make|cd ./samtools-0.1.9;make CC=$(CC) -j$(CPU_COUNT)|' Makefile
+sed -i.bak 's|cd ./src/bowtie; make|cd ./src/bowtie; make CC=$(CC) CXX=$(CXX) -j$(CPU_COUNT)|' Makefile
 rm -rf *.bak
 
 sed -i.bak 's|$(EXTRA_CXXFLAGS)|$(EXTRA_CXXFLAGS) -fpermissive|' src/bowtie/Makefile
