@@ -3,7 +3,7 @@
 mkdir -p bin
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CFLAGS="${CXXFLAGS} -I${PREFIX}/include -L${PREFIX}/lib -Wno-format -Wno-unused-result -O3 -fpermissive"
+export CFLAGS="${CXXFLAGS} -I${PREFIX}/include -L${PREFIX}/lib -Wno-format -Wno-unused-result -Wno-unused-local-typedefs -O3 -fpermissive"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 if [[ "${PY_VER}" =~ 3 ]]
