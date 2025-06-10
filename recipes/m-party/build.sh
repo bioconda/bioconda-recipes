@@ -8,7 +8,6 @@ mkdir -p "$INSTALL_FOLDER/resources/Data/FASTA"
 mkdir -p $BIN_FOLDER
 
 cp -rf workflow $INSTALL_FOLDER/
-cp -rf workflow $BIN_FOLDER/
 cp -rf config $INSTALL_FOLDER/
 cp -rf resources/Data/Tables/* $INSTALL_FOLDER/resources/Data/Tables/
 cp -rf resources/Data/FASTA/* $INSTALL_FOLDER/resources/Data/FASTA/
