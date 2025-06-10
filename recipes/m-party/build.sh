@@ -8,6 +8,7 @@ mkdir -p "$INSTALL_FOLDER/resources/Data/FASTA"
 mkdir -p $BIN_FOLDER
 
 cp -rf workflow $INSTALL_FOLDER/
+cp -rf workflow $BIN_FOLDER/
 cp -rf config $INSTALL_FOLDER/
 cp -rf resources/Data/Tables/* $INSTALL_FOLDER/resources/Data/Tables/
 cp -rf resources/Data/FASTA/* $INSTALL_FOLDER/resources/Data/FASTA/
@@ -20,4 +21,4 @@ cp -rf resources/Data/FASTA/human_gut_metagenome.fasta $INSTALL_FOLDER/resources
 
 ls -l $INSTALL_FOLDER
 ls -l $BIN_FOLDER
-ln -sf $INSTALL_FOLDER/m-party.py $BIN_FOLDER/m-party
+cp -f $INSTALL_FOLDER/m-party.py $BIN_FOLDER/m-party
