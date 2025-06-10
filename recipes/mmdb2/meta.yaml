@@ -1,0 +1,51 @@
+{% set name = "mmdb2" %}
+{% set version = "2.0.22" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://www2.mrc-lmb.cam.ac.uk/personal/pemsley/coot/dependencies/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: a9646933ce9f34633e1ae4901f2383af0e5318d6490851328f5b6aa06195ab51
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - {{ compiler("cxx") }}
+    - make
+    - pkg-config
+  host:
+    - zlib
+
+test:
+  requires:
+    - pkg-config
+  commands:
+    - test -f ${PREFIX}/lib/libmmdb2${SHLIB_EXT}  # [unix]
+    - test -f ${PREFIX}/include/mmdb2/mmdb_manager.h  # [unix]
+    - pkg-config --exists mmdb2
+    - pkg-config --cflags mmdb2 | grep -q "\-I${PREFIX}/include"
+    - pkg-config --libs mmdb2 | grep -q "\-lmmdb2"
+
+about:
+  home: https://www2.mrc-lmb.cam.ac.uk/personal/pemsley/coot/dependencies
+  license: GPL-3.0-only AND LGPL-3.0-only
+  license_family: GPL
+  license_file:
+    - LICENSE
+    - COPYING
+  summary: C++ toolkit for working with macromolecular coordinate files
+  description: |
+    MMDB2 is a C++ toolkit for working with macromolecular coordinate files.
+    It provides functionality for reading, writing, and manipulating PDB and mmCIF files,
+    including support for crystallographic symmetry operations and molecular geometry calculations.
+
+extra:
+  recipe-maintainers:
+    - eunos-1128
