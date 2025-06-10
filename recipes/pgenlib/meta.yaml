@@ -2,16 +2,16 @@
 {% set version = "0.93.0" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pgenlib-{{ version }}.tar.gz
   sha256: b51c2aa6099c76bc7d77021d107146cd90a6e40f22bf3b703527a7cf07213794
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir"
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage('pgenlib', max_pin="x.x") }}
 
@@ -21,13 +21,14 @@ requirements:
   host:
     - python
     - pip
-    - cython 
+    - setuptools <81
+    - cython >=3.1.0
     - numpy >=2.0.0  # [py >= 39]
-    - numpy  # [py < 39]
     - zlib
   run:
     - python
-    - numpy >=1.19.0
+    - setuptools <81
+    - numpy >=1.19.3
 
 test:
   imports:
