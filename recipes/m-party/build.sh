@@ -7,21 +7,17 @@ mkdir -p "$INSTALL_FOLDER/resources/Data/Tables"
 mkdir -p "$INSTALL_FOLDER/resources/Data/FASTA"
 mkdir -p $BIN_FOLDER
 
-pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
-
 cp -rf workflow/scripts $INSTALL_FOLDER/
 cp -rf config $INSTALL_FOLDER/
 cp -rf resources/Data/Tables/* $INSTALL_FOLDER/resources/Data/Tables/
 cp -rf resources/Data/FASTA/* $INSTALL_FOLDER/resources/Data/FASTA/
-cp -f m-party.py $INSTALL_FOLDER/
+install -v -m 755 m-party.py "$INSTALL_FOLDER"
 
-cp -rf $INSTALL_FOLDER/scripts/* $BIN_FOLDER
+install -v -m 755 $INSTALL_FOLDER/scripts/* "$BIN_FOLDER"
 # for testing
 cp -rf resources/Data/FASTA/polymerase_DB.fasta $INSTALL_FOLDER
 cp -rf resources/Data/FASTA/human_gut_metagenome.fasta $INSTALL_FOLDER/resources/Data/FASTA/
 
 ls -l $INSTALL_FOLDER
 ls -l $BIN_FOLDER
-chmod u+x $INSTALL_FOLDER/m-party.py
 cp -f $INSTALL_FOLDER/m-party.py $BIN_FOLDER/m-party
-cp -f $INSTALL_FOLDER/scripts/table_report_utils.py $BIN_FOLDER
