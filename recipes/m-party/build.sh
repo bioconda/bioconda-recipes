@@ -7,6 +7,8 @@ mkdir -p "$INSTALL_FOLDER/resources/Data/Tables"
 mkdir -p "$INSTALL_FOLDER/resources/Data/FASTA"
 mkdir -p $BIN_FOLDER
 
+pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+
 cp -rf workflow/scripts $INSTALL_FOLDER/
 cp -rf config $INSTALL_FOLDER/
 cp -rf resources/Data/Tables/* $INSTALL_FOLDER/resources/Data/Tables/
@@ -22,4 +24,4 @@ ls -l $INSTALL_FOLDER
 ls -l $BIN_FOLDER
 chmod u+x $INSTALL_FOLDER/m-party.py
 cp -f $INSTALL_FOLDER/m-party.py $BIN_FOLDER/m-party
-cp -f $INSTALL_FOLDER/workflow/scripts/table_report_utils.py $BIN_FOLDER
+cp -f $INSTALL_FOLDER/scripts/table_report_utils.py $BIN_FOLDER
