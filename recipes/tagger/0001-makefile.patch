@@ -1,0 +1,25 @@
+diff --git a/makefile b/makefile
+index 5746b98..1769e58 100644
+--- a/makefile
++++ b/makefile
+@@ -1,7 +1,7 @@
+-CC     = g++
+-CFLAGS = -fpic -Wall -O3 -std=c++11
+-LFLAGS = -fpic -shared -lboost_regex
+-PYTHON = -I/usr/include/python2.7 -I/usr/include/python
++CC     = $(CXX)
++CFLAGS = -fpic -Wall -O3 -std=c++14 -I$(PREFIX)/include
++LFLAGS = -L$(PREFIX)/lib -fpic -shared -lboost_regex
++PYTHON = -I$(PREFIX)/include/python$(PY_VER)
+ 
+ all: tagger_swig.py _tagger_swig.so libtagger.so libtagger.a tagcorpus cleandict environments organisms species
+ 
+@@ -35,7 +35,7 @@ libtagger.so: tagger.o
+ 	$(CC) $(LFLAGS) -o $@ $<
+ 
+ libtagger.a: tagger.o
+-	ar -rfs -o $@ $<
++	ar -rcs -o $@ $<
+ 
+ tagcorpus: tagcorpus.cxx acronyms.h document.h file.h hash.h mutex.h thread.h match_handlers.h base_handlers.h meta_handlers.h print_handlers.h score_handlers.h segment_handlers.h batch_tagger.h threaded_batch_tagger.h tagger.h tagger_core.h tagger_types.h tightvector.h tokens.h
+ 	$(CC) $(CFLAGS) -lboost_regex -pthread -o $@ $< -lm
