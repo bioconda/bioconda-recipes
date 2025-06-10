@@ -3,7 +3,7 @@
 BIN_FOLDER="$PREFIX/bin"
 mkdir -p $BIN_FOLDER/workflow
 
-cp -rf workflow $BIN_FOLDER/
+cp -rf workflow/* $BIN_FOLDER/workflow/
 cp -rf config $BIN_FOLDER/
 cp -rf m-party.py "$BIN_FOLDER"
 
