@@ -12,29 +12,41 @@ source:
   patches: ciriquant.patch
 
 build:
-  number: 2
+  number: 3
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('ciriquant', max_pin="x.x") }}
   entry_points:
     - CIRIquant=CIRIquant.main:main
     - CIRI_DE=CIRIquant.de:main
     - CIRI_DE_replicate=CIRIquant.replicate:main
     - prep_CIRIquant=CIRIquant.prep_CIRIquant:main
-  script: {{ PYTHON }} -m pip install . -vvv --ignore-installed --no-deps
+  script: |
+    sed -i 's/from version import __version__/from .version import __version__/' CIRIquant/main.py
+    sed -i 's/import circ/from . import circ/' CIRIquant/main.py
+    sed -i 's/import pipeline/from . import pipeline/' CIRIquant/main.py
+    sed -i 's/from logger import get_logger/from .logger import get_logger/' CIRIquant/main.py
+    sed -i 's/from utils import check_file, check_dir, check_config, get_thread_num/from .utils import check_file, check_dir, check_config, get_thread_num/' CIRIquant/main.py
+    sed -i 's/from utils import CIRCparser, TOOLS/from .utils import CIRCparser, TOOLS/' CIRIquant/main.py
+    sed -i 's/from itertools import izip_longest/from itertools import zip_longest/' CIRIquant/circ.py
+    sed -i 's/import utils/from . import utils/' CIRIquant/circ.py
+    sed -i 's/import utils/from . import utils/' CIRIquant/pipeline.py
+    {{ PYTHON }} -m pip install . -vvv --ignore-installed --no-deps
 
 requirements:
   host:
     - pip
-    - python ==2.7.15
+    - python
+    - setuptools
   run:
-    - argparse
     - bwa
     - numexpr
     - numpy
     - hisat2
     - pysam
-    - python ==2.7.15
+    - python
     - pyyaml
-    - samtools ==1.9
+    - samtools >=1.10
     - scikit-learn
     - scipy
     - stringtie
