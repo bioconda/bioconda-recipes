@@ -1,15 +1,13 @@
 #!/bin/bash
 
-set -euxo pipefail
+set -exo pipefail
 
-# Configure
 ./configure \
     --prefix=${PREFIX} \
     --enable-shared \
-    --disable-static
+    --disable-static \
+    --disable-debug \
+    --disable-dependency-tracking
 
-# Build
 make -j${CPU_COUNT}
-
-# Install
 make install
