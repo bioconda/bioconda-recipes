@@ -20,6 +20,9 @@ sed -i.bak 's|$(EXTRA_CXXFLAGS)|$(EXTRA_CXXFLAGS) -fpermissive|' src/bowtie/Make
 sed -i.bak 's|PTHREAD_LIB = -lpthread|PTHREAD_LIB = -pthread|' src/bowtie/Makefile
 rm -rf src/bowtie/*.bak
 
+sed -i.bak 's|gcc|$(CC)|' samtools-0.1.9/Makefile
+rm -rf samtools-0.1.9/*.bak
+
 make CXX="${CXX}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
 
 install -v -m 755 mapsplice.py "${PREFIX}/bin"
