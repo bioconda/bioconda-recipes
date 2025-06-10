@@ -14,7 +14,7 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 SHARE_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
-OS=$(uname -s)
+OS=$(uname -m)
 
 # -fsigned-char is needed for aarch64; register needs to be hidden for os-x's C++ compiler
 CFLAGS="${CFLAGS} -fsigned-char -Wno-write-strings -Dregister='' -O0"
