@@ -1,13 +1,26 @@
 #!/bin/bash
 
+mkdir -p bin
+
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CXXFLAGS} -I${PREFIX}/include -L${PREFIX}/lib -Wno-format -Wno-unused-result -O3 -fpermissive"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
 if [[ "${PY_VER}" =~ 3 ]]
 then
 	2to3 -w -n .
 fi
 
-mkdir -p bin
-export CFLAGS="-I${PREFIX}/include -L${PREFIX}/lib -fpermissive"
-make -j 2
-cp bin/* ${PREFIX}/bin
-chmod +x mapsplice.py
-cp mapsplice.py ${PREFIX}/bin
+sed -i.bak 's|g++|$(CXX)|' Makefile
+sed -i.bak 's|-lpthread|-pthread|' Makefile
+sed -i.bak 's|-O3|-O3 -fpermissive -I$(PREFIX)/include|' Makefile
+rm -rf *.bak
+
+sed -i.bak 's|$(EXTRA_CXXFLAGS)|$(EXTRA_CXXFLAGS) -fpermissive|' src/bowtie/Makefile
+sed -i.bak 's|PTHREAD_LIB = -lpthread|PTHREAD_LIB = -pthread|' src/bowtie/Makefile
+rm -rf src/bowtie/*.bak
+
+make CXX="${CXX}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
+
+install -v -m 755 mapsplice.py "${PREFIX}/bin"
+install -v -m 755 bin/* "${PREFIX}/bin"
