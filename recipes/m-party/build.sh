@@ -8,6 +8,7 @@ cp -rf config $BIN_FOLDER/
 cp -rf m-party.py "$BIN_FOLDER"
 
 cp -rf workflow/envs/*.yaml "$BIN_FOLDER"
+cp -rf config/*.yaml "$BIN_FOLDER"
 
 echo "print bin folder"
 ls -la $BIN_FOLDER
