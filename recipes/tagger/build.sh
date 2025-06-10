@@ -10,4 +10,4 @@ mkdir -p "${PREFIX}/lib"
 make CXX="${CXX}" -j"${CPU_COUNT}"
 
 install -v -m 755 tagcorpus tagger_swig.py "${PREFIX}/bin"
-cp -rf libtagger.a libtagger.so _tagger_swig.so "${PREFIX}/lib"
+install -v -m 755 libtagger.a libtagger.so _tagger_swig.so "${PREFIX}/lib"
