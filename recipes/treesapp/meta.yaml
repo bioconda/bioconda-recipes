@@ -1,7 +1,8 @@
+{% set name = "treesapp" %}
 {% set version = "0.11.4" %} 
 
 package:
-  name: treesapp
+  name: {{name}}
   version: {{ version }}
 
 source:
@@ -9,10 +10,10 @@ source:
   sha256: b7f8353339b1a449d1cf9d31e425b37490653a9b854a7bd3fe1ceceeb87e8eee
 
 build:
-  number: 1
-  # Skipping py>=38 because Py3.8 builds are not available for old versions of dependencies.
-  # Dependencies (pyfastx, specifically) are likely pinned downed too strictly.
-  skip: True  # [py<30 or py>=38]
+  number: 2
+  run_exports:
+    - {{ pin_subpackage(name, max_pin = "x.x") }}
+  skip: True   # [py!=39]
   entry_points:
     - treesapp = treesapp.__main__:main
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
@@ -26,9 +27,9 @@ requirements:
     - setuptools >=50.0.0
   run:
     - python
-    - numpy >=1.18.1
+    - numpy >=1.19.2
     - scipy >=1.5.2
-    - scikit-learn ==0.23.1
+    - scikit-learn ==0.24.2
     - biopython >=1.78
     - pygtrie >=2.3.3
     - ete3 >=3.1.2
@@ -65,5 +66,8 @@ about:
   summary: "TreeSAPP is a functional and taxonomic annotation tool for microbial genomes and proteins"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   recipe-maintainers:
     - cmorganl

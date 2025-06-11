@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "nanotubes-1.18.0"
+installBiocDataPackage.sh "nanotubes-1.22.0"

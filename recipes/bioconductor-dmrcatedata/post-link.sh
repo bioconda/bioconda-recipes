@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "dmrcatedata-2.20.0"
+installBiocDataPackage.sh "dmrcatedata-2.24.0"

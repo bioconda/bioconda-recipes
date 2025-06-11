@@ -1,4 +1,4 @@
-{% set version = "0.2.2" %}
+{% set version = "0.2.8" %}
 
 package:
   name: gsearch
@@ -8,18 +8,24 @@ build:
   number: 0
   run_exports:
       - {{ pin_subpackage('gsearch', max_pin="x.x") }}
-  skip: True  # [osx]
 source:
   url: https://github.com/jianshu93/gsearch/archive/v{{ version }}.tar.gz
-  sha256: 2f0247712a302f152b1f08d153f5555a5e7d1608b23f6f9a7eb90e6fa2990945
+  sha256: 86cf955161687d9588ecd4c806d795dfb191c8992d3eb9037fedba6d1ceb1a11
 
 requirements:
   build:
     - {{ compiler("cxx") }}
     - {{ compiler('c') }}
-    - rust >=1.60
+    - {{ compiler('rust') }}
     - make
     - cmake
+    - openblas
+  host:
+    - openblas
+    - openssl
+  run:
+    - openblas
+    - openssl
 
 test:
   commands:
@@ -30,8 +36,10 @@ about:
   license: MIT
   summary: gsearch is an ultra-fast and scalable microbial genome search program based on MinHash-like metrics and graph-based approximate nearest neighbor search
 extra:
+  additional-platforms:
+    - osx-arm64
   maintainers:
    - Jean Pierre-Both
    - Jianshu Zhao
   identifiers:
-   - https://doi.org/10.1093/nar/gkae609
+   - doi:10.1093/nar/gkae609
