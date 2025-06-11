@@ -15,6 +15,12 @@ rm -rf rust/*.bak
 curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --profile=minimal -y
 export PATH="${HOME}/.cargo/bin:${PATH}"
 
+if [[ "${unamestr}" == "Darwin" ]]; then
+  RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup"
+else
+  RUSTFLAGS="-C target-feature=-crt-static -L ${PREFIX}/lib64"
+fi
+
 cd blobtk/rust
 
 # build statically linked binary with Rust
