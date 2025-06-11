@@ -1,0 +1,58 @@
+{% set name = "pytximport" %}
+{% set version = "0.12.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pytximport-{{ version }}.tar.gz
+  sha256: ade8c44f153f5b14779f4ff3c99e8e5b89424518f3a2172455d725e0556c9f2c
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  number: 0
+  entry_points:
+    - pytximport=pytximport._cli:cli
+  run_exports:
+    - {{ pin_subpackage('pytximport', max_pin="x.x") }}
+
+requirements:
+  host:
+    - flit-core >=3.2,<4
+    - python >=3.9
+    - pip
+  run:
+    - python >=3.9
+    - anndata >=0.8.0
+    - click >=8.1.7
+    - conda-forge::click-default-group >=1.2.0
+    - flox >=0.9.8
+    - h5py >=3.11.0
+    - numpy >=1.23.0
+    - pandas >=1.4.0
+    - pybiomart >=0.2.0
+    - tqdm >=4.66.4
+    - xarray >=2024.6.0
+
+test:
+  imports:
+    - pytximport
+  commands:
+    - pytximport --help
+
+about:
+  home: https://pytximport.readthedocs.io/en/stable/start.html
+  dev_url: https://github.com/complextissue/pytximport
+  doc_url: https://pytximport.readthedocs.io
+  summary: pytximport - gene count estimation from transcript-level quantification
+  description: |
+    pytximport is a Python port of tximport that allows users to import transcript counts from tools such as kallisto and Salmon, correct them for differential isoform usage, and summarize them at the gene level.
+  license: GPL-3.0-only
+  license_family: GPL
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - maltekuehl

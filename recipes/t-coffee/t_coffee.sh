@@ -8,5 +8,5 @@ else
 fi
 export MAX_N_PID_4_TCOFFEE
 export PLUGINS_4_TCOFFEE=CHANGEME/plugins/__OS__
-
+export TEMP='./tmp'
 exec "CHANGEME/bin/__OS__/t_coffee" "$@"

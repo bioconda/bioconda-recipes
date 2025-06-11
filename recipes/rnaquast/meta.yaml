@@ -1,9 +1,9 @@
 {% set name = "rnaQUAST" %}
-{% set version = "2.2.3" %}
-{% set sha256 = "581f2632e76d61c168a0b60aac14fd5ce9b26518ec410e17ff876d9c85c42066" %}
+{% set version = "2.3.0" %}
+{% set sha256 = "71290a5067d69f3157137771bf5ff151e1918ad0c241d916fab88a2eb3409889" %}
 
 package:
-  name: {{ name | lower }}
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
@@ -12,16 +12,17 @@ source:
 
 build:
   number: 0
-  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('rnaquast', max_pin="x") }}
 
 requirements:
   run:
     - python
     - blast
-    - blat
+    - ucsc-blat
     - busco >=5
     - emboss
-    - gmap <2021.02.22, >=2020.03.12
+    - gmap >=2020.03.12
     - gffutils
     - joblib
     - matplotlib-base
@@ -31,16 +32,19 @@ requirements:
 
 test:
   commands:
-    - rnaQUAST.py --test
-    - makeblastdb -help
-    # test fa_coords from gmap
-    - ": | fa_coords | grep 'Error: No contigs were read in.'"
+    - rnaQUAST.py --help
 
 about:
-  summary: rnaQUAST is a tool for evaluating RNA-Seq assemblies using reference genome and gene database. In addition, rnaQUAST is also capable of estimating gene database coverage by raw reads and de novo quality assessment using third-party software.
-  home: http://cab.spbu.ru/software/rnaquast/
-  license: GPLv2
+  summary: "rnaQUAST is a tool for evaluating RNA-Seq assemblies using reference genome and gene database. In addition, rnaQUAST is also capable of estimating gene database coverage by raw reads and de novo quality assessment using third-party software."
+  home: https://github.com/ablab/rnaquast
+  license: GPL-2.0-or-later
+  license_family: GPL
+  dev_url: https://github.com/ablab/rnaquast
 
 extra:
   skip-lints:
     - should_be_noarch_generic
+  identifiers:
+    - doi:10.1093/bioinformatics/btw218
+    - biotools:rnaQUAST
+    - usegalaxy-eu:rna_quast

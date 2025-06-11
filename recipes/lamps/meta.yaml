@@ -1,0 +1,55 @@
+{% set name = "lamps" %}
+{% set version = "1.0.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/lamps-{{ version }}.tar.gz
+  sha256: c85de92edcb4cd450aeebcb829729f163a02b3905146ef5208f911f38f2abe63
+
+build:
+  entry_points:
+    - lamp = lamp.__main__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('lamps', max_pin="x") }}   
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools >=61.0
+    - wheel
+    - pip
+  run:
+    - python >=3.8
+    - numpy
+    - scipy
+    - pandas
+    - pyside6
+    - pyteomics
+    - openpyxl
+    - pyjanitor
+
+test:
+  imports:
+    - lamp
+  commands:
+    - pip check
+    - lamp --help
+  requires:
+    - pip
+
+about:
+  home: https://pypi.org/project/lamps/
+  summary: Liverpool Annotation of metabolites using Mass Spectrometry
+  dev_url: https://github.com/wanchanglin/lamp
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - harryln-1
