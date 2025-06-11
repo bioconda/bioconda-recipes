@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "snphooddata-1.32.0"
+installBiocDataPackage.sh "snphooddata-1.36.0"

@@ -1,0 +1,51 @@
+{% set name = "excludonfinder" %}
+{% set version = "0.1.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Alvarosmb/ExcludonFinder/archive/v{{ version }}.tar.gz
+  sha256: b25267178817b0e4534c89aa1f9763f9fe383b2abd2e089293476775056fc364
+
+build:
+  number: 1  # Incrementado de 0 a 1
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}  # Usando x.x porque empieza con 0
+  script:
+    - mkdir -p $PREFIX/bin
+    - mkdir -p $PREFIX/share/${PKG_NAME}/scripts
+    - cp -rf scripts/ExcludonFinder $PREFIX/bin/
+    - cp -rf scripts/TUs_annotation.R $PREFIX/share/${PKG_NAME}/scripts/
+    - cp -rf scripts/main.sh $PREFIX/share/${PKG_NAME}/scripts/
+    - chmod +x $PREFIX/bin/ExcludonFinder
+    - chmod +x $PREFIX/share/${PKG_NAME}/scripts/*.{sh,R}
+
+requirements:
+  run:
+    - r-base >=4.1
+    - bwa-mem2 >=2.2.1
+    - minimap2 >=2.24
+    - samtools >=1.15
+    - subread >=2.0.1
+    - r-dplyr >=1.0.7
+    - r-foreach >=1.5.2
+    - r-doparallel >=1.0.17
+    - r-data.table >=1.14
+    - r-biocmanager >=1.30.19
+    - bioconductor-rtracklayer >=1.54.0
+
+test:
+  commands:
+    - ExcludonFinder -h
+    - ExcludonFinder --help
+
+about:
+  home: https://github.com/Alvarosmb/ExcludonFinder
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A tool for identifying and analyzing excludons in genomic data using RNA-seq data."
+  dev_url: https://github.com/Alvarosmb/ExcludonFinder

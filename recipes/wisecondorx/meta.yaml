@@ -1,36 +1,38 @@
-{% set version="1.2.5" %}
+{% set version="1.2.9" %}
 package:
   name: wisecondorx
   version:  {{ version }}
 
 source:
   url: https://github.com/CenterForMedicalGeneticsGhent/wisecondorX/archive/v{{ version }}.tar.gz
-  sha256: be60c95630cd89977f445b68f11560360ef10d6c994ea3028c0d0295fc7452c9
+  sha256: 345faaf81822d6532d278ca9819059c1a2860e0856432b054d3bed076c95326c
 
 build:
   number: 0
   noarch: python
   script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  run_exports:
+    - {{ pin_subpackage('wisecondorx', max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.6
     - setuptools
   run:
-    - python
-    - pysam
-    - futures # [not py3k]
-    - scipy
-    - scikit-learn
-    - numpy
-    - r-jsonlite >=1.5
+    - pandas
+    - python >=3.6
+    - pysam ==0.22
+    - scipy ==1.13
+    - scikit-learn ==1.4
+    - numpy ==1.26
+    - r-jsonlite ==1.8.8
     - r-png
-    - bioconductor-dnacopy
-    - matplotlib-base
+    - bioconductor-dnacopy ==1.76
+    - matplotlib-base ==3.8.4
 
 test:
   imports:
-    - wisecondorX
+    - wisecondorx
   commands:
     - WisecondorX --help
     - WisecondorX convert --help
