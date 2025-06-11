@@ -3,7 +3,7 @@
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
-#export PYO3_PYTHON="${PYTHON}"
+export PYO3_PYTHON="${PYTHON}"
 unamestr=$(uname -s)
 
 sed -i.bak 's|maturin>=0.13,<0.14|maturin>=1.8.0,<2.0.0|' rust/pyproject.toml
