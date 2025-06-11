@@ -1,0 +1,49 @@
+{% set name = "aliceasm" %}
+{% set version = "0.6.36" %}
+{% set sha256 = "0be437515b84bb03164680eb92e45d88917f634dd42b8b9bf7384899e2de2d10" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/RolandFaure/alice-asm/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage("aliceasm", max_pin="x.x") }}
+
+requirements:
+  build:
+    - cmake
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - bcalm
+    - gfatools
+
+test:
+  commands:
+    - aliceasm --help 2>&1 | grep "Command line:"
+
+about:
+  home: "https://github.com/RolandFaure/alice-asm"
+  license: "AGPL-3.0-only"
+  license_family: AGPL
+  license_file: "LICENSE.txt"
+  summary: "Efficient HiFi genome assembler producing haplotype-separated assemblies."
+  dev_url: "https://github.com/RolandFaure/alice-asm"
+
+extra:
+  recipe-maintainers:
+    - RolandFaure
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
