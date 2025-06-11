@@ -1,0 +1,65 @@
+{% set name = "strangepg" %}
+{% set version = "0.8.20" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/qwx9/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 2249438979a8543c162979309348da2c0266285633d8f0ab4b9512a586460d62
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('strangepg', max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+    - {{ cdt('mesa-libegl-devel') }}  # [linux and aarch64]
+    - {{ cdt('mesa-libgl-devel') }}   # [linux]
+    - {{ cdt('mesa-dri-drivers') }}   # [linux]
+    - {{ cdt('libdrm-devel') }}       # [linux]
+    - {{ cdt('libglvnd-glx') }}       # [linux and cdt_name != 'cos6']
+    - {{ cdt('libglvnd-egl') }}       # [linux and aarch64 and cdt_name != 'cos6']
+    - {{ cdt('libglvnd-gles') }}      # [linux and aarch64 and cdt_name != 'cos6']
+  host:
+    - libegl-devel    # [linux and aarch64]
+    - libgles-devel   # [linux and aarch64]
+    - xorg-libx11     # [linux]
+    - xorg-libxcursor # [linux]
+    - xorg-libxi      # [linux]
+    - xorg-xorgproto  # [linux]
+  run:
+    - libxcb          # [linux]
+    - xorg-libx11     # [linux]
+    - xorg-libxau     # [linux]
+    - xorg-libxcursor # [linux]
+    - xorg-libxdmcp   # [linux]
+    - xorg-libxext    # [linux]
+    - xorg-libxfixes  # [linux]
+    - xorg-libxi      # [linux]
+    - xorg-libxrandr  # [linux]
+
+test:
+  source_files:
+    - test/frag10.gfa
+
+about:
+  home: https://github.com/qwx9/{{ name }}
+  summary: 'Strange pangenome-scale interactive graph visualizer'
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev-url: https://github.com/qwx9/{{ name }}
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - qwx9
+  container:
+    extended-base: True

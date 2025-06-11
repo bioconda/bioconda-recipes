@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 ./configure --prefix=$PREFIX
-make LIBS+=-lhts
+make -j ${CPU_COUNT} LIBS+=-lhts
 make install

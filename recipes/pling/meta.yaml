@@ -1,0 +1,48 @@
+{% set version = "2.0.1" %}
+{% set name = "pling" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/iqbal-lab-org/{{ name|lower }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ac97585b1bc18e2032c7e6ebb42e63ef0e8f94a51e0f956cce557e5d846cb5cd
+
+build:
+  number: 0
+  noarch: python
+  script: "pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  entry_points:
+    - pling = pling.run_pling:main
+  run_exports:
+    - {{ pin_subpackage("pling", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9,<3.12
+    - pip
+  run:
+    - python >=3.9,<3.12
+    - sourmash >=4.4.0,<5.0.0
+    - pandas >=1.5.3
+    - numpy >=1.26.0
+    - intervaltree >=3.0.2
+    - mummer >=3.23
+    - glpk >=5.0
+    - snakemake >=7.25.4,<8.0.0
+    - plasnet >=0.6.0
+    - dingII
+test:
+  imports:
+    - pling
+
+  commands:
+    - pling --help
+
+about:
+  home: https://github.com/iqbal-lab-org/pling
+  license: LICENSE
+  license_family: MIT
+  summary: 'Pling computes the rearrangement distance between plasmids and clusters on their basis '
+

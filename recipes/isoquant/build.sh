@@ -6,4 +6,4 @@ mkdir -p $PREFIX/bin
 chmod a+x *.py
 cp -rp * "$OUTDIR/"
 cd $PREFIX/bin
-ln -s "../${OUTDIR#$PREFIX}"/*.py .
+ln -sf "../${OUTDIR#$PREFIX}"/*.py .

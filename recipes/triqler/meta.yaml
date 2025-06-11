@@ -1,5 +1,5 @@
 {% set name = "triqler" %}
-{% set version = "0.6.2" %}
+{% set version = "0.9.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,37 +7,62 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "09e0e286e252742be7fc957932eb1c998dce9d6d357b90473526ac7d6dc19d62"
+  sha256: "bff22b87631e20666566ab1da566b2b4c332fd3b5b4b86dfbb630758fd2f1a7d"
 
 build:
   noarch: python
   number: 0
   entry_points:
     - triqler = triqler.triqler:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+    - dinosaur2triqler = triqler.convert.dinosaur:main
+    - maxquant2triqler = triqler.convert.maxquant:main
+    - quandenser2triqler = triqler.convert.quandenser:main
+    - diann2triqler = triqler.convert.diann:main
+    - plot_hyperparameter_fits = triqler.distribution.plot_hyperparameter_fits:main
+    - plot_posteriors = triqler.distribution.plot_posteriors:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('triqler', max_pin="x.x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.10,<3.14
+    - poetry-core
   run:
-    - numpy >=1.12
-    - python
-    - scipy >=0.17
-    - threadpoolctl >=1.0
+    - numpy >=2.0.0
+    - python >=3.10,<3.14
+    - scipy >=1.9.1
+    - threadpoolctl >=3.1.0
+    - pandas >=1.4.0
+    - job-pool >=0.3.0
+    - pyarrow >=19.0.1
+    - matplotlib-base
 
 test:
   imports:
     - triqler
   commands:
     - triqler --help
+    - dinosaur2triqler --help
+    - maxquant2triqler --help
+    - quandenser2triqler --help
+    - diann2triqler --help
+    - plot_hyperparameter_fits --help
+    - plot_posteriors --help
 
 about:
   home: "https://github.com/statisticalbiotechnology/triqler"
-  license: "Apache Software"
+  license: "Apache-2.0"
   license_family: "APACHE"
-  summary: "A combined identification and quantification error model of label-free protein quantification"
+  license_file: LICENSE
+  summary: "A combined identification and quantification error model of label-free protein quantification."
+  dev_url: "https://github.com/statisticalbiotechnology/triqler"
+  doc_url: "https://github.com/statisticalbiotechnology/triqler/wiki"
 
 extra:
   recipe-maintainers:
     - glormph
+  identifiers:
+    - doi:0.1074/mcp.RA118.001018
+    - doi:10.1021/acs.jproteome.2c00607

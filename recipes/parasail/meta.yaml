@@ -1,0 +1,58 @@
+{% set name = "parasail" %}
+{% set version = "2.6.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/jeffdaily/{{ name|lower }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 9057041db8e1cde76678f649420b85054650414e5de9ea84ee268756c7ea4b4b
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - libtool
+    - make
+    - m4
+    - pkg-config
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - zlib
+
+test:
+  commands:
+    - parasail_aligner -h 2>&1 | grep -q usage
+    - parasail_stats 2>&1 | grep -q Missing
+
+about:
+  home: https://github.com/jeffdaily/parasail
+  dev_url: https://github.com/jeffdaily/parasail
+  doc_url: https://github.com/jeffdaily/parasail
+  summary: "Pairwise Sequence Alignment Library"
+  description: |
+    parasail is a SIMD C (C99) library containing implementations of the Smith-Waterman (local), Needleman-Wunsch (global), and various semi-global pairwise sequence alignment algorithms.
+    Here, semi-global means insertions before the start or after the end of either the query or target sequence are optionally not penalized.
+    parasail implements most known algorithms for vectorized pairwise sequence alignment, including diagonal [Wozniak, 1997], blocked [Rognes and Seeberg, 2000], striped [Farrar, 2007], and prefix scan [Daily, 2015].
+    Therefore, parasail is a reference implementation for these algorithms in addition to providing an implementation of the best-performing algorithm(s) to date on today's most advanced CPUs.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.md
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1186/s12859-016-0930-z
+  recipe-maintainers:
+    - eunos-1128

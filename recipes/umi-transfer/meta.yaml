@@ -1,5 +1,5 @@
-{% set version = "1.0.0" %}
-{% set sha256 = "04e2ee89487fde9be51984a5143931f349b39563b7e0b1861221389c5c5d1b7a" %}
+{% set version = "1.5.0" %}
+{% set sha256 = "eeacc6c12aea055f624a29623c96b9396e6b412461f57a8ff9e19ba849c4538d" %}
 
 package:
   name: umi-transfer
@@ -10,21 +10,17 @@ source:
   sha256: {{ sha256 }}
   
 build:
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('umi-transfer', max_pin="x") }}
 
 requirements:
   build:
-    - rust >=1.40
-    - cmake
     - make
-    - autoconf
-    - {{ compiler('cxx') }}
-    - pkg-config
-    - zlib
-  host:
-    - zlib
-  run:
-
+    - cmake
+    - {{ compiler('c') }}
+    - {{ compiler("rust") }}
+    - cargo-bundle-licenses
 
 test:
   commands:
@@ -36,3 +32,9 @@ about:
   license_family: MIT
   license_file: LICENSE
   summary: A tool for transferring Unique Molecular Identifiers (UMIs) from a separate FastQ file.
+
+extra:
+  recipe-maintainers:
+    - MatthiasZepper
+  additional-platforms:
+    - linux-aarch64

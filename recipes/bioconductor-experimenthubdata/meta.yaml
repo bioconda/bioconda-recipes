@@ -1,52 +1,57 @@
-{% set version = "1.28.0" %}
+{% set version = "1.32.0" %}
 {% set name = "ExperimentHubData" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 9e36d1a7958213cce85feccfd46fd7d5
+about:
+  description: Functions to add metadata to ExperimentHub db and resource files to AWS S3 buckets.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Add resources to ExperimentHub
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-experimenthubdata", max_pin="x.x") }}'
-  noarch: generic
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: GenomeInfoDb, RUnit, knitr, BiocStyle, rmarkdown, HubPub
 requirements:
   host:
-    - 'bioconductor-annotationhubdata >=1.32.0,<1.33.0'
-    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
-    - 'bioconductor-experimenthub >=2.10.0,<2.11.0'
-    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - bioconductor-annotationhubdata >=1.36.0,<1.37.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-biocmanager
     - r-curl
     - r-dbi
     - r-httr
   run:
-    - 'bioconductor-annotationhubdata >=1.32.0,<1.33.0'
-    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
-    - 'bioconductor-experimenthub >=2.10.0,<2.11.0'
-    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - bioconductor-annotationhubdata >=1.36.0,<1.37.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-biocmanager
     - r-curl
     - r-dbi
     - r-httr
+
+source:
+  md5: cd6859088d3aa6cbeca30efde006244e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Add resources to ExperimentHub'
-  description: 'Functions to add metadata to ExperimentHub db and resource files to AWS S3 buckets.'
+    - $R -e "library('{{ name }}')"
 

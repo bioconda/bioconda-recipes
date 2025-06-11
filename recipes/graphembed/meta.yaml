@@ -1,35 +1,52 @@
-{% set version = "0.1.1" %}
+{% set version = "0.1.7" %}
 
 package:
   name: graphembed
   version: {{ version }}
 
 build:
-  number: 1
+  number: 0
   run_exports:
       - {{ pin_subpackage('graphembed', max_pin="x.x") }}
-  skip: True  # [osx]
 source:
   url: https://github.com/jianshu93/graphembed/archive/v{{ version }}.tar.gz
-  sha256: 894ffd1e2042ef93501317059c018bef817225dcb994a932ceb7593a134e7d8e
+  sha256: 0a836282e69a5b0c63846da7586ad94260e9490bf6b55e6c24a044b2b858a702
 
 requirements:
   build:
     - {{ compiler("cxx") }}
     - {{ compiler('c') }}
-    - rust >=1.39
+    - {{ compiler('fortran') }}
+    - {{ compiler('rust') }}
     - make
     - cmake
-
+    - cargo-bundle-licenses
+    - pkg-config
+    - openblas
+    - liblapack
+    - liblapacke
+  host:
+    - openblas
+    - liblapack
+    - liblapacke
+  run:
+    - openblas
+    - liblapack
+    - liblapacke
 test:
   commands:
     - graphembed -h
 
 about:
-  home: https://github.com/jean-pierreBoth/graphembed
+  home: https://github.com/jianshu93/graphembed
   license: MIT
-  summary: Efficient Graph Embedding via Recursive Sketching or High-order Transitivity Preserving with Benchmarking
+  license_family: MIT
+  summary: "Efficient and Robust Graph/Network Embedding via High-Order Proximity Preservation or Recursive Sketching."
+  dev_url: https://github.com/jianshu93/graphembed
+
 extra:
-  maintainers:
-   - Jean Pierre-Both
-   - Jianshu Zhao
+  additional-platforms:
+    - osx-arm64
+  recipe-maintainers:
+    - jianshu93
+    - jean-pierreBoth

@@ -1,47 +1,54 @@
-{% set version = "2.1.5" %}
+{% set version = "4.0.0" %}
 
 package:
   name: fusion-report
   version: "{{ version }}"
 
 source:
-  url: https://github.com/matq007/fusion-report/archive/{{ version }}.tar.gz
-  sha256: f1d7d4bba20a73fdfeddd171318e38b0dae520fae58894ba589a9f809e047bcf
+  url: https://github.com/Clinical-Genomics/fusion-report/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ea6a3274c427760240a465052cbec549bddade35a37386d9c9dd08858fef6dfe
 
 build:
-  number: 0
-  noarch: python
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  number: 1
+  noarch: generic
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage("fusion-report", max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.12
     - pip
+    - setuptools
   run:
-    - python >=3.6
-    - tqdm ==4.33.0
-    - colorlog ==4.0.2
-    - Jinja2 ==2.10.1
-    - python-rapidjson
+    - python >=3.12
+    - tqdm >=4.66.0
+    - colorlog
     - pyyaml >=4.2b1
-    - markupsafe <2.1
-    - pandas
+    - jinja2 >=3.1.0
+    - MarkupSafe >=2.1.1
+    - numpy >=1.26.0
+    - pandas >=2.2.0
+    - requests >=2.31.0
+    - openpyxl
+    - xlrd >=2.0.0
+    - beautifulsoup4 >=4.12.0
+    - click >=8.1.0
+    - tabulate >=0.9.0
+    - sqlite >=3.39
 
 test:
-  # Python imports
-  imports:
-    - fusion_report
-
   commands:
     - fusion_report --help
 
 about:
-  home: https://github.com/matq007/fusion-report
+  home: https://github.com/Clinical-Genomics/fusion-report
   license: GPL-3.0-only
-  summary: 'Tool for parsing outputs from fusion detection tools. Part of a nf-core/rnafusion pipeline'
+  summary: 'Tool for parsing outputs from fusion detection tools. Part of the nf-core/rnafusion pipeline.'
   license_family: GPL3
   license_file: LICENSE
+  dev_url: https://github.com/Clinical-Genomics/fusion-report
 
 extra:
   identifiers:
-    - DOI:10.5281/zenodo.2609024
+    - doi:10.5281/zenodo.2609024
