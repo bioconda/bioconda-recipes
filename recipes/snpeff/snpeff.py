@@ -16,6 +16,10 @@ from os import X_OK
 
 jar_file = 'snpEff.jar'
 
+# Phone home has been disabled due to usage of an unregistered domain
+# If in the future the "phone home" feature becomes "opt-in" (e.g. -Log)
+# please remove the below to allow users to opt in
+disable_phone_home_opts = ['-noLog']
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
@@ -49,6 +53,7 @@ def jvm_opts(argv):
     prop_opts = []
     pass_args = []
     exec_dir = None
+    is_dryrun = False
 
     for arg in argv:
         if arg.startswith('-D'):
@@ -61,6 +66,8 @@ def jvm_opts(argv):
             exec_dir = arg.split('=')[1].strip('"').strip("'")
             if not os.path.exists(exec_dir):
                 shutil.copytree(real_dirname(sys.argv[0]), exec_dir, symlinks=False, ignore=None)
+        elif arg.startswith('--dry-run'):
+            is_dryrun = True
         else:
             pass_args.append(arg)
 
@@ -73,7 +80,7 @@ def jvm_opts(argv):
     if mem_opts == [] and getenv('_JAVA_OPTIONS') is None:
         mem_opts = default_jvm_mem_opts
 
-    return (mem_opts, prop_opts, pass_args, exec_dir)
+    return (mem_opts, prop_opts, pass_args, exec_dir, is_dryrun)
 
 
 def main():
@@ -85,7 +92,7 @@ def main():
     If the exec_dir dies not exist,
     we copy the jar file, lib, and resources to the exec_dir directory.
     """
-    (mem_opts, prop_opts, pass_args, exec_dir) = jvm_opts(sys.argv[1:])
+    (mem_opts, prop_opts, pass_args, exec_dir, is_dryrun) = jvm_opts(sys.argv[1:])
     jar_dir = exec_dir if exec_dir else real_dirname(sys.argv[0])
 
     if pass_args != [] and pass_args[0].startswith('eu'):
@@ -95,9 +102,12 @@ def main():
 
     jar_path = os.path.join(jar_dir, jar_file)
 
-    java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
+    java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args + disable_phone_home_opts
 
-    sys.exit(subprocess.call(java_args))
+    if is_dryrun:
+        sys.exit(print(java_args))
+    else:
+        sys.exit(subprocess.call(java_args))
 
 
 if __name__ == '__main__':

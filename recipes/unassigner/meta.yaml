@@ -1,0 +1,46 @@
+{% set name = "unassigner" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 46191cd18b3a072f4cb02aac6b01cd5b81f0cd5bfc7a0c03f9ede59958b8cddd
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - unassigner = unassigner.command:main
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage('unassigner', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - python
+    - vsearch
+    - biopython
+    - scipy
+
+test:
+  imports:
+    - unassigner
+  commands:
+    - unassigner --help
+
+about:
+  home: https://github.com/PennChopMicrobiomeProgram/unassigner
+  license: GPL-2.0-or-later
+  license_family: GPL
+  summary: "Type strain identification for 16S reads"
+  dev_url: https://github.com/PennChopMicrobiomeProgram/unassigner
+
+extra:
+  recipe-maintainers:
+    - Ulthran

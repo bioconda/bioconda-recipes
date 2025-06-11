@@ -1,0 +1,52 @@
+diff --git a/parsnp b/parsnp
+index 85fd9c9..9501ab8 100755
+--- a/parsnp
++++ b/parsnp
+@@ -8,6 +8,7 @@
+ import os, sys, string, random, subprocess, time, operator, math, datetime, numpy #pysam
+ from collections import defaultdict
+ import shutil
++import multiprocessing
+ import shlex
+ from tempfile import TemporaryDirectory
+ import re
+@@ -1210,8 +1211,13 @@ SETTINGS:
+         (len(outputDir)+17)*"*"))
+ 
+     # If we requested more threads than available, give a warning.
+-    if len(os.sched_getaffinity(0)) < threads:
+-        logger.warning("You have asked to use more threads than you have available on your machine. This may lead to serious performance degredation with RAxML.")
++    try:
++        if len(os.sched_getaffinity(0)) < threads:
++            logger.warning("You have asked to use more threads than you have available on your machine. This may lead to serious performance degredation with RAxML.")
++    except AttributeError:
++        if multiprocessing.cpu_count() < threads:
++            logger.warning("You have asked to use more threads than you have available on your machine. This may lead to serious performance degredation with RAxML.")
++
+     logger.info("<<Parsnp started>>")
+ 
+     #1)read fasta files (contigs/scaffolds/finished/DBs/dirs)
+@@ -1614,19 +1620,16 @@ SETTINGS:
+     else:
+         import partition 
+ 
+-        full_query_list_path = f"{outputDir}/config/input-list.txt"
+-        with open(full_query_list_path, 'w') as input_list_handle:
+-            random_seeded.shuffle(finalfiles)
+-            for qf in finalfiles:
+-                input_list_handle.write(qf + "\n")
+-
+         if len(finalfiles) % args.partition_size == 1:
+             logger.warning("Incrementing partition size by 1 to avoid having a remainder partition of size 1")
+             args.partition_size += 1
+         partition_output_dir = f"{outputDir}/partition"
+         partition_list_dir = f"{partition_output_dir}/input-lists"
+         os.makedirs(partition_list_dir, exist_ok=True)
+-        run_command(f"split -l {args.partition_size} -a 5 --additional-suffix '.txt' {full_query_list_path} {partition_list_dir}/{partition.CHUNK_PREFIX}-")
++        for partition_idx in range(math.ceil(len(finalfiles) / args.partition_size)):
++            with open(f"{partition_list_dir}/{partition.CHUNK_PREFIX}-{partition_idx:010}.txt", 'w') as part_out:
++                for qf in finalfiles[partition_idx*args.partition_size : (partition_idx+1)*args.partition_size]:
++                    part_out.write(f"{qf}\n")
+ 
+         chunk_label_parser = re.compile(f'{partition.CHUNK_PREFIX}-(.*).txt')
+         chunk_labels = []

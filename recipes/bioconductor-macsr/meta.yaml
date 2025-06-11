@@ -1,47 +1,52 @@
-{% set version = "1.10.0" %}
+{% set version = "1.14.0" %}
 {% set name = "MACSr" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: bab4dacc8d41a2a47798bc740181f014
+about:
+  description: The Model-based Analysis of ChIP-Seq (MACS) is a widely used toolkit for identifying transcript factor binding sites. This package is an R wrapper of the lastest MACS3.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: BSD_3_clause + file LICENSE
+  license_file: LICENSE
+  summary: 'MACS: Model-based Analysis for ChIP-Seq'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-macsr", max_pin="x.x") }}'
-  noarch: generic
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: testthat, knitr, rmarkdown, BiocStyle, MACSdata
 requirements:
   host:
-    - 'bioconductor-annotationhub >=3.10.0,<3.11.0'
-    - 'bioconductor-basilisk >=1.14.0,<1.15.0'
-    - 'bioconductor-experimenthub >=2.10.0,<2.11.0'
-    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-basilisk >=1.18.0,<1.19.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-reticulate
   run:
-    - 'bioconductor-annotationhub >=3.10.0,<3.11.0'
-    - 'bioconductor-basilisk >=1.14.0,<1.15.0'
-    - 'bioconductor-experimenthub >=2.10.0,<2.11.0'
-    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-basilisk >=1.18.0,<1.19.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-reticulate
+
+source:
+  md5: b8fc522dac1cde77a5c38c39c7228d7a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'BSD_3_clause + file LICENSE'
-  summary: 'MACS: Model-based Analysis for ChIP-Seq'
-  description: 'The Model-based Analysis of ChIP-Seq (MACS) is a widely used toolkit for identifying transcript factor binding sites. This package is an R wrapper of the lastest MACS3.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

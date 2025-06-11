@@ -1,0 +1,78 @@
+{% set name = "vuegen" %}
+{% set version = "0.4.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/vuegen-{{ version }}.tar.gz
+  sha256: 4ba863c61104395ee26c7d4ef0b32a80c1b0e0aa86fd0d068acdd3224ec87b26
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - vuegen = vuegen.__main__:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  
+requirements:
+  host:
+    - python >=3.11,<4.0
+    - poetry-core
+    - poetry-dynamic-versioning >=1.0.0,<2.0.0
+    - pip
+  run:
+    - python >=3.11,<4.0
+    - streamlit 1.39.0
+    - streamlit-aggrid
+    - quarto
+    - plotly 5.15.0
+    - pyvis >=0.3.2,<0.4.0
+    - pandas >=2.2.3,<3.0.0
+    - openpyxl >=3.1.5,<4.0.0
+    - xlrd >=2.0.1,<3.0.0
+    - nbformat >=5.10.4,<6.0.0
+    - nbclient >=0.10.0,<0.11.0
+    - matplotlib-base >=3.9.2,<4.0.0
+    - altair
+    - itables >=2.2.2,<3.0.0
+    - python-kaleido 0.2.0
+    - vl-convert-python >=1.7.0,<2.0.0
+    - dataframe_image
+    - strenum >=0.4.15  # [py<311]
+    - pyyaml >=6.0.2,<7.0.0
+    - nb_conda_kernels >=2.4.0,<3.0.0
+    - lxml >=5.3.0,<6.0.0
+  run_constrained:
+    - sphinx *
+    - sphinx-book-theme *
+    - myst-nb *
+    - ipywidgets *
+    - sphinx-new-tab-link !=0.2.2
+    - jupytext *
+
+test:
+  commands:
+    - vuegen --help
+
+about:
+  home: "https://github.com/Multiomics-Analytics-Group/vuegen"
+  summary: |
+    VueGen automates the creation of reports from bioinformatics outputs, 
+    supporting formats like PDF, HTML, DOCX, ODT, PPTX, Reveal.js, 
+    Jupyter notebooks, and Streamlit web applications. Users simply 
+    provide a directory with output files—such as plots, tables, networks, 
+    Markdown text, and HTML files—and VueGen compiles them into a structured report.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: "https://vuegen.readthedocs.io"
+  dev_url: "https://github.com/Multiomics-Analytics-Group/vuegen"
+
+extra:
+  recipe-maintainers:
+    - sayalaruano
+    - enryH

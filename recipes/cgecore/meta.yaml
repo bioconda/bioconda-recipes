@@ -1,6 +1,6 @@
 {% set name = "cgecore" %}
-{% set version = "1.5.6" %}
-{% set sha256 = "310dbaf02c6791dcc17cff7b01930a6260d92328c07cfaaf431742f073fcc758" %}
+{% set version = "2.0.1" %}
+{% set sha256 = "1154efd945622e0282284015815c7d186820262875cec1b80d333585d4170ec4" %}
 
 package:
   name: "{{ name|lower }}"
@@ -13,15 +13,22 @@ source:
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.10
+    - pdm-backend
   run:
-    - python
-    - biopython
+    - python >=3.10
+    - biopython >=1.81
+    - python-dateutil >=2.8.2
+    - gitpython >=3.1.40
+    - numpy >=1.26.2
+    - pandas >=2.1.4
 
 test:
   imports:
@@ -31,13 +38,13 @@ test:
     - cgecore.alignment
     - cgecore.argumentparsing
     - cgecore.cgefinder
-    - cgecore.cmdline
     - cgecore.utility
 
 about:
   home: https://bitbucket.org/genomicepidemiology/cge_core_module
   license: Apache-2.0
   license_family: Apache
+  license_file: LICENSE.txt
   summary: "Center for Genomic Epidemiology Core Module"
   dev_url: https://bitbucket.org/genomicepidemiology/cge_core_module
 
