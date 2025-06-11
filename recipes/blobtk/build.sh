@@ -31,6 +31,6 @@ fi
 
 cd rust
 
-maturin build --release --strip -b pyo3 --interpreter "${PYTHON}"
+maturin build --release --strip --interpreter "${PYTHON}"
 
 ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
