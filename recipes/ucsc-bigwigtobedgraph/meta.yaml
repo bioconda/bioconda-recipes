@@ -1,47 +1,57 @@
 {% set package = "ucsc-bigwigtobedgraph" %}
 {% set program = "bigWigToBedGraph" %}
-{% set version = "448" %}
-{% set sha256 = "90c28f06f3f5b6d79ff141cbf745e6a0c1b289a2ce640bbd1b0a14c826f08a85" %}
+{% set version = "469" %}
+{% set sha256 = "3f95b26ccca854c965c05773481c269f2a0e6fb1906ae8a7fe2437c6ad543963" %}
 
 package:
-  name: {{ package }}
-  version: {{ version }}
+  name: "{{ package }}"
+  version: "{{ version }}"
 
 source:
-  url: http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz
-  sha256: {{ sha256 }}
+  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
+  sha256: "{{ sha256 }}"
   patches:
-    - include.patch
+    - "include.patch"
 
 build:
-  number: 0
   skip: True  # [osx]
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(package, max_pin=None) }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - binutils # [linux]
   host:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
     - libopenssl-static
     - zlib
+
   run:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
+    - libopenssl-static
+    - zlib
 
 test:
   commands:
-    # just check for existence, because the individual packages have no unified behavior
-    - which {{ program }}
+    # just check for existence and exec bit, because the individual packages have no unified behavior
+    - test -x ${PREFIX}/bin/{{ program }}
 
 about:
-  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "varies; see http://genome.ucsc.edu/license"
+  home: "https://hgdownload.cse.ucsc.edu/admin/exe/"
+  license: "Varies; see http://genome.ucsc.edu/license"
   summary: "Convert from bigWig to bedGraph format."
+  dev_url: "https://github.com/ucscGenomeBrowser/kent"
+  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/master/README"
+
+extra:
+  identifiers:
+    - biotools:UCSC_Genome_Browser_Utilities
+    - doi:10.1093/bib/bbs038
+  additional-platforms:
+    - linux-aarch64

@@ -1,30 +1,42 @@
-{% set version = "1.60.0" %}
+{% set version = "1.66.0" %}
 {% set name = "netresponse" %}
-{% set bioc = "3.17" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 16f0c62907c79eb5d346ae329345310f
+about:
+  description: Algorithms for functional network analysis. Includes an implementation of a variational Dirichlet process Gaussian mixture model for nonparametric mixture modeling.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Functional Network Analysis
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-netresponse", max_pin="x.x") }}'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:netresponse
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
   host:
-    - 'bioconductor-biocstyle >=2.28.0,<2.29.0'
-    - 'bioconductor-graph >=1.78.0,<1.79.0'
-    - 'bioconductor-minet >=3.58.0,<3.59.0'
-    - 'bioconductor-qvalue >=2.32.0,<2.33.0'
-    - 'bioconductor-rgraphviz >=2.44.0,<2.45.0'
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-minet >=3.64.0,<3.65.0
+    - bioconductor-qvalue >=2.38.0,<2.39.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
     - r-base
     - r-ggplot2
     - r-igraph
@@ -36,11 +48,11 @@ requirements:
     - libblas
     - liblapack
   run:
-    - 'bioconductor-biocstyle >=2.28.0,<2.29.0'
-    - 'bioconductor-graph >=1.78.0,<1.79.0'
-    - 'bioconductor-minet >=3.58.0,<3.59.0'
-    - 'bioconductor-qvalue >=2.32.0,<2.33.0'
-    - 'bioconductor-rgraphviz >=2.44.0,<2.45.0'
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-minet >=3.64.0,<3.65.0
+    - bioconductor-qvalue >=2.38.0,<2.39.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
     - r-base
     - r-ggplot2
     - r-igraph
@@ -49,16 +61,16 @@ requirements:
     - r-rcolorbrewer
     - r-reshape2
     - r-rmarkdown
-  build:
-    - {{ compiler('c') }}
-    - make
+
+source:
+  md5: e20c3007cae4033b71198709e0240d4a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>=2)'
-  summary: 'Functional Network Analysis'
-  description: 'Algorithms for functional network analysis. Includes an implementation of a variational Dirichlet process Gaussian mixture model for nonparametric mixture modeling.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

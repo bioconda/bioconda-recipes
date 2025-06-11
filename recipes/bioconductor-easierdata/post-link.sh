@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "easierdata-1.6.0"
+installBiocDataPackage.sh "easierdata-1.12.0"

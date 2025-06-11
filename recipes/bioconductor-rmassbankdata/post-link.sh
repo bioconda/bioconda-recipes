@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "rmassbankdata-1.38.0"
+installBiocDataPackage.sh "rmassbankdata-1.44.0"

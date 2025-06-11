@@ -1,0 +1,92 @@
+{% set name = "mgnify-pipelines-toolkit" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/mgnify_pipelines_toolkit-{{ version }}.tar.gz
+  sha256: 7a01927a6ac758002b82dcf9042f2a5cd0b859b4f3162e0108788b5738ddd6c5
+
+build:
+  entry_points:
+    - get_subunits = mgnify_pipelines_toolkit.analysis.shared.get_subunits:main
+    - get_subunits_coords = mgnify_pipelines_toolkit.analysis.shared.get_subunits_coords:main
+    - mapseq2biom = mgnify_pipelines_toolkit.analysis.shared.mapseq2biom:main
+    - fastq_suffix_header_check = mgnify_pipelines_toolkit.analysis.shared.fastq_suffix_header_check:main
+    - library_strategy_check = mgnify_pipelines_toolkit.analysis.shared.library_strategy_check:main
+    - study_summary_generator = mgnify_pipelines_toolkit.analysis.shared.study_summary_generator:main
+    - are_there_primers = mgnify_pipelines_toolkit.analysis.amplicon.are_there_primers:main
+    - assess_inflection_point_mcp = mgnify_pipelines_toolkit.analysis.amplicon.assess_inflection_point_mcp:main
+    - assess_mcp_proportions = mgnify_pipelines_toolkit.analysis.amplicon.assess_mcp_proportions:main
+    - classify_var_regions = mgnify_pipelines_toolkit.analysis.amplicon.classify_var_regions:main
+    - find_mcp_inflection_points = mgnify_pipelines_toolkit.analysis.amplicon.find_mcp_inflection_points:main
+    - make_asv_count_table = mgnify_pipelines_toolkit.analysis.amplicon.make_asv_count_table:main
+    - remove_ambiguous_reads = mgnify_pipelines_toolkit.analysis.amplicon.remove_ambiguous_reads:main
+    - rev_comp_se_primers = mgnify_pipelines_toolkit.analysis.amplicon.rev_comp_se_primers:main
+    - standard_primer_matching = mgnify_pipelines_toolkit.analysis.amplicon.standard_primer_matching:main
+    - mapseq_to_asv_table = mgnify_pipelines_toolkit.analysis.amplicon.mapseq_to_asv_table:main
+    - primer_val_classification = mgnify_pipelines_toolkit.analysis.amplicon.primer_val_classification:main
+    - add_rhea_chebi_annotation = mgnify_pipelines_toolkit.analysis.assembly.add_rhea_chebi_annotation:main
+    - combined_gene_caller_merge = mgnify_pipelines_toolkit.analysis.assembly.combined_gene_caller_merge:main
+    - generate_gaf = mgnify_pipelines_toolkit.analysis.assembly.generate_gaf:main
+    - summarise_goslims = mgnify_pipelines_toolkit.analysis.assembly.summarise_goslims:main
+    - fasta_to_delimited = mgnify_pipelines_toolkit.utils.fasta_to_delimited:main
+    - get_mpt_version = mgnify_pipelines_toolkit.utils.get_mpt_version:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('mgnify-pipelines-toolkit', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - setuptools >=61.0
+    - pip
+  run:
+    - python >=3.9
+    - biopython ==1.82
+    - numpy ==1.26.0
+    - pandas ==2.0.2
+    - regex ==2023.12.25
+    - click
+    - pandera
+    - requests
+    - pyfastx >=2.2.0
+    - intervaltree ==3.1.0
+
+test:
+  imports:
+    - mgnify_pipelines_toolkit
+  commands:
+    - get_subunits --help
+    - get_subunits_coords --help
+    - mapseq2biom --help
+    - are_there_primers --help
+    - assess_inflection_point_mcp --help
+    - assess_mcp_proportions --help
+    - classify_var_regions --help
+    - find_mcp_inflection_points --help
+    - make_asv_count_table --help
+    - remove_ambiguous_reads --help
+    - rev_comp_se_primers --help
+    - standard_primer_matching --help
+    - combined_gene_caller_merge --help
+
+about:
+  home: https://github.com/EBI-Metagenomics/mgnify-pipelines-toolkit
+  summary: "Collection of scripts and tools for MGnify pipelines."
+  description: |
+    This package contains a collection of scripts used by MGnify
+    pipelines
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  dev_url: https://github.com/EBI-Metagenomics/mgnify-pipelines-toolkit
+
+extra:
+  recipe-maintainers:
+    - chrisAta
+    - mberacochea

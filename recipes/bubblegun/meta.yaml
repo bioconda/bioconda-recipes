@@ -1,0 +1,40 @@
+{% set name = "BubbleGun" %}
+{% set version = "1.1.10" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: "https://github.com/fawaz-dabbaghieh/bubble_gun/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: 64525e265388c10d12744790b71766890fac1d87198dccd40eee6f8369fd3bf8
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - BubbleGun=BubbleGun.main:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_compatible('BubbleGun', max_pin="x") }}
+    
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - setuptools
+  run:
+    - python >=3.6
+
+test:
+  commands:
+    - BubbleGun -h
+
+about:
+  home: "https://github.com/fawaz-dabbaghieh/bubble_gun"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'BubbleGun is a tool for detecting bubbles and superbubbles in GFA graphs, and reports them and their nested structures.'
+  doc_url: "https://github.com/fawaz-dabbaghieh/bubble_gun/blob/v{{ version }}/README.md"
+  dev_url: "https://github.com/fawaz-dabbaghieh"

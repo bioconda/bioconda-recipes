@@ -1,5 +1,5 @@
 {% set name = "hybpiper" %}
-{% set version = "2.1.6" %}
+{% set version = "2.3.2" %}
 
 package:
   name: {{ name|lower }}
@@ -7,18 +7,22 @@ package:
 
 source:
   url: "https://github.com/mossmatters/HybPiper/archive/refs/tags/v{{ version }}.tar.gz"
-  sha256: ac175b2b02cd9fcc1d195a4edd68dd1e004c6d2e2bb5658f4cce9b2a4339b4c9
+  sha256: ca59cfd837606d28de093dd6603175e3dc6452fc3e7957521defe7ae281b5acc
 
 build:
   number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  entry_points:
+    - hybpiper = hybpiper.hybpiper_main:main
+  run_exports:
+    - {{ pin_subpackage('hybpiper', max_pin="x") }}
 
 requirements:
-  build:
-    - {{ compiler('c') }}
-    - setuptools
   host:
-    - python >=3.7.0 # [linux]
-    - python >=3.7.0,<3.10 # [osx]
+    - python >=3.7
+    - pip
+    - setuptools
   run:
     - bbmap >=38.44
     - biopython >=1.80
@@ -34,9 +38,8 @@ requirements:
     - progressbar2 >=3.38.0
     - psutil >=5.9.0
     - samtools >=1.14
-    - seaborn >=0.11.1
-    - spades >=3.15.2 # [osx]
-    - spades >=3.15.4 # [linux]
+    - seaborn-base >=0.11.1
+    - spades >=4.0.0
     - trimmomatic
 
 test:
@@ -55,10 +58,10 @@ test:
     - hybpiper.fix_targetfile
 
 about:
-    home: "https://github.com/mossmatters/HybPiper"
-    license: GPL-3.0-or-later
-    license_family: GPL
-    license_file: LICENSE.txt
-    summary: >
-      HybPiper is a suite of Python scripts/modules for targeted sequence
-      capture
+  home: "https://github.com/mossmatters/HybPiper"
+  dev_url: "https://github.com/mossmatters/HybPiper"
+  doc_url: "https://github.com/mossmatters/HybPiper/wiki"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "LICENSE.txt"
+  summary: "HybPiper is a suite of Python scripts/modules for targeted sequence capture."

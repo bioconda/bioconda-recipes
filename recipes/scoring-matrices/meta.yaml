@@ -1,0 +1,53 @@
+{% set name = "scoring-matrices" %}
+{% set module = "scoring_matrices" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ module }}-{{ version }}.tar.gz"
+  sha256: 0eba50087f65f752cb7ac3c20f58cbbae6650ed923c3c48070245b64bdebb3cb
+
+build:
+  number: 1
+  skip: True  # [py < 37]
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - 'cmake >=3.20'
+    - make
+  host:
+    - python
+    - pip
+    - cython
+    - scikit-build-core
+  run:
+    - python
+
+test:
+  imports:
+    - {{ module }}
+  commands:
+    - python -m unittest -vv {{ module }}.tests
+
+about:
+  home: https://github.com/althonos/scoring-matrices
+  license: MIT
+  license_family: MIT
+  license_file: COPYING
+  summary: "Dependency free, Cython-compatible scoring matrices to use with biological sequences."
+  doc_url: https://scoring-matrices.readthedocs.org
+  dev_url: https://github.com/althonos/scoring-matrices
+
+extra:
+  recipe-maintainers:
+    - althonos
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

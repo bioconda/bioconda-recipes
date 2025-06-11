@@ -1,32 +1,36 @@
-{% set version = "1.8.5" %}
+{% set version = "1.14.0" %}
 {% set name = "BioNERO" %}
-{% set bioc = "3.17" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: e673d1c24445c648a2a152f8408d4f09
+about:
+  description: BioNERO aims to integrate all aspects of biological network inference in a single package, including data preprocessing, exploratory analyses, network inference, and analyses for biological interpretations. BioNERO can be used to infer gene coexpression networks (GCNs) and gene regulatory networks (GRNs) from gene expression data. Additionally, it can be used to explore topological properties of protein-protein interaction (PPI) networks. GCN inference relies on the popular WGCNA algorithm. GRN inference is based on the "wisdom of the crowds" principle, which consists in inferring GRNs with multiple algorithms (here, CLR, GENIE3 and ARACNE) and calculating the average rank for each interaction pair. As all steps of network analyses are included in this package, BioNERO makes users avoid having to learn the syntaxes of several packages and how to communicate between them. Finally, users can also identify consensus modules across independent expression sets and calculate intra and interspecies module preservation statistics between different networks.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Biological Network Reconstruction Omnibus
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-bionero", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, testthat (>= 3.0.0), BiocStyle, DESeq2, networkD3, covr
 requirements:
+
   host:
-    - 'bioconductor-biocparallel >=1.34.0,<1.35.0'
-    - 'bioconductor-complexheatmap >=2.16.0,<2.17.0'
-    - 'bioconductor-genie3 >=1.22.0,<1.23.0'
-    - 'bioconductor-minet >=3.58.0,<3.59.0'
-    - 'bioconductor-summarizedexperiment >=1.30.0,<1.31.0'
-    - 'bioconductor-sva >=3.48.0,<3.49.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-genie3 >=1.28.0,<1.29.0
+    - bioconductor-minet >=3.64.0,<3.65.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-sva >=3.54.0,<3.55.0
     - r-base
     - r-dynamictreecut
     - r-ggdendro
@@ -42,13 +46,14 @@ requirements:
     - r-reshape2
     - r-rlang
     - r-wgcna
+
   run:
-    - 'bioconductor-biocparallel >=1.34.0,<1.35.0'
-    - 'bioconductor-complexheatmap >=2.16.0,<2.17.0'
-    - 'bioconductor-genie3 >=1.22.0,<1.23.0'
-    - 'bioconductor-minet >=3.58.0,<3.59.0'
-    - 'bioconductor-summarizedexperiment >=1.30.0,<1.31.0'
-    - 'bioconductor-sva >=3.48.0,<3.49.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-genie3 >=1.28.0,<1.29.0
+    - bioconductor-minet >=3.64.0,<3.65.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-sva >=3.54.0,<3.55.0
     - r-base
     - r-dynamictreecut
     - r-ggdendro
@@ -64,13 +69,16 @@ requirements:
     - r-reshape2
     - r-rlang
     - r-wgcna
+
+source:
+  md5: bd8a627c25eb9e60f504ca4b30c01a56
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Biological Network Reconstruction Omnibus'
-  description: 'BioNERO aims to integrate all aspects of biological network inference in a single package, including data preprocessing, exploratory analyses, network inference, and analyses for biological interpretations. BioNERO can be used to infer gene coexpression networks (GCNs) and gene regulatory networks (GRNs) from gene expression data. Additionally, it can be used to explore topological properties of protein-protein interaction (PPI) networks. GCN inference relies on the popular WGCNA algorithm. GRN inference is based on the "wisdom of the crowds" principle, which consists in inferring GRNs with multiple algorithms (here, CLR, GENIE3 and ARACNE) and calculating the average rank for each interaction pair. As all steps of network analyses are included in this package, BioNERO makes users avoid having to learn the syntaxes of several packages and how to communicate between them. Finally, users can also identify consensus modules across independent expression sets and calculate intra and interspecies module preservation statistics between different networks.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

@@ -1,6 +1,6 @@
-{% set version = "1.14.1" %}
+{% set version = "1.18.0" %}
 {% set name = "Maaslin2" %}
-{% set bioc = "3.17" %}
+{% set bioc = "3.19" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -11,18 +11,21 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 7f70167c230537ebff1f132b2a2d46bf
+  md5: 65689f289ef30a89d727f676e645719a
+  patches:
+    - rpath.patch
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-maaslin2", max_pin="x.x") }}'
   noarch: generic
 # Suggests: knitr, testthat (>= 2.1.0), rmarkdown, markdown
 requirements:
   host:
-    - 'bioconductor-edger >=3.42.0,<3.43.0'
-    - 'bioconductor-metagenomeseq >=1.42.0,<1.43.0'
+    - 'bioconductor-edger >=4.0.0,<4.1.0'
+    - 'bioconductor-metagenomeseq >=1.43.0,<1.44.0'
     - r-base
     - r-biglm
     - r-car
@@ -46,8 +49,8 @@ requirements:
     - r-tibble
     - r-vegan
   run:
-    - 'bioconductor-edger >=3.42.0,<3.43.0'
-    - 'bioconductor-metagenomeseq >=1.42.0,<1.43.0'
+    - 'bioconductor-edger >=4.0.0,<4.1.0'
+    - 'bioconductor-metagenomeseq >=1.43.0,<1.44.0'
     - r-base
     - r-biglm
     - r-car
@@ -73,6 +76,7 @@ requirements:
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
+    - Maaslin2.R --help
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'MIT + file LICENSE'

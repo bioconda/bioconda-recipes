@@ -11,4 +11,4 @@ mkdir -p ${PREFIX}/bin
 
 # build shared Python module with Rust
 maturin build --release --strip -f
-${PYTHON} -m pip install -vv .
+${PYTHON} -m pip install -vvv --no-deps --no-build-isolation .

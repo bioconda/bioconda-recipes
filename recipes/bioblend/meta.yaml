@@ -1,29 +1,34 @@
-{% set version = "1.2.0" %}
+{% set name = "bioblend" %}
+{% set version = "1.5.0" %}
 
 package:
-  name: bioblend
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://pypi.io/packages/source/b/bioblend/bioblend-{{ version }}.tar.gz
-  sha256: 90be67c5e0dbdb1235fd9a8cb463b5ded1c6a2d6a8303913649068973d037903
+  sha256: a31dd4dc7dbe4bf18eaf8c9bf8bc645e84b7988cb3e4b25d8f52014fc52d9151
 
 build:
-  noarch: python
-  script: python -m pip install --no-deps --ignore-installed .
   number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  entry_points:
+    - bioblend-galaxy-tests = bioblend._tests.pytest_galaxy_test_wrapper:main [testing]
+  run_exports:
+    - {{ pin_subpackage('bioblend', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.7
-    - setuptools
+    - python >=3.0
     - pip
+    - setuptools
   run:
-    - python >=3.7
+    - python >=3.9
     - requests >=2.20.0
     - requests-toolbelt >=0.5.1,!=0.9.0
     - tuspy
-    - typing-extensions
+    - pyyaml
 
 test:
   imports:
@@ -60,7 +65,10 @@ test:
     - bioblend.util
 
 about:
-  home: https://bioblend.readthedocs.org/
-  license: MIT License
-  summary: 'A Python library for interacting with the Galaxy API'
+  home: "https://github.com/galaxyproject/bioblend"
+  license: MIT
+  summary: 'A Python library for interacting with the Galaxy API.'
   license_family: MIT
+  license_file: LICENSE
+  doc_url: "https://bioblend.readthedocs.org/"
+  dev_url: "https://github.com/galaxyproject/bioblend"

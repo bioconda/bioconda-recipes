@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "scatac.explorer-1.6.0"
+installBiocDataPackage.sh "scatac.explorer-1.12.1"

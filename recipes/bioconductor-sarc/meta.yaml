@@ -1,0 +1,76 @@
+{% set version = "1.4.0" %}
+{% set name = "SARC" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: Imports a cov/coverage file (normalised read coverages from BAM files) and a cnv file (list of CNVs - similiar to a BED file) from WES/ WGS CNV (copy number variation) detection pipelines and utilises several metrics to weigh the likelihood of a sample containing a detected CNV being a true CNV or a false positive. Highly useful for diagnostic testing to filter out false positives to provide clinicians with fewer variants to interpret. SARC uniquely only used cov and csv (similiar to BED file) files which are the common CNV pipeline calling filetypes, and can be used as to supplement the Interactive Genome Browser (IGV) to generate many figures automatedly, which can be especially helpful in large cohorts with 100s-1000s of patients.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Statistical Analysis of Regions with CNVs
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-sarc", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, kableExtra, testthat, TxDb.Hsapiens.UCSC.hg38.knownGene, Homo.sapiens, TxDb.Mmusculus.UCSC.mm10.knownGene, Mus.musculus, GenomicAlignments
+requirements:
+  host:
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-multtest >=2.62.0,<2.63.0
+    - bioconductor-plyranges >=1.26.0,<1.27.0
+    - bioconductor-raggedexperiment >=1.30.0,<1.31.0
+    - r-base
+    - r-data.table
+    - r-desctools
+    - r-ggplot2
+    - r-gridextra
+    - r-gtable
+    - r-metap
+    - r-plotly
+    - r-rcolorbrewer
+    - r-reshape2
+    - r-scales
+    - r-tidyverse
+  run:
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-multtest >=2.62.0,<2.63.0
+    - bioconductor-plyranges >=1.26.0,<1.27.0
+    - bioconductor-raggedexperiment >=1.30.0,<1.31.0
+    - r-base
+    - r-data.table
+    - r-desctools
+    - r-ggplot2
+    - r-gridextra
+    - r-gtable
+    - r-metap
+    - r-plotly
+    - r-rcolorbrewer
+    - r-reshape2
+    - r-scales
+    - r-tidyverse
+
+source:
+  md5: e9da6decb3dcdfca23fcb7cef3cfe455
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

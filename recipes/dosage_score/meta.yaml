@@ -1,0 +1,46 @@
+{% set name = "dosage_score" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "4d5761a1b0284bba5c0291359b24e7abf9a7e729b06917c324bf846d59b4306c" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/SegawaTenta/Dosage-score/releases/download/v{{ version }}/Dosage-score-main.zip
+  sha256: {{ sha256 }}
+
+build:
+  script: python -m pip install --no-deps --ignore-installed .
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('dosage_score', max_pin="x") }}
+
+requirements:
+  build:
+    - python >=3.7
+    - setuptools
+    - pip
+  run:
+    - python >=3.7
+    - pandas =1.5.0 
+    - samtools >=1.16
+    - matplotlib-base
+    - numpy
+
+test:
+  commands:
+    - dosage_score -h
+    - dosage_score_plot -h
+
+about:
+  home: https://github.com/SegawaTenta/Dosage-score
+  summary: 'Dosage-score: pipline to estimate dosage of each genomic region'
+  license: 'GPL-3.0-or-later'
+  license_family: GPL
+  license_file: LICENSE.txt
+
+extra:
+  identifiers:
+    - biotools:dosage_score
