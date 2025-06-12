@@ -9,4 +9,4 @@ sed "s=version=$PKG_VERSION=" bin/zdb > ${PREFIX}/bin/zdb
 
 chmod u+x ${PREFIX}/bin/zdb
 
-mv bin/ annotation_pipeline.nf nextflow.config db_setup.nf zdb/ conda/ webapp FAQ.txt README.md ${ZDB_DIR}
+mv bin/ annotation_pipeline.nf nextflow.config db_setup.nf zdb/ conda/ utils/ webapp FAQ.txt README.md ${ZDB_DIR}

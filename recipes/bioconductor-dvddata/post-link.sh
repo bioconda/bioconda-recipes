@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "dvddata-1.36.0"
+installBiocDataPackage.sh "dvddata-1.42.0"

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "duoclustering2018-1.18.0"
+installBiocDataPackage.sh "duoclustering2018-1.24.0"

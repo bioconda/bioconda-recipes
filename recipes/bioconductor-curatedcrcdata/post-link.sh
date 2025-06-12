@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "curatedcrcdata-2.32.0"
+installBiocDataPackage.sh "curatedcrcdata-2.34.0"

@@ -1,4 +1,4 @@
-{% set version = "2.0.4" %}
+{% set version = "2.1.2" %}
 
 package:
   name: crispector2
@@ -9,20 +9,21 @@ build:
   entry_points:
     - crispector = crispector2.cli:main
   noarch: python
-  script: python -m pip install . --no-deps -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  run_exports:
+    - {{ pin_subpackage('crispector2', max_pin="x") }}
 
 source:
   url: https://github.com/theAguy/crispector2/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 5d90bd9148931d6c905eee6e757b60d53fd7fb2da9ec3289d0ba9b57891c9308
+  sha256: 1c624fda975f293b5acab8b2c6afe98cacaaa77a79dc54c923b18c08fa1942cc
 
 requirements:
   host:
-    - python 3.7
+    - python >=3.8
     - pip
-    - setuptools
   run:
-    - python 3.7
-    - biopython >=1.74
+    - python >=3.8
+    - biopython >=1.74, <=1.79 # Bio.SubsMat
     - fastp
     - python-edlib
     - click >=7.0
@@ -36,6 +37,7 @@ requirements:
     - statsmodels
     - jinja2
     - tqdm >=4.66.0
+    - mpmath
 
 test:
   commands:

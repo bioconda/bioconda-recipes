@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "ahpubmeddbs-1.6.0"
+installBiocDataPackage.sh "ahpubmeddbs-1.8.0"

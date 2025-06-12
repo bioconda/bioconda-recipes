@@ -1,28 +1,35 @@
 {% set name = "easypqp" %}
-{% set version = "0.1.39" %}
-{% set sha256 = "38da8371287ecaf8dadbba620a222fa1f71c584043cb62b0d3e68bc563e0d235" %}
+{% set version = "0.1.52" %}
+{% set sha256 = "dbbcce04a64a2f8454cd8fd171c36fbea054c40141e6151fb2c1439333a8f8cf" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/easypqp-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/easypqp-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps -vvv
+  script: |
+    export MPLCONFIGDIR=${PREFIX}/tmp/matplotlib-cache
+    export XDG_CACHE_HOME=${PREFIX}/tmp/fontconfig-cache
+    mkdir -p ${MPLCONFIGDIR} ${XDG_CACHE_HOME}
+    {{ PYTHON }} -m pip install . --no-cache-dir --no-deps --no-build-isolation -vvv
   entry_points:
     - easypqp=easypqp.main:cli
+  run_exports:
+    - {{ pin_subpackage('easypqp', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.9
     - pip
+    - setuptools
   run:
-    - python >=3.6
+    - python >=3.9
     - numba
     - click
     - numpy
@@ -34,7 +41,7 @@ requirements:
     - pyprophet
     - pyopenms
     - matplotlib-base
-    - seaborn
+    - seaborn-base
     - tqdm
 
 test:

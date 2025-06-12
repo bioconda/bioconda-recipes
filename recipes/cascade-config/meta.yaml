@@ -1,0 +1,45 @@
+{% set name = "cascade-config" %}
+{% set version = "0.4.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/cascade_config-{{ version }}.tar.gz
+  sha256: cb3cffd3e9899b6aa46f29e5462b413cfdd94e74e36748e977d1949c46478715
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: "{{ PYTHON }} -m pip install . --no-deps -vvv"
+
+requirements:
+  host:
+    - python >=3.6
+    - flit-core
+    - pip
+  run:
+    - python >=3.6
+    - jsonschema
+
+test:
+  imports:
+    - cascade_config
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/RalfG/cascade-config
+  summary: Cascading configuration from the CLI and config files.
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - compomics
+    - RalfG

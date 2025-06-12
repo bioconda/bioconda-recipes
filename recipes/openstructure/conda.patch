@@ -1,0 +1,443 @@
+diff --git a/cmake_support/OST.cmake b/cmake_support/OST.cmake
+index 44591345..9ecbc0c2 100644
+--- a/cmake_support/OST.cmake
++++ b/cmake_support/OST.cmake
+@@ -542,7 +542,7 @@ macro(pymod)
+       set(_PARENT_LIB_NAME "${_PARENT_NAME}")
+     endif()
+     target_link_libraries("_${_LIB_NAME}" ${_PARENT_LIB_NAME} 
+-                          ${Python_LIBRARIES} Boost::python)
++                          Boost::python)
+ 
+     set_target_properties("_${_LIB_NAME}"
+                           PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PYMOD_STAGE_DIR})
+@@ -857,14 +857,8 @@ macro(setup_stage)
+   if (UNIX AND NOT APPLE)
+     check_architecture()
+   endif()
+-  set (ARCH ${CMAKE_NATIVE_ARCH})
+-  if ("${ARCH}" MATCHES "64" AND NOT _UBUNTU_LAYOUT)
+-    set(LIB_DIR lib64  )
+-    set(LIB_STAGE_PATH "${STAGE_DIR}/lib64"  )
+-  else()
+-    set(LIB_DIR lib  )
+-    set(LIB_STAGE_PATH "${STAGE_DIR}/lib"  )
+-  endif()
++  set(LIB_DIR lib  )
++  set(LIB_STAGE_PATH "${STAGE_DIR}/lib"  )
+   if (_UBUNTU_LAYOUT)
+     set(LIBEXEC_PATH ${LIB_DIR}/openstructure/libexec  )
+     set(LIBEXEC_STAGE_PATH ${LIB_STAGE_PATH}/openstructure/libexec  )
+diff --git a/modules/gui/src/CMakeLists.txt b/modules/gui/src/CMakeLists.txt
+index 5c2fd044..b340d273 100644
+--- a/modules/gui/src/CMakeLists.txt
++++ b/modules/gui/src/CMakeLists.txt
+@@ -452,7 +452,6 @@ module(NAME gui SOURCES ${OST_GUI_MOCS} ${OST_GUI_SOURCES}
+                ${OST_GUI_HEADERS}
+        DEPENDS_ON ost_gfx ost_io ost_mol_alg ost_seq_alg
+        LINK ${QT_LIBRARIES}
+-            ${Python_LIBRARIES} 
+             Boost::python
+             ${SPNAV_LIBRARIES}
+         NO_STATIC)
+@@ -469,10 +468,17 @@ qt5_wrap_cpp(OST_GOSTY_MOC "gosty.hh"
+              OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED
+                      -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+ 
+-set(LINK LINK ${QT_LIBRARIES} Boost::program_options)
++find_package(Python 3 COMPONENTS Interpreter Development REQUIRED)
+ 
+-executable_libexec(NAME gosty SOURCES gosty.cc ${OST_GOSTY_MOC}
+-                   ${OST_QT_RESOURCE} DEPENDS_ON ost_gui ${LINK})
++set(GOSTY_LINK_LIBS
++    ${QT_LIBRARIES}
++    ${BOOST_PROGRAM_OPTIONS_LIBRARIES}
++    Python::Python)
++
++executable_libexec(NAME gosty
++                   SOURCES gosty.cc ${OST_GOSTY_MOC} ${OST_QT_RESOURCE}
++                   DEPENDS_ON ost_gui
++                   LINK ${GOSTY_LINK_LIBS})
+            
+ file(GLOB MOC_CXX_FILES moc_*.cxx)
+ 
+diff --git a/modules/gui/src/gosty.cc b/modules/gui/src/gosty.cc
+index 689cbf9e..853899a1 100644
+--- a/modules/gui/src/gosty.cc
++++ b/modules/gui/src/gosty.cc
+@@ -111,11 +111,7 @@ String setup_python_search_path(const String& root, PythonInterpreter& pi)
+ #ifdef _MSC_VER
+   String loc=root+"\\lib\\"+site_pkgs.str()+"\\site-packages";
+ #else  
+-# if (defined(__ppc64__) || defined(__x86_64__)) && !defined(__APPLE__) && !OST_UBUNTU_LAYOUT
+-  String loc=root+"/lib64/"+site_pkgs.str()+"/site-packages";
+-# else
+   String loc=root+"/lib/"+site_pkgs.str()+"/site-packages";
+-# endif
+ #endif
+   pi.AppendModulePath(QString::fromStdString(loc));
+   // dng is an interactive python session, so add '.' to search path
+diff --git a/modules/gui/src/python_shell/python_interpreter.cc b/modules/gui/src/python_shell/python_interpreter.cc
+index 4c2afae4..740dbdc6 100644
+--- a/modules/gui/src/python_shell/python_interpreter.cc
++++ b/modules/gui/src/python_shell/python_interpreter.cc
+@@ -29,7 +29,7 @@
+ #include <string>
+ #include <fstream>
+ 
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <ost/log.hh>
+ 
+ #include <QFile>
+diff --git a/modules/io/src/mol/dcd_io.cc b/modules/io/src/mol/dcd_io.cc
+index d7007443..54499a42 100644
+--- a/modules/io/src/mol/dcd_io.cc
++++ b/modules/io/src/mol/dcd_io.cc
+@@ -25,7 +25,7 @@
+ #include <algorithm>
+ 
+ #include <boost/iostreams/filter/gzip.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ 
+ #include <ost/stdint.hh>
+ #include <ost/log.hh>
+diff --git a/modules/io/src/mol/entity_io_crd_handler.cc b/modules/io/src/mol/entity_io_crd_handler.cc
+index 7956df8c..aa106024 100644
+--- a/modules/io/src/mol/entity_io_crd_handler.cc
++++ b/modules/io/src/mol/entity_io_crd_handler.cc
+@@ -24,7 +24,7 @@
+ #include <iomanip>
+ 
+ #include <boost/iostreams/filter/gzip.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <boost/algorithm/string.hpp>
+ #include <boost/lexical_cast.hpp>
+ #include <boost/format.hpp>
+diff --git a/modules/io/src/mol/entity_io_mae_handler.cc b/modules/io/src/mol/entity_io_mae_handler.cc
+index 22d6d663..b692daaa 100644
+--- a/modules/io/src/mol/entity_io_mae_handler.cc
++++ b/modules/io/src/mol/entity_io_mae_handler.cc
+@@ -28,7 +28,7 @@
+ #include <ctype.h>
+ 
+ #include <boost/iostreams/filter/gzip.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <boost/algorithm/string.hpp>
+ #include <boost/format.hpp>
+ #include <boost/regex.hpp>
+diff --git a/modules/io/src/mol/entity_io_mmcif_handler.cc b/modules/io/src/mol/entity_io_mmcif_handler.cc
+index fe567478..7538e3d6 100644
+--- a/modules/io/src/mol/entity_io_mmcif_handler.cc
++++ b/modules/io/src/mol/entity_io_mmcif_handler.cc
+@@ -24,7 +24,7 @@
+ #include <iomanip>
+ 
+ #include <boost/algorithm/string.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <boost/format.hpp>
+ #include <boost/lexical_cast.hpp>
+ 
+diff --git a/modules/io/src/mol/entity_io_pdb_handler.cc b/modules/io/src/mol/entity_io_pdb_handler.cc
+index 82f6c957..c56f6356 100644
+--- a/modules/io/src/mol/entity_io_pdb_handler.cc
++++ b/modules/io/src/mol/entity_io_pdb_handler.cc
+@@ -24,7 +24,7 @@
+ #include <iomanip>
+ 
+ #include <boost/algorithm/string.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <boost/format.hpp>
+ #include <boost/lexical_cast.hpp>
+ 
+diff --git a/modules/io/src/mol/entity_io_pqr_handler.cc b/modules/io/src/mol/entity_io_pqr_handler.cc
+index ccd96a48..b0d775ab 100644
+--- a/modules/io/src/mol/entity_io_pqr_handler.cc
++++ b/modules/io/src/mol/entity_io_pqr_handler.cc
+@@ -25,7 +25,7 @@
+ #include <iomanip>
+ 
+ #include <boost/iostreams/filter/gzip.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <boost/algorithm/string.hpp>
+ #include <boost/lexical_cast.hpp>
+ #include <boost/format.hpp>
+diff --git a/modules/io/src/mol/pdb_reader.cc b/modules/io/src/mol/pdb_reader.cc
+index d6bdda56..6523e9d2 100644
+--- a/modules/io/src/mol/pdb_reader.cc
++++ b/modules/io/src/mol/pdb_reader.cc
+@@ -17,7 +17,7 @@
+ // 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ //------------------------------------------------------------------------------
+ #include <boost/iostreams/filter/gzip.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <boost/algorithm/string.hpp>
+ #include <boost/algorithm/string/trim.hpp>
+ 
+diff --git a/modules/io/src/mol/pdb_writer.cc b/modules/io/src/mol/pdb_writer.cc
+index 53880452..d383d5a4 100644
+--- a/modules/io/src/mol/pdb_writer.cc
++++ b/modules/io/src/mol/pdb_writer.cc
+@@ -25,7 +25,7 @@
+ 
+ #include <boost/format.hpp>
+ #include <boost/iostreams/filter/gzip.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <boost/algorithm/string.hpp>
+ 
+ #include <ost/base.hh>
+diff --git a/modules/io/src/mol/sdf_reader.cc b/modules/io/src/mol/sdf_reader.cc
+index 31efdd76..ed9102ad 100644
+--- a/modules/io/src/mol/sdf_reader.cc
++++ b/modules/io/src/mol/sdf_reader.cc
+@@ -21,7 +21,7 @@
+  */
+ 
+ #include <boost/algorithm/string.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <boost/format.hpp>
+ #include <boost/iostreams/filter/gzip.hpp>
+ #include <boost/lexical_cast.hpp>
+diff --git a/modules/io/src/mol/sdf_writer.hh b/modules/io/src/mol/sdf_writer.hh
+index 929be1d3..36cc8bd2 100644
+--- a/modules/io/src/mol/sdf_writer.hh
++++ b/modules/io/src/mol/sdf_writer.hh
+@@ -27,7 +27,7 @@
+ #include <iomanip>
+ 
+ #include <boost/filesystem/fstream.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <boost/algorithm/string.hpp>
+ #include <boost/lexical_cast.hpp>
+ #include <boost/format.hpp>
+diff --git a/modules/io/src/mol/surface_io_msms_handler.cc b/modules/io/src/mol/surface_io_msms_handler.cc
+index 9c10752b..02384a22 100644
+--- a/modules/io/src/mol/surface_io_msms_handler.cc
++++ b/modules/io/src/mol/surface_io_msms_handler.cc
+@@ -22,7 +22,7 @@
+ #include <sstream>
+ 
+ #include <ost/log.hh>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include "surface_io_msms_handler.hh"
+ 
+ namespace bf = boost::filesystem;
+diff --git a/modules/io/src/seq/clustal_io_handler.cc b/modules/io/src/seq/clustal_io_handler.cc
+index 8eb8eb65..d4d30a83 100644
+--- a/modules/io/src/seq/clustal_io_handler.cc
++++ b/modules/io/src/seq/clustal_io_handler.cc
+@@ -20,7 +20,7 @@
+ #include <map>
+ #include <ost/message.hh>
+ #include <boost/filesystem/fstream.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <boost/algorithm/string.hpp>
+ #include <boost/format.hpp>
+ 
+diff --git a/modules/io/src/seq/fasta_io_handler.cc b/modules/io/src/seq/fasta_io_handler.cc
+index 61bb43ba..c35119c5 100644
+--- a/modules/io/src/seq/fasta_io_handler.cc
++++ b/modules/io/src/seq/fasta_io_handler.cc
+@@ -19,7 +19,7 @@
+ #include "fasta_io_handler.hh"
+ #include <ost/message.hh>
+ #include <boost/filesystem/fstream.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <boost/algorithm/string.hpp>
+ #include <boost/format.hpp>
+ 
+diff --git a/modules/io/src/seq/hhm_io_handler.cc b/modules/io/src/seq/hhm_io_handler.cc
+index 9f69691a..507f655b 100644
+--- a/modules/io/src/seq/hhm_io_handler.cc
++++ b/modules/io/src/seq/hhm_io_handler.cc
+@@ -24,7 +24,7 @@
+ #include "hhm_io_handler.hh"
+ 
+ #include <boost/algorithm/string/predicate.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <boost/filesystem/fstream.hpp>
+ #include <boost/iostreams/filter/gzip.hpp>
+ #include <boost/iostreams/filtering_stream.hpp>
+diff --git a/modules/io/src/seq/pir_io_handler.cc b/modules/io/src/seq/pir_io_handler.cc
+index a84710b7..34ba6f28 100644
+--- a/modules/io/src/seq/pir_io_handler.cc
++++ b/modules/io/src/seq/pir_io_handler.cc
+@@ -19,7 +19,7 @@
+ #include "pir_io_handler.hh"
+ #include <ost/message.hh>
+ #include <boost/filesystem/fstream.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <boost/algorithm/string.hpp>
+ #include <boost/format.hpp>
+ 
+diff --git a/modules/io/src/seq/promod_io_handler.cc b/modules/io/src/seq/promod_io_handler.cc
+index 612ca2b1..3c402913 100644
+--- a/modules/io/src/seq/promod_io_handler.cc
++++ b/modules/io/src/seq/promod_io_handler.cc
+@@ -24,7 +24,7 @@
+ 
+ #include <ost/message.hh>
+ #include <boost/filesystem/fstream.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <boost/algorithm/string.hpp>
+ #include <boost/format.hpp>
+ #include <boost/algorithm/string/erase.hpp>
+diff --git a/modules/io/src/seq/pssm_io_handler.cc b/modules/io/src/seq/pssm_io_handler.cc
+index ba0b898b..205eece7 100644
+--- a/modules/io/src/seq/pssm_io_handler.cc
++++ b/modules/io/src/seq/pssm_io_handler.cc
+@@ -24,7 +24,7 @@
+ #include "pssm_io_handler.hh"
+ 
+ #include <boost/algorithm/string/predicate.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <boost/filesystem/fstream.hpp>
+ #include <boost/iostreams/filter/gzip.hpp>
+ #include <boost/iostreams/filtering_stream.hpp>
+diff --git a/modules/mol/alg/src/entity_to_density.cc b/modules/mol/alg/src/entity_to_density.cc
+index b6ac49ef..201b7dfc 100644
+--- a/modules/mol/alg/src/entity_to_density.cc
++++ b/modules/mol/alg/src/entity_to_density.cc
+@@ -2,7 +2,7 @@
+ #include <cmath>
+ 
+ #include <boost/filesystem/fstream.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <boost/algorithm/string.hpp>
+ 
+ #include <ost/log.hh>
+diff --git a/modules/mol/alg/src/lddt.cc b/modules/mol/alg/src/lddt.cc
+index e76621b0..07c01826 100644
+--- a/modules/mol/alg/src/lddt.cc
++++ b/modules/mol/alg/src/lddt.cc
+@@ -24,7 +24,7 @@
+ #endif
+ #include <boost/program_options.hpp>
+ #include <boost/filesystem/fstream.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <ost/base.hh>
+ #include <ost/boost_filesystem_helper.hh>
+ #include <ost/mol/chain_view.hh>
+diff --git a/modules/mol/alg/src/local_dist_diff_test.cc b/modules/mol/alg/src/local_dist_diff_test.cc
+index 1182dc37..caf6f7bc 100644
+--- a/modules/mol/alg/src/local_dist_diff_test.cc
++++ b/modules/mol/alg/src/local_dist_diff_test.cc
+@@ -5,7 +5,7 @@
+ #include <ost/platform.hh>
+ #include "local_dist_diff_test.hh"
+ #include <boost/concept_check.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <ost/mol/alg/consistency_checks.hh>
+ 
+ namespace ost { namespace mol { namespace alg {
+diff --git a/scripts/dng.in b/scripts/dng.in
+index 93e7d862..624ec98b 100755
+--- a/scripts/dng.in
++++ b/scripts/dng.in
+@@ -20,14 +20,30 @@
+ # Startup script for a protein-centric user interface
+ # Author: Marco Biasini
+ 
+-if [ -h "$0" ] ; then
+-  SCRIPT_NAME=`readlink "$0"`
++if [ -h "$0" ]; then
++  TARGET="$0"
++  while [ -h "$TARGET" ]; do
++    DIR="$(cd -P "$(dirname "$TARGET")" && pwd)"
++    TARGET="$(readlink "$TARGET")"
++    [[ $TARGET != /* ]] && TARGET="$DIR/$TARGET"
++  done
++  SCRIPT_PATH="$DIR/$(basename "$TARGET")"
+ else
+-  SCRIPT_NAME="$0"
++  SCRIPT_PATH="$0"
+ fi
+-BIN_DIR=`dirname "$SCRIPT_NAME"`
+-source "$BIN_DIR/../@LIBEXEC_PATH@/ost_config"
+ 
++# Get the absolute path of the script
++if command -v realpath >/dev/null 2>&1; then
++  SCRIPT_PATH="$(realpath "$SCRIPT_PATH")"
++elif command -v readlink >/dev/null 2>&1; then
++  SCRIPT_PATH="$(readlink -f "$SCRIPT_PATH")"
++else
++  # Fallback for systems without realpath or readlink
++  SCRIPT_PATH="$(cd "$(dirname "$SCRIPT_PATH")" && pwd -P)/$(basename "$SCRIPT_PATH")"
++fi
++
++BIN_DIR=$(dirname "$SCRIPT_PATH")
++source "$BIN_DIR/../@LIBEXEC_PATH@/ost_config"
+ 
+ opts=""
+ 
+diff --git a/scripts/ost.in b/scripts/ost.in
+index b85886a3..fc48014e 100755
+--- a/scripts/ost.in
++++ b/scripts/ost.in
+@@ -22,12 +22,29 @@
+ # convenience wrapper for non-gui openstructure interface 'ost'
+ #
+ # Self detect important directories
+-if [ -h "$0" ] ; then
+-  SCRIPT_NAME=`readlink "$0"`
++if [ -h "$0" ]; then
++  TARGET="$0"
++  while [ -h "$TARGET" ]; do
++    DIR="$(cd -P "$(dirname "$TARGET")" && pwd)"
++    TARGET="$(readlink "$TARGET")"
++    [[ $TARGET != /* ]] && TARGET="$DIR/$TARGET"
++  done
++  SCRIPT_PATH="$DIR/$(basename "$TARGET")"
+ else
+-  SCRIPT_NAME="$0"
++  SCRIPT_PATH="$0"
+ fi
+-BIN_DIR=`dirname "$SCRIPT_NAME"`
++
++# Get the absolute path of the script
++if command -v realpath >/dev/null 2>&1; then
++  SCRIPT_PATH="$(realpath "$SCRIPT_PATH")"
++elif command -v readlink >/dev/null 2>&1; then
++  SCRIPT_PATH="$(readlink -f "$SCRIPT_PATH")"
++else
++  # Fallback for systems without realpath or readlink
++  SCRIPT_PATH="$(cd "$(dirname "$SCRIPT_PATH")" && pwd -P)/$(basename "$SCRIPT_PATH")"
++fi
++
++BIN_DIR=$(dirname "$SCRIPT_PATH")
+ OST_EXEC_DIR=$(cd $BIN_DIR/../@LIBEXEC_PATH@ && pwd)
+ export OST_EXEC_DIR
+ 
+diff --git a/tools/molck/main.cc b/tools/molck/main.cc
+index b855dc5d..c6dd83e1 100644
+--- a/tools/molck/main.cc
++++ b/tools/molck/main.cc
+@@ -1,7 +1,7 @@
+ #include <unistd.h>
+ #include <boost/program_options.hpp>
+ #include <boost/filesystem/path.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <ost/base.hh>
+ #include <ost/boost_filesystem_helper.hh>
+ #include <ost/platform.hh>

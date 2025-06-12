@@ -1,5 +1,5 @@
 {% set name = "ViroConstrictor" %}
-{% set version = "1.3.1" %}
+{% set version = "1.5.3" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/RIVM-bioinformatics/ViroConstrictor/archive/v{{ version }}.tar.gz
-  sha256: 7fae8e0552a8f33fa6f2942ed2872810e204f7e688db8b658c2bc568e1a43cee
+  sha256: fea488f18bfee6ad86f09e96a78dfa5e53405301029b8302303a0939a604a4fd
 
 build:
   noarch: python
@@ -16,42 +16,41 @@ build:
     - viroconstrictor = ViroConstrictor.__main__:main
     - viroConstrictor = ViroConstrictor.__main__:main
     - Viroconstrictor = ViroConstrictor.__main__:main
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps -vvv
   number: 0
+  run_exports:
+    - {{ pin_subpackage('viroconstrictor', max_pin="x") }}
 
 requirements:
   host:
     - python >=3.10
-    - snakemake-minimal >=7.15.2
-    - conda
-    - mamba
     - pip
+    - snakemake ==7.25.2
+    - conda
   run:
     - python >=3.10
-    - urllib3
-    - biopython >=1.79
+    - urllib3  ==1.26.*
+    - biopython ==1.81
     - drmaa ==0.7.9
-    - fpdf2
-    - pandas >=1.5.1
-    - openpyxl
+    - fpdf2  ==2.5.1
+    - pandas ==2.0.*
+    - openpyxl  ==3.1.*
     - pyyaml ==6.0
     - rich ==13.*
-    - snakemake-minimal >=7.15.2
-    - aminoextract >=0.2.1
-    - mamba
+    - snakemake ==7.25.2
+    - aminoextract ==0.3.1
+    - pyopenssl ==24.*
     - conda
+    - mamba >=1.5.0, <2.0.0
 
 test:
   imports:
     - ViroConstrictor
   commands:
-    - pip check
     - ViroConstrictor --help
     - viroconstrictor --help
     - viroConstrictor --help
     - Viroconstrictor --help
-  requires:
-    - pip
 
 about:
   home: https://rivm-bioinformatics.github.io/ViroConstrictor/
@@ -65,5 +64,6 @@ about:
 extra:
   recipe-maintainers:
     - florianzwagemaker
-    - KHajji
+    - raaijmag
+    - wolthuisr
     - ids-bioinformatics

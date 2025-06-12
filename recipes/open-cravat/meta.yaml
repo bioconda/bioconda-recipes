@@ -1,5 +1,5 @@
 {% set name = "open-cravat" %}
-{% set version = "2.4.1" %}
+{% set version = "2.13.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,45 +7,51 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: f2223f573594a0e20bcaca9df42ad81e766a07cfa45c67189d549ff9ba99c00f
+  sha256: ec8c2295d1dfd2a039e9602ed9ecdea1ee7e121a3c501cdbe091b26dc8f7b4c7
 
 build:
   number: 0
   entry_points:
     - oc=cravat.oc:main
   noarch: python
-  script: {{PYTHON}} -m pip install . -vv --ignore-installed --no-deps
+  script: {{PYTHON}} -m pip install . -vvv --no-build-isolation --no-deps --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('open-cravat', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.9
+    - setuptools
   run:
-    - aiohttp
+    - aiohttp <4.0.0
     - aiosqlite
+    - biopython
     - chardet >=3.0.4
     - intervaltree
     - markdown
+    - mpmath
     - nest-asyncio
     - openpyxl
     - oyaml
     - psutil
     - pyliftover
-    - python
+    - python >=3.9
+    - setuptools
     - pyyaml
     - requests
     - requests-toolbelt
     - twobitreader
     - websockets
     - xlsxwriter
-    - pyvcf
+    - pyvcf3
 
 test:
   imports:
     - cravat
 
 about:
-  home: "http://www.opencravat.org"
+  home: "https://www.opencravat.org"
   license: MIT
   license_family: MIT
   license_file: LICENSE

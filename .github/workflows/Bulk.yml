@@ -7,22 +7,23 @@ jobs:
   build-linux:
     name: Bulk Linux Builds
     if: "contains(github.event.head_commit.message, '[ci run]')"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       max-parallel: 6
       matrix:
         runner: [0, 1, 2, 3, 4, 5]
+        # runner: [0]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          # checkout as bioconda-bot in order to have the permission to push fail logs
+          # checkout as BiocondaBot in order to have the permission to push fail logs
           token: ${{secrets.BIOCONDA_BOT_REPO_TOKEN}}
-      
+
       - name: set git user
         run: |
-          git config user.name bioconda-bot
-          git config user.email bioconda-bot@users.noreply.github.com
+          git config user.name BiocondaBot
+          git config user.email BiocondaBot@users.noreply.github.com
 
       - name: set path
         run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
@@ -31,23 +32,9 @@ jobs:
         run: |
           wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
 
-      - name: Restore cache
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: /opt/mambaforge
-          key: ${{ runner.os }}--bulk--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
-
       - name: Set up bioconda-utils
-        if: steps.cache.outputs.cache-hit != 'true'
         run: bash install-and-set-up-conda.sh
 
-      # This script can be used to reconfigure conda to use the right channel setup.
-      # This has to be done after the cache is restored, because
-      # the channel setup is not cached as it resides in the home directory.
-      # We could use a system-wide (and therefore cached) channel setup,
-      # but mamba does not support that at the time of implementation
-      # (it ignores settings made with --system).
       - name: Configure conda
         run: bash configure-conda.sh
 
@@ -71,23 +58,29 @@ jobs:
           bioconda-utils build recipes config.yml \
             --worker-offset ${{ matrix.runner }} --n-workers 6 \
             --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
-            --record-build-failures --skiplist-leafs
+            --lint --record-build-failures --skiplist-leafs \
+            --exclude bioconda-repodata-patches # --subdag-depth 5
           conda clean -y --all
 
   build-osx:
-    name: Bulk OSX Builds
+    name: Bulk OSX-64 Builds
     if: "contains(github.event.head_commit.message, '[ci run]')"
-    runs-on: macOS-latest
+    runs-on: macos-13
     strategy:
       fail-fast: false
-      max-parallel: 4
+      max-parallel: 3
       matrix:
-        runner: [0, 1, 2, 3]
+        runner: [0, 1, 2]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          # checkout as bioconda-bot in order to have the permission to push fail logs
+          # checkout as BiocondaBot in order to have the permission to push fail logs
           token: ${{secrets.BIOCONDA_BOT_REPO_TOKEN}}
+
+      - name: set git user
+        run: |
+          git config user.name BiocondaBot
+          git config user.email BiocondaBot@users.noreply.github.com
 
       - name: set path
         run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
@@ -96,23 +89,9 @@ jobs:
         run: |
           wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
 
-      - name: Restore cache
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: /opt/mambaforge
-          key: ${{ runner.os }}--bulk--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
-
       - name: Set up bioconda-utils
-        if: steps.cache.outputs.cache-hit != 'true'
         run: bash install-and-set-up-conda.sh
 
-      # This script can be used to reconfigure conda to use the right channel setup.
-      # This has to be done after the cache is restored, because
-      # the channel setup is not cached as it resides in the home directory.
-      # We could use a system-wide (and therefore cached) channel setup,
-      # but mamba does not support that at the time of implementation
-      # (it ignores settings made with --system).
       - name: Configure conda
         run: bash configure-conda.sh
 
@@ -129,7 +108,7 @@ jobs:
           eval "$(conda shell.bash hook)"
           conda activate bioconda
 
-          # The SDK isn't actually cached, so reinstall it
+          source common.sh
           run_conda_forge_build_setup
 
           echo '============'
@@ -139,6 +118,69 @@ jobs:
           python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
           echo '============'
           bioconda-utils build recipes config.yml \
-            --worker-offset ${{ matrix.runner }} --n-workers 4 \
-            --anaconda-upload --record-build-failures --skiplist-leafs
+            --worker-offset ${{ matrix.runner }} --n-workers 3 \
+            --lint --anaconda-upload --record-build-failures --skiplist-leafs \
+            --exclude bioconda-repodata-patches # --subdag-depth 5
+          conda clean -y --all
+
+  build-osx-arm:
+    name: Bulk OSX-ARM64 Builds
+    if: "contains(github.event.head_commit.message, '[ci run]')"
+    runs-on: macOS-14 # M1
+    strategy:
+      fail-fast: false
+      max-parallel: 1 # GHA free plan allows 5 concurrent Mac runners total, we still need most on osx-64.
+      matrix:
+        runner: [0]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # checkout as BiocondaBot in order to have the permission to push fail logs
+          token: ${{secrets.BIOCONDA_BOT_REPO_TOKEN}}
+
+      - name: set git user
+        run: |
+          git config user.name BiocondaBot
+          git config user.email BiocondaBot@users.noreply.github.com
+
+      - name: set path
+        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
+
+      - name: Fetch conda install script
+        run: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
+
+      - name: Set up bioconda-utils
+        run: bash install-and-set-up-conda.sh
+
+      - name: Configure conda
+        run: bash configure-conda.sh
+
+      - name: Build and upload
+        env:
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+          INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+          QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+          # Mimic circleci
+          OSTYPE: "darwin"
+          CI: "true"
+        run: |
+          set -xe
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+
+          source common.sh
+          # Sets up OSX SDK
+          run_conda_forge_build_setup
+
+          echo '============'
+          conda info --all
+          conda config --show-sources
+          conda activate bioconda
+          python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+          echo '============'
+          bioconda-utils build recipes config.yml \
+            --worker-offset ${{ matrix.runner }} --n-workers 1 \
+            --lint --anaconda-upload --record-build-failures --skiplist-leafs \
+            --exclude bioconda-repodata-patches
           conda clean -y --all

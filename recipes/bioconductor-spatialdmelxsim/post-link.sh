@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "spatialdmelxsim-1.6.1"
+installBiocDataPackage.sh "spatialdmelxsim-1.12.0"

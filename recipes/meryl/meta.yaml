@@ -1,20 +1,24 @@
 {% set name = "meryl" %}
-{% set version = "1.4" %}
-{% set sha256 = "2ca6df788cda26521c2b3672fa2d6562a6b3b57e95003cff31df596be289c92f" %}
+{% set version = "1.4.1" %}
+{% set sha256 = "adaa713b8cd9151db2a08e7eadd8114d16bf91dae0d191674b75d7be72bdd53d" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/marbl/{{name}}/releases/download/v{{version}}/{{name}}-{{version}}.tar.xz
-  sha256: {{ sha256 }}
+  git_url: https://github.com/marbl/{{name}}
+  git_rev: v{{version}}
   patches:
-    - 0001-Do-not-bail-out-for-Clang-on-macOS.patch
+    - 0001-Do-not-bail-out-for-Clang-on-macOS.patch # [osx]
     - 0002-macos-cmath.patch  # [osx]
+    - 0003-align.patch  # [aarch64 or arm64]
+    - meryl-utility-aarch64.patch # [aarch64 or arm64]
 
 build:
-  number: 1
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('meryl', max_pin="x") }}
 
 requirements:
   build:
@@ -40,7 +44,13 @@ about:
   license: 'Public Domain'
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:meryl
     - usegalaxy-eu:meryl
     - doi:10.1186/s13059-020-02134-9
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

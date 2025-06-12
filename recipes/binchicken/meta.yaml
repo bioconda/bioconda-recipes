@@ -1,0 +1,55 @@
+{% set version = "0.12.11" %}
+{% set name = "binchicken" %}
+{% set sha256 = "f3aff267398391ef34042f077ac4d333cdfcffa5a073834d258831bf419f6cf1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  entry_points:
+    - binchicken = binchicken.binchicken:main
+    - ibis = binchicken.binchicken:main
+  run_exports:
+    - {{ pin_subpackage('binchicken', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+  run:
+    - python =3.10.*
+    - snakemake-minimal >=6.0.5,<8
+    - mamba =1.4.*
+    - networkx
+    - bird_tool_utils_python
+    - extern
+    - ruamel.yaml >=0.15.99
+    - polars =1.2.*
+    - pigz
+    - pyarrow
+    - parallel
+    - sourmash =4.8.*
+    - sourmash_plugin_branchwater =0.9.*
+    - pyopenssl >22.1.0
+
+test:
+  commands:
+    - {{ name }} --version | grep '{{ version }}'
+
+about:
+  home: https://github.com/aroneys/binchicken
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Targeted recovery of low abundance metagenome assembled genomes through intelligent coassembly
+  dev_url: https://github.com/aroneys/binchicken
+  doc_url: https://aroneys.github.io/binchicken

@@ -29,14 +29,19 @@ export NCM_HOME=$PREFIX/NGSCheckMate
 python $PREFIX/NGSCheckMate/vaf_ncm.py "\$@"
 EOF
 
-ln -s $PREFIX/NGSCheckMate/ngscheckmate_fastq $PREFIX/bin/ngscheckmate_fastq
-
+cd $PREFIX/NGSCheckMate/ngscheckmate_fastq-source
+make COMPILER=${CC} CFLAGS="${CFLAGS} -c" DFLAGS="${LDFLAGS}"
+cd $PREFIX
+ln -sf $PREFIX/NGSCheckMate/ngscheckmate_fastq-source/ngscheckmate_fastq $PREFIX/bin/
 cat << EOF > $PREFIX/bin/makesnvpattern.pl
 #!/usr/bin/env bash
 
 export NCM_HOME=$PREFIX/NGSCheckMate
 perl $PREFIX/NGSCheckMate/patterngenerator/makesnvpattern.pl "\$@"
 EOF
+
+#/usr/bin/perl is hardcoded, need to point to env
+sed -i.bak 's/perl/env perl/g' $PREFIX/NGSCheckMate/patterngenerator/*.pl
 
 cat << EOF > $PREFIX/NGSCheckMate/ncm.conf
 SAMTOOLS=samtools

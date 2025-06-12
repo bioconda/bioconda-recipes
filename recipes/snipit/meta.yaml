@@ -1,5 +1,5 @@
 {% set name = "snipit" %}
-{% set version = "1.1.2" %}
+{% set version = "1.6" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,14 +7,16 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: e798e22d99ef1675034a1a12a87c39642a0c71dded2170e53efca58d6e2b9475
+  sha256: 4d3080926bebfd3eeb52e98a35e69bbd66a99e3752dbf436c8d5ccb428bfdb10
 
 build:
   number: 0
   noarch: python
   entry_points:
     - snipit=snipit.command:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage('snipit', max_pin="x") }}
 
 requirements:
   host:
@@ -35,7 +37,7 @@ test:
 
 about:
   home: "https://github.com/aineniamh/snipit"
-  license: GNU General Public License v3 (GPLv3)
+  license: GPL-3.0-or-later
   license_family: GPL3
   license_file: LICENSE
   summary: Visualize snps relative to a reference sequence
