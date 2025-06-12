@@ -15,6 +15,6 @@ export LIBS="-lm ${PREFIX}/lib/libz.a"
 ./autogen.sh
 #./configure --disable-silent-rules --disable-dependency-tracking --prefix=$PREFIX
 ./configure --disable-silent-rules --disable-dependency-tracking --prefix=${PREFIX} --with-boost=${PREFIX} --with-boost-libdir=${PREFIX}/lib
-make V=1
-make V=1 check
+make -j ${CPU_COUNT} V=1
+make -j ${CPU_COUNT} V=1 check
 make install
