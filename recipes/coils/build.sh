@@ -11,6 +11,12 @@ COILS_PROGRAMS="coils-svr.pl coils-wrap.pl"
 
 # remove the precompilated one
 rm ncoils-linux
+
+sed -i 's/^main(/int main(/' ncoils.c
+sed -i '1i#include <string.h>' ncoils.c
+sed -i '1i#include <string.h>' read_matrix.c
+sed -i -r 's/strncmp$([^,]+,[^,]+),([0-9]+)$/strncmp(\1,(size_t)\2)/g' read_matrix.c
+
 #compile
 ${CC} -O2 -I. -o ncoils-osf ncoils.c read_matrix.c -lm
 
