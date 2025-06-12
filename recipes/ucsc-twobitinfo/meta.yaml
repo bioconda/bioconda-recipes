@@ -1,25 +1,21 @@
 {% set package = "ucsc-twobitinfo" %}
 {% set program = "twoBitInfo" %}
-{% set version = "455" %}
-{% set sha256 = "e458cadad7c4a5c1b8385edafffa1b29380ac725a0c20535bf5a3bab99fe80db" %}
+{% set version = "481" %}
+{% set sha256 = "0df96181560e2cac3c29628b51140d60a56a0bf088c361bfd5eeb233009f98ec" %}
 
 package:
   name: "{{ package }}"
   version: "{{ version }}"
 
 source:
-  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
+  url: "https://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
   sha256: "{{ sha256 }}"
   patches:
-    - "include.patch"
-    - htmshell.patch
+    - include.patch
+    - include.linux.patch  # [linux]
 
 build:
-  skip: True # [osx]
-  number: 1
-  ignore_run_exports:
-    - libpng
-    - libuuid
+  number: 0
   run_exports:
     - {{ pin_subpackage(package, max_pin=None) }}
 
@@ -27,31 +23,36 @@ requirements:
   build:
     - make
     - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - binutils # [linux]
   host:
+    - clangdev  # [osx]
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
     - libopenssl-static
     - zlib
+    - bzip2
+    - liblzma-devel
   run:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
+    - libopenssl-static
 
 test:
   commands:
-    # just check for existence, because the individual packages have no unified behavior
-    - which {{ program }}
+    # just check for existence and exec bit, because the individual packages have no unified behavior
+    - test -x ${PREFIX}/bin/{{ program }}
 
 about:
-  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "varies; see http://genome.ucsc.edu/license"
-  summary: "get information about sequences in a .2bit file"
+  home: "https://hgdownload.cse.ucsc.edu/admin/exe"
+  license: "Varies; see https://genome.ucsc.edu/license"
+  summary: "Get information about sequences in a .2bit file."
+  dev_url: "https://github.com/ucscGenomeBrowser/kent"
+  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/v{{ version }}_base/README"
 
 extra:
+  identifiers:
+    - biotools:UCSC_Genome_Browser_Utilities
+    - doi:10.1093/bib/bbs038
   additional-platforms:
     - linux-aarch64

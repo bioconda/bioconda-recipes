@@ -1,56 +1,75 @@
 {% set name = "canu" %}
-{% set version = "2.2" %}
+{% set version = "2.3" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/marbl/{{ name }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.Darwin-amd64.tar.xz # [osx]
-  md5: 6bd937d31bb9f5f46bf0f9839889c00f # [osx]
-  url: https://github.com/marbl/{{ name }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.Linux-amd64.tar.xz # [linux]
-  md5: 63219165fc45b3dbbeb73ed920a23db5 # [linux]
+  git_url: https://github.com/marbl/canu.git
+  git_commit: 13903848e95311cb437b78423cdee34ad55a8b2e
+  sha256: ignored
   patches:
-   - fewreads.patch
+    - arm_hwcap.patch  # [linux and aarch64]
 
 build:
-  number: 0
-  skip: true  # [win and osx-arm64]
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('canu', max_pin="x") }}
 
 requirements:
   build:
-   - make
-   - '{{ compiler("cxx") }}'
+    - make
+    - {{ compiler("cxx") }}
+    - pkg-config
   host:
     - gnuplot >=5.2
     - xorg-libxfixes  # [linux]
+    - boost-cpp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - curl
+    - zlib
   run:
     - perl
     - perl-filesys-df
-    - openjdk  >=8
+    - openjdk >=20
     - minimap2
+    - boost-cpp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - gnuplot >=5.2
+    - samtools
+
 test:
   requires:
     - curl
   commands:
-     - canu --version
-     - sqStoreDumpFASTQ --version
+    - canu --version
+    - sqStoreDumpFASTQ --version
 
 about:
-  home: http://canu.readthedocs.org/
-  license: GPLv2 and others
-  license_file: README.licenses
+  home: "https://github.com/marbl/canu"
+  license: "GPL-2.0-or-later and others"
+  license_file: "README.licenses"
   license_family: GPL
-  summary: Canu is a fork of the Celera Assembler designed for high-noise single-molecule sequencing.
-  dev_url: https://github.com/marbl/canu
+  summary: "Canu is a fork of the Celera Assembler designed for high-noise single-molecule sequencing."
+  dev_url: "https://github.com/marbl/canu"
+  doc_url: "https://canu.readthedocs.org"
 
 extra:
   container:
     # libGL needed for gnuplot
-    extended-base: true
+    extended-base: True
   identifiers:
     - usegalaxy-eu:canu
+    - biotools:canu
+    - biotools:hicanu
+    - doi:10.1101/gr.215087.116
+    - doi:10.1038/nbt.4277
+    - doi:10.1101/gr.263566.120
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   skip-lints:
     - uses_vcs_url
-    - missing_hash
