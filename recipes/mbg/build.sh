@@ -7,6 +7,7 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 if [[ `uname -s` == "Darwin" ]]; then
 	sed -i.bak 's|-Wl,-Bstatic||' makefile
+	sed -i.bak 's|-Wl,-Bdynamic||' makefile
 fi
 
 sed -i.bak 's|-Izstr/src|-I$(PREFIX)/include -Izstr/src|' makefile
