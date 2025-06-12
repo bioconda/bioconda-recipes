@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "confessdata-1.26.0"
+installBiocDataPackage.sh "confessdata-1.34.0"

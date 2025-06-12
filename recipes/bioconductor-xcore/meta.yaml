@@ -1,57 +1,64 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "xcore" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 4eff542ecdc60f951bdad3064aa977b1
+about:
+  description: xcore is an R package for transcription factor activity modeling based on known molecular signatures and user's gene expression data. Accompanying xcoredata package provides a collection of molecular signatures, constructed from publicly available ChiP-seq experiments. xcore use ridge regression to model changes in expression as a linear combination of molecular signatures and find their unknown activities. Obtained, estimates can be further tested for significance to select molecular signatures with the highest predicted effect on the observed expression changes.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: xcore expression regulators inference
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-xcore", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: AnnotationHub (>= 3.0.2), BiocGenerics (>= 0.38.0), BiocParallel (>= 1.28), BiocStyle (>= 2.20.2), data.table (>= 1.14.0), devtools (>= 2.4.2), doParallel (>= 1.0.16), ExperimentHub (>= 2.2.0), knitr (>= 1.37), pheatmap (>= 1.0.12), proxy (>= 0.4.26), ridge (>= 3.0), rmarkdown (>= 2.11), rtracklayer (>= 1.52.0), testthat (>= 3.0.0), usethis (>= 2.0.1), xcoredata
 requirements:
   host:
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-multiassayexperiment >=1.24.0,<1.25.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-multiassayexperiment >=1.32.0,<1.33.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
-    - 'r-foreach >=1.5.1'
-    - 'r-glmnet >=4.1.2'
-    - 'r-iterators >=1.0.13'
-    - 'r-magrittr >=2.0.1'
-    - 'r-matrix >=1.3.4'
+    - r-foreach >=1.5.1
+    - r-glmnet >=4.1.2
+    - r-iterators >=1.0.13
+    - r-magrittr >=2.0.1
+    - r-matrix >=1.3.4
   run:
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-multiassayexperiment >=1.24.0,<1.25.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-multiassayexperiment >=1.32.0,<1.33.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
-    - 'r-foreach >=1.5.1'
-    - 'r-glmnet >=4.1.2'
-    - 'r-iterators >=1.0.13'
-    - 'r-magrittr >=2.0.1'
-    - 'r-matrix >=1.3.4'
+    - r-foreach >=1.5.1
+    - r-glmnet >=4.1.2
+    - r-iterators >=1.0.13
+    - r-magrittr >=2.0.1
+    - r-matrix >=1.3.4
+
+source:
+  md5: 1f25b26360120ca184ece31f704c8daa
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'xcore expression regulators inference'
-  description: 'xcore is an R package for transcription factor activity modeling based on known molecular signatures and user''s gene expression data. Accompanying xcoredata package provides a collection of molecular signatures, constructed from publicly available ChiP-seq experiments. xcore use ridge regression to model changes in expression as a linear combination of molecular signatures and find their unknown activities. Obtained, estimates can be further tested for significance to select molecular signatures with the highest predicted effect on the observed expression changes.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+    - $R -e "library('{{ name }}')"
 

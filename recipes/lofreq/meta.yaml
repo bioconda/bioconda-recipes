@@ -1,38 +1,59 @@
-{% set version="2.1.5" %}
+{% set version = "2.1.5" %}
 
 package:
   name: lofreq
   version: {{ version }}
 
 source:
-  url: https://raw.githubusercontent.com/CSB5/lofreq/v{{ version }}/dist/lofreq_star-{{ version }}.tar.gz
-  sha256: 43028af07faa23c7ec0e167855492ae7bd31c4e7f8158114e51ec12aba5fd184
+  url: https://github.com/CSB5/lofreq/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: da85ec4baca21e20a55b5f9ee491cdda2986d0dc672177007a2c70ca1d804fe7
+  patches:
+    - 0001-patches
 
 build:
-  number: 8
+  number: 15
+  run_exports:
+    - {{ pin_subpackage('lofreq', max_pin='x') }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - autoconf
+    - automake
+    - libtool
   host:
     - python
+    - setuptools  # [py >= 3.12]
     - htslib
+    - samtools
+    - gsl
     - zlib
   run:
     - python
     - samtools
+    - bcftools
+    - gsl
 
 test:
   commands:
     - lofreq version
     - samtools --help
+    - bcftools --help
 
 about:
-  home: http://csb5.github.io/lofreq/
+  home: "https://csb5.github.io/lofreq"
   license: MIT
-  summary: A fast and sensitive variant-caller for inferring SNVs and indels from next-generation sequencing data
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A fast and sensitive variant-caller for inferring SNVs and indels from next-generation sequencing data."
+  dev_url: "https://github.com/CSB5/lofreq"
+  doc_url: "https://csb5.github.io/lofreq"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - usegalaxy-eu:lofreq_call
+    - biotools:lofreq

@@ -1,26 +1,40 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "DeMixT" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 01d3dac06f864ac67ed2f890ee077452
+about:
+  description: DeMixT is a software package that performs deconvolution on transcriptome data from a mixture of two or three components.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Cell type-specific deconvolution of heterogeneous tumor samples with two or three components using expression data from RNAseq or microarray platforms
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-demixt", max_pin="x.x") }}'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:DeMixT
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - 'bioconductor-dss >=2.46.0,<2.47.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-sva >=3.46.0,<3.47.0'
+    - bioconductor-dss >=2.54.0,<2.55.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-sva >=3.54.0,<3.55.0
     - r-base
     - r-base64enc
     - r-dendextend
@@ -30,15 +44,15 @@ requirements:
     - r-matrixcalc
     - r-matrixstats
     - r-psych
-    - 'r-rcpp >=1.0.0'
+    - r-rcpp >=1.0.0
     - r-rmarkdown
     - r-truncdist
     - libblas
     - liblapack
   run:
-    - 'bioconductor-dss >=2.46.0,<2.47.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-sva >=3.46.0,<3.47.0'
+    - bioconductor-dss >=2.54.0,<2.55.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-sva >=3.54.0,<3.55.0
     - r-base
     - r-base64enc
     - r-dendextend
@@ -48,20 +62,19 @@ requirements:
     - r-matrixcalc
     - r-matrixstats
     - r-psych
-    - 'r-rcpp >=1.0.0'
+    - r-rcpp >=1.0.0
     - r-rmarkdown
     - r-truncdist
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: eb2787dc4a420364dc9af2b2f8262cc1
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Cell type-specific deconvolution of heterogeneous tumor samples with two or three components using expression data from RNAseq or microarray platforms'
-  description: 'DeMixT is a software package that performs deconvolution on transcriptome data from a mixture of two or three components.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

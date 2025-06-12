@@ -1,12 +1,15 @@
-{% set version = "0.5.0" %}
-{% set sha256 = "4c24431ad59d4583b95b71e26584329be12632f55b9d4cca0b7ab0567276219d" %}
+{% set name = "fasten" %}
+{% set version = "0.8.7" %}
+{% set sha256 = "96a4b8a2dcd450c00da57bf5652c7339e8f6faf92654bf70985fc14ebc75a860" %}
 
 package:
-  name: fasten
+  name: {{ name }}
   version: {{ version }}
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 source:
   url: https://github.com/lskatz/fasten/archive/v{{ version }}.tar.gz
@@ -14,9 +17,9 @@ source:
 
 requirements:
   build:
-    - rust
+    - {{ compiler('rust') }}
     - {{ compiler('c') }}
-  host:
+    - cargo-bundle-licenses
 
 test:
   commands:
@@ -39,5 +42,14 @@ test:
 about:
   home: https://github.com/lskatz/fasten
   license: MIT
-  license_file: LICENSE
+  license_family: MIT
+  license_file: 
+    - LICENSE
+    - THIRDPARTY.yml
   summary: "Perform random operations on fastq files, using unix streaming. Secure your analysis with Fasten!"
+
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

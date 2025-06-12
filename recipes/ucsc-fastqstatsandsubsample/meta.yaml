@@ -1,7 +1,7 @@
 {% set package = "ucsc-fastqstatsandsubsample" %}
 {% set program = "fastqStatsAndSubsample" %}
-{% set version = "377" %}
-{% set sha256 = "932f149c19641064a9cd3f2382cbb54b45a9292b8444792872d531346925d676" %}
+{% set version = "469" %}
+{% set sha256 = "3f95b26ccca854c965c05773481c269f2a0e6fb1906ae8a7fe2437c6ad543963" %}
 
 package:
   name: "{{ package }}"
@@ -15,7 +15,9 @@ source:
 
 build:
   skip: True  # [osx]
-  number: 4
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(package, max_pin=None) }}
 
 requirements:
   build:
@@ -25,22 +27,31 @@ requirements:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
+    - libopenssl-static
     - zlib
 
   run:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
+    - libopenssl-static
     - zlib
 
 test:
   commands:
-    # just check for existence, because the individual packages have no unified behavior
-    - which {{ program }}
+    # just check for existence and exec bit, because the individual packages have no unified behavior
+    - test -x ${PREFIX}/bin/{{ program }}
 
 about:
-  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "varies; see http://genome.ucsc.edu/license"
+  home: "https://hgdownload.cse.ucsc.edu/admin/exe/"
+  license: "Varies; see http://genome.ucsc.edu/license"
   summary: "Go through a fastq file doing sanity checks and collecting stats"
+  dev_url: "https://github.com/ucscGenomeBrowser/kent"
+  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/master/README"
+
+extra:
+  identifiers:
+    - biotools:UCSC_Genome_Browser_Utilities
+    - doi:10.1093/bib/bbs038
+  additional-platforms:
+    - linux-aarch64

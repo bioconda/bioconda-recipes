@@ -1,106 +1,21 @@
-{% set version = "1.38.0" %}
+{% set version = "1.46.0" %}
 {% set name = "pRoloc" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: a35d14bfbd29e08ef4ab5ef588a4b61a
+about:
+  description: The pRoloc package implements machine learning and visualisation methods for the analysis and interogation of quantitiative mass spectrometry data to reliably infer protein sub-cellular localisation.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: A unifying bioinformatics framework for spatial proteomics
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: testthat, rmarkdown, pRolocdata (>= 1.9.4), roxygen2, xtable, rgl, BiocStyle (>= 2.5.19), hpar (>= 1.15.3), dplyr, akima, fields, vegan, GO.db, AnnotationDbi, Rtsne (>= 0.13), nipals, reshape, magick
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
-    - 'bioconductor-mlinterfaces >=1.78.0,<1.79.0'
-    - 'bioconductor-msnbase >=2.24.0,<2.25.0'
-    - r-base
-    - r-caret
-    - r-class
-    - r-coda
-    - r-dendextend
-    - r-e1071
-    - r-fnn
-    - r-ggplot2
-    - r-gtools
-    - r-hexbin
-    - r-kernlab
-    - r-knitr
-    - r-laplacesdemon
-    - r-lattice
-    - r-mass
-    - 'r-mclust >=4.3'
-    - r-mixtools
-    - r-mvtnorm
-    - r-nnet
-    - r-plyr
-    - r-proxy
-    - r-randomforest
-    - r-rcolorbrewer
-    - 'r-rcpp >=0.10.3'
-    - r-rcpparmadillo
-    - r-sampling
-    - r-scales
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
-    - 'bioconductor-mlinterfaces >=1.78.0,<1.79.0'
-    - 'bioconductor-msnbase >=2.24.0,<2.25.0'
-    - r-base
-    - r-caret
-    - r-class
-    - r-coda
-    - r-dendextend
-    - r-e1071
-    - r-fnn
-    - r-ggplot2
-    - r-gtools
-    - r-hexbin
-    - r-kernlab
-    - r-knitr
-    - r-laplacesdemon
-    - r-lattice
-    - r-mass
-    - 'r-mclust >=4.3'
-    - r-mixtools
-    - r-mvtnorm
-    - r-nnet
-    - r-plyr
-    - r-proxy
-    - r-randomforest
-    - r-rcolorbrewer
-    - 'r-rcpp >=0.10.3'
-    - r-rcpparmadillo
-    - r-sampling
-    - r-scales
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'A unifying bioinformatics framework for spatial proteomics'
-  description: 'The pRoloc package implements machine learning and visualisation methods for the analysis and interogation of quantitiative mass spectrometry data to reliably infer protein sub-cellular localisation.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-proloc", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:proloc
@@ -108,4 +23,100 @@ extra:
     name: bioconductor-proloc
     path: recipes/bioconductor-proloc
     version: 1.20.2
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, rmarkdown, pRolocdata (>= 1.43.2), roxygen2, xtable, rgl, BiocStyle (>= 2.5.19), hpar (>= 1.41.0), dplyr, akima, fields, vegan, GO.db, AnnotationDbi, Rtsne (>= 0.13), nipals, reshape, magick
+requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-biomart >=2.62.0,<2.63.0
+    - bioconductor-mlinterfaces >=1.86.0,<1.87.0
+    - bioconductor-msnbase >=2.32.0,<2.33.0
+    - r-base
+    - r-caret
+    - r-class
+    - r-coda
+    - r-dendextend
+    - r-e1071
+    - r-fnn
+    - r-ggplot2
+    - r-gtools
+    - r-hexbin
+    - r-kernlab
+    - r-knitr
+    - r-laplacesdemon
+    - r-lattice
+    - r-mass
+    - r-mclust >=4.3
+    - r-mixtools
+    - r-mvtnorm
+    - r-nnet
+    - r-plyr
+    - r-proxy
+    - r-randomforest
+    - r-rcolorbrewer
+    - r-rcpp >=0.10.3
+    - r-rcpparmadillo
+    - r-sampling
+    - r-scales
+    - libblas
+    - liblapack
+
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-biomart >=2.62.0,<2.63.0
+    - bioconductor-mlinterfaces >=1.86.0,<1.87.0
+    - bioconductor-msnbase >=2.32.0,<2.33.0
+    - r-base
+    - r-caret
+    - r-class
+    - r-coda
+    - r-dendextend
+    - r-e1071
+    - r-fnn
+    - r-ggplot2
+    - r-gtools
+    - r-hexbin
+    - r-kernlab
+    - r-knitr
+    - r-laplacesdemon
+    - r-lattice
+    - r-mass
+    - r-mclust >=4.3
+    - r-mixtools
+    - r-mvtnorm
+    - r-nnet
+    - r-plyr
+    - r-proxy
+    - r-randomforest
+    - r-rcolorbrewer
+    - r-rcpp >=0.10.3
+    - r-rcpparmadillo
+    - r-sampling
+    - r-scales
+
+source:
+  md5: af27cefbe17786019c650bd56840013e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

@@ -1,51 +1,59 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "extraChIPs" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: bc4b8c52aae2563380ea44e972cd4e11
+about:
+  description: This package builds on existing tools and adds some simple but extremely useful capabilities for working wth ChIP-Seq data. The focus is on detecting differential binding windows/regions. One set of functions focusses on set-operations retaining mcols for GRanges objects, whilst another group of functions are to aid visualisation of results. Coercion to tibble objects is also implemented.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Additional functions for working with ChIP-Seq data
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, covr, knitr, plyranges, rmarkdown, testthat (>= 3.0.0), tidyverse
+  run_exports: '{{ pin_subpackage("bioconductor-extrachips", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: apeglm, BiocStyle, covr, DESeq2, EnrichedHeatmap, Gviz, harmonicmeanp, here, knitr, limma, magrittr, plyranges, quantro, rmarkdown, testthat (>= 3.0.0), tidyverse
 requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - make
+
   host:
-    - 'bioconductor-biocio >=1.8.0,<1.9.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-csaw >=1.32.0,<1.33.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-enrichedheatmap >=1.27.0,<1.28.0'
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicinteractions >=1.32.0,<1.33.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-gviz >=1.42.0,<1.43.0'
-    - 'bioconductor-interactionset >=1.26.0,<1.27.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocio >=1.16.0,<1.17.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-csaw >=1.40.0,<1.41.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicalignments >=1.42.0,<1.43.0
+    - bioconductor-genomicinteractions >=1.40.0,<1.41.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-interactionset >=1.34.0,<1.35.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-broom
     - r-complexupset
-    - r-dplyr
+    - r-dplyr >=1.1.1
     - r-forcats
     - r-ggforce
-    - r-ggplot2
+    - r-ggplot2 >=3.5.0
     - r-ggrepel
-    - r-ggside
+    - r-ggside >=0.3.1
     - r-glue
+    - r-matrixstats
+    - r-patchwork
     - r-rcolorbrewer
     - r-rlang
     - r-scales
@@ -55,33 +63,36 @@ requirements:
     - r-tidyselect
     - r-vctrs
     - r-venndiagram
+    - libblas
+    - liblapack
+
   run:
-    - 'bioconductor-biocio >=1.8.0,<1.9.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-csaw >=1.32.0,<1.33.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-enrichedheatmap >=1.27.0,<1.28.0'
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicinteractions >=1.32.0,<1.33.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-gviz >=1.42.0,<1.43.0'
-    - 'bioconductor-interactionset >=1.26.0,<1.27.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocio >=1.16.0,<1.17.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-csaw >=1.40.0,<1.41.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicalignments >=1.42.0,<1.43.0
+    - bioconductor-genomicinteractions >=1.40.0,<1.41.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-interactionset >=1.34.0,<1.35.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-broom
     - r-complexupset
-    - r-dplyr
+    - r-dplyr >=1.1.1
     - r-forcats
     - r-ggforce
-    - r-ggplot2
+    - r-ggplot2 >=3.5.0
     - r-ggrepel
-    - r-ggside
+    - r-ggside >=0.3.1
     - r-glue
+    - r-matrixstats
+    - r-patchwork
     - r-rcolorbrewer
     - r-rlang
     - r-scales
@@ -91,13 +102,16 @@ requirements:
     - r-tidyselect
     - r-vctrs
     - r-venndiagram
+
+source:
+  md5: 922d1c66195a54c8d0918f64196a3ab3
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Additional functions for working with ChIP-Seq data'
-  description: 'This package builds on existing tools and adds some simple but extremely useful capabilities for working with ChIP-Seq data. The focus is on detecting differential binding windows/regions. One set of functions focusses on set-operations retaining mcols for GRanges objects, whilst another group of functions are to aid visualisation of results. Coercion to tibble objects is also included.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

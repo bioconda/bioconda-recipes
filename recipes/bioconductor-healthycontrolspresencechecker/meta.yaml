@@ -1,45 +1,52 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "healthyControlsPresenceChecker" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 8789ca7539d9cf83ce2db9fe89a6fb3e
+about:
+  description: 'A function that reads in the GEO accession code of a gene expression dataset, retrieves its data from GEO, and checks if data of healthy controls are present in the dataset. It returns true if healthy controls data are found, and false otherwise. GEO: Gene Expression Omnibus. ID: identifier code. The GEO datasets are downloaded from the URL <https://ftp.ncbi.nlm.nih.gov/geo/series/>.'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Dowloads A Gene Expression Dataset From GEO And Checks If It Contains Data Of Healthy Controls Or Not
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-healthycontrolspresencechecker", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: RUnit, BiocGenerics, markdown, BiocStyle, knitr, rmarkdown
 requirements:
   host:
-    - 'bioconductor-geoquery >=2.66.0,<2.67.0'
+    - bioconductor-geoquery >=2.74.0,<2.75.0
     - r-base
     - r-geneexpressionfromgeo
     - r-magrittr
     - r-xml2
   run:
-    - 'bioconductor-geoquery >=2.66.0,<2.67.0'
+    - bioconductor-geoquery >=2.74.0,<2.75.0
     - r-base
     - r-geneexpressionfromgeo
     - r-magrittr
     - r-xml2
     - curl
-    - bioconductor-data-packages>=20221109
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: 7834e53a3995caf74a55a7f4c63fb344
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Dowloads A Gene Expression Dataset From GEO And Checks If It Contains Data Of Healthy Controls Or Not'
-  description: 'A function that reads in the GEO accession code of a gene expression dataset, retrieves its data from GEO, and checks if data of healthy controls are present in the dataset. It returns true if healthy controls data are found, and false otherwise. GEO: Gene Expression Omnibus. ID: identifier code. The GEO datasets are downloaded from the URL <https://ftp.ncbi.nlm.nih.gov/geo/series/>.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

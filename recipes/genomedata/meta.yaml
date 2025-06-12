@@ -1,6 +1,6 @@
 {% set name = "genomedata" %}
-{% set version = "1.6.0" %}
-{% set sha256 = "72f15fb8dc595b680e5c24855d7bff3fc0a523c838b4c27c2be074aab6ef9feb" %}
+{% set version = "1.7.3" %}
+{% set sha256 = "308a2110ec14659f4a9e40d1515e5d9c95ebf808923f0cfbbe5cff4e7a8cce3c" %}
 
 package:
   name: {{ name|lower }}
@@ -9,15 +9,29 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  
+
 build:
-  skip: True  # [osx or py < 37]
-  number: 0
+  skip: True  # [osx or py < 39]
+  number: 2
+  entry_points:
+    - genomedata-close-data = genomedata._close_data:main
+    - genomedata-erase-data = genomedata._erase_data:main
+    - genomedata-hardmask = genomedata._hardmask:main
+    - genomedata-histogram = genomedata._histogram:main
+    - genomedata-info = genomedata._info:main
+    - genomedata-load = genomedata.load_genomedata:main
+    - genomedata-load-assembly = genomedata._load_seq:main
+    - genomedata-load-data = genomedata._load_data:main
+    - genomedata-load-seq = genomedata._load_seq:main
+    - genomedata-open-data = genomedata._open_data:main
+    - genomedata-query = genomedata._query:main
+    - genomedata-report = genomedata._report:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - hdf5
   host:
     - pip
     - python
@@ -30,7 +44,8 @@ requirements:
     - six
     - hdf5
     - pytables >=3.4.3
-    - path.py
+    - pybigwig
+    - path
     - textinput
     - bedtools
     - ucsc-bigwigtobedgraph >=377
@@ -59,10 +74,16 @@ test:
 
 about:
   home: http://genomedata.hoffmanlab.org/
-  license: GPL2
-  summary: 'tools for accessing large amounts of genomic data'
+  license: GPL-2.0
+  license_family: GPL2
+  license_file: LICENSE
+  summary: 'Tools for accessing large amounts of genomic data'
+  doc_url: https://genomedata.readthedocs.io/en/latest/
+  dev_url: https://github.com/hoffmangroup/genomedata
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:genomedata
     - doi:10.1093/bioinformatics/btq164

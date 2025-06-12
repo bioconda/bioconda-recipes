@@ -1,0 +1,52 @@
+{% set name = "argnorm" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: ffec455ea95b6ed7bd36cf4b70953f0f6dd58100f10d03c6800ca65c52010ec8
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - argnorm=argnorm.cli:main
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage('argnorm', max_pin='x') }}
+requirements:
+  host:
+    - pandas
+    - pip
+    - pronto >=2.5.6
+    - pytest
+    - python >=3.7
+    - setuptools
+  run:
+    - pandas
+    - pronto >=2.5.6
+    - pytest
+    - python >=3.7
+    - setuptools
+
+test:
+  imports:
+    - argnorm
+    - argnorm.data
+  commands:
+    - argnorm --help
+
+about:
+  home: "https://github.com/BigDataBiology/argNorm"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Normalize antibiotic resistance genes (ARGs) abundance tables (e.g., from metagenomics) by using the ARO ontology (developed by CARD)."
+  doc_url: https://argnorm.readthedocs.io/en/latest/
+
+extra:
+  recipe-maintainers:
+    - Vedanth-Ramji

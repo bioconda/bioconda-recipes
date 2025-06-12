@@ -1,53 +1,22 @@
-{% set version = "1.32.0" %}
+{% set version = "1.40.0" %}
 {% set name = "hiAnnotator" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: c3fbc36754fb405d62a9371fb6380777
+about:
+  description: 'hiAnnotator contains set of functions which allow users to annotate a GRanges object with custom set of annotations. The basic philosophy of this package is to take two GRanges objects (query & subject) with common set of seqnames (i.e. chromosomes) and return associated annotation per seqnames and rows from the query matching seqnames and rows from the subject (i.e. genes or cpg islands). The package comes with three types of annotation functions which calculates if a position from query is: within a feature, near a feature, or count features in defined window sizes. Moreover, each function is equipped with parallel backend to utilize the foreach package. In addition, the package is equipped with wrapper functions, which finds appropriate columns needed to make a GRanges object from a common data frame.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Functions for annotating GRanges objects
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, doParallel, testthat, BiocGenerics, markdown
-requirements:
-  host:
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - r-base
-    - r-dplyr
-    - r-foreach
-    - r-ggplot2
-    - r-iterators
-    - r-scales
-  run:
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - r-base
-    - r-dplyr
-    - r-foreach
-    - r-ggplot2
-    - r-iterators
-    - r-scales
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Functions for annotating GRanges objects'
-  description: 'hiAnnotator contains set of functions which allow users to annotate a GRanges object with custom set of annotations. The basic philosophy of this package is to take two GRanges objects (query & subject) with common set of seqnames (i.e. chromosomes) and return associated annotation per seqnames and rows from the query matching seqnames and rows from the subject (i.e. genes or cpg islands). The package comes with three types of annotation functions which calculates if a position from query is: within a feature, near a feature, or count features in defined window sizes. Moreover, each function is equipped with parallel backend to utilize the foreach package. In addition, the package is equipped with wrapper functions, which finds appropriate columns needed to make a GRanges object from a common data frame.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-hiannotator", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:hiannotator
@@ -56,4 +25,43 @@ extra:
     name: bioconductor-hiannotator
     path: recipes/bioconductor-hiannotator
     version: 1.14.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, doParallel, testthat, BiocGenerics, markdown
+requirements:
+  host:
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - r-base
+    - r-dplyr
+    - r-foreach
+    - r-ggplot2
+    - r-iterators
+    - r-scales
+  run:
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - r-base
+    - r-dplyr
+    - r-foreach
+    - r-ggplot2
+    - r-iterators
+    - r-scales
+
+source:
+  md5: c2e1132d926b5ec2006fe37609b1ca16
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

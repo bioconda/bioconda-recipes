@@ -1,30 +1,32 @@
-{% set name = 'ratatosk' %}
-{% set version = "0.7.6.3" %}
-{% set sha256 = "bda23e29902fefcf8f82a79a5ee10dac7b8903b4162eca2119fbd312866d67e4" %}
+{% set name = "Ratatosk" %}
+{% set version = "0.9.0" %}
+{% set sha256 = "d9e9575516aaebc8aa84f9bc0daab74e16d73501d57df15d5d0f600cebda3d63" %}
 
 package:
-  name: {{ name }}
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/DecodeGenetics/Ratatosk/archive/refs/tags/v{{ version }}.tar.gz
+- url: https://github.com/DecodeGenetics/Ratatosk/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
     - cmakelists.patch
+- url: https://github.com/pmelsted/bifrost/archive/refs/tags/v1.3.5.tar.gz
+  sha256: e1b2491328b0cc1a32e433a8a9780f05547fa4b8d674b58abdda9ac8809f5341
+  folder: Bifrost
 
 build:
-  number: 0
+  number: 2
   skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('ratatosk', max_pin="x.x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
     - cmake
   host:
-    - zlib
-  run:
     - zlib
 
 test:
@@ -34,7 +36,17 @@ test:
     - 'Ratatosk index --help'
 
 about:
-  home: https://github.com/DecodeGenetics/Ratatosk
-  license: BSD-2-Clause
+  home: "https://github.com/DecodeGenetics/Ratatosk"
+  license: "BSD-2-Clause"
+  license_family: BSD
   license_file: LICENSE
-  summary: "Hybrid error correction of long reads using colored de Bruijn graphs"
+  summary: "Hybrid error correction of long reads using colored de Bruijn graphs."
+  dev_url: "https://github.com/DecodeGenetics/Ratatosk"
+  doc_url: "https://github.com/DecodeGenetics/Ratatosk/blob/v{{ version }}/README.md"
+
+extra:
+  identifiers:
+    - biotools:ratatosk
+    - doi:10.1186/s13059-020-02244-4
+  additional-platforms:
+    - linux-aarch64

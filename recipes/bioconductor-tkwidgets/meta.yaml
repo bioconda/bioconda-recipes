@@ -1,38 +1,40 @@
-{% set version = "1.76.0" %}
+{% set version = "1.84.0" %}
 {% set name = "tkWidgets" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: c0beebd9f2d5e41045c916781192bb39
+about:
+  description: Widgets to provide user interfaces. tcltk should have been installed for the widgets to run.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: R based tk widgets
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-tkwidgets", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: Biobase, hgu95av2
 requirements:
   host:
-    - 'bioconductor-dyndoc >=1.76.0,<1.77.0'
-    - 'bioconductor-widgettools >=1.76.0,<1.77.0'
+    - bioconductor-dyndoc >=1.84.0,<1.85.0
+    - bioconductor-widgettools >=1.84.0,<1.85.0
     - r-base
   run:
-    - 'bioconductor-dyndoc >=1.76.0,<1.77.0'
-    - 'bioconductor-widgettools >=1.76.0,<1.77.0'
+    - bioconductor-dyndoc >=1.84.0,<1.85.0
+    - bioconductor-widgettools >=1.84.0,<1.85.0
     - r-base
+source:
+  md5: 4dab35f753e3ecc76300812082567cf0
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'R based tk widgets'
-  description: 'Widgets to provide user interfaces. tcltk should have been installed for the widgets to run.'
+    - $R -e "library('{{ name }}')"
 

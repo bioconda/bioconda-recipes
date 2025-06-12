@@ -1,41 +1,22 @@
-{% set version = "1.26.0" %}
+{% set version = "1.34.0" %}
 {% set name = "chromPlot" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 92c0f6ecc20d34fe9497eb91bbad444e
+about:
+  description: Package designed to visualize genomic data along the chromosomes, where the vertical chromosomes are sorted by number, with sex chromosomes at the end.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Global visualization tool of genomic data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: qtl, GenomicFeatures, TxDb.Hsapiens.UCSC.hg19.knownGene
-requirements:
-  host:
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - r-base
-  run:
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Global visualization tool of genomic data'
-  description: 'Package designed to visualize genomic data along the chromosomes, where the vertical chromosomes are sorted by number, with sex chromosomes at the end.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-chromplot", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:chromplot
@@ -44,4 +25,31 @@ extra:
     name: bioconductor-chromplot
     path: recipes/bioconductor-chromplot
     version: 1.8.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: qtl, GenomicFeatures, TxDb.Hsapiens.UCSC.hg19.knownGene
+requirements:
+  host:
+    - bioconductor-biomart >=2.62.0,<2.63.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - r-base
+  run:
+    - bioconductor-biomart >=2.62.0,<2.63.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - r-base
+
+source:
+  md5: fe85ead7e4f016176f9e7cd4ae47b58d
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

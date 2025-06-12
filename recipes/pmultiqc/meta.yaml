@@ -1,5 +1,5 @@
 {% set name = "pmultiqc" %}
-{% set version = "0.0.19" %}
+{% set version = "0.0.28" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,26 +7,33 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 44fd8087943d8f32c2e613e042b5070ebf6dbe0ae3b20cc2c0c8b7ef7dffaf8d
+  sha256: 90963283e2200a00605d9edbc3734ea3c08e091db4e241368f81366ebca78910
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  run_exports:
+    - {{ pin_subpackage('pmultiqc', max_pin="x.x") }}
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.10,<3.13
     - pip
+    - poetry-core
   run:
-    - python >=3.6
+    - python >=3.10,<3.13
     - pytest
     - lxml
-    - multiqc
+    - multiqc ==1.26
     - pandas
-    - sdrf-pipelines
+    - sdrf-pipelines >=0.0.32
     - pyteomics
-    - pyopenms >2.7
+    - pyopenms
+    - numpy >=1.23
+    - pyarrow
+    - scikit-learn ==1.5.0
+    - lxml
     
 test:
   imports:

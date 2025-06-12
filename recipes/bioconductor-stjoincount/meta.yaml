@@ -1,27 +1,31 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "stJoincount" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 74904917e330f82631376e7327aa2ff5
+about:
+  description: stJoincount facilitates the application of join count analysis to spatial transcriptomic data generated from the 10x Genomics Visium platform. This tool first converts a labeled spatial tissue map into a raster object, in which each spatial feature is represented by a pixel coded by label assignment. This process includes automatic calculation of optimal raster resolution and extent for the sample. A neighbors list is then created from the rasterized sample, in which adjacent and diagonal neighbors for each pixel are identified. After adding binary spatial weights to the neighbors list, a multi-categorical join count analysis is performed to tabulate "joins" between all possible combinations of label pairs. The function returns the observed join counts, the expected count under conditions of spatial randomness, and the variance calculated under non-free sampling. The z-score is then calculated as the difference between observed and expected counts, divided by the square root of the variance.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: stJoincount - Join count statistic for quantifying spatial correlation between clusters
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
+  run_exports: '{{ pin_subpackage("bioconductor-stjoincount", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, rmarkdown, testthat (>= 3.0.0)
 requirements:
   host:
-    - 'bioconductor-spatialexperiment >=1.8.0,<1.9.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-spatialexperiment >=1.16.0,<1.17.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-dplyr
     - r-ggplot2
@@ -32,8 +36,8 @@ requirements:
     - r-sp
     - r-spdep
   run:
-    - 'bioconductor-spatialexperiment >=1.8.0,<1.9.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-spatialexperiment >=1.16.0,<1.17.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-dplyr
     - r-ggplot2
@@ -43,13 +47,16 @@ requirements:
     - r-seurat
     - r-sp
     - r-spdep
+
+source:
+  md5: 94c4eeaaa629a3a0f2ddf84ed2f602bb
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'stJoincount - Join count statistic for quantifying spatial correlation between clusters'
-  description: 'stJoincount, the application of join count analysis to the spatial transcriptomics dataset. This tool converts the spatial map into a raster object (a two-dimensional image as a rectangular matrix or grid of square pixels), where clusters labelled spots are converted to adjacent pixels with a calculated resolution. A neighbors'' list was created based on the rasterized sample, which identifies adjacent and diagonal neighbors for each pixel. After adding binary spatial weights to the neighbors'' list, a multi-categorical join count analysis is then performed, allowing all possible combinations of cluster pairings to be tabulated. The function returns the observed join counts, the expected count under conditions of spatial randomness, and the variance of observed to expected calculated under non-free sampling. The z-score is then calculated as the difference between observed and expected counts, divided by the square root of the variance.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

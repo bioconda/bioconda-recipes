@@ -1,38 +1,40 @@
 {% set version = "1.4.2" %}
 {% set name = "BSgenome.Drerio.UCSC.danRer11" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: cd586da56ca88ccebb85804f992ba204
+about:
+  description: Full genome sequences for Danio rerio (Zebrafish) as provided by UCSC (danRer11, May 2017) and stored in Biostrings objects.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Full genome sequences for Danio rerio (UCSC version danRer11)
 build:
-  number: 6
+  noarch: generic
+  number: 9
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-bsgenome.drerio.ucsc.danrer11", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: GenomicFeatures
 requirements:
   host:
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
     - r-base
   run:
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221102
+    - bioconductor-data-packages >=20241103
+source:
+  md5: cd586da56ca88ccebb85804f992ba204
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Full genome sequences for Danio rerio (UCSC version danRer11)'
-  description: 'Full genome sequences for Danio rerio (Zebrafish) as provided by UCSC (danRer11, May 2017) and stored in Biostrings objects.'
+    - $R -e "library('{{ name }}')"
 

@@ -1,45 +1,52 @@
-{% set version = "1.44.0" %}
+{% set version = "1.52.0" %}
 {% set name = "isobar" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 4ca2c276ba2edfd43c57bd939739db00
+about:
+  description: isobar provides methods for preprocessing, normalization, and report generation for the analysis of quantitative mass spectrometry proteomics data labeled with isobaric tags, such as iTRAQ and TMT. Features modules for integrating and validating PTM-centric datasets (isobar-PTM). More information on http://www.ms-isobar.org.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-2'
+  summary: Analysis and quantitation of isobarically tagged MSMS proteomics data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-isobar", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: MSnbase, OrgMassSpecR, XML, RJSONIO, Hmisc, gplots, RColorBrewer, gridExtra, limma, boot, DBI, MASS
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biomart >=2.62.0,<2.63.0
     - r-base
     - r-distr
     - r-ggplot2
     - r-plyr
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biomart >=2.62.0,<2.63.0
     - r-base
     - r-distr
     - r-ggplot2
     - r-plyr
+
+source:
+  md5: 1d5e059f717cae9a8989a9b7a7f7b96d
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: LGPL-2
-  summary: 'Analysis and quantitation of isobarically tagged MSMS proteomics data'
-  description: 'isobar provides methods for preprocessing, normalization, and report generation for the analysis of quantitative mass spectrometry proteomics data labeled with isobaric tags, such as iTRAQ and TMT. Features modules for integrating and validating PTM-centric datasets (isobar-PTM). More information on http://www.ms-isobar.org.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-2'
+    - $R -e "library('{{ name }}')"
 

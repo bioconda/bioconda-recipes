@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "seqcna.annot-1.34.0"
+installBiocDataPackage.sh "seqcna.annot-1.38.0"

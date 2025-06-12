@@ -1,42 +1,44 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "flowCut" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 1fd2359cf57c55a553f2bd9d62f555ad
+about:
+  description: Common techinical complications such as clogging can result in spurious events and fluorescence intensity shifting, flowCut is designed to detect and remove technical artifacts from your data by removing segments that show statistical differences from other segments.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Automated Removal of Outlier Events and Flagging of Files Based on Time Versus Fluorescence Analysis
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-flowcut", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: RUnit, BiocGenerics, knitr, markdown, rmarkdown
 requirements:
   host:
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-flowdensity >=1.32.0,<1.33.0'
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-flowdensity >=1.40.0,<1.41.0
     - r-base
     - r-cairo
     - r-e1071
   run:
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-flowdensity >=1.32.0,<1.33.0'
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-flowdensity >=1.40.0,<1.41.0
     - r-base
     - r-cairo
     - r-e1071
+source:
+  md5: 6f7365a1629078183175226e937235df
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Automated Removal of Outlier Events and Flagging of Files Based on Time Versus Fluorescence Analysis'
-  description: 'Common techinical complications such as clogging can result in spurious events and fluorescence intensity shifting, flowCut is designed to detect and remove technical artifacts from your data by removing segments that show statistical differences from other segments.'
+    - $R -e "library('{{ name }}')"
 

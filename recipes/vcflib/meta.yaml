@@ -1,51 +1,124 @@
-{% set version = "1.0.3" %}
+{% set name = "vcflib" %}
+{% set version = "1.0.14" %}
+{% set sha256 = "27ba26a3c48ba3911e760de1c5633d46b57e1e8dce9ad41e8cb3de299d2d6053" %}
 
 package:
-  name: vcflib
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/vcflib/vcflib/releases/download/v{{ version }}/vcflib-{{ version }}-src.tar.gz
-  sha256: 766bb8f47eb19810b7a0c53b6e3130658300450493d39db46eadc6124b0af200
+- url: https://github.com/vcflib/vcflib/releases/download/v{{ version }}/{{ name }}-{{ version }}-src.tar.gz
+  sha256: {{ sha256 }}
   patches:
-    - shared_lib.patch
-    - pkg-config.patch
+    - 0001-CMakeLists.patch
+    - 0002-CMakeLists.macos.patch  # [osx]
+    - 0003-tabix.patch
+- url: https://ziglang.org/builds/zig-linux-x86_64-0.15.0-dev.565+8e72a2528.tar.xz  # [linux and x86_64]
+  sha256: 593c2d76e54dadde7c7cd8e83e6885eb1eb2e494f7243582af09ae402ca17e0f  # [linux and x86_64]
+  folder: zig-linux-x86_64-0.15.0-dev  # [linux and x86_64]
+- url: https://ziglang.org/builds/zig-linux-aarch64-0.15.0-dev.565+8e72a2528.tar.xz  # [linux and aarch64]
+  sha256: dc568d5acbd434f8d54a728d42a14681ae5c4df0709f79827b48cdb1af875449  # [linux and aarch64]
+  folder: zig-linux-aarch64-0.15.0-dev  # [linux and aarch64]
+- url: https://ziglang.org/builds/zig-macos-x86_64-0.15.0-dev.565+8e72a2528.tar.xz  # [osx and x86_64]
+  sha256: bd7d5f97aa4b5f8b2598518212e637b4d13de32da009df4eba413c52cbfa9408  # [osx and x86_64]
+  folder: zig-macos-x86_64-0.15.0-dev  # [osx and x86_64]
+- url: https://ziglang.org/builds/zig-macos-aarch64-0.15.0-dev.565+8e72a2528.tar.xz  # [osx and arm64]
+  sha256: 205ba7e35fea8ffe7627e0e7a17a7bb8997aec433e21ef8e8e5c1f760792d224  # [osx and arm64]
+  folder: zig-macos-aarch64-0.15.0-dev  # [osx and arm64]
 
 build:
-  number: 2
+  number: 0
+  # Undefined symbols for architecture x86_64: "___ulock_wait2", referenced from: _Thread.Futex.DarwinImpl.wait in libzig.a(libzig.a.o)
+  skip: True  # [osx and x86_64]
+  run_exports:
+    - {{ pin_subpackage('vcflib', max_pin="x") }}
 
 requirements:
   build:
-    - make
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - make
+    - cmake
     # python really only used as a build tool; no ${PREFIX}/bin/python needed.
     - python >=3
-    - cmake
     - pkg-config
+    - autoconf
+    - automake
+    - libtool
+    - pybind11
   host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - htslib
     - tabixpp
+    - wfa2-lib  # [osx]
+    - pandoc
+    - zlib
+    - bzip2
+    - xz
+    - libcurl
+    - libdeflate
+    - fastahack
   run:
     - python >=3
-    - zlib   
+    - perl
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - htslib
     - tabixpp
+    - wfa2-lib  # [osx]
+    - wget
+    - fastahack
 
 test:
+  requires:
+    - wget
   commands:
-    - vcfallelicprimitives -h
-    - vcffirstheader < /dev/null
-    - vcfsort < /dev/null
-    - vcfrandom | grep 'fileformat=VCF'
+    - "vcfwave -h"
+    - "vcffirstheader < /dev/null"
+    - "vcfsort < /dev/null"
+    - "vcfstreamsort --help"
+    - "wget -O test.vcf https://raw.githubusercontent.com/vcflib/vcflib/a610b7444daab0c9e974d9a001550bf8dd644770/test/data/regression/vcffilter_2.vcf"
+    - "vcfuniq test.vcf"
 
 about:
-  home: https://github.com/vcflib/vcflib
+  home: "https://github.com/vcflib/vcflib"
   license: MIT
-  summary: Command-line tools for manipulating VCF files
-  maintainers: jpuritz
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Command-line tools for manipulating VCF files."
+  dev_url: "https://github.com/vcflib/vcflib"
+  doc_url: "https://github.com/vcflib/vcflib/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - jpuritz
+    - mencian
   identifiers:
     - biotools:vcflib
-    - doi:10.1101/023754
+    - doi:10.1371/journal.pcbi.1009123
+    - usegalaxy-eu:vcfsort
+    - usegalaxy-eu:vcfallelicprimitives
+    - usegalaxy-eu:vcfbreakcreatemulti
+    - usegalaxy-eu:vcffilter2
+    - usegalaxy-eu:vcfcheck
+    - usegalaxy-eu:vcfcombine
+    - usegalaxy-eu:vcfaddinfo
+    - usegalaxy-eu:vcf2tsv
+    - usegalaxy-eu:vcfleftalign
+    - usegalaxy-eu:vcfhethom
+    - usegalaxy-eu:vcfrandomsample
+    - usegalaxy-eu:vcfbedintersect
+    - usegalaxy-eu:vcfgenotypes
+    - usegalaxy-eu:vcffixup
+    - usegalaxy-eu:vcfgeno2haplo
+    - usegalaxy-eu:vcfvcfintersect
+    - usegalaxy-eu:vcfanno
+    - usegalaxy-eu:vcfannotate
+    - usegalaxy-eu:vcfcommonsamples
+    - usegalaxy-eu:vcfflatten2
+    - usegalaxy-eu:vcfdistance
+    - usegalaxy-eu:vcfannotategenotypes
+    - usegalaxy-eu:vcfselectsamples

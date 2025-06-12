@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "weberdivechalcdata-1.0.0"
+installBiocDataPackage.sh "weberdivechalcdata-1.8.0"

@@ -1,46 +1,97 @@
+{% set version = "3.5.6" %}
+
 package:
   name: deeptools
-  version: '3.5.1'
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/ad/f7/4187b99b63258631f6fa457b42fbbfe8d0b27efeb5f20a374271f9522a9d/deepTools-3.5.1.tar.gz
-  sha256: 62eea132513afa5f6bb51387e5866a5c3a26613aeb7e8c9600c38becf2ecb716
+  url: https://github.com/deeptools/deepTools/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 2f46c4234211eb3a05c99ff80586a8d89954cfd5a3f94a397cba90cade23ef02
 
 build:
-  number: 1
+  number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
+  run_exports:
+    - {{ pin_subpackage("deeptools", max_pin="x") }}
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  entry_points:
+    - alignmentSieve = deeptools.alignmentSieve:main
+    - bamCompare = deeptools.bamCompare:main
+    - bamCoverage = deeptools.bamCoverage:main
+    - bamPEFragmentSize = deeptools.bamPEFragmentSize:main
+    - bigwigAverage = deeptools.bigwigAverage:main
+    - bigwigCompare = deeptools.bigwigCompare:main
+    - computeGCBias = deeptools.computeGCBias:main
+    - computeMatrix = deeptools.computeMatrix:main
+    - computeMatrixOperations = deeptools.computeMatrixOperations:main
+    - correctGCBias = deeptools.correctGCBias:main
+    - deeptools = deeptools.deeptools_list_tools:main
+    - estimateReadFiltering = deeptools.estimateReadFiltering:main
+    - estimateScaleFactor = deeptools.estimateScaleFactor:main
+    - multiBamSummary = deeptools.multiBamSummary:main
+    - multiBigwigSummary = deeptools.multiBigwigSummary:main
+    - plotCorrelation = deeptools.plotCorrelation:main
+    - plotCoverage = deeptools.plotCoverage:main
+    - plotEnrichment = deeptools.plotEnrichment:main
+    - plotFingerprint = deeptools.plotFingerprint:main
+    - plotHeatmap = deeptools.plotHeatmap:main
+    - plotPCA = deeptools.plotPCA:main
+    - plotProfile = deeptools.plotProfile:main
 
 requirements:
   host:
-    - python >=3
+    - python >=3.9
     - pip
+    - setuptools
   run:
-    - python >=3
+    - python >=3.9
     - pybigwig >=0.2.3
-    - numpy >=1.9.0,<1.24
+    - numpy >=2.0.0
+    - numpydoc >=0.5
     - scipy >=0.17.0
-    - matplotlib-base >=3.1.0
+    - matplotlib-base >=3.5.0
     - pysam >=0.14.0
     - py2bit >=0.2.0
-    - plotly >=2.0.0
+    - plotly >=4.9
     - deeptoolsintervals >=0.1.8
+    - importlib-metadata
 
 test:
   imports:
     - deeptools
-
   commands:
     - bamCompare --version
 
 about:
   home: https://github.com/deeptools/deepTools
-  license: GPL3
+  license: MIT
+  license_family: MIT
   license_file: LICENSE.txt
   summary: A set of user-friendly tools for normalization and visualzation of deep-sequencing data
+  doc_url: https://deeptools.readthedocs.io/en/latest/
+  dev_url: https://github.com/deeptools/deepTools
 
 extra:
   identifiers:
     - biotools:deeptools
     - doi:10.1093/nar/gkw257
     - usegalaxy-eu:deeptools_plot_heatmap
+    - usegalaxy-eu:deeptools_plot_pca
+    - usegalaxy-eu:deeptools_plot_profile
+    - usegalaxy-eu:deeptools_plot_correlation
+    - usegalaxy-eu:deeptools_plot_coverage
+    - usegalaxy-eu:deeptools_plot_fingerprint
+    - usegalaxy-eu:deeptools_plot_enrichment
+    - usegalaxy-eu:deeptools_bam_compare
+    - usegalaxy-eu:deeptools_bam_pe_fragmentsize
+    - usegalaxy-eu:deeptools_bigwig_compare
+    - usegalaxy-eu:deeptools_correct_gc_bias
+    - usegalaxy-eu:deeptools_multi_bam_summary
+    - usegalaxy-eu:deeptools_compute_matrix
+    - usegalaxy-eu:deeptools_compute_gc_bias
+    - usegalaxy-eu:deeptools_multi_bigwig_summary
+    - usegalaxy-eu:deeptools_compute_matrix_operations
+    - usegalaxy-eu:deeptools_alignmentsieve
+    - usegalaxy-eu:deeptools_estimatereadfiltering
+    - usegalaxy-eu:hicup_deduplicator
+    - usegalaxy-eu:deeptools_bigwig_average

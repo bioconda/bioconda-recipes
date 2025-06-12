@@ -1,66 +1,73 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "syntenet" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 80c7e6c725d0125ed9649f730aeaf108
+about:
+  description: 'syntenet can be used to infer synteny networks from whole-genome protein sequences and analyze them. Anchor pairs are detected with the MCScanX algorithm, which was ported to this package with the Rcpp framework for R and C++ integration. Anchor pairs from synteny analyses are treated as an undirected unweighted graph (i.e., a synteny network), and users can perform: i. network clustering; ii. phylogenomic profiling (by identifying which species contain which clusters) and; iii. microsynteny-based phylogeny reconstruction with maximum likelihood.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Inference And Analysis Of Synteny Networks
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: BiocStyle, ggtree, covr, knitr, rmarkdown, testthat (>= 3.0.0), xml2
+  run_exports: '{{ pin_subpackage("bioconductor-syntenet", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, ggtree, labdsv, covr, knitr, rmarkdown, testthat (>= 3.0.0), xml2, networkD3
 requirements:
-  host:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - r-base
-    - r-ggnetwork
-    - r-ggplot2
-    - r-igraph
-    - r-intergraph
-    - r-labdsv
-    - r-networkd3
-    - r-pheatmap
-    - r-rcolorbrewer
-    - 'r-rcpp >=1.0.8'
-    - r-testthat
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - r-base
-    - r-ggnetwork
-    - r-ggplot2
-    - r-igraph
-    - r-intergraph
-    - r-labdsv
-    - r-networkd3
-    - r-pheatmap
-    - r-rcolorbrewer
-    - 'r-rcpp >=1.0.8'
-    - r-testthat
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+  host:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - r-base
+    - r-ggnetwork
+    - r-ggplot2
+    - r-igraph
+    - r-intergraph
+    - r-pheatmap
+    - r-rcolorbrewer
+    - r-rcpp >=1.0.8
+    - r-rlang
+    - r-testthat
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - r-base
+    - r-ggnetwork
+    - r-ggplot2
+    - r-igraph
+    - r-intergraph
+    - r-pheatmap
+    - r-rcolorbrewer
+    - r-rcpp >=1.0.8
+    - r-rlang
+    - r-testthat
+
+source:
+  md5: d43f9996496ecd4cf2de0933f5226ca6
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Inference And Analysis Of Synteny Networks'
-  description: 'syntenet can be used to infer synteny networks from whole-genome protein sequences and analyze them. Anchor pairs are detected with the MCScanX algorithm, which was ported to this package with the Rcpp framework for R and C++ integration. Anchor pairs from synteny analyses are treated as an undirected unweighted graph (i.e., a synteny network), and users can perform: i. network clustering; ii. phylogenomic profiling (by identifying which species contain which clusters) and; iii. microsynteny-based phylogeny reconstruction with maximum likelihood.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

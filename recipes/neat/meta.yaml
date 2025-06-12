@@ -1,0 +1,49 @@
+{% set name = "NEAT" %}
+{% set version = "4.2.8" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/ncsa/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: 3497eb02a36c3bffc3a12e19f0231efdc6b39d3b92896ad8fbb8021fdfe97a59
+  
+
+build:
+  run_exports:    
+    - {{ pin_subpackage('neat', max_pin="x") }}
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed --no-cache-dir -vvv ."
+  number: 0
+  noarch: python
+
+requirements:
+  host:
+    - python >=3.10
+    - poetry-core >=1.0.0
+    - pip
+  run:
+    - python >=3.10
+    - biopython =1.79
+    - pkginfo
+    - matplotlib-base
+    - numpy
+    - seaborn
+    - pyyaml
+    - scipy
+    - bedtools
+    - pybedtools >=0.9.0
+    - htslib
+    - pysam
+    - frozendict
+
+test:
+  commands:
+    - neat -h | grep read-simulator
+
+about:
+  home: https://github.com/ncsa/NEAT/
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE.md
+  summary: Toolset for generating synthethic FASTQ, VCF and BAM files.

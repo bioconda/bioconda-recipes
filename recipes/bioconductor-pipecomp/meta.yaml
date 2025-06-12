@@ -1,32 +1,37 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "pipeComp" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: b6913a4fdd99bc7d42ccd1b617b2bf2a
+about:
+  description: A simple framework to facilitate the comparison of pipelines involving various steps and parameters. The `pipelineDefinition` class represents pipelines as, minimally, a set of functions consecutively executed on the output of the previous one, and optionally accompanied by step-wise evaluation and aggregation functions. Given such an object, a set of alternative parameters/methods, and benchmark datasets, the `runPipeline` function then proceeds through all combinations arguments, avoiding recomputing the same step twice and compiling evaluations on the fly to avoid storing potentially large intermediate data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: pipeComp pipeline benchmarking framework
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-pipecomp", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, rmarkdown
 requirements:
+
   host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-scater >=1.26.0,<1.27.0'
-    - 'bioconductor-scran >=1.26.0,<1.27.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-scater >=1.34.0,<1.35.0
+    - bioconductor-scran >=1.34.0,<1.35.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-aricode
     - r-base
     - r-circlize
@@ -47,14 +52,15 @@ requirements:
     - r-seurat
     - r-uwot
     - r-viridislite
+
   run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-scater >=1.26.0,<1.27.0'
-    - 'bioconductor-scran >=1.26.0,<1.27.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-scater >=1.34.0,<1.35.0
+    - bioconductor-scran >=1.34.0,<1.35.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-aricode
     - r-base
     - r-circlize
@@ -75,13 +81,16 @@ requirements:
     - r-seurat
     - r-uwot
     - r-viridislite
+
+source:
+  md5: 1d4f2ff01c4ebbb799909f65d77eb0e2
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL
-  summary: 'pipeComp pipeline benchmarking framework'
-  description: 'A simple framework to facilitate the comparison of pipelines involving various steps and parameters. The `pipelineDefinition` class represents pipelines as, minimally, a set of functions consecutively executed on the output of the previous one, and optionally accompanied by step-wise evaluation and aggregation functions. Given such an object, a set of alternative parameters/methods, and benchmark datasets, the `runPipeline` function then proceeds through all combinations arguments, avoiding recomputing the same step twice and compiling evaluations on the fly to avoid storing potentially large intermediate data.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

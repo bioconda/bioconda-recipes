@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 BINARY=mummer
 BINARY_HOME=$PREFIX/bin
 MUMMER_HOME=$PREFIX/opt/mummer-$PKG_VERSION
@@ -47,7 +49,14 @@ for i in exact-tandems dnadiff mapview mummerplot nucmer promer run-mummer1 run-
   perl -i -pe 's/(envs\/\_\_.*)(\K\@)/\\@/' $i
 done
 
+# fix hashbang lines to use conda's perl
+for i in dnadiff mapview mummerplot nucmer promer; do
+  sed -i.bak '1 s|^#!/.*/perl -w$|#!/usr/bin/env perl|g' $MUMMER_HOME/$i
+  rm -rf $MUMMER_HOME/$i.bak
+done
+
 for i in $binaries; do 
+  # ensure executable and setup symlink for binary
   chmod +x $MUMMER_HOME/$i
   ln -s "$MUMMER_HOME/$i" "$BINARY_HOME/$i"
 done

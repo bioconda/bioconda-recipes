@@ -1,6 +1,6 @@
-{% set version = "1.44.0" %}
+{% set version = "1.48.0" %}
 {% set name = "exomeCopy" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,29 +8,31 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 6a07931c4b2acae6d052add5468327b0
+  md5: 068f1f0cb675297a1b7940330fae0cbe
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-exomecopy", max_pin="x.x") }}'
 # Suggests: Biostrings
 requirements:
   host:
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
+    - 'bioconductor-genomeinfodb >=1.38.0,<1.39.0'
+    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
+    - 'bioconductor-iranges >=2.36.0,<2.37.0'
+    - 'bioconductor-rsamtools >=2.18.0,<2.19.0'
     - r-base
     - libblas
     - liblapack
   run:
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
+    - 'bioconductor-genomeinfodb >=1.38.0,<1.39.0'
+    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
+    - 'bioconductor-iranges >=2.36.0,<2.37.0'
+    - 'bioconductor-rsamtools >=2.18.0,<2.19.0'
     - r-base
   build:
     - {{ compiler('c') }}
@@ -40,11 +42,13 @@ test:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
+  license: 'GPL-3.0-or-later'
   summary: 'Copy number variant detection from exome sequencing read depth'
   description: 'Detection of copy number variants (CNV) from exome sequencing samples, including unpaired samples.  The package implements a hidden Markov model which uses positional covariates, such as background read depth and GC-content, to simultaneously normalize and segment the samples into regions of constant copy count.'
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:exomecopy
     - doi:10.2202/1544-6115.1732

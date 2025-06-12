@@ -1,23 +1,27 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "PoDCall" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 5873a3a7cbfe65a0402aed8e7b1cc20a
+about:
+  description: Reads files exported from 'QX Manager or QuantaSoft' containing amplitude values from a run of ddPCR (96 well plate) and robustly sets thresholds to determine positive droplets for each channel of each individual well. Concentration and normalized concentration in addition to other metrics is then calculated for each well. Results are returned as a table, optionally written to file, as well as optional plots (scatterplot and histogram) for both channels per well written to file. The package includes a shiny application which provides an interactive and user-friendly interface to the full functionality of PoDCall.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Positive Droplet Calling for DNA Methylation Droplet Digital PCR
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, rmarkdown, testthat
+  run_exports: '{{ pin_subpackage("bioconductor-podcall", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, testthat, BiocStyle
 requirements:
   host:
     - r-base
@@ -45,13 +49,16 @@ requirements:
     - r-rlist
     - r-shiny
     - r-shinyjs
+
+source:
+  md5: 1a527f296adf984ae99dd9c88002e630
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Positive Droplet Calling for DNA Methylation Droplet Digital PCR'
-  description: 'Reads files exported from ''QuantaSoft'' containing amplitude values from a run of ddPCR (96 well plate) and robustly sets thresholds to determine positive droplets for each channel of each individual well. Concentration and normalized concentration in addition to other metrics is then calculated for each well. Results are returned as a table, optionally written to file, as well as optional plots (scatterplot and histogram) for both channels per well written to file. The package includes a shiny application which provides an interactive and user-friendly interface to the full functionality of PoDCall.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

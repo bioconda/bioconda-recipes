@@ -1,32 +1,40 @@
-{% set version = "1.4.0" %}
+{% set version = "1.12.0" %}
 {% set name = "GeoDiff" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 1fed6fd0563c836c1d84d7b680cf8d07
+about:
+  description: A series of statistical models using count generating distributions for background modelling, feature and sample QC, normalization and differential expression analysis on GeoMx RNA data. The application of these methods are demonstrated by example data analysis vignette.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Count model based differential expression and normalization on GeoMx RNA data
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-geodiff", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, dplyr
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-geomxtools >=3.2.0,<3.3.0'
-    - 'bioconductor-nanostringnctools >=1.6.0,<1.7.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-geomxtools >=3.10.0,<3.11.0
+    - bioconductor-nanostringnctools >=1.14.0,<1.15.0
     - r-base
     - r-lme4
     - r-matrix
     - r-plyr
-    - 'r-rcpp >=1.0.4.6'
+    - r-rcpp >=1.0.4.6
     - r-rcpparmadillo
     - r-robust
     - r-roptim
@@ -35,30 +43,29 @@ requirements:
     - libblas
     - liblapack
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-geomxtools >=3.2.0,<3.3.0'
-    - 'bioconductor-nanostringnctools >=1.6.0,<1.7.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-geomxtools >=3.10.0,<3.11.0
+    - bioconductor-nanostringnctools >=1.14.0,<1.15.0
     - r-base
     - r-lme4
     - r-matrix
     - r-plyr
-    - 'r-rcpp >=1.0.4.6'
+    - r-rcpp >=1.0.4.6
     - r-rcpparmadillo
     - r-robust
     - r-roptim
     - r-testthat
     - r-withr
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: a3c5d6ea2abd61fa18c86ed57e6a5432
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Count model based differential expression and normalization on GeoMx RNA data'
-  description: 'A series of statistical models using count generating distributions for background modelling, feature and sample QC, normalization and differential expression analysis on GeoMx RNA data. The application of these methods are demonstrated by example data analysis vignette.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

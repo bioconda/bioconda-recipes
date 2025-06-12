@@ -1,38 +1,21 @@
-{% set version = "1.58.0" %}
+{% set version = "1.66.0" %}
 {% set name = "GSEAlm" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 60a03344159b6cea974b408dec1f9e99
+about:
+  description: Models and methods for fitting linear models to gene expression data, together with tools for computing and using various regression diagnostics.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Linear Model Toolset for Gene Set Enrichment Analysis
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: GSEABase,Category, multtest, ALL, annotate, hgu95av2.db, genefilter, GOstats, RColorBrewer
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - r-base
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Linear Model Toolset for Gene Set Enrichment Analysis'
-  description: 'Models and methods for fitting linear models to gene expression data, together with tools for computing and using various regression diagnostics.'
+  run_exports: '{{ pin_subpackage("bioconductor-gsealm", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:gsealm
@@ -41,4 +24,29 @@ extra:
     name: bioconductor-gsealm
     path: recipes/bioconductor-gsealm
     version: 1.40.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: GSEABase,Category, multtest, ALL, annotate, hgu95av2.db, genefilter, GOstats, RColorBrewer
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+
+source:
+  md5: 2c7b3b95a50d2fcc962e5693be5142cb
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

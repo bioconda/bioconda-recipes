@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "adductdata-1.14.0"
+installBiocDataPackage.sh "adductdata-1.22.0"

@@ -1,51 +1,21 @@
-{% set version = "1.46.0" %}
+{% set version = "1.54.0" %}
 {% set name = "TurboNorm" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 9754fed558476f702dfeb91c3f40b31b
+about:
+  description: A fast scatterplot smoother based on B-splines with second-order difference penalty. Functions for microarray normalization of single-colour data i.e. Affymetrix/Illumina and two-colour data supplied as marray MarrayRaw-objects or limma RGList-objects are available.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: A fast scatterplot smoother suitable for microarray normalization
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: BiocStyle, affydata
-requirements:
-  host:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-convert >=1.74.0,<1.75.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-marray >=1.76.0,<1.77.0'
-    - r-base
-    - r-lattice
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-convert >=1.74.0,<1.75.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-marray >=1.76.0,<1.77.0'
-    - r-base
-    - r-lattice
-  build:
-    - {{ compiler('c') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: LGPL
-  summary: 'A fast scatterplot smoother suitable for microarray normalization'
-  description: 'A fast scatterplot smoother based on B-splines with second-order difference penalty. Functions for microarray normalization of single-colour data i.e. Affymetrix/Illumina and two-colour data supplied as marray MarrayRaw-objects or limma RGList-objects are available.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-turbonorm", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:turbonorm
@@ -53,4 +23,42 @@ extra:
     name: bioconductor-turbonorm
     path: recipes/bioconductor-turbonorm
     version: 1.28.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, affydata, hgu95av2cdf
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-convert >=1.82.0,<1.83.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-marray >=1.84.0,<1.85.0
+    - r-base
+    - r-lattice
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-convert >=1.82.0,<1.83.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-marray >=1.84.0,<1.85.0
+    - r-base
+    - r-lattice
+
+source:
+  md5: 5baa780a371fb0fda681b73cb0ae58ba
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

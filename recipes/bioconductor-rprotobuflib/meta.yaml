@@ -1,46 +1,56 @@
-{% set version = "2.10.0" %}
+{% set version = "2.18.0" %}
 {% set name = "RProtoBufLib" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 260cc9ba12583b3113df8ee9b5b06958
+about:
+  description: This package provides the headers and static library of Protocol buffers for other R packages to compile and link against.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: BSD_3_clause
+  summary: C++ headers and static libraries of Protocol buffers
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-rprotobuflib", max_pin="x.x") }}'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  parent_recipe:
+    name: bioconductor-rprotobuflib
+    path: recipes/bioconductor-rprotobuflib
+    version: 1.2.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown
 # SystemRequirements: GNU make
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
   host:
     - r-base
     - libblas
     - liblapack
   run:
     - r-base
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - automake
-    - make
+
+source:
+  md5: 7de7917bb81b2f16b83661795e3f13bd
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: BSD_3_clause
-  summary: 'C++ headers and static libraries of Protocol buffers'
-  description: 'This package provides the headers and static library of Protocol buffers for other R packages to compile and link against.'
-extra:
-  parent_recipe:
-    name: bioconductor-rprotobuflib
-    path: recipes/bioconductor-rprotobuflib
-    version: 1.2.0
+    - $R -e "library('{{ name }}')"
 

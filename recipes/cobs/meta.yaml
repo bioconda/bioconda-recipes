@@ -1,4 +1,4 @@
-{% set version = "0.2.1" %}
+{% set version = "0.3.1" %}
 {% set name = "cobs" %}
 
 package:
@@ -7,10 +7,14 @@ package:
 
 source:
   url: https://github.com/iqbal-lab-org/{{ name }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
-  sha256: ce2ab77ffb17327250244f47481e100df5191a3e8c218e9725cb5e9c80e24ee2
+  sha256: 181cda165d2fd8633b9f9de96b7a6f00d5994effe37ffaf7734e428f83d29d5d
+  patches:
+    - cobs-aarch64.patch # [aarch64 or arm64]
 
 build:
-  number: 0
+  number: 2
+  run_exports:
+  - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 requirements:
   build:
@@ -37,6 +41,9 @@ test:
     - cobs
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    # - osx-arm64 # disabled due to failing tests. See PR #52350
   recipe-maintainers:
     - luizirber
     - johnlees

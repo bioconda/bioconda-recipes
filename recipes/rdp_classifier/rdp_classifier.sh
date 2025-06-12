@@ -36,10 +36,10 @@ for arg in "$@"; do
         '-XX'*)
             jvm_prop_opts="$jvm_prop_opts $arg"
             ;;
-         '-Xm'*)
+        '-Xm'*)
             jvm_mem_opts="$jvm_mem_opts $arg"
             ;;
-         *)
+        *)
             pass_args="$pass_args $arg"
             ;;
     esac

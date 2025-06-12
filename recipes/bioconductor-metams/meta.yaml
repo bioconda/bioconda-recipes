@@ -1,47 +1,22 @@
-{% set version = "1.34.0" %}
+{% set version = "1.42.0" %}
 {% set name = "metaMS" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 8b3004d0b568589b810c5629a0c3f449
+about:
+  description: MS-based metabolomics data processing and compound annotation pipeline.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: MS-based metabolomics annotation pipeline
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: metaMSdata, RUnit
-requirements:
-  host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-camera >=1.54.0,<1.55.0'
-    - 'bioconductor-xcms >=3.20.0,<3.21.0'
-    - r-base
-    - r-matrix
-    - r-robustbase
-  run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-camera >=1.54.0,<1.55.0'
-    - 'bioconductor-xcms >=3.20.0,<3.21.0'
-    - r-base
-    - r-matrix
-    - r-robustbase
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'MS-based metabolomics annotation pipeline'
-  description: 'MS-based metabolomics data processing and compound annotation pipeline.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-metams", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:metams
@@ -49,4 +24,37 @@ extra:
     name: bioconductor-metams
     path: recipes/bioconductor-metams
     version: 1.18.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: metaMSdata, RUnit
+requirements:
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-camera >=1.62.0,<1.63.0
+    - bioconductor-xcms >=4.4.0,<4.5.0
+    - r-base
+    - r-matrix
+    - r-robustbase
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-camera >=1.62.0,<1.63.0
+    - bioconductor-xcms >=4.4.0,<4.5.0
+    - r-base
+    - r-matrix
+    - r-robustbase
+
+source:
+  md5: f83ed753222affdaaa30a48cdd250c76
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

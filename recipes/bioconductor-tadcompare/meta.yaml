@@ -1,26 +1,30 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "TADCompare" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 07692165540958508adabd852bee8a77
+about:
+  description: TADCompare is an R package designed to identify and characterize differential Topologically Associated Domains (TADs) between multiple Hi-C contact matrices. It contains functions for finding differential TADs between two datasets, finding differential TADs over time and identifying consensus TADs across multiple matrices. It takes all of the main types of HiC input and returns simple, comprehensive, easy to analyze results.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: 'TADCompare: Identification and characterization of differential TADs'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, knitr, rmarkdown, microbenchmark, testthat, covr, pheatmap, rGREAT, SpectralTAD
+  run_exports: '{{ pin_subpackage("bioconductor-tadcompare", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, rmarkdown, microbenchmark, testthat, covr, pheatmap, SpectralTAD, magick, qpdf
 requirements:
   host:
-    - 'bioconductor-hiccompare >=1.20.0,<1.21.0'
+    - bioconductor-hiccompare >=1.28.0,<1.29.0
     - r-base
     - r-cluster
     - r-cowplot
@@ -34,7 +38,7 @@ requirements:
     - r-reshape2
     - r-tidyr
   run:
-    - 'bioconductor-hiccompare >=1.20.0,<1.21.0'
+    - bioconductor-hiccompare >=1.28.0,<1.29.0
     - r-base
     - r-cluster
     - r-cowplot
@@ -47,13 +51,16 @@ requirements:
     - r-rcolorbrewer
     - r-reshape2
     - r-tidyr
+
+source:
+  md5: e29de1e58e0c613f54bf3766dc171b12
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'TADCompare: Identification and characterization of differential TADs'
-  description: 'TADCompare is an R package designed to identify and characterize differential Topologically Associated Domains (TADs) between multiple Hi-C contact matrices. It contains functions for finding differential TADs between two datasets, finding differential TADs over time and identifying consensus TADs across multiple matrices. It takes all of the main types of HiC input and returns simple, comprehensive, easy to analyze results.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

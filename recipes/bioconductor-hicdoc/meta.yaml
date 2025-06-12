@@ -1,77 +1,84 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "HiCDOC" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: c84a415d83a6add2fb78aaa0bb4810d5
+about:
+  description: 'HiCDOC normalizes intrachromosomal Hi-C matrices, uses unsupervised learning to predict A/B compartments from multiple replicates, and detects significant compartment changes between experiment conditions. It provides a collection of functions assembled into a pipeline to filter and normalize the data, predict the compartments and visualize the results. It accepts several type of data: tabular `.tsv` files, Cooler `.cool` or `.mcool` files, Juicer `.hic` files or HiC-Pro `.matrix` and `.bed` files.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: A/B compartment detection and differential analysis
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: knitr, rmarkdown, testthat, BiocStyle, BiocManager
+  run_exports: '{{ pin_subpackage("bioconductor-hicdoc", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, testthat, BiocStyle, BiocManager, rhdf5
 # SystemRequirements: C++11
 requirements:
-  host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-interactionset >=1.26.0,<1.27.0'
-    - 'bioconductor-multihiccompare >=1.16.0,<1.17.0'
-    - 'bioconductor-rhdf5 >=2.42.0,<2.43.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-zlibbioc >=1.44.0,<1.45.0'
-    - r-base
-    - r-data.table
-    - r-ggextra
-    - r-ggplot2
-    - r-ggpubr
-    - r-gridextra
-    - r-gtools
-    - r-pbapply
-    - 'r-rcpp >=0.12.8'
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-interactionset >=1.26.0,<1.27.0'
-    - 'bioconductor-multihiccompare >=1.16.0,<1.17.0'
-    - 'bioconductor-rhdf5 >=2.42.0,<2.43.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-zlibbioc >=1.44.0,<1.45.0'
-    - r-base
-    - r-data.table
-    - r-ggextra
-    - r-ggplot2
-    - r-ggpubr
-    - r-gridextra
-    - r-gtools
-    - r-pbapply
-    - 'r-rcpp >=0.12.8'
+
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-interactionset >=1.34.0,<1.35.0
+    - bioconductor-multihiccompare >=1.24.0,<1.25.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-zlibbioc >=1.52.0,<1.53.0
+    - r-base
+    - r-cowplot
+    - r-data.table
+    - r-ggplot2
+    - r-gridextra
+    - r-gtools
+    - r-pbapply
+    - r-rcpp >=0.12.8
+    - libblas
+    - liblapack
+    - zlib
+
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-interactionset >=1.34.0,<1.35.0
+    - bioconductor-multihiccompare >=1.24.0,<1.25.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-zlibbioc >=1.52.0,<1.53.0
+    - r-base
+    - r-cowplot
+    - r-data.table
+    - r-ggplot2
+    - r-gridextra
+    - r-gtools
+    - r-pbapply
+    - r-rcpp >=0.12.8
+
+source:
+  md5: d6f9e9565f7fd00b7cc8bc1689c2111d
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'LGPL (>= 3)'
-  summary: 'A/B compartment detection and differential analysis'
-  description: 'HiCDOC normalizes intrachromosomal Hi-C matrices, uses unsupervised learning to predict A/B compartments from multiple replicates, and detects significant compartment changes between experiment conditions. It provides a collection of functions assembled into a pipeline to filter and normalize the data, predict the compartments and visualize the results. It accepts several type of data: tabular `.tsv` files, Cooler `.cool` or `.mcool` files, Juicer `.hic` files or HiC-Pro `.matrix` and `.bed` files.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+    - $R -e "library('{{ name }}')"
 

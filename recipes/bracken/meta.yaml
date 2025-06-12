@@ -1,29 +1,31 @@
-{% set version = "2.8" %}
-{% set sha256 = "b0c8a803cc020b7d1cbca47b53e71e874d9688b836911e4a4b71b0e4b826b61a" %}
+{% set name = "bracken" %}
+{% set version = "3.1" %}
+{% set sha256 = "c0a35331a8aac1e0dbb14c2a92c4de6f89f0aac540101c05c2eec54032107560" %}
 
 package:
-  name: bracken
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/jenniferlu717/Bracken/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - osx.patch  # [osx]
+    #- osx.patch  # [osx]
     - py3.patch
 
 build:
-  skip: True  # [osx]
   number: 0
+  skip: True  # [osx and x86_64]
+  run_exports:
+    - {{ pin_subpackage('bracken', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
     - make
   host:
-    - python
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
   run:
     - python
     - kraken2
@@ -39,11 +41,19 @@ test:
 
 about:
   home: https://github.com/jenniferlu717/Bracken
-  license: GPL-3.0
+  license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: LICENSE
   summary: 'Bracken (Bayesian Reestimation of Abundance with KrakEN) is a highly accurate statistical method that computes the abundance of species in DNA sequences from a metagenomics sample.'
+  dev_url: https://github.com/jenniferlu717/Bracken
+  doc_url: https://github.com/jenniferlu717/Bracken/blob/v{{ version }}/README.md
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+   # missing perl-list-moreutils-xs, perl-io-compress and rpsbproc for osx-arm64
+   # - osx-arm64
   identifiers:
     - biotools:Bracken
+    - usegalaxy-eu:est_abundance
     - doi:10.7717/peerj-cs.104

@@ -1,26 +1,36 @@
-{% set version = "1.18.0" %}
+{% set version = "1.26.0" %}
 {% set name = "iCNV" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f8cd3706a753d57d45c13c9afd7f1fba
+about:
+  description: Integrative copy number variation (CNV) detection from multiple platform and experimental design.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Integrated Copy Number Variation detection
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-icnv", max_pin="x.x") }}'
+
+extra:
+  parent_recipe:
+    name: bioconductor-icnv
+    path: recipes/bioconductor-icnv
+    version: 1.2.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, WES.1KG.WUGSC
 requirements:
   host:
-    - 'bioconductor-codex >=1.30.0,<1.31.0'
+    - bioconductor-codex >=1.38.0,<1.39.0
     - r-base
     - r-data.table
     - r-dplyr
@@ -30,7 +40,7 @@ requirements:
     - r-tidyr
     - r-truncnorm
   run:
-    - 'bioconductor-codex >=1.30.0,<1.31.0'
+    - bioconductor-codex >=1.38.0,<1.39.0
     - r-base
     - r-data.table
     - r-dplyr
@@ -39,18 +49,16 @@ requirements:
     - r-rlang
     - r-tidyr
     - r-truncnorm
+
+source:
+  md5: 06031b0e2f77cbcb9e48635b698084b8
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Integrated Copy Number Variation detection'
-  description: 'Integrative copy number variation (CNV) detection from multiple platform and experimental design.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
-extra:
-  parent_recipe:
-    name: bioconductor-icnv
-    path: recipes/bioconductor-icnv
-    version: 1.2.0
+    - $R -e "library('{{ name }}')"
 

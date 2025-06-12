@@ -1,17 +1,20 @@
-{% set version="0.3.0" %}
+{% set name = "repaq" %}
+{% set version = "0.5.1" %}
 
 package:
-  name: repaq 
+  name: {{ name }}
   version: {{ version }}
-  patches:
-    - patch
 
 source:
   url: https://github.com/OpenGene/repaq/archive/v{{ version }}.tar.gz
-  sha256: 97a2f48eb47020aea416df5ff8d5a231db11284622bdcc9816758ac3bbe244d3
+  sha256: 19720e87ce83327d8c8de6176fa85bb32ada4d722eea86ee5210d2d55cd4e787
+  patches:
+    - endian.patch
 
 build:
-  number: 2
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('repaq', max_pin="x.x") }}
 
 requirements:
   build:
@@ -20,15 +23,23 @@ requirements:
     - {{ compiler('cxx') }}
   host:
     - zlib
-  run:
-    - zlib
 
 test:
   commands:
     - repaq --help
 
 about:
-  home: https://github.com/OpenGene/repaq
+  home: "https://github.com/OpenGene/repaq"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: A fast lossless FASTQ compressor with ultra-high compression ratio
+  summary: "A fast lossless FASTQ compressor with ultra-high compression ratio."
+  dev_url: "https://github.com/OpenGene/repaq"
+  doc_url: "https://github.com/OpenGene/repaq/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.3389/fgene.2023.1260531

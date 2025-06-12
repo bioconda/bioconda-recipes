@@ -1,41 +1,22 @@
-{% set version = "1.26.0" %}
+{% set version = "1.34.0" %}
 {% set name = "EBSEA" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 7055b7242a27748eafee7c00087f5c29
+about:
+  description: Calculates differential expression of genes based on exon counts of genes obtained from RNA-seq sequencing data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Exon Based Strategy for Expression Analysis of genes
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, rmarkdown
-requirements:
-  host:
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-empiricalbrownsmethod >=1.26.0,<1.27.0'
-    - r-base
-  run:
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-empiricalbrownsmethod >=1.26.0,<1.27.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Exon Based Strategy for Expression Analysis of genes'
-  description: 'Calculates differential expression of genes based on exon counts of genes obtained from RNA-seq sequencing data.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-ebsea", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:ebsea
@@ -44,4 +25,31 @@ extra:
     name: bioconductor-ebsea
     path: recipes/bioconductor-ebsea
     version: 1.8.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown
+requirements:
+  host:
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-empiricalbrownsmethod >=1.34.0,<1.35.0
+    - r-base
+  run:
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-empiricalbrownsmethod >=1.34.0,<1.35.0
+    - r-base
+
+source:
+  md5: 210e0c09dc646a8a07edfa0c9f5a5b3d
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

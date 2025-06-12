@@ -1,44 +1,22 @@
-{% set version = "1.70.0" %}
+{% set version = "1.78.0" %}
 {% set name = "timecourse" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: ef063c2d4a6c4c361c15e067b1002853
+about:
+  description: Functions for data analysis and graphical displays for developmental microarray time course data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: Statistical Analysis for Developmental Microarray Time Course Data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-marray >=1.76.0,<1.77.0'
-    - r-base
-    - r-mass
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-marray >=1.76.0,<1.77.0'
-    - r-base
-    - r-mass
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: LGPL
-  summary: 'Statistical Analysis for Developmental Microarray Time Course Data'
-  description: 'Functions for data analysis and graphical displays for developmental microarray time course data.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-timecourse", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:timecourse
@@ -47,4 +25,34 @@ extra:
     name: bioconductor-timecourse
     path: recipes/bioconductor-timecourse
     version: 1.52.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-marray >=1.84.0,<1.85.0
+    - r-base
+    - r-mass
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-marray >=1.84.0,<1.85.0
+    - r-base
+    - r-mass
+
+source:
+  md5: e1b47aacb78e70b3d78bc8920b527635
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

@@ -1,29 +1,32 @@
-{% set version = "1.18.0" %}
+{% set version = "1.26.0" %}
 {% set name = "ddPCRclust" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 6fee35cd73bf0de1310b501da8366865
+about:
+  description: The ddPCRclust algorithm can automatically quantify the CPDs of non-orthogonal ddPCR reactions with up to four targets. In order to determine the correct droplet count for each target, it is crucial to both identify all clusters and label them correctly based on their position. For more information on what data can be analyzed and how a template needs to be formatted, please check the vignette.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Clustering algorithm for ddPCR data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-ddpcrclust", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle
 requirements:
   host:
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-flowdensity >=1.32.0,<1.33.0'
-    - 'bioconductor-flowpeaks >=1.44.0,<1.45.0'
-    - 'bioconductor-samspectral >=1.52.0,<1.53.0'
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-flowdensity >=1.40.0,<1.41.0
+    - bioconductor-flowpeaks >=1.52.0,<1.53.0
+    - bioconductor-samspectral >=1.60.0,<1.61.0
     - r-base
     - r-clue
     - r-ggplot2
@@ -31,22 +34,26 @@ requirements:
     - r-plotrix
     - r-r.utils
   run:
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-flowdensity >=1.32.0,<1.33.0'
-    - 'bioconductor-flowpeaks >=1.44.0,<1.45.0'
-    - 'bioconductor-samspectral >=1.52.0,<1.53.0'
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-flowdensity >=1.40.0,<1.41.0
+    - bioconductor-flowpeaks >=1.52.0,<1.53.0
+    - bioconductor-samspectral >=1.60.0,<1.61.0
     - r-base
     - r-clue
     - r-ggplot2
     - r-openxlsx
     - r-plotrix
     - r-r.utils
+
+source:
+  md5: 49f1c9ea525a02b3f1951e2d3e6098b0
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Clustering algorithm for ddPCR data'
-  description: 'The ddPCRclust algorithm can automatically quantify the CPDs of non-orthogonal ddPCR reactions with up to four targets. In order to determine the correct droplet count for each target, it is crucial to both identify all clusters and label them correctly based on their position. For more information on what data can be analyzed and how a template needs to be formatted, please check the vignette.'
+    - $R -e "library('{{ name }}')"
 

@@ -1,5 +1,5 @@
 {% set name = "staramr" %}
-{% set version = "0.9.1" %}
+{% set version = "0.11.0" %}
 
 package:
   name: '{{ name|lower }}'
@@ -7,17 +7,20 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 4ebfe7f9d48566b2c592ae1d6543e0f2bad62db433f7374a5581613e3e8b382a
+  sha256: fe6ab926fad6685a3c9cc8e42d996bf07508acf5a6eedfc133eaf190936e4ad7
 
 build:
   number: 0
-  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
   noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
     - python >=3
     - pip
+    - setuptools
   run:
     - python >=3
     - biopython >=1.70

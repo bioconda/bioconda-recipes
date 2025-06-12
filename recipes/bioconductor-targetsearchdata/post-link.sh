@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "targetsearchdata-1.35.2"
+installBiocDataPackage.sh "targetsearchdata-1.44.0"

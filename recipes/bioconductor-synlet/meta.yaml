@@ -1,51 +1,22 @@
-{% set version = "1.28.0" %}
+{% set version = "2.6.0" %}
 {% set name = "synlet" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: cef6bc081e9d5f31339a8228830e5bed
+about:
+  description: Select hits from synthetic lethal RNAi screen data. For example, there are two identical celllines except one gene is knocked-down in one cellline. The interest is to find genes that lead to stronger lethal effect when they are knocked-down further by siRNA. Quality control and various visualisation tools are implemented. Four different algorithms could be used to pick up the interesting hits. This package is designed based on 384 wells plates, but may apply to other platforms with proper configuration.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Hits Selection for Synthetic Lethal RNAi Screen Data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, testthat, rmarkdown
-requirements:
-  host:
-    - 'bioconductor-rankprod >=3.24.0,<3.25.0'
-    - r-base
-    - r-doby
-    - r-dplyr
-    - r-ggplot2
-    - r-magrittr
-    - r-rcolorbrewer
-    - r-reshape2
-  run:
-    - 'bioconductor-rankprod >=3.24.0,<3.25.0'
-    - r-base
-    - r-doby
-    - r-dplyr
-    - r-ggplot2
-    - r-magrittr
-    - r-rcolorbrewer
-    - r-reshape2
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Hits Selection for Synthetic Lethal RNAi Screen Data'
-  description: 'Select hits from synthetic lethal RNAi screen data. For example, there are two identical celllines except one gene is knocked-down in one cellline. The interest is to find genes that lead to stronger lethal effect when they are knocked-down further by siRNA. Quality control and various visualisation tools are implemented. Four different algorithms could be used to pick up the interesting hits. This package is designed based on 384 wells plates, but may apply to other platforms with proper configuration.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-synlet", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:synlet
@@ -54,4 +25,39 @@ extra:
     name: bioconductor-synlet
     path: recipes/bioconductor-synlet
     version: 1.10.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, testthat, rmarkdown
+requirements:
+  host:
+    - bioconductor-rankprod >=3.32.0,<3.33.0
+    - r-base
+    - r-data.table
+    - r-ggplot2
+    - r-magrittr
+    - r-patchwork
+    - r-rcolorbrewer
+  run:
+    - bioconductor-rankprod >=3.32.0,<3.33.0
+    - r-base
+    - r-data.table
+    - r-ggplot2
+    - r-magrittr
+    - r-patchwork
+    - r-rcolorbrewer
+
+source:
+  md5: 070bb69d84f70bd96a82cc605068381b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

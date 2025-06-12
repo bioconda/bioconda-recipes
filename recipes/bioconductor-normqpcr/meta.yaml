@@ -1,35 +1,31 @@
-{% set version = "1.44.0" %}
+{% set version = "1.52.0" %}
 {% set name = "NormqPCR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: d4d3aa3469db6111c010fff2ee691648
+about:
+  description: Functions for the selection of optimal reference genes and the normalisation of real-time quantitative PCR data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: Functions for normalisation of RT-qPCR data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-normqpcr", max_pin="x.x") }}'
+
+extra:
+  container:
+    extended-base: yes
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-readqpcr >=1.44.0,<1.45.0'
-    - r-base
-    - r-qpcr
-    - r-rcolorbrewer
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-readqpcr >=1.44.0,<1.45.0'
-    - r-base
-    - r-qpcr
-    - r-rcolorbrewer
   build:
     - {{ cdt('mesa-libgl-devel') }}  # [linux]
     - {{ cdt('mesa-dri-drivers') }}  # [linux]
@@ -37,16 +33,28 @@ requirements:
     - {{ cdt('libxdamage') }}  # [linux]
     - {{ cdt('libxxf86vm') }}  # [linux]
     - xorg-libxfixes  # [linux]
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-readqpcr >=1.52.0,<1.53.0
+    - r-base
+    - r-qpcr
+    - r-rcolorbrewer
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-readqpcr >=1.52.0,<1.53.0
+    - r-base
+    - r-qpcr
+    - r-rcolorbrewer
+
+source:
+  md5: 23b072389ca09a8e54da8857c772cb46
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: LGPL-3
-  summary: 'Functions for normalisation of RT-qPCR data'
-  description: 'Functions for the selection of optimal reference genes and the normalisation of real-time quantitative PCR data.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
-extra:
-  container:
-    extended-base: true
+    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library('{{ name }}')"
 

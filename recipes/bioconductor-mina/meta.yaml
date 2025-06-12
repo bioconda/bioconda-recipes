@@ -1,23 +1,31 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "mina" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: cbd92e6ffc537bc52b3a9137245cff0e
+about:
+  description: An increasing number of microbiome datasets have been generated and analyzed with the help of rapidly developing sequencing technologies. At present, analysis of taxonomic profiling data is mainly conducted using composition-based methods, which ignores interactions between community members. Besides this, a lack of efficient ways to compare microbial interaction networks limited the study of community dynamics. To better understand how community diversity is affected by complex interactions between its members, we developed a framework (Microbial community dIversity and Network Analysis, mina), a comprehensive framework for microbial community diversity analysis and network comparison. By defining and integrating network-derived community features, we greatly reduce noise-to-signal ratio for diversity analyses. A bootstrap and permutation-based method was implemented to assess community network dissimilarities and extract discriminative features in a statistically principled way.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Microbial community dIversity and Network Analysis
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-mina", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
     - r-apcluster
     - r-base
@@ -54,17 +62,16 @@ requirements:
     - r-reshape2
     - r-rspectra
     - r-stringr
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: 7dc755ac67f493187d858b9e27f43882
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL
-  summary: 'Microbial community dIversity and Network Analysis'
-  description: 'An increasing number of microbiome datasets have been generated and analyzed with the help of rapidly developing sequencing technologies. At present, analysis of taxonomic profiling data is mainly conducted using composition-based methods, which ignores interactions between community members. Besides this, a lack of efficient ways to compare microbial interaction networks limited the study of community dynamics. To better understand how community diversity is affected by complex interactions between its members, we developed a framework (Microbial community dIversity and Network Analysis, mina), a comprehensive framework for microbial community diversity analysis and network comparison. By defining and integrating network-derived community features, we greatly reduce noise-to-signal ratio for diversity analyses. A bootstrap and permutation-based method was implemented to assess community network dissimilarities and extract discriminative features in a statistically principled way.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

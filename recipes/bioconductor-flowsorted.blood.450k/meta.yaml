@@ -1,42 +1,44 @@
-{% set version = "1.36.0" %}
+{% set version = "1.44.0" %}
 {% set name = "FlowSorted.Blood.450k" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 49bce6f7d31d9a37fef658108eefd5a4
+about:
+  description: Raw data objects for the Illumina 450k DNA methylation microarrays, and an object depicting which CpGs on the array are associated with cell type.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Illumina HumanMethylation data on sorted blood cell populations
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-minfi >=1.44.0,<1.45.0'
-    - r-base
-  run:
-    - 'bioconductor-minfi >=1.44.0,<1.45.0'
-    - r-base
-    - curl
-    - bioconductor-data-packages>=20221110
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Illumina HumanMethylation data on sorted blood cell populations'
-  description: 'Raw data objects for the Illumina 450k DNA methylation microarrays, and an object depicting which CpGs on the array are associated with cell type.'
+  run_exports: '{{ pin_subpackage("bioconductor-flowsorted.blood.450k", max_pin="x.x") }}'
 extra:
   parent_recipe:
     name: bioconductor-flowsorted.blood.450k
     path: recipes/bioconductor-flowsorted.blood.450k
     version: 1.18.0
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+requirements:
+  host:
+    - bioconductor-minfi >=1.52.0,<1.53.0
+    - r-base
+  run:
+    - bioconductor-minfi >=1.52.0,<1.53.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 6df54186a88be5c6335467a86ec2e219
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

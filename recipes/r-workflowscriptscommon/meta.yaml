@@ -1,19 +1,23 @@
-{% set version = '0.0.8' %}
+{% set name = "r-workflowscriptscommon" %}
+{% set version = "0.0.8" %}
 
 package:
-  name: r-workflowscriptscommon
+  name: {{ name }}
   version: {{ version }}
 
 source:
-    url: https://github.com/ebi-gene-expression-group/workflowscriptscommon/archive/v{{ version }}.tar.gz
-    sha256: 6a5685d2c754f7d639a11e0dfcc203ce3bab16c0ba0886a3a5b993811964e7a3 
+  url: https://github.com/ebi-gene-expression-group/workflowscriptscommon/archive/v{{ version }}.tar.gz
+  sha256: 6a5685d2c754f7d639a11e0dfcc203ce3bab16c0ba0886a3a5b993811964e7a3 
 
 build:
-  number: 2
+  number: 5
   noarch: generic
+  script: ${R} CMD INSTALL --build . ${R_ARGS}
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports:
+    - {{ pin_subpackage("r-workflowscriptscommon", max_pin="x.x") }}
 
 requirements:
   host:
@@ -27,11 +31,11 @@ test:
     - $R -e "library('workflowscriptscommon')"
 
 about:
-  home: https://github.com/ebi-gene-expression-group/workflowscriptscommon
-  dev_url: https://github.com/ebi-gene-expression-group/workflowscriptscommon
-  license: GPL-3
+  home: "https://github.com/ebi-gene-expression-group/workflowscriptscommon"
+  dev_url: "https://github.com/ebi-gene-expression-group/workflowscriptscommon"
+  license: "GPL-3.0-or-later"
   summary: Common functions for making R function wapper scripts. Functions in R
       packages are hard to call when building workflows outside of R, so this
       package is used by other packages (e.g. r-seurat-scripts) to add sets of
       simple wrappers with robust argument parsing. 
-  license_family: GPL
+  license_family: GPL3

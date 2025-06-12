@@ -1,47 +1,62 @@
-{% set version = "2.0.0" %}
+{% set version = "3.2.0" %}
 {% set name = "Rhtslib" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 69bbda8208069ab4542f23cd6249bac8
+about:
+  description: This package provides version 1.18 of the 'HTSlib' C library for high-throughput sequence analysis. The package is primarily useful to developers of other R packages who wish to make use of HTSlib. Motivation and instructions for use of this package are in the vignette, vignette(package="Rhtslib", "Rhtslib").
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: HTSlib high-throughput sequencing library as an R package
+
 build:
-  number: 0
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-rhtslib", max_pin="x.x") }}'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:rhtslib
+    - doi:10.1038/nmeth.3252
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, BiocStyle
 # SystemRequirements: libbz2 & liblzma & libcurl (with header files), GNU make
 requirements:
-  host:
-    - 'bioconductor-zlibbioc >=1.44.0,<1.45.0'
-    - r-base
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-zlibbioc >=1.44.0,<1.45.0'
-    - r-base
   build:
     - {{ compiler('c') }}
     - automake
     - make
+  host:
+    - bioconductor-zlibbioc >=1.52.0,<1.53.0
+    - r-base
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-zlibbioc >=1.52.0,<1.53.0
+    - r-base
+
+source:
+  md5: 1d8eabf0934373b61aca2dc20cab712b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  patches:
+    - arm_hwcap.patch
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'LGPL (>= 2)'
-  summary: 'HTSlib high-throughput sequencing library as an R package'
-  description: 'This package provides version 1.15.1 of the ''HTSlib'' C library for high-throughput sequence analysis. The package is primarily useful to developers of other R packages who wish to make use of HTSlib. Motivation and instructions for use of this package are in the vignette, vignette(package="Rhtslib", "Rhtslib").'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
-extra:
-  identifiers:
-    - biotools:rhtslib
-    - doi:10.1038/nmeth.3252
+    - $R -e "library('{{ name }}')"
 

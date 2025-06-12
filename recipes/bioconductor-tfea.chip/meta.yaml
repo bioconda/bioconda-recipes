@@ -1,48 +1,55 @@
-{% set version = "1.18.0" %}
+{% set version = "1.26.0" %}
 {% set name = "TFEA.ChIP" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 9aa80290e35d064a55ea90ec42cd38a1
+about:
+  description: Package to analize transcription factor enrichment in a gene set using data from ChIP-Seq experiments.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Analyze Transcription Factor Enrichment
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, rmarkdown, S4Vectors, plotly, scales, tidyr, ggplot2, DESeq2, BiocGenerics, ggrepel, rcompanion, TxDb.Hsapiens.UCSC.hg19.knownGene
+  run_exports: '{{ pin_subpackage("bioconductor-tfea.chip", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, S4Vectors, plotly, scales, tidyr, ggplot2, DESeq2, BiocGenerics, ggrepel, rcompanion, TxDb.Hsapiens.UCSC.hg19.knownGene, RUnit
 requirements:
   host:
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
+    - bioconductor-biomart >=2.62.0,<2.63.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
     - r-base
     - r-dplyr
     - r-r.utils
   run:
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
+    - bioconductor-biomart >=2.62.0,<2.63.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
     - r-base
     - r-dplyr
     - r-r.utils
+
+source:
+  md5: e6bf364a3389c915a5027ea027ca8c39
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Analyze Transcription Factor Enrichment'
-  description: 'Package to analize transcription factor enrichment in a gene set using data from ChIP-Seq experiments.'
+    - $R -e "library('{{ name }}')"
 

@@ -1,89 +1,22 @@
-{% set version = "1.28.0" %}
+{% set version = "1.36.0" %}
 {% set name = "GUIDEseq" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: a3d2591b32fc8388d12b51d36c20d742
+about:
+  description: The package implements GUIDE-seq and PEtag-seq analysis workflow including functions for filtering UMI and reads with low coverage, obtaining unique insertion sites (proxy of cleavage sites), estimating the locations of the insertion sites, aka, peaks, merging estimated insertion sites from plus and minus strand, and performing off target search of the extended regions around insertion sites with mismatches and indels.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: GUIDE-seq and PEtag-seq analysis pipeline
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, RUnit, BiocStyle, BSgenome.Hsapiens.UCSC.hg19, BSgenome.Hsapiens.UCSC.hg38, TxDb.Hsapiens.UCSC.hg19.knownGene, org.Hs.eg.db, testthat (>= 3.0.0)
-requirements:
-  host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
-    - 'bioconductor-chippeakanno >=3.32.0,<3.33.0'
-    - 'bioconductor-crisprseek >=1.38.0,<1.39.0'
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicalignments >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-multtest >=2.54.0,<2.55.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - r-data.table
-    - r-dplyr
-    - r-ggplot2
-    - r-hash
-    - r-matrixstats
-    - r-openxlsx
-    - r-patchwork
-    - r-purrr
-    - r-rio
-    - r-rlang
-    - r-stringr
-    - r-tidyr
-  run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
-    - 'bioconductor-chippeakanno >=3.32.0,<3.33.0'
-    - 'bioconductor-crisprseek >=1.38.0,<1.39.0'
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicalignments >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-multtest >=2.54.0,<2.55.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - r-data.table
-    - r-dplyr
-    - r-ggplot2
-    - r-hash
-    - r-matrixstats
-    - r-openxlsx
-    - r-patchwork
-    - r-purrr
-    - r-rio
-    - r-rlang
-    - r-stringr
-    - r-tidyr
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'GUIDE-seq and PEtag-seq analysis pipeline'
-  description: 'The package implements GUIDE-seq and PEtag-seq analysis workflow including functions for filtering UMI and reads with low coverage, obtaining unique insertion sites (proxy of cleavage sites), estimating the locations of the insertion sites, aka, peaks, merging estimated insertion sites from plus and minus strand, and performing off target search of the extended regions around insertion sites.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-guideseq", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:guideseq
@@ -92,4 +25,83 @@ extra:
     name: bioconductor-guideseq
     path: recipes/bioconductor-guideseq
     version: 1.10.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, RUnit, BiocStyle, BSgenome.Hsapiens.UCSC.hg19, BSgenome.Hsapiens.UCSC.hg38, TxDb.Hsapiens.UCSC.hg19.knownGene, org.Hs.eg.db, testthat (>= 3.0.0)
+requirements:
+
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-chippeakanno >=3.40.0,<3.41.0
+    - bioconductor-crisprseek >=1.46.0,<1.47.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicalignments >=1.42.0,<1.43.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-multtest >=2.62.0,<2.63.0
+    - bioconductor-pwalign >=1.2.0,<1.3.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-data.table
+    - r-dplyr
+    - r-ggplot2
+    - r-hash
+    - r-matrixstats
+    - r-openxlsx
+    - r-patchwork
+    - r-purrr
+    - r-rio
+    - r-rlang
+    - r-stringr
+    - r-tidyr
+
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-chippeakanno >=3.40.0,<3.41.0
+    - bioconductor-crisprseek >=1.46.0,<1.47.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicalignments >=1.42.0,<1.43.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-multtest >=2.62.0,<2.63.0
+    - bioconductor-pwalign >=1.2.0,<1.3.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-data.table
+    - r-dplyr
+    - r-ggplot2
+    - r-hash
+    - r-matrixstats
+    - r-openxlsx
+    - r-patchwork
+    - r-purrr
+    - r-rio
+    - r-rlang
+    - r-stringr
+    - r-tidyr
+
+source:
+  md5: c3904595d1e820e765cbd00e3fb6b9ae
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 
