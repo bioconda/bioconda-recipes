@@ -1,4 +1,4 @@
-{% set version = "0.17.1" %}
+{% set version = "0.18.0" %}
 
 package:
   name: gimmemotifs
@@ -6,16 +6,21 @@ package:
 
 source:
   url: https://github.com/vanheeringen-lab/gimmemotifs/releases/download/{{ version }}/gimmemotifs-{{ version }}.tar.gz
-  sha256: 4d73d4b1df0ef765414dac952bf1d26609e74e97f9a2ee2d3d65a09078e1ad4c
+  sha256: 8e7d23a898174a962c845b22433a74e3ddde619c5d77f3a5b5dbfb8fa61e7351
 
 build:
-  number: 2
+  number: 6
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('gimmemotifs', max_pin="x.x") }}
+    - {{ pin_subpackage('gimmemotifs-minimal', max_pin="x.x") }}
 
 outputs:
   - name: gimmemotifs-minimal
 
     build:
       script: python -m pip install . --no-deps --ignore-installed -vvv
+      skip: True  # [py<37]
 
     requirements:
       build:
@@ -23,7 +28,7 @@ outputs:
         - {{ compiler('cxx') }}
       host:
         - pip
-        - python                        # pinned in conda_build_config.yaml
+        - python
       run:
         - biofluff >=3.0.4              # Necessary for coverage_table()
         - configparser
@@ -35,12 +40,11 @@ outputs:
         - logomaker
         - loguru
         - matplotlib-base >=3.3         # https://matplotlib.org/stable/devel/min_dep_policy.html#list-of-dependency-versions
-        - numpy >=0.18                  # https://numpy.org/neps/nep-0029-deprecation_policy.html#support-table
-        - pandas >=1.0.3, <=1.1.5       # 1.3.5/1.4.2 are bugged
-        - pyarrow                       # can be removed next release.
+        - numpy >=1.18                  # https://numpy.org/neps/nep-0029-deprecation_policy.html#support-table
+        - pandas >=1.3, <2
         - pybedtools >=0.9.0
         - pysam >=0.16
-        - python                        # pinned in conda_build_config.yaml
+        - python
         - python-xxhash
         - qnorm  >=0.8.1
         - scikit-learn >=0.23.2         # https://scikit-learn.org/stable/install.html#installing-the-latest-release
@@ -49,23 +53,23 @@ outputs:
         - statsmodels
         - tqdm >=4.46.1
         - xdg
-        - xgboost >=1.0.2
 
   - name: gimmemotifs
 
     requirements:
       run:
         - gimmemotifs-minimal ={{ version }}
-#         - ipywidgets                   # Necessary for progress bar in Jupyter notebook. removed to save RAM on Bioconda's tests
+#        - ipywidgets                    # bloats environment
+#        - xgboost >=1.0.2               # bloats environment
         - dinamo >=1.0  # [not osx]
         - gadem >=1.3.1
         - homer >=4.11  # [not osx]
         - meme >=5.4.1
         - prosampler >=1.0
-#         - trawler >=2.0                # removed to save RAM on Bioconda's tests
-#         - weeder >=2.0                 # removed to save RAM on Bioconda's tests
+        - trawler >=2.0
+        - weeder >=2.0
         - xxmotif >=1.6
-#         - yamda >=0.1.00e9c9d          # removed to save RAM on Bioconda's tests
+#         - yamda >=0.1.00e9c9d          # bloats environment
 
 test:
   imports:

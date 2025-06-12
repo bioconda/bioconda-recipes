@@ -1,9 +1,9 @@
 set -e
 
 # Configuration
-N_FILES_IN_TAR=139919
-DB_URL="https://data.gtdb.ecogenomic.org/releases/release207/207.0/auxillary_files/gtdbtk_r207_v2_data.tar.gz"
-TARGET_TAR_NAME="gtdbtk_r207_v2_data.tar.gz"
+N_FILES_IN_TAR=307538
+DB_URL="https://data.gtdb.ecogenomic.org/releases/release226/226.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r226_data.tar.gz"
+TARGET_TAR_NAME="gtdbtk_r226_data.tar.gz"
 
 # Script variables (no need to configure)
 TARGET_DIR=${1:-$GTDBTK_DATA_PATH}
@@ -16,9 +16,6 @@ if [ "$n_folders" -gt 1 ]; then
   echo "[ERROR] - The GTDB-Tk database directory must be empty, please empty it: $TARGET_DIR"
   exit 1
 fi
-
-# Ensure that the GTDB-Tk data directory exists
-mkdir -p "$TARGET_DIR"
 
 # Start the download process
 # Note: When this URL is updated, ensure that the "--total" flag of TQDM below is also updated
@@ -34,10 +31,11 @@ rm "$TARGET_TAR"
 echo "[INFO] - The GTDB-Tk database has been successfully downloaded and extracted."
 
 # Set the environment variable
-if conda env config vars set TARGET_DIR="$TARGET_DIR"; then
-  echo "[INFO] - Added TARGET_DIR ($TARGET_DIR) to the GTDB-Tk conda environment."
+if conda env config vars set GTDBTK_DATA_PATH="$TARGET_DIR"; then
+  echo "[INFO] - Added GTDBTK_DATA_PATH ($TARGET_DIR) to the GTDB-Tk conda environment."
 else
-  echo "[INFO] - Conda not found in PATH, please be sure to set the TARGET_DIR envrionment variable"
+  echo "[INFO] - Conda not found in PATH, please be sure to set the GTDBTK_DATA_PATH environment variable"
+  echo "export GTDBTK_DATA_PATH=$TARGET_DIR before running GTDB-Tk. "
 fi
 
 exit 0

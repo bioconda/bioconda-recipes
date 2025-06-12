@@ -1,10 +1,12 @@
 #!/bin/bash
 
+set -xe
+
 if [[ ${target_platform} =~ linux.* ]] ; then
-    make -C general \
+    make -j ${CPU_COUNT} -C general \
         CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
         CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
-    make -C bmtagger \
+    make -j ${CPU_COUNT} -C bmtagger \
         CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
         CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
     cd bmtagger

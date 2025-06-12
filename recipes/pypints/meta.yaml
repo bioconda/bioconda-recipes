@@ -1,25 +1,27 @@
 {% set name = "pyPINTS" %}
-{% set version = "1.1.4" %}
+{% set version = "1.2.1" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://files.pythonhosted.org/packages/8e/b7/208dbcb6940f79c180f82d2989e460b6e8ab69aefa9a2dc5114181137216/pyPINTS-{{ version }}.tar.gz
-  sha256: fcf406c27eee134ca7243ca43970c523c3af5f5bbe0b0412cfc31600d48dfe7f
+  url: "https://files.pythonhosted.org/packages/b7/9b/c82f8aafbe10fcd9e6529f5c7c763a17108c13a69623a528875e507ce0fe/pypints-1.2.1.tar.gz"
+  sha256: afc4b4d6922aa39ca6d2982f104382b40cbf71e1ac8fcd765c6120de4bd98720
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('pypints', max_pin="x") }}
 
 requirements:
   host:
     - pip
     - python
   run:
-    - python
+    - bedtools
     - biopython
     - matplotlib-base
     - numpy
@@ -27,9 +29,12 @@ requirements:
     - pybedtools
     - pybigwig
     - pysam
+    - python
     - requests
+    - samtools
     - scipy
     - statsmodels
+    - tabix
 
 test:
   imports:
@@ -38,7 +43,7 @@ test:
 about:
   home: "https://pints.yulab.org"
   license: GPL-3.0-only
-  license_family: GPL
+  license_family: GPL3
   license_file: LICENSE
   summary: "Peak Identifier for Nascent Transcripts Starts (PINTS)"
   dev_url: "https://github.com/hyulab/PINTS"

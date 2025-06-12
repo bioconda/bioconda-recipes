@@ -1,36 +1,38 @@
-{% set version = "3.2.1" %}
-{% set url = "https://github.com/refresh-bio/KMC/archive/v3.2.1.tar.gz" %}  # [linux]
-{% set sha256 = "7db333091a754508163a097c41720cf32a80abe160bef60f3fc82c8da1d67896" %}  # [linux]
-{% set url = "https://github.com/refresh-bio/kmc/releases/download/v3.2.1/kmc3.2.1.mac.tar.gz" %}  # [osx]
-{% set sha256 = "d4bd30d5e16bcbaac7f979f18e49e7447b0148709fb26f754490be9e3e766e73" %}  # [osx]
-
+{% set name = "kmc" %}
+{% set version = "3.2.4" %}
+{% set url = "https://github.com/refresh-bio/KMC/releases/download/v3.2.4/KMC3.2.4.linux.x64.tar.gz" %}  # [linux and x86_64]
+{% set sha256 = "158f2084f8d928b3f33b8aaf7d1220fee4183bf46837787e5e6b16bbdf54d31d" %}  # [linux and x86_64]
+{% set url = "https://github.com/refresh-bio/KMC/releases/download/v3.2.4/KMC3.2.4.linux.arm64.tar.gz" %}  # [linux and aarch64]
+{% set sha256 = "3049745a71c4219fb05cf003a53b03a9f434e8afacb79c710488f1aefae0a9c8" %}  # [linux and aarch64]
+{% set url = "https://github.com/refresh-bio/KMC/releases/download/v3.2.4/KMC3.2.4.mac.x64.tar.gz" %}  # [osx and x86_64]
+{% set sha256 = "70d66545d5802cf116469e41acb2a04631271feac81ff5c4d1c299e9407ca326" %}  # [osx and x86_64]
+{% set url = "https://github.com/refresh-bio/KMC/releases/download/v3.2.4/KMC3.2.4.mac.arm64.tar.gz" %}  # [osx and arm64]
+{% set sha256 = "a84b07bc2097e71ee7d23588a58070d1dc8ae37d1f63d3daf79cb518cc6b66ae" %}  # [osx and arm64]
 
 package:
-  name: kmc
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: {{ url }}
   sha256:  {{ sha256 }}
-  patches:
-    - Makefile.patch  # [linux]
 
 build:
-  number: 2
+  number: 3
+  run_exports:
+    - {{ pin_subpackage("kmc", max_pin="x") }}
 
 requirements:
   build:
     - make
-    - bzip2
-    - zlib
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
     - zlib
     - bzip2
-  run:
-    - zlib
-    - bzip2
+
+test:
+  commands:
+    - kmc --help  # [not aarch64]
 
 about:
   home: https://github.com/refresh-bio/kmc
@@ -38,9 +40,15 @@ about:
   description: |
     KMC is a utility designed for counting k-mers (sequences
     of consecutive k symbols) in a set of DNA sequences. KMC tools allow performing various operations on k-mers sets.
-  license: GPL-3
-  license_family: GPL
-  license_file: gpl-3.0.txt
-test:
-  commands:
-    - kmc --help
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "gpl-3.0.txt"
+  dev_url: https://github.com/refresh-bio/kmc
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:kmc
+    - doi:10.1093/bioinformatics/btx304

@@ -1,21 +1,24 @@
-{% set version = '1.0.0' %}
+{% set name = "liger" %}
+{% set version = '2.2.0' %}
 
 package:
-  name: r-liger
+  name: r-{{ name }}
   version: {{ version|replace("-", "_") }}
 
 source:
   url:
     - {{ cran_mirror }}/src/contrib/rliger_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/rliger/rliger_{{ version }}.tar.gz
-  sha256: b905643e6609b051bd257c5d6998c7ba03d19700b804d022224f8f037ce50dbf
+  sha256: 3c389f4c4ac71d5689839f3b8acea02bdfed300a2918d772a0b1ac9b7ee2bf08
 
 build:
-  number: 1
+  number: 2
   script: R CMD INSTALL --build .
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports:
+    - {{ pin_subpackage("r-liger", max_pin="x") }}
 
 requirements:
   build:
@@ -23,71 +26,63 @@ requirements:
     - make
   host:
     - r-base
-    - r-fnn
-    - r-hmisc
-    - r-rann.l1
     - r-rcpp >=0.12.10
     - r-rcpparmadillo
     - r-rcppprogress
-    - r-rtsne
-    - r-cowplot
-    - r-dosnow
     - r-dplyr
-    - r-foreach
     - r-ggplot2
-    - r-ggrepel
     - r-ica
     - r-irlba
     - r-mclust
-    - r-patchwork
-    - r-doparallel
     - r-uwot
     - r-hdf5r
-    - r-plyr
-    - r-riverplot
-    - r-snow
-    - r-psych
-    - r-rcppeigen
     - r-rann
+    - r-leidenalg >=1.1.1
+    - bioconductor-s4vectors
+    - r-cli
+    - r-cowplot
+    - bioconductor-complexheatmap
+    - r-dplyr
+    - r-ggplot2 
+    - r-hdf5r
+    - r-leidenalg >=1.1.1
+    - r-lifecycle
+    - r-magrittr
+    - r-scales
+    - bioconductor-delayedarray
+    - bioconductor-hdf5array
+    - r-rcppplanc >=2.0.0
   run:
     - r-base
-    - r-fnn
-    - r-hmisc
-    - r-rann.l1
     - r-rcpp >=0.12.10
     - r-rcpparmadillo
     - r-rcppprogress
-    - r-rtsne
-    - r-cowplot
-    - r-doparallel
-    - r-uwot
-    - r-hdf5r
-    - r-dosnow
     - r-dplyr
-    - r-foreach
     - r-ggplot2
-    - r-ggrepel
     - r-ica
     - r-irlba
     - r-mclust
-    - r-patchwork
-    - r-plyr
-    - r-riverplot
-    - r-snow
-    - r-psych
-    - r-rcppeigen
+    - r-uwot
+    - r-hdf5r
     - r-rann
-    - r-reticulate
-    - openjdk >=6
-    - umap-learn
-
+    - r-leidenalg >=1.1.1
+    - bioconductor-s4vectors
+    - r-cli
+    - r-rlang
+    - r-matrix
+    - r-lifecycle
+    - r-magrittr
+    - r-scales
+    - bioconductor-delayedarray
+    - bioconductor-hdf5array
+    - r-rcppplanc >=2.0.0
 test:
   commands:
     - $R -e "library('rliger')"
 
 about:
-  home: https://github.com/MacoskoLab/liger
-  license: GPL-3
+  home: https://github.com/welch-lab/liger
+  license: GPL-3.0-or-later
   summary: Uses an extension of nonnegative matrix factorization to identify shared and dataset-specific
     factors. See Welch J, Kozareva V, et al (2019) <doi:10.1016/j.cell.2019.05.006>,
     and Liu J, Gao C, Sodicoff J, et al (2020) <doi:10.1038/s41596-020-0391-8> for more
@@ -95,7 +90,15 @@ about:
   license_family: GPL3
   license_file:
     - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  doc_url: https://welch-lab.github.io/liger/index.html
+  dev_url: https://github.com/welch-lab/liger
 
 extra:
   recipe-maintainers:
+    - theAeon
     - raivivek
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64
+  identifiers:
+    - doi:10.1016/j.cell.2019.05.006

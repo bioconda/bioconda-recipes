@@ -1,7 +1,7 @@
 {% set version = "2.2.1" %}
-
+{% set name = "hisat2" %}
 package:
-  name: hisat2
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -9,10 +9,12 @@ source:
   sha256: f3f4f867d0a6b1f880d64efc19deaa5788c62050e0a4d614ce98b3492f702599
   patches:
     - 0001-Rename-VERSION-to-VERSION.txt.patch
+    - simde-mr-c.patch
 
 build:
-  number: 4
-
+  number: 8
+  run_exports: '{{ pin_subpackage(name,  max_pin="x") }}'
+  
 requirements:
   build:
     - make
@@ -38,6 +40,10 @@ about:
   dev_url: https://github.com/DaehwanKimLab/hisat2
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+    
   identifiers:
     - biotools:HISAT2
     - doi:10.1038/nmeth.3317

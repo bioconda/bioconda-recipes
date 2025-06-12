@@ -12,7 +12,7 @@ elif [ -f Makefile.PL ]; then
     perl Makefile.PL INSTALLDIRS=site INC="-I${PREFIX}/include/tidyp" LIBS="-L${PREFIX}/lib"
     # By default the linked .so files are listed first, which obviously doesn't work for linking against tidyp.so
     sed -i.bak -e "s/\$(LDDLFLAGS)  \$(LDFROM)/\$(LDFROM) \$(LDDLFLAGS)/g" Makefile
-    make
+    make CC=${CC} CFLAGS="${CFLAGS}"
     make test
     make install
 else

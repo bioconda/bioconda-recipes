@@ -1,0 +1,42 @@
+{% set version = "1.4.0" %}
+{% set name = "gDRtestData" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: R package with internal dose-response test data. Package provides functions to generate input testing data that can be used as the input for gDR pipeline. It also contains qs files with MAE data processed by gDR.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: gDRtestData - R data package with testing dose response data
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-gdrtestdata", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: BiocStyle, gDRstyle (>= 1.1.5), knitr, qs, reshape2, rmarkdown, SummarizedExperiment, testthat, yaml
+requirements:
+  host:
+    - r-base
+    - r-checkmate
+    - r-data.table
+  run:
+    - r-base
+    - r-checkmate
+    - r-data.table
+    - curl
+    - bioconductor-data-packages >=20241103
+source:
+  md5: edefc42aeca53a188b512659ae557f6d
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
