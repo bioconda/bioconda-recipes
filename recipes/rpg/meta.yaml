@@ -1,0 +1,40 @@
+{% set name = "rpg" %}
+{% set version = "2.0.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/rpg-{{ version }}.tar.gz
+  sha256: 8b5b6309a9913b456d009427b4f1304003e8639835ac6506ccdbf4eb4aa8ce3f
+
+build:
+  entry_points:
+    - rpg=rpg.RapidPeptidesGenerator:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+
+test:
+  imports:
+    - rpg
+  commands:
+    - pip check
+    - rpg --help
+  requires:
+    - pip
+
+about:
+  home: https://gitlab.pasteur.fr/nmaillet/rpg
+  summary: In silico protein digestion
+  license: GPL-3.0-only
+  license_file: LICENSE
+
