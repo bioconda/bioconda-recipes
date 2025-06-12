@@ -8,14 +8,18 @@ package:
 source:
   - url: https://github.com/rpetit3/{{ name }}/archive/v{{ version }}.tar.gz
     sha256: {{ sha256 }}
-  - url: https://github.com/wolfcw/libfaketime/archive/v0.9.8.tar.gz
-    sha256 : 06288237cd5890eca148489e5b904ed852ed0ffa8424bfb479342f4daa8442a3
+  - url: https://github.com/wolfcw/libfaketime/archive/v0.9.10.tar.gz
+    sha256 : 729ad33b9c750a50d9c68e97b90499680a74afd1568d859c574c0fe56fe7947f
     folder : libfaketime
     patches:
       - test_makefile.patch
+      - gettimeofday_proto.patch
 
 build:
-  number: 2
+  number: 6
+  run_exports:
+    - {{ pin_subpackage(name, max_pin = "x.x") }}
+
 
 requirements:
   build:
@@ -35,6 +39,9 @@ about:
   summary: 'tbl2asn is a program that automates the creation of sequence records for submission to GenBank'
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   skip-lints:
     - should_be_noarch_generic
     - should_not_be_noarch_source

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "oct4-1.13.0"
+installBiocDataPackage.sh "oct4-1.22.0"

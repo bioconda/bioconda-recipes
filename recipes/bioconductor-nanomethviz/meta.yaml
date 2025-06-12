@@ -1,43 +1,55 @@
-{% set version = "2.4.0" %}
+{% set version = "3.2.0" %}
 {% set name = "NanoMethViz" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 415563da0840aae3d20df658d63c1de0
+about:
+  description: NanoMethViz is a toolkit for visualising methylation data from Oxford Nanopore sequencing. It can be used to explore methylation patterns from reads derived from Oxford Nanopore direct DNA sequencing with methylation called by callers including nanopolish, f5c and megalodon. The plots in this package allow the visualisation of methylation profiles aggregated over experimental groups and across classes of genomic features.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Apache License (>= 2.0)
+  summary: Visualise methylation data from Oxford Nanopore sequencing
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: DSS, Mus.musculus (>= 1.3.1), Homo.sapiens (>= 1.3.1), org.Hs.eg.db, TxDb.Hsapiens.UCSC.hg19.knownGene, TxDb.Hsapiens.UCSC.hg38.knownGene, org.Mm.eg.db, TxDb.Mmusculus.UCSC.mm10.knownGene, knitr, rmarkdown, rtracklayer, testthat (>= 3.0.0), covr
-# SystemRequirements: C++11
+  run_exports: '{{ pin_subpackage("bioconductor-nanomethviz", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, DSS, Mus.musculus (>= 1.3.1), Homo.sapiens (>= 1.3.1), org.Hs.eg.db, TxDb.Hsapiens.UCSC.hg19.knownGene, TxDb.Hsapiens.UCSC.hg38.knownGene, org.Mm.eg.db, TxDb.Mmusculus.UCSC.mm10.knownGene, TxDb.Mmusculus.UCSC.mm39.refGene, knitr, rmarkdown, rtracklayer, testthat (>= 3.0.0), covr
+# SystemRequirements: C++20
 requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
   host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biocsingular >=1.14.0,<1.15.0'
-    - 'bioconductor-bsseq >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-zlibbioc >=1.44.0,<1.45.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biocsingular >=1.22.0,<1.23.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-bsseq >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-zlibbioc >=1.52.0,<1.53.0
     - r-assertthat
     - r-base
-    - 'r-cpp11 >=0.2.5'
-    - r-data.table
+    - r-cli
+    - r-cpp11 >=0.2.5
+    - r-dbscan
     - r-dplyr
     - r-e1071
     - r-forcats
     - r-fs
-    - r-ggplot2
+    - r-ggplot2 >=3.4.0
     - r-ggrastr
     - r-glue
     - r-patchwork
@@ -46,34 +58,36 @@ requirements:
     - r-rcpp
     - r-readr
     - r-rlang
-    - r-rsqlite
-    - 'r-scales >=1.2.0'
-    - r-scico
+    - r-scales >=1.2.0
     - r-stringr
     - r-tibble
     - r-tidyr
     - r-withr
     - libblas
     - liblapack
+
   run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biocsingular >=1.14.0,<1.15.0'
-    - 'bioconductor-bsseq >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-zlibbioc >=1.44.0,<1.45.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biocsingular >=1.22.0,<1.23.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-bsseq >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-zlibbioc >=1.52.0,<1.53.0
     - r-assertthat
     - r-base
-    - 'r-cpp11 >=0.2.5'
-    - r-data.table
+    - r-cli
+    - r-cpp11 >=0.2.5
+    - r-dbscan
     - r-dplyr
     - r-e1071
     - r-forcats
     - r-fs
-    - r-ggplot2
+    - r-ggplot2 >=3.4.0
     - r-ggrastr
     - r-glue
     - r-patchwork
@@ -82,23 +96,21 @@ requirements:
     - r-rcpp
     - r-readr
     - r-rlang
-    - r-rsqlite
-    - 'r-scales >=1.2.0'
-    - r-scico
+    - r-scales >=1.2.0
     - r-stringr
     - r-tibble
     - r-tidyr
     - r-withr
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: 37353e2801348c57a5e4e067bb7d9468
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'Apache License (>= 2.0)'
-  summary: 'Visualise methlation data from Oxford Nanopore sequencing'
-  description: 'NanoMethViz is a toolkit for visualising methylation data from Oxford Nanopore sequencing. It can be used to explore methylation patterns from reads derived from Oxford Nanopore direct DNA sequencing with methylation called by callers including nanopolish, f5c and megalodon. The plots in this package allow the visualisation of methylation profiles aggregated over experimental groups and across classes of genomic features.'
+    - $R -e "library('{{ name }}')"
 

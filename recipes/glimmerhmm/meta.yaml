@@ -1,13 +1,21 @@
+{% set name = "glimmerhmm" %}
+{% set version = "3.0.4" %}
+
 package:
-  name: glimmerhmm
-  version: "3.0.4"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  md5: af3626a5eceb2893ba4e19373dfad1b0
-  url: https://ccb.jhu.edu/software/glimmerhmm/dl/GlimmerHMM-3.0.4.tar.gz
+  url: https://ccb.jhu.edu/software/{{ name }}/dl/GlimmerHMM-{{ version }}.tar.gz
+  sha256: 43e321792b9f49a3d78154cbe8ddd1fb747774dccb9e5c62fbcc37c6d0650727
+  patches:
+    - 0001-sources-makefile.patch
+    - 0002-train-makefile.patch
 
 build:
-  number: 5
+  number: 9
+  run_exports:
+    - {{ pin_subpackage('glimmerhmm', max_pin="x") }}
 
 requirements:
   build:
@@ -25,6 +33,16 @@ test:
     - trainGlimmerHMM | tee /dev/null
 
 about:
-  home: https://ccb.jhu.edu/software/glimmerhmm/
+  home: https://ccb.jhu.edu/software/glimmerhmm
   license: Artistic License
-  summary: "GlimmerHMM is a gene finder based on a Generalized Hidden Markov Model (GHMM)"
+  license_file: LICENSE
+  summary: "GlimmerHMM is a gene finder based on a Generalized Hidden Markov Model (GHMM)."
+  doc_url: https://ccb.jhu.edu/software/glimmerhmm
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:glimmer-hmm
+    - doi:10.1093/bioinformatics/bth315

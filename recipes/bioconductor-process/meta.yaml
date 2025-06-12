@@ -1,37 +1,21 @@
-{% set version = "1.74.0" %}
+{% set version = "1.82.0" %}
 {% set name = "PROcess" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 781bdf154b8ddf4f5fb5a12d8669fe31
+about:
+  description: A package for processing protein mass spectrometry data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Ciphergen SELDI-TOF Processing
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-icens >=1.70.0,<1.71.0'
-    - r-base
-  run:
-    - 'bioconductor-icens >=1.70.0,<1.71.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Ciphergen SELDI-TOF Processing'
-  description: 'A package for processing protein mass spectrometry data.'
+  run_exports: '{{ pin_subpackage("bioconductor-process", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:process
@@ -40,4 +24,28 @@ extra:
     name: bioconductor-process
     path: recipes/bioconductor-process
     version: 1.58.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  host:
+    - bioconductor-icens >=1.78.0,<1.79.0
+    - r-base
+  run:
+    - bioconductor-icens >=1.78.0,<1.79.0
+    - r-base
+
+source:
+  md5: 4908c255d9a7568a935d9a9a104a1543
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

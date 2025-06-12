@@ -1,47 +1,54 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "NBAMSeq" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 86f836dfe9b4e1d16e52e803a7006d34
+about:
+  description: High-throughput sequencing experiments followed by differential expression analysis is a widely used approach to detect genomic biomarkers. A fundamental step in differential expression analysis is to model the association between gene counts and covariates of interest. NBAMSeq a flexible statistical model based on the generalized additive model and allows for information sharing across genes in variance estimation.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Negative Binomial Additive Model for RNA-Seq Data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-nbamseq", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, testthat, ggplot2
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-genefilter >=1.80.0,<1.81.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-genefilter >=1.88.0,<1.89.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
-    - 'r-mgcv >=1.8-24'
+    - r-mgcv >=1.8-24
   run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-genefilter >=1.80.0,<1.81.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-genefilter >=1.88.0,<1.89.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
-    - 'r-mgcv >=1.8-24'
+    - r-mgcv >=1.8-24
+
+source:
+  md5: 9ac3de6a0dece162a3e824e71207811e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Negative Binomial Additive Model for RNA-Seq Data'
-  description: 'High-throughput sequencing experiments followed by differential expression analysis is a widely used approach to detect genomic biomarkers. A fundamental step in differential expression analysis is to model the association between gene counts and covariates of interest. NBAMSeq a flexible statistical model based on the generalized additive model and allows for information sharing across genes in variance estimation.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+    - $R -e "library('{{ name }}')"
 

@@ -1,45 +1,25 @@
-{% set version = "1.26.0" %}
+{% set version = "1.34.0" %}
 {% set name = "lpsymphony" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: f0e1bc1603e03b24f9371a794df24f0d
+about:
+  description: This package was derived from Rsymphony_0.1-17 from CRAN. These packages provide an R interface to SYMPHONY, an open-source linear programming solver written in C++. The main difference between this package and Rsymphony is that it includes the solver source code (SYMPHONY version 5.6), while Rsymphony expects to find header and library files on the users' system. Thus the intention of lpsymphony is to provide an easy to install interface to SYMPHONY. For Windows, precompiled DLLs are included in this package.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: EPL
+  summary: Symphony integer linear programming solver in R
+
 build:
-  number: 0
+  skip: True   # [osx] # hasn't build since 1.30 - linker error with flags in CoinUtils package
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: BiocStyle, knitr, testthat
-# SystemRequirements: GNU make
-requirements:
-  host:
-    - r-base
-    - libblas
-    - liblapack
-  run:
-    - r-base
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - {{ compiler('fortran') }}
-    - automake
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: EPL
-  summary: 'Symphony integer linear programming solver in R'
-  description: 'This package was derived from Rsymphony_0.1-17 from CRAN. These packages provide an R interface to SYMPHONY, an open-source linear programming solver written in C++. The main difference between this package and Rsymphony is that it includes the solver source code (SYMPHONY version 5.6), while Rsymphony expects to find header and library files on the users'' system. Thus the intention of lpsymphony is to provide an easy to install interface to SYMPHONY. For Windows, precompiled DLLs are included in this package.'
+  run_exports: '{{ pin_subpackage("bioconductor-lpsymphony", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   identifiers:
     - biotools:lpsymphony
     - doi:10.1007/0-387-23529-9_5
@@ -47,4 +27,36 @@ extra:
     name: bioconductor-lpsymphony
     path: recipes/bioconductor-lpsymphony
     version: 1.8.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, testthat
+# SystemRequirements: GNU make
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+    - automake
+    - make
+  host:
+    - r-base
+    - libblas
+    - liblapack
+  run:
+    - r-base
+
+source:
+  md5: 54ce27cefa98d444f06b137ba5ca4a70
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

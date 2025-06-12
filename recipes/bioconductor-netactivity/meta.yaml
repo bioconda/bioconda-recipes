@@ -1,47 +1,54 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "NetActivity" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 40094b89a7632cb31f9566d3b828bbcc
+about:
+  description: '#'' NetActivity enables to compute gene set scores from previously trained sparsely-connected autoencoders. The package contains a function to prepare the data (`prepareSummarizedExperiment`) and a function to compute the gene set scores (`computeGeneSetScores`). The package `NetActivityData` contains different pre-trained models to be directly applied to the data. Alternatively, the users might use the package to compute gene set scores using custom models.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Compute gene set scores from a deep learning framework
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-netactivity", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: AnnotationDbi, BiocStyle, Fletcher2013a, knitr, org.Hs.eg.db, rmarkdown, testthat (>= 3.0.0), tidyverse
 requirements:
   host:
-    - 'bioconductor-airway >=1.18.0,<1.19.0'
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-delayedmatrixstats >=1.20.0,<1.21.0'
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-netactivitydata >=1.0.0,<1.1.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-airway >=1.26.0,<1.27.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-delayedmatrixstats >=1.28.0,<1.29.0
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-netactivitydata >=1.8.0,<1.9.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
   run:
-    - 'bioconductor-airway >=1.18.0,<1.19.0'
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-delayedmatrixstats >=1.20.0,<1.21.0'
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-netactivitydata >=1.0.0,<1.1.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-airway >=1.26.0,<1.27.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-delayedmatrixstats >=1.28.0,<1.29.0
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-netactivitydata >=1.8.0,<1.9.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
+
+source:
+  md5: aee224387f9df720b12309541d2953c7
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Compute gene set scores from a deep learning framework'
-  description: '#'' NetActivity enables to compute gene set scores from previously trained sparsely-connected autoencoders. The package contains a function to prepare the data (`prepareSummarizedExperiment`) and a function to compute the gene set scores (`computeGeneSetScores`). The package `NetActivityData` contains different pre-trained models to be directly applied to the data. Alternatively, the users might use the package to compute gene set scores using custom models.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

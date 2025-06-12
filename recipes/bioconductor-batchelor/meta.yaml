@@ -1,73 +1,91 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "batchelor" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: db2935e1e1ce1ae7b464357fe8c160d6
+about:
+  description: Implements a variety of methods for batch correction of single-cell (RNA sequencing) data. This includes methods based on detecting mutually nearest neighbors, as well as several efficient variants of linear regression of the log-expression values. Functions are also provided to perform global rescaling to remove differences in depth between batches, and to perform a principal components analysis that is robust to differences in the numbers of cells across batches.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Single-Cell Batch Correction Methods
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-batchelor", max_pin="x.x") }}'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:batchelor
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: testthat, BiocStyle, knitr, rmarkdown, scran, scater, bluster, scRNAseq
 # SystemRequirements: C++11
 requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
   host:
-    - 'bioconductor-beachmat >=2.14.0,<2.15.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocneighbors >=1.16.0,<1.17.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-biocsingular >=1.14.0,<1.15.0'
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-delayedmatrixstats >=1.20.0,<1.21.0'
-    - 'bioconductor-residualmatrix >=1.8.0,<1.9.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-scaledmatrix >=1.6.0,<1.7.0'
-    - 'bioconductor-scuttle >=1.8.0,<1.9.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-beachmat >=2.22.0,<2.23.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocneighbors >=2.0.0,<2.1.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-biocsingular >=1.22.0,<1.23.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-delayedmatrixstats >=1.28.0,<1.29.0
+    - bioconductor-residualmatrix >=1.16.0,<1.17.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-scaledmatrix >=1.14.0,<1.15.0
+    - bioconductor-scuttle >=1.16.0,<1.17.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-sparsearray >=1.6.0,<1.7.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-igraph
     - r-matrix
     - r-rcpp
     - libblas
     - liblapack
+
   run:
-    - 'bioconductor-beachmat >=2.14.0,<2.15.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocneighbors >=1.16.0,<1.17.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-biocsingular >=1.14.0,<1.15.0'
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-delayedmatrixstats >=1.20.0,<1.21.0'
-    - 'bioconductor-residualmatrix >=1.8.0,<1.9.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-scaledmatrix >=1.6.0,<1.7.0'
-    - 'bioconductor-scuttle >=1.8.0,<1.9.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-beachmat >=2.22.0,<2.23.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocneighbors >=2.0.0,<2.1.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-biocsingular >=1.22.0,<1.23.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-delayedmatrixstats >=1.28.0,<1.29.0
+    - bioconductor-residualmatrix >=1.16.0,<1.17.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-scaledmatrix >=1.14.0,<1.15.0
+    - bioconductor-scuttle >=1.16.0,<1.17.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-sparsearray >=1.6.0,<1.7.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-igraph
     - r-matrix
     - r-rcpp
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: d94a18149110a29fb790ade3b086411c
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Single-Cell Batch Correction Methods'
-  description: 'Implements a variety of methods for batch correction of single-cell (RNA sequencing) data. This includes methods based on detecting mutually nearest neighbors, as well as several efficient variants of linear regression of the log-expression values. Functions are also provided to perform global rescaling to remove differences in depth between batches, and to perform a principal components analysis that is robust to differences in the numbers of cells across batches.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

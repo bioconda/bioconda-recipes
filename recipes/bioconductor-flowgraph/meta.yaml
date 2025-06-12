@@ -1,27 +1,30 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "flowGraph" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: ca3c410472371c976e9d0f9053a74e9b
+about:
+  description: Identifies maximal differential cell populations in flow cytometry data taking into account dependencies between cell populations; flowGraph calculates and plots SpecEnr abundance scores given cell population cell counts.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Identifying differential cell populations in flow cytometry data accounting for marker frequency
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-flowgraph", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, dplyr, knitr, rmarkdown, testthat (>= 2.1.0)
 requirements:
   host:
     - r-base
-    - 'r-data.table >=1.9.5'
+    - r-data.table >=1.9.5
     - r-effsize
     - r-furrr
     - r-future
@@ -40,7 +43,7 @@ requirements:
     - r-visnetwork
   run:
     - r-base
-    - 'r-data.table >=1.9.5'
+    - r-data.table >=1.9.5
     - r-effsize
     - r-furrr
     - r-future
@@ -57,12 +60,16 @@ requirements:
     - r-stringi
     - r-stringr
     - r-visnetwork
+
+source:
+  md5: 3e0352ed9503c0f07870b7cdb680e16e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Identifying differential cell populations in flow cytometry data accounting for marker frequency'
-  description: 'Identifies maximal differential cell populations in flow cytometry data taking into account dependencies between cell populations; flowGraph calculates and plots SpecEnr abundance scores given cell population cell counts.'
+    - $R -e "library('{{ name }}')"
 

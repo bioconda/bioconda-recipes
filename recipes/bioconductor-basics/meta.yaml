@@ -1,33 +1,43 @@
-{% set version = "2.10.0" %}
+{% set version = "2.18.0" %}
 {% set name = "BASiCS" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: fe818fcf4d79055bdaf17246f107e220
+about:
+  description: Single-cell mRNA sequencing can uncover novel cell-to-cell heterogeneity in gene expression levels in seemingly homogeneous populations of cells. However, these experiments are prone to high levels of technical noise, creating new challenges for identifying genes that show genuine heterogeneous expression within the population of cells under study. BASiCS (Bayesian Analysis of Single-Cell Sequencing data) is an integrated Bayesian hierarchical model to perform statistical analyses of single-cell RNA sequencing datasets in the context of supervised experiments (where the groups of cells of interest are known a priori, e.g. experimental conditions or cell types). BASiCS performs built-in data normalisation (global scaling) and technical noise quantification (based on spike-in genes). BASiCS provides an intuitive detection criterion for highly (or lowly) variable genes within a single group of cells. Additionally, BASiCS can compare gene expression patterns between two or more pre-specified groups of cells. Unlike traditional differential expression tools, BASiCS quantifies changes in expression that lie beyond comparisons of means, also allowing the study of changes in cell-to-cell heterogeneity. The latter can be quantified via a biological over-dispersion parameter that measures the excess of variability that is observed with respect to Poisson sampling noise, after normalisation and technical noise removal. Due to the strong mean/over-dispersion confounding that is typically observed for scRNA-seq datasets, BASiCS also tests for changes in residual over-dispersion, defined by residual values with respect to a global mean/over-dispersion trend.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Bayesian Analysis of Single-Cell Sequencing data
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: BiocStyle, knitr, rmarkdown, testthat, magick
+  run_exports: '{{ pin_subpackage("bioconductor-basics", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, rmarkdown, testthat, scRNAseq, magick
 # SystemRequirements: C++11
 requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-scran >=1.26.0,<1.27.0'
-    - 'bioconductor-scuttle >=1.8.0,<1.9.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-scran >=1.34.0,<1.35.0
+    - bioconductor-scuttle >=1.16.0,<1.17.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-assertthat
     - r-base
     - r-coda
@@ -36,23 +46,25 @@ requirements:
     - r-ggplot2
     - r-hexbin
     - r-mass
-    - 'r-matrix >=1.5.0'
+    - r-matrix >=1.5.0
     - r-matrixstats
-    - 'r-rcpp >=0.11.3'
+    - r-posterior
+    - r-rcpp >=0.11.3
     - r-rcpparmadillo
     - r-reshape2
     - r-viridis
     - libblas
     - liblapack
+
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-scran >=1.26.0,<1.27.0'
-    - 'bioconductor-scuttle >=1.8.0,<1.9.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-scran >=1.34.0,<1.35.0
+    - bioconductor-scuttle >=1.16.0,<1.17.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-assertthat
     - r-base
     - r-coda
@@ -61,23 +73,23 @@ requirements:
     - r-ggplot2
     - r-hexbin
     - r-mass
-    - 'r-matrix >=1.5.0'
+    - r-matrix >=1.5.0
     - r-matrixstats
-    - 'r-rcpp >=0.11.3'
+    - r-posterior
+    - r-rcpp >=0.11.3
     - r-rcpparmadillo
     - r-reshape2
     - r-viridis
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: 075730ceccc669baaff1bc0649dbe0b7
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Bayesian Analysis of Single-Cell Sequencing data'
-  description: 'Single-cell mRNA sequencing can uncover novel cell-to-cell heterogeneity in gene expression levels in seemingly homogeneous populations of cells. However, these experiments are prone to high levels of technical noise, creating new challenges for identifying genes that show genuine heterogeneous expression within the population of cells under study. BASiCS (Bayesian Analysis of Single-Cell Sequencing data) is an integrated Bayesian hierarchical model to perform statistical analyses of single-cell RNA sequencing datasets in the context of supervised experiments (where the groups of cells of interest are known a priori, e.g. experimental conditions or cell types). BASiCS performs built-in data normalisation (global scaling) and technical noise quantification (based on spike-in genes). BASiCS provides an intuitive detection criterion for highly (or lowly) variable genes within a single group of cells. Additionally, BASiCS can compare gene expression patterns between two or more pre-specified groups of cells. Unlike traditional differential expression tools, BASiCS quantifies changes in expression that lie beyond comparisons of means, also allowing the study of changes in cell-to-cell heterogeneity. The latter can be quantified via a biological over-dispersion parameter that measures the excess of variability that is observed with respect to Poisson sampling noise, after normalisation and technical noise removal. Due to the strong mean/over-dispersion confounding that is typically observed for scRNA-seq datasets, BASiCS also tests for changes in residual over-dispersion, defined by residual values with respect to a global mean/over-dispersion trend.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

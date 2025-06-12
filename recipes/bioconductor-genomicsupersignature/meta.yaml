@@ -1,30 +1,33 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "GenomicSuperSignature" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: abeb255f416aa751f8bacc6665e7e390
+about:
+  description: This package provides a novel method for interpreting new transcriptomic datasets through near-instantaneous comparison to public archives without high-performance computing requirements. Through the pre-computed index, users can identify public resources associated with their dataset such as gene sets, MeSH term, and publication. Functions to identify interpretable annotations and intuitive visualization options are implemented in this package.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Interpretation of RNA-seq experiments through robust, efficient comparison to public databases
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-genomicsupersignature", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, devtools, roxygen2, pkgdown, usethis, BiocStyle, testthat, forcats, stats, wordcloud, circlize, EnrichmentBrowser, clusterProfiler, msigdbr, cluster, RColorBrewer, reshape2, tibble, BiocManager, bcellViper, readr, utils
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-dplyr
     - r-flextable
@@ -33,11 +36,11 @@ requirements:
     - r-irlba
     - r-plotly
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-dplyr
     - r-flextable
@@ -45,12 +48,16 @@ requirements:
     - r-ggpubr
     - r-irlba
     - r-plotly
+
+source:
+  md5: efa8078ab97b7a012aeed34e7e966e9e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Interpretation of RNA-seq experiments through robust, efficient comparison to public databases'
-  description: 'This package provides a novel method for interpreting new transcriptomic datasets through near-instantaneous comparison to public archives without high-performance computing requirements. Through the pre-computed index, users can identify public resources associated with their dataset such as gene sets, MeSH term, and publication. Functions to identify interpretable annotations and intuitive visualization options are implemented in this package.'
+    - $R -e "library('{{ name }}')"
 

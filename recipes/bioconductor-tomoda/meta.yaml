@@ -1,26 +1,30 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "tomoda" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 52a7481bd26fa5e0240d7bf6fff8236b
+about:
+  description: 'This package provides many easy-to-use methods to analyze and visualize tomo-seq data. The tomo-seq technique is based on cryosectioning of tissue and performing RNA-seq on consecutive sections. (Reference: Kruse F, Junker JP, van Oudenaarden A, Bakkers J. Tomo-seq: A method to obtain genome-wide expression data with spatial resolution. Methods Cell Biol. 2016;135:299-307. doi:10.1016/bs.mcb.2016.01.006) The main purpose of the package is to find zones with similar transcriptional profiles and spatially expressed genes in a tomo-seq sample. Several visulization functions are available to create easy-to-modify plots.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Tomo-seq data analysis
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-tomoda", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, BiocStyle, testthat
 requirements:
   host:
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-ggplot2
     - r-ggrepel
@@ -29,7 +33,7 @@ requirements:
     - r-rtsne
     - r-umap
   run:
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-ggplot2
     - r-ggrepel
@@ -37,13 +41,16 @@ requirements:
     - r-reshape2
     - r-rtsne
     - r-umap
+
+source:
+  md5: 75962e098028f25bf9ff184650535c5b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Tomo-seq data analysis'
-  description: 'This package provides many easy-to-use methods to analyze and visualize tomo-seq data. The tomo-seq technique is based on cryosectioning of tissue and performing RNA-seq on consecutive sections. (Reference: Kruse F, Junker JP, van Oudenaarden A, Bakkers J. Tomo-seq: A method to obtain genome-wide expression data with spatial resolution. Methods Cell Biol. 2016;135:299-307. doi:10.1016/bs.mcb.2016.01.006) The main purpose of the package is to find zones with similar transcriptional profiles and spatially expressed genes in a tomo-seq sample. Several visulization functions are available to create easy-to-modify plots.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

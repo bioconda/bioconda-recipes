@@ -1,57 +1,78 @@
-{% set version = "2.14.0" %}
+{% set version = "3.6.0" %}
 {% set name = "hipathia" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 50201a1eec92a1a35ccb8d95ac8b0785
+about:
+  description: Hipathia is a method for the computation of signal transduction along signaling pathways from transcriptomic data. The method is based on an iterative algorithm which is able to compute the signal intensity passing through the nodes of a network by taking into account the level of expression of each gene and the intensity of the signal arriving to it. It also provides a new approach to functional analysis allowing to compute the signal arriving to the functions annotated to each pathway.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: 'HiPathia: High-throughput Pathway Analysis'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-hipathia", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, knitr, rmarkdown, testthat
 requirements:
   host:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-multiassayexperiment >=1.24.0,<1.25.0'
-    - 'bioconductor-preprocesscore >=1.60.0,<1.61.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-multiassayexperiment >=1.32.0,<1.33.0
+    - bioconductor-preprocesscore >=1.68.0,<1.69.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-coin
-    - 'r-igraph >=1.0.1'
+    - r-dplyr
+    - r-ggplot2
+    - r-ggpubr
+    - r-igraph >=1.0.1
     - r-matrixstats
+    - r-metbrewer
+    - r-reshape2
     - r-servr
+    - r-tibble
+    - r-visnetwork
   run:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-multiassayexperiment >=1.24.0,<1.25.0'
-    - 'bioconductor-preprocesscore >=1.60.0,<1.61.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-multiassayexperiment >=1.32.0,<1.33.0
+    - bioconductor-preprocesscore >=1.68.0,<1.69.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-coin
-    - 'r-igraph >=1.0.1'
+    - r-dplyr
+    - r-ggplot2
+    - r-ggpubr
+    - r-igraph >=1.0.1
     - r-matrixstats
+    - r-metbrewer
+    - r-reshape2
     - r-servr
+    - r-tibble
+    - r-visnetwork
+
+source:
+  md5: 73997b57da0ca2a2759adeb5aca55b26
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'HiPathia: High-throughput Pathway Analysis'
-  description: 'Hipathia is a method for the computation of signal transduction along signaling pathways from transcriptomic data. The method is based on an iterative algorithm which is able to compute the signal intensity passing through the nodes of a network by taking into account the level of expression of each gene and the intensity of the signal arriving to it. It also provides a new approach to functional analysis allowing to compute the signal arriving to the functions annotated to each pathway.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+    - $R -e "library('{{ name }}')"
 

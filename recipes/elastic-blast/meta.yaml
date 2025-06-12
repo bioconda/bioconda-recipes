@@ -1,37 +1,39 @@
-{% set version = "1.0.0" %}
+{% set name = "elastic-blast" %}
+{% set version = "1.4.0" %}
 
 package:
-  name: elastic-blast
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/source/e/elastic-blast/elastic_blast-{{ version }}.tar.gz
-  sha256: e55983cfc836584e0a37728a9094ab5202faeb0ed19f183356134e48fc441fd2
+  url: https://files.pythonhosted.org/packages/61/e8/7ad2f3cdc19b676aa5f003dbef9be1f1ff0f3c998a402709332668374aa8/elastic_blast-{{ version }}.tar.gz
+  sha256: 5a13a2f4e0eb71b1c7d8b68e4d7b1efccf35043218fa8dafa550b9f2817a7fe5
 
 build:
-  number: 0 
+  number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage("elastic-blast", max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.7
-    - google-cloud-sdk
-    - awscli
-    - awslimitchecker
+    - python >=3.7,<3.13
     - python-packit
-    - importlib-metadata
+    - setuptools
   run:
-    - python >=3.7
+    - python >=3.7,<3.13
     - boto3
     - awscli
     - awslimitchecker
     - tenacity
     - google-cloud-sdk
-    - kubernetes-client ==1.18.8
+    - kubernetes-client
+    - importlib-resources ==6.1.1
     - importlib-metadata
     - dataclasses-json
+    - pex ==2.24.1
 
 test:
   commands:
@@ -41,18 +43,21 @@ test:
     - gsutil --version
     - aws --version
     - kubectl version --client=true
+
 about:
-  home: https://pypi.org/project/elastic-blast/
-  license: Public Domain
+  home: https://github.com/ncbi/elastic-blast
+  license: "Public Domain"
   license_family: PUBLIC-DOMAIN
   license_file: LICENSE.md
   summary: "ElasticBLAST is a cloud-based tool to perform your BLAST searches faster and make you more effective."
-  dev_url: https://github.com/ncbi/elastic-blast/
+  dev_url: https://github.com/ncbi/elastic-blast
 
 extra:
+  identifiers:
+    - biotools:blast
+    - doi:10.1186/s12859-023-05245-9
   recipe-maintainers:
     - r78v10a07
     - christiam
     - victzh
     - boratyng
-    

@@ -1,42 +1,44 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "TREG" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 72bde92193485231bc3a0761bd1ef8b7
+about:
+  description: RNA abundance and cell size parameters could improve RNA-seq deconvolution algorithms to more accurately estimate cell type proportions given the different cell type transcription activity levels. A Total RNA Expression Gene (TREG) can facilitate estimating total RNA content using single molecule fluorescent in situ hybridization (smFISH). We developed a data-driven approach using a measure of expression invariance to find candidate TREGs in postmortem human brain single nucleus RNA-seq. This R package implements the method for identifying candidate TREGs from snRNA-seq data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Tools for finding Total RNA Expression Genes in single nucleus RNA-seq data
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-treg", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: BiocFileCache, BiocStyle, dplyr, ggplot2, knitr, pheatmap, sessioninfo, RefManageR, rmarkdown, testthat (>= 3.0.0), tibble, tidyr, SingleCellExperiment
 requirements:
   host:
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-matrix
     - r-purrr
     - r-rafalib
   run:
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-matrix
     - r-purrr
     - r-rafalib
+source:
+  md5: 871bb50be403533bc358bbf9c96e0df4
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Tools for finding Total RNA Expression Genes in single nucleus RNA-seq data'
-  description: 'RNA abundance and cell size parameters could improve RNA-seq deconvolution algorithms to more accurately estimate cell type proportions given the different cell type transcription activity levels. A Total RNA Expression Gene (TREG) can facilitate estimating total RNA content using single molecule fluorescent in situ hybridization (smFISH). We developed a data-driven approach using a measure of expression invariance to find candidate TREGs in postmortem human brain single nucleus RNA-seq. This R package implements the method for identifying candidate TREGs from snRNA-seq data.'
+    - $R -e "library('{{ name }}')"
 

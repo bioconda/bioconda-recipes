@@ -1,6 +1,6 @@
 {% set name = "dysgu" %}
-{% set version = "1.3.16" %}
-{% set sha256hash = "8f9f6320c76facbd927f5525c7b2597af97a3121ca8d914755cb4027e78cb4aa" %}
+{% set version = "1.8.5" %}
+{% set sha256hash = "90df9e1ddd899661b737c4cd889808563168a4fa620d98317c055f570196c171" %}
 
 package:
   name: {{ name|lower }}
@@ -15,78 +15,78 @@ build:
   binary_relocation: False
   entry_points:
     - dysgu = dysgu.main:cli
+  run_exports:
+    - {{ pin_subpackage('dysgu', max_pin='x') }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - tapi  # [osx]
   host:
-    - python >=3.8
-    - setuptools
-    - cython
+    - python
+    - pip
+    - cython >=0.29
+    - meson-python
     - htslib >=1.12
     - numpy >=1.18
-    - lightgbm
-    - zlib
-    - pysam
-    - libcurl
-    - openssl
-    - bzip2
-    - xz
-    - wheel
-    - scipy
-    - pandas
+    - lightgbm >=3.1
+    - zlib >=1.2
+    - pysam >=0.19
+    - libcurl >=7.75
+    - openssl >=1.1
+    - bzip2 >=1.0.8
+    - xz >=5.2
+    - scipy >=1.7
+    - pandas >=1.2
     - networkx >=2.4
     - scikit-learn >=0.22
-    - python-edlib
-    - sortedcontainers
-    - click >=8.0
+    - superintervals >=0.2.10
   run:
-    - python >=3.8
+    - python
+    - cython >=0.29
     - numpy >=1.18
-    - scipy
-    - pandas
+    - scipy >=1.7
+    - pandas >=1.2
     - networkx >=2.4
     - scikit-learn >=0.22
-    - python-edlib
     - sortedcontainers
-    - lightgbm
-    - zlib
+    - lightgbm >=3.1
     - click >=8.0
-    - pysam
-    - libcurl
-    - openssl
-    - bzip2
-    - xz
+    - pysam >=0.23
+    - openssl >=1.1
     - htslib >=1.12
-    - wheel
-    - cython
+    - superintervals >=0.2.10
 
 test:
   requires:
     - cython
   imports:
     - dysgu
-
-
-
   files:
     - dysgu/tests/*
   commands:
-    - 'dysgu --help'
-
+    - dysgu --help
 
 about:
-  home: https://github.com/kcleal/dysgu
-  summary: A collection of tools for calling structural variants using short or long reads
+  home: "https://github.com/kcleal/dysgu"
+  summary: "A collection of tools for calling structural variants using short or long reads."
   license: MIT
-  license_file: LICENSE.md
+  license_family: MIT
+  license_file: "LICENSE.md"
+  dev_url: "https://github.com/kcleal/dysgu"
+  doc_url: "https://github.com/kcleal/dysgu/blob/v{{ version }}/README.rst"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   container:
-      extended-base: True
+    extended-base: True
   recipe-maintainers:
     - kcleal
   skip-lints:
     - cython_must_be_in_host
+  identifiers:
+    - doi:10.1093/nar/gkac039

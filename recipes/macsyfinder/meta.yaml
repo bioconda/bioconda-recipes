@@ -1,5 +1,5 @@
-{% set name = "MacSyFinder" %}
-{% set version = "2.1" %}
+{% set name = "macsyfinder" %}
+{% set version = "2.1.4" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,27 +7,40 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: ba585a7ab9699bc486bfc55847e5bd79d9cb85ebd1c926e0848502a33758529a
+  sha256: 93af563a81cc33f7593fa145bb9def76d51e3ef500a073531685d642f77da1a5
 
 build:
   noarch: python
-  number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
+  number: 1
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  entry_points:
+    - macsyfinder=macsypy.scripts.macsyfinder:main
+    - macsydata=macsypy.scripts.macsydata:main
+    - macsyprofile=macsypy.scripts.macsyprofile:main
+    - macsyconfig=macsypy.scripts.macsyconfig:main
+    - macsysplit=macsypy.scripts.macsy_gembase_split:main
+    - macsymerge=macsypy.scripts.macsy_merge_results:main
+  run_exports:
+    - {{ pin_subpackage('macsyfinder', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.10
+    - setuptools
+
   run:
-    - python
+    - python >=3.10
     - colorlog
     - PyYAML >=5.1.1
     - packaging >=18.0
     - networkx >=2.4
-    - pandas >=1.1.5,<=1.4.3
+    - pandas >=1.1.5,<=2.2.3
     - colorama >=0.4.4
     - certifi
-    - hmmer >=3.1b2,<=3.3.2
+    - hmmer >=3.1b2,<=3.4
+    - git >1.7.0
+    - gitpython >=3.1.30 
 
 test:
   commands:
@@ -47,5 +60,4 @@ extra:
     - bneron
   identifiers:
     - biotools:macsyfinder
-    - doi:10.1371/journal/pone.0110726
-
+    - doi:10.24072/pcjournal.250

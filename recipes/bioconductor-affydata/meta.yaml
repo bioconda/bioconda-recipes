@@ -1,44 +1,41 @@
-{% set version = "1.46.0" %}
+{% set version = "1.54.0" %}
 {% set name = "affydata" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 99b85f3a09dcc5219ce0575d29146e62
+about:
+  description: Example datasets of a slightly large size. They represent 'real world examples', unlike the artificial examples included in the package affy.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Affymetrix Data for Demonstration Purpose
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-affydata", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: hgu95av2cdf, hgu133acdf
 requirements:
   host:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
+    - bioconductor-affy >=1.84.0,<1.85.0
     - r-base
   run:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
+    - bioconductor-affy >=1.84.0,<1.85.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221104
+    - bioconductor-data-packages >=20241103
+source:
+  md5: dfb8275fc3bb96847e867ddcdced9c52
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Affymetrix Data for Demonstration Purpose'
-  description: 'Example datasets of a slightly large size. They represent ''real world examples'', unlike the artificial examples included in the package affy.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-extra:
-  parent_recipe:
-    name: bioconductor-affydata
-    path: recipes/bioconductor-affydata
-    version: 1.28.0
+    - $R -e "library('{{ name }}')"
 

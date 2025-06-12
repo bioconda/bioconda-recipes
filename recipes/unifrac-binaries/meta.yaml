@@ -1,4 +1,4 @@
-{% set version = "1.2.1" %}
+{% set version = "1.5" %}
 
 package:
   name: unifrac-binaries
@@ -6,34 +6,40 @@ package:
 
 source:
   url: https://github.com/biocore/unifrac-binaries/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 202d6f5877257a923416d5eac7a901c765cd596c21e818ab2c5bd71576dbeaa8
+  sha256: 566cae407e4bb0f94dbc712cc367177ac24bd894254ded39f1157f7d2837ff1b
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage("unifrac-binaries", max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - hdf5
-    - mkl-include
-    - hdf5-static
+    - libcxx-devel # [osx]
+    - llvm-openmp # [osx]
+    - hdf5 =*=nompi*
+    - hdf5-static =*=nompi*
     - lz4
-    - zlib
+    - zlib # [linux]
     - libcblas
+    - blas-devel
     - liblapacke
     - make
     - curl
   host:
     - lz4
-    - zlib
+    - zlib # [linux]
     - libcblas
     - liblapacke
+    - libaec # [linux]
   run:
     - lz4
-    - zlib
+    - zlib # [linux]
     - libcblas
     - liblapacke
+    - libaec # [linux]
 
 test:
   commands:
@@ -58,6 +64,9 @@ about:
   dev_url: https://github.com/biocore/unifrac-binaries
 
 extra:
+  additional-platforms:
+    - osx-arm64
+
   recipe-maintainers:
     - sfiligoi
     - wasade

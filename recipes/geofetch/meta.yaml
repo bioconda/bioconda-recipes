@@ -1,5 +1,5 @@
 {% set name = "geofetch" %}
-{% set version = "0.12.0" %}
+{% set version = "0.12.7" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 6133ef26a467757e752d024a0b7cf36fe1f25f42aa8c6c00b86f87df72b33f4c
+  sha256: c7820852dcb5a619a510616b0ca80f402a6a2a60f95d081ea7e174b387ec3e36
 
 build:
   number: 0
@@ -15,6 +15,8 @@ build:
     - geofetch = geofetch.geofetch:main
     - sraconvert = geofetch.sraconvert:main
   noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
 
 requirements:
@@ -22,6 +24,7 @@ requirements:
     - pip
     - python >=3.8
   run:
+    - python >=3.8
     - attmap >=0.1.8
     - colorama >=0.3.9
     - coloredlogs >=15.0.1
@@ -41,9 +44,6 @@ test:
   commands:
     - geofetch --help
     - sraconvert --help
-  requires:
-    - mock >=2.0.0
-    - pytest ==3.10.1
 
 about:
   home: "https://github.com/pepkit/geofetch/"
@@ -52,7 +52,6 @@ about:
   license_file: "LICENSE.txt"
   summary: "Downloads data and metadata from GEO and SRA and creates standard PEPs."
   doc_url: "http://geofetch.databio.org/"
-  dev_url: 
 
 extra:
   recipe-maintainers:

@@ -1,31 +1,35 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "VplotR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 240a00c615f71e1d632fcabbd94545dc
+about:
+  description: The pattern of digestion and protection from DNA nucleases such as DNAse I, micrococcal nuclease, and Tn5 transposase can be used to infer the location of associated proteins. This package contains useful functions to analyze patterns of paired-end sequencing fragment density. VplotR facilitates the generation of V-plots and footprint profiles over single or aggregated genomic loci of interest.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 3)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Set of tools to make V-plots and compute footprint profiles
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-vplotr", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: GenomicFeatures, TxDb.Scerevisiae.UCSC.sacCer3.sgdGene, testthat, covr, knitr, rmarkdown, pkgdown
 requirements:
   host:
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicalignments >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicalignments >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-cowplot
     - r-ggplot2
@@ -34,12 +38,12 @@ requirements:
     - r-reshape2
     - r-zoo
   run:
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicalignments >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicalignments >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-cowplot
     - r-ggplot2
@@ -47,13 +51,16 @@ requirements:
     - r-rcolorbrewer
     - r-reshape2
     - r-zoo
+
+source:
+  md5: 6158b3c841b45bf9e09ebb91b183ef19
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Set of tools to make V-plots and compute footprint profiles'
-  description: 'The pattern of digestion and protection from DNA nucleases such as DNAse I, micrococcal nuclease, and Tn5 transposase can be used to infer the location of associated proteins. This package contains useful functions to analyze patterns of paired-end sequencing fragment density. VplotR facilitates the generation of V-plots and footprint profiles over single or aggregated genomic loci of interest.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

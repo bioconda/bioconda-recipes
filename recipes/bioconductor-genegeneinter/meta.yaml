@@ -1,27 +1,41 @@
-{% set version = "1.24.0" %}
+{% set version = "1.32.0" %}
 {% set name = "GeneGeneInteR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 400f2839067b6ee7b69f8b206c066b29
+about:
+  description: The aim of this package is to propose several methods for testing gene-gene interaction in case-control association studies. Such a test can be done by aggregating SNP-SNP interaction tests performed at the SNP level (SSI) or by using gene-gene multidimensionnal methods (GGI) methods. The package also proposes tools for a graphic display of the results. <doi:10.18637/jss.v095.i12>.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Tools for Testing Gene-Gene Interaction at the Gene Level
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-genegeneinter", max_pin="x.x") }}'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:genegeneinter
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-snpstats >=1.48.0,<1.49.0'
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-snpstats >=1.56.0,<1.57.0
     - r-base
     - r-data.table
     - r-factominer
@@ -31,27 +45,26 @@ requirements:
     - libblas
     - liblapack
   run:
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-snpstats >=1.48.0,<1.49.0'
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-snpstats >=1.56.0,<1.57.0
     - r-base
     - r-data.table
     - r-factominer
     - r-igraph
     - r-kernlab
     - r-mvtnorm
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: f7913598aed390843211d46146aef0a9
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Tools for Testing Gene-Gene Interaction at the Gene Level'
-  description: 'The aim of this package is to propose several methods for testing gene-gene interaction in case-control association studies. Such a test can be done by aggregating SNP-SNP interaction tests performed at the SNP level (SSI) or by using gene-gene multidimensionnal methods (GGI) methods. The package also proposes tools for a graphic display of the results. <doi:10.18637/jss.v095.i12>.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

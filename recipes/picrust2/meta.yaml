@@ -1,43 +1,48 @@
 {% set name = "picrust2" %}
-{% set version = "2.5.1" %}
+{% set version = "2.6.2" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version | replace('-', '_') }}"
 
 source:
-  url: https://github.com/picrust/picrust2/archive/refs/tags/v2.5.1.tar.gz
-  sha256: cefbdcb69cf973bf10aeb63fa33f4e07565ed2ee6b308a6b6d6a0df2b2cd53de 
+  url: https://github.com/picrust/picrust2/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: cb0a04c08e3ba5405033d1e7adfdeb10eaf7bbed4146e5c7e8dfb54a71d2f127
 
 build:
-  number: 0
+  run_exports:
+        - {{ pin_subpackage('picrust2', max_pin="x") }}
+  number: 1
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
 
 requirements:
   host:
-    - cython
+    - setuptools
     - pip
-    - python >=3.5,<3.9
+    - python >=3.5
   run:
     - biom-format >=2.1.10
+    - dendropy 4.5.2
     - epa-ng 0.3.8
-    - gappa 0.8.0
-    - glpk 4.65
-    - h5py >=3.1.0
+    - ete3
+    - gappa >=0.8.0,<=0.8.5
+    - glpk >=4.65
+    - h5py >=2.10.0
     - hmmer >=3.1b2,<=3.2.1
+    - jinja2 >=2.11.3
     - joblib >=1.0.1
     - numpy >=1.19.5
     - pandas >=1.1.5
-    - python >=3.5,<3.9
+    - python >=3.5
     - pytest >=4.4.1
     - pytest-cov >=2.6.1
     - r-base >=3.5.1
-    - r-castor 1.7.2
+    - r-castor >=1.7.2
     - scipy >=1.2.1
-    - sepp 4.3.10
+    - sepp 4.4.0
     - wget
- 
+
 test:
   commands:
    - add_descriptions.py -h > /dev/null
@@ -46,14 +51,15 @@ test:
    - metagenome_pipeline.py -h > /dev/null
    - picrust2_pipeline.py -h > /dev/null
    - place_seqs.py -h > /dev/null
-   - print_picrust2_config.py > /dev/null
    - pathway_pipeline.py -h > /dev/null
    - shuffle_predictions.py -h > /dev/null
 
 about:
   home: https://github.com/picrust/picrust2
   license: GNU General Public License v3.0
+  license_family: GPL3
   license_file: LICENSE
+  dev_url: https://github.com/picrust/picrust2
   summary: "PICRUSt: Phylogenetic Investigation of Communities by Reconstruction of Unobserved States"
   identifiers:
     - doi:10.1038/s41587-020-0548-6

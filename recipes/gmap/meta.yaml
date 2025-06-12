@@ -1,5 +1,6 @@
 {% set name = "GMAP" %}
-{% set version = "2021.08.25" %}
+{% set version = "2025.04.19" %}
+{% set sha256 = "68dd820ba14c97774e8619f1ccfdd60587de3f85d2e516f214548739800bd5a5" %}
 
 package:
   name: {{ name|lower }}
@@ -7,43 +8,52 @@ package:
 
 source:
   url: http://research-pub.gene.com/gmap/src/gmap-gsnap-{{ version | replace(".", "-") }}.tar.gz
-  sha256: ef58843eb9cfbe174fad8444bf1b52b3f8841731412a3f90544a0e2bb85799b5
+  sha256: {{ sha256 }}
   patches:
     - single_quote_paths.patch
+    - 0002-genome_sites.patch  # [osx]
 
 build:
-  number: 2
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('gmap', max_pin=None) }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - autoconf
+    - automake
+    - libtool
   host:
     - perl
-    # zlib is needed for gunzip
     - zlib
     - bzip2
   run:
     - perl
-    # zlib is needed for gunzip
-    - zlib
-    - bzip2
+    - perl-file-util
 
 test:
   commands:
-    - gmap --help
-    - gsnap --help
-    - ": | fa_coords | grep 'Error: No contigs were read in.'"
+    - "gmap --help"
+    - "gsnap --help"
 
 about:
-  home: http://research-pub.gene.com/gmap/
-  license: Apache-2.0
+  home: "http://research-pub.gene.com/gmap"
+  license: "Apache-2.0"
   license_family: APACHE
   license_file: LICENSE
   summary: "Genomic mapping and alignment program for mRNA and EST sequences."
+  dev_url: "http://research-pub.gene.com/gmap"
+  doc_url: "http://research-pub.gene.com/gmap"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    # bitpack64-access.c:2231:9: error: unrecognized instruction mnemonic, did you mean: abs, asr, b, blr, br, brk, bsl, lsr, msr, sri, str?
+    #- osx-arm64
   identifiers:
     - biotools:gmap
+    - biotools:gsnap
     - doi:10.1093/bioinformatics/bti310
     - doi:10.1093/bioinformatics/btq057

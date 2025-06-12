@@ -1,42 +1,22 @@
-{% set version = "1.56.0" %}
+{% set version = "1.64.0" %}
 {% set name = "qpcrNorm" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: cba6ab7638108ac878a217e8d313c453
+about:
+  description: The package contains functions to perform normalization of high-throughput qPCR data. Basic functions for processing raw Ct data plus functions to generate diagnostic plots are also available.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: Data-driven normalization strategies for high-throughput qPCR data.
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - r-base
-  run:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'LGPL (>= 2)'
-  summary: 'Data-driven normalization strategies for high-throughput qPCR data.'
-  description: 'The package contains functions to perform normalization of high-throughput qPCR data. Basic functions for processing raw Ct data plus functions to generate diagnostic plots are also available.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-qpcrnorm", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:qpcrnorm
@@ -45,4 +25,32 @@ extra:
     name: bioconductor-qpcrnorm
     path: recipes/bioconductor-qpcrnorm
     version: 1.38.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  host:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - r-base
+  run:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - r-base
+
+source:
+  md5: 673a5545cde0b6a35d479b1c41a92cb6
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

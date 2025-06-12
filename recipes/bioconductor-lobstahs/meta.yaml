@@ -1,41 +1,22 @@
-{% set version = "1.24.0" %}
+{% set version = "1.32.0" %}
 {% set name = "LOBSTAHS" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 04fe4db1bafa2094d2365d712327d078
+about:
+  description: LOBSTAHS is a multifunction package for screening, annotation, and putative identification of mass spectral features in large, HPLC-MS lipid datasets. In silico data for a wide range of lipids, oxidized lipids, and oxylipins can be generated from user-supplied structural criteria with a database generation function. LOBSTAHS then applies these databases to assign putative compound identities to features in any high-mass accuracy dataset that has been processed using xcms and CAMERA. Users can then apply a series of orthogonal screening criteria based on adduct ion formation patterns, chromatographic retention time, and other properties, to evaluate and assign confidence scores to this list of preliminary assignments. During the screening routine, LOBSTAHS rejects assignments that do not meet the specified criteria, identifies potential isomers and isobars, and assigns a variety of annotation codes to assist the user in evaluating the accuracy of each assignment.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 3) + file LICENSE
+  license_file: LICENSE
+  summary: Lipid and Oxylipin Biomarker Screening through Adduct Hierarchy Sequences
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: PtH2O2lipids, knitr, rmarkdown
-requirements:
-  host:
-    - 'bioconductor-camera >=1.54.0,<1.55.0'
-    - 'bioconductor-xcms >=3.20.0,<3.21.0'
-    - r-base
-  run:
-    - 'bioconductor-camera >=1.54.0,<1.55.0'
-    - 'bioconductor-xcms >=3.20.0,<3.21.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 3) + file LICENSE'
-  summary: 'Lipid and Oxylipin Biomarker Screening through Adduct Hierarchy Sequences'
-  description: 'LOBSTAHS is a multifunction package for screening, annotation, and putative identification of mass spectral features in large, HPLC-MS lipid datasets. In silico data for a wide range of lipids, oxidized lipids, and oxylipins can be generated from user-supplied structural criteria with a database generation function. LOBSTAHS then applies these databases to assign putative compound identities to features in any high-mass accuracy dataset that has been processed using xcms and CAMERA. Users can then apply a series of orthogonal screening criteria based on adduct ion formation patterns, chromatographic retention time, and other properties, to evaluate and assign confidence scores to this list of preliminary assignments. During the screening routine, LOBSTAHS rejects assignments that do not meet the specified criteria, identifies potential isomers and isobars, and assigns a variety of annotation codes to assist the user in evaluating the accuracy of each assignment.'
-  license_file: LICENSE
+  run_exports: '{{ pin_subpackage("bioconductor-lobstahs", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:lobstahs
@@ -43,4 +24,31 @@ extra:
     name: bioconductor-lobstahs
     path: recipes/bioconductor-lobstahs
     version: 1.8.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: PtH2O2lipids, knitr, rmarkdown
+requirements:
+  host:
+    - bioconductor-camera >=1.62.0,<1.63.0
+    - bioconductor-xcms >=4.4.0,<4.5.0
+    - r-base
+  run:
+    - bioconductor-camera >=1.62.0,<1.63.0
+    - bioconductor-xcms >=4.4.0,<4.5.0
+    - r-base
+
+source:
+  md5: b475990b09baab38979a76a91b25537f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

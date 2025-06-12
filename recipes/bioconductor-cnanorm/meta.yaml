@@ -1,48 +1,58 @@
-{% set version = "1.44.0" %}
+{% set version = "1.52.0" %}
 {% set name = "CNAnorm" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: e8ae90e174c38c974321c3a3b7dd4386
+about:
+  description: Performs ratio, GC content correction and normalization of data obtained using low coverage (one read every 100-10,000 bp) high troughput sequencing. It performs a "discrete" normalization looking for the ploidy of the genome. It will also provide tumour content if at least two ploidy states can be found.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: A normalization method for Copy Number Aberration in cancer samples
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-requirements:
-  host:
-    - 'bioconductor-dnacopy >=1.72.0,<1.73.0'
-    - r-base
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-dnacopy >=1.72.0,<1.73.0'
-    - r-base
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('fortran') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'A normalization method for Copy Number Aberration in cancer samples'
-  description: 'Performs ratio, GC content correction and normalization of data obtained using low coverage (one read every 100-10,000 bp) high troughput sequencing. It performs a "discrete" normalization looking for the ploidy of the genome. It will also provide tumour content if at least two ploidy states can be found.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-cnanorm", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:cnanorm
   parent_recipe:
     name: bioconductor-cnanorm
     path: recipes/bioconductor-cnanorm
     version: 1.26.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('fortran') }}
+    - make
+  host:
+    - bioconductor-dnacopy >=1.80.0,<1.81.0
+    - r-base
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-dnacopy >=1.80.0,<1.81.0
+    - r-base
+
+source:
+  md5: ad9b870a77b07945bcd7c867c08fa04c
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

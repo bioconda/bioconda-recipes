@@ -1,26 +1,29 @@
-{% set version = "1.18.0" %}
+{% set version = "1.26.0" %}
 {% set name = "Sconify" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 19d32efc62e19da1cf84ac13e09601ac
+about:
+  description: This package does k-nearest neighbor based statistics and visualizations with flow and mass cytometery data. This gives tSNE maps"fold change" functionality and provides a data quality metric by assessing manifold overlap between fcs files expected to be the same. Other applications using this package include imputation, marker redundancy, and testing the relative information loss of lower dimension embeddings compared to the original manifold.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: A toolkit for performing KNN-based statistics for flow and mass cytometry data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-sconify", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, testthat
 requirements:
   host:
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
+    - bioconductor-flowcore >=2.18.0,<2.19.0
     - r-base
     - r-dplyr
     - r-fnn
@@ -30,7 +33,7 @@ requirements:
     - r-rtsne
     - r-tibble
   run:
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
+    - bioconductor-flowcore >=2.18.0,<2.19.0
     - r-base
     - r-dplyr
     - r-fnn
@@ -39,12 +42,16 @@ requirements:
     - r-readr
     - r-rtsne
     - r-tibble
+
+source:
+  md5: 8cd64b7a4ca0bcd04fb3aad9a7da3429
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'A toolkit for performing KNN-based statistics for flow and mass cytometry data'
-  description: 'This package does k-nearest neighbor based statistics and visualizations with flow and mass cytometery data. This gives tSNE maps"fold change" functionality and provides a data quality metric by assessing manifold overlap between fcs files expected to be the same. Other applications using this package include imputation, marker redundancy, and testing the relative information loss of lower dimension embeddings compared to the original manifold.'
+    - $R -e "library('{{ name }}')"
 

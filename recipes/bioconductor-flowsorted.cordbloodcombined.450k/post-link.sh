@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "flowsorted.cordbloodcombined.450k-1.14.0"
+installBiocDataPackage.sh "flowsorted.cordbloodcombined.450k-1.22.0"

@@ -1,50 +1,57 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "microbiomeDataSets" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: c8e86f82bc8021289697c4887cabf453
+about:
+  description: microbiomeDataSets is a collection of microbiome datasets loaded from Bioconductor'S ExperimentHub infrastructure. The datasets serve as reference for workflows and vignettes published adjacent to the microbiome analysis tools on Bioconductor. Additional datasets can be added overtime and additions from authors are welcome.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: CC0
+  summary: Experiment Hub based microbiome datasets
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-microbiomedatasets", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, BiocStyle, SingleCellExperiment, testthat
 requirements:
   host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
-    - 'bioconductor-multiassayexperiment >=1.24.0,<1.25.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-treesummarizedexperiment >=2.6.0,<2.7.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-multiassayexperiment >=1.32.0,<1.33.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-treesummarizedexperiment >=2.14.0,<2.15.0
     - r-ape
     - r-base
   run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
-    - 'bioconductor-multiassayexperiment >=1.24.0,<1.25.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-treesummarizedexperiment >=2.6.0,<2.7.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-multiassayexperiment >=1.32.0,<1.33.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-treesummarizedexperiment >=2.14.0,<2.15.0
     - r-ape
     - r-base
     - curl
-    - bioconductor-data-packages>=20221108
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: df3b92fa8bb2edd4cb6b98d4d6215542
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: CC0
-  summary: 'Experiment Hub based microbiome datasets'
-  description: 'microbiomeDataSets is a collection of microbiome datasets loaded from Bioconductor''S ExperimentHub infrastructure. The datasets serve as reference for workflows and vignettes published adjacent to the microbiome analysis tools on Bioconductor. Additional datasets can be added overtime and additions from authors are welcome.'
+    - $R -e "library('{{ name }}')"
 

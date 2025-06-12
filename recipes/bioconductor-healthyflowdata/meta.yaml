@@ -1,37 +1,39 @@
-{% set version = "1.36.0" %}
+{% set version = "1.44.0" %}
 {% set name = "healthyFlowData" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: ec9097c2d66f5350c9a9b1a00c1a43bb
+about:
+  description: A healthy dataset with 20 flow cytometry samples used by the flowMatch package.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Healthy dataset used by the flowMatch package
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-healthyflowdata", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 requirements:
   host:
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
+    - bioconductor-flowcore >=2.18.0,<2.19.0
     - r-base
   run:
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
+    - bioconductor-flowcore >=2.18.0,<2.19.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221104
+    - bioconductor-data-packages >=20241103
+source:
+  md5: a93dbeb707da467b9072d8926d5e79e6
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Healthy dataset used by the flowMatch package'
-  description: 'A healthy dataset with 20 flow cytometry samples used by the flowMatch package.'
+    - $R -e "library('{{ name }}')"
 

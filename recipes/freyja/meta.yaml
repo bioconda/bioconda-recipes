@@ -1,4 +1,4 @@
-{% set version = "1.3.12" %}
+{% set version = "1.5.3" %}
 {% set name = "Freyja" %}
 
 package:
@@ -6,22 +6,25 @@ package:
   version: {{ version }}
 
 build:
-  number: 0
-  script: "python -m pip install . --no-deps"
+  number: 1
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   noarch: python
   entry_points:
     - freyja=freyja._cli:cli
+  run_exports:
+    - {{ pin_subpackage('freyja', max_pin="x") }}
 
 source:
   url:  https://github.com/andersen-lab/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 10e12b1a78aa05a3da4c185b29a98ad97c6e8ca3f85a8ec63ecdd1a4010a888d
+  sha256: 390983ef1d19dd581beb1ae1a6c1f56b9c22202cee4dacb91a0da84465a5ef68
 
 requirements:
   host:
     - python >=3.7
     - pip
+    - setuptools
   run:
-    - python >=3.7
+    - python >=3.8
     - click
     - cvxpy
     - ivar
@@ -36,6 +39,12 @@ requirements:
     - pyyaml
     - requests
     - epiweeks
+    - pysam
+    - biopython
+    - seaborn-base
+    - pyarrow >=10.0.1
+    - sphinx
+    - sphinx_rtd_theme
 
 test:
   commands:
@@ -43,7 +52,8 @@ test:
 
 about:
   home: https://github.com/andersen-lab/Freyja
-  license: BSD
+  license: BSD-2-Clause
+  license_family: BSD
   license_file: LICENSE
   summary: "Freyja recovers relative lineage abundances from mixed SARS-CoV-2 samples and provides functionality to analyze lineage dynamics."
-  
+  dev_url: https://github.com/andersen-lab/Freyja

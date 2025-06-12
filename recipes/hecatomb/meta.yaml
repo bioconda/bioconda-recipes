@@ -1,40 +1,49 @@
 {% set name = "Hecatomb" %}
-{% set version = "1.1.0" %}
+{% set version = "1.3.3" %}
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/shandley/{{ name|lower }}/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: c1b40ca139d954d0d75a0df3ad217aee3ccbade029f8d91afbd2957bccf3ceac
 
 build:
   number: 0
-  noarch: generic
-
-source:
-  url: https://github.com/shandley/{{ name|lower }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: ffc682b3e455a54d9e81c2ae639b326cd41481caac9087da70afaee8dfd34fac
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('hecatomb', max_pin='x.x') }}
+  script: "{{ PYTHON }} -m pip install . -vv "
 
 requirements:
+  host:
+    - python
+    - pip
   run:
-    - python>=3.9
-    - snakemake-minimal>=6.10.0
-    - jinja2>=3.0.2
-    - networkx>=2.6.3
-    - pygraphviz>=1.7
-    - pygments>=2.10.0
-    - mamba>=0.19.0
-    - pyyaml>=5.4.1
-    - click>=8.0.4
+    - python >=3.9,<=3.12
+    - snakemake >=7.14.0,<8
+    - pulp <2.8
+    - pyyaml >=6.0
+    - click >=8.1.3
+    - metasnek >=0.0.7
+    - snaketool-utils >=0.0.4
 
 test:
   commands:
     - hecatomb --help
-    - hecatomb install --threads 1 -n
-    - rm -rf hecatomb.out/ .snakemake/ hecatomb.config.yaml
 
 about:
-  home: https://github.com/shandley/hecatomb
+  home: "https://github.com/shandley/hecatomb"
   license: MIT
-  license_file: hecatomb.LICENSE
-  summary: Accurate classification of viral sequences from metagenome samples
-  dev_url: https://github.com/shandley/hecatomb
-  doc_url: https://hecatomb.readthedocs.io/en/latest/
+  license_file: "hecatomb/hecatomb.LICENSE"
+  summary: "Hecatomb: and end-to-end platform for viral metagenomics"
+  description: |
+    Hecatomb accelerates viral metagenomics research by assembling contigs and accurately identifying viruses from a
+    range of sequencing data types.
+  dev_url: "https://github.com/shandley/hecatomb"
+  doc_url: "https://hecatomb.readthedocs.io/en/latest/"
+
+extra:
+  recipe-maintainers:
+    - beardymcjohnface

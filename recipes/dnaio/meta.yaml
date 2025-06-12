@@ -1,28 +1,30 @@
-{% set version = "0.10.0" %}
+{% set version = "1.2.3" %}
 
 package:
   name: dnaio
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/ed/fc/d46a2dd24b238fbf4592a699b1250399ccb1bb8a516ee9c0fc9f30deae17/dnaio-0.10.0.tar.gz
-  sha256: de51a50948f00b864297d74eddb588fbee5ac229855754e77564d18b24619d18
+  url: https://files.pythonhosted.org/packages/ca/23/1afaeadecfe4712769db4b609ca4aeb4246f6a47a9ab39801cb6a5aa8c2e/dnaio-1.2.3.tar.gz
+  sha256: aad456d9f6272339958b2c5af32fd64d77a50aca12e394e7a143b4129d49b0b9
 
 build:
   number: 0
   script: "{{ PYTHON }} -m pip install . --no-deps -vv"
-  skip: True  # [py27 or py36]
+  run_exports:
+    - {{ pin_subpackage('dnaio', max_pin="x") }}
+
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - pip
-    - python
+    - python >=3.9
     - cython
     - setuptools-scm
   run:
-    - python
+    - python >=3.9
     - xopen >=1.4.0
 
 test:
@@ -35,5 +37,8 @@ about:
   summary: 'Read and write FASTA and FASTQ files efficiently'
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - marcelm

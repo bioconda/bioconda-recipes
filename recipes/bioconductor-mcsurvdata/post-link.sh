@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "mcsurvdata-1.16.0"
+installBiocDataPackage.sh "mcsurvdata-1.24.0"

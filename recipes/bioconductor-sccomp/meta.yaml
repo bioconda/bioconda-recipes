@@ -1,92 +1,93 @@
-{% set version = "1.1.0" %}
+{% set version = "1.10.0" %}
 {% set name = "sccomp" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: e20e4b87200c1098254423cda113634a
+about:
+  description: A robust and outlier-aware method for testing differential tissue composition from single-cell data. This model can infer changes in tissue composition and heterogeneity, and can produce realistic data simulations based on any existing dataset. This model can also transfer knowledge from a large set of integrated datasets to increase accuracy further.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Robust Outlier-aware Estimation of Composition and Heterogeneity for Single-cell Data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: BiocStyle, testthat (>= 3.0.0), markdown, ggplot2, knitr, tidyseurat, tidySingleCellExperiment
-# SystemRequirements: GNU make
+  run_exports: '{{ pin_subpackage("bioconductor-sccomp", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, BiocStyle, testthat (>= 3.0.0), markdown, knitr, loo, prettydoc, tidyseurat, tidySingleCellExperiment, bayesplot, posterior
+# SystemRequirements: CmdStan (https://mc-stan.org/users/interfaces/cmdstan)
 requirements:
+
   host:
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
     - r-base
-    - 'r-bh >=1.66.0'
     - r-boot
+    - r-callr
+    - r-digest
     - r-dplyr
     - r-forcats
+    - r-fs
     - r-ggplot2
     - r-ggrepel
+    - r-glue
+    - r-instantiate >=0.2.3
     - r-lifecycle
     - r-magrittr
     - r-patchwork
     - r-purrr
-    - 'r-rcpp >=0.12.0'
-    - 'r-rcppeigen >=0.3.3.3.0'
-    - 'r-rcppparallel >=5.0.1'
     - r-readr
     - r-rlang
-    - 'r-rstan >=2.18.1'
-    - 'r-rstantools >=2.1.1'
     - r-scales
     - r-seuratobject
-    - 'r-stanheaders >=2.18.0'
     - r-stringr
     - r-tibble
     - r-tidyr
     - r-tidyselect
-    - libblas
-    - liblapack
+    - r-withr
+
   run:
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
     - r-base
-    - 'r-bh >=1.66.0'
     - r-boot
+    - r-callr
+    - r-digest
     - r-dplyr
     - r-forcats
+    - r-fs
     - r-ggplot2
     - r-ggrepel
+    - r-glue
+    - r-instantiate >=0.2.3
     - r-lifecycle
     - r-magrittr
     - r-patchwork
     - r-purrr
-    - 'r-rcpp >=0.12.0'
-    - 'r-rcppeigen >=0.3.3.3.0'
-    - 'r-rcppparallel >=5.0.1'
     - r-readr
     - r-rlang
-    - 'r-rstan >=2.18.1'
-    - 'r-rstantools >=2.1.1'
     - r-scales
     - r-seuratobject
-    - 'r-stanheaders >=2.18.0'
     - r-stringr
     - r-tibble
     - r-tidyr
     - r-tidyselect
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - automake
-    - make
+    - r-withr
+
+source:
+  md5: 763de87d7776c55e2321e17c85f433c7
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Robust Outlier-aware Estimation of Composition and Heterogeneity for Single-cell Data'
-  description: 'A robust and outlier-aware method for testing differential tissue composition from single-cell data. This model can infer changes in tissue composition and heterogeneity, and can produce realistic data simulations based on any existing dataset. This model can also transfer knowledge from a large set of integrated datasets to increase accuracy further.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

@@ -1,66 +1,78 @@
-{% set version = "1.26.0" %}
+{% set version = "1.34.0" %}
 {% set name = "dada2" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: b633d014f891b3c096c594b976bca494
+about:
+  description: The dada2 package infers exact amplicon sequence variants (ASVs) from high-throughput amplicon sequencing data, replacing the coarser and less accurate OTU clustering approach. The dada2 pipeline takes as input demultiplexed fastq files, and outputs the sequence variants and their sample-wise abundances after removing substitution and chimera errors. Taxonomic classification is available via a native implementation of the RDP naive Bayesian classifier, and species-level assignment to 16S rRNA gene fragments by exact matching.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-2'
+  summary: Accurate, high-resolution sample inference from amplicon sequencing data
+
 build:
-  number: 0
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: BiocStyle, knitr, rmarkdown
-# SystemRequirements: GNU make
-requirements:
-  host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-shortread >=1.56.0,<1.57.0'
-    - 'bioconductor-xvector >=0.38.0,<0.39.0'
-    - r-base
-    - 'r-ggplot2 >=2.1.0'
-    - 'r-rcpp >=0.12.0'
-    - 'r-rcppparallel >=4.3.0'
-    - 'r-reshape2 >=1.4.1'
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-shortread >=1.56.0,<1.57.0'
-    - 'bioconductor-xvector >=0.38.0,<0.39.0'
-    - r-base
-    - 'r-ggplot2 >=2.1.0'
-    - 'r-rcpp >=0.12.0'
-    - 'r-rcppparallel >=4.3.0'
-    - 'r-reshape2 >=1.4.1'
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: LGPL-2
-  summary: 'Accurate, high-resolution sample inference from amplicon sequencing data'
-  description: 'The dada2 package infers exact amplicon sequence variants (ASVs) from high-throughput amplicon sequencing data, replacing the coarser and less accurate OTU clustering approach. The dada2 pipeline takes as input demultiplexed fastq files, and outputs the sequence variants and their sample-wise abundances after removing substitution and chimera errors. Taxonomic classification is available via a native implementation of the RDP naive Bayesian classifier, and species-level assignment to 16S rRNA gene fragments by exact matching.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-dada2", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+
   identifiers:
     - biotools:dada2
   parent_recipe:
     name: bioconductor-dada2
     path: recipes/bioconductor-dada2
     version: 1.8.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, rmarkdown
+# SystemRequirements: GNU make
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-shortread >=1.64.0,<1.65.0
+    - bioconductor-xvector >=0.46.0,<0.47.0
+    - r-base
+    - r-ggplot2 >=2.1.0
+    - r-rcpp >=0.12.0
+    - r-rcppparallel >=4.3.0
+    - r-reshape2 >=1.4.1
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-shortread >=1.64.0,<1.65.0
+    - bioconductor-xvector >=0.46.0,<0.47.0
+    - r-base
+    - r-ggplot2 >=2.1.0
+    - r-rcpp >=0.12.0
+    - r-rcppparallel >=4.3.0
+    - r-reshape2 >=1.4.1
+
+source:
+  md5: 5dff89c66a530ab9a0a52554943e8419
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

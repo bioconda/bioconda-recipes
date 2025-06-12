@@ -1,28 +1,36 @@
-{% set version = "0.14.1" %}
+{% set version = "0.20.0" %}
 
 package:
   name: taxonkit
   version: {{ version }}
 
+source:
+  url: https://github.com/shenwei356/taxonkit/archive/v{{ version }}.tar.gz
+  sha256: eb5a6641264f84997eaa22df7c9cad735c100b434dfd62c2560aba78164f34f6
+
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage('taxonkit', max_pin='x.x') }}
 
-source:
-  - url: https://github.com/shenwei356/taxonkit/releases/download/v{{ version }}/taxonkit_darwin_amd64.tar.gz # [osx]
-    md5: 5d5d939cd99140b5f9d41e07e944fcd0 # [osx]
-  - url: https://github.com/shenwei356/taxonkit/releases/download/v{{ version }}/taxonkit_linux_amd64.tar.gz # [linux]
-    md5: ae098b1b977f20668cc265783435eec1 # [linux]
+requirements:
+  build:
+    - {{ compiler('go-nocgo') }}
 
 test:
   commands:
-    - taxonkit version --help
+    - taxonkit version
 
 about:
   home: https://github.com/shenwei356/taxonkit
   summary: A Cross-platform and Efficient NCBI Taxonomy Toolkit
   license: MIT
+  license_family: MIT
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   skip-lints:
     - should_be_noarch_generic
     - should_not_be_noarch_source

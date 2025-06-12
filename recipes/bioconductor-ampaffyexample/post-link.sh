@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "ampaffyexample-1.38.0"
+installBiocDataPackage.sh "ampaffyexample-1.46.0"

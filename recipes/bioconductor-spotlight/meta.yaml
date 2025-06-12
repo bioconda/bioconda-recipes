@@ -1,26 +1,31 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "SPOTlight" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 558ff8d0c3f5413b6d1ec38e556de0d1
+about:
+  description: '`SPOTlight`provides a method to deconvolute spatial transcriptomics spots using a seeded NMF approach along with visualization tools to assess the results. Spatially resolved gene expression profiles are key to understand tissue organization and function. However, novel spatial transcriptomics (ST) profiling techniques lack single-cell resolution and require a combination with single-cell RNA sequencing (scRNA-seq) information to deconvolute the spatially indexed datasets. Leveraging the strengths of both data types, we developed SPOTlight, a computational tool that enables the integration of ST with scRNA-seq data to infer the location of cell types and states within a complex tissue. SPOTlight is centered around a seeded non-negative matrix factorization (NMF) regression, initialized using cell-type marker genes and non-negative least squares (NNLS) to subsequently deconvolute ST capture locations (spots).'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: '`SPOTlight`: Spatial Transcriptomics Deconvolution'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, colorBlindness, ExperimentHub, DelayedArray, ggcorrplot, grid, igraph, jpeg, knitr, methods, png, rmarkdown, scater, scatterpie, scran, Seurat, SeuratObject, SpatialExperiment, SummarizedExperiment, S4Vectors, TabulaMurisSenisData, TENxVisiumData, testthat
+  run_exports: '{{ pin_subpackage("bioconductor-spotlight", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, colorBlindness, DelayedArray, DropletUtils, ExperimentHub, ggcorrplot, grDevices, grid, igraph, jpeg, knitr, methods, png, rmarkdown, scater, scatterpie, scran, SpatialExperiment, SummarizedExperiment, S4Vectors, TabulaMurisSenisData, TENxVisiumData, testthat
 requirements:
   host:
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-sparsematrixstats >=1.18.0,<1.19.0
     - r-base
     - r-ggplot2
     - r-matrix
@@ -28,20 +33,24 @@ requirements:
     - r-nmf
     - r-nnls
   run:
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-sparsematrixstats >=1.18.0,<1.19.0
     - r-base
     - r-ggplot2
     - r-matrix
     - r-matrixstats
     - r-nmf
     - r-nnls
+
+source:
+  md5: 638290a97f214a906f347c6bb5a8c5dd
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: '`SPOTlight`: Spatial Transcriptomics Deconvolution'
-  description: '`SPOTlight`provides a method to deconvolute spatial transcriptomics spots using a seeded NMF approach along with visualization tools to assess the results. Spatially resolved gene expression profiles are key to understand tissue organization and function. However, novel spatial transcriptomics (ST) profiling techniques lack single-cell resolution and require a combination with single-cell RNA sequencing (scRNA-seq) information to deconvolute the spatially indexed datasets. Leveraging the strengths of both data types, we developed SPOTlight, a computational tool that enables the integration of ST with scRNA-seq data to infer the location of cell types and states within a complex tissue. SPOTlight is centered around a seeded non-negative matrix factorization (NMF) regression, initialized using cell-type marker genes and non-negative least squares (NNLS) to subsequently deconvolute ST capture locations (spots).'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

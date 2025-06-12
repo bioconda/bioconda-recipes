@@ -1,41 +1,43 @@
-{% set version = "1.33.0" %}
+{% set version = "1.42.0" %}
 {% set name = "simpIntLists" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 5a75c92aee4a1cbc367ec5a3477cfdd7
+about:
+  description: The package contains BioGRID interactions for arabidopsis(thale cress), c.elegans, fruit fly, human, mouse, yeast( budding yeast ) and S.pombe (fission yeast) . Entrez ids, official names and unique ids can be used to find proteins. The format of interactions are lists. For each gene/protein, there is an entry in the list with "name" containing name of the gene/protein and "interactors" containing the list of genes/proteins interacting with it.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: The package contains BioGRID interactions for various organisms in a simple format
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-simpintlists", max_pin="x.x") }}'
+extra:
+  parent_recipe:
+    name: bioconductor-simpintlists
+    path: recipes/bioconductor-simpintlists
+    version: 1.16.0
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 requirements:
   host:
     - r-base
   run:
     - r-base
     - curl
-    - bioconductor-data-packages>=20221103
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 22e154a884965c1309c378abc80c602a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'The package contains BioGRID interactions for various organisms in a simple format'
-  description: 'The package contains BioGRID interactions for arabidopsis(thale cress), c.elegans, fruit fly, human, mouse, yeast( budding yeast ) and S.pombe (fission yeast) . Entrez ids, official names and unique ids can be used to find proteins. The format of interactions are lists. For each gene/protein, there is an entry in the list with "name" containing name of the gene/protein and "interactors" containing the list of genes/proteins interacting with it.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-extra:
-  parent_recipe:
-    name: bioconductor-simpintlists
-    path: recipes/bioconductor-simpintlists
-    version: 1.16.0
+    - $R -e "library('{{ name }}')"
 

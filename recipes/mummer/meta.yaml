@@ -11,10 +11,16 @@ source:
   sha256: {{ sha256 }}
   patches:
     - patches/gnuplot_mouse_clipboardformat.patch
+    - patches/linkloc_explicit.patch
+    - patches/addleafcount_explicit.patch
+    - patches/findmumcand_explicit.patch
+    - patches/findmaxmat_explicit.patch
+    - patches/procmaxmat_explicit.patch
 
 build:
-  number: 14
-  skip: True  # [osx]
+  number: 21
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
 
 requirements:
   build:
@@ -22,24 +28,24 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - perl # [not osx]
+    - perl
   run:
-    - perl # [not osx]
+    - perl
 
 test:
   commands:
     - "mummer -h &> /dev/null"
-    #- "delta-filter -h &> /dev/null"
-    #- "dnadiff -h &> /dev/null"
-    #- "mapview -h &> /dev/null"
+    - "delta-filter -h &> /dev/null"
+    - "dnadiff -h &> /dev/null"
+    - "mapview -h &> /dev/null"
     - "mummerplot -h &> /dev/null"
     - "nucmer -h &> /dev/null"
     - "promer -h &> /dev/null"
     - "show-aligns -h &> /dev/null"
-    #- "show-coords -h &> /dev/null"
-    #- "show-diff -h &> /dev/null"
-    #- "show-snps -h &> /dev/null"
-    #- "show-tiling -h &> /dev/null"
+    - "show-coords -h &> /dev/null"
+    - "show-diff -h &> /dev/null"
+    - "show-snps -h &> /dev/null"
+    - "show-tiling -h &> /dev/null"
 
 about:
   home: 'http://mummer.sourceforge.net/'
@@ -48,5 +54,9 @@ about:
   summary: "MUMmer is a system for rapidly aligning entire genomes"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:mummer
+

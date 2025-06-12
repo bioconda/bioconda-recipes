@@ -1,31 +1,44 @@
-{% set version = "2.16.0" %}
+{% set version = "2.24.0" %}
 {% set name = "MLSeq" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 8ebfbcfbb6fa1c9a7e853b284b106af6
+about:
+  description: This package applies several machine learning methods, including SVM, bagSVM, Random Forest and CART to RNA-Seq data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL(>=2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Machine Learning Interface for RNA-Seq Data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-mlseq", max_pin="x.x") }}'
+
+extra:
+  identifiers:
+    - biotools:mlseq
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-mlseq
+    path: recipes/bioconductor-mlseq
+    version: 1.20.3
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, e1071, kernlab
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-sseq >=1.36.0,<1.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-sseq >=1.44.0,<1.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-caret
     - r-foreach
@@ -36,12 +49,12 @@ requirements:
     - r-venndiagram
     - r-xtable
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-sseq >=1.36.0,<1.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-sseq >=1.44.0,<1.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-caret
     - r-foreach
@@ -51,21 +64,16 @@ requirements:
     - r-testthat
     - r-venndiagram
     - r-xtable
+
+source:
+  md5: 402677688472631e3a8e9d4c70b98154
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL(>=2)
-  summary: 'Machine Learning Interface for RNA-Seq Data'
-  description: 'This package applies several machine learning methods, including SVM, bagSVM, Random Forest and CART to RNA-Seq data.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-extra:
-  identifiers:
-    - biotools:mlseq
-    - doi:10.1038/nmeth.3252
-  parent_recipe:
-    name: bioconductor-mlseq
-    path: recipes/bioconductor-mlseq
-    version: 1.20.3
+    - $R -e "library('{{ name }}')"
 

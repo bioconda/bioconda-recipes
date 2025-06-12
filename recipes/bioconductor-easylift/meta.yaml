@@ -1,0 +1,52 @@
+{% set version = "1.4.0" %}
+{% set name = "easylift" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: The easylift package provides a convenient tool for genomic liftover operations between different genome assemblies. It seamlessly works with Bioconductor's GRanges objects and chain files from the UCSC Genome Browser, allowing for straightforward handling of genomic ranges across various genome versions. One noteworthy feature of easylift is its integration with the BiocFileCache package. This integration automates the management and caching of chain files necessary for liftover operations. Users no longer need to manually specify chain file paths in their function calls, reducing the complexity of the liftover process.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: An R package to perform genomic liftover
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-easylift", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat (>= 3.0.0), IRanges, knitr, BiocStyle, rmarkdown
+requirements:
+  host:
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - r-base
+    - r-r.utils
+  run:
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - r-base
+    - r-r.utils
+
+source:
+  md5: ffc5f970619f6de99418696f4534c2c6
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

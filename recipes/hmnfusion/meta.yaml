@@ -1,5 +1,5 @@
 {% set name = "hmnfusion" %}
-{% set version = "1.2.6" %}
+{% set version = "1.3.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,17 +7,19 @@ package:
 
 source:
   url: https://github.com/guillaume-gricourt/HmnFusion/archive/{{ version }}.tar.gz
-  sha256: 474e7c094a829f496986a23ce8726d75f62eb3f2f283c40a1c6547e9ebfa795e
+  sha256: 86514b52d1a9c2cc5c1e469419f214ff079472f52033eeb2808e07b8121236fe
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install -vv .
+  script: {{ PYTHON }} -m pip install -vvv . --no-deps --no-build-isolation --no-cache-dir
   entry_points:
     - {{ name }}=hmnfusion.__main__:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
-  build:
+  host:
     - pip
     - pytest
     - python
@@ -48,8 +50,9 @@ test:
 
 about:
   home: https://github.com/guillaume-gricourt/HmnFusion
-  summary: Analysis fusion from DNA genomics
+  summary: "Fusion analysis from DNA genomics."
   license: MIT
+  license_family: MIT
   license_file: LICENSE
 
 extra:

@@ -1,40 +1,22 @@
-{% set version = "1.70.0" %}
+{% set version = "1.78.0" %}
 {% set name = "GraphAT" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 67134f039471963a570c196759c77685
+about:
+  description: Functions and data used in Balasubramanian, et al. (2004)
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: Graph Theoretic Association Tests
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - r-base
-    - r-mcmcpack
-  run:
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - r-base
-    - r-mcmcpack
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: LGPL
-  summary: 'Graph Theoretic Association Tests'
-  description: 'Functions and data used in Balasubramanian, et al. (2004)'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-graphat", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:graphat
@@ -43,4 +25,30 @@ extra:
     name: bioconductor-graphat
     path: recipes/bioconductor-graphat
     version: 1.52.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  host:
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - r-base
+    - r-mcmcpack
+  run:
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - r-base
+    - r-mcmcpack
+
+source:
+  md5: 5509da5e60b7666f716c5363318e670a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

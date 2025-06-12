@@ -1,31 +1,35 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "cardelino" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 525534b70799dee1c832844736da4e2b
+about:
+  description: Methods to infer clonal tree configuration for a population of cells using single-cell RNA-seq data (scRNA-seq), and possibly other data modalities. Methods are also provided to assign cells to inferred clones and explore differences in gene expression between clones. These methods can flexibly integrate information from imperfect clonal trees inferred based on bulk exome-seq data, and sparse variant alleles expressed in scRNA-seq data. A flexible beta-binomial error model that accounts for stochastic dropout events as well as systematic allelic imbalance is used.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Clone Identification from Single Cell Data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-cardelino", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, foreach, knitr, pcaMethods, rmarkdown, testthat, VGAM
 requirements:
   host:
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-ggtree >=3.6.0,<3.7.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-snpstats >=1.48.0,<1.49.0'
-    - 'bioconductor-variantannotation >=1.44.0,<1.45.0'
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-ggtree >=3.14.0,<3.15.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-snpstats >=1.56.0,<1.57.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
     - r-base
     - r-combinat
     - r-ggplot2
@@ -34,12 +38,12 @@ requirements:
     - r-pheatmap
     - r-vcfr
   run:
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-ggtree >=3.6.0,<3.7.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-snpstats >=1.48.0,<1.49.0'
-    - 'bioconductor-variantannotation >=1.44.0,<1.45.0'
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-ggtree >=3.14.0,<3.15.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-snpstats >=1.56.0,<1.57.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
     - r-base
     - r-combinat
     - r-ggplot2
@@ -47,13 +51,16 @@ requirements:
     - r-matrixstats
     - r-pheatmap
     - r-vcfr
+
+source:
+  md5: cd0a4c4ec8ded3c833d1e32aeb2af021
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Clone Identification from Single Cell Data'
-  description: 'Methods to infer clonal tree configuration for a population of cells using single-cell RNA-seq data (scRNA-seq), and possibly other data modalities. Methods are also provided to assign cells to inferred clones and explore differences in gene expression between clones. These methods can flexibly integrate information from imperfect clonal trees inferred based on bulk exome-seq data, and sparse variant alleles expressed in scRNA-seq data. A flexible beta-binomial error model that accounts for stochastic dropout events as well as systematic allelic imbalance is used.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

@@ -1,0 +1,65 @@
+{% set name = "stripepy-hic" %}
+{% set version = "1.1.0" %}
+{% set sha256 = "1ffeb6bb975d812541e43c33ecf7fd1d1649bf9e908af4a2345b41bcab90190c" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name|replace("-", "_") }}/{{ name|replace("-", "_") }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - stripepy = stripepy.main:main
+  script: "{{ PYTHON }} -m pip install '.[all]' --no-deps --no-build-isolation --no-cache-dir -v"
+  run_exports:
+    - {{ pin_subpackage('stripepy-hic', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - hatchling
+    - hatch-vcs
+  run:
+    - h5py >=3
+    - hictkpy >=1.2
+    - matplotlib-base >=3.8
+    - numpy >=2  # This is required to use np.argsort(..., stable=True)
+    - pandas >=2
+    - scipy
+    - structlog >=24
+    - colorama
+    - rich >=13.9
+
+about:
+  home: https://github.com/paulsengroup/StripePy
+  license: MIT
+  license_file: LICENCE
+  summary: "StripePy recognizes architectural stripes in 3C and Hi-C contact maps using geometric reasoning"
+  dev_url: https://github.com/paulsengroup/StripePy
+  doc_url: https://github.com/paulsengroup/StripePy/blob/main/README.md
+
+test:
+  requires:
+    - curl
+    - perl-digest-md5
+    - pyarrow
+    - pytest>=8
+  source_files:
+    - test/*
+  imports:
+    - stripepy
+
+extra:
+  recipe-maintainers:
+    - robomics
+    - rea1991
+    - jonnings
+  identifiers:
+    - biotools:stripepy-hic
+    - doi:10.5281/zenodo.14394041

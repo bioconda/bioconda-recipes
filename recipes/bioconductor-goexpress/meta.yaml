@@ -1,51 +1,58 @@
-{% set version = "1.32.0" %}
+{% set version = "1.40.0" %}
 {% set name = "GOexpress" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: cfb6ee0bc0be19c2b1c6a7e51a735cd8
+about:
+  description: The package contains methods to visualise the expression profile of genes from a microarray or RNA-seq experiment, and offers a supervised clustering approach to identify GO terms containing genes with expression levels that best classify two or more predefined groups of samples. Annotations for the genes present in the expression dataset may be obtained from Ensembl through the biomaRt package, if not provided by the user. The default random forest framework is used to evaluate the capacity of each gene to cluster samples according to the factor of interest. Finally, GO terms are scored by averaging the rank (alternatively, score) of their respective gene sets to cluster the samples. P-values may be computed to assess the significance of GO term ranking. Visualisation function include gene expression profile, gene ontology-based heatmaps, and hierarchical clustering of experimental samples using gene expression data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 3)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Visualise microarray and RNAseq data using gene ontology annotations
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-goexpress", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biomart >=2.62.0,<2.63.0
     - r-base
-    - 'r-ggplot2 >=0.9.0'
-    - 'r-gplots >=2.13.0'
-    - 'r-randomforest >=4.6'
-    - 'r-rcolorbrewer >=1.0'
-    - 'r-rcurl >=1.95'
-    - 'r-stringr >=0.6.2'
+    - r-ggplot2 >=0.9.0
+    - r-gplots >=2.13.0
+    - r-randomforest >=4.6
+    - r-rcolorbrewer >=1.0
+    - r-rcurl >=1.95
+    - r-stringr >=0.6.2
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biomart >=2.62.0,<2.63.0
     - r-base
-    - 'r-ggplot2 >=0.9.0'
-    - 'r-gplots >=2.13.0'
-    - 'r-randomforest >=4.6'
-    - 'r-rcolorbrewer >=1.0'
-    - 'r-rcurl >=1.95'
-    - 'r-stringr >=0.6.2'
+    - r-ggplot2 >=0.9.0
+    - r-gplots >=2.13.0
+    - r-randomforest >=4.6
+    - r-rcolorbrewer >=1.0
+    - r-rcurl >=1.95
+    - r-stringr >=0.6.2
+
+source:
+  md5: 20975c857147c270e93591d4b3b0fe4c
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 3)'
-  summary: 'Visualise microarray and RNAseq data using gene ontology annotations'
-  description: 'The package contains methods to visualise the expression profile of genes from a microarray or RNA-seq experiment, and offers a supervised clustering approach to identify GO terms containing genes with expression levels that best classify two or more predefined groups of samples. Annotations for the genes present in the expression dataset may be obtained from Ensembl through the biomaRt package, if not provided by the user. The default random forest framework is used to evaluate the capacity of each gene to cluster samples according to the factor of interest. Finally, GO terms are scored by averaging the rank (alternatively, score) of their respective gene sets to cluster the samples. P-values may be computed to assess the significance of GO term ranking. Visualisation function include gene expression profile, gene ontology-based heatmaps, and hierarchical clustering of experimental samples using gene expression data.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

@@ -1,4 +1,4 @@
-{% set version = "0.20.0" %}
+{% set version = "0.23.3" %}
 
 package:
   name: pysam
@@ -6,11 +6,16 @@ package:
 
 source:
   url: https://github.com/pysam-developers/pysam/archive/v{{ version }}.tar.gz
-  sha256: 5a25d95b986c2cb9f5040b9df4e1d93ce9a8bc3af5a956b1317416ed05269f60
+  sha256: 7442379f7ddaa2428c14a84be1cde93c15df554d0f0de36d8c85f9662c35d738
+  patches:
+    - arm_hwcap.patch
 
 build:
   number: 0
+  skip: True # [py2k]
   binary_relocation: False # [linux]
+  run_exports:
+    - {{ pin_subpackage('pysam', max_pin="x.x") }}
 
 requirements:
   build:
@@ -28,12 +33,6 @@ requirements:
     - openssl  # [not osx]
   run:
     - python
-    - zlib
-    - xz
-    - bzip2
-    - libdeflate
-    - libcurl
-    - openssl  # [not osx]
 
 about:
   home: https://github.com/pysam-developers/pysam
@@ -41,6 +40,9 @@ about:
   summary: "Pysam is a Python module for reading and manipulating SAM/BAM/VCF/BCF files. It's a lightweight wrapper of the htslib C-API, the same one that powers samtools, bcftools, and tabix."
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:pysam
     - doi:10.1093/bioinformatics/btp352

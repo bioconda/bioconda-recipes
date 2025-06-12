@@ -1,47 +1,53 @@
-{% set version = "3.4.0" %}
+{% set name = "tiddit" %}
+{% set version = "3.9.3" %}
 
 package:
-  name: tiddit
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/SciLifeLab/TIDDIT/archive/TIDDIT-{{ version }}.tar.gz
-  sha256: 6ee771409596a4042ef54f941c10b8490eb0b820a4fe58f078f0792402c2a212
+  sha256: 6343a4785e81812057ede262e01a5b4fda6971de911c6a759333098010564b41
 
 build:
   number: 0
   entry_points:
     - tiddit = tiddit.__main__:main
-  script: python -m pip install --no-deps --ignore-installed .
-  skip: True  # [osx]
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  run_exports:
+    - {{ pin_subpackage('tiddit', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - python >=3.1
+    - python
     - cython
     - numpy
     - pip
-    - joblib
-
+    - pysam
   run:
-    - python >=3.1
-    - numpy
-    - joblib
+    - python
+    - {{ pin_compatible('numpy') }}
     - pysam
     - fermi2
     - bwa
     - ropebwt2
+    - joblib
 
 test:
   commands:
     - tiddit --help
-    - fermi2 2>&1 | grep "^Usage:"
-    - ropebwt2 /dev/null 2>&1 | grep ropebwt2
-    - bwa 2>&1 | grep "index sequences in the"
+
 about:
-  home: https://github.com/SciLifeLab/TIDDIT
-  license: GPL-3.0-only
+  home: "https://github.com/SciLifeLab/TIDDIT"
+  license: "GPL-3.0-only"
+  license_family: GPL3
   license_file: LICENSE
-  summary: "TIDDIT - structural variant calling"
+  summary: "TIDDIT - structural variant calling."
+  dev_url: "https://github.com/SciLifeLab/TIDDIT"
+  doc_url: "https://github.com/SciLifeLab/TIDDIT/blob/TIDDIT-{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64

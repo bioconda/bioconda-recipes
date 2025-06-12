@@ -1,48 +1,76 @@
-{% set name = "iqtree" %}
-{% set version = "2.2.0.3" %}
+{% set name = "IQTREE" %}
+{% set version = "2.4.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version | replace("-", "_") }}
 
 build:
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('iqtree', max_pin="x") }}
 
 source:
-  - url: https://github.com/iqtree/iqtree2/archive/v{{ version }}.tar.gz
-    sha256: c78f9425ffcdd055dfd44842dcf1ce4bf1b6c91da7fbd24a59fc8d631ae93db6
-    #patches:
-    #  - 0001-PATCH-macos-10.9.patch
-  - url: https://github.com/tothuhien/lsd2/archive/v1.9.9.tar.gz
-    sha256: decda612ad7f26c67d50f3dc46fb14bfc2ac90776e460b14c548fd6f9d281454
-    folder: lsd2
+  # using git_url rather than tarball due to use of 2 submodules by iqtree (lsd2, cmaple)
+  # Previously, the submodules were specified as source tarballs themselves
+  # But the submodules weren't updated when iqtree was, hence switch to git_url
+  # see discussion https://github.com/bioconda/bioconda-recipes/pull/49360/files#r1686415630
+  git_url: https://github.com/iqtree/iqtree2.git
+  git_rev: v{{ version }}
+  sha256: unused
+  patches:
+    - patch
 
 requirements:
   build:
-    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
-    - llvm-openmp  # [osx]
-    - ld64 # [osx]
+    - ninja
   host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - boost-cpp
     - eigen
-    - zlib
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
 
 test:
+  source_files:
+    - cmaple/example/input.fa
   commands:
     - iqtree
     - iqtree2
+    # Mulled builds don't work with source_files
+    - iqtree --pathogen-force -s cmaple/example/input.fa  # [osx]
+    # Test that the CMAPLE submodule is working
+    - grep -v "not compiled with CMAPLE integrated" cmaple/example/input.fa.log  # [osx]
 
 about:
-  home: "http://www.iqtree.org/"
-  dev_url: https://github.com/iqtree/iqtree2
-  license: GPL-2.0-or-later
+  home: "http://www.iqtree.org"
+  dev_url: "https://github.com/iqtree/iqtree2"
+  license: "GPL-2.0-or-later"
+  license_family: GPL2
+  license_file: LICENSE
   summary: "Efficient phylogenomic software by maximum likelihood."
+  doc_url: "http://www.iqtree.org/doc"
 
 extra:
+  skip-lints:
+    # uses submodules
+    - uses_vcs_url
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
-    - biotools:iq-tree
+    - biotools:iqtree
     - doi:10.1093/molbev/msu300
+    - doi:10.1038/nmeth.4285
+    - doi:10.1093/molbev/msx281
+    - doi:10.1093/sysbio/syae008
+    # cmaple
+    - doi:10.1093/molbev/msae134
     - usegalaxy-eu:{{ name|lower }}
+  recipe-maintainers:
+    - corneliusroemer

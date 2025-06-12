@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "obmiti-1.6.0"
+installBiocDataPackage.sh "obmiti-1.14.0"

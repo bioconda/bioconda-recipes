@@ -1,27 +1,34 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "gpuMagic" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 40a24b110193b39396861d94f94b5d21
+about:
+  description: The package aims to help users write openCL code with little or no effort. It is able to compile an user-defined R function and run it on a device such as a CPU or a GPU. The user can also write and run their openCL code directly by calling .kernel function.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: An openCL compiler with the capacity to compile R functions and run the code on GPU
+
 build:
-  skip: True  # [osx]
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-gpumagic", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: testthat, knitr, rmarkdown, BiocStyle
 # SystemRequirements: 1. C++11, 2. a graphic driver or a CPU SDK. 3. ICD loader For Windows user, an ICD loader is required at C:/windows/system32/OpenCL.dll (Usually it is installed by the graphic driver). For Linux user (Except mac): ocl-icd-opencl-dev package is required. For Mac user, no action is needed for the system has installed the dependency. 4. GNU make
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
     - r-base
     - r-deriv
     - r-desctools
@@ -31,9 +38,8 @@ requirements:
     - r-stringr
     - libblas
     - liblapack
-    - ocl-icd
   run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
     - r-base
     - r-deriv
     - r-desctools
@@ -41,18 +47,16 @@ requirements:
     - r-pryr
     - r-rcpp
     - r-stringr
-    - ocl-icd
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: cc537f655d58c0a240bb6905612a2ac3
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'An openCL compiler with the capacity to compile R functions and run the code on GPU'
-  description: 'The package aims to help users write openCL code with little or no effort. It is able to compile an user-defined R function and run it on a device such as a CPU or a GPU. The user can also write and run their openCL code directly by calling .kernel function.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

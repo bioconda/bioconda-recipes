@@ -1,5 +1,5 @@
-{% set version = "2.0.7" %}
-{% set sha256 = "bf532eb0b3aaeaee840100a3bb3339f1d5175ba98adfe3cf19685b0abb0885a1" %}
+{% set version = "2.6.2" %}
+{% set sha256 = "5c1a1c80980be4600e76fd5a1f547cd252b61f76469f1a02a1a136f3e23ce045" %}
 
 package:
   name: sniffles
@@ -12,24 +12,39 @@ source:
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('sniffles', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.7
+    - python >=3.10
+    - pip
     - setuptools
   run:
-    - python >=3.7
-    - pysam
+    - python >=3.10
+    - pysam >=0.21.0
+    - python-edlib >=1.3.9
+    - psutil >=5.9.4
+    - numpy
 
 test:
   commands:
     - sniffles --help
 
 about:
-  home: https://github.com/fritzsedlazeck/Sniffles
+  home: "https://github.com/fritzsedlazeck/Sniffles"
   license: MIT
   license_file: LICENSE
   license_family: MIT
-  summary: Sniffles is a structural variation caller using third generation sequencing
-    (PacBio or Oxford Nanopore)
+  summary: "Sniffles is a structural variation caller using third generation sequencing
+    (PacBio or Oxford Nanopore)."
+  doc_url: "https://github.com/fritzsedlazeck/Sniffles/wiki"
+  dev_url: "https://github.com/fritzsedlazeck/Sniffles"
+
+extra:
+  identifiers:
+    - doi:10.1038/s41587-023-02024-y
+    - doi:10.1038/s41592-018-0001-7
+    - biotools:sniffles
+    - usegalaxy-eu:sniffles

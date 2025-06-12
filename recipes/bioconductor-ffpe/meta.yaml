@@ -1,51 +1,22 @@
-{% set version = "1.42.0" %}
+{% set version = "1.50.0" %}
 {% set name = "ffpe" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 3c382d38f15d52056b1a187351c92425
+about:
+  description: Identify low-quality data using metrics developed for expression data derived from Formalin-Fixed, Paraffin-Embedded (FFPE) data.  Also a function for making Concordance at the Top plots (CAT-plots).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Quality assessment and control for FFPE microarray expression data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: genefilter, ffpeExampleData
-requirements:
-  host:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-lumi >=2.50.0,<2.51.0'
-    - 'bioconductor-methylumi >=2.44.0,<2.45.0'
-    - r-base
-    - r-sfsmisc
-    - r-ttr
-  run:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-lumi >=2.50.0,<2.51.0'
-    - 'bioconductor-methylumi >=2.44.0,<2.45.0'
-    - r-base
-    - r-sfsmisc
-    - r-ttr
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>2)'
-  summary: 'Quality assessment and control for FFPE microarray expression data'
-  description: 'Identify low-quality data using metrics developed for expression data derived from Formalin-Fixed, Paraffin-Embedded (FFPE) data.  Also a function for making Concordance at the Top plots (CAT-plots).'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-ffpe", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:ffpe
@@ -53,4 +24,41 @@ extra:
     name: bioconductor-ffpe
     path: recipes/bioconductor-ffpe
     version: 1.24.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: genefilter, ffpeExampleData
+requirements:
+  host:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-lumi >=2.58.0,<2.59.0
+    - bioconductor-methylumi >=2.52.0,<2.53.0
+    - r-base
+    - r-sfsmisc
+    - r-ttr
+  run:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-lumi >=2.58.0,<2.59.0
+    - bioconductor-methylumi >=2.52.0,<2.53.0
+    - r-base
+    - r-sfsmisc
+    - r-ttr
+
+source:
+  md5: 03c8fd5b65c89bd2ea1cbe61e45fda1f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

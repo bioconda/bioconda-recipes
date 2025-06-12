@@ -1,5 +1,5 @@
-{% set version = "0.1.0" %}
-{% set sha256 = "458424c1e6c8ff5d4a7db7df1b7c1f76ab7926331f2a879d11c7fac2c7517b16" %}
+{% set version = "0.18.5" %}
+{% set sha256 = "8ed7241201c2506d0c3cefa95fef52b5fe0c442cb96f87fd529614ba93e3fad7" %}
 
 package:
   name: clinvar-this
@@ -10,34 +10,46 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
   noarch: python
+  run_exports:
+    - {{ pin_subpackage("clinvar-this", max_pin="x.x") }}
   number: 0
+  entry_points:
+    - clinvar-this=clinvar_this.cli:cli
 
 requirements:
   host:
-    - python >=3.8
+    - python >=3.6
     - pip
+    - setuptools
   run:
-    - python >=3.8
+    - python >=3.6
     - pysam >=0.10.0
     - logzero
-    - requests
-    - attrs
-    - cattrs
+    - httpx >=0.24
+    - pydantic >=2.5
     - python-dateutil
     - click
     - toml
     - tabulate
     - jsonschema
+    - xmltodict >=0.13.0,<0.15
+    - tqdm >=4.0
+    - protobuf >=3.20.2,<6.0
 
 test:
   imports:
     - clinvar_this
     - clinvar_api
+    - clinvar_data
+  commands:
+    - clinvar-this --help
 
 about:
   home: https://github.com/bihealth/clinvar-this
   license: MIT
   license_family: MIT
-  summary: ClinVar Submission API Made Easy
+  license_file: LICENSE
+  summary: "ClinVar Submission API Made Easy."
+  dev_url: https://github.com/bihealth/clinvar-this

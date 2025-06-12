@@ -1,25 +1,33 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "biodbNci" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 3d48581ac261e785f8f20899598acffa
+about:
+  description: The biodbNci library is an extension of the biodb framework package. It provides access to biodbNci, a library for connecting to the National Cancer Institute (USA) CACTUS Database. It allows to retrieve entries by their accession number, and run specific web services.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: AGPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+  summary: biodbNci, a library for connecting to biodbNci, a library for connecting to the National Cancer Institute (USA) CACTUS Database
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-biodbnci", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: roxygen2, BiocStyle, testthat (>= 2.0.0), devtools, knitr, rmarkdown, covr, lgr
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - 'bioconductor-biodb >=1.6.0,<1.7.0'
+    - bioconductor-biodb >=1.14.0,<1.15.0
     - r-base
     - r-chk
     - r-r6
@@ -28,23 +36,22 @@ requirements:
     - libblas
     - liblapack
   run:
-    - 'bioconductor-biodb >=1.6.0,<1.7.0'
+    - bioconductor-biodb >=1.14.0,<1.15.0
     - r-base
     - r-chk
     - r-r6
     - r-rcpp
     - r-testthat
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: c60bde3f0881c284dbc9dc6089338b64
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: AGPL-3
-  summary: 'biodbNci, a library for connecting to biodbNci, a library for connecting to the National Cancer Institute (USA) CACTUS Database'
-  description: 'The biodbNci library is an extension of the biodb framework package. It provides access to biodbNci, a library for connecting to the National Cancer Institute (USA) CACTUS Database. It allows to retrieve entries by their accession number, and run specific web services.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+    - $R -e "library('{{ name }}')"
 

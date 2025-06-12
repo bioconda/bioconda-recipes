@@ -1,28 +1,32 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "scDataviz" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: dbbddacb255aafef43492da777322d9f
+about:
+  description: In the single cell World, which includes flow cytometry, mass cytometry, single-cell RNA-seq (scRNA-seq), and others, there is a need to improve data visualisation and to bring analysis capabilities to researchers even from non-technical backgrounds. scDataviz attempts to fit into this space, while also catering for advanced users. Additonally, due to the way that scDataviz is designed, which is based on SingleCellExperiment, it has a 'plug and play' feel, and immediately lends itself as flexibile and compatibile with studies that go beyond scDataviz. Finally, the graphics in scDataviz are generated via the ggplot engine, which means that users can 'add on' features to these with ease.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: 'scDataviz: single cell dataviz and downstream analyses'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-scdataviz", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: PCAtools, cowplot, BiocGenerics, RUnit, knitr, kableExtra, rmarkdown
 requirements:
   host:
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
     - r-base
     - r-corrplot
     - r-ggplot2
@@ -35,9 +39,9 @@ requirements:
     - r-seurat
     - r-umap
   run:
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
     - r-base
     - r-corrplot
     - r-ggplot2
@@ -49,13 +53,16 @@ requirements:
     - r-scales
     - r-seurat
     - r-umap
+
+source:
+  md5: 323fdfdad14d30359b8b319c1caa81af
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'scDataviz: single cell dataviz and downstream analyses'
-  description: 'In the single cell World, which includes flow cytometry, mass cytometry, single-cell RNA-seq (scRNA-seq), and others, there is a need to improve data visualisation and to bring analysis capabilities to researchers even from non-technical backgrounds. scDataviz attempts to fit into this space, while also catering for advanced users. Additonally, due to the way that scDataviz is designed, which is based on SingleCellExperiment, it has a ''plug and play'' feel, and immediately lends itself as flexibile and compatibile with studies that go beyond scDataviz. Finally, the graphics in scDataviz are generated via the ggplot engine, which means that users can ''add on'' features to these with ease.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

@@ -1,44 +1,56 @@
-{% set version = "1.2.0.20230130" %}
+{% set name = "biscuit" %}
+{% set version = "1.7.0.20250512" %}
 
 package:
-  name: biscuit
+  name: {{ name }}
   version: {{ version }}
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage('biscuit', max_pin='x') }}
 
 source:
-  - url: https://github.com/huishenlab/biscuit/releases/download/v{{ version }}/release-source.zip
-    sha256: d3b1cb854bc091f507757e1a0c1fd34f0e204851c9010ac8b62a2aa876c0f2d7
-    patches:
-      - patch
-  - url: https://github.com/huishenlab/biscuit/releases/download/v{{ version }}/QC.sh
-    sha256: 91d37cb3c6b20face2ae2214685d48eef03fe00173a210f1e5042d9ed33c974f
-  - url: https://github.com/huishenlab/biscuit/releases/download/v{{ version }}/build_biscuit_QC_assets.pl
-    sha256: 7967240b63c8f816e7da79c3c0eb890933ec47df1114f6893b9e9736c8e564a8
+  url: https://github.com/huishenlab/biscuit/releases/download/v{{ version }}/release-source.zip
+  sha256: 13ac091da9aee0f4141737fe01c68ff0299da06297cea8a1557338a2f5f7ee2f
+  patches:
+    - 0001-CMakeLists.patch
+    - 0004-aarch64-ksw.patch  # [aarch64 or arm64]
 
 requirements:
   build:
     - make
+    - cmake
     - {{ compiler('c') }}
   host:
     - zlib
     - ncurses
+    - pthread-stubs
     - libcurl
+    - libdeflate
   run:
-    - zlib
-    - ncurses
-    - libcurl
+    - pthread-stubs
     - perl
 
 test:
   commands:
-    - biscuit 2>&1 || true
-    - QC.sh -h 2>&1 | grep Usage 
-    - build_biscuit_QC_assets.pl -h 2>&1 | grep Usage 
+    - biscuit 2>&1 | grep "Usage"
+    - QC.sh -h 2>&1 | grep "Usage"
+    - build_biscuit_QC_assets.pl -h 2>&1 | grep "Usage"
 
 about:
-  home: https://github.com/huishenlab/biscuit
+  home: "https://github.com/huishenlab/biscuit"
   license: MIT
-  summary: A utility for analyzing sodium bisulfite conversion-based DNA methylation/modification data
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A utility for analyzing sodium bisulfite conversion-based DNA methylation/modification data."
+  dev_url: "https://github.com/huishenlab/biscuit"
+  doc_url: "https://huishenlab.github.io/biscuit"
 
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/nar/gkae097
+    - biotools:biscuit

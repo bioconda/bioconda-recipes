@@ -1,22 +1,31 @@
-{% set version = "0.2.15" %}
+{% set version = "0.2.19" %}
 
 package:
   name: somalier
   version: {{ version }}
 
+source:
+  url: https://github.com/brentp/somalier/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: d93b34d15deb12d75ce4637857d4c74eb94572e0aac6303df539a345e3485fa8
+
 # Skip OSX following https://github.com/bioconda/bioconda-recipes/blob/73a14544ca8ef7926797b39259cb58b83732b7da/recipes/slivar/meta.yaml
 build:
-  number: 0
+  number: 1
   skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage("somalier", max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - curl
-    - nim
+    - nim <2
   host:
-    - htslib >=1.10
+    - openblas
+    - htslib
   run:
+    - openblas
+    - htslib
 
 test:
   commands:
@@ -29,6 +38,7 @@ about:
   license: MIT
   summary: 'fast sample-swap and relatedness checks on BAMs/CRAMs/VCFs/GVCFs.'
 
+  
 extra:
   identifiers:
     - doi:10.1186/s13073-020-00761-2

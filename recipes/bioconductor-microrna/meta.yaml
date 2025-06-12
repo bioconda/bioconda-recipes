@@ -1,43 +1,24 @@
-{% set version = "1.56.0" %}
+{% set version = "1.64.0" %}
 {% set name = "microRNA" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 0db9d6be4a9f7499e050a5737a05848b
+about:
+  description: Different data resources for microRNAs and some functions for manipulating them.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Data and functions for dealing with microRNAs
+
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-requirements:
-  host:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - r-base
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - r-base
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Data and functions for dealing with microRNAs'
-  description: 'Different data resources for microRNAs and some functions for manipulating them.'
+  run_exports: '{{ pin_subpackage("bioconductor-microrna", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   identifiers:
     - biotools:microrna
     - doi:10.1038/nmeth.3252
@@ -45,4 +26,34 @@ extra:
     name: bioconductor-microrna
     path: recipes/bioconductor-microrna
     version: 1.38.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - r-base
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - r-base
+
+source:
+  md5: ecbbe0f4a76950c5b26cfa4e5102f120
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

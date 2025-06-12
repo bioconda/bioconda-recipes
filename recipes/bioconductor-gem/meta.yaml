@@ -1,22 +1,22 @@
-{% set version = "1.24.0" %}
+{% set version = "1.32.0" %}
 {% set name = "GEM" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 0c0c434a859ef5f1c4375d70877769c1
+about:
+  description: Tools for analyzing EWAS, methQTL and GxE genome widely.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: 'GEM: fast association study for the interplay of Gene, Environment and Methylation'
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-gem", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: knitr, RUnit, testthat, BiocGenerics, rmarkdown, markdown
 requirements:
   host:
@@ -25,12 +25,14 @@ requirements:
   run:
     - r-base
     - r-ggplot2
+source:
+  md5: 58de7f773c0abeb5b13dff866cf05f0a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'GEM: fast association study for the interplay of Gene, Environment and Methylation'
-  description: 'Tools for analyzing EWAS, methQTL and GxE genome widely.'
+    - $R -e "library('{{ name }}')"
 

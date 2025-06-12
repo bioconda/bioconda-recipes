@@ -1,58 +1,68 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "VDJdive" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 9db24834afe1f1015c3f201453907523
+about:
+  description: This package provides functions for handling and analyzing immune receptor repertoire data, such as produced by the CellRanger V(D)J pipeline. This includes reading the data into R, merging it with paired single-cell data, quantifying clonotype abundances, calculating diversity metrics, and producing common plots. It implements the E-M Algorithm for clonotype assignment, along with other methods, which makes use of ambiguous cells for improved quantification.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Analysis Tools for 10X V(D)J Data
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-vdjdive", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: breakaway, covr, knitr, rmarkdown, testthat, BiocStyle
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - 'bioconductor-basilisk >=1.9.0,<1.10.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-cowplot
     - r-ggplot2
     - r-gridextra
     - r-matrix
     - r-rcolorbrewer
-    - r-reticulate
+    - r-rcpp
+    - libblas
+    - liblapack
   run:
-    - 'bioconductor-basilisk >=1.9.0,<1.10.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-cowplot
     - r-ggplot2
     - r-gridextra
     - r-matrix
     - r-rcolorbrewer
-    - r-reticulate
+    - r-rcpp
+
+source:
+  md5: e36bca9c91ac3f6a9499e622ee72c775
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Analysis Tools for 10X V(D)J Data'
-  description: 'This package provides functions for handling and analyzing immune receptor repertoire data, such as produced by the CellRanger V(D)J pipeline. This includes reading the data into R, merging it with paired single-cell data, quantifying clonotype abundances, calculating diversity metrics, and producing common plots. It implements the E-M Algorithm for clonotype assignment, along with other methods, which makes use of ambiguous cells for improved quantification.'
+    - $R -e "library('{{ name }}')"
 

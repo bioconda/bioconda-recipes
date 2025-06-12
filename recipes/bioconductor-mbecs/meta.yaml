@@ -1,28 +1,31 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "MBECS" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: b82851d33548f8a63ece200e01a81b9c
+about:
+  description: The Microbiome Batch Effect Correction Suite (MBECS) provides a set of functions to evaluate and mitigate unwated noise due to processing in batches. To that end it incorporates a host of batch correcting algorithms (BECA) from various packages. In addition it offers a correction and reporting pipeline that provides a preliminary look at the characteristics of a data-set before and after correcting for batch effects.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Evaluation and correction of batch effects in microbiome data-sets
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-mbecs", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, markdown, BiocStyle, testthat (>= 3.0.0)
 requirements:
   host:
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-phyloseq >=1.42.0,<1.43.0'
-    - 'bioconductor-sva >=3.46.0,<3.47.0'
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-phyloseq >=1.50.0,<1.51.0
+    - bioconductor-sva >=3.54.0,<3.55.0
     - r-base
     - r-cluster
     - r-dplyr
@@ -39,9 +42,9 @@ requirements:
     - r-tidyr
     - r-vegan
   run:
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-phyloseq >=1.42.0,<1.43.0'
-    - 'bioconductor-sva >=3.46.0,<3.47.0'
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-phyloseq >=1.50.0,<1.51.0
+    - bioconductor-sva >=3.54.0,<3.55.0
     - r-base
     - r-cluster
     - r-dplyr
@@ -57,12 +60,16 @@ requirements:
     - r-tibble
     - r-tidyr
     - r-vegan
+
+source:
+  md5: cbd4d415284fcb3e70279bb89899162e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Evaluation and correction of batch effects in microbiome data-sets'
-  description: 'The Microbiome Batch Effect Correction Suite (MBECS) provides a set of functions to evaluate and mitigate unwated noise due to processing in batches. To that end it incorporates a host of batch correcting algorithms (BECA) from various packages. In addition it offers a correction and reporting pipeline that provides a preliminary look at the characteristics of a data-set before and after correcting for batch effects.'
+    - $R -e "library('{{ name }}')"
 

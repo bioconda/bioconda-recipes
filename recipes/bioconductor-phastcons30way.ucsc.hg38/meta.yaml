@@ -1,40 +1,42 @@
 {% set version = "3.13.0" %}
 {% set name = "phastCons30way.UCSC.hg38" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 754faee8463bc494c502540cb8f6ea8d
+about:
+  description: Store phastCons30way.UCSC.hg38 AnnotationHub Resource Metadata.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: phastCons30way.UCSC.hg38 AnnotationHub Resource Metadata
 build:
-  number: 2
+  noarch: generic
+  number: 5
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-phastcons30way.ucsc.hg38", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: knitr, rmarkdown
 requirements:
   host:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-genomicscores >=2.10.0,<2.11.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-genomicscores >=2.18.0,<2.19.0
     - r-base
   run:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-genomicscores >=2.10.0,<2.11.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-genomicscores >=2.18.0,<2.19.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221103
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 754faee8463bc494c502540cb8f6ea8d
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'phastCons30way.UCSC.hg38 AnnotationHub Resource Metadata'
-  description: 'Store phastCons30way.UCSC.hg38 AnnotationHub Resource Metadata.'
+    - $R -e "library('{{ name }}')"
 

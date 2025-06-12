@@ -1,39 +1,22 @@
-{% set version = "1.44.0" %}
+{% set version = "1.52.0" %}
 {% set name = "AffyRNADegradation" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 0a1d2444de49c7558c377344a93490a3
+about:
+  description: The package helps with the assessment and correction of RNA degradation effects in Affymetrix 3' expression arrays. The parameter d gives a robust and accurate measure of RNA integrity. The correction removes the probe positional bias, and thus improves comparability of samples that are affected by RNA degradation.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Analyze and correct probe positional bias in microarray data due to RNA degradation
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: AmpAffyExample
-requirements:
-  host:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - r-base
-  run:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Analyze and correct probe positional bias in microarray data due to RNA degradation'
-  description: 'The package helps with the assessment and correction of RNA degradation effects in Affymetrix 3'' expression arrays. The parameter d gives a robust and accurate measure of RNA integrity. The correction removes the probe positional bias, and thus improves comparability of samples that are affected by RNA degradation.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-affyrnadegradation", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:affyrnadegradation
@@ -41,4 +24,29 @@ extra:
     name: bioconductor-affyrnadegradation
     path: recipes/bioconductor-affyrnadegradation
     version: 1.26.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: AmpAffyExample, hgu133acdf
+requirements:
+  host:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - r-base
+  run:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - r-base
+
+source:
+  md5: cadf0ca1b06dd4db0aad5357277b3967
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

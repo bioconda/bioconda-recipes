@@ -1,26 +1,30 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "NPARC" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: a7df694afdae223d702c71fd8333c042
+about:
+  description: 'Perform non-parametric analysis of response curves as described by Childs, Bach, Franken et al. (2019): Non-parametric analysis of thermal proteome profiles reveals novel drug-binding proteins.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Non-parametric analysis of response curves for thermal proteome profiling experiments
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-nparc", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: testthat, devtools, knitr, rprojroot, rmarkdown, ggplot2, BiocStyle
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
     - r-base
     - r-broom
     - r-dplyr
@@ -29,7 +33,7 @@ requirements:
     - r-rlang
     - r-tidyr
   run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
     - r-base
     - r-broom
     - r-dplyr
@@ -37,13 +41,16 @@ requirements:
     - r-mass
     - r-rlang
     - r-tidyr
+
+source:
+  md5: d72813fe5c5b69ffe12e88e548c013cc
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Non-parametric analysis of response curves for thermal proteome profiling experiments'
-  description: 'Perform non-parametric analysis of response curves as described by Childs, Bach, Franken et al. (2019): Non-parametric analysis of thermal proteome profiles reveals novel drug-binding proteins.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

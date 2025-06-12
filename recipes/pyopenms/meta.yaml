@@ -1,66 +1,104 @@
 {% set name = "pyopenms" %}
-{% set version = "2.8.0" %}
+{% set version = "3.4.1" %}  # if ends with 'dev' it is considered a development release and pulled from GitHub
+
 package:
-  name: {{ name|lower  }}
-  version: {{ version  }}
+  name: {{ name|lower }}
+  version: {{ version }}
+{% if 'dev' in version %}
 
 source:
-  url: https://abibuilder.cs.uni-tuebingen.de/archive/openms/OpenMSInstaller/release/{{ version }}/OpenMS-{{ version }}-src.tar.gz
-  sha256: c39e3ccdce5c335d2659cfa9d0bb63555a01ec422757afd90706d3869bf611ac
-  patches:
-    - pyopenms_cmakelist2.patch
-    - pyopenms_cmakelist.patch
+  git_url: https://github.com/OpenMS/OpenMS.git
+  git_rev: release/{{ version }}
+  md5: unused
+{% else %}
+
+source:
+  # Remove trailing zeros for major releases
+  {% set version_parts = version.split('.') %}
+  {% if version_parts|length == 3 and version_parts[2] == '0' %}
+    {% set short_version = version_parts[0] ~ '.' ~ version_parts[1] %}
+  {% else %}
+    {% set short_version = version %}
+  {% endif %}
+  url: https://github.com/OpenMS/OpenMS/releases/download/release%2F{{ version }}/OpenMS-{{ short_version }}.tar.gz
+  md5: 8d0b4d1d333f069959f7d5ff1c77a90f
+{% endif %}
 
 build:
-  skip: True  # [py2k]
-  number: 1
+  number: 0
+  skip: True  # [py < 39]
+  run_exports:
+    - {{ pin_subpackage("pyopenms", max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - make
+    - ninja
     - cmake
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - qt6-main
+    - sysroot_linux-64 =2.17  # [linux]
   host:
-    - libopenms {{ version }}
-    - libsvm
-    - xerces-c
-    - boost-cpp
-    - qt
-    - python {{ python }}
-    - cython >=0.25.2
-    - autowrap >=0.22.6
-    - setuptools
-    - wheel
+    - python
     - pip
-    - nose
-    - numpy {{ numpy }}
+    - cython <3.1
+    - eigen >=3.4.0
+    - libopenms >={{ version }}
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - libsvm
+    - coinmp
+    - yaml-cpp
+    - doxygen >=1.8.13
+    - xerces-c
+    - boost-cpp
+    - autowrap >=0.22.11
+    - numpy >=2.0
     - pandas
-  run: # run_exports in libopenms should take care of the libraries. But it does not because of bugs. So copy everthing again and again
-    - libopenms {{ version }}
+    - matplotlib-base
+    - sysroot_linux-64 =2.17  # [linux]
+    - icu >=75.1,<76.0a0
+    - pytest
+    - zlib
+  run:  # run_exports in libopenms should take care of the libraries. But it does not because of bugs. So copy everthing again and again
+    - python
+    - libopenms >={{ version }}
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - libsvm
     - xerces-c
     - boost-cpp
-    - qt
-    - python {{ python }}
-    - numpy {{ numpy }}
+    - eigen >=3.4.0
+    - numpy >=2.0
     - pandas
+    - matplotlib-base
+    - sysroot_linux-64 =2.17  # [linux]
+
 test:
-  requires:
-    - nose
   commands:
     - python -c "import pyopenms; print(pyopenms.__version__)"
     # We cant use the PYTHON variable since it does not exist on the biocontainer?!
-    # TODO run the test suite
+    # TODO run the full test suite?
 
 about:
-  home: https://github.com/OpenMS/OpenMS
-  license: BSD
+  home: "https://github.com/OpenMS/OpenMS"
+  license: "BSD-3-Clause"
+  license_family: BSD
   license_file: LICENSE
-  summary: python bindings for OpenMS, an open-source software C++ library for LC-MS data management and analyses
+  summary: "Python bindings for OpenMS, an open-source software C++ library for LC-MS data management and analyses."
+  dev_url: "https://github.com/OpenMS/OpenMS"
+  doc_url: "https://openms.readthedocs.io/en/latest"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+{% if 'dev' in version %}
+  skip-lints:
+    - uses_vcs_url
+{% endif %}
   identifiers:
     - biotools:openms
-    - doi:10.1038/nmeth.3959
+    - doi:10.1038/s41592-024-02197-7

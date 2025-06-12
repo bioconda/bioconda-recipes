@@ -1,49 +1,21 @@
-{% set version = "1.30.0" %}
+{% set version = "1.38.0" %}
 {% set name = "SIMAT" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 965a2757e4c4be8a641c9f215568b3b7
+about:
+  description: This package provides a pipeline for analysis of GC-MS data acquired in selected ion monitoring (SIM) mode. The tool also provides a guidance in choosing appropriate fragments for the targets of interest by using an optimization algorithm. This is done by considering overlapping peaks from a provided library by the user.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: GC-SIM-MS data processing and alaysis tool
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: RUnit, BiocGenerics
-requirements:
-  host:
-    - 'bioconductor-mzr >=2.32.0,<2.33.0'
-    - r-base
-    - r-ggplot2
-    - 'r-rcpp >=0.11.3'
-    - r-reshape2
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-mzr >=2.32.0,<2.33.0'
-    - r-base
-    - r-ggplot2
-    - 'r-rcpp >=0.11.3'
-    - r-reshape2
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'GC-SIM-MS data processing and alaysis tool'
-  description: 'This package provides a pipeline for analysis of GC-MS data acquired in selected ion monitoring (SIM) mode. The tool also provides a guidance in choosing appropriate fragments for the targets of interest by using an optimization algorithm. This is done by considering overlapping peaks from a provided library by the user.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-simat", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:simat
@@ -52,4 +24,40 @@ extra:
     name: bioconductor-simat
     path: recipes/bioconductor-simat
     version: 1.12.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: RUnit, BiocGenerics
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - bioconductor-mzr >=2.40.0,<2.41.0
+    - r-base
+    - r-ggplot2
+    - r-rcpp >=0.11.3
+    - r-reshape2
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-mzr >=2.40.0,<2.41.0
+    - r-base
+    - r-ggplot2
+    - r-rcpp >=0.11.3
+    - r-reshape2
+
+source:
+  md5: 95fb0d70ca9802bf2a2efc703fa79dba
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

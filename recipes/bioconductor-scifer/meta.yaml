@@ -1,67 +1,84 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "scifer" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: bad38f6d75de43e08a89a6e2236ab9e0
+about:
+  description: Have you ever index sorted cells in a 96 or 384-well plate and then sequenced using Sanger sequencing? If so, you probably had some struggles to either check the electropherogram of each cell sequenced manually, or when you tried to identify which cell was sorted where after sequencing the plate. Scifer was developed to solve this issue by performing basic quality control of Sanger sequences and merging flow cytometry data from probed single-cell sorted B cells with sequencing data. scifer can export summary tables, 'fasta' files, electropherograms for visual inspection, and generate reports.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: 'Scifer: Single-Cell Immunoglobulin Filtering of Sanger Sequences'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: fs, BiocStyle, testthat (>= 3.0.0)
+  run_exports: '{{ pin_subpackage("bioconductor-scifer", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocBaseUtils, fs, BiocStyle, testthat (>= 3.0.0)
 requirements:
+
   host:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-decipher >=2.26.0,<2.27.0'
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-sangerseqr >=1.34.0,<1.35.0'
+    - bioconductor-basilisk >=1.18.0,<1.19.0
+    - bioconductor-basilisk.utils >=1.18.0,<1.19.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-decipher >=3.2.0,<3.3.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-sangerseqr >=1.42.0,<1.43.0
     - r-base
     - r-data.table
     - r-dplyr
     - r-ggplot2
     - r-gridextra
+    - r-here
     - r-kableextra
     - r-knitr
     - r-plyr
+    - r-reticulate
     - r-rlang
     - r-rmarkdown
     - r-scales
     - r-stringr
     - r-tibble
+
   run:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-decipher >=2.26.0,<2.27.0'
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-sangerseqr >=1.34.0,<1.35.0'
+    - bioconductor-basilisk >=1.18.0,<1.19.0
+    - bioconductor-basilisk.utils >=1.18.0,<1.19.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-decipher >=3.2.0,<3.3.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-sangerseqr >=1.42.0,<1.43.0
     - r-base
     - r-data.table
     - r-dplyr
     - r-ggplot2
     - r-gridextra
+    - r-here
     - r-kableextra
     - r-knitr
     - r-plyr
+    - r-reticulate
     - r-rlang
     - r-rmarkdown
     - r-scales
     - r-stringr
     - r-tibble
+
+source:
+  md5: 198aef728d59d2bb60481383fb140834
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Scifer: Single-Cell Immunoglobulin Filtering of Sanger Sequences'
-  description: 'Have you ever index sorted cells in a 96 or 384-well plate and then sequenced using Sanger sequencing? If so, you probably had some struggles to either check the electropherogram of each cell sequenced manually, or when you tried to identify which cell was sorted where after sequencing the plate. Scifer was developed to solve this issue by performing basic quality control of Sanger sequences and merging flow cytometry data from probed single-cell sorted B cells with sequencing data. scifer can export summary tables, ''fasta'' files, electropherograms for visual inspection, and generate reports.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

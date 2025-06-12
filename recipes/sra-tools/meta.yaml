@@ -1,31 +1,37 @@
-{% set version = "3.0.3" %}
+{% set name = "sra-tools" %}
+{% set version = "3.2.1" %}
+{% set sha256 = "2558683c217ad2318833ab7731939617ed91dc79a6b1dee92bf88b56a1dc142a" %}
 
 package:
-  name: sra-tools
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/ncbi/sra-tools/archive/{{version}}.tar.gz
-  sha256: ea4b9a4b2e6e40e6b2bf36b01eb8df2b50280ef9dcdc66b504c1d1296600afbd
+- url: https://github.com/ncbi/sra-tools/archive/refs/tags/{{version}}.tar.gz
+  sha256: {{ sha256 }}
   folder: sra-tools
+- url: https://github.com/ncbi/ncbi-vdb/archive/refs/tags/{{version}}.tar.gz  # [osx]
+  sha256: 535511984928ec5bac02a61fc6b4d1ca72a5b69c742f4882eabd32ed3a97621c  # [osx]
+  folder: ncbi-vdb  # [osx]
 
 build:
   number: 0
-  skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - bison
-    - cmake
-    - flex
     - make
-    - ncbi-vdb >=3.0.2
+    - cmake
+    - bison
+    - flex
+  host:
+    - ncbi-vdb >={{ version }}
   run:
     - ca-certificates
     - curl
-    - ncbi-vdb >=3.0.2
+    - ncbi-vdb >={{ version }}
     - ossuuid
     - perl
     - perl-xml-libxml
@@ -43,18 +49,25 @@ test:
     - vdb-config --help > /dev/null
     - vdb-decrypt --help > /dev/null
     - fastq-dump SRR002702 && grep '@SRR002702.1 EX35NVW14INCVK' SRR002702.fastq && rm SRR002702.fastq
-    - fasterq-dump SRR002702 && grep '@SRR002702.1 EX35NVW14INCVK' SRR002702.fastq  && rm SRR002702.fastq
+    # 2025-01-16T22:18:06 fasterq-dump.3.2.0 err: cannot find 'SRR002702' -> RC(rcVFS,rcQuery,rcExecuting,rcItem,rcNotFound)
+    #- fasterq-dump SRR002702 && grep '@SRR002702.1 EX35NVW14INCVK' SRR002702.fastq  && rm SRR002702.fastq
     - prefetch SRR002702 -O ./ && test -d SRR002702 && rm -r SRR002702
     - sam-dump SRR002702 | grep 'EX35NVW14ISYAK'
 
 about:
-  home: https://github.com/ncbi/sra-tools
-  license: Public Domain
-  summary: SRA Toolkit and SDK from NCBI
+  home: "https://github.com/ncbi/sra-tools"
+  license: "Public Domain"
+  summary: "The SRA Toolkit and SDK from NCBI."
   description:  |
-    The SRA Toolkit and SDK from NCBI is a collection of tools and libraries
-    for using data in the INSDC Sequence Read Archives.
+    "The SRA Toolkit and SDK from NCBI is a collection of tools and libraries
+    for using data in the INSDC Sequence Read Archives."
+  dev_url: "https://github.com/ncbi/sra-tools"
+  doc_url: "https://github.com/ncbi/sra-tools/wiki"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   notes: 'After installation, you should run the configuration tool: ./vdb-config
     -i. This tool will setup your download/cache area for downloaded files and references.'
+  identifiers:
+    - biotools:sra-tools

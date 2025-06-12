@@ -1,45 +1,22 @@
-{% set version = "1.38.0" %}
+{% set version = "1.46.0" %}
 {% set name = "pvca" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 3e0a756f9bd0beab58434428b1b8f400
+about:
+  description: This package contains the function to assess the batch sourcs by fitting all "sources" as random effects including two-way interaction terms in the Mixed Model(depends on lme4 package) to selected principal components, which were obtained from the original data correlation matrix. This package accompanies the book "Batch Effects and Noise in Microarray Experiements, chapter 12.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL (>= 2.0)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: Principal Variance Component Analysis (PVCA)
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: golubEsets
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-vsn >=3.66.0,<3.67.0'
-    - r-base
-    - r-lme4
-    - r-matrix
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-vsn >=3.66.0,<3.67.0'
-    - r-base
-    - r-lme4
-    - r-matrix
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'LGPL (>= 2.0)'
-  summary: 'Principal Variance Component Analysis (PVCA)'
-  description: 'This package contains the function to assess the batch sourcs by fitting all "sources" as random effects including two-way interaction terms in the Mixed Model(depends on lme4 package) to selected principal components, which were obtained from the original data correlation matrix. This package accompanies the book "Batch Effects and Noise in Microarray Experiements, chapter 12.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-pvca", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:pvca
@@ -48,4 +25,35 @@ extra:
     name: bioconductor-pvca
     path: recipes/bioconductor-pvca
     version: 1.20.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: golubEsets
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-vsn >=3.74.0,<3.75.0
+    - r-base
+    - r-lme4
+    - r-matrix
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-vsn >=3.74.0,<3.75.0
+    - r-base
+    - r-lme4
+    - r-matrix
+
+source:
+  md5: a58e00010280d2a69984c0edb9263382
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

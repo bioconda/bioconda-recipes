@@ -1,36 +1,38 @@
-{% set version = "1.29.0" %}
+{% set version = "1.38.0" %}
 {% set name = "SVM2CRMdata" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 3e07fd96096e1c15a05cd1e45b5173bc
+about:
+  description: An example dataset for use with the SVM2CRM package.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: LGPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: An example dataset for use with the SVM2CRM package
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-svm2crmdata", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 requirements:
   host:
     - r-base
   run:
     - r-base
     - curl
-    - bioconductor-data-packages>=20221103
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 0a323250bb842533ddf675228e0ff0b7
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: 'LGPL (>= 2)'
-  summary: 'An example dataset for use with the SVM2CRM package'
-  description: 'An example dataset for use with the SVM2CRM package.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+    - $R -e "library('{{ name }}')"
 

@@ -1,28 +1,31 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "systemPipeTools" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 51a1df70131eff836ee669a1bbf6750c
+about:
+  description: systemPipeTools package extends the widely used systemPipeR (SPR) workflow environment with an enhanced toolkit for data visualization, including utilities to automate the data visualizaton for analysis of differentially expressed genes (DEGs). systemPipeTools provides data transformation and data exploration functions via scatterplots, hierarchical clustering heatMaps, principal component analysis, multidimensional scaling, generalized principal components, t-Distributed Stochastic Neighbor embedding (t-SNE), and MA and volcano plots. All these utilities can be integrated with the modular design of the systemPipeR environment that allows users to easily substitute any of these features and/or custom with alternatives.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Tools for data visualization
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-systempipetools", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: systemPipeR, knitr, BiocStyle, rmarkdown, testthat (>= 3.0.0), BiocGenerics, Biostrings, methods
 requirements:
   host:
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-ggtree >=3.6.0,<3.7.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-ggtree >=3.14.0,<3.15.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-ape
     - r-base
     - r-dplyr
@@ -37,9 +40,9 @@ requirements:
     - r-rtsne
     - r-tibble
   run:
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-ggtree >=3.6.0,<3.7.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-ggtree >=3.14.0,<3.15.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-ape
     - r-base
     - r-dplyr
@@ -53,12 +56,16 @@ requirements:
     - r-plotly
     - r-rtsne
     - r-tibble
+
+source:
+  md5: 6a14f23733dc113d07a860f495035ebf
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Tools for data visualization'
-  description: 'systemPipeTools package extends the widely used systemPipeR (SPR) workflow environment with an enhanced toolkit for data visualization, including utilities to automate the data visualizaton for analysis of differentially expressed genes (DEGs). systemPipeTools provides data transformation and data exploration functions via scatterplots, hierarchical clustering heatMaps, principal component analysis, multidimensional scaling, generalized principal components, t-Distributed Stochastic Neighbor embedding (t-SNE), and MA and volcano plots. All these utilities can be integrated with the modular design of the systemPipeR environment that allows users to easily substitute any of these features and/or custom with alternatives.'
+    - $R -e "library('{{ name }}')"
 

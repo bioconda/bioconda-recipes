@@ -1,40 +1,42 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "adductData" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 7a983571463b4566782cbfe478ea93a9
+about:
+  description: mzXML files from Grigoryan et al 2016 (Anal Chem).
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Data from untargeted MS of modifications to Cys34 of serum albumin
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-adductdata", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: knitr (>= 1.15.1), rmarkdown (>= 1.5)
 requirements:
   host:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
     - r-base
   run:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221109
+    - bioconductor-data-packages >=20241103
+source:
+  md5: ed236e56217a786e98246e4db03eda1e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Data from untargeted MS of modifications to Cys34 of serum albumin'
-  description: 'mzXML files from Grigoryan et al 2016 (Anal Chem).'
+    - $R -e "library('{{ name }}')"
 

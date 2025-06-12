@@ -1,13 +1,17 @@
-{% set version = "1.1.6.0" %}
+{% set version = "1.6.2.1" %}
 package:
   name: poseidon-trident
   version: {{ version }}
 
+# documentation of preprocessing selectors:
+# https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#preprocessing-selectors
 source:
   - url: https://github.com/poseidon-framework/poseidon-hs/releases/download/v{{ version }}/trident-conda-linux # [linux]
-    md5: ecf2a411c51de00c1d03867531f42235 # [linux]
-  - url: https://github.com/poseidon-framework/poseidon-hs/releases/download/v{{ version }}/trident-macOS # [osx]
-    md5: 38c76fc9d54b0b38d5ec8ce153594cd6 # [osx]
+    md5: e0eeea8a65ccf23523ffabd2498b7929 # [linux]
+  - url: https://github.com/poseidon-framework/poseidon-hs/releases/download/v{{ version }}/trident-macOS-X64 # [osx and x86_64]
+    md5: 2c75b5ede2f30af454d8bca20379d9ef # [osx and x86_64]
+  - url: https://github.com/poseidon-framework/poseidon-hs/releases/download/v{{ version }}/trident-macOS-ARM64 # [osx and arm64]
+    md5: 68a5dc39e652f9e48edb8ae117d4ab1a # [osx and arm64]
 
 build:
   number: 0 
@@ -15,6 +19,8 @@ build:
     - "mkdir -p $PREFIX/bin"
     - "mv trident* $PREFIX/bin/trident"
     - "chmod u+x $PREFIX/bin/trident"
+  run_exports:
+    - {{ pin_subpackage("poseidon-trident", max_pin=None) }}
 
 requirements:
   build:
@@ -32,6 +38,10 @@ test:
      - trident --version
 
 about:
-  home: https://poseidon-framework.github.io/#/
+  home: https://www.poseidon-adna.org/#/
   license: MIT
   summary: "A tool (trident) to work with modular genotype databases formatted using Poseidon."
+
+extra:
+  additional-platforms:
+    - osx-arm64

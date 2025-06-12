@@ -1,5 +1,5 @@
 {% set name = "ngsderive" %}
-{% set version = "2.4.0" %}
+{% set version = "4.0.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,33 +7,37 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: f2a019674296803cbd5643dd18c294f6c252dd7005a17f816df5f51c5613ede8
+  sha256: 1e55f7bed3dfe1ecf4b3955636bd6fc7b1c1bd7c5685c539c0e248abfc47bf97
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+  script: "{{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv"
   noarch: python
+  entry_points:
+    - ngsderive = ngsderive.__main__:run
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
   host:
     - pip
-    - python >=3.8, <3.10
-    - poetry >=1.3.2
+    - python >=3.8
+    - poetry
   run:
     - colorlog >=6.6.0
-    - pysam >=0.18
+    - pysam >=0.21
     - pytabix >=0.1
-    - python >=3.8, <3.10
+    - python >=3.8
     - rstr >=3.0.0
     - gtfparse >=1.2.1
     - sortedcontainers >=2.4.0
     - tabix >=1.11
+    - pygtrie >=2.5.0
 
 test:
   imports:
     - ngsderive
     - ngsderive.commands
-    - ngsderive.readers
   commands:
     - ngsderive --help
 

@@ -1,28 +1,36 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "SMAD" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 967716013f80dce6a0f39f616d77bfd9
+about:
+  description: Assigning probability scores to protein interactions captured in affinity purification mass spectrometry (AP-MS) expriments to infer protein-protein interactions. The output would facilitate non-specific background removal as contaminants are commonly found in AP-MS data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Statistical Modelling of AP-MS Data (SMAD)
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-smad", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, testthat, BiocStyle
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
     - r-base
     - r-dplyr
-    - 'r-magrittr >=1.5'
-    - 'r-rcpp >=1.0.0'
+    - r-magrittr >=1.5
+    - r-rcpp >=1.0.0
     - r-rcppalgos
     - r-tidyr
     - libblas
@@ -30,21 +38,20 @@ requirements:
   run:
     - r-base
     - r-dplyr
-    - 'r-magrittr >=1.5'
-    - 'r-rcpp >=1.0.0'
+    - r-magrittr >=1.5
+    - r-rcpp >=1.0.0
     - r-rcppalgos
     - r-tidyr
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: aadca1bedea5db4730f49638cbc0bdd0
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Statistical Modelling of AP-MS Data (SMAD)'
-  description: 'Assigning probability scores to prey proteins captured in affinity purification mass spectrometry (AP-MS) expriments to infer protein-protein interactions. The output would facilitate non-specific background removal as contaminants are commonly found in AP-MS data.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

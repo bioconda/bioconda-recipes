@@ -1,46 +1,22 @@
-{% set version = "1.40.0" %}
+{% set version = "1.48.0" %}
 {% set name = "UNDO" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 669423a1fa44919cc5658cd0a061b73b
+about:
+  description: UNDO is an R package for unsupervised deconvolution of tumor and stromal mixed expression data. It detects marker genes and deconvolutes the mixing expression data without any prior knowledge.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Unsupervised Deconvolution of Tumor-Stromal Mixed Expressions
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - r-base
-    - r-boot
-    - r-mass
-    - r-nnls
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - r-base
-    - r-boot
-    - r-mass
-    - r-nnls
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Unsupervised Deconvolution of Tumor-Stromal Mixed Expressions'
-  description: 'UNDO is an R package for unsupervised deconvolution of tumor and stromal mixed expression data. It detects marker genes and deconvolutes the mixing expression data without any prior knowledge.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-undo", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:undo
@@ -49,4 +25,36 @@ extra:
     name: bioconductor-undo
     path: recipes/bioconductor-undo
     version: 1.22.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - r-base
+    - r-boot
+    - r-mass
+    - r-nnls
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - r-base
+    - r-boot
+    - r-mass
+    - r-nnls
+
+source:
+  md5: de9d4e4fc46f7474d274b53a4b9fd200
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "synaptome.db-0.99.12"
+installBiocDataPackage.sh "synaptome.db-0.99.16"

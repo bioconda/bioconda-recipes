@@ -1,47 +1,22 @@
-{% set version = "1.70.0" %}
+{% set version = "1.78.0" %}
 {% set name = "annaffy" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 9f5252619c2fb8cf2ca23b705af46aab
+about:
+  description: Functions for handling data from Bioconductor Affymetrix annotation data packages. Produces compact HTML and text reports including experimental data and URL links to many online databases. Allows searching biological metadata using various criteria.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: Annotation tools for Affymetrix biological metadata
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: hgu95av2.db, multtest, tcltk
-requirements:
-  host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-go.db >=3.16.0,<3.17.0'
-    - r-base
-    - r-biocmanager
-    - r-dbi
-  run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-go.db >=3.16.0,<3.17.0'
-    - r-base
-    - r-biocmanager
-    - r-dbi
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: LGPL
-  summary: 'Annotation tools for Affymetrix biological metadata'
-  description: 'Functions for handling data from Bioconductor Affymetrix annotation data packages. Produces compact HTML and text reports including experimental data and URL links to many online databases. Allows searching biological metadata using various criteria.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-annaffy", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:annaffy
@@ -50,4 +25,37 @@ extra:
     name: bioconductor-annaffy
     path: recipes/bioconductor-annaffy
     version: 1.52.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: hgu95av2.db, multtest, tcltk
+requirements:
+  host:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-go.db >=3.20.0,<3.21.0
+    - r-base
+    - r-biocmanager
+    - r-dbi
+  run:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-go.db >=3.20.0,<3.21.0
+    - r-base
+    - r-biocmanager
+    - r-dbi
+
+source:
+  md5: 276ba25b848eb8109a19c09c54a11e76
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

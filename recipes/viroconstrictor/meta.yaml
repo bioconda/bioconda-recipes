@@ -1,5 +1,5 @@
 {% set name = "ViroConstrictor" %}
-{% set version = "1.2.5" %}
+{% set version = "1.5.3" %}
 
 package:
   name: {{ name|lower }}
@@ -7,51 +7,50 @@ package:
 
 source:
   url: https://github.com/RIVM-bioinformatics/ViroConstrictor/archive/v{{ version }}.tar.gz
-  sha256: 3e6de7f769ecee23e8f1bfb5d665d4859bca4c785c8daee39b715331e434b511
+  sha256: fea488f18bfee6ad86f09e96a78dfa5e53405301029b8302303a0939a604a4fd
 
 build:
   noarch: python
   entry_points:
-    - ViroConstrictor = ViroConstrictor.ViroConstrictor:main
-    - viroconstrictor = ViroConstrictor.ViroConstrictor:main
-    - viroConstrictor = ViroConstrictor.ViroConstrictor:main
-    - Viroconstrictor = ViroConstrictor.ViroConstrictor:main
-  script: {{ PYTHON }} -m pip install . -vv
+    - ViroConstrictor = ViroConstrictor.__main__:main
+    - viroconstrictor = ViroConstrictor.__main__:main
+    - viroConstrictor = ViroConstrictor.__main__:main
+    - Viroconstrictor = ViroConstrictor.__main__:main
+  script: {{ PYTHON }} -m pip install . --no-deps -vvv
   number: 0
+  run_exports:
+    - {{ pin_subpackage('viroconstrictor', max_pin="x") }}
 
 requirements:
   host:
     - python >=3.10
-    - snakemake >=7.15.2
-    - conda
-    - mamba
     - pip
+    - snakemake ==7.25.2
+    - conda
   run:
     - python >=3.10
-    - urllib3 >=1.26
-    - biopython ==1.79
+    - urllib3  ==1.26.*
+    - biopython ==1.81
     - drmaa ==0.7.9
-    - fpdf2 ==2.5.1
-    - pandas ==1.4.2
-    - openpyxl ==3.0.9
+    - fpdf2  ==2.5.1
+    - pandas ==2.0.*
+    - openpyxl  ==3.1.*
     - pyyaml ==6.0
     - rich ==13.*
-    - snakemake >=7.15.2
-    - aminoextract ==0.2.1
-    - mamba
+    - snakemake ==7.25.2
+    - aminoextract ==0.3.1
+    - pyopenssl ==24.*
     - conda
+    - mamba >=1.5.0, <2.0.0
 
 test:
   imports:
     - ViroConstrictor
   commands:
-    - pip check
     - ViroConstrictor --help
     - viroconstrictor --help
     - viroConstrictor --help
     - Viroconstrictor --help
-  requires:
-    - pip
 
 about:
   home: https://rivm-bioinformatics.github.io/ViroConstrictor/
@@ -65,5 +64,6 @@ about:
 extra:
   recipe-maintainers:
     - florianzwagemaker
-    - KHajji
+    - raaijmag
+    - wolthuisr
     - ids-bioinformatics

@@ -1,25 +1,28 @@
-{% set name = "MSMetaEnhancer" %}
-{% set version = "0.2.5" %}
+{% set name = "msmetaenhancer" %}
+{% set version = "0.4.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: "https://github.com/RECETOX/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz"
-  sha256: 28a85be800fae007207e167aa68fea1ee5bc25e2a25dd40350c0c5461bd8725d
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/msmetaenhancer-{{ version }}.tar.gz
+  sha256: 3a286814a3cac2ef490f35ec94a1a4ba3a318a943649d2d6de8fcb748efd19f0
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('msmetaenhancer', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.9
+    - python >=3.10,<3.13
+    - poetry-core
     - pip
   run:
-    - python >=3.9
+    - python >=3.10,<3.13
     - matchms
     - pandas
     - scipy
@@ -27,24 +30,30 @@ requirements:
     - aiohttp
     - asyncstdlib
     - frozendict
+    - twine
     - tabulate
     - rdkit
     - multidict
     - aiocircuitbreaker
+    - openpyxl
 
 test:
   imports:
     - MSMetaEnhancer
 
 about:
-  home: https://github.com/RECETOX/MSMetaEnhancer
+  home: "https://github.com/RECETOX/MSMetaEnhancer"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
   summary: "MSMetaEnhancer is a Python tool that adds more annotations (e.g. SMILES, InChI, CAS number) to MSP files."
   dev_url: "https://github.com/RECETOX/MSMetaEnhancer"
-  doc_url: "https://msmetaenhancer.readthedocs.io/"
+  doc_url: "https://msmetaenhancer.readthedocs.io"
 
 extra:
   recipe-maintainers:
     - xtrojak
     - martenson
+  identifiers:
+    - biotools:msmetaenhancer
+    - doi:10.21105/joss.04494

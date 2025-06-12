@@ -1,28 +1,46 @@
-{% set version = "4.40.0" %}
+{% set version = "4.48.0" %}
 {% set name = "EBImage" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f879fa92a5c9e8ee2ba935191c6b983d
+about:
+  description: EBImage provides general purpose functionality for image processing and analysis. In the context of (high-throughput) microscopy-based cellular assays, EBImage offers tools to segment cells and extract quantitative cellular descriptors. This allows the automation of such tasks using the R programming language and facilitates the use of other tools in the R environment for signal processing, statistical modeling, machine learning and visualization with image data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: Image processing and analysis toolbox for R
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-ebimage", max_pin="x.x") }}'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:ebimage
+  parent_recipe:
+    name: bioconductor-ebimage
+    path: recipes/bioconductor-ebimage
+    version: 4.22.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, digest, knitr, rmarkdown, shiny
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
     - r-abind
     - r-base
-    - 'r-fftwtools >=0.9-7'
+    - r-fftwtools >=0.9-7
     - r-htmltools
     - r-htmlwidgets
     - r-jpeg
@@ -33,10 +51,10 @@ requirements:
     - libblas
     - liblapack
   run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
     - r-abind
     - r-base
-    - 'r-fftwtools >=0.9-7'
+    - r-fftwtools >=0.9-7
     - r-htmltools
     - r-htmlwidgets
     - r-jpeg
@@ -44,24 +62,16 @@ requirements:
     - r-png
     - r-rcurl
     - r-tiff
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: e8bcb4c4a3c7c36005ad0c7992f836fd
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: LGPL
-  summary: 'Image processing and analysis toolbox for R'
-  description: 'EBImage provides general purpose functionality for image processing and analysis. In the context of (high-throughput) microscopy-based cellular assays, EBImage offers tools to segment cells and extract quantitative cellular descriptors. This allows the automation of such tasks using the R programming language and facilitates the use of other tools in the R environment for signal processing, statistical modeling, machine learning and visualization with image data.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
-extra:
-  identifiers:
-    - biotools:ebimage
-  parent_recipe:
-    name: bioconductor-ebimage
-    path: recipes/bioconductor-ebimage
-    version: 4.22.1
+    - $R -e "library('{{ name }}')"
 
