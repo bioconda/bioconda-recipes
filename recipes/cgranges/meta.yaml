@@ -1,6 +1,6 @@
 {% set name = "cgranges" %}
-{% set version = "0.1" %}
-{% set sha256 = "40bd89f946ea96f5a8d6b207b0d54d8ee1aba6184b6d8ad8201c1ca3e7241379" %}
+{% set version = "0.1.1" %}
+{% set sha256 = "9445ec0cab97e736981db440cb306069d6fe33f638fbd142c106a0408ba10d6c" %}
 
 package:
   name: "{{ name|lower }}"
@@ -11,9 +11,10 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
-  skip: True # [py27]
-  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed -vv .
+  number: 3
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation -vvv .
+  run_exports:
+    - {{ pin_subpackage('cgranges', max_pin="x") }}
 
 requirements:
   build:
@@ -22,7 +23,6 @@ requirements:
     - python
     - pip
     - cython
-    - setuptools
   run:
     - python
 
@@ -37,5 +37,8 @@ about:
   summary: "cgranges is a small C library for genomic interval overlap queries"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - nh13

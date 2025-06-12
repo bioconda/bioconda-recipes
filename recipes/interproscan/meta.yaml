@@ -1,9 +1,9 @@
 {% set name = "interproscan" %}
 # Remember to update db versions in interproscan.properties for each new release
 # Look at ./core/jms-implementation/support-mini-x86-32/interproscan.properties in the archive
-{% set version_minor = "88.0" %}
-{% set version_major = "5.55" %}
-{% set md5 = "a47ea8136ab76f84d7fb3318d9aa6600" %}
+{% set version_minor = "91.0" %}
+{% set version_major = "5.59" %}
+{% set sha256 = "140ab453af8b5f7c36ad607777378027fd018648e56ce915d4a9928f18e06dfc" %}
 
 package:
   name: "{{ name|lower }}"
@@ -11,22 +11,24 @@ package:
 
 source:
   url: https://github.com/ebi-pf-team/interproscan/archive/{{ version_major }}-{{ version_minor }}.tar.gz
-  md5: {{ md5 }}
+  sha256: {{ sha256 }}
+  patches:
+    - "no_setup.patch"
 
 build:
-  number: 1
+  number: 2
   skip: True  # [osx]
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
-    - openjdk >=11
+    - openjdk >=11,<17
     - maven >=3
   run:
     - python >=3
     - perl >=5.08
-    - openjdk >=11
+    - openjdk >=11,<17
     - cath-tools # for cath-resolve-hits used by CATH-Gene3D
     - pftools # for Pfscan/Pfsearch used by ProSite Profiles, ProSite Patterns and HAMAP
     - hmmer2 # used by SMART
@@ -64,3 +66,9 @@ about:
   license_file: LICENSE
   summary: InterPro integrates together predictive information about proteins function from a number of partner resources
   dev_url: https://github.com/ebi-pf-team/interproscan
+
+extra:
+  maintainers:
+    - abretaud
+  identifiers:
+    - biotools:interproscan_ebi

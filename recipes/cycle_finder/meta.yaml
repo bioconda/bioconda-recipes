@@ -1,0 +1,46 @@
+{% set version = "1.0.0" %}
+{% set sha256 = "1254695585e1211b279ca036ac24594100ef1d21998e9fe1739f83364fbb7942" %}
+
+
+package:
+  name: cycle_finder
+  version: {{ version }}
+
+source:
+  sha256: '{{sha256}}'
+  url: https://github.com/rkajitani/cycle_finder/archive/refs/tags/v{{ version }}.tar.gz
+
+build:
+  number: 1
+  skip: True # [osx]
+
+requirements:
+  build:
+    - make
+    - openmp
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - libgomp      # [linux]
+    - llvm-openmp  # [osx]
+  host:
+    - openmp
+  run:
+    - openmp
+    - zlib
+    - gzip
+    - bzip2
+    - cd-hit
+    - blast
+    - trf
+    - jellyfish
+
+test:
+  commands:
+    - cycle_finder -h
+
+about:
+  home: https://github.com/rkajitani/cycle_finder
+  license: GPL-3.0
+  license_file: LICENSE
+  license_family: GPL
+  summary: A de novo analysis tool for tandem and interspersed repeats based on cycle-finding

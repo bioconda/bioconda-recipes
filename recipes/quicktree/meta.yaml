@@ -1,27 +1,43 @@
+{% set name = "quicktree" %}
 {% set version = "2.5" %}
 
 package:
-  name: quicktree
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/khowe/quicktree/archive/v{{ version }}.tar.gz
   sha256: 731aa845ce3f1f0645bd0df2b54df75f78fce065d6a3ddc47fedf4bdcb11c248
+  patches:
+    - patches/0001-Add-rule-to-build-shared-library.patch
+    - patches/0002-Fix-segfault-in-sonLib-phylogeny-tests.patch
 
 build:
-  number: 2
+  number: 9
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
-  run:
 
 test:
   commands:
     - quicktree -h
 
 about:
-  home: https://github.com/khowe/quicktree
-  license: Apache-2.0
-  summary: Fast implementation of the neighbour-joining phylogenetic inference method
+  home: "https://github.com/khowe/quicktree"
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: LICENSE
+  summary: "Fast implementation of the neighbour-joining phylogenetic inference method."
+  dev_url: "https://github.com/khowe/quicktree"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:quicktree
+    - usegalaxy-eu:quicktree

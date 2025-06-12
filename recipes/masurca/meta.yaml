@@ -1,5 +1,5 @@
 {% set name = "masurca" %}
-{% set version = "4.0.9" %}
+{% set version = "4.1.3" %}
 
 package:
   name: {{ name }}
@@ -7,44 +7,52 @@ package:
 
 source:
   url: https://github.com/alekseyzimin/masurca/releases/download/v{{ version }}/MaSuRCA-{{ version }}.tar.gz
-  sha256: a31c2f786452f207c0b0b20e646b6c85b7357dcfd522b697c1009d902d3ed4cf
+  sha256: 133536fd83d75a433c7020c19cf9a37d892a744abf69dd929c424e2b90a3ee64
+  patches:
+    - 0002-48bit_iterator.patch
 
 build:
   number: 1
   skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - yaggo
     - make
+    - automake
+    - autoconf
+    - libtool
+    - pkg-config
   host:
     - zlib
     - bzip2
+    - libxcrypt
     - boost-cpp
-    - perl 
   run:
-    - zlib
     - boost-cpp
     - perl
     - grep
     - bwa
-    - minimap2
 
 test:
   commands:
     - masurca --help
 
 about:
-  home: http://masurca.blogspot.co.uk/
-  license: GPL-3.0-only
-  license_family: GPL
-  license_file: LICENSE.txt
-  summary: |
+  home: "https://masurca.blogspot.co.uk"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: "LICENSE.txt"
+  dev_url: "https://github.com/alekseyzimin/masurca"
+  doc_url: "https://github.com/alekseyzimin/masurca/blob/v{{ version }}/README.md"
+  description:
     MaSuRCA (Maryland Super-Read Celera Assembler) genome assembly software.
     MaSuRCA requires Illumina data, and supports third-generation PacBio/Nanopore
     MinION reads for hybrid assembly.
+  summary: "MaSuRCA (Maryland Super-Read Celera Assembler) genome assembly software."
 
 extra:
   identifiers:

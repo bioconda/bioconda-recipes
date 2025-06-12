@@ -1,4 +1,4 @@
-{% set version = "2.4.0" %}
+{% set version = "2.7.5" %}
 {% set name = "PopPUNK" %}
 
 package:
@@ -6,31 +6,33 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/johnlees/{{ name|lower }}/archive/v{{ version }}.tar.gz
-  sha256: c2f7eb18affaa22ec2ba5ddd86fa4cc3f4fef40abd4bea40176f39a3c4f142aa
+  url: https://github.com/bacpop/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: ebf19fa55c83e1e97190a9332423bde8a8a2db8d268347229b79c8c9c7370fb7
 
 build:
-  number: 2
-  skip: true  # [py < 38]
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  number: 0
+  skip: True # [py < 39]
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   entry_points:
     - poppunk = PopPUNK.__main__:main
     - poppunk_assign = PopPUNK.assign:main
     - poppunk_visualise = PopPUNK.visualise:main
     - poppunk_mst = PopPUNK.sparse_mst:main
-    - poppunk_prune = PopPUNK.prune_db:main
     - poppunk_references = PopPUNK.reference_pick:main
-    - poppunk_tsne = PopPUNK.tsne:main
+    - poppunk_mandrake = PopPUNK.mandrake:main
+    - poppunk_info = PopPUNK.info:main
+    - poppunk_lineages_from_strains = PopPUNK.lineages:main
+  run_exports:
+    - {{ pin_subpackage("poppunk", max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux64]
     - cmake >=3.18
     - make
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
   host:
     # python
     - python
@@ -40,7 +42,6 @@ requirements:
     - zlib
     - eigen
     - boost-cpp
-    - openblas
   run:
     # python
     - python
@@ -52,20 +53,16 @@ requirements:
     - graph-tool >=2.35
     - matplotlib-base
     - hdbscan
-    - pp-sketchlib >=1.7.0
+    - pp-sketchlib >=2.0.1
     - rapidnj
     - networkx
     - h5py
     - tqdm
-    # http server
+    - mandrake
+    - biopython
+    - treeswift
     - requests
-    - flask
-    - flask-cors
-    - flask-apscheduler
-    - gunicorn
     # C++ extension
-    - zlib
-    - libblas
     # The xorg-* requirements are only used for gtk3 which is pulled in via graph-tool.
     - xorg-libxi
     - xorg-libxcursor
@@ -81,22 +78,29 @@ test:
   imports:
     - PopPUNK
     - poppunk_refine
-
   commands:
     - poppunk --help
     - poppunk_assign --help
     - poppunk_visualise --help
     - poppunk_mst --help
-    - poppunk_prune --help
     - poppunk_references --help
-    - poppunk_tsne --help
+    - poppunk_mandrake --help
+    - poppunk_info --help
+    - poppunk_lineages_from_strains --help
 
 about:
-  home: https://www.poppunk.net
-  license: Apache-2.0
+  home: "https://poppunk.bacpop.org"
+  license: "Apache-2.0"
   license_family: APACHE
+  license_file: LICENSE
   summary: 'PopPUNK (POPulation Partitioning Using Nucleotide Kmers)'
+  dev_url: "https://github.com/bacpop/PopPUNK"
+  doc_url: "https://poppunk.bacpop.org/index.html"
 
 extra:
   identifiers:
     - doi:10.1101/gr.241455.118
+    - biotools:poppunk
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

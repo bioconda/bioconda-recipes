@@ -1,29 +1,31 @@
-{% set version = "1.1" %}
-{% set sha256 = "9e299a0b5c33156a84e5ef345d7f1c15d9c504d25d142e15bb8f92a34bb2a82d" %}
+{% set version = "1.6" %}
+{% set sha256 = "d5f5fc5c2fb047fdbc6292a36dc3a164f5bbf820f87ceebafecf1412c41632f6" %}
 
 package:
   name: hmftools-lilac
   version: '{{ version }}'
 
 source:
-  url: https://github.com/hartwigmedical/hmftools/releases/download/lilac-v{{ version }}/lilac.jar
+  url: https://github.com/hartwigmedical/hmftools/releases/download/lilac-v{{ version }}/lilac_v{{ version }}.jar
   sha256: '{{ sha256 }}'
 
 build:
   noarch: generic
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('hmftools-lilac', max_pin="x") }}
 
 requirements:
   run:
     - zlib
-    - openjdk >=8
+    - openjdk >=8,<=21
 
 test:
   commands:
-    - 'LILAC 2>&1 | grep -q "LilacApplication"'
+    - 'lilac -version | grep Lilac'
 
 about:
   home: https://github.com/hartwigmedical/hmftools/blob/master/lilac/README.md
-  license:  "GNU General Public v3 (GPLv3)"
+  license: GPL-3.0-only
   license_family: GPL3
   summary: LILAC is a WGS tool to determine HLA Class I types.

@@ -1,0 +1,42 @@
+{% set version = "1.6.0" %}
+{% set name = "planttfhunter" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: planttfhunter is used to identify plant transcription factors (TFs) from protein sequence data and classify them into families and subfamilies using the classification scheme implemented in PlantTFDB. TFs are identified using pre-built hidden Markov model profiles for DNA-binding domains. Then, auxiliary and forbidden domains are used with DNA-binding domains to classify TFs into families and subfamilies (when applicable). Currently, TFs can be classified in 58 different TF families/subfamilies.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Identification and classification of plant transcription factors
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-planttfhunter", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: BiocStyle, covr, sessioninfo, knitr, rmarkdown, testthat (>= 3.0.0)
+# SystemRequirements: HMMER <http://hmmer.org/>
+requirements:
+  host:
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+  run:
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+source:
+  md5: 8d2aac7dd28d9c74019070fe692019b8
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

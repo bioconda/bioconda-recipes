@@ -1,0 +1,50 @@
+{% set name = "hmnillumina" %}
+{% set version = "1.5.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/guillaume-gricourt/HmnIllumina/archive/{{ version }}.tar.gz
+  sha256: 4ef0913c0f2fe681f2a42102649263c6516dff980dcda6b0af7eee898c49b1ab
+
+build:
+  number: 1
+  skip: true  # [osx]
+  run_exports:
+    - {{ pin_subpackage('hmnillumina', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - illumina-interop
+    - rapidjson
+    - zlib
+  run:
+    - python
+    - pytest
+    - illumina-interop
+    - rapidjson
+
+test:
+  source_files:
+    - Makefile
+  commands:
+    - HmnIllumina
+  requires:
+    - make
+
+about:
+  home: https://github.com/guillaume-gricourt/HmnIllumina
+  summary: A parser for Illumina run
+  description: 'HmnIllumina: parsing Illumina InterOp folder to keep useful information'
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - guillaume-gricourt

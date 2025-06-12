@@ -1,0 +1,50 @@
+{% set name = "svtopovz" %}
+{% set version = "0.2.0" %}
+{% set shasum = "17fb74a343ad9ddd537527de990a4fd7495fbbb450bd56fb42e7c576a3a3a6e5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PacificBiosciences/HiFi-SVTopo/archive/v{{ version }}.tar.gz 
+  sha256: {{ shasum }}
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install SVTopoVz/ --no-deps --no-build-isolation --no-cache-dir"
+  entry_points:
+    - svtopovz = svtopovz.__main__:main
+  run_exports:
+    - {{ pin_subpackage('svtopovz', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.10
+    - cython >=3.0.10
+    - setuptools
+  run:
+    - python >=3.10
+    - matplotlib-base >=3.8.4
+    - numpy ==1.26.4
+    - scikit-image >=0.24.0
+    - Jinja2 ==3.1.5
+    - tqdm ==4.67.1
+    - pytest ==8.3.5
+
+test:
+  commands:
+    - svtopovz --version
+    - svtopovz --help
+
+about:
+  home: https://github.com/PacificBiosciences/HiFi-SVTopo
+  license: "Pacific Biosciences Software License Agreement"
+  summary: "Complex structural variant visualization for HiFi sequencing data: plotting tool."
+  dev_url: https://github.com/PacificBiosciences/HiFi-SVTopo
+
+extra:
+  recipe-maintainers:
+    - jbelyeu

@@ -1,0 +1,47 @@
+{% set name = "PROVEAN" %}
+{% set version = "1.1.5" %}
+{% set sha256 = "f543a4446f239bbe57ab16bb0ea2be5f6aeebddb58f8025dc38781ad4c8e007c" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://sourceforge.net/projects/provean/files/provean-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches: 
+    - osx_SequenceDB.patch  # [osx]
+    - blast_db.patch
+
+build:
+  number: 3
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - blast <=2.9
+    - cd-hit 4.8
+  run:
+    - blast <=2.9
+    - cd-hit 4.8
+
+test:
+  commands:
+    - provean 2>&1 | grep "USAGE"
+    - provean.sh 2>&1 | grep "provean.sh"
+
+about:
+  home: https://www.jcvi.org/research/provean
+  license: GPL-3
+  license_family: GPL
+  license_file: LICENSE
+  summary: "PROVEAN (Protein Variation Effect Analyzer) is a software tool which predicts whether an amino acid substitution or indel has an impact on the biological function of a protein."
+  notes: PROVEAN requires BLAST NR database v4 or older that can be set with the variable BLAST_DB_NR.
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btv195
+    - doi:10.1371/journal.pone.0046688

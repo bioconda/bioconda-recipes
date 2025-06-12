@@ -1,4 +1,4 @@
-{% set version = "0.4.0" %}
+{% set version = "1.0" %}
 {% set sha256 = "f4784e0c8863c266c2b826078bfe46fca4943fcde5799337891c333c9e0d29b4" %}
 
 package:
@@ -6,6 +6,7 @@ package:
   version: {{ version }}
 
 build:
+  skip: True  # [osx]
   number: 3
 
 source:
@@ -18,24 +19,23 @@ requirements:
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
     - llvm-openmp  # [osx]
+    - libgomp      # [linux]
     - zstd
     - make
   host:
     - zlib
-    - llvm-openmp  # [osx]
   run:
     - zlib
-    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - dashing --help 2>&1 | grep {{ version }}
 
 about:
   home: https://github.com/dnbaker/dashing
   license: GPL-3
   summary: Fast and accurate genomic distances using HyperLogLog
   license_file: LICENSE
-
-test:
-  commands:
-    - dashing --help 2>&1 | grep {{ version }}
 
 extra:
   identifiers:

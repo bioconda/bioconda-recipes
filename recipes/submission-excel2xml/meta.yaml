@@ -1,0 +1,39 @@
+{% set version = "3.4" %}
+
+package:
+  name: submission-excel2xml
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('submission-excel2xml', max_pin="x") }}
+
+source:
+  url: https://github.com/ddbj/submission-excel2xml/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 925ae1409c1be341e18f865067e84a51da9c1b1cf3c60af4ac284641a4ac346c 
+
+requirements:
+  host:
+    - make
+    - ruby >=3.0
+    - compilers
+  run:
+    - ruby >=3.0
+    - libxml2
+
+test:
+  commands:
+    # - excel2xml_dra -h
+    # - excel2xml_jga -h
+    - excel2xml_dra -a example -i 0001 -p PRJDB7252  ${XDG_DATA_HOME}/submission-excel2xml/example/example-0001_dra_metadata.xlsx && validate_meta_dra -a example -i 0001
+    - excel2xml_dra -a example -i 0002 -p PRJDB7252 -c "National Institute of Genetics" ${XDG_DATA_HOME}/submission-excel2xml/example/example-0002_dra_metadata.xlsx && validate_meta_dra -a example -i 0002
+    - excel2xml_jga -j JSUB999999 ${XDG_DATA_HOME}/submission-excel2xml/example/JSUB999999_jga_metadata.xlsx && validate_meta_jga -j JSUB999999
+
+about:
+  home: https://github.com/ddbj/submission-excel2xml
+  license: Apache License 2.0
+  summary: Generate DRA metadata XML files from Excel spreadsheet
+
+
