@@ -1,5 +1,5 @@
 {% set name = "py_fasta_validator" %}
-{% set version = "0.5" %}
+{% set version = "0.6" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,21 +7,26 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "1f22c832bbc76b7d12e4f137224b5f19f0d0e61b30709455ef66a8deefcdeade"
+  sha256: "ca29c20e1be31ef190f923b62ddb7fccda8c1c3ba9cf699a6ccaccce10ea011a"
 
 build:
-  number: 3
+  number: 6
+  run_exports:
+    - {{ pin_subpackage(name, max_pin = "x.x") }}
+
   skip: True  # [py < 37]
   script: "{{ PYTHON }} -m pip install --ignore-installed --no-cache-dir -vvv ." 
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - make
   host:
     - python
     - pip
     - setuptools >=38.6.0
     - setuptools_scm
+    - zlib
   run:
     - python
     - setuptools >=38.6.0
@@ -43,6 +48,9 @@ about:
   dev_url: "https://github.com/linsalrob/py_fasta_validator"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   recipe-maintainers:
     - linsalrob
   identifiers:

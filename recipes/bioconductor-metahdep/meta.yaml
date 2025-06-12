@@ -1,41 +1,21 @@
-{% set version = "1.56.0" %}
+{% set version = "1.64.0" %}
 {% set name = "metahdep" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 3254dcdb515fa65cee397b399a41e8a1
+about:
+  description: Tools for meta-analysis in the presence of hierarchical (and/or sampling) dependence, including with gene expression studies
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Hierarchical Dependence in Meta-Analysis
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: affyPLM
-requirements:
-  host:
-    - r-base
-    - libblas
-    - liblapack
-  run:
-    - r-base
-  build:
-    - {{ compiler('c') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Hierarchical Dependence in Meta-Analysis'
-  description: 'Tools for meta-analysis in the presence of hierarchical (and/or sampling) dependence, including with gene expression studies'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-metahdep", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:metahdep
@@ -44,4 +24,32 @@ extra:
     name: bioconductor-metahdep
     path: recipes/bioconductor-metahdep
     version: 1.38.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: affyPLM
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - r-base
+    - libblas
+    - liblapack
+  run:
+    - r-base
+
+source:
+  md5: caaf064d7e18803a472e8fccfc255c58
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

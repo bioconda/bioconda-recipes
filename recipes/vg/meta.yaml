@@ -1,21 +1,25 @@
 {% set name = "vg" %}
-{% set version = "1.45.0" %}
+{% set version = "1.65.0" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/vgteam/vg/releases/download/v{{ version }}/vg
-  sha256: 2b7fab7bb075d3b28e13665ddc45a716293206aad3cd700d68b2a4c5b428739c
+  - url: https://github.com/vgteam/vg/releases/download/v{{ version }}/vg       # [linux and x86_64]
+    sha256: 78ded5d2ed0e7c102806860d842ab7ca54e3ec6ef71242d0a38e9a5ca633f23c    # [linux and x86_64]
+  - url: https://github.com/vgteam/vg/releases/download/v{{ version }}/vg-arm64 # [linux and aarch64]
+    sha256: 3d1947cef46339e71f4e38333fa0c48a7f24596303f3190818998dc41a66983c    # [linux and aarch64]
 
 build:
   number: 0
   skip: true  # [osx]
   script:
     - mkdir -p ${PREFIX}/bin
-    - cp vg ${PREFIX}/bin/
+    - cp vg* ${PREFIX}/bin/vg
     - chmod +x ${PREFIX}/bin/vg
+  run_exports:
+    - {{ pin_subpackage('vg', max_pin="x") }}
 
 test:
   commands:
@@ -24,8 +28,11 @@ test:
 about:
   home: https://github.com/vgteam/vg
   license: MIT
+  license_family: MIT
   summary: Variation graph data structures, interchange formats, alignment, genotyping, and variant calling methods
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   skip-lints:
     - should_be_noarch_generic

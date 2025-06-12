@@ -1,47 +1,60 @@
-{% set name = "Kleborate" %}
-{% set version = "2.3.1" %}
+{% set name = "kleborate" %}
+{% set version = "3.1.3" %}
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://github.com/katholt/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 81bd01f9c7db7ca1d6763571eddea616e4970d2420dab6dfa8a9b47aebb8a870
-  patches:
-    - fix_get_kaptive_path.patch
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/kleborate-{{ version }}.tar.gz"
+  sha256: ff8517f7916c6d5d6dc5d69c760387af92e5e253d283689bfe73cde4fc7bea67
 
 build:
-  noarch: python
   number: 0
+  noarch: python
+  entry_points:
+    -  kleborate = kleborate.__main__:main
+  script:
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('kleborate', max_pin='x') }}
 
 requirements:
   host:
-    - python >=3.7
-    - biopython >=1.73,<1.78
-    - kaptive
-    - blast >=2.2.31
-    - mash
+    - pip
+    - python >=3.9
+    - setuptools
   run:
-    - python >=3.7
-    - biopython >=1.73,<1.78
-    - kaptive
-    - blast >=2.2.31
+    - python >=3.9
+    - biopython >=1.83
+    - numpy >=1.22
+    - dna_features_viewer
+    - minimap2
     - mash
+    - kaptive
 
 test:
+  imports:
+    - kleborate
   commands:
-    - kaptive.py -h
-    - kleborate -h
-    - kleborate -a $(which kleborate | sed 's=bin/kleborate=opt/kaptive_reference_database/exact_match.fasta=')
+    - kaptive --help
+    - minimap2 --help
+    - kleborate --help
 
 about:
-  home: https://github.com/katholt/Kleborate
-  license: GNU General Public License v3 or later (GPLv3+)
-  license_file: LICENSE
-  summary: 'Screening Klebsiella genome assemblies for MLST, sub-species, and other Klebsiella related genes of interest'
-  long_summary: 'A tool to screen Klebsiella genome assembiles for: MLST sequence type, 
-  species (e.g. K. pneumoniae, K. quasipneumoniae, K. variicola, etc.), 
-  ICEKp associated virulence loci: yersiniabactin (ybt), colibactin (clb), virulence plasmid associated loci: salmochelin (iro), aerobactin (iuc), hypermucoidy (rmpA, rmpA2), antimicrobial resistance genes, including quinolone resistance SNPs and colistin resistance truncations, 
-  and K (capsule) and O antigen (LPS) serotype prediction, via wzi alleles and Kaptive.'
+  home: "https://kleborate.readthedocs.io/"
+  dev_url: "https://github.com/klebgenomics/Kleborate"
+  summary: "Kleborate: a tool for typing and screening pathogen genome assemblies"
+  license: "GPL-3.0-or-later"
   license_family: GPL3
+  license_file: LICENSE
+  doc_url: "https://kleborate.readthedocs.io/"
+
+extra:
+  recipe-maintainers:
+    - Marysteph
+  identifiers:
+    - doi:10.1038/s41467-021-24448-3
+    - doi:10.1099/mgen.0.000102
+    - biotools:kleborate
+    - usegalaxy-eu:kleborate

@@ -1,0 +1,51 @@
+{% set name = "metabolights-utils" %}
+{% set version = "1.4.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/metabolights_utils-{{ version }}.tar.gz
+  sha256: 9006cf4d570b40f332cb7a80bc88f6313ca6384c7d39137242d37e86f3720fab
+
+build:
+  entry_points:
+    - mtbls = metabolights_utils.commands.cli:cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.8,<4.0
+    - pydantic >=2.0.0,<3.0.0
+    - pydantic-settings >=2.0.3,<3.0.0
+    - unidecode >=1.3.8,<2.0.0
+    - jsonschema >=4.22.0,<5.0.0
+    - click >=8.1.7,<9.0.0
+    - beautifulsoup4 >=4.12.3,<5.0.0
+    - jsonpath-ng >=1.6.1,<2.0.0
+    - httpx >=0.27.0,<0.28.0
+    - python-dateutil >=2.9.0,<3.0.0
+
+test:
+  imports:
+    - metabolights_utils
+  commands:
+    - mtbls --version
+    - mtbls --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/EBI-Metabolights/metabolights-utils
+  summary: MetaboLights open metabolomics data repository command line interface (CLI), common MetaboLights data models, utility methods and classes.
+  license: Apache-2.0
+  license_file: LICENSE

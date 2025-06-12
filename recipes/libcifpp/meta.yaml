@@ -1,41 +1,56 @@
-{% set version = "5.0.0" %}
+{% set name = "libcifpp" %}
+{% set version = "8.0.1" %}
+{% set sha256 = "53f0ff205711428dcabf9451b23804091539303cea9d2f54554199144ca0fc4e" %}
 
 package:
-  name: libcifpp
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  git_url: https://github.com/PDB-REDO/libcifpp
-  git_tag: "v{{ version }}"
-  sha256: fc1ed30d9bddddc10f32f96bb7fc9cb82430c93d012a7cd17d69678287542dec
+  url: https://github.com/PDB-REDO/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - ninja
+  host:
+    - zlib
+    - boost-cpp
+    - eigen
+    - clangdev
+    - llvmlite
+  run:
+    - boost-cpp
+    - eigen
 
 test:
   commands:
     - test -e $PREFIX/lib/libcifpp.a
 
-build:
-  skip: True  # [osx]
-  number: 0
-  run_exports:
-    - {{ pin_subpackage('libcifpp', max_pin='x.x') }}
-
-requirements:
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - boost-cpp
-    - cmake
-    - make
-    
 about:
-  home: https://github.com/PDB-REDO/libcifpp
-  license: BSD-2-Clause
+  home: "https://github.com/PDB-REDO/libcifpp"
+  license: "BSD-2-Clause"
   license_file: LICENSE
   license_family: BSD
-  summary: Library containing code to manipulate mmCIF and PDB files
+  summary: "Library containing code to manipulate mmCIF and PDB files."
+  doc_url: "https://pdb-redo.github.io/libcifpp"
+  dev_url: "https://github.com/PDB-REDO/libcifpp"
 
 extra:
   recipe-maintainers:
     - multimeric
-  skip-lints:
-    - uses_vcs_url
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

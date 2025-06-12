@@ -1,41 +1,56 @@
-{% set version = "0.0.11" %}
+{% set version = "0.6.4" %}
+{% set name = "fibertools-rs" %}
+{% set build_number = "0" %}
 
 package:
-  name: fibertools-rs
+  name: {{ name }}
   version: {{ version }}
+  
+source:  
+  url: https://github.com/fiberseq/fibertools-rs/archive/v{{ version }}.tar.gz
+  sha256: e6b0817e770f0db3dd3fcc01f196ba438384cdfaa9b33495058f0b450d747198
 
 build:
-  number: 0
-
-source:
-  url: https://github.com/mrvollger/fibertools-rs/archive/v{{ version }}.tar.gz
-  sha256: 7146e92d2ffc86af84e46eabc2d75a502a7802d5b04c61fbc08133b0fb660664
-
+  run_exports:
+    - {{ pin_subpackage('fibertools-rs', max_pin="x.x") }}
+  number: {{ build_number }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - rust >=1.60
-    - clangdev
-    - pkg-config
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
     - make
     - cmake
-    - rust-bio-tools
+  # all the host and run requirements match those needed for htslib
   host:
-    - gsl
-    - libcblas
     - libcurl
-    - openssl
+    - bzip2
+    - xz
+    - zlib
+    - libdeflate
+    - openssl  # [not osx]
+    - unzip
+    - curl
   run:
-    - openssl
+    - openssl  # [not osx]
 
 test:
   commands:
-    - ft --help
-
+    - ft help
 
 about:
-  home: https://github.com/mrvollger/fibertools-rs
+  home: "https://github.com/fiberseq/fibertools-rs"
   license: MIT
-  summary: Mitchell Vollger's rust tools for fiberseq data.
+  license_family: MIT
+  summary: "Mitchell Vollger's rust tools for fiberseq data."
+  dev_url: "https://github.com/fiberseq/fibertools-rs"
+  doc_url: "https://fiberseq.github.io/fibertools/fibertools.html"
+
+extra:
+  recipe-maintainers:
+    - mrvollger
+  additional-platforms:
+    - osx-arm64
+    # - linux-aarch64 # Dependency issue, see https://github.com/bioconda/bioconda-recipes/pull/48868

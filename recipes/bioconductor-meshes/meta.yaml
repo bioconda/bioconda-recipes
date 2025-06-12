@@ -1,50 +1,21 @@
-{% set version = "1.24.0" %}
+{% set version = "1.32.0" %}
 {% set name = "meshes" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 9b5827ad8c0fb6536efd04eaa78c098d
+about:
+  description: MeSH (Medical Subject Headings) is the NLM controlled vocabulary used to manually index articles for MEDLINE/PubMed. MeSH terms were associated by Entrez Gene ID by three methods, gendoo, gene2pubmed and RBBH. This association is fundamental for enrichment and semantic analyses. meshes supports enrichment analysis (over-representation and gene set enrichment analysis) of gene list or whole expression profile. The semantic comparisons of MeSH terms provide quantitative ways to compute similarities between genes and gene groups. meshes implemented five methods proposed by Resnik, Schlicker, Jiang, Lin and Wang respectively and supports more than 70 species.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: MeSH Enrichment and Semantic analyses
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, rmarkdown, prettydoc
-requirements:
-  host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-dose >=3.24.0,<3.25.0'
-    - 'bioconductor-enrichplot >=1.18.0,<1.19.0'
-    - 'bioconductor-gosemsim >=2.24.0,<2.25.0'
-    - 'bioconductor-meshdbi >=1.34.0,<1.35.0'
-    - r-base
-    - r-yulab.utils
-  run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-dose >=3.24.0,<3.25.0'
-    - 'bioconductor-enrichplot >=1.18.0,<1.19.0'
-    - 'bioconductor-gosemsim >=2.24.0,<2.25.0'
-    - 'bioconductor-meshdbi >=1.34.0,<1.35.0'
-    - r-base
-    - r-yulab.utils
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'MeSH Enrichment and Semantic analyses'
-  description: 'MeSH (Medical Subject Headings) is the NLM controlled vocabulary used to manually index articles for MEDLINE/PubMed. MeSH terms were associated by Entrez Gene ID by three methods, gendoo, gene2pubmed and RBBH. This association is fundamental for enrichment and semantic analyses. meshes supports enrichment analysis (over-representation and gene set enrichment analysis) of gene list or whole expression profile. The semantic comparisons of MeSH terms provide quantitative ways to compute similarities between genes and gene groups. meshes implemented five methods proposed by Resnik, Schlicker, Jiang, Lin and Wang respectively and supports more than 70 species.'
+  run_exports: '{{ pin_subpackage("bioconductor-meshes", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:meshes
@@ -53,4 +24,41 @@ extra:
     name: bioconductor-meshes
     path: recipes/bioconductor-meshes
     version: 1.6.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, prettydoc
+requirements:
+  host:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-dose >=4.0.0,<4.1.0
+    - bioconductor-enrichplot >=1.26.0,<1.27.0
+    - bioconductor-gosemsim >=2.32.0,<2.33.0
+    - bioconductor-meshdbi >=1.42.0,<1.43.0
+    - r-base
+    - r-yulab.utils >=0.1.5
+  run:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-dose >=4.0.0,<4.1.0
+    - bioconductor-enrichplot >=1.26.0,<1.27.0
+    - bioconductor-gosemsim >=2.32.0,<2.33.0
+    - bioconductor-meshdbi >=1.42.0,<1.43.0
+    - r-base
+    - r-yulab.utils >=0.1.5
+
+source:
+  md5: 67f774a48cecf5173121fff150972d54
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

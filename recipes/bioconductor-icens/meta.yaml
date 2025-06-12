@@ -1,37 +1,21 @@
-{% set version = "1.70.0" %}
+{% set version = "1.78.0" %}
 {% set name = "Icens" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 0cf1c275f889bcc3bc8d37e552144513
+about:
+  description: Many functions for computing the NPMLE for censored and truncated data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: NPMLE for Censored and Truncated Data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - r-base
-    - r-survival
-  run:
-    - r-base
-    - r-survival
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'NPMLE for Censored and Truncated Data'
-  description: 'Many functions for computing the NPMLE for censored and truncated data.'
+  run_exports: '{{ pin_subpackage("bioconductor-icens", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:icens
@@ -40,4 +24,28 @@ extra:
     name: bioconductor-icens
     path: recipes/bioconductor-icens
     version: 1.52.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  host:
+    - r-base
+    - r-survival
+  run:
+    - r-base
+    - r-survival
+
+source:
+  md5: a9c2a7c2a240d00ef9baa1100daabf5c
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

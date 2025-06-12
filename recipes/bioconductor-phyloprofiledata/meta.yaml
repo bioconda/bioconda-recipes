@@ -1,43 +1,45 @@
-{% set version = "1.12.0" %}
+{% set version = "1.20.0" %}
 {% set name = "PhyloProfileData" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 40f15a8b8cf7bdf63362ecb46e24a58e
+about:
+  description: Two experimental datasets to illustrate running and analysing phylogenetic profiles with PhyloProfile package.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Data package for phylogenetic profile analysis using PhyloProfile tool
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-phyloprofiledata", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: knitr, rmarkdown, markdown
 requirements:
   host:
-    - 'bioconductor-biocstyle >=2.26.0,<2.27.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
     - r-base
   run:
-    - 'bioconductor-biocstyle >=2.26.0,<2.27.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221108
+    - bioconductor-data-packages >=20241103
+source:
+  md5: c90f4558af49b28657028abe5d402f4f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Data package for phylogenetic profile analysis using PhyloProfile tool'
-  description: 'Two experimental datasets to illustrate running and analysing phylogenetic profiles with PhyloProfile package.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

@@ -1,0 +1,73 @@
+{% set name = "fairease-source" %}
+{% set version = "1.4.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/fair-ease/Source/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 2c29f71fe34c6ea6bf45d1bf10340a5dc901bbcf4830d5f892d7bee5ad4f0178
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('fairease-source', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - netCDF4
+    - numpy
+    - pandas
+    - python >=3.6
+    - pykml
+    - scipy
+    - seawater
+    - scikit-learn
+    - unidecode
+
+test:
+  imports:
+    - SOURCE
+    - SOURCE.time_calc
+    - SOURCE.obs_postpro.insitu_tac_pre_processing
+  commands:
+    - create_probes_earth_map.py
+    - duplicated_records_remover.py
+    - find_variable_name.py
+    - insitu_evaluation.py
+    - pointwise_datasets_concatenator.py
+    - ptmp_to_temp.py
+    - real_time_concatenator.py
+    - records_monotonicity_fixer.py
+    - time_calc.py | grep "Script to compute most probable"
+    - time_check.py | grep "Script to compute time step verification"
+    - model_postpro.py
+    - vertical_interpolation.py
+    - model_datasets_concatenator.py
+    - data_information_calc.py | grep "Script to calculate total, valid"
+    - depth_aggregator.py
+    - depth_calc.py | grep "Script to calculate rounded depth"
+    - insitu_tac_platforms_finder.py
+    - insitu_tac_pre_processing.py
+    - insitu_tac_timeseries_extractor.py
+    - mean_variance_nc_variable.py | grep "Script to compute variable average"
+    - metadata_merger.py
+    - obs_postpro.py
+    - quality_check_applier.py
+    - rejection_statistics.py
+    - time_averager.py
+    - time_from_index.py
+    - time_series_post_processing.py
+    - unique_values_nc_variable.py
+
+about:
+  home: "https://github.com/fair-ease/Source"
+  license: CC-BY-NC-4.0
+  license_family: CC
+  summary: "SOURCE: Sea Observations Utility for Reprocessing, Calibration and Evaluation"
+  dev_url: https://github.com/fair-ease/Source

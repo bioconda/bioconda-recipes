@@ -1,30 +1,40 @@
 {% set name = "mummer4" %}
-{% set version = "4.0.0rc1" %}
+{% set version = "4.0.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  sha256: 85006adb2d6539c2f738c3e3bb14b58bb6f62cd6c6ca5ede884a87ae76e07d1d
+  sha256: bc20ae2701a0b2e323e4e515b7cfa18a0f0cb34a4ff5844b289b2de0154e3d3e
   url: https://github.com/mummer4/mummer/releases/download/v{{ version }}/mummer-{{ version }}.tar.gz
   patches:
-    - Makefile.am.patch # replaces some double quotes with single quotes to accomodate filepaths with '@' (Galaxy)
-    - Makefile.in.patch
-    - 0001-sort-mgaps-file-before-postpro.-on-behalf-of-jervied.patch  # fixes https://github.com/mummer4/mummer/issues/55
+    #- 0001-Makefile.am.patch  # replaces some double quotes with single quotes to accomodate filepaths with '@' (Galaxy)
+    #- 0002-Makefile.in.patch
+    - 0003-sort-mgaps-file-before-postpro.-on-behalf-of-jervied.patch  # fixes https://github.com/mummer4/mummer/issues/55
 
 build:
-  number: 4
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - libtool
   host:
     - perl
+    - swig
+    - yaggo
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
   run:
     - perl
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
 
 test:
   commands:
@@ -36,6 +46,19 @@ test:
     - "show-aligns -h &> /dev/null"
 
 about:
-  home: 'https://mummer4.github.io/'
-  license: "The Artistic License 2.0"
-  summary: "MUMmer is a system for rapidly aligning entire genomes"
+  home: "https://mummer4.github.io"
+  license: "Artistic License 2.0"
+  summary: "MUMmer is a system for rapidly aligning entire genomes."
+  dev_url: "https://github.com/mummer4/mummer"
+  doc_url: "https://github.com/mummer4/mummer/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1371/journal.pcbi.1005944
+    - biotools:mummer4
+    - usegalaxy-eu:mummer_mummer
+    - usegalaxy-eu:mummerplot
+    - usegalaxy-eu:mummerplot_wrapper

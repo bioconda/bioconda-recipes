@@ -1,5 +1,5 @@
 {% set name = "getorganelle" %}
-{% set version = "1.7.7.0" %}
+{% set version = "1.7.7.1" %}
 
 package:
   name: {{name}}
@@ -7,20 +7,21 @@ package:
 
 source:
   url: https://github.com/Kinggerm/GetOrganelle/archive/{{version}}.tar.gz
-  sha256: dd351b5cd33688adfcd8bff9794ae0cc0ce01a572dac2bcf6c9d7db77b3e4883
+  sha256: cf8e14766de43967182be839de20c9d1709b60fae38a0b3d175742dfad7a5d44
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('getorganelle', max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.7
     - pip
-
   run:
-    - python
+    - python >=3.7
     - perl
     - pigz
     - spades >=3.9
@@ -33,16 +34,25 @@ requirements:
     - requests
 
 test:
-  imports:
-    - GetOrganelleLib
-
+  #imports:
+    #- GetOrganelleLib
   commands:
     - get_organelle_from_reads.py -h
     - get_organelle_from_assembly.py -h
     - slim_graph.py -h
 
 about:
-  home: http://github.com/Kinggerm/GetOrganelle
-  license: GPL3
+  home: https://github.com/Kinggerm/GetOrganelle
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
   summary: Get organelle genomes from genome skimming data
+  dev_url: https://github.com/Kinggerm/GetOrganelle
+  doc_url: https://github.com/Kinggerm/GetOrganelle/wiki
+
+extra:
+  identifiers:
+    - doi:10.1186/s13059-020-02154-5
+    - biotools:getorganelle
+    - usegalaxy-eu:get_organelle_from_reads
+    - usegalaxy-eu:get_annotated_regions_from_gb

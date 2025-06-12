@@ -1,25 +1,29 @@
 {% set name = "midsv" %}
-{% set version = "0.8.2" %}
+{% set version = "0.11.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/midsv-{{ version }}.zip
-  sha256: 255ff02f18dfdb559bf5b5ae6c6b5584ff02562d66108c958caa00895d2f2dda
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/midsv-{{ version }}.tar.gz
+  sha256: 740bd67719c07e147868b4b1f639cc021569b7a3190a380bbd110a3ec00f1f91
 
 build:
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
+  run_exports:
+    - {{ pin_subpackage('midsv', max_pin="x.x") }}
 
 requirements:
   host:
+    - python >=3.9,<4.0
+    - poetry-core >=1.0.0
     - pip
-    - python >=3.7
   run:
-    - python >=3.7
+    - python >=3.9.0,<4.0.0
+    - cstag >=1.1.0
 
 test:
   imports:
@@ -30,7 +34,7 @@ test:
     - pip
 
 about:
-  home: https://github.com/akikuno/mids
+  home: https://github.com/akikuno/midsv
   summary: Python module to convert SAM to MIDSV format.
   license: MIT
   license_file: LICENSE

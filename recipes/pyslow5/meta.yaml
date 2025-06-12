@@ -1,29 +1,33 @@
-{% set version = "0.8.0" %}
+{% set name = "pyslow5" %}
+{% set sha256 = "2fdf091beb7e1f685d9fca70b69e406bb359d801e032d8567daf39a8833abd5a" %}
+{% set version = "1.3.0" %}
 
 package:
-  name: pyslow5
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/d5/aa/815199ef79e407b2fba5e16b8d83c2bb7e00a640d30e67921d2f672e0d9d/pyslow5-0.8.0.tar.gz
-  sha256: 362de1506340aa56bc68ec8b309f8b8fcddca7de9ecfeb86b084dfcea512032f
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pyslow5-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('pyslow5', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - python
+    - pip
     - cython
     - setuptools
     - zlib
     - numpy    
   run:
     - python
-    - zlib
-    - numpy  
+    - {{ pin_compatible('numpy') }} 
 
 test:
   imports:
@@ -31,5 +35,13 @@ test:
 
 about:
   home: https://github.com/hasindu2008/slow5lib
-  license: MIT
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: thirdparty/streamvbyte/LICENSE
   summary: 'slow5lib Python binding'
+  dev_url: https://github.com/hasindu2008/slow5lib
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

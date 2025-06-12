@@ -1,5 +1,5 @@
 {% set name = "biobb_vs" %}
-{% set version = "3.9.0" %}
+{% set version = "5.0.0" %}
 
 package:
   name: '{{ name|lower }}'
@@ -7,25 +7,34 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: aed37485a0d6a13db353f3cfcd7417cebfcadc8d66b2d7e1b6ceebdf446f2224
+  sha256: 7f8a4be739dcd4f262e284f14ca3a51f3b4feb420059bb380c92a534fb2381bf
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  entry_points:
+    - fpocket_filter = biobb_vs.fpocket.fpocket_filter:main
+    - fpocket_run = biobb_vs.fpocket.fpocket_run:main
+    - fpocket_select = biobb_vs.fpocket.fpocket_select:main
+    - bindingsite = biobb_vs.utils.bindingsite:main
+    - box_residues = biobb_vs.utils.box_residues:main
+    - box = biobb_vs.utils.box:main
+    - extract_model_pdbqt = biobb_vs.utils.extract_model_pdbqt:main
+    - autodock_vina_run = biobb_vs.vina.autodock_vina_run:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
   host:
-    - python >=3.7,<3.10
-    - setuptools
-    - biobb_common ==3.9.0
-    - autodock-vina ==1.1.2
-    - fpocket ==3.1.4.2
+    - python >=3.9,<3.12
+    - pip
+    - setuptools <66
   run:
-    - python >=3.7,<3.10
-    - biobb_common ==3.9.0
-    - autodock-vina ==1.1.2
-    - fpocket ==3.1.4.2
+    - python >=3.9,<3.12
+    - biobb_common ==5.0.0
+    - vina ==1.2.3
+    - fpocket ==4.1
 
 test:
   imports:
@@ -35,11 +44,24 @@ test:
     - biobb_vs.vina
 
 about:
-  home: https://github.com/bioexcel/biobb_vs
-  license: Apache Software License
+  home: "https://github.com/bioexcel/biobb_vs"
+  license: 'Apache-2.0'
   license_family: APACHE
-  license_file: ''
-  summary: Biobb_vs is the Biobb module collection to perform virtual screening studies.
-  description: "Biobb_vs is the Biobb module collection to perform virtual screening studies.\nBiobb (BioExcel building blocks) packages are Python\
-    \ building blocks that\ncreate new layer of compatibility and interoperability over popular\n
-    \ bioinformatics tools.\nThe latest documentation of this package can be found in our readthedocs site: http://biobb_vs.readthedocs.io/en/latest/).\n"
+  license_file: 'LICENSE'
+  summary: "Biobb_vs is the Biobb module collection to perform virtual screening studies."
+  description: "# biobb_vs\n\n### Introduction\nBiobb_vs is the Biobb module collection to perform virtual screening studies.\nBiobb (BioExcel building blocks) packages are Python building blocks that\ncreate\
+    \ new layer of compatibility and interoperability over popular\nbioinformatics tools.\nThe latest documentation of this package can be found in our readthedocs site:\n[latest API documentation](http://biobb-vs.readthedocs.io/en/latest/).\n\
+    \n\n### Copyright & Licensing\nThis software has been developed in the [MMB group](http://mmb.irbbarcelona.org) at the [BSC](http://www.bsc.es/) & [IRB](https://www.irbbarcelona.org/) for the [European BioExcel](http://bioexcel.eu/), funded by the European Commission (EU H2020 [823830](http://cordis.europa.eu/projects/823830), EU H2020 [675728](http://cordis.europa.eu/projects/675728)).\
+    \n\n* (c) 2015-2024 [Barcelona Supercomputing Center](https://www.bsc.es/)\n* (c) 2015-2024 [Institute for Research in Biomedicine](https://www.irbbarcelona.org/)\n\
+    Licensed under the\n\
+    [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0), see the file LICENSE for details.\n\
+    \n\
+    ![](https://bioexcel.eu/wp-content/uploads/2019/04/Bioexcell_logo_1080px_transp.png \"Bioexcel\")\n\n\n"
+  doc_url: 'https://biobb-vs.readthedocs.io/en/latest'
+  dev_url: 'https://github.com/bioexcel/biobb_vs'
+
+extra:
+  recipe-maintainers:
+    - PauAndrio
+    - adamhospital
+    - gbayarri

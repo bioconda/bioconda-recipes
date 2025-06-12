@@ -1,50 +1,51 @@
-{% set version = "0.3.1" %}
-{% set sha256 = "d6c08cd11a617d8ba13b492a7754b9f4e54e2b085ae076c409390ce1448d8413" %}
-
+{% set name = "pcaone" %}
+{% set version = "0.5.2" %}
+{% set sha256 = "523114924b8353a0fb03b24ea188341eaed6560caaa18d53762261303f42fa0e" %}
 
 package:
-  name: pcaone
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/Zilong-Li/PCAone/archive/refs/tags/v{{ version }}.tar.gz # [x86_64]
-  sha256: '{{ sha256 }}'
+  url: https://github.com/Zilong-Li/PCAone/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage('pcaone', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
-    - sysroot_linux-64 2.17 # [linux]
-    - intel-openmp
-
+    - sysroot_linux-64 2.17  # [linux]
   host:
-    - mkl
-    - mkl-include
-    - intel-openmp
+    - mkl >=2025.1.0  # [linux]
+    - mkl-include >=2025.1.0  # [linux]
     - zlib
-
+    - llvm-openmp # [osx]
+    - libgomp # [linux]
   run:
-    - mkl
-    - intel-openmp
-    - zlib
+    - mkl >=2025.1.0  # [linux]
+    - mkl-include >=2025.1.0  # [linux]
+    - llvm-openmp # [osx]
+    - libgomp # [linux]
 
 test:
   commands:
     - PCAone --help
 
 about:
-  home: https://github.com/Zilong-Li/PCAone
-  license: GPL-3.0-only
+  home: "https://github.com/Zilong-Li/PCAone"
+  license: "GPL-3.0-only"
   license_family: GPL3
   license_file: LICENSE
-  summary: PCAone - Principal Component Analysis All in One
-  doc_url: https://github.com/Zilong-Li/PCAone
-  dev_url: https://github.com/Zilong-Li/PCAone
+  summary: "PCAone - Principal Component Analysis All in One."
+  doc_url: "https://github.com/Zilong-Li/PCAone"
+  dev_url: "https://github.com/Zilong-Li/PCAone"
 
 extra:
   recipe-maintainers:
-    - Zilong
+    - Zilong-Li

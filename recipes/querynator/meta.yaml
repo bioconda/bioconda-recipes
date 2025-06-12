@@ -1,5 +1,5 @@
 {% set name = "querynator" %}
-{% set version = "0.1.3" %}
+{% set version = "0.6.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,45 +7,47 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: ca85e5f1fa2989a3f821cc2fb158225b742b7924af668d2405b61bcfdc4ee60c
+  sha256: 24f86d53028420e6e621aa36bd7396bde52aebb272ea6217e052a852b7233ed7
 
 build:
   number: 0
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('querynator', max_pin="x") }}
   entry_points:
     - querynator=querynator.__main__:run_querynator
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
 
 requirements:
   host:
-    - click >=8.1.3
-    - httplib2
     - pip
-    - pytest >=6.2.4
-    - python >=3.8
-    - requests
-    - requests-cache
-    - sphinx >=5.3.0
-    - sphinx-rtd-theme
+    - python >=3.8,<3.11
   run:
+    - civicpy >=3.0.0
     - click >=8.1.3
     - httplib2
+    - matplotlib-base >=3.6.1
+    - numpy ==1.24.4
+    - pandas ==1.5.3
+    - pretty_html_table >=0.9.16
     - pytest >=6.2.4
-    - python >=3.8
+    - python >=3.8,<3.11
+    - pyvcf3 >=1.0.3
     - requests
     - requests-cache
     - sphinx >=5.3.0
     - sphinx-rtd-theme
-
+    - upsetplot >=0.8.0
+    - urllib3 <2
+    
 test:
   imports:
     - querynator
+    - querynator.helper_functions
     - querynator.query_api
-    - tests
+    - querynator.report_scripts
   commands:
     - querynator --help
-  requires:
-    - pytest >=3
 
 about:
   home: "https://github.com/qbic-pipelines/querynator"

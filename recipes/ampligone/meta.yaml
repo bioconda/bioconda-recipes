@@ -1,35 +1,40 @@
 {% set name = "AmpliGone" %}
-{% set version = "1.1.0" %}
+{% set version = "2.0.1" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: bc9be58eecdc79ed8c2a23218f883ceb20ff26b0a0636a17898455842a347b67
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/ampligone-{{ version }}.tar.gz
+  sha256: 9115902d207c94e5ff5521aebce2b9ec3c0f688f0c1372effb18111f12ee8420
 
 build:
   noarch: python
   number: 0
+  run_exports:
+    - {{ pin_subpackage("ampligone", max_pin="x") }}  
   entry_points:
-    - ampligone = AmpliGone.AmpliGone:main
-    - AmpliGone = AmpliGone.AmpliGone:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+    - ampligone = AmpliGone.__main__:main
+    - AmpliGone = AmpliGone.__main__:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps
 
 requirements:
   host:
-    - python>=3.8
+    - python >=3.10
+    - hatchling >=1.27
+    - wheel
     - pip
   run:
-    - python>=3.8
-    - pandas >=1.3
-    - pysam =0.19
-    - biopython >=1.79
-    - mappy ==2.24
-    - parmap =1.5
-    - regex >=2021.11.10
-    - rich =12.5
+    - python >=3.10
+    - pandas =2.2
+    - pysam =0.22
+    - biopython ==1.84
+    - mappy ==2.28
+    - parmap =1.7
+    - parasail-python ==1.3.4
+    - rich =13.7
+    - pgzip ==0.3.4
 
 test:
   imports:
@@ -50,5 +55,5 @@ about:
 extra:
   recipe-maintainers:
     - florianzwagemaker
-    - KHajji
+    - raaijmag
     - ids-bioinformatics

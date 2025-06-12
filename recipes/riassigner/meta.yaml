@@ -1,32 +1,35 @@
-{% set version = "0.3.3" %}
+{% set name = "riassigner" %}
+{% set version = "0.4.1" %}
 
 package:
-  name: riassigner
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://github.com/RECETOX/RIAssigner/archive/refs/tags/v{{ version }}.tar.gz"
-  sha256: 920de3787a8179d3a02776344987532bd18c124641a08e939dcdbc955accb176
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/riassigner-{{ version }}.tar.gz
+  sha256: 316bc4399f0de586a8ba31e3d38b834307277bf84b7dcc2b51dfe2cead807299
 
 build:
   noarch: python
-  preserve_egg_dir: True
-  number: 1
-  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed . -vv
+  number: 0
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv
+  run_exports:
+    - {{ pin_subpackage('riassigner', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.7,<3.9
+    - python >=3.10,<3.13
     - pip
-    - pytest-runner
-    - setuptools
+    - poetry-core
   run:
     - numpy
-    - matchms >=0.9.1
-    - pint >=0.17,<0.20
+    - matchms >=0.24.1,<0.25.0
+    - pint >=0.23.0,<0.24.0
     - pandas
-    - python >=3.7,<3.9
+    - python >=3.10,<3.13
     - scipy
+    - urllib3 1.26.15
+    - fastparquet >=2023.10.1,<2024.0.0
 
 test:
   imports:
@@ -35,6 +38,7 @@ test:
 about:
   home: https://github.com/RECETOX/RIAssigner
   license: MIT
+  license_family: MIT
   license_file: LICENSE
   summary: 'GC-MS retention index calculation'
   description: |

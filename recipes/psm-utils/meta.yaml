@@ -1,26 +1,29 @@
-{% set version = "0.2.1" %}
-{% set sha256 = "2d03e4df9b8279c1c7df321ab9e9579e0ed0cc5799e01f7c898003c9373e01a8" %}
+{% set name = "psm-utils" %}
+{% set version = "1.4.1" %}
+{% set sha256 = "54ac0920a18491a307c1fe5ddfed0af0dcea3a69553b6b5d0531483029a2796f" %}
 
 package:
-  name: "psm-utils"
+  name: {{ name|lower }}
   version: "{{ version }}"
 
 source:
-  url: https://files.pythonhosted.org/packages/source/p/psm-utils/psm-utils-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/psm_utils-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   number: 0
   entry_points:
-    - psm-utils=psm-utils.__main__:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+    - psm_utils=psm_utils.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   noarch: python
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 requirements:
   host:
     - pip
     - python >=3.7
-    - flit-core
+    - setuptools
   run:
     - python >=3.7
     - pyteomics >=4
@@ -31,6 +34,8 @@ requirements:
     - click
     - rich
     - pydantic
+    - sqlalchemy
+    - pyarrow
 
 test:
   imports:
@@ -46,5 +51,8 @@ about:
   dev_url: https://github.com/compomics/psm_utils
 
 extra:
+  identifiers:
+    - doi:10.1021/acs.jproteome.2c00609
+    - biotools:psm_utils
   recipe-maintainers:
     - compomics

@@ -1,48 +1,53 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "scry" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: c9aa38d89dd8f2ed22d68b444ab4fe49
+about:
+  description: Many modern biological datasets consist of small counts that are not well fit by standard linear-Gaussian methods such as principal component analysis. This package provides implementations of count-based feature selection and dimension reduction algorithms. These methods can be used to facilitate unsupervised analysis of any high-dimensional data such as single-cell RNA-seq.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Small-Count Analysis Methods for High-Dimensional Data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: markdown, BiocGenerics, covr, DuoClustering2018, ggplot2, knitr, rmarkdown, TENxPBMCData, testthat
+  run_exports: '{{ pin_subpackage("bioconductor-scry", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocGenerics, covr, DuoClustering2018, ggplot2, HDF5Array, knitr, markdown, rmarkdown, TENxPBMCData, testthat
 requirements:
   host:
-    - 'bioconductor-biocsingular >=1.14.0,<1.15.0'
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-hdf5array >=1.26.0,<1.27.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocsingular >=1.22.0,<1.23.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
-    - 'r-glmpca >=0.2.0'
+    - r-glmpca >=0.2.0
     - r-matrix
   run:
-    - 'bioconductor-biocsingular >=1.14.0,<1.15.0'
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-hdf5array >=1.26.0,<1.27.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocsingular >=1.22.0,<1.23.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
-    - 'r-glmpca >=0.2.0'
+    - r-glmpca >=0.2.0
     - r-matrix
+
+source:
+  md5: 707c3684c772110a0c1fdab3e7a1e38a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Small-Count Analysis Methods for High-Dimensional Data'
-  description: 'Many modern biological datasets consist of small counts that are not well fit by standard linear-Gaussian methods such as principal component analysis. This package provides implementations of count-based feature selection and dimension reduction algorithms. These methods can be used to facilitate unsupervised analysis of any high-dimensional data such as single-cell RNA-seq.'
+    - $R -e "library('{{ name }}')"
 

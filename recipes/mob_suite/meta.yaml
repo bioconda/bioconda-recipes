@@ -1,41 +1,70 @@
-{% set version = "3.1.2" %}
+{% set name = "mob_suite" %}
+{% set version = "3.1.9" %}
+{% set sha256 = "c5313378d22fb45d684101054eee6153244261e355668f843d2d956209f9fb97" %}
 
 package:
-  name: mob_suite
+  name: {{ name|lower }}
   version: {{ version }}
 
-build:
-  number: 0
-  noarch: python
-  script: python -m pip install --no-deps --ignore-installed .
-
 source:
-  url: https://github.com/phac-nml/mob-suite/archive/{{ version }}.tar.gz
-  sha256: 7f4690f1df5ebeaa2c8f256678334275991d44239c8d9c729745b34ce428018f
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/mob_suite-{{ version }}.tar.gz
+  sha256: {{ sha256 }}  
+
+build:
+  number: 1
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - mob_init=mob_suite.mob_init:main
+    - mob_recon=mob_suite.mob_recon:main
+    - mob_cluster=mob_suite.mob_cluster:main
+    - mob_typer=mob_suite.mob_typer:main
 
 requirements:
   host:
     - python >=3.7
     - pip
+    - pytest-runner
   run:
-    - python >=3.7,<4
+    - python >=3.7
     - numpy >=1.11.1,<1.23.5
-    - pytables >=3.3,<4
-    - pandas >=0.22.0,<=1.0.5
-    - biopython >=1.70,<2
-    - pycurl >=7.43,<8
-    - scipy >=1.1,<2
-    - ete3 >=3.0,<4
-    - blast >=2.9.0,<3
-    - mash >=2.0,<3
+    - pandas >=0.22,<=1.5.3
+    - pytables
+    - biopython >=1.8,<2
+    - pycurl >=7.43.0
+    - scipy >=1.1.0
+    - ete3 >=3.1.3
+    - six
+    - blast >=2.9.0,<2.16.0
+    - mash >=2.0
+    - libsqlite <3.49 #version 3.49 causes ete3 sqlite should this be a string literal in single-quotes error
 
 test:
+  imports:
+    - mob_suite
+  requires:
+    - pytest 
   commands:
-    - mob_typer -h
-    - mob_recon -h
-    - mob_cluster -h
+    - mob_recon --help
+    - mob_cluster --help
+    - mob_typer --help
+    - mob_init --help
 
 about:
-  home: https://github.com/phac-nml/mob-suite
-  license: Apache-2.0
-  summary: 'This package MOB-suite: software tools for clustering, reconstruction and typing of plasmids from draft assemblies. The MOB-suite is designed to be a modular set of tools for the typing and reconstruction of plasmid sequences from WGS assemblies.'
+  home: 'https://pypi.org/project/mob-suite/'
+  summary: 'MOB-suite is a set of tools for finding, typing and reconstruction of plasmids from draft and complete genome assemblies.'
+  license: 'Apache-2.0'
+  license_family: APACHE
+  license_file: LICENSE
+  dev_url: 'https://github.com/phac-nml/mob-suite'
+  doc_url: 'https://github.com/phac-nml/mob-suite/blob/master/README.md'
+
+extra:
+  identifiers:
+    - biotools:mob-suite
+    - usegalaxy-eu:mob_recon
+    - usegalaxy-eu:mob_typer
+    - doi:10.1099/mgen.0.000206
+    - doi:10.1099/mgen.0.000435

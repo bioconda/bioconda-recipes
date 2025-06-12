@@ -1,17 +1,18 @@
-{% set version = "1.4.1" %}
-{% set program = "abpoa" %}
-{% set PROGRAM = "abPOA" %}
+{% set version = "1.5.4" %}
+{% set name = "abPOA" %}
 
 package:
-  name: abpoa
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/yangao07/{{ PROGRAM }}/releases/download/v{{ version }}/{{ PROGRAM }}-v{{ version }}.tar.gz
-  sha256: 54b1f5cfd94fb5894e189d9e099f8158051411bcbcc9ba2d77478cfb9221dde1
+  url: https://github.com/yangao07/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
+  sha256: 15fc8c1ae07891d276009cf86d948105c2ba8a4a94823581f93744351c2fcf4a
 
 build:
   number: 1
+  run_exports:
+    - {{ pin_subpackage(name | lower, max_pin="x") }}
 
 requirements:
   build:
@@ -22,10 +23,21 @@ requirements:
 
 test:
   commands:
-    - {{ program }} --version | grep {{ version }}
+    - {{ name | lower }} --version | grep {{ version }}
 
 about:
-  home: https://github.com/yangao07/{{ PROGRAM }}
-  license: GPL
+  home: "https://github.com/yangao07/{{ name }}"
+  license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: 'abPOA: fast SIMD-based partial order alignment using adaptive band'
+  summary: 'abPOA: fast SIMD-based partial order alignment using adaptive band.'
+  dev_url: "https://github.com/yangao07/{{ name }}"
+  doc_url: "https://github.com/yangao07/abPOA/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/bioinformatics/btaa963
+    - biotools:abpoa

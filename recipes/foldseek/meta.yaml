@@ -1,36 +1,46 @@
-{% set version = "4-645b789" %}
-{% set sha256 = "84f8b37e8fb25e2e050f02e6b44ed3a0f3a472d3eefa56885b3c25b95009b5a2" %}
+{% set version = "10-941cd33" %}
+{% set sha256 = "0db8bf072c9ec895efc6aa3626c746f4ca020acc9b92e9b2292b56c8c9f8a943" %}
 
 package:
   name: foldseek
   version: {{ version|replace("-", ".")  }}
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('foldseek', max_pin="x") }}
 
 source:
   url: https://github.com/steineggerlab/foldseek/archive/{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    # remove for next release
+    - prostt5-memory.patch
 
 requirements:
   build:
-    - {{ compiler('cxx') }}
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
     - cmake
     - make
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
-  host:
+    - llvm-openmp         # [osx]
+    - libgomp             # [linux]
+    - cuda-nvcc           # [linux]
+    - cuda-cudart-dev     # [linux]
+    - libcublas-dev       # [linux]
+    - libcublas-static    # [linux]
+    - cuda-version >=12.6 # [linux]
     - perl
-    - gawk
+  host:
     - zlib
     - bzip2
   run:
     - aria2
-    - wget
     - gawk
     - zlib
     - bzip2
+    - __osx >={{ MACOSX_DEPLOYMENT_TARGET|default("10.15") }}  # [osx and arm64]
 
 test:
   commands:
@@ -45,7 +55,13 @@ about:
 
 extra:
   identifiers:
-    - doi:10.1101/2022.02.07.479398 
+    - doi:10.1038/s41587-023-01773-0
+    - doi:10.1038/s41586-023-06510-w
+    - doi:10.1101/2024.04.14.589414
     - biotools:foldseek
   recipe-maintainers:
     - milot-mirdita
+    - martin-steinegger
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

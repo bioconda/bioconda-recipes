@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "illuminadatatestfiles-1.35.0"
+installBiocDataPackage.sh "illuminadatatestfiles-1.44.0"

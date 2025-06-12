@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "onassisjavalibs-1.19.0"
+installBiocDataPackage.sh "onassisjavalibs-1.28.0"

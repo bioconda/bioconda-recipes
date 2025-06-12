@@ -1,38 +1,40 @@
-{% set version = "1.22.0" %}
+{% set version = "1.30.0" %}
 {% set name = "sampleClassifierData" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 72ef1fbd73285e12de97276a88da7054
+about:
+  description: This package contains two microarray and two RNA-seq datasets that have been preprocessed for use with the sampleClassifier package. The RNA-seq data are derived from Fagerberg et al. (2014) and the Illumina Body Map 2.0 data. The microarray data are derived from Roth et al. (2006) and Ge et al. (2005).
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Pre-processed data for use with the sampleClassifier package
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-sampleclassifierdata", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: BiocStyle
 requirements:
   host:
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
   run:
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221106
+    - bioconductor-data-packages >=20241103
+source:
+  md5: dbda361a9401f68ae3935368e7555135
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Pre-processed data for use with the sampleClassifier package'
-  description: 'This package contains two microarray and two RNA-seq datasets that have been preprocessed for use with the sampleClassifier package. The RNA-seq data are derived from Fagerberg et al. (2014) and the Illumina Body Map 2.0 data. The microarray data are derived from Roth et al. (2006) and Ge et al. (2005).'
+    - $R -e "library('{{ name }}')"
 

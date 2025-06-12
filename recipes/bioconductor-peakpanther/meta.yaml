@@ -1,65 +1,76 @@
-{% set version = "1.12.0" %}
+{% set version = "1.20.0" %}
 {% set name = "peakPantheR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 3872bc01fcb09e264d9e6dad878b1651
+about:
+  description: An automated pipeline for the detection, integration and reporting of predefined features across a large number of mass spectrometry data files. It enables the real time annotation of multiple compounds in a single file, or the parallel annotation of multiple compounds in multiple files. A graphical user interface as well as command line functions will assist in assessing the quality of annotation and update fitting parameters until a satisfactory result is obtained.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Peak Picking and Annotation of High Resolution Experiments
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-peakpanther", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: testthat, devtools, faahKO, msdata, knitr, rmarkdown, pander, BiocStyle
 requirements:
   host:
-    - 'bioconductor-msnbase >=2.24.0,<2.25.0'
-    - 'bioconductor-mzr >=2.32.0,<2.33.0'
+    - bioconductor-msnbase >=2.32.0,<2.33.0
+    - bioconductor-mzr >=2.40.0,<2.41.0
     - r-base
     - r-bslib
-    - 'r-doparallel >=1.0.11'
-    - 'r-dt >=0.15'
-    - 'r-foreach >=1.4.4'
-    - 'r-ggplot2 >=3.3.0'
-    - 'r-gridextra >=2.3'
-    - 'r-minpack.lm >=1.2.1'
-    - 'r-pracma >=2.2.3'
-    - 'r-scales >=0.5.0'
-    - 'r-shiny >=1.0.5'
-    - 'r-shinycssloaders >=1.0.0'
-    - 'r-stringr >=1.2.0'
-    - 'r-xml >=3.98.1.10'
+    - r-doparallel >=1.0.11
+    - r-dt >=0.15
+    - r-foreach >=1.4.4
+    - r-ggplot2 >=3.5.0
+    - r-gridextra >=2.3
+    - r-lubridate
+    - r-minpack.lm >=1.2.1
+    - r-pracma >=2.2.3
+    - r-scales >=0.5.0
+    - r-shiny >=1.0.5
+    - r-shinycssloaders >=1.0.0
+    - r-stringr >=1.2.0
+    - r-svglite >=2.1.1
+    - r-xml >=3.98.1.10
   run:
-    - 'bioconductor-msnbase >=2.24.0,<2.25.0'
-    - 'bioconductor-mzr >=2.32.0,<2.33.0'
+    - bioconductor-msnbase >=2.32.0,<2.33.0
+    - bioconductor-mzr >=2.40.0,<2.41.0
     - r-base
     - r-bslib
-    - 'r-doparallel >=1.0.11'
-    - 'r-dt >=0.15'
-    - 'r-foreach >=1.4.4'
-    - 'r-ggplot2 >=3.3.0'
-    - 'r-gridextra >=2.3'
-    - 'r-minpack.lm >=1.2.1'
-    - 'r-pracma >=2.2.3'
-    - 'r-scales >=0.5.0'
-    - 'r-shiny >=1.0.5'
-    - 'r-shinycssloaders >=1.0.0'
-    - 'r-stringr >=1.2.0'
-    - 'r-xml >=3.98.1.10'
+    - r-doparallel >=1.0.11
+    - r-dt >=0.15
+    - r-foreach >=1.4.4
+    - r-ggplot2 >=3.5.0
+    - r-gridextra >=2.3
+    - r-lubridate
+    - r-minpack.lm >=1.2.1
+    - r-pracma >=2.2.3
+    - r-scales >=0.5.0
+    - r-shiny >=1.0.5
+    - r-shinycssloaders >=1.0.0
+    - r-stringr >=1.2.0
+    - r-svglite >=2.1.1
+    - r-xml >=3.98.1.10
+
+source:
+  md5: dd5dffdd9397ba01ab9d25d3dc075a28
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Peak Picking and Annotation of High Resolution Experiments'
-  description: 'An automated pipeline for the detection, integration and reporting of predefined features across a large number of mass spectrometry data files. It enables the real time annotation of multiple compounds in a single file, or the parallel annotation of multiple compounds in multiple files. A graphical user interface as well as command line functions will assist in assessing the quality of annotation and update fitting parameters until a satisfactory result is obtained.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

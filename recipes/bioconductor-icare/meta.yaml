@@ -1,23 +1,36 @@
-{% set version = "1.26.0" %}
+{% set version = "1.34.0" %}
 {% set name = "iCARE" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f3a3bfed9bde5598dc4d7a00d6789675
+about:
+  description: An R package to build, validate and apply absolute risk models
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 + file LICENSE
+  license_file: LICENSE
+  summary: Individualized Coherent Absolute Risk Estimation (iCARE)
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-icare", max_pin="x.x") }}'
+
+extra:
+  parent_recipe:
+    name: bioconductor-icare
+    path: recipes/bioconductor-icare
+    version: 1.10.2
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: RUnit, BiocGenerics
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
   host:
     - r-base
     - r-gtools
@@ -30,21 +43,16 @@ requirements:
     - r-gtools
     - r-hmisc
     - r-plotrix
-  build:
-    - {{ compiler('c') }}
-    - make
+
+source:
+  md5: 9d8145140886876660aeaa921fd14a47
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL-3 + file LICENSE'
-  summary: 'A Tool for Individualized Coherent Absolute Risk Estimation (iCARE)'
-  description: 'An R package to compute Individualized Coherent Absolute Risk Estimators.'
-  license_file: LICENSE
-extra:
-  parent_recipe:
-    name: bioconductor-icare
-    path: recipes/bioconductor-icare
-    version: 1.10.2
+    - $R -e "library('{{ name }}')"
 

@@ -1,40 +1,42 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "TreeAndLeaf" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 5c716b5d382c654865933d805b2505c4
+about:
+  description: The TreeAndLeaf package combines unrooted and force-directed graph algorithms in order to layout binary trees, aiming to represent multiple layers of information onto dendrogram leaves.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Displaying binary trees with focus on dendrogram leaves
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-treeandleaf", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: knitr, rmarkdown, BiocStyle, RUnit, BiocGenerics, stringr, geneplast, ggtree, ggplot2, dplyr, dendextend, RColorBrewer
 requirements:
   host:
-    - 'bioconductor-reder >=2.2.0,<2.3.0'
+    - bioconductor-reder >=3.2.0,<3.3.0
     - r-ape
     - r-base
     - r-igraph
   run:
-    - 'bioconductor-reder >=2.2.0,<2.3.0'
+    - bioconductor-reder >=3.2.0,<3.3.0
     - r-ape
     - r-base
     - r-igraph
+source:
+  md5: 5c6bb392e15eafc4ec4c3fab3cd9d85b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Displaying binary trees with focus on dendrogram leaves'
-  description: 'The TreeAndLeaf package combines unrooted and force-directed graph algorithms in order to layout binary trees, aiming to represent multiple layers of information onto dendrogram leaves.'
+    - $R -e "library('{{ name }}')"
 

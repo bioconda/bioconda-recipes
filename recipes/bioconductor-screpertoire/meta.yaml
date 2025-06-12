@@ -1,69 +1,100 @@
-{% set version = "1.8.0" %}
+{% set version = "2.2.0" %}
 {% set name = "scRepertoire" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 390b786725eb6e85d55d6b53fbc90092
+about:
+  description: scRepertoire is a toolkit for processing and analyzing single-cell T-cell receptor (TCR) and immunoglobulin (Ig). The scRepertoire framework supports use of 10x, AIRR, BD, MiXCR, Omniscope, TRUST4, and WAT3R single-cell formats. The functionality includes basic clonal analyses, repertoire summaries, distance-based clustering and interaction with the popular Seurat and SingleCellExperiment/Bioconductor R workflows.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: A toolkit for single-cell immune receptor profiling
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, rmarkdown, BiocStyle, circlize, scales, Seurat, scater
+  run_exports: '{{ pin_subpackage("bioconductor-screpertoire", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocManager, BiocStyle, circlize, knitr, rmarkdown, scales, scater, Seurat, spelling, testthat (>= 3.0.0), vdiffr
 requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
   host:
-    - 'bioconductor-powertcr >=1.18.0,<1.19.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
-    - r-doparallel
+    - r-cubature
     - r-dplyr
+    - r-evmix
     - r-ggalluvial
+    - r-ggdendro
     - r-ggplot2
     - r-ggraph
+    - r-hash
     - r-igraph
+    - r-inext
     - r-plyr
+    - r-quantreg
+    - r-rcpp
     - r-reshape2
+    - r-rjson
     - r-rlang
     - r-seuratobject
     - r-stringdist
     - r-stringr
     - r-tidygraph
-    - r-vegan
+    - r-truncdist
+    - r-vgam
+    - libblas
+    - liblapack
+
   run:
-    - 'bioconductor-powertcr >=1.18.0,<1.19.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
-    - r-doparallel
+    - r-cubature
     - r-dplyr
+    - r-evmix
     - r-ggalluvial
+    - r-ggdendro
     - r-ggplot2
     - r-ggraph
+    - r-hash
     - r-igraph
+    - r-inext
     - r-plyr
+    - r-quantreg
+    - r-rcpp
     - r-reshape2
+    - r-rjson
     - r-rlang
     - r-seuratobject
     - r-stringdist
     - r-stringr
     - r-tidygraph
-    - r-vegan
+    - r-truncdist
+    - r-vgam
+
+source:
+  md5: eb321afd64fa19bda15b6e574b19ef7a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'A toolkit for single-cell immune receptor profiling'
-  description: 'scRepertoire was built to process data derived from the 10x Genomics Chromium Immune Profiling for both T-cell receptor (TCR) and immunoglobulin (Ig) enrichment workflows and subsequently interacts with the popular Seurat and SingleCellExperiment R packages. It also allows for general analysis of single-cell clonotype information without the use of expression information. The package functions as a wrapper for Startrac and powerTCR R packages.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+    - $R -e "library('{{ name }}')"
 

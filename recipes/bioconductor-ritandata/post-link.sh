@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "ritandata-1.22.0"
+installBiocDataPackage.sh "ritandata-1.30.0"

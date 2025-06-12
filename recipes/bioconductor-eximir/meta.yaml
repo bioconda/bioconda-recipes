@@ -1,47 +1,22 @@
-{% set version = "2.40.0" %}
+{% set version = "2.48.0" %}
 {% set name = "ExiMiR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: c08d694578905c778ccb49e9c2c7d181
+about:
+  description: This package contains functions for reading raw data in ImaGene TXT format obtained from Exiqon miRCURY LNA arrays, annotating them with appropriate GAL files, and normalizing them using a spike-in probe-based method. Other platforms and data formats are also supported.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: R functions for the normalization of Exiqon miRNA array data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: mirna10cdf
-requirements:
-  host:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-affyio >=1.68.0,<1.69.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-preprocesscore >=1.60.0,<1.61.0'
-    - r-base
-  run:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-affyio >=1.68.0,<1.69.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-preprocesscore >=1.60.0,<1.61.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'R functions for the normalization of Exiqon miRNA array data'
-  description: 'This package contains functions for reading raw data in ImaGene TXT format obtained from Exiqon miRCURY LNA arrays, annotating them with appropriate GAL files, and normalizing them using a spike-in probe-based method. Other platforms and data formats are also supported.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-eximir", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:eximir
@@ -50,4 +25,37 @@ extra:
     name: bioconductor-eximir
     path: recipes/bioconductor-eximir
     version: 2.22.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: mirna10cdf
+requirements:
+  host:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-affyio >=1.76.0,<1.77.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-preprocesscore >=1.68.0,<1.69.0
+    - r-base
+  run:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-affyio >=1.76.0,<1.77.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-preprocesscore >=1.68.0,<1.69.0
+    - r-base
+
+source:
+  md5: 1731710afbb17675530b4164c95fe599
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

@@ -1,38 +1,40 @@
-{% set version = "1.30.0" %}
+{% set version = "1.38.0" %}
 {% set name = "ListerEtAlBSseq" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 34e0e425d704f29b62840aeb318043a3
+about:
+  description: Base resolution bisulfite sequencing data of Human DNA methylomes
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic 2.0
+  summary: BS-seq data of H1 and IMR90 cell line excerpted from Lister et al. 2009
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-listeretalbsseq", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: BSgenome.Hsapiens.UCSC.hg18
 requirements:
   host:
-    - 'bioconductor-methylpipe >=1.32.0,<1.33.0'
+    - bioconductor-methylpipe >=1.40.0,<1.41.0
     - r-base
   run:
-    - 'bioconductor-methylpipe >=1.32.0,<1.33.0'
+    - bioconductor-methylpipe >=1.40.0,<1.41.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221109
+    - bioconductor-data-packages >=20241103
+source:
+  md5: c985f67b2cfdb549d614ae350ac50029
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: 'Artistic 2.0'
-  summary: 'BS-seq data of H1 and IMR90 cell line excerpted from Lister et al. 2009'
-  description: 'Base resolution bisulfite sequencing data of Human DNA methylomes'
+    - $R -e "library('{{ name }}')"
 

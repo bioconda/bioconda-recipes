@@ -1,0 +1,52 @@
+{% set name = "im2deep" %}
+{% set version = "1.0.3" %}
+{% set sha256 = "d4624a9a0954351e157743b77845cbdac41720913056360692d18a4e9409aaad" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/im2deep-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+
+  number: 0
+  entry_points:
+    - im2deep=im2deep.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('im2deep', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.8
+    - setuptools
+  run:
+    - python >=3.8
+    - click
+    - deeplc
+    - psm-utils
+    - pandas
+    - numpy
+    - rich
+
+test:
+  imports:
+    - im2deep
+
+about:
+  home: https://github.com/compomics/im2deep
+  license: Apache-2.0
+  license_file: LICENSE
+  license_family: APACHE
+  summary: "Framework for prediction of collisional cross-section of peptides."
+  dev_url: https://github.com/compomics/im2deep
+
+extra:
+  recipe-maintainers:
+    - CompOmics
+    - rodvrees

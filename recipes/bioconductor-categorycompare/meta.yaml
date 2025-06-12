@@ -1,60 +1,67 @@
-{% set version = "1.42.0" %}
+{% set version = "1.50.0" %}
 {% set name = "categoryCompare" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 13384458a320bba4f400bb5b7e46a0e4
+about:
+  description: Calculates significant annotations (categories) in each of two (or more) feature (i.e. gene) lists, determines the overlap between the annotations, and returns graphical and tabular data about the significant annotations and which combinations of feature lists the annotations were found to be significant. Interactive exploration is facilitated through the use of RCytoscape (heavily suggested).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Meta-analysis of high-throughput experiments using feature annotations
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-categorycompare", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, GO.db, KEGGREST, estrogen, org.Hs.eg.db, hgu95av2.db, limma, affy, genefilter, rmarkdown
 # SystemRequirements: Cytoscape (>= 3.6.1) (if used for visualization of results, heavily suggested)
 requirements:
   host:
-    - 'bioconductor-annotate >=1.76.0,<1.77.0'
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-category >=2.64.0,<2.65.0'
-    - 'bioconductor-gostats >=2.64.0,<2.65.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-gseabase >=1.60.0,<1.61.0'
-    - 'bioconductor-rcy3 >=2.18.0,<2.19.0'
+    - bioconductor-annotate >=1.84.0,<1.85.0
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-category >=2.72.0,<2.73.0
+    - bioconductor-gostats >=2.72.0,<2.73.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-gseabase >=1.68.0,<1.69.0
+    - bioconductor-rcy3 >=2.26.0,<2.27.0
     - r-base
     - r-colorspace
     - r-hwriter
-    - 'cytoscape >=3.6.1'
+    - cytoscape >=3.6.1
   run:
-    - 'bioconductor-annotate >=1.76.0,<1.77.0'
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-category >=2.64.0,<2.65.0'
-    - 'bioconductor-gostats >=2.64.0,<2.65.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-gseabase >=1.60.0,<1.61.0'
-    - 'bioconductor-rcy3 >=2.18.0,<2.19.0'
+    - bioconductor-annotate >=1.84.0,<1.85.0
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-category >=2.72.0,<2.73.0
+    - bioconductor-gostats >=2.72.0,<2.73.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-gseabase >=1.68.0,<1.69.0
+    - bioconductor-rcy3 >=2.26.0,<2.27.0
     - r-base
     - r-colorspace
     - r-hwriter
-    - 'cytoscape >=3.6.1'
+    - cytoscape >=3.6.1
+
+source:
+  md5: 698bd62c3b933e00e072bf741fd1bbb4
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Meta-analysis of high-throughput experiments using feature annotations'
-  description: 'Calculates significant annotations (categories) in each of two (or more) feature (i.e. gene) lists, determines the overlap between the annotations, and returns graphical and tabular data about the significant annotations and which combinations of feature lists the annotations were found to be significant. Interactive exploration is facilitated through the use of RCytoscape (heavily suggested).'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+    - $R -e "library('{{ name }}')"
 

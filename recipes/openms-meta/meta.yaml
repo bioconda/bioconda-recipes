@@ -1,18 +1,36 @@
 {% set name = "OpenMS" %}
-{% set version = "2.8.0" %}
+{% set version = "3.4.1" %}  # if ends with 'dev' it is considered a development release and pulled from GitHub
+
+# Note: to create a new release: 
+# - version number
+# - reset build number to 0
+# - md5 
+# need to be updated.
+
 package:
   name: {{ name|lower  }}-meta
   version: {{ version  }}
 
+{% if 'dev' in version %}
 source:
-  url: https://abibuilder.cs.uni-tuebingen.de/archive/openms/OpenMSInstaller/release/{{ version }}/OpenMS-{{ version }}-src.tar.gz
-  sha256: c39e3ccdce5c335d2659cfa9d0bb63555a01ec422757afd90706d3869bf611ac
-  # patch should be removed in 2.9 https://github.com/OpenMS/OpenMS/pull/6122
-  patches:
-    - sirius-2.8.0.patch
+  git_url: https://github.com/OpenMS/OpenMS.git
+  git_rev: release/{{ version }}
+  md5: unused
+{% else %}
+source:
+  # Remove trailing zeros for major releases
+  {% set version_parts = version.split('.') %}
+  {% if version_parts|length == 3 and version_parts[2] == '0' %}
+    {% set short_version = version_parts[0] ~ '.' ~ version_parts[1] %}
+  {% else %}
+    {% set short_version = version %}
+  {% endif %}
+  url: https://github.com/OpenMS/OpenMS/releases/download/release%2F{{ version }}/OpenMS-{{ short_version }}.tar.gz  # since we discarded the trailing 0 during the GHA we have to hard code this, fix it next release
+  md5: 8d0b4d1d333f069959f7d5ff1c77a90f
+{% endif %}
 
 build:
-  number: 4
+  number: 0
 
 # Try this when building with GUI
 #extra:
@@ -20,26 +38,34 @@ build:
 #    extended-base: True
 
 requirements:
+    # Note: pinning of sysroot_linux-64 =2.17 enforces cos7 and is currently needed to prevent an memcpy@GLIBC2.14 error
     build:
       - {{ compiler('cxx') }}
       - cmake
-      - make
+      - ninja
       - autoconf
       - automake
-    host:
-      - llvm-openmp # [osx]
-      - zlib
       - libtool
+      - pkg-config
+      - qt6-main
+      - sysroot_linux-64 =2.17  # [linux]
+    host:
+      - libgomp  # [linux]
+      - llvm-openmp  # [osx]
       - xerces-c
       - boost-cpp
-      - eigen >=3.3.2
-      - glpk
-      - hdf5 >=1.10
-      - bzip2
-      - qt
+      - eigen >=3.4.0
+      - hdf5
       - libsvm
       - coinmp
-      - sqlite
+      - yaml-cpp
+      - doxygen >=1.8.13
+      - sysroot_linux-64 =2.17  # [linux]
+      - zlib
+      - bzip2
+    run:
+      - libgomp  # [linux]
+      - llvm-openmp  # [osx]
 
 test:
   commands:
@@ -54,36 +80,43 @@ outputs:
         # no actual build is done. CMake is used to install different parts of the existing build
         # But since the other packages depend on its run_exports
         # We want to make sure that the versions of the dependencies used are the same as above
+        # Note: pinning of sysroot_linux-64 =2.17 enforces cos7 and is currently needed to prevent an memcpy@GLIBC2.14 error
         build:
           - cmake
-        host:
-          - llvm-openmp # [osx]
-          - zlib
+          - sysroot_linux-64 =2.17  # [linux]
           - libtool
+          - pkg-config
+          - qt6-main
+        host:
+          - libgomp  # [linux]
+          - llvm-openmp  # [osx]
           - xerces-c
           - boost-cpp
-          - eigen >=3.3.2
-          - glpk
-          - hdf5 >=1.10
-          - bzip2
-          - qt
+          - eigen >=3.4.0
+          - hdf5
           - libsvm
           - coinmp
-          - sqlite
+          - yaml-cpp
+          - doxygen >=1.8.13
+          - sysroot_linux-64 =2.17  # [linux]
+          - zlib
+          - bzip2
+        run:
+          - libgomp  # [linux]
+          - llvm-openmp  # [osx]
+
     build:
       run_exports:
-          - {{ pin_compatible('llvm-openmp', max_pin='x.x') }} # [osx]
+          - {{ pin_compatible('llvm-openmp', max_pin='x.x') }}  # [osx]
           - {{ pin_compatible('zlib', max_pin='x.x') }}
           - {{ pin_compatible('xerces-c', max_pin='x.x') }}
           - {{ pin_compatible('boost-cpp', max_pin='x.x') }}
           - {{ pin_compatible('eigen', max_pin='x.x') }}
-          - {{ pin_compatible('glpk', max_pin='x.x') }}
           - {{ pin_compatible('hdf5', max_pin='x.x') }}
           - {{ pin_compatible('bzip2', max_pin='x.x') }}
-          - {{ pin_compatible('qt', max_pin='x.x') }}
+          - {{ pin_compatible('qt6-main', max_pin='x.x') }}
           - {{ pin_compatible('libsvm', max_pin='x.x') }}
           - {{ pin_compatible('coinmp', max_pin='x.x') }}
-          - {{ pin_compatible('sqlite', max_pin='x.x') }}
           - libopenms {{ version }}
 
   - name: openms
@@ -91,41 +124,47 @@ outputs:
     script: package_openms-tools.sh
     requirements:
       # no actual build is done. CMake is used to install different parts of the existing build
+      # Note: pinning of sysroot_linux-64 =2.17 enforces cos7 and is currently needed to prevent an memcpy@GLIBC2.14 error
       build:
         - cmake
+        - sysroot_linux-64 =2.17  # [linux]
+        - libtool
+        - pkg-config
+        - qt6-main
       host:
         - {{ pin_subpackage('libopenms', exact=True) }}
       # conda apparently does not support run_exports in subpackages yet, otherwise having libopenms in host would be enough.
       # see https://github.com/conda/conda-build/issues/3478
       # so specify everything again, such that EXACTLY the same versions are used!
       # I could not get the "resolved_packages" jinja function to gather dependencies from other subpackages.
-        - llvm-openmp # [osx]
-        - zlib
-        - libtool
+        - libgomp  # [linux]
+        - llvm-openmp  # [osx]
         - xerces-c
         - boost-cpp
-        - eigen >=3.3.2
-        - glpk
-        - hdf5 >=1.10
-        - bzip2
-        - qt
+        - eigen >=3.4.0
+        - hdf5
         - libsvm
         - coinmp
-        - sqlite
+        - yaml-cpp
+        - doxygen >=1.8.13
+        - sysroot_linux-64 =2.17  # [linux]
+        - zlib
+        - bzip2
       run:
+        - libgomp  # [linux]
+        - llvm-openmp  # [osx]
         - {{ pin_subpackage('libopenms', exact=True) }}
-        - {{ pin_compatible('llvm-openmp', max_pin='x.x') }} # [osx]
+        - {{ pin_compatible('llvm-openmp', max_pin='x.x') }}  # [osx]
         - {{ pin_compatible('zlib', max_pin='x.x') }}
         - {{ pin_compatible('xerces-c', max_pin='x.x') }}
         - {{ pin_compatible('boost-cpp', max_pin='x.x') }}
         - {{ pin_compatible('eigen', max_pin='x.x') }}
-        - {{ pin_compatible('glpk', max_pin='x.x') }}
         - {{ pin_compatible('hdf5', max_pin='x.x') }}
         - {{ pin_compatible('bzip2', max_pin='x.x') }}
-        - {{ pin_compatible('qt', max_pin='x.x') }}
+        - {{ pin_compatible('qt6-main', max_pin='x.x') }}
         - {{ pin_compatible('libsvm', max_pin='x.x') }}
         - {{ pin_compatible('coinmp', max_pin='x.x') }}
-        - {{ pin_compatible('sqlite', max_pin='x.x') }}
+
     test:
       commands:
         - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/OpenMSInfo
@@ -136,37 +175,43 @@ outputs:
     build:
      # Dependencies bumbershoot, fido, percolator are not available for osx.
      skip: True  # [osx]
+
     requirements:
      run:
        - {{ pin_subpackage('openms', exact=True) }}
-       - bumbershoot ==3_0_21142_0e4f4a4
-       - comet-ms ==2019015
-       - crux-toolkit ==3.2
-       - fido ==1.0
+       - comet-ms ==2024011
        - luciphor2 ==2020_04_03
-       - msgf_plus ==2021.03.22
-       - pepnovo ==20101117
-       - percolator ==3.5
-       - sirius-csifingerid =4.9
-       - thermorawfileparser ==1.3.4
-       - xtandem ==15.12.15.2
+       - msgf_plus ==2024.03.26
+       - percolator ==3.7.1
+       - sirius-ms >=6.1.0
+       - thermorawfileparser ==1.4.3
+       - sage-proteomics ==0.14.7
        - gnuplot
        - r-gplots
+
     test:
      # Test copied from openms output to make sure a test environment for this output is created.
      commands:
        - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/OpenMSInfo
-       - sirius --help
 
 about:
-  home: https://github.com/OpenMS/OpenMS
-  license: BSD
+  home: "https://github.com/OpenMS/OpenMS"
+  license: "BSD-3-Clause"
+  license_family: BSD
   license_file: LICENSE
-  summary: OpenMS is an open-source software C++ library for LC-MS data management and analyses
+  summary: "OpenMS is an open-source software C++ library for LC-MS data management and analyses."
+  dev_url: "https://github.com/OpenMS/OpenMS"
+  doc_url: "https://openms.readthedocs.io/en/latest/index.html"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   skip-lints:
     - build_number_needs_reset  # our linter has some issues with multi-package recipes as it seems
+    - missing_run_exports  # linter seems expect run_export keyword for meta-package in multi-package
+    {% if 'dev' in version %}
+    - uses_vcs_url
+    {% endif %}
   identifiers:
     - biotools:openms
     - usegalaxy-eu:openms_fileconverter

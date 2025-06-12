@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "donapllp2013-1.35.0"
+installBiocDataPackage.sh "donapllp2013-1.44.0"

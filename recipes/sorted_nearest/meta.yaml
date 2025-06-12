@@ -1,9 +1,8 @@
 {% set name = "sorted_nearest" %}
-{% set version = "0.0.37" %}
+{% set version = "0.0.39" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "dd3430d76e6c2aed14cda2cb0f2a5ce359007de3d2bc689474622f819f559d31" %}
-
+{% set hash_value = "16a51d5db87ae226b47ace43c176bb672477a1b7ba8052ea9291a6356c9c69b1" %}
 
 package:
   name: '{{ name|lower }}'
@@ -14,18 +13,24 @@ source:
   '{{ hash_type }}': '{{ hash_value }}'
 
 build:
-  number: 0
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  number: 5
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir"
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin='x.x') }}
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - python
-    - setuptools
+    - pip
     - cython
+    - setuptools-scm >=6.2
   run:
     - python
+    - setuptools  # [osx and arm64]
     - numpy
 
 test:
@@ -34,5 +39,13 @@ test:
 
 about:
   home: https://github.com/endrebak/sorted_nearest
-  license: BSD
-  summary: Find nearest interval.
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE.txt
+  summary: "Find nearest interval."
+  dev_url: https://github.com/endrebak/sorted_nearest
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

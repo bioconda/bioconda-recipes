@@ -1,64 +1,22 @@
-{% set version = "1.24.0" %}
+{% set version = "1.32.0" %}
 {% set name = "KEGGlincs" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 9ec567d1ddb633385b7d7309604a73b5
+about:
+  description: See what is going on 'under the hood' of KEGG pathways by explicitly re-creating the pathway maps from information obtained from KGML files.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Visualize all edges within a KEGG pathway and overlay LINCS data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocManager (>= 1.20.3), knitr, graph
-# SystemRequirements: Cytoscape (>= 3.3.0), Java (>= 8)
-requirements:
-  host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-hgu133a.db >=3.13.0,<3.14.0'
-    - 'bioconductor-kegggraph >=1.58.0,<1.59.0'
-    - 'bioconductor-keggrest >=1.38.0,<1.39.0'
-    - 'bioconductor-kodata >=1.24.0,<1.25.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - r-base
-    - r-gtools
-    - r-httr
-    - r-igraph
-    - r-plyr
-    - r-rjsonio
-    - r-xml
-    - 'cytoscape >=3.3.0'
-  run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-hgu133a.db >=3.13.0,<3.14.0'
-    - 'bioconductor-kegggraph >=1.58.0,<1.59.0'
-    - 'bioconductor-keggrest >=1.38.0,<1.39.0'
-    - 'bioconductor-kodata >=1.24.0,<1.25.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - r-base
-    - r-gtools
-    - r-httr
-    - r-igraph
-    - r-plyr
-    - r-rjsonio
-    - r-xml
-    - 'cytoscape >=3.3.0'
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Visualize all edges within a KEGG pathway and overlay LINCS data'
-  description: 'See what is going on ''under the hood'' of KEGG pathways by explicitly re-creating the pathway maps from information obtained from KGML files.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-kegglincs", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:kegglincs
@@ -67,4 +25,54 @@ extra:
     name: bioconductor-kegglincs
     path: recipes/bioconductor-kegglincs
     version: 1.6.2
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocManager (>= 1.20.3), knitr, graph
+# SystemRequirements: Cytoscape (>= 3.3.0), Java (>= 8)
+requirements:
+  host:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-hgu133a.db >=3.13.0,<3.14.0
+    - bioconductor-kegggraph >=1.66.0,<1.67.0
+    - bioconductor-keggrest >=1.46.0,<1.47.0
+    - bioconductor-kodata >=1.32.0,<1.33.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - r-base
+    - r-gtools
+    - r-httr
+    - r-igraph
+    - r-plyr
+    - r-rjsonio
+    - r-xml
+    - cytoscape >=3.3.0
+  run:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-hgu133a.db >=3.13.0,<3.14.0
+    - bioconductor-kegggraph >=1.66.0,<1.67.0
+    - bioconductor-keggrest >=1.46.0,<1.47.0
+    - bioconductor-kodata >=1.32.0,<1.33.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - r-base
+    - r-gtools
+    - r-httr
+    - r-igraph
+    - r-plyr
+    - r-rjsonio
+    - r-xml
+    - cytoscape >=3.3.0
+
+source:
+  md5: b18b0cbbe1a545bba3ff3930e345c9df
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

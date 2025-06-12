@@ -1,32 +1,36 @@
-{% set version = "1.12.0" %}
+{% set version = "1.20.0" %}
 {% set name = "SEtools" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: dbef07a3d593da625756c8440af9adef
+about:
+  description: This includes a set of convenience functions for working with the SummarizedExperiment class. Note that plotting functions historically in this package have been moved to the sechm package (see vignette for details).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: 'SEtools: tools for working with SummarizedExperiment'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-setools", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, knitr, rmarkdown, ggplot2
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-sechm >=1.6.0,<1.7.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-sva >=3.46.0,<3.47.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-sechm >=1.14.0,<1.15.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-sva >=3.54.0,<3.55.0
     - r-base
     - r-circlize
     - r-data.table
@@ -34,26 +38,29 @@ requirements:
     - r-openxlsx
     - r-pheatmap
   run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-sechm >=1.6.0,<1.7.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-sva >=3.46.0,<3.47.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-sechm >=1.14.0,<1.15.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-sva >=3.54.0,<3.55.0
     - r-base
     - r-circlize
     - r-data.table
     - r-matrix
     - r-openxlsx
     - r-pheatmap
+
+source:
+  md5: 0157f338d5325713e2b2d7f299c7a5d4
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL
-  summary: 'SEtools: tools for working with SummarizedExperiment'
-  description: 'This includes a set of tools for working with the SummarizedExperiment class, including merging, melting, aggregation functions. Plotting functions historically in this package have been moved to the sechm package.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

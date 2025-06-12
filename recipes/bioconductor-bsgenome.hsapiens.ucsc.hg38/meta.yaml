@@ -1,42 +1,52 @@
-{% set version = "1.4.4" %}
+{% set version = "1.4.5" %}
 {% set name = "BSgenome.Hsapiens.UCSC.hg38" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 360474907caa1c1ed31030f68f80f0a5
+about:
+  description: Full genomic sequences for Homo sapiens as provided by UCSC (genome hg38, based on assembly GRCh38.p14 since 2023/01/31). The sequences are stored in DNAString objects.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Full genomic sequences for Homo sapiens (UCSC genome hg38)
+
 build:
-  number: 2
+  noarch: generic
+  number: 3
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
-    - r-base
-  run:
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
-    - r-base
-    - curl
-    - bioconductor-data-packages>=20221102
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Full genome sequences for Homo sapiens (UCSC version hg38, based on GRCh38.p13)'
-  description: 'Full genome sequences for Homo sapiens (Human) as provided by UCSC (hg38, based on GRCh38.p13) and stored in Biostrings objects.'
+  run_exports: '{{ pin_subpackage("bioconductor-bsgenome.hsapiens.ucsc.hg38", max_pin="x.x") }}'
+
 extra:
   parent_recipe:
     name: bioconductor-bsgenome.hsapiens.ucsc.hg38
     path: recipes/bioconductor-bsgenome.hsapiens.ucsc.hg38
     version: 1.4.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  host:
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - r-base
+  run:
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: b2e670c27944eed77fbe9a9b55be40d2
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

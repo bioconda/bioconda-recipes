@@ -1,27 +1,14 @@
 name: CommentResponder
 on:
-  status:
-  check_suite:
-    types:
-    - completed
   issue_comment:
     types:
     - created
 
-# Re-enable when the bot has been updated to handle azure
-#      (
-#        github.event_name == 'check_suite' &&
-#        github.event.check_suite.conclusion == 'success'
-#      ) ||
 jobs:
   comment:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: bioconda-bot comment
     if: >-
-      (
-        github.event_name == 'status' &&
-        github.event.state == 'success'
-      ) ||
       (
         github.event_name == 'issue_comment' &&
         github.event.issue.pull_request &&
@@ -44,7 +31,7 @@ jobs:
       run: bioconda-bot comment
 
   repost:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: bioconda-bot repost
     if: >-
       (
@@ -66,7 +53,7 @@ jobs:
       run: bioconda-bot comment
 
   merge:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: bioconda-bot merge
     if: >-
       (
@@ -82,17 +69,16 @@ jobs:
     container:
       image: 'quay.io/bioconda/bot:merge'
     steps:
-    - name: bioconda-bot merge
-      env:
-        BOT_TOKEN: ${{ secrets.GITHUBTOKEN }}
-        ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
-        QUAY_LOGIN: ${{ secrets.QUAY_LOGIN }}
-        JOB_CONTEXT: ${{ toJson(github) }}
-      run: bioconda-bot merge
+    - name: Comment with deprecation info
+      uses: peter-evans/create-or-update-comment@v2
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        body: |
+          The "please merge" bot command is deprecated. Just hit the merge button
+          for merging the PR.
 
   update:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: bioconda-bot update
     if: >-
       (
@@ -118,7 +104,13 @@ jobs:
     - name: Setup ssh (post)
       run: |
         mkdir -p /root/.ssh
-        cat /github/home/.ssh/known_hosts >> /root/.ssh/known_hosts
+
+        # https://github.blog/2023-03-23-we-updated-our-rsa-ssh-host-key/
+        ssh-keygen -R github.com || true
+        printf '%s\n' \
+          'github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl' \
+          'github.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCj7ndNxQowgcQnjshcLrqPEiiphnt+VTTvDP6mHBL9j1aNUkY4Ue1gvwnGLVlOhGeYrnZaMgRK6+PKCUXaDbC7qtbW8gIkhL7aGCsOr/C56SJMy/BCZfxd1nWzAOxSDPgVsmerOBYfNqltV9/hWCqBywINIR+5dIg6JTJ72pcEpEjcYgXkE2YEFXV1JHnsKgbLWNlhScqb2UmyRkQyytRLtL+38TGxkxCflmO+5Z8CSSNY7GidjMIZ7Q4zMjA2n1nGrlTDkzwDCsw+wqFPGQA179cnfGWOWRVruj16z6XyvxvjJwbz0wQZ75XK5tKSb7FNyeIEs4TT4jk+S4dhPeAUC5y+bDYirYgM4GC7uEnztnZyaVWQ7B381AK4Qdrwt51ZqExKbQpTUNn+EjqoTwvqNj4kqx5QUCI0ThS/YkOxJCXmPUWZbhjpCg56i+2aB6CmK2JGhn57K5mj0MNdBXA4/WnwH6XoPWJzK5Nyu2zB3nAZp+S5hpQs+p1vN1/wsjk=' \
+          >> /root/.ssh/known_hosts
     - name: bioconda-bot update
       env:
         BOT_TOKEN: ${{ secrets.GITHUBTOKEN }}

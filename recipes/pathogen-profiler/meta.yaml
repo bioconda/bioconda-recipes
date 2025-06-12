@@ -1,6 +1,6 @@
 {% set name = "pathogen-profiler" %}
-{% set version = "2.0.4" %}
-{% set sha256 = "adede9bd1f8a428cf9b82056eb57703a70303e867918eacdf0a92454ac11d710" %}
+{% set version = "5.0.0" %}
+{% set sha256 = "bdd36c9d0613badf94ddbca5848375c0c9940d1d3e13dd89fc8f8f07061f07b2" %}
 
 package:
   name: {{name}}
@@ -14,25 +14,27 @@ build:
   script: python -m pip install --no-deps --ignore-installed .
   noarch: python
   number: 0
+  run_exports:
+    - { pin_subpackage('pathogen-profiler', max_pin="x") }
 
 requirements:
   host:
     - python
     - pip
   run:
-    - python >=3.7
+    - python >=3.10
     - git
     - trimmomatic
     - bwa
-    - minimap2
+    - minimap2 >=2.28
     - parallel
-    - samtools >=1.10
-    - bcftools >=1.10
+    - samtools >=1.12
+    - bcftools >=1.12
     - tqdm
-    - delly =0.8.7
+    - delly =1.3.3
     - gatk4
     - bedtools
-    - freebayes >=1.3.5
+    - freebayes =1.3.6
     - samclip
     - snpeff >=5.1
     - requests
@@ -41,6 +43,15 @@ requirements:
     - openjdk >=11.0.8
     - kmc >=3.2.1
     - dsk >=2.2
+    - rich-argparse 
+    - joblib >=1.3.0
+    - pysam
+    - pydantic >=2.6
+    - tomli
+    - itol-config
+    - seqkit
+    - sourmash
+    - pandas 
     
 test:
   imports:
@@ -49,6 +60,9 @@ test:
     - rename_vcf_chrom.py -h
     - combine_vcf_variants.py -h 
     - echo '#' | add_dummy_AD.py
+    - delly --version
+    - samtools --version
+    - bcftools --version
 
 about:
   home: https://github.com/jodyphelan/{{ name }}

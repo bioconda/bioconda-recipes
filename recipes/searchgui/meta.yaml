@@ -1,6 +1,7 @@
 # Do not forget to update the version string in the searchgui.py file
 {% set name = "SearchGUI" %}
-{% set version = "4.1.24" %}
+{% set version = "4.3.14" %}
+{% set sha256 = "e25b187c2761638e6ed44d92ce56dd7c10ed4f310c465057d6a3d1b5eb0187e4" %}
 {% set build = "0" %}
 
 package:
@@ -9,31 +10,30 @@ package:
 
 build:
   number: {{ build }}
+  noarch: generic
   binary_relocation:
     - 'share/searchgui-{{ version }}-{{ build }}/resources/MS Amanda/*'
+  run_exports:
+    - {{ pin_subpackage('searchgui', max_pin="x") }}
 
 source:
   url: http://genesis.ugent.be/maven2/eu/isas/searchgui/{{ name }}/{{ version }}/{{ name }}-{{ version }}-mac_and_linux.tar.gz
-  sha256: ee9402d7a7c37d1676712101ee1ca50114d9d7c34a2e71f82a7490df9324a7e6
+  sha256: {{ sha256 }}
 
 requirements:
-  build:
-    - {{ compiler('c') }}
-    - coreutils
   host:
     - xtandem ==15.12.15.2
-    - metamorpheus ==0.0.320
-    - blast ==2.12.0
-
+    - metamorpheus ==1.0.8
+    - blast >=2.14.0
   run:
-    - openjdk >=11
-    - mono >=6.0.0
     - python
+    - openjdk >=21
     - xtandem ==15.12.15.2
+    - metamorpheus ==1.0.8
+    - mono >=6.0.0
     - fontconfig
     - fonts-conda-ecosystem
-    - metamorpheus ==0.0.320
-    - blast ==2.12.0
+    - blast >=2.14.0
 
 test:
   files:
@@ -46,15 +46,17 @@ test:
     - searchgui eu.isas.searchgui.cmd.SearchCLI -id_params "Identification_Parameters_default.par" -fasta_file "fastacli_searchgui_tinydb1_concatenated_target_decoy.fasta" -spectrum_files "searchgui_tinyspectra1.mgf" -xtandem 1 -output_folder "." -output_option 0  -output_data 1
 
 about:
-  home: https://github.com/compomics/searchgui
-  license: Apache License 2.0
+  home: "https://github.com/compomics/searchgui"
+  license: "Apache-2.0"
   license_family: APACHE
-  summary: User-friendly graphical tool for using proteomics identification search engines
-  description: |
+  summary: "User-friendly graphical tool for using proteomics identification search engines."
+  description:
     SearchGUI is a user-friendly open-source graphical user interface for configuring and running proteomics identification search engines, currently supporting X!Tandem, MS-GF+, MetaMorpheus, MS Amanda, MyriMatch, Comet, Tide, Andromeda and OMSSA.
+  dev_url: "https://github.com/compomics/searchgui"
+  doc_url: "https://github.com/compomics/searchgui/blob/master/README.md"
 
 extra:
-  notes: |
+  notes:
     SearchGUI is Java program that comes with a custom wrapper shell script.
     This shell wrapper is called "opsin" and is on $PATH by default. By default
     "-Xms512m -Xmx4g" is set in the wrapper. If you want to overwrite it you can
@@ -65,4 +67,4 @@ extra:
     - biotools:searchgui
     - usegalaxy-eu:search_gui
     - doi:10.1002/pmic.201000595
-  extended-base: true  ## precompiled packages
+  extended-base: True  ## precompiled packages

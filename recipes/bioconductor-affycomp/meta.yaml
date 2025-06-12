@@ -1,39 +1,22 @@
-{% set version = "1.74.0" %}
+{% set version = "1.82.0" %}
 {% set name = "affycomp" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 6d69d91c904478573b35eaeb6b536db7
+about:
+  description: The package contains functions that can be used to compare expression measures for Affymetrix Oligonucleotide Arrays.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Graphics Toolbox for Assessment of Affymetrix Expression Measures
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: splines, affycompData
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - r-base
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Graphics Toolbox for Assessment of Affymetrix Expression Measures'
-  description: 'The package contains functions that can be used to compare expression measures for Affymetrix Oligonucleotide Arrays.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-affycomp", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:affycomp
@@ -42,4 +25,29 @@ extra:
     name: bioconductor-affycomp
     path: recipes/bioconductor-affycomp
     version: 1.56.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: splines, affycompData
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+
+source:
+  md5: 9dd57ca955c7b4b9bf7e5787e060de4a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

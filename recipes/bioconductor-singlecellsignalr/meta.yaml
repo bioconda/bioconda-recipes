@@ -1,30 +1,33 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "SingleCellSignalR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: b0f12e269ca633d0834b368283418346
+about:
+  description: Allows single cell RNA seq data analysis, clustering, creates internal network and infers cell-cell interactions.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Cell Signalling Using Single Cell RNAseq Data Analysis
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-singlecellsignalr", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown
 requirements:
   host:
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-multtest >=2.54.0,<2.55.0'
-    - 'bioconductor-scran >=1.26.0,<1.27.0'
-    - 'bioconductor-simlr >=1.24.0,<1.25.0'
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-multtest >=2.62.0,<2.63.0
+    - bioconductor-scran >=1.34.0,<1.35.0
     - r-base
     - r-biocmanager
     - r-circlize
@@ -36,11 +39,10 @@ requirements:
     - r-rtsne
     - r-stringr
   run:
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-multtest >=2.54.0,<2.55.0'
-    - 'bioconductor-scran >=1.26.0,<1.27.0'
-    - 'bioconductor-simlr >=1.24.0,<1.25.0'
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-multtest >=2.62.0,<2.63.0
+    - bioconductor-scran >=1.34.0,<1.35.0
     - r-base
     - r-biocmanager
     - r-circlize
@@ -51,13 +53,16 @@ requirements:
     - r-pheatmap
     - r-rtsne
     - r-stringr
+
+source:
+  md5: 0e82613ffe044a13aff73b6929714472
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Cell Signalling Using Single Cell RNAseq Data Analysis'
-  description: 'Allows single cell RNA seq data analysis, clustering, creates internal network and infers cell-cell interactions.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

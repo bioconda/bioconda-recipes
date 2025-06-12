@@ -1,31 +1,36 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "famat" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: ed39234859b59bb3d5e8d0f4f24e455d
+about:
+  description: 'Famat is made to collect data about lists of genes and metabolites provided by user, and to visualize it through a Shiny app. Information collected is: - Pathways containing some of the user''s genes and metabolites (obtained using a pathway enrichment analysis). - Direct interactions between user''s elements inside pathways. - Information about elements (their identifiers and descriptions). - Go terms enrichment analysis performed on user''s genes. The Shiny app is composed of: - information about genes, metabolites, and direct interactions between them inside pathways. - an heatmap showing which elements from the list are in pathways (pathways are structured in hierarchies). - hierarchies of enriched go terms using Molecular Function and Biological Process.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Functional analysis of metabolic and transcriptomic data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-famat", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, knitr, rmarkdown, testthat, BiocManager
 requirements:
+
   host:
-    - 'bioconductor-clusterprofiler >=4.6.0,<4.7.0'
-    - 'bioconductor-go.db >=3.16.0,<3.17.0'
-    - 'bioconductor-keggrest >=1.38.0,<1.39.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-reactome.db >=1.82.0,<1.83.0'
-    - 'bioconductor-rwikipathways >=1.18.0,<1.19.0'
+    - bioconductor-clusterprofiler >=4.14.0,<4.15.0
+    - bioconductor-go.db >=3.20.0,<3.21.0
+    - bioconductor-keggrest >=1.46.0,<1.47.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-reactome.db >=1.89.0,<1.90.0
+    - bioconductor-rwikipathways >=1.26.0,<1.27.0
     - r-base
     - r-biasedurn
     - r-dplyr
@@ -40,13 +45,14 @@ requirements:
     - r-shinydashboard
     - r-stringr
     - r-tidyr
+
   run:
-    - 'bioconductor-clusterprofiler >=4.6.0,<4.7.0'
-    - 'bioconductor-go.db >=3.16.0,<3.17.0'
-    - 'bioconductor-keggrest >=1.38.0,<1.39.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-reactome.db >=1.82.0,<1.83.0'
-    - 'bioconductor-rwikipathways >=1.18.0,<1.19.0'
+    - bioconductor-clusterprofiler >=4.14.0,<4.15.0
+    - bioconductor-go.db >=3.20.0,<3.21.0
+    - bioconductor-keggrest >=1.46.0,<1.47.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-reactome.db >=1.89.0,<1.90.0
+    - bioconductor-rwikipathways >=1.26.0,<1.27.0
     - r-base
     - r-biasedurn
     - r-dplyr
@@ -61,13 +67,16 @@ requirements:
     - r-shinydashboard
     - r-stringr
     - r-tidyr
+
+source:
+  md5: 986dd091cadc19b393396a41dfb898d3
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Functional analysis of metabolic and transcriptomic data'
-  description: 'Famat is made to collect data about lists of genes and metabolites provided by user, and to visualize it through a Shiny app. Information collected is: - Pathways containing some of the user''s genes and metabolites (obtained using a pathway enrichment analysis). - Direct interactions between user''s elements inside pathways. - Information about elements (their identifiers and descriptions). - Go terms enrichment analysis performed on user''s genes. The Shiny app is composed of: - information about genes, metabolites, and direct interactions between them inside pathways. - an heatmap showing which elements from the list are in pathways (pathways are structured in hierarchies). - hierarchies of enriched go terms using Molecular Function and Biological Process.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

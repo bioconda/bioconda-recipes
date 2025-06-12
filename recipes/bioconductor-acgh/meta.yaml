@@ -1,50 +1,24 @@
-{% set version = "1.76.0" %}
+{% set version = "1.84.0" %}
 {% set name = "aCGH" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 4ed40e84cdfa7084127e10a09349ee6e
+about:
+  description: Functions for reading aCGH data from image analysis output files and clone information files, creation of aCGH S3 objects for storing these data. Basic methods for accessing/replacing, subsetting, printing and plotting aCGH objects.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Classes and functions for Array Comparative Genomic Hybridization data
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-multtest >=2.54.0,<2.55.0'
-    - r-base
-    - r-cluster
-    - r-survival
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-multtest >=2.54.0,<2.55.0'
-    - r-base
-    - r-cluster
-    - r-survival
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Classes and functions for Array Comparative Genomic Hybridization data'
-  description: 'Functions for reading aCGH data from image analysis output files and clone information files, creation of aCGH S3 objects for storing these data. Basic methods for accessing/replacing, subsetting, printing and plotting aCGH objects.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-acgh", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:acgh
     - doi:10.1093/bioinformatics/bti677
@@ -52,4 +26,40 @@ extra:
     name: bioconductor-acgh
     path: recipes/bioconductor-acgh
     version: 1.58.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-multtest >=2.62.0,<2.63.0
+    - r-base
+    - r-cluster
+    - r-survival
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-multtest >=2.62.0,<2.63.0
+    - r-base
+    - r-cluster
+    - r-survival
+
+source:
+  md5: c2acef2cc478e54d29de890b7d12c146
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

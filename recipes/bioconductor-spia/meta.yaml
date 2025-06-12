@@ -1,39 +1,22 @@
-{% set version = "2.50.0" %}
+{% set version = "2.58.0" %}
 {% set name = "SPIA" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 0ee81ea8f562f47e4272289f3c24e83e
+about:
+  description: This package implements the Signaling Pathway Impact Analysis (SPIA) which uses the information form a list of differentially expressed genes and their log fold changes together with signaling pathways topology, in order to identify the pathways most relevant to the condition under the study.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: file LICENSE
+  license_file: LICENSE
+  summary: Signaling Pathway Impact Analysis (SPIA) using combined evidence of pathway over-representation and unusual signaling perturbations
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: graph, Rgraphviz, hgu133plus2.db
-requirements:
-  host:
-    - 'bioconductor-kegggraph >=1.58.0,<1.59.0'
-    - r-base
-  run:
-    - 'bioconductor-kegggraph >=1.58.0,<1.59.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'file LICENSE'
-  summary: 'Signaling Pathway Impact Analysis (SPIA) using combined evidence of pathway over-representation and unusual signaling perturbations'
-  description: 'This package implements the Signaling Pathway Impact Analysis (SPIA) which uses the information form a list of differentially expressed genes and their log fold changes together with signaling pathways topology, in order to identify the pathways most relevant to the condition under the study.'
-  license_file: LICENSE
+  run_exports: '{{ pin_subpackage("bioconductor-spia", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:spia
@@ -42,4 +25,29 @@ extra:
     name: bioconductor-spia
     path: recipes/bioconductor-spia
     version: 2.32.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: graph, Rgraphviz, hgu133plus2.db
+requirements:
+  host:
+    - bioconductor-kegggraph >=1.66.0,<1.67.0
+    - r-base
+  run:
+    - bioconductor-kegggraph >=1.66.0,<1.67.0
+    - r-base
+
+source:
+  md5: 1ac84aa5495b39db8d7007b0970bc4a3
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

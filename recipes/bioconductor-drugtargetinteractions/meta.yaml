@@ -1,52 +1,59 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "drugTargetInteractions" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: eb80ddd832c35d54f7ef7043992ebe86
+about:
+  description: Provides utilities for identifying drug-target interactions for sets of small molecule or gene/protein identifiers. The required drug-target interaction information is obained from a local SQLite instance of the ChEMBL database. ChEMBL has been chosen for this purpose, because it provides one of the most comprehensive and best annotatated knowledge resources for drug-target information available in the public domain.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Drug-Target Interactions
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-drugtargetinteractions", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: RUnit, BiocStyle, knitr, rmarkdown, ggplot2, reshape2, DT, EnsDb.Hsapiens.v86
 requirements:
   host:
-    - 'bioconductor-annotationfilter >=1.22.0,<1.23.0'
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
-    - 'bioconductor-ensembldb >=2.22.0,<2.23.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-uniprot.ws >=2.38.0,<2.39.0'
+    - bioconductor-annotationfilter >=1.30.0,<1.31.0
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-biomart >=2.62.0,<2.63.0
+    - bioconductor-ensembldb >=2.30.0,<2.31.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-uniprot.ws >=2.46.0,<2.47.0
     - r-base
     - r-dplyr
     - r-rappdirs
     - r-rsqlite
   run:
-    - 'bioconductor-annotationfilter >=1.22.0,<1.23.0'
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
-    - 'bioconductor-ensembldb >=2.22.0,<2.23.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-uniprot.ws >=2.38.0,<2.39.0'
+    - bioconductor-annotationfilter >=1.30.0,<1.31.0
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-biomart >=2.62.0,<2.63.0
+    - bioconductor-ensembldb >=2.30.0,<2.31.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-uniprot.ws >=2.46.0,<2.47.0
     - r-base
     - r-dplyr
     - r-rappdirs
     - r-rsqlite
+
+source:
+  md5: c3a5b2c3bfffb066cc015a2cdfbda44a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Drug-Target Interactions'
-  description: 'Provides utilities for identifying drug-target interactions for sets of small molecule or gene/protein identifiers. The required drug-target interaction information is obained from a local SQLite instance of the ChEMBL database. ChEMBL has been chosen for this purpose, because it provides one of the most comprehensive and best annotatated knowledge resources for drug-target information available in the public domain.'
+    - $R -e "library('{{ name }}')"
 

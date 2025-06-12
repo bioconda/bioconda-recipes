@@ -1,31 +1,42 @@
-{% set version = "3.6.0" %}
+{% set version = "3.14.0" %}
 {% set name = "AnnotationHub" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 0cf4c3b511b29d9375eed93381239b76
+about:
+  description: This package provides a client for the Bioconductor AnnotationHub web resource. The AnnotationHub web resource provides a central location where genomic files (e.g., VCF, bed, wig) and other resources from standard locations (e.g., UCSC, Ensembl) can be discovered. The resource includes metadata about each resource, e.g., a textual description, tags, and date of modification. The client creates and manages a local cache of files retrieved by the user, helping with quick and reproducible access.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Client to access AnnotationHub resources
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: IRanges, GenomicRanges, GenomeInfoDb, VariantAnnotation, Rsamtools, rtracklayer, BiocStyle, knitr, AnnotationForge, rBiopaxParser, RUnit, GenomicFeatures, MSnbase, mzR, Biostrings, SummarizedExperiment, ExperimentHub, gdsfmt, rmarkdown, HubPub
+  run_exports: '{{ pin_subpackage("bioconductor-annotationhub", max_pin="x.x") }}'
+
+extra:
+  identifiers:
+    - biotools:annotationhub
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-annotationhub
+    path: recipes/bioconductor-annotationhub
+    version: 2.12.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: IRanges, GenomicRanges, GenomeInfoDb, VariantAnnotation, Rsamtools, rtracklayer, BiocStyle, knitr, AnnotationForge, rBiopaxParser, RUnit, txdbmaker, MSnbase, mzR, Biostrings, CompoundDb, keras, ensembldb, SummarizedExperiment, ExperimentHub, gdsfmt, rmarkdown, HubPub
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocversion >=3.16.0,<3.17.0'
-    - 'bioconductor-interactivedisplaybase >=1.36.0,<1.37.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocversion >=3.20.0,<3.21.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-biocmanager
     - r-curl
@@ -35,12 +46,11 @@ requirements:
     - r-rsqlite
     - r-yaml
   run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocversion >=3.16.0,<3.17.0'
-    - 'bioconductor-interactivedisplaybase >=1.36.0,<1.37.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocversion >=3.20.0,<3.21.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-biocmanager
     - r-curl
@@ -49,20 +59,16 @@ requirements:
     - r-rappdirs
     - r-rsqlite
     - r-yaml
+
+source:
+  md5: b637981ca6631a32c25266604141b11d
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Client to access AnnotationHub resources'
-  description: 'This package provides a client for the Bioconductor AnnotationHub web resource. The AnnotationHub web resource provides a central location where genomic files (e.g., VCF, bed, wig) and other resources from standard locations (e.g., UCSC, Ensembl) can be discovered. The resource includes metadata about each resource, e.g., a textual description, tags, and date of modification. The client creates and manages a local cache of files retrieved by the user, helping with quick and reproducible access.'
-extra:
-  identifiers:
-    - biotools:annotationhub
-    - doi:10.1038/nmeth.3252
-  parent_recipe:
-    name: bioconductor-annotationhub
-    path: recipes/bioconductor-annotationhub
-    version: 2.12.1
+    - $R -e "library('{{ name }}')"
 

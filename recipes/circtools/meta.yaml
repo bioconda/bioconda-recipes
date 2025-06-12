@@ -1,48 +1,105 @@
 {% set name = "circtools" %}
-{% set version = "1.2.1" %}
-
+{% set version = "2.0.1" %}
+{% set sha256 = "66ecd3371eecbe0a1bb878d0bddccbbeaaa787bd8eaf87563330ca8bcc03e34f" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/circtools-{{ version }}.tar.gz
-  sha256: 69ed288408bc702ce735602bd7aa6133d51607306ba7fd2b2647c0649f8a0f4f
+  sha256: {{ sha256 }}
 
 build:
-  noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . -vv
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - circtools_install_R_dependencies = circtools.scripts.r_runner:install_R_dependencies
+    - circtools_circtest_wrapper = circtools.scripts.r_runner:circtools_circtest_wrapper
+    - circtools_enrich_visualization = circtools.scripts.r_runner:circtools_enrich_visualization
+    - circtools_exon_wrapper = circtools.scripts.r_runner:circtools_exon_wrapper
+    - circtools_primex_formatter = circtools.scripts.r_runner:circtools_primex_formatter
+    - circtools_primex_wrapper = circtools.scripts.r_runner:circtools_primex_wrapper
+    - circtools_quickcheck_wrapper = circtools.scripts.r_runner:circtools_quickcheck_wrapper
+    - circtools_reconstruct_visualization = circtools.scripts.r_runner:circtools_reconstruct_visualization
+    - circtools_sirna_formatter = circtools.scripts.r_runner:circtools_sirna_formatter
+    - circtools_reconstruct_coverage_graph = circtools.scripts.r_runner:circtools_reconstruct_coverage_graph
+    - circtools_reconstruct_summarized_coverage_profiles = circtools.scripts.r_runner:circtools_reconstruct_summarized_coverage_profiles
+    - create_igv_script = circtools.scripts.create_igv_script:main
+    - detect_new_exons_from_fuchs_data = circtools.scripts.detect_new_exons_from_fuchs_data:main
+    - create_igv_script_from_position_list = circtools.scripts.create_igv_script_from_position_list:main
+    - create_igv_script_from_gene_names = circtools.scripts.create_igv_script_from_gene_names:main
+    - guided_denovo_circle_structure = circtools.reconstruct.guided_denovo_circle_structure_parallel:main
+    - wonderdump = circtools.scripts.bash_runner:wonderdump
+    - circtools = circtools.circtools:main
+  run_exports:
+    - {{ pin_subpackage('circtools', max_pin="x") }}
 
 requirements:
   host:
+    - python >=3.8
     - pip
-    - python
+    - setuptools
   run:
-    - biopython >=1.71
-    - htseq >=0.11.0
-    - numpy >=1.14.5
-    - pandas >=0.25.0
+    - python >=3.8
+    - pysam >=0.16.0.1
     - pybedtools >=0.7.10
-    - pysam >=0.13
-    - python
-    - reportlab >=3.3.0
+    - biopython >=1.71
     - scipy >=0.19.0
-    - statsmodels >=0.9.0
+    - reportlab >=3.3.0
+    - pandas >=0.25.0
+    - statsmodels
+    - numpy >=1.14.5
+    - htseq >=2.0.0
+    - pathos >=0.3.0
+    - pyyaml >=6.0.2
+    - requests >=2.32.3
+    - star
+    - stringtie
+    - tqdm >=4.67.1
+    - r-base
+    - r-aod
+    - r-devtools
+    - r-formattable
+    - r-kableextra
+    - r-dplyr
+    - r-rcolorbrewer
+    - r-amap
+    - r-data.table
+    - r-ggfortify
+    - r-ggplot2
+    - r-gplots
+    - r-ggrepel
+    - r-gridextra
+    - r-openxlsx
+    - r-plyr
+    - r-hmisc
+    - r-reshape2
+    - bioconductor-ballgown
+    - bioconductor-biomart
+    - bioconductor-edger
+    - bioconductor-genomicfeatures
+    - bioconductor-genomicranges
+    - bioconductor-ggbio
 
 test:
   commands:
-    - DCC -h
-    - FUCHS -h
+    #- circtools_install_R_dependencies --help
+    - circtools --help
 
 about:
-  home: https://github.com/dieterich-lab/circtools
-  summary: circtools - a circular RNA toolbox
-  dev_url: https://github.com/dieterich-lab/circtools
-  license: GPL-3.0
+  home: https://github.com/jakobilab/circtools
+  summary: "circtools - a circular RNA toolbox."
+  doc_url: "https://docs.circ.tools/en/latest"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
+  dev_url: https://github.com/jakobilab/circtools
 
 extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/bty948
+    - biotools:circtools
   recipe-maintainers:
     - BarryDigby

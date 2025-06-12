@@ -1,5 +1,5 @@
 {% set name = "phykit" %}
-{% set version = "1.11.14" %}
+{% set version = "2.0.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 3d5a562a1ca53898e28923de017a105c47698aab9edc78b6cbd80ecbf20a34a3
+  sha256: 34799da77c621afdd50afd3411449a4460f15a52a56bff38b5c9ab7def864302
 
 build:
   noarch: python
@@ -121,17 +121,21 @@ build:
     - pk_thread_dna = phykit.phykit:thread_dna
     - pk_pal2nal = phykit.phykit:thread_dna
     - pk_p2n = phykit.phykit:thread_dna
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('phykit', max_pin="x") }}
 
 requirements:
   host:
     - pip
     - python >=3
+    - setuptools
   run:
-    - biopython >=1.79
-    - numpy >=1.18.2
+    - biopython >=1.82
+    - numpy >=1.24.0
     - python >=3
-    - scipy >=1.4.1
+    - scipy >=1.11.3
+    - scikit-learn >=1.4.2
 
 test:
   imports:
@@ -253,8 +257,15 @@ test:
 about:
   home: "https://github.com/jlsteenwyk/phykit"
   license: MIT
+  license_family: MIT
+  license_file: "LICENSE.md"
   summary: "PhyKIT is a UNIX shell toolkit for processing and analyzing phylogenomic data."
+  doc_url: "https://jlsteenwyk.com/PhyKIT"
+  dev_url: "https://github.com/jlsteenwyk/phykit"
 
 extra:
   recipe-maintainers:
     - pauldg
+  identifiers:
+    - doi:10.1093/bioinformatics/btab096
+    - biotools:phykit

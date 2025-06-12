@@ -1,5 +1,5 @@
 {% set name = "ganon" %}
-{% set version = "1.3.0" %}
+{% set version = "2.1.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -8,7 +8,7 @@ package:
 source:
   - folder: ganon
     url: https://github.com/pirovc/{{ name }}/archive/{{ version }}.tar.gz
-    sha256: 81b9dca9f04e506816ab55311f6df0a2e6b031a835b4a62acce47f5b7e88d4ed
+    sha256: adba3d1e632a49c9c7b4c7bbf07dfa164cf826465b802e4f9b254a3bc5bc0634
   - folder: robin-hood-hashing
     url: https://github.com/martinus/robin-hood-hashing/archive/refs/tags/3.11.3.tar.gz
     sha256: dcf2b7fa9ef9dd0c67102d94c28e8df3effbe1845e0ed1f31f4772ca5e857fc4
@@ -16,33 +16,42 @@ source:
 build:
   number: 0
   skip: True  # [py<36 or osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-    - cmake >=3.14
+    - cmake >=3.5
   host:
     - bzip2
-    - seqan3 ==3.1.0
+    - seqan3 ==3.3.0
     - catch2 ==2.*
     - cxxopts >=2.2.0
     - python
-    - pandas >=1.1.0
-    - multitax >=1.2.1
-    - genome_updater >=0.5.1
+    - pandas >=1.2.0
+    - multitax >=1.3.1
+    - genome_updater >=0.6.4
     - grep
     - coreutils
+    - curl
+    - diffutils
     - zlib
+    - parameterized >=0.9.0
+    - raptor ==3.*
   run:
     - bzip2
     - python
-    - pandas >=1.1.0
-    - multitax >=1.2.1
-    - genome_updater >=0.5.1
+    - pandas >=1.2.0
+    - multitax >=1.3.1
+    - genome_updater >=0.6.4
     - grep
     - coreutils
+    - curl
+    - diffutils 
     - zlib
+    - raptor ==3.*
     
 test:
   commands:
@@ -52,15 +61,19 @@ test:
 
 about:
   home: https://github.com/pirovc/ganon
-  summary: "ganon classifies short DNA sequences against large sets of genomic reference sequences efficiently"
+  summary: "ganon2 classifies genomic sequences against large sets of references efficiently,"
   description: |
-          ganon classifies short DNA sequences against large sets of genomic sequences efficiently, 
-          with download and update of references (RefSeq/Genbank), taxonomic (NCBI/GTDB) and 
-          hierarchical classification, customized reporting and more
+          ganon2 classifies genomic sequences against large sets of references efficiently, 
+          with integrated download and update of databases (refseq/genbank), taxonomic profiling 
+          (ncbi/gtdb), binning and hierarchical classification, customized reporting and more
   license: MIT License
   license_family: MIT
+  license_file: {{ SRC_DIR }}/ganon/LICENSE
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   identifiers:
     - doi:10.1101/406017
   recipe-maintainers:

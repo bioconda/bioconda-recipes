@@ -1,35 +1,36 @@
-{% set version = "6.1.0.post1" %}
+{% set version = "9.0.0" %}
 
 package:
   name: nextstrain-cli
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/n/nextstrain-cli/nextstrain-cli-{{ version }}.tar.gz
-  sha256: 06caed83aad6b7a85abf71ed11bc1e619f138b0c1265a84a09d6c59f3548a01b
+  url: https://pypi.io/packages/source/n/nextstrain-cli/nextstrain_cli-{{ version }}.tar.gz
+  sha256: de69203a8f1d3b140cbbad640df745e00827c23018f16171887a1d8fd538ce27
 
 build:
-  number: 0
+  number: 1
   noarch: python
   entry_points:
     - nextstrain = nextstrain.cli.__main__:main
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  run_exports:
+    - {{ pin_subpackage('nextstrain-cli', max_pin='x') }}
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.8
     - pip
-
+    - setuptools
   run:
-    - python >=3.6
-    - dataclasses # [py<37]
+    - python >=3.8
     - docutils
     - fasteners
-    - importlib_metadata # [py<38]
     - importlib_resources >=5.3.0 # [py<311]
-    - packaging
+    - packaging >=3.0.0
     - pyjwt >=2.0.0
-    - cryptography # Required for pyjwt digital signature support. Replicates "pip install pyjwt[crypto]".
+    # Required for pyjwt digital signature support. Replicates "pip install pyjwt[crypto]".
+    - cryptography
     - pyparsing
     - requests
     - typing_extensions >=3.6.4
@@ -37,12 +38,13 @@ requirements:
     - wrapt
     # nextstrain-cli requires boto3 but does not directly declare this
     # dependency, to avoid issues with pip dependency resolution with s3fs and
-    # botocore. We can declare the boto3 dependency and unpinned s3fs here,
-    # since Conda can resolve these dependency issues.
+    # botocore. We can declare the boto3 dependency and s3fs here, since Conda
+    # can resolve these dependency issues.
     # See: https://github.com/nextstrain/cli/blob/77c97bfecaf3dda84a8c20c343afc70cc6659f53/setup.py#L91-L98
-    - fsspec
+    - fsspec !=2023.9.1
     - boto3
-    - s3fs
+    - s3fs >=2021.04.0,!=2023.9.1
+    - urllib3 >=2.0.0 # [py>=310]
 
 test:
   requires:
@@ -71,3 +73,8 @@ extra:
   recipe-maintainers:
     - tsibley
     - corneliusroemer
+    - genehack
+    - victorlin
+  identifiers:
+    - doi:10.1093/bioinformatics/bty407 
+

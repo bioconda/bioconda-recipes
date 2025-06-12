@@ -1,5 +1,5 @@
 {% set name = "pyhmmer" %}
-{% set version = "0.7.1" %}
+{% set version = "0.11.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,39 +7,55 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: e746cfc3b352656757286106fd210763f835ac20cf8466141bca5588567bcb5c
+  sha256: f83e9a7d80f31713c52291b5c888dddb98c1e765222e064c40d56e87ad91cc4e
 
 build:
-  number: 1
-  skip: True  #[py2k or win]
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  number: 0
+  skip: True  # [py2k or win]
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv"
+  run_exports:
+    - {{ pin_subpackage('pyhmmer', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - cmake >=3.20
+    - make
   host:
-    - python
+    - python {{ python_min }}
     - pip
-    - cython
-    - setuptools >=46.4
-    - psutil >=5.8
+    - cython >=3.0
+    - scikit-build-core
   run:
-    - python
-    - psutil >=5.8
+    - python >={{ python_min }}
+    - psutil >=6.0,<8.0
 
 test:
+  requires:
+    - python {{ python_min }}
+    - importlib_resources #[py36 or py37 or py38]
+    - pip
   imports:
     - {{ name }}
+  commands:
+    - pip check
+    - python -m unittest -vv {{ name }}.tests
 
 about:
-  home: https://github.com/althonos/pyhmmer
+  home: "https://github.com/althonos/pyhmmer"
   license: MIT
+  license_family: MIT
   license_file: COPYING
-  summary: Cython bindings and Python interface to HMMER3.
-  doc_url: https://pyhmmer.readthedocs.io
+  summary: "Cython bindings and Python interface to HMMER3."
+  doc_url: "https://pyhmmer.readthedocs.io"
+  dev_url: "https://github.com/althonos/pyhmmer"
 
 extra:
   recipe-maintainers:
     - althonos
   identifiers:
-    - DOI:10.5281/zenodo.4270012
+    - doi:10.1093/bioinformatics/btad214
+    - biotools:pyhmmer
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

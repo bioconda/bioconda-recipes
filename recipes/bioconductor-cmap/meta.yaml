@@ -1,41 +1,43 @@
 {% set version = "1.15.1" %}
 {% set name = "cMAP" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: dbf8df4d4540151936884e1c5d747bcf
+about:
+  description: Annotation data file for cMAP assembled using data from public data repositories
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: LGPL
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: A data package containing annotation data for cMAP
 build:
-  number: 13
+  noarch: generic
+  number: 16
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-cmap", max_pin="x.x") }}'
+extra:
+  parent_recipe:
+    name: bioconductor-cmap
+    path: recipes/bioconductor-cmap
+    version: 1.15.1
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 requirements:
   host:
     - r-base
   run:
     - r-base
     - curl
-    - bioconductor-data-packages>=20221102
+    - bioconductor-data-packages >=20241103
+source:
+  md5: dbf8df4d4540151936884e1c5d747bcf
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: LGPL
-  summary: 'A data package containing annotation data for cMAP'
-  description: 'Annotation data file for cMAP assembled using data from public data repositories'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
-extra:
-  parent_recipe:
-    name: bioconductor-cmap
-    path: recipes/bioconductor-cmap
-    version: 1.15.1
+    - $R -e "library('{{ name }}')"
 

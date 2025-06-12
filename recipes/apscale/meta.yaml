@@ -1,5 +1,5 @@
 {% set name = "apscale" %}
-{% set version = "1.5.5" %}
+{% set version = "2.0.4" %}
 
 package:
   name: {{ name|lower }}
@@ -7,19 +7,22 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/apscale-{{ version }}.tar.gz
-  sha256: 20c86c3591e32f3454f78c5cadd6a1a6bf42a02615b5bfcc7ab5519a5f18b22d
+  sha256: f032bcee6bf5d3fbe960ff1de4393d2a288dbfeebe901cb74ef237824028219a
 
 build:
   entry_points:
     - apscale = apscale.__main__:main
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   number: 0
+  run_exports:
+    - {{ pin_subpackage('apscale', max_pin="x") }}
 
 requirements:
   host:
     - pip
     - python >=3.7
+    - setuptools
   run:
     - biopython >=1.78
     - cutadapt >=3.5
@@ -38,16 +41,15 @@ test:
   imports:
     - apscale
   commands:
-    - pip check
     - apscale --help
-  requires:
-    - pip
 
 about:
   home: https://github.com/DominikBuchner/apscale
-  summary: Advanced Pipeline for Simple yet Comprehensive AnaLysEs of DNA metabarcoding data
+  summary: "Advanced Pipeline for Simple yet Comprehensive AnaLysEs of DNA metabarcoding data."
   license: MIT
+  license_family: MIT
   license_file: LICENSE
+  dev_url: https://github.com/DominikBuchner/apscale
 
 extra:
   recipe-maintainers:

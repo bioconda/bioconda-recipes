@@ -1,17 +1,18 @@
 {% set name = "LAST" %}
-{% set version = "1447" %}
+{% set version = "1639" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://gitlab.com/mcfrith/last/-/archive/{{ version }}/last-{{ version }}.zip
-  sha256: 1b1ff403b637ea8d6429308ab6ca80c399c48b30a280a8d72626eed8c682de2c
+  url: "https://gitlab.com/mcfrith/last/-/archive/{{ version }}/last-{{ version }}.tar.gz"
+  sha256: 45690ef4536588e3d6a7d37dae1ceb4547bed75f858351607d4a995a4672066e
 
 build:
   number: 0
-  script: make install CXXFLAGS="$CXXFLAGS -msse4 -pthread" prefix=$PREFIX
+  run_exports:
+    - {{ pin_subpackage('last', max_pin=None) }}
 
 requirements:
   build:
@@ -21,7 +22,6 @@ requirements:
   host:
     - zlib
   run:
-    - zlib
     - python
     - pillow
     - parallel
@@ -30,15 +30,12 @@ test:
   commands:
     - lastal -h
     - lastdb -h
-    - lastal5 -h
-    - lastdb5 -h
     - last-split -h
     - last-merge-batches -h
     - maf-convert -h
     - last-dotplot -h
     - last-map-probs -h
     - last-postmask -h
-    - last-split5 -h
     - last-train -h
     - last-pair-probs -h
     - fastq-interleave -h
@@ -52,15 +49,22 @@ test:
     - parallel-fastq -h
 
 about:
-  home: https://gitlab.com/mcfrith/last
-  license: GPL-3.0-or-later
-  license_family: GPL
-  license_file: COPYING.txt
+  home: "https://gitlab.com/mcfrith/last"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "COPYING.txt"
   summary: "LAST finds & aligns related regions of sequences."
   description: "LAST finds & aligns related regions of sequences. It is designed for moderately large data (e.g. genomes, DNA reads, proteomes).  It's especially good at: finding rearrangements and recombinations; finding DNA-versus-protein related regions; unusual data like AT-rich DNA; sensitive DNA-DNA search."
+  dev_url: "https://gitlab.com/mcfrith/last"
+  doc_url: "https://gitlab.com/mcfrith/last/-/blob/{{ version }}/doc/last-cookbook.rst"
 
 extra:
-  container:
-    extended-base: True
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:last
+    - usegalaxy-eu:last_train
+    - usegalaxy-eu:last_al
+    - usegalaxy-eu:last_db
+    - usegalaxy-eu:last_split

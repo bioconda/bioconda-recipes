@@ -1,45 +1,56 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "ggtreeExtra" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: cfeac1a7fb311df0b484c0f06cf040e7
+about:
+  description: '''ggtreeExtra'' extends the method for mapping and visualizing associated data on phylogenetic tree using ''ggtree''. These associated data can be presented on the external panels to circular layout, fan layout, or other rectangular layout tree built by ''ggtree'' with the grammar of ''ggplot2''.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 3)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: An R Package To Add Geometric Layers On Circular Or Other Layout Tree Of "ggtree"
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-ggtreeextra", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: treeio, ggstar, patchwork, knitr, rmarkdown, prettydoc, markdown, testthat (>= 3.0.0), pillar
 requirements:
   host:
-    - 'bioconductor-ggtree >=3.6.0,<3.7.0'
+    - bioconductor-ggtree >=3.14.0,<3.15.0
     - r-base
+    - r-cli
     - r-ggnewscale
     - r-ggplot2
+    - r-magrittr
     - r-rlang
-    - 'r-tidytree >=0.3.9'
+    - r-tidytree >=0.3.9
   run:
-    - 'bioconductor-ggtree >=3.6.0,<3.7.0'
+    - bioconductor-ggtree >=3.14.0,<3.15.0
     - r-base
+    - r-cli
     - r-ggnewscale
     - r-ggplot2
+    - r-magrittr
     - r-rlang
-    - 'r-tidytree >=0.3.9'
+    - r-tidytree >=0.3.9
+
+source:
+  md5: 986a039ba11b2062a7b4fdb4945d308e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 3)'
-  summary: 'An R Package To Add Geometric Layers On Circular Or Other Layout Tree Of "ggtree"'
-  description: '''ggtreeExtra'' extends the method for mapping and visualizing associated data on phylogenetic tree using ''ggtree''. These associated data can be presented on the external panels to circular layout, fan layout, or other rectangular layout tree built by ''ggtree'' with the grammar of ''ggplot2''.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

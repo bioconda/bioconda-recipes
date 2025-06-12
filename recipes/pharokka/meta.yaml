@@ -1,6 +1,6 @@
-{% set version = "1.2.0" %}
+{% set version = "1.7.5" %}
 {% set name = "pharokka" %}
-{% set sha256 = "0c77ce79364528de1af9a68906bfe22ad782af47ea9f5870c2c4d48b393f5be1" %}
+{% set sha256 = "7ba4560b1e066f313d9631a60ed2072f3c07ed590bedfd48f38780e14b858ea2" %}
 {% set user = "gbouras13" %}
 
 package:
@@ -10,31 +10,53 @@ package:
 build:
   number: 0
   noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-build-isolation --use-pep517 --no-deps -vvv"
+  run_exports:
+    - {{ pin_subpackage('pharokka', max_pin='x') }}
 
 source:
   url: https://github.com/{{ user }}/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 requirements:
- run:
-  - bcbio-gff
-  - biopython >=1.78
-  - phanotate >=1.5.0
-  - mmseqs2 ==13.45111
-  - trnascan-se >=2.0.9
-  - minced >=0.4.2
-  - aragorn >=1.2.41
-  - mash >=2.2
-  - pyrodigal >=2.0.1
+  host:
+    - python >=3.5
+    - pip
+    - setuptools
+  run:
+    - python >=3.5
+    - bcbio-gff >=0.7.0
+    - biopython >=1.80,<1.82
+    - phanotate >=1.5.0,<1.6.4
+    - mmseqs2 ==13.45111
+    - trnascan-se >=2.0.9
+    - minced >=0.4.2
+    - aragorn >=1.2.41
+    - mash >=2.2
+    - dnaapler >=1.0.1
+    - pyrodigal >=3.1.0
+    - pyrodigal-gv >=0.2.0
+    - pycirclize >=0.3.1
+    - alive-progress >=3.0.1
+    - requests >=2.25.1
+    - pyhmmer >=0.11.0
+    - loguru >=0.5.4
+    - pyyaml >=6.0
+    - black >=22.3.0
+    - isort >=5.10.1
+    - pytest >=6.2.5
+    - pytest-cov >=3.0.0
 
 test:
   commands:
     - install_databases.py -h
     - pharokka.py -h
+    - pharokka_plotter.py -h
 
 about:
   home: https://github.com/gbouras13/pharokka
   license: MIT
+  license_family: MIT
   license_file: LICENSE
   summary: "Fast Phage Annotation Program"
   dev_url: https://github.com/gbouras13/pharokka

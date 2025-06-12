@@ -1,5 +1,5 @@
 {% set name = "hitac" %}
-{% set version = "2.0.23" %}
+{% set version = "2.2.2" %}
 
 package:
   name: {{ name|lower }}
@@ -7,31 +7,38 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: c1beb4c1fb812851647837f378d952b61581685fdee0084103d5ed6399a9125a
+  sha256: 22e69ba328f4d48b6f1dd6c394f37fdc429317a5a810a41c91e8e03454f8db09
 
 build:
   noarch: python
-  number: 0
+  number: 1
   script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.7
+    - python >=3.9,<3.13
     - pip
   run:
-    - python >=3.7
-    - hiclass ==4.1.7
+    - python >=3.9,<3.13
+    - hiclass ==4.13.3
     - numpy >=1.22.3
     - pandas >=1.4.3
     - scikit-bio >=0.5
-    - scikit-learn >=0.24
+    - scikit-learn >=0.24,<1.5
 
 test:
+  commands:
+    - hitac-fit --help
+    - hitac-classify --help
+    - hitac-fit-filter --help
+    - hitac-filter --help
   imports:
     - hitac
 
 about:
-  home: https://github.com/mirand863/hitac
+  home: https://gitlab.com/dacs-hpi/hitac
   license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE

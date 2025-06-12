@@ -1,51 +1,58 @@
-{% set version = "1.50.0" %}
+{% set version = "1.58.0" %}
 {% set name = "attract" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: cc6d8ec12476dba5e4299fc998cb7e65
+about:
+  description: This package contains the functions to find the gene expression modules that represent the drivers of Kauffman's attractor landscape. The modules are the core attractor pathways that discriminate between different cell types of groups of interest. Each pathway has a set of synexpression groups, which show transcriptionally-coordinated changes in gene expression.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL (>= 2.0)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: Methods to Find the Gene Expression Modules that Represent the Drivers of Kauffman's Attractor Landscape
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-attract", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: illuminaHumanv1.db
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-gostats >=2.64.0,<2.65.0'
-    - 'bioconductor-keggrest >=1.38.0,<1.39.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-reactome.db >=1.82.0,<1.83.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-gostats >=2.72.0,<2.73.0
+    - bioconductor-keggrest >=1.46.0,<1.47.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-reactome.db >=1.89.0,<1.90.0
     - r-base
     - r-cluster
   run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-gostats >=2.64.0,<2.65.0'
-    - 'bioconductor-keggrest >=1.38.0,<1.39.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-reactome.db >=1.82.0,<1.83.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-gostats >=2.72.0,<2.73.0
+    - bioconductor-keggrest >=1.46.0,<1.47.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-reactome.db >=1.89.0,<1.90.0
     - r-base
     - r-cluster
+
+source:
+  md5: d2537505966a09c9f55c075123193a6e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'LGPL (>= 2.0)'
-  summary: 'Methods to Find the Gene Expression Modules that Represent the Drivers of Kauffman''s Attractor Landscape'
-  description: 'This package contains the functions to find the gene expression modules that represent the drivers of Kauffman''s attractor landscape. The modules are the core attractor pathways that discriminate between different cell types of groups of interest. Each pathway has a set of synexpression groups, which show transcriptionally-coordinated changes in gene expression.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+    - $R -e "library('{{ name }}')"
 

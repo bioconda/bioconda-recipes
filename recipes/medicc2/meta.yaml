@@ -1,5 +1,6 @@
 {% set name = "medicc2" %}
-{% set version = "0.8.3" %}
+{% set version = "1.1.2" %}
+{% set hash = "13cb58099d5e4b79b4169b8ccc8f2543863b1dab0a43fafb5e146bfd9d9adc97" %}
 
 
 package:
@@ -8,12 +9,14 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: b8e28c5f9452ea9389f4c68df0ffadbe6d940a7c8911b02d69b1c8a65ab5dfac
+  sha256: {{ hash }}
 
 build:
-  number: 0
-  skip: true  # [py < 37 or py > 39]
-  script: {{ PYTHON }} -m pip install . -vv
+  number: 1
+  skip: True  # [py < 38 or py >= 311]
+  run_exports:
+    - {{ pin_subpackage("medicc2", max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
 
 requirements:
   build:
@@ -24,34 +27,39 @@ requirements:
     - pip
     # The following are needed for building the Cython extension
     - numpy >=1.20.1
-    - openfst ==1.8.1
+    - openfst ==1.8.2
     - setuptools
-    - cython >=0.29.21
+    - cython ==0.29.*
+    - pathlib2
   run:
     - python
-    - numpy >=1.20.1
+    - numpy >=1.20.1,<2.0
     - pyyaml >=5.4.1
     - {{ pin_compatible('openfst', max_pin='x.x.x') }}
-    - pandas >=1.2.2
+    - pandas >=1.2,<2.1
     - joblib >=1.0.1
     - biopython >=1.78
     - scipy >=1.7
-    - matplotlib-base >=3.3
+    - matplotlib-base >=3.3.4
     - pyranges
 
 test:
   commands:
     - medicc2 --help
 
-extra:
-  recipe-maintainers:
-    - tlkaufmann
-
 about:
   home: https://bitbucket.org/schwarzlab/medicc2
-  license: GPL-3
+  license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: LICENSE
   summary: Whole-genome doubling-aware copy number phylogenies for cancer evolution
   description: |
     For more information see the accompanying biorxiv preprint "Kaufmann et al. Whole-genome 
     doubling-aware copy number phylogenies for cancer evolution with MEDICC2."
+  dev_url: https://bitbucket.org/schwarzlab/medicc2
+
+extra:
+  recipe-maintainers:
+    - tlkaufmann
+  identifiers:
+    - doi:10.1186/s13059-022-02794-9

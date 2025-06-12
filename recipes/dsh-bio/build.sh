@@ -8,6 +8,7 @@ mkdir -p $PACKAGE_HOME
 
 cp -R * $PACKAGE_HOME
 
+ln -s $PACKAGE_HOME/bin/dsh-bin-fastq-quality-scores $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-bio $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-compress-bed $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-compress-fasta $BINARY_HOME
@@ -20,14 +21,24 @@ ln -s $PACKAGE_HOME/bin/dsh-compress-paf $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-compress-rgfa $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-compress-sam $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-compress-vcf $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-count-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-create-sequence-dictionary $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-disinterleave-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-downsample-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-downsample-interleaved-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-export-segments $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-extract-fasta $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-extract-fasta-kmers $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-extract-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-extract-fastq-by-length $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-extract-uniprot-features $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-extract-uniprot-features-to-parquet $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-extract-uniprot-features-to-partitioned-parquet $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-extract-uniprot-sequences $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-fasta-index-to-pangenome $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-fasta-index-to-pangenome-tree $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-fasta-to-fastq $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-fasta-to-text $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-fastq-description $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-fastq-sequence-length $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-fastq-to-bam $BINARY_HOME
@@ -45,6 +56,7 @@ ln -s $PACKAGE_HOME/bin/dsh-filter-rgfa $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-filter-sam $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-filter-vcf $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-gfa1-to-gfa2 $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-gff3-to-bed $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-identify-gfa1 $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-interleave-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-interleaved-fastq-to-bam $BINARY_HOME
@@ -68,6 +80,9 @@ ln -s $PACKAGE_HOME/bin/dsh-split-interleaved-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-split-paf $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-split-sam $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-split-vcf $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-summarize-uniprot-entries $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-summarize-uniprot-entries-to-parquet $BINARY_HOME
+ln -s $PACKAGE_HOME/bin/dsh-text-to-fasta $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-text-to-fastq $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-traversals-to-cytoscape-edges $BINARY_HOME
 ln -s $PACKAGE_HOME/bin/dsh-traversals-to-property-graph $BINARY_HOME

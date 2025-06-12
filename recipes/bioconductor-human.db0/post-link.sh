@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "human.db0-3.16.0"
+installBiocDataPackage.sh "human.db0-3.20.0"

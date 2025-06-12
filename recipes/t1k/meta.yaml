@@ -1,4 +1,4 @@
-{% set version = "1.0.1" %}
+{% set version = "1.0.8" %}
 
 package:
   name: t1k
@@ -6,10 +6,12 @@ package:
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage('t1k', max_pin="x") }}
 
 source:
   url: https://github.com/mourisl/T1K/archive/v{{ version }}.tar.gz
-  sha256: 77b0533b78e0c67f4c552877c5056fd3081bb36b6583c99c674fa812fc01bde6
+  sha256: 38cff351dc9cba2f343e7ba5b0dfe42933e6628b7478161618655b9d9e4acff8
 
 requirements:
   build:
@@ -17,11 +19,12 @@ requirements:
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
   host:
-    - samtools 0.1.19.*
+    - samtools 0.1.19.*  # [x86_64]
     - zlib
   run:
     - perl
     - python
+    - curl
 
 test:
   commands:
@@ -29,15 +32,23 @@ test:
     - fastq-extractor 2>&1 | cat > /dev/null
     - bam-extractor 2>&1 | cat > /dev/null
     - analyzer 2>&1 | cat > /dev/null
-    - which t1k-build.pl
-    - which ParseDatFile.pl
-    - which AddGeneCoord.pl
-    - which t1k-smartseq.pl
-    - which t1k-merge.py
-    - which run-t1k
+    - test -x ${PREFIX}/bin/t1k-build.pl
+    - test -x ${PREFIX}/bin/ParseDatFile.pl
+    - test -x ${PREFIX}/bin/AddGeneCoord.pl
+    - test -x ${PREFIX}/bin/t1k-smartseq.pl
+    - test -x ${PREFIX}/bin/t1k-merge.py
+    - test -x ${PREFIX}/bin/run-t1k
 
 about:
   home: https://github.com/mourisl/T1K
-  summary: T1K is a versatile methods to genotype highly polymorphic genes (e.g. KIR, HLA) with RNA-seq, WGS or WES data. 
+  summary: "T1K is a versatile methods to genotype highly polymorphic genes (e.g. KIR, HLA) with RNA-seq, WGS or WES data."
   license: MIT
+  license_family: MIT
   license_file: LICENSE.txt
+  dev_url: https://github.com/mourisl/T1K
+  doc_url: "https://github.com/mourisl/T1K/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

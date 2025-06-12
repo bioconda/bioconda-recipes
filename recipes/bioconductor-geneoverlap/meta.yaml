@@ -1,22 +1,35 @@
-{% set version = "1.34.0" %}
+{% set version = "1.42.0" %}
 {% set name = "GeneOverlap" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 38427040d6c3d6da80207f4da1f3eb6a
+about:
+  description: Test two sets of gene lists and visualize the results.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Test and visualize gene overlaps
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-geneoverlap", max_pin="x.x") }}'
+
+extra:
+  identifiers:
+    - biotools:geneoverlap
+    - doi:10.1167/iovs.16-20618
+  parent_recipe:
+    name: bioconductor-geneoverlap
+    path: recipes/bioconductor-geneoverlap
+    version: 1.16.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: RUnit, BiocGenerics, BiocStyle
 requirements:
   host:
@@ -27,21 +40,16 @@ requirements:
     - r-base
     - r-gplots
     - r-rcolorbrewer
+
+source:
+  md5: 4ae5390946a3e0a23aca20198e6474ab
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Test and visualize gene overlaps'
-  description: 'Test two sets of gene lists and visualize the results.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-extra:
-  identifiers:
-    - biotools:geneoverlap
-    - doi:10.1167/iovs.16-20618
-  parent_recipe:
-    name: bioconductor-geneoverlap
-    path: recipes/bioconductor-geneoverlap
-    version: 1.16.0
+    - $R -e "library('{{ name }}')"
 

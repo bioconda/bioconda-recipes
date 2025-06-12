@@ -1,5 +1,5 @@
-{% set version="2.0.0" %}
-{% set sha256="3be0d2cac7f7451f8b741983e22803b546de2074d837b425fb1b69ccc718ebbc" %}
+{% set version="2.0.1" %}
+{% set sha256="1f50748d2f8f4bf5888394154d366e0eed8d4e20a3cd0da8b33e200aa1d9edf7" %}
 {% set vrnaversion="2.5.1" %}
 
 package:
@@ -13,7 +13,9 @@ about:
   summary: Multiple alignment of RNAs
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('locarna', max_pin="x.x") }}
 
 source:
   url: "https://github.com/s-will/LocARNA/releases/download/v{{ version }}/locarna-{{ version }}.tar.gz"
@@ -27,19 +29,21 @@ requirements:
     - make
     - {{ compiler('cxx') }}
   host:
-    - viennarna =={{ vrnaversion }}
+    - viennarna >={{ vrnaversion }},<3
+    - perl
   run:
-    - viennarna =={{ vrnaversion }}
+    - viennarna >={{ vrnaversion }},<3
     - perl
 
 test:
   commands:
-    - mlocarna --version
-    - locarna --version
-    - locarna_p --version
-    - sparse --version
-    - exparna_p --version
-    - echo -e ">D10744\nGGAAAAUUGAUCAUCGGCAAGAUAAGUUAUUUACUAAAUAAUAGGAUUUAAUAACCUGGUGAGUUCGAAUCUCACAUUUUCCG" | locarna_rnafold_pp --in-loop --stacking --noLP -p0.5 |head -n3
+    - "ls -la"
+    - LC_ALL=en_US.UTF-8 mlocarna --version
+    - LC_ALL=en_US.UTF-8 locarna --version
+    - LC_ALL=en_US.UTF-8 locarna_p --version
+    - LC_ALL=en_US.UTF-8 sparse --version
+    - LC_ALL=en_US.UTF-8 exparna_p --version
+    - echo -e ">D10744\nGGAAAAUUGAUCAUCGGCAAGAUAAGUUAUUUACUAAAUAAUAGGAUUUAAUAACCUGGUGAGUUCGAAUCUCACAUUUUCCG" | LC_ALL=en_US.UTF-8 locarna_rnafold_pp --in-loop --stacking --noLP -p0.5 |head -n3
 
 extra:
   identifiers:

@@ -1,16 +1,24 @@
-{% set version = "2.0.2" %}
-{% set sha256hash = "3402528e14426984951d8ab1203e4f11dafaee4aa2ef220606f71b60520dff02" %}
+{% set name = "snap-aligner" %}
+{% set version = "2.0.5" %}
+{% set sha256hash = "736223679bad806aa7a6da8077b4428baceb186cf94a585417c1eb1914624f55" %}
+
 package:
-  name: snap-aligner
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/amplab/snap/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256hash }}
+  patches:
+    - 0001-Makefile.patch
+    - 0002-snap-aligner-aarch64.patch  # [arm64 or aarch64]
+    - 0003-header.patches
+    - 0004-main.cpp.patch
 
 build:
-  number: 0
-  skip: True # [osx]
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
   build:
@@ -18,14 +26,21 @@ requirements:
     - {{ compiler('cxx') }}
   host:
     - zlib
-  run:
-    - zlib
 
 test:
   commands:
     - 'snap-aligner 2>&1 | grep "SNAP"'
 
 about:
-  home: http://snap.cs.berkeley.edu/
-  license: Apache v2
-  summary: Scalable Nucleotide Alignment Program -- a fast and accurate read aligner for high-throughput sequencing data
+  home: "https://snap.cs.berkeley.edu"
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: LICENSE
+  summary: "Scalable Nucleotide Alignment Program -- a fast and accurate read aligner for high-throughput sequencing data."
+  dev_url: "https://github.com/amplab/snap"
+  doc_url: "https://www.microsoft.com/en-us/research/project/snap"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

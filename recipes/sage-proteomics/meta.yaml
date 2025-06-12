@@ -1,23 +1,25 @@
 {% set name = "sage-proteomics" %}
-{% set version = "0.8.0" %}
+{% set version = "0.14.7" %}
+{% set sha256 = "894b59429a67dc22592fc65fca547ee6d67f8bada71d09f7c1a81524b65fe6da" %}
 
 package:
-  name: {{ name|lower  }}
-  version: {{ version  }}
+  name: {{ name }}
+  version: {{ version }}
 
 build:
-  number: 0
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('sage-proteomics', max_pin="x") }}
 
 source:
   url: https://github.com/lazear/sage/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 4b8da12dc77969c153329604716964a54e831d57ee29c573911dfa63fb1cf24b
+  sha256: {{ sha256 }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - rust >=1.62.0
+    - {{ compiler('rust') }}
   host:
-  run:
 
 test:
   commands:
@@ -26,12 +28,16 @@ test:
 about:
   home: https://github.com/lazear/sage
   license: MIT
+  license_family: MIT
   license_file: LICENSE
   doc_url: https://lazear.github.io/sage/
   dev_url: https://github.com/lazear/sage
   summary: "Proteomics searching so fast it feels like magic."
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - ypriverol
     - lazear

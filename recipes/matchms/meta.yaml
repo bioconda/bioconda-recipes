@@ -1,5 +1,5 @@
 {% set name = "matchms" %}
-{% set version = "0.18.0" %}
+{% set version = "0.30.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,33 +7,41 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: cda3949b978d46d7aa351e42d25431cd9d4ba9bc44bcc2ed9053cdd539e5cf8b
+  sha256: d2341df163ec0ec3c35010e629065a085640479985f39e68fea696eb737423b8
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('matchms', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.10,<3.13
+    - poetry-core
   run:
-    - deprecated
-    - lxml
-    - matplotlib-base
-    - networkx
-    - numba >=0.47
-    - numpy
+    - python >=3.10,<3.13
+    - deprecated >=1.2.14
+    - lxml >=4.9.3,<5
+    - matplotlib-base >=3.7
+    - networkx >=3.4.2
+    - numba >=0.60.0
+    - numpy >=2.0.0
     - pickydict >=0.4.0
-    - pyteomics >=4.2
-    - python
-    - pyyaml
-    - rdkit >=2020.03.1
-    - requests
-    - scipy >=1.4.0
-    - sparsestack >=0.4.1
-    - tqdm
+    - pyteomics >=4.6
+    - pyyaml >=6.0.1
+    - rdkit >=2024.3.5
+    - requests >=2.31.0
+    - scikit-learn
+    - scipy >=1.14.1
+    - sparsestack >=0.6.0
+    - tqdm >=4.65.0
+    - pillow !=9.4.0
+    - pandas >=2.2.3
+    - pubchempy
+    - pynndescent >=0.5.13
 
 test:
   imports:
@@ -45,14 +53,33 @@ test:
 
 about:
   home: "https://github.com/matchms/matchms"
-  license: Apache Software
+  license: "Apache-2.0"
   license_family: APACHE
   license_file: LICENSE
-  summary: "Python library for fuzzy comparison of mass spectrum data and other Python objects"
-  doc_url: "https://matchms.readthedocs.io/en/latest/"
+  summary: "Python library for fuzzy comparison of mass spectrum data and other Python objects."
+  doc_url: "https://matchms.readthedocs.io/en/latest"
   dev_url: "https://github.com/matchms/matchms"
 
 extra:
   recipe-maintainers:
     - hechth
     - maximskorik
+  identifiers:
+    - doi:10.21105/joss.02411
+    - doi:10.1186/s13321-024-00878-1
+    - biotools:matchms
+    - usegalaxy-eu:matchms_convert
+    - usegalaxy-eu:matchms_filtering
+    - usegalaxy-eu:matchms_fingerprint_similarity
+    - usegalaxy-eu:matchms_formatter
+    - usegalaxy-eu:matchms_metadata_export
+    - usegalaxy-eu:matchms_metadata_match
+    - usegalaxy-eu:matchms_networking
+    - usegalaxy-eu:matchms_similarity
+    - usegalaxy-eu:matchms_spectral_similarity
+    - usegalaxy-eu:matchms_split
+    - usegalaxy-eu:matchms_subsetting
+    - usegalaxy-eu:matchms_metadata_merge
+    - usegalaxy-eu:matchms_add_key
+    - usegalaxy-eu:matchms_remove_key
+    - usegalaxy-eu:matchms_remove_spectra

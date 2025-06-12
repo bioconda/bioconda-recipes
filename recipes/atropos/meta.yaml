@@ -1,6 +1,6 @@
 {% set name = "atropos" %}
-{% set version = "1.1.31" %}
-{% set hash = "5219575de12334d4b6a365ff682d6271d54fb01568ae52cc27522e33684789c6" %}
+{% set version = "1.1.32" %}
+{% set sha256 = "17e9dc3d76d7a2ca607a12da191a6d7ba1cfbd1a8c924215870417f85858fd83" %}
 
 package:
   name: {{ name }}
@@ -8,15 +8,14 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: {{ hash }}
-  patches:
-    - python310.patch
+  sha256: {{ sha256 }}
 
 build:
-  number: 2
+  number: 3
   # Ensure Cython is rerun by removing *.c output files and PKG-INFO (checked for by setup.py)
-  script: find . "(" -name "*.c" -o -name PKG-INFO ")" -exec rm {} ";" && python -m pip install --no-deps --ignore-installed .
-  skip: True  # [py27]
+  script: find . "(" -name "*.c" -o -name PKG-INFO ")" -exec rm {} ";" && {{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv
+  run_exports:
+    - {{ pin_subpackage('atropos', max_pin="x") }}
 
 requirements:
   build:
@@ -24,6 +23,7 @@ requirements:
   host:
     - python
     - pip
+    - setuptools
     - cython >=0.25.2
   run:
     - python
@@ -36,6 +36,11 @@ test:
     - atropos | grep "Atropos version"
 
 about:
-  home: https://atropos.readthedocs.io/
+  home: https://github.com/jdidion/atropos
   license: CC0 and partly MIT
   summary: 'trim adapters from high-throughput sequencing reads'
+  doc_url: https://atropos.readthedocs.io
+
+extra:
+  additional-platforms:
+    - linux-aarch64

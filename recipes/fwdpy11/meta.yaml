@@ -1,74 +1,70 @@
+{% set name = "fwdpy11" %}
+{% set version = "0.24.5" %}
+
 package:
-  name: fwdpy11
-  version: "0.19.2"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/0a/e2/0e1c197cbeb21972478bbe56878fc67bc42770aea0826e928f9dfb0d9fe9/fwdpy11-0.19.2.tar.gz
-  sha256: 59c2ac6a2e0814db3793f9695421706b944636f2a8976964f94fa65d2f619f94
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/fwdpy11-{{ version }}.tar.gz
+  sha256: cc427619d56e792e75e71e664c5905af9975bb146a1cc4b4e0bae0b467321940
 
 build:
-  skip: True # [py27 or py<37]
+  skip: True  # [py < 310 or py > 314]
   number: 0
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  entry_points:
+    - fwdpy11 = fwdpy11.__main__:main
+  run_exports:
+    - {{ pin_subpackage('fwdpy11', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
     - cmake
     - make
   host:
     - python
-    - pkgconfig
-    - python
     - pip
-    - numpy >=1.20
-    - pybind11 ==2.9.1
-    - tskit >=0.5
+    - setuptools-scm >=8
+    - pybind11 ==2.12.0
     - gsl
-    - openblas
-    - attrs
-    - setuptools_scm
-    - rust >=1.62.1  
-#    - intervaltree
-#    - pybind11 >=2.10.0
-#    - numpy
-#    - scipy
-#    - attrs >=0.19.2
-#    - black
-#    - tskit
-#    - msprime
-#    - gsl
-#    - boost
-#    - pytest
-#    - pytest-xdist
-#    - setuptools_scm
-#    - demes >=0.2.0
-#    - rust >=1.62.1
-#    - hypothesis
+    - scikit-build-core >=0.11.0
+    - numpy >=2.0
   run:
     - python
-    - numpy >=1.20
-    - tskit >=0.5
+    - numpy <2.0
+    - tskit >=0.5.6
     - gsl
     - openblas
     - scipy
     - attrs
     - black
-    - demes >=0.2
+    - demes >=0.2.2
     - intervaltree
+    - deprecated
 
 test:
-  # Python imports
   imports:
     - fwdpy11
+  commands:
+    - fwdpy11 --help
 
 about:
-  home: http://pypi.python.org/pypi/fwdpy11
-  license: GNU General Public License v3 or later (GPLv3+)
+  home: https://github.com/molpopgen/fwdpy11
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: "COPYING"
   summary: 'Forward-time population genetic simulation in Python.'
+  dev_url: https://github.com/molpopgen/fwdpy11
+  doc_url: https://molpopgen.github.io/fwdpy11
 
-extras:
+extra:
   identifiers:
-    - 10.1534/genetics.114.165019
-    - 10.1371/journal.pcbi.1006581
+    - doi:10.1534/genetics.114.165019
+    - doi:10.1371/journal.pcbi.1006581
+  additional-platforms:
+    - linux-aarch64

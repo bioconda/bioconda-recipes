@@ -1,5 +1,5 @@
 {% set name = "humann" %}
-{% set version = "3.6" %}
+{% set version = "3.9" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,11 +7,11 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: addce81db58bacfdd5465423455d25e385aa8dd14349253c3a7054bf7d3747dc
+  sha256: d018ddbbe45f5e3e11080620b4ae5f1737ba213d2c8cecdc8237859f853b2287
 
 build:
-  number: 2
-  noarch: python
+  number: 0
+  noarch: generic
   entry_points:
     - humann = humann.humann:main
     - humann3 = humann.humann:main
@@ -24,31 +24,29 @@ build:
     - humann_renorm_table = humann.tools.renorm_table:main
     - humann_regroup_table = humann.tools.regroup_table:main
     - humann_infer_taxonomy = humann.tools.infer_taxonomy:main
-    - humann_humann1_kegg = humann.tools.humann_humann1_kegg:main
-    - humann_rna_dna_norm = humann.tools.rna_dna_norm:main
-    - humann_strain_profiler = humann.tools.strain_profiler:main
     - humann_reduce_table = humann.tools.reduce_table:main
     - humann_unpack_pathways = humann.tools.merge_abundance:main
     - humann_test = humann.tests.humann_test:main
     - humann_build_custom_database = humann.tools.build_custom_database:main
     - humann_genefamilies_genus_level = humann.tools.genefamilies_genus_level:main
     - humann_split_stratified_table = humann.tools.split_stratified_table:main
-    - humann_associate = humann.tools.humann_associate:main
     - humann_barplot = humann.tools.humann_barplot:main
     - humann_benchmark = humann.tools.humann_benchmark:main
-  script: "{{ PYTHON }} -m pip install . -vv --install-option='--bypass-dependencies-install'"
+    - humann_expand_cluster = humann.tools.expand_cluster:main
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir"
+  run_exports:
+    - {{ pin_subpackage('humann', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3
   run:
-    - python
+    - python >=3
     - metaphlan >=4.0
     - diamond >=0.9.36
     - glpk
     - bowtie2 >2.1
-    #- minpath
 
 test:
   imports:
@@ -68,25 +66,26 @@ test:
     - humann_rename_table --help
     - humann_renorm_table --help
     - humann_regroup_table --help
-    #- humann_infer_taxonomy --help
-    - humann_humann1_kegg --help
-    - humann_rna_dna_norm --help
-    - humann_strain_profiler --help
     - humann_reduce_table --help
     - humann_unpack_pathways --help
     - humann_test --help
     - humann_build_custom_database --help
     - humann_genefamilies_genus_level --help
     - humann_split_stratified_table --help
-    - humann_associate --help
     - humann_barplot --help
     - humann_benchmark --help
     - humann_test
 
 about:
-  home: "http://huttenhower.sph.harvard.edu/humann"
+  home: "https://huttenhower.sph.harvard.edu/humann"
   license: MIT
   license_family: MIT
+  license_file: LICENSE
   summary: "HUMAnN: The HMP Unified Metabolic Analysis Network, version 3"
-  doc_url: http://huttenhower.sph.harvard.edu/humann
-  dev_url: https://github.com/biobakery/humann
+  doc_url: "http://huttenhower.sph.harvard.edu/humann"
+  dev_url: "https://github.com/biobakery/humann"
+
+extra:
+  identifiers:
+    - doi:10.7554/eLife.65088
+    - biotools:humann

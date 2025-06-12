@@ -1,39 +1,47 @@
 {% set name = "fqtk" %}
-{% set version = "0.2.0" %}
+{% set version = "0.3.1" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 0
-
 source:
   url: https://github.com/fulcrumgenomics/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 6a9eb885d6bbb8e1ef177e6da649adadde354c6755de09ae095c6d5eeb7985e8
+  sha256: f64598b7493b2c87fe8b17330c137c98eb66e352f3648809e4128ea25f300a2e
+
+build:
+  number: 3
+  run_exports:
+    - {{ pin_subpackage('fqtk', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - rust >=1.60
+    - {{ compiler('rust') }}
     - pkg-config
     - make
     - cmake
-  host:
-  run:
+    - cargo-bundle-licenses
 
 test:
   commands:
     - fqtk --help
 
 about:
-  home: https://github.com/fulcrumgenomics/{{ name }}
+  home: "https://github.com/fulcrumgenomics/{{ name }}"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: A toolkit for working with FASTQ files.
+  summary: "A toolkit for working with FASTQ files."
+  dev_url: "https://github.com/fulcrumgenomics/{{ name }}"
+  doc_url: "https://github.com/fulcrumgenomics/fqtk/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
-    - NatPRoach
     - nh13
     - tfenne
+  identifers:
+    - DOI:10.5281/zenodo.13345414

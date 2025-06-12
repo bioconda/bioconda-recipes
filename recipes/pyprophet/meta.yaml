@@ -1,7 +1,7 @@
 {% set name = "pyprophet" %}
-{% set version = "2.2.3" %}
+{% set version = "2.2.5" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "73409a31067e4cbe176b3a698c78f29b35861d68fedc2072b44fd1da7e117cb1" %}
+{% set hash_value = "f1d42ba53ecc0c0cac21e6938ad830f1260acb65ac69b3012a697f56e4badab3" %}
 
 package:
   name: '{{ name|lower }}'
@@ -12,8 +12,9 @@ source:
   '{{ hash_type }}': '{{ hash_value }}'
 
 build:
-  number: 0
-  skip: True  # [py27]
+  number: 4
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
   entry_points:
     - pyprophet=pyprophet.main:cli
   script: python -m pip install --no-deps --ignore-installed .
@@ -24,7 +25,7 @@ requirements:
   host:
     - python
     - pip
-    - cython
+    - cython <1
     - numpy >=1.9
     - pypdf2
   run:
@@ -43,6 +44,7 @@ requirements:
     - click
     - dataclasses
     - pypdf2
+    - typing-extensions
 
 test:
   imports:
@@ -56,6 +58,8 @@ about:
   license_family: BSD
   summary: Python reimplementation of mProphet peak scoring
 extra:
+  additional-platforms:
+    - linux-aarch64
   container:
     # Click requires the extended container
     extended-base: true

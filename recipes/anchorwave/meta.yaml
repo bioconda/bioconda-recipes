@@ -1,10 +1,10 @@
-{% set name = "AnchorWave" %}
-{% set version = "1.1.1" %}
-{% set tag = "v1.1.1" %}
-{% set sha256 = "0133fc38bc862e818d07089370c8797180c36b8d7ca1b65accb5c91fd21cf4bc" %}
+{% set name = "anchorwave" %}
+{% set version = "1.2.6" %}
+{% set tag = "v1.2.6" %}
+{% set sha256 = "568cd3943c464d0294717232a73f7e4fe13f8db34146871e9ca870eb676a30d9" %}
 
 package:
-  name: {{ name | lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -13,7 +13,12 @@ source:
 
 build:
   number: 0
-  skip: True  # [not linux]
+  skip: True  # [not unix]
+  script_env:
+    - TARGET_PLATFORM=macOS  # [osx]
+    - TARGET_PLATFORM=Linux  # [linux]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -24,15 +29,20 @@ requirements:
   run:
     - gmap
     - minimap2
-    - zlib
 
 test:
   commands:
     - 'anchorwave | grep "Usage: anchorwave"'
 
 about:
-  home: https://github.com/baoxingsong/AnchorWave
+  home: "https://github.com/baoxingsong/AnchorWave"
   license: MIT
-  summary: 'Sensitive alignment of genomes with high sequence diversity, extensive structural polymorphism, and whole-genome duplication variation'
-  dev_url: https://github.com/baoxingsong/AnchorWave
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'Sensitive alignment of genomes with high sequence diversity, extensive structural polymorphism, and whole-genome duplication variation.'
+  dev_url: "https://github.com/baoxingsong/AnchorWave"
+  doc_url: "https://github.com/baoxingsong/AnchorWave/blob/v{{ version }}/README.md"
 
+extra:
+  additional-platforms:
+    - linux-aarch64

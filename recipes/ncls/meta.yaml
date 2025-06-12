@@ -1,5 +1,5 @@
 {% set name = "ncls" %}
-{% set version = "0.0.66" %}
+{% set version = "0.0.68" %}
 
 package:
   name: '{{ name|lower }}'
@@ -7,11 +7,13 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: cf65863021b318975bf5a0d17aaa838eef2fa64487fc129c7c78a7f1c94bca36
+  sha256: 81aaa5abb123bb21797ed2f8ef921e20222db14a3ecbc61ccf447532f2b7ba93
 
 build:
-  number: 0
+  number: 5
   script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x.x") }}
 
 requirements:
   build:
@@ -20,8 +22,10 @@ requirements:
     - python
     - cython
     - pip
+    - setuptools
   run:
     - python
+    - setuptools
     - numpy
 
 test:
@@ -34,5 +38,10 @@ about:
   summary: Fast overlap datastructure.
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - endrebak
+  skip-lints:
+    - uses_setuptools

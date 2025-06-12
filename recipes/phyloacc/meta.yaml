@@ -1,60 +1,63 @@
 {% set name = "PhyloAcc" %}
-{% set version = "2.1.1" %}
-{% set sha256 = "50f372ae7d05804fd9e4b02631d65f91f4ff3b83c2a2249e31cef088a245c8b4" %}
+{% set version = "2.4.3" %}
+{% set sha256 = "07582ec36ac894417fe582c4bf60f7d0970122d2dfd3139490bcf56f048898e1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
-source: 
+source:
   url: https://github.com/phyloacc/PhyloAcc/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   number: 0
-  skip: True # [py < 38]
+  skip: True  # [py < 311]
+  run_exports:
+    - {{ pin_subpackage('phyloacc', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - make
-    - libgomp  # [linux]
-    - llvm-openmp  # [osx]
   host:
+    - python
     - gsl
     - openblas
     - blis
     - liblapack
     - armadillo
-    - python
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - mkl # [target_platform != "linux-aarch64"]
   run:
     - python
     - blis
     - matplotlib-base >=3.5
     - biopython >=1.79
     - numpy >=1.22
-    - snakemake-minimal >=7.3
+    - snakemake-minimal >=8.0
+    - snakemake-executor-plugin-slurm
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - mkl # [target_platform != "linux-aarch64"]
 
 test:
-  commands:
-    - phyloacc.py --version
-    - phyloacc.py --depcheck
-    - phyloacc_post.py -h
-# Test commands to run after building and installing
+  requires:
+    - wget
 
 about:
   home: https://phyloacc.github.io/
-  license: GNU GPLv3 
-  license_family: GPL
+  license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: LICENSE.md
   summary: 'Bayesian estimation of substitution rate shifts in non-coding regions'
   description: 'Bayesian estimation of substitution rate shifts in non-coding regions'
-  doc_url: https://phyloacc.github.io/
+  doc_url: https://phyloacc.github.io/readme.html
   dev_url: https://github.com/phyloacc/PhyloAcc
-# Package meta info
-# URLs just point to the github page until we update the docs
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
     - gwct
-# Extra info

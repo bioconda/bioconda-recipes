@@ -1,37 +1,45 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "rSWeeP" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 98fc57049c6c2bc16b69e85e51edb408
+about:
+  description: '"Spaced Words Projection (SWeeP)" is a method for representing biological sequences using vectors preserving inter-sequence comparability.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Spaced Words Projection (SWeeP)
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: Biostrings, methods, knitr, rmarkdown, BiocStyle
+  run_exports: '{{ pin_subpackage("bioconductor-rsweep", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: Rtsne, ape, Seurat, knitr, rmarkdown, tictoc, BiocStyle, testthat (>= 3.0.0)
 requirements:
   host:
+    - bioconductor-biostrings >=2.74.0,<2.75.0
     - r-base
-    - r-pracma
+    - r-doparallel
+    - r-foreach
+    - r-stringi
   run:
+    - bioconductor-biostrings >=2.74.0,<2.75.0
     - r-base
-    - r-pracma
+    - r-doparallel
+    - r-foreach
+    - r-stringi
+source:
+  md5: e9f05e3b0bad39fefd41f1fa4692ee2a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Functions to creation of low dimensional comparative matrices of Amino Acid Sequence occurrences'
-  description: 'The SWeeP method was developed to favor the analizes between amino acids sequences and to assist alignment free phylogenetic studies. This method is based on the concept of sparse words, which is applied in the scan of biological sequences and its the conversion in a matrix of ocurrences. Aiming the generation of low dimensional matrices of Amino Acid Sequence occurrences.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

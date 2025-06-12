@@ -1,44 +1,21 @@
-{% set version = "1.28.0" %}
+{% set version = "1.36.0" %}
 {% set name = "Oscope" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: b029ef5797f581df21a82d730467099e
+about:
+  description: 'Oscope is a statistical pipeline developed to identifying and recovering the base cycle profiles of oscillating genes in an unsynchronized single cell RNA-seq experiment. The Oscope pipeline includes three modules: a sine model module to search for candidate oscillator pairs; a K-medoids clustering module to cluster candidate oscillators into groups; and an extended nearest insertion module to recover the base cycle order for each oscillator group.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Oscope - A statistical pipeline for identifying oscillatory genes in unsynchronized single cell RNA-seq
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle
-requirements:
-  host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-ebseq >=1.38.0,<1.39.0'
-    - r-base
-    - r-cluster
-    - r-testthat
-  run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-ebseq >=1.38.0,<1.39.0'
-    - r-base
-    - r-cluster
-    - r-testthat
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Oscope - A statistical pipeline for identifying oscillatory genes in unsynchronized single cell RNA-seq'
-  description: 'Oscope is a statistical pipeline developed to identifying and recovering the base cycle profiles of oscillating genes in an unsynchronized single cell RNA-seq experiment. The Oscope pipeline includes three modules: a sine model module to search for candidate oscillator pairs; a K-medoids clustering module to cluster candidate oscillators into groups; and an extended nearest insertion module to recover the base cycle order for each oscillator group.'
+  run_exports: '{{ pin_subpackage("bioconductor-oscope", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:oscope
@@ -47,4 +24,35 @@ extra:
     name: bioconductor-oscope
     path: recipes/bioconductor-oscope
     version: 1.10.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle
+requirements:
+  host:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-ebseq >=2.4.0,<2.5.0
+    - r-base
+    - r-cluster
+    - r-testthat
+  run:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-ebseq >=2.4.0,<2.5.0
+    - r-base
+    - r-cluster
+    - r-testthat
+
+source:
+  md5: ee7801c0823b7ee339d43affc78c4244
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

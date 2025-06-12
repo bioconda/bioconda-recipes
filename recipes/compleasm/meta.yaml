@@ -1,0 +1,48 @@
+{% set name = "compleasm" %}
+{% set version = "0.2.7" %}
+{% set hash = "26cdb461ec0dc1501fd46c094309779061a1fedaf139117e0161e6b24db0de68" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/huangnengCSU/compleasm/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: {{ hash }}
+ 
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - compleasm=compleasm:main
+  script:
+    - {{ PYTHON }} -m pip install . -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - python
+    - pandas
+    - hmmer
+    - miniprot >=0.11
+    - sepp
+    - dendropy <4.6.0
+
+test:
+  commands:
+    - compleasm --help
+
+about:
+  home: "https://github.com/huangnengCSU/compleasm"
+  license: Apache License 2.0
+  license_file: LICENSE
+  summary: "Compleasm: a faster and more accurate reimplementation of BUSCO"
+  dev_url: "https://github.com/huangnengCSU/compleasm"
+
+extra:
+  recipe-maintainers:
+    - huangnengCSU

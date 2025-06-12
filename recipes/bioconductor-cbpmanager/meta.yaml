@@ -1,26 +1,30 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "cbpManager" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 0a95ceef8400c5025368ef64e6b32724
+about:
+  description: This R package provides an R Shiny application that enables the user to generate, manage, and edit data and metadata files suitable for the import in cBioPortal for Cancer Genomics. Create cancer studies and edit its metadata. Upload mutation data of a patient that will be concatenated to the data_mutation_extended.txt file of the study. Create and edit clinical patient data, sample data, and timeline data. Create custom timeline tracks for patients.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: AGPL-3 + file LICENSE
+  license_file: LICENSE
+  summary: Generate, manage, and edit data and metadata files suitable for the import in cBioPortal for Cancer Genomics
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-cbpmanager", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, BiocStyle, rmarkdown, testthat (>= 3.0.0)
 requirements:
   host:
-    - 'bioconductor-basilisk >=1.9.0,<1.10.0'
+    - bioconductor-basilisk >=1.18.0,<1.19.0
     - r-base
     - r-dplyr
     - r-dt
@@ -32,13 +36,14 @@ requirements:
     - r-rapportools
     - r-reticulate
     - r-rintrojs
+    - r-rlang
     - r-shiny
     - r-shinybs
     - r-shinycssloaders
     - r-shinydashboard
     - r-vroom
   run:
-    - 'bioconductor-basilisk >=1.9.0,<1.10.0'
+    - bioconductor-basilisk >=1.18.0,<1.19.0
     - r-base
     - r-dplyr
     - r-dt
@@ -50,18 +55,22 @@ requirements:
     - r-rapportools
     - r-reticulate
     - r-rintrojs
+    - r-rlang
     - r-shiny
     - r-shinybs
     - r-shinycssloaders
     - r-shinydashboard
     - r-vroom
+
+source:
+  md5: 0b499c0dabec8c6f39df576b789c1dbb
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'AGPL-3 + file LICENSE'
-  summary: 'Generate, manage, and edit data and metadata files suitable for the import in cBioPortal for Cancer Genomics'
-  description: 'This R package provides an R Shiny application that enables the user to generate, manage, and edit data and metadata files suitable for the import in cBioPortal for Cancer Genomics. Create cancer studies and edit its metadata. Upload mutation data of a patient that will be concatenated to the data_mutation_extended.txt file of the study. Create and edit clinical patient data, sample data, and timeline data. Create custom timeline tracks for patients.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

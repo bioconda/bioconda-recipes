@@ -1,41 +1,42 @@
-{% set version = "0.7.1" %}
+{% set version = "0.8.1.4" %}
 
 package:
   name: pyfaidx
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/70/e0/0f968d75b061a46ce01102fa9e434f329d3d62d533765a46ebd248da2c81/pyfaidx-0.7.1.tar.gz
-  sha256: 3977632b7fd29049f8b11035d7e9dea0e2c5da9c235f982b4c3fae06ff1fa23f
+  url: https://files.pythonhosted.org/packages/16/28/caee630bbc77d0f5a5a28e74c3ff35700e19a9c70090a8c9c9a3ff123a8b/pyfaidx-0.8.1.4.tar.gz
+  sha256: e73b32ad32ab972f284c97e63d70fef3671a118e2fe5aefb5980967a95082ce8
 
 build:
   number: 0
   noarch: python
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   entry_points:
     - faidx = pyfaidx.cli:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('pyfaidx', max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.7
     - pip
     - setuptools-scm
-
   run:
-    - python
+    - python >=3.7
     - six
     - setuptools  # uses pkg_resources
     # the following are not mentioned in setup.py but conditionally imported at runtime
     - packaging  # https://github.com/mdshw5/pyfaidx/blob/58d8b4e381f1348b9e669d55d88019e2498c71de/pyfaidx/__init__.py#L398
     - pyvcf3  # https://github.com/mdshw5/pyfaidx/blob/58d8b4e381f1348b9e669d55d88019e2498c71de/pyfaidx/__init__.py#L1183
     - biopython  # https://github.com/mdshw5/pyfaidx/blob/58d8b4e381f1348b9e669d55d88019e2498c71de/pyfaidx/__init__.py#L396
-    # TODO this will become unnecessary after release of https://github.com/mdshw5/pyfaidx/pull/194
-    - pysam  # https://github.com/mdshw5/pyfaidx/blob/58d8b4e381f1348b9e669d55d88019e2498c71de/pyfaidx/__init__.py#L1179
+    - importlib-metadata
 
 test:
   imports:
     - pyfaidx
-
   commands:
     - faidx --help
 
@@ -44,6 +45,8 @@ about:
   license: BSD License
   summary: 'pyfaidx: efficient pythonic random access to fasta subsequences'
   license_family: BSD
+  license_file: LICENSE
+  doc_url: https://pythonhosted.org/pyfaidx/
 
 extra:
   identifiers:

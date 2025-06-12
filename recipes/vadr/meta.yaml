@@ -1,5 +1,5 @@
 {% set name = "vadr" %}
-{% set version = "1.5" %}
+{% set version = "1.6.4" %}
 
 package:
   name: {{ name }}
@@ -7,34 +7,39 @@ package:
 
 source:
   - url: https://github.com/ncbi/{{ name }}/archive/refs/tags/{{ name }}-{{ version }}.tar.gz
-    sha256: 2d21eb74ef10c7081ff9c2223bf4471c1bde26891815211e8afddfd02612e871
+    sha256: 00e40b441a2a567394de9bff92419ec53b9f69021a1ed976c4fb5a556efea21a
     patches:
       - fix_vannotate_path.patch
       - fix_local_test_path.patch
+  - url: https://github.com/wrpearson/fasta36/archive/refs/tags/v36.3.8h_04-May-2020.tar.gz
+    sha256: d13ec06a040e4d77bf6913af44b705d3ecc921131da018e71d24daf47d3664d3 
+    folder: fasta
 
 build:
-  noarch: generic
   number: 1
+  run_exports:
+      - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - make
     - wget
   host:
     - perl
-    - sequip >=0.08
+    - sequip >=0.10
   run:
-    - blast >=2.11.0
+    - blast >=2.15.0
     - easel >=0.48
-    - fasta3 36.3.8h
-    - hmmer >=3.3.2
+    - hmmer >=3.4
     - infernal >=1.1.4
-    - minimap2
+    - minimap2 >=2.26
     - perl
-    - perl-bio-easel >=0.15
+    - perl-bio-easel >=0.16
     - perl-lwp-simple
     - perl-lwp-protocol-https >=6.07
     - perl-net-ssleay >=1.88
-    - sequip >=0.08
+    - sequip >=0.10
     - wget
 
 test:

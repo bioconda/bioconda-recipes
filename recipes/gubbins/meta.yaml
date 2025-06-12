@@ -1,20 +1,19 @@
 {% set name = "gubbins" %}
-{% set version = "3.3" %}
-{% set sha256 = "6afa437430992cde21c0fe5986455eab23cb45e08f11b7e8c3f20aaa074997c2" %}
+{% set version = "3.4" %}
+{% set sha256 = "ff134b7c1d06eee548e94f417394fb67229caf1b0d35b097a71309017ac7a91d" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 0
-  skip: True  # [py < 38]
+  number: 3
+  run_exports:
+    - {{ pin_subpackage('gubbins', max_pin="x") }}
 
 source:
-  url: https://github.com/nickjcroucher/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  url: https://github.com/nickjcroucher/gubbins/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - gubbins.patch
 
 requirements:
   build:
@@ -24,32 +23,42 @@ requirements:
     - autoconf
     - automake
     - autoconf-archive
+    - pkg-config
   host:
     - perl
     - zlib
-    - python
-    - scipy >=1.5.3
+    - python >=3.8
+    - pip
+    - scipy
     - setuptools
-    - dendropy  >=4.0.2
-    - biopython >=1.59
-    - numpy >=1.2
-    - numba >=0.53
+    - dendropy
+    - biopython
+    - numpy <=1.23.0
+    - numba
   run:
-    - python
-    - scipy >=1.5.3
-    - reportlab >=3.0
-    - dendropy  >=4.0.2
-    - biopython >=1.59
-    - multiprocess >=0.70
+    - python >=3.8
+    - scipy
+    - dendropy
+    - biopython
+    - multiprocess
     - setuptools
-    - raxml 8.2.12
-    - iqtree 2.0.3
+    - raxml =>8.2.12
+    - iqtree >=2.2
     - rapidnj
-    - raxml-ng 1.0.1
-    - fasttree 2.1.10
-    - numpy >=1.2
-    - numba >=0.53
-    - ska >=1.0
+    - raxml-ng =>1.0.1
+    - fasttree =>2.1.10
+    - numpy <=1.23.0
+    - numba
+    - ska2 >=0.3.0
+    - r-argparser
+    - r-magrittr
+    - r-tidyverse
+    - bioconductor-treeio
+    - bioconductor-ggtree
+    - r-aplot
+    - r-patchwork
+    - r-cowplot
+    - r-rcolorbrewer
 
 test:
   commands:
@@ -62,5 +71,7 @@ about:
   summary: 'Rapid phylogenetic analysis of large samples of recombinant bacterial whole genome sequences using Gubbins.'
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   skip-lints:
     - uses_setuptools  #uses pkg_resources

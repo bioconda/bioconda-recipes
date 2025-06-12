@@ -1,5 +1,5 @@
 {% set name = "cellqc" %}
-{% set version = "0.0.4" %}
+{% set version = "0.1.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,12 +7,14 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 35fda6a1901e07d86303303f9364db81c664a8e069932ac551db54668e47cc72
+  sha256: 15249e5a94971ab0850763b97530edaa30146e279bb4e0b627653dcd29d648c8
 
 build:
   number: 0
   entry_points:
     - cellqc=cellqc.cellqc:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
   script: "{{ PYTHON }} -m pip install . -vv"
   noarch: python
 
@@ -21,12 +23,12 @@ requirements:
     - click
     - pip
     - pygraphviz
-    - python
+    - python {{ python_min }}
     - snakemake
   run:
     - click
     - pygraphviz
-    - python
+    - python >={{ python_min }}
     - snakemake
     - bioconductor-dropletutils
     - r-seurat
@@ -39,7 +41,8 @@ requirements:
     - r-scpred
     - scanpy >=1.9.1
     - numpy
-    - anndata
+    - anndata =0.7.8
+    - graphviz
 
 test:
   imports:

@@ -1,5 +1,5 @@
 {% set name = "inStrain" %}
-{% set version = "1.6.4" %}
+{% set version = "1.10.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,35 +7,34 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 034bf7521713034275954cf2741d37deeca4a40af4e2e2c951d140f850934b8f
+  sha256: f40f1d439914ec85cec83ce4c3f2fbf2ce064132109be9f2d3bfd048899b5a8e
 
 build:
   noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv --no-deps"
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir"
+  run_exports:
+    - {{ pin_subpackage('instrain', max_pin="x.x") }}
 
 requirements:
   host:
     - pip
     - python >=3.4
+    - setuptools
   run:
-    - biopython <=1.74
-    - drep
-    - h5py
-    - matplotlib-base
-    - networkx
+    - python >=3.4
     - numpy
     - pandas >=0.25,!=1.1.3
-    - psutil
-    - pysam >=0.15
-    - pytest
-    - python >=3.4
-    - scikit-learn
-    - seaborn
+    - seaborn-base
+    - matplotlib-base
+    - biopython <=1.74
     - tqdm
-    - numba
+    - pysam >=0.15
+    - networkx
+    - h5py
+    - psutil
+    - pytest
     - lmfit
-    - samtools
 
 test:
   imports:
@@ -48,4 +47,5 @@ about:
   home: "https://github.com/MrOlm/inStrain"
   license: MIT
   license_family: MIT
-  summary: "Calculation of strain-level metrics"
+  summary: "Calculation of strain-level metrics."
+  dev_url: "https://github.com/MrOlm/inStrain"

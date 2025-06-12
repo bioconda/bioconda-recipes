@@ -1,4 +1,4 @@
-{% set version = "1.0.8" %}
+{% set version = "1.1.5" %}
 
 package:
   name: trust4
@@ -6,10 +6,12 @@ package:
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage('trust4', max_pin="x") }}
 
 source:
   url: https://github.com/liulab-dfci/TRUST4/archive/v{{ version }}.tar.gz
-  sha256: 87c03829e5e46298d95edcfd2f858a94abf7d3f2a7e16c54e9b7f53a745ae5b4
+  sha256: 5eb3e43bfb04847fa31abecd96b7ebd9f2b1d600b8c88f69a6491a268284d3c5
 
 requirements:
   build:
@@ -17,7 +19,7 @@ requirements:
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
   host:
-    - samtools 0.1.19.*
+    - samtools 0.1.19.* # [x86_64]
     - zlib
   run:
     - perl
@@ -28,16 +30,21 @@ test:
     - fastq-extractor 2>&1 | cat > /dev/null
     - bam-extractor 2>&1 | cat > /dev/null
     - annotator 2>&1 | cat > /dev/null
-    - which trust-simplerep.pl
-    - which trust-barcoderep.pl
-    - which trust-smartseq.pl
-    - which trust-airr.pl
-    - which BuildDatabaseFa.pl
-    - which BuildImgtAnnot.pl
-    - which run-trust4
+    - test -x ${PREFIX}/bin/trust-simplerep.pl
+    - test -x ${PREFIX}/bin/trust-barcoderep.pl
+    - test -x ${PREFIX}/bin/trust-smartseq.pl
+    - test -x ${PREFIX}/bin/trust-airr.pl
+    - test -x ${PREFIX}/bin/BuildDatabaseFa.pl
+    - test -x ${PREFIX}/bin/BuildImgtAnnot.pl
+    - test -x ${PREFIX}/bin/run-trust4
 
 about:
-  home: https://github.com/liulab-dfci/TRUST4 
+  home: https://github.com/liulab-dfci/TRUST4
   summary: TCR and BCR assembly from bulk or single-cell RNA-seq data
-  license: GPL-3.0-only
+  license: MIT
   license_file: LICENSE.txt
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,53 +1,22 @@
-{% set version = "1.50.0" %}
+{% set version = "1.58.0" %}
 {% set name = "frma" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 33285e71ae493c2296d35ea957fb302a
+about:
+  description: Preprocessing and analysis for single microarrays and microarray batches.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Frozen RMA and Barcode
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: hgu133afrmavecs, frmaExampleData
-requirements:
-  host:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-oligo >=1.62.0,<1.63.0'
-    - 'bioconductor-oligoclasses >=1.60.0,<1.61.0'
-    - 'bioconductor-preprocesscore >=1.60.0,<1.61.0'
-    - r-base
-    - r-dbi
-    - r-mass
-  run:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-oligo >=1.62.0,<1.63.0'
-    - 'bioconductor-oligoclasses >=1.60.0,<1.61.0'
-    - 'bioconductor-preprocesscore >=1.60.0,<1.61.0'
-    - r-base
-    - r-dbi
-    - r-mass
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Frozen RMA and Barcode'
-  description: 'Preprocessing and analysis for single microarrays and microarray batches.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-frma", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:frma
@@ -55,4 +24,43 @@ extra:
     name: bioconductor-frma
     path: recipes/bioconductor-frma
     version: 1.32.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: hgu133afrmavecs, frmaExampleData
+requirements:
+  host:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-oligo >=1.70.0,<1.71.0
+    - bioconductor-oligoclasses >=1.68.0,<1.69.0
+    - bioconductor-preprocesscore >=1.68.0,<1.69.0
+    - r-base
+    - r-dbi
+    - r-mass
+  run:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-oligo >=1.70.0,<1.71.0
+    - bioconductor-oligoclasses >=1.68.0,<1.69.0
+    - bioconductor-preprocesscore >=1.68.0,<1.69.0
+    - r-base
+    - r-dbi
+    - r-mass
+
+source:
+  md5: 102ea012249dc8c3bc37e6d37b4f5d2e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

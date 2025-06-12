@@ -1,17 +1,19 @@
-{% set version = "0.7" %}
+{% set version = "0.16" %}
 {% set name = "miniprot" %}
-{% set sha256 = "ada30d715b4e2a0aad08ea2358360be9711ec46ade35e7bc9d0ddebae680b99d" %}
+{% set sha256 = "1ec0290552a6c80ad71657a44c767c3a2a2bbcfe3c7cc150083de7f9dc4b3ed0" %}
 
 package:
-  name: "{{ name }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/lh3/miniprot/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
-
-source:
-  url: "https://github.com/lh3/miniprot/archive/refs/tags/v{{ version }}.tar.gz"
-  sha256: "{{ sha256 }}"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
@@ -19,17 +21,26 @@ requirements:
     - {{ compiler('c') }}
   host:
     - zlib
-  run:
-    - zlib
 
 test:
   commands:
     - miniprot --help 2>&1 | grep miniprot
 
 about:
-  home: https://github.com/lh3/miniprot
+  home: "https://github.com/lh3/miniprot"
   license: MIT
-  license_file: LICENSE.txt
-  summary: |
-    Miniprot aligns a protein sequence against a genome with affine gap penalty, splicing and frameshift.
-    It is primarily intended for annotating protein-coding genes in a new species using known genes from other species. 
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  summary: "Miniprot aligns a protein sequence against a genome with affine gap penalty, splicing and frameshift. It is primarily intended for annotating protein-coding genes in a new species using known genes from other species."
+  dev_url: "https://github.com/lh3/miniprot"
+  doc_url: "https://lh3.github.io/miniprot/miniprot.html"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/bioinformatics/btad014
+    - biotools:miniprot
+    - usegalaxy-eu:miniprot
+    - usegalaxy-eu:miniprot_index

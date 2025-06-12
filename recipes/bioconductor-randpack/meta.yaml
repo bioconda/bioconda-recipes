@@ -1,37 +1,21 @@
-{% set version = "1.44.0" %}
+{% set version = "1.52.0" %}
 {% set name = "randPack" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: e6bea184510b9fd62603424a6cd36c20
+about:
+  description: A suite of classes and functions for randomizing patients in clinical trials.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic 2.0
+  summary: Randomization routines for Clinical Trials
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - r-base
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'Artistic 2.0'
-  summary: 'Randomization routines for Clinical Trials'
-  description: 'A suite of classes and functions for randomizing patients in clinical trials.'
+  run_exports: '{{ pin_subpackage("bioconductor-randpack", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:randpack
@@ -40,4 +24,28 @@ extra:
     name: bioconductor-randpack
     path: recipes/bioconductor-randpack
     version: 1.26.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+
+source:
+  md5: 3b62e01dd95b189100960ee0c9691b7f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

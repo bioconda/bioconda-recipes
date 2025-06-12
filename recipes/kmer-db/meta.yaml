@@ -1,5 +1,14 @@
-{% set version = "1.9.4" %}
-{% set sha256 = "b50095bcf81b3722db9d6484579eaea0dbb7ac21885ded4067e99a941270002c" %}
+{% set version = "2.2.5" %}
+
+{% set system = "x64_linux" %}       # [linux and x86_64]
+{% set system = "x64_mac" %}         # [osx and x86_64]
+{% set system = "arm64_linux" %}     # [linux and aarch64]
+{% set system = "arm64_mac" %}       # [osx and arm64]
+
+{% set sha256 = "e7606071b4a10957e0fbbcb58f3cc4cf8ac783ede14088efaec442cff3bf79fe" %}  # [linux and x86_64]
+{% set sha256 = "d6311cbfc6dfa1d6d4615e54c3957f9c1021d78e3c3eef850cb2ee3635c0205e" %}  # [osx and x86_64]
+{% set sha256 = "fda433b494b473a7a98af379e5e2ce5611177c28ac664155a0dd8404e0146a81" %}  # [linux and aarch64]
+{% set sha256 = "a3499160358517bf334f2b6ed333fcb4fd49115305a7733090b0f146021bb780" %}  # [osx and arm64]
 
 
 package:
@@ -7,21 +16,17 @@ package:
   version: {{ version }}
 
 build:
-  number: 1
+  number: 0
+  run_exports:
+  - {{ pin_subpackage('kmer-db', max_pin='x') }}
+  script: |
+    mkdir -p "${PREFIX}/bin"
+    cp -v kmer-db "${PREFIX}/bin/" || { echo "Error: Failed to copy kmer-db binary"; exit 1; }
+
 
 source:
-  url: https://github.com/refresh-bio/kmer-db/archive/v{{ version }}.tar.gz
+  url: https://github.com/refresh-bio/kmer-db/releases/download/v{{ version }}/kmer-db-v{{ version }}-{{ system }}.tar.gz
   sha256: {{ sha256 }}
-
-requirements:
-  build:
-    - make
-    - {{ compiler('cxx') }}
-    - make 
-  host:
-    - zlib
-  run:
-    - zlib
 
 about:
   home: https://github.com/refresh-bio/kmer-db
@@ -33,3 +38,13 @@ about:
 test:
   commands:
     - kmer-db > /dev/null
+    - kmer-db -help
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - should_be_noarch_generic
+    - should_not_be_noarch_source
+

@@ -1,0 +1,37 @@
+{% set name = "KSNP" %}
+{% set version = "1.0.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/zhouqiansolab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: 78975c007919b12af7a61a27d66347228a43ea223d59e37aad5ce7ae691a0569
+
+build:
+  number: 2
+  python: 3.7
+  run_exports:
+    - {{ pin_subpackage("ksnp", max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - cmake >=3.10.0
+    - {{ compiler('cxx') }}
+    - python >=3.7
+  host:
+    - zlib
+    - htslib 
+
+test:
+  commands:
+    - "ksnp 2>&1 | grep ksnp"
+
+
+about:
+  summary: k-mer based haplotype assembly
+  home: https://github.com/zhouqiansolab/KSNP
+  license: GPL3
+  license_file: COPYING

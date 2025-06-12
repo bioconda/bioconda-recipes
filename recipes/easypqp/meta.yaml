@@ -1,37 +1,48 @@
 {% set name = "easypqp" %}
-{% set version = "0.1.35" %} 
+{% set version = "0.1.52" %}
+{% set sha256 = "dbbcce04a64a2f8454cd8fd171c36fbea054c40141e6151fb2c1439333a8f8cf" %}
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: b0e30c71000d672179e9ae8e2e121196e0d0937addfdb75a1eb1bdee045831c3
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/easypqp-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  noarch: python
   number: 0
+  noarch: python
+  script: |
+    export MPLCONFIGDIR=${PREFIX}/tmp/matplotlib-cache
+    export XDG_CACHE_HOME=${PREFIX}/tmp/fontconfig-cache
+    mkdir -p ${MPLCONFIGDIR} ${XDG_CACHE_HOME}
+    {{ PYTHON }} -m pip install . --no-cache-dir --no-deps --no-build-isolation -vvv
   entry_points:
     - easypqp=easypqp.main:cli
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  run_exports:
+    - {{ pin_subpackage('easypqp', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.9
     - pip
+    - setuptools
   run:
-    - python >=3.6
+    - python >=3.9
+    - numba
     - click
     - numpy
     - scipy
+    - scikit-learn
     - statsmodels
     - pandas
     - biopython
     - pyprophet
     - pyopenms
     - matplotlib-base
-    - seaborn
+    - seaborn-base
+    - tqdm
 
 test:
   imports:
@@ -40,11 +51,12 @@ test:
     - easypqp --help
 
 about:
-  home: https://github.com/grosenberger/easypqp
-  license: BSD License
+  home: https://pypi.org/project/easypqp/
+  summary: 'EasyPQP: Simple library generation for OpenSWATH'
+  license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE
-  summary: 'EasyPQP: Simple library generation for OpenSWATH'
+  dev_url: https://github.com/grosenberger/easypqp
   description: "EasyPQP: Simple library generation for OpenSWATH\n================================================\n\nEasyPQP is a Python package that provides simplified and fast peptide query parameter\
     \ generation for OpenSWATH. It can process input from MSFragger or other database search engines in pepXML format. Statistical validation can be conducted either using PyProphet or PeptideProphet/iProphet.\
     \ Retention times are calibrated using an internal or external standard. In addition to a cumulative library, run-specific libraries are generated for non-linear RT alignment in OpenSWATH.\n\nInstallation\n\
