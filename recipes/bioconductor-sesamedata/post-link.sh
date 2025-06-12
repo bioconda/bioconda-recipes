@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "sesamedata-1.16.0"
+installBiocDataPackage.sh "sesamedata-1.24.0"

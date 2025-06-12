@@ -1,54 +1,64 @@
-{% set version = "2.42.0" %}
+{% set version = "2.50.0" %}
 {% set name = "rhdf5" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 71bb6d244caf54e0b21a8a900eda81de
+about:
+  description: This package provides an interface between HDF5 and R. HDF5's main features are the ability to store and access very large and/or complex datasets and a wide variety of metadata on mass storage (disk) through a completely portable file format. The rhdf5 package is thus suited for the exchange of large and/or complex datasets between R and other software package, and for letting R applications work on datasets that are larger than the available RAM.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: R Interface to HDF5
+
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: bit64, BiocStyle, knitr, rmarkdown, testthat, microbenchmark, dplyr, ggplot2, mockery
-# SystemRequirements: GNU make
-requirements:
-  host:
-    - 'bioconductor-rhdf5filters >=1.10.0,<1.11.0'
-    - 'bioconductor-rhdf5lib >=1.20.0,<1.21.0'
-    - r-base
-    - libblas
-    - liblapack
-    - openssl
-  run:
-    - 'bioconductor-rhdf5filters >=1.10.0,<1.11.0'
-    - 'bioconductor-rhdf5lib >=1.20.0,<1.21.0'
-    - r-base
-    - openssl
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - automake
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'R Interface to HDF5'
-  description: 'This package provides an interface between HDF5 and R. HDF5''s main features are the ability to store and access very large and/or complex datasets and a wide variety of metadata on mass storage (disk) through a completely portable file format. The rhdf5 package is thus suited for the exchange of large and/or complex datasets between R and other software package, and for letting R applications work on datasets that are larger than the available RAM.'
+  run_exports: '{{ pin_subpackage("bioconductor-rhdf5", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:rhdf5
   parent_recipe:
     name: bioconductor-rhdf5
     path: recipes/bioconductor-rhdf5
     version: 2.24.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: bit64, BiocStyle, knitr, rmarkdown, testthat, bench, dplyr, ggplot2, mockery, BiocParallel
+# SystemRequirements: GNU make
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
+  host:
+    - bioconductor-rhdf5filters >=1.18.0,<1.19.0
+    - bioconductor-rhdf5lib >=1.28.0,<1.29.0
+    - r-base
+    - libblas
+    - liblapack
+    - zlib
+  run:
+    - bioconductor-rhdf5filters >=1.18.0,<1.19.0
+    - bioconductor-rhdf5lib >=1.28.0,<1.29.0
+    - r-base
+
+source:
+  md5: 3b8b33f3ee9a260cceefab2911d1cd63
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

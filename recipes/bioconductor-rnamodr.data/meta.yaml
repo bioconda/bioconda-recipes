@@ -1,40 +1,42 @@
-{% set version = "1.12.0" %}
+{% set version = "1.19.0" %}
 {% set name = "RNAmodR.Data" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f15f9939776393d3dfc6ea30d47590c0
+about:
+  description: RNAmodR.Data contains example data, which is used for vignettes and example workflows in the RNAmodR and dependent packages.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Example data for the RNAmodR package
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-rnamodr.data", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: knitr, rmarkdown, BiocStyle, GenomicRanges, sessioninfo, testthat
 requirements:
   host:
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
-    - 'bioconductor-experimenthubdata >=1.24.0,<1.25.0'
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-experimenthubdata >=1.32.0,<1.33.0
     - r-base
   run:
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
-    - 'bioconductor-experimenthubdata >=1.24.0,<1.25.0'
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-experimenthubdata >=1.32.0,<1.33.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221109
+    - bioconductor-data-packages >=20241103
+source:
+  md5: b8b56a5e310771c78f3076d338eaeb02
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Example data for the RNAmodR package'
-  description: 'RNAmodR.Data contains example data, which is used for vignettes and example workflows in the RNAmodR and dependent packages.'
+    - $R -e "library('{{ name }}')"
 

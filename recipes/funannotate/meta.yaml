@@ -1,65 +1,78 @@
 {% set name = "funannotate" %}
-{% set version = "1.8.13" %}
+{% set version = "1.8.17" %}
 
 package:
-  name: funannotate
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://pypi.io/packages/source/f/funannotate/funannotate-{{ version }}.tar.gz
-  sha256: 40819741bcb38ef3a410a242cc5f172cb0e0083570daddfe5807fb6bc0c3c384
+  sha256: bdadfd7a5636383c1c40c26dab37c5908a77e8c4064adced84f1ba9e86187a04
 
 build:
-  number: 0
+  number: 1
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - funannotate=funannotate.funannotate:main
+  run_exports:
+    - {{ pin_subpackage('funannotate', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.6,<3.9
+    - python >=3.6,<3.10
   run:
-    - python >=3.6,<3.9
-    - biopython
+    # python requirements as in setup.py
+    - python >=3.6,<3.10
+    - biopython <1.80
     - goatools
-    - matplotlib-base <3.5
+    - seaborn-base
+    - psutil
+    - pandas
+    - matplotlib-base
     - natsort
     - numpy
-    - pandas
-    - psutil
     - requests
     - scikit-learn
     - scipy
-    - seaborn
-    - blast ==2.2.31
-    - tantan
+    - distro
+
+    # 3rd party requirements (mentioned in code or docker file )
+    - augustus ==3.5.0
+    - bamtools
     - bedtools
-    - hmmer
-    - exonerate
-    - diamond >=2.0.5
-    - tbl2asn
-    - ucsc-pslcdnafilter
-    - pasa >=2.4.1
-    - trimmomatic
-    - raxml
-    - trimal
-    - mafft >=7
-    - iqtree
-    - kallisto >=0.46.0,<0.46.2
-    - minimap2
-    - evidencemodeler
+    - blast
     - codingquarry
-    - stringtie
-    - snap
+    - diamond
+    - evidencemodeler ==1.1.1
+    - ete3
+    - exonerate
     - glimmerhmm
-    - bamtools  # [linux]
-    - augustus  # [linux]
-    - trinity >=2.8.5=h8b12597_5  # [linux]
-    - trnascan-se
+    - fasta3
     - hisat2
-    - proteinortho >=6.0.16
-    - salmon >=0.9
+    - hmmer
+    - kallisto >=0.46.0,<0.46.2
+    - mafft >=7
+    - minimap2
+    - pasa
     - phyml
+    - pigz
+    - proteinortho
+    - raxml
+    - salmon
+    - samtools
+    - snap
+    - stringtie
+    - tantan
+    - tbl2asn
+    - trimal
+    - trimmomatic
+    - trinity
+    - trnascan-se
+    - ucsc-blat
+    - ucsc-pslcdnafilter
+    # 3rd party perl requirements for supplementary script
     - perl
     - perl-math-utils  # Needed by GeneMark
     - perl-mce  # Needed by GeneMark
@@ -72,24 +85,31 @@ requirements:
     - perl-scalar-util-numeric
     - perl-text-soundex
     - perl-parallel-forkmanager
-    - perl-db-file
-    - r-base >=3.4.1
-    - ete3
-    - distro
-    - samtools >=1.9
+    - perl-db_file
+    - perl-local-lib
+
 
 test:
+  import:
+    - funannotate
   commands:
     - "funannotate --help | grep \"Funannotate is a genome prediction\""
-
+ 
 about:
   home: "https://github.com/nextgenusfs/funannotate"
   license: "BSD-2-Clause"
   license_family: "BSD"
   license_file: "LICENSE.md"
   summary: "funannotate: eukaryotic genome annotation pipeline"
-  doc_url: "funannotate.readthedocs.io"
+  doc_url: "https://funannotate.readthedocs.io/en/latest/"
+  dev_url: "https://github.com/nextgenusfs/funannotate"
 
 extra:
   recipe-maintainers:
     - nextgenusfs
+  identifiers:
+    - biotools:funannotate
+    - usegalaxy-eu:funannotate_compare
+    - usegalaxy-eu:funannotate_clean
+    - usegalaxy-eu:funannotate_predict
+    - usegalaxy-eu:funannotate_annotate

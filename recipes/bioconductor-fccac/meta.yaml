@@ -1,52 +1,21 @@
-{% set version = "1.24.0" %}
+{% set version = "1.32.0" %}
 {% set name = "fCCAC" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 40f92c91b3f32744695923e826213be6
+about:
+  description: 'Computational evaluation of variability across DNA or RNA sequencing datasets is a crucial step in genomics, as it allows both to evaluate reproducibility of replicates, and to compare different datasets to identify potential correlations. fCCAC applies functional Canonical Correlation Analysis to allow the assessment of: (i) reproducibility of biological or technical replicates, analyzing their shared covariance in higher order components; and (ii) the associations between different datasets. fCCAC represents a more sophisticated approach that complements Pearson correlation of genomic coverage.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: functional Canonical Correlation Analysis to evaluate Covariance between nucleic acid sequencing datasets
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: RUnit, BiocGenerics, BiocStyle, knitr, rmarkdown
-requirements:
-  host:
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
-    - 'bioconductor-genomation >=1.30.0,<1.31.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - r-fda
-    - r-ggplot2
-    - r-rcolorbrewer
-  run:
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
-    - 'bioconductor-genomation >=1.30.0,<1.31.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - r-fda
-    - r-ggplot2
-    - r-rcolorbrewer
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'functional Canonical Correlation Analysis to evaluate Covariance between nucleic acid sequencing datasets'
-  description: 'Computational evaluation of variability across DNA or RNA sequencing datasets is a crucial step in genomics, as it allows both to evaluate reproducibility of replicates, and to compare different datasets to identify potential correlations. fCCAC applies functional Canonical Correlation Analysis to allow the assessment of: (i) reproducibility of biological or technical replicates, analyzing their shared covariance in higher order components; and (ii) the associations between different datasets. fCCAC represents a more sophisticated approach that complements Pearson correlation of genomic coverage.'
+  run_exports: '{{ pin_subpackage("bioconductor-fccac", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:fccac
@@ -54,4 +23,43 @@ extra:
     name: bioconductor-fccac
     path: recipes/bioconductor-fccac
     version: 1.6.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: RUnit, BiocGenerics, BiocStyle, knitr, rmarkdown
+requirements:
+  host:
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-genomation >=1.38.0,<1.39.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-fda
+    - r-ggplot2
+    - r-rcolorbrewer
+  run:
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-genomation >=1.38.0,<1.39.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-fda
+    - r-ggplot2
+    - r-rcolorbrewer
+
+source:
+  md5: fdc39a1bc4364b4639d38de2066b50e9
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

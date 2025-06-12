@@ -1,45 +1,56 @@
 {% set name = "veryFastTree" %}
-{% set version = "3.2.1" %}
-{% set sha256 = "72c6b2fd946b6caf370bfa9c88365d67a1738de453a72fd9335c9297e057007e" %}
+{% set version = "4.0.5" %}
+{% set sha256 = "e753c01555b3363747ea1d51248d691aa1e79d228cac187a6725ea8cd86ad321" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
-source: 
+source:
   url: https://github.com/citiususc/{{ name|lower }}/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   number: 0
-  skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage('veryfasttree', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - libgomp      
     - cmake
-    - make     
-  host:    
-    - libgomp 
+    - make
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
   run:
-    - libgomp  
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
 
 test:
   commands:
    - VeryFastTree --help
 
 about:
-  home: https://github.com/citiususc/veryfasttree
-  license: GPL-3.0-only
+  home: "https://github.com/citiususc/veryfasttree"
+  license: "GPL-3.0-only"
+  license_family: GPL3
   license_file: LICENSE
-  summary: VeryFastTree -- speeding up the estimation of phylogenies for large alignments through parallelization and vectorization strategies
+  summary: "VeryFastTree -- speeding up the estimation of phylogenies for large alignments through parallelization and vectorization strategies."
   description: |
     VeryFastTree is a highly-tuned implementation of the FastTree-2 tool that takes advantage of parallelization and vectorization strategies 
     to speed up the inference of phylogenies for huge alignments.
-  dev_url: https://github.com/citiususc/veryfasttree
+  dev_url: "https://github.com/citiususc/veryfasttree"
+  doc_url: "https://github.com/citiususc/veryfasttree/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - cesarpomar
     - jcpichel
+  identifiers:
+    - doi:10.1093/bioinformatics/btaa582
+    - doi:10.1093/gigascience/giae055
+    - biotools:veryfasttree

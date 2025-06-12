@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "rgmqllib-1.18.0"
+installBiocDataPackage.sh "rgmqllib-1.26.0"

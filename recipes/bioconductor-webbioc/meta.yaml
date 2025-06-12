@@ -1,53 +1,22 @@
-{% set version = "1.70.0" %}
+{% set version = "1.78.0" %}
 {% set name = "webbioc" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: a0e27956105e9032cc113005b5bf24a4
+about:
+  description: An integrated web interface for doing microarray analysis using several of the Bioconductor packages. It is intended to be deployed as a centralized bioinformatics resource for use by many users. (Currently only Affymetrix oligonucleotide analysis is supported.)
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Bioconductor Web Interface
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# SystemRequirements: Unix, Perl (>= 5.6.0), Netpbm
-requirements:
-  host:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-annaffy >=1.70.0,<1.71.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-gcrma >=2.70.0,<2.71.0'
-    - 'bioconductor-multtest >=2.54.0,<2.55.0'
-    - 'bioconductor-qvalue >=2.30.0,<2.31.0'
-    - 'bioconductor-vsn >=3.66.0,<3.67.0'
-    - r-base
-    - r-biocmanager
-  run:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-annaffy >=1.70.0,<1.71.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-gcrma >=2.70.0,<2.71.0'
-    - 'bioconductor-multtest >=2.54.0,<2.55.0'
-    - 'bioconductor-qvalue >=2.30.0,<2.31.0'
-    - 'bioconductor-vsn >=3.66.0,<3.67.0'
-    - r-base
-    - r-biocmanager
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Bioconductor Web Interface'
-  description: 'An integrated web interface for doing microarray analysis using several of the Bioconductor packages. It is intended to be deployed as a centralized bioinformatics resource for use by many users. (Currently only Affymetrix oligonucleotide analysis is supported.)'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-webbioc", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:webbioc
@@ -56,4 +25,43 @@ extra:
     name: bioconductor-webbioc
     path: recipes/bioconductor-webbioc
     version: 1.52.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# SystemRequirements: Unix, Perl (>= 5.6.0), Netpbm
+requirements:
+  host:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-annaffy >=1.78.0,<1.79.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-gcrma >=2.78.0,<2.79.0
+    - bioconductor-multtest >=2.62.0,<2.63.0
+    - bioconductor-qvalue >=2.38.0,<2.39.0
+    - bioconductor-vsn >=3.74.0,<3.75.0
+    - r-base
+    - r-biocmanager
+  run:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-annaffy >=1.78.0,<1.79.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-gcrma >=2.78.0,<2.79.0
+    - bioconductor-multtest >=2.62.0,<2.63.0
+    - bioconductor-qvalue >=2.38.0,<2.39.0
+    - bioconductor-vsn >=3.74.0,<3.75.0
+    - r-base
+    - r-biocmanager
+
+source:
+  md5: d6783454c4d55a9364bbcd1dedefefce
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

@@ -1,49 +1,55 @@
-{% set version = "1.1.1" %}
+{% set name = "svclone" %}
+{% set version = "1.1.3" %}
 
 package:
-  name: svclone
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/mcmero/SVclone/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 718cf6358a6f86c306f18e1dc9d05bc10c488a4bcf3003f8ea3266b0acfdb0e3
+  sha256: ca2a9b2817e25ae4e3e1ae6cf2de71e70772e5f4a8f58a649518b82079ff12d4
 
 build:
   number: 0
   noarch: python
   entry_points:
     - svclone = SVclone.cli:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('svclone', max_pin="x") }}
 
 requirements:
-    host:
-        - python
-        - pip
-        - r-base
-        - r-ccube
-        - r-doparallel
-    run:
-        - python
-        - numpy
-        - pandas
-        - pysam
-        - pyvcf
-        - r-base
-        - r-ccube
-        - r-doparallel
+  host:
+    - python >=3
+    - pip
+    - r-base
+    - r-ccube
+    - r-doparallel
+  run:
+    - python >=3
+    - numpy
+    - pandas
+    - pysam
+    - pyvcf
+    - r-base
+    - r-ccube
+    - r-doparallel
 
 test:
-    commands:
-        - svclone --help
+  commands:
+    - svclone --help
 
 about:
   home: https://github.com/mcmero/SVclone
-  license: BSD 3-clause
+  license: BSD-3-Clause
   license_family: BSD
-  summary: |
+  license_file: LICENSE
+  summary: Computational method for inferring cancer cell fraction of tumour SVs from WGS
+  description: |
     A computational method for inferring the cancer cell
     fraction of tumour structural variation from whole-genome
-    sequencing data. 
+    sequencing data.
+  dev_url: https://github.com/mcmero/SVclone 
 
 extra:
   identifiers:

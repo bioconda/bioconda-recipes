@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "seq2pathway.data-1.30.0"
+installBiocDataPackage.sh "seq2pathway.data-1.38.0"

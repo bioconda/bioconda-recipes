@@ -14,7 +14,7 @@ from os import access
 from os import getenv
 from os import X_OK
 
-jar_file = 'PeptideShaker-2.2.17.jar'
+jar_file = 'PeptideShaker-3.0.11.jar'
 
 
 default_jvm_mem_opts = ['-Xms2g', '-Xmx4g']

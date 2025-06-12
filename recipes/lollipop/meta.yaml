@@ -1,6 +1,6 @@
 {% set name = "LolliPop" %}
-{% set version = "0.1.0" %}
-{% set sha256 = "3d64521abf07e2d1698daec561b290454ed8e4aff52b71a31d290dc173200a47" %}
+{% set version = "0.5.3" %}
+{% set sha256 = "596b92f9949a83bf74602760af7f3561661693b6d0671089ec8800839c627acb" %}
 
 package:
   name: {{ name|lower }}
@@ -13,25 +13,43 @@ source:
 build:
   noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -v
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+  script:
+    - {{ PYTHON }} -m pip install '.[cli]' --ignore-installed --no-deps -v
+    - mkdir -p ${PREFIX}/share/{{ name }}/{presets,examples}
+    - cp -vr presets/*  ${PREFIX}/share/{{ name }}/presets/
+    - cp -vr *preprint*yaml ${PREFIX}/share/{{ name }}/examples/
 
 requirements:
   host:
-    - python >=3
+    - python >=3.10
     - pip
     - poetry-core >=1.0.8
+    - poetry-dynamic-versioning
   run:
-    - python >=3
+    - python >=3.10
     - numpy
     - scipy
     - pandas
-    - ruamel_yaml
+    - threadpoolctl
+    - zstandard
+    # NOTE: change of API between ruamel.yaml 0.17.x and 0.18
+    - ruamel.yaml >=0.18
+    - strictyaml
     - tqdm
     - click
-
+    - click-option-group
+    - bcbio-gff
+    
 test:
   imports:
     - lollipop
+  commands:
+    - test "$(lollipop --version|tee >(cat 1>&2)|grep -oE '[0-9]+(\.[0-9a-z]+)*$')" == "{{ version }}"
+    - lollipop generate-mutlist --help
+    - lollipop getmutations from-basecount --help
+    - lollipop deconvolute --help
 
 about:
   home: https://github.com/cbg-ethz/LolliPop
@@ -43,3 +61,6 @@ about:
 extra:
   recipe-maintainers:
     - DrYak
+  identifiers:
+    - biotools:lollipop
+    - doi:10.1101/2022.11.02.22281825

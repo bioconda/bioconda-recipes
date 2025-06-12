@@ -1,27 +1,30 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "GenProSeq" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 567b4bf531054a988510d8e204f205c0
+about:
+  description: Generative modeling for protein engineering is key to solving fundamental problems in synthetic biology, medicine, and material science. Machine learning has enabled us to generate useful protein sequences on a variety of scales. Generative models are machine learning methods which seek to model the distribution underlying the data, allowing for the generation of novel samples with similar properties to those on which the model was trained. Generative models of proteins can learn biologically meaningful representations helpful for a variety of downstream tasks. Furthermore, they can learn to generate protein sequences that have not been observed before and to assign higher probability to protein sequences that satisfy desired criteria. In this package, common deep generative models for protein sequences, such as variational autoencoder (VAE), generative adversarial networks (GAN), and autoregressive models are available. In the VAE and GAN, the Word2vec is used for embedding. The transformer encoder is applied to protein sequences for the autoregressive model.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Generating Protein Sequences with Deep Generative Models
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, testthat, rmarkdown
+  run_exports: '{{ pin_subpackage("bioconductor-genproseq", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: VAExprs, stringdist, knitr, testthat, rmarkdown
 requirements:
   host:
-    - 'bioconductor-deeppincs >=1.6.0,<1.7.0'
-    - 'bioconductor-ttgsea >=1.6.0,<1.7.0'
+    - bioconductor-deeppincs >=1.14.0,<1.15.0
+    - bioconductor-ttgsea >=1.14.0,<1.15.0
     - r-base
     - r-catencoders
     - r-keras
@@ -30,8 +33,8 @@ requirements:
     - r-tensorflow
     - r-word2vec
   run:
-    - 'bioconductor-deeppincs >=1.6.0,<1.7.0'
-    - 'bioconductor-ttgsea >=1.6.0,<1.7.0'
+    - bioconductor-deeppincs >=1.14.0,<1.15.0
+    - bioconductor-ttgsea >=1.14.0,<1.15.0
     - r-base
     - r-catencoders
     - r-keras
@@ -39,12 +42,16 @@ requirements:
     - r-reticulate
     - r-tensorflow
     - r-word2vec
+
+source:
+  md5: a32d030b971c3014f578dd24c9ca4858
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Generating Protein Sequences with Deep Generative Models'
-  description: 'Generative modeling for protein engineering is key to solving fundamental problems in synthetic biology, medicine, and material science. Machine learning has enabled us to generate useful protein sequences on a variety of scales. Generative models are machine learning methods which seek to model the distribution underlying the data, allowing for the generation of novel samples with similar properties to those on which the model was trained. Generative models of proteins can learn biologically meaningful representations helpful for a variety of downstream tasks. Furthermore, they can learn to generate protein sequences that have not been observed before and to assign higher probability to protein sequences that satisfy desired criteria. In this package, common deep generative models for protein sequences, such as variational autoencoder (VAE), generative adversarial networks (GAN), and autoregressive models are available. In the VAE and GAN, the Word2vec is used for embedding. The transformer encoder is applied to protein sequences for the autoregressive model.'
+    - $R -e "library('{{ name }}')"
 

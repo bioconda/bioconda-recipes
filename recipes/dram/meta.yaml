@@ -1,7 +1,7 @@
 {% set name = "DRAM" %}
 {% set pypi_name = "DRAM-bio" %}
-{% set version = "1.4.6" %}
-{% set sha256 = "f014c55d7e75433bfc029dc20092df6eb9fb5a565dc60d6e7934d0261f36f945" %}
+{% set version = "1.5.0" %}
+{% set sha256 = "2d4a503fa806e33b580afb6d21879b2399178e48ba3b05ada882449fee571889" %}
 
 package:
   name: {{ name|lower }}
@@ -10,27 +10,32 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ pypi_name }}/{{ pypi_name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    # https://github.com/WrightonLabCSU/DRAM/issues/339
+    - fix_setup.patch
 
 build:
   number: 0
   noarch: python
   script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.8
     - pip
   run:
-    - python >=3.6
+    - python >=3.8
     - altair >=4
     - networkx
     - numpy
     - openpyxl
-    - pandas >=1
-    - scikit-bio
+    - pandas >=1.5, <2
+    - scikit-bio >=0.5.8, <0.6
     - sqlalchemy
     - prodigal
-    - scipy <=1.8.1
+    - scipy >=1.9
     - mmseqs2 >10.6d92c
     - hmmer
     - trnascan-se >=2

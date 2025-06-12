@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "bronchialil13-1.36.0"
+installBiocDataPackage.sh "bronchialil13-1.44.0"

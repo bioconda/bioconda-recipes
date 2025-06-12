@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "mmdiffbamsubset-1.33.0"
+installBiocDataPackage.sh "mmdiffbamsubset-1.42.0"

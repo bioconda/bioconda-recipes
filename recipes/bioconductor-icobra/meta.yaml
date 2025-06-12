@@ -1,61 +1,22 @@
-{% set version = "1.26.0" %}
+{% set version = "1.34.0" %}
 {% set name = "iCOBRA" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 855ad8f9d8bae650ca48651a6e224425
+about:
+  description: This package provides functions for calculation and visualization of performance metrics for evaluation of ranking and binary classification (assignment) methods. Various types of performance plots can be generated programmatically. The package also contains a shiny application for interactive exploration of results.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Comparison and Visualization of Ranking and Assignment Methods
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, rmarkdown, testthat
-requirements:
-  host:
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - r-base
-    - r-dplyr
-    - r-dt
-    - 'r-ggplot2 >=2.0.0'
-    - r-markdown
-    - r-reshape2
-    - r-rocr
-    - r-scales
-    - 'r-shiny >=0.9.1.9008'
-    - r-shinybs
-    - r-shinydashboard
-    - r-upsetr
-  run:
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - r-base
-    - r-dplyr
-    - r-dt
-    - 'r-ggplot2 >=2.0.0'
-    - r-markdown
-    - r-reshape2
-    - r-rocr
-    - r-scales
-    - 'r-shiny >=0.9.1.9008'
-    - r-shinybs
-    - r-shinydashboard
-    - r-upsetr
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>=2)'
-  summary: 'Comparison and Visualization of Ranking and Assignment Methods'
-  description: 'This package provides functions for calculation and visualization of performance metrics for evaluation of ranking and binary classification (assignment) methods. Various types of performance plots can be generated programmatically. The package also contains a shiny application for interactive exploration of results.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-icobra", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:icobra
@@ -63,4 +24,53 @@ extra:
     name: bioconductor-icobra
     path: recipes/bioconductor-icobra
     version: 1.8.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, testthat
+requirements:
+  host:
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - r-base
+    - r-dplyr
+    - r-dt
+    - r-ggplot2 >=3.4.0
+    - r-markdown
+    - r-reshape2
+    - r-rlang
+    - r-rocr
+    - r-scales
+    - r-shiny >=0.9.1.9008
+    - r-shinybs
+    - r-shinydashboard
+    - r-upsetr
+  run:
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - r-base
+    - r-dplyr
+    - r-dt
+    - r-ggplot2 >=3.4.0
+    - r-markdown
+    - r-reshape2
+    - r-rlang
+    - r-rocr
+    - r-scales
+    - r-shiny >=0.9.1.9008
+    - r-shinybs
+    - r-shinydashboard
+    - r-upsetr
+
+source:
+  md5: 01d6f84334605ccc0d8247572e9c9695
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

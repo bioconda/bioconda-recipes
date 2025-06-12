@@ -1,23 +1,23 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "Informeasure" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: e6e6b60623b78a76f05c5b748f48ace2
+about:
+  description: This package consolidates a comprehensive set of information measurements, encompassing mutual information, conditional mutual information, interaction information, partial information decomposition, and part mutual information.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: R implementation of information measures
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, rmarkdown, testthat, SummarizedExperiment
+  run_exports: '{{ pin_subpackage("bioconductor-informeasure", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: knitr, BiocStyle, rmarkdown, testthat (>= 3.0.0), SummarizedExperiment
 requirements:
   host:
     - r-base
@@ -25,13 +25,14 @@ requirements:
   run:
     - r-base
     - r-entropy
+source:
+  md5: b52fbbdf221f0437533a025776f59940
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'R implementation of Information measures'
-  description: 'This package compiles most of the information measures currently available: mutual information, conditional mutual information, interaction information, partial information decomposition and part mutual information. All of these estimators can be used to quantify nonlinear dependence between variables in (biological regulatory) network inference. The first estimator is used to infer bivariate networks while the last four estimators are dedicated to analysis of trivariate networks.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

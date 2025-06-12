@@ -1,6 +1,6 @@
 {% set name = "recognizer" %}
-{% set version = "1.8.3" %}
-{% set sha256 = "c7150b6b18c37b52c259bfe799b9679de900149892d657794eb7d7f063e10b10" %}
+{% set version = "1.11.1" %}
+{% set sha256 = "e385fb307fd64892629bcdad35d43d29ab0ea3703d20b0090e78b5cdaa83ea98" %}
 
 package:
   name: {{ name|lower }}
@@ -13,6 +13,14 @@ source:
 build:
   noarch: generic
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: >
+    mkdir -p $PREFIX/bin && 
+    mkdir -p $PREFIX/share && 
+    cp recognizer.py resources/*.tsv $PREFIX/share &&
+    chmod +x $PREFIX/share/recognizer.py &&
+    ln -s $PREFIX/share/recognizer.py $PREFIX/bin/recognizer
 
 requirements:
   run:
@@ -29,7 +37,7 @@ requirements:
 
 test:
   commands:
-    - recognizer.py -v
+    - recognizer -v
 
 about:
   home: https://github.com/iquasere/reCOGnizer

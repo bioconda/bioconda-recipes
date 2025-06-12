@@ -6,130 +6,181 @@ on:
 jobs:
   build-linux:
     name: Bulk Linux Builds
-    runs-on: ubuntu-latest
+    if: "contains(github.event.head_commit.message, '[ci run]')"
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
-      max-parallel: 13
+      max-parallel: 6
       matrix:
-        runner: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] #, 13, 14, 15, 16, 17, 18, 19]
+        runner: [0, 1, 2, 3, 4, 5]
+        # runner: [0]
     steps:
-    - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
+        with:
+          # checkout as BiocondaBot in order to have the permission to push fail logs
+          token: ${{secrets.BIOCONDA_BOT_REPO_TOKEN}}
 
-    - name: Fetch common.sh
-      run: |
-        wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/common.sh
+      - name: set git user
+        run: |
+          git config user.name BiocondaBot
+          git config user.email BiocondaBot@users.noreply.github.com
 
-    - name: Restore cache
-      id: cache
-      uses: actions/cache@v1
-      with:
-        path: /home/runner/bioconda
-        key: ${{ runner.os }}--bulk--${{ hashFiles('**/common.sh') }}
+      - name: set path
+        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
 
-    - name: Setup Bioconda-utils
-      if: steps.cache.outputs.cache-hit != 'true'
-      uses: bioconda/bioconda-actions/bioconda_recipes_setup/@bulk
-      env:
-        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+      - name: Fetch conda install script
+        run: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
 
-    - name: Build and upload
-      env:
-        ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
-        QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
-        # Mimic circleci
-        OSTYPE: "linux-gnu"
-        CI: "true"
-      run: |
-        ls /home/runner/bioconda/etc/profile.d
-        ls /home/runner/bioconda/etc
-        . /home/runner/bioconda/etc/profile.d/conda.sh
-        conda activate base
-        echo '============'
-        conda info --all
-        conda config --show-sources
-        python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
-        echo '============'
-        bioconda-utils build recipes config.yml \
-          --worker-offset ${{ matrix.runner }} --n-workers 13 \
-          --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
-        conda clean -y --all
+      - name: Set up bioconda-utils
+        run: bash install-and-set-up-conda.sh
+
+      - name: Configure conda
+        run: bash configure-conda.sh
+
+      - name: Build and upload
+        env:
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+          INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+          QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+          # Mimic circleci
+          OSTYPE: "linux-gnu"
+          CI: "true"
+        run: |
+          set -e
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+          echo '============'
+          conda info --all
+          conda config --show-sources
+          python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+          echo '============'
+          bioconda-utils build recipes config.yml \
+            --worker-offset ${{ matrix.runner }} --n-workers 6 \
+            --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
+            --lint --record-build-failures --skiplist-leafs \
+            --exclude bioconda-repodata-patches # --subdag-depth 5
+          conda clean -y --all
 
   build-osx:
-    name: Bulk OSX Builds
-    runs-on: macOS-latest
+    name: Bulk OSX-64 Builds
+    if: "contains(github.event.head_commit.message, '[ci run]')"
+    runs-on: macos-13
     strategy:
       fail-fast: false
-      max-parallel: 4
+      max-parallel: 3
       matrix:
-        runner: [0, 1, 2, 3]
+        runner: [0, 1, 2]
     steps:
-    - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
+        with:
+          # checkout as BiocondaBot in order to have the permission to push fail logs
+          token: ${{secrets.BIOCONDA_BOT_REPO_TOKEN}}
 
-    - name: Fetch common.sh
-      run: |
-        wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/common.sh
+      - name: set git user
+        run: |
+          git config user.name BiocondaBot
+          git config user.email BiocondaBot@users.noreply.github.com
 
-    - name: Restore cache
-      id: cache
-      uses: actions/cache@v1
-      with:
-        path: /Users/runner/miniconda
-        key: ${{ runner.os }}--bulk1--${{ hashFiles('**/common.sh') }}
+      - name: set path
+        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
 
-    - name: OSX stuff
-      if: steps.cache.outputs.cache-hit != 'true'
-      run: |
-        # Remove existing installation on macOS runners
-        sudo rm -rf /usr/local/miniconda
-        sudo rm -rf ${HOME}/miniconda
+      - name: Fetch conda install script
+        run: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
 
-        # Extract the versions we should be using from the previously-downloaded common.sh
-        BIOCONDA_UTILS_TAG=$(grep "^BIOCONDA_UTILS_TAG=" common.sh | cut -f2 -d "=" | sed "s/^v//g")
-        MINICONDA_VER=$(grep "^MINICONDA_VER=" common.sh | cut -f2 -d "=")
+      - name: Set up bioconda-utils
+        run: bash install-and-set-up-conda.sh
 
-        # Basic miniconda installation with bioconda channels configured
-        curl "https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA_VER}-MacOSX-x86_64.sh" > miniconda.sh
-        bash miniconda.sh -b -p "${HOME}/miniconda"
-        export PATH="${HOME}/miniconda/bin:${PATH}"
-        conda config --set always_yes yes
-        conda config --system --add channels defaults
-        conda config --system --add channels bioconda
-        conda config --system --add channels conda-forge
-        conda config --system --set channel_priority strict
-        conda info
+      - name: Configure conda
+        run: bash configure-conda.sh
 
-        # The run_conda_forge_build_setup script, from the conda-forge-ci-setup
-        # script, helps install required SDK for macOS.
-        #
-        # Installing bioconda-utils and conda-forge-ci-setup with conda causes dependency conflicts.
-        # Installing bioconda-utils and conda-forge-ci-setup with mamba works fine.
-        conda install -y mamba
-        mamba install bioconda-utils=${BIOCONDA_UTILS_TAG} conda-forge-ci-setup
+      - name: Build and upload
+        env:
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+          INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+          QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+          # Mimic circleci
+          OSTYPE: "darwin"
+          CI: "true"
+        run: |
+          set -e
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
 
-        # Set local channel as highest priority
-        mkdir -p "${HOME}/miniconda/conda-bld/{noarch,linux-64,osx-64}"
-        conda index "${HOME}/miniconda/conda-bld"
-        conda config --system --add channels "file://${HOME}/miniconda/conda-bld"
+          source common.sh
+          run_conda_forge_build_setup
 
-    - name: Build and upload
-      env:
-        ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
-        QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
-        # Mimic circleci
-        OSTYPE: "darwin"
-        CI: "true"
-      run: |
-        export PATH="${HOME}/miniconda/bin:${PATH}"
-        # The SDK isn't actually cached, so reinstall it
-        ${HOME}/miniconda/bin/run_conda_forge_build_setup
-        echo '============'
-        conda info --all
-        conda config --show-sources
-        python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
-        echo '============'
-        bioconda-utils build recipes config.yml \
-          --worker-offset ${{ matrix.runner }} --n-workers 4 \
-          --anaconda-upload
-        conda clean -y --all
+          echo '============'
+          conda info --all
+          conda config --show-sources
+          conda activate bioconda
+          python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+          echo '============'
+          bioconda-utils build recipes config.yml \
+            --worker-offset ${{ matrix.runner }} --n-workers 3 \
+            --lint --anaconda-upload --record-build-failures --skiplist-leafs \
+            --exclude bioconda-repodata-patches # --subdag-depth 5
+          conda clean -y --all
+
+  build-osx-arm:
+    name: Bulk OSX-ARM64 Builds
+    if: "contains(github.event.head_commit.message, '[ci run]')"
+    runs-on: macOS-14 # M1
+    strategy:
+      fail-fast: false
+      max-parallel: 1 # GHA free plan allows 5 concurrent Mac runners total, we still need most on osx-64.
+      matrix:
+        runner: [0]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # checkout as BiocondaBot in order to have the permission to push fail logs
+          token: ${{secrets.BIOCONDA_BOT_REPO_TOKEN}}
+
+      - name: set git user
+        run: |
+          git config user.name BiocondaBot
+          git config user.email BiocondaBot@users.noreply.github.com
+
+      - name: set path
+        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
+
+      - name: Fetch conda install script
+        run: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
+
+      - name: Set up bioconda-utils
+        run: bash install-and-set-up-conda.sh
+
+      - name: Configure conda
+        run: bash configure-conda.sh
+
+      - name: Build and upload
+        env:
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+          INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+          QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+          # Mimic circleci
+          OSTYPE: "darwin"
+          CI: "true"
+        run: |
+          set -xe
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+
+          source common.sh
+          # Sets up OSX SDK
+          run_conda_forge_build_setup
+
+          echo '============'
+          conda info --all
+          conda config --show-sources
+          conda activate bioconda
+          python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+          echo '============'
+          bioconda-utils build recipes config.yml \
+            --worker-offset ${{ matrix.runner }} --n-workers 1 \
+            --lint --anaconda-upload --record-build-failures --skiplist-leafs \
+            --exclude bioconda-repodata-patches
+          conda clean -y --all

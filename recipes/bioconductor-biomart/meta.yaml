@@ -1,54 +1,21 @@
-{% set version = "2.54.0" %}
+{% set version = "2.62.0" %}
 {% set name = "biomaRt" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 72f4afffedb7c70fda011572e8a1687d
+about:
+  description: In recent years a wealth of biological data has become available in public data repositories. Easy access to these valuable data resources and firm integration with data analysis is needed for comprehensive bioinformatics data analysis. biomaRt provides an interface to a growing collection of databases implementing the BioMart software suite (<http://www.biomart.org>). The package enables retrieval of large amounts of data in a uniform way without the need to know the underlying database schemas or write complex SQL queries. The most prominent examples of BioMart databases are maintain by Ensembl, which provides biomaRt users direct access to a diverse set of data and enables a wide range of powerful online queries from gene annotation to database mining.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Interface to BioMart databases (i.e. Ensembl)
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, knitr, mockery, rmarkdown, testthat, webmockr
-requirements:
-  host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
-    - r-base
-    - r-digest
-    - r-httr
-    - r-progress
-    - r-rappdirs
-    - r-stringr
-    - 'r-xml >=3.99-0.7'
-    - r-xml2
-  run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
-    - r-base
-    - r-digest
-    - r-httr
-    - r-progress
-    - r-rappdirs
-    - r-stringr
-    - 'r-xml >=3.99-0.7'
-    - r-xml2
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Interface to BioMart databases (i.e. Ensembl)'
-  description: 'In recent years a wealth of biological data has become available in public data repositories. Easy access to these valuable data resources and firm integration with data analysis is needed for comprehensive bioinformatics data analysis. biomaRt provides an interface to a growing collection of databases implementing the BioMart software suite (<http://www.biomart.org>). The package enables retrieval of large amounts of data in a uniform way without the need to know the underlying database schemas or write complex SQL queries. The most prominent examples of BioMart databases are maintain by Ensembl, which provides biomaRt users direct access to a diverse set of data and enables a wide range of powerful online queries from gene annotation to database mining.'
+  run_exports: '{{ pin_subpackage("bioconductor-biomart", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:biomaRt
@@ -57,4 +24,45 @@ extra:
     name: bioconductor-biomart
     path: recipes/bioconductor-biomart
     version: 2.36.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, mockery, rmarkdown, testthat, httptest2
+requirements:
+  host:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - r-base
+    - r-curl
+    - r-digest
+    - r-httr2
+    - r-progress
+    - r-rappdirs
+    - r-stringr
+    - r-xml2
+  run:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - r-base
+    - r-curl
+    - r-digest
+    - r-httr2
+    - r-progress
+    - r-rappdirs
+    - r-stringr
+    - r-xml2
+
+source:
+  md5: 405174e4e9aaafe96f14c5c3f4d43dcb
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

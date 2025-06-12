@@ -1,44 +1,22 @@
-{% set version = "1.42.0" %}
+{% set version = "1.50.0" %}
 {% set name = "HybridMTest" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 6fec564c3b2aace09ab2d284b0717ff6
+about:
+  description: Performs hybrid multiple testing that incorporates method selection and assumption evaluations into the analysis using empirical Bayes probability (EBP) estimates obtained by Grenander density estimation. For instance, for 3-group comparison analysis, Hybrid Multiple testing considers EBPs as weighted EBPs between F-test and H-test with EBPs from Shapiro Wilk test of normality as weigth. Instead of just using EBPs from F-test only or using H-test only, this methodology combines both types of EBPs through EBPs from Shapiro Wilk test of normality. This methodology uses then the law of total EBPs.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL Version 2 or later
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Hybrid Multiple Testing
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - r-base
-    - r-fdrtool
-    - r-mass
-    - r-survival
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - r-base
-    - r-fdrtool
-    - r-mass
-    - r-survival
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL Version 2 or later'
-  summary: 'Hybrid Multiple Testing'
-  description: 'Performs hybrid multiple testing that incorporates method selection and assumption evaluations into the analysis using empirical Bayes probability (EBP) estimates obtained by Grenander density estimation. For instance, for 3-group comparison analysis, Hybrid Multiple testing considers EBPs as weighted EBPs between F-test and H-test with EBPs from Shapiro Wilk test of normality as weigth. Instead of just using EBPs from F-test only or using H-test only, this methodology combines both types of EBPs through EBPs from Shapiro Wilk test of normality. This methodology uses then the law of total EBPs.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-hybridmtest", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:hybridmtest
@@ -47,4 +25,34 @@ extra:
     name: bioconductor-hybridmtest
     path: recipes/bioconductor-hybridmtest
     version: 1.24.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+    - r-fdrtool
+    - r-mass
+    - r-survival
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+    - r-fdrtool
+    - r-mass
+    - r-survival
+
+source:
+  md5: 489ba94cda0e85739b28525b73ef2520
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

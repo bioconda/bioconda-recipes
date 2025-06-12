@@ -1,50 +1,21 @@
-{% set version = "1.26.0" %}
+{% set version = "1.34.0" %}
 {% set name = "biosigner" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 60fa2538b344a969630de1198d161c01
+about:
+  description: Feature selection is critical in omics data analysis to extract restricted and meaningful molecular signatures from complex and high-dimension data, and to build robust classifiers. This package implements a new method to assess the relevance of the variables for the prediction performances of the classifier. The approach can be run in parallel with the PLS-DA, Random Forest, and SVM binary classifiers. The signatures and the corresponding 'restricted' models are returned, enabling future predictions on new datasets. A Galaxy implementation of the package is available within the Workflow4metabolomics.org online infrastructure for computational metabolomics.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: CeCILL
+  summary: Signature discovery from omics data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BioMark, BiocGenerics, BiocStyle, golubEsets, hu6800.db, knitr, omicade4, rmarkdown, testthat
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-multiassayexperiment >=1.24.0,<1.25.0'
-    - 'bioconductor-multidataset >=1.26.0,<1.27.0'
-    - 'bioconductor-ropls >=1.30.0,<1.31.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - r-base
-    - r-e1071
-    - r-randomforest
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-multiassayexperiment >=1.24.0,<1.25.0'
-    - 'bioconductor-multidataset >=1.26.0,<1.27.0'
-    - 'bioconductor-ropls >=1.30.0,<1.31.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - r-base
-    - r-e1071
-    - r-randomforest
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: CeCILL
-  summary: 'Signature discovery from omics data'
-  description: 'Feature selection is critical in omics data analysis to extract restricted and meaningful molecular signatures from complex and high-dimension data, and to build robust classifiers. This package implements a new method to assess the relevance of the variables for the prediction performances of the classifier. The approach can be run in parallel with the PLS-DA, Random Forest, and SVM binary classifiers. The signatures and the corresponding ''restricted'' models are returned, enabling future predictions on new datasets. A Galaxy implementation of the package is available within the Workflow4metabolomics.org online infrastructure for computational metabolomics.'
+  run_exports: '{{ pin_subpackage("bioconductor-biosigner", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:biosigner
@@ -53,4 +24,41 @@ extra:
     name: bioconductor-biosigner
     path: recipes/bioconductor-biosigner
     version: 1.8.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BioMark, BiocGenerics, BiocStyle, golubEsets, hu6800.db, knitr, omicade4, rmarkdown, testthat
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-multiassayexperiment >=1.32.0,<1.33.0
+    - bioconductor-multidataset >=1.34.0,<1.35.0
+    - bioconductor-ropls >=1.38.0,<1.39.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-e1071
+    - r-randomforest
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-multiassayexperiment >=1.32.0,<1.33.0
+    - bioconductor-multidataset >=1.34.0,<1.35.0
+    - bioconductor-ropls >=1.38.0,<1.39.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-e1071
+    - r-randomforest
+
+source:
+  md5: 520d3316884f94a15696c3d91fbc3a6f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

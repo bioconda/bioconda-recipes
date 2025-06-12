@@ -1,0 +1,47 @@
+{% set name = "vireoSNP" %}
+{% set version = "0.5.9" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/vireosnp-{{ version }}.tar.gz
+  sha256: 475dd587a76f03a73228ebd9d6db008f42058c3e548753c841a6b30529edf146
+
+build:
+  entry_points:
+    - vireo = vireoSNP.vireo:main
+    - GTbarcode = vireoSNP.GTbarcode:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('vireosnp', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+  run:
+    - python
+    - numpy >=1.9.0
+    - scipy >=1.4.0
+    - matplotlib-base
+
+test:
+  imports:
+    - vireoSNP
+  commands:
+    - vireo --help
+    - GTbarcode --help
+
+about:
+  home: https://github.com/huangyh09/vireoSNP
+  summary: "vireoSNP - donor deconvolution for multiplexed scRNA-seq data."
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: LICENSE
+  doc_url: "https://vireosnp.readthedocs.io/en/latest"
+  dev_url: https://github.com/huangyh09/vireoSNP

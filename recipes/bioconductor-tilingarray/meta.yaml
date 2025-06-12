@@ -1,27 +1,33 @@
-{% set version = "1.76.0" %}
+{% set version = "1.84.0" %}
 {% set name = "tilingArray" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: db497c7a02fc20e9e761363e8d355127
+about:
+  description: 'The package provides functionality that can be useful for the analysis of high-density tiling microarray data (such as from Affymetrix genechips) for measuring transcript abundance and architecture. The main functionalities of the package are: 1. the class ''segmentation'' for representing partitionings of a linear series of data; 2. the function ''segment'' for fitting piecewise constant models using a dynamic programming algorithm that is both fast and exact; 3. the function ''confint'' for calculating confidence intervals using the strucchange package; 4. the function ''plotAlongChrom'' for generating pretty plots; 5. the function ''normalizeByReference'' for probe-sequence dependent response adjustment from a (set of) reference hybridizations.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Transcript mapping with high-density oligonucleotide tiling arrays
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-tilingarray", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
   host:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-genefilter >=1.80.0,<1.81.0'
-    - 'bioconductor-vsn >=3.66.0,<3.67.0'
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-genefilter >=1.88.0,<1.89.0
+    - bioconductor-vsn >=3.74.0,<3.75.0
     - r-base
     - r-pixmap
     - r-rcolorbrewer
@@ -29,23 +35,24 @@ requirements:
     - libblas
     - liblapack
   run:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-genefilter >=1.80.0,<1.81.0'
-    - 'bioconductor-vsn >=3.66.0,<3.67.0'
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-genefilter >=1.88.0,<1.89.0
+    - bioconductor-vsn >=3.74.0,<3.75.0
     - r-base
     - r-pixmap
     - r-rcolorbrewer
     - r-strucchange
-  build:
-    - {{ compiler('c') }}
-    - make
+
+source:
+  md5: cc6bb59da38ff62ab1eb6522e255bd22
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Transcript mapping with high-density oligonucleotide tiling arrays'
-  description: 'The package provides functionality that can be useful for the analysis of high-density tiling microarray data (such as from Affymetrix genechips) for measuring transcript abundance and architecture. The main functionalities of the package are: 1. the class ''segmentation'' for representing partitionings of a linear series of data; 2. the function ''segment'' for fitting piecewise constant models using a dynamic programming algorithm that is both fast and exact; 3. the function ''confint'' for calculating confidence intervals using the strucchange package; 4. the function ''plotAlongChrom'' for generating pretty plots; 5. the function ''normalizeByReference'' for probe-sequence dependent response adjustment from a (set of) reference hybridizations.'
+    - $R -e "library('{{ name }}')"
 

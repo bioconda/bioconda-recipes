@@ -1,55 +1,22 @@
-{% set version = "2.10.0" %}
+{% set version = "2.18.0" %}
 {% set name = "STRINGdb" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 7bd78d93cb2cccb76735750417c45cef
+about:
+  description: The STRINGdb package provides a R interface to the STRING protein-protein interactions database (https://string-db.org).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: STRINGdb - Protein-Protein Interaction Networks and Functional Enrichment Analysis
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: RUnit, BiocGenerics
-requirements:
-  host:
-    - r-base
-    - r-gplots
-    - r-hash
-    - r-igraph
-    - r-plotrix
-    - r-plyr
-    - r-png
-    - r-rcolorbrewer
-    - r-rcurl
-    - r-sqldf
-  run:
-    - r-base
-    - r-gplots
-    - r-hash
-    - r-igraph
-    - r-plotrix
-    - r-plyr
-    - r-png
-    - r-rcolorbrewer
-    - r-rcurl
-    - r-sqldf
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'STRINGdb - Protein-Protein Interaction Networks and Functional Enrichment Analysis'
-  description: 'The STRINGdb package provides a R interface to the STRING protein-protein interactions database (https://string-db.org).'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-stringdb", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:stringdb
@@ -57,4 +24,45 @@ extra:
     name: bioconductor-stringdb
     path: recipes/bioconductor-stringdb
     version: 1.20.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: RUnit, BiocGenerics
+requirements:
+  host:
+    - r-base
+    - r-gplots
+    - r-hash
+    - r-httr
+    - r-igraph
+    - r-plotrix
+    - r-plyr
+    - r-png
+    - r-rcolorbrewer
+    - r-sqldf
+  run:
+    - r-base
+    - r-gplots
+    - r-hash
+    - r-httr
+    - r-igraph
+    - r-plotrix
+    - r-plyr
+    - r-png
+    - r-rcolorbrewer
+    - r-sqldf
+
+source:
+  md5: 9b150c10f4fe0f8f195cd6cdd8e99d62
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

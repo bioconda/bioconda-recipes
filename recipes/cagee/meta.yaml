@@ -1,6 +1,6 @@
 {% set name = "CAGEE" %}
-{% set version = "1.0" %}
-{% set sha256 = "3aec98af3552ef86df03d42a068925e2becd69daac3720ea9fd136b084198f57" %}
+{% set version = "1.2" %}
+{% set sha256 = "fc1db60d8d9478ef53b38f310a687453c6f8f2f50d3c68ec6a0747e822c2a481" %}
 
 package:
   name: {{ name|lower }}
@@ -11,27 +11,30 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('cagee', max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - binutils >=2.33.1  # [linux]
+    - binutils_impl_linux-aarch64  # [osx]
     - cmake >=3.13
     - make
-    - llvm-openmp  # [osx]
   host:
     - eigen >=3.4.0
     - boost-cpp
     - mkl >=2020.4
     - mkl-include
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - zlib
     - zstd
   run:
     - boost-cpp
     - mkl >=2020.4
-    - zlib
 
 test:
   commands:
@@ -49,4 +52,3 @@ about:
 extra:
   recipe-maintainers:
     - benfulton
-

@@ -1,47 +1,22 @@
-{% set version = "2.26.0" %}
+{% set version = "2.34.0" %}
 {% set name = "ROntoTools" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 9de3f2e7ac9c008025e214bd844038d3
+about:
+  description: Suite of tools for functional analysis.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: CC BY-NC-ND 4.0 + file LICENSE
+  license_file: LICENSE
+  summary: R Onto-Tools suite
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: RUnit, BiocGenerics
-requirements:
-  host:
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-kegggraph >=1.58.0,<1.59.0'
-    - 'bioconductor-keggrest >=1.38.0,<1.39.0'
-    - 'bioconductor-rgraphviz >=2.42.0,<2.43.0'
-    - r-base
-    - r-boot
-  run:
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-kegggraph >=1.58.0,<1.59.0'
-    - 'bioconductor-keggrest >=1.38.0,<1.39.0'
-    - 'bioconductor-rgraphviz >=2.42.0,<2.43.0'
-    - r-base
-    - r-boot
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'CC BY-NC-ND 4.0 + file LICENSE'
-  summary: 'R Onto-Tools suite'
-  description: 'Suite of tools for functional analysis.'
-  license_file: LICENSE
+  run_exports: '{{ pin_subpackage("bioconductor-rontotools", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:rontotools
@@ -50,4 +25,37 @@ extra:
     name: bioconductor-rontotools
     path: recipes/bioconductor-rontotools
     version: 2.8.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: RUnit, BiocGenerics
+requirements:
+  host:
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-kegggraph >=1.66.0,<1.67.0
+    - bioconductor-keggrest >=1.46.0,<1.47.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
+    - r-base
+    - r-boot
+  run:
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-kegggraph >=1.66.0,<1.67.0
+    - bioconductor-keggrest >=1.46.0,<1.47.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
+    - r-base
+    - r-boot
+
+source:
+  md5: ebc83d02dc550f9673920bf52ee6ee1b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

@@ -1,0 +1,60 @@
+{% set name = "nanomotif" %}
+{% set version = "0.6.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/nanomotif-{{ version }}.tar.gz
+  sha256: 6ab7b7f2ba35b6e9441c704b0007dfc1f9a368b90014b35a1668c14b9431aa93
+
+build:
+  entry_points:
+    - nanomotif = nanomotif.main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('nanomotif', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+  run:
+    - python
+    - wheel
+    - requests
+    - numpy >=1.24.4
+    - pandas >=2.0.2
+    - polars >=0.19,<=0.20.23
+    - scipy >=1.10.1
+    - scikit-learn >=1.5.2
+    - networkx >=3.1
+    - pyarrow >=15.0.2
+    - pymethylation_utils ==0.5.2
+    - hdbscan
+    - Bio >=1.6.2
+    - snakemake >=7.32.4
+    - progressbar2 >=3.53.1
+
+test:
+  imports:
+    - nanomotif
+  commands:
+    - nanomotif --help
+
+about:
+  home: "https://github.com/MicrobialDarkMatter/nanomotif"
+  summary: "Identifying methlyation motifs in nanopore data"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: "https://nanomotif.readthedocs.io/en/latest"
+  dev_url: "https://github.com/MicrobialDarkMatter/nanomotif"
+
+extra:
+  recipe-maintainers:
+    - SorenHeidelbach

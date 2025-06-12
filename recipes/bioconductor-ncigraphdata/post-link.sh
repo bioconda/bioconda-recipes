@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "ncigraphdata-1.33.0"
+installBiocDataPackage.sh "ncigraphdata-1.42.0"

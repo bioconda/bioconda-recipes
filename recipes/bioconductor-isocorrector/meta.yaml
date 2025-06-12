@@ -1,23 +1,33 @@
-{% set version = "1.16.0" %}
+{% set version = "1.24.0" %}
 {% set name = "IsoCorrectoR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 2b085e251e417eaa32adf60808eb0d8e
+about:
+  description: 'IsoCorrectoR performs the correction of mass spectrometry data from stable isotope labeling/tracing metabolomics experiments with regard to natural isotope abundance and tracer impurity. Data from both MS and MS/MS measurements can be corrected (with any tracer isotope: 13C, 15N, 18O...), as well as ultra-high resolution MS data from multiple-tracer experiments (e.g. 13C and 15N used simultaneously). See the Bioconductor package IsoCorrectoRGUI for a graphical user interface to IsoCorrectoR. NOTE: With R version 4.0.0, writing correction results to Excel files may currently not work on Windows. However, writing results to csv works as before.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Correction for natural isotope abundance and tracer purity in MS and MS/MS data from stable isotope labeling experiments
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: IsoCorrectoRGUI, knitr, rmarkdown, testthat
+  run_exports: '{{ pin_subpackage("bioconductor-isocorrector", max_pin="x.x") }}'
+
+extra:
+  parent_recipe:
+    name: bioconductor-isocorrector
+    path: recipes/bioconductor-isocorrector
+    version: 1.0.4
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: IsoCorrectoRGUI, knitr, rmarkdown, testthat, BiocStyle
 requirements:
   host:
     - r-base
@@ -41,18 +51,16 @@ requirements:
     - r-stringr
     - r-tibble
     - r-writexls
+
+source:
+  md5: b2d0f007cc55788211373f20740d79a5
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Correction for natural isotope abundance and tracer purity in MS and MS/MS data from stable isotope labeling experiments'
-  description: 'IsoCorrectoR performs the correction of mass spectrometry data from stable isotope labeling/tracing metabolomics experiments with regard to natural isotope abundance and tracer impurity. Data from both MS and MS/MS measurements can be corrected (with any tracer isotope: 13C, 15N, 18O...), as well as ultra-high resolution MS data from multiple-tracer experiments (e.g. 13C and 15N used simultaneously). See the Bioconductor package IsoCorrectoRGUI for a graphical user interface to IsoCorrectoR. NOTE: With R version 4.0.0, writing correction results to Excel files may currently not work on Windows. However, writing results to csv works as before.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-extra:
-  parent_recipe:
-    name: bioconductor-isocorrector
-    path: recipes/bioconductor-isocorrector
-    version: 1.0.4
+    - $R -e "library('{{ name }}')"
 

@@ -1,28 +1,32 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "GladiaTOX" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: b7fc6774f1ff8048cd714b6551b90fa8
+about:
+  description: 'GladiaTOX R package is an open-source, flexible solution to high-content screening data processing and reporting in biomedical research. GladiaTOX takes advantage of the tcpl core functionalities and provides a number of extensions: it provides a web-service solution to fetch raw data; it computes severity scores and exports ToxPi formatted files; furthermore it contains a suite of functionalities to generate pdf reports for quality control and data processing.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: R Package for Processing High Content Screening data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-gladiatox", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: roxygen2, knitr, rmarkdown, testthat, BiocStyle
 requirements:
   host:
     - r-base
     - r-brew
-    - 'r-data.table >=1.9.4'
+    - r-data.table >=1.9.4
     - r-dbi
     - r-ggplot2
     - r-ggrepel
@@ -30,7 +34,7 @@ requirements:
     - r-rcolorbrewer
     - r-rcurl
     - r-rjsonio
-    - r-rmysql
+    - r-rmariadb
     - r-rsqlite
     - r-stringr
     - r-tidyr
@@ -39,7 +43,7 @@ requirements:
   run:
     - r-base
     - r-brew
-    - 'r-data.table >=1.9.4'
+    - r-data.table >=1.9.4
     - r-dbi
     - r-ggplot2
     - r-ggrepel
@@ -47,19 +51,22 @@ requirements:
     - r-rcolorbrewer
     - r-rcurl
     - r-rjsonio
-    - r-rmysql
+    - r-rmariadb
     - r-rsqlite
     - r-stringr
     - r-tidyr
     - r-xml
     - r-xtable
+
+source:
+  md5: 9d9290cf476a663e129f6032813f8b94
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'R Package for Processing High Content Screening data'
-  description: 'GladiaTOX R package is an open-source, flexible solution to high-content screening data processing and reporting in biomedical research. GladiaTOX takes advantage of the tcpl core functionalities and provides a number of extensions: it provides a web-service solution to fetch raw data; it computes severity scores and exports ToxPi formatted files; furthermore it contains a suite of functionalities to generate pdf reports for quality control and data processing.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+    - $R -e "library('{{ name }}')"
 

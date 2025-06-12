@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "leukemiaseset-1.34.0"
+installBiocDataPackage.sh "leukemiaseset-1.42.0"

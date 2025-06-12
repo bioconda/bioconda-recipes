@@ -1,44 +1,31 @@
-{% set version = "2.46.0" %}
+{% set version = "2.54.0" %}
 {% set name = "flowMerge" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 83ff08da04abc47e77f4abdea2204352
+about:
+  description: 'Merging of mixture components for model-based automated gating of flow cytometry data using the flowClust framework. Note: users should have a working copy of flowClust 2.0 installed.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Cluster Merging for Flow Cytometry Data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-flowmerge", max_pin="x.x") }}'
+
+extra:
+  container:
+    extended-base: yes
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown
 requirements:
-  host:
-    - 'bioconductor-flowclust >=3.36.0,<3.37.0'
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-rgraphviz >=2.42.0,<2.43.0'
-    - r-base
-    - r-feature
-    - r-foreach
-    - r-rrcov
-    - r-snow
-  run:
-    - 'bioconductor-flowclust >=3.36.0,<3.37.0'
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-rgraphviz >=2.42.0,<2.43.0'
-    - r-base
-    - r-feature
-    - r-foreach
-    - r-rrcov
-    - r-snow
   build:
     - {{ cdt('mesa-libgl-devel') }}  # [linux]
     - {{ cdt('mesa-dri-drivers') }}  # [linux]
@@ -46,15 +33,36 @@ requirements:
     - {{ cdt('libxdamage') }}  # [linux]
     - {{ cdt('libxxf86vm') }}  # [linux]
     - xorg-libxfixes  # [linux]
+  host:
+    - bioconductor-flowclust >=3.44.0,<3.45.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
+    - r-base
+    - r-feature
+    - r-foreach
+    - r-rrcov
+    - r-snow
+  run:
+    - bioconductor-flowclust >=3.44.0,<3.45.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
+    - r-base
+    - r-feature
+    - r-foreach
+    - r-rrcov
+    - r-snow
+
+source:
+  md5: 19db512773324d4b85928cc44e5622ef
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Cluster Merging for Flow Cytometry Data'
-  description: 'Merging of mixture components for model-based automated gating of flow cytometry data using the flowClust framework. Note: users should have a working copy of flowClust 2.0 installed.'
-extra:
-  container:
-    extended-base: true
+    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library('{{ name }}')"
 

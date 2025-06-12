@@ -1,26 +1,30 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "fobitools" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: aa300176fb8fee2c5592a9373ff76345
+about:
+  description: A set of tools for interacting with the Food-Biomarker Ontology (FOBI). A collection of basic manipulation tools for biological significance analysis, graphs, and text mining strategies for annotating nutritional data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Tools for Manipulating the FOBI Ontology
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-fobitools", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, covr, ggrepel, kableExtra, knitr, metabolomicsWorkbenchR, POMA, rmarkdown, rvest, SummarizedExperiment, testthat (>= 2.3.2), tidyverse
 requirements:
   host:
-    - 'bioconductor-fgsea >=1.24.0,<1.25.0'
+    - bioconductor-fgsea >=1.32.0,<1.33.0
     - r-base
     - r-clisymbols
     - r-crayon
@@ -38,7 +42,7 @@ requirements:
     - r-tidyr
     - r-vroom
   run:
-    - 'bioconductor-fgsea >=1.24.0,<1.25.0'
+    - bioconductor-fgsea >=1.32.0,<1.33.0
     - r-base
     - r-clisymbols
     - r-crayon
@@ -55,13 +59,16 @@ requirements:
     - r-tidygraph
     - r-tidyr
     - r-vroom
+
+source:
+  md5: a1bfbea449a5e6fdfb29e5847eeb07f8
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Tools For Manipulating FOBI Ontology'
-  description: 'A set of tools for interacting with Food-Biomarker Ontology (FOBI). A collection of basic manipulation tools for biological significance analysis, graphs, and text mining strategies for annotating nutritional data.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

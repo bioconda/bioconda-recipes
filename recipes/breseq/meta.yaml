@@ -1,4 +1,4 @@
-{% set version = "0.37.1" %}
+{% set version = "0.39.0" %}
 
 package:
   name: breseq
@@ -6,20 +6,23 @@ package:
 
 source:
   url: https://github.com/barricklab/breseq/releases/download/v{{ version }}/breseq-{{ version }}-Source.tar.gz
-  sha256: "96131a55271225f7d7e130ef25adea04608dc8e142d2268c85be627c761fcd1b"
+  sha256: "39b35e246ecd2b497c82a99765ca4d78a0400bc4a7518b7506b140229ccc0247"
 
 build:
-  number: 1
+  number: 3
+  run_exports:
+    - {{ pin_subpackage('breseq', max_pin="x.x") }}
 
 requirements:
   build:
     - make
-    - {{ compiler("c") }}
     - {{ compiler("cxx") }}
+    - autoconf
+    - automake
+    - libtool
   host:
     - zlib
   run:
-    - zlib
     - r-base
     - r-cairo
     - bowtie2 >=2.0.0,!=2.0.3,!=2.0.4,!=2.3.1
@@ -31,8 +34,20 @@ test:
 
 about:
   home: https://github.com/barricklab/breseq
-  license: GPL-3.0
+  license: GPL-2.0-or-later
   license_family: GPL
   license_file: COPYING
-  summary: A computational pipeline for finding mutations relative to a reference sequence in short-read DNA re-sequencing
-    data.
+  summary: "A computational pipeline for finding mutations relative to a reference sequence in short-read DNA re-sequencing
+    data."
+  doc_url: "https://barricklab.org/twiki/pub/Lab/ToolsBacterialGenomeResequencing/documentation/"
+  dev_url: https://github.com/barricklab/breseq
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:breseq
+    - biotools:breseq_bam2aln
+    - biotools:breseq_bam2cov
+    - usegalaxy-eu:breseq

@@ -1,0 +1,54 @@
+{% set name = "mzspeclib" %}
+{% set version = "1.0.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/mzspeclib-{{ version }}.tar.gz
+  sha256: 08610b5a0aea097e632593deadfb444e68b55fbd3772fe39bda500d5a04584dc
+
+build:
+  entry_points:
+    - mzspeclib = mzspeclib.tools.cli:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('mzspeclib', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools
+    - pip
+  run:
+    - python >=3.8
+    - sqlalchemy
+    - click
+    - psims >=1.3.4
+    - pyteomics >=4.5.3
+    - mzpaf
+
+test:
+  imports:
+    - mzspeclib
+  commands:
+    - pip check
+    - mzspeclib --help
+  requires:
+    - pip
+
+about:
+  summary: HUPO-PSI Spectral library format
+  home: https://github.com/HUPO-PSI/mzSpecLib
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  doc_url: https://mzspeclib-py.readthedocs.io/en/latest/
+  dev_url: https://github.com/HUPO-PSI/mzspeclib-py
+
+extra:
+  recipe-maintainers:
+    - hechth

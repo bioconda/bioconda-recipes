@@ -1,27 +1,31 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "Dune" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 2b6f8892515c68f0858b9ad9ed793bd3
+about:
+  description: Given a set of clustering labels, Dune merges pairs of clusters to increase mean ARI between labels, improving replicability.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Improving replicability in single-cell RNA-Seq cell type discovery
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-dune", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, testthat (>= 2.1.0)
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-aricode
     - r-base
     - r-dplyr
@@ -32,8 +36,8 @@ requirements:
     - r-rcolorbrewer
     - r-tidyr
   run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-aricode
     - r-base
     - r-dplyr
@@ -43,13 +47,16 @@ requirements:
     - r-purrr
     - r-rcolorbrewer
     - r-tidyr
+
+source:
+  md5: 2550b356019d43f1dd52fc997a55f115
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Improving replicability in single-cell RNA-Seq cell type discovery'
-  description: 'Given a set of clustering labels, Dune merges pairs of clusters to increase mean ARI between labels, improving replicability.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

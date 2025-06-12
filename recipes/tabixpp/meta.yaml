@@ -1,54 +1,59 @@
-{% set version = "1.1.0" %}
+{% set name = "tabixpp" %}
+{% set version = "1.1.2" %}
+{% set sha256 = "c850299c3c495221818a85c9205c60185c8ed9468d5ec2ed034470bb852229dc" %}
 
 package:
-  name: tabixpp
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/ekg/tabixpp/archive/v{{version}}.tar.gz
-  sha256: 56c8f1b07190aba5e1d0b738e380e726d380f0ad8b2d0df133200b0ab1f8ed88
+- url: https://github.com/vcflib/tabixpp/archive/refs/tags/v{{version}}.tar.gz
+  sha256: {{ sha256 }}
   patches:
     - shared_lib.patch
-    - pkg-config.patch
+    - pkg-config.patch  # [osx]
+- url: https://github.com/samtools/htslib/releases/download/1.20/htslib-1.20.tar.bz2
+  sha256: e52d95b14da68e0cfd7d27faf56fef2f88c2eaf32a2be51c72e146e3aa928544
+  folder: htslib
 
 build:
-  number: 11
+  number: 4
+  run_exports:
+    # Observed ABI version increase from 1.1.0 to 1.1.2.
+    # Hence, we pin to the patch version even.
+    - {{ pin_subpackage(name, max_pin="x.x.x") }}
 
 requirements:
   build:
-    - make
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - make
   host:
     - zlib
     - bzip2
     - xz
+    - pkg-config  # [osx]
     - htslib
     - bc
-    - samtools
-    - pkg-config #needed for MacOS build
-    
   run:
-    - zlib
-    - bzip2
-    - xz
-    - htslib
-    - bc
     - samtools
-    
+
 test:
   commands:
     - which tabix++
-    
 
 about:
-  home: https://github.com/ekg/tabixpp
+  home: "https://github.com/vcflib/tabixpp"
   license: MIT
-  license_file: LICENSE
   license_family: MIT
-  summary: This is a C++ wrapper around tabix project which abstracts some of the details of opening and jumping in tabix-indexed files.
-  maintainers: jpuritz
+  license_file: LICENSE
+  summary: "A C++ wrapper around the tabix project, a generic indexer for TAB-delimited genome position files."
+  dev_url: "https://github.com/vcflib/tabixpp"
 
 extra:
-   identifiers:
+  identifiers:
     - biotools:tabixpp
+  recipe-maintainers:
+    - jpuritz
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

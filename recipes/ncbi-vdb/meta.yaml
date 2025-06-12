@@ -1,44 +1,46 @@
-{% set version = "3.0.2" %}
+{% set name = "ncbi-vdb" %}
+{% set version = "3.2.1" %}
 
 package:
-  name: ncbi-vdb
+  name: {{ name }}
   version: {{ version }}
 
 build:
   number: 0
-  skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage('ncbi-vdb', max_pin='x') }}
 
 source:
-  - url: https://github.com/ncbi/ncbi-vdb/archive/{{ version }}.tar.gz
-    sha256: 275ccb225ddb156688c8c71f772f73276cb18ebff773a51150f86f8002ed2d59
-    folder: ncbi-vdb
+  url: https://github.com/ncbi/ncbi-vdb/archive/{{ version }}.tar.gz
+  sha256: 535511984928ec5bac02a61fc6b4d1ca72a5b69c742f4882eabd32ed3a97621c
+  folder: ncbi-vdb
+  patches:
+    - env.cmake.patch  # [osx]
 
-requirements:    
+requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - bison
     - cmake
     - flex
     - make
-  run:
-    - ca-certificates
-    - curl
-    - ossuuid
-    - perl
-    - perl-xml-libxml
-    - perl-uri
 
 about:
-  home: https://github.com/ncbi/ncbi-vdb
+  home: "https://github.com/ncbi/ncbi-vdb"
   license: Public Domain
-  summary: SRA tools database engine
+  summary: "SRA tools database engine."
   description: |
-    VDB is the database engine that all SRA tools use. It is a columnar database
-    system with a number of unique features. All SRA objects are stored in VDB.
+    "VDB is the database engine that all SRA tools use. It is a columnar database
+    system with a number of unique features. All SRA objects are stored in VDB."
+  dev_url: "https://github.com/ncbi/ncbi-vdb"
+  doc_url: "https://github.com/ncbi/ncbi-vdb/wiki"
 
 test:
   commands:
-    - test -e ${PREFIX}/lib64/libncbi-vdb.so # [not osx]
-    - test -e ${PREFIX}/lib64/libncbi-vdb.dylib # [osx]
+    - test -e ${PREFIX}/lib/libncbi-vdb.so  # [not osx]
+    - test -e ${PREFIX}/lib/libncbi-vdb.dylib  # [osx]
 
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

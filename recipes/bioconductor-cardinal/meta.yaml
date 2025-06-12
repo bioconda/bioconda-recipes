@@ -1,71 +1,22 @@
-{% set version = "3.0.1" %}
+{% set version = "3.8.0" %}
 {% set name = "Cardinal" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 2c46e941821bd76a335c8183110843d2
+about:
+  description: Implements statistical & computational tools for analyzing mass spectrometry imaging datasets, including methods for efficient pre-processing, spatial segmentation, and classification.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0 | file LICENSE
+  license_file: LICENSE
+  summary: A mass spectrometry imaging toolbox for statistical analysis
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: BiocStyle, testthat, knitr, rmarkdown
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-ebimage >=4.40.0,<4.41.0'
-    - 'bioconductor-matter >=2.0.0,<2.1.0'
-    - 'bioconductor-protgenerics >=1.30.0,<1.31.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - r-irlba
-    - r-magrittr
-    - r-matrix
-    - r-mclust
-    - r-nlme
-    - r-signal
-    - r-sp
-    - r-viridislite
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-ebimage >=4.40.0,<4.41.0'
-    - 'bioconductor-matter >=2.0.0,<2.1.0'
-    - 'bioconductor-protgenerics >=1.30.0,<1.31.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - r-irlba
-    - r-magrittr
-    - r-matrix
-    - r-mclust
-    - r-nlme
-    - r-signal
-    - r-sp
-    - r-viridislite
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'A mass spectrometry imaging toolbox for statistical analysis'
-  description: 'Implements statistical & computational tools for analyzing mass spectrometry imaging datasets, including methods for efficient pre-processing, spatial segmentation, and classification.'
+  run_exports: '{{ pin_subpackage("bioconductor-cardinal", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:cardinal
@@ -74,4 +25,49 @@ extra:
     name: bioconductor-cardinal
     path: recipes/bioconductor-cardinal
     version: 1.12.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, testthat, knitr, rmarkdown
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-cardinalio >=1.4.0,<1.5.0
+    - bioconductor-ebimage >=4.48.0,<4.49.0
+    - bioconductor-matter >=2.8.0,<2.9.0
+    - bioconductor-protgenerics >=1.38.0,<1.39.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-irlba
+    - r-matrix
+    - r-nlme
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-cardinalio >=1.4.0,<1.5.0
+    - bioconductor-ebimage >=4.48.0,<4.49.0
+    - bioconductor-matter >=2.8.0,<2.9.0
+    - bioconductor-protgenerics >=1.38.0,<1.39.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-irlba
+    - r-matrix
+    - r-nlme
+
+source:
+  md5: d41a53e6890b0f7cd69fb75226b18edd
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

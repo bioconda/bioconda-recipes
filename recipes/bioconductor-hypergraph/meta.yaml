@@ -1,38 +1,21 @@
-{% set version = "1.70.0" %}
+{% set version = "1.78.0" %}
 {% set name = "hypergraph" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: fc5ed8a8b82b888e5095eaadeeb4248a
+about:
+  description: A package that implements some simple capabilities for representing and manipulating hypergraphs.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: A package providing hypergraph data structures
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocGenerics, RUnit
-requirements:
-  host:
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - r-base
-  run:
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'A package providing hypergraph data structures'
-  description: 'A package that implements some simple capabilities for representing and manipulating hypergraphs.'
+  run_exports: '{{ pin_subpackage("bioconductor-hypergraph", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:hypergraph
@@ -41,4 +24,29 @@ extra:
     name: bioconductor-hypergraph
     path: recipes/bioconductor-hypergraph
     version: 1.52.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocGenerics, RUnit
+requirements:
+  host:
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - r-base
+  run:
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - r-base
+
+source:
+  md5: 664ea291a51db1bed4d8433759c6a43a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

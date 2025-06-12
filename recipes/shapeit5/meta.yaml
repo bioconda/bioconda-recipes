@@ -1,0 +1,64 @@
+{% set name = "shapeit5" %}
+{% set version = "5.1.1" %}
+{% set user = "odelaneau" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/odelaneau/shapeit5
+  git_commit: 990ed0dd0a814756c90e16d3a771bc0089b1177a
+  sha256: ignored
+  patches:
+    - arm64.patch  # [arm64 or aarch64]
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('shapeit5', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake
+    - clangdev  # [osx]
+  host:
+    - boost-cpp
+    - libcurl
+    - libdeflate
+    - bzip2
+    - htslib
+    - xz
+    - zlib
+  run:
+    - boost-cpp
+    - htslib
+
+test:
+  commands:
+    - SHAPEIT5_phase_common --help
+    - SHAPEIT5_phase_rare --help
+    - SHAPEIT5_switch --help
+    - SHAPEIT5_ligate --help
+
+about:
+  home: https://odelaneau.github.io/shapeit5
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'Fast and accurate method for estimation of haplotypes (phasing).'
+  description: 'This package provides the software SHAPEIT5. SHAPEIT5 estimates haplotypes in large datasets (WGS, WES, SNP array), with a special focus on rare variants.'
+  dev_url: https://github.com/odelaneau/shapeit5
+  doc_url: https://odelaneau.github.io/shapeit5
+
+extra:
+  identifiers:
+    - doi:10.1101/2022.10.19.512867 
+    - biotools:shapeit5
+  #additional-platforms:
+    #- linux-aarch64
+    #- osx-arm64
+  skip-lints:
+    - uses_vcs_url

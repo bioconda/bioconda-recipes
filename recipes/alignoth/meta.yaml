@@ -1,24 +1,25 @@
-{% set version = "0.7.3" %}
+{% set name = "alignoth" %}
+{% set version = "0.16.1" %}
 
 package:
-  name: alignoth
+  name: {{ name }}
   version: {{ version }}
+
+source:
+  url: https://github.com/alignoth/alignoth/archive/v{{ version }}.tar.gz
+  sha256: cdb6e9f27a2a1bb687606fbe73af819906f46e35dfdd42ca02aa21faac500f2a
 
 build:
   number: 0
-  # TODO fails to build on osx with
-  # Undefined symbols for architecture x86_64: "_SSLCopyALPNProtocols", referenced from: _sectransp_connect_step2 in libcurl_sys-1f07db570920ba9f.rlib(sectransp.o)
-  skip: true  #[osx]
-
-source:
-  url: https://github.com/koesterlab/alignoth/archive/v{{ version }}.tar.gz
-  sha256: 3900dfe33f7c1ccfa71f1c054db358d2e4ac2d93308d7e85e8e51f87829330c2
+  run_exports:
+    - {{ pin_subpackage('alignoth', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler("cxx") }}
-    - rust >=1.30
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
     - clangdev
     - pkg-config
     - make
@@ -33,11 +34,18 @@ test:
     - alignoth --help
 
 about:
-  home: https://github.com/koesterlab/alignoth
+  home: "https://alignoth.github.io"
   license: MIT
-  summary: A tool for creating alignment plots from bam files
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A tool for creating alignment plots from bam files."
+  dev_url: "https://github.com/alignoth/alignoth"
+  doc_url: "https://github.com/alignoth/alignoth/blob/v{{ version }}/README.md"
 
 extra:
   recipe-maintainers:
     - fxwiegand
     - johanneskoester
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

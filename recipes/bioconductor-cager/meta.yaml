@@ -1,91 +1,22 @@
-{% set version = "2.4.0" %}
+{% set version = "2.12.0" %}
 {% set name = "CAGEr" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 68ec18ea718b95086d52c29ea6369b6a
+about:
+  description: The _CAGEr_ package identifies transcription start sites (TSS) and their usage frequency from CAGE (Cap Analysis Gene Expression) sequencing data. It normalises raw CAGE tag count, clusters TSSs into tag clusters (TC) and aggregates them across multiple CAGE experiments to construct consensus clusters (CC) representing the promoterome.  CAGEr provides functions to profile expression levels of these clusters by cumulative expression and rarefaction analysis, and outputs the plots in ggplot2 format for further facetting and customisation.  After clustering, CAGEr performs analyses of promoter width and detects differential usage of TSSs (promoter shifting) between samples.  CAGEr also exports its data as genome browser tracks, and as R objects for downsteam expression analysis by other Bioconductor packages such as DESeq2, CAGEfightR, or seqArchR.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Analysis of CAGE (Cap Analysis of Gene Expression) sequencing data for precise mapping of transcription start sites and promoterome mining
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BSgenome.Drerio.UCSC.danRer7, DESeq2, FANTOM3and4CAGE, BiocStyle, knitr, rmarkdown
-requirements:
-  host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-delayedmatrixstats >=1.20.0,<1.21.0'
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicalignments >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-multiassayexperiment >=1.24.0,<1.25.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - r-base
-    - r-data.table
-    - r-formula.tools
-    - 'r-ggplot2 >=2.2.0'
-    - r-gtools
-    - r-kernsmooth
-    - r-memoise
-    - r-plyr
-    - r-reshape2
-    - r-som
-    - r-stringdist
-    - r-stringi
-    - r-vegan
-    - r-vgam
-  run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-delayedmatrixstats >=1.20.0,<1.21.0'
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicalignments >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-multiassayexperiment >=1.24.0,<1.25.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - r-base
-    - r-data.table
-    - r-formula.tools
-    - 'r-ggplot2 >=2.2.0'
-    - r-gtools
-    - r-kernsmooth
-    - r-memoise
-    - r-plyr
-    - r-reshape2
-    - r-som
-    - r-stringdist
-    - r-stringi
-    - r-vegan
-    - r-vgam
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Analysis of CAGE (Cap Analysis of Gene Expression) sequencing data for precise mapping of transcription start sites and promoterome mining'
-  description: 'Preprocessing of CAGE sequencing data, identification and normalization of transcription start sites and downstream analysis of transcription start sites clusters (promoters).'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-cager", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:cager
@@ -93,4 +24,89 @@ extra:
     name: bioconductor-cager
     path: recipes/bioconductor-cager
     version: 1.22.3
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BSgenome.Dmelanogaster.UCSC.dm3, BSgenome.Drerio.UCSC.danRer7, BSgenome.Hsapiens.UCSC.hg18, BSgenome.Hsapiens.UCSC.hg19, BSgenome.Mmusculus.UCSC.mm9, DESeq2, FANTOM3and4CAGE, ggseqlogo, BiocStyle, knitr, rmarkdown
+requirements:
+
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-cagefightr >=1.26.0,<1.27.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicalignments >=1.42.0,<1.43.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-multiassayexperiment >=1.32.0,<1.33.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-data.table
+    - r-formula.tools
+    - r-ggplot2 >=2.2.0
+    - r-gtools
+    - r-kernsmooth
+    - r-memoise
+    - r-plyr
+    - r-reshape2
+    - r-rlang
+    - r-scales
+    - r-som
+    - r-stringdist
+    - r-stringi
+    - r-vegan
+    - r-vgam
+
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-cagefightr >=1.26.0,<1.27.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicalignments >=1.42.0,<1.43.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-multiassayexperiment >=1.32.0,<1.33.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-data.table
+    - r-formula.tools
+    - r-ggplot2 >=2.2.0
+    - r-gtools
+    - r-kernsmooth
+    - r-memoise
+    - r-plyr
+    - r-reshape2
+    - r-rlang
+    - r-scales
+    - r-som
+    - r-stringdist
+    - r-stringi
+    - r-vegan
+    - r-vgam
+
+source:
+  md5: 056b2f3234240143e260fe91edf2db85
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

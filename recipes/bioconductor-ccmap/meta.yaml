@@ -1,51 +1,58 @@
-{% set version = "1.24.0" %}
+{% set version = "1.32.0" %}
 {% set name = "ccmap" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 2d0f89a7ecd5e5d211c68a1eb0ddeddb
+about:
+  description: Finds drugs and drug combinations that are predicted to reverse or mimic gene expression signatures. These drugs might reverse diseases or mimic healthy lifestyles.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Combination Connectivity Mapping
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-ccmap", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: crossmeta, knitr, rmarkdown, testthat, lydata
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-ccdata >=1.24.0,<1.25.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-ccdata >=1.32.0,<1.33.0
     - r-base
-    - 'r-biocmanager >=1.30.4'
-    - 'r-data.table >=1.10.4'
-    - 'r-doparallel >=1.0.10'
-    - 'r-foreach >=1.4.3'
-    - 'r-lsa >=0.73.1'
-    - 'r-xgboost >=0.6.4'
+    - r-biocmanager >=1.30.4
+    - r-data.table >=1.10.4
+    - r-doparallel >=1.0.10
+    - r-foreach >=1.4.3
+    - r-lsa >=0.73.1
+    - r-xgboost >=0.6.4
   run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-ccdata >=1.24.0,<1.25.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-ccdata >=1.32.0,<1.33.0
     - r-base
-    - 'r-biocmanager >=1.30.4'
-    - 'r-data.table >=1.10.4'
-    - 'r-doparallel >=1.0.10'
-    - 'r-foreach >=1.4.3'
-    - 'r-lsa >=0.73.1'
-    - 'r-xgboost >=0.6.4'
+    - r-biocmanager >=1.30.4
+    - r-data.table >=1.10.4
+    - r-doparallel >=1.0.10
+    - r-foreach >=1.4.3
+    - r-lsa >=0.73.1
+    - r-xgboost >=0.6.4
+
+source:
+  md5: 350b860cb1123cd82d554b834566c29a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Combination Connectivity Mapping'
-  description: 'Finds drugs and drug combinations that are predicted to reverse or mimic gene expression signatures. These drugs might reverse diseases or mimic healthy lifestyles.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

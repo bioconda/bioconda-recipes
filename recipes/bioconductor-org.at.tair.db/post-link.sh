@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "org.at.tair.db-3.16.0"
+installBiocDataPackage.sh "org.at.tair.db-3.20.0"

@@ -1,43 +1,22 @@
-{% set version = "2.20.0" %}
+{% set version = "2.28.0" %}
 {% set name = "BrowserViz" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: aa90122bfd4b56e52a1a3a51b8c1838d
+about:
+  description: Interactvive graphics in a web browser from R, using websockets and JSON.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: 'BrowserViz: interactive R/browser graphics using websockets and JSON'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: RUnit, BiocStyle, knitr, rmarkdown
-requirements:
-  host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - r-base
-    - 'r-httpuv >=1.5.0'
-    - 'r-jsonlite >=1.5'
-  run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - r-base
-    - 'r-httpuv >=1.5.0'
-    - 'r-jsonlite >=1.5'
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'BrowserViz: interactive R/browser graphics using websockets and JSON'
-  description: 'Interactvive graphics in a web browser from R, using websockets and JSON.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-browserviz", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:browserviz
@@ -46,4 +25,33 @@ extra:
     name: bioconductor-browserviz
     path: recipes/bioconductor-browserviz
     version: 2.2.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: RUnit, BiocStyle, knitr, rmarkdown
+requirements:
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - r-base
+    - r-httpuv >=1.5.0
+    - r-jsonlite >=1.5
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - r-base
+    - r-httpuv >=1.5.0
+    - r-jsonlite >=1.5
+
+source:
+  md5: 2732179787359af166be88c9d1265bda
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 
