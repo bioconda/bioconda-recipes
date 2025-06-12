@@ -2,9 +2,9 @@
 
 mkdir -p "${PREFIX}/bin"
 
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-writable-strings -Wno-literal-suffix"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -std=c++14 -O3 -Wformat -Wno-reserved-user-defined-literal -Wno-writable-strings -Wno-literal-suffix"
+export CXXFLAGS="${CXXFLAGS} -std=c++14 -O3 -Wformat -Wno-reserved-user-defined-literal"
 
 sed -i.bak '/char nucToNum/s/^/signed\ /g' defs.h
 sed -i.bak '/char numToNuc/s/^/signed\ /g' defs.h
