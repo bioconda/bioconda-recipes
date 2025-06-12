@@ -2,21 +2,20 @@
 {% set version = "20180710" %}
 
 package:
-  name: rascaf
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  # scaffold.hpp:722:32: error: invalid suffix on literal; C++11 requires a space between literal and identifier [-Wreserved-user-defined-literal]
-  skip: True  # [osx]
-  number: 0
-  run_exports:
-    - {{ pin_subpackage(name|lower) }}
 
 source:
   url: https://github.com/mourisl/Rascaf/archive/690f618e59b1f555fafa406ad1b6b95c1b0423b4.tar.gz
   md5: 7478d8db1e4f5618ee9ab0dfae23815f
   patches:
     - 0001-Unvendor-samtools.patch
+
+build:
+  # scaffold.hpp:722:32: error: invalid suffix on literal; C++11 requires a space between literal and identifier [-Wreserved-user-defined-literal]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower) }}
 
 requirements:
   build:
@@ -26,8 +25,6 @@ requirements:
   host:
     - samtools 0.1.19.*
     - zlib
-  run:
-    - zlib
 
 test:
   commands:
@@ -35,6 +32,16 @@ test:
     - rascaf-join 2>&1 | grep usage > /dev/null
 
 about:
-  home: https://github.com/mourisl/Rascaf/commits/master
-  summary: Scaffolding with RNA-seq read alignment
-  license: GPL2
+  home: "https://github.com/mourisl/Rascaf"
+  summary: "Scaffolding with RNA-seq read alignment."
+  license: "GPL-2.0-or-later"
+  license_family: GPL
+  dev_url: "https://github.com/mourisl/Rascaf"
+  doc_url: "https://github.com/mourisl/Rascaf/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.3835/plantgenome2016.03.0027
