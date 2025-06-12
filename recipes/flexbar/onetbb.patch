@@ -1,0 +1,554 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index a5643ca..fb42cc4 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -32,9 +32,10 @@ else()
+ endif()
+ 
+ add_executable( flexbar Flexbar.cpp )
+-target_link_libraries( flexbar tbb -lpthread )
+-
++target_link_libraries( flexbar -lpthread )
+ 
++find_package(TBB CONFIG REQUIRED)
++target_link_libraries(flexbar TBB::tbb)
+ find_package( ZLIB )
+ if( ZLIB_FOUND )
+     include_directories( ${ZLIB_INCLUDE_DIRS} )
+@@ -53,9 +54,4 @@ else()
+ 	message( STATUS "Build will not support bzip2." )
+ endif()
+ 
+-# find_package( TBB REQUIRED )
+-# if( NOT TBB_FOUND )
+-# 	message( FATAL_ERROR "TBB library not found." )
+-# endif()
+-
+ set( SEQAN_CTD_EXECUTABLES ${SEQAN_CTD_EXECUTABLES} flexbar CACHE INTERNAL "" )
+diff --git a/src/Flexbar.h b/src/Flexbar.h
+index 2f82f18..46261cf 100644
+--- a/src/Flexbar.h
++++ b/src/Flexbar.h
+@@ -12,9 +12,9 @@
+ #include <iostream>
+ #include <vector>
+ 
+-#include <tbb/pipeline.h>
+-#include <tbb/task_scheduler_init.h>
+-#include <tbb/concurrent_vector.h>
++#include <oneapi/tbb/parallel_pipeline.h>
++#include <oneapi/tbb/global_control.h>
++#include <oneapi/tbb/concurrent_vector.h>
+ 
+ #include <seqan/basic.h>
+ #include <seqan/sequence.h>
+@@ -239,14 +239,21 @@ void startProcessing(Options &o){
+ 	PairedAlign<TSeqStr, TString>  alignFilter(o);
+ 	PairedOutput<TSeqStr, TString> outputFilter(o);
+ 	
+-	tbb::task_scheduler_init init_serial(o.nThreads);
+-	tbb::pipeline pipe;
+-	
+-	pipe.add_filter(inputFilter);
+-	pipe.add_filter(alignFilter);
+-	pipe.add_filter(outputFilter);
+-	pipe.run(o.nThreads);
+-	
++    oneapi::tbb::global_control control(
++            oneapi::tbb::global_control::max_allowed_parallelism, o.nThreads);
++    oneapi::tbb::parallel_pipeline(o.nThreads,
++                                   oneapi::tbb::make_filter<void, TPairedReadBundle *>(
++                                           oneapi::tbb::filter_mode::serial_in_order,
++                                           [&inputFilter](auto &fc) { return inputFilter(fc); })
++                                   &
++                                   oneapi::tbb::make_filter<TPairedReadBundle *, TPairedReadBundle *>(
++                                           oneapi::tbb::filter_mode::parallel,
++                                           [&alignFilter](TPairedReadBundle *tprb) { return alignFilter(tprb); })
++                                   &
++                                   oneapi::tbb::make_filter<TPairedReadBundle *, void>(
++                                           oneapi::tbb::filter_mode::serial_in_order,
++                                           [&outputFilter](TPairedReadBundle *tprb) { return outputFilter(tprb); })
++    );
+ 	if(o.logAlign == TAB) *out << "\n";
+ 	*out << "done.\n" << endl;
+ 	
+diff --git a/src/FlexbarTypes.h b/src/FlexbarTypes.h
+index 8abdf66..3cf241e 100644
+--- a/src/FlexbarTypes.h
++++ b/src/FlexbarTypes.h
+@@ -3,6 +3,20 @@
+ #ifndef FLEXBAR_FLEXBARTYPES_H
+ #define FLEXBAR_FLEXBARTYPES_H
+ 
++#include <atomic>
++
++// A simple wrapper around std::atomic<T> with a copy-constructor
++// This is a drop-in replacement for the previously used tbb::atomic (which is copyable),
++// to avoid having to add copy-constructors to classes that used it
++template<typename T>
++struct FlexbarAtomic : public std::atomic<T> {
++    FlexbarAtomic() = default;
++    explicit constexpr FlexbarAtomic(T t) : std::atomic<T>(t) {}
++    constexpr FlexbarAtomic(const FlexbarAtomic<T>& other) :
++            FlexbarAtomic(other.load(std::memory_order_acquire))
++    {}
++};
++
+ 
+ template <typename TSeqStr, typename TString>
+ class SeqRead {
+@@ -125,8 +139,8 @@ namespace flexbar{
+ 		FString id;
+ 		FSeqStr seq;
+ 		bool rcAdapter;
+-		
+-		tbb::atomic<unsigned long> rmOverlap, rmFull;
++
++        FlexbarAtomic<unsigned long> rmOverlap, rmFull;
+ 		
+ 		TBar() :
+ 			rmOverlap(0),
+diff --git a/src/LoadAdapters.h b/src/LoadAdapters.h
+index 046e799..6168775 100644
+--- a/src/LoadAdapters.h
++++ b/src/LoadAdapters.h
+@@ -10,7 +10,7 @@ class LoadAdapters {
+ private:
+ 	
+ 	std::ostream *out;
+-	tbb::concurrent_vector<flexbar::TBar> adapters;
++	oneapi::tbb::concurrent_vector<flexbar::TBar> adapters;
+ 	
+ 	flexbar::Adapters a;
+ 	
+@@ -134,7 +134,7 @@ public:
+ 	};
+ 	
+ 	
+-	tbb::concurrent_vector<flexbar::TBar> getAdapters(){
++	oneapi::tbb::concurrent_vector<flexbar::TBar> getAdapters(){
+ 		return adapters;
+ 	}
+ 	
+diff --git a/src/LoadFasta.h b/src/LoadFasta.h
+index 3e69594..ccd0550 100644
+--- a/src/LoadFasta.h
++++ b/src/LoadFasta.h
+@@ -10,7 +10,7 @@ class LoadFasta {
+ private:
+ 	
+ 	std::ostream *out;
+-	tbb::concurrent_vector<flexbar::TBar> bars;
++	oneapi::tbb::concurrent_vector<flexbar::TBar> bars;
+ 	
+ 	const bool m_isAdapter;
+ 	const flexbar::RevCompMode m_rcMode;
+@@ -94,12 +94,12 @@ public:
+ 	};
+ 	
+ 	
+-	tbb::concurrent_vector<flexbar::TBar> getBars(){
++	oneapi::tbb::concurrent_vector<flexbar::TBar> getBars(){
+ 		return bars;
+ 	}
+ 	
+ 	
+-	void setBars(tbb::concurrent_vector<flexbar::TBar> &newBars){
++	void setBars(oneapi::tbb::concurrent_vector<flexbar::TBar> &newBars){
+ 		bars = newBars;
+ 	}
+ 	
+diff --git a/src/Options.h b/src/Options.h
+index 6299c50..21d7710 100644
+--- a/src/Options.h
++++ b/src/Options.h
+@@ -46,7 +46,7 @@ struct Options{
+ 	flexbar::AdapterPreset   aPreset;
+ 	flexbar::AdapterTrimmed  aTrimmed;
+ 	
+-	tbb::concurrent_vector<flexbar::TBar> barcodes, adapters, barcodes2, adapters2;
++	oneapi::tbb::concurrent_vector<flexbar::TBar> barcodes, adapters, barcodes2, adapters2;
+ 	
+ 	std::ostream *out;
+ 	std::fstream fstrmOut;
+diff --git a/src/PairedAlign.h b/src/PairedAlign.h
+index d6f9956..d3b50ae 100644
+--- a/src/PairedAlign.h
++++ b/src/PairedAlign.h
+@@ -9,7 +9,7 @@
+ 
+ 
+ template <typename TSeqStr, typename TString>
+-class PairedAlign : public tbb::filter {
++class PairedAlign {
+ 
+ private:
+ 	
+@@ -31,9 +31,9 @@ private:
+ 	const flexbar::TrimEnd        m_aTrimEnd, m_arcTrimEnd, m_bTrimEnd;
+ 	const flexbar::PairOverlap    m_poMode;
+ 	
+-	tbb::atomic<unsigned long> m_unassigned;
+-	tbb::concurrent_vector<flexbar::TBar> *m_adapters, *m_adapters2;
+-	tbb::concurrent_vector<flexbar::TBar> *m_barcodes, *m_barcodes2;
++    mutable std::atomic<unsigned long> m_unassigned;
++	oneapi::tbb::concurrent_vector<flexbar::TBar> *m_adapters, *m_adapters2;
++	oneapi::tbb::concurrent_vector<flexbar::TBar> *m_barcodes, *m_barcodes2;
+ 	
+ 	typedef SeqAlign<TSeqStr, TString, SeqAlignAlgo<TSeqStr> > TSeqAlign;
+ 	TSeqAlign *m_a1, *m_b1, *m_a2, *m_b2;
+@@ -47,7 +47,6 @@ public:
+ 	
+ 	PairedAlign(Options &o) :
+ 		
+-		filter(parallel),
+ 		m_format(o.format),
+ 		m_log(o.logAlign),
+ 		m_runType(o.runType),
+@@ -102,7 +101,7 @@ public:
+ 	};
+ 	
+ 	
+-	void alignPairedReadToBarcodes(flexbar::TPairedRead* pRead, flexbar::TAlignBundle &alBundle, std::vector<flexbar::ComputeCycle> &cycle, std::vector<unsigned int> &idxAl, const flexbar::AlignmentMode &alMode){
++	void alignPairedReadToBarcodes(flexbar::TPairedRead* pRead, flexbar::TAlignBundle &alBundle, std::vector<flexbar::ComputeCycle> &cycle, std::vector<unsigned int> &idxAl, const flexbar::AlignmentMode &alMode) const {
+ 		
+ 		using namespace flexbar;
+ 		
+@@ -122,7 +121,7 @@ public:
+ 	}
+ 	
+ 	
+-	void alignPairedReadToAdapters(flexbar::TPairedRead* pRead, flexbar::TAlignBundle &alBundle, std::vector<flexbar::ComputeCycle> &cycle, std::vector<unsigned int> &idxAl, const flexbar::AlignmentMode &alMode, const flexbar::TrimEnd trimEnd){
++	void alignPairedReadToAdapters(flexbar::TPairedRead* pRead, flexbar::TAlignBundle &alBundle, std::vector<flexbar::ComputeCycle> &cycle, std::vector<unsigned int> &idxAl, const flexbar::AlignmentMode &alMode, const flexbar::TrimEnd trimEnd) const {
+ 		
+ 		using namespace flexbar;
+ 		
+@@ -173,7 +172,7 @@ public:
+ 	}
+ 	
+ 	
+-	void trimLeftHPS(flexbar::TSeqRead* seqRead){
++	void trimLeftHPS(flexbar::TSeqRead* seqRead) const{
+ 		
+ 		using namespace std;
+ 		using namespace flexbar;
+@@ -223,7 +222,7 @@ public:
+ 	}
+ 	
+ 	
+-	void trimRightHPS(flexbar::TSeqRead* seqRead){
++	void trimRightHPS(flexbar::TSeqRead* seqRead) const{
+ 		
+ 		using namespace std;
+ 		using namespace flexbar;
+@@ -275,13 +274,11 @@ public:
+ 	
+ 	
+ 	// tbb filter operator
+-	void* operator()(void* item){
++    flexbar::TPairedReadBundle* operator()(flexbar::TPairedReadBundle* prBundle) const{
+ 		
+ 		using namespace flexbar;
+ 		
+-		if(item != NULL){
+-			
+-			TPairedReadBundle *prBundle = static_cast<TPairedReadBundle* >(item);
++		if(prBundle != NULL){
+ 			
+ 			if(m_umiTags){
+ 				for(unsigned int i = 0; i < prBundle->size(); ++i){
+diff --git a/src/PairedInput.h b/src/PairedInput.h
+index 94a54e5..230474b 100644
+--- a/src/PairedInput.h
++++ b/src/PairedInput.h
+@@ -7,7 +7,7 @@
+ 
+ 
+ template <typename TSeqStr, typename TString>
+-class PairedInput : public tbb::filter {
++class PairedInput {
+ 
+ private:
+ 	
+@@ -15,14 +15,13 @@ private:
+ 	const bool m_isPaired, m_useBarRead, m_useNumberTag, m_interleaved;
+ 	const unsigned int m_bundleSize;
+ 	
+-	tbb::atomic<unsigned long> m_uncalled, m_uncalledPairs, m_tagCounter, m_nBundles;
++    mutable std::atomic<unsigned long> m_uncalled, m_uncalledPairs, m_tagCounter, m_nBundles;
+ 	SeqInput<TSeqStr, TString> *m_f1, *m_f2, *m_b;
+ 	
+ public:
+ 	
+ 	PairedInput(const Options &o) :
+ 		
+-		filter(serial_in_order),
+ 		m_format(o.format),
+ 		m_useNumberTag(o.useNumberTag),
+ 		m_interleaved(o.interleavedInput),
+@@ -55,7 +54,7 @@ public:
+ 	}
+ 	
+ 	
+-	void* loadPairedReadBundle(){
++	void* loadPairedReadBundle() const{
+ 		
+ 		using namespace std;
+ 		using namespace flexbar;
+@@ -207,8 +206,7 @@ public:
+ 	
+ 	
+ 	// tbb filter operator
+-	void* operator()(void*){
+-		
++    flexbar::TPairedReadBundle* operator()(oneapi::tbb::flow_control& fc) const {
+ 		using namespace flexbar;
+ 		
+ 		TPairedReadBundle *prBundle = NULL;
+@@ -223,9 +221,14 @@ public:
+ 				
+ 				prBundle = static_cast< TPairedReadBundle* >(loadPairedReadBundle());
+ 				
+-				if(prBundle == NULL) return prBundle;
++				if(prBundle == NULL){
++                    fc.stop();
++                    return prBundle;
++                }
+ 			}
+-		}
++		} else {
++            fc.stop();
++        }
+ 		
+ 		return prBundle;
+ 	}
+diff --git a/src/PairedOutput.h b/src/PairedOutput.h
+index 6c3fad7..fae5d3f 100644
+--- a/src/PairedOutput.h
++++ b/src/PairedOutput.h
+@@ -9,7 +9,7 @@
+ 
+ 
+ template <typename TSeqStr, typename TString>
+-class PairedOutput : public tbb::filter {
++class PairedOutput {
+ 
+ private:
+ 	
+@@ -18,8 +18,8 @@ private:
+ 	const bool m_isPaired, m_writeUnassigned, m_writeSingleReads, m_writeSingleReadsP;
+ 	const bool m_twoBarcodes, m_qtrimPostRm;
+ 	
+-	tbb::atomic<unsigned long> m_nSingleReads, m_nLowPhred;
+-	
++    mutable std::atomic<unsigned long> m_nSingleReads, m_nLowPhred;
++
+ 	const std::string m_target;
+ 	
+ 	const flexbar::FileFormat     m_format;
+@@ -34,14 +34,13 @@ private:
+ 	TOutFiles *m_outMap;
+ 	std::ostream *out;
+ 	
+-	tbb::concurrent_vector<flexbar::TBar> *m_adapters,  *m_barcodes;
+-	tbb::concurrent_vector<flexbar::TBar> *m_adapters2, *m_barcodes2;
++	oneapi::tbb::concurrent_vector<flexbar::TBar> *m_adapters,  *m_barcodes;
++	oneapi::tbb::concurrent_vector<flexbar::TBar> *m_adapters2, *m_barcodes2;
+ 	
+ public:
+ 	
+ 	PairedOutput(Options &o) :
+ 		
+-		filter(serial_in_order),
+ 		m_target(o.targetName),
+ 		m_format(o.format),
+ 		m_runType(o.runType),
+@@ -57,6 +56,8 @@ public:
+ 		m_writeSingleReads(o.writeSingleReads),
+ 		m_writeSingleReadsP(o.writeSingleReadsP),
+ 		m_twoBarcodes(o.barDetect == flexbar::WITHIN_READ_REMOVAL2 || o.barDetect == flexbar::WITHIN_READ2),
++        m_nSingleReads(0),
++        m_nLowPhred(0),
+ 		out(o.out){
+ 		
+ 		using namespace std;
+@@ -68,9 +69,7 @@ public:
+ 		m_adapters2 = &o.adapters2;
+ 		
+ 		m_mapsize      = 0;
+-		m_nSingleReads = 0;
+-		m_nLowPhred    = 0;
+-		
++
+ 		switch(m_runType){
+ 			
+ 			case PAIRED_BARCODED:{
+@@ -237,7 +236,7 @@ public:
+ 	};
+ 	
+ 	
+-	void writePairedRead(flexbar::TPairedRead* pRead){
++	void writePairedRead(flexbar::TPairedRead* pRead) const{
+ 		
+ 		using namespace flexbar;
+ 		
+@@ -346,13 +345,11 @@ public:
+ 	
+ 	
+ 	// tbb filter operator
+-	void* operator()(void* item){
++	void operator()(flexbar::TPairedReadBundle* prBundle) const{
+ 		
+ 		using namespace flexbar;
+ 		
+-		if(item != NULL){
+-			
+-			TPairedReadBundle *prBundle = static_cast< TPairedReadBundle* >(item);
++		if(prBundle != NULL){
+ 			
+ 			for(unsigned int i = 0; i < prBundle->size(); ++i){
+ 				
+@@ -361,8 +358,6 @@ public:
+ 			}
+ 			delete prBundle;
+ 		}
+-		
+-		return NULL;
+ 	}
+ 	
+ 	
+@@ -457,7 +452,7 @@ public:
+ 		
+ 		using namespace std;
+ 		
+-		tbb::concurrent_vector<flexbar::TBar> *adapters;
++		oneapi::tbb::concurrent_vector<flexbar::TBar> *adapters;
+ 		const unsigned int maxSpaceLen = 20;
+ 		
+ 		int startLen = 8;
+diff --git a/src/SeqAlign.h b/src/SeqAlign.h
+index 979d05f..b10aafa 100644
+--- a/src/SeqAlign.h
++++ b/src/SeqAlign.h
+@@ -3,6 +3,7 @@
+ #ifndef FLEXBAR_SEQALIGN_H
+ #define FLEXBAR_SEQALIGN_H
+ 
++std::mutex ouputMutex;
+ 
+ template <typename TSeqStr, typename TString, class TAlgorithm>
+ class SeqAlign {
+@@ -20,16 +21,16 @@ private:
+ 	const float m_errorRate;
+ 	const unsigned int m_bundleSize;
+ 	
+-	tbb::atomic<unsigned long> m_nPreShortReads, m_modified;
+-	tbb::concurrent_vector<flexbar::TBar> *m_queries;
+-	tbb::concurrent_vector<unsigned long> m_rmOverlaps;
++	std::atomic<unsigned long> m_nPreShortReads, m_modified;
++	oneapi::tbb::concurrent_vector<flexbar::TBar> *m_queries;
++	oneapi::tbb::concurrent_vector<unsigned long> m_rmOverlaps;
+ 	
+ 	std::ostream *m_out;
+ 	TAlgorithm m_algo;
+ 	
+ public:
+ 	
+-	SeqAlign(tbb::concurrent_vector<flexbar::TBar> *queries, const Options &o, int minOverlap, float errorRate, const int tailLength, const int match, const int mismatch, const int gapCost, const bool isBarcoding):
++	SeqAlign(oneapi::tbb::concurrent_vector<flexbar::TBar> *queries, const Options &o, int minOverlap, float errorRate, const int tailLength, const int match, const int mismatch, const int gapCost, const bool isBarcoding):
+ 			
+ 			m_minOverlap(minOverlap),
+ 			m_errorRate(errorRate),
+@@ -50,7 +51,7 @@ public:
+ 			m_algo(TAlgorithm(o, match, mismatch, gapCost, ! isBarcoding)){
+ 		
+ 		m_queries    = queries;
+-		m_rmOverlaps = tbb::concurrent_vector<unsigned long>(flexbar::MAX_READLENGTH + 1, 0);
++		m_rmOverlaps = oneapi::tbb::concurrent_vector<unsigned long>(flexbar::MAX_READLENGTH + 1, 0);
+ 	};
+ 	
+ 	
+@@ -305,7 +306,9 @@ public:
+ 			  << "read seq  " << seqRead.seq << "\n\n" << endl;
+ 		}
+ 		
++		ouputMutex.lock();
+ 		*m_out << s.str();
++		ouputMutex.unlock();
+ 		
+ 		return ++qIndex;
+ 	}
+diff --git a/src/SeqAlignPair.h b/src/SeqAlignPair.h
+index d5d1079..2479242 100644
+--- a/src/SeqAlignPair.h
++++ b/src/SeqAlignPair.h
+@@ -20,8 +20,8 @@ private:
+ 	const float m_errorRate;
+ 	const unsigned int m_bundleSize;
+ 	
+-	tbb::atomic<unsigned long> m_nPreShortReads, m_overlaps, m_modified;
+-	tbb::concurrent_vector<unsigned long> m_overlapLengths;
++	std::atomic<unsigned long> m_nPreShortReads, m_overlaps, m_modified;
++	oneapi::tbb::concurrent_vector<unsigned long> m_overlapLengths;
+ 	
+ 	std::ostream *m_out;
+ 	TAlgorithm m_algo;
+@@ -45,7 +45,7 @@ public:
+ 			m_modified(0),
+ 			m_algo(TAlgorithm(o, match, mismatch, gapCost, true)){
+ 		
+-		m_overlapLengths = tbb::concurrent_vector<unsigned long>(flexbar::MAX_READLENGTH + 1, 0);
++		m_overlapLengths = oneapi::tbb::concurrent_vector<unsigned long>(flexbar::MAX_READLENGTH + 1, 0);
+ 	};
+ 	
+ 	
+diff --git a/src/SeqInput.h b/src/SeqInput.h
+index 4dcbe74..7a8f8d0 100644
+--- a/src/SeqInput.h
++++ b/src/SeqInput.h
+@@ -18,7 +18,7 @@ private:
+ 	
+ 	const bool m_preProcess, m_useStdin, m_qtrimPostRm, m_iupacInput;
+ 	const int m_maxUncalled, m_preTrimBegin, m_preTrimEnd, m_qtrimThresh, m_qtrimWinSize;
+-	tbb::atomic<unsigned long> m_nrReads, m_nrChars, m_nLowPhred;
++	std::atomic<unsigned long> m_nrReads, m_nrChars, m_nLowPhred;
+ 	
+ public:
+ 	
+diff --git a/src/SeqOutput.h b/src/SeqOutput.h
+index 9a63e6a..64cab91 100644
+--- a/src/SeqOutput.h
++++ b/src/SeqOutput.h
+@@ -18,8 +18,8 @@ private:
+ 	const bool m_switch2Fasta, m_writeLenDist, m_useStdout;
+ 	const unsigned int m_minLength, m_cutLen_read;
+ 	
+-	tbb::atomic<unsigned long> m_countGood, m_countGoodChars;
+-	tbb::concurrent_vector<unsigned long> m_lengthDist;
++	std::atomic<unsigned long> m_countGood, m_countGoodChars;
++	oneapi::tbb::concurrent_vector<unsigned long> m_lengthDist;
+ 	
+ public:
+ 	
+@@ -48,7 +48,7 @@ public:
+ 		}
+ 		m_filePath += o.outCompression;
+ 		
+-		m_lengthDist = tbb::concurrent_vector<unsigned long>(MAX_READLENGTH + 1, 0);
++		m_lengthDist = oneapi::tbb::concurrent_vector<unsigned long>(MAX_READLENGTH + 1, 0);
+ 		
+ 		if(m_useStdout){
+ 			
+diff --git a/src/SeqOutputFiles.h b/src/SeqOutputFiles.h
+index fe6b50e..8ece58c 100644
+--- a/src/SeqOutputFiles.h
++++ b/src/SeqOutputFiles.h
+@@ -14,7 +14,7 @@ public:
+ 	typedef SeqOutput<TSeqStr, TString> TSeqOutput;
+ 	
+ 	TSeqOutput *f1, *f2, *single1, *single2;
+-	tbb::atomic<unsigned long> m_nShort_1, m_nShort_2;
++	std::atomic<unsigned long> m_nShort_1, m_nShort_2;
+ 	
+ 	SeqOutputFiles() :
+ 		f1(0),

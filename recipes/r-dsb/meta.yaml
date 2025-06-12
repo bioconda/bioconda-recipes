@@ -1,0 +1,110 @@
+{% set version = '2.0.0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-dsb
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/dsb_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/dsb/dsb_{{ version }}.tar.gz
+  sha256: 7fe3ab8819f6836274703f1da7e8088db45fd375d1571e3c14e7c07e301987b0
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+  # no skip
+  noarch: generic
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage('r-dsb', max_pin="x") }}
+
+# Suggests: testthat, knitr, rmarkdown, ggplot2, cowplot, spelling
+requirements:
+  build:
+    - {{ posix }}zip               # [win]
+
+  host:
+    - r-base
+    - bioconductor-limma
+    - r-magrittr
+    - r-mclust
+
+  run:
+    - r-base
+    - bioconductor-limma
+    - r-magrittr
+    - r-mclust
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('dsb')"           # [not win]
+    - "\"%R%\" -e \"library('dsb')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://github.com/niaid/dsb
+  license: CC0 | file LICENSE
+  summary: "Normalizing and denoising protein expression data from droplet-based single cell profiling"
+  description: "This lightweight R package provides a method for normalizing and denoising protein
+    expression data from droplet based single cell experiments. Raw protein Unique Molecular
+    Index (UMI) counts from sequencing DNA-conjugated antibody derived tags (ADT) in
+    droplets (e.g. 'CITE-seq') have substantial measurement noise. Our experiments and
+    computational modeling revealed two major components of this noise: 1) protein-specific
+    noise originating from ambient, unbound antibody encapsulated in droplets that can
+    be accurately inferred via the expected protein counts detected in empty droplets,
+    and 2) droplet/cell-specific noise revealed via the shared variance component associated
+    with isotype antibody controls and background protein counts in each cell. This
+    package normalizes and removes both of these sources of noise from raw protein data
+    derived from methods such as 'CITE-seq', 'REAP-seq', 'ASAP-seq', 'TEA-seq', 'proteogenomic'
+    data from the Mission Bio platform, etc. See the vignette for tutorials on how to
+    integrate dsb with 'Seurat' and 'Bioconductor' and how to use dsb in 'Python'. Please
+    see our paper Mul\xE8 M.P., Martins A.J., and Tsang J.S. Nature Communications 2022
+    <https://www.nature.com/articles/s41467-022-29356-8> for more details on the method."  
+  license_family: CC
+  license_file:
+    - LICENSE
+
+# The original CRAN metadata for this package was:
+
+# Package: dsb
+# Type: Package
+# Title: Normalize & Denoise Droplet Single Cell Protein Data (CITE-Seq)
+# Version: 1.0.3
+# Authors@R: c(person(given = "Matthew", family = "Mule", role = c("aut", "cre"), email = "mattmule@gmail.com", comment = c(ORCID = "0000-0001-8457-2716")), person(given = "Andrew", family = "Martins", role = "aut", email = "andrew.martins@nih.gov", comment = c(ORCID = "0000-0002-1832-1924")), person(given = "John", family = "Tsang", role = "pdr", email = "john.tsang@nih.gov", comment = c(ORCID = "0000-0003-3186-3047")))
+# Description: This lightweight R package provides a method for normalizing and denoising protein expression data from droplet based single cell experiments. Raw protein Unique Molecular Index (UMI) counts from sequencing DNA-conjugated antibody derived tags (ADT) in droplets (e.g. 'CITE-seq') have substantial measurement noise. Our experiments and computational modeling revealed two major components of this noise: 1) protein-specific noise originating from ambient, unbound antibody encapsulated in droplets that can be accurately inferred via the expected protein counts detected in empty droplets, and 2) droplet/cell-specific noise revealed via the shared variance component associated with isotype antibody controls and background protein counts in each cell. This package normalizes and removes both of these sources of noise from raw protein data derived from methods such as 'CITE-seq', 'REAP-seq', 'ASAP-seq', 'TEA-seq', 'proteogenomic' data from the Mission Bio platform, etc. See the vignette for tutorials on how to integrate dsb with 'Seurat' and 'Bioconductor' and how to use dsb in 'Python'. Please see our paper Mule M.P., Martins A.J., and Tsang J.S. Nature Communications 2022 <https://www.nature.com/articles/s41467-022-29356-8> for more details on the method.
+# License: CC0 | file LICENSE
+# Encoding: UTF-8
+# LazyData: true
+# RoxygenNote: 7.1.1
+# Depends: R (>= 2.10)
+# biocViews:
+# Imports: magrittr, limma, mclust, stats
+# Suggests: testthat, knitr, rmarkdown, ggplot2, cowplot, spelling
+# URL: https://github.com/niaid/dsb
+# BugReports: https://github.com/niaid/dsb/issues
+# VignetteBuilder: knitr, rmarkdown
+# Language: en-US
+# NeedsCompilation: no
+# Packaged: 2023-03-17 16:55:52 UTC; matthewmule
+# Author: Matthew Mule [aut, cre] (<https://orcid.org/0000-0001-8457-2716>), Andrew Martins [aut] (<https://orcid.org/0000-0002-1832-1924>), John Tsang [pdr] (<https://orcid.org/0000-0003-3186-3047>)
+# Maintainer: Matthew Mule <mattmule@gmail.com>
+# Repository: CRAN
+# Date/Publication: 2023-03-17 23:20:02 UTC
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml

@@ -1,0 +1,37 @@
+{% set name = "pbpigeon" %}
+{% set version = "1.4.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/PacificBiosciences/pigeon/releases/download/v{{ version }}/pigeon
+    sha256: 1f99bc9513b6c4e5fb4ebf830f55a7b6f26338de1d0e6d166c32b35f6b3a8ce3
+
+build:
+  # repackaged binaries
+  skip: True  # [osx]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('pbpigeon', max_pin='x.x') }}
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+test:
+  commands:
+    - pigeon -h
+
+about:
+  home: https://github.com/PacificBiosciences/pigeon
+  license: BSD-3-Clause-Clear
+  summary: PacBio transcript toolkit
+
+extra:
+  recipe-maintainers:
+    - jmattick
+    - armintoepfer
+    - pb-dseifert
+  skip-lints:
+    #repackaged binary
+    - should_be_noarch_generic

@@ -1,0 +1,62 @@
+{% set name = "trackplot" %}
+{% set version = "0.5.3" %}
+
+package:
+  name: trackplot
+  version: {{ version }}
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 5bfbe51600d40a087cc504d7a8ac6885722af9b4d14448ec0b6284fb6042170b
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - trackplot = trackplot.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.8,<3.12
+    - pip
+    - poetry-core
+  run:
+    - python >=3.8,<3.12
+    - adjusttext >=0.7.3
+    - cairocffi >=1.4.0
+    - click
+    - click-option-group
+    - filetype >=1.2.0
+    - hicmatrix
+    - loguru
+    - matplotlib-base >=3.6.3
+    - numpy >=1.24.1
+    - pandas >=1.5.3
+    - pybigwig >=0.3.18
+    - pysam >=0.21.0
+    - requests
+    - scipy >=1.10.0
+    - seaborn-base >=0.12.2
+    - xmltodict
+    - flask >=2.3.2
+
+test:
+  imports:
+    - trackplot
+  commands:
+    - trackplot --help
+
+about:
+  home: https://github.com/ygidtu/trackplot
+  summary: "The trackplot is a tool for visualizing various next-generation sequencing (NGS) data, including DNA-seq, RNA-seq, single-cell RNA-seq and full-length sequencing datasets."
+  doc_url: https://trackplot.readthedocs.io/en/latest/
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - ygidtu

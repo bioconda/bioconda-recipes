@@ -1,0 +1,51 @@
+{% set name = "tntblast" %}
+{% set version = "2.66" %}
+ 
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage( name|lower, max_pin="x") }}
+
+source:
+  url: https://github.com/jgans/thermonucleotideBLAST/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 46f4ea4a1a8c3fe1a659cd54da847fd66c6a588d643d90be814412078b92da9e
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - mpich
+    - openmp       #[linux]
+    - llvm-openmp  #[osx]
+    - zlib
+  host:
+    - openmp       #[linux]
+    - llvm-openmp  #[osx]
+    - mpich
+    - zlib
+  run:
+    - openmp       #[linux]
+    - llvm-openmp  #[osx]
+    - mpich
+    - zlib
+
+test:
+  commands:
+    - '{ tntblast 2>&1 || true; } | grep v.{{ version }}'
+
+about:
+  home: https://github.com/jgans/thermonucleotideBLAST
+  license: BSD License
+  license_file: LICENSE
+  license_family: BSD
+  summary: Searching DNA/RNA sequence databases with PCR and/or probe queries
+  dev_url: https://github.com/jgans/thermonucleotideBLAST
+  doc_url: https://github.com/jgans/thermonucleotideBLAST#readme
+
+extra:
+  identifiers:
+    - doi:10.1093/nar/gkn301

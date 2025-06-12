@@ -1,0 +1,40 @@
+{% set name = "libgff" %}
+{% set version = "2.0.0" %}
+{% set sha256 = "7656b19459a7ca7d2fd0fcec4f2e0fd0deec1b4f39c703a114e8f4c22d82a99c" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/COMBINE-lab/libgff/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('libgff', max_pin='x') }}
+
+requirements:
+  build:
+    - make
+    - cmake
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+
+test:
+  commands:
+    - "ls ${PREFIX}/lib/libgff.a"
+
+about:
+  home: https://github.com/COMBINE-lab/libgff
+  license: MIT
+  license_family: MIT
+  summary: 'A simple "libraryfication" of the GFF/GTF parsing code that is used in GFFRead codebase.'
+  dev_url: https://github.com/COMBINE-lab/libgff
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# install DAStool R package
-R CMD INSTALL "package/DASTool_${PKG_VERSION}.tar.gz"
-
 # unzip SCG marker database
 unzip db.zip -d db
 
@@ -14,4 +11,5 @@ cp -r src db $DESTDIR
 chmod +x $DESTDIR/DAS_Tool
 
 ln -s $DESTDIR/DAS_Tool $PREFIX/bin/
-ln -s $DESTDIR/src/Fasta_to_Scaffolds2Bin.sh $PREFIX/bin/
+ln -s $DESTDIR/src/Fasta_to_Contig2Bin.sh $PREFIX/bin/
+ln -s $DESTDIR/src/Contigs2Bin_to_Fasta.sh $PREFIX/bin/

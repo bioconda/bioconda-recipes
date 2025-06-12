@@ -1,6 +1,6 @@
 {% set name = "GATK4" %}
-{% set version = "4.2.5.0" %}
-{% set sha256 = "203f17868f0a73a8322d2f8bd568b9f7b4bb81e36d37db5b6a142d8050ef049f" %}
+{% set version = "4.6.2.0" %}
+{% set sha256 = "32d2f90bf13fcb3a8ac765bb2cb8ec1fc9a6cc447055d0156bd1db2092d4e3e8" %}
 
 package:
   name: {{ name|lower }}
@@ -13,48 +13,54 @@ source:
 build:
   noarch: generic
   number: 0
+  run_exports:
+     - {{ pin_subpackage('gatk4', max_pin="x") }}
 
 requirements:
   host:
-    - r-base
+    - r-base =4.3.1
     - r-gplots
     - r-ggplot2
     - r-gsalib
     - r-reshape
+    - gcnvkernel =0.9
   run:
-    - openjdk >=8,<12
+    - openjdk >=17,<18
     - python
-    - r-base
+    - r-base =4.3.1
     - r-gplots
     - r-ggplot2
     - r-gsalib
     - r-reshape
+    - gcnvkernel =0.9
 
 test:
   commands:
     - gatk -h
     - gatk --list
     - gatk HaplotypeCaller --help
+    - gatk DetermineGermlineContigPloidy --help
 
 outputs:
   - name: gatk4
     script: build_main.sh
     requirements:
       run:
-        - openjdk >=8,<12
+        - openjdk >=17,<18
         - python
     test:
       commands:
         - gatk -h
         - gatk --list
         - gatk HaplotypeCaller --help
+        - gatk DetermineGermlineContigPloidy --help
   - name: gatk4-spark
     script: build_spark.sh
     build:
-            noarch: generic
+      noarch: generic
     requirements:
       run:
-        - openjdk >=8,<12
+        - openjdk >=17,<18
         - python
         - {{ pin_subpackage("gatk4", exact=True) }}
     test:
@@ -62,6 +68,7 @@ outputs:
         - gatk -h
         - gatk --list
         - gatk MarkDuplicatesSpark --help
+        - gatk DetermineGermlineContigPloidy --help
 
 about:
   home: https://www.broadinstitute.org/gatk/

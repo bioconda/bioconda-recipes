@@ -1,5 +1,5 @@
 {% set name = "MBG" %}
-{% set version = "1.0.9" %}
+{% set version = "1.0.17" %}
 
 package:
   name: {{ name|lower }}
@@ -7,13 +7,18 @@ package:
 
 
 source:
-  url: https://github.com/maickrau/{{ name }}/files/8120466/{{ name }}.tar.gz
-  sha256: fdaa425f57c7f5b421b8a455f7eeada703b61eac8686d77b998a4adb873a6f24
-  patches: version.patch
+  git_url: https://github.com/maickrau/{{name}}
+  git_rev: v{{version}}
+  patches:
+    - version.patch
+    - osx_availability.patch # [osx]
+    - mbg-aarch64.patch # [aarch64 or arm64]
 
 build:
   number: 0
   skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage('mbg', max_pin="x.x") }}
 
 requirements:
   build:
@@ -21,6 +26,8 @@ requirements:
     - {{ compiler('cxx') }}
   host:
     - zlib
+    - pkg-config
+    - bamtools
 
 test:
   commands:
@@ -31,3 +38,11 @@ about:
   license: MIT
   license_file: LICENSE.md
   summary: Minimizer based sparse de Bruijn graph constructor
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

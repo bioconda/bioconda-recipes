@@ -1,0 +1,52 @@
+{% set name = "NetSyn" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/labgem/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: 20e85462a83a7cb22a05b45acf861994226a25f7f80db3b69b937f45ffa5aa3f
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed -vv .
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python >=3.8
+    - mmseqs2 >=9.d36de
+    - pyyaml
+    - python-igraph
+    - jsonschema
+    - networkx >=2.8
+    - urllib3
+    - biopython
+    - markov_clustering
+    - requests
+
+test:
+  imports:
+    - netsyn
+  commands:
+    - netsyn -h
+    - netsyn_getINSDCFiles -h
+    - netsyn_parseINSDCFiles_GetTaxonomy -h
+    - netsyn_clusteringIntoFamilies -h
+    - netsyn_syntenyFinder -h
+    - netsyn_dataExport -h
+
+about:
+  home: https://github.com/labgem/{{ name|lower }}
+  license: CeCiLL 2.1
+  license_family: OTHER
+  license_file: LICENSE.txt
+  summary: NetSyn is a tool to detect conserved genomic contexts (i.e. synteny conservation) among a list of protein targets.

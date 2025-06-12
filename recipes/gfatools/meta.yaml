@@ -1,16 +1,22 @@
-{% set version = "0.5" %}
-{% set sha256 = "0653dc143c2224743afb6bb638da3465231ec0bb476c0d55e2eb6708ee105712" %}
+{% set name = "gfatools" %}
+{% set version = "0.5.5" %}
+{% set sha256 = "5eb23232d8f2b8ec883264cd3500c25dc6a1be33f433d567718bccb442df56e9" %}
 
 package:
-  name: gfatools
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/lh3/gfatools/archive/v{{ version }}.tar.gz
+  url: https://github.com/lh3/{{ name }}/archive/refs/tags/final-gt.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-Makefile.patch
+    - 0002-asm.c.patch
 
 build:
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("gfatools", max_pin="x.x") }}
 
 requirements:
   build:
@@ -19,17 +25,22 @@ requirements:
   host:
     - zlib
 
-    
 test:
   commands:
     - gfatools 2>&1 | grep "gfatools"
     - paf2gfa 2>&1 | grep "paf2gfa"
 
 about:
-  home: https://github.com/lh3/gfatools
-  license: Unknown
-  summary: Tools for manipulating sequence graphs in the GFA and rGFA formats
+  home: "https://github.com/lh3/gfatools"
+  license: MIT
+  license_family: MIT
+  summary: "Tools for manipulating sequence graphs in the GFA and rGFA formats."
+  dev_url: "https://github.com/lh3/gfatools"
+  doc_url: "https://github.com/lh3/gfatools/blob/master/README.md"
 
 extra:
   recipe-maintainers:
     - natir
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

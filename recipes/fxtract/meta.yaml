@@ -1,0 +1,44 @@
+{% set name = "fxtract" %}
+{% set version = "2.4" %}
+{% set revision = "958619a6b46f6f5886ea56a65eb7af060a53c347" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # need to do recursive to clone the submodules
+  git_url: https://github.com/ctSkennerton/fxtract
+  git_revision: {{ revision }}
+  patches:
+    - Makefile.patch
+  
+build:
+  number: 3
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - zlib
+    - pcre
+  run:
+    - pcre
+
+test:
+  commands:
+    - fxtract -h 2>&1 > /dev/null || [[ "$?" == 2 ]]
+
+about:
+  home: https://github.com/ctSkennerton/fxtract
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Extract sequences from a fastx file given a subsequence or identifier."
+
+extra:
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

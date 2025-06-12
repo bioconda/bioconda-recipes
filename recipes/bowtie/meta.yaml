@@ -8,23 +8,31 @@ package:
 source:
   url: https://github.com/BenLangmead/bowtie/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - rename_version_to_version_txt.patch
 
 build:
-  skip: True  # [osx or py<30]
-  number: 0
+  skip: True  # [py<30]
+  number: 10
+  run_exports:
+    - {{ pin_subpackage("bowtie", max_pin="x.x") }}
 
 requirements:
   build:
     - make
+    - patch  # [osx]
     - {{ compiler('cxx') }}
+    - zlib
   host:
     - python
     - tbb
     - tbb-devel
+    - zlib
   run:
     - python
     - perl
     - tbb
+    - zlib
 
 test:
   commands:
@@ -44,6 +52,9 @@ about:
   summary: An ultrafast memory-efficient short read aligner
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:bowtie
     - doi:10.1186/gb-2009-10-3-r25
