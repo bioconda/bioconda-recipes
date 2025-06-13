@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include -std=c++14"
+export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include -std=c++14 -Wno-deprecated-declarations"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 sed -i.bak -e 's|:= $(add|:= -I$(PREFIX)/include $(add|' \
