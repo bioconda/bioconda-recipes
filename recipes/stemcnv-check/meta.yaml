@@ -10,7 +10,7 @@ source:
   sha256: '{{ sha256 }}'
 
 build:
-  number: 0
+  number: 1
   noarch: python
   entry_points:
     - stemcnv-check=stemcnv_check.__main__:main
@@ -33,6 +33,7 @@ requirements:
     - setuptools-scm
   run:
     - python >=3.12
+    # These are also all in the pyproject.toml
     - snakemake-minimal >=8,<9
     - ruamel.yaml >=0.18
     - loguru >=0.7
@@ -41,7 +42,12 @@ requirements:
     - xlsxwriter >=3.2
     - pydantic >=2.8
     - deepdiff >=8.0
-    - apptainer
+    # Unsure if this is inherited from snakemake-minimal or not, but it is needed for the app
+    - apptainer >=1.3
+  # The actual snakemake workflow has a runtime dependency on bcftools-gtc2vcf-plugin & therefore linux
+  run_constrained:
+    - __linux  
+    - bcftools-gtc2vcf-plugin =1.16 # [osx]  
 
 test:
   # imports:
