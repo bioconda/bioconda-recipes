@@ -13,7 +13,7 @@ sed -i.bak -e 's|:= $(add|:= -I$(PREFIX)/include $(add|' \
 rm -rf *.bak
 
 if [[ 'uname -s' == "Darwin" ]]; then
-    export CXXFLAGS="${CXXFLAGS} -std=c++14 -std=libstdc++"
+    export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/lib/clang/20/include"
 fi
 
 install -d ${PREFIX}/share/rDock
