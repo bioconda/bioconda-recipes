@@ -1,0 +1,44 @@
+{% set name = "haphic" %}
+{% set version = "1.0.7" %}
+{% set sha256 = "66ea84d499bd24b2f207d2adcee91f9419b4136f18101916a64dae6ea60d76a5" %}
+
+package:
+  name: {{ name | lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name | lower, max_pin="x") }}
+
+source:
+  url: https://github.com/zengxiaofei/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  run:
+    - python >=3.12
+    - mkl
+    - sparse_dot_mkl
+    - numpy <2.0.0
+    - scipy
+    - matplotlib-base
+    - scikit-learn
+    - networkx
+    - pysam
+    - portion
+
+test:
+  commands:
+    - haphic --version
+    - haphic --help
+    - haphic check
+    - haphic refsort --help
+
+about:
+  home: https://github.com/zengxiaofei/HapHiC
+  license: BSD 3-Clause License
+  license_file: LICENSE
+  summary: 'HapHiC: a fast, reference-independent, allele-aware scaffolding tool based on Hi-C data'
+
