@@ -1,16 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include -std=c++14"
+export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-
-sed -i.bak -e 's|:= $(add|:= -I$(PREFIX)/include $(add|' \
-           -e 's|-lpopt -lm|-L$(PREFIX)/lib -lpopt -lm|' \
-           -e 's|g++|$(CXX)|' \
-           -e 's|-I$(BREW_PREFIX)|-I$(PREFIX)|' \
-           -e 's|-L$(BREW_PREFIX)|-L$(PREFIX)|' \
-           Makefile
-rm -rf *.bak
 
 if [[ 'uname -s' == "Darwin" ]]; then
     export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/lib/clang/20/include"
