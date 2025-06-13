@@ -5,11 +5,11 @@ set -euo pipefail
 export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include -std=c++14"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-sed -i.bak -e "s|INCLUDE\s*:=|INCLUDE := -I$(PREFIX)/include |" \
-           -e "s|LIB_DEPENDENCIES\s*:=\s*-lpopt|LIB_DEPENDENCIES := -L$(PREFIX)/lib -lpopt|" \
-           -e 's|g++|$(CXX)|' \
-           -e 's|-I$(BREW_PREFIX)|-I$(PREFIX)|' \
-           -e 's|-L$(BREW_PREFIX)|-L$(PREFIX)|' \
+sed -i.bak -e "s|INCLUDE\s*:=|INCLUDE := -I${PREFIX}/include |" \
+           -e "s|LIB_DEPENDENCIES\s*:=\s*-lpopt|LIB_DEPENDENCIES := -L${PREFIX}/lib -lpopt|" \
+           -e "s|g++|${CXX}|" \
+           -e "s|-I$(BREW_PREFIX)|-I${PREFIX}|" \
+           -e "s|-L$(BREW_PREFIX)|-L${PREFIX}|" \
            Makefile
 
 install -d ${PREFIX}/share/rDock
