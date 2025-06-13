@@ -1,31 +1,51 @@
+{% set name = "r-rblast" %}
+{% set version = "0.99.1" %}
+
 package:
-  name: r-rblast
-  version: "0.99.1"
+  name: {{ name }}
+  version: {{ version }}
+
 source:
-  url:
-    - https://github.com/mhahsler/rBLAST/archive/5cbc5039705e45c83d88c324c4f2a64dfc63e4e1.tar.gz
-  md5: 5773ffb34b208af1d7999518c645728a
+  url: https://github.com/mhahsler/rBLAST/archive/e1044a564cdf635debbeffd1e57557a9682b69f5.tar.gz
+  md5: 942a913439807694358d4974a2e1b0b9
+
 build:
-  number: 8
+  number: 0
+  noarch: generic
   rpaths:
     - lib/R/lib/
     - lib/
+  script:
+    - export LC_ALL="en_US.UTF-8"
+    - export DISABLE_AUTOBREW=1
+    - ${R} CMD INSTALL --build . "${R_ARGS}"
+  run_exports:
+    - {{ pin_subpackage('r-rblast', max_pin="x") }}
+
 requirements:
   host:
-    - r-base
+    - r-base >=3.6.3
     - bioconductor-biostrings
+    - bioconductor-biocfilecache
   run:
-    - r-base
+    - r-base >=3.6.3
     - bioconductor-biostrings
     - blast
+
 test:
   commands:
-    - $R -e "library('rBLAST')" # [not win]
-    - "\"%R%\" -e \"library('rBLAST')\"" # [win]
+    - $R -e "library('rBLAST')"  # [not win]
+    - "\"%R%\" -e \"library('rBLAST')\""  # [win]
+
 about:
-  home: https://github.com/mhahsler/rBLAST
-  license: GPL3
-  summary: 'Seamlessly interfaces the Basic Local Alignment Search Tool (BLAST) to search genetic sequence data bases. This work was partially supported by grant no. R21HG005912 from the National Human Genome Research Institute.'
+  home: "https://github.com/mhahsler/rBLAST"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Seamlessly interfaces the Basic Local Alignment Search Tool (BLAST) to search genetic sequence data bases. This work was partially supported by grant no. R21HG005912 from the National Human Genome Research Institute."
+  dev_url: "https://github.com/mhahsler/rBLAST"
+  doc_url: "https://github.com/mhahsler/rBLAST/blob/devel/README.md"
+
 extra:
   recipe-maintainers:
     - MathiasHaudgaard
@@ -35,3 +55,5 @@ extra:
     - bgruening
     - daler
     - jdblischak
+  identifiers:
+    - doi:10.18129/B9.bioc.rBLAST
