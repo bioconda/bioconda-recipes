@@ -46,8 +46,8 @@ if ProjFileName is None:
 binary = ProjFileName.replace(".vcxproj", "")
 sys.stderr.write("binary=" + binary + "\n")
 
-compiler_opts = "-ffast-math -march=native -O3 -I${PREFIX}/include"
-linker_opts = "-ffast-math -march=native -L${PREFIX}/lib"
+compiler_opts = "-ffast-math -O3 -I${PREFIX}/include"
+linker_opts = "-ffast-math -L${PREFIX}/lib"
 
 if std:
     compiler_opts += " --std=" + std
@@ -171,9 +171,9 @@ with open("Makefile", "w") as f:
     Out("$(BINPATH) : $(BINDIR)/ $(OBJDIR)/ $(OBJS)")
 
     if len(CXXNames) > 0:
-        Cmd = "\t$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) $(OBJS) -o $(BINPATH)"
+        Cmd = "\t$(CXX) $(LDFLAGS) $(OBJS) -o $(BINPATH)"
     else:
-        Cmd = "\t%(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(OBJS) -o $(BINPATH)"
+        Cmd = "\t%(CC) $(LDFLAGS) $(OBJS) -o $(BINPATH)"
 
     if Args.lrt:
         Cmd += " -lrt -ldl"
