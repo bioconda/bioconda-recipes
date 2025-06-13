@@ -1,0 +1,72 @@
+{% set name = "vpt" %}
+{% set version = "1.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/vpt-{{ version }}.tar.gz
+  sha256: 796569f2cbf22f689e4512442c51276281cb36680b1eb14e68526a8b6afca691
+
+build:
+  entry_points:
+    - vpt = vpt.vizgen_postprocess:entry_point
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+  - {{ pin_subpackage("vpt", max_pin="x.x.x") }}
+
+requirements:
+  host:
+    - python >=3.9,<3.11
+    - poetry-core
+    - pip
+  run:
+    - python >=3.9,<3.11
+    - boto3 >=1.17
+    - dask-core >=2023.2.0
+    - distributed >=2023.2.0
+    - fsspec
+    - fastparquet
+    - geopandas >=0.13.2
+    - gcsfs
+    - h5py >=3.7.0
+    - ipykernel
+    - jinja2
+    - python-kaleido
+    - leidenalg >=0.10.1
+    - matplotlib-base <=3.7.0
+    - numpy >=1.24.3
+    - pandas >=2.0.3
+    - plotly >=5.17.0
+    - pretty_html_table >=0.9.16
+    - pyarrow >=8.0.0
+    - python-dotenv >=0.20.0
+    - pyvips >=2.2.1
+    - rasterio >=1.3.0
+    - s3fs
+    - scanpy
+    - scipy >=1.8.1
+    - shapely >=2.0.0
+    - pytorch >=2.0.0,!=2.0.1,!=2.1.0
+    - vpt-core >=1.2.0
+    - vpt-segmentation-packing >=1.0.0
+    - wrapt_timeout_decorator >=1.5.1
+
+test:
+  imports:
+    - vpt
+  commands:
+    - vpt --help
+
+about:
+  home: https://github.com/Vizgen/vizgen-postprocessing
+  summary: Command line tool for highly parallelized processing of Vizgen data
+  license: Apache-2.0
+  license_file: LICENSE.md
+
+extra:
+  recipe-maintainers:
+    - nilchia

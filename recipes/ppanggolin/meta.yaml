@@ -1,4 +1,4 @@
-{% set version = "1.2.74" %}
+{% set version = "2.2.3" %}
 
 package:
   name: ppanggolin
@@ -6,36 +6,38 @@ package:
 
 source:
   url: https://github.com/labgem/PPanGGOLiN/archive/{{ version }}.tar.gz
-  sha256: d9a646b59615a4cabed8889d5d3c9f301d1be4a06955d4f95ebf791cb420c0ed
+  sha256: f27efc117406a422bfbbd94df97c537e965e34fe9bfac0889c478b4cd083e131
 
 build:
-  number: 1
-  skip: True  # [py<30 or py>=39]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("ppanggolin", max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+
   host:
     - python
     - pip
-    - cython
+    - cython <3
   run:
-    - python
-    - tqdm=4
-    - pytables=3
-    - prodigal=2.6
-    - aragorn=1.2
-    - infernal=1.1
-    - mmseqs2
-    - networkx=2
-    - scipy=1
-    - plotly=4
-    - gmpy2=2
-    - numpy=1
-    - pandas=0.25
-    - colorlover=0.3
-    - mafft
-    - bokeh=2
+    - tqdm >=4.0.0, <5.0.0
+    - pytables >=3.0.0, <4.0.0
+    - pyrodigal >=3.0.0, <4.0.0
+    - networkx >=3.0.0, <4.0.0
+    - dataclasses =0.8
+    - scipy >=1.0.0, <2.0.0
+    - plotly >=5.0.0, <6.0.0
+    - gmpy2 >=2.0.0, <3.0.0
+    - pandas >=2.0.0, <3.0.0
+    - numpy >1.24.0, <2.0.0
+    - bokeh >=3.0.0, <4.0.0
+    # Tools that are not in Python 
+    - infernal =1
+    - aragorn =1
+    - mmseqs2 =15
+    - mafft =7
 
 test:
   commands:
@@ -48,9 +50,14 @@ test:
 about:
   license: CeCiLL 2.1
   home: https://github.com/labgem/PPanGGOLiN
+  doc_url: https://ppanggolin.readthedocs.io
   summary: "PPanGGOLiN: Depicting microbial species diversity via a Partitioned PanGenome Graph"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - axbazin
     - jpjarnoux
+    - JeanMainguy

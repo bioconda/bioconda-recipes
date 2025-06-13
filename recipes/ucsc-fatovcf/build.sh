@@ -1,20 +1,20 @@
 #!/bin/bash
 
-export CFLAGS="$CFLAGS -I$PREFIX/include"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-export CPATH=${PREFIX}/include
+export INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3 ${LDFLAGS}"
+export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include ${LDFLAGS}"
 export USE_HIC=0
 
-mkdir -p "$PREFIX/bin"
-export MACHTYPE=x86_64
+mkdir -p "${PREFIX}/bin"
+export MACHTYPE=$(uname -m)
 export BINDIR=$(pwd)/bin
 export L="${LDFLAGS}"
-mkdir -p "$BINDIR"
-patch kent/src/inc/common.mk $RECIPE_DIR/inc.common.mk.v426.patch
-(cd kent/src/lib && make)
-(cd kent/src/htslib && make)
-(cd kent/src/jkOwnLib && make)
-(cd kent/src/hg/lib && make)
-(cd kent/src/hg/utils/faToVcf && make)
-cp bin/faToVcf "$PREFIX/bin"
-chmod +x "$PREFIX/bin/faToVcf"
+mkdir -p "${BINDIR}"
+(cd kent/src/lib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
+(cd kent/src/htslib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
+(cd kent/src/jkOwnLib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
+(cd kent/src/hg/lib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
+(cd kent/src/hg/utils/faToVcf && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
+install -v -m 0755 bin/faToVcf "${PREFIX}/bin"

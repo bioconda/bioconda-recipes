@@ -1,0 +1,49 @@
+{% set name = "hmnqc" %}
+{% set version = "0.5.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/guillaume-gricourt/HmnQc/archive/{{ version }}.tar.gz
+  sha256: c2b24a5610ea586410fd712b9a82495e2e706c7df69aaa41acf5dce4cad296b3
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install -vv .
+  entry_points:
+    - {{ name }}=hmnqc.__main__:main
+
+requirements:
+  build:
+    - pip
+    - python
+    - pyyaml
+    - setuptools
+  run:
+    - biopython
+    - cnvkit
+    - openpyxl
+    - openssl # [not osx]
+    - pandas
+    - pysam
+    - pyyaml
+    - xlsxwriter
+
+test:
+  imports:
+    - {{ name }}
+  commands:
+    - {{ name }} --help
+
+about:
+  home: https://github.com/guillaume-gricourt/HmnQc
+  summary: Compute differents metrics about quality, check identity and coverage from high-throughput sequencing provided by targeted NGS
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - guillaume-gricourt

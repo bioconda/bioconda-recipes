@@ -1,4 +1,3 @@
-
 {% set version = "2012.04" %}
 {% set sha256 = "1217a1c6975301a4dd3316fe6e7f413aea4a321635285c30aea7787b6d82641a" %}
 
@@ -6,16 +5,16 @@ package:
   name: cogtriangles
   version: {{ version }}
 
-build:
-  number: 0
-  skip: True  # [osx]
-
 source:
   url: https://github.com/eead-csic-compbio/get_homologues/releases/download/v3.4.6/COGsoft.tgz
   sha256: {{ sha256 }}
 
-requirements:
+build:
+  number: 4
+  run_exports:
+    - {{ pin_subpackage('cogtriangles', max_pin="x.x") }}
 
+requirements:
   build:
     - make
     - {{ compiler('cxx') }}
@@ -30,12 +29,14 @@ test:
     - "COGtriangles -h 2>&1 | grep Usage"
 
 about:
-  home: https://ftp.ncbi.nih.gov/pub/wolf/COGs/COGsoft/
-  summary: low-polynomial algorithm for assembling clusters of orthologous groups from intergenomic symmetric best matches
+  home: "https://ftp.ncbi.nih.gov/pub/wolf/COGs/COGsoft"
+  summary: "Low-polynomial algorithm for assembling clusters of orthologous groups from intergenomic symmetric best matches."
   license: Public Domain 
 
 extra:
   identifiers:
     - biotools:cogtriangles
     - doi:10.1093/bioinformatics/btq229
-
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

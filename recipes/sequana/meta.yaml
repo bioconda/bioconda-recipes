@@ -1,5 +1,5 @@
-{% set version = "0.14.0" %}
-{% set sha = "f4d391807d9436cae161e196ca5596e3f2463199ce0daa350a10999f6965abda" %}
+{% set version = "0.16.4" %}
+{% set sha256 = "d2624dd09dd04a7d27a38bbfb90e8ae5bf554bdc2e0b1e6a9484ab979a56e1ea" %}
 {% set name = "sequana" %}
 
 package:
@@ -8,9 +8,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: {{ sha }}
-  #patches:
-  #  - patch
+  sha256: {{ sha256 }}
 
 build:
   preserve_egg_dir: True
@@ -21,44 +19,51 @@ build:
     - sequana_taxonomy=sequana.scripts.taxonomy:main
     - sequana_coverage=sequana.scripts.coverage:main
     - sequana_start_pipeline=sequana.scripts.start_pipeline:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+    - sequana_substractor=sequana.scripts.substractor:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('sequana', max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.8
     - pip
   run:
     - adjusttext
-    - bioservices >=1.7.8
+    - bioservices >=1.10.0
     - brokenaxes
     - bx-python
-    - click>=8.1.0
+    - click >=8.1.0
     - colorlog >=3.1.0
     - colormap
-    - cookiecutter
+    - cookiecutter <2
     - cython
+    - deprecated
     - docutils
     - easydev >=0.11.1
     - gseapy
     - itolapi
     - lxml
-    - matplotlib-base
+    - matplotlib-base <3.6
     - matplotlib-venn
     - mock
-    - multiqc
+    - multiqc <=1.11
     - packaging
     - pandas >=0.22
     - plotly
     - psutil
     - pykwalify
     - pysam >=0.16
-    - python
+    - python >=3.8
+    - rich-click
     - ruamel.yaml >=0.16.0
     - scikit-learn
     - scipy
-    - snakemake
+    - selenium
+    - snakemake-minimal >=7.16
     - seaborn
     - statsmodels
+    - tqdm
     - UpSetPlot
     - vcfpy
     - xlrd
@@ -93,10 +98,12 @@ test:
 
 about:
   home: "http://sequana.readthedocs.io/"
-  license: "BSD 3-clause"
+  license: "BSD-3-Clause"
   summary: "A set of standalone application and snakemake pipelines dedicated to NGS (new generation sequencing) analysis"
   license_family: BSD
+  license_file: LICENSE
   doc_url: "https://sequana.readthedocs.io"
+  dev_url: https://github.com/sequana/sequana
 
 extra:
   container:

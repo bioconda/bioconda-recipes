@@ -1,23 +1,31 @@
 {% set name = "seqfu" %}
-{% set version = "1.11.0" %}
-{% set sha256 = "4f773f52f059970e56b2363b3e3d712fa3c86739445e6b94ed50e3c9396ecb8f" %}
+{% set version = "1.22.3" %}
+{% set sha256 = "65c1090cafe0e760e68d15d450bccfd57c0a03d553fdabca26e2191f566fef62" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/telatin/{{ name }}2/archive/v{{ version }}.tar.gz
+  url: https://github.com/telatin/{{ name }}2/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - nim
+    - {{ compiler('cxx') }}
+    - nim >=2.0.0
+    - make
+    - zlib
   host:
+    - zlib
+    - pcre
+  run:
     - zlib
     - pcre
     
@@ -40,6 +48,8 @@ about:
     Tools to interleave and deinterleave, to calculate stats, and extract
     portions of sequence datasets.
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
     - telatin
   identifiers:

@@ -1,5 +1,5 @@
 {% set name = "resmico" %}
-{% set version = "1.0.12" %}
+{% set version = "1.2.2" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,10 +7,11 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 132870a5305ac5e1297508152acaa72f247f41207554418a1985e3c739b25d46
+  sha256: 540d709749befa646a4822f4fb878192ed129ed8dbebc8abe67da805608b7bda
 
 build:
-  number: 0
+  skip:  true  # [py < 38]
+  number: 2
   script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
@@ -18,33 +19,36 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - python >=3.5
+    - python
     - pip
-    - numpy >=1.17
+    - numpy >=1.17.0
     - setuptools
     - cython
+    - zlib
   run:
-    - python >=3.5
+    - python
     - cmake >=3.13
     - ipython
-    - pathos
-    - numpy >=1.17
-    - pandas >=1.1.2
+    - keras >=2.8.0
+    - numpy >=1.17.0
+    - pandas >=1.4.2
+    - pathos >=0.2.9
     - pytables
-    - scikit-learn
-    - keras
-    - tensorflow
+    - pysam >=0.19.1
+    - protobuf >=3.20
+    - tensorflow >=2.8.1
     - tensorboard <2.9.0
-    - toolz
+    - scikit-learn >=1.1.1
+    - toolz >=0.11.2
 
 test:
   imports:
     - resmico
   commands:
-    - resmico preprocess -h
-    - resmico predict -h
+    - resmico bam2feat -h
     - resmico train -h
     - resmico evaluate -h
+    - resmico filter -h
 
 about:
   home: https://github.com/leylabmpi/ResMiCo

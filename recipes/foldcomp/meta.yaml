@@ -1,0 +1,48 @@
+{% set version = "0.0.7" %}
+{% set sha256 = "34cf6df7bb48f6bdd5c94337ddb1e1f16eafead841da8afed62dac1b5b8a9467" %}
+
+package:
+  name: foldcomp
+  version: {{ version }}
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('foldcomp', max_pin="x.x") }}
+
+source:
+  url: https://github.com/steineggerlab/foldcomp/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - cmake
+    - make
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  host:
+    - zlib
+  run:
+    - zlib
+
+test:
+  commands:
+    - foldcomp > /dev/null
+
+about:
+  home: https://github.com/steineggerlab/foldcomp
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE.txt
+  summary: "Foldcomp: a library and format for compressing and indexing large protein structure sets"
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btad153
+  recipe-maintainers:
+    - milot-mirdita
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

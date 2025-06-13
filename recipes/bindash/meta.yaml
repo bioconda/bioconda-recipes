@@ -1,30 +1,30 @@
 {% set name = "bindash" %}
-{% set version = "1.0" %}
+{% set version = "2.4" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/zhaoxiaofei/{{ name|lower }}/archive/v{{ version }}.tar.gz
-  sha256: 6f7c68fec2ad5e2d869fbe52c324010de2ed61c3a5d5800cf6ab8f9c5deaaa1a
+  url: https://github.com/jianshu93/bindash/archive/v{{ version }}.tar.gz
+  sha256: a0280659e69cc168f364d3d0e62b2497d3b580004ce0487698ce122396f57ca3
 
 build:
-  skip: True  # [osx]
-  number: 2
+  number: 0
+  run_exports:
+      - {{ pin_subpackage('bindash', max_pin="x") }}
 
 requirements:
   build:
     - make
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
-    - llvm-openmp  # [osx]
   host:
     - zlib
+    - libgomp  # [linux]
     - llvm-openmp  # [osx]
   run:
-    - zlib
+    - libgomp  # [linux]
     - llvm-openmp  # [osx]
 
 test:
@@ -32,12 +32,18 @@ test:
     - bindash --help 2>&1 | grep sketch
 
 about:
-   home: https://github.com/zhaoxiaofei/bindash
-   license: Apache-2.0
-   license_family: APACHE
-   license_file: LICENSE
-   summary: Fast and precise comparison of genomes and metagenomes (in the order of terabytes) on a typical personal laptop
+  home: "https://github.com/zhaoxiaofei/bindash"
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: LICENSE
+  summary: "Fast and precise comparison of genomes and metagenomes (in the order of terabytes) on a typical personal laptop."
+  dev_url: "https://github.com/zhaoxiaofei/bindash"
+  doc_url: "https://github.com/jianshu93/bindash/blob/v{{ version }}/README.md"
 
 extra:
-   identifiers:
-     - doi:10.1371/journal.pgen.1007758
+  identifiers:
+    - doi:10.1093/bioinformatics/bty651
+    - doi:10.1101/2024.03.13.584875
+  recipe-maintainers:
+    - jianshu93
+    - zhaoxiaofei

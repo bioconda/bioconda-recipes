@@ -1,0 +1,46 @@
+{% set name = "corneto" %}
+{% set version = "1.0.0a0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/corneto-{{ version }}.tar.gz
+  sha256: 966d50762f92047ea4e5d1a136607f20ae9ec1d585530a24ad5c95e700b24180
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("corneto", max_pin="x.x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - poetry-core >=1.0.0
+    - pip
+  run:
+    - python >=3.9
+    - numpy >=1.15,<2.0.0
+    - cvxpy-base >=1.5.0,<2.0.0
+    - scipy >=1.11.0,<2.0.0
+
+test:
+  imports:
+    - corneto
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/saezlab/corneto/
+  summary: 'CORNETO: A Unified Framework for Omics-Driven Network Inference'
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - nilchia
