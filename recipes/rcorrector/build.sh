@@ -8,6 +8,8 @@ export CFLAGS="-I$PREFIX/include"
 export CXXFLAGS="-Wall -O3 -std=c++0x -L$PREFIX/lib"
 
 sed -i.bak 's/CXXFLAGS=.*//' Makefile
+sed -i '/char nucToNum/s/^/signed\ /g' main.cpp
+sed -i '/char numToNuc/s/^/signed\ /g' main.cpp
 
 make CXX=$CXX
 mkdir -p $PREFIX/bin
