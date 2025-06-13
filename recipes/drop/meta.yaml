@@ -1,5 +1,5 @@
 {% set name = "drop" %}
-{% set version = "1.1.4" %} 
+{% set version = "1.4.0" %} 
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/gagneurlab/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: 0ea30a369a52db4426bdb05501e17939a670691ed17c6bce7b982d58127cf540
+  sha256: e96585a06fe0a386d940c4bd31a595356f0041ae8b063fd55108eb4e84fe1c15
 
 build:
   number: 0
@@ -15,6 +15,8 @@ build:
   entry_points:
     - drop=drop.cli:main
   script: "{{ PYTHON }} -m pip install . -vv --no-deps --ignore-installed"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
 
 requirements:
   host:
@@ -27,8 +29,8 @@ requirements:
     - click-log
     - python-dateutil
     # snakemake/wbuild
+    - wbuild >=1.8=pyhdfd78af_2
     - snakemake-minimal >=5.5.2
-    - wbuild >=1.8
     - pandoc
     - graphviz
     # command line tools
@@ -40,7 +42,7 @@ requirements:
     - gatk4 >=4.0.4
     - star >=2.7
     # R dependencies
-    - r-base>=4.0.0
+    - r-base >=4.0.0
     - r-rmarkdown
     - r-knitr
     - r-ggplot2
@@ -54,20 +56,19 @@ requirements:
     - r-tmae >=1.0.4
     # bioconductor packages
     - bioconductor-deseq2
-    - bioconductor-GenomicScores
-    - bioconductor-outrider >=1.6.1
-    - bioconductor-fraser >=1.2.1
+    - bioconductor-genomicscores
+    - bioconductor-outrider >=1.20.1
+    - bioconductor-fraser >=1.99.4
     - bioconductor-variantannotation
     
 test:
   imports:
     - drop
-  requires:
-    - pip
-    - pytest
-    - pytest-runner
-  source_files:
-    - tests/
+  commands:
+    - "drop --version"
+    - "gatk --version"
+    - "samtools --version"
+    - "bcftools --version"
 
 about:
   home: https://github.com/gagneurlab/drop
@@ -86,5 +87,5 @@ extra:
     - https://doi.org/10.1038/s41596-020-00462-5
   recipe-maintainers:
     - c-mertes
-    - mumichae
+    - nickhsmith
     - vyepez88

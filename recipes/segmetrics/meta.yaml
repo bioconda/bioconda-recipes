@@ -1,0 +1,50 @@
+{% set name = "segmetrics" %}
+{% set version = "1.5" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/BMCV/segmetrics/archive/refs/tags/{{ version }}.zip"
+  sha256: 3169055e6d7fdc269d7ce0d32c1f5871752001a0e03f13a25de67d52a1b4e386
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed . -vv "
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.6,<3.11
+    - pip
+    - setuptools
+    - numpy >=1.18
+    - scipy
+    - scikit-image >=0.18
+    - scikit-learn
+    - dill
+  run:
+    - python >=3.6,<3.11 
+    - numpy >=1.18
+    - scipy
+    - scikit-image >=0.18
+    - scikit-learn
+    - dill
+
+test:
+  commands:
+    - python -m segmetrics.cli --help
+
+about:
+  home: "https://github.com/BMCV/segmetrics"
+  license: MIT
+  summary: "A Python package implementing image segmentation and object detection performance measures, for biomedical image analysis and beyond."
+  dev_url: "https://github.com/BMCV/segmetrics"
+  doc_url: "https://segmetrics.readthedocs.io"
+
+extra:
+  recipe-maintainers:
+    - kostrykin

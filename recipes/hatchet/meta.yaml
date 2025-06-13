@@ -1,13 +1,13 @@
 {% set name = "hatchet" %}
-{% set version = "0.4.14" %}
+{% set version = "2.1.2" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  - url: https://github.com/raphael-group/{{ name }}/archive/v{{ version }}.zip
-    sha256: 56d8c448fa41ee2928b454c0b98150eefea232d4dc13f7db6ba047163bf6cc7a
+  - url: https://github.com/raphael-group/{{ name }}/archive/v{{ version }}.tar.gz
+    sha256: 079ea85a0f533ac7f5abd086216b4727869d480ba065df2e3bed215a83abca64
 
   - url: https://packages.gurobi.com/9.0/gurobi9.0.2_linux64.tar.gz  # [not osx]
     sha256: 6527581aef11c3e425c52993d108861ef53ec13971d9931861bf9c88d9d111f3  # [not osx]
@@ -19,38 +19,53 @@ source:
 build:
   number: 0
   skip: True  # [py < 37]
+  entry_points:
+    - hatchet = hatchet.__main__:main
+  run_exports:
+    - {{ pin_subpackage('hatchet', max_pin="x") }}
 
 requirements:
-  build:  
+  build:
     - {{ compiler('cxx') }}
-    - cmake>=3.9
+    - cmake
     - make
   host:
     - python
-    - setuptools
+    - pip
   run:
     - python
     - bcftools
     - biopython
+    - hmmlearn
     - matplotlib-base
+    - mosdepth
+    - numpy <2
     - pandas
+    - picard-slim
     - psutil
+    - pybedtools
     - pyomo
     - pysam
     - requests
     - samtools
-    - seaborn 
+    - seaborn-base
     - scikit-learn
-    - scipy 
+    - scipy
+    - statsmodels
+    - tabix
 
 test:
   imports:
-    - hatchet 
+    - hatchet
 
 about:
-  home: https://github.com/raphael-group/hatchet
-  license: BSD-3
-  summary: "Holistic Allele-specific Tumor Copy-number Heterogeneity"
+  home: "https://github.com/raphael-group/hatchet"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: LICENSE
+  summary: "A package to infer allele and clone-specific copy-number aberrations (CNAs)."
+  doc_url: "https://raphael-group.github.io/hatchet"
+  dev_url: "https://github.com/raphael-group/hatchet"
   description: |
     HATCHet is an algorithm to infer allele and clone-specific copy-number
     aberrations (CNAs), clone proportions, and whole-genome duplications

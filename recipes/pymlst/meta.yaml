@@ -1,5 +1,5 @@
 {% set name = "pymlst" %}
-{% set version = "2.1.3" %}
+{% set version = "2.2.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://github.com/bvalot/pyMLST/archive/refs/tags/{{ version }}.tar.gz"
-  sha256: 8fb594573b6a59951dafc6aa5bf143c9c8143ad1c44245c9e49fc546af344185
+  sha256: e044a725d05c9a505c07b10eeeffbe8e98193e99c7af54824804e8b56d295a5e
 
 build:
   noarch: python
@@ -16,28 +16,16 @@ build:
     - pymlst=pymlst.cmd:py
     - wgmlst=pymlst.cmd:wg
     - clamlst=pymlst.cmd:cla
+    - pytyper=pymlst.cmd:pytyper
   script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
-    - alembic >=1.6
-    - beautifulsoup4 >=4.9
-    - biopython >=1.78
-    - click >=7.1
-    - decorator >=4.4
-    - networkx >=2.5
-    - numpy >=1.20
-    - pandas >=1.2
     - pip
-    - pytest >=6.2
-    - python
-    - questionary >=1.9
-    - requests >=2.23
+    - python >=3.7
     - setuptools >=44.0
-    - sqlalchemy >=1.4
-    - ucsc-blat
-    - kma
-    - mafft
   run:
     - alembic >=1.6
     - beautifulsoup4 >=4.9
@@ -48,14 +36,15 @@ requirements:
     - numpy >=1.20
     - pandas >=1.2
     - pytest >=6.2
-    - python
+    - python >=3.7
     - questionary >=1.9
     - requests >=2.23
-    - setuptools >=44.0
-    - sqlalchemy >=1.4
-    - ucsc-blat
-    - kma
-    - mafft
+    - sqlalchemy >=1.4,<2
+    - GitPython >=3.1
+    - git >=1.7
+    - ucsc-blat >=360
+    - kma >=1.3
+    - mafft >=7.3
 
 test:
   imports:
@@ -66,10 +55,13 @@ test:
     - pymlst.common.commands
     - pymlst.wg
     - pymlst.wg.commands
+    - pymlst.pytyper
+    - pymlst.pytyper.commands
   commands:
     - pymlst --help
     - wgmlst --help
     - clamlst --help
+    - pytyper --help
 
 about:
   home: "https://github.com/bvalot/pyMLST.git"

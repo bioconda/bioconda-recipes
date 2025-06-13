@@ -1,0 +1,486 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 558a0ba..72c6be9 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -1,6 +1,8 @@
+-cmake_minimum_required(VERSION 2.8)
++cmake_minimum_required(VERSION 3.15)
+ project(root)
++set(CMAKE_CXX_STANDARD 14)
+ set(CMAKE_BUILD_TYPE RELEASE)
+ add_subdirectory(graphdump)
+ add_subdirectory(graphconstructor)
+ include(CPack)
++set(THREADS_PREFER_PTHREAD_FLAG ON)
+diff --git a/src/common/streamfastaparser.cpp b/src/common/streamfastaparser.cpp
+index 9cdecac..132091a 100644
+--- a/src/common/streamfastaparser.cpp
++++ b/src/common/streamfastaparser.cpp
+@@ -1,5 +1,6 @@
+ #include <sstream>
+ #include <algorithm>
++#include <mutex>
+ 
+ #include "streamfastaparser.h"
+ 
+diff --git a/src/common/streamfastaparser.h b/src/common/streamfastaparser.h
+index 9f647df..f3b9c83 100644
+--- a/src/common/streamfastaparser.h
++++ b/src/common/streamfastaparser.h
+@@ -5,7 +5,6 @@
+ #include <fstream>
+ #include <stdexcept>
+ #include <algorithm>
+-#include <tbb/mutex.h>
+ #include <iostream>
+ #include <memory>
+ 
+@@ -131,7 +130,7 @@ namespace TwoPaCo
+ 		size_t seqId_;
+ 		size_t start_;
+ 		size_t pieceId_;
+-		tbb::mutex mutex_;
++		std::mutex mutex_;
+ 		size_t overlapSize_;
+ 		std::ifstream in_;
+ 		std::string overlapBuffer_;
+diff --git a/src/graphconstructor/CMakeLists.txt b/src/graphconstructor/CMakeLists.txt
+index ab48c32..2bb8ec9 100644
+--- a/src/graphconstructor/CMakeLists.txt
++++ b/src/graphconstructor/CMakeLists.txt
+@@ -2,14 +2,12 @@ project(twopaco CXX)
+ cmake_minimum_required(VERSION 2.8)
+ 
+ set(CMAKE_PROJECT_NAME twopaco)
+-if(CMAKE_COMPILER_IS_GNUCXX)
+-	list(APPEND "CMAKE_CXX_FLAGS" "-std=c++11 -lstdc++")
+-endif()
++set(CMAKE_CXX_STANDARD 14)
+ 
+ add_executable(twopaco ../common/dnachar.cpp constructor.cpp concurrentbitvector.cpp compressedstring.cpp ../common/streamfastaparser.cpp test.cpp vertexenumerator.cpp ../common/spooky/SpookyV2.cpp common.cpp)
+ link_directories(${TBB_LIB_DIR})
+ include_directories(${twopaco_SOURCE_DIR} ${TBB_INCLUDE_DIR} "../common") 
+-target_link_libraries(twopaco  "tbb" )
++target_link_libraries(twopaco  "tbb" "tbbmalloc" "tbbmalloc_proxy" "pthread" )
+ install(TARGETS twopaco RUNTIME DESTINATION bin)
+ 
+ set(CPACK_PACKAGE_VERSION_MAJOR "0")
+diff --git a/src/graphconstructor/bifurcationstorage.h b/src/graphconstructor/bifurcationstorage.h
+index b9e8fd7..8a57e3b 100644
+--- a/src/graphconstructor/bifurcationstorage.h
++++ b/src/graphconstructor/bifurcationstorage.h
+@@ -1,6 +1,7 @@
+ #ifndef _BIFURCATION_STORAGE_H_
+ #define _BIFURCATION_STORAGE_H_
+ 
++#include "oneapi/tbb/task_arena.h"
+ #include "common.h"
+ #include "compressedstring.h"
+ 
+@@ -34,7 +35,7 @@ namespace TwoPaCo
+ 			}
+ 
+ 			size_t hashFunctionNumber = 3;
+-			bitsPower = max(bitsPower, size_t(24));
++			bitsPower = std::max(static_cast<size_t>(bitsPower), size_t(24));
+ 			bifurcationFilter_.assign(uint64_t(1) << bitsPower, false);
+ 			hashFunction_.resize(hashFunctionNumber);
+ 			for (HashFunctionPtr & ptr : hashFunction_)
+@@ -61,8 +62,13 @@ namespace TwoPaCo
+ 				}
+ 			}
+ 
+-			tbb::task_scheduler_init init(threads);
+-			tbb::parallel_sort(bifurcationKey_.begin(), bifurcationKey_.end(), DnaString::Less);
++
++			// Create the custom task_arena with four threads
++			oneapi::tbb::task_arena arena(threads);
++
++			arena.execute([this]{
++				oneapi::tbb::parallel_sort(this->bifurcationKey_.begin(), this->bifurcationKey_.end(), DnaString::Less);
++			});
+ 		}
+ 
+ 		int64_t GetId(std::string::const_iterator pos) const
+@@ -161,4 +167,4 @@ namespace TwoPaCo
+ 	};
+ }
+ 
+-#endif
+\ No newline at end of file
++#endif
+diff --git a/src/graphconstructor/common.h b/src/graphconstructor/common.h
+index ae6bcb6..aed6c39 100644
+--- a/src/graphconstructor/common.h
++++ b/src/graphconstructor/common.h
+@@ -11,7 +11,7 @@
+ #include <functional>
+ 
+ #include <dnachar.h>
+-#include <tbb/concurrent_queue.h>
++#include "oneapi/tbb/concurrent_queue.h"
+ 
+ namespace TwoPaCo
+ {
+@@ -45,7 +45,7 @@ namespace TwoPaCo
+ 			seqId(seqId), start(start), piece(piece), offset(offset), isFinal(isFinal), str(std::move(str)) {}
+ 	};
+ 
+-	typedef tbb::concurrent_bounded_queue<Task> TaskQueue;
++	typedef oneapi::tbb::concurrent_bounded_queue<Task> TaskQueue;
+ 	typedef std::unique_ptr<TaskQueue> TaskQueuePtr;
+ }
+ 
+diff --git a/src/graphconstructor/constructor.cpp b/src/graphconstructor/constructor.cpp
+index 3f89aec..2a2c185 100644
+--- a/src/graphconstructor/constructor.cpp
++++ b/src/graphconstructor/constructor.cpp
+@@ -14,6 +14,7 @@
+ #include <sstream>
+ 
+ #include <tclap/CmdLine.h>
++#include "oneapi/tbb/scalable_allocator.h"
+ 
+ #include "test.h"
+ #include "assemblyedgeconstructor.h"
+@@ -187,5 +188,32 @@ int main(int argc, char * argv[])
+ 		return 1;
+ 	}
+ 	
++
++	// NOTE: why do this here?  Well, this is to 
++	// fix the OSX build under [bioconda](https://bioconda.github.io).
++	// Specifically, when the `scalable_allocation_command` is called 
++	// it can result in a segmentation fault if no prior allocation had 
++	// been made because of the invalid state of the underlying pointer 
++	// examined by `scalable_allocation_command`.  In reality, this shouldn't
++	// happen because of the static initalization of that pointer, but it 
++	// does (on older OSX platforms).  So, here we will allocate a small 
++	// amount of memory (1k), which will force the scalable allocator 
++	// to initalize itself properly.  Then, we will immediately free 
++	// this memory.  Then we will make the call to `scalable_allocation_command`.
++	// This ensures (for the cost of one extra allocation call) that the 
++	// call to `scalable_allocation_command` works across all platforms on 
++	// which we need to build.
++	void* salloc = scalable_malloc(1024);
++  
++	if (salloc == nullptr) {
++		std::cerr << "TwoPaCo::buildGraphMain:: couldn't allocate using scalable_malloc!" << std::endl; 
++	} else {
++		std::cerr << "TwoPaCo::buildGraphMain:: allocated with scalable_malloc; freeing." << std::endl;
++		scalable_free(salloc);
++
++		std::cerr << "TwoPaCo::buildGraphMain:: Calling scalable_allocation_command(TBBMALLOC_CLEAN_ALL_BUFFERS, 0);" << std::endl;
++		scalable_allocation_command(TBBMALLOC_CLEAN_ALL_BUFFERS, 0);
++	}
++
+ 	return 0;
+ }
+diff --git a/src/graphconstructor/vertexenumerator.h b/src/graphconstructor/vertexenumerator.h
+index f3d8698..5952052 100644
+--- a/src/graphconstructor/vertexenumerator.h
++++ b/src/graphconstructor/vertexenumerator.h
+@@ -9,15 +9,12 @@
+ #include <sstream>
+ #include <unordered_map>
+ 
+-#include <tbb/tbb.h>
+-#include <tbb/mutex.h>
+-#include <tbb/compat/thread>
+-#include <tbb/spin_rw_mutex.h>
+-#include <tbb/blocked_range.h>
+-#include <tbb/parallel_sort.h>
+-#include <tbb/parallel_reduce.h>
+-#include <tbb/task_scheduler_init.h>
+-#include <tbb/concurrent_unordered_set.h>
++#include "tbb/tbb.h"
++#include "oneapi/tbb/spin_rw_mutex.h"
++#include "oneapi/tbb/blocked_range.h"
++#include "oneapi/tbb/parallel_sort.h"
++#include "oneapi/tbb/parallel_reduce.h"
++#include "oneapi/tbb/concurrent_unordered_set.h"
+ 
+ #include <junctionapi.h>
+ 
+@@ -94,7 +91,7 @@ namespace TwoPaCo
+ 			}
+ 		};
+ 
+-		typedef tbb::concurrent_unordered_set<Occurence, OccurenceHash, OccurenceEquality> OccurenceSet;
++		typedef oneapi::tbb::concurrent_unordered_set<Occurence, OccurenceHash, OccurenceEquality> OccurenceSet;
+ 
+ 	public:
+ 
+@@ -162,7 +159,7 @@ namespace TwoPaCo
+ 			std::ostream & logFile = std::cerr;
+ #endif
+ 
+-			tbb::mutex errorMutex;
++			std::mutex errorMutex;
+ 			std::unique_ptr<std::runtime_error> error;
+ 			
+ 			size_t edgeLength = vertexLength + 1;
+@@ -183,7 +180,7 @@ namespace TwoPaCo
+ 			if (rounds > 1)
+ 			{
+ 				logStream << "Splitting the input kmers set..." << std::endl;
+-				std::vector<std::unique_ptr<tbb::tbb_thread> > workerThread(threads);
++				std::vector<std::unique_ptr<std::thread> > workerThread(threads);
+ 				binCounter = new std::atomic<uint32_t>[BINS_COUNT];
+ 				std::fill(binCounter, binCounter + BINS_COUNT, 0);
+ 				ConcurrentBitVector bitVector(realSize);
+@@ -195,7 +192,7 @@ namespace TwoPaCo
+ 						vertexLength,
+ 						*taskQueue[i],
+ 						binCounter);
+-					workerThread[i].reset(new tbb::tbb_thread(worker));
++					workerThread[i].reset(new std::thread(worker));
+ 				}
+ 
+ 				DistributeTasks(fileName, edgeLength, taskQueue, error, errorMutex, logFile, offset, offsetFill);
+@@ -265,7 +262,7 @@ namespace TwoPaCo
+ 					logStream << "Round " << round << ", " << low << ":" << high << std::endl;
+ 					logStream << "Pass\tFilling\tFiltering" << std::endl << "1\t";
+ 					{
+-						std::vector<std::unique_ptr<tbb::tbb_thread> > workerThread(threads);
++						std::vector<std::unique_ptr<std::thread> > workerThread(threads);
+ 						for (size_t i = 0; i < workerThread.size(); i++)
+ 						{
+ 							FilterFillerWorker worker(low,
+@@ -274,7 +271,7 @@ namespace TwoPaCo
+ 								std::ref(bitVector),
+ 								edgeLength,
+ 								std::ref(*taskQueue[i]));
+-							workerThread[i].reset(new tbb::tbb_thread(worker));
++							workerThread[i].reset(new std::thread(worker));
+ 						}
+ 
+ 						DistributeTasks(fileName, edgeLength, taskQueue, error, errorMutex, logFile, offset, offsetFill);
+@@ -290,7 +287,7 @@ namespace TwoPaCo
+ 					}
+ 
+ 					//bitVector.WriteToFile(filterDumpFile_);
+-					tbb::mutex maskStorageMutex;
++					std::mutex maskStorageMutex;
+ 					std::ofstream maskStorage(CandidateMaskFileName(tmpDirName, round).c_str(), ios::binary);
+ 					if (!maskStorage)
+ 					{
+@@ -300,7 +297,7 @@ namespace TwoPaCo
+ 					logStream << time(0) - mark << "\t";
+ 					mark = time(0);
+ 					{
+-						std::vector<std::unique_ptr<tbb::tbb_thread> > workerThread(threads);
++						std::vector<std::unique_ptr<std::thread> > workerThread(threads);
+ 						for (size_t i = 0; i < workerThread.size(); i++)
+ 						{
+ 							CandidateCheckingWorker worker(std::make_pair(low, high),
+@@ -316,7 +313,7 @@ namespace TwoPaCo
+ 								error,
+ 								errorMutex);
+ 
+-							workerThread[i].reset(new tbb::tbb_thread(worker));
++							workerThread[i].reset(new std::thread(worker));
+ 						}
+ 
+ 						DistributeTasks(fileName, vertexLength + 1, taskQueue, error, errorMutex, logFile, offset, offsetFill);
+@@ -335,18 +332,18 @@ namespace TwoPaCo
+ 				}
+ 
+ 				mark = time(0);
+-				tbb::spin_rw_mutex mutex;
++				oneapi::tbb::spin_rw_mutex mutex;
+ 				logStream << "2\t";
+ 				OccurenceSet occurenceSet(1 << 20);
+ 				{
+-					tbb::mutex maskStorageMutex;
++					std::mutex maskStorageMutex;
+ 					inMaskStorage[round] = new std::ifstream(CandidateMaskFileName(tmpDirName, round).c_str(), ios::binary);
+ 					if (!(*inMaskStorage[round]))
+ 					{
+ 						throw std::runtime_error("Can't open a temporary file");
+ 					}
+ 
+-					std::vector<std::unique_ptr<tbb::tbb_thread> > workerThread(threads);
++					std::vector<std::unique_ptr<std::thread> > workerThread(threads);
+ 					for (size_t i = 0; i < workerThread.size(); i++)
+ 					{
+ 						CandidateFinalFilteringWorker worker(hashFunctionSeed_,
+@@ -361,7 +358,7 @@ namespace TwoPaCo
+ 							error,
+ 							errorMutex);
+ 
+-						workerThread[i].reset(new tbb::tbb_thread(worker));
++						workerThread[i].reset(new std::thread(worker));
+ 					}
+ 
+ 					DistributeTasks(fileName, vertexLength + 1, taskQueue, error, errorMutex, logFile, offset, offsetFill);
+@@ -415,14 +412,14 @@ namespace TwoPaCo
+ 
+ 			mark = time(0);			
+ 			std::atomic<uint64_t> occurence;
+-			tbb::mutex currentStubVertexMutex;
++			std::mutex currentStubVertexMutex;
+ 			std::atomic<uint64_t> currentPiece;			
+ 			uint64_t currentStubVertexId = verticesCount + 42;
+ 			JunctionPositionWriter posWriter(outFileNamePrefix);
+ 			occurence = currentPiece = 0;
+ 			{
+-				tbb::mutex inMaskStorageMutex;
+-				std::vector<std::unique_ptr<tbb::tbb_thread> > workerThread(threads);
++				std::mutex inMaskStorageMutex;
++				std::vector<std::unique_ptr<std::thread> > workerThread(threads);
+ 				for (size_t i = 0; i < workerThread.size(); i++)
+ 				{
+ 					EdgeConstructionWorker worker(vertexLength,
+@@ -439,7 +436,7 @@ namespace TwoPaCo
+ 						error,
+ 						errorMutex);
+ 
+-					workerThread[i].reset(new tbb::tbb_thread(worker));
++					workerThread[i].reset(new std::thread(worker));
+ 				}
+ 
+ 				DistributeTasks(fileName, vertexLength + 1, taskQueue, error, errorMutex, logFile, offset, offsetFill);
+@@ -490,7 +487,7 @@ namespace TwoPaCo
+ 			return ss.str();
+ 		}
+ 
+-		static void ReportError(tbb::mutex & errorMutex, std::unique_ptr<std::runtime_error> & error, const std::string & msg)
++		static void ReportError(std::mutex & errorMutex, std::unique_ptr<std::runtime_error> & error, const std::string & msg)
+ 		{
+ 			errorMutex.lock();
+ 			if (error == 0)
+@@ -596,9 +593,9 @@ namespace TwoPaCo
+ 				std::atomic<uint64_t> & marksCount,
+ 				size_t round,
+ 				std::ofstream & maskStorage,
+-				tbb::mutex & maskStorageMutex,
++				std::mutex & maskStorageMutex,
+ 				std::unique_ptr<std::runtime_error> & error,				
+-				tbb::mutex & errorMutex) : bound(bound), hashFunction(hashFunction), bitVector(bitVector), vertexLength(vertexLength), taskQueue(taskQueue),
++				std::mutex & errorMutex) : bound(bound), hashFunction(hashFunction), bitVector(bitVector), vertexLength(vertexLength), taskQueue(taskQueue),
+ 				tmpDirectory(tmpDirectory), marksCount(marksCount), maskStorage(maskStorage), maskStorageMutex(maskStorageMutex), error(error), errorMutex(errorMutex), round(round)
+ 			{
+ 
+@@ -699,9 +696,9 @@ namespace TwoPaCo
+ 			std::atomic<uint64_t> & marksCount;
+ 			size_t round;
+ 			std::ofstream & maskStorage;
+-			tbb::mutex & maskStorageMutex;
++			std::mutex & maskStorageMutex;
+ 			std::unique_ptr<std::runtime_error> & error;
+-			tbb::mutex & errorMutex;
++			std::mutex & errorMutex;
+ 		};
+ 
+ 
+@@ -713,13 +710,13 @@ namespace TwoPaCo
+ 				size_t vertexLength,
+ 				TaskQueue & taskQueue,
+ 				OccurenceSet & occurenceSet,
+-				tbb::spin_rw_mutex & mutex,
++				oneapi::tbb::spin_rw_mutex & mutex,
+ 				const std::string & tmpDirectory,
+ 				size_t round,
+ 				std::ifstream & maskStorage,
+-				tbb::mutex & maskStorageMutex,
++				std::mutex & maskStorageMutex,
+ 				std::unique_ptr<std::runtime_error> & error,
+-				tbb::mutex & errorMutex) : hashFunction(hashFunction), vertexLength(vertexLength), taskQueue(taskQueue), occurenceSet(occurenceSet),
++				std::mutex & errorMutex) : hashFunction(hashFunction), vertexLength(vertexLength), taskQueue(taskQueue), occurenceSet(occurenceSet),
+ 				mutex(mutex), tmpDirectory(tmpDirectory), round(round), maskStorage(maskStorage), maskStorageMutex(maskStorageMutex), error(error), errorMutex(errorMutex)
+ 			{
+ 
+@@ -812,13 +809,13 @@ namespace TwoPaCo
+ 			size_t vertexLength;
+ 			TaskQueue & taskQueue;
+ 			OccurenceSet & occurenceSet;
+-			tbb::spin_rw_mutex & mutex;
++			oneapi::tbb::spin_rw_mutex & mutex;
+ 			const std::string & tmpDirectory;
+ 			size_t round;
+ 			std::ifstream & maskStorage;
+-			tbb::mutex & maskStorageMutex;
++			std::mutex & maskStorageMutex;
+ 			std::unique_ptr<std::runtime_error> & error;
+-			tbb::mutex & errorMutex;
++			std::mutex & errorMutex;
+ 		};
+ 
+ 		struct EdgeResult
+@@ -856,12 +853,12 @@ namespace TwoPaCo
+ 				std::atomic<uint64_t> & currentPiece,
+ 				std::atomic<uint64_t> & occurences,
+ 				uint64_t & currentStubVertexId,
+-				tbb::mutex & currentStubVertexMutex,
++				std::mutex & currentStubVertexMutex,
+ 				const std::string & tmpDirectory,
+ 				std::vector<std::ifstream*> & inMaskStorage,
+-				tbb::mutex & inMaskStorageMutex,
++				std::mutex & inMaskStorageMutex,
+ 				std::unique_ptr<std::runtime_error> & error,
+-				tbb::mutex & errorMutex) : vertexLength(vertexLength), taskQueue(taskQueue), bifStorage(bifStorage),
++				std::mutex & errorMutex) : vertexLength(vertexLength), taskQueue(taskQueue), bifStorage(bifStorage),
+ 				writer(writer), currentPiece(currentPiece), occurences(occurences), tmpDirectory(tmpDirectory),
+ 				error(error), errorMutex(errorMutex), currentStubVertexId(currentStubVertexId), currentStubVertexMutex(currentStubVertexMutex), 
+ 				inMaskStorage(inMaskStorage), inMaskStorageMutex(inMaskStorageMutex)
+@@ -979,10 +976,10 @@ namespace TwoPaCo
+ 			std::atomic<uint64_t> & occurences;
+ 			const std::string & tmpDirectory;
+ 			std::unique_ptr<std::runtime_error> & error;
+-			tbb::mutex & inMaskStorageMutex;
++			std::mutex & inMaskStorageMutex;
+ 			std::vector<std::ifstream*> & inMaskStorage;
+-			tbb::mutex & errorMutex;
+-			tbb::mutex & currentStubVertexMutex;
++			std::mutex & errorMutex;
++			std::mutex & currentStubVertexMutex;
+ 		};		
+ 		
+ 		class FilterFillerWorker
+@@ -1102,7 +1099,7 @@ namespace TwoPaCo
+ 			size_t overlapSize,
+ 			std::vector<TaskQueuePtr> & taskQueue,
+ 			std::unique_ptr<std::runtime_error> & error,
+-			tbb::mutex & errorMutex,
++			std::mutex & errorMutex,
+ 			std::ostream & logFile,
+ 			std::vector<size_t> & offset,
+ 			bool offsetFill)
+diff --git a/src/graphdump/CMakeLists.txt b/src/graphdump/CMakeLists.txt
+index 4a44a8d..797ee9d 100644
+--- a/src/graphdump/CMakeLists.txt
++++ b/src/graphdump/CMakeLists.txt
+@@ -2,14 +2,12 @@ project(graphdump CXX)
+ cmake_minimum_required(VERSION 2.8)
+ 
+ set(CMAKE_PROJECT_NAME graphdump)
+-if(CMAKE_COMPILER_IS_GNUCXX)
+-	list(APPEND "CMAKE_CXX_FLAGS" "-std=c++11 -lstdc++")
+-endif()
++set(CMAKE_CXX_STANDARD 14)
+ 
+ add_executable(graphdump graphdump.cpp ../common/dnachar.cpp ../common/streamfastaparser.cpp)
+ link_directories(${TBB_LIB_DIR})
+ include_directories(${twopaco_SOURCE_DIR} ${TBB_INCLUDE_DIR} "../common")
+-target_link_libraries(graphdump  "tbb")
++target_link_libraries(graphdump  "tbb" "pthread")
+ install(TARGETS graphdump RUNTIME DESTINATION bin)
+ 
+ set(CPACK_PACKAGE_VERSION_MAJOR "0")
+diff --git a/src/graphdump/graphdump.cpp b/src/graphdump/graphdump.cpp
+index 5bd04fa..3117050 100644
+--- a/src/graphdump/graphdump.cpp
++++ b/src/graphdump/graphdump.cpp
+@@ -9,9 +9,10 @@
+ #include <iterator>
+ #include <iostream>
+ #include <algorithm>
++#include <unordered_map>
+ 
+ #include <tclap/CmdLine.h>
+-#include <tbb/parallel_sort.h>
++#include "oneapi/tbb/parallel_sort.h"
+ 
+ #include <dnachar.h>
+ #include <streamfastaparser.h>

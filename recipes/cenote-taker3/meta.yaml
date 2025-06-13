@@ -1,0 +1,67 @@
+{% set name = "cenote-taker3" %}
+{% set version = "3.4.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/mtisza1/Cenote-Taker3/archive/v{{ version }}.tar.gz"
+  sha256: 976c0b57f3afea500b0ff605af2a2d5502c9e83b28db96ca9cd6626856512852
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage("cenote-taker3", max_pin="x") }}
+  entry_points:
+    - cenotetaker3 = cenote.cenotetaker3:cenotetaker3
+    - get_ct3_dbs = cenote.get_ct3_databases:get_ct3_dbs
+  script:
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+    - setuptools
+  run:
+    - python >=3.6
+    - seqkit
+    - prodigal
+    - pyrodigal-gv >=0.3.1
+    - hhsuite
+    - mmseqs2
+    - trnascan-se
+    - minimap2
+    - tbl2asn-forever
+    - biopython
+    - bedtools
+    - phanotate
+    - pyhmmer >=0.11.0
+    - findutils
+    - coreutils
+    - sed
+    - grep
+    - samtools
+    - pandas
+    - pyarrow
+    - numpy
+
+test:
+  commands:
+    - cenotetaker3 --version
+    - get_ct3_dbs -h
+
+about:
+  home: "https://github.com/mtisza1/Cenote-Taker3"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Cenote-Taker 3: Discover and annotate the virome."
+  dev_url: "https://github.com/mtisza1/Cenote-Taker3"
+  doc_url: "https://github.com/mtisza1/Cenote-Taker3/blob/v{{ version }}/README.md"
+
+extra:
+  recipe-maintainers:
+    - mtisza1

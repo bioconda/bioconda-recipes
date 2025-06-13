@@ -1,0 +1,58 @@
+package:
+  name: 'concoord'
+  version: '2.1.2'
+
+source:
+  - url: http://www3.mpibpc.mpg.de/groups/de_groot/concoord/concoord_2.1.2_linux64.tgz                          # [linux64]
+    sha256: f8fe46a88622f70f01a783b9c462678ad1756305e2f815010625723c3e72a1ff                                     # [linux64]
+
+  - url: http://www3.mpibpc.mpg.de/groups/de_groot/concoord/concoord_2.1.2_OSX.tgz                              # [osx]
+    sha256: baaa45d9db9f0dd52d56826551c0ba9551d76f86006eb49d15c8375579c5042a                                     # [osx]
+
+build:
+
+  number: 4
+  script:
+    - mkdir -p $PREFIX/share/concoord
+    - cp -r lib $PREFIX/share/concoord/lib
+    
+    - mkdir -p $PREFIX/etc/conda/activate.d
+    - echo "export OLD_CONCOORDLIB=$CONCOORDLIB" >> $PREFIX/etc/conda/activate.d/concoord.sh
+    - echo "export CONCOORDLIB=$PREFIX/share/concoord/lib" >> $PREFIX/etc/conda/activate.d/concoord.sh
+    - mkdir -p $PREFIX/etc/conda/deactivate.d
+    - echo "export CONCOORDLIB=$OLD_CONCOORDLIB" >> $PREFIX/etc/conda/deactivate.d/concoord.sh
+
+    - echo "setenv OLD_CONCOORDLIB $CONCOORDLIB" >> $PREFIX/etc/conda/activate.d/concoord.csh
+    - echo "setenv CONCOORDLIB $PREFIX/share/concoord/lib" >> $PREFIX/etc/conda/activate.d/concoord.csh
+    - echo "setenv CONCOORDLIB $OLD_CONCOORDLIB" >> $PREFIX/etc/conda/deactivate.d/concoord.csh
+
+    - mkdir -p $PREFIX/bin
+    - cd bin
+    - chmod u+x dist disco dist.exe
+    - cp dist disco dist.exe $PREFIX/bin/
+
+    - install_name_tool -change /opt/local/lib/gcc44/libgomp.1.dylib $PREFIX/lib/libgomp.1.dylib $PREFIX/bin/dist.exe        # [osx]
+    - install_name_tool -change /opt/local/lib/gcc44/libgomp.1.dylib $PREFIX/lib/libgomp.1.dylib $PREFIX/bin/disco           # [osx]
+
+requirements:
+  host:
+    - libgcc ==4.8.5=1                                                # [osx]
+  run:
+    - libgcc ==4.8.5=1                                                # [osx]
+
+test:
+  commands:
+    - dist -h
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic
+    - should_not_be_noarch_source
+    - should_use_compilers
+
+about:
+  home: https://www3.mpibpc.mpg.de/groups/de_groot/concoord
+  license: Apache Software License
+  license_family: APACHE
+  summary: CONCOORD is a method to generate protein conformations around a known structure based on geometric restrictions.
+  description: "CONCOORD is a method to generate protein conformations around a known structure based on geometric restrictions."

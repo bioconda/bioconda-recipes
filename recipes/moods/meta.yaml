@@ -1,38 +1,46 @@
-{% set version = "1.9.4.1" %}
+{% set name = "moods" %}
+{% set version = "1.9.4.2" %}
 
 package:
-  name: moods
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/jhkorhonen/MOODS/releases/download/v{{ version }}/MOODS-python-{{ version }}.tar.gz
-  sha256: 7fd4d634bc2258421859d720afb9e38b4015b92d1ffc7aaeeb5422ce8b26d65e
+  url: https://pypi.io/packages/source/{{ name[0] }}/mira-moods/mira-moods-{{ version }}.tar.gz
+  sha256: e694e37c7487286801bffcda3e0576157960007919dd5ceb8b5a1626dc2968e1
 
 build:
-  number: 1
+  number: 3
+  skip: True  # [py < 36]
+  run_exports:
+    - {{ pin_subpackage('moods', max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
     - python
-    - swig # [py3k]
-
+    - pip
   run:
     - python
-    - swig # [py3k]
 
 test:
   imports:
     - MOODS.scan
 
 about:
-  home: https://github.com/jhkorhonen/MOODS
-  license: GPL-3.0
-  summary: MOODS, Motif Occurrence Detection Suite
+  home: "https://www.cs.helsinki.fi/group/pssmfind"
+  summary: 'MOODS: Motif Occurrence Detection Suite'
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: COPYING.GPLv3
+  dev_url: "https://github.com/jhkorhonen/MOODS"
+  doc_url: "https://github.com/jhkorhonen/MOODS/wiki"
 
 extra:
   identifiers:
     - biotools:MOODS
     - doi:10.1109/TCBB.2009.35
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

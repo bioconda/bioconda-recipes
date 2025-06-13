@@ -14,5 +14,5 @@ echo "$PREFIX/lib/STAR-Fusion/FusionFilter/blast_and_promiscuity_filter.pl \$@" 
 chmod +x $PREFIX/bin/blast_and_promiscuity_filter.pl
 
 echo "#!/bin/bash" > $PREFIX/bin/prep_genome_lib.pl
-echo "$PREFIX/lib/STAR-Fusion/FusionFilter/prep_genome_lib.pl \$@" >> $PREFIX/bin/prep_genome_lib.pl
+echo "$PREFIX/lib/STAR-Fusion/ctat-genome-lib-builder/prep_genome_lib.pl \$@" >> $PREFIX/bin/prep_genome_lib.pl
 chmod +x $PREFIX/bin/prep_genome_lib.pl

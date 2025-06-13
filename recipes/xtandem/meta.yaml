@@ -1,17 +1,19 @@
+{% set name = "xtandem" %}
+{% set version = "15.12.15.2" %}
+{% set md5 = "40058cd84fc3f56d671d32ff393f7aa3" %}
+
 package:
-  name: xtandem
-  version: 15.12.15.2
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://depot.galaxyproject.org/software/xtandem/xtandem_15.12.15.2_src_all.zip
-  md5: 40058cd84fc3f56d671d32ff393f7aa3
-  patches:
-    - patch
-    - 0001-Fix-missing-pointer-deref.patch
+  url: https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.zip
+  md5: {{ md5 }}
 
 build:
-  skip: true  # [osx]
-  number: 6
+  number: 11
+  run_exports:
+    - {{ pin_subpackage('xtandem', max_pin="x") }}
 
 requirements:
   build:
@@ -20,8 +22,8 @@ requirements:
   host:
     - zlib
     - expat
+    - dos2unix
   run:
-    - zlib
     - expat
 
 test:
@@ -29,11 +31,16 @@ test:
     - xtandem help 2>&1 | grep 'TANDEM'
 
 about:
-  home: http://www.thegpm.org/TANDEM/index.html
-  license: Artistic License
-  summary: X! Tandem open source is software that can match tandem mass spectra with peptide sequences, in a process that has come to be known as protein identification
+  home: "https://www.thegpm.org/TANDEM/index.html"
+  license: "The-Artistic-License"
+  summary: "X! Tandem open source is software that can match tandem mass spectra with peptide sequences, in a process that has come to be known as protein identification."
+  doc_url: "https://www.thegpm.org/TANDEM/index.html"
+  license_file: LICENSE
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:xtandem
     - doi:10.1093/bioinformatics/bth092
