@@ -1,0 +1,51 @@
+diff --git a/setup.py b/setup.py
+index 4465048..fcf4451 100644
+--- a/setup.py
++++ b/setup.py
+@@ -239,6 +239,10 @@ def build_autotools(patch_m4=False):
+             print("{} already exists! Skipping build.".format(binary))
+         else:
+             os.chdir(os.path.join(top,tdir))
++            subprocess.run('mkdir -p build-aux', shell=True, executable="/bin/bash")
++            subprocess.run('mkdir -p lib', shell=True, executable="/bin/bash")
++            subprocess.run('cp -rfv ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/', shell=True, executable="/bin/bash")
++            subprocess.run('cp -rfv ${BUILD_PREFIX}/share/gnuconfig/config.* lib/', shell=True, executable="/bin/bash")
+             CPPFLAGS=""
+             if tool == 'm4' and patch_m4:
+                 CPPFLAGS="CPPFLAGS=-D_IO_IN_BACKUP=0x100"
+@@ -265,12 +269,13 @@ def build_autotools(patch_m4=False):
+                 os.chdir(save_cwd)
+                 return False
+             print("making and installing {}".format(tool))
+-            proc = subprocess.Popen([
+-                'make', '-j', str(cpu_count()), 'install'
+-                ], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+-            stdout,stderr = proc.communicate()
++            subprocess.run('cp -rf ${BUILD_PREFIX}/bin/make ${PREFIX}/bin/make', shell=True, executable="/bin/bash")
++            subprocess.run('export PATH=${PREFIX}/bin:${PATH}', shell=True, executable="/bin/bash")
++            proc = subprocess.run([
++                'make -j${CPU_COUNT} install',
++                ], shell=True, executable="/bin/bash", text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+             if 0 != proc.returncode:
+-                print(stdout)
++                print(proc.stdout)
+                 print("make of {} failed".format(tool))
+                 os.chdir(save_cwd)
+                 return False
+@@ -324,14 +329,14 @@ def build_parasail(libname):
+         # on OSX, homebrew perl might not support threading and automake
+         # build will fail
+         print('Prepending /usr/bin to PATH')
+-        os.environ['PATH'] = '/usr/bin' + os.pathsep + os.environ['PATH']
++        os.environ['PATH'] = os.environ['PREFIX'] + '/bin' + os.pathsep + os.environ['PATH']
+         print("PATH={}".format(os.environ['PATH']))
+         if not run_autoreconf(root):
+             newpath = os.path.join(os.getcwd(), 'autotools', 'bin')
+             print("Prepending {} to PATH".format(newpath))
+             os.environ['PATH'] = newpath + os.pathsep + os.environ['PATH']
+             if platform.system() == "Darwin" and 'M4' not in os.environ:
+-                os.environ['M4'] = '/usr/bin/m4'
++                os.environ['M4'] = os.environ['BUILD_PREFIX'] + '/bin/m4'
+             print("PATH={}".format(os.environ['PATH']))
+             if not build_autotools():
+                 if not build_autotools(True):
