@@ -1,0 +1,45 @@
+{% set name = "cram-archiver" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 3c8437284351b8656b1211693a2a21165355dd6feed4b4c0f9a9a4788c9411fe
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - cram-archiver = cram_archiver.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python>=3.10
+  run:
+    - python>=3.10
+    - samtools>=1.22
+
+test:
+  imports:
+    - cram_archiver
+  commands:
+    - cram-archiver --help
+
+about:
+  home: "https://github.com/lumc/cram-archiver"
+  license: "agpl-3.0-or-later"
+  license_file: "LICENSE"
+  license_family: "AGPL"
+  summary: "A samtools wrapper for CRAM conversion automation."
+  doc_url: "https://github.com/lumc/cram-archiver"
+  dev_url: "https://github.com/lumc/cram-archiver"
+
+extra:
+  recipe-maintainers:
+    - rhpvorderman
+    - DavyCats
