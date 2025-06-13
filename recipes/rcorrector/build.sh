@@ -2,7 +2,7 @@
 
 export CPLUS_INCLUDE_PATH="$PREFIX/include"
 export CFLAGS="${CFLAGS} -O3 -I$PREFIX/include"
-export CXXFLAGS="${CXXFLAGS} -Wall -O3 -std=c++0x"
+export CXXFLAGS="${CXXFLAGS} -Wall -O3 -std=c++0x -L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
