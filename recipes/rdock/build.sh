@@ -12,6 +12,10 @@ sed -i.bak -e 's|:= $(add|:= -I$(PREFIX)/include $(add|' \
            Makefile
 rm -rf *.bak
 
+if [[ 'uname -s' == "Darwin" ]]; then
+    export CXXFLAGS="${CXXFLAGS} -std=c++14 -std=libstdc++"
+fi
+
 install -d ${PREFIX}/share/rDock
 cp -rf lib data tests ${PREFIX}/share/rDock
 rm -f lib/*
