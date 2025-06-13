@@ -1,0 +1,80 @@
+{% set name = "yleaf" %}
+{% set version = "3.2.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/genid/Yleaf/archive/refs/tags/{{ version }}.tar.gz
+  sha256: dc288e97c351a3e62093195d27a5fdda0c4ea9e176d66b0adf91eb9bbbf4dfd3
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  entry_points:
+    - Yleaf=yleaf.Yleaf:main
+    - predict_haplogroup=yleaf.predict_haplogroup:main
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+  run:
+    - python
+    - pip
+    - graphviz >=2.40
+    - networkx >=2.6
+    - numpy
+    - pandas >=1.3
+    - python-dateutil >=2.8
+    - pytz >=2021
+    - six >=1.16
+
+test:
+  imports:
+    - yleaf
+  commands:
+    - Yleaf --help
+    - predict_haplogroup --help
+    - python -c "import yleaf; print(yleaf.__version__)"
+    - test -f $PREFIX/lib/python*/site-packages/yleaf/__init__.py
+
+about:
+  home: https://github.com/genid/Yleaf
+  license: MIT
+  license_family: MIT
+  summary: Yleaf - A tool for Y-chromosome haplogroup prediction
+  description: |
+    Yleaf is a tool for Y-chromosome haplogroup prediction from next-generation sequencing data.
+    It provides a comprehensive solution for analyzing Y-chromosome genetic data and determining
+    haplogroup assignments.
+  dev_url: https://github.com/genid/Yleaf
+  doc_url: https://academic.oup.com/mbe/article/35/5/1291/4922696
+  citation: |
+    @article{ralf2018yleaf,
+      title={Yleaf: software for human Y-chromosomal haplogroup inference from next generation sequencing data},
+      author={Ralf, Arwin and Montiel Gonz{\'a}lez, Diego and Zhong, Kaiyin and Kayser, Manfred},
+      journal={Molecular Biology and Evolution},
+      volume={35},
+      number={5},
+      pages={1291--1294},
+      year={2018},
+      publisher={Oxford University Press}
+    }
+
+extra:
+  recipe-maintainers:
+    - bioconda-bot
+  notes: |
+    Yleaf requires reference genome files for analysis. These will be downloaded automatically
+    when needed, or you can specify their location in the config.txt file.
+
+    Basic usage:
+      Yleaf -fastq input.fastq -rg hg38 -o output_dir
+
+    For more information, see the documentation at:
+      https://github.com/genid/Yleaf

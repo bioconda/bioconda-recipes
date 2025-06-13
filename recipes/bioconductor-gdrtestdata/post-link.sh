@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "gdrtestdata-1.0.0"
+installBiocDataPackage.sh "gdrtestdata-1.4.0"

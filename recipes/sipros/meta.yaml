@@ -1,0 +1,57 @@
+{% set name = "sipros" %}
+{% set version = "4.02" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/thepanlab/Sipros4/releases/download/{{ version }}/siprosRelease.zip
+  sha256: 6e79761a147bd33a2a5feb522a153831f3d9fad0c75a7f9c811053da806d3cac
+
+build:
+  noarch: generic
+  number: 1
+  skip: False
+  run_exports:
+    - {{ pin_subpackage('sipros', max_pin="x") }}
+    
+requirements:
+  run:
+    - bioconductor-biostrings
+    - mono <6
+    - numpy =1.16
+    - python =2.7
+    - r-base
+    - r-stringr
+    - r-tidyr
+    - scikit-learn =0.20.3
+
+test:
+  commands:
+    - configGenerator -h
+    - SiprosEnsembleOMP --help
+    - SiprosV4OMP --help
+    - Raxport -h
+    - EnsembleScripts_sipros_psm_tabulating -v
+    - V4Scripts_sipros_peptides_filtering -v
+    - V4Scripts_getSpectraCountInEachFT -help
+    - V4Scripts_refineProteinFDR -help
+    - copyConfigTemplate -SIP
+
+about:
+  home: https://github.com/thepanlab/Sipros4
+  license: MIT
+  # currently include in the recipe folder because from the release (https://github.com/thepanlab/Sipros4/issues/3)
+  license_file: LICENSE
+  summary: "Tools for stable isotopic mass spectrometry-based metaproteomics"
+  description: |
+      "Tools for stable isotopic mass spectrometry-based metaproteomics research developed by Sipros team. These include Raxport, SiprosV4, SiprosEnsemble and some python / R scripts."
+
+extra:
+  recipe-maintainers:
+    - bernt-matthias
+    - yi-xiong
+  identifiers:
+    - biotools:sipros
+    - doi:10.1186/s40168-024-01866-1

@@ -1,0 +1,137 @@
+{% set version = '1.0.3' %}
+{% set github = 'https://github.com/GreenleafLab/ArchR' %}
+{% set posix = 'm2-' if win else '' %}
+
+package:
+  name: r-archr
+  version: {{ version|replace('-', '_') }}
+
+source:
+  url: {{ github }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 9c07c785a095062a998ed94c65df17a58f273d0d64062c14210f0a2c491304cf
+
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage('r-archr', max_pin='x.x') }}
+
+requirements:
+  build:
+    - cross-r-base {{ r_base }}  # [build_platform != target_platform]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - r-base
+    - bioconductor-biocgenerics
+    - bioconductor-biostrings
+    - bioconductor-chromvar
+    - bioconductor-complexheatmap
+    - bioconductor-genomicranges
+    - bioconductor-motifmatchr
+    - bioconductor-rhdf5
+    - bioconductor-rsamtools
+    - bioconductor-s4vectors >=0.9.25
+    - bioconductor-sparsematrixstats
+    - bioconductor-summarizedexperiment
+    - r-chromvarmotifs
+    - r-data.table
+    - r-devtools
+    - r-ggplot2 <3.5
+    - r-ggrepel
+    - r-gridextra
+    - r-gtable
+    - r-gtools
+    - r-harmony
+    - r-magrittr
+    - r-matrix
+    - r-matrixstats
+    - r-nabor
+    - r-plyr
+    - r-presto
+    - r-rcpp >=0.12.16
+    - r-rcpparmadillo
+    - r-seurat
+    - r-seuratobject
+    - r-stringr
+    - r-uwot
+  run:
+    - r-base
+    - bioconductor-biocgenerics
+    - bioconductor-biostrings
+    - bioconductor-chromvar
+    - bioconductor-complexheatmap
+    - bioconductor-genomicranges
+    - bioconductor-motifmatchr
+    - bioconductor-rhdf5
+    - bioconductor-rsamtools
+    - bioconductor-s4vectors >=0.9.25
+    - bioconductor-sparsematrixstats
+    - bioconductor-summarizedexperiment
+    - r-chromvarmotifs
+    - r-data.table
+    - r-devtools
+    - r-ggplot2 <3.5
+    ## ggrastr is optional lib, but plotting defaults assume it
+    - r-ggrastr
+    - r-ggrepel
+    - r-gridextra
+    - r-gtable
+    - r-gtools
+    - r-harmony
+    - r-magrittr
+    - r-matrix
+    - r-matrixstats
+    - r-nabor
+    - r-plyr
+    - r-presto
+    - r-rcpp >=0.12.16
+    - r-rcpparmadillo
+    - r-seurat
+    - r-seuratobject
+    - r-stringr
+    - r-uwot
+
+test:
+  requires:
+    - r-testthat
+    - macs2
+    - bioconductor-bsgenome.hsapiens.ucsc.hg19
+  commands:
+    - $R -e "library('ArchR')"
+    ## NB: this tightly-couples to `macs2` coming from `test.requires` and avoids running against the container
+    - if command -v macs2; then $R -e "testthat::test_package('ArchR', stop_on_failure=TRUE)"; fi
+
+about:
+  home: https://www.archrproject.com
+  dev_url: {{ github }}
+  doc_url: https://www.archrproject.com/bookdown/index.html
+  license: MIT
+  summary: This package is designed to streamline scATAC analyses in R.
+  license_family: MIT
+  license_file:
+    - {{ environ['PREFIX'] }}/lib/R/share/licenses/MIT
+
+extra:
+  recipe-maintainers:
+    - jdblischak
+    - mfansler
+
+# Package: ArchR
+# Type: Package
+# Date: 2022-04-03
+# Title: Analyzing single-cell regulatory chromatin in R.
+# Version: 1.0.2
+# Authors@R: c( person("Jeffrey", "Granja", email = "jgranja.stanford@gmail.com", role = c("aut","cre")), person("Ryan", "Corces", role = "aut"))
+# Description: This package is designed to streamline scATAC analyses in R.
+# Roxygen: list(markdown = TRUE)
+# License: GPL (>= 2)
+# LinkingTo: Rcpp
+# LazyData: TRUE
+# RoxygenNote: 7.1.2
+# Encoding: UTF-8
+# Imports: ggplot2, SummarizedExperiment, data.table, Matrix, rhdf5, magrittr, S4Vectors (>= 0.9.25), BiocGenerics, Rcpp (>= 0.12.16), matrixStats, plyr, nabor, motifmatchr, chromVAR, uwot, ggrepel, Rsamtools, gtable, gtools, stringr, grid, gridExtra, Biostrings, ComplexHeatmap, GenomicRanges
+# Depends:
+# Collate: 'AllClasses.R' 'AnnotationGenome.R' 'AnnotationPeaks.R' 'ArchRBrowser.R' 'ArchRHeatmap.R' 'ArrowRead.R' 'ArrowUtils.R' 'ArrowWrite.R' 'BulkProjection.R' 'Clustering.R' 'ColorPalettes.R' 'CreateArrow.R' 'DoubletsScores.R' 'Embedding.R' 'FilterCells.R' 'Footprinting.R' 'GRangesUtils.R' 'GgplotUtils.R' 'GlobalDefaults.R' 'GroupCoverages.R' 'HelperUtils.R' 'GroupExport.R' 'Harmony.R' 'HiddenUtils.R' 'Imputation.R' 'InputData.R' 'IntegrativeAnalysis.R' 'IterativeLSI.R' 'LoggerUtils.R' 'MarkerFeatures.R' 'MatrixDeviations.R' 'MatrixFeatures.R' 'MatrixGeneExpression.R' 'MatrixGeneScores.R' 'MatrixTiles.R' 'ModuleScore.R' 'MultiModal.R' 'ProjectMethods.R' 'QualityControl.R' 'RNAIntegration.R' 'RcppExports.R' 'ReproduciblePeakSet.R' 'Trajectory.R' 'ValidationUtils.R' 'VisualizeData.R'

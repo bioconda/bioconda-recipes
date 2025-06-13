@@ -1,54 +1,48 @@
 {% set name = "FragPipe" %}
-{% set version = "20.0" %}
-{% set philosopher_version = "5.0.0" %}
+{% set version = "23.0" %}
 
 # These keys were generated ONLY for the testing of this bioconda package.
 # Users must generate their own key by agreeing to the terms at https://msfragger-upgrader.nesvilab.org/upgrader/ and https://msfragger.arsci.com/ionquant/.
 {% set msfragger_academic_use_only_key = "f28c4be2-759b0a11-6c1ea652-1240565a" %}
 {% set ionquant_academic_use_only_key = "b6c0ad83-9a4e8900-3e83d29c-aeba3bfb" %}
+{% set diatracer_academic_use_only_key = "8de4daf3-a090ed0d-0acdb00a-1485d8a7" %}
 
 package:
-  name: fragpipe
+  name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 3
   noarch: generic
+  number: 0
   run_exports:
-    - {{ pin_subpackage('fragpipe', max_pin="x.x") }}
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 source:
-  - url: https://github.com/Nesvilab/{{ name }}/releases/download/{{ version }}/{{ name }}-{{ version }}.zip
-    sha256: 0d77db85ae26c190a915823e1c68238f3a19533810734b008564b2a8d85d1bd6
+  - url: https://github.com/Nesvilab/{{ name }}/releases/download/{{ version }}/{{ name }}-{{ version }}-linux.zip
+    sha256: dcd47883d36e1b0af5b69e907e17c86dc800e28a8680636a7e2ccf9baf84a0ac
     folder: fragpipe_source
-  - url: https://github.com/Nesvilab/philosopher/releases/download/v{{ philosopher_version }}/philosopher_v{{ philosopher_version }}_linux_amd64.zip
-    sha256: b0f6a6d22ca72efd54d1143142648e110b211eccaba20fe169ee65509da02fad
-    folder: philosopher_source
 
 requirements:
   run:
     - openjdk >=9
-    - python =3.9
-    - msfragger >=4.0
-    - ionquant >=1.10.12
+    - python =3.11
+    - msfragger >=4.2
+    - ionquant >=1.11.9
+    - diatracer >=1.2.5
     - easypqp >=0.1.34
     - zlib >=1.2.13
     - lxml
 
 test:
   commands:
-    - fragpipe --msfragger_key {{ msfragger_academic_use_only_key }} --ionquant_key {{ ionquant_academic_use_only_key }} --help | grep "FragPipe v{{ version }}"
+    - which fragpipe
 
 about:
   home: https://github.com/Nesvilab/FragPipe
   license: GPL-3.0 + LICENSE files
   license_file:
-      - licenses/fragpipe_LICENSE.txt
-      - licenses/dia-umpire_LICENSE.txt
-      - licenses/easypqp_LICENSE.txt
-      - licenses/msbooster_LICENSE.txt
-      - licenses/ptm-shepherd_LICENSE.txt
-      - philosopher_source/License
+    - licenses/fragpipe_LICENSE.txt
+    - licenses/fragpipe_THIRD_PARTY_LICENSES.txt
   summary:  Pipeline for comprehensive analysis of shotgun proteomics data
   description: |
     FragPipe is a Java Graphical User Interface (GUI) for a suite of computational tools
