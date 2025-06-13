@@ -5,7 +5,7 @@ export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 if [[ 'uname -s' == "Darwin" ]]; then
-    export CXXFLAGS="${CXXFLAGS} -I${BUILD_PREFIX}/lib/clang/20/include"
+    export CXXFLAGS="${CXXFLAGS} -I${BUILD_PREFIX}/lib/clang/18/include"
 fi
 
 install -d ${PREFIX}/share/rDock
