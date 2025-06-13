@@ -1,6 +1,9 @@
-#!/bin/bash 
-
+#!/bin/bash
 set -xeuo
+
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 case $(uname -m) in
     aarch64 | arm64)
@@ -11,7 +14,9 @@ case $(uname -m) in
         ;;
 esac
 
-# build statically linked binary with Rust
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
-RUST_BACKTRACE=1 cargo install --verbose --locked --no-track --root $PREFIX --path . ${FEATURES}
-cp scripts/* $PREFIX/bin
+
+# build statically linked binary with Rust
+RUST_BACKTRACE=1
+cargo install -v --locked --no-track --root "${PREFIX}" --path . "${FEATURES}"
+cp -f scripts/* "${PREFIX}/bin"
