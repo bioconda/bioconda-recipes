@@ -1,0 +1,68 @@
+{% set name = "pyani-plus" %}
+{% set version = "0.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pyani_plus-{{ version }}.tar.gz
+  sha256: 95c11ae6e2f88872bc2b99cb41112c3c07ca0b9021d7f384a98fc4cc20a3e509
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - .pyani-plus-private-cli = pyani_plus.private_cli:app
+    - pyani-plus = pyani_plus.public_cli:app
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - setuptools >=61.0
+    - setuptools-scm >=8.0
+    - pip
+  run:
+    - python >=3.11
+    - intervaltree
+    - networkx >=3.4.2
+    - matplotlib-base >=3.10.0
+    - seaborn-base >=0.13.2
+    - snakemake-minimal >=8.24
+    - snakemake-executor-plugin-slurm
+    - pandas
+    - rich
+    - sqlalchemy >=2.0
+    - typer >=0.12
+    # Following are soft dependencies, method specific:
+    - blast
+    - fastani
+    - mummer =3.23
+    - sourmash
+    - sourmash_plugin_branchwater >=0.9.11
+
+test:
+  imports:
+    - pyani_plus
+    - pyani_plus.methods
+  commands:
+    - pyani-plus --version
+    - .pyani-plus-private-cli --version
+
+about:
+  home: "https://github.com/pyani-plus/pyani-plus"
+  license: MIT
+  license_file: LICENSE
+  summary: 'Whole-genome classification of microbes using Average Nucleotide Identity and similar methods.'
+  license_family: MIT
+  dev_url: "https://github.com/pyani-plus/pyani-plus"
+  doc_url: "https://pyani-plus.github.io/pyani-plus-docs"
+
+extra:
+  identifiers:
+    - doi:10.5281/zenodo.15005805
