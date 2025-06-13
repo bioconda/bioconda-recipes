@@ -1,0 +1,40 @@
+diff --git a/Makefile b/Makefile
+index a26b40c..b2ccb6a 100644
+--- a/Makefile
++++ b/Makefile
+@@ -26,20 +26,26 @@ clean:
+ 		cd .. && ./pyclean.sh; \
+ 	fi
+ 
+-PREFIX = /usr/local
+-INSTALLDIR = /opt/augustus-$(AUGVERSION)
++# DESTDIR is usually the empty string but can be set for staging
++prefix ?= $(PREFIX)
++bindir = $(DESTDIR)$(prefix)/bin
++INSTALLDIR = $(prefix)/share/augustus-$(AUGVERSION)
+ 
+ install:
+-	if [ ! $(PWD) -ef $(INSTALLDIR) ] ; then \
++	@echo Installing augustus executables into $(bindir)
++# two main ways:
++# 1) make install is executed from anywhere but in INSTALLDIR. Then INSTALLDIR is created if it does not exist and config data is copied.
++# 2) make install is executed in INSTALLDIR. This is done by the singularity file.
++	if [ ! $(CURDIR) -ef $(INSTALLDIR) ] ; then \
+ 		install -d $(INSTALLDIR) && \
+ 		cp -a config bin scripts $(INSTALLDIR) ; \
+ 	fi
+-	ln -sf $(INSTALLDIR)/bin/augustus $(PREFIX)/bin/augustus
+-	ln -sf $(INSTALLDIR)/bin/etraining $(PREFIX)/bin/etraining
+-	ln -sf $(INSTALLDIR)/bin/prepareAlign $(PREFIX)/bin/prepareAlign
+-	ln -sf $(INSTALLDIR)/bin/fastBlockSearch $(PREFIX)/bin/fastBlockSearch
+-	if [ -f $(INSTALLDIR)/bin/load2db ] ; then ln -sf $(INSTALLDIR)/bin/load2db $(PREFIX)/bin/load2db ; fi
+-	if [ -f $(INSTALLDIR)/bin/getSeq ] ; then ln -sf $(INSTALLDIR)/bin/getSeq $(PREFIX)/bin/getSeq ; fi
++	ln -sf $(INSTALLDIR)/bin/augustus $(bindir)/augustus
++	ln -sf $(INSTALLDIR)/bin/etraining $(bindir)/etraining
++	ln -sf $(INSTALLDIR)/bin/prepareAlign $(bindir)/prepareAlign
++	ln -sf $(INSTALLDIR)/bin/fastBlockSearch $(bindir)/fastBlockSearch
++	if [ -f $(INSTALLDIR)/bin/load2db ] ; then ln -sf $(INSTALLDIR)/bin/load2db $(bindir)/load2db ; fi
++	if [ -f $(INSTALLDIR)/bin/getSeq ] ; then ln -sf $(INSTALLDIR)/bin/getSeq $(bindir)/getSeq ; fi
+ 
+ # for internal purposes:
+ release:

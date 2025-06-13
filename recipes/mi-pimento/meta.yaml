@@ -1,0 +1,55 @@
+{% set name = "mi-pimento" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/mi_pimento-{{ version }}.tar.gz
+  sha256: 8baedca61ae518bb28d2c7db317020688a5decf0d87b692782db29e56bc2d3bc
+
+build:
+  entry_points:
+    - pimento = pimento.pimento:cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('mi-pimento', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools >=61.0
+    - pip
+  run:
+    - python >=3.10
+    - biopython ==1.82
+    - numpy ==1.26.0
+    - pandas ==2.0.2
+    - regex ==2023.12.25
+    - click ==8.1.7
+    - pyfastx >=2.2.0
+    - rich ==13.9.4
+
+test:
+  imports:
+    - pimento
+  commands:
+    - pip check
+    - pimento --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/EBI-Metagenomics/PIMENTO
+  summary: A PrIMEr infereNce TOolkit to facilitate large-scale calling of metabarcoding amplicon sequence variants
+  description: |
+    A toolkit for performing primer inference in sequencing reads
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - chrisAta

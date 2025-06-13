@@ -1,6 +1,6 @@
 {% set name = "upimapi" %}
-{% set version = "1.8.2" %}
-{% set sha256 = "68db87a0aca7881d8459652fa4a28c0f342d1249a249cf3757c67405d8d025e1" %}
+{% set version = "1.13.1" %}
+{% set sha256 = "72fd88f6c21b6982071c007e9ce9a92ffe2bbc75edff3f6eddcfb0653bced0d4" %}
 
 package:
   name: {{ name|lower }}
@@ -13,7 +13,13 @@ source:
 build:
   noarch: generic
   number: 0
-  script: "mkdir -p $PREFIX/bin && cp upimapi.py $PREFIX/bin && cp resources/* $PREFIX/bin"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: >
+    mkdir -p $PREFIX/bin && 
+    cp upimapi.py $PREFIX/bin &&
+    chmod +x $PREFIX/bin/upimapi.py &&
+    ln -s $PREFIX/bin/upimapi.py $PREFIX/bin/upimapi
 
 requirements:
   run:
@@ -23,15 +29,11 @@ requirements:
     - tqdm
     - requests
     - biopython
-    - selenium
-    - firefox
-    - lxml
-    - geckodriver
     - pyyaml
 
 test:
   commands:
-    - upimapi.py -v 
+    - upimapi -v 
 
 about:
   home: https://github.com/iquasere/UPIMAPI
@@ -52,4 +54,3 @@ about:
 extra:
   recipe-maintainers:
     - iquasere
-

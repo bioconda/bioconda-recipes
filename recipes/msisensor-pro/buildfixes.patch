@@ -4,24 +4,31 @@ index 321a56b..dc541fc 100755
 +++ b/cpp/bamreader.cpp
 @@ -27,6 +27,7 @@ unsigned int g_CloseMappedPlus = 0;
  unsigned int g_CloseMappedMinus = 0;
- 
+
  //init hash/maps for read pairing on the fly
 +#define register
  KSORT_INIT_GENERIC(uint32_t)
  KHASH_MAP_INIT_STR(read_name, bam1_t *)
  struct fetch_func_data_SR {
 diff --git a/cpp/makefile b/cpp/makefile
-index 78da629..98daf27 100755
+index 88639e1..c1f6bb6 100644
 --- a/cpp/makefile
 +++ b/cpp/makefile
-@@ -6,8 +6,8 @@ HTSLIB=$(realpath ../vendor/htslib-1.11)
+@@ -1,13 +1,13 @@
+-CXX=g++
++CXX=${CXX}
+ 
+ HTSLIB=$(realpath ../vendor/htslib-1.11)
+ # HTSLIB_CPPFLAGS=-I$(realpath $(HTSLIB_ROOT))
+ # echo $(HTSLIB_CPPFLAGS)
  # HTSLIB_LDFLAGS=-L/mnt/project/Project_Pindel/pindel_update/pindel/htslib/ -Wl,-rpath
  CPP_ROOT=cpp
- CXXFLAGS+=    -O2 -fopenmp
+-CXXFLAGS+=    -O2 -fopenmp
 -LDFLAGS+=    -L${HTSLIB}
 -INCLUDES+=    -I${HTSLIB}
-+LDFLAGS+=
-+INCLUDES+=
++CXXFLAGS+=    -O3 -fopenmp -I${PREFIX}/include
++LDFLAGS+= -L${PREFIX}/lib
++INCLUDES+= -I${PREFIX}/include
  LIBS+=    -lm -lz -lpthread -lhts
  LD_LIBRARY_PATH+= -L${HTSLIB}
  export LD_LIBRARY_PATH=${HTSLIB_ROOT}
@@ -30,7 +37,7 @@ index 78da629..98daf27 100755
  
  %.o:%.cpp
 -	        $(CXX) -L ${HTSLIB} -std=c++11 $(CXXFLAGS) $(INCLUDES) -c $< -o $@
-+	        $(CXX) -std=c++11 $(CXXFLAGS) $(INCLUDES) -c $< -o $@
++	        $(CXX) -std=c++14 $(CXXFLAGS) $(INCLUDES) -c $< -o $@
  
 -all: htsfile msisensor-pro
 +all: msisensor-pro
@@ -40,7 +47,7 @@ index 78da629..98daf27 100755
  
  msisensor-pro: $(OBJS)
 -	        $(CXX)  -std=c++11 $^ $(CXXFLAGS) $(LDFLAGS)  $(LIBS) -Wl,-rpath=${HTSLIB} -o $@
-+	        $(CXX)  -std=c++11 $^ $(CXXFLAGS) $(LDFLAGS)  $(LIBS) -o $@
- # 	        $(CXX)  -std=c++11 $^ $(CXXFLAGS) $(INCLUDES)  $(LDFLAGS) $(LIBS) -o $@
++	        $(CXX) -std=c++14 $^ $(CXXFLAGS) $(LDFLAGS) $(LIBS) -o $@
+ 		# 	        $(CXX)  -std=c++11 $^ $(CXXFLAGS) $(INCLUDES)  $(LDFLAGS) $(LIBS) -o $@
  
  clean:

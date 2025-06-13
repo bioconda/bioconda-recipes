@@ -1,0 +1,43 @@
+{% set name = "mantis-msi2" %}
+{% set version = "2.0.0" %}
+{% set sha256 = "7416592e43451e796498b3158080d315779cf00336f1fa6d2ce23648a1f778d7" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/nh13/MANTIS2/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - Makefile.patch
+
+build:
+  number: 2
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  run:
+    - python >=3.6
+    - numpy >=1.11
+    - pysam >=0.13
+
+test:
+  commands:
+    - mantis-msi2 --help
+    - mantis-msi2-repeat-finder -m 5 -i <(echo -e ">1\nACGTAAAAAAAAAAAAAGT") -o /dev/null
+
+
+about:
+  home: "https://github.com/nh13/MANTIS2/"
+  license: GPL-3
+  license_family: GPL
+  summary: "MANTIS2 is a program developed for detecting microsatellite instability from paired-end BAM files"
+  description: |
+    MANTIS2 (Microsatellite Analysis for Normal-Tumor InStability) is a program developed for detecting microsatellite instability from paired-end BAM files. To perform analysis, the program needs a tumor BAM and a matched normal BAM file (produced using the same pipeline) to determine the instability score between the two samples within the pair. Longer reads (ideally, 100 bp or longer) are recommended, as shorter reads are unlikely to entirely cover the microsatellite loci, and will be discarded after failing the quality control filters.  Originally developed and maintained here: https://github.com/OSU-SRLab/MANTIS.
+
+extra:
+  recipe-maintainers:
+    - nh13

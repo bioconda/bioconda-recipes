@@ -1,18 +1,19 @@
-{% set version = "0.7.17" %}
-{% set sha256 = "980b9591b61c60042c4a39b9e31ccaad8d17ff179d44d347997825da3fdf47fd" %}
+{% set name = "bwa" %}
+{% set version = "0.7.19" %}
+{% set sha256 = "cdff5db67652c5b805a3df08c4e813a822c65791913eccfb3cf7d528588f37bc" %}
 
 package:
-  name: bwa
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/lh3/bwa/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - Makefile.patch
 
 build:
-  number: 9
+  number: 1
+  run_exports:
+    - {{ pin_subpackage("bwa", max_pin="x.x") }}
 
 requirements:
   build:
@@ -21,7 +22,6 @@ requirements:
   host:
     - zlib
   run:
-    - zlib
     - perl
 
 test:
@@ -31,13 +31,22 @@ test:
     - which qualfa2fq.pl
 
 about:
-  home: https://github.com/lh3/bwa
-  license: GPL3
+  home: "https://github.com/lh3/bwa"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: COPYING
-  summary: The BWA read mapper.
+  summary: "The BWA read mapper."
+  dev_url: "https://github.com/lh3/bwa"
+  doc_url: "https://github.com/lh3/bwa/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:bwa
     - usegalaxy-eu:bwa_mem
     - usegalaxy-eu:bwa
+    - doi:10.1093/bioinformatics/btp324
+    - doi:10.1093/bioinformatics/btp698
+    - doi:10.48550/arXiv.1303.3997

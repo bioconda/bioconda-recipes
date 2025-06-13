@@ -1,6 +1,6 @@
 {% set name = "antiSMASH" %}
-{% set version = "6.1.1" %}
-{% set sha256 = "38c9fa8d34dea2552d3b21e3cb2ca293864f2f53d381764de9dd3d5f0b40139e" %}
+{% set version = "8.0.1" %}
+{% set sha256 = "e008eaeab13a92a657de82d077b2ffd782a97bc334c248ff22618c52f04fbc02" %}
 
 package:
   name: {{ name|lower }}
@@ -9,38 +9,48 @@ package:
 build:
   number: 0
   noarch: python
+  entry_points:
+    - download-antismash-databases = antismash.download_databases:_main
+    - antismash = antismash.__main__:entrypoint
+  run_exports:
+    - {{ pin_subpackage('antismash', max_pin="x") }}
 
 source:
-  url: https://dl.secondarymetabolites.org/releases/{{ version }}/antismash-{{ version }}.tar.gz
+  url: https://github.com/antismash/antismash/archive/{{ version | replace(".", "-") }}.tar.gz
   sha256: {{ sha256 }}
 
 requirements:
   host:
-    - python >=3.7 
+    - python >=3.11
     - pip
+    - pytest
+    - setuptools
   run:
-    - python >=3.7
-    - numpy
-    - biopython 1.78
-    - helperlibs >=0.2.0
-    - jinja2
-    - joblib
-    - jsonschema
-    - markupsafe >=2.0
-    - pysvg-py3
-    - bcbio-gff
-    - pyscss
-    - matplotlib-base
-    - scipy
-    - openjdk
-    - scikit-learn >=0.19
-    - diamond 0.9.*
-    - fasttree 2.1.*
-    - glimmerhmm ==3.0.*
+    - python >=3.11
+    - brawn ==1.0.2
+    - numpy ==2.2.5
+    - biopython ==1.81
+    - helperlibs ==0.2.1
+    - jinja2 ==3.1.6
+    - joblib ==1.4.2
+    # jsonschema below 4.18 should not emit deprecation warnings for 8.0.0; https://github.com/bioconda/bioconda-recipes/pull/55989#issuecomment-2866900302
+    # setup.py calls for jsonschema ==4.11.0 but is not available in conda-forge; next version up that is available is 4.14.0
+    - jsonschema ==4.14.0
+    - markupsafe ==3.0.2
+    - nrpys ==0.1.1
+    - bcbio-gff ==0.7.1
+    # libsass 0.23 does not exist as of 05/14/2025
+    - libsass ==0.22.0
+    - matplotlib-base ==3.10.1
+    - orjson ==3.10.16
+    - scipy ==1.15.2
+    - scikit-learn ==1.6.1
+    # moods 1.9.4.1 does not have builds for python 3.11-3.12
+    - moods ==1.9.4.2
+    - diamond
+    - fasttree
     - hmmer2
-    - hmmer ==3.1b2
-    - meme <=4.11.2
-    - muscle 3.8.*
+    - hmmer
     - blast
     - prodigal
 
@@ -52,16 +62,16 @@ test:
     - diamond --help 2>&1 > /dev/null
 
 about:
-  home: https://docs.antismash.secondarymetabolites.org/intro/
-  license: AGPL-3.0
+  home: "https://docs.antismash.secondarymetabolites.org/intro"
+  license: "AGPL-3.0-or-later"
   license_family: AGPL
-  license_file: LICENSE.txt
-  summary: antiSMASH - the antibiotics and Secondary Metabolite Analysis SHell
+  license_file: "LICENSE.txt"
+  summary: "antiSMASH - the antibiotics and Secondary Metabolite Analysis SHell."
   description: |
         antiSMASH allows the rapid genome-wide identification,
         annotation and analysis of secondary metabolite biosynthesis gene clusters.
-  dev_url: https://github.com/antismash/antismash
-  doc_url: https://docs.antismash.secondarymetabolites.org
+  dev_url: "https://github.com/antismash/antismash"
+  doc_url: "https://docs.antismash.secondarymetabolites.org"
 
 extra:
   identifiers:
@@ -72,4 +82,5 @@ extra:
     - doi:10.1093/nar/gkx319
     - doi:10.1093/nar/gkz310
     - doi:10.1093/nar/gkab335
+    - doi:10.1093/nar/gkad344
     - usegalaxy-eu:antismash

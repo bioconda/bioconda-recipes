@@ -1,0 +1,59 @@
+{% set name = "tracegroomer" %}
+{% set version = "0.1.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/tracegroomer-{{ version }}.tar.gz
+  sha256: be87034d1ac14622ff361c39e363a842ace6d40ab3a70be62a9a38e29a593c70
+
+build:
+  entry_points:
+    - tracegroomer = tracegroomer.__main__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('tracegroomer', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.10.0,<4.0.0
+    - sphinx >=7.2.6,<8.0.0
+    - click >=8.1.7,<9.0.0
+    - matplotlib-base >=3.8.2,<4.0.0
+    - mypy >=1.8.0,<2.0.0
+    - numpy >=1.26.4,<2.0.0
+    - pandas >=2.2.0,<3.0.0
+    - scipy >=1.12.0,<2.0.0
+    - scikit-learn >=1.4.0,<2.0.0
+    - seaborn >=0.13.2,<0.14.0
+    - openpyxl >=3.1.2,<4.0.0
+    - pyyaml >=6.0.1,<7.0.0
+    - python-dotenv >=1.0.1,<2.0.0
+    - pydantic >=1.10.8,<2.0.0
+
+test:
+  imports:
+    - tracegroomer
+  commands:
+    - pip check
+    - tracegroomer --help
+  requires:
+    - pip
+
+about:
+  summary: 'Format and normalise tracer metabolomics given file(s), to produce the .csv files which are ready for DIMet analysis.'
+  license: MIT
+  license_file: LICENSE
+  home: 'https://github.com/cbib/TraceGroomer'
+
+extra:
+  recipe-maintainers:
+    - hechth

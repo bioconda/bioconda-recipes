@@ -1,0 +1,45 @@
+{% set version = "1.2.1" %}
+{% set sha256 = "b2544882906d60bfb0ea93f9d9396857ed11374bb0f9b282b823b3f055d549fa" %}
+
+package:
+  name: emerald
+  version: {{ version }}
+
+source:
+  url: https://github.com/algbio/emerald/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - no_filesystem.patch
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('emerald', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+  host:
+    - gmp
+    - openmp
+  run:
+    - gmp
+    - openmp
+
+test:
+  commands:
+    - emerald --help > /dev/null
+
+about:
+  home: https://github.com/algbio/emerald
+  license: AGPL-3.0
+  license_family: AGPL
+  license_file: LICENSE
+  summary: Unlocking the suboptimal pairwise alignment space for protein sequences
+
+extra:
+  identifiers:
+    - biotools:Emerald

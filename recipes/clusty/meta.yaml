@@ -1,0 +1,49 @@
+{% set name = "clusty" %}
+{% set version = "1.2.0" %}
+
+{% set system = "x64_linux" %}       # [linux and x86_64]
+{% set system = "x64_mac" %}         # [osx and x86_64]
+{% set system = "arm64_linux" %}     # [linux and aarch64]
+{% set system = "arm64_mac" %}       # [osx and arm64]
+
+{% set sha256 = "8076574098ee677f0a2e33e5feea4527926cf7fe9c4936876b6015789d0d5a6c" %}  # [linux and x86_64]
+{% set sha256 = "fa2398f1a649e4e354ba134cb87acecdefce2ff2725857960ebef5f2e05ca643" %}  # [osx and x86_64]
+{% set sha256 = "a58f2d84cd744ca932b5e3a8fbe8f9bc236d062075c0d85db35db4681678d8d7" %}  # [linux and aarch64]
+{% set sha256 = "dc700d79009d5a702ea31c37de4d7ade0481ccb027bf3b9f8362d5d46f4136cd" %}  # [osx and arm64]
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+  - {{ pin_subpackage('clusty', max_pin='x') }}
+  script: |
+    mkdir -p "${PREFIX}/bin"
+    cp -v clusty "${PREFIX}/bin/" || { echo "Error: Failed to copy clusty binary"; exit 1; }
+
+source:
+  url: https://github.com/refresh-bio/clusty/releases/download/v{{ version }}/clusty-v{{ version }}-{{ system }}.tar.gz
+  sha256: {{ sha256 }}
+
+test:
+  commands:
+    - clusty > /dev/null
+
+about:
+  home: https://github.com/refresh-bio/clusty
+  summary: "Clusty is a tool for large-scale data clustering."
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  dev_url: https://github.com/refresh-bio/clusty
+  doc_url: "https://github.com/refresh-bio/clusty/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - should_be_noarch_generic
+    - should_not_be_noarch_source

@@ -1,0 +1,45 @@
+{% set name = "ancestry_hmm" %}
+{% set version = "1.0.2" %}
+{% set sha256 = "4c389adf30eff2c3900c95479946a73eb1a26305498e0434386fb48c4f865126" %}
+
+package:
+  name: {{name}}
+  version: {{version}}
+
+source:
+  url: https://github.com/russcd/{{name}}/archive/refs/tags/v{{version}}.tar.gz
+  sha256: {{sha256}}
+
+build:
+  number: 3
+  run_exports:
+    - {{ pin_subpackage("ancestry_hmm", max_pin="x.x.x") }}  
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - armadillo
+  run:
+    - armadillo
+    - selam
+
+test:
+  commands:
+    - ahmm-s --help &> /dev/null
+    - ancestry_hmm --help &> /dev/null
+
+about:
+  home: https://github.com/russcd/Ancestry_HMM
+  license: GPL3
+  license_file: LICENSE
+  summary: "Software for local ancestry inference"
+  description: |
+    A hidden Markov model approach for simultaneously estimating local ancestry and admixture
+    time using next generation sequence data in samples of arbitrary ploidy.
+extra:
+  identifiers:
+    - doi:10.1371/journal.pgen.1006529
+  additional-platforms:
+    - linux-aarch64

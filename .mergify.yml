@@ -1,0 +1,17 @@
+pull_request_rules:
+  - name: Approve and merge autobump PRs if tests are successful
+    conditions:
+      - "author=BiocondaBot"
+      - "label=autobump"
+      - created-at<3 days ago # note the operator direction: 3 days ago yield a timestamp pointing to 3 days ago, and we want to be smaller
+      - "check-success=Linux Tests"
+      - "check-success=OSX-64 Tests"
+      - "check-success=build and test (ARM)"
+      #- "check-success=bioconda.bioconda-recipes"
+      - "#commits=1" # by enforcing only a single commit, we ensure that the PR is not hijacked by others to introduce additional changes
+    actions:
+      review:
+        type: APPROVE
+        message: Automatically approving successfull autobump
+      merge:
+        method: squash
