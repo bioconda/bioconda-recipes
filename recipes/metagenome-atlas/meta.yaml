@@ -1,6 +1,4 @@
-
-{% set version = "2.11.0" %}
-{% set sha256 = "8a595eaea0e281a6f42c6683c6eedffe7756a8cb3e0e3673c74d2955e900a22b" %}
+{% set version = "19.0.1" %}
 
 package:
   name: metagenome-atlas
@@ -8,33 +6,37 @@ package:
 
 source:
   url: https://github.com/metagenome-atlas/atlas/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  sha256: 8e85d2ca77ade948af5f4b31e13837efcd730af5b18660fd42b0a9845d61c09b
 
 build:
-  number: 1
+  number: 0
   entry_points:
     - atlas=atlas.atlas:cli
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('metagenome-atlas', max_pin="x") }}
 
 requirements:
   host:
-    - python =3.8
+    - python >=3.8,<3.11
     - pip
   run:
-    - python >=3.8, <3.11
+    - python >=3.8,<3.11
     - mamba
-    - bbmap =38
-    - snakemake-minimal =7.3
+    - bbmap >=39.01,<40
+    - snakemake-minimal >=7.18.1,<7.26
+    - pygments
+    - networkx
+    - graphviz
     - pandas >=1.2, <1.5
-    - pyarrow =8 # for parquet reading
+    - pyarrow >=8 # for parquet reading
     - click >=7
-    - ruamel.yaml =0.17
+    - ruamel.yaml >=0.17
     - cookiecutter
-    - pathlib2
+    - pathlib
     # optional to help conda solve
     - numpy =1.21
- 
 
 test:
   imports:

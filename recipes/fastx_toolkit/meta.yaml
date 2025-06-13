@@ -1,44 +1,57 @@
+{% set name = "fastx_toolkit" %}
+{% set version = "0.0.14" %}
+{% set sha256 = "9e1f00c4c9f286be59ac0e07ddb7504f3b6433c93c5c7941d6e3208306ff5806" %}
+
 package:
-  name: fastx_toolkit
-  version: 0.0.14
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/agordon/fastx_toolkit/releases/download/0.0.14/fastx_toolkit-0.0.14.tar.bz2
-  md5: bf1993c898626bb147de3d6695c20b40
+  url: https://github.com/agordon/fastx_toolkit/releases/download/{{ version }}/fastx_toolkit-{{ version }}.tar.bz2
+  sha256: {{ sha256 }}
   patches:
     - fastx.patch
+    - fastx-toolkit-gcc7.patch
 
 build:
-  preserve_egg_dir: True
-  number: 10
+  number: 13
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
-    - pkg-config  # [osx]
+    - pkg-config
+    - gnuconfig
+    - autoconf
+    - automake
+    - libtool
   host:
-    - cython
-    - nose
     - libgtextutils
   run:
-    - gnuplot >=5.0.5
+    - gnuplot >=5.4.10
     - perl
     - perl-perlio-gzip
     - perl-gd
     - perl-gdgraph-histogram
+    - libgtextutils
 
 test:
   commands:
-    - fasta_clipping_histogram.pl
+    - 'fasta_clipping_histogram.pl'
     - 'fastx_trimmer -h | grep "Part of FASTX Toolkit 0.0.14 by A. Gordon (assafgordon@gmail.com)"'
 
 about:
-  home: https://github.com/agordon/fastx_toolkit
-  license: AGPL
+  home: "https://github.com/agordon/fastx_toolkit"
+  dev_url: "https://github.com/agordon/fastx_toolkit"
+  doc_url: "https://github.com/agordon/fastx_toolkit/blob/{{ version }}/README"
+  license: "AGPL-3.0-or-later"
+  license_family: AGPL
+  license_file: COPYING
   summary: |
-    The FASTX-Toolkit is a collection of command line tools for
+    'The FASTX-Toolkit is a collection of command line tools for
     Short-Reads FASTA/FASTQ files preprocessing.
 
     Next-Generation sequencing machines usually produce FASTA or FASTQ files,
@@ -57,6 +70,8 @@ about:
     The FASTX-Toolkit tools perform some of these preprocessing tasks.'
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   container:
     # gnuplot fails without libGL.so.1
-    extended-base: true
+    extended-base: True

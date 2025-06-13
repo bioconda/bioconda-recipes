@@ -1,39 +1,54 @@
-{% set version = "2.3.0" %}
+{% set name = "kmer-jellyfish" %}
+{% set version = "2.3.1" %}
 
 package:
-  name: kmer-jellyfish
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 3
 
 source:
   url: https://github.com/gmarcais/Jellyfish/releases/download/v{{ version }}/jellyfish-{{ version }}.tar.gz
-  sha256: e195b7cf7ba42a90e5e112c0ed27894cd7ac864476dc5fb45ab169f5b930ea5a
+  sha256: ee032b57257948ca0f0610883099267572c91a635eecbd88ae5d8974c2430fcd
+
+build:
+  number: 6
+  skip: True  # [py < 38]
+  run_exports:
+    - {{ pin_subpackage("kmer-jellyfish", max_pin="x") }}
 
 requirements:
   build:
-    - make
     - {{ compiler('cxx') }}
-    - autoconf
-    - automake
-    - gettext
-    - libtool
+    - make
     - pkg-config
-    - yaggo >=1.5.8
+    - gnuconfig
+  host:
+    - python
+    - pip
+    - perl
+  run:
+    - python
+    - perl
 
 test:
   commands:
     - jellyfish --version 2>&1 > /dev/null
+  imports:
+    - dna_jellyfish
 
 about:
-  home: http://www.genome.umd.edu/jellyfish.html
-  license: GPL-3.0
-  license_family: GPL
-  summary: Jellyfish is a tool for fast, memory-efficient counting of k-mers in DNA. A k-mer is a substring of length k, and counting the occurrences of all such substrings is a central step in many analyses of DNA sequence
-  dev_url: https://github.com/gmarcais/Jellyfish
+  home: "https://genome.umd.edu/jellyfish.html"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "LICENSE-GPL-3.0"
+  summary: "Jellyfish is a tool for fast, memory-efficient counting of k-mers in DNA. A k-mer is a substring of length k, and counting the occurrences of all such substrings is a central step in many analyses of DNA sequence."
+  dev_url: "https://github.com/gmarcais/Jellyfish"
+  doc_url: "https://genome.umd.edu/docs/JellyfishUserGuide.pdf"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:jellyfish
     - doi:10.1093/bioinformatics/btr011
+    - usegalaxy-eu:jellyfish

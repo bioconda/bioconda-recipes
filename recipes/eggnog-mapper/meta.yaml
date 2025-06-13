@@ -1,25 +1,27 @@
 {% set name = "eggNOG-mapper" %}
-{% set version = "2.1.9" %}
+{% set version = "2.1.12" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/jhcepas/eggnog-mapper/archive/{{ version }}.tar.gz
-  sha256: 01f495a2a7cb9bf1d98cb40691b8598131c32d583cba652a98cdc20e5c8602eb
+  url: https://github.com/eggnogdb/eggnog-mapper/archive/refs/tags/{{ version }}.tar.gz
+  sha256: b3c53fb0e606a5cfec75cbc84f7c215f57f43ce00d8e50f449513acdad76da73
 
 build:
-  number: 0
+  number: 2
+  run_exports:
+    - {{ pin_subpackage("eggnog-mapper", max_pin="x") }}
   noarch: python
   script: sed -i.bak "s/eggnogmapper.bin/#eggnogmapper.bin/g"  setup.cfg; python -m pip install --no-deps --ignore-installed --no-cache-dir -vvv .
 
 requirements:
   host:
     - pip
-    - python >=3.7
+    - python >=3.7,<3.12
   run:
-    - python >=3.7
+    - python >=3.7,<3.12
     - biopython >=1.76
     - psutil >=5.7.0
     - diamond >=2.0.11
@@ -51,6 +53,9 @@ about:
   doc_url: https://github.com/eggnogdb/eggnog-mapper/wiki
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   container:
     # need wget with more options than the busybox one
     extended-base: True

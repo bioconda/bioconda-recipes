@@ -1,0 +1,67 @@
+{% set name = "mgatk" %}
+{% set version = "0.7.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/mgatk-{{ version }}.tar.gz
+  sha256: f42f5eb8fcfd38dd6ef3db853764071311cb70d841a73ff2f40f0a0c9e9d7de9
+
+build:
+  number: 2
+  noarch: python
+  entry_points:
+    - mgatk = mgatk.cli:main
+    - mgatk-del-find = mgatk.deletioncalling.clifind:main
+    - mgatk-del = mgatk.deletioncalling.clidel:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('mgatk', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3
+    - pip
+  run:
+    - python >=3
+    - click
+    - pysam
+    - pytest
+    - snakemake-minimal <8
+    - pulp <2.8
+    - biopython
+    - numpy
+    - pandas
+    - optparse-pretty
+    - regex
+    - ruamel.yaml 0.16.12
+    - openjdk
+    - picard-slim
+    - r-base
+    - r-dplyr
+    - r-data.table
+    - r-matrix
+    - bioconductor-genomicranges
+    - bioconductor-summarizedexperiment
+
+test:
+  imports:
+    - mgatk
+  commands:
+    - mgatk --help
+    - mgatk-del-find --help
+    - mgatk-del --help
+
+about:
+  home: https://github.com/caleblareau/mgatk
+  summary: Mitochondrial genome analysis toolkit.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  doc_url: https://github.com/caleblareau/mgatk/wiki
+
+extra:
+  recipe-maintainers:
+    - mencian

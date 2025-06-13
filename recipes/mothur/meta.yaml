@@ -1,43 +1,50 @@
-{% set mothurVersion = "1.48.0" %}
-{% set mothurSha256 = "9494406abd8d14b821782ab9db811f045ded9424f28f01234ee6764d4e78941d" %}
+{% set name = "mothur" %}
+{% set mothurVersion = "1.48.3" %}
+{% set mothurSha256 = "70129ef4f7cae5840aece54a1f4097a5044b824c9e62b9fcc7460ad70d4de3c0" %}
 {% set vsearchVersion = "2.15.2" %}
 
 package:
-  name: mothur
+  name: {{ name }}
   version: {{ mothurVersion }}
 
 source:
   url: https://github.com/mothur/mothur/archive/refs/tags/v{{ mothurVersion }}.tar.gz
   sha256: {{ mothurSha256 }}
   patches:
-    - makefile.patch
+    - 0001-Makefile.patch
+    - 0002-Makefile-osx.patch  # [osx]
+    - 0003-uchime_makefile.patch
 
 build:
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('mothur', max_pin="x") }}
 
 requirements:
   build:
-    - make==4.2.1
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - blast-legacy
     - boost-cpp
     - gsl
     - hdf5
     - readline
-    - sra-tools
-    - vsearch ={{ vsearchVersion }}
+    - sra-tools  # [not arm64]
+    - vsearch >=2.15.2
+    #- vsearch ={{ vsearchVersion }}  # [x86_64]
+    #- vsearch >=2.28.1  # [aarch64 or arm64]
     - zlib
+    - bzip2
   run:
-    - blast-legacy
     - boost-cpp
     - gsl
     - hdf5
     - readline
-    - sra-tools
-    - vsearch ={{ vsearchVersion }}
-    - zlib
+    - sra-tools  # [not arm64]
+    - vsearch >=2.15.2
+    #- vsearch ={{ vsearchVersion }}  # [x86_64]
+    #- vsearch >=2.28.1  # [aarch64 or arm64]
 
 test:
   commands:
@@ -45,14 +52,19 @@ test:
     - uchime --version
 
 about:
-  home: http://www.mothur.org
-  license: GPL-3.0
-  license_family: GPL
-  license_file: LICENSE.md
-  summary: This project seeks to develop a single piece of open-source, expandable software to fill the bioinformatics needs of the microbial ecology community.
-  dev_url: https://github.com/mothur/mothur
+  home: "https://www.mothur.org"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "LICENSE.md"
+  summary: "This project seeks to develop a single piece of open-source, expandable software to fill the bioinformatics needs of the microbial ecology community."
+  dev_url: "https://github.com/mothur/mothur"
+  doc_url: "https://mothur.org/wiki/mothur_manual"
 
 extra:
   identifiers:
     - doi:10.1128/AEM.01541-09
     - usegalaxy-eu:mothur_get_label
+    - biotools:mothur
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

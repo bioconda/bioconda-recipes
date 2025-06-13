@@ -1,0 +1,50 @@
+{% set name = "HLAfreq" %}
+{% set version = "0.0.5" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0]|lower }}/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz"
+  sha256: 297ae735de85dfdc9f60f94f3fef92d4a1f055b455b282b7171e10d3de358b96
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('hlafreq', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+  run:
+    - bs4
+    - matplotlib-base >=3.6.0
+    - numpy >=1.24.0
+    - pandas
+    - pymc >=3
+    - arviz
+    - python >=3.10
+    - requests
+    - scipy >=1.10.0
+
+test:
+  imports:
+    - HLAfreq
+    - HLAfreq.HLAfreq_pymc
+
+about:
+  home: "https://github.com/Vaccitech/HLAfreq"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Download and combine HLA frequency data from multiple studies."
+  dev_url: "https://github.com/Vaccitech/HLAfreq"
+
+extra:
+  recipe-maintainers:
+    - DAWells

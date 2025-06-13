@@ -1,31 +1,37 @@
 {% set name = "gtdbtk" %}
-{% set version = "2.1.1" %}
+{% set version = "2.4.1" %}
 package:
   name: {{ name|lower }}
   version: {{ version }}
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 2276723f627c5374b76b4c2cb8b07e8a218ef9f6e72091fcbc6a98ecf6c8796d
+  sha256: 088cbdeddf6fec20a9c08937ba489ae7c887cc467fb4abb97893b8b1e8000fde
 build:
   number: 1
   noarch: python
   entry_points:
     - gtdbtk = gtdbtk.__main__:main
+    - gtdb_to_ncbi_majority_vote = scripts.gtdb_to_ncbi_majority_vote:main
+  run_exports:
+    - {{ pin_subpackage('gtdbtk', max_pin="x") }}
 requirements:
   host:
     - pip
     - python >=3.6
+    - setuptools
   run:
     - dendropy >=4.1.0
     - python >=3.6
     - prodigal >=2.6.2
-    - hmmer ==3.1b2
+    - hmmer 3.*
     - pplacer >=1.1.alpha17
-    - fastani ==1.3
+    - fastani >=1.32
     - fasttree >=2.1.9
     - numpy >=1.9.0
     - mash >=2.0
     - tqdm >=4.35.0
+    - pydantic >=1.9.2, <2
+    - skani >=0.2.0
 test:
   imports:
     - gtdbtk
@@ -35,8 +41,8 @@ test:
     - gtdbtk.external.pypfam
     - gtdbtk.external.pypfam.HMM
     - gtdbtk.external.pypfam.Scan
-    - gtdbtk.io.marker
-    - gtdbtk.io.prodigal
+    - gtdbtk.files.marker
+    - gtdbtk.files.prodigal
 about:
   home: https://github.com/Ecogenomics/GTDBTk
   license: GNU General Public v3 (GPLv3)
