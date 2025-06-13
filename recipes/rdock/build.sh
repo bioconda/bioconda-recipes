@@ -1,8 +1,7 @@
 #!/bin/bash
-
 set -euo pipefail
 
-export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include -std=c++14 -Wno-deprecated-declarations"
+export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include -std=c++14"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 sed -i.bak -e 's|:= $(add|:= -I$(PREFIX)/include $(add|' \
@@ -16,7 +15,7 @@ rm -rf *.bak
 install -d ${PREFIX}/share/rDock
 cp -rf lib data tests ${PREFIX}/share/rDock
 rm -f lib/*
-make CXX="${CXX}" CXX_EXTRA_FLAGS="-I${PREFIX}/include" PREFIX="${PREFIX}" -j"${CPU_COUNT}"
+make CXX="${CXX}" CXX_EXTRA_FLAGS="-I${PREFIX}/include -Wno-deprecated-declarations" PREFIX="${PREFIX}" -j"${CPU_COUNT}"
 PREFIX="${PREFIX}" make install
 
 mkdir -p ${PREFIX}/etc/conda/activate.d
