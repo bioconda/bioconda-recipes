@@ -1,37 +1,46 @@
+{% set name = "clustalo" %}
 {% set version = "1.2.4" %}
 
 package:
-  name: "clustalo"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: http://www.clustal.org/omega/clustal-omega-{{ version }}.tar.gz
   sha256: 8683d2286d663a46412c12a0c789e755e7fd77088fb3bc0342bb71667f05a3ee
+
+build:
+  number: 10
+  run_exports:
+    - {{ pin_subpackage('clustalo', max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - gnuconfig
   host:
     - argtable2
   run:
     - argtable2
-
-build:
-  number: 9
-  run_exports:
-    - {{ pin_subpackage('clustalo', max_pin="x") }}
 
 test:
   commands:
     - "clustalo --help > /dev/null"
 
 about:
-  home: "http://www.clustal.org/omega/"
-  license: "GPLv2"
-  summary: "Latest version of Clustal: a multiple sequence alignment program for DNA or proteins"
+  home: "http://www.clustal.org/omega"
+  license: "GPL-2.0-or-later"
+  license_family: GPL
+  summary: "Latest version of Clustal: a multiple sequence alignment program for DNA or proteins."
+  doc_url: "http://www.clustal.org/omega"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
