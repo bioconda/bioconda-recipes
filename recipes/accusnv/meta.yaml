@@ -1,0 +1,65 @@
+{% set name = "accusnv" %}
+{% set version = "1.0.0.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: d528ac3b26be79de318d6db90ed400d96519bc39bc32314b2ecd4c70d72893b6
+
+build:
+  number: 0
+  entry_points:
+    - accusnv=accusnv.accusnv_main:main
+    - accusnv_snakemake=accusnv.accusnv_snakemake:main
+    - accusnv_downstream=accusnv.downstream:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+
+requirements:
+  host:
+    - pip
+    - python ==3.9.*
+  run:
+    - bcbio-gff ==0.6.9
+    - biopython ==1.78
+    - cutadapt
+    - matplotlib-base
+    - numpy
+    - pandas
+    - pulp ==2.7.0
+    - scipy
+    - statsmodels
+    - pytorch
+    - tqdm
+    - snakemake ==7.32.3
+    - sickle-trim
+    - bwa
+    - samtools
+    - bcftools
+    - tabix
+    - phylip
+
+
+test:
+  imports:
+    - accusnv
+    - accusnv.modules
+  commands:
+    - accusnv --help
+    - accusnv_snakemake --help
+    - accusnv_downstream --help
+
+about:
+  home: https://github.com/liaoherui/AccuSNV
+  license: MIT
+  license_family: MIT
+  license_file: 
+  summary: High-accuracy SNV calling for bacterial isolates using AccuSNV
+  doc_url: 
+  dev_url: 
+
+extra:
+  recipe-maintainers:
+    - liaoherui
