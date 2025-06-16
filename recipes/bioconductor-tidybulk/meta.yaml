@@ -1,32 +1,40 @@
-{% set version = "1.6.1" %}
+{% set version = "1.18.0" %}
 {% set name = "tidybulk" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 1f36d23f809ca86eca4d1b5fd012fa34
+about:
+  description: This is a collection of utility functions that allow to perform exploration of and calculations to RNA sequencing data, in a modular, pipe-friendly and tidy fashion.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Brings transcriptomics to the tidyverse
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, testthat, vctrs, AnnotationDbi, BiocManager, Rsubread, e1071, edgeR, limma, org.Hs.eg.db, org.Mm.eg.db, sva, GGally, knitr, qpdf, covr, Seurat, KernSmooth, Rtsne, S4Vectors, ggplot2, widyr, clusterProfiler, msigdbr, DESeq2, broom, survival, boot, betareg, tidyHeatmap, pasilla, ggrepel, devtools, functional, survminer, tidySummarizedExperiment, markdown, uwot
+  run_exports: '{{ pin_subpackage("bioconductor-tidybulk", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, testthat, vctrs, AnnotationDbi, BiocManager, Rsubread, e1071, edgeR, limma, org.Hs.eg.db, org.Mm.eg.db, sva, GGally, knitr, qpdf, covr, Seurat, KernSmooth, Rtsne, ggplot2, widyr, clusterProfiler, msigdbr, DESeq2, broom, survival, boot, betareg, tidyHeatmap, pasilla, ggrepel, devtools, functional, survminer, tidySummarizedExperiment, markdown, uwot, matrixStats, igraph, EGSEA, IRanges, here, glmmSeq, pbapply, pbmcapply, lme4, glmmTMB, MASS, pkgconfig
 requirements:
+
   host:
-    - 'bioconductor-genomicranges >=1.46.0,<1.47.0'
-    - 'bioconductor-preprocesscore >=1.56.0,<1.57.0'
-    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-preprocesscore >=1.68.0,<1.69.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
-    - r-dplyr
+    - r-crayon
+    - r-dplyr >=1.1.0
     - r-lifecycle
     - r-magrittr
+    - r-matrix
     - r-purrr
     - r-readr
     - r-rlang
@@ -36,14 +44,19 @@ requirements:
     - r-tibble
     - r-tidyr
     - r-tidyselect
+    - r-ttservice >=0.3.6
+
   run:
-    - 'bioconductor-genomicranges >=1.46.0,<1.47.0'
-    - 'bioconductor-preprocesscore >=1.56.0,<1.57.0'
-    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-preprocesscore >=1.68.0,<1.69.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
-    - r-dplyr
+    - r-crayon
+    - r-dplyr >=1.1.0
     - r-lifecycle
     - r-magrittr
+    - r-matrix
     - r-purrr
     - r-readr
     - r-rlang
@@ -53,13 +66,17 @@ requirements:
     - r-tibble
     - r-tidyr
     - r-tidyselect
+    - r-ttservice >=0.3.6
+
+source:
+  md5: 541de0cbf7fbb2350db6e6980aea09dc
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Brings transcriptomics to the tidyverse'
-  description: 'This is a collection of utility functions that allow to perform exploration of and calculations to RNA sequencing data, in a modular, pipe-friendly and tidy fashion.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

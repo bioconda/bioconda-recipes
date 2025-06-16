@@ -1,0 +1,58 @@
+{% set name = "el_gato" %}
+{% set version = "1.21.2" %}
+{% set hash = "7a35b9aa44a1ac2e1da21bf69356bb1828cd34af56a1a62f9d17ddb84d989364" %}
+{% set user = "CDCgov" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/{{ user }}/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ hash }}
+
+build:
+  number: 0
+  noarch: generic
+  script:
+    - mkdir -p $PREFIX/bin/db
+    - cp -rf el_gato/db/* $PREFIX/bin/db/
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  build:
+    - python
+  host:
+    - python >=3.8,<3.12
+    - pip
+
+  run:
+    - python >=3.8,<3.12
+    - minimap2 >=2.24
+    - samtools >=1.15.1
+    - blast >=2.13
+    - ispcr >=33.0
+    - fpdf2
+    - packaging
+    - colorama  # [linux]
+    - importlib-metadata  # [py <= 38]
+
+extra:
+  skip-lints:
+    - should_be_noarch_python # database files aren't found properly when built with noarch: python
+
+test:
+
+  commands:
+    - el_gato.py --version
+
+about:
+  home: "https://github.com/{{ user }}/{{ name }}"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Perform Legionella pneumophila Sequence Based Typing (SBT) from short reads or assemblies."
+  dev_url: "https://github.com/{{ user }}/{{ name }}"
+  doc_url: "https://github.com/{{ user }}/{{ name }}/blob/{{ version }}/README.md"

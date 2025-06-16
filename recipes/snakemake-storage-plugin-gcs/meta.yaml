@@ -1,0 +1,49 @@
+{% set name = "snakemake-storage-plugin-gcs" %}
+{% set version = "1.1.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/snakemake_storage_plugin_gcs-{{ version }}.tar.gz
+  sha256: 185dcd995f5f20ca83b0613bdc29bc4b7967db49adf7e45275fb4ad909b75b30
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11,<4.0
+    - poetry-core
+    - pip
+    - hatchling
+  run:
+    - python >=3.11.0,<4.0.0
+    - snakemake-interface-common >=1.14.2,<2.0.0
+    - snakemake-interface-storage-plugins >=4.1.0,<5.0.0
+    - google-cloud-storage >=2.12.0,<3.0.0
+    - google-crc32c >=1.1.2,<2.0.0
+
+test:
+  # We do not test the import as the plugin needs snakemake for importing, but adding
+  # it would create a circular dependency.
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/snakemake/snakemake-storage-plugin-gcs
+  summary: A Snakemake storage plugin for Google Cloud Storage
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - koesterlab

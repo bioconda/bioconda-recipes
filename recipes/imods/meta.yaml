@@ -1,0 +1,56 @@
+package:
+  name: 'imods'
+  version: '1.0.4'
+
+source:
+  - url: https://mmb.irbbarcelona.org/biobb-dev/sw/imod/iMOD_v1.04_Linux_20160112.tgz                            # [linux64]
+    sha256: 4fa9e172d4990c2b6c39cd9bfa7b886a54cf0d526081cb3a5eaaf5de85dd059a                                     # [linux64]
+
+  - url: https://mmb.irbbarcelona.org/biobb-dev/sw/imod/iMOD_v1.04_osx-arm64.tgz                                 # [osx]
+    sha256: f40398c2c3e54431165c2c95ca299fe1e6427393f7b303b2f07bd80682500639                                     # [osx]
+
+  - url: https://mmb.irbbarcelona.org/biobb-dev/sw/imod/iMOD_v1.04_osx-arm64.tgz                                 # [osx-arm64]
+    sha256: f40398c2c3e54431165c2c95ca299fe1e6427393f7b303b2f07bd80682500639                                     # [osx-arm64]
+
+build:
+  number: 3
+
+  script:
+    - mkdir -p $PREFIX/bin
+    - cd bin
+    - chmod u+x imc imodview imove imode_gcc 
+    - cp imc imodview imove imode_gcc $PREFIX/bin/
+
+    - install_name_tool -change /opt/anaconda3/envs/imorph/lib/libarpack.2.dylib $PREFIX/lib/libarpack.2.dylib $PREFIX/bin/imode_gcc       # [osx-arm64]
+    - install_name_tool -change /opt/anaconda3/envs/imods/lib/libopenblas.0.dylib $PREFIX/lib/libopenblas.0.dylib $PREFIX/bin/imode_gcc    # [osx-arm64]
+    - install_name_tool -change /opt/anaconda3/envs/dev/lib/libgfortran.5.dylib $PREFIX/lib/libgfortran.5.dylib $PREFIX/bin/imode_gcc      # [osx-arm64]
+    - install_name_tool -change /opt/anaconda3/envs/imods/lib/libmkl_rt.2.dylib $PREFIX/lib/libmkl_rt.2.dylib $PREFIX/bin/imode_gcc        # [osx-arm64]
+
+requirements:
+  host:
+    - arpack ==3.7.0
+    - mkl ==2023.0.0                                              # [osx-arm64]
+
+  run:
+    - arpack ==3.7.0
+    - mkl ==2023.0.0                                              # [osx-arm64]
+
+test:
+  commands:
+    - imc -h
+    - imodview -h
+    - imove -h
+    - imode_gcc -h
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic
+    - should_not_be_noarch_source
+    - should_use_compilers
+
+about:
+  home: https://chaconlab.org/multiscale-simulations/imod 
+  license: Copyright 2018 Chaconlab.org https://chaconlab.org/images/download/License.txt
+  license_family: OTHER
+  summary: toolkit to perform Normal Mode Analysis (NMA) in internal coordinates (IC) on both protein and nucleic acid atomic structures.
+  description: "iMOD is an versatile toolkit to perform Normal Mode Analysis (NMA) in internal coordinates (IC) on both protein and nucleic acid atomic structures. Vibrational analysis, motion animations, morphing trajectories and Monte-Carlo simulations can be easily carried out at different scales of resolution using this toolkit." 

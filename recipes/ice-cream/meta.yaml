@@ -1,0 +1,57 @@
+{% set name = "ice-cream" %}
+{% set version = "2.0.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/xinehc/ice-cream/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: accdc66306fec9015959188b79c135101a50b1c0aacc763485f18dc7e9125ee6
+
+build:
+  number: 0
+  noarch: python
+  script: '{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv'
+  entry_points:
+    - ICEcream = icecream_pkg.ICEcream:main
+    - draw_segment = icecream_pkg.plotting_script:plotting_script
+    - arrange_orf = icecream_pkg.organize_orfs:organize_orfs
+    - gbff2gbk = icecream_pkg.gbff2gbk:main
+  run_exports:
+    - {{ pin_subpackage('ice-cream', max_pin='x') }}
+
+requirements:
+  host:
+    - python ==3.10.14
+    - pip
+    - setuptools
+    - zlib
+    - bzip2
+    - libidn
+    - libnsl
+  run:
+    - python ==3.10.14
+    - bakta ==1.9.4
+    - blast ==2.16.0
+    - macsyfinder ==2.1.4
+    - prodigal ==2.6.3
+    - vmatch ==2.3.0
+    - dna_features_viewer
+    - biopython
+    - pandas
+    - r-base
+    - r-essentials
+    - r-reshape2
+
+test:
+  commands:
+    - ICEcream --help
+
+about:
+  home: https://github.com/xinehc/ice-cream
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'ICEcream: Integrative and Conjugative Elements Classification and gRaphical gEne Arrangement Method.'
+  dev_url: https://github.com/xinehc/ice-cream

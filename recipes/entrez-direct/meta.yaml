@@ -1,22 +1,26 @@
-{% set version = "16.2" %}
-{% set date = "20211103" %}
-{% set sha256 = "42124ac5aa9aed2bb399b064ad4dfe418b9facb6f61eef95ac7e92e7cc410dd3" %}
+{% set name = "entrez-direct" %}
+{% set version = "24.0" %}
+{% set date = "20250527" %}
+{% set sha256 = "eb5ac6b1faf33a39cc5b2b2eaa2b6ce5e1c05ac3d00d1be2b70bd6054c44f694" %}
 
 package:
-  name: entrez-direct
+  name: {{ name }}
   version: {{ version }}
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 source:
-  url: https://raw.githubusercontent.com/biostars/conda-ready-entrez-direct/main/dist/edirect-16.2.20211103.tar.gz
+  url: https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/edirect.tar.gz
   sha256: {{ sha256 }}
 
 requirements:
   build:
-    # The installer script downloads statically compiled binaries, so this is effectively just avoiding linter errors
     - {{ compiler('go') }}
+  run:
+    - wget
 
 test:
   commands:
@@ -27,9 +31,19 @@ test:
     - esearch --help
     - elink --help
     - esummary --help
+    - rchive -version
+    - transmute -version
     - xtract -version
 
 about:
-  home: ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/README
-  license: PUBLIC DOMAIN
-  summary: Entrez Direct (EDirect) is an advanced method for accessing the NCBI's set of interconnected databases (publication, sequence, structure, gene, variation, expression, etc.) from a UNIX terminal window. Functions take search terms from command-line arguments. Individual operations are combined to build multi-step queries. Record retrieval and formatting normally complete the process.
+  home: "https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/README"
+  license: "Public Domain"
+  summary: "Entrez Direct (EDirect) is an advanced method for accessing the NCBI's set of interconnected databases (publication, sequence, structure, gene, variation, expression, etc.) from a UNIX terminal window. Functions take search terms from command-line arguments. Individual operations are combined to build multi-step queries. Record retrieval and formatting normally complete the process."
+  doc_url: "https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/README"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:entrez

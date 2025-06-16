@@ -1,18 +1,22 @@
 {% set name = "graphmap" %}
-{% set version = "0.6.3" %}
+{% set version = "0.6.4" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 2
+  number: 1
   skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 source:
   git_url: https://github.com/lbcb-sci/graphmap2
   git_rev: v{{ version }}
   sha256: unused
+  patches:
+    - graphmap2-aarch64.patch # [aarch64]
 
 requirements:
   build:
@@ -33,7 +37,11 @@ about:
   license: MIT
   license_file: LICENCE
   summary: 'A highly sensitive and accurate mapper for long, error-prone reads.'
+  dev_url: https://github.com/lbcb-sci/graphmap2
+  doc_url: https://www.nature.com/articles/ncomms11307
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   skip-lints:
     - uses_vcs_url

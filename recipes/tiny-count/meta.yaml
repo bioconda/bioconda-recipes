@@ -1,0 +1,45 @@
+{% set version = "1.5.0" %}
+{% set sha256 = "6e7401571244d2866d51029e1a1e6b19ad3a378092dcc71c2f72cd82e23ff79d" %}
+
+package:
+  name: tiny-count
+  version: {{ version }}
+
+source:
+  url: https://github.com/MontgomeryLab/tinyRNA/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  skip: True  # [not unix]
+  number: 2
+  script: "{{ PYTHON }} -m pip install . -vv"
+  script_env:
+    - tiny_count_only=1
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - python 3.9.*
+    - setuptools 63.1.*
+    - cython 0.29.*
+    - pysam 0.19.*
+    - pip 22.1.*
+  run:
+    - python 3.9.*
+    - htseq =2.0.2
+    - numpy =1.23.1
+    - pandas =1.4.3
+    - ruamel.yaml =0.17.16
+
+test:
+  commands:
+    - tiny-count -h
+
+about:
+  home: https://github.com/MontgomeryLab/tinyRNA
+  license: GPLv3
+  summary: \
+    A precision counting tool for hierarchical classification 
+    and quantification of small RNA-seq reads. tiny-count is
+    part of the tinyRNA analysis pipeline.

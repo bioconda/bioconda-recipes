@@ -1,0 +1,39 @@
+{% set name = "scSplit" %}
+{% set version = "1.0.8.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/scSplit-{{ version }}.tar.gz
+  sha256: e39e2e840ec34bec289619817d7ccee70165e79a361041b1b38e53beac1b7fa3
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('scsplit', max_pin="x.x.x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+
+test:
+  imports:
+    - scSplit
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/jon-xu/scSplit
+  summary: Genotype-free demultiplexing of pooled single-cell RNA-Seq
+  license: MIT
+
+

@@ -1,0 +1,47 @@
+{% set version = "1.1.0" %}
+
+package:
+  name: peglit
+  version: {{ version }}
+
+source:
+  url: https://github.com/sshen8/peglit/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 06f3fae684f264f3dcf3ecd18dbadd57ca78934a07c8d8e0f68860ff05ba1754
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed
+  noarch: python
+  entry_points:
+    - peglit = peglit.peglit:main
+    - peglit.score = peglit.score:main
+    - peglit.inspect = peglit.inspect:main
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+  run:
+    - python >=3.6
+    - viennarna >=2.5
+    - pandas
+    - tqdm
+    - matplotlib-base
+    - scipy
+    - scikit-learn
+    - levenshtein
+
+test:
+  imports: peglit
+  commands:
+    - peglit --help > /dev/null
+    - peglit.score --help > /dev/null
+    - peglit.inspect --help > /dev/null
+
+about:
+  home: https://github.com/sshen8/peglit/
+  summary: "Automatically identifies non-interfering nucleotide linkers between a pegRNA and 3' motif"
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
