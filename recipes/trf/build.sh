@@ -21,7 +21,7 @@ case "${target_platform}" in
 esac
 
 ${CC} ${CFLAGS} -O3 \
-    ${CPPFLAGS} -DUNIXCONSOLE -DVERSION=\"4.10.0-rc.1\" \
+    ${CPPFLAGS} -DUNIXCONSOLE -DVERSION=\"4.10.0-rc.2\" \
     -I${PREFIX}/include \
     -o build/trf \
     src/trf.c \
