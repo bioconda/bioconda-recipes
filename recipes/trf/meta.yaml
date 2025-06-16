@@ -1,30 +1,29 @@
 {% set name = "trf" %}
-{% set version = "4.09.1" %}
+# Note: GitHub tag is rc.2, but actual version reported by the software is rc.1
+{% set version = "4.10.0rc1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/Benson-Genomics-Lab/TRF/archive/v{{ version }}.tar.gz
-  sha256: 516015b625473350c3d1c9b83cac86baea620c8418498ab64c0a67029c3fb28a     
+  url: https://github.com/Benson-Genomics-Lab/TRF/archive/v4.10.0-rc.2.tar.gz
+  sha256: 45ab174b0e015af16543576b54198d3e1b9f73b23478bbac4fbae9a393074100     
 
 build:
-  number: 7
+  number: 0
   run_exports:
-    - {{ pin_subpackage(name, max_pin='x') }}
+    # Return code behavior changed between 4.09 and 4.10
+    - {{ pin_subpackage(name, max_pin='x.x') }} 
 
 requirements:
   build:
-    - make
     - {{ compiler('c') }}
-    - autoconf
-    - automake
-    - libtool
 
 test:
   commands:
     - trf -v
+    - trf -v 2>&1 | grep -q "4.10.0-rc.1"
 
 about:
   home: "https://tandem.bu.edu/trf/trf.html"
@@ -34,6 +33,9 @@ about:
   summary: 'Tandem Repeats Finder is a program to locate and display tandem repeats in DNA sequences.'
   dev_url: "https://github.com/Benson-Genomics-Lab/TRF"
   doc_url: "https://tandem.bu.edu/trf/trf.html"
+  description: |
+    Tandem Repeats Finder (TRF) is a bioinformatics tool used to identify and locate tandem repeats in DNA sequences. 
+    These repeats are consecutive copies of short sequence patterns found in many genomes and are of interest in genetic studies. 
 
 extra:
   additional-platforms:
