@@ -73,7 +73,7 @@ index 0000000..2fa8e83
 +    "Choose the type of build, options are: None Debug Release RelWithAsserts RelWithDebInfo."
 +    FORCE)
 +endif()
-+  
++
 +# Default compiler flags
 +if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 +  message("Making Debug Configuration...")
@@ -97,7 +97,7 @@ index 0000000..2fa8e83
 +    add_definitions(-DNDEBUG)
 +  endif()
 +endif()
-+add_compile_options(-Wall -fsigned-char)
++add_compile_options(-I${PREFIX}/include -Wall -fsigned-char -Wno-unused-variable -Wno-return-type -Wno-deprecated-declarations -pthread)
 +
 +add_subdirectory(kmc_api)
 +add_subdirectory(kmc_core)
@@ -140,7 +140,7 @@ index 0000000..3490491
 +file(GLOB sources "[a-zA-Z]*.cpp")
 +# export it to the parent scope, so python module could reuse it
 +set(PY_KMC_API_SOURCES ${sources} PARENT_SCOPE)
-+      
++
 +add_library(kmc_api OBJECT
 +            ${sources})
 diff --git a/kmc_api/kmer_defs.h b/kmc_api/kmer_defs.h
@@ -265,16 +265,16 @@ index 0000000..bf2be09
 +        LANGUAGES CXX)
 +
 +add_executable(kmc_tools
-+  kmer_file_header.cpp kmc_tools.cpp nc_utils.cpp 
-+  parameters_parser.cpp parser.cpp tokenizer.cpp 
-+  fastq_filter.cpp fastq_reader.cpp fastq_writer.cpp 
++  kmer_file_header.cpp kmc_tools.cpp nc_utils.cpp
++  parameters_parser.cpp parser.cpp tokenizer.cpp
++  fastq_filter.cpp fastq_reader.cpp fastq_writer.cpp
 +  percent_progress.cpp kff_info_reader.cpp)
 +target_link_libraries(kmc_tools kmc_api kff_core zlib)
 +
 +install(TARGETS kmc_tools
 +        DESTINATION bin
 +        COMPONENT kmc)
-+      
++
 diff --git a/py_kmc_api/CMakeLists.txt b/py_kmc_api/CMakeLists.txt
 new file mode 100644
 index 0000000..145d2e8
