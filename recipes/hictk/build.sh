@@ -1,9 +1,10 @@
 #!/bin/bash
 
 export CONAN_NON_INTERACTIVE=1
-
 export CMAKE_BUILD_PARALLEL_LEVEL="${CPU_COUNT}"
 export CTEST_PARALLEL_LEVEL="${CPU_COUNT}"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 if [[ "${DEBUG_C}" == yes ]]; then
   CMAKE_BUILD_TYPE=Debug
@@ -21,9 +22,11 @@ declare -a CMAKE_PLATFORM_FLAGS
 if [[ "${OSTYPE}" =~ .*darwin.* ]]; then
   # https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
   export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+  export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
 else
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
+  export CONFIG_ARGS=""
 fi
 
 # Remove unnecessary dependencies from conanfile.py
@@ -61,16 +64,18 @@ cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"   \
       -DCMAKE_C_COMPILER="${CC}"                 \
       -DCMAKE_CXX_COMPILER="${CXX}"              \
       "${CMAKE_PLATFORM_FLAGS[@]}"               \
+      -Wno-dev -Wno-deprecated --no-warn-unused-cli \
+      "${CONFIG_ARGS}"                           \
       -B build/                                  \
       -S .
 
-cmake --build build/
+cmake --build build/ --clean-first -j "${CPU_COUNT}"
 
 ctest --test-dir build/   \
       --output-on-failure \
       --no-tests=error    \
       --timeout 240
 
-cmake --install build/ --component Runtime
+cmake --install build/ --component Runtime -j "${CPU_COUNT}"
 
 "${PREFIX}/bin/hictk" --version
