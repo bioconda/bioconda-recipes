@@ -6,10 +6,8 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-sed -i.bak 's|3.2.2|3.2.4|' CMakeLists.txt
 sed -i.bak 's|VERSION 2.8.12|VERSION 3.5|' 3rd_party/cloudflare/CMakeLists.txt
 sed -i.bak 's|VERSION 2.8.12|VERSION 3.5|' 3rd_party/cloudflare/ucm.cmake
-rm -rf *.bak
 rm -rf 3rd_party/cloudflare/*.bak
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
