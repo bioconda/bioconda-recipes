@@ -4,7 +4,7 @@ mkdir -p "${PREFIX}/bin"
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -std=c++14 -O3"
 
 sed -i.bak 's|VERSION 2.8.12|VERSION 3.5|' 3rd_party/cloudflare/CMakeLists.txt
 sed -i.bak 's|VERSION 2.8.12|VERSION 3.5|' 3rd_party/cloudflare/ucm.cmake
