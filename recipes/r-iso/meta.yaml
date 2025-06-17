@@ -1,0 +1,56 @@
+{% set version = "0.0-18.1" %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-iso
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/Iso_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/Iso/Iso_{{ version }}.tar.gz
+  sha256: 2fa5f78a7603cbae94a5e38e791938596a053d48c609a7c120a19cbb7d93c66f
+
+build:
+  merge_build_host: true  # [win]
+  number: 3
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage('r-iso', max_pin='x.x') }}      
+
+requirements:
+  build:
+    - {{ compiler('c') }}              # [not win]
+    - {{ compiler('m2w64_c') }}        # [win]
+    - {{ compiler('fortran') }}        # [not win]
+    - {{ compiler('m2w64_fortran') }}  # [win]
+    - {{ posix }}filesystem        # [win]
+    - {{ posix }}make
+    - {{ posix }}sed               # [win]
+    - {{ posix }}coreutils         # [win]
+    - {{ posix }}zip               # [win]
+  host:
+    - r-base >=3.6.3
+  run:
+    - r-base >=3.6.3
+    - {{ native }}gcc-libs         # [win]
+
+test:
+  commands:
+    - $R -e "library('Iso')"           # [not win]
+
+about:
+  home: http://www.stat.auckland.ac.nz/~rolf/
+  license: GPL-2.0-or-later
+  summary: Linear order and unimodal order (univariate) isotonic regression; bivariate isotonic regression with linear order on both variables.
+  license_family: GPL2
+  license_file: {{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2
+
+extra:
+  recipe-maintainers:
+    - conda-forge/r
+
