@@ -2,13 +2,9 @@
 
 set -xe
 
-mkdir -p ${HOME}/bin
-export PATH="${HOME}/bin:$PATH"
-ln -s ${CC} ${HOME}/bin/gcc
-
 pushd build/gmake
 
-make CFLAGS="-g -pedantic -Wall -I ${SRC_DIR}/include -fPIC ${CFLAGS}"
+make CC=${CC} CFLAGS="-g -pedantic -Wall -I ${SRC_DIR}/include -fPIC ${CFLAGS}"
 
 popd
 
