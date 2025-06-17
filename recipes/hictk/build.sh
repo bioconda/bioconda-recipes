@@ -53,6 +53,8 @@ cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"   \
       -DHICTK_ENABLE_FUZZY_TESTING=OFF           \
       -DHICTK_BUILD_EXAMPLES=OFF                 \
       -DHICTK_BUILD_BENCHMARKS=OFF               \
+      -DHICTK_WITH_ARROW=OFF                     \
+      -DHICTK_WITH_EIGEN=OFF                     \
       -DHICTK_BUILD_TOOLS=ON                     \
       -DHICTK_ENABLE_GIT_VERSION_TRACKING=OFF    \
       -DCMAKE_INSTALL_PREFIX="${PREFIX}"         \
@@ -69,6 +71,6 @@ ctest --test-dir build/   \
       --no-tests=error    \
       --timeout 240
 
-cmake --install build/
+cmake --install build/ --component Runtime
 
 "${PREFIX}/bin/hictk" --version
