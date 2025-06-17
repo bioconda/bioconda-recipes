@@ -20,6 +20,8 @@ case "${target_platform}" in
         ;;
 esac
 
+# Version manually set to latest RC (rc.2); should be defined upstream.
+# See: https://github.com/Benson-Genomics-Lab/TRF/issues/32
 ${CC} ${CFLAGS} -O3 \
     ${CPPFLAGS} -DUNIXCONSOLE -DVERSION=\"4.10.0-rc.2\" \
     -I${PREFIX}/include \
