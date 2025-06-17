@@ -1,9 +1,12 @@
+{% set name = "duphist" %}
+{% set version = "1.0.3" %}
+
 package:
-  name: duphist
-  version: "1.0.3"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/minjeongjj/DupHIST/archive/refs/tags/v1.0.3.tar.gz
+  url: https://github.com/minjeongjj/DupHIST/archive/refs/tags/v{{ version }}.tar.gz
   sha256: fb0b7923d107749d1d38e6bc2700cd093dbd034242d177404599e91c96513c87
 
 build:
@@ -12,10 +15,9 @@ build:
   script: |
     mkdir -p $PREFIX/bin/scripts
     cp -r scripts/* $PREFIX/bin/scripts/
-    cp duphist $PREFIX/bin/
-    chmod +x $PREFIX/bin/duphist
+    install -v -m 755 duphist $PREFIX/bin
   run_exports:
-    - {{ pin_subpackage("duphist", max_pin="x.x") }}
+    - {{ pin_subpackage("duphist", max_pin="x") }}
 
 requirements:
   run:
@@ -32,14 +34,16 @@ requirements:
     - r-tictoc
     - r-agricolae
     - prank
-      # kaks_calculator2 (not available on Bioconda, needs manual install or separate recipe)
+    - kakscalculator2
 
 test:
   commands:
     - duphist --help || true
 
 about:
-  home: https://github.com/minjeongjj/DupHIST
+  home: "https://github.com/minjeongjj/DupHIST"
   license: MIT
-  summary: "DupHIST: A toolkit for duplication history inference via substitution-based timeframe"
+  license_family: MIT
+  summary: "DupHIST: A toolkit for duplication history inference via substitution-based timeframe."
   license_file: LICENSE
+  dev_url: "https://github.com/minjeongjj/DupHIST"
