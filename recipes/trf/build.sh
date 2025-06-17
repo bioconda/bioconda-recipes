@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+
 echo "Starting build Process."
 mkdir -p build
 mkdir -p "${PREFIX}/bin"
@@ -22,13 +25,13 @@ esac
 
 # Version manually set to latest RC (rc.2); should be defined upstream.
 # See: https://github.com/Benson-Genomics-Lab/TRF/issues/32
-${CC} ${CFLAGS} -O3 \
-    ${CPPFLAGS} -DUNIXCONSOLE -DVERSION=\"4.10.0-rc.2\" \
+${CC} "${CFLAGS}" -O3 \
+    "${CPPFLAGS}" -DUNIXCONSOLE -DVERSION=\"4.10.0-rc.2\" \
     -I${PREFIX}/include \
     -o build/trf \
     src/trf.c \
-    ${LDFLAGS} ${EXTRA_LDFLAGS}
+    "${LDFLAGS}" ${EXTRA_LDFLAGS}
 
-echo "Installing binary to \$PREFIX/bin..."
-cp build/trf "${PREFIX}/bin/trf"
+echo "Installing binary to \${PREFIX}/bin..."
+install -v -m 755 build/trf "${PREFIX}/bin"
 echo "'trf' build and installation complete."
