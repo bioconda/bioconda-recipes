@@ -5,6 +5,7 @@ mkdir -p "${PREFIX}/bin"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
+export CFLAGS="${CFLAGS} -O3"
 
 sed -i.bak 's|g++-11|$(CXX)|' Makefile
 sed -i.bak 's|g++|$(CXX)|' Makefile
@@ -25,8 +26,8 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-DCMAKE_C_COMPILER="${CXX}" \
-	-DCMAKE_C_FLAGS="${CXXFLAGS}" \
+	-DCMAKE_C_COMPILER="${CC}" \
+	-DCMAKE_C_FLAGS="${CFLAGS}" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
