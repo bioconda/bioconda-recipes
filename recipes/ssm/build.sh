@@ -21,8 +21,8 @@ sed -i.bak \
   superpose.cpp
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/
-autoreconf -if
 
+autoreconf -ifv
 ./configure \
     --prefix="${PREFIX}" \
     --enable-ccp4 \
@@ -32,6 +32,7 @@ autoreconf -if
     --disable-dependency-tracking \
     --enable-silent-rules \
     --disable-option-checking \
+    --verbose \
     CC="${CC}" \
     CFLAGS="${CFLAGS}" \
     CPPFLAGS="${CPPFLAGS}" \
@@ -40,4 +41,4 @@ autoreconf -if
     CXXFLAGS="${CXXFLAGS}"
 
 make -j"${CPU_COUNT}" V=1
-make install
+make install V=1
