@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mkdir -p "${PREFIX}/bin"
+
 sed -i.bak 's|-lpthread|-pthread|' Makefile
 sed -i.bak 's|gcc|$(CC)|' Makefile
 sed -i.bak 's|-Wall|-O3 -Wall|' Makefile
