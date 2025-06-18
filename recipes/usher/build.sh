@@ -1,6 +1,6 @@
 #!/bin/bash
-#/System/Volumes/Data/System/DriverKit/usr/lib/libSystem.dylib
-mkdir -p $PREFIX/bin
+set -ex
+mkdir -p "$PREFIX/bin"
 
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
@@ -11,27 +11,24 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 if [[ "$OSTYPE" == "darwin"* ]]; then
     curl -sSLO https://github.com/oneapi-src/oneTBB/releases/download/2019_U9/tbb2019_20191006oss_mac.tgz
     tar -xzf tbb2019_20191006oss_mac.tgz
-    tbb_root=tbb2019_20191006oss
+    export tbb_root="tbb2019_20191006oss"
 else
     curl -sSLO https://github.com/oneapi-src/oneTBB/archive/2019_U9.tar.gz
     tar -xzf 2019_U9.tar.gz
-    tbb_root=oneTBB-2019_U9
+    export tbb_root="oneTBB-2019_U9"
 fi
 
-mkdir -p build
-pushd build
-
-if [[ `uname -s` == "Darwin" ]]; then
+if [[ `(uname -s)` == "Darwin" ]]; then
     export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
-    ln -sf "${CC}" ${PREFIX}/bin/clang
 else
     export CONFIG_ARGS=""
-    ln -sf "${CC}" ${PREFIX}/bin/gcc
 fi
 
-cmake -DTBB_DIR="${PWD}/../$tbb_root" -DCMAKE_PREFIX_PATH="${PWD}/../$tbb_root/cmake" -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DTBB_DIR="${tbb_root}" -DCMAKE_PREFIX_PATH="${tbb_root}/cmake" \
     -DCMAKE_C_COMPILER="${CC}" -DCMAKE_C_FLAGS="${CFLAGS}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
-    "${CONFIG_ARGS}" ..
+    "${CONFIG_ARGS}"
+
+cd build
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # omit ripples-fast due to problems building on Mac
@@ -67,5 +64,3 @@ if [[ -d ./tbb_cmake_build ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     cp -f ../$tbb_root/lib/* ${PREFIX}/lib/
 fi
-
-popd
