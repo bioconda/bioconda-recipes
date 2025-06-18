@@ -14,6 +14,7 @@ mkdir -p "${SRA_BUILD_DIR}"
 
 echo "Compiling sra-tools"
 if [[ "$(uname -s)" == "Darwin" ]]; then
+	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names"
 	export VDB_INC="${SRC_DIR}/ncbi-vdb/interfaces"
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 	export CFLAGS="${CFLAGS} -DTARGET_OS_OSX"
