@@ -1,6 +1,7 @@
 #!/bin/bash
 set -ex
 
+export CFLAGS="${CFLAGS} -O3 -Wno-compound-token-split-by-macro"
 if [[ `uname -s` == "Darwin" ]]; then
     # Force use of conda's libxml instead of the system one
     export DYLD_FALLBACK_LIBRARY_PATH="${PREFIX}/lib"
