@@ -26,7 +26,7 @@ fi
 
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DTBB_DIR="${tbb_root}" -DCMAKE_PREFIX_PATH="${tbb_root}/cmake" \
     -DCMAKE_C_COMPILER="${CC}" -DCMAKE_C_FLAGS="${CFLAGS}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
-    "${CONFIG_ARGS}"
+    -DCMAKE_CXX_COMPILER="${CXX}" "${CONFIG_ARGS}"
 
 cd build
 
