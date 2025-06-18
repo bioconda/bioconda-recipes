@@ -1,0 +1,49 @@
+{% set name = "duphist" %}
+{% set version = "1.0.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/minjeongjj/DupHIST/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 4dce19677a675c19d780b9ec2f53c9a55f269f54b97afd6fe29fb9a9c7b5ec81
+
+build:
+  noarch: generic
+  number: 0
+  script: |
+    mkdir -p $PREFIX/bin/scripts
+    cp -r scripts/* $PREFIX/bin/scripts/
+    install -v -m 755 duphist $PREFIX/bin
+  run_exports:
+    - {{ pin_subpackage("duphist", max_pin="x") }}
+
+requirements:
+  run:
+    - perl
+    - perl-config-tiny
+    - perl-data-dumper
+    - perl-statistics-r
+    - r-base
+    - r-cluster
+    - r-desctools
+    - r-nbclust
+    - r-foreach
+    - r-doparallel
+    - r-tictoc
+    - r-agricolae
+    - prank
+    - kakscalculator2
+
+test:
+  commands:
+    - duphist --help || true
+
+about:
+  home: "https://github.com/minjeongjj/DupHIST"
+  license: MIT
+  license_family: MIT
+  summary: "DupHIST: A toolkit for duplication history inference via substitution-based timeframe."
+  license_file: LICENSE
+  dev_url: "https://github.com/minjeongjj/DupHIST"

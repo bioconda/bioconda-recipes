@@ -1,0 +1,52 @@
+{% set name = "SigProfilerExtractor" %}
+{% set version = "1.2.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/source/s/sigprofilerextractor/sigprofilerextractor-{{ version }}.tar.gz
+  sha256: 91b422c083c0c4626c044fa95a25c084119529a74a6ad58d1c7fffad1851ef90
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - SigProfilerExtractor = SigProfilerExtractor.sigprofilerextractor_cli:main_function
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=61
+  run:
+    - python >=3.9
+    - numpy >=2.0.0
+    - pandas >=2.0.0
+    - scipy >=1.6.3
+    - pytorch >=1.8.1
+    - nimfa >=1.1.0
+    - sigprofilerplotting >=1.4.0
+    - sigprofilermatrixgenerator >=1.3.0
+    - sigprofilerassignment >=0.2.0
+    - statsmodels >=0.9.0
+    - scikit-learn >=0.24.2
+    - psutil >=5.6.1
+
+test:
+  imports:
+    - SigProfilerExtractor
+  commands:
+    - SigProfilerExtractor -h
+
+about:
+  home: "https://github.com/AlexandrovLab/SigProfilerExtractor"
+  summary: "Extracts mutational signatures from mutational catalogues."
+  license: "BSD-2-Clause"
+  license_family: BSD
+  license_file: "LICENSE.txt"
+  dev_url: "https://github.com/AlexandrovLab/SigProfilerExtractor"

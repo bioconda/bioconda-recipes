@@ -1,0 +1,53 @@
+{% set name = "cdskit" %}
+{% set version = "0.14.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/kfuku52/cdskit/archive/{{ version }}.tar.gz
+  sha256: 7e40ee4f45c0f282d159acd97bdcf059252d59dbdec11fe37025abcf49a05925
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('cdskit', max_pin="x.x") }}
+  noarch: python
+  script:
+    - "{{ PYTHON }} -m pip install . -vv --ignore-installed --no-deps"
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >={{ python_min }}
+    - biopython
+    - numpy
+
+test:
+  imports:
+    - cdskit
+  commands:
+    - cdskit --help
+
+about:
+  home: "https://github.com/kfuku52/cdskit"
+  license: "BSD-3-Clause"
+  license_file: LICENSE
+  summary: "A toolkit for processing protein-coding sequences (CDS)."
+  description: |
+    CDSKIT is a Python program that processes DNA sequences,
+    especially protein-coding sequences. Many functions of this program are
+    designed to handle DNA sequences using codons (sets of three nucleotides)
+    as the unit, and therefore, edits the coding sequences without causing a
+    frameshift. All sequence formats supported by Biopython are available in
+    this tool for both inputs and outputs.
+
+extra:
+  recipe-maintainers:
+    - kfuku52
+
