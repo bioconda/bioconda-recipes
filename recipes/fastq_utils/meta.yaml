@@ -1,7 +1,8 @@
+{% set name = "fastq_utils" %}
 {% set version = "0.25.3" %}
 
 package:
-  name: fastq_utils
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -9,24 +10,20 @@ source:
   sha256: 73dcefe69c45986d1b2f4e0f66f736e000504f2f3d904f1054840319d3944bb7
 
 build:
-  skip: True  # [osx]
   number: 0
+  run_exports:
+      - {{ pin_subpackage('fastq_utils', max_pin='x.x') }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - make
-    - zlib
   host:
     - zlib
     - ncurses
-    - samtools 0.1.19 =h20b1175_10 # [linux]
+    - samtools 0.1.19 =h20b1175_10  # [linux]
   run:
-    - zlib
     - samtools
-
-# Note: these tools unhelpfully return exit codes of 1, so can't use their -h
-# arguments for testing
 
 test:
   commands:
@@ -42,19 +39,22 @@ test:
     - which bam2fastq
 
 about:
-  home: https://github.com/nunofonseca/fastq_utils
-  dev_url: https://github.com/nunofonseca/fastq_utils
-  license: GPL-3.0-only
-  summary: Validation and manipulation of FASTQ files, scRNA-seq barcode pre-processing and UMI quantification.
+  home: "https://github.com/nunofonseca/fastq_utils"
+  dev_url: "https://github.com/nunofonseca/fastq_utils"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  summary: "Validation and manipulation of FASTQ files, scRNA-seq barcode pre-processing and UMI quantification."
   Description:  |
     Set of Linux utilities to validate and manipulate fastq files. It also 
     includes a set of programs to preprocess barcodes (namely UMIs, cells 
     and samples), add the barcodes as tags in BAM files and count UMIs. 
-  license_family: GPL
   license_file: LICENSE
+  doc_url: "https://github.com/nunofonseca/fastq_utils/blob/{{ version }}/README.md"
 
 extra:
   recipe-maintainers:
     - pinin4fjords
     - nunofonseca
-
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
