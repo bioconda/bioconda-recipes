@@ -1,4 +1,4 @@
-{% set version = "1.0.13" %}
+{% set version = "1.1.4" %}
 {% set name = "squirrel" %}
 
 package:
@@ -7,41 +7,52 @@ package:
 
 source:
   url: https://github.com/aineniamh/squirrel/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 3c9d9451aab5d6d0e2faac14cf51c8673ce5ac8cd974b010a123472f30b8f934
+  sha256: 702d503dd88336fd56cd66382b37eb1557f9a8643e13e54e9b9e59257dc195fa
 
 build:
   number: 0
   noarch: python
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - squirrel = squirrel.command:main
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
-    - python ==3.10
+    - python >=3.7
     - pip
+    - setuptools
   run:
-    - python ==3.10
-    - biopython >=1.74
-    - minimap2 >=2.16
-    - snakemake-minimal ==7.32
+    - python >=3.7
+    - biopython >=1.70
+    - snakemake-minimal <8
     - matplotlib-base >=3.3.1
-    - seaborn
-    - gofasta
+    - seaborn-base
+    - tabulate
     - baltic
     - mako
     - pandas
-    - iqtree >=2.1
+    - gofasta
+    - iqtree
     - jclusterfunk >=0.0.25
+    - minimap2
 
 test:
   commands:
     - squirrel --help
 
 about:
-  home: https://github.com/aineniamh/squirrel
-  license: GPL-3.0-only
+  home: "https://github.com/aineniamh/squirrel"
+  license: "GPL-3.0-only"
   license_family: GPL3
   license_file: LICENSE
-  summary: Some QUIck Reconstruction to Resolve Evolutionary Links
+  summary: "Some QUIck Reconstruction to Resolve Evolutionary Links."
+  dev_url: "https://github.com/aineniamh/squirrel"
+  doc_url: "https://github.com/aineniamh/squirrel/blob/{{ version }}/README.md"
 
+extra:
+  identifiers:
+    - biotools:squirrel
+    - usegalaxy-eu:squirrel_phylo
+    - usegalaxy-eu:squirrel_qc
