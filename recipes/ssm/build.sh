@@ -4,12 +4,15 @@ set -exo pipefail
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CFLAGS="${CFLAGS} -O3"
+
+if [[ "${target_platform}" == "linux-"* ]]; then
+  export CFLAGS="${CFLAGS} -O3 -fPIC"
+else
+  export CFLAGS="${CFLAGS} -O3"
+fi
+
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/
-
-autoreconf -if
 sed -i.bak \
   -e 's/" v."superpose_version" from "superpose_date" built"/" v.%s from %s built"/' \
   -e 's/,ssm::MAJOR_VERSION/,superpose_version, superpose_date, ssm::MAJOR_VERSION/' \
@@ -17,14 +20,8 @@ sed -i.bak \
   -e $'s/------\\n\\n"/------\\n\\n",superpose_version, superpose_date/' \
   superpose.cpp
 
-if [[ "${target_platform}" == "linux-"* ]]; then
-  export CFLAGS="${CFLAGS} -fPIC"
-elif [[ "${target_platform}" == "osx-"* ]]; then
-  sed -i.bak \
-    -e 's/\${wl}-flat_namespace//g' \
-    -e 's/\${wl}-undefined \${wl}suppress/-undefined dynamic_lookup/g' \
-    configure
-fi
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/
+autoreconf -if
 
 ./configure \
     --prefix="${PREFIX}" \
