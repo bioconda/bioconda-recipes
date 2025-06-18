@@ -11,28 +11,29 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 if [[ "$OSTYPE" == "darwin"* ]]; then
     curl -sSLO https://github.com/oneapi-src/oneTBB/releases/download/2019_U9/tbb2019_20191006oss_mac.tgz
     tar -xzf tbb2019_20191006oss_mac.tgz
-    tbb_root="tbb2019_20191006oss"
-    export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+    tbb_root=tbb2019_20191006oss
 else
     curl -sSLO https://github.com/oneapi-src/oneTBB/archive/2019_U9.tar.gz
     tar -xzf 2019_U9.tar.gz
-    tbb_root="oneTBB-2019_U9"
-    export CONFIG_ARGS=""
+    tbb_root=oneTBB-2019_U9
 fi
 
 mkdir -p build
 pushd build
 
-cmake -S .. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-    -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
-    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-    -DTBB_DIR="${PWD}/../$tbb_root" \
-    -DCMAKE_PREFIX_PATH="${PWD}/../$tbb_root/cmake" \
-    "${CONFIG_ARGS}"
+if [[ `uname -s` == "Darwin" ]]; then
+    export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+else
+    export CONFIG_ARGS=""
+fi
+
+cmake -DTBB_DIR="${PWD}/../$tbb_root" -DCMAKE_PREFIX_PATH="${PWD}/../$tbb_root/cmake" -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+    -DCMAKE_C_COMPILER="${CC}" -DCMAKE_C_FLAGS="${CFLAGS}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
+    "${CONFIG_ARGS}" ..
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # omit ripples-fast due to problems building on Mac
-    make -j1 usher matUtils matOptimize usher-sampled ripples
+    make usher matUtils matOptimize usher-sampled ripples -j1
     cat > ripples-fast <<EOF
 #!/bin/bash
 # This is a placeholder for the program ripples-fast on Mac where the build is currently failing.
@@ -46,25 +47,23 @@ echo ""
 EOF
     chmod a+x ripples-fast
 else
-    cmake --build . --target install -j 1
+    make -j1
 fi
 
-install -v -m 0755 ./usher ${PREFIX}/bin
-install -v -m 0755 ./matUtils ${PREFIX}/bin
-install -v -m 0755 ./matOptimize ${PREFIX}/bin
+install -v -m 755 ./usher ./matUtils ./matOptimize ${PREFIX}/bin
 if [[ -f "usher-sampled" ]]; then
-    install -v -m 0755 ./usher-sampled ${PREFIX}/bin
+    install -v -m 755 ./usher-sampled ${PREFIX}/bin
 fi
 if [[ -f "ripples" ]]; then
-    install -v -m 0755 ./ripples ${PREFIX}/bin
+    install -v -m 755 ./ripples ${PREFIX}/bin
 fi
 if [[ -f "ripples-fast" ]]; then
-    install -v -m 0755 ./ripples-fast ${PREFIX}/bin
+    install -v -m 755 ./ripples-fast ${PREFIX}/bin
 fi
-if [ -d ./tbb_cmake_build ]; then
-    cp -rf ./tbb_cmake_build/tbb_cmake_build_subdir_release/* ${PREFIX}/lib/
+if [[ -d ./tbb_cmake_build ]]; then
+    cp -f ./tbb_cmake_build/tbb_cmake_build_subdir_release/* ${PREFIX}/lib/
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-    cp -rf ../$tbb_root/lib/* ${PREFIX}/lib/
+    cp -f ../$tbb_root/lib/* ${PREFIX}/lib/
 fi
 
 popd
