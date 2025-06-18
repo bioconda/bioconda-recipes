@@ -9,11 +9,11 @@ mkdir -p obj/ngs/ngs-java/javadoc/ngs-doc  # prevent error on OSX
 
 # Execute Make commands from a separate subdirectory. Else:
 # ERROR: In source builds are not allowed
-export SRA_BUILD_DIR=${SRC_DIR}/build_sratools
-mkdir -p ${SRA_BUILD_DIR}
+export SRA_BUILD_DIR="${SRC_DIR}/build_sratools"
+mkdir -p "${SRA_BUILD_DIR}"
 
 echo "Compiling sra-tools"
-if [[ "$(uname)" == "Darwin" ]]; then
+if [[ "$(uname -s)" == "Darwin" ]]; then
 	export VDB_INC="${SRC_DIR}/ncbi-vdb/interfaces"
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 	export CFLAGS="${CFLAGS} -DTARGET_OS_OSX"
@@ -35,9 +35,10 @@ cmake -S sra-tools/ -B build_sratools/ \
 	-DCMAKE_C_FLAGS="${CFLAGS}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	${CONFIG_ARGS}
 
-cmake --build build_sratools/ --target install -j "${CPU_COUNT}" -v
+cmake --build build_sratools/ --clean-first --target install -j "${CPU_COUNT}"
 
 
 # Strip package version from binary names
