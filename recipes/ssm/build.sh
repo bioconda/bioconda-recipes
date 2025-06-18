@@ -39,5 +39,5 @@ autoreconf -if
     CXX="${CXX}" \
     CXXFLAGS="${CXXFLAGS}"
 
-make -j"${CPU_COUNT}"
+make -j"${CPU_COUNT}" V=1
 make install
