@@ -9,6 +9,11 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 mkdir -p "${PREFIX}/bin"
 
+if [[ "$(uname -s)" == "Darwin" ]]; then
+	sed -i.bak 's|-std=c++14||' Makefile
+	rm -rf *.bak
+fi
+
 case $(uname -m) in
     aarch64)
 	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a|' Makefile
