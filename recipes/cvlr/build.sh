@@ -3,7 +3,7 @@
 mkdir -p "${PREFIX}/bin"
 
 sed -i.bak 's|-lpthread|-pthread|' Makefile
-sed -i.bak 's|gcc|$(CC)|' Makefile
+sed -i.bak 's|gcc|${CC}|' Makefile
 sed -i.bak 's|-Wall|-Wall -O3|' Makefile
 rm -rf *.bak
 
