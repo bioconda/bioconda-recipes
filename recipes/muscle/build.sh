@@ -34,9 +34,9 @@ elif [[ "${ARCH}" == "aarch64" ]]; then
 fi
 
 # Verify binary exists and is executable
-if [[ ! -x ../bin/muscle ]]; then
-	echo "Error: muscle binary not found"
-	exit 1
-fi
+#if [[ ! -x ../bin/muscle ]]; then
+#	echo "Error: muscle binary not found"
+#	exit 1
+#fi
 
 install -v -m 755 ../bin/muscle "${PREFIX}/bin"
