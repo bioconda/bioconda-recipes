@@ -23,8 +23,10 @@ pushd build
 
 if [[ `uname -s` == "Darwin" ]]; then
     export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+    ln -sf "${CC}" ${PREFIX}/bin/clang
 else
     export CONFIG_ARGS=""
+    ln -sf "${CC}" ${PREFIX}/bin/gcc
 fi
 
 cmake -DTBB_DIR="${PWD}/../$tbb_root" -DCMAKE_PREFIX_PATH="${PWD}/../$tbb_root/cmake" -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
