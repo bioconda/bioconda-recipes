@@ -11,11 +11,11 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 if [[ "$OSTYPE" == "darwin"* ]]; then
     curl -sSLO https://github.com/oneapi-src/oneTBB/releases/download/2019_U9/tbb2019_20191006oss_mac.tgz
     tar -xzf tbb2019_20191006oss_mac.tgz
-    export tbb_root="tbb2019_20191006oss"
+    export tbb_root="$(pwd)/tbb2019_20191006oss"
 else
     curl -sSLO https://github.com/oneapi-src/oneTBB/archive/2019_U9.tar.gz
     tar -xzf 2019_U9.tar.gz
-    export tbb_root="oneTBB-2019_U9"
+    export tbb_root="$(pwd)/oneTBB-2019_U9"
 fi
 
 if [[ `(uname -s)` == "Darwin" ]]; then
