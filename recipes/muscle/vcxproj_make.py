@@ -46,8 +46,8 @@ if ProjFileName is None:
 binary = ProjFileName.replace(".vcxproj", "")
 sys.stderr.write("binary=" + binary + "\n")
 
-compiler_opts = "-I${PREFIX}/include -ffast-math -march=x86-64-v3 -static-libgcc -static-libstdc++ -O3"
-linker_opts = "-L${PREFIX}/lib -ffast-math -march=x86-64-v3 -static-libgcc -static-libstdc++"
+compiler_opts = "-ffast-math -march=x86-64-v3 -O3 -I${PREFIX}/include"
+linker_opts = "-ffast-math -march=x86-64-v3 -L${PREFIX}/lib "
 
 if std:
     compiler_opts += " --std=" + std
