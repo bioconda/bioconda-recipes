@@ -12,4 +12,4 @@ export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
 
 make install CC="${CC}" -j"${CPU_COUNT}"
 
-install -v -m 755 bin/* "${PREFIX}/bin"
+install -v -m 0755 bin/* "${PREFIX}/bin"
