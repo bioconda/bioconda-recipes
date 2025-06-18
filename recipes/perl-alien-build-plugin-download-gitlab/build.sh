@@ -1,6 +1,6 @@
 #!/bin/bash
-
 set -o errexit -o pipefail
+export LC_ALL=C
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [[ -f Build.PL ]]; then
