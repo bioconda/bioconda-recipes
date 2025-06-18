@@ -1,6 +1,6 @@
 #!/bin/bash
 set -ex
-mkdir -p "$PREFIX/bin"
+mkdir -p "${PREFIX}/bin"
 
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
@@ -24,15 +24,19 @@ else
     export CONFIG_ARGS=""
 fi
 
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DTBB_DIR="${tbb_root}" -DCMAKE_PREFIX_PATH="${tbb_root}/cmake" \
-    -DCMAKE_C_COMPILER="${CC}" -DCMAKE_C_FLAGS="${CFLAGS}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
-    -DCMAKE_CXX_COMPILER="${CXX}" "${CONFIG_ARGS}"
+wget https://raw.githubusercontent.com/cmake-basis/legacy-modules/refs/heads/develop/FindTBB.cmake -O "${tbb_root}/cmake/FindTBB.cmake"
+export CMAKE_MODULE_PATH="${tbb_root}/cmake"
 
-cd build
+mkdir -p build
+pushd build
+
+cmake -S .. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DTBB_DIR="$(pwd)/../oneTBB-2019_U9" -DCMAKE_PREFIX_PATH="$(pwd)/../oneTBB-2019_U9/cmake" \
+    -DCMAKE_C_COMPILER="${CC}" -DCMAKE_C_FLAGS="${CFLAGS}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
+    -DCMAKE_CXX_COMPILER="${CXX}" -DBOOST_ROOT="${PREFIX}" "${CONFIG_ARGS}"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # omit ripples-fast due to problems building on Mac
-    make usher matUtils matOptimize usher-sampled ripples -j1
+    make usher matUtils matOptimize usher-sampled ripples -j"${CPU_COUNT}"
     cat > ripples-fast <<EOF
 #!/bin/bash
 # This is a placeholder for the program ripples-fast on Mac where the build is currently failing.
@@ -46,7 +50,7 @@ echo ""
 EOF
     chmod a+x ripples-fast
 else
-    make -j1
+    make -j"${CPU_COUNT}"
 fi
 
 install -v -m 755 ./usher ./matUtils ./matOptimize ${PREFIX}/bin
@@ -64,3 +68,5 @@ if [[ -d ./tbb_cmake_build ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     cp -f ../$tbb_root/lib/* ${PREFIX}/lib/
 fi
+
+popd
