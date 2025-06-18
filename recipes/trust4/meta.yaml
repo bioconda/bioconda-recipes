@@ -1,8 +1,9 @@
-{% set version = "1.0.14" %}
+{% set name = "trust4" %}
+{% set version = "1.1.6.1" %}
 
 package:
-  name: trust4
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 build:
   number: 0
@@ -11,7 +12,7 @@ build:
 
 source:
   url: https://github.com/liulab-dfci/TRUST4/archive/v{{ version }}.tar.gz
-  sha256: cea1e06976ee3887ba1bd56b6ca86864f7f136076087c7b5c52727ada66f5dfd
+  sha256: 036cd63925df864affaeb90e01c97cc2e0565cb0bfe2b574950547c43dabc0d5
 
 requirements:
   build:
@@ -19,7 +20,7 @@ requirements:
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
   host:
-    - samtools 0.1.19.*
+    - samtools 0.1.19.* # [x86_64]
     - zlib
   run:
     - perl
@@ -30,17 +31,27 @@ test:
     - fastq-extractor 2>&1 | cat > /dev/null
     - bam-extractor 2>&1 | cat > /dev/null
     - annotator 2>&1 | cat > /dev/null
-    - which trust-simplerep.pl
-    - which trust-barcoderep.pl
-    - which trust-smartseq.pl
-    - which trust-airr.pl
-    - which BuildDatabaseFa.pl
-    - which BuildImgtAnnot.pl
-    - which run-trust4
+    - test -x ${PREFIX}/bin/trust-simplerep.pl
+    - test -x ${PREFIX}/bin/trust-barcoderep.pl
+    - test -x ${PREFIX}/bin/trust-smartseq.pl
+    - test -x ${PREFIX}/bin/trust-airr.pl
+    - test -x ${PREFIX}/bin/BuildDatabaseFa.pl
+    - test -x ${PREFIX}/bin/BuildImgtAnnot.pl
+    - test -x ${PREFIX}/bin/run-trust4
 
 about:
-  home: https://github.com/liulab-dfci/TRUST4
-  summary: TCR and BCR assembly from bulk or single-cell RNA-seq data
-  license: GPL-3.0-only
-  license_family: GPL3
-  license_file: LICENSE.txt
+  home: "https://github.com/liulab-dfci/TRUST4"
+  summary: "TCR and BCR assembly from bulk or single-cell RNA-seq data."
+  license: MIT
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  dev_url: "https://github.com/liulab-dfci/TRUST4"
+  doc_url: "https://github.com/liulab-dfci/TRUST4/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1038/s41592-021-01142-2
+    - biotools:trust4
