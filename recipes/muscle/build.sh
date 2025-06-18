@@ -25,10 +25,10 @@ elif [[ "${OS}" == "Linux" ]]; then
   	python ./vcxproj_make.py --openmp --pthread --lrt --cppcompiler "${CXX}" --ccompiler "${CC}"
 fi
 
-if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
+if [[ "${ARCH}" == "arm64" ]]; then
 	sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a|' vcxproj_make_osx.py
 	rm -rf *.bak
-elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
+elif [[ "${ARCH}" == "aarch64" ]]; then
 	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a|' vcxproj_make.py
 	rm -rf *.bak
 fi
