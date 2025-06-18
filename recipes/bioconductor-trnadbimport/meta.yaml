@@ -1,57 +1,62 @@
-{% set version = "1.16.0" %}
+{% set version = "1.24.0" %}
 {% set name = "tRNAdbImport" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: bb0f68515995204b16127530bae60894
+about:
+  description: tRNAdbImport imports the entries of the tRNAdb and mtRNAdb (http://trna.bioinf.uni-leipzig.de) as GRanges object.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 + file LICENSE
+  license_file: LICENSE
+  summary: Importing from tRNAdb and mitotRNAdb as GRanges objects
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, rmarkdown, testthat, httptest, BiocStyle, rtracklayer
+  run_exports: '{{ pin_subpackage("bioconductor-trnadbimport", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocGenerics, knitr, rmarkdown, testthat, httptest, BiocStyle, rtracklayer
 requirements:
   host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-modstrings >=1.14.0,<1.15.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-structstrings >=1.14.0,<1.15.0'
-    - 'bioconductor-trna >=1.16.0,<1.17.0'
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-modstrings >=1.22.0,<1.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-structstrings >=1.22.0,<1.23.0
+    - bioconductor-trna >=1.24.0,<1.25.0
     - r-base
-    - r-httr
+    - r-httr2
     - r-stringr
     - r-xml2
   run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-modstrings >=1.14.0,<1.15.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-structstrings >=1.14.0,<1.15.0'
-    - 'bioconductor-trna >=1.16.0,<1.17.0'
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-modstrings >=1.22.0,<1.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-structstrings >=1.22.0,<1.23.0
+    - bioconductor-trna >=1.24.0,<1.25.0
     - r-base
-    - r-httr
+    - r-httr2
     - r-stringr
     - r-xml2
+
+source:
+  md5: 05c490998d3a1d2a552747d44958b6a0
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL-3 + file LICENSE'
-  summary: 'Importing from tRNAdb and mitotRNAdb as GRanges objects'
-  description: 'tRNAdbImport imports the entries of the tRNAdb and mtRNAdb (http://trna.bioinf.uni-leipzig.de) as GRanges object.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

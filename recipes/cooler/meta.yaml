@@ -1,38 +1,42 @@
-{% set version = "0.9.1" %}
+{% set name = "cooler" %}
+{% set version = "0.10.3" %}
 
 package:
-  name: cooler
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://pypi.python.org/packages/source/c/cooler/cooler-{{ version }}.tar.gz
-  sha256: e29ee54797c71c5e3af520772e32d664e7fd09318f15c318777dd62125b15731
+  sha256: 710319e894c80a81d4df89d2f52750ec0d68c0d91286bc06ffb9d61fc49e435a
 
 build:
   number: 0
   noarch: python
   entry_points:
     - cooler = cooler.cli:cli
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('cooler', max_pin="x.x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.8
     - pip
+    - hatchling
+    - hatch-vcs
   run:
     - asciitree
-    - click >7
+    - click >=7
     - cytoolz
     - dask
     - h5py >=2.5
-    - hdf5
     - multiprocess
-    - numpy >=1.9
+    - numpy >=1.26
     - pairix
-    - pandas >1.0
+    - pandas >1.5
     - pyfaidx
-    - pysam >0.8
-    - python
+    - pysam
+    - python >=3.8
     - pyyaml
     - scipy
     - simplejson
@@ -42,16 +46,18 @@ test:
     - cooler
     - cooler.cli
     - cooler.sandbox
-
   commands:
     # click requires a unicode locale
     - cooler --help
 
 about:
-  home: https://github.com/open2c/cooler
-  summary: 'Sparse binary format for genomic interaction matrices'
-  license: BSD-3-Clause
+  home: "https://github.com/open2c/cooler"
+  summary: 'Sparse binary format for genomic interaction matrices.'
+  license: "BSD-3-Clause"
   license_family: BSD
+  license_file: LICENSE
+  dev_url: "https://github.com/open2c/cooler"
+  doc_url: "https://open2c.github.io/cooler"
 
 extra:
   identifiers:

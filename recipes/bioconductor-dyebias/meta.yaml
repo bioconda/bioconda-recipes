@@ -1,41 +1,22 @@
-{% set version = "1.58.0" %}
+{% set version = "1.66.0" %}
 {% set name = "dyebias" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: ebed952e1115f00b803eea21caf15aeb
+about:
+  description: Many two-colour hybridizations suffer from a dye bias that is both gene-specific and slide-specific. The former depends on the content of the nucleotide used for labeling; the latter depends on the labeling percentage. The slide-dependency was hitherto not recognized, and made addressing the artefact impossible.  Given a reasonable number of dye-swapped pairs of hybridizations, or of same vs. same hybridizations, both the gene- and slide-biases can be estimated and corrected using the GASSCO method (Margaritis et al., Mol. Sys. Biol. 5:266 (2009), doi:10.1038/msb.2009.21)
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: The GASSCO method for correcting for slide-dependent gene-specific dye bias
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: limma, convert, GEOquery, dyebiasexamples, methods
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-marray >=1.76.0,<1.77.0'
-    - r-base
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-marray >=1.76.0,<1.77.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'The GASSCO method for correcting for slide-dependent gene-specific dye bias'
-  description: 'Many two-colour hybridizations suffer from a dye bias that is both gene-specific and slide-specific. The former depends on the content of the nucleotide used for labeling; the latter depends on the labeling percentage. The slide-dependency was hitherto not recognized, and made addressing the artefact impossible.  Given a reasonable number of dye-swapped pairs of hybridizations, or of same vs. same hybridizations, both the gene- and slide-biases can be estimated and corrected using the GASSCO method (Margaritis et al., Mol. Sys. Biol. 5:266 (2009), doi:10.1038/msb.2009.21)'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-dyebias", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:dyebias
@@ -43,4 +24,31 @@ extra:
     name: bioconductor-dyebias
     path: recipes/bioconductor-dyebias
     version: 1.40.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: limma, convert, GEOquery, dyebiasexamples, methods
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-marray >=1.84.0,<1.85.0
+    - r-base
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-marray >=1.84.0,<1.85.0
+    - r-base
+
+source:
+  md5: ff4b8a165d42629cc2794925b2afb926
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

@@ -1,47 +1,54 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "SpatialDecon" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 32548789c532014650a765197400da79
+about:
+  description: Using spatial or bulk gene expression data, estimates abundance of mixed cell types within each observation. Based on "Advances in mixed cell deconvolution enable quantification of cell types in spatial transcriptomic data", Danaher (2022). Designed for use with the NanoString GeoMx platform, but applicable to any gene expression data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Deconvolution of mixed cells from spatial and/or bulk gene expression data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: testthat, knitr, rmarkdown, qpdf
+  run_exports: '{{ pin_subpackage("bioconductor-spatialdecon", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, knitr, rmarkdown, qpdf, Seurat
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-geomxtools >=3.2.0,<3.3.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-geomxtools >=3.10.0,<3.11.0
     - r-base
-    - 'r-lognormreg >=0.4'
+    - r-lognormreg >=0.4
     - r-matrix
     - r-repmis
     - r-seuratobject
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-geomxtools >=3.2.0,<3.3.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-geomxtools >=3.10.0,<3.11.0
     - r-base
-    - 'r-lognormreg >=0.4'
+    - r-lognormreg >=0.4
     - r-matrix
     - r-repmis
     - r-seuratobject
+
+source:
+  md5: 1926c558a0c6dc9aed1ca4e2d84073e3
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Deconvolution of mixed cells from spatial and/or bulk gene expression data'
-  description: 'Using spatial or bulk gene expression data, estimates abundance of mixed cell types within each observation. Based on "Advances in mixed cell deconvolution enable quantification of cell types in spatial transcriptomic data", Danaher (2022). Designed for use with the NanoString GeoMx platform, but applicable to any gene expression data.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

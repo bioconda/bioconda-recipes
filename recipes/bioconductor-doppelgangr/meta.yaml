@@ -1,51 +1,22 @@
-{% set version = "1.26.0" %}
+{% set version = "1.34.0" %}
 {% set name = "doppelgangR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 959dd9827864db89ef05d4acd526ad48
+about:
+  description: The main function is doppelgangR(), which takes as minimal input a list of ExpressionSet object, and searches all list pairs for duplicated samples.  The search is based on the genomic data (exprs(eset)), phenotype/clinical data (pData(eset)), and "smoking guns" - supposedly unique identifiers found in pData(eset).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=2.0)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Identify likely duplicate samples from genomic or meta-data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, knitr, rmarkdown, curatedOvarianData, testthat
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-impute >=1.72.0,<1.73.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-sva >=3.46.0,<3.47.0'
-    - r-base
-    - r-digest
-    - r-mnormt
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-impute >=1.72.0,<1.73.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-sva >=3.46.0,<3.47.0'
-    - r-base
-    - r-digest
-    - r-mnormt
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>=2.0)'
-  summary: 'Identify likely duplicate samples from genomic or meta-data'
-  description: 'The main function is doppelgangR(), which takes as minimal input a list of ExpressionSet object, and searches all list pairs for duplicated samples.  The search is based on the genomic data (exprs(eset)), phenotype/clinical data (pData(eset)), and "smoking guns" - supposedly unique identifiers found in pData(eset).'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-doppelgangr", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:doppelgangr
@@ -54,4 +25,41 @@ extra:
     name: bioconductor-doppelgangr
     path: recipes/bioconductor-doppelgangr
     version: 1.8.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, rmarkdown, curatedOvarianData, testthat
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-sva >=3.54.0,<3.55.0
+    - r-base
+    - r-digest
+    - r-mnormt
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-sva >=3.54.0,<3.55.0
+    - r-base
+    - r-digest
+    - r-mnormt
+
+source:
+  md5: dc715e98732ecc99e88ce2418cbf2b45
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

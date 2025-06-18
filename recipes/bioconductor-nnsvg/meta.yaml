@@ -1,49 +1,56 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "nnSVG" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: d42af5f6f0c52ce3081fb37abf439706
+about:
+  description: Method for scalable identification of spatially variable genes (SVGs) in spatially-resolved transcriptomics data. The method is based on nearest-neighbor Gaussian processes and uses the BRISC algorithm for model fitting and parameter estimation. Allows identification and ranking of SVGs with flexible length scales across a tissue slide or within spatial domains defined by covariates. Scales linearly with the number of spatial locations and can be applied to datasets containing thousands or more spatial locations.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Scalable identification of spatially variable genes in spatially-resolved transcriptomics data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, knitr, rmarkdown, STexampleData, scran, ggplot2, testthat
+  run_exports: '{{ pin_subpackage("bioconductor-nnsvg", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, rmarkdown, STexampleData, WeberDivechaLCdata, scran, ggplot2, testthat
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-spatialexperiment >=1.8.0,<1.9.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-spatialexperiment >=1.16.0,<1.17.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-brisc
     - r-matrix
     - r-matrixstats
   run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-spatialexperiment >=1.8.0,<1.9.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-spatialexperiment >=1.16.0,<1.17.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-brisc
     - r-matrix
     - r-matrixstats
+
+source:
+  md5: f6f9e616f7afeacdd159320811fd1b0a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Scalable identification of spatially variable genes in spatially-resolved transcriptomics data'
-  description: 'Method for scalable identification of spatially variable genes (SVGs) in spatially-resolved transcriptomics data. The method is based on nearest-neighbor Gaussian processes and uses the BRISC algorithm for model fitting and parameter estimation. Allows identification and ranking of SVGs with flexible length scales across a tissue slide or within spatial domains defined by covariates. Scales linearly with the number of spatial locations and can be applied to datasets containing thousands or more spatial locations.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

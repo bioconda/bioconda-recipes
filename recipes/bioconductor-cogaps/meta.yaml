@@ -1,61 +1,76 @@
-{% set version = "3.18.0" %}
+{% set version = "3.26.0" %}
 {% set name = "CoGAPS" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 05f7b1c2afa281c6c59e38513d4baafd
+about:
+  description: Coordinated Gene Activity in Pattern Sets (CoGAPS) implements a Bayesian MCMC matrix factorization algorithm, GAPS, and links it to gene set statistic methods to infer biological process activity.  It can be used to perform sparse matrix factorization on any data, and when this data represents biomolecules, to do gene set analysis.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: BSD_3_clause + file LICENSE
+  license_file: LICENSE
+  summary: Coordinated Gene Activity in Pattern Sets
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: testthat, knitr, rmarkdown, BiocStyle
+  run_exports: '{{ pin_subpackage("bioconductor-cogaps", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, knitr, rmarkdown, BiocStyle, SeuratObject, BiocFileCache
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
   host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-rhdf5 >=2.42.0,<2.43.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-fgsea >=1.32.0,<1.33.0
+    - bioconductor-rhdf5 >=2.50.0,<2.51.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-bh
     - r-cluster
+    - r-dplyr
+    - r-forcats
+    - r-ggplot2
     - r-gplots
     - r-rcolorbrewer
     - r-rcpp
     - libblas
     - liblapack
   run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-rhdf5 >=2.42.0,<2.43.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-fgsea >=1.32.0,<1.33.0
+    - bioconductor-rhdf5 >=2.50.0,<2.51.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-bh
     - r-cluster
+    - r-dplyr
+    - r-forcats
+    - r-ggplot2
     - r-gplots
     - r-rcolorbrewer
     - r-rcpp
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - automake
-    - make
+
+source:
+  md5: 599bdb86d2235555ce1540335932f4db
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'BSD_3_clause + file LICENSE'
-  summary: 'Coordinated Gene Activity in Pattern Sets'
-  description: 'Coordinated Gene Activity in Pattern Sets (CoGAPS) implements a Bayesian MCMC matrix factorization algorithm, GAPS, and links it to gene set statistic methods to infer biological process activity.  It can be used to perform sparse matrix factorization on any data, and when this data represents biomolecules, to do gene set analysis.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

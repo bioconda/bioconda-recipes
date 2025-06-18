@@ -1,23 +1,41 @@
-{% set version = "1.46.0" %}
+{% set version = "1.54.0" %}
 {% set name = "mgsa" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 8ced9f2d140d4c14f1fff69dfb679f49
+about:
+  description: Model-based Gene Set Analysis (MGSA) is a Bayesian modeling approach for gene set enrichment. The package mgsa implements MGSA and tools to use MGSA together with the Gene Ontology.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Model-based gene set analysis
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-mgsa", max_pin="x.x") }}'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:mgsa
+    - doi:10.1093/nar/gkq045
+  parent_recipe:
+    name: bioconductor-mgsa
+    path: recipes/bioconductor-mgsa
+    version: 1.28.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: DBI, RSQLite, GO.db, testthat
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - automake
+    - make
   host:
     - r-base
     - r-gplots
@@ -26,24 +44,16 @@ requirements:
   run:
     - r-base
     - r-gplots
-  build:
-    - {{ compiler('c') }}
-    - automake
-    - make
+
+source:
+  md5: 697df1e213746a4582d9d684e06318b7
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Model-based gene set analysis'
-  description: 'Model-based Gene Set Analysis (MGSA) is a Bayesian modeling approach for gene set enrichment. The package mgsa implements MGSA and tools to use MGSA together with the Gene Ontology.'
-extra:
-  identifiers:
-    - biotools:mgsa
-    - doi:10.1093/nar/gkq045
-  parent_recipe:
-    name: bioconductor-mgsa
-    path: recipes/bioconductor-mgsa
-    version: 1.28.0
+    - $R -e "library('{{ name }}')"
 

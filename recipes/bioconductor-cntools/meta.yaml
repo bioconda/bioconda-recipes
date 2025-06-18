@@ -1,43 +1,24 @@
-{% set version = "1.54.0" %}
+{% set version = "1.62.0" %}
 {% set name = "CNTools" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 4edaefb85eee163d531eba241e05d8df
+about:
+  description: This package provides tools to convert the output of segmentation analysis using DNAcopy to a matrix structure with overlapping segments as rows and samples as columns so that other computational analyses can be applied to segmented data
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: Convert segment data into a region by sample matrix to allow for other high level computational analyses.
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-requirements:
-  host:
-    - 'bioconductor-genefilter >=1.80.0,<1.81.0'
-    - r-base
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-genefilter >=1.80.0,<1.81.0'
-    - r-base
-  build:
-    - {{ compiler('c') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: LGPL
-  summary: 'Convert segment data into a region by sample matrix to allow for other high level computational analyses.'
-  description: 'This package provides tools to convert the output of segmentation analysis using DNAcopy to a matrix structure with overlapping segments as rows and samples as columns so that other computational analyses can be applied to segmented data'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-cntools", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:cntools
     - doi:10.1038/nmeth.3252
@@ -45,4 +26,33 @@ extra:
     name: bioconductor-cntools
     path: recipes/bioconductor-cntools
     version: 1.36.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-genefilter >=1.88.0,<1.89.0
+    - r-base
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-genefilter >=1.88.0,<1.89.0
+    - r-base
+
+source:
+  md5: 9b6334e87040b016f3f4359d07dd7a25
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

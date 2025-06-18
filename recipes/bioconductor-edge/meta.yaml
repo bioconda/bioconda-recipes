@@ -1,49 +1,60 @@
-{% set version = "2.30.0" %}
+{% set version = "2.38.0" %}
 {% set name = "edge" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: d1d99a3666fc3f05f226e739e7fb8760
+about:
+  description: The edge package implements methods for carrying out differential expression analyses of genome-wide gene expression studies. Significance testing using the optimal discovery procedure and generalized likelihood ratio tests (equivalent to F-tests and t-tests) are implemented for general study designs. Special functions are available to facilitate the analysis of common study designs, including time course experiments. Other packages such as sva and qvalue are integrated in edge to provide a wide range of tools for gene expression analysis.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Extraction of Differential Gene Expression
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-edge", max_pin="x.x") }}'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:edge
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: testthat, knitr, ggplot2, reshape2
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-qvalue >=2.30.0,<2.31.0'
-    - 'bioconductor-snm >=1.46.0,<1.47.0'
-    - 'bioconductor-sva >=3.46.0,<3.47.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-qvalue >=2.38.0,<2.39.0
+    - bioconductor-sva >=3.54.0,<3.55.0
     - r-base
     - r-mass
     - libblas
     - liblapack
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-qvalue >=2.30.0,<2.31.0'
-    - 'bioconductor-snm >=1.46.0,<1.47.0'
-    - 'bioconductor-sva >=3.46.0,<3.47.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-qvalue >=2.38.0,<2.39.0
+    - bioconductor-sva >=3.54.0,<3.55.0
     - r-base
     - r-mass
-  build:
-    - {{ compiler('c') }}
-    - make
+
+source:
+  md5: 99f1e4889963beb7376407c4dc92fd15
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Extraction of Differential Gene Expression'
-  description: 'The edge package implements methods for carrying out differential expression analyses of genome-wide gene expression studies. Significance testing using the optimal discovery procedure and generalized likelihood ratio tests (equivalent to F-tests and t-tests) are implemented for general study designs. Special functions are available to facilitate the analysis of common study designs, including time course experiments. Other packages such as snm, sva, and qvalue are integrated in edge to provide a wide range of tools for gene expression analysis.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

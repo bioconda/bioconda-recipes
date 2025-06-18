@@ -1,28 +1,31 @@
+{% set name = "augustus" %}
 {% set version = "3.5.0" %}
 {% set sha256 = "5ed6ce6106303b800c5e91d37a250baff43b20824657b853ae04d11ad8bdd686" %}
 
 package:
-  name: augustus
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/Gaius-Augustus/Augustus/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
+    - patches/0001-Makefile.patch
     - patches/homGeneMapping.src.makefile.patch
     - patches/utrrnaseq.patch
 
 build:
-  number: 1
+  number: 7
+  run_exports:
+    - {{ pin_subpackage('augustus', max_pin="x") }}
 
 requirements:
   build:
     - make
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
     - zlib
-    - samtools ==0.1.19
+    - samtools
     - bamtools
     - htslib
     - gsl
@@ -35,7 +38,6 @@ requirements:
     - perl
     - perl-module-build
   run:
-    - zlib
     - boost-cpp
     - gsl
     - lp_solve
@@ -152,8 +154,8 @@ test:
     - fix_in_frame_stop_codon_genes.py --help | grep -Fq 'fix_in_frame_stop_codon_genes.py'
 
 about:
-  home: http://bioinf.uni-greifswald.de/augustus/
-  license: Artistic Licence
+  home: "https://bioinf.uni-greifswald.de/augustus"
+  license: "Artistic Licence"
   license_family: Other
   license_file: "src/LICENSE.TXT"
   summary: 'AUGUSTUS is a gene prediction program for eukaryotes written by Mario
@@ -161,10 +163,16 @@ about:
     it bases its prediction purely on the sequence. AUGUSTUS may also incorporate
     hints on the gene structure coming from extrinsic sources such as EST, MS/MS,
     protein alignments and synthenic genomic alignments.'
+  dev_url: "https://github.com/Gaius-Augustus/Augustus"
+  doc_url: "https://github.com/Gaius-Augustus/Augustus/blob/v{{ version }}/docs/RUNNING-AUGUSTUS.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   identifiers:
     - biotools:augustus
     - doi:10.1093/bioinformatics/btr010
     - usegalaxy-eu:augustus
+    - usegalaxy-eu:augustus_training
   notes: "Builds with sqlite support are currently only available on Linux due to compile issues with macOS."

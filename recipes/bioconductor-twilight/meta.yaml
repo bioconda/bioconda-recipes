@@ -1,43 +1,21 @@
-{% set version = "1.74.0" %}
+{% set version = "1.82.0" %}
 {% set name = "twilight" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 90b4852f79f1e3fbcd709b1cae4af226
+about:
+  description: 'In a typical microarray setting with gene expression data observed under two conditions, the local false discovery rate describes the probability that a gene is not differentially expressed between the two conditions given its corrresponding observed score or p-value level. The resulting curve of p-values versus local false discovery rate offers an insight into the twilight zone between clear differential and clear non-differential gene expression. Package ''twilight'' contains two main functions: Function twilight.pval performs a two-condition test on differences in means for a given input matrix or expression set and computes permutation based p-values. Function twilight performs a stochastic downhill search to estimate local false discovery rates and effect size distributions. The package further provides means to filter for permutations that describe the null distribution correctly. Using filtered permutations, the influence of hidden confounders could be diminished.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Estimation of local false discovery rate
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: golubEsets (>= 1.4.2), vsn (>= 1.7.2)
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - r-base
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - r-base
-  build:
-    - {{ compiler('c') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Estimation of local false discovery rate'
-  description: 'In a typical microarray setting with gene expression data observed under two conditions, the local false discovery rate describes the probability that a gene is not differentially expressed between the two conditions given its corrresponding observed score or p-value level. The resulting curve of p-values versus local false discovery rate offers an insight into the twilight zone between clear differential and clear non-differential gene expression. Package ''twilight'' contains two main functions: Function twilight.pval performs a two-condition test on differences in means for a given input matrix or expression set and computes permutation based p-values. Function twilight performs a stochastic downhill search to estimate local false discovery rates and effect size distributions. The package further provides means to filter for permutations that describe the null distribution correctly. Using filtered permutations, the influence of hidden confounders could be diminished.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-twilight", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:twilight
@@ -46,4 +24,34 @@ extra:
     name: bioconductor-twilight
     path: recipes/bioconductor-twilight
     version: 1.56.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: golubEsets (>= 1.4.2), vsn (>= 1.7.2)
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+
+source:
+  md5: 75f8082dc238fcb07aa7a6793303681f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

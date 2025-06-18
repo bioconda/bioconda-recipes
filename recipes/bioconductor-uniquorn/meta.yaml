@@ -1,54 +1,21 @@
-{% set version = "2.18.0" %}
+{% set version = "2.26.0" %}
 {% set name = "Uniquorn" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 29cbe0d26aaa3866d78607bbfc6b6855
+about:
+  description: '''Uniquorn'' enables users to identify cancer cell lines. Cancer cell line misidentification and cross-contamination reprents a significant challenge for cancer researchers. The identification is vital and in the frame of this package based on the locations/ loci of somatic and germline mutations/ variations. The input format is vcf/ vcf.gz and the files have to contain a single cancer cell line sample (i.e. a single member/genotype/gt column in the vcf file).'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Identification of cancer cell lines based on their weighted mutational/ variational fingerprint
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: testthat, knitr, rmarkdown, BiocGenerics
-requirements:
-  host:
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-variantannotation >=1.44.0,<1.45.0'
-    - r-base
-    - r-data.table
-    - r-doparallel
-    - r-foreach
-    - r-r.utils
-    - r-stringr
-    - r-writexls
-  run:
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-variantannotation >=1.44.0,<1.45.0'
-    - r-base
-    - r-data.table
-    - r-doparallel
-    - r-foreach
-    - r-r.utils
-    - r-stringr
-    - r-writexls
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Identification of cancer cell lines based on their weighted mutational/ variational fingerprint'
-  description: '''Uniquorn'' enables users to identify cancer cell lines. Cancer cell line misidentification and cross-contamination reprents a significant challenge for cancer researchers. The identification is vital and in the frame of this package based on the locations/ loci of somatic and germline mutations/ variations. The input format is vcf/ vcf.gz and the files have to contain a single cancer cell line sample (i.e. a single member/genotype/gt column in the vcf file).'
+  run_exports: '{{ pin_subpackage("bioconductor-uniquorn", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:uniquorn
@@ -57,4 +24,45 @@ extra:
     name: bioconductor-uniquorn
     path: recipes/bioconductor-uniquorn
     version: 2.0.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, knitr, rmarkdown, BiocGenerics
+requirements:
+  host:
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
+    - r-base
+    - r-data.table
+    - r-doparallel
+    - r-foreach
+    - r-r.utils
+    - r-stringr
+    - r-writexls
+  run:
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
+    - r-base
+    - r-data.table
+    - r-doparallel
+    - r-foreach
+    - r-r.utils
+    - r-stringr
+    - r-writexls
+
+source:
+  md5: 55300f5e8b47cb80f27b9eddf671a8b4
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

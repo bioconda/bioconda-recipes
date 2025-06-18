@@ -1,40 +1,42 @@
-{% set version = "1.18.0" %}
+{% set version = "1.26.0" %}
 {% set name = "HSMMSingleCell" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 030d50f78cca5810f70ab930e091ed87
+about:
+  description: Skeletal myoblasts undergo a well-characterized sequence of morphological and transcriptional changes during differentiation. In this experiment, primary human skeletal muscle myoblasts (HSMM) were expanded under high mitogen conditions (GM) and then differentiated by switching to low-mitogen media (DM).  RNA-Seq libraries were sequenced from each of several hundred cells taken over a time-course of serum-induced differentiation. Between 49 and 77 cells were captured at each of four time points (0, 24, 48, 72 hours) following serum switch using the Fluidigm C1 microfluidic system. RNA from each cell was isolated and used to construct mRNA-Seq libraries, which were then sequenced to a depth of ~4 million reads per library, resulting in a complete gene expression profile for each cell.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Single-cell RNA-Seq for differentiating human skeletal muscle myoblasts (HSMM)
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-hsmmsinglecell", max_pin="x.x") }}'
+extra:
+  parent_recipe:
+    name: bioconductor-hsmmsinglecell
+    path: recipes/bioconductor-hsmmsinglecell
+    version: 0.114.0
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 requirements:
   host:
     - r-base
   run:
     - r-base
     - curl
-    - bioconductor-data-packages>=20221112
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 81add770e941f389d38651577056a14e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Single-cell RNA-Seq for differentiating human skeletal muscle myoblasts (HSMM)'
-  description: 'Skeletal myoblasts undergo a well-characterized sequence of morphological and transcriptional changes during differentiation. In this experiment, primary human skeletal muscle myoblasts (HSMM) were expanded under high mitogen conditions (GM) and then differentiated by switching to low-mitogen media (DM).  RNA-Seq libraries were sequenced from each of several hundred cells taken over a time-course of serum-induced differentiation. Between 49 and 77 cells were captured at each of four time points (0, 24, 48, 72 hours) following serum switch using the Fluidigm C1 microfluidic system. RNA from each cell was isolated and used to construct mRNA-Seq libraries, which were then sequenced to a depth of ~4 million reads per library, resulting in a complete gene expression profile for each cell.'
-extra:
-  parent_recipe:
-    name: bioconductor-hsmmsinglecell
-    path: recipes/bioconductor-hsmmsinglecell
-    version: 0.114.0
+    - $R -e "library('{{ name }}')"
 

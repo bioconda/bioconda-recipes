@@ -1,51 +1,22 @@
-{% set version = "2.60.0" %}
+{% set version = "2.68.0" %}
 {% set name = "altcdfenvs" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 314a03730c8948d9da6c351f356135fc
+about:
+  description: Convenience data structures and functions to handle cdfenvs
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: alternative CDF environments (aka probeset mappings)
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: plasmodiumanophelescdf, hgu95acdf, hgu133aprobe, hgu133a.db, hgu133acdf, Rgraphviz, RColorBrewer
-requirements:
-  host:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-hypergraph >=1.70.0,<1.71.0'
-    - 'bioconductor-makecdfenv >=1.74.0,<1.75.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-  run:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-hypergraph >=1.70.0,<1.71.0'
-    - 'bioconductor-makecdfenv >=1.74.0,<1.75.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'alternative CDF environments (aka probeset mappings)'
-  description: 'Convenience data structures and functions to handle cdfenvs'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-altcdfenvs", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:altcdfenvs
@@ -53,4 +24,41 @@ extra:
     name: bioconductor-altcdfenvs
     path: recipes/bioconductor-altcdfenvs
     version: 2.42.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: plasmodiumanophelescdf, hgu95acdf, hgu133aprobe, hgu133a.db, hgu133acdf, Rgraphviz, RColorBrewer
+requirements:
+  host:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-hypergraph >=1.78.0,<1.79.0
+    - bioconductor-makecdfenv >=1.82.0,<1.83.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+  run:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-hypergraph >=1.78.0,<1.79.0
+    - bioconductor-makecdfenv >=1.82.0,<1.83.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+
+source:
+  md5: 9efb851f488b8e78f0b1b38fa8a24090
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

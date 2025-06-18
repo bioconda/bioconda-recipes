@@ -1,41 +1,43 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "TENxVisiumData" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: b5b1e60d7f71343347cb9eadbe03a2c7
+about:
+  description: 'Collection of Visium spatial gene expression datasets by 10X Genomics, formatted into objects of class SpatialExperiment. Data cover various organisms and tissues, and include: single- and multi-section experiments, as well as single sections subjected to both whole transcriptome and targeted panel analysis. Datasets may be used for testing of and as examples in packages, for tutorials and workflow demonstrations, or similar purposes.'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Visium spatial gene expression data by 10X Genomics
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-tenxvisiumdata", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: BiocStyle, knitr, rmarkdown
 requirements:
   host:
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
-    - 'bioconductor-spatialexperiment >=1.8.0,<1.9.0'
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-spatialexperiment >=1.16.0,<1.17.0
     - r-base
   run:
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
-    - 'bioconductor-spatialexperiment >=1.8.0,<1.9.0'
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-spatialexperiment >=1.16.0,<1.17.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221108
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 51c4de649c20eb710f34c5e6803f98ed
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Visium spatial gene expression data by 10X Genomics'
-  description: 'Collection of Visium spatial gene expression datasets by 10X Genomics, formatted into objects of class SpatialExperiment. Data cover various organisms and tissues, and include: single- and multi-section experiments, as well as single sections subjected to both whole transcriptome and targeted panel analysis. Datasets may be used for testing of and as examples in packages, for tutorials and workflow demonstrations, or similar purposes.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

@@ -1,37 +1,39 @@
-{% set version = "1.32.0" %}
+{% set version = "1.40.0" %}
 {% set name = "GSAR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 78713b451f1880bc14abb607a7026dd2
+about:
+  description: Gene set analysis using specific alternative hypotheses. Tests for differential expression, scale and net correlation structure.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Gene Set Analysis in R
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-gsar", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: MASS, GSVAdata, ALL, tweeDEseqCountData, GSEABase, annotate, org.Hs.eg.db, Biobase, genefilter, hgu95av2.db, edgeR, BiocStyle
 requirements:
   host:
     - r-base
-    - 'r-igraph >=0.7.1'
+    - r-igraph >=0.7.1
   run:
     - r-base
-    - 'r-igraph >=0.7.1'
+    - r-igraph >=0.7.1
+source:
+  md5: 1f1a274ccebaff6a0a2ee6ffbb01c8ea
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>=2)'
-  summary: 'Gene Set Analysis in R'
-  description: 'Gene set analysis using specific alternative hypotheses. Tests for differential expression, scale and net correlation structure.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

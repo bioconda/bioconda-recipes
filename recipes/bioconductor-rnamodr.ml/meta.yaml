@@ -1,46 +1,53 @@
-{% set version = "1.12.0" %}
+{% set version = "1.20.0" %}
 {% set name = "RNAmodR.ML" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 328af6dc93c4fc57c1a9634bffc9644d
+about:
+  description: RNAmodR.ML extend the functionality of the RNAmodR package and classical detection strategies towards detection through machine learning models. RNAmodR.ML provides classes, functions and an example workflow to establish a detection stratedy, which can be packaged.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Detecting patterns of post-transcriptional modifications using machine learning
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-rnamodr.ml", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, knitr, rmarkdown, testthat, RNAmodR.Data, RNAmodR.AlkAnilineSeq, GenomicFeatures, Rsamtools, rtracklayer, keras
 requirements:
   host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rnamodr >=1.12.0,<1.13.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rnamodr >=1.20.0,<1.21.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-ranger
   run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rnamodr >=1.12.0,<1.13.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rnamodr >=1.20.0,<1.21.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-ranger
+
+source:
+  md5: 6869e376dfa0bdbc43899f3963029282
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Detecting patterns of post-transcriptional modifications using machine learning'
-  description: 'RNAmodR.ML extend the functionality of the RNAmodR package and classical detection strategies towards detection through machine learning models. RNAmodR.ML provides classes, functions and an example workflow to establish a detection stratedy, which can be packaged.'
+    - $R -e "library('{{ name }}')"
 

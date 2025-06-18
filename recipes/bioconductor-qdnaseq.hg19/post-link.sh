@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "qdnaseq.hg19-1.28.0"
+installBiocDataPackage.sh "qdnaseq.hg19-1.36.0"

@@ -1,46 +1,39 @@
-{% set version = "0.2.3" %}
-{% set sha256 = "96d3734b3317a039145db5f403205e32f34a865865cf178766c49f506ed2acfb" %}
+{% set name = "dicey" %}
+{% set version = "0.3.4" %}
+{% set sha256 = "93a085f479818f3f5bd78b81af049491d3a6da3f0a4d07223a92435cfe18abd9" %}
 
 package:
-  name: dicey
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   - url: https://github.com/gear-genomics/dicey/archive/v{{ version }}.tar.gz
-    sha256: '{{ sha256 }}'
+    sha256: {{ sha256 }}
   - folder: src/xxsds
     git_url: https://github.com/xxsds/sdsl-lite.git
     git_rev: a654b57
 
-
 build:
   number: 0
-
-extra:
-  skip-lints:
-    - uses_vcs_url
-    - missing_hash
+  run_exports:
+    - {{ pin_subpackage("dicey", max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-    - cmake >=3.10
+    - cmake <4
     - autoconf
     - automake
+    - libtool
     - pkg-config
-    - clangdev
-    - llvm-openmp
   host:
     - zlib
     - bzip2
+    - libdeflate
     - boost-cpp
     - htslib
-    - clangdev
-    - llvm-openmp
   run:
-    - zlib
-    - bzip2
     - boost-cpp
     - htslib
 
@@ -49,8 +42,21 @@ test:
     - dicey --help
 
 about:
-  home: https://github.com/gear-genomics/dicey
-  license: GPL-3
-  license_family: GPL
+  home: "https://github.com/gear-genomics/dicey"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: In-silico PCR and variant primer design
+  summary: "In-silico PCR and variant primer design."
+  dev_url: "https://github.com/gear-genomics/dicey"
+  doc_url: "https://github.com/gear-genomics/dicey/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:Gear-Genomics
+    - doi:10.1186/s12864-020-6635-8
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

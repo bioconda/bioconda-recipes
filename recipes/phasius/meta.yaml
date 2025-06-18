@@ -1,26 +1,30 @@
-{% set version = "0.1.0" %}
+{% set name = "phasius" %}
+{% set version = "0.5.0" %}
 
 package:
-  name: phasius
+  name: {{ name }}
   version: {{ version }}
 
 build:
   number: 0
   skip: true  # [osx]
-#  script: cargo install --path . --root ${PREFIX}
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
 
 source:
-  url: https://github.com/wdecoster/phasius/archive/v{{ version }}d.tar.gz
-  sha256: fc210f31c06f5437264cabff9be785e708a293f945b9e865c2bd964fdb61f9c7
+  url: https://github.com/wdecoster/phasius/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 180df6107e3b35f2ce294eb364e5bac7701c8ef4bb1b409f9c3c5e5c790dce50
 
 requirements:
   build:
-    - rust >=1.60  
     - autoconf
     - make
+    - {{ compiler('rust') }}
     - {{ compiler('cxx') }}
     - pkg-config
     - cmake
+    - cargo-bundle-licenses
+    - clangdev
   host:
   run:
 
@@ -32,5 +36,11 @@ test:
 about:
   home: https://github.com/wdecoster/phasius
   license: MIT
-  license_file: LICENSE
+  license_file: 
+    - LICENSE
+    - THIRDPARTY.yml
   summary: A rust tool to create phase-block maps from phased cram/bam files
+
+extra:
+  additional-platforms:
+   - linux-aarch64

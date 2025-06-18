@@ -1,38 +1,40 @@
-{% set version = "1.29.0" %}
+{% set version = "1.38.0" %}
 {% set name = "CardinalWorkflows" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: c45b20fee59776be3f8b3d72044fc0df
+about:
+  description: 'Datasets and workflows for Cardinal: DESI and MALDI examples including pig fetus, cardinal painting, and human RCC.'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Datasets and workflows for the Cardinal MSI
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-cardinalworkflows", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: BiocStyle, knitr, rmarkdown
 requirements:
   host:
-    - 'bioconductor-cardinal >=3.0.0,<3.1.0'
+    - bioconductor-cardinal >=3.8.0,<3.9.0
     - r-base
   run:
-    - 'bioconductor-cardinal >=3.0.0,<3.1.0'
+    - bioconductor-cardinal >=3.8.0,<3.9.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221103
+    - bioconductor-data-packages >=20241103
+source:
+  md5: d245d4c9f068e8618542e73c1ccb4973
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Datasets and workflows for the Cardinal mass spectrometry imaging package'
-  description: 'Datasets and workflows for Cardinal: DESI and MALDI examples including pig fetus, cardinal painting, and human RCC.'
+    - $R -e "library('{{ name }}')"
 

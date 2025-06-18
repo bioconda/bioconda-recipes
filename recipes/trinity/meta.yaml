@@ -1,6 +1,6 @@
 {% set name = "Trinity" %}
-{% set version = "2.15.1" %}
-{% set sha256 = "ba37e5f696d3d54e8749c4ba439901a3e97e14a4314a5229d7a069ad7b1ee580" %}
+{% set version = "2.15.2" %}
+{% set sha256 = "baab87e4878ad097e265c46de121414629bf88fa9342022baae5cac12432a15c" %}
 
 package:
   name: {{ name|lower }}
@@ -11,39 +11,42 @@ source:
   sha256: {{ sha256 }}
   patches:
     - makefile.patch
+    - cflags-remove-m64.patch
+    - 0003-installer.patch
 
 build:
-  skip: True  # [osx]
-  number: 1
+  number: 4
+  run_exports:
+    - {{ pin_subpackage('trinity', max_pin="x") }}
 
 requirements:
   build:
-    - make
     - {{ compiler('cxx') }}
-    - {{ compiler('c') }}
+    - make
     - cmake
-    - autoconf
+  host:
     - libgomp  # [linux]
     - llvm-openmp  # [osx]
-  host:
     - zlib
     - htslib
-  run:
-    - perl-db_file
-    - trimmomatic >=0.36
-    - bowtie
-    - bowtie2 >=2.3.0
-    - kmer-jellyfish >=2.2
-    - openjdk >=8
     - perl
-    - python >=3.6
-    - samtools >=1.9
-    - salmon >=1.0
-    - kallisto
+    - rsync
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - openjdk >=17
+    - perl
+    - perl-db_file
+    - python >=3.7
     - numpy
-    - htslib
+    - trimmomatic >=0.39
+    - bowtie2 >=2.3.0
+    - kmer-jellyfish >=2.3
+    - samtools >=1.14
+    - salmon
+    - kallisto
     - coreutils
-    - r-base >=4.1
+    - r-base
     - r-cluster
     - r-gplots
     - r-fastcluster
@@ -54,9 +57,9 @@ requirements:
     - r-tidyverse
     - r-sm
     - r-vioplot
-    - bioconductor-edger
     - bioconductor-qvalue
     - bioconductor-ctc
+    - bioconductor-edger
     - bioconductor-goseq
     - bioconductor-go.db
     - bioconductor-dexseq
@@ -74,18 +77,19 @@ test:
     - "Trinity_gene_splice_modeler.py --help"
 
 about:
-  home: https://github.com/trinityrnaseq/trinityrnaseq/
-  license: BSD-3-Clause
+  home: "https://github.com/trinityrnaseq/trinityrnaseq"
+  license: "BSD-3-Clause"
   license_family: BSD
-  license_file:
-    - LICENSE
-    - LICENSE.txt
+  license_file: LICENSE
   summary: "Trinity assembles transcript sequences from Illumina RNA-Seq data."
-  doc_url: https://github.com/trinityrnaseq/trinityrnaseq/wiki
-  dev_url: https://github.com/trinityrnaseq/trinityrnaseq/
+  doc_url: "https://github.com/trinityrnaseq/trinityrnaseq/wiki"
+  dev_url: "https://github.com/trinityrnaseq/trinityrnaseq"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:trinity
-    - doi:10.1038/nbt.1883
     - usegalaxy-eu:trinity
+    - doi:10.1038/nbt.1883
+    - doi:10.1038/nprot.2013.084

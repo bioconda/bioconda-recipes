@@ -1,41 +1,22 @@
-{% set version = "1.72.0" %}
+{% set version = "1.80.0" %}
 {% set name = "goTools" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 8f53950b070ae1b49661666205e4c8c9
+about:
+  description: Wraper functions for description/comparison of oligo ID list using Gene Ontology database
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Functions for Gene Ontology database
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: hgu133a.db
-requirements:
-  host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-go.db >=3.16.0,<3.17.0'
-    - r-base
-  run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-go.db >=3.16.0,<3.17.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Functions for Gene Ontology database'
-  description: 'Wraper functions for description/comparison of oligo ID list using Gene Ontology database'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-gotools", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:gotools
@@ -44,4 +25,31 @@ extra:
     name: bioconductor-gotools
     path: recipes/bioconductor-gotools
     version: 1.54.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: hgu133a.db
+requirements:
+  host:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-go.db >=3.20.0,<3.21.0
+    - r-base
+  run:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-go.db >=3.20.0,<3.21.0
+    - r-base
+
+source:
+  md5: 64aabdeff248a4131615200e0d83a673
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

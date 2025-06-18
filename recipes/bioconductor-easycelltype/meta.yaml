@@ -1,52 +1,63 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "EasyCellType" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 647eb1bfd87c25f865e266a17328cd66
+about:
+  description: 'We developed EasyCellType which can automatically examine the input marker lists obtained from existing software such as Seurat over the cell markerdatabases. Two quantification approaches to annotate cell types are provided: Gene set enrichment analysis (GSEA) and a modified versio of Fisher''s exact test. The function presents annotation recommendations in graphical outcomes: bar plots for each cluster showing candidate cell types, as well as a dot plot summarizing the top 5 significant annotations for each cluster.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Annotate cell types for scRNA-seq data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, rmarkdown, testthat (>= 3.0.0), Seurat, BiocManager, devtools
+  run_exports: '{{ pin_subpackage("bioconductor-easycelltype", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, testthat (>= 3.0.0), Seurat, BiocManager, devtools, BiocStyle
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-clusterprofiler >=4.6.0,<4.7.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-org.mm.eg.db >=3.16.0,<3.17.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-clusterprofiler >=4.14.0,<4.15.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-org.mm.eg.db >=3.20.0,<3.21.0
     - r-base
     - r-dplyr
     - r-forcats
     - r-ggplot2
     - r-magrittr
     - r-rlang
+    - r-vctrs >=0.6.4
   run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-clusterprofiler >=4.6.0,<4.7.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-org.mm.eg.db >=3.16.0,<3.17.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-clusterprofiler >=4.14.0,<4.15.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-org.mm.eg.db >=3.20.0,<3.21.0
     - r-base
     - r-dplyr
     - r-forcats
     - r-ggplot2
     - r-magrittr
     - r-rlang
+    - r-vctrs >=0.6.4
+
+source:
+  md5: 0f729cb62a1682ad1e0d282612989734
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Annotate cell types for scRNA-seq data'
-  description: 'We developed EasyCellType which can automatically examine the input marker lists obtained from existing software such as Seurat over the cell markerdatabases. Two quantification approaches to annotate cell types are provided: Gene set enrichment analysis (GSEA) and a modified versio of Fisher''s exact test. The function presents annotation recommendations in graphical outcomes: bar plots for each cluster showing candidate cell types, as well as a dot plot summarizing the top 5 significant annotations for each cluster.'
+    - $R -e "library('{{ name }}')"
 

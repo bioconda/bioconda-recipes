@@ -1,13 +1,13 @@
 {% set name = "MoDLE" %}
-{% set version = "1.0.0" %}
-{% set sha256 = "dd9ea8c08f3c5c7acc00996b8dde96bd321805f8a3f070f9a22f5be9d7240e5b" %}
+{% set version = "1.1.0" %}
+{% set sha256 = "f1bfd2c98ff131d555bc1504fab5c86f35521e51da87d5f66435c145e11a26e3" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
 
 source:
   url: https://github.com/paulsengroup/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
@@ -17,9 +17,9 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake >=3.20
-    - conan >=1.53
-    - git
+    - cmake >=3.25
+    - conan >=2.0
+    - git >2.7
     - make
 
 about:
@@ -31,6 +31,19 @@ about:
   doc_url: https://github.com/paulsengroup/{{ name }}#readme
 
 test:
+  requires:
+    - cooler>=0.9
+    - curl
+    - perl-digest-sha1
+    - pyBigWig>=0.3.22
+    - xz
+  source_files:
+    - cmake/FetchTestDataset.cmake
+    - test/scripts/compare_bwigs.py
+    - test/scripts/modle_integration_test.sh
+    - test/scripts/modle_tools_annotate_barriers_integration_test.sh
+    - test/scripts/modle_tools_eval_integration_test.sh
+    - test/scripts/modle_tools_transform_integration_test.sh
   commands:
     - modle --help
     - modle_tools --help

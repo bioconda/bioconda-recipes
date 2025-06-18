@@ -1,4 +1,4 @@
-{% set version = "1.0.8" %}
+{% set version = "1.5.3" %}
 
 package:
   name: piranha-polio
@@ -6,12 +6,16 @@ package:
 
 source:
   url: https://github.com/polio-nanopore/piranha/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 9f7ead55d1e383fe1222c00eddca2c1dcac387ccc07b54640ca64aa6f7b9738e
+  sha256: ec89de5708e9e91c7e9d76b6b835feabe9e9d72d1b0f13f31598d25c1ec8db36
 
 build:
   number: 0
   noarch: python
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv
+  entry_points:
+    - piranha = piranha.command:main
+  run_exports:
+    - {{ pin_subpackage("piranha-polio", max_pin="x") }}
 
 requirements:
   host:
@@ -25,6 +29,7 @@ requirements:
     - mako >=1.2
     - medaka >=1.7.1
     - minimap2 >=2.17
+    - numpy <=1.23.5
     - pandas
     - pysam
     - python <3.10
@@ -41,5 +46,6 @@ test:
 about:
   home: https://github.com/polio-nanopore/piranha
   license: GPL-3.0-only
+  license_family: GPL3
   license_file: LICENSE
   summary: Poliovirus Investigation Resource Automating Nanopore Haplotype Analysis

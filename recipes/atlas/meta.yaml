@@ -1,39 +1,67 @@
-{% set version = "0.9.9" %}
+{% set version = "2.0.0" %}
 
-package: 
+package:
   name: atlas
   version: {{ version }}
 
 source:
-  url: https://bitbucket.org/wegmannlab/atlas/get/{{ version }}.tar.gz
-  sha256: 7b65eae5ab7ff439accd53febf8caa15ad9d8230278eee31fd5c2e95bf021990
+  url: https://bitbucket.org/wegmannlab/atlas/get/{{ version }}-rc.10.tar.gz
+  sha256: 6c616cee3e0b16871c3440b4e819e9e4c2a80184581c9a5b71898a9873dc9c41
 
 build:
-  number: 1
+  number: 5
+  run_exports:
+    - {{ pin_subpackage("atlas", max_pin="x") }}
 
 requirements:
-    build:
-      - make
-      - {{ compiler('cxx') }}
-      - zlib
-      - armadillo
-      - libblas
-      - openblas
-    host:
-      - zlib
-      - armadillo
-      - libblas
-      - openblas
-    run:
-      - libblas
-      - zlib
-      - armadillo
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - git
+    - ninja
+    - sysroot_linux-64 =2.17  # [linux]
+  host:
+    - armadillo
+    - fmt
+    - htslib
+    - mkl # [x86]
+    - lapack
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - nlohmann_json
+    - openblas
+    - sysroot_linux-64 =2.17  # [linux]
+    - jsoncpp
+    - zlib
+  run:
+    - armadillo
+    - fmt
+    - htslib
+    - mkl # [x86]
+    - lapack
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - nlohmann_json
+    - openblas
+    - sysroot_linux-64 =2.17  # [linux]
+    - jsoncpp
 
 test:
-    commands:
-      - atlas task=recal | grep Wegmann
-      
+  commands:
+    - atlas | grep "successfully"
+    - atlas simulate
+    - atlas HKY85 --bam ATLAS_simulations.bam --fasta ATLAS_simulations.fasta
+    - atlas GLF --bam ATLAS_simulations.bam
+    - atlas saf --glf ATLAS_simulations.glf.gz --fasta ATLAS_simulations.fasta
+    - atlas majorMinor --glf ATLAS_simulations.glf.gz
+    - rm ATLAS_* *.parameters saf.saf.* || exit 1
+
 about:
-  home: https://bitbucket.org/wegmannlab/atlas/wiki/Home
-  license: GPLv3
-  summary: "ATLAS, a suite of methods to accurately genotype and estimate genetic diversity"
+  home: https://atlaswiki.netlify.app
+  license: MPL-2.0
+  summary: "ATLAS: Analysis Tools for Ancient and Low-depth Samples"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

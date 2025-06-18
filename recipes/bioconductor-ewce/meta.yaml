@@ -1,32 +1,36 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "EWCE" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 9c76425eadd916e87b3c8de9b1ab7edf
+about:
+  description: Used to determine which cell types are enriched within gene lists. The package provides tools for testing enrichments within simple gene lists (such as human disease associated genes) and those resulting from differential expression studies. The package does not depend upon any particular Single Cell Transcriptome dataset and user defined datasets can be loaded in and used in the analyses.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Expression Weighted Celltype Enrichment
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: remotes, knitr, BiocStyle, rmarkdown, testthat (>= 3.0.0), readxl, memoise, markdown, sctransform, DESeq2, MAST, DelayedMatrixStats, cowplot, ggdendro, grDevices, grid, gridExtra, scales, magick, badger
+  run_exports: '{{ pin_subpackage("bioconductor-ewce", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: rworkflows, remotes, knitr, BiocStyle, rmarkdown, testthat (>= 3.0.0), readxl, memoise, markdown, sctransform, DESeq2, MAST, DelayedMatrixStats, ggdendro, scales, patchwork
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-ewcedata >=1.6.0,<1.7.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-orthogene >=1.4.0,<1.5.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-ewcedata >=1.14.0,<1.15.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-orthogene >=1.12.0,<1.13.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-data.table
     - r-dplyr
@@ -34,16 +38,16 @@ requirements:
     - r-hgnchelper
     - r-matrix
     - r-reshape2
-    - 'r-rnomni >=1.0'
+    - r-rnomni >=1.0
     - r-stringr
   run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-ewcedata >=1.6.0,<1.7.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-orthogene >=1.4.0,<1.5.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-ewcedata >=1.14.0,<1.15.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-orthogene >=1.12.0,<1.13.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-data.table
     - r-dplyr
@@ -51,15 +55,18 @@ requirements:
     - r-hgnchelper
     - r-matrix
     - r-reshape2
-    - 'r-rnomni >=1.0'
+    - r-rnomni >=1.0
     - r-stringr
+
+source:
+  md5: e13b2171ed0942acfd68bc0fb37d8ee0
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Expression Weighted Celltype Enrichment'
-  description: 'Used to determine which cell types are enriched within gene lists. The package provides tools for testing enrichments within simple gene lists (such as human disease associated genes) and those resulting from differential expression studies. The package does not depend upon any particular Single Cell Transcriptome dataset and user defined datasets can be loaded in and used in the analyses.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

@@ -1,37 +1,39 @@
 {% set version = "1.4.3" %}
 {% set name = "BSgenome.Mmusculus.UCSC.mm39" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: a130ef50dd55da9fd341e6c90b22637b
+about:
+  description: Full genome sequences for Mus musculus (Mouse) as provided by UCSC (genome mm39, based on assembly GRCm39) and stored in Biostrings objects.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Full genome sequences for Mus musculus (UCSC genome mm39, based on GRCm39)
 build:
-  number: 2
+  noarch: generic
+  number: 5
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-bsgenome.mmusculus.ucsc.mm39", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 requirements:
   host:
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
     - r-base
   run:
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221102
+    - bioconductor-data-packages >=20241103
+source:
+  md5: a130ef50dd55da9fd341e6c90b22637b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Full genome sequences for Mus musculus (UCSC genome mm39, based on GRCm39)'
-  description: 'Full genome sequences for Mus musculus (Mouse) as provided by UCSC (genome mm39, based on assembly GRCm39) and stored in Biostrings objects.'
+    - $R -e "library('{{ name }}')"
 

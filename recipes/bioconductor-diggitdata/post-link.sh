@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "diggitdata-1.30.0"
+installBiocDataPackage.sh "diggitdata-1.38.0"

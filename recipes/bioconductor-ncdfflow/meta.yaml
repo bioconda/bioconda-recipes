@@ -1,57 +1,25 @@
-{% set version = "2.44.0" %}
+{% set version = "2.52.0" %}
 {% set name = "ncdfFlow" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 24caf0dba4802c27180be2f7a7eb133a
+about:
+  description: Provides HDF5 storage based methods and functions for manipulation of flow cytometry data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: AGPL-3.0-only
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: 'ncdfFlow: A package that provides HDF5 based storage for flow cytometry data.'
+
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: testthat,parallel,flowStats,knitr
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-rhdf5lib >=1.20.0,<1.21.0'
-    - 'bioconductor-zlibbioc >=1.44.0,<1.45.0'
-    - r-base
-    - r-bh
-    - r-cpp11
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-rhdf5lib >=1.20.0,<1.21.0'
-    - 'bioconductor-zlibbioc >=1.44.0,<1.45.0'
-    - r-base
-    - r-bh
-    - r-cpp11
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: AGPL-3.0-only
-  summary: 'ncdfFlow: A package that provides HDF5 based storage for flow cytometry data.'
-  description: 'Provides HDF5 storage based methods and functions for manipulation of flow cytometry data.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-ncdfflow", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   identifiers:
     - biotools:ncdfflow
     - doi:10.1016/j.copbio.2012.09.003
@@ -59,4 +27,48 @@ extra:
     name: bioconductor-ncdfflow
     path: recipes/bioconductor-ncdfflow
     version: 2.26.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat,parallel,flowStats,knitr
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-rhdf5lib >=1.28.0,<1.29.0
+    - bioconductor-zlibbioc >=1.52.0,<1.53.0
+    - r-base
+    - r-bh
+    - r-cpp11
+    - libblas
+    - liblapack
+    - zlib
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-rhdf5lib >=1.28.0,<1.29.0
+    - bioconductor-zlibbioc >=1.52.0,<1.53.0
+    - r-base
+    - r-bh
+    - r-cpp11
+
+source:
+  md5: d67423b40637d81fccdf25642a6ae33b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

@@ -1,54 +1,65 @@
-{% set version = "1.30.0" %}
+{% set version = "1.38.0" %}
 {% set name = "msa" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 1c8b9a24eef7b30e2e3359185c0abda6
-  patches:
-    - infinity.patch
+about:
+  description: The 'msa' package provides a unified R/Bioconductor interface to the multiple sequence alignment algorithms ClustalW, ClustalOmega, and Muscle. All three algorithms are integrated in the package, therefore, they do not depend on any external software tools and are available for all major platforms. The multiple sequence alignment algorithms are complemented by a function for pretty-printing multiple sequence alignments using the LaTeX package TeXshade.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Multiple Sequence Alignment
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: Biobase, knitr, seqinr, ape (>= 5.1), phangorn
+  run_exports: '{{ pin_subpackage("bioconductor-msa", max_pin="x.x") }}'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:msa
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: Biobase, knitr, seqinr, ape (>= 5.1), phangorn, pwalign
 # SystemRequirements: GNU make
 requirements:
-  host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - 'r-rcpp >=0.11.1'
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - 'r-rcpp >=0.11.1'
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - automake
     - make
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-rcpp >=0.11.1
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-rcpp >=0.11.1
+
+source:
+  md5: b0876e877edd9fd49356b20229f9424f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Multiple Sequence Alignment'
-  description: 'The ''msa'' package provides a unified R/Bioconductor interface to the multiple sequence alignment algorithms ClustalW, ClustalOmega, and Muscle. All three algorithms are integrated in the package, therefore, they do not depend on any external software tools and are available for all major platforms. The multiple sequence alignment algorithms are complemented by a function for pretty-printing multiple sequence alignments using the LaTeX package TeXshade.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

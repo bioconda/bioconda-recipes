@@ -1,36 +1,48 @@
 {% set name = "learnMSA" %}
-{% set version = "1.1.2" %}
+{% set version = "2.0.11" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: b6b7362c967008d1dc2ed07045f05558ca2e6c1387c06054f75230a53f2b3ab2
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/learnmsa-{{ version }}.tar.gz"
+  sha256: 241024c789c1026438cf404c47bcf766c48b41841c1b9ff3229b7eb913e895b6
 
 build:
   number: 0
   entry_points:
     - learnMSA = learnMSA.run:run_main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('learnmsa', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.7
+    - python =3.12
+    - setuptools
   run:
     - logomaker
     - networkx
     - seaborn
-    - python >=3.7
-    - tensorflow >=2.7.0
+    - python =3.12
+    - tensorflow =2.18
+    - biopython >=1.69
+    - pyfamsa
+    - transformers
+    - imageio
+    - sentencepiece
+    - tf-keras =2.18
+    - pytorch =2.6
+    - mmseqs2
 
 test:
   imports:
     - learnMSA
     - learnMSA.msa_hmm
+    - learnMSA.protein_language_models
     - learnMSA.run
   commands:
     - learnMSA --help
@@ -46,3 +58,6 @@ about:
 extra:
   recipe-maintainers:
     - felbecker
+  identifiers:
+    - doi:10.1093/gigascience/giac104
+    - biotools:learnMSA

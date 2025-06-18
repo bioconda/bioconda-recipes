@@ -1,31 +1,35 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "memes" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: cd87df8450ab4b31ed3be36ac4bd7ce1
+about:
+  description: A seamless interface to the MEME Suite family of tools for motif analysis. 'memes' provides data aware utilities for using GRanges objects as entrypoints to motif analysis, data structures for examining & editing motif lists, and novel data visualizations. 'memes' functions and data structures are amenable to both base R and tidyverse workflows.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: motif matching, comparison, and de novo discovery using the MEME Suite
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-memes", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: cowplot, BSgenome.Dmelanogaster.UCSC.dm3, BSgenome.Dmelanogaster.UCSC.dm6, forcats, testthat (>= 2.1.0), knitr, MotifDb, pheatmap, PMCMRplus, plyranges (>= 1.9.1), rmarkdown, covr
 # SystemRequirements: Meme Suite (v5.3.3 or above) <http://meme-suite.org/doc/download.html>
 requirements:
   host:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-universalmotif >=1.16.0,<1.17.0'
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-universalmotif >=1.24.0,<1.25.0
     - r-base
-    - 'r-cmdfun >=1.0.2'
+    - r-cmdfun >=1.0.2
     - r-dplyr
     - r-ggplot2
     - r-ggseqlogo
@@ -41,11 +45,11 @@ requirements:
     - r-usethis
     - r-xml2
   run:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-universalmotif >=1.16.0,<1.17.0'
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-universalmotif >=1.24.0,<1.25.0
     - r-base
-    - 'r-cmdfun >=1.0.2'
+    - r-cmdfun >=1.0.2
     - r-dplyr
     - r-ggplot2
     - r-ggseqlogo
@@ -60,13 +64,16 @@ requirements:
     - r-tidyr
     - r-usethis
     - r-xml2
+
+source:
+  md5: ca85fcf4bbc792484859320c12a8bde7
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'motif matching, comparison, and de novo discovery using the MEME Suite'
-  description: 'A seamless interface to the MEME Suite family of tools for motif analysis. ''memes'' provides data aware utilities for using GRanges objects as entrypoints to motif analysis, data structures for examining & editing motif lists, and novel data visualizations. ''memes'' functions and data structures are amenable to both base R and tidyverse workflows.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

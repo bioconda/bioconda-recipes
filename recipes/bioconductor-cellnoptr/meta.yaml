@@ -1,28 +1,47 @@
-{% set version = "1.44.0" %}
+{% set version = "1.52.0" %}
 {% set name = "CellNOptR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: e438afa72966a32111828601470f9750
+about:
+  description: This package does optimisation of boolean logic networks of signalling pathways based on a previous knowledge network and a set of data upon perturbation of the nodes in the network.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Training of boolean logic models of signalling networks using prior knowledge networks and perturbation data
+
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-cellnoptr", max_pin="x.x") }}'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+
+  identifiers:
+    - biotools:cellnoptr
+    - doi:10.1186/1752-0509-6-133
+  parent_recipe:
+    name: bioconductor-cellnoptr
+    path: recipes/bioconductor-cellnoptr
+    version: 1.26.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: data.table, dplyr, tidyr, readr, knitr, RUnit, BiocGenerics,
 # SystemRequirements: Graphviz version >= 2.2
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
   host:
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-rbgl >=1.74.0,<1.75.0'
-    - 'bioconductor-rgraphviz >=2.42.0,<2.43.0'
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-rbgl >=1.82.0,<1.83.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
     - r-base
     - r-ggplot2
     - r-igraph
@@ -33,11 +52,11 @@ requirements:
     - r-xml
     - libblas
     - liblapack
-    - 'graphviz >=2.2'
+    - graphviz >=2.2
   run:
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-rbgl >=1.74.0,<1.75.0'
-    - 'bioconductor-rgraphviz >=2.42.0,<2.43.0'
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-rbgl >=1.82.0,<1.83.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
     - r-base
     - r-ggplot2
     - r-igraph
@@ -46,25 +65,17 @@ requirements:
     - r-stringi
     - r-stringr
     - r-xml
-    - 'graphviz >=2.2'
-  build:
-    - {{ compiler('c') }}
-    - make
+    - graphviz >=2.2
+
+source:
+  md5: 4e04f8ff6b1bd740c8550feb529780a5
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Training of boolean logic models of signalling networks using prior knowledge networks and perturbation data'
-  description: 'This package does optimisation of boolean logic networks of signalling pathways based on a previous knowledge network and a set of data upon perturbation of the nodes in the network.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-extra:
-  identifiers:
-    - biotools:cellnoptr
-    - doi:10.1186/1752-0509-6-133
-  parent_recipe:
-    name: bioconductor-cellnoptr
-    path: recipes/bioconductor-cellnoptr
-    version: 1.26.0
+    - $R -e "library('{{ name }}')"
 

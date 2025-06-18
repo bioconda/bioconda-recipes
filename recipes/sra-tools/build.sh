@@ -1,31 +1,43 @@
 #!/bin/bash -e
 
-export CFLAGS="${CFLAGS} -DH5_USE_110_API"
-
-echo "compiling sra-tools"
-if [[ $OSTYPE == "darwin"* ]]; then
-    export CFLAGS="-DTARGET_OS_OSX $CFLAGS"
-    export CXXFLAGS="-DTARGET_OS_OSX $CXXFLAGS"
-fi
-
-export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3 -DH5_USE_110_API -D_FILE_OFFSET_BITS=64 ${LDFLAGS}"
+export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
 
 mkdir -p obj/ngs/ngs-java/javadoc/ngs-doc  # prevent error on OSX
 
 
 # Execute Make commands from a separate subdirectory. Else:
 # ERROR: In source builds are not allowed
-SRA_BUILD_DIR=./build_sratools
-mkdir ${SRA_BUILD_DIR}
-pushd ${SRA_BUILD_DIR}
-cmake ../sra-tools/ -DVDB_BINDIR=${BUILD_PREFIX}/lib64 \
-    -DVDB_LIBDIR=${BUILD_PREFIX}/lib64 \
-    -DVDB_INCDIR=${BUILD_PREFIX}/include \
-    -DCMAKE_INSTALL_PREFIX=${PREFIX} \
-    -DCMAKE_BUILD_TYPE=Release
-cmake --build .
-cmake --install .
-popd
+export SRA_BUILD_DIR=${SRC_DIR}/build_sratools
+mkdir -p ${SRA_BUILD_DIR}
+
+echo "Compiling sra-tools"
+if [[ "$(uname)" == "Darwin" ]]; then
+	export VDB_INC="${SRC_DIR}/ncbi-vdb/interfaces"
+	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	export CFLAGS="${CFLAGS} -DTARGET_OS_OSX"
+	export CXXFLAGS="${CXXFLAGS} -DTARGET_OS_OSX"
+else
+	export VDB_INC="${PREFIX}/include"
+	export CONFIG_ARGS=""
+fi
+
+cmake -S sra-tools/ -B build_sratools/ \
+	-DVDB_BINDIR="${PREFIX}" \
+	-DVDB_LIBDIR="${PREFIX}/lib" \
+	-DVDB_INCDIR="${VDB_INC}" \
+	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DBUILD_SHARED_LIBS=ON \
+	-DCMAKE_INSTALL_LIBDIR="${PREFIX}/lib" \
+	-DCMAKE_C_COMPILER="${CC}" \
+	-DCMAKE_C_FLAGS="${CFLAGS}" \
+	-DCMAKE_CXX_COMPILER="${CXX}" \
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	${CONFIG_ARGS}
+
+cmake --build build_sratools/ --target install -j "${CPU_COUNT}" -v
 
 
 # Strip package version from binary names
@@ -38,5 +50,5 @@ for exe in \
     srapath-orig \
     sra-pileup-orig
 do
-    ln -s "${exe}.${PKG_VERSION}" "${exe}"
+    ln -sf "${exe}.${PKG_VERSION}" "${exe}"
 done

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "hicdatalymphoblast-1.33.0"
+installBiocDataPackage.sh "hicdatalymphoblast-1.42.0"

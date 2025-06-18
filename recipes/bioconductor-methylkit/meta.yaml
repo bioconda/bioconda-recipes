@@ -1,38 +1,57 @@
-{% set version = "1.24.0" %}
+{% set version = "1.32.0" %}
 {% set name = "methylKit" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: b8bf98f842f90ab6e4759bf0711282e0
+about:
+  description: methylKit is an R package for DNA methylation analysis and annotation from high-throughput bisulfite sequencing. The package is designed to deal with sequencing data from RRBS and its variants, but also target-capture methods and whole genome bisulfite sequencing. It also has functions to analyze base-pair resolution 5hmC data from experimental protocols such as oxBS-Seq and TAB-Seq. Methylation calling can be performed directly from Bismark aligned BAM files.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: DNA methylation analysis from high-throughput bisulfite sequencing results
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-methylkit", max_pin="x.x") }}'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:methylkit
+  parent_recipe:
+    name: bioconductor-methylkit
+    path: recipes/bioconductor-methylkit
+    version: 1.6.3
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: testthat (>= 2.1.0), knitr, rmarkdown, genomation, BiocManager
 # SystemRequirements: GNU make
 requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
   host:
-    - 'bioconductor-fastseg >=1.44.0,<1.45.0'
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-qvalue >=2.30.0,<2.31.0'
-    - 'bioconductor-rhtslib >=2.0.0,<2.1.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-zlibbioc >=1.44.0,<1.45.0'
+    - bioconductor-fastseg >=1.52.0,<1.53.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-qvalue >=2.38.0,<2.39.0
+    - bioconductor-rhtslib >=3.2.0,<3.3.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-zlibbioc >=1.52.0,<1.53.0
     - r-base
-    - 'r-data.table >=1.9.6'
+    - r-data.table >=1.9.6
     - r-emdbook
     - r-gtools
     - r-kernsmooth
@@ -42,20 +61,23 @@ requirements:
     - r-rcpp
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
+
   run:
-    - 'bioconductor-fastseg >=1.44.0,<1.45.0'
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-qvalue >=2.30.0,<2.31.0'
-    - 'bioconductor-rhtslib >=2.0.0,<2.1.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-zlibbioc >=1.44.0,<1.45.0'
+    - bioconductor-fastseg >=1.52.0,<1.53.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-qvalue >=2.38.0,<2.39.0
+    - bioconductor-rhtslib >=3.2.0,<3.3.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-zlibbioc >=1.52.0,<1.53.0
     - r-base
-    - 'r-data.table >=1.9.6'
+    - r-data.table >=1.9.6
     - r-emdbook
     - r-gtools
     - r-kernsmooth
@@ -63,23 +85,16 @@ requirements:
     - r-mgcv
     - r-r.utils
     - r-rcpp
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: 569d9049779250a340f2543af4bdd088
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'DNA methylation analysis from high-throughput bisulfite sequencing results'
-  description: 'methylKit is an R package for DNA methylation analysis and annotation from high-throughput bisulfite sequencing. The package is designed to deal with sequencing data from RRBS and its variants, but also target-capture methods and whole genome bisulfite sequencing. It also has functions to analyze base-pair resolution 5hmC data from experimental protocols such as oxBS-Seq and TAB-Seq. Methylation calling can be performed directly from Bismark aligned BAM files.'
-extra:
-  identifiers:
-    - biotools:methylkit
-  parent_recipe:
-    name: bioconductor-methylkit
-    path: recipes/bioconductor-methylkit
-    version: 1.6.3
+    - $R -e "library('{{ name }}')"
 

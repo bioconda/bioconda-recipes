@@ -1,47 +1,22 @@
-{% set version = "1.24.0" %}
+{% set version = "1.32.0" %}
 {% set name = "philr" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 988e7af713c22b59fc49b9eb7d73d14a
+about:
+  description: PhILR is short for Phylogenetic Isometric Log-Ratio Transform. This package provides functions for the analysis of compositional data (e.g., data representing proportions of different variables/parts). Specifically this package allows analysis of compositional data where the parts can be related through a phylogenetic tree (as is common in microbiota survey data) and makes available the Isometric Log Ratio transform built from the phylogenetic tree and utilizing a weighted reference measure.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Phylogenetic partitioning based ILR transform for metagenomics data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: testthat, knitr, ecodist, rmarkdown, BiocStyle, phyloseq, SummarizedExperiment, TreeSummarizedExperiment, glmnet, dplyr, mia
-requirements:
-  host:
-    - 'bioconductor-ggtree >=3.6.0,<3.7.0'
-    - r-ape
-    - r-base
-    - r-ggplot2
-    - r-phangorn
-    - r-tidyr
-  run:
-    - 'bioconductor-ggtree >=3.6.0,<3.7.0'
-    - r-ape
-    - r-base
-    - r-ggplot2
-    - r-phangorn
-    - r-tidyr
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Phylogenetic partitioning based ILR transform for metagenomics data'
-  description: 'PhILR is short for Phylogenetic Isometric Log-Ratio Transform. This package provides functions for the analysis of compositional data (e.g., data representing proportions of different variables/parts). Specifically this package allows analysis of compositional data where the parts can be related through a phylogenetic tree (as is common in microbiota survey data) and makes available the Isometric Log Ratio transform built from the phylogenetic tree and utilizing a weighted reference measure.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-philr", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:philr
@@ -49,4 +24,37 @@ extra:
     name: bioconductor-philr
     path: recipes/bioconductor-philr
     version: 1.8.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, knitr, ecodist, rmarkdown, BiocStyle, phyloseq, SummarizedExperiment, TreeSummarizedExperiment, glmnet, dplyr, mia
+requirements:
+  host:
+    - bioconductor-ggtree >=3.14.0,<3.15.0
+    - r-ape
+    - r-base
+    - r-ggplot2
+    - r-phangorn
+    - r-tidyr
+  run:
+    - bioconductor-ggtree >=3.14.0,<3.15.0
+    - r-ape
+    - r-base
+    - r-ggplot2
+    - r-phangorn
+    - r-tidyr
+
+source:
+  md5: e45ace4abfb591c0f37ab174248f6311
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

@@ -1,43 +1,45 @@
-{% set version = "1.22.0" %}
+{% set version = "1.30.0" %}
 {% set name = "AnnotationFilter" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 479cc3a2941b020e86b344ee1fc49597
+about:
+  description: This package provides class and other infrastructure to implement filters for manipulating Bioconductor annotation resources. The filters will be used by ensembldb, Organism.dplyr, and other packages.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Facilities for Filtering Bioconductor Annotation Resources
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, knitr, testthat, RSQLite, org.Hs.eg.db, rmarkdown
-requirements:
-  host:
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - r-base
-    - r-lazyeval
-  run:
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - r-base
-    - r-lazyeval
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Facilities for Filtering Bioconductor Annotation Resources'
-  description: 'This package provides class and other infrastructure to implement filters for manipulating Bioconductor annotation resources. The filters will be used by ensembldb, Organism.dplyr, and other packages.'
+  run_exports: '{{ pin_subpackage("bioconductor-annotationfilter", max_pin="x.x") }}'
 extra:
   parent_recipe:
     name: bioconductor-annotationfilter
     path: recipes/bioconductor-annotationfilter
     version: 1.4.0
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: BiocStyle, knitr, testthat, RSQLite, org.Hs.eg.db, rmarkdown
+requirements:
+  host:
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - r-base
+    - r-lazyeval
+  run:
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - r-base
+    - r-lazyeval
+source:
+  md5: da4a64897ad46309b7668de0fbacd487
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

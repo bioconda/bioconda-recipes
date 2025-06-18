@@ -1,40 +1,43 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "qsmooth" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: fd62456b97bd33c2f43d44b6a7859b61
+about:
+  description: 'Smooth quantile normalization is a generalization of quantile normalization, which is average of the two types of assumptions about the data generation process: quantile normalization and quantile normalization between groups.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Smooth quantile normalization
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-qsmooth", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: bodymapRat, quantro, knitr, rmarkdown, BiocStyle, testthat
 requirements:
   host:
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-sva >=3.46.0,<3.47.0'
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-sva >=3.54.0,<3.55.0
     - r-base
     - r-hmisc
   run:
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-sva >=3.46.0,<3.47.0'
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-sva >=3.54.0,<3.55.0
     - r-base
     - r-hmisc
+source:
+  md5: 45909d751d39e66fd98d35c49930b013
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'CC BY 4.0'
-  summary: 'Smooth quantile normalization'
-  description: 'Smooth quantile normalization is a generalization of quantile normalization, which is average of the two types of assumptions about the data generation process: quantile normalization and quantile normalization between groups.'
+    - $R -e "library('{{ name }}')"
 

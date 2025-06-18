@@ -1,4 +1,4 @@
-{% set version = "0.15.0" %}
+{% set version = "0.16.2" %}
 
 package:
   name: genomepy
@@ -6,12 +6,14 @@ package:
 
 source:
   url: https://github.com/vanheeringen-lab/genomepy/releases/download/{{ version }}/genomepy-{{ version }}.tar.gz
-  sha256: c1bf7271759ef0dd68353311803bfc929fc727f3ca7df9fc7f295194994c359e
+  sha256: f209738ed96b51c99bb9d27a3d905f24eac749330dc2fd014c3a2e70eb43eb5b
 
 build:
-  number: 0
+  number: 1
   noarch: python
   script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  run_exports:
+    - {{ pin_subpackage('genomepy', max_pin="x.x") }}
   
 requirements:
   host:
@@ -26,9 +28,11 @@ requirements:
     - click
     - colorama
     - filelock >=3.5
+    - libsqlite <3.49  # v3.49.1: no column "size" (this is a diskcache requirement)
     - loguru
     - mygene
-    - mysql-connector-python
+    - mysql <=8.4  # fix for 'mysql_native_password' cannot be loaded
+    - mysql-connector-python <=8.4  # fix for 'mysql_native_password' cannot be loaded
     - norns >=0.1.6
     - numpy
     - pandas

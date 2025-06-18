@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "msd16s-1.18.0"
+installBiocDataPackage.sh "msd16s-1.25.0"

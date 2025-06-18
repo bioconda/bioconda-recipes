@@ -10,18 +10,19 @@ source:
   sha256: '3e2c2e9d88bdc714b16b28cce1b5b77db4e4831c2e46287c90a3ddd063eca073'
 
 build:
-  skip: True  # [py27 or py >= 39]
-  number: 3
+  number: 6
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
   entry_points:
     - cortexpy=cortexpy.__main__:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
 
 requirements:
   build:
     - {{ compiler('cxx') }}
   host:
     - pip
-    - python
+    - python ==3.8
   run:
     - attrs
     - biopython
@@ -29,7 +30,7 @@ requirements:
     - msgpack-python
     - networkx
     - numpy
-    - python
+    - python ==3.8
     - pyyaml
     - schema
 
@@ -51,13 +52,16 @@ test:
 
 about:
   home: https://github.com/winni2k/cortexpy
-  license: Apache Software
+  license: Apache-2.0
   license_family: APACHE
   license_file: LICENSE.txt
-  summary: "A Python API for manipulating (Mc)Cortex de novo assembly graph and link data"
-  doc_url: https://cortexpy.readthedocs.io/en/v{{ version }}/
+  summary: "A Python API for manipulating (Mc)Cortex de novo assembly graph and link data."
+  doc_url: https://cortexpy.readthedocs.io/en/v{{ version }}
   dev_url: https://github.com/winni2k/cortexpy
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - winni2k

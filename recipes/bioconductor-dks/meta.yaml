@@ -1,22 +1,23 @@
-{% set version = "1.44.0" %}
+{% set version = "1.52.0" %}
 {% set name = "dks" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: d93ca0629aabccf5f42958777ba341c9
+about:
+  description: The dks package consists of a set of diagnostic functions for multiple testing methods. The functions can be used to determine if the p-values produced by a multiple testing procedure are correct. These functions are designed to be applied to simulated data. The functions require the entire set of p-values from multiple simulated studies, so that the joint distribution can be evaluated.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: The double Kolmogorov-Smirnov package for evaluating multiple testing procedures.
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-dks", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 requirements:
   host:
     - r-base
@@ -24,13 +25,14 @@ requirements:
   run:
     - r-base
     - r-cubature
+source:
+  md5: 63404c3bfc062f81249bdd219e229ef5
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL
-  summary: 'The double Kolmogorov-Smirnov package for evaluating multiple testing procedures.'
-  description: 'The dks package consists of a set of diagnostic functions for multiple testing methods. The functions can be used to determine if the p-values produced by a multiple testing procedure are correct. These functions are designed to be applied to simulated data. The functions require the entire set of p-values from multiple simulated studies, so that the joint distribution can be evaluated.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

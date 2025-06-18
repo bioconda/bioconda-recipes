@@ -1,45 +1,45 @@
-{% set version = "1.20.0" %}
+{% set version = "1.28.0" %}
 {% set name = "BiocSklearn" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 978d745a28451ee4dcbc639501be35c7
+about:
+  description: This package provides interfaces to selected sklearn elements, and demonstrates fault tolerant use of python modules requiring extensive iteration.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: interface to python sklearn via Rstudio reticulate
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: testthat, restfulSE, HDF5Array, BiocStyle, rmarkdown, knitr
+  run_exports: '{{ pin_subpackage("bioconductor-biocsklearn", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: testthat, HDF5Array, BiocStyle, rmarkdown, knitr
 # SystemRequirements: python (>= 2.7), sklearn, numpy, pandas, h5py
 requirements:
   host:
-    - 'bioconductor-basilisk >=1.9.0,<1.10.0'
-    - 'bioconductor-basilisk.utils >=1.10.0,<1.11.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-basilisk >=1.18.0,<1.19.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-reticulate
-    - 'python >=2.7'
+    - python >=2.7
   run:
-    - 'bioconductor-basilisk >=1.9.0,<1.10.0'
-    - 'bioconductor-basilisk.utils >=1.10.0,<1.11.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-basilisk >=1.18.0,<1.19.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-reticulate
-    - 'python >=2.7'
+    - python >=2.7
+source:
+  md5: 3b8803f511bbfa480a9b39faa6d10434
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'interface to python sklearn via Rstudio reticulate'
-  description: 'This package provides interfaces to selected sklearn elements, and demonstrates fault tolerant use of python modules requiring extensive iteration.'
+    - $R -e "library('{{ name }}')"
 

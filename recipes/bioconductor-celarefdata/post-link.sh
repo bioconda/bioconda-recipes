@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "celarefdata-1.15.0"
+installBiocDataPackage.sh "celarefdata-1.24.0"

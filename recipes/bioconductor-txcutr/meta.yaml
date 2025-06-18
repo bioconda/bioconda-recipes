@@ -1,53 +1,62 @@
-{% set version = "1.4.0" %}
+{% set version = "1.12.0" %}
 {% set name = "txcutr" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 0523d546264d21010fc1494c6608cd58
+about:
+  description: Various mRNA sequencing library preparation methods generate sequencing reads specifically from the transcript ends. Analyses that focus on quantification of isoform usage from such data can be aided by using truncated versions of transcriptome annotations, both at the alignment or pseudo-alignment stage, as well as in downstream analysis. This package implements some convenience methods for readily generating such truncated annotations and their corresponding sequences.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Transcriptome CUTteR
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-txcutr", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: RefManageR, BiocStyle, knitr, sessioninfo, rmarkdown, testthat (>= 3.0.0), TxDb.Scerevisiae.UCSC.sacCer3.sgdGene, BSgenome.Scerevisiae.UCSC.sacCer3
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-txdbmaker >=1.2.0,<1.3.0
     - r-base
   run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-txdbmaker >=1.2.0,<1.3.0
     - r-base
+
+source:
+  md5: 0a905e26a0a6785cb4917b6ff9435613
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Transcriptome CUTteR'
-  description: 'Various mRNA sequencing library preparation methods generate sequencing reads specifically from the transcript ends. Analyses that focus on quantification of isoform usage from such data can be aided by using truncated versions of transcriptome annotations, both at the alignment or pseudo-alignment stage, as well as in downstream analysis. This package implements some convenience methods for readily generating such truncated annotations and their corresponding sequences.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

@@ -1,48 +1,55 @@
-{% set version = "1.4.0" %}
+{% set version = "1.12.0" %}
 {% set name = "BioPlex" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: e5d585d15a7f5fad7aee1e383f7bd7f2
+about:
+  description: The BioPlex package implements access to the BioPlex protein-protein interaction networks and related resources from within R. Besides protein-protein interaction networks for HEK293 and HCT116 cells, this includes access to CORUM protein complex data, and transcriptome and proteome data for the two cell lines. Functionality focuses on importing the various data resources and storing them in dedicated Bioconductor data structures, as a foundation for integrative downstream analysis of the data.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: R-side access to BioPlex protein-protein interaction data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-bioplex", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: AnnotationDbi, AnnotationHub, BiocStyle, DEXSeq, ExperimentHub, GenomicFeatures, S4Vectors, depmap, knitr, rmarkdown
 requirements:
   host:
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-geoquery >=2.66.0,<2.67.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-geoquery >=2.74.0,<2.75.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
   run:
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-geoquery >=2.66.0,<2.67.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-geoquery >=2.74.0,<2.75.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221106
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: 6082010a89fc4adbb51185459ab189f5
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'R-side access to BioPlex protein-protein interaction data'
-  description: 'The BioPlex package implements access to the BioPlex protein-protein interaction networks and related resources from within R. Besides protein-protein interaction networks for HEK293 and HCT116 cells, this includes access to CORUM protein complex data, and transcriptome and proteome data for the two cell lines. Functionality focuses on importing the various data resources and storing them in dedicated Bioconductor data structures, as a foundation for integrative downstream analysis of the data.'
+    - $R -e "library('{{ name }}')"
 

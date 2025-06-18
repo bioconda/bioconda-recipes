@@ -1,27 +1,31 @@
-{% set version = "1.20.0" %}
+{% set version = "1.28.0" %}
 {% set name = "progeny" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 8baf46a4ce12dd912ee8a0b922c732c2
+about:
+  description: PROGENy is resource that leverages a large compendium of publicly available signaling perturbation experiments to yield a common core of pathway responsive genes for human and mouse. These, coupled with any statistical method, can be used to infer pathway activities from bulk or single-cell transcriptomics.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Apache License (== 2.0) | file LICENSE
+  license_file: LICENSE
+  summary: Pathway RespOnsive GENes for activity inference from gene expression
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-progeny", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: airway, biomaRt, BiocFileCache, broom, Seurat, SingleCellExperiment, DESeq2, BiocStyle, knitr, readr, readxl, pheatmap, tibble, rmarkdown, testthat (>= 2.1.0)
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-decoupler >=2.4.0,<2.5.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-decoupler >=2.12.0,<2.13.0
     - r-base
     - r-dplyr
     - r-ggplot2
@@ -30,8 +34,8 @@ requirements:
     - r-reshape2
     - r-tidyr
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-decoupler >=2.4.0,<2.5.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-decoupler >=2.12.0,<2.13.0
     - r-base
     - r-dplyr
     - r-ggplot2
@@ -39,13 +43,16 @@ requirements:
     - r-gridextra
     - r-reshape2
     - r-tidyr
+
+source:
+  md5: 98f76e162cce19fd43ab13251969b117
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'Apache License (== 2.0) | file LICENSE'
-  summary: 'Pathway RespOnsive GENes for activity inference from gene expression'
-  description: 'PROGENy is resource that leverages a large compendium of publicly available signaling perturbation experiments to yield a common core of pathway responsive genes for human and mouse. These, coupled with any statistical method, can be used to infer pathway activities from bulk or single-cell transcriptomics.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

@@ -1,30 +1,32 @@
-{% set version = "1.13" %}
-{% set sha256 = "d70a6bc73da518d159525caa5186551a771c88441efe1103a3425befd2445215" %}
+{% set version = "2.0" %}
+{% set sha256 = "ba79a42a70044079b0cdc7b108e2ed9582928912783ff97e8748d8502624353e" %}
 
 package:
   name: hmftools-cobalt
   version: '{{ version }}'
 
 source:
-  url: https://github.com/hartwigmedical/hmftools/releases/download/cobalt-v{{ version }}/cobalt-{{ version }}.jar
+  url: https://github.com/hartwigmedical/hmftools/releases/download/cobalt-v{{ version }}/cobalt_v{{ version }}.jar
   sha256: '{{ sha256 }}'
 
 build:
   noarch: generic
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("hmftools-cobalt", max_pin="x.x") }}
 
 requirements:
   run:
-    - openjdk >=8
+    - openjdk >=8,<=21
     - bioconductor-copynumber
     - r-dplyr
 
 test:
   commands:
-    - 'COBALT 2>&1 | grep -q "tumor_bam"'
+    - 'cobalt -version | grep Cobalt'
 
 about:
   home: https://github.com/hartwigmedical/hmftools/blob/master/cobalt/README.md
-  license: MIT
-  license_family: MIT
-  summary: Counts read starts within each 1000 base window to use in PURPLE
+  license: GPL-3.0-only
+  license_family: GPL3
+  summary: Calculate read-depth counts and GC ratios to use in PURPLE.

@@ -1,51 +1,62 @@
-{% set version = "0.1.5" %}
 {% set name = "plassembler" %}
-{% set sha256 = "083022b06a3d5c5a0f929accd5e6c8e5f0460efd2220f83ba8fe8967dfa7fedf" %}
-{% set user = "gbouras13" %}
+{% set version = "1.7.1" %}
 
 package:
-  name: {{ name }}
+  name: {{ name|lower }}
   version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 909d825416dd41edd6f0ee9ef1b556cb1f83d8021e8807a70d37318c43ec5454
 
 build:
   number: 0
   noarch: python
-
-source:
-  url: https://github.com/{{ user }}/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  entry_points:
+    - plassembler = plassembler:main
+  script: "{{ PYTHON }} -m pip install . --no-deps -vvv"
+  run_exports:
+    - {{ pin_subpackage('plassembler', max_pin='x') }}
 
 requirements:
+  host:
+    - python >=3.8,<3.10
+    - poetry-core >=1.0.0
+    - pip
   run:
-    - python >=3.6
+    - python >=3.8,<3.10
     - flye >=2.9
-    - unicycler >=0.4.8
-    - bwa
-    - biopython >=1.76
     - minimap2 >=2.11
-    - pandas
-    - fastp >=0.18.0
-    - nanofilt >=2.2.0
-    - seqkit
+    - fastp >=0.24.2
+    - chopper >=0.5.0
     - mash >=2.2
-    - samtools >=1.10
+    - unicycler >=0.4.8
+    - raven-assembler >=1.8
+    - samtools >=0.15.0
+    - click >=8.0.0
+    - loguru >=0.5.3
+    - pysam >=0.16.0
+    - pyyaml >=6.0
+    - pandas >=1.4.2
+    - biopython >=1.76
+    - alive-progress >=3.0.1
+    - requests >=2.25.1
+    - canu >=2.2
+    - dnaapler >=0.4.0
 
 test:
+  imports:
+    - plassembler
   commands:
-    - plassembler.py --version
-    - install_database.py --help
+    - plassembler --help
 
 about:
   home: https://github.com/gbouras13/plassembler
   license: MIT
-  license_familY: MIT
-  summary: "Automated Bacterial Plasmid Assembly Program"
-  dev_url: https://github.com/gbouras13/plassembler
-  doc_url: https://plassembler.readthedocs.io
+  license_family: MIT
+  license_file: LICENSE
+  summary: Quickly and accurately assemble plasmids in hybrid sequenced bacterial isolates
 
 extra:
   recipe-maintainers:
     - gbouras13
-
-
-

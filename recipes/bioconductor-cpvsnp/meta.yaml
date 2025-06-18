@@ -1,48 +1,21 @@
-{% set version = "1.30.0" %}
+{% set version = "1.38.0" %}
 {% set name = "cpvSNP" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 65344f26be01a2ca4c35bf91e70bc02b
+about:
+  description: Gene set analysis methods exist to combine SNP-level association p-values into gene sets, calculating a single association p-value for each gene set. This package implements two such methods that require only the calculated SNP p-values, the gene set(s) of interest, and a correlation matrix (if desired). One method (GLOSSI) requires independent SNPs and the other (VEGAS) can take into account correlation (LD) among the SNPs. Built-in plotting functions are available to help users visualize results.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Gene set analysis methods for SNP association p-values that lie in genes in given gene sets
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: TxDb.Hsapiens.UCSC.hg19.knownGene, RUnit, BiocGenerics, ReportingTools, BiocStyle
-requirements:
-  host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
-    - 'bioconductor-gseabase >=1.60.0,<1.61.0'
-    - r-base
-    - r-corpcor
-    - r-ggplot2
-    - r-plyr
-  run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
-    - 'bioconductor-gseabase >=1.60.0,<1.61.0'
-    - r-base
-    - r-corpcor
-    - r-ggplot2
-    - r-plyr
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Gene set analysis methods for SNP association p-values that lie in genes in given gene sets'
-  description: 'Gene set analysis methods exist to combine SNP-level association p-values into gene sets, calculating a single association p-value for each gene set. This package implements two such methods that require only the calculated SNP p-values, the gene set(s) of interest, and a correlation matrix (if desired). One method (GLOSSI) requires independent SNPs and the other (VEGAS) can take into account correlation (LD) among the SNPs. Built-in plotting functions are available to help users visualize results.'
+  run_exports: '{{ pin_subpackage("bioconductor-cpvsnp", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:cpvsnp
@@ -51,4 +24,39 @@ extra:
     name: bioconductor-cpvsnp
     path: recipes/bioconductor-cpvsnp
     version: 1.12.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: TxDb.Hsapiens.UCSC.hg19.knownGene, RUnit, BiocGenerics, ReportingTools, BiocStyle
+requirements:
+  host:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-gseabase >=1.68.0,<1.69.0
+    - r-base
+    - r-corpcor
+    - r-ggplot2
+    - r-plyr
+  run:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-gseabase >=1.68.0,<1.69.0
+    - r-base
+    - r-corpcor
+    - r-ggplot2
+    - r-plyr
+
+source:
+  md5: b0920d0e350c81690d3287679df77285
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

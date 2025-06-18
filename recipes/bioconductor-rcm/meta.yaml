@@ -1,31 +1,35 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "RCM" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 8bafb94a18f5de1fc8faea7363a06aeb
+about:
+  description: Combine ideas of log-linear analysis of contingency table, flexible response function estimation and empirical Bayes dispersion estimation for explorative visualization of microbiome datasets. The package includes unconstrained as well as constrained analysis. In addition, diagnostic plot to detect lack of fit are available.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Fit row-column association models with the negative binomial distribution for the microbiome
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-rcm", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, testthat
 requirements:
   host:
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-phyloseq >=1.42.0,<1.43.0'
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-phyloseq >=1.50.0,<1.51.0
     - r-alabama
     - r-base
     - r-dbi
-    - 'r-ggplot2 >=2.2.1.9000'
+    - r-ggplot2 >=2.2.1.9000
     - r-mass
     - r-nleqslv
     - r-rcolorbrewer
@@ -34,12 +38,12 @@ requirements:
     - r-tseries
     - r-vgam
   run:
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-phyloseq >=1.42.0,<1.43.0'
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-phyloseq >=1.50.0,<1.51.0
     - r-alabama
     - r-base
     - r-dbi
-    - 'r-ggplot2 >=2.2.1.9000'
+    - r-ggplot2 >=2.2.1.9000
     - r-mass
     - r-nleqslv
     - r-rcolorbrewer
@@ -47,13 +51,16 @@ requirements:
     - r-tensor
     - r-tseries
     - r-vgam
+
+source:
+  md5: b9ae0db23764d294d38458ed9fae3014
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Fit row-column association models with the negative binomial distribution for the microbiome'
-  description: 'Combine ideas of log-linear analysis of contingency table, flexible response function estimation and empirical Bayes dispersion estimation for explorative visualization of microbiome datasets. The package includes unconstrained as well as constrained analysis. In addition, diagnostic plot to detect lack of fit are available.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+    - $R -e "library('{{ name }}')"
 

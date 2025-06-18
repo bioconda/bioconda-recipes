@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "cardinalworkflows-1.29.0"
+installBiocDataPackage.sh "cardinalworkflows-1.38.0"

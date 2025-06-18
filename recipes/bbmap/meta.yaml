@@ -1,30 +1,31 @@
 {% set name = "BBMap" %}
-{% set version = "39.01" %}
-{% set sha256 = "98608da50130c47f3abd095b889cc87f60beeb8b96169b664bc9d849abe093e6" %}
-
-build:
-  number: 0
+{% set version = "39.26" %}
+{% set sha256 = "cbeaeb53b7d9051b16f5b15a1628012f053491da0c1684bc88ff9aec69b331c8" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: http://downloads.sourceforge.net/project/{{ name|lower }}/{{ name }}_{{ version }}.tar.gz
+  url: https://downloads.sourceforge.net/project/{{ name|lower }}/{{ name }}_{{ version }}.tar.gz
   sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - openjdk >=7.0
+    - openjdk >=11.0.1
     - pbzip2
     - bzip2
     - samtools
+    - patchelf  # [osx]
   run:
-    - openjdk >=7.0
-    - pbzip2
-    - bzip2
+    - openjdk >=11.0.1
     - samtools
 
 test:
@@ -40,17 +41,27 @@ test:
     - bbnorm.sh --help 2>&1 | grep "BBNorm" > /dev/null
 
 about:
-  home: https://sourceforge.net/projects/bbmap
-  doc_url: https://jgi.doe.gov/data-and-tools/bbtools/bb-tools-user-guide/
+  home: "https://sourceforge.net/projects/bbmap"
+  doc_url: "https://jgi.doe.gov/data-and-tools/bbtools/bb-tools-user-guide"
   license: "UC-LBL license (see package)"
-  license_file: license.txt
+  license_file: "license.txt"
   summary: "BBMap is a short read aligner, as well as various other bioinformatic tools."
+  dev_url: "https://sourceforge.net/projects/bbmap"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   notes: |
     BBMap is a series of Java programs, but they come with a number of custom
     wrapper shell scripts. Each of these is symlinked to the conda bin directory
     during install.
   identifiers:
     - biotools:bbmap
+    - usegalaxy-eu:bbtools_bbmap
+    - usegalaxy-eu:bbtools_callvariants
+    - usegalaxy-eu:bbtools_bbmerge
+    - usegalaxy-eu:bbtools_tadpole
+    - usegalaxy-eu:bbtools_bbduk
+    - usegalaxy-eu:bbtools_bbnorm
     - doi:10.1371/journal.pone.0185056
