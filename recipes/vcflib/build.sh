@@ -3,9 +3,7 @@ set -ex
 
 cp -rf "${RECIPE_DIR}/vcflib.pc.in" "${SRC_DIR}"
 
-sed -i.bak -e 's|mem.split|mem.splitSequence|' src/zig/samples.zig
-rm -rf src/zig/*.bak
-
+sed -i.bak -e 's|1.0.13|1.0.14|' VERSION
 sed -i.bak -e 's|-fPIC|-fPIC -Wno-int-conversion -Wno-deprecated-declarations -Wno-absolute-value -Wno-unused-comparison|' CMakeLists.txt
 rm -rf *.bak
 
@@ -85,4 +83,4 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
-cmake --build build --target install -j "${CPU_COUNT}"
+cmake --build build --clean-first --target install -j "${CPU_COUNT}"
