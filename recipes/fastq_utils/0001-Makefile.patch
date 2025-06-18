@@ -24,7 +24,7 @@ index 8f5f4fa..e503209 100644
  # zlib is required
  #CFLAGS+= -g -Wunused-result  -pg -Wall
 -CFLAGS+=  -O3 -Wunused-result  -Wall
-+CFLAGS+= -I$(PREFIX)/include -L$(PREFIX)/lib -O3 -Wunused-result -Wall
++CFLAGS+= -I$(PREFIX)/include -O3 -Wunused-result -Wall
  
  ifdef PROFILE
  CFLAGS+= -pg
@@ -154,3 +154,48 @@ index 8f5f4fa..e503209 100644
  	gcov $(TARGETS) hash.o range_list.o fastq.o
  
  
+diff --git a/samtools-0.1.19/Makefile b/samtools-0.1.19/Makefile
+index 2f51bfc..6877088 100644
+--- a/samtools-0.1.19/Makefile
++++ b/samtools-0.1.19/Makefile
+@@ -1,5 +1,5 @@
+-CC=			gcc
+-CFLAGS=		-g -Wall -O2
++CC=			$(CC)
++CFLAGS=		-g -Wall -O3
+ #LDFLAGS=		-Wl,-rpath,\$$ORIGIN/../lib
+ DFLAGS=		-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -D_USE_KNETFILE -D_CURSES_LIB=1
+ KNETFILE_O=	knetfile.o
+@@ -12,10 +12,10 @@ AOBJS=		bam_tview.o bam_plcmd.o sam_view.o \
+ 			cut_target.o phase.o bam2depth.o padding.o bedcov.o bamshuf.o \
+ 			bam_tview_curses.o bam_tview_html.o
+ PROG=		samtools
+-INCLUDES=	-I.
++INCLUDES=	-I. -I$(PREFIX)/include
+ SUBDIRS=	. bcftools misc
+ LIBPATH=
+-LIBCURSES=	-lcurses # -lXCurses
++LIBCURSES=	-lncurses # -lXCurses
+ 
+ .SUFFIXES:.c .o
+ .PHONY: all lib
+@@ -41,16 +41,16 @@ all:$(PROG)
+ lib:libbam.a
+ 
+ libbam.a:$(LOBJS)
+-		$(AR) -csru $@ $(LOBJS)
++		$(AR) -csr $@ $(LOBJS)
+ 
+ samtools:lib-recur $(AOBJS)
+-		$(CC) $(CFLAGS) -o $@ $(AOBJS) $(LDFLAGS) libbam.a -Lbcftools -lbcf $(LIBPATH) $(LIBCURSES) -lm -lz -lpthread
++		$(CC) $(CFLAGS) -o $@ $(AOBJS) $(LDFLAGS) libbam.a -Lbcftools -lbcf $(LIBPATH) $(LIBCURSES) -lm -lz -pthread
+ 
+ razip:razip.o razf.o $(KNETFILE_O)
+ 		$(CC) $(CFLAGS) -o $@ $^ -lz
+ 
+ bgzip:bgzip.o bgzf.o $(KNETFILE_O)
+-		$(CC) $(CFLAGS) -o $@ $^ -lz -lpthread
++		$(CC) $(CFLAGS) -o $@ $^ -lz -pthread
+ 
+ bgzf.o:bgzf.c bgzf.h
+ 		$(CC) -c $(CFLAGS) $(DFLAGS) -DBGZF_CACHE $(INCLUDES) bgzf.c -o $@
