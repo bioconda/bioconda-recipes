@@ -6,17 +6,16 @@ package:
   name: {{ name|lower }}
   version: {{ version }}
 
-build:
-  number: 7
-  skip: True # [osx]
-  run_exports: 
-    - {{ pin_subpackage(name|lower) }}
-
 source:
   url: https://github.com/statgen/demuxlet/archive/b99026f9298f46d897a23f6e7909e462e1b1fa1b.zip
   sha256: {{ sha256 }}
   patches:
     - Makefile.am.patch
+
+build:
+  number: 7
+  run_exports: 
+    - {{ pin_subpackage('demuxlet', max_pin="x") }}
 
 requirements:
   build:
@@ -26,14 +25,13 @@ requirements:
     - libtool
     - autoconf
     - automake
-    - zlib
+    - pkg-config
   host:
     - htslib 1.10
     - zlib
   run:
     - samtools
     - htslib 1.10
-    - zlib
 
 test:
   commands:
@@ -41,12 +39,14 @@ test:
 
 about:
   home: https://github.com/statgen/demuxlet
-  license: GPL3
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: Genetic multiplexing of barcoded single cell RNA-seq
+  summary: "Genetic multiplexing of barcoded single cell RNA-seq."
   dev_url: https://github.com/statgen/demuxlet
   doc_url: https://github.com/statgen/demuxlet
 
 extra: 
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
