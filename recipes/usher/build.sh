@@ -9,20 +9,11 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    #curl -sSLO https://github.com/oneapi-src/oneTBB/releases/download/2019_U9/tbb2019_20191006oss_mac.tgz
-    #tar -xzf tbb2019_20191006oss_mac.tgz
-    #export tbb_root="tbb2019_20191006oss"
-    curl -sSLO https://github.com/oneapi-src/oneTBB/archive/2019_U9.tar.gz
-    tar -xzf 2019_U9.tar.gz
-    export tbb_root="oneTBB-2019_U9"
-else
-    curl -sSLO https://github.com/oneapi-src/oneTBB/archive/2019_U9.tar.gz
-    tar -xzf 2019_U9.tar.gz
-    export tbb_root="oneTBB-2019_U9"
-fi
+curl -sSLO https://github.com/oneapi-src/oneTBB/archive/2019_U9.tar.gz
+tar -xzf 2019_U9.tar.gz
+export tbb_root="oneTBB-2019_U9"
 
-if [[ `(uname -s)` == "Darwin" ]]; then
+if [[ "$(uname -s)" == "Darwin" ]]; then
     export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
     export CONFIG_ARGS=""
@@ -31,8 +22,12 @@ fi
 mkdir -p build
 pushd build
 
-if [[ `(uname -m)` == "arm64" ]]; then
+if [[ "$(uname -m)" == "arm64" ]]; then
     export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+elif [[ "$(uname -m)" == "aarch64" ]]; then
+    export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+else
+    export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
 
 cmake -S .. -B . -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
@@ -60,7 +55,11 @@ else
     ninja -j"${CPU_COUNT}"
 fi
 
-install -v -m 755 usher* mat* transpose* ripples* compareVCF check_samples_place "${PREFIX}/bin"
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    install -v -m 755 usher* mat* ripples* compareVCF check_samples_place "${PREFIX}/bin"
+else
+    install -v -m 755 usher* mat* transpose* ripples* compareVCF check_samples_place "${PREFIX}/bin"
+fi
 
 if [[ -d ./tbb_cmake_build ]]; then
     cp -rf ./tbb_cmake_build/tbb_cmake_build_subdir_release/* ${PREFIX}/lib/
