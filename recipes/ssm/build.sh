@@ -13,12 +13,19 @@ fi
 
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-sed -z -i.bak -E '
-  s@" v\."superpose_version" from "superpose_date" built"@" v.%s from %s built"@g;
-  s@,ssm::MAJOR_VERSION@,superpose_version, superpose_date, ssm::MAJOR_VERSION@g;
-  s@" Superpose v\."superpose_version" from "superpose_date" "@" Superpose v.%s from %s "@g;
+sed -i.bak -z -E '
+  s@" v\."superpose_version" from "superpose_date" built"@" v.%s from %s built"@g
+  s@,ssm::MAJOR_VERSION@,superpose_version, superpose_date, ssm::MAJOR_VERSION@g
+  s@" Superpose v\."superpose_version" from "superpose_date" "@" Superpose v.%s from %s "@g
   s@------\n\n"@------\n\n",superpose_version, superpose_date@g
 ' superpose.cpp
+
+if [[ "${target_platform}" == "osx-"* ]]; then
+  sed -i.bak \
+    -e 's/\${wl}-flat_namespace//g' \
+    -e 's/\${wl}-undefined \${wl}suppress/-undefined dynamic_lookup/g' \
+    configure
+fi
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/
 
