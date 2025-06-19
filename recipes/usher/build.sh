@@ -26,7 +26,7 @@ fi
 mkdir -p build
 pushd build
 
-cmake -S .. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+cmake -S .. -B . -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DTBB_DIR="$(pwd)/../${tbb_root}" \
 	-DCMAKE_PREFIX_PATH="$(pwd)/../${tbb_root}/cmake" \
 	-DCMAKE_C_COMPILER="${CC}" -DCMAKE_C_FLAGS="${CFLAGS}" \
@@ -50,7 +50,7 @@ echo ""
 EOF
     chmod a+x ripples-fast
 else
-    make -j"${CPU_COUNT}"
+    ninja -j"${CPU_COUNT}"
 fi
 
 install -v -m 755 ./usher ./matUtils ./matOptimize "${PREFIX}/bin"
