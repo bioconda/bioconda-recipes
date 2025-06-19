@@ -3,7 +3,8 @@
 set -e
 
 cd siprosV4CmakeAll 
-make -DCMAKE_BUILD_TYPE=Release 
+cmake -DCMAKE_BUILD_TYPE=Release
+make -j8
 cd -
 
 mkdir -p "$PREFIX/bin"
