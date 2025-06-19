@@ -14,8 +14,13 @@ fi
 export CFLAGS="-I$PREFIX/include"
 export CPATH=${PREFIX}/include
 
-
 mkdir -p build
+
+if [[ ${target_platform} == "linux-aarch64" ]]; then
+# Conda does not yet support the MKL library for aarch64
+  sed -i '/set(MKLROOT/s/^/#/' CMakeLists.txt
+  sed -i '/include <optional>/a #\ \ \ \ include\ <cstdint>' external_libs/cxxopts/include/cxxopts.hpp
+fi
 
 cmake \
   -DBUILD_SHARED_LIBS:BOOL=ON \
