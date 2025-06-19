@@ -47,15 +47,15 @@ echo ""
 EOF
     chmod a+x ripples-fast
 else
-    make -j"${CPU_COUNT}"
+    ninja -j"${CPU_COUNT}"
 fi
 
 install -v -m 755 usher* mat* transpose* ripples* compareVCF check_samples_place "${PREFIX}/bin"
 
 if [[ -d ./tbb_cmake_build ]]; then
-    cp -f ./tbb_cmake_build/tbb_cmake_build_subdir_release/* ${PREFIX}/lib/
+    cp -rf ./tbb_cmake_build/tbb_cmake_build_subdir_release/* ${PREFIX}/lib/
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-    cp -f ../$tbb_root/lib/* ${PREFIX}/lib/
+    cp -rf ../$tbb_root/lib/* ${PREFIX}/lib/
 fi
 
 popd
