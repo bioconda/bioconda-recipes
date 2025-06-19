@@ -56,7 +56,7 @@ else
 fi
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
-    install -v -m 755 usher* mat* ripples* compareVCF check_samples_place "${PREFIX}/bin"
+    install -v -m 755 usher* mat* ripples* "${PREFIX}/bin"
 else
     install -v -m 755 usher* mat* transpose* ripples* compareVCF check_samples_place "${PREFIX}/bin"
 fi
