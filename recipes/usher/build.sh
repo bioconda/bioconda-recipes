@@ -63,8 +63,6 @@ fi
 
 if [[ -d ./tbb_cmake_build ]]; then
     cp -rf ./tbb_cmake_build/tbb_cmake_build_subdir_release/* ${PREFIX}/lib/
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-    cp -rf ../$tbb_root/lib/* ${PREFIX}/lib/
 fi
 
 popd
