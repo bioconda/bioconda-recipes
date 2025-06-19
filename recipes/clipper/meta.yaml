@@ -1,0 +1,63 @@
+{% set name = "clipper" %}
+{% set version = "2.1.20180802" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  - url: https://www2.mrc-lmb.cam.ac.uk/personal/pemsley/coot/dependencies/{{ name|lower }}-{{ version }}.tar.gz
+    sha256: 7c7774f224b59458e0faa104d209da906c129523fa737e81eb3b99ec772b81e0
+    patches: clipper-configure-2.patch
+    foldler: clipper
+  - url: https://fftw.org/fftw-2.1.5.tar.gz
+    sha256: f8057fae1c7df8b99116783ef3e94a6a44518d49c72e2e630c24b689c6022630
+    folder: fftw2
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - {{ compiler("cxx") }}
+    - autoconf
+    - automake
+    - gnuconfig
+    - libtool
+    - make
+    - pkg-config
+    - texinfo
+  host:
+    - libccp4
+    - mmdb2
+
+test:
+  commands:
+    - pkg-config --exists clipper
+    - pkg-config --cflags clipper | grep -q "\-I${PREFIX}/include"
+    - pkg-config --libs clipper | grep -q "\-lclipper"
+
+about:
+  home: "https://www.ccp4.ac.uk"
+  license: GPL-2.1-only
+  license_family: GPL2
+  license_file:
+    - COPYING
+  summary: "Crystallographic automation and complex data manipulation libraries."
+  description: |
+    MMDB2 is a C++ toolkit for working with macromolecular coordinate files.
+    It provides functionality for reading, writing, and manipulating PDB and mmCIF files,
+    including support for crystallographic symmetry operations and molecular geometry calculations.
+
+extra:
+  identifiers:
+    - doi:10.1002/pro.3299
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - eunos-1128
+
