@@ -1,19 +1,17 @@
 #!/bin/bash
-export CC=aarch64-conda-linux-gnu-gcc
-export AR=aarch64-conda-linux-gnu-ar
-export RANLIB=aarch64-conda-linux-gnu-ranlib
-export CFLAGS="-I$PREFIX/include -O2"
-export LDFLAGS="-L$PREFIX/lib -Wl,-rpath,$PREFIX/lib"
-EXTRA_ARGS=""
+
+export CFLAGS="${CFLAGS} -I$PREFIX/include -O3"
+export LDFLAGS="${LDFLAGS} -L$PREFIX/lib -Wl,-rpath,$PREFIX/lib"
 if [[ "$target_platform" == linux-* ]]; then
   EXTRA_ARGS+=" --enable-gcs --enable-s3"
 fi
 
+autoreconf -if
 ./configure \
-  --prefix=$PREFIX \
-  --host=aarch64-conda-linux-gnu \  # 关键：指定目标平台
+  --prefix="${PREFIX}" \
   --enable-libcurl \
   --with-libdeflate \
-  --enable-plugins \
-  $EXTRA_ARGS
+  --enable-plugins
+
+make -j"${CPU_COUNT}"
 make install
