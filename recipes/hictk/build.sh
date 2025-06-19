@@ -18,33 +18,47 @@ export CONAN_HOME="${scratch}/conan"
 # shellcheck disable=SC2064
 trap "rm -rf '${scratch}'" EXIT
 
-declare -a CMAKE_PLATFORM_FLAGS
+CMAKE_PLATFORM_FLAGS=(
+  -Wno-dev
+  -Wno-deprecated
+  --no-warn-unused-cli
+)
+
 if [[ "${OSTYPE}" =~ .*darwin.* ]]; then
   # https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
   export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-  export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
-  CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
+  CMAKE_PLATFORM_FLAGS+=(
+    -DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}"
+    -DCMAKE_FIND_FRAMEWORK=NEVER
+    -DCMAKE_FIND_APPBUNDLE=NEVER
+  )
 else
   CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
-  export CONFIG_ARGS=""
 fi
 
 # Remove unnecessary dependencies from conanfile.py
-patch conanfile.Dockerfile.py < "${RECIPE_DIR}/conanfile.Dockerfile.py.patch"
+patch conanfile.py < "${RECIPE_DIR}/conanfile.py.patch"
 
 conan profile detect
 
 # Install header-only deps
-conan install conanfile.Dockerfile.py \
+conan install conanfile.py \
        -s build_type="${CMAKE_BUILD_TYPE}" \
        -s compiler.cppstd=17 \
+       -o 'hictk/*:with_cli_tool_deps=False' \
+       -o 'hictk/*:with_benchmark_deps=False' \
+       -o 'hictk/*:with_arrow=False' \
+       -o 'hictk/*:with_eigen=False' \
+       -o 'hictk/*:with_telemetry_deps=False' \
+       -o 'hictk/*:with_unit_testing_deps=False' \
+       -o 'hictk/*:with_fuzzy_testing_deps=False' \
        --build="*" \
-       --output-folder=build/
+       --output-folder=cmake-prefix/
 
 # Add bioconda suffix to hictk version
 sed -i.bak 's/set(HICTK_PROJECT_VERSION_SUFFIX "")/set(HICTK_PROJECT_VERSION_SUFFIX "bioconda")/' CMakeLists.txt
 
-CMAKE_PREFIX_PATH="${CMAKE_PREFIX_PATH}:${PWD}/build"
+CMAKE_PREFIX_PATH="${CMAKE_PREFIX_PATH}:${PWD}/cmake-prefix"
 
 # https://docs.conda.io/projects/conda-build/en/stable/user-guide/environment-variables.html#environment-variables-set-during-the-build-process
 cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"   \
@@ -64,18 +78,16 @@ cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"   \
       -DCMAKE_C_COMPILER="${CC}"                 \
       -DCMAKE_CXX_COMPILER="${CXX}"              \
       "${CMAKE_PLATFORM_FLAGS[@]}"               \
-      -Wno-dev -Wno-deprecated --no-warn-unused-cli \
-      "${CONFIG_ARGS}"                           \
       -B build/                                  \
       -S .
 
-cmake --build build/ --clean-first -j "${CPU_COUNT}"
+cmake --build build/
 
 ctest --test-dir build/   \
       --output-on-failure \
       --no-tests=error    \
       --timeout 240
 
-cmake --install build/ --component Runtime -j "${CPU_COUNT}"
+cmake --install build/ --component Runtime
 
 "${PREFIX}/bin/hictk" --version
