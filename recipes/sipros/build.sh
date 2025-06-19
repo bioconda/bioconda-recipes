@@ -2,6 +2,10 @@
 
 set -e
 
+cd siprosV4CmakeAll 
+make -DCMAKE_BUILD_TYPE=Release 
+cd -
+
 mkdir -p "$PREFIX/bin"
 chmod u+x bin/*
 cp -r bin/* "$PREFIX/bin"
