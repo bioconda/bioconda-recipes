@@ -53,16 +53,8 @@ else
     make -j"${CPU_COUNT}"
 fi
 
-install -v -m 755 ./usher ./matUtils ./matOptimize ${PREFIX}/bin
-if [[ -f "usher-sampled" ]]; then
-    install -v -m 755 ./usher-sampled ${PREFIX}/bin
-fi
-if [[ -f "ripples" ]]; then
-    install -v -m 755 ./ripples ${PREFIX}/bin
-fi
-if [[ -f "ripples-fast" ]]; then
-    install -v -m 755 ./ripples-fast ${PREFIX}/bin
-fi
+install -v -m 755 usher* mat* transpose* ripples* compareVCF check_samples_place "${PREFIX}/bin"
+
 if [[ -d ./tbb_cmake_build ]]; then
     cp -f ./tbb_cmake_build/tbb_cmake_build_subdir_release/* ${PREFIX}/lib/
 elif [[ "$OSTYPE" == "darwin"* ]]; then
