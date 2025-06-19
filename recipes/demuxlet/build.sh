@@ -1,13 +1,14 @@
 #!/bin/bash
 set -x -e
 
-export CFLAGS="${CFLAGS} -I${PREFIX}/include -I${PREFIX}/include/htslib -ldl -ldeflate -fno-strict-aliasing"
-#export LDFLAGS="-ldl"
-export CXXFLAGS="${CXXFLAGS} -ldl -ldeflate"
 export INCLUDE_PATH="${PREFIX}/include:${PREFIX}/include/htslib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
-autoreconf -vfi
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include -I${PREFIX}/include/htslib -ldl -ldeflate -fno-strict-aliasing"
+export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/htslib -ldl -ldeflate"
 
-CXXFLAGS="-I${PREFIX}/htslib ${CXXFLAGS}" ./configure --prefix=${PREFIX}
-CXXFLAGS="${CXXFLAGS}" PREFIX=${PREFIX} make
+autoreconf -if
+CXXFLAGS="${CXXFLAGS}" ./configure --prefix="${PREFIX}"
+
+CXXFLAGS="${CXXFLAGS}" PREFIX="${PREFIX}" make -j"${CPU_COUNT}"
 make install
