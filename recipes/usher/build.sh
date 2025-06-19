@@ -24,12 +24,18 @@ else
     export CONFIG_ARGS=""
 fi
 
+if [[ `(uname -m)` == "arm64" ]]; then
+    export EXTRA_ARGS="-DTBB_DIR=${PREFIX}/include/tbb -DCMAKE_PREFIX_PATH=$(pwd)/../${tbb_root}/cmake"
+else
+    export EXTRA_ARGS="-DTBB_DIR=$(pwd)/../${tbb_root} -DCMAKE_PREFIX_PATH=$(pwd)/../${tbb_root}/cmake"
+fi
+
 mkdir -p build
 pushd build
 
 cmake -S .. -B . -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DTBB_DIR="$(pwd)/../${tbb_root}" -DCMAKE_PREFIX_PATH="$(pwd)/../${tbb_root}/cmake" \
     -DCMAKE_C_COMPILER="${CC}" -DCMAKE_C_FLAGS="${CFLAGS}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
-    -DCMAKE_CXX_COMPILER="${CXX}" -DBOOST_ROOT="${PREFIX}" "${CONFIG_ARGS}"
+    -DCMAKE_CXX_COMPILER="${CXX}" -DBOOST_ROOT="${PREFIX}" "${EXTRA_ARGS}" "${CONFIG_ARGS}"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # omit ripples-fast due to problems building on Mac
