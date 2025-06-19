@@ -33,7 +33,7 @@ cmake -S .. -B . -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DTBB_DIR="$(pwd)/.
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # omit ripples-fast due to problems building on Mac
-    make usher matUtils matOptimize usher-sampled ripples -j"${CPU_COUNT}"
+    ninja -j"${CPU_COUNT}" usher matUtils matOptimize usher-sampled ripples
     cat > ripples-fast <<EOF
 #!/bin/bash
 # This is a placeholder for the program ripples-fast on Mac where the build is currently failing.
