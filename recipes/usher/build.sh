@@ -11,11 +11,11 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 if [[ "$OSTYPE" == "darwin"* ]]; then
     curl -sSLO https://github.com/oneapi-src/oneTBB/releases/download/2019_U9/tbb2019_20191006oss_mac.tgz
     tar -xzf tbb2019_20191006oss_mac.tgz
-    export tbb_root="$(pwd)/tbb2019_20191006oss"
+    export tbb_root="tbb2019_20191006oss"
 else
     curl -sSLO https://github.com/oneapi-src/oneTBB/archive/2019_U9.tar.gz
     tar -xzf 2019_U9.tar.gz
-    export tbb_root="$(pwd)/oneTBB-2019_U9"
+    export tbb_root="oneTBB-2019_U9"
 fi
 
 if [[ `(uname -s)` == "Darwin" ]]; then
@@ -24,13 +24,10 @@ else
     export CONFIG_ARGS=""
 fi
 
-wget https://raw.githubusercontent.com/cmake-basis/legacy-modules/refs/heads/develop/FindTBB.cmake -O "${tbb_root}/cmake/FindTBB.cmake"
-export CMAKE_MODULE_PATH="${tbb_root}/cmake"
-
 mkdir -p build
 pushd build
 
-cmake -S .. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DTBB_DIR="$(pwd)/../oneTBB-2019_U9" -DCMAKE_PREFIX_PATH="$(pwd)/../oneTBB-2019_U9/cmake" \
+cmake -S .. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DTBB_DIR="$(pwd)/../${tbb_root}" -DCMAKE_PREFIX_PATH="$(pwd)/../${tbb_root}/cmake" \
     -DCMAKE_C_COMPILER="${CC}" -DCMAKE_C_FLAGS="${CFLAGS}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
     -DCMAKE_CXX_COMPILER="${CXX}" -DBOOST_ROOT="${PREFIX}" "${CONFIG_ARGS}"
 
