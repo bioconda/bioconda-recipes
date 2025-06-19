@@ -4,19 +4,23 @@ package:
   name: htslib
   version: {{ version }}
 
-build:
-  number: 2
-  run_exports:
-    - {{ pin_subpackage('htslib', max_pin='x.x') }}
-
 source:
   url: https://github.com/samtools/htslib/releases/download/{{ version }}/htslib-{{ version }}.tar.bz2
   sha256: 7ae44dd9faeb4c4293e9bb4815164ac28c6c6fae81fed4791df2fa878f57a972
 
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('htslib', max_pin="x") }}
+
 requirements:
   build:
     - {{ compiler('c') }}
+    - autoconf
+    - automake
     - libtool
+    - pkg-config
+    - gnuconfig
   host:
     - libcurl
     - bzip2
@@ -27,11 +31,6 @@ requirements:
     - gcsfs    # [linux]
     - aws-sdk-cpp  # [linux]
   run:
-    - libcurl
-    - bzip2
-    - xz
-    - zlib
-    - libdeflate
     - openssl  # [not osx]
 
 test:
@@ -56,3 +55,4 @@ extra:
     - biotools:HTSlib
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
