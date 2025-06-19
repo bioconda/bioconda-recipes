@@ -28,7 +28,7 @@ mkdir -p build
 pushd build
 
 if [[ `(uname -m)` == "arm64" ]]; then
-    export EXTRA_ARGS="-DTBB_DIR=${PREFIX}/include/tbb -DCMAKE_PREFIX_PATH=$(pwd)/../${tbb_root}/cmake"
+    export EXTRA_ARGS="-DTBB_DIR=${PREFIX}/include/tbb -DCMAKE_PREFIX_PATH=$(pwd)/../${tbb_root}"
 else
     export EXTRA_ARGS="-DTBB_DIR=$(pwd)/../${tbb_root} -DCMAKE_PREFIX_PATH=$(pwd)/../${tbb_root}/cmake"
 fi
