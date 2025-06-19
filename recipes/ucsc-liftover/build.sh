@@ -27,7 +27,8 @@ elif [[ "$(uname -s)" == "Darwin" && "$(uname -m)" == "x86_64" ]]; then
 	install -v -m 755 liftOver "${PREFIX}/bin"
 elif [[ "$(uname -s)" == "Linux" && "$(uname -m)" == "x86_64" ]]; then
 	rsync -aP rsync://hgdownload.cse.ucsc.edu/genome/admin/exe/linux.x86_64/liftOver .
-	install -v -m 755 liftOver "${PREFIX}/bin"
+	cp -rf liftOver "${PREFIX}/bin"
+	chmod 0755 "${PREFIX}/bin/liftOver"
 fi
 
 #(cd kent/src/lib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
