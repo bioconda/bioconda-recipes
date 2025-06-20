@@ -9,21 +9,8 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 
 pushd fftw2
 
-# # On macOS/ARM add --build hack to configure
-# CONFIG_ARGS=( \
-#   --prefix="${PREFIX}/fftw2" \
-#   --enable-shared \
-#   --enable-float \
-#   --disable-static \
-# 	--disable-debug \
-# 	--disable-dependency-tracking \
-# 	--enable-silent-rules \
-# 	--disable-option-checking \
-# )
-# if [[ "${target_platform}" == "osx-arm64" ]]; then
-#   BUILD_HOST="arm-apple-$(uname | tr '[:upper:]' '[:lower:]')$(uname -r | cut -d. -f1)"
-#   CONFIG_ARGS+=( --build="${BUILD_HOST}" )
-# fi
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
+autoreconf -if
 
 ./configure \
   --prefix="${PREFIX}/fftw2" \
@@ -48,7 +35,6 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/fftw2/include"
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/
 
 autoreconf -if
-
 
 # Fix pkg-config name mismatch
 sed -i.bak 's|libccp4c|ccp4c|g' configure
