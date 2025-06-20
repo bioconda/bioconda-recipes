@@ -33,7 +33,7 @@ popd
 
 pushd clipper
 
-export CXXFLAGS="${CXXFLAGS} -g -O2 -fno-strict-aliasing -Wno-narrowing"
+export CXXFLAGS="${CXXFLAGS} -fno-strict-aliasing -Wno-narrowing"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/fftw2/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/fftw2/include"
 
@@ -58,5 +58,6 @@ sed -i.bak 's|libccp4c|ccp4c|g' configure
   --disable-option-checking
 
 make -j"${CPU_COUNT}"
+make check
 make install
 popd
