@@ -12,7 +12,10 @@ pushd fftw2
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/fftw2/fftw"
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
-autoreconf -if
+aclocal
+libtoolize --force
+automake --add-missing --force-missing
+autoconf
 
 ./configure \
   --prefix="${PREFIX}/fftw2" \
