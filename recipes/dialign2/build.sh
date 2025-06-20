@@ -10,7 +10,7 @@ cd src
 
 sed -i.bak "s|strcpy ( dialign_dir , \"DIALIGN2_DIR\" );|strcpy ( par_dir , \""${PREFIX}"/share/dialign2\" );|g" dialign.c
 sed -i '14c\CFLAGS =  -c -O -I$ -DCONS -Xlinker -zmuldefs -fcommon' makefile
-make
+make CC=${CC}
 mv dialign2-2 ${PREFIX}/bin/dialign2-2
 
 cd ../dialign2_dir
