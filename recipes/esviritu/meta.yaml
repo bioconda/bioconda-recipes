@@ -1,72 +1,67 @@
-{% set name = "esviritu" %}
-{% set version = "0.2.3" %}
+{% set name = "EsViritu" %}
+{% set version = "1.0.0" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: "https://github.com/cmmr/{{ name }}/archive/v{{ version }}.tar.gz"
-  sha256: 19c0afbb59097f81ada768a2c55a0915678ebaf2f843589beb962ebf8522be31
+  url: https://github.com/cmmr/EsViritu/archive/v{{ version }}.tar.gz
+  sha256: 3432f992fd86664e8ab355e40d6dc4bd00ae35858ffe5124baca336bdc2d1725
 
 build:
-  number: 0
-  noarch: python
   entry_points:
-    - EsViritu = EsViritu.EsViritu:EsViritu
-  script:
-    - {{ PYTHON }} -m pip install . --no-deps -vv
+    - EsViritu = EsViritu:esviritu
+    - summarize_esv_runs = EsViritu.summarize_esv_runs:summarize_esv_runs
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("esviritu", max_pin="x") }}
 
 requirements:
   host:
+    - python >=3.11
+    - setuptools >=61.0
     - pip
-    - python >=3.8
   run:
-    - python >=3.8
-    - blast >=2.13.0
-    - minimap2 >=2.21
-    - dashing =1.0
-    - bwa-mem2 =2.2.1
-    - samtools >=1.9
-    - bioawk =1.0
-    - fastani >=1.3
-    - coverm =0.6.1
-    - seqkit =2.4.0
-    - bedtools =2.30.0
-    - fastp >=0.23.2
-    - seqfu >=1.17.1
-    - r-rcolorbrewer
-    - r-scales
-    - r-htmltools
-    - r-knitr
-    - r-viridis
-    - r-reactablefmtr
-    - r-dplyr
-    - scipy
+    - python >=3.11
     - numpy
-    - tqdm
-    - r-data.table
+    - polars
+    - pysam
+    - logging-utils
+    - pyyaml
+    - minimap2>=2.21
+    - samtools>=1.15
+    - fastp>=0.23.2
+    - seqkit
     - r-base
-    - r-remotes
+    - r-htmltools
+    - r-scales
     - r-reactable
-    - r-readxl
-    - r-lubridate
-    - r-stringr
-    - biopython
+    - r-reactablefmtr
+    - r-magrittr
+    - r-remotes
 
 test:
+  imports:
+    - EsViritu
   commands:
-    - EsViritu --version
+    - pip check
+    - EsViritu --help
+    - summarize_esv_runs --help
+  requires:
+    - pip
 
 about:
-  home: "https://github.com/cmmr/EsViritu"
+  summary: Read mapping pipeline for detection and measurement of human and animal virus pathogens from short read metagenomic environmental or clinical samples.
   license: MIT
   license_file: LICENSE
-  summary: "EsViritu: Read mapping pipeline for detection and measurement of virus pathogens from metagenomic or clinical data"
   dev_url: "https://github.com/cmmr/EsViritu"
+  home: "https://github.com/cmmr/EsViritu"
 
 extra:
   recipe-maintainers:
     - mtisza1
   identifiers:
-    - https://doi.org/10.1101/2023.05.03.23289441
+    - https://doi.org/10.1038/s41467-023-42064-1
