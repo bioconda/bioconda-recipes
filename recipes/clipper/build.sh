@@ -9,6 +9,8 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 
 pushd fftw2
 
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/fftw2/fftw"
+
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 autoreconf -if
 
@@ -33,7 +35,6 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/fftw2/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/fftw2/include"
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/
-
 autoreconf -if
 
 # Fix pkg-config name mismatch
