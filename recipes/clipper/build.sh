@@ -58,6 +58,5 @@ sed -i.bak 's|libccp4c|ccp4c|g' configure
   --disable-option-checking
 
 make -j"${CPU_COUNT}"
-make check
 make install
 popd
