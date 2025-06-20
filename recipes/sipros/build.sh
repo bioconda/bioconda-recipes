@@ -2,7 +2,8 @@
 
 set -e
 
-cd siprosV4CmakeAll 
+cd siprosV4CmakeAll
+export CMAKE_EXE_LINKER_FLAGS="-ldl"
 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 make -j8
 cd -
