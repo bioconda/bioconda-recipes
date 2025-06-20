@@ -1,0 +1,84 @@
+{% set name = "coot-headless" %}
+{% set version = "1.1.17" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/pemsley/{{ name|lower }}/archive/refs/tags/Release-{{ version }}.tar.gz
+  sha256: ddaf9c7dade0d9b21881617ec01eebb5f4bb6fb7cb6282ec0db559469d366219
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - autoconf
+    - automake
+    - bison
+    - cmake
+    - flex
+    - libtool
+    - m4
+    - make
+    - pkg-config
+  host:
+    - cairo
+    - clipper
+    - curl
+    - eigen
+    - fontconfig
+    - freetype
+    - gemmi
+    - gsl >=2.7,<3
+    - libboost-devel >=1.86,<1.87
+    - libboost-python-devel >=1.86,<1.87
+    - libccp4
+    - libffi
+    - libpng
+    - libxml2
+    - mmdb2
+    - nanobind
+    - numpy >=1,<2
+    - openblas
+    - pixman
+    - python {{ python }}
+    - rdkit
+    - sqlite
+    - ssm
+    - zlib
+  run:
+    - python {{ python }}
+    - {{ pin_compatible("numpy") }}
+
+test:
+  imports:
+    - coot_headless_api
+  commands:
+    - python -c "import coot_headless_api; container = coot_headless_api.molecules_container_t(False); print('Import successful')"
+
+about:
+  home: https://www2.mrc-lmb.cam.ac.uk/personal/pemsley/coot
+  dev_url: https://github.com/pemsley/coot
+  doc_url: https://www2.mrc-lmb.cam.ac.uk/personal/pemsley/coot/web/docs
+  license: GPL-3.0-or-later AND LGPL-3.0-or-later
+  license_family: GPL3
+  license_file:
+    - COPYING
+    - COPYING.LESSERv3
+  summary: "Coot Headless API - Software for macromolecular model building"
+  description: |
+    Coot is a macromolecular model building, model completion and validation
+    application. This package provides the headless APIs (Chapi python bindings and libcootapi C++ library)
+    without GUI dependencies, suitable for automated workflows.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1107/S0907444910007493
