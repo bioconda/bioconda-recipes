@@ -14,10 +14,10 @@ fi
 export CXXFLAGS="${CXXFLAGS} -O3"
 
 # Fix "invalid suffix on literal; C++11 requires a space between literal and identifier"
-sed -i.bak '" v."superpose_version" from "superpose_date" built', '" v.%s from %s built', "superpose.cpp"
-sed -i.bak ",ssm::MAJOR_VERSION", ",superpose_version, superpose_date, ssm::MAJOR_VERSION", "superpose.cpp"
-sed -i.bak '" Superpose v."superpose_version" from "superpose_date" "', '" Superpose v.%s from %s "', "superpose.cpp"
-sed -i.bak '------\n\n"', '------\n\n",superpose_version, superpose_date', "superpose.cpp"
+sed -i.bak 's|" v."superpose_version" from "superpose_date" built|" v.%s from %s built|g' superpose.cpp
+sed -i.bak 's|,ssm::MAJOR_VERSION|,superpose_version, superpose_date, ssm::MAJOR_VERSION|g' superpose.cpp
+sed -i.bak 's|" Superpose v."superpose_version" from "superpose_date" "|" Superpose v.%s from %s "|g' superpose.cpp
+sed -i.bak 's|------\n\n"|------\n\n",superpose_version, superpose_date|g' superpose.cpp
 
 if [[ "${target_platform}" == "osx-"* ]]; then
   sed -i.bak \
