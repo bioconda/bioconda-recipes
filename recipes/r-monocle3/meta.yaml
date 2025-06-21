@@ -1,21 +1,27 @@
-{% set version = "1.3.1" %}
+{% set name = "r-monocle3" %}
+{% set version = "1.4.26" %}
+{% set sha256 = "b4b47e500ba99912bb4a66bf981b26e184c4b1ac91c03b0ba71eeacb1574d1a4" %}
 {% set github = "https://github.com/cole-trapnell-lab/monocle3" %}
 
 package:
-  name: r-monocle3
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "{{ github }}/archive/v{{ version }}.tar.gz"
-  sha256: 30e86d5323ea22b302614813ecf102f26774b42710589671a1f1d51ef9ad183d
+  url: {{ github }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
+  script:
+    - export DISABLE_AUTOBREW=1
+    - export LC_ALL="en_US.UTF-8"
+    - ${R} CMD INSTALL --build --install-tests . "${R_ARGS}"
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports:
-    - {{ pin_subpackage('r-monocle3', max_pin="x.x") }}
+    - {{ pin_subpackage('r-monocle3', max_pin="x") }}
 
 requirements:
   build:
@@ -35,7 +41,10 @@ requirements:
     - bioconductor-s4vectors
     - bioconductor-summarizedexperiment >=1.11.5
     - r-assertthat >=0.2.1
+    - r-bpcells
     - r-dplyr >=0.8.0.1
+    - r-ggdist
+    - r-ggforce
     - r-ggplot2 >=3.1.1
     - r-ggrastr
     - r-ggrepel >=0.8.1
@@ -79,7 +88,7 @@ requirements:
     - r-uwot >=0.1.3
     - r-viridis >=0.5.1
       # Suggests:
-      # - r-ggrastr
+    - r-ggrastr
     - r-knitr
     - r-rmarkdown
     - r-spelling
@@ -99,7 +108,10 @@ requirements:
     - bioconductor-s4vectors
     - bioconductor-summarizedexperiment >=1.11.5
     - r-assertthat >=0.2.1
+    - r-bpcells
     - r-dplyr >=0.8.0.1
+    - r-ggdist
+    - r-ggforce
     - r-ggplot2 >=3.1.1
     - r-ggrastr
     - r-ggrepel >=0.8.1
@@ -142,7 +154,7 @@ requirements:
     - r-uwot >=0.1.3
     - r-viridis >=0.5.1
       # Suggests:
-      # - r-ggrastr
+    - r-ggrastr
     - r-knitr
     - r-rmarkdown
     - r-spelling
@@ -153,14 +165,21 @@ test:
     - $R -e "library('monocle3')"
 
 about:
-  home: https://cole-trapnell-lab.github.io/monocle3/
-  dev_url: "{{ github }}"
+  home: "https://cole-trapnell-lab.github.io/monocle3"
+  dev_url: {{ github }}
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: An analysis toolkit for single-cell RNA-seq.
+  summary: "An analysis toolkit for single-cell RNA-seq."
+  doc_url: "https://cole-trapnell-lab.github.io/monocle3/docs/introduction"
 
 extra:
   recipe-maintainers:
     - mjsteinbaugh
     - hpliner
     - ctrapnell
+  identifiers:
+    - biotools:monocle
+    - doi:10.1038/nbt.2859
+    - doi:10.1038/nmeth.4402
+    - doi:10.1038/s41586-019-0969-x
