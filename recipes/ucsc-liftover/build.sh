@@ -26,7 +26,7 @@ elif [[ "$(uname -s)" == "Darwin" && "$(uname -m)" == "x86_64" ]]; then
 	rsync -aP rsync://hgdownload.cse.ucsc.edu/genome/admin/exe/macOSX.x86_64/liftOver .
 	install -v -m 755 liftOver "${PREFIX}/bin"
 elif [[ "$(uname -s)" == "Linux" ]]; then
-	(cd kent/src && make libs CC="${CC}" -j"${CPU_COUNT}")
+	(cd kent/src && make libs PTHREADLIB=1 CC="${CC}" -j"${CPU_COUNT}")
 	(cd kent/src/hg/liftOver && make CC="${CC}" -j"${CPU_COUNT}")
 	install -v -m 755 bin/liftOver "${PREFIX}/bin"
 fi
