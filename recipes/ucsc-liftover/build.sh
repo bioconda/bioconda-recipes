@@ -26,10 +26,7 @@ elif [[ "$(uname -s)" == "Darwin" && "$(uname -m)" == "x86_64" ]]; then
 	rsync -aP rsync://hgdownload.cse.ucsc.edu/genome/admin/exe/macOSX.x86_64/liftOver .
 	install -v -m 755 liftOver "${PREFIX}/bin"
 elif [[ "$(uname -s)" == "Linux" ]]; then
-	(cd kent/src/lib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
-	(cd kent/src/htslib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
-	(cd kent/src/jkOwnLib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
-	(cd kent/src/hg/lib && make USE_HIC=0 CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
-	(cd kent/src/hg/liftOver && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
+	(cd kent/src && make libs CC="${CC}" -j"${CPU_COUNT}")
+	(cd kent/src/hg/liftOver && make CC="${CC}" -j"${CPU_COUNT}")
 	install -v -m 755 bin/liftOver "${PREFIX}/bin"
 fi
