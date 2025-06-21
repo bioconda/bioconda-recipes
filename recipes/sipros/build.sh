@@ -4,12 +4,16 @@ set -e
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -ldl"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
 
 mkdir -p "${PREFIX}/bin"
 
 sed -i.bak 's|VERSION 3.1|VERSION 3.5|' siprosV4CmakeAll/CMakeLists.txt
+sed -i.bak 's|"gcc-11"|"$CC"|' siprosV4CmakeAll/make
+sed -i.bak 's|"g++-11"|"$CXX"|' siprosV4CmakeAll/make
 rm -rf siprosV4CmakeAll/*.bak
+sed -i.bak 's|-static|-static -ldl|' siprosV4CmakeAll/openmp/CMakeLists.txt
+rm -rf siprosV4CmakeAll/openmp/*.bak
 
 if [[ `uname -s` == "Darwin" ]]; then
     export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
