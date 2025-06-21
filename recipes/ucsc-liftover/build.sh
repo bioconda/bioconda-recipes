@@ -14,6 +14,12 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 export L="${LDFLAGS}"
 
+sed -i.bak 's|g++|$(CXX)|' kent/src/optimalLeaf/makefile
+sed -i.bak 's|-g|-g -O3|' kent/src/optimalLeaf/makefile
+sed -i.bak 's|ar rcus|ar rcs|' kent/src/jkOwnLib/makefile
+rm -rf kent/src/optimalLeaf/*.bak
+rm -rf kent/src/jkOwnLib/*.bak
+
 if [[ "$(uname -s)" == "Darwin" ]]; then
         export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
         export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument"
@@ -26,7 +32,7 @@ elif [[ "$(uname -s)" == "Darwin" && "$(uname -m)" == "x86_64" ]]; then
 	rsync -aP rsync://hgdownload.cse.ucsc.edu/genome/admin/exe/macOSX.x86_64/liftOver .
 	install -v -m 755 liftOver "${PREFIX}/bin"
 elif [[ "$(uname -s)" == "Linux" ]]; then
-	(cd kent/src && make libs PTHREADLIB=1 CC="${CC}" -j"${CPU_COUNT}")
+	(cd kent/src && make libs PTHREADLIB=1 CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}")
 	(cd kent/src/hg/liftOver && make CC="${CC}" -j"${CPU_COUNT}")
 	install -v -m 755 bin/liftOver "${PREFIX}/bin"
 fi
