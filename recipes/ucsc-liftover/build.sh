@@ -31,11 +31,12 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
         export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument"
 fi
 
-if [[ "$(uname -s)" == "Darwin" && "$(uname -m)" == "arm64" ]]; then
+if [[ "$(uname -m)" == "arm64" ]]; then
 	rsync -aP rsync://hgdownload.cse.ucsc.edu/genome/admin/exe/macOSX.arm64/liftOver .
-	install -v -m 755 liftOver "${PREFIX}/bin"
+	rsync -aP rsync://hgdownload.cse.ucsc.edu/genome/admin/exe/macOSX.arm64/liftOverMerge .
+	install -v -m 755 liftOver* "${PREFIX}/bin"
 else
 	(cd kent/src && make libs PTHREADLIB=1 CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}")
 	(cd kent/src/hg/liftOver && make CC="${CC}" -j"${CPU_COUNT}")
-	install -v -m 755 bin/liftOver "${PREFIX}/bin"
+	install -v -m 755 bin/liftOver* "${PREFIX}/bin"
 fi
