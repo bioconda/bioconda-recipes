@@ -20,7 +20,7 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
 fi
 
 if [[ "$(uname -m)" == "arm64" ]]; then
-	rsync -aP rsync://hgdownload.cse.ucsc.edu/genome/admin/exe/macOSX.arm64/blat .
+	rsync -aP rsync://hgdownload.cse.ucsc.edu/genome/admin/exe/macOSX.arm64/blat/blat .
 	install -v -m 755 blat "${PREFIX}/bin"
 else
 	(cd kent/src/lib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
