@@ -1,0 +1,83 @@
+{% set version = '4.5' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-devemf
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/devEMF_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/devEMF/devEMF_{{ version }}.tar.gz
+  sha256: ead1cb3dbb41bf4caacc77335452c6575b1b5e620aac1205c3a80467a0a13c0e
+
+build:
+  merge_build_host: True  # [win]
+  number: 0
+  run_exports: '{{ pin_compatible("r-devEMF", max_pin="x.x") }}'
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}              # [not win]
+    - {{ compiler('m2w64_c') }}        # [win]
+    - {{ compiler('cxx') }}            # [not win]
+    - {{ compiler('m2w64_cxx') }}      # [win]
+    - {{ posix }}filesystem        # [win]
+    - {{ posix }}sed               # [win]
+    - {{ posix }}grep              # [win]
+    - {{ posix }}autoconf
+    - {{ posix }}automake          # [not win]
+    - {{ posix }}automake-wrapper  # [win]
+    - {{ posix }}pkg-config
+    - {{ posix }}make
+    - {{ posix }}coreutils         # [win]
+    - {{ posix }}zip               # [win]
+
+  host:
+    - r-base >=3.5
+
+  run:
+    - r-base >=3.5
+    - {{native}}gcc-libs         # [win]
+
+test:
+  commands:
+    - $R -e "library('devEMF')"           # [not win]
+    - "\"%R%\" -e \"library('devEMF')\""  # [win]
+
+about:
+  home: https://github.com/plfjohnson/devEMF
+  license: GPL-3
+  summary: Output graphics to EMF+/EMF.
+  license_family: GPL3
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+# The original CRAN metadata for this package was:
+
+# Package: devEMF
+# Type: Package
+# Title: EMF Graphics Output Device
+# Version: 4.5
+# Date: 2024-07-26
+# Author: Philip Johnson
+# Maintainer: Philip Johnson <plfj@umd.edu>
+# Depends: R (>= 2.10.1)
+# SystemRequirements: fontconfig or zlib (only needed for platforms other than modern OSX and Windows)
+# Description: Output graphics to EMF+/EMF.
+# License: GPL-3
+# URL: https://github.com/plfjohnson/devEMF
+# BugReports: https://github.com/plfjohnson/devEMF/issues
+# NeedsCompilation: yes
+# Packaged: 2024-07-26 15:53:10 UTC; pjohnson
+# Repository: CRAN
+# Date/Publication: 2024-07-26 20:00:01 UTC
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml
