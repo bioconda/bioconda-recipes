@@ -1,4 +1,9 @@
 #!/bin/bash
+
+git clone https://github.com/CompEvol/BeastFX.git
+
+ln -s
+
 ant linux
 
 mkdir -p ${PREFIX}/bin ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/lib
