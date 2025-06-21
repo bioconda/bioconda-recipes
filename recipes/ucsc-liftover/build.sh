@@ -16,7 +16,7 @@ export L="${LDFLAGS}"
 
 sed -i.bak 's|g++|$(CXX)|' kent/src/optimalLeaf/makefile
 sed -i.bak 's|-g|-g -O3|' kent/src/optimalLeaf/makefile
-sed -i.bak 's|ar rcus|ar rcs|' kent/src/jkOwnLib/makefile
+sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/jkOwnLib/makefile
 rm -rf kent/src/optimalLeaf/*.bak
 rm -rf kent/src/jkOwnLib/*.bak
 
