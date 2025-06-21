@@ -17,8 +17,10 @@ export L="${LDFLAGS}"
 sed -i.bak 's|g++|$(CXX)|' kent/src/optimalLeaf/makefile
 sed -i.bak 's|-g|-g -O3|' kent/src/optimalLeaf/makefile
 sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/jkOwnLib/makefile
+sed -i.bak 's|ld|$(LD)|' kent/src/hg/lib/straw/makefile
 rm -rf kent/src/optimalLeaf/*.bak
 rm -rf kent/src/jkOwnLib/*.bak
+rm -rf kent/src/hg/lib/straw/*.bak
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
         export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
