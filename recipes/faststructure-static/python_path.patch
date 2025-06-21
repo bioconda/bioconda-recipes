@@ -1,0 +1,105 @@
+--- chooseK.py	2014-12-16 00:43:01.000000000 -0600
++++ chooseK.py.new	2019-01-04 13:31:42.113328343 -0600
+@@ -1,6 +1,8 @@
++#!/opt/anaconda1anaconda2anaconda3/bin/python
++
+ import numpy as np
+ import getopt
+-import vars.utils as utils
++import utils as utils
+ import glob
+ import sys
+ import pdb
+--- distruct.py	2014-12-16 00:43:01.000000000 -0600
++++ distruct.py.new	2019-01-04 13:30:44.297322820 -0600
+@@ -1,3 +1,5 @@
++#!/opt/anaconda1anaconda2anaconda3/bin/python
++
+ import numpy as np
+ import matplotlib.pyplot as plot
+ import colorsys
+--- fastStructure.pyx	2014-12-16 00:43:01.000000000 -0600
++++ fastStructure.pyx.new	2019-01-04 13:32:16.636331641 -0600
+@@ -2,12 +2,12 @@
+ import numpy as np
+ cimport numpy as np
+ from cpython cimport bool
+-import vars.utils as utils
+-cimport vars.allelefreq as af 
+-import vars.allelefreq as af
+-cimport vars.admixprop as ap 
+-import vars.admixprop as ap
+-import vars.marglikehood as mlhood
++import utils as utils
++cimport allelefreq as af 
++import allelefreq as af
++cimport admixprop as ap 
++import admixprop as ap
++import marglikehood as mlhood
+ import time
+ 
+ def infer_variational_parameters(np.ndarray[np.uint8_t, ndim=2] G, int K, str outfile, double mintol, str prior, int cv):
+--- structure.py	2014-12-16 00:43:01.000000000 -0600
++++ structure.py.new	2019-01-04 13:31:01.531324463 -0600
+@@ -1,3 +1,4 @@
++#!/opt/anaconda1anaconda2anaconda3/bin/python
+ 
+ import numpy as np
+ import fastStructure
+--- setup.py	2014-12-16 00:43:01.000000000 -0600
++++ setup.py.new	2019-01-07 18:26:13.765894457 -0600
+@@ -1,36 +1,37 @@
+-
+ from distutils.core import setup
++from Cython.Build import cythonize
+ from distutils.extension import Extension
+ from Cython.Distutils import build_ext
+ import numpy
+ import sys
+ 
+-# setup bed parser
+-ext_modules = [Extension("parse_bed", ["parse_bed.pyx"])]
+-
+-setup(
+-    name = 'parse_bed',
+-    cmdclass = {'build_ext': build_ext},
+-    include_dirs=[numpy.get_include(), '.'],
+-    ext_modules = ext_modules
+-)
+ 
+-# setup structure format parser
+-ext_modules = [Extension("parse_str", ["parse_str.pyx"])]
++# setup variable updates
++ext_modules = [Extension("admixprop", sources=["admixprop.pyx", "C_admixprop.c"]),
++               Extension("allelefreq", sources=["allelefreq.pyx", "C_allelefreq.c"], libraries=["gsl","gslcblas"], extra_compile_args=["-O3"]),
++               Extension("marglikehood", sources=["marglikehood.pyx", "C_marglikehood.c"])]
++ext_modules = cythonize(ext_modules)
+ 
+ setup(
+-    name = 'parse_str',
++    name = 'fastStructure',
++    author = 'Anil Raj',
++    version = '1.0',
++    author_email = 'rajanil@stanford.edu',
++    include_dirs = [numpy.get_include(), '.'],
+     cmdclass = {'build_ext': build_ext},
+-    include_dirs=[numpy.get_include(), '.'],
+     ext_modules = ext_modules
+ )
+ 
+-# setup fastStructure
+-ext_modules = [Extension("fastStructure", ["fastStructure.pyx"])]
++
++ext_modules = [Extension("parse_bed", sources=["parse_bed.pyx"]), 
++               Extension("parse_str", ["parse_str.pyx"]), 
++               Extension("fastStructure", ["fastStructure.pyx"]), 
++               Extension("utils", ["utils.pyx"])]
++ext_modules = ext_modules
+ 
+ setup(
+     name = 'fastStructure',
++    include_dirs = [numpy.get_include(), '.'],
+     cmdclass = {'build_ext': build_ext},
+-    include_dirs=[numpy.get_include(), '.', 'vars/'],
+     ext_modules = ext_modules
+ )

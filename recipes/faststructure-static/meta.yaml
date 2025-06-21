@@ -1,0 +1,44 @@
+{% set name = "faststructure-static" %}
+{% set version = "1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/rajanil/fastStructure/archive/v{{ version }}.tar.gz
+  sha256: f1bfb24bb5ecd108bc3a90145fad232012165c1e60608003f1c87d200f867b81
+  patches:
+    - python_path.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('faststructure-static', max_pin="x") }}
+
+requirements:
+  host:
+    - python 2.7
+    - numpy 1.10
+    - scipy 0.17.1
+    - cython <0.28
+    - gsl 1.16
+    - openblas
+  build:
+    - {{ compiler('c') }}
+    - python 2.7
+    - numpy 1.10
+    - scipy 0.17.1
+    - gsl 1.16
+    - openblas
+
+test:
+  commands:
+    - fastStructure
+
+about:
+  home: https://github.com/rajanil/fastStructure
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A variational framework for inferring population structure from SNP genotype data (statically compiled)."
