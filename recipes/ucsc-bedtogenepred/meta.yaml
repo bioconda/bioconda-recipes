@@ -1,7 +1,7 @@
 {% set package = "ucsc-bedtogenepred" %}
 {% set program = "bedToGenePred" %}
-{% set version = "480" %}
-{% set sha256 = "4667a4221740c426e0d6a709eb59029d3b48f55346fea464ff5490e3ee0c7aed" %}
+{% set version = "482" %}
+{% set sha256 = "745d0f0a980e9f863373b0b0a6ad7961a1d0f53a9d7c446e92fc28fc4909431a" %}
 
 package:
   name: {{ package }}
@@ -11,8 +11,10 @@ source:
   url: https://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz
   sha256: {{ sha256 }}
   patches:
-    - include.patch
-    - include.linux.patch  # [linux]
+    - 0001-include.patch
+    - 0002-include.linux.patch  # [linux]
+    - 0003-common.mk.patch
+    - 0004-straw.patch
 
 build:
   number: 0
@@ -23,25 +25,22 @@ requirements:
   build:
     - make
     - {{ compiler('c') }}
-    - autoconf
-    - automake
-    - libtool
-    - pkg-config
+    - {{ compiler('cxx') }}
   host:
     - libpng
     - libuuid
-    - mysql-connector-c
+    - mysql-connector-c  # [not arm64]
     - libopenssl-static
     - clangdev  # [osx]
+    - rsync  # [osx]
     - libiconv
-    - curl
     - bzip2
     - liblzma-devel
     - zlib
   run:
     - libpng
     - libuuid
-    - mysql-connector-c
+    - mysql-connector-c  # [not arm64]
     - libopenssl-static
 
 test:
@@ -59,6 +58,7 @@ about:
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:UCSC_Genome_Browser_Utilities
     - doi:10.1093/bib/bbs038

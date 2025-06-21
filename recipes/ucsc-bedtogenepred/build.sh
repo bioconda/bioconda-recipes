@@ -1,30 +1,41 @@
 #!/bin/bash
-
 set -xe
 
-export MACHTYPE=$(uname -m)
-export BINDIR=$(pwd)/bin
-
+mkdir -p "${PREFIX}/bin"
+export MACHTYPE="$(uname -m)"
+export BINDIR="$(pwd)/bin"
+mkdir -p "$(pwd)/bin"
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export L="${LDFLAGS}"
-export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3"
 export COPT="${COPT} ${CFLAGS}"
-export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
+export L="${LDFLAGS}"
 
-mkdir -p "${PREFIX}/bin"
-mkdir -p "${BINDIR}"
+sed -i.bak 's|g++|$(CXX)|' kent/src/optimalLeaf/makefile
+sed -i.bak 's|-g|-g -O3|' kent/src/optimalLeaf/makefile
+sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/optimalLeaf/makefile
+sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/jkOwnLib/makefile
+sed -i.bak 's|ld|$(LD)|' kent/src/hg/lib/straw/makefile
+sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/lib/makefile
+sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/hg/cgilib/makefile
+sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/hg/lib/makefile
+rm -rf kent/src/optimalLeaf/*.bak
+rm -rf kent/src/jkOwnLib/*.bak
+rm -rf kent/src/hg/lib/straw/*.bak
 
-sed -i.bak -e 's|${LINKLIBS} ${L}|${LINKLIBS} ${L} -ldl -lm -lc -liconv|' kent/src/inc/userApp.mk
-sed -i.bak -e 's|${CC} ${COPT}|${CC} ${LDFLAGS} $(CPPFLAGS) ${COPT}|' kent/src/inc/userApp.mk
-sed -i.bak -e 's|-lpthread|-pthread|' kent/src/inc/common.mk
+if [[ "$(uname -s)" == "Darwin" ]]; then
+        export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
+        export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument"
+fi
 
-rm -rf kent/src/inc/*.bak
-
-(cd kent/src/lib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
-(cd kent/src/htslib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
-(cd kent/src/jkOwnLib && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
-(cd kent/src/hg/lib && make USE_HIC=0 CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
-(cd kent/src/hg/bedToGenePred && make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}")
-install -v -m 0755 bin/bedToGenePred "${PREFIX}/bin"
+if [[ "$(uname -m)" == "arm64" ]]; then
+	rsync -aP rsync://hgdownload.cse.ucsc.edu/genome/admin/exe/macOSX.arm64/bedToGenePred .
+	install -v -m 755 bedToGenePred "${PREFIX}/bin"
+else
+	(cd kent/src && make libs PTHREADLIB=1 CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}")
+	(cd kent/src/hg/bedToGenePred && make CC="${CC}" -j"${CPU_COUNT}")
+	install -v -m 755 bin/bedToGenePred "${PREFIX}/bin"
+fi
