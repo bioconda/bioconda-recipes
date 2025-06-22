@@ -7,11 +7,14 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/bbuchfink/diamond/archive/v{{ version }}.tar.gz
+- url: https://github.com/bbuchfink/diamond/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+- url: https://github.com/ncbi/ncbi-cxx-toolkit-public/archive/refs/tags/release/29.2.0.tar.gz
+  sha256: 4bb2701b2cc8b4b29b5cde10088142d3c71c0ffd59e5f3402a1a6eec3d07db7e
+  folder: ncbi-cxx-toolkit-public
 
 build:
-  number: 0
+  number: 2
   run_exports:
     - {{ pin_subpackage('diamond', max_pin="x") }}
 
@@ -27,9 +30,12 @@ requirements:
   host:
     - zlib
     - zstd-static
-    - blast
+    - sqlite
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
   run:
-    - blast
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
 
 test:
   commands:
