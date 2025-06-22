@@ -1,14 +1,13 @@
 {% set name = "OpenStructure" %}
-{% set version = "2.10.0" %}
+{% set version = "2.11.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  - url: https://git.scicore.unibas.ch/schwede/{{ name|lower }}/-/archive/{{ version }}/{{ name|lower }}-{{ version }}.tar.gz
-    sha256: 88009b3d5b477f753e4ce1c731da19fb733aea4ed4ccac6c5fbaf6e1359a9560
-    patches: conda.patch
+  url: https://git.scicore.unibas.ch/schwede/{{ name|lower }}/-/archive/{{ version }}/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: 46c91d0499f54818e3039cb6d51c9cc296b7e1a2ff34521dcc207cee18c38b60
 
 build:
   number: 0
@@ -24,24 +23,14 @@ requirements:
     - pkg-config
     - wget
   host:
-    - boost ==1.85.0
+    - python {{ python }}
+    - libboost-devel >=1.86,<1.87
+    - libboost-python-devel >=1.86,<1.87
     - eigen
     - fftw
-    - glew
-    - glfw
-    - glm
-    - libegl-devel  # [linux]
-    - libgl-devel  # [linux]
-    - libglx-devel  # [linux]
-    - libgles-devel  # [linux]
-    - libxcb  # [linux]
     - libpng
     - libtiff
-    - mesalib  # [linux]
-    - ocl-icd  # [linux]
-    - opencl-headers  # [linux]
     - parasail
-    - python >=3.10
     - numpy >=1,<2
     - pandas >=1
     - scipy >=1,<2
@@ -53,22 +42,36 @@ requirements:
     - pyqt5-sip
     - voronota
     - zlib
+    # OpenCL
+    - khronos-opencl-icd-loader  # [osx]
+    - ocl-icd  # [linux]
+    - opencl-headers  # [linux]
+    # OpenGL
+    - glew
+    - glfw
+    - glm
+    - libglvnd-devel  # [linux]
+    - libopengl-devel  # [linux]
+    - libgl-devel  # [linux]
+    - libegl-devel  # [linux]
+    - libglx-devel  # [linux]
+    - libgles-devel  # [linux]
+    - libxcb  # [linux]
+    - mesalib  # [linux]
   run:
-    - {{ pin_compatible("python") }}
+    - python {{ python }}
+    - {{ pin_compatible("networkx") }}
     - {{ pin_compatible("numpy") }}
+    - {{ pin_compatible("openmm") }}
     - {{ pin_compatible("pandas") }}
     - {{ pin_compatible("scipy") }}
-    - {{ pin_compatible("networkx") }}
-    - clustalw
-    - libboost ==1.85.0
-    - libboost-python ==1.85.0
-    - libgl  # [linux]
+    - ocl-icd-system  # [linux]
+    - ocl_icd_wrapper_apple  # [osx]
 
 test:
   source_files:
     - examples/scoring/model.pdb
     - examples/scoring/reference.cif.gz
-
   commands:
     - ost -h 2>&1 | grep -q Usage
     - lddt --help 2>&1 | grep -q usage

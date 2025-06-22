@@ -1,24 +1,31 @@
----
-{% set version = "0.1.4" %}
+{% set name = "atol-bpa-datamapper" %}
+{% set version = "0.1.7" %}
 
 package:
-  name: atol-bpa-datamapper
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/TomHarrop/atol-bpa-datamapper/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: f1e3c1a5eb3dc6685bc2b0753225d81d3d384eb68b42433e2d51abfcf660b0bb
+  sha256: 1744805ffdf83693cb70f558acb9530c0548138f65234d89a98515fc77541952
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install --ignore-installed .
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  entry_points:
+    - filter-packages = atol_bpa_datamapper.filter_packages:main
+    - map-metadata = atol_bpa_datamapper.map_metadata:main
   run_exports:
-    - {{ pin_subpackage("atol-bpa-datamapper", max_pin="x.x") }}
+    - {{ pin_subpackage('atol-bpa-datamapper', max_pin="x.x") }}
 
 requirements:
   host:
     - python >=3.12,<3.13
+    - pip
+    - setuptools-scm
   run:
     - python >=3.12,<3.13
     - ckanapi >=4.8
@@ -29,11 +36,11 @@ test:
   commands:
     - "filter-packages --help | grep 'usage: filter-packages'"
     - "map-metadata --help | grep 'usage: map-metadata'"
-    - "resolve-organism --help | grep 'usage: resolve-organism'"
 
 about:
-  home: https://github.com/TomHarrop/atol-bpa-datamapper
-  license: GPL-3.0-or-later
+  home: "https://github.com/TomHarrop/atol-bpa-datamapper"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: >
-    Map data from the BPA data portal for AToL's Genome Engine.
+  summary: "Map data from the BPA data portal for AToL's Genome Engine."
+  dev_url: "https://github.com/TomHarrop/atol-bpa-datamapper"

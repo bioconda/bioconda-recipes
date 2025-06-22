@@ -1,11 +1,11 @@
 #!/bin/bash
 
-cd $SRC_DIR/bin
+mkdir -p $PREFIX/bin
+cd bin
 
 binaries="\
 gustaf \
 gustaf_mate_joining \
 "
-mkdir -p $PREFIX/bin
 
-for i in $binaries; do cp $SRC_DIR/bin/$i $PREFIX/bin/$i && chmod a+x $PREFIX/bin/$i; done
+for i in ${binaries}; do install -v -m 755 $SRC_DIR/bin/$i "$PREFIX/bin"; done
