@@ -36,6 +36,6 @@ if [[ "$(uname -m)" == "arm64" ]]; then
 	install -v -m 755 gtfToGenePred "${PREFIX}/bin"
 else
 	(cd kent/src && make libs PTHREADLIB=1 CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}")
-	(cd kent/src/hg/gtfToGenePred && make CC="${CC}" -j"${CPU_COUNT}")
+	(cd kent/src/hg/utils/gtfToGenePred && make CC="${CC}" -j"${CPU_COUNT}")
 	install -v -m 755 bin/gtfToGenePred "${PREFIX}/bin"
 fi
