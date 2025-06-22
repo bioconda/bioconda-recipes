@@ -1,38 +1,53 @@
-{% set version="0.6.3" %}
+{% set name = "usher" %}
+{% set version = "0.6.4" %}
 
 package:
-  name: usher
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  - url: https://github.com/yatisht/usher/archive/v{{ version  }}.tar.gz
-    sha256: 95aba8f748599915f21f7bdf883c2e532f2d821138f06cb2e4e58d7323019946
+  url: https://github.com/yatisht/usher/archive/v{{ version  }}.tar.gz
+  sha256: f9c38f7bf65ec22f22620917ec3c4c99fc23e96cbd75c03f104a8b03533674fd
+  patches:
+    - 0001-CMakeLists.patch
+    - 0002-main-cpp.patch
 
 build:
-  number: 2
+  number: 0
   run_exports:
     - {{ pin_subpackage('usher', max_pin="x.x") }}
 
 requirements:
   build:
-    - make
-    - autoconf
-    - cmake
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
-    - wget
+    - make
+    - cmake
+    - autoconf
+    - automake
+    - libtool
+    - ninja
+    - pkg-config
   host:
     - boost-cpp
-    - libprotobuf
-    - openmpi =4.1.2
+    - protobuf <4
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - openmpi
     - openssh
+    - tbb-devel <2021.1.1
     - isa-l
+    - wget
   run:
     - mafft
     - boost-cpp
-    - ucsc-fatovcf
-    - openmpi =4.1.2
+    - protobuf <4
+    - ucsc-fatovcf  # [not arm64]
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - openmpi
     - openssh
+    - tbb-devel <2021.1.1
     - isa-l
 
 test:
@@ -43,15 +58,20 @@ test:
     - matUtils --help
 
 about:
-  home: https://github.com/yatisht/usher
+  home: "https://github.com/yatisht/usher"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: Ultrafast Sample Placement on Existing Trees (UShER)
-  doc_url: https://usher-wiki.readthedocs.io/en/latest/
+  summary: "Ultrafast Sample Placement on Existing Trees (UShER)."
+  doc_url: "https://usher-wiki.readthedocs.io/en/latest"
+  dev_url: "https://github.com/yatisht/usher"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.1038/s41588-021-00862-7
+    - biotools:usher
+    - usegalaxy-eu:usher_matutils
+    - usegalaxy-eu:usher
