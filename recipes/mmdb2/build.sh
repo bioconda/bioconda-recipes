@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -exo pipefail
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
