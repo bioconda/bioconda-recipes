@@ -35,7 +35,7 @@ if [[ "$(uname -m)" == "arm64" ]]; then
 	rsync -aP rsync://hgdownload.cse.ucsc.edu/genome/admin/exe/macOSX.arm64/pslCDnaFilter .
 	install -v -m 755 pslCDnaFilter "${PREFIX}/bin"
 else
-	(cd kent/src && make libs CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}")
+	(cd kent/src && make libs PTHREADLIB=1 CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}")
 	(cd kent/src/hg/pslCDnaFilter && make CC="${CC}" -j"${CPU_COUNT}")
 	install -v -m 755 bin/pslCDnaFilter "${PREFIX}/bin"
 fi
