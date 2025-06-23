@@ -1,5 +1,6 @@
 #!/bin/bash
-
+mkdir -p $PREFIX/bin
+sed -i '8c\CFLAGS=-g -O2 $(CFLAGS0) -Xlinker -zmuldefs' Makefile
 make
 # copy binary to prefix folder
 cp -p bin/domclust $PREFIX/bin
