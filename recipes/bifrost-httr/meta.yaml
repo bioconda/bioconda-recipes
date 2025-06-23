@@ -12,9 +12,11 @@ source:
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   entry_points:
     - bifrost-httr = bifrost_httr.cli:cli
+  run_exports:
+    - {{ pin_subpackage('bifrost-httr', max_pin="x.x") }}
 
 requirements:
   host:
@@ -35,15 +37,27 @@ requirements:
 test:
   imports:
     - bifrost_httr
+    - bifrost_httr.core
+    - bifrost_httr.models
+    - bifrost_httr.utils
+    - bifrost_httr.visualization
+    - bifrost_httr.data
   commands:
     - pip check
     - bifrost-httr --help
+    - bifrost-httr run-analysis --help
+    - bifrost-httr create-report --help
+    - bifrost-httr compress-output --help
+    - bifrost-httr prepare-inputs --help
+    - bifrost-httr split-data --help
+    - bifrost-httr compile-model --help
   requires:
     - pip
 
 about:
   home: https://github.com/seqera-services/bifrost-httr
   license: GPL-3.0
+  license_family: GPL
   license_file: LICENSE
   summary: BIFROST HTTr Analysis Package - Bayesian inference for region of signal threshold
   description: |
@@ -54,4 +68,6 @@ about:
 
 extra:
   recipe-maintainers:
-    - pinin4fjords 
+    - pinin4fjords
+    - JoeReynolds257
+    - mark-liddell 
