@@ -1,5 +1,6 @@
 #!/bin/bash
 set -euo pipefail
+
 mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/share
 mkdir -p ${PREFIX}/share/dialign2
