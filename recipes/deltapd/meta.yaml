@@ -15,7 +15,12 @@ source:
 
 build:
   number: 7
-  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir --use-pep517 -vvv
+  script:
+    - sed -i.bak 's|-march=native|-march=armv8-a|' setup.py  # [aarch64]
+    - sed -i.bak 's|-march=native|-march=armv8.4-a|' setup.py  # [arm64]
+    - sed -i.bak 's|-march=native|-march=x86-64-v3|' setup.py  # [x86_64]
+    - rm -rf *.bak
+    - {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir --use-pep517 -vvv
   entry_points:
     - deltapd = deltapd.__main__:main
   run_exports:
