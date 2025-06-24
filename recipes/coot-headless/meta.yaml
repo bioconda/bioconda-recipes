@@ -6,8 +6,10 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/pemsley/coot/archive/refs/tags/Release-{{ version }}.tar.gz
-  sha256: 127480271faafd0543b6a12708608e6f449901bf04d1e955dfdc252cc3d02e85
+  # url: https://github.com/pemsley/coot/archive/refs/tags/Release-{{ version }}.tar.gz
+  # sha256: 127480271faafd0543b6a12708608e6f449901bf04d1e955dfdc252cc3d02e85
+  git_url: https://github.com/pemsley/coot.git
+  git_rev: 1af17d4971c3a0c2a6dd3cc6e3ac5191a5cd2d17
 
 build:
   number: 0
@@ -17,23 +19,19 @@ build:
 requirements:
   build:
     - {{ compiler("cxx") }}
-    - autoconf
-    - automake
-    - bison
     - cmake
-    - flex
-    - libtool
-    - m4
-    - make
+    - ninja
     - pkg-config
   host:
     - cairo
     - clipper
     - curl
     - eigen
+    - elfutils  # [linux]
     - fontconfig
     - freetype
     - gemmi
+    - glm
     - gsl >=2.7,<3
     - libboost-devel
     - libboost-python-devel
@@ -47,19 +45,24 @@ requirements:
     - openblas
     - pixman
     - python {{ python }}
-    - rdkit
+    - rdkit-dev
     - sqlite
     - ssm
     - zlib
   run:
-    - python {{ python }}
+    - {{ pin_compatible("gemmi") }}
     - {{ pin_compatible("numpy") }}
+    - {{ pin_compatible("rdkit-dev") }}
+    - libopenblas
+    - python {{ python }}
 
 test:
+  requires:
+    - pip
   imports:
     - coot_headless_api
   commands:
-    - python -c "import coot_headless_api; container = coot_headless_api.molecules_container_t(False); print('Import successful')"
+    - pip check
 
 about:
   home: https://www2.mrc-lmb.cam.ac.uk/personal/pemsley/coot
@@ -82,3 +85,5 @@ extra:
     - osx-arm64
   identifiers:
     - doi:10.1107/S0907444910007493
+  recipe-maintainers:
+    - eunos-1128
