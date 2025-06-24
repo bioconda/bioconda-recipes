@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 set -e
 
-lw
+ls
 pwd
 
 git clone https://github.com/kcleal/gw.git
