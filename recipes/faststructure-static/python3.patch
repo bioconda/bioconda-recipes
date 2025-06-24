@@ -1,0 +1,137 @@
+diff --git a/fastStructure.pyx b/fastStructure.pyx
+index f787f4d..6132de6 100644
+--- a/fastStructure.pyx
++++ b/fastStructure.pyx
+@@ -302,7 +302,7 @@ cdef np.ndarray CV(np.ndarray[np.uint8_t, ndim=2] Gtrue, ap.AdmixProp psi, af.Al
+ 
+         if not len(newmasks)>=cv:
+             wellmasked = False
+-            print "Failed"
++            print("Failed")
+ 
+     masks = newmasks[:cv]
+     meandeviance = np.zeros((cv,), dtype=float)
+diff --git a/parse_bed.pyx b/parse_bed.pyx
+index 34d95e5..08ec7e0 100644
+--- a/parse_bed.pyx
++++ b/parse_bed.pyx
+@@ -21,7 +21,7 @@ def load(file):
+     Nindiv = i+1
+ 
+     # Number of bytes to read in at a time
+-    Nbytes = Nindiv/4+(Nindiv%4>0)*1
++    Nbytes = Nindiv // 4 + (Nindiv % 4 > 0) * 1
+ 
+     # number of SNPs
+     handle = open(file+'.bim','r')
+@@ -44,7 +44,7 @@ def load(file):
+     checkC = bin(struct.unpack('<B', line)[0])[2:].zfill(8)[::-1]
+ 
+     if checkA!="00110110" or checkB!="11011000":
+-        print "This is not a valid bed file"
++        print("This is not a valid bed file")
+         handle.close()
+         sys.exit(2)
+ 
+diff --git a/structure.py b/structure.py
+index 9472251..e3adfa4 100644
+--- a/structure.py
++++ b/structure.py
+@@ -41,7 +41,7 @@ def parseopts(opts):
+             params['prior'] = arg
+ 
+             if params['prior'] not in ['simple','logistic']:
+-                print "%s prior is not currently implemented, defaulting to the simple prior"
++                print("%s prior is not currently implemented, defaulting to the simple prior")
+                 params['prior'] = 'simple'
+ 
+         elif opt in ["--format"]:
+@@ -70,31 +70,31 @@ def checkopts(params):
+     """
+ 
+     if params['mintol']<=0:
+-        print "a non-positive value was provided as convergence criterion"
++        print("a non-positive value was provided as convergence criterion")
+         raise ValueError
+     
+     if params['cv']<0:
+-        print "a negative value was provided for the number of cross-validations folds"
++        print("a negative value was provided for the number of cross-validations folds")
+         raise ValueError
+ 
+     if not params.has_key('K'):
+-        print "a positive integer should be provided for number of populations"
++        print("a positive integer should be provided for number of populations")
+         raise KeyError
+ 
+     if params['format'] not in ['bed','str']:
+-        print "%s data format is not currently implemented"
++        print("%s data format is not currently implemented")
+         raise ValueError
+ 
+     if params['K']<=0:
+-        print "a negative value was provided for the number of populations"
++        print("a negative value was provided for the number of populations")
+         raise ValueError
+     
+     if not params.has_key('inputfile'):
+-        print "an input file needs to be provided"
++        print("an input file needs to be provided")
+         raise KeyError 
+ 
+     if not params.has_key('outputfile'):
+-        print "an output file needs to be provided"
++        print("an output file needs to be provided")
+         raise KeyError
+     
+ def write_output(Q, P, other, params):
+@@ -128,17 +128,17 @@ def usage():
+     brief description of various flags and options for this script
+     """
+ 
+-    print "\nHere is how you can use this script\n"
+-    print "Usage: python %s"%sys.argv[0]
+-    print "\t -K <int> (number of populations)"
+-    print "\t --input=<file> (/path/to/input/file)"
+-    print "\t --output=<file> (/path/to/output/file)"
+-    print "\t --tol=<float> (convergence criterion; default: 10e-6)"
+-    print "\t --prior={simple,logistic} (choice of prior; default: simple)"
+-    print "\t --cv=<int> (number of test sets for cross-validation, 0 implies no CV step; default: 0)"
+-    print "\t --format={bed,str} (format of input file; default: bed)"
+-    print "\t --full (to output all variational parameters; optional)"
+-    print "\t --seed=<int> (manually specify seed for random number generator; optional)"
++    print("\nHere is how you can use this script\n")
++    print("Usage: python %s"%sys.argv[0])
++    print("\t -K <int> (number of populations)")
++    print("\t --input=<file> (/path/to/input/file)")
++    print("\t --output=<file> (/path/to/output/file)")
++    print("\t --tol=<float> (convergence criterion; default: 10e-6)")
++    print("\t --prior={simple,logistic} (choice of prior; default: simple)")
++    print("\t --cv=<int> (number of test sets for cross-validation, 0 implies no CV step; default: 0)")
++    print("\t --format={bed,str} (format of input file; default: bed)")
++    print("\t --full (to output all variational parameters; optional)")
++    print("\t --seed=<int> (manually specify seed for random number generator; optional)")
+ 
+ 
+ if __name__=="__main__":
+@@ -153,7 +153,7 @@ if __name__=="__main__":
+             usage()
+             sys.exit(2)
+     except getopt.GetoptError:
+-        print "Incorrect options passed"
++        print("Incorrect options passed")
+         usage()
+         sys.exit(2)
+ 
+diff --git a/vars/allelefreq.pyx b/vars/allelefreq.pyx
+index 961d162..9ea68c7 100644
+--- a/vars/allelefreq.pyx
++++ b/vars/allelefreq.pyx
+@@ -4,6 +4,7 @@ cimport numpy as np
+ cimport admixprop as ap
+ from cpython cimport bool
+ from scipy.special import digamma, gammaln, polygamma
++from functools import reduce
+ import scipy.optimize as opt
+ import utils
+ 
