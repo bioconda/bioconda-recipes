@@ -1,6 +1,7 @@
 {% set name = "dnadotplot" %}
 {% set version = "0.1.4" %}
 {% set sha256 = "92db68007f6b9ed3d0b2e40779a784a48b31ca206b2c1412f66b119ff8ad74ad" %}
+
 package:
   name: {{ name|lower }}
   version: {{ version }}
@@ -11,7 +12,9 @@ source:
 
 build:
   number: 0
-  script: cargo install --locked --root "${PREFIX}" --path .
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install --locked --root "${PREFIX}" --path .
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
@@ -19,10 +22,8 @@ requirements:
   build:
     - {{ compiler('rust') }}
     - {{ compiler('c') }}
+    - cargo-bundle-licenses
     - pkg-config
-  host:
-  run:
-
 
 test:
   commands:
@@ -33,7 +34,7 @@ about:
   home: https://github.com/quadram-institute-bioscience/{{ name }}
   license: MIT 
   license_family: MIT
-  summary: "DNA dot plot generator"
+  summary: "DNA dot plot generator."
   description: |
     A tool for generating DNA dot plots for bioinformatics analysis.
     # Add more detailed description based on actual functionality
@@ -43,3 +44,6 @@ about:
 extra:
   recipe-maintainers:
     - telatin
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
