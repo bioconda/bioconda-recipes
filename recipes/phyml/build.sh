@@ -26,6 +26,8 @@ case $(uname -m) in
 		;;
 esac
 
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.*
+
 # needed to fix version
 autoreconf -if
 
@@ -36,11 +38,12 @@ for binary in phyrex phyml phyml-mpi phytime rf; do
 	./configure \
 		--disable-dependency-tracking \
 		--enable-silent-rules \
+		--disable-native \
 		--prefix="${PREFIX}" \
 		--enable-${binary} \
 		CC="${CC}" CPPFLAGS="${CPPFLAGS}" \
 		LDFLAGS="${LDFLAGS}" CFLAGS="${CFLAGS} ${ARCH_OPTS}"
+	make clean
 	make CFLAGS="${CFLAGS} ${ARCH_OPTS}" -j"${CPU_COUNT}"
 	make install
-	make clean
 done
