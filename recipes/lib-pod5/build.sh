@@ -35,4 +35,4 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 
 cmake --build build --clean-first --target install -j "${CPU_COUNT}"
 
-${PYTHON} -m pip install ./*.whl --no-deps --no-build-isolation --no-cache-dir -vvv
+${PYTHON} -m pip install ${PREFIX}/*.whl --no-deps --no-build-isolation --no-cache-dir -vvv
