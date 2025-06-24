@@ -10,10 +10,10 @@ fi
 make CC="${CC}" -j"${CPU_COUNT}"
 
 # Copy binery file since there is no INSTALL part in the makefile
-#cp -R remuRNA ${PREFIX}/bin
+install -v -m 755 remuRNA ${PREFIX}/bin
 # Copy data folder. not sure if putting this folder in the main conda folder is "wise", but this tool won't work otherwise
-cp -R data/ ${PREFIX}/share/remurna
-ln -s ${PREFIX}/share/remurna/data ${PREFIX}/bin/data
+cp -Rf data/ ${PREFIX}/share/remurna
+ln -sf ${PREFIX}/share/remurna/data ${PREFIX}/bin/data
 
 # Preparing test files
 printf ">gi|56682960|ref|NM_000146.3| Homo sapiens ferritin, light polypeptide (FTL), mRNA\nGCAGTTCGGCGGTCCCGCGGGTCTGTCTCTTGCTTCAACAGTGTTTGGACGGAACAGATCCGGGGACTCTCTTCCAGCCTCCGACCGCCCTCCGATTTCCTCTCCGCTTGCAACCTCCGGGACCATCTTCTCGGCCATCTCCTGCTTCTGGGACCTGCCAGCACCGTTTTTGTGGTTAGCTCCTTCTTGCCAACCAACCA\n*A3G" > input.fa
