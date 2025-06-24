@@ -32,10 +32,10 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
 fi
 
 if [[ "$(uname -m)" == "arm64" ]]; then
-    rsync -aP rsync://hgdownload.cse.ucsc.edu/genome/admin/exe/macOSX.arm64/faSize .
-    install -v -m 755 faSize "${PREFIX}/bin"
+    rsync -aP rsync://hgdownload.cse.ucsc.edu/genome/admin/exe/macOSX.arm64/bigWigSummary .
+    install -v -m 755 bigWigSummary "${PREFIX}/bin"
 else
     (cd kent/src && make libs PTHREADLIB=1 CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}")
-    (cd kent/src/utils/faSize && make CC="${CC}" -j"${CPU_COUNT}")
-    install -v -m 755 bin/faSize "${PREFIX}/bin"
+    (cd kent/src/utils/bigWigSummary && make CC="${CC}" -j"${CPU_COUNT}")
+    install -v -m 755 bin/bigWigSummary "${PREFIX}/bin"
 fi
