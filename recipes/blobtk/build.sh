@@ -30,6 +30,6 @@ fi
 
 cd rust
 
-maturin build --release --strip --interpreter "${PYTHON}"
+RUSTFLAGS="-C target-feature=+crt-static -L ${PREFIX}/lib" maturin build --release --strip --interpreter "${PYTHON}"
 
 ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
