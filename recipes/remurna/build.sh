@@ -7,7 +7,7 @@ if [[ ${target_platform} == "linux-aarch64" ]]; then
 	sed -i.bak 's/\-m64/\-mabi=lp64/g' Makefile
 fi
 
-make CC="${CC}" -j"${CPU_COUNT}"
+make CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}"
 
 # Copy binery file since there is no INSTALL part in the makefile
 install -v -m 755 remuRNA ${PREFIX}/bin
