@@ -4,8 +4,10 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
+cp -rf ${RECIPE_DIR}/POD5Version.cmake cmake/
+
 ${PYTHON} -m setuptools_scm
-${PYTHON} -m pod5_make_version
+#${PYTHON} -m pod5_make_version
 
 if [[ `uname` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
