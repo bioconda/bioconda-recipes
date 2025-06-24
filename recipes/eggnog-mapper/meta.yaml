@@ -1,5 +1,5 @@
 {% set name = "eggNOG-mapper" %}
-{% set version = "2.1.12" %}
+{% set version = "2.1.13" %}
 
 package:
   name: {{ name|lower }}
@@ -7,14 +7,16 @@ package:
 
 source:
   url: https://github.com/eggnogdb/eggnog-mapper/archive/refs/tags/{{ version }}.tar.gz
-  sha256: b3c53fb0e606a5cfec75cbc84f7c215f57f43ce00d8e50f449513acdad76da73
+  sha256: 8fb708da4c8ccd8699ec51b5ba86d0aa9449c388bd73419d944753a076714905
 
 build:
-  number: 1
-  run_exports:
-    - {{ pin_subpackage("eggnog-mapper", max_pin="x") }}
+  number: 0
   noarch: python
-  script: sed -i.bak "s/eggnogmapper.bin/#eggnogmapper.bin/g"  setup.cfg; python -m pip install --no-deps --ignore-installed --no-cache-dir -vvv .
+  script:
+    - sed -i.bak "s/eggnogmapper.bin/#eggnogmapper.bin/g" setup.cfg
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('eggnog-mapper', max_pin="x") }}
 
 requirements:
   host:
@@ -24,8 +26,8 @@ requirements:
     - python >=3.7,<3.12
     - biopython >=1.76
     - psutil >=5.7.0
-    - diamond >=2.0.11
     - xlsxwriter >=1.4.3
+    - diamond >=2.0.11
     - hmmer
     - mmseqs2
     - prodigal
@@ -40,19 +42,22 @@ test:
     - hmm_mapper.py --help
     - hmm_server.py --help
     - hmm_worker.py --help
-
   imports:
     - eggnogmapper
 
 about:
-  home: https://github.com/eggnogdb/eggnog-mapper
-  license: AGPL-3.0-only
-  license_family: GPL
-  license_file: LICENSE.txt
+  home: "https://github.com/eggnogdb/eggnog-mapper"
+  license: "AGPL-3.0-only"
+  license_family: AGPL
+  license_file: "LICENSE.txt"
   summary: "Fast genome-wide functional annotation through orthology assignment."
-  doc_url: https://github.com/eggnogdb/eggnog-mapper/wiki
+  doc_url: "https://github.com/eggnogdb/eggnog-mapper/wiki"
+  dev_url: "https://github.com/eggnogdb/eggnog-mapper"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   container:
     # need wget with more options than the busybox one
     extended-base: True

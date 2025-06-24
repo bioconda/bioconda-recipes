@@ -2,6 +2,9 @@
 
 set -ex
 
+export RUST_BACKTRACE=1
+export RUST_BACKTRACE=full
+
 if [ `uname` == Darwin ]; then
   export HOME=`mktemp -d`
 fi
