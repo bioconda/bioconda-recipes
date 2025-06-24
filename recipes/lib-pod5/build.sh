@@ -40,11 +40,12 @@ cmake --build build --clean-first --target install -j "${CPU_COUNT}"
 
 if [[ "${OS}" == "Darwin" ]]; then
 	${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+	install -v lib/*.a "${PREFIX}/lib"
 else
 	${PYTHON} -m pip install *.whl --no-deps --no-build-isolation --no-cache-dir -vvv
+	install -v lib64/*.a "${PREFIX}/lib"
 fi
 
-install -v lib/*.a "${PREFIX}/lib"
 install -v include/pod5_format/*.h "${PREFIX}/include"
 cp -rf include/pod5_format/svb16 "${PREFIX}/include"
 
