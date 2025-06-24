@@ -4,6 +4,9 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
+mkdir -p ${PREFIX}/include
+mkdir -p ${PREFIX}/lib
+
 cp -rf ${RECIPE_DIR}/POD5Version.cmake cmake/
 
 ${PYTHON} -m setuptools_scm
@@ -27,7 +30,7 @@ else
 	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
 
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX="$(pwd)" \
 	-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DBUILD_PYTHON_WHEEL=ON \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
@@ -35,4 +38,7 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 
 cmake --build build --clean-first --target install -j "${CPU_COUNT}"
 
-${PYTHON} -m pip install ${PREFIX}/*.whl --no-deps --no-build-isolation --no-cache-dir -vvv
+${PYTHON} -m pip install *.whl --no-deps --no-build-isolation --no-cache-dir -vvv
+
+install -v lib/* "${PREFIX}/lib"
+install -v include/* "${PREFIX}/include"
