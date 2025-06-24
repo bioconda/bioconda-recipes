@@ -8,11 +8,15 @@ package:
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
   sha256: 28b0b5071bcb50362841a053e94d860be371bc0fc1420c28678399b3abb22383
-
+  patches: tssv-sources.patch
 build:
-  number: 5
+  number: 6
   skip: True  # [py2k]
-  script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports: 
+    - {{ pin_subpackage(name|lower) }}
+  script: |
+    export CFLAGS="-DNO_SSE -O2 -Xlinker -zmuldefs"
+    {{ PYTHON }} -m pip install . -vv
 
 requirements:
   build:
@@ -43,3 +47,5 @@ about:
 extra:
   recipe-maintainers:
     - Redmar-van-den-Berg
+  additional-platforms:
+    - linux-aarch64
