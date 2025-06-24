@@ -7,12 +7,24 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 cp -rf ${RECIPE_DIR}/POD5Version.cmake cmake/
 
 ${PYTHON} -m setuptools_scm
-#${PYTHON} -m pod5_make_version
 
-if [[ `uname` == "Darwin" ]]; then
+OS=$(uname -s)
+ARCH=$(uname -m)
+
+if [[ "${OS}" == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+fi
+
+if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
+	export CONFIG_ARGS="${CONFIG_ARGS} -DCMAKE_OSX_ARCHITECTURES=arm64"
+fi
+
+if [[ "${ARCH}" == "aarch64" ]]; then
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+elif [[ "${ARCH}" == "arm64" ]]; then
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
 else
-	export CONFIG_ARGS=""
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
 
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
