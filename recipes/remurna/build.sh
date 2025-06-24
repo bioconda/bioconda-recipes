@@ -3,6 +3,8 @@
 mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/share/remurna
 
+cd remuRNA
+
 if [[ ${target_platform} == "linux-aarch64" ]]; then
 	sed -i.bak 's/\-m64/\-mabi=lp64/g' Makefile
 fi
