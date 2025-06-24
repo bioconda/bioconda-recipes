@@ -1,6 +1,9 @@
 #!/usr/bin/bash
 set -e
 
+lw
+pwd
+
 git clone https://github.com/kcleal/gw.git
 cd gw
 sed -i.bak 's|$(CONDA_PREFIX)/lib -Wl|$(CONDA_PREFIX)/lib|' Makefile
