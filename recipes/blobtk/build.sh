@@ -25,7 +25,7 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
   export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names"
   RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
 else
-  RUSTFLAGS="-C target-feature=+crt-static" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
+  RUSTFLAGS="-C target-feature=+crt-static -L ${PREFIX}/lib" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
 fi
 
 cd rust
