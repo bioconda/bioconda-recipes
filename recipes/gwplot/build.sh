@@ -1,7 +1,11 @@
 #!/usr/bin/bash
 set -e
 
+git submodule update --init --recursive
+
+cd gw
 sed -i.bak 's|$(CONDA_PREFIX)/lib -Wl|$(CONDA_PREFIX)/lib|' Makefile
+cd ../
 
 # Set flags conditionally based on the OS type
 if [[ "$OSTYPE" != "darwin"* ]]; then
@@ -21,4 +25,12 @@ export LDFLAGS="${LDFLAGS}"
 export prefix="${PREFIX}"
 export SYSROOT_FLAGS="${SYSROOT_FLAGS}"
 
-pip install . -vv --config-settings=setup-args=-Dold_skia=true
+if [[ "$OSTYPE" == "darwin"* ]] && [[ "$(uname -m)" == "arm64" ]]; then
+  # macOS ARM64 - use new skia
+  OLD_SKIA_FLAG="false"
+else
+  # All other platforms - use old skia
+  OLD_SKIA_FLAG="true"
+fi
+
+pip install . -vv --config-settings=setup-args=-Dold_skia=${OLD_SKIA_FLAG}
