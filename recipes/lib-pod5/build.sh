@@ -38,7 +38,7 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="$(pwd)" \
 
 cmake --build build --clean-first --target install -j "${CPU_COUNT}"
 
-${PYTHON} -m pip install "build/c++/pod5_format_pybind/wheel_0.3.27/lib_pod5*.whl" --no-deps --no-build-isolation --no-cache-dir -vvv
+${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
 
 install -v lib/*.a "${PREFIX}/lib"
 install -v include/pod5_format/*.h "${PREFIX}/include"
