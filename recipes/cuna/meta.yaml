@@ -1,14 +1,22 @@
+{% set name = "CUNA" %}
+{% set version = "0.1.0" %}
+
 package:
-  name: cuna
-  version: "0.1.0"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/iris1901/CUNA/archive/refs/tags/v0.1.0.tar.gz
+  url: https://github.com/iris1901/CUNA/archive/v{{ version }}.tar.gz
   sha256: eb2abb15c1e3e2047151439facafd824b5e0c0a265e8a6b7e0ed2a2f9a9e3ba6
 
 build:
+  number: 0
   noarch: python
-  script: python -m pip install . --no-deps --ignore-installed -vv
+  entry_points:
+    - cuna = cuna.CUNA:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+      - {{ pin_subpackage('cuna', max_pin="x.x") }}
 
 requirements:
   host:
@@ -40,11 +48,13 @@ test:
 about:
   home: "https://github.com/iris1901/CUNA"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: "CUNA: Cytosine Uracil Neural Algorithm for ancient DNA damage detection using nanopore signals"
+  summary: "CUNA: Cytosine Uracil Neural Algorithm for ancient DNA damage detection using nanopore signals."
   description: |
     CUNA is a deep learning pipeline for detecting cytosine deamination (C→U) events in ancient DNA, using raw nanopore signals.
     It includes feature extraction, model training, and modification detection.
+  dev_url: "https://github.com/iris1901/CUNA"
 
 extra:
   recipe-maintainers:
