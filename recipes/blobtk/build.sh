@@ -10,37 +10,38 @@ export CC_x86_64_unknown_linux_gnu="${CC}"
 export CXX_x86_64_unknown_linux_gnu="${CXX}"
 export AR_x86_64_unknown_linux_gnu="${AR}"
 
-curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --profile=minimal -y
-export PATH="${HOME}/.cargo/bin:${PATH}"
+cp -f ${RECIPE_DIR}/LICENSE .
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
-sed -i.bak 's|maturin>=0.13,<0.14|maturin>=1.8.0,<2.0.0|' rust/pyproject.toml
-sed -i.bak 's|"0.40.2"|"0.47.1"|' rust/Cargo.toml
-sed -i.bak 's|"0.18.1"|"0.21.2"|' rust/Cargo.toml
-sed -i.bak 's|"0.18.3"|"0.21.2"|' rust/Cargo.toml
-rm -rf rust/*.bak
+#curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --profile=minimal -y
+#export PATH="${HOME}/.cargo/bin:${PATH}"
+
+sed -i.bak 's|"0.40.2"|"0.47.1"|' Cargo.toml
+sed -i.bak 's|"0.18.1"|"0.21.2"|' Cargo.toml
+sed -i.bak 's|"0.18.3"|"0.21.2"|' Cargo.toml
+rm -rf *.bak
 
 OS=$(uname -s)
 ARCH=$(uname -m)
 
-if [[ "${OS}" == "Linux" && "${ARCH}" == "x86_64" ]]; then
-	export TARG="x86_64-unknown-linux-gnu"
-	rustup target add x86_64-unknown-linux-gnu
-elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
-	export TARG="aarch64-unknown-linux-gnu"
-	rustup target add aarch64-unknown-linux-gnu
-elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
-	export TARG="aarch64-apple-darwin"
-else
-	export TARG="x86_64-apple-darwin"
-fi
+#if [[ "${OS}" == "Linux" && "${ARCH}" == "x86_64" ]]; then
+	#export TARG="x86_64-unknown-linux-gnu"
+	#rustup target add x86_64-unknown-linux-gnu
+#elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
+	#export TARG="aarch64-unknown-linux-gnu"
+	#rustup target add aarch64-unknown-linux-gnu
+#elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
+	#export TARG="aarch64-apple-darwin"
+#else
+	#export TARG="x86_64-apple-darwin"
+#fi
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
-cd rust
 if [[ "${OS}" == "Linux" ]]; then
-	RUSTFLAGS="-C target-feature=+crt-static -C linker=${CC}" maturin build --interpreter "${PYTHON}" --release --strip -b pyo3 --target "${TARG}"
+	RUSTFLAGS="-C target-feature=+crt-static -C linker=${CC}" maturin build --interpreter "${PYTHON}" --release --strip -b pyo3
 else
-	RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" maturin build --interpreter "${PYTHON}" --release --strip -b pyo3 --target "${TARG}"
+	RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" maturin build --interpreter "${PYTHON}" --release --strip -b pyo3
 fi
 
-${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
