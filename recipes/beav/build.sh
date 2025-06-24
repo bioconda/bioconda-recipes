@@ -25,6 +25,9 @@ mkdir $BEAV_DIR/software/PaperBLAST/bin/blast
 
 chmod +x $BEAV_DIR/scripts/*
 
+# Download perl-xml-libxml
+conda install bioconda::perl-xml-libxml
+
 #TIGER
 #TIGER must be downloaded in the build script because the official release contains linux binaries and a broken softlink.
 #Downloading in the meta.yaml script breaks the build and so it must be downloaded here with the exclude parameters.
