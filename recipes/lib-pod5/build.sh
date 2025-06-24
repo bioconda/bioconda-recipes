@@ -43,3 +43,6 @@ ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
 install -v lib/*.a "${PREFIX}/lib"
 install -v include/pod5_format/*.h "${PREFIX}/include"
 cp -rf include/pod5_format/svb16 "${PREFIX}/include"
+
+cd python/lib_pod5/
+${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
