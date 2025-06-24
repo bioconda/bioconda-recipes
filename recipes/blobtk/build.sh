@@ -25,11 +25,19 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
   export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names"
   RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
 else
-  RUSTFLAGS="-C target-feature=+crt-static -L ${PREFIX}/lib" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
+  RUSTFLAGS="-C target-feature=-crt-static -L ${PREFIX}/lib" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
 fi
 
 cd rust
 
-maturin build --release --strip --interpreter "${PYTHON}"
+OS=$(uname -s)
+ARCH=$(uname -m)
+P_VER="${PY_VER//./}"
 
-${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+if [[ "${OS}" == "Linux" && "${ARCH}" == "x86_64" ]]; then
+  wget "https://github.com/genomehubs/blobtk/releases/download/${PKG_VERSION}/blobtk-${PKG_VERSION}-cp${P_VER}-cp${P_VER}-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+  ${PYTHON} -m pip install ./*.whl --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+else
+  maturin build --release --strip --interpreter "${PYTHON}"
+  ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+fi
