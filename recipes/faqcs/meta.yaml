@@ -1,16 +1,20 @@
 {% set name = "FaQCs" %}
-{% set version = "2.10" %}
+{% set version = "2.12" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
-build:
-  number: 7
-
 source:
   url: https://github.com/LANL-Bioinformatics/FaQCs/archive/{{ version }}.tar.gz
-  sha256: 0458e3500adab5257ba11d1db5402adfc52feb936da39c0a26089cbfc1007832
+  sha256: cff6ada0f9ecc5a72fb5c484addd304f35952b1b11424c74016b827d21a07384
+  patches:
+    - 0001-aarch64.patch  # [aarch64 or arm64]
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('faqcs', max_pin='x') }}
 
 requirements:
   build:
@@ -18,10 +22,12 @@ requirements:
     - {{ compiler('cxx') }}
   host:
     - zlib
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - r-base
-
   run:
-    - zlib
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - r-base
 
 test:
@@ -30,11 +36,17 @@ test:
     - R --version 2>&1 | grep "R version"
 
 about:
-  home: https://github.com/LANL-Bioinformatics/FaQCs
-  license: BSD 3-Clause
+  home: "https://github.com/LANL-Bioinformatics/FaQCs"
+  dev_url: "https://github.com/LANL-Bioinformatics/FaQCs"
+  license: "BSD-3-Clause"
+  license_family: BSD
   license_file: LICENSE
   summary: 'Quality Control of Next Generation Sequencing Data.'
 
 extra:
   identifiers:
     - biotools:faqcs
+    - doi:10.1186/s12859-014-0366-2
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

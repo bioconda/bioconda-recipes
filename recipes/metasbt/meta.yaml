@@ -1,0 +1,71 @@
+{% set name = "metasbt" %}
+{% set version = "0.1.4.post1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 8cae840c4676331e40d9e99b623969558422732e2df96e9192ee3305d1588030
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - metasbt=metasbt.metasbt:run
+  run_exports:
+    - {{ pin_subpackage('metasbt', max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+
+requirements:
+  host:
+    - pip
+    - python >=3.9
+    - setuptools
+  run:
+    - biopython >=1.85
+    - busco >=5.8.3
+    - checkm-genome >=1.2.4
+    - checkv >=1.0.3
+    - fastcluster <1.3.0
+    - howdesbt >=2.00.15
+    - kitsune >=1.3.5
+    - kraken2 >=2.1.3
+    - ncbitax2lin >=2.4.1
+    - ntcard >=1.2.2
+    - numpy =1.26.4
+    - packaging >=25.0
+    - python >=3.9
+    - requests >=2.32.4
+    - scipy >=1.13.1
+    - tabulate >=0.9.0
+    - tqdm >=4.67.1
+
+test:
+  source_files:
+    - test/references.tsv
+    - test/mags.txt
+  imports:
+    - metasbt
+  commands:
+    - metasbt --version
+    - metasbt test --references ${SRC_DIR}/test/references.tsv --mags ${SRC_DIR}/test/mags.txt
+
+about:
+  home: https://github.com/cumbof/MetaSBT
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Microbial genomes characterization with Sequence Bloom Trees."
+  description: |
+   A scalable framework for automatically indexing microbial genomes and accurately 
+   characterizing metagenome-assembled genomes with Sequence Bloom Trees
+  dev_url: https://github.com/cumbof/MetaSBT
+
+identifiers:
+  - biotools:metasbt
+
+extra:
+  recipe-maintainers:
+    - cumbof
