@@ -40,6 +40,10 @@ git clone https://github.com/kcleal/gw.git
 #ls libgw
 #cd ../
 
+
+sed -i.bak "s|get_install_dir() / 'gwplot')|get_install_dir() / 'gwplot', depends: libgw_stamp)|g" meson.build
+
+
 $PYTHON -m pip wheel . --config-settings="setup-args=-Dold_skia=${OLD_SKIA_FLAG}" --no-deps
 
 if [[ "$OSTYPE" != "darwin"* ]]; then
