@@ -1,0 +1,45 @@
+{% set name = "vpt-plugin-cellpose2" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/vpt-plugin-cellpose2-{{ version }}.tar.gz
+  sha256: 
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports: {{ pin_subpackage("vpt-plugin-cellpose2", max_pin="x.x.x") }}
+
+requirements:
+  host:
+    - python >=3.9,<3.11
+    - poetry-core
+    - pip
+  run:
+    - python >=3.9,<3.11
+    - vpt-core >=1.2.0
+    - pandas ==2.0.3
+    - numpy ==1.24.3
+    - cellpose ==2.2.3
+    - onnx >=1.12.0,<1.15.0
+    - openvino >=2023.2.0
+    - pytorch ==2.0.0
+
+test:
+  imports:
+    - vpt_plugin_cellpose2
+
+about:
+  home: https://github.com/Vizgen/vpt-plugin-cellpose2
+  summary: Cellpose2 plugin for the Vizgen Post-processing Tool
+  license: Apache-2.0
+  license_file: LICENSE.md
+
+extra:
+  recipe-maintainers:
+    - mcmero
