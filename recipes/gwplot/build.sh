@@ -31,14 +31,8 @@ fi
 
 export MESONPY_SETUP_ARGS="-Dold_skia=${OLD_SKIA_FLAG}"
 
-# Initialize the gw submodule (if it's supposed to be a submodule)
-git submodule update --init --recursive
+git clone https://github.com/kcleal/gw.git
 
-# OR clone it if it's not a submodule
-if [ ! -d "gw" ]; then
-    git clone https://github.com/kcleal/gw.git
-fi
-#git clone https://github.com/kcleal/gw.git
 #cd gw
 #sed -i.bak 's|$(CONDA_PREFIX)/lib -Wl|$(CONDA_PREFIX)/lib|' Makefile
 #make prep
