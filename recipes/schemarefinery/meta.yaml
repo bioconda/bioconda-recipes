@@ -1,0 +1,76 @@
+{% set name = "schemarefinery" %}
+{% set version = "0.3.3.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: f736243f03d5db7d8aa4ce8ceba5552dd5b6779bf725175b0f4d99259ecdd235
+
+build:
+  entry_points:
+    - SchemaRefinery = SchemaRefinery.schema_refinery:entry_point
+    - SR = SchemaRefinery.schema_refinery:entry_point
+  noarch: python
+  number: 0
+  script:
+    - python -m pip install . -vv
+
+requirements:
+  host:
+    - pip
+    - python >=3.9,<3.12
+    - setuptools >=75.0.0
+  run:
+    - biopython >=1.79
+    - blast >=2.9.0
+    - chewbbaca >=3.3.10
+    - ncbi-datasets-cli >=18.3.1
+    - networkx >=2.6.0,<3.0.0
+    - numpy >=1.24.3,<2.0.0
+    - pandas >=1.5.1,<2.0.0
+    - plotly >=5.8.0
+    - psutil >=5.1.1
+    - python >=3.9,<3.14
+    - requests >=2.27.1
+    - scipy >=1.10.1
+    - tqdm >=4.62.0
+
+test:
+  commands:
+    - SR --help
+  imports:
+    - SchemaRefinery
+    - SchemaRefinery.AdaptLoci
+    - SchemaRefinery.AdaptLoci.Legacy_code
+    - SchemaRefinery.CreateSchemaStructure
+    - SchemaRefinery.DownloadAssemblies
+    - SchemaRefinery.DownloadAssemblies.legacy_code
+    - SchemaRefinery.IdentifyParalogousLoci
+    - SchemaRefinery.MatchSchemas
+    - SchemaRefinery.RefineSchema
+    - SchemaRefinery.RefineSchema.Legacy_code
+    - SchemaRefinery.SchemaAnnotation
+    - SchemaRefinery.SchemaAnnotation.legacy_code
+    - SchemaRefinery.docs
+    - SchemaRefinery.utils
+    - scripts
+    - tests
+
+about:
+  description: The SchemaRefinery is a comprehensive toolkit designed for refining and managing genomic schemas. It provides a suite of modules for various tasks such as identifying paralogous loci, downloading genomic assemblies, and adapting loci into standardized schemas.
+  home: https://github.com/B-UMMI/Schema_Refinery
+  license: "GNU General Public v3 (GPLv3)"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Tool to refine cg/wgMLST Schemas"
+  doc_url: "https://schema-refinery.readthedocs.io/en/latest/index.html#"
+  dev_url: "https://github.com/B-UMMI/Schema_Refinery"
+
+extra:
+  copy_test_source_files: true
+  final: true
+  recipe-maintainers:
+    - imm-bioinfo@medicina.ulisboa.pt
