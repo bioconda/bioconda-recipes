@@ -1,7 +1,8 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-BEAV_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
+export BEAV_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
 
+mkdir -p ${BEAV_DIR}
 mkdir -p $BEAV_DIR/scripts
 mkdir -p $BEAV_DIR/databases
 mkdir -p $BEAV_DIR/software
@@ -9,10 +10,7 @@ mkdir -p $BEAV_DIR/models
 mkdir -p $BEAV_DIR/test_data
 mkdir -p $PREFIX/bin
 
-mv beav $PREFIX/bin
-mv beav_db $PREFIX/bin
-mv beav_test $PREFIX/bin
-mv beav_circos $PREFIX/bin
+install -v -m 755 beav beav_db beav_test beav_circos "${PREFIX}/bin"
 mv scripts/* $BEAV_DIR/scripts
 mv databases/* $BEAV_DIR/databases
 mv models/* $BEAV_DIR/models
@@ -21,12 +19,9 @@ mv test_data/* $BEAV_DIR/test_data
 mv DBSCAN-SWA $BEAV_DIR/software/
 mv PyCirclize $BEAV_DIR/software/
 mv PaperBLAST $BEAV_DIR/software/
-mkdir $BEAV_DIR/software/PaperBLAST/bin/blast
+mkdir -p $BEAV_DIR/software/PaperBLAST/bin/blast
 
 chmod +x $BEAV_DIR/scripts/*
-
-# Download perl-xml-libxml
-conda install bioconda::perl-xml-libxml
 
 #TIGER
 #TIGER must be downloaded in the build script because the official release contains linux binaries and a broken softlink.
@@ -36,7 +31,6 @@ tar xzf TIGER2.1.tar.gz --exclude 'TIGER-TIGER2.1/db/Pfam-A.hmm' --exclude 'TIGE
 patch -p 0 -d ./ < $BEAV_DIR/scripts/tiger.patch
 mv TIGER-TIGER2.1 $BEAV_DIR/software/TIGER
 rm TIGER2.1.tar.gz
-
 
 mkdir -p $PREFIX/etc/conda/activate.d
 mkdir -p $PREFIX/etc/conda/deactivate.d
