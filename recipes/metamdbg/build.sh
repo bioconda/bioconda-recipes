@@ -4,12 +4,20 @@ set -xe
 
 mkdir -p $PREFIX/bin
 
-export CPATH=${PREFIX}/include
+export CPATH="${PREFIX}/include"
 
-mkdir build
-cd build
-cmake ..
+if [[ "$(uname)" == "Darwin" ]]; then
+	cp -rf ${RECIPE_DIR}/ContigPolisher.hpp src/polish/
+	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	export CXXFLAGS="${CXXFLAGS} -O3 -D_LIBCPP_DISABLE_AVAILABILITY"
+else
+	export CONFIG_ARGS=""
+fi
 
-make -j ${CPU_COUNT}
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	"${CONFIG_ARGS}"
 
-cp ./bin/metaMDBG $PREFIX/bin
+cmake --build build -j "${CPU_COUNT}" -v
+
+install -v -m 0755 build/bin/metaMDBG ${PREFIX}/bin

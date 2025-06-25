@@ -1,14 +1,19 @@
+{% set name = "perl-libwww-perl" %}
+{% set version = "6.68" %}
+
 package:
-  name: perl-libwww-perl
-  version: "6.67"
+  name: {{ name }} 
+  version: {{ version }}
 
 source:
-  url: https://cpan.metacpan.org/authors/id/O/OA/OALDERS/libwww-perl-6.67.tar.gz
-  sha256: 96eec40a3fd0aa1bd834117be5eb21c438f73094d861a1a7e5774f0b1226b723
+  url: https://cpan.metacpan.org/authors/id/O/OA/OALDERS/libwww-perl-{{ version }}.tar.gz
+  sha256: 42784a5869855ee08522dfb1d30fccf98ca4ddefa8c6c1bcb0d68a0adceb7f01
 
 build:
   number: 0
   noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
   
 requirements:
   build:
@@ -19,7 +24,6 @@ requirements:
     - perl-digest-md5
     - perl-test-fatal
     - perl-uri
-    - perl-module-metadata
     - perl-mime-base64
     - perl-encode-locale
     - perl-encode
@@ -33,13 +37,12 @@ requirements:
     - perl-base
     - perl-net-http >=6.18
     - perl-test-requiresinternet
-    - perl-cpan-meta-requirements
     - perl-http-negotiate
     - perl-lwp-mediatypes
     - perl-extutils-makemaker
     - perl-html-parser
     - perl-ntlm
-
+    - perl-test-leaktrace
   run:
     - perl
     - perl-http-cookies
@@ -56,9 +59,12 @@ requirements:
     - perl-http-negotiate
     - perl-http-daemon
     - perl-lwp-mediatypes
+    - perl-lwp-protocol-https
     - perl-www-robotrules
     - perl-html-parser
     - perl-ntlm
+    - perl-module-load
+    - perl-data-dump
 
 test:
   # Perl 'use' tests
@@ -88,6 +94,8 @@ test:
     - LWP::UserAgent
 
 about:
-  home: http://metacpan.org/pod/libwww-perl
+  home: https://metacpan.org/dist/libwww-perl
   license: perl_5
-  summary: 'The World-Wide Web library for Perl'
+  summary: 'The World-Wide Web library for Perl.'
+  dev_url: https://github.com/libwww-perl/libwww-perl
+  doc_url: https://metacpan.org/dist/libwww-perl
