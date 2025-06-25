@@ -22,16 +22,18 @@ export SYSROOT_FLAGS="${SYSROOT_FLAGS}"
 if [[ "$OSTYPE" == "darwin"* ]] && [[ "$(uname -m)" == "arm64" ]]; then
   # macOS ARM64 - use new skia
   OLD_SKIA_FLAG="false"
+  OLD_SKIA=0
 else
   # All other platforms - use old skia
   OLD_SKIA_FLAG="true"
+  OLD_SKIA=1
 fi
 
 git clone https://github.com/kcleal/gw.git
 cd gw
 sed -i.bak 's|$(CONDA_PREFIX)/lib -Wl|$(CONDA_PREFIX)/lib|' Makefile
-make prep
-make shared -j ${CPU_COUNT}
+$OLD_SKIA make prep
+$OLD_SKIA make shared -j ${CPU_COUNT}
 cp libgw/lib* "${CONDA_PREFIX}/lib"
 cp -rf libgw/GW "${CONDA_PREFIX}/include"
 cd ../
