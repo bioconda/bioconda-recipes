@@ -33,8 +33,8 @@ git clone https://github.com/kcleal/gw.git
 cd gw
 sed -i.bak 's|$(CONDA_PREFIX)/lib -Wl|$(CONDA_PREFIX)/lib|' Makefile
 make prep
-#make shared -j ${CPU_COUNT}
-#ls libgw
+make shared -j ${CPU_COUNT}
+ls libgw
 cd ../
 
 export MESONPY_SETUP_ARGS="-Dold_skia=${OLD_SKIA_FLAG}"
