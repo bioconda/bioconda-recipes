@@ -35,5 +35,6 @@ sed -i.bak 's|$(CONDA_PREFIX)/lib -Wl|$(CONDA_PREFIX)/lib|' Makefile
 make prep
 make shared -j ${CPU_COUNT}
 ls libgw
+cd ../
 
 pip install . -vv --config-settings=setup-args=-Dold_skia=${OLD_SKIA_FLAG}
