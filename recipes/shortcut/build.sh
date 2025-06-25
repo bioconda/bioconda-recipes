@@ -5,6 +5,8 @@ set -eu -o pipefail
 BINDIR=$PREFIX/bin
 mkdir -p $BINDIR
 
-cp "$SRC_DIR/ShortCut.py" "$BINDIR/ShortCut"
+# make executable 
+chmod +x $SRC_DIR/ShortCut
 
-chmod +x "$BINDIR/ShortCut"
+# Install the script
+cp $SRC_DIR/ShortCut $BINDIR
