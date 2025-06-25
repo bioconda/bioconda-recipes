@@ -34,10 +34,11 @@ cd gw
 sed -i.bak 's|$(CONDA_PREFIX)/lib -Wl|$(CONDA_PREFIX)/lib|' Makefile
 make prep
 make shared -j ${CPU_COUNT}
-cp libgw/lib* "${CONDA_PREFIX}/lib"
-cp -rf libgw/GW "${CONDA_PREFIX}/include"
+cp libgw/lib* "${PREFIX}/lib"
+cp -rf libgw/GW "${PREFIX}/include"
 cd ../
-ls "${CONDA_PREFIX}/lib/libgw*"
-ls "${CONDA_PREFIX}/include/G*"
+ls ${PREFIX}
+ls "${PREFIX}/lib/libgw*"
+ls "${PREFIX}/include/G*"
 
 pip install . -vv --config-settings=setup-args=-Dold_skia=${OLD_SKIA_FLAG}
