@@ -1,14 +1,6 @@
 #!/usr/bin/bash
 set -e
 
-ls
-pwd
-
-git clone https://github.com/kcleal/gw.git
-cd gw
-sed -i.bak 's|$(CONDA_PREFIX)/lib -Wl|$(CONDA_PREFIX)/lib|' Makefile
-cd ../
-
 # Set flags conditionally based on the OS type
 if [[ "$OSTYPE" != "darwin"* ]]; then
   SYSROOT_FLAGS="--sysroot=${BUILD_PREFIX}/${HOST}/sysroot"
@@ -34,5 +26,16 @@ else
   # All other platforms - use old skia
   OLD_SKIA_FLAG="true"
 fi
+
+git clone https://github.com/kcleal/gw.git
+cd gw
+sed -i.bak 's|$(CONDA_PREFIX)/lib -Wl|$(CONDA_PREFIX)/lib|' Makefile
+make prep
+make shared -j ${CPU_COUNT}
+cp libgw/lib* "${CONDA_PREFIX}/lib"
+cp -rf libgw/GW "${CONDA_PREFIX}/include"
+cd ../
+ls "${CONDA_PREFIX}/lib/libgw*"
+ls "${CONDA_PREFIX}/include/G*"
 
 pip install . -vv --config-settings=setup-args=-Dold_skia=${OLD_SKIA_FLAG}
