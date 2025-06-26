@@ -1,10 +1,20 @@
 #!/bin/bash
 
-FFLAGS="-O3 -ffast-math -lm"
-
-# backup to "gfortran" in conda GFORTRAN is not set
-GFORTRAN=${GFORTRAN:-gfortran}
-
 mkdir -p ${PREFIX}/bin
-$GFORTRAN $FFLAGS -o "$PREFIX/bin/TMalign" TMalign.f
-$GFORTRAN $FFLAGS -o "$PREFIX/bin/TMscore" TMscore.f
+
+export FFLAGS="-O3 -ffast-math -lm -Wno-deprecated-declarations"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+if [[ `uname` == "Darwin" ]]; then
+	rm -f TMalign.cpp TMscore.cpp
+	cp -rf ${RECIPE_DIR}/TMalign.cpp .
+	wget https://zhanggroup.org/TM-score/TMscore.cpp
+	${CXX} ${FFLAGS} -o "${PREFIX}/bin/TMalign" TMalign.cpp
+	${CXX} ${FFLAGS} -o "${PREFIX}/bin/TMscore" TMscore.cpp
+else
+	rm -f TMalign.cpp TMscore.cpp
+	wget https://seq2fun.dcmb.med.umich.edu//TM-align/TMalign.cpp
+	wget https://zhanggroup.org/TM-score/TMscore.cpp
+	${CXX} ${FFLAGS} -static -o "${PREFIX}/bin/TMalign" TMalign.cpp
+	${CXX} ${FFLAGS} -static -o "${PREFIX}/bin/TMscore" TMscore.cpp
+fi
