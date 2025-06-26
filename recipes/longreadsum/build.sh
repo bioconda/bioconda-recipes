@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Create the src directory
-mkdir -p "${PREFIX}/src"
+mkdir -p "${PREFIX}"/src
 
 # Add the library path to the LD_LIBRARY_PATH
 export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${PREFIX}/lib"
@@ -19,8 +19,8 @@ make CXX="${CXX}" -j"${CPU_COUNT}"
 ${PYTHON} setup.py -I"${PREFIX}/include" -L"${PREFIX}/lib" install
 
 # Copy source files to the bin directory
-cp -rf "${SRC_DIR}/src/*.py" "${PREFIX}/bin"
+cp -rf "${SRC_DIR}"/src/*.py "${PREFIX}/bin"
 
 # Copy the SWIG generated library to the lib directory
-cp -rf "${SRC_DIR}/lib/*.py" "${PREFIX}/lib"
-cp -rf "${SRC_DIR}/lib/*.so" "${PREFIX}/lib"
+cp -rf "${SRC_DIR}"/lib/*.py "${PREFIX}"/lib
+cp -rf "${SRC_DIR}"/lib/*.so "${PREFIX}"/lib
