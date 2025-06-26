@@ -1,0 +1,34 @@
+diff --git a/src/Flexbar.h b/src/Flexbar.h
+index 2f82f18..67c07d7 100644
+--- a/src/Flexbar.h
++++ b/src/Flexbar.h
+@@ -15,6 +15,7 @@
+ #include <tbb/pipeline.h>
+ #include <tbb/task_scheduler_init.h>
+ #include <tbb/concurrent_vector.h>
++#include <tbb/mutex.h>
+ 
+ #include <seqan/basic.h>
+ #include <seqan/sequence.h>
+diff --git a/src/SeqAlign.h b/src/SeqAlign.h
+index 979d05f..221a901 100644
+--- a/src/SeqAlign.h
++++ b/src/SeqAlign.h
+@@ -3,6 +3,7 @@
+ #ifndef FLEXBAR_SEQALIGN_H
+ #define FLEXBAR_SEQALIGN_H
+ 
++tbb::mutex ouputMutex;
+ 
+ template <typename TSeqStr, typename TString, class TAlgorithm>
+ class SeqAlign {
+@@ -305,7 +306,9 @@ public:
+ 			  << "read seq  " << seqRead.seq << "\n\n" << endl;
+ 		}
+ 		
++		ouputMutex.lock();
+ 		*m_out << s.str();
++		ouputMutex.unlock();
+ 		
+ 		return ++qIndex;
+ 	}
