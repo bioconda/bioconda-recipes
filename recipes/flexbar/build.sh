@@ -14,6 +14,15 @@ mv seqan-library-2.4.0/include "${SRC_DIR}"
 sed -i.bak 's|VERSION 2.8.2|VERSION 3.5|' CMakeLists.txt
 sed -i.bak 's|VERSION 2.8.2|VERSION 3.5|' src/CMakeLists.txt
 
+case $(uname -m) in
+    aarch64)
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a|' src/CMakeLists.txt
+	;;
+    arm64)
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a|' src/CMakeLists.txt
+	;;
+esac
+
 if [[ `uname` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
