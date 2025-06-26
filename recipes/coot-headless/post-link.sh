@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu -o pipefail
+set -exuo pipefail
 
 PKG_VERSION="1.1.17"
 PREFIX=${CONDA_PREFIX}
@@ -8,7 +8,8 @@ PREFIX=${CONDA_PREFIX}
 GITHUB_RELEASE_URL="https://github.com/pemsley/coot/archive/refs/tags/Release-${PKG_VERSION}.tar.gz"
 TEMP_DIR=$(mktemp -d)
 
-COOT_DATA_DIR="${PREFIX}/share/coot/lib/data"
+COOT_REFMAC_LIB_DIR="${PREFIX}/share/coot/lib"
+COOT_DATA_DIR="${COOT_REFMAC_LIB_DIR}/share/coot/lib/data"
 
 mkdir -p "${COOT_DATA_DIR}"
 
@@ -48,9 +49,3 @@ else
 fi
 
 find "${COOT_DATA_DIR}/monomers" -name "*Makefile*" -delete
-
-echo ""
-echo "====================================================================="
-echo "To use Coot Headless API properly, set this environment variable:"
-echo "\`export COOT_REFMAC_LIB_DIR=${COOT_DATA_DIR}\`"
-echo "====================================================================="
