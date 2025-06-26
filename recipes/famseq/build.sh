@@ -5,6 +5,7 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 install -d "${PREFIX}/bin"
 
+cd FamSeq || true
 cd src
 
 sed -i.bak 's|g++|$(CXX)|' makefile
