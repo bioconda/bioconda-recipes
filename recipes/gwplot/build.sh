@@ -42,9 +42,10 @@ git clone https://github.com/kcleal/gw.git
 #cd ../
 
 # Fetch fixed build script
-git clone https://github.com/kcleal/gwplot.git
-mv gwplot/build_gw.py .
-mv gwplot/meson.build .
+curl -O https://raw.githubusercontent.com/kcleal/gwplot/refs/heads/main/build_gw.py
+curl -O https://raw.githubusercontent.com/kcleal/gwplot/refs/heads/main/meson.build
+
+ls
 
 # $PYTHON -m pip wheel . --config-settings="setup-args=-Dold_skia=${OLD_SKIA_FLAG}" --no-deps
 
