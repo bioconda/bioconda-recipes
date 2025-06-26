@@ -22,7 +22,7 @@ fi
 sed -i.bak 's|find_package(Python 3.12.4|find_package(Python 3|' CMakeLists.txt
 rm -rf *.bak
 
-cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
   -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" \
@@ -40,7 +40,5 @@ cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -Wno-dev -Wno-deprecated --no-warn-unused-cli \
   "${CONFIG_ARGS}"
 
-ninja -C build coot_headless_api -j"${CPU_COUNT}"
-#cmake --build build --target coot_headless_api -j"${CPU_COUNT}"
-ninja -C build install -j"${CPU_COUNT}"
-#cmake --install build -j"${CPU_COUNT}"
+cmake --build build --clean-first --target coot_headless_api -j"${CPU_COUNT}"
+cmake --install build -j"${CPU_COUNT}"
