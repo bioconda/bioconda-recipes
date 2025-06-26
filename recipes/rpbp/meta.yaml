@@ -11,8 +11,8 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 2
-  skip: True  # [py >= 311 ]
+  number: 3
+  skip: false
   script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv && compile-rpbp-models"
   entry_points:
     - extract-orf-coordinates = rpbp.reference_preprocessing.extract_orf_coordinates:main
@@ -50,11 +50,11 @@ requirements:
   build:
     - {{ compiler('cxx') }}
   host:
-    - python
+    - python <3.11                 #The latest version of pbiotools is 4.0.2, need python < 311
     - pip
     - cmdstanpy >=1.0.0
   run:
-    - python
+    - python <3.11
     - biopython
     - bowtie2
     - cmdstanpy >=1.0.0
@@ -62,7 +62,7 @@ requirements:
     - dash-bio
     - dash-bootstrap-components
     - fastqc
-    - flexbar
+    - flexbar                       # [not (linux and aarch64)]
     - joblib
     - numpy
     - pandas
@@ -124,3 +124,5 @@ about:
 extra:
   identifiers:
     - doi:10.1093/nar/gkw1350
+  additional-platforms:
+    - linux-aarch64
