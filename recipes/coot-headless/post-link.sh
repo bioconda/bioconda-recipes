@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exuo pipefail
+set -euo pipefail
 
 PKG_VERSION="1.1.17"
 PREFIX=${CONDA_PREFIX}
@@ -9,9 +9,22 @@ GITHUB_RELEASE_URL="https://github.com/pemsley/coot/archive/refs/tags/Release-${
 TEMP_DIR=$(mktemp -d)
 
 COOT_REFMAC_LIB_DIR="${PREFIX}/share/coot/lib"
-COOT_DATA_DIR="${COOT_REFMAC_LIB_DIR}/share/coot/lib/data"
+COOT_DATA_DIR="${COOT_REFMAC_LIB_DIR}/data"
+COOT_STANDARD_RESIDUES="${PREFIX}/share/coot/standard-residues.pdb"
+COOT_STANDARD_RESIDUES_URL="https://github.com/pemsley/coot/raw/Release-${PKG_VERSION}/standard-residues.pdb"
 
 mkdir -p "${COOT_DATA_DIR}"
+
+echo "Downloading standard-residues.pdb for Coot..."
+curl -s -L -o "${COOT_STANDARD_RESIDUES}" "${COOT_STANDARD_RESIDUES_URL}"
+
+if [[ -f "${COOT_STANDARD_RESIDUES}" ]]; then
+    chmod 644 "${COOT_STANDARD_RESIDUES}"
+    echo "standard-residues.pdb successfully installed to ${COOT_STANDARD_RESIDUES}."
+else
+    echo "Error: Failed to download standard-residues.pdb" >&2
+    exit 1
+fi
 
 echo "Downloading monomer library data for Coot from GitHub Release-${PKG_VERSION}..."
 if ! command -v curl > /dev/null; then
