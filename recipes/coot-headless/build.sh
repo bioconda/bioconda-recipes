@@ -2,6 +2,8 @@
 
 set -exo pipefail
 
+sed -i.bak s|find_package(Python 3.12.4|find_package(Python 3| CMakeLists.txt
+
 cmake -S . -B build -G Ninja \
   ${CMAKE_ARGS} \
   -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" \
