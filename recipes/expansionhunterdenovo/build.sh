@@ -31,8 +31,8 @@ cmake -S source -B build -DCMAKE_BUILD_TYPE=Release \
   -Wno-dev -Wno-deprecated --no-warn-unused-cli \
   "${CONFIG_ARGS}"
 
-sed -i.bak "s,htslib-NOTFOUND,${PREFIX}/lib/libhts.so,g" CMakeFiles/ExpansionHunterDenovo.dir/link.txt
-sed -i.bak "s,htslib-NOTFOUND,${PREFIX}/lib/libhts.so,g" CMakeFiles/ExpansionHunterDenovo.dir/build.make
+sed -i.bak "s,htslib-NOTFOUND,${PREFIX}/lib/libhts.so,g" build/CMakeFiles/ExpansionHunterDenovo.dir/link.txt
+sed -i.bak "s,htslib-NOTFOUND,${PREFIX}/lib/libhts.so,g" build/CMakeFiles/ExpansionHunterDenovo.dir/build.make
 
 cmake --build build --clean-first -j "${CPU_COUNT}"
 install -v -m 0755 build/ExpansionHunterDenovo "${PREFIX}/bin"
