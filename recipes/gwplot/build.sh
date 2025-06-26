@@ -34,14 +34,7 @@ export MESONPY_SETUP_ARGS="-Dold_skia=${OLD_SKIA_FLAG}"
 # Subclone gw
 git clone https://github.com/kcleal/gw.git
 
-#cd gw
-#sed -i.bak 's|$(CONDA_PREFIX)/lib -Wl|$(CONDA_PREFIX)/lib|' Makefile
-#make prep
-#make shared -j ${CPU_COUNT}
-#ls libgw
-#cd ../
-
-# Fetch fixed build script
+# Fetch working build script
 curl -O https://raw.githubusercontent.com/kcleal/gwplot/refs/heads/main/build_gw.py
 curl -O https://raw.githubusercontent.com/kcleal/gwplot/refs/heads/main/meson.build
 
