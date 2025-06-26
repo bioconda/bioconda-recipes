@@ -1,11 +1,30 @@
 #!/bin/bash
-
 set -exo pipefail
 
-sed -i.bak s|find_package(Python 3.12.4|find_package(Python 3| CMakeLists.txt
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
-cmake -S . -B build -G Ninja \
-  ${CMAKE_ARGS} \
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+else
+  export CONFIG_ARGS=""
+fi
+
+if [[ "$(uname -m)" == "arm64" ]]; then
+  export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+elif [[ "$(uname -m)" == "aarch64" ]]; then
+  export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+else
+  export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+fi
+
+sed -i.bak s|find_package(Python 3.12.4|find_package(Python 3| CMakeLists.txt
+rm -rf *.bak
+
+cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
   -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" \
   -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
   -DCMAKE_CXX_STANDARD=17 \
@@ -18,7 +37,11 @@ cmake -S . -B build -G Ninja \
   -DFFTW2_INCLUDE_DIRS="${PREFIX}/fftw2/include" \
   -DFFTW2_LIBRARY="${PREFIX}/fftw2/lib/libfftw.so" \
   -DRFFTW2_LIBRARY="${PREFIX}/fftw2/lib/librfftw.so" \
-  -DPYTHON_SITE_PACKAGES="${SP_DIR}"
+  -DPYTHON_SITE_PACKAGES="${SP_DIR}" \
+  -Wno-dev -Wno-deprecated --no-warn-unused-cli \
+  "${CONFIG_ARGS}"
 
-cmake --build build --target coot_headless_api
-cmake --install build
+ninja -C build coot_headless_api -j"${CPU_COUNT}"
+#cmake --build build --target coot_headless_api -j"${CPU_COUNT}"
+ninja -C build install -j"${CPU_COUNT}"
+#cmake --install build -j"${CPU_COUNT}"
