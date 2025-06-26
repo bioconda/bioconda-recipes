@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 cd source
 sed -i.bak "s,add_subdirectory(thirdparty/boost-cmake-1.67.0),find_package(Boost REQUIRED COMPONENTS system program_options filesystem),g" CMakeLists.txt
@@ -11,6 +11,8 @@ sed -i.bak "s,add_library(htslib IMPORTED),add_library(htslib IMPORTED)\ninclude
 sed -i.bak "s,add_dependencies(htslib htslib_project),,g" io/CMakeLists.txt
 sed -i.bak "/target_include_directories/,/)/d" io/CMakeLists.txt
 sed -i.bak "/set_property(TARGET htslib/,/)/d" io/CMakeLists.txt
+rm -rf *.bak
+rm -rf io/*.bak
 
 sed -i.bak "s,thirdparty/spdlog/spdlog.h,spdlog/spdlog.h,g" merge/MergeWorkflow.cpp
 sed -i.bak "s,thirdparty/spdlog/spdlog.h,spdlog/spdlog.h,g" profile/ProfileWorkflow.cpp
@@ -18,12 +20,11 @@ sed -i.bak "s,thirdparty/spdlog/spdlog.h,spdlog/spdlog.h,g" app/ExpansionHunterD
 
 cd ..
 
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release ../source
+cmake -S source -B build -DCMAKE_BUILD_TYPE=Release
 
 sed -i.bak "s,htslib-NOTFOUND,${PREFIX}/lib/libhts.so,g" CMakeFiles/ExpansionHunterDenovo.dir/link.txt
 sed -i.bak "s,htslib-NOTFOUND,${PREFIX}/lib/libhts.so,g" CMakeFiles/ExpansionHunterDenovo.dir/build.make
 
-make
-cp ExpansionHunterDenovo $PREFIX/bin/ExpansionHunterDenovo
+cd build
+make -j"${CPU_COUNT}"
+install -v -m 0755 ExpansionHunterDenovo "$PREFIX/bin"
