@@ -2,7 +2,7 @@
 
 set -xe
 
-export CFLAGS="${CFLAGS} -O3 -std=c11 -Wno-implicit-function-declaration"
+export CFLAGS="${CFLAGS} -std=c11"
 
 # build statically linked binary with Rust
 export RUST_BACKTRACE=1
