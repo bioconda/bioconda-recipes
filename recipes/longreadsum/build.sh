@@ -19,7 +19,7 @@ make CXX="${CXX}" -j"${CPU_COUNT}"
 ${PYTHON} setup.py -I"${PREFIX}/include" -L"${PREFIX}/lib" install
 
 # Copy source files to the bin directory
-cp -rf "${SRC_DIR}"/src/*.py "${PREFIX}/bin"
+cp -rf "${SRC_DIR}"/src/*.py "${PREFIX}"/bin
 
 # Copy the SWIG generated library to the lib directory
 cp -rf "${SRC_DIR}"/lib/*.py "${PREFIX}"/lib
