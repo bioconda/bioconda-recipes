@@ -16,7 +16,7 @@ rm -rf *.bak
 make CXX="${CXX}" -j"${CPU_COUNT}"
 
 # Generate the shared library
-${PYTHON} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+${PYTHON} setup.py -I"${PREFIX}/include" -L"${PREFIX}/lib" install
 
 # Copy source files to the bin directory
 cp -rf "${SRC_DIR}/src/*.py" "${PREFIX}/bin"
