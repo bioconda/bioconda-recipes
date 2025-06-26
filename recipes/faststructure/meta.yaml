@@ -9,44 +9,71 @@ package:
 source:
   url: https://github.com/rajanil/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - python_path.patch
+  patches: py3.patch
 
 build:
-  number: 5
-  skip: True  # [not py2k]
+  number: 6
+  script: |
+    # Build vars
+    cd vars
+    python setup.py build_ext --inplace
+    cd ..
+
+    # Build main
+    python setup.py build_ext --inplace
+    cp vars/*.so ./
+
+    # Add shebang lines
+    sed -i '1i#!/usr/bin/env python3' structure.py
+    sed -i '1i#!/usr/bin/env python3' distruct.py
+    sed -i '1i#!/usr/bin/env python3' chooseK.py
+
+    # Make scripts executable
+    chmod +x structure.py
+    chmod +x distruct.py
+    chmod +x chooseK.py
+
+    # Install files
+    mkdir -p ${PREFIX}/bin/vars
+    install -v -m 755 *.py ${PREFIX}/bin
+    install -v -m 755 *.so ${PREFIX}/bin
+    install -v -m 755 vars/*.py ${PREFIX}/bin/vars
+    install -v -m 755 vars/*.so ${PREFIX}/bin/vars
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - python
-    - numpy
-    - scipy
-    - cython <0.28
-    - gsl
-    - openblas
+    - python =3.11
+    - numpy =2.3.0
+    - scipy =1.15.2
+    - cython =3.1.2
+    - gsl =2.8
+    - liblapack =3.9.0
   run:
     - python
     - numpy
     - scipy
-    - matplotlib
     - gsl
-    - openblas
+    - liblapack
+    - matplotlib
 
 test:
-  imports:
-    - fastStructure
-    - parse_bed
-    - parse_str
   commands:
-    - structure.py | grep "structure.py" > /dev/null
-    - chooseK.py | grep "chooseK.py" > /dev/null
-    - export MPLBACKEND="svg" && distruct.py | grep "distruct.py" > /dev/null
+    - structure.py | grep "Usage" > /dev/null
+    - distruct.py | grep "Usage" > /dev/null
+    - chooseK.py | grep "Usage" > /dev/null
 
 about:
   home: https://github.com/rajanil/fastStructure
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: "A variational framework for inferring population structure from SNP genotype data."
+  summary: "A variational framework for inferring population structure from SNP genotype data. Ported to python3 by @StuntsPT based on the work of @jashapiro"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - StuntsPT
