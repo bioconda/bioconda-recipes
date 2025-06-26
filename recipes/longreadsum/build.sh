@@ -1,23 +1,26 @@
 #!/bin/bash
 
-# Build the C++ library
+# Create the src directory
+mkdir -p "${PREFIX}/src"
 
 # Add the library path to the LD_LIBRARY_PATH
 export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
+sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+sed -i.bak 's|-std=c++11|-std=c++14|' setup.py
+rm -rf *.bak
+
+# Build the C++ library
 make CXX="${CXX}" -j"${CPU_COUNT}"
-# Generate the SWIG files
-#swig -c++ -python -outdir "${SRC_DIR}"/lib -I"${SRC_DIR}"/include -I"${PREFIX}"/include -o "${SRC_DIR}"/src/lrst_wrap.cpp "${SRC_DIR}"/src/lrst.i
 
 # Generate the shared library
-$PYTHON setup.py -I"${PREFIX}/include" -L"${PREFIX}/lib" install
-
-# Create the src directory
-mkdir -p "${PREFIX}"/src
+${PYTHON} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
 
 # Copy source files to the bin directory
-cp -r "${SRC_DIR}"/src/*.py "${PREFIX}/bin"
+cp -rf "${SRC_DIR}/src/*.py" "${PREFIX}/bin"
 
 # Copy the SWIG generated library to the lib directory
-cp -r "${SRC_DIR}"/lib/*.py "${PREFIX}"/lib
-cp -r "${SRC_DIR}"/lib/*.so "${PREFIX}"/lib
+cp -rf "${SRC_DIR}/lib/*.py" "${PREFIX}/lib"
+cp -rf "${SRC_DIR}/lib/*.so" "${PREFIX}/lib"
