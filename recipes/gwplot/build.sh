@@ -40,14 +40,14 @@ curl -O https://raw.githubusercontent.com/kcleal/gwplot/refs/heads/main/meson.bu
 
 ls
 
-# $PYTHON -m pip wheel . --config-settings="setup-args=-Dold_skia=${OLD_SKIA_FLAG}" --no-deps
+$PYTHON -m pip wheel . --config-settings="setup-args=-Dold_skia=${OLD_SKIA_FLAG}" --no-deps
 
-# if [[ "$OSTYPE" != "darwin"* ]]; then
-#     auditwheel -v repair dist/*.whl
-#     $PYTHON -m pip install wheelhouse/*.whl -v
-# else
-#     delocate-wheel -v dist/*.whl
-#     $PYTHON -m pip install dist/*.whl -v
-# fi
+if [[ "$OSTYPE" != "darwin"* ]]; then
+    auditwheel repair dist/*.whl --wheel-dir wheelhouse/
+    $PYTHON -m pip install wheelhouse/*.whl -v
+ else
+    delocate-wheel -v dist/*.whl
+    $PYTHON -m pip install dist/*.whl -v
+fi
 
-$PYTHON -m pip install . -vv --config-settings="setup-args=-Dold_skia=${OLD_SKIA_FLAG}"
+# $PYTHON -m pip install . -vv --config-settings="setup-args=-Dold_skia=${OLD_SKIA_FLAG}"
