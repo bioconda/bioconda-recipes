@@ -31,6 +31,7 @@ fi
 
 export MESONPY_SETUP_ARGS="-Dold_skia=${OLD_SKIA_FLAG}"
 
+# Subclone gw
 git clone https://github.com/kcleal/gw.git
 
 #cd gw
@@ -40,18 +41,19 @@ git clone https://github.com/kcleal/gw.git
 #ls libgw
 #cd ../
 
+# Fetch fixed build script
+git clone https://github.com/kcleal/gwplot.git
+mv gwplot/build_gw.py .
+mv gwplot/meson.build .
 
-sed -i.bak "s|get_install_dir() / 'gwplot')|get_install_dir() / 'gwplot', depends: libgw_stamp)|g" meson.build
+# $PYTHON -m pip wheel . --config-settings="setup-args=-Dold_skia=${OLD_SKIA_FLAG}" --no-deps
 
+# if [[ "$OSTYPE" != "darwin"* ]]; then
+#     auditwheel -v repair dist/*.whl
+#     $PYTHON -m pip install wheelhouse/*.whl -v
+# else
+#     delocate-wheel -v dist/*.whl
+#     $PYTHON -m pip install dist/*.whl -v
+# fi
 
-$PYTHON -m pip wheel . --config-settings="setup-args=-Dold_skia=${OLD_SKIA_FLAG}" --no-deps
-
-if [[ "$OSTYPE" != "darwin"* ]]; then
-    auditwheel -v repair dist/*.whl
-    $PYTHON -m pip install wheelhouse/*.whl -v
-else
-    delocate-wheel -v dist/*.whl
-    $PYTHON -m pip install dist/*.whl -v
-fi
-
-#$PYTHON -m pip install . -vv --config-settings="setup-args=-Dold_skia=${OLD_SKIA_FLAG}"
+$PYTHON -m pip install . -vv --config-settings="setup-args=-Dold_skia=${OLD_SKIA_FLAG}"
