@@ -20,11 +20,19 @@ sed -i.bak "s,thirdparty/spdlog/spdlog.h,spdlog/spdlog.h,g" app/ExpansionHunterD
 
 cd ..
 
-cmake -S source -B build -DCMAKE_BUILD_TYPE=Release
+if [[ `uname -s` == "Darwin" ]]; then
+  export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+else
+  export CONFIG_ARGS=""
+fi
+
+cmake -S source -B build -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+  -Wno-dev -Wno-deprecated --no-warn-unused-cli \
+  "${CONFIG_ARGS}"
 
 sed -i.bak "s,htslib-NOTFOUND,${PREFIX}/lib/libhts.so,g" CMakeFiles/ExpansionHunterDenovo.dir/link.txt
 sed -i.bak "s,htslib-NOTFOUND,${PREFIX}/lib/libhts.so,g" CMakeFiles/ExpansionHunterDenovo.dir/build.make
 
-cd build
-make -j"${CPU_COUNT}"
-install -v -m 0755 ExpansionHunterDenovo "$PREFIX/bin"
+cmake --build build --clean-first -j "${CPU_COUNT}"
+install -v -m 0755 build/ExpansionHunterDenovo "${PREFIX}/bin"
