@@ -19,7 +19,7 @@ else
   export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
 
-sed -i.bak s|find_package(Python 3.12.4|find_package(Python 3| CMakeLists.txt
+sed -i.bak 's|find_package(Python 3.12.4|find_package(Python 3|' CMakeLists.txt
 rm -rf *.bak
 
 cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
@@ -27,7 +27,6 @@ cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
   -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" \
   -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
-  -DCMAKE_CXX_STANDARD=17 \
   -DPython_EXECUTABLE="${PYTHON}" \
   -Dnanobind_DIR="${SP_DIR}/nanobind/cmake" \
   -DBOOST_ROOT="${PREFIX}" \
