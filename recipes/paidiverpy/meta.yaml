@@ -1,18 +1,20 @@
 {% set python_min = "3.10" %}
-{% set version = "0.1.3" %}
+{% set version = "0.1.4" %}
 {% set name = "paidiverpy" %}
+
 package:
   name: {{ name|lower }}
   version: {{ version }}
+
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 62fe5d8bdd0b96f300cb3390e72a98f2d1d10cab74592ea7a250a2f5e794564c
+  sha256: 1b08a196d807e0bc6a31ca42393b4319146fc435bb5ad4f941ebda1feb75700a
 
 build:
   entry_points:
     - paidiverpy = cli.main:main
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   number: 0
   run_exports:
     - {{ pin_subpackage('paidiverpy', max_pin="x.x") }}
@@ -22,7 +24,6 @@ requirements:
     - python {{ python_min }}
     - setuptools >=64.0.0
     - setuptools-scm
-    - wheel
     - pip
   run:
     - python >={{ python_min }}
@@ -48,28 +49,23 @@ requirements:
     - boto3 >=1.35.92
     - botocore >=1.35.92
     - opencv >=4.11
-
-
-
-
-
+    - pydantic
+    - rawpy
 
 test:
   imports:
     - cli
     - paidiverpy
   commands:
-    - pip check
     - paidiverpy --help
-  requires:
-    - python {{ python_min }}
-    - pip
 
 about:
-  summary: A library to preprocess image data.
+  summary: "A library to preprocess image data."
   home: https://github.com/paidiver/paidiverpy
   license: Apache-2.0
+  license_family: APACHE
   license_file: LICENSE
+  dev_url: https://github.com/paidiver/paidiverpy
 
 extra:
   recipe-maintainers:
