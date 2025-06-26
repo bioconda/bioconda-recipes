@@ -1,5 +1,5 @@
-{% set version = "1.16.3" %}
-{% set sha256 = "81479a85742ff0df6bf5385ae6045bf7db11b19bc312396f2a2306bd33662c94" %}
+{% set version = "2.3" %}
+{% set sha256 = "e287564e3e9f6311cfe4b9be71723ebd2cfb036c922745e428860c383bd9b0ce" %}
 
 package:
   name: harpy
@@ -10,40 +10,35 @@ source:
   sha256: '{{ sha256 }}'
 
 build:
-  number: 0
-  skip: True  # [osx or py < 39]
+  number: 1
+  noarch: python
   script_env:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   run_exports:
     - {{ pin_subpackage('harpy', max_pin="x") }}
   script: |
     mkdir -p ${PREFIX}/bin
-    "${CXX}" harpy/bin/extractReads.cpp -O3 -o ${PREFIX}/bin/extractReads
     ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
-    chmod 0755 harpy/bin/* 
-    cp -rf harpy/bin/* ${PREFIX}/bin/
+    install -v -m 0755 harpy/bin/* ${PREFIX}/bin
   entry_points:
     - harpy = harpy.__main__:cli
 
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
-    - python
+    - python >=3.9
     - pip
     - setuptools-scm >=3.4
   run:
-    - apptainer
+    - apptainer # [linux]
     - bcftools =1.20
     - conda >24.7
-    - lrez
-    - pysam
-    - python
+    - htslib =1.20
+    - pysam =0.22
+    - python >=3.9
     - rich-click
-    - snakemake-minimal >7
+    - snakemake-minimal =9
     - samtools =1.20
     - seqtk
-    - tabix
 
 test:
   commands:
@@ -52,7 +47,7 @@ test:
 
 about:
   home: "https://github.com/pdimens/harpy"
-  license: GPL-3.0-or-later
+  license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: LICENSE
   summary: "Process raw haplotagging data, from raw sequences to phased haplotypes."
@@ -67,7 +62,5 @@ about:
   dev_url: "https://github.com/pdimens/harpy"
 
 extra:
-  additional-platforms:
-    - linux-aarch64
   recipe-maintainers:
     - pdimens
