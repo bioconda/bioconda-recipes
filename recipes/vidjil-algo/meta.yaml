@@ -1,0 +1,48 @@
+{% set version = "2025.02" %}
+{% set name = "vidjil-algo" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://gitlab.inria.fr/vidjil/vidjil/-/archive/release-{{ version }}/vidjil-release-{{ version }}.tar.gz
+  sha256: 9a600472005bf7ef188849d61a5b4c9517bc911a9cb23509f628350738defd53
+
+build:
+  number: 0
+  script:
+    - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+    - mkdir -p "${PREFIX}/bin"
+    - make CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -O3 -std=c++14" LDFLAGS="${LDFLAGS} -L${PREFIX}/lib" algo -j"${CPU_COUNT}"
+    - install -v -m 0755 vidjil-algo "${PREFIX}/bin"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin=None) }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - zlib
+
+test:
+  commands:
+    - vidjil-algo --help
+
+about:
+  home: "https://gitlab.inria.fr/vidjil/vidjil"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Vidjil is an open-source platform for the analysis of high-throughput sequencing data from lymphocytes."
+  dev_url: "https://gitlab.inria.fr/vidjil/vidjil"
+  doc_url: "https://www.vidjil.org/doc"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1186/1471-2164-15-409
+    - doi:10.1371/journal.pone.0166126

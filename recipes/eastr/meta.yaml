@@ -1,0 +1,72 @@
+{% set name = "eastr" %}
+{% set version = "1.1.2" %}
+{% set sha256 = "9ddfa1f00e6840b1bccecc450e06817baf5e2b32c2fd34927ce7a4410e9e1240" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  skip: True  # [py < 310]
+  entry_points:
+    - eastr = eastr.run_eastr:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script:
+    - export M4="$BUILD_PREFIX/bin/m4"  # [arm64]
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+
+requirements:
+  build:
+    - make
+    - cmake
+    - {{ compiler('cxx') }}
+    - automake
+    - autoconf
+    - libtool
+  host:
+    - pip
+    - python
+    - setuptools
+    - zlib
+  run:
+    - python
+    - biopython >=1.81,<2.0
+    - mappy >=2.26,<3.0
+    - numpy >=1.26.1
+    - pandas >=2.1.2,<2.3
+    - pysam >=0.22.0,<0.23
+    # bioconda deps
+    - bowtie2
+    - samtools
+
+test:
+  imports:
+    - eastr
+  commands:
+    - eastr --help
+
+about:
+  home: "https://ccb.jhu.edu/eastr"
+  summary: "Tool for emending alignments of spuriously spliced transcript reads."
+  license: MIT
+  license_file: LICENSE
+  license_family: MIT
+  dev_url: "https://github.com/ishinder/EASTR"
+  doc_url: "https://ccb.jhu.edu/eastr/#usage"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:eastr
+    - doi:10.1038/s41467-023-43017-4
+  recipe-maintainers:
+    - ishinder
+    - coperni
