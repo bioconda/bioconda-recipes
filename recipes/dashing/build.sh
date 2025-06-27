@@ -21,6 +21,10 @@ case $(uname -m) in
 	sed -i.bak 's|-march=native|-march=armv8-a|' bonsai/Makefile
 	sed -i.bak 's|-march=native|-march=armv8-a|' bonsai/python/Makefile
 	sed -i.bak 's|-march=native|-march=armv8-a|' bonsai/hll/Makefile
+	sed -i.bak 's|-mavx||' Makefile
+	sed -i.bak 's|-mavx2||' Makefile
+	sed -i.bak 's|-msse4.1||' Makefile
+	sed -i.bak 's|-msse2||' Makefile
 	;;
     arm64)
 	sed -i.bak 's|-march=native|-march=armv8.4-a|' Makefile
@@ -28,6 +32,10 @@ case $(uname -m) in
 	sed -i.bak 's|-march=native|-march=armv8-a|' bonsai/Makefile
 	sed -i.bak 's|-march=native|-march=armv8-a|' bonsai/python/Makefile
 	sed -i.bak 's|-march=native|-march=armv8-a|' bonsai/hll/Makefile
+	sed -i.bak 's|-mavx||' Makefile
+	sed -i.bak 's|-mavx2||' Makefile
+	sed -i.bak 's|-msse4.1||' Makefile
+	sed -i.bak 's|-msse2||' Makefile
 	;;
     x86_64)
 	sed -i.bak 's|-march=native|-march=x86-64-v3|' Makefile
