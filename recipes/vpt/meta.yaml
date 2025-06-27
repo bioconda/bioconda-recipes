@@ -14,7 +14,7 @@ build:
     - vpt = vpt.vizgen_postprocess:entry_point
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  number: 0
+  number: 1
   run_exports:
   - {{ pin_subpackage("vpt", max_pin="x.x.x") }}
 
@@ -60,6 +60,18 @@ test:
     - vpt
   commands:
     - vpt --help
+
+outputs:
+  - name: vpt-cellpose2
+    requirements:
+      run:
+        - {{ pin_subpackage("vpt", exact=True) }}
+        - vpt-plugin-cellpose2 >=1.0.1
+    run_exports:
+      - {{ pin_subpackage("vpt-cellpose2", max_pin="x.x.x") }}
+    test:
+      commands:
+        - vpt --help
 
 about:
   home: https://github.com/Vizgen/vizgen-postprocessing
