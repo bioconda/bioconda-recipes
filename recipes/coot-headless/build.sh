@@ -22,6 +22,7 @@ fi
 sed -i.bak 's|find_package(Python 3.12.4|find_package(Python 3|' CMakeLists.txt
 rm -rf *.bak
 
+rm -rf build
 cmake -S . -B build \
   -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_PREFIX_PATH="${PREFIX}" \
