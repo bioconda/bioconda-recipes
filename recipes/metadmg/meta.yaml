@@ -7,20 +7,22 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/metaDMG-dev/metaDMG-cpp/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  git_url: https://github.com/metaDMG-dev/metaDMG-cpp.git
+  git_rev: v{{ version }}
+  sha256: unused
+  patches:
+    - 0001-Makefile.patch
 
 build:
-  number: 0
-  skip: false
+  number: 2
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-    - {{ compiler('c') }}
+    - pkg-config
   host:
     - openssl
     - htslib
@@ -32,9 +34,6 @@ requirements:
   run:
     - openssl
     - htslib
-    - zlib
-    - bzip2
-    - xz
     - gsl
     - eigen
 
@@ -46,14 +45,21 @@ test:
     - compressbam 2>&1 | grep 'compressbam'
 
 about:
-  home: https://github.com/metaDMG-dev/metaDMG-cpp
-  license: GPLv3, MIT
-  #license_file: LICENSE
-  summary: "metaDMG-cpp: fast and efficient method for estimating mutation and damage rates in ancient DNA data"
+  home: "https://github.com/metaDMG-dev/metaDMG-cpp"
+  license: "GPL-3.0-or-later, MIT"
+  license_family: "GPL3"
+  summary: "metaDMG-cpp: fast and efficient method for estimating mutation and damage rates in ancient DNA data."
+  dev_url: "https://github.com/metaDMG-dev/metaDMG-cpp"
+  doc_url: "https://github.com/metaDMG-dev/metaDMG-cpp/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - ANGSD
     - rahenriksen
   identifiers:
     - doi:10.1101/2022.12.06.519264
+  skip-lints:
+     - uses_vcs_url
