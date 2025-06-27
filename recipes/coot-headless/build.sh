@@ -24,6 +24,7 @@ rm -rf *.bak
 
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_CXX_STANDARD=17 \
   -DCMAKE_CXX_COMPILER="${CXX}" \
   -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
   -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" \
@@ -46,5 +47,5 @@ if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm6
   export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
 fi
 
-cmake --build build --clean-first --target coot_headless_api -j"${CPU_COUNT}"
-cmake --install build -j"${CPU_COUNT}"
+cmake --build build --clean-first --target coot_headless_api -j "${CPU_COUNT}"
+cmake --install build -j "${CPU_COUNT}"
