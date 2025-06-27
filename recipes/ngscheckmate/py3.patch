@@ -1,5 +1,5 @@
 diff --git a/ncm.py b/ncm.py
-index 2f52021..6372770 100644
+index 2f52021..f09bfa0 100644
 --- a/ncm.py
 +++ b/ncm.py
 @@ -65,7 +65,7 @@ def pearson_def(x, y):
@@ -11,6 +11,60 @@ index 2f52021..6372770 100644
                  continue
  
              link = root + '/' +  file
+@@ -223,7 +223,7 @@ def createDataSetFromDir(base_dir, bedFile):
+                 sum_file[file] = sum[file]
+ 
+                 for key in features:
+-                    if glob_scores.has_key(file):
++                    if file in glob_scores:
+                         glob_scores[file].append(scores[key])
+                     else:
+                         glob_scores[file] = [scores[key]]    
+@@ -236,7 +236,7 @@ def createDataSetFromDir(base_dir, bedFile):
+                     for key in features:
+                         if key not in score_set[file]:
+                             score_set[file][key] = 0
+-                        if glob_scores.has_key(file):
++                        if file in glob_scores:
+                             glob_scores[file].append(score_set[file][key])
+                         else:
+                             glob_scores[file] = [score_set[file][key]]    
+@@ -406,7 +406,7 @@ def createDataSetFromList(base_list, bedFile):
+             sum_file[file] = sum[file]
+ 
+             for key in features:
+-                if glob_scores.has_key(file):
++                if file in glob_scores:
+                     glob_scores[file].append(scores[key])
+                 else:
+                     glob_scores[file] = [scores[key]]    
+@@ -419,7 +419,7 @@ def createDataSetFromList(base_list, bedFile):
+                 for key in features:
+                     if key not in score_set[file]:
+                         score_set[file][key] = 0
+-                    if glob_scores.has_key(file):
++                    if file in glob_scores:
+                         glob_scores[file].append(score_set[file][key])
+                     else:
+                         glob_scores[file] = [score_set[file][key]]    
+@@ -481,7 +481,7 @@ def createDataSetFromDir_TEST(base_dir, bedFile,order):
+             sum_file[file] = sum
+ 
+             for key in features:
+-                if glob_scores.has_key(file):
++                if file in glob_scores:
+                     glob_scores[file].append(scores[key])
+                 else:
+                     glob_scores[file] = [scores[key]]
+@@ -542,7 +542,7 @@ def createDataSetFromList_TEST(base_list, bedFile,order):
+         sum_file[file] = sum
+ 
+         for key in features:
+-            if glob_scores.has_key(file):
++            if file in glob_scores:
+                 glob_scores[file].append(scores[key])
+             else:
+                 glob_scores[file] = [scores[key]]
 @@ -608,7 +608,7 @@ def clustering(K):
              sum = sum + max_value
              Pos_count =  Pos_count + 1
@@ -118,7 +172,15 @@ index 2f52021..6372770 100644
                  SAMTOOLS = temp[1].strip()
              elif temp[0].startswith("BCFTOOLS"):
                  BCFTOOLS = temp[1].strip()
-@@ -1203,7 +1203,7 @@ def run_mpileup():
+@@ -1196,6 +1196,7 @@ def run_mpileup():
+ ##version of samtools
+     samtools_version = getCallResult(SAMTOOLS)
+     for samtool_line in samtools_version:
++        samtool_line = str(samtool_line)
+         if samtool_line.find("Version") != -1:
+             version_flag = 1
+             version_line = samtool_line.split("\n")
+@@ -1203,7 +1204,7 @@ def run_mpileup():
                  if version_tag.find("Version") != -1:
                      version_list = version_tag.split(" ")
                      version = version_list[1]
@@ -127,7 +189,7 @@ index 2f52021..6372770 100644
  
      for sample in bam_list:
          filename = sample.split("/")
-@@ -1212,7 +1212,7 @@ def run_mpileup():
+@@ -1212,7 +1213,7 @@ def run_mpileup():
              command = SAMTOOLS + " mpileup -I -uf " + REF + " -l " + bedFile + " " + sample + " | "  + BCFTOOLS + " view -cg - > " + outdir + "/" + tag  + ".vcf"
          else:
              command = SAMTOOLS + " mpileup -uf " + REF + " -l " + bedFile + " " + sample + " | "  + BCFTOOLS + " call -c > " + outdir + "/" + tag  + ".vcf"
@@ -136,7 +198,7 @@ index 2f52021..6372770 100644
          call(command,shell=True)
   #       proc = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
  #        return_code = proc.wait()
-@@ -1443,7 +1443,7 @@ if __name__ == '__main__':
+@@ -1443,7 +1444,7 @@ if __name__ == '__main__':
              get_bam_list()
          run_mpileup()
          base_dir = outdir
@@ -145,7 +207,7 @@ index 2f52021..6372770 100644
          if args.testsamplename != None:
              testsamplename = args.testsamplename
              createDataSetFromDir_TEST(base_dir,bedFile,"1")
-@@ -1454,7 +1454,7 @@ if __name__ == '__main__':
+@@ -1454,7 +1455,7 @@ if __name__ == '__main__':
              classifying()
      elif args.VCF_type != False :
          if args.datadir != None :
@@ -154,7 +216,7 @@ index 2f52021..6372770 100644
              if args.testsamplename != None:
                  testsamplename = args.testsamplename
                  createDataSetFromDir_TEST(base_dir,bedFile,"1")
-@@ -1464,7 +1464,7 @@ if __name__ == '__main__':
+@@ -1464,7 +1465,7 @@ if __name__ == '__main__':
                  createDataSetFromDir(base_dir,bedFile)
                  classifying()
          elif args.datalist != None :
@@ -163,16 +225,34 @@ index 2f52021..6372770 100644
              if args.testsamplename != None:
                  testsamplename = args.testsamplename
                  createDataSetFromList_TEST(base_list,bedFile,"1")
-@@ -1487,4 +1487,4 @@ if __name__ == '__main__':
+@@ -1487,4 +1488,4 @@ if __name__ == '__main__':
      pdf_tag = out_tag
      generate_R_scripts()
      run_R_scripts()
 -#	remove_internal_files()
 +#       remove_internal_files()
 diff --git a/ncm_fastq.py b/ncm_fastq.py
-index daa5910..f4cf7a4 100644
+index daa5910..468725c 100644
 --- a/ncm_fastq.py
 +++ b/ncm_fastq.py
+@@ -118,7 +118,7 @@ def createDataSetFromDir(base_dir, bedFile):
+  #           sum_file[file] = sum                        
+                      
+             for key in features:
+-                if glob_scores.has_key(file):
++                if file in glob_scores:
+                     glob_scores[file].append(scores[key])
+                 else: 
+                     glob_scores[file] = [scores[key]]
+@@ -185,7 +185,7 @@ def createDataSetFromDir_test(base_dir, bedFile,order):
+  #           sum_file[file] = sum                        
+                      
+             for key in features:
+-                if glob_scores.has_key(file):
++                if file in glob_scores:
+                     glob_scores[file].append(scores[key])
+                 else: 
+                     glob_scores[file] = [scores[key]]
 @@ -298,7 +298,7 @@ def plotROC(predStrengths, classLabels):
      plt.title('ROC curves')
      ax.axis([0,1,0,1])
@@ -282,7 +362,7 @@ index daa5910..f4cf7a4 100644
          classifying()
  
 diff --git a/ncm_test.py b/ncm_test.py
-index 528565f..37cad01 100644
+index 528565f..ffdfab7 100644
 --- a/ncm_test.py
 +++ b/ncm_test.py
 @@ -60,7 +60,7 @@ def pearson_def(x, y):
@@ -294,6 +374,42 @@ index 528565f..37cad01 100644
                  continue
  
              link = root + '/' +  file
+@@ -107,7 +107,7 @@ def createDataSetFromDir(base_dir, bedFile):
+             sum_file[file] = sum
+ 
+             for key in features:
+-                if glob_scores.has_key(file):
++                if file in glob_scores:
+                     glob_scores[file].append(scores[key])
+                 else:
+                     glob_scores[file] = [scores[key]]
+@@ -167,7 +167,7 @@ def createDataSetFromList(base_list, bedFile):
+         sum_file[file] = sum
+ 
+         for key in features:
+-            if glob_scores.has_key(file):
++            if file in glob_scores:
+                 glob_scores[file].append(scores[key])
+             else:
+                 glob_scores[file] = [scores[key]]
+@@ -230,7 +230,7 @@ def createDataSetFromDir_TEST(base_dir, bedFile,order):
+             sum_file[file] = sum
+ 
+             for key in features:
+-                if glob_scores.has_key(file):
++                if file in glob_scores:
+                     glob_scores[file].append(scores[key])
+                 else:
+                     glob_scores[file] = [scores[key]]
+@@ -291,7 +291,7 @@ def createDataSetFromList_TEST(base_list, bedFile,order):
+         sum_file[file] = sum
+ 
+         for key in features:
+-            if glob_scores.has_key(file):
++            if file in glob_scores:
+                 glob_scores[file].append(scores[key])
+             else:
+                 glob_scores[file] = [scores[key]]
 @@ -357,7 +357,7 @@ def clustering(K):
              sum = sum + max_value
              Pos_count =  Pos_count + 1
@@ -497,9 +613,18 @@ diff --git a/ngscheckmate_fastq-source/patternconvert.h.gch b/ngscheckmate_fastq
 index 2303d61..78cac10 100644
 Binary files a/ngscheckmate_fastq-source/patternconvert.h.gch and b/ngscheckmate_fastq-source/patternconvert.h.gch differ
 diff --git a/vaf_ncm.py b/vaf_ncm.py
-index 61a9168..900c0d4 100644
+index 61a9168..f9e5d6f 100644
 --- a/vaf_ncm.py
 +++ b/vaf_ncm.py
+@@ -121,7 +121,7 @@ def createDataSetFromDir(base_dir, bedFile):
+  #           sum_file[file] = sum                        
+                      
+             for key in features:
+-                if glob_scores.has_key(file):
++                if file in glob_scores:
+                     glob_scores[file].append(scores[key])
+                 else: 
+                     glob_scores[file] = [scores[key]]
 @@ -233,7 +233,7 @@ def plotROC(predStrengths, classLabels):
      plt.title('ROC curves')
      ax.axis([0,1,0,1])
