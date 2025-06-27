@@ -22,8 +22,10 @@ fi
 sed -i.bak 's|find_package(Python 3.12.4|find_package(Python 3|' CMakeLists.txt
 rm -rf *.bak
 
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+cmake -S . -B build \
+  -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_CXX_STANDARD=20 \
   -DCMAKE_CXX_COMPILER="${CXX}" \
   -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
   -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" \
