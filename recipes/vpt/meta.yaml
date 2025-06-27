@@ -10,14 +10,20 @@ source:
   sha256: 796569f2cbf22f689e4512442c51276281cb36680b1eb14e68526a8b6afca691
 
 build:
+  noarch: python
   number: 1
+  run_exports:
+    - {{ pin_subpackage("vpt", max_pin="x.x.x") }}
+      
+test:
+  commands:
+    - vpt --help
 
 outputs:
   - name: vpt
     build:
       entry_points:
         - vpt = vpt.vizgen_postprocess:entry_point
-      noarch: python
       script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
       run_exports:
         - {{ pin_subpackage("vpt", max_pin="x.x.x") }}
