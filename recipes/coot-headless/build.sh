@@ -15,10 +15,11 @@ else
   export CONFIG_ARGS=""
 fi
 
-if [[ "${target_platform}" == "osx-arm64" ]]; then
-  export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
-elif [[ "${target_platform}" == "linux-aarch64" ]]; then
+if [[ "${target_platform}" == "linux-aarch64" ]]; then
   export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+elif [[ "${target_platform}" == "osx-arm64" ]]; then
+  export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+  export CONFIG_ARGS="${CONFIG_ARGS} -DCMAKE_OSX_ARCHITECTURES=arm64"
 else
   export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
@@ -49,7 +50,7 @@ cmake -S . -B build -G Ninja \
   -DRFFTW2_LIBRARY="${PREFIX}/fftw2/lib/librfftw${SHLIB_EXT}" \
   -DPYTHON_SITE_PACKAGES="${SP_DIR}" \
   -Wno-dev -Wno-deprecated --no-warn-unused-cli \
-  "${CONFIG_ARGS}"
+  ${CONFIG_ARGS}
 
 cmake --build build --clean-first --target coot_headless_api -j "${CPU_COUNT}"
 cmake --install build -j "${CPU_COUNT}"
