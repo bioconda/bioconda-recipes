@@ -25,6 +25,7 @@ case $(uname -m) in
 	sed -i.bak 's|-mavx2||' Makefile
 	sed -i.bak 's|-msse4.1||' Makefile
 	sed -i.bak 's|-msse2||' Makefile
+	cp -rf ${RECIPE_DIR}/sse2neon.h bonsai/clhash/src/
 	;;
     arm64)
 	sed -i.bak 's|-march=native|-march=armv8.4-a|' Makefile
@@ -36,6 +37,7 @@ case $(uname -m) in
 	sed -i.bak 's|-mavx2||' Makefile
 	sed -i.bak 's|-msse4.1||' Makefile
 	sed -i.bak 's|-msse2||' Makefile
+	cp -rf ${RECIPE_DIR}/sse2neon.h bonsai/clhash/src/
 	;;
     x86_64)
 	sed -i.bak 's|-march=native|-march=x86-64-v3|' Makefile
