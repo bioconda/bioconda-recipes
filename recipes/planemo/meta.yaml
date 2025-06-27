@@ -1,23 +1,23 @@
 {% set name = "planemo" %}
-{% set version = "0.75.27" %}
-{% set sha256 = "f55faae9a1502dd0aa2286ca806803833b1a3e7e414d5fa87a21243007e45e1e" %}
+{% set version = "0.75.31" %}
+{% set sha256 = "1daa5f75b6a2ba15894dfca8a5c2dd1b13a40503ef07b20d414a04732deec47c" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/planemo-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/planemo-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   entry_points:
     - planemo = planemo.cli:planemo
   run_exports:
-    - {{ pin_subpackage('planemo', max_pin='x.x') }}
+    - {{ pin_subpackage('planemo', max_pin="x.x") }}
 
 requirements:
   host:
@@ -27,12 +27,15 @@ requirements:
   run:
     - python >=3.7
     - allure-python-commons
-    - bioblend >=1.0.0
+    - backports
+    - backports.strenum
+    - bioblend >=1.6.0
     - click !=8.0.2
     - cwltool >=1.0.20191225192155
     - ephemeris >=0.10.3
-    - galaxy-tool-util >=24.1,<25.0
-    - galaxy-util >=24.1,<25.0
+    - galaxy-job-config-init >=0.1.3
+    - galaxy-tool-util >=24.1,<25.1
+    - galaxy-util >=24.1,<25.1
     - glob2
     - gxformat2 >=0.14.0
     - h5py
@@ -49,9 +52,7 @@ test:
   imports:
     - planemo
     - planemo.commands
-    #- planemo.cwl
     - planemo.database
-    #- planemo.engine
     - planemo.galaxy
     - planemo.galaxy.test
     - planemo.linters
@@ -62,18 +63,13 @@ test:
     - planemo.training
     - planemo.xml
   commands:
-    #- planemo --help
+    - planemo --help
 
 about:
-  home: 'https://github.com/galaxyproject/planemo'
-  summary: 'Command-line utilities to assist in building tools for the Galaxy project (http://galaxyproject.org/).'
+  home: "https://github.com/galaxyproject/planemo"
+  summary: "Command-line utilities to assist in building tools for the Galaxy project (https://galaxyproject.org)."
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  doc_url: 'https://planemo.readthedocs.io/en/latest/'
-  dev_url: 'https://github.com/galaxyproject/planemo'
-
-extra:
-  container:
-    # click requires a Unicode locale
-    extended-base: True
+  doc_url: "https://planemo.readthedocs.io/en/latest"
+  dev_url: "https://github.com/galaxyproject/planemo"

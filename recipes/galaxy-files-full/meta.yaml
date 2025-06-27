@@ -1,0 +1,58 @@
+{% set version = "25.0.1" %}
+{% set sha256 = "38779f443405ab39d223ee7503089e996d8b4cec204d009fc1e213926e6ea696" %}
+{% set galaxy_version = version.split(".")[:2]|join(".") %}
+
+package:
+  name: galaxy-files-full
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/g/galaxy-files/galaxy_files-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('galaxy-files-full', max_pin="x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools
+  run:
+    - python >={{ python_min }}
+    - galaxy-util >={{ galaxy_version }}
+    - fs
+    - typing-extensions
+    - fs.webdavfs
+    - webdavclient3
+    - fs.sshfs
+    - fs.googledrivefs
+    - fs-gcsfs
+    - google-cloud-storage
+    - legacy-cgi
+    
+test:
+  imports:
+    - galaxy
+    - galaxy.files
+
+about:
+  home: "https://galaxyproject.org"
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: "LICENSE.txt"
+  summary: "The Galaxy file sources framework and default plugins."
+  doc_url: "https://docs.galaxyproject.org"
+  dev_url: "https://github.com/galaxyproject/galaxy"
+
+extra:
+  identifiers:
+    - biotools:galaxy
+    - doi:10.1093/nar/gky379
+  recipe-maintainers:
+    - bernt-matthias
+    - bgruening

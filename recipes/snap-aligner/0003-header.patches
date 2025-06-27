@@ -1,0 +1,40 @@
+diff --git a/SNAPLib/Bam.cpp b/SNAPLib/Bam.cpp
+index 5957791..a5d9586 100644
+--- a/SNAPLib/Bam.cpp
++++ b/SNAPLib/Bam.cpp
+@@ -289,7 +289,8 @@ BAMAlignment::decodeSeq(
+ {
+ 
+ 
+-    _uint16 *o_sequence_pairs = (_uint16 *)o_sequence;
++    size_t offset = bases % 2 == 1 ? 1 : 0;
++    _uint16 *o_sequence_pairs = (_uint16 *)(o_sequence+offset);
+     int pairs = bases / 2;
+     for (int i = 0; i < pairs; i++) {
+         o_sequence_pairs[i] = CodeToSeqPair[nibbles[i]];
+diff --git a/LandauVishkin.cpp b/LandauVishkin.cpp
+index d6d7819..a22ddb9 100644
+--- a/SNAPLib/LandauVishkin.cpp
++++ b/SNAPLib/LandauVishkin.cpp
+@@ -99,7 +99,7 @@ LandauVishkinWithCigar::writeCigar(char** o_buf, int* o_buflen, int count, char
+         }
+         int written = snprintf(*o_buf, *o_buflen, "%d%c", count, code);
+         if (written > *o_buflen - 1) {
+-            *o_buf = '\0';
++            **o_buf = '\0';
+             return false;
+         }
+         else {
+diff --git a/Compat.cpp b/Compat.cpp
+index 9d56062..3136197 100644
+--- a/SNAPLib/Compat.cpp
++++ b/SNAPLib/Compat.cpp
+@@ -241,7 +241,7 @@ bool WaitForEventWithTimeout(EventObject *eventObject, _int64 timeoutInMillis)
+ 
+ void BindThreadToProcessor(unsigned processorNumber) // This hard binds a thread to a processor.  You can no-op it at some perf hit.
+ {
+-    if (!SetThreadAffinityMask(GetCurrentThread(),((unsigned _int64)1) << processorNumber)) {
++    if (!SetThreadAffinityMask(GetCurrentThread(),((_int64)1) << processorNumber)) {
+         WriteErrorMessage("Binding thread to processor %d failed, %d\n",processorNumber,GetLastError());
+     }
+ }
