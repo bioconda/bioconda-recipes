@@ -31,7 +31,7 @@ case $(uname -m) in
 	;;
     x86_64)
 	sed -i.bak 's|-march=native|-march=x86-64-v3|' Makefile
-	sed -i.bak 's|-msse4.2 -mpclmul -march=native|-march=x86-64-v3|' bonsai/clhash/Makefile
+	sed -i.bak 's|-msse4.2 -mpclmul -march=native|-msse4.2 -mpclmul -march=x86-64-v3|' bonsai/clhash/Makefile
 	sed -i.bak 's|-march=native|-march=x86-64-v3|' bonsai/Makefile
 	sed -i.bak 's|-march=native|-march=x86-64-v3|' bonsai/python/Makefile
 	sed -i.bak 's|-march=native|-march=x86-64-v3|' bonsai/hll/Makefile
