@@ -20,6 +20,8 @@ else
 fi
 
 sed -i.bak 's|find_package(Python 3.12.4|find_package(Python 3|' CMakeLists.txt
+sed -i.bak '/find_package(RDKit CONFIG COMPONENTS RDGeneral REQUIRED)/a \
+  set_target_properties(RDKit::rdkit_base PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${RDKit_INCLUDE_DIRS}")' CMakeLists.txt
 rm -rf *.bak
 
 cmake -S . -B build -G Ninja \
@@ -37,7 +39,7 @@ cmake -S . -B build -G Ninja \
   -DGSL_ROOT_DIR="${PREFIX}" \
   -DRDKIT_ROOT="${PREFIX}" \
   -DRDKit_DIR="${PREFIX}/lib/cmake/rdkit" \
-  -D"RDKit::rdkit_base:INTERFACE_INCLUDE_DIRECTORIES:STRING=${PREFIX}/include/rdkit" \
+  -DRDKit_INCLUDE_DIRS="${PREFIX}/include/rdkit" \
   -DFFTW2_INCLUDE_DIRS="${PREFIX}/fftw2/include" \
   -DFFTW2_LIBRARY="${PREFIX}/fftw2/lib/libfftw.so" \
   -DRFFTW2_LIBRARY="${PREFIX}/fftw2/lib/librfftw.so" \
