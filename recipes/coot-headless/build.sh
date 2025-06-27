@@ -1,19 +1,23 @@
 #!/bin/bash
 set -exo pipefail
 
+if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm64" ]]; then
+  export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
+fi
+
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-if [[ "$(uname -s)" == "Darwin" ]]; then
+if [[ "${target_platform}" == "osx-"* ]]; then
   export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
   export CONFIG_ARGS=""
 fi
 
-if [[ "$(uname -m)" == "arm64" ]]; then
+if [[ "${target_platform}" == "osx-arm64" ]]; then
   export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
-elif [[ "$(uname -m)" == "aarch64" ]]; then
+elif [[ "${target_platform}" == "linux-aarch64" ]]; then
   export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
 else
   export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
@@ -41,15 +45,11 @@ cmake -S . -B build -G Ninja \
   -DRDKit_DIR="${PREFIX}/lib/cmake/rdkit" \
   -DRDKit_INCLUDE_DIRS="${PREFIX}/include/rdkit" \
   -DFFTW2_INCLUDE_DIRS="${PREFIX}/fftw2/include" \
-  -DFFTW2_LIBRARY="${PREFIX}/fftw2/lib/libfftw.so" \
-  -DRFFTW2_LIBRARY="${PREFIX}/fftw2/lib/librfftw.so" \
+  -DFFTW2_LIBRARY="${PREFIX}/fftw2/lib/libfftw${SHLIB_EXT}" \
+  -DRFFTW2_LIBRARY="${PREFIX}/fftw2/lib/librfftw${SHLIB_EXT}" \
   -DPYTHON_SITE_PACKAGES="${SP_DIR}" \
   -Wno-dev -Wno-deprecated --no-warn-unused-cli \
   "${CONFIG_ARGS}"
-
-if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm64" ]]; then
-  export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
-fi
 
 cmake --build build --clean-first --target coot_headless_api -j "${CPU_COUNT}"
 cmake --install build -j "${CPU_COUNT}"
