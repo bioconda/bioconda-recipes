@@ -36,7 +36,7 @@ cmake -S . -B build -G Ninja \
   -DEIGEN3_INCLUDE_DIR="${PREFIX}/include/eigen3" \
   -DGSL_ROOT_DIR="${PREFIX}" \
   -DRDKIT_ROOT="${PREFIX}" \
-  -DRDKit_INCLUDE_DIRS="${PREFIX}/include/rdkit" \
+  -D"RDKit::rdkit_base:INTERFACE_INCLUDE_DIRECTORIES:STRING=${PREFIX}/include/rdkit" \
   -DFFTW2_INCLUDE_DIRS="${PREFIX}/fftw2/include" \
   -DFFTW2_LIBRARY="${PREFIX}/fftw2/lib/libfftw.so" \
   -DRFFTW2_LIBRARY="${PREFIX}/fftw2/lib/librfftw.so" \
