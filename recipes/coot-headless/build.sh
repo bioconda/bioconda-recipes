@@ -24,7 +24,8 @@ rm -rf *.bak
 
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+  -DCMAKE_CXX_COMPILER="${CXX}" \
+  -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
   -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" \
   -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
   -DPython_EXECUTABLE="${PYTHON}" \
@@ -39,6 +40,10 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DPYTHON_SITE_PACKAGES="${SP_DIR}" \
   -Wno-dev -Wno-deprecated --no-warn-unused-cli \
   "${CONFIG_ARGS}"
+
+if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm64" ]]; then
+  export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
+fi
 
 cmake --build build --clean-first --target coot_headless_api -j"${CPU_COUNT}"
 cmake --install build -j"${CPU_COUNT}"
