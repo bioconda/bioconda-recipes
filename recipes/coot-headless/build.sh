@@ -22,7 +22,6 @@ fi
 sed -i.bak 's|find_package(Python 3.12.4|find_package(Python 3|' CMakeLists.txt
 rm -rf *.bak
 
-rm -rf build
 cmake -S . -B build \
   -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_PREFIX_PATH="${PREFIX}" \
@@ -48,5 +47,5 @@ if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm6
   export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
 fi
 
-cmake --build build --clean-first --target coot_headless_api -j "${CPU_COUNT}"
+cmake --build build --target coot_headless_api -j "${CPU_COUNT}"
 cmake --install build -j "${CPU_COUNT}"
