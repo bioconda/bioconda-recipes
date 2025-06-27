@@ -6,22 +6,22 @@ package:
   name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 2
-  skip: True  # [osx]
-  run_exports:
-    - {{ pin_subpackage('coverm', max_pin="x.x") }}
-
 source:
   url: https://github.com/wwood/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
+build:
+  number: 3
+  run_exports:
+    - {{ pin_subpackage('coverm', max_pin="x.x") }}
+
 requirements:
   build:
-    - rust >=1.19
+    - {{ compiler('rust') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - clangdev  #  one of the rust submodules explicitly requires clang. As it's statically compiled that will hopefully work
+    - cargo-bundle-licenses
+    - clangdev  # one of the rust submodules explicitly requires clang. As it's statically compiled that will hopefully work
     - pkg-config
     - make
     - cmake
@@ -30,7 +30,6 @@ requirements:
     - gsl
     - openblas
   run:
-    - zlib
     - gsl
     - starcode
     - openblas
@@ -38,15 +37,23 @@ requirements:
     - samtools >=1.9
     - minimap2 >=2.24
     - fastani >=1.31
-    - dashing >=0.4.0
-    - strobealign >=0.11.0
+    - dashing >=0.4.0,<1.0
+    - strobealign >=0.14.0
 
 test:
   commands:
     - {{ name }} --version | grep '{{ version }}'
 
 about:
-  home: https://github.com/wwood/CoverM
-  license: GPL3
+  home: "https://github.com/wwood/CoverM"
+  license: "GPL-3.0-or-later"
   license_family: GPL3
-  summary: CoverM aims to be a configurable, easy to use and fast DNA read coverage and relative abundance calculator focused on metagenomics applications
+  license_file: "LICENCE.txt"
+  summary: "CoverM aims to be a configurable, easy to use and fast DNA read coverage and relative abundance calculator focused on metagenomics applications."
+  dev_url: "https://github.com/wwood/CoverM"
+  doc_url: "https://github.com/wwood/CoverM/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
