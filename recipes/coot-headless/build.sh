@@ -48,6 +48,9 @@ cmake -S . -B build -G Ninja \
   -DFFTW2_INCLUDE_DIRS="${PREFIX}/fftw2/include" \
   -DFFTW2_LIBRARY="${PREFIX}/fftw2/lib/libfftw${SHLIB_EXT}" \
   -DRFFTW2_LIBRARY="${PREFIX}/fftw2/lib/librfftw${SHLIB_EXT}" \
+  -DCLIPPER-CORE_LIBRARY="${PREFIX}/lib/libclipper-core${SHLIB_EXT}" \
+  -DMMDB2_LIBRARY="${PREFIX}/lib/libmmdb2${SHLIB_EXT}" \
+  -DSSM_LIBRARY="${PREFIX}/lib/libssm${SHLIB_EXT}" \
   -DPYTHON_SITE_PACKAGES="${SP_DIR}" \
   -Wno-dev -Wno-deprecated --no-warn-unused-cli \
   ${CONFIG_ARGS}
