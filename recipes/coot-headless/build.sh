@@ -46,12 +46,17 @@ cmake -S . -B build -G Ninja \
   -DRDKIT_ROOT="${PREFIX}" \
   -DRDKit_DIR="${PREFIX}/lib/cmake/rdkit" \
   -DRDKit_INCLUDE_DIRS="${PREFIX}/include/rdkit" \
+  -DCLIPPER_INCLUDE_DIRS="${PREFIX}/include/clipper" \
+  -DCLIPPER_LIBRARY_DIRS="${PREFIX}/lib" \
+  -DMMDB2_INCLUDE_DIRS="${PREFIX}/include/mmdb2" \
+  -DMMDB2_LIBRARY_DIRS="${PREFIX}/lib" \
   -DFFTW2_INCLUDE_DIRS="${PREFIX}/fftw2/include" \
   -DFFTW2_LIBRARY="${PREFIX}/fftw2/lib/libfftw${SHLIB_EXT}" \
   -DRFFTW2_LIBRARY="${PREFIX}/fftw2/lib/librfftw${SHLIB_EXT}" \
   -DPYTHON_SITE_PACKAGES="${SP_DIR}" \
   -Wno-dev -Wno-deprecated --no-warn-unused-cli \
   ${CONFIG_ARGS}
+
 
 cmake --build build --clean-first --target coot_headless_api -j "${CPU_COUNT}"
 cmake --install build -j "${CPU_COUNT}"
