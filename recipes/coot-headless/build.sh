@@ -5,7 +5,7 @@ if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm6
   export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
 fi
 
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -I${PREFIX}/include/clipper -I${PREFIX}/include/mmdb2"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -frtti"
 
@@ -50,6 +50,10 @@ cmake -S . -B build -G Ninja \
   -DCLIPPER_LIBRARY_DIRS="${PREFIX}/lib" \
   -DMMDB2_INCLUDE_DIRS="${PREFIX}/include/mmdb2" \
   -DMMDB2_LIBRARY_DIRS="${PREFIX}/lib" \
+  -DSSM_INCLUDE_DIRS="${PREFIX}/include/ssm" \
+  -DSSM_LIBRARY_DIRS="${PREFIX}/lib" \
+  -DCCP4_INCLUDE_DIRS="${PREFIX}/include/ccp4" \
+  -DCCP4_LIBRARY_DIRS="${PREFIX}/lib" \
   -DFFTW2_INCLUDE_DIRS="${PREFIX}/fftw2/include" \
   -DFFTW2_LIBRARY="${PREFIX}/fftw2/lib/libfftw${SHLIB_EXT}" \
   -DRFFTW2_LIBRARY="${PREFIX}/fftw2/lib/librfftw${SHLIB_EXT}" \
