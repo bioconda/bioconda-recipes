@@ -19,6 +19,7 @@ if [[ "${target_platform}" == "linux-aarch64" ]]; then
   export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
 elif [[ "${target_platform}" == "osx-arm64" ]]; then
   export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+  export CONFIG_ARGS="${CONFIG_ARGS} -DCMAKE_OSX_ARCHITECTURES=arm64"
 else
   export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
