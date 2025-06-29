@@ -14,7 +14,9 @@ elif [[ "${target_platform}" == "osx-"* ]]; then
     export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic -framework OpenGL"
 fi
 
-cmake -S . -B build -G Ninja \
+mkdir -p build && cd build
+
+cmake .. \
     ${CMAKE_ARGS} \
     -DCMAKE_PREFIX_PATH="${PREFIX}" \
     -DCMAKE_CXX_COMPILER="${CXX}" \
@@ -31,13 +33,13 @@ cmake -S . -B build -G Ninja \
     -DUSE_RPATH=ON \
     -DCMAKE_VERBOSE_MAKEFILE=ON
 
-cmake --build build --parallel "${CPU_COUNT}" --verbose
+make VERBOSE=1 -j"${CPU_COUNT}"
 
 wget https://files.wwpdb.org/pub/pdb/data/monomers/components.cif.gz
 stage/bin/chemdict_tool create components.cif.gz compounds.chemlib pdb -i
 stage/bin/chemdict_tool update ../modules/conop/data/charmm.cif compounds.chemlib charmm
 
-cmake -S . -B build -G Ninja \
+cmake .. \
     ${CMAKE_ARGS} \
     -DCMAKE_PREFIX_PATH="${PREFIX}" \
     -DCMAKE_CXX_COMPILER="${CXX}" \
@@ -66,12 +68,12 @@ cmake -S . -B build -G Ninja \
     -DOPEN_MM_PLUGIN_DIR="${PREFIX}/lib/plugins" \
     -DCMAKE_VERBOSE_MAKEFILE=ON
 
-cmake --build build --parallel "${CPU_COUNT}" --verbose
+make VERBOSE=1 -j"${CPU_COUNT}"
 
 # GFX-related tests time out for CI checks on linux-aarch64
 if [[ "${target_platform}" != "linux-aarch64" ]]; then
-    cmake --build build --target check --verbose
+    make check
 fi
 
-cmake --install build
-rm -rf build
+make install
+cd "${SRC_DIR}" && rm -rf build
