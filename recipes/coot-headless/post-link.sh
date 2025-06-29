@@ -2,9 +2,6 @@
 
 set -euo pipefail
 
-PKG_VERSION="1.1.17"
-PREFIX=${CONDA_PREFIX}
-
 GITHUB_RELEASE_URL="https://github.com/pemsley/coot/archive/refs/tags/Release-${PKG_VERSION}.tar.gz"
 TEMP_DIR=$(mktemp -d)
 
