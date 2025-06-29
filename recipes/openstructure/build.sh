@@ -14,9 +14,7 @@ elif [[ "$(uname)" == "Darwin" ]]; then
     export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic -framework OpenGL"
 fi
 
-mkdir -p build && cd build
-
-cmake .. \
+cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
     -DCMAKE_PREFIX_PATH="${PREFIX}" \
     -DCMAKE_CXX_COMPILER="${CXX}" \
@@ -33,13 +31,13 @@ cmake .. \
     -DUSE_RPATH=ON \
     -DCMAKE_VERBOSE_MAKEFILE=ON
 
-make VERBOSE=1 -j"${CPU_COUNT}"
+cmake --build build --parallel "${CPU_COUNT}" --verbose
 
 wget https://files.wwpdb.org/pub/pdb/data/monomers/components.cif.gz
 stage/bin/chemdict_tool create components.cif.gz compounds.chemlib pdb -i
 stage/bin/chemdict_tool update ../modules/conop/data/charmm.cif compounds.chemlib charmm
 
-cmake .. \
+cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
     -DCMAKE_PREFIX_PATH="${PREFIX}" \
     -DCMAKE_CXX_COMPILER="${CXX}" \
@@ -68,12 +66,12 @@ cmake .. \
     -DOPEN_MM_PLUGIN_DIR="${PREFIX}/lib/plugins" \
     -DCMAKE_VERBOSE_MAKEFILE=ON
 
-make VERBOSE=1 -j"${CPU_COUNT}"
+cmake --build build --parallel "${CPU_COUNT}" --verbose
 
 # GFX-related tests time out for CI checks on linux-aarch64
 if [[ "${build_platform}" != "linux-aarch64" ]]; then
-    make check
+    cmake --build build --target check --verbose
 fi
 
-make install
-cd "${SRC_DIR}" && rm -rf build
+cmake --install build
+rm -rf build
