@@ -3,7 +3,7 @@
 set -exo pipefail
 
 # Prevent build failures due to insufficient memory in the CI environment
-# Use parallel build because serial build on osx-arm64 sometimes causes errors
+# Use parallel build because of serial build on osx-arm64 causing occasional errors
 if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm64" ]]; then
   export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
 fi
