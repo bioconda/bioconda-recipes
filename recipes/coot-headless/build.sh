@@ -19,7 +19,6 @@ if [[ "${target_platform}" == "linux-aarch64" ]]; then
   export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
 elif [[ "${target_platform}" == "osx-arm64" ]]; then
   export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
-  export CONFIG_ARGS="${CONFIG_ARGS} -DCMAKE_OSX_ARCHITECTURES=arm64"
 else
   export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
@@ -46,17 +45,17 @@ cmake -S . -B build -G Ninja \
   -DRDKIT_ROOT="${PREFIX}" \
   -DRDKit_DIR="${PREFIX}/lib/cmake/rdkit" \
   -DRDKit_INCLUDE_DIRS="${PREFIX}/include/rdkit" \
-  -DCLIPPER_INCLUDE_DIRS="${PREFIX}/include/clipper" \
-  -DCLIPPER_LIBRARY_DIRS="${PREFIX}/lib" \
-  -DMMDB2_INCLUDE_DIRS="${PREFIX}/include/mmdb2" \
-  -DMMDB2_LIBRARY_DIRS="${PREFIX}/lib" \
-  -DSSM_INCLUDE_DIRS="${PREFIX}/include/ssm" \
-  -DSSM_LIBRARY_DIRS="${PREFIX}/lib" \
-  -DCCP4_INCLUDE_DIRS="${PREFIX}/include/ccp4" \
-  -DCCP4_LIBRARY_DIRS="${PREFIX}/lib" \
   -DFFTW2_INCLUDE_DIRS="${PREFIX}/fftw2/include" \
   -DFFTW2_LIBRARY="${PREFIX}/fftw2/lib/libfftw${SHLIB_EXT}" \
   -DRFFTW2_LIBRARY="${PREFIX}/fftw2/lib/librfftw${SHLIB_EXT}" \
+  -D"CCP4::ssm:IMPORTED_LOCATION=${PREFIX}/lib/libssm${SHLIB_EXT}" \
+  -D"CCP4::mmdb2:IMPORTED_LOCATION=${PREFIX}/lib/libmmdb2${SHLIB_EXT}" \
+  -D"CCP4::clipper-core:IMPORTED_LOCATION=${PREFIX}/lib/libclipper-core${SHLIB_EXT}" \
+  -D"CCP4::clipper-mmdb:IMPORTED_LOCATION=${PREFIX}/lib/libclipper-mmdb${SHLIB_EXT}" \
+  -D"CCP4::clipper-ccp4:IMPORTED_LOCATION=${PREFIX}/lib/libclipper-ccp4${SHLIB_EXT}" \
+  -D"CCP4::clipper-contrib:IMPORTED_LOCATION=${PREFIX}/lib/libclipper-contrib${SHLIB_EXT}" \
+  -D"CCP4::clipper-minimol:IMPORTED_LOCATION=${PREFIX}/lib/libclipper-minimol${SHLIB_EXT}" \
+  -D"CCP4::clipper-cif:IMPORTED_LOCATION=${PREFIX}/lib/libclipper-cif${SHLIB_EXT}" \
   -DPYTHON_SITE_PACKAGES="${SP_DIR}" \
   -Wno-dev -Wno-deprecated --no-warn-unused-cli \
   ${CONFIG_ARGS}
