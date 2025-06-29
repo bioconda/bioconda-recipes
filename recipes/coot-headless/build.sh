@@ -48,14 +48,19 @@ cmake -S . -B build -G Ninja \
   -DFFTW2_INCLUDE_DIRS="${PREFIX}/fftw2/include" \
   -DFFTW2_LIBRARY="${PREFIX}/fftw2/lib/libfftw${SHLIB_EXT}" \
   -DRFFTW2_LIBRARY="${PREFIX}/fftw2/lib/librfftw${SHLIB_EXT}" \
-  -D"CCP4::ssm:IMPORTED_LOCATION=${PREFIX}/lib/libssm${SHLIB_EXT}" \
-  -D"CCP4::mmdb2:IMPORTED_LOCATION=${PREFIX}/lib/libmmdb2${SHLIB_EXT}" \
-  -D"CCP4::clipper-core:IMPORTED_LOCATION=${PREFIX}/lib/libclipper-core${SHLIB_EXT}" \
-  -D"CCP4::clipper-mmdb:IMPORTED_LOCATION=${PREFIX}/lib/libclipper-mmdb${SHLIB_EXT}" \
-  -D"CCP4::clipper-ccp4:IMPORTED_LOCATION=${PREFIX}/lib/libclipper-ccp4${SHLIB_EXT}" \
-  -D"CCP4::clipper-contrib:IMPORTED_LOCATION=${PREFIX}/lib/libclipper-contrib${SHLIB_EXT}" \
-  -D"CCP4::clipper-minimol:IMPORTED_LOCATION=${PREFIX}/lib/libclipper-minimol${SHLIB_EXT}" \
-  -D"CCP4::clipper-cif:IMPORTED_LOCATION=${PREFIX}/lib/libclipper-cif${SHLIB_EXT}" \
+  -DMMDB2_INCLUDE_DIR="${PREFIX}/include/mmdb2" \
+  -DMMDB2_LIBRARY="${PREFIX}/lib/libmmdb2${SHLIB_EXT}" \
+  -DSSM_INCLUDE_DIR="${PREFIX}/include/ssm" \
+  -DSSM_LIBRARY="${PREFIX}/lib/libssm${SHLIB_EXT}" \
+  -DCLIPPER-CORE_INCLUDE_DIR="${PREFIX}/include/clipper" \
+  -DCLIPPER-CORE_LIBRARY="${PREFIX}/lib/libclipper-core${SHLIB_EXT}" \
+  -DCLIPPER-MMDB_INCLUDE_DIR="${PREFIX}/include/clipper" \
+  -DCLIPPER-MMDB_LIBRARY="${PREFIX}/lib/libclipper-mmdb${SHLIB_EXT}" \
+  -DCLIPPER-CCP4_INCLUDE_DIR="${PREFIX}/include/clipper" \
+  -DCLIPPER-CCP4_LIBRARY="${PREFIX}/lib/libclipper-ccp4${SHLIB_EXT}" \
+  -DCLIPPER-MINIMOL_LIBRARY="${PREFIX}/lib/libclipper-minimol${SHLIB_EXT}" \
+  -DCLIPPER-CONTRIB_LIBRARY="${PREFIX}/lib/libclipper-contrib${SHLIB_EXT}" \
+  -DCLIPPER-CIF_LIBRARY="${PREFIX}/lib/libclipper-cif${SHLIB_EXT}" \
   -DPYTHON_SITE_PACKAGES="${SP_DIR}" \
   -Wno-dev -Wno-deprecated --no-warn-unused-cli \
   ${CONFIG_ARGS}
