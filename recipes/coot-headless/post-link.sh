@@ -2,13 +2,13 @@
 
 set -euo pipefail
 
-GITHUB_RELEASE_URL="https://github.com/pemsley/coot/archive/refs/tags/${PKG_VERSION}.tar.gz"
+GITHUB_RELEASE_URL="https://github.com/pemsley/coot/archive/refs/tags/Release-${PKG_VERSION}.tar.gz"
 TEMP_DIR=$(mktemp -d)
 
 COOT_REFMAC_LIB_DIR="${PREFIX}/share/coot/lib"
 COOT_DATA_DIR="${COOT_REFMAC_LIB_DIR}/data"
 COOT_STANDARD_RESIDUES="${PREFIX}/share/coot/standard-residues.pdb"
-COOT_STANDARD_RESIDUES_URL="https://github.com/pemsley/coot/raw/${PKG_VERSION}/standard-residues.pdb"
+COOT_STANDARD_RESIDUES_URL="https://github.com/pemsley/coot/raw/Release-${PKG_VERSION}/standard-residues.pdb"
 
 mkdir -p "${COOT_DATA_DIR}"
 
@@ -23,7 +23,7 @@ else
     exit 1
 fi
 
-echo "Downloading monomer library data for Coot from GitHub ${PKG_VERSION}..."
+echo "Downloading monomer library data for Coot from GitHub Release-${PKG_VERSION}..."
 if ! command -v curl > /dev/null; then
     echo "Error: curl is not available but it should be. Please check your installation." >&2
     exit 1
@@ -31,7 +31,7 @@ fi
 
 curl -s -L "${GITHUB_RELEASE_URL}" | tar -xz -C "${TEMP_DIR}"
 
-RELEASE_DIR="${TEMP_DIR}/coot-${PKG_VERSION}"
+RELEASE_DIR="${TEMP_DIR}/coot-Release-${PKG_VERSION}"
 
 if [ -d "${RELEASE_DIR}/monomers" ]; then
     rm -rf "${COOT_DATA_DIR}/monomers"
