@@ -1,8 +1,11 @@
 diff --git a/Makefile b/Makefile
-index fc81a1a..42d9f17 100644
+index 0f35f0e..95d3b45 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -1,7 +1,7 @@
+@@ -1,10 +1,10 @@
+ # make FLAGS=-D__REGRESSION__
+ #c++ -I /opt/homebrew/Cellar/eigen/3.4.0_1/include/ -c -I/Users/fvr124/metaDMG-cpp/htslib   regression.cpp -std=c++14  -D__REGRESSION__
+ 
 -CC  ?= gcc
 -CXX ?= g++
 +CC  ?= $(CC)
@@ -13,7 +16,7 @@ index fc81a1a..42d9f17 100644
  
  CRYPTO_TRY=$(shell echo 'int main(){}'|$(CXX) -x c++ - -lcrypto 2>/dev/null -o /dev/null; echo $$?)
  ifeq "$(CRYPTO_TRY)" "0"
-@@ -25,7 +25,7 @@ else
+@@ -28,7 +28,7 @@ else
  #if hts source path is given
  # Adjust $(HTSSRC) to point to your top-level htslib directory
  $(info HTSSRC defined: $(HTSSRC))
@@ -22,7 +25,7 @@ index fc81a1a..42d9f17 100644
  LIBHTS := $(HTSSRC)/libhts.a
  LIBS := $(LIBHTS) $(LIBS)
  
-@@ -40,7 +40,7 @@ $(info Use `make HTSSRC=systemwide` to build metadamage using the systemwide hts
+@@ -43,7 +43,7 @@ $(info Use `make HTSSRC=systemwide` to build metadamage using the systemwide hts
  
  
  HTSSRC := $(CURDIR)/htslib
@@ -30,49 +33,4 @@ index fc81a1a..42d9f17 100644
 +CPPFLAGS += -I$(HTSSRC) -I$(PREFIX)/include
  LIBHTS := $(HTSSRC)/libhts.a
  LIBS := $(LIBHTS) $(LIBS)
- 
-@@ -48,7 +48,7 @@ all: .activate_module
- 
- endif
- 
--.PHONY: .activate_module 
-+.PHONY: .activate_module
- 
- .activate_module:
- 	git submodule update --init --recursive
-@@ -57,7 +57,7 @@ endif
- 
- 
- #modied from htslib makefile
--FLAGS = -O3 
-+FLAGS = -O3
- CPPFLAGS := $(filter-out -DNDEBUG,$(CPPFLAGS))
- FLAGS2 = $(CPPFLAGS) $(FLAGS) $(LDFLAGS)
- 
-@@ -97,7 +97,7 @@ version.h:
- 
- .PHONY: all clean install install-all install-misc misc test
- 
--misc: 
-+misc:
- 	$(MAKE) -C misc HTSSRC="$(realpath $(HTSSRC))"
- 
- -include $(OBJ:.o=.d)
-@@ -118,7 +118,7 @@ metaDMG-cpp: version.h $(OBJ)
- testclean:
- 	rm -f test/acc2taxid.map.gzf570b1db7c.dedup.filtered.rname.bam.bin
- 	rm -f test/data/f570b1db7c.dedup.filtered.rname.bam
--	rm -rf test/output test/logfile version.h 
-+	rm -rf test/output test/logfile version.h
- 
- clean: testclean
- 	rm  -f *.o *.d $(PROGRAMS) version.h *~
-@@ -126,7 +126,7 @@ clean: testclean
- 
- test:
- 	echo "Running unit tests for metaDMG"
--	cd test;./testAll.sh 
-+	cd test;./testAll.sh
- 
- force:
  
