@@ -70,13 +70,16 @@ outputs:
           - vpt --help
 
   - name: vpt-cellpose2
-    script: "echo"
+    build:
+      entry_points:
+        - vpt = vpt.vizgen_postprocess:entry_point
+      script: python -m pip install . -vv --no-deps --no-build-isolation
+      run_exports:
+        - {{ pin_subpackage("vpt-cellpose2", max_pin="x.x.x") }}
     requirements:
       run:
         - {{ pin_subpackage("vpt", exact=True) }}
         - vpt-plugin-cellpose2 >=1.0.1
-    run_exports:
-      - {{ pin_subpackage("vpt-cellpose2", max_pin="x.x.x") }}
     test:
       commands:
         - vpt --help
