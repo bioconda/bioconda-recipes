@@ -1,18 +1,57 @@
 #!/bin/bash
 
-export CPP_INCLUDE_PATH=${PREFIX}/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export CXX_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
+export CPLUS_INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
 pushd bonsai
 rm -rf zstd
 git clone --recursive --single-branch --branch dev https://github.com/facebook/zstd
 pushd zstd
-make CC=$CC lib && mv lib/libzstd.a ..
+make CC="${CC}" lib -j"${CPU_COUNT}" && mv lib/libzstd.a ..
 popd
 popd
 
+case $(uname -m) in
+    aarch64)
+	sed -i.bak 's|-march=native|-march=armv8-a|' Makefile
+	sed -i.bak 's|-msse4.2 -mpclmul -march=native|-march=armv8-a|' bonsai/clhash/Makefile
+	sed -i.bak 's|-march=native|-march=armv8-a|' bonsai/Makefile
+	sed -i.bak 's|-march=native|-march=armv8-a|' bonsai/python/Makefile
+	sed -i.bak 's|-march=native|-march=armv8-a|' bonsai/hll/Makefile
+	sed -i.bak 's|-mavx||' Makefile
+	sed -i.bak 's|-mavx2||' Makefile
+	sed -i.bak 's|-msse4.1||' Makefile
+	sed -i.bak 's|-msse2||' Makefile
+	cp -rf ${RECIPE_DIR}/sse2neon.h bonsai/clhash/src/
+	;;
+    arm64)
+	sed -i.bak 's|-march=native|-march=armv8.4-a|' Makefile
+	sed -i.bak 's|-msse4.2 -mpclmul -march=native|-march=armv8.4-a|' bonsai/clhash/Makefile
+	sed -i.bak 's|-march=native|-march=armv8-a|' bonsai/Makefile
+	sed -i.bak 's|-march=native|-march=armv8-a|' bonsai/python/Makefile
+	sed -i.bak 's|-march=native|-march=armv8-a|' bonsai/hll/Makefile
+	sed -i.bak 's|-mavx||' Makefile
+	sed -i.bak 's|-mavx2||' Makefile
+	sed -i.bak 's|-msse4.1||' Makefile
+	sed -i.bak 's|-msse2||' Makefile
+	cp -rf ${RECIPE_DIR}/sse2neon.h bonsai/clhash/src/
+	;;
+    x86_64)
+	sed -i.bak 's|-march=native|-march=x86-64-v3|' Makefile
+	sed -i.bak 's|-msse4.2 -mpclmul -march=native|-msse4.2 -mpclmul -march=x86-64-v3|' bonsai/clhash/Makefile
+	sed -i.bak 's|-march=native|-march=x86-64-v3|' bonsai/Makefile
+	sed -i.bak 's|-march=native|-march=x86-64-v3|' bonsai/python/Makefile
+	sed -i.bak 's|-march=native|-march=x86-64-v3|' bonsai/hll/Makefile
+	;;
+esac
+
 sed -i.bak "s/ -lzstd//g" Makefile
-make CC=$CC CXX=$CXX
-make install PREFIX=$PREFIX
+sed -i.bak 's|ar r|$(AR) rcs|' Makefile
+sed -i.bak 's|-std=c99|-std=c11|' bonsai/clhash/Makefile
+rm -rf *.bak
+
+make CC="${CC}" CXX="${CXX}" INCPLUS="-I${PREFIX}/include" EXTRA_LD="-L${PREFIX}/lib" -j"${CPU_COUNT}"
+make install PREFIX="${PREFIX}"
