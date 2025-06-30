@@ -2,5 +2,5 @@
 
 python -m pip install --no-deps --ignore-installed .
 cd db
-tb-profiler load_lib tbdb
+tb-profiler load_library tbdb
 bwa index $PREFIX/share/tbprofiler/tbdb.fasta
