@@ -3,7 +3,7 @@ set -exo pipefail
 
 # Copy all source files from SRC_DIR into the bin folder
 mkdir -p "$PREFIX/bin/clincnv/"
-cp -r "$SRC_DIR"/* "$PREFIX/bin/clincnv/"
+cp -r "$SRC_DIR"/{*.R,germline,somatic,PCAWG,helper_scripts,trios} "$PREFIX/bin/clincnv/"
 
 # List of R script names
 scripts=("clinCNV.R" "mergeFilesFromFolder.R" "mergeFilesFromFolderDT.R")
