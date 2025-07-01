@@ -1,0 +1,43 @@
+{% set name = "primalschemers" %}
+{% set version = "0.1.7" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/primalschemers-{{ version }}.tar.gz
+  sha256: e9a2774ea92b31cf49420468b6d75a1d8c71ee4924129193370bda165f349cd1
+
+build:
+  entry_points:
+    - primalschemers = primalschemers:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.9
+    - maturin >=1.0,<2.0
+    - pip
+  run:
+    - python >=3.9
+
+test:
+  imports:
+    - primalschemers
+  commands:
+    - pip check
+    - primalschemers --help
+  requires:
+    - pip
+
+about:
+  summary: Rust code base for PrimalScheme3
+  license: GPL-3.0-only
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - chriskent
