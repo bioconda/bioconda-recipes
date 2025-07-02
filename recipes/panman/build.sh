@@ -19,7 +19,7 @@ cmake -S . -B build \
     -DCMAKE_PREFIX_PATH="${PREFIX}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_COMPILER="${CXX}" \
-    -DTBB_DIR="${PREFIX}/lib/cmake/TBB" \
+    -DTBB_DIR="${PREFIX}/lib/cmake/tbb" \
     -Wno-dev -Wno-deprecated --no-warn-unused-cli \
     "${CONFIG_ARGS}"
 
