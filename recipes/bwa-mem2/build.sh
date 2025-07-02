@@ -1,14 +1,9 @@
 #!/bin/bash
 set -x
 
-mkdir -p $PREFIX/bin
-
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
 
-if [[ "$(uname)" = "Darwin" -a "$(uname -m)" = "x86_64" ]]; then
+if [ "$(uname)" = "Darwin" -a "$(uname -m)" = "x86_64" ]; then
     sed -i.bak "s#extern errno_t memset_s#//xxx extern errno_t memset_s#g" ext/safestringlib/include/safe_mem_lib.h
     sed -i.bak 's/memset_s/memset8_s/g' ext/safestringlib/include/safe_mem_lib.h
     sed -i.bak 's/memset_s/memset8_s/g' ext/safestringlib/safeclib/memset16_s.c
@@ -18,6 +13,7 @@ if [[ "$(uname)" = "Darwin" -a "$(uname -m)" = "x86_64" ]]; then
  # for safestringlib to compile
     CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
 fi
+
 
 case "$(uname -m)" in
   x86_64)
@@ -33,4 +29,5 @@ case "$(uname -m)" in
       echo "Not supported architecture: $(uname -m)" ;;
 esac
 
-install -v -m 0755 bwa-mem2* "$PREFIX/bin"
+mkdir -p $PREFIX/bin
+install -v -m 0755 bwa-mem2* $PREFIX/bin
