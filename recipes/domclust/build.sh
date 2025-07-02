@@ -3,7 +3,7 @@
 mkdir -p $PREFIX/bin
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
-  sed -i.bak 's|-g -O2 $(CFLAGS0)|-g -O3 $(CFLAGS0) -Xlinker -Wno-implicit-int -Wno-implicit-function-declaration|' Makefile
+  sed -i.bak 's|-g -O2 $(CFLAGS0)|-g -O3 -Xlinker -Wno-implicit-int -Wno-implicit-function-declaration|' Makefile
 else
   sed -i.bak 's|-g -O2 $(CFLAGS0)|-g -O3 $(CFLAGS0) -Xlinker -zmuldefs -Wno-implicit-int -Wno-implicit-function-declaration|' Makefile
 fi
