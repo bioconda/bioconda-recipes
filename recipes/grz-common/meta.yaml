@@ -1,0 +1,56 @@
+{% set name = "grz-common" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/grz_common-{{ version }}.tar.gz
+  sha256: 2b054adf6b14e8e3aba64e8e8e4192dc47ecefbce08c4062a039c652598cdab2
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - hatchling
+    - pip
+  run:
+    - python >=3.12
+    - boto3 >=1.36,<2
+    - click >=8.2,<9
+    - python-crypt4gh >=1.7,<2
+    - jsonschema >=4.23.0,<5
+    - pyyaml >=6.0.2,<7
+    - tqdm >=4.66.5,<5
+    - pydantic >=2.9.2,<2.10
+    - pydantic-settings >=2.9.0,<2.10
+    - platformdirs >=4.3.6,<5
+    - grz-pydantic-models =2
+    - pysam ==0.23.*
+    - rich ==13.*
+    - requests >=2.32.3,<3
+
+test:
+  imports:
+    - grz_common
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/BfArM-MVH/grz-tools
+  summary: Common library for grz applications
+  license: MIT
+
+extra:
+  recipe-maintainers:
+    - twrightsman
+    - tedil
