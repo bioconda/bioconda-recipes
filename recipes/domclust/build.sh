@@ -3,8 +3,10 @@
 mkdir -p $PREFIX/bin
 
 sed -i.bak '8c\CFLAGS=-g -O2 $(CFLAGS0) -Xlinker -zmuldefs' Makefile
+sed -i.bak 's|-O2|-O3|' Makefile
+rm -rf *.bak
 
-make -j"${CPU_COUNT}"
+make CC="${CC}" -j"${CPU_COUNT}"
 # copy binary to prefix folder
 install -v -m 0755 bin/domclust Script/*.pl build_input/*.pl "${PREFIX}/bin"
 
