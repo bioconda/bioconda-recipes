@@ -1,33 +1,36 @@
 #!/bin/bash
 set -x
 
-export CXXFLAGS="${CXXFLAGS} -std=c++14"
+mkdir -p "${PREFIX}/bin"
 
-if [ "$(uname)" = "Darwin" -a "$(uname -m)" = "x86_64" ]; then
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
+
+if [[ "$(uname -s)" = "Darwin" -a "$(uname -m)" = "x86_64" ]]; then
     sed -i.bak "s#extern errno_t memset_s#//xxx extern errno_t memset_s#g" ext/safestringlib/include/safe_mem_lib.h
     sed -i.bak 's/memset_s/memset8_s/g' ext/safestringlib/include/safe_mem_lib.h
     sed -i.bak 's/memset_s/memset8_s/g' ext/safestringlib/safeclib/memset16_s.c
     sed -i.bak 's/memset_s/memset8_s/g' ext/safestringlib/safeclib/memset32_s.c
     sed -i.bak 's/memset_s/memset8_s/g' ext/safestringlib/safeclib/memset_s.c
     sed -i.bak 's/memset_s/memset8_s/g' ext/safestringlib/safeclib/wmemset_s.c
- # for safestringlib to compile
+    # for safestringlib to compile
     CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
 fi
 
-
 case "$(uname -m)" in
   x86_64)
-      	LIBS="${LDFLAGS}" make -j${CPU_COUNT} CC="${CC}" CXX="${CXX}" multi ;;
+      	LIBS="${LDFLAGS}" make CC="${CC}" CXX="${CXX}" multi -j"${CPU_COUNT}" ;;
   arm64|aarch64)      
         rm -rf ext/sse2neon
         git submodule add https://github.com/DLTcollab/sse2neon ext/sse2neon
-        cd ext/sse2neon ; git checkout tags/v1.8.0
+        cd ext/sse2neon; git checkout tags/v1.8.0
         cd ../..
-	LIBS="${LDFLAGS}" make -j${CPU_COUNT} arch="-march=armv8-a" EXE=bwa-mem2 CC="${CC}" CXX="${CXX}" all
+	LIBS="${LDFLAGS}" make arch="-march=armv8-a" EXE="bwa-mem2" CC="${CC}" CXX="${CXX}" all -j"${CPU_COUNT}"
       ;;
   *)
       echo "Not supported architecture: $(uname -m)" ;;
 esac
 
-mkdir -p $PREFIX/bin
-cp bwa-mem2* $PREFIX/bin
+install -v -m 0755 bwa-mem2* "${PREFIX}/bin"
