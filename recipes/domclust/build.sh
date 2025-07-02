@@ -1,14 +1,11 @@
 #!/bin/bash
 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-int -Wno-implicit-function-declaration"
+
 mkdir -p $PREFIX/bin
 
-if [[ "$(uname -s)" == "Darwin" ]]; then
-  sed -i.bak 's|-g -O2 $(CFLAGS0)|-g -O3 -Xlinker -Wno-implicit-int -Wno-implicit-function-declaration|' Makefile
-else
-  sed -i.bak 's|-g -O2 $(CFLAGS0)|-g -O3 $(CFLAGS0) -Xlinker -zmuldefs -Wno-implicit-int -Wno-implicit-function-declaration|' Makefile
-fi
-
-sed -i.bak 's|-O2|-O3|' Makefile
+sed -i.bak 's|-g -O2 $(CFLAGS0)|-g -O3 $(CFLAGS0) -Xlinker -Wno-implicit-int -Wno-implicit-function-declaration|' Makefile
 rm -rf *.bak
 
 make CC="${CC}" -j"${CPU_COUNT}"
