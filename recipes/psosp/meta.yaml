@@ -1,19 +1,21 @@
 {% set name = "psosp" %}
-{% set version = "1.1.1" %}
-
+{% set version = "1.1.2" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/mujiezhang/PSOSP/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 4db57556ca7e008f1d9edf31ddb57837876bfbaee75f59705396438b95727793
+  sha256: 0a0a5c3293e83943b60019cc03faa47f1b7a1a67a0bc8124e601c9e6f4fcda94
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -rf *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   entry_points:
     - psosp = psosp:main
   run_exports:
@@ -33,14 +35,18 @@ requirements:
     - prodigal
     - checkv >=1.0.1
 
-
 test:
+  imports:
+    - psosp
+  source_files:
+    - psosp/test/data
   commands:
-    - psosp --version
+    - psosp test
 
 about:
-  home: https://github.com/mujiezhang/PSOSP
+  home: "https://github.com/mujiezhang/PSOSP"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
   summary: "PSOSP (Prophage SOS-dependency Predictor)"
   description: |
@@ -48,10 +54,9 @@ about:
     to predict prophage induction modes by analyzing the heterology index (HI) 
     of LexA protein binding to target DNA, classifying prophages into 
     SOS-dependent (SdPs) and SOS-independent (SiPs).
-  dev_url: https://github.com/mujiezhang/PSOSP
+  dev_url: "https://github.com/mujiezhang/PSOSP"
   doc_url: "https://github.com/mujiezhang/PSOSP/blob/main/README.md"
 
 extra:
   recipe-maintainers:
     - mujiezhang 
-
