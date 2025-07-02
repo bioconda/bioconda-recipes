@@ -1,4 +1,5 @@
 #!/bin/bash
+mkdir -p $PREFIX/bin
 cd flock/src
 cc -o $PREFIX/bin/flock1 flock1.c find_connected.c -lm
 cc -o $PREFIX/bin/flock2 flock2.c -lm
