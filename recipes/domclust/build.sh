@@ -2,7 +2,7 @@
 
 mkdir -p $PREFIX/bin
 
-sed -i.bak '8c\CFLAGS=-g -O2 $(CFLAGS0) -Xlinker -zmuldefs' Makefile
+sed -i.bak 's|-g -O2 $(CFLAGS0)|-g -O3 $(CFLAGS0) -Xlinker -zmuldefs|' Makefile
 sed -i.bak 's|-O2|-O3|' Makefile
 rm -rf *.bak
 
