@@ -25,7 +25,7 @@ CONFIG_OPTIONS=" \
     -trf_dir ${PREFIX}/bin \
     -ucsctools_dir ${PREFIX}/bin"
     
-if [[ $(uname) == 'Linux' ]]; then
+if [[ "$(uname -s)" == "Linux" ]]; then
     LTR_STRUCTURAL_SEARCH="y"
     CONFIG_OPTIONS+=" \
     -ninja_dir ${PREFIX}/bin"
