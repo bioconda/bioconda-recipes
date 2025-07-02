@@ -1,0 +1,43 @@
+{% set name = "newmap" %}
+{% set version = "0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/hoffmangroup/newmap.git
+  git_rev: {{ version }}
+  git_depth: 1 # (Defaults to -1/not shallow)
+
+build:
+  skip: True  # [osx or py < 39]
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - cmake
+    - make
+    - git
+  run:
+    - python
+    - numpy
+
+test:
+    commands:
+    - newmap --help
+    - newmap index --help
+    - newmap search --help
+    - newmap track --help
+    # Test functionality
+    - pushd tests && ./run_all.sh && popd
+
+about:
+  home: https://github.com/hoffmangroup/newmap
+  license: GPL-3.0
+  license_family: GPL3
+  license_file: LICENSE
+  summary: 'Tool for creating mappability data for reference sequences'
+  doc_url: https://newmap.readthedocs.io/en/latest/
+  dev_url: https://github.com/hoffmangroup/newmap
