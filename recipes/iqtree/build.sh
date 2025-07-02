@@ -1,6 +1,9 @@
 #!/bin/bash
 set -ex
 
+# See https://github.com/iqtree/iqtree3/edit/master/.github/workflows/ci.yaml
+# for the latest build instructions
+
 # AVX might not be supported on all CPUs, in particular Rosetta2 on Apple Silicon
 # -march=nocona and -mtune=haswell are the original conda-forge flags
 # we're restoring them here by mentioning them explicitly
@@ -51,7 +54,7 @@ VERBOSE=1 cmake -S . -B build \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	"${DCMAKE_ARGS[@]}" \
-	-DIQTREE_FLAGS="static omp" \
+	-DIQTREE_FLAGS="omp" \
 	-DUSE_LSD2=ON \
 	-DUSE_CMAPLE=ON \
 	-DBUILD_GMOCK=OFF \
