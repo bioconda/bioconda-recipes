@@ -1,31 +1,31 @@
+{% set name = "bwa-mem2" %}
 {% set version = "2.3" %}
 
 package:
-  name: bwa-mem2
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  - url: https://github.com/bwa-mem2/bwa-mem2/releases/download/v{{ version }}/Source_code_including_submodules.tar.gz
-    sha256: 0c48a1ea800af499ae7264b4c8908c4ca35fbe5a7df2ad6106c79aa94bb49cbb
-    patches:
-      - Makefile.patch # [ not aarch64 and not arm64 ]
-      - safestr-makefile.patch  # [ not aarch64 and not arm64 ] 
-      - sse2neon.patch # [ aarch64 or arm64 ]
+  url: https://github.com/bwa-mem2/bwa-mem2/releases/download/v{{ version }}/Source_code_including_submodules.tar.gz
+  sha256: 0c48a1ea800af499ae7264b4c8908c4ca35fbe5a7df2ad6106c79aa94bb49cbb
+  patches:
+    - Makefile.patch  # [ not aarch64 and not arm64 ]
+    - safestr-makefile.patch  # [ not aarch64 and not arm64 ] 
+    - sse2neon.patch  # [ aarch64 or arm64 ]
 
 build:
   number: 0
   run_exports:
-    - {{ pin_subpackage("bwa-mem2", max_pin="x") }}
+    - {{ pin_subpackage('bwa-mem2', max_pin="x") }}
 
 requirements:
   build:
     - make
-    - wget
     # bwa-mem2 needs gcc<11, see https://github.com/bwa-mem2/bwa-mem2/issues/222 and conda_build_config.yaml in this folder
     - {{ compiler('cxx') }}
-    - git
   host:
     - zlib
+    - wget
 
 test:
   commands:
@@ -37,10 +37,13 @@ test:
     - bwa-mem2.avx512bw version # [ not aarch64 and not arm64 ]
 
 about:
-  home: https://github.com/bwa-mem2/bwa-mem2
+  home: "https://github.com/bwa-mem2/bwa-mem2"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: The next version of bwa-mem 
+  summary: "The next version of bwa-mem."
+  dev_url: "https://github.com/bwa-mem2/bwa-mem2"
+  doc_url: "https://github.com/bwa-mem2/bwa-mem2/blob/v{{ version }}/README.md"
 
 extra:
   additional-platforms:
@@ -48,3 +51,6 @@ extra:
     - osx-arm64
   identifiers:
     - doi:10.1109/IPDPS.2019.00041
+    - biotools:bwa-mem2
+    - usegalaxy-eu:bwa_mem2
+    - usegalaxy-eu:bwa_mem2_idx
