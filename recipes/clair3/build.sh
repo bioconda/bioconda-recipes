@@ -17,5 +17,5 @@ else
     cp -rv pypy3.10-v7.3.19-linux64 $PREFIX/bin
     cp -P pypy3 pypy $PREFIX/bin
 fi
-make CC=${GCC} CXX=${GXX}  PREFIX=${PREFIX}
+make CC=${GCC} CXX=${GXX}  PREFIX=${PREFIX} CFLAGS="-fpic -std=c99 -Og -I ${PREFIX}/include -L ${PREFIX}/lib" CPPFLAGS="-std=c++11 -Wall -Og -I ${PREFIX}/include -L ${PREFIX}/lib -Wl,-rpath=${PREFIX}/lib"
 cp  longphase libclair3* $PREFIX/bin
