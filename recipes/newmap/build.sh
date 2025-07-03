@@ -16,13 +16,13 @@ fi
 cd AvxWindowFmIndex
 
 # Release build
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+cmake -S . -B . -DCMAKE_BUILD_TYPE=Release \
 	-DBUILD_SHARED_LIBS=OFF -DCMAKE_C_COMPILER="${CC}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
-cmake --build build --clean-first -j "${CPU_COUNT}"
+cmake --build . --clean-first -j "${CPU_COUNT}"
 
 cd ..
 
