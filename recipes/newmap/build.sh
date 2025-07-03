@@ -22,14 +22,9 @@ cmake -S . -B . -DCMAKE_BUILD_TYPE=Release \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
-cmake --build . --clean-first -j "${CPU_COUNT}"
+cmake --build . --clean-first
 
 cd ..
 
 # Do not install dependencies, instead use the conda environment
 ${PYTHON} -m pip install --disable-pip-version-check --no-deps --no-cache-dir --no-build-isolation -vvv
-
-# Work around for no 'source_files' support in test section of meta.yaml
-cp test/run_tests.py $PREFIX/bin/run_genomedata_tests.py
-cp test/test_genomedata.py $PREFIX/bin
-cp -r test/data $PREFIX/bin
