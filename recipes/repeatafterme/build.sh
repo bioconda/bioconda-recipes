@@ -9,6 +9,9 @@ mkdir -p "${PREFIX}/bin"
 
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' util/*.pl
 rm -rf util/*.bak
+sed -i.bak 's|ar rcs|$(AR) rcs|' kentsrc/Makefile
+sed -i.bak 's|-mtune=native||' Makefile
+
 
 make CC="${CC}" -j1
 
