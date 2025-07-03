@@ -27,4 +27,4 @@ cmake --build . --clean-first
 cd ..
 
 # Do not install dependencies, instead use the conda environment
-${PYTHON} -m pip install --disable-pip-version-check --no-deps --no-cache-dir --no-build-isolation -vvv
+$PYTHON -m pip install --disable-pip-version-check --no-deps --no-cache-dir --no-build-isolation -vvv
