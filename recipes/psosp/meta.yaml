@@ -1,18 +1,21 @@
 {% set name = "psosp" %}
-{% set version = "1.1.0" %}
+{% set version = "1.1.2" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/mujiezhang/PSOSP/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 155916e961732e717a9e665b694fe22218563a7e26cb55350cc607a270d18f11
+  sha256: 0a0a5c3293e83943b60019cc03faa47f1b7a1a67a0bc8124e601c9e6f4fcda94
 
 build:
-  number: 0
+  number: 1
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -rf *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   entry_points:
     - psosp = psosp:main
   run_exports:
@@ -28,20 +31,32 @@ requirements:
     - biopython
     - scikit-learn
     - diamond >=2.0.4
-    - meme ==5.5.5
+    - meme >=5.5.5
     - prodigal
-    - checkv ==1.0.3
+
+    - checkv >=1.0.3
+
 
 test:
+  imports:
+    - psosp
+  source_files:
+    - psosp/test/data
   commands:
-    - psosp --version
+    - psosp test
 
 about:
-  home: https://github.com/mujiezhang/PSOSP
+  home: "https://github.com/mujiezhang/PSOSP"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
   summary: "PSOSP (Prophage SOS-dependency Predictor)"
-  dev_url: https://github.com/mujiezhang/PSOSP
+  description: |
+    PSOSP (Prophage SOS-dependency Predictor) is a novel bioinformatics tool 
+    to predict prophage induction modes by analyzing the heterology index (HI) 
+    of LexA protein binding to target DNA, classifying prophages into 
+    SOS-dependent (SdPs) and SOS-independent (SiPs).
+  dev_url: "https://github.com/mujiezhang/PSOSP"
   doc_url: "https://github.com/mujiezhang/PSOSP/blob/main/README.md"
 
 extra:
