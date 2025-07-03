@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Fetch all submodules if they don't exist
-git submodule update --init --recursive
-
 # Build AvxWindowFmIndex libraries
 cd AvxWindowFmIndex
 # Release build
