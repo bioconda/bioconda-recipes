@@ -8,24 +8,24 @@ package:
 source:
   git_url: https://github.com/hoffmangroup/newmap.git
   git_rev: {{ version }}
-  git_depth: 1 # (Defaults to -1/not shallow)
+  git_depth: 1  # (Defaults to -1/not shallow)
+  sha256: unused
 
 build:
-  skip: True  # [osx or py < 39]
   number: 0
+  skip: True  # [py < 39]
+  # Downstream dependencies should expect breaking changes on major version
+  run_exports:
+    - {{ pin_subpackage('newmap', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - cmake
     - make
-    - git
   run:
     - python
     - numpy
-  # Downstream dependencies should expect breaking changes on major version
-  run_exports:
-    - {{ pin_subpackage('newmap', max_pin="x") }}
 
 test:
     commands:
@@ -37,10 +37,14 @@ test:
     - pushd tests && ./run_all.sh && popd
 
 about:
-  home: https://github.com/hoffmangroup/newmap
-  license: GPL-3.0
+  home: "https://github.com/hoffmangroup/newmap"
+  license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: LICENSE
-  summary: 'Tool for creating mappability data for reference sequences'
-  doc_url: https://newmap.readthedocs.io/en/latest/
-  dev_url: https://github.com/hoffmangroup/newmap
+  summary: "Tool for creating mappability data for reference sequences."
+  doc_url: "https://newmap.readthedocs.io/en/latest"
+  dev_url: "https://github.com/hoffmangroup/newmap"
+
+extra:
+  skip-lints:
+    - uses_vcs_url
