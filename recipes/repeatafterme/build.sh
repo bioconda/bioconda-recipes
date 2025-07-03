@@ -10,12 +10,12 @@ mkdir -p "${PREFIX}/bin"
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' util/*.pl
 rm -rf util/*.bak
 
-make CC="${CC}" -j"${CPU_COUNT}"
+make CC="${CC}" -j1
 
 make install
 
 install -v -m 0755 util/*.pl "${PREFIX}/bin"
 
-cd kentsrc && make twoBitToFa CC="${CC}" -j"${CPU_COUNT}"
+cd kentsrc && make twoBitToFa CC="${CC}" -j1
 
 install -v -m 0755 twoBitToFa "${PREFIX}/bin"
