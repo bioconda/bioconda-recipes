@@ -8,22 +8,21 @@ source:
   url: https://github.com/Syrinx55/GenomeProfiler/archive/refs/tags/v{{ version }}.tar.gz
   sha256: 3bfea171586ce18b2d75b40f8832ea3518fd1906534c80166a0309a2d20676e0
 
-
 build:
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   entry_points:
     - genome_profiler = genome_profiler.genome_profiler:main
   run_exports:
-    - {{ pin_subpackage("genome_profiler", max_pin="x.x") }}
-
+    - {{ pin_subpackage('genome_profiler', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.10,<3.13
+    - python >=3.10
     - pip
+    - setuptools
   run:
-    - python >=3.10,<3.13
+    - python >=3.10
     - ratelimit
     - requests-toolbelt
     - python-dotenv
@@ -36,18 +35,20 @@ requirements:
     - ectyper
     - diamond
     - ncbi-datasets-cli
-    - pip
-  run_constrained:
-    - bio >=1.8  # pip-installed package
+    - bio >=1.8
 
 test:
   commands:
     - genome_profiler --help
 
 about:
-  home: https://github.com/Syrinx55/GenomeProfiler
-  license: BSD-2-Clause-Patent
+  home: "https://github.com/Syrinx55/GenomeProfiler"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: "LICENSE.txt"
   summary: "Prokaryotic genome and plasmid profiling pipeline."
+  dev_url: "https://github.com/Syrinx55/GenomeProfiler"
+  doc_url: "https://github.com/Syrinx55/GenomeProfiler/blob/v{{ version }}/README.md"
 
 extra:
   recipe-maintainers:
