@@ -1,0 +1,49 @@
+diff --git a/Makefile b/Makefile
+index a49f639..ec845ee 100644
+--- a/Makefile
++++ b/Makefile
+@@ -11,16 +11,16 @@
+ VERSION = 0.0.7
+ 
+ # Installation Directory
+-INSTDIR = /usr/local/RepeatAfterMe-$(VERSION)
++INSTDIR = $(PREFIX)
+ 
+ CFLAGS = -std=gnu11 -fpic -mtune=native -g -O3 -Wall -Iminunit -I.
+-LIBS = -lm 
+-LDFLAGS =
++LIBS = -lm
++LDFLAGS = -L$(PREFIX)/lib -Lkentsrc -L.
+ 
+ EXTOBJ = ram_extend.o common.o report.o score_system.o cmd_line_opts.o version.o sequence.o bnw_extend.o
+ EXTSRC = ram_extend.c common.c report.c score_system.c cmd_line_opts.c version.c sequence.c bnw_extend.c
+ EXTINC = ram_extend.h common.h report.h score_system.h cmd_line_opts.h sequence.h bnw_extend.h
+-TEST_OBJ = cmd_line_opts.o common.o report.o version.o score_system.o sequence.o bnw_extend.o test/test_suite.o    
++TEST_OBJ = cmd_line_opts.o common.o report.o version.o score_system.o sequence.o bnw_extend.o test/test_suite.o
+ 
+ BUILD_NUMBER_FILE=build.dat
+ BUILD_NUMBER = $$(cat $(BUILD_NUMBER_FILE))
+@@ -36,8 +36,8 @@ RAMExtend: $(EXTOBJ) $(EXTINC) kentsrc/libTwoBit.a
+ kentsrc/libTwoBit.a: kentsrc/twoBitNew.c
+ 	$(MAKE) -C kentsrc
+ 
+-test_suite: $(TEST_OBJ) bnw_extend.h 
+-	$(CC) $(TEST_OBJ) -o $@ $(LIBS) -lpthread -Lkentsrc -lTwoBit $(LIBFMIDX_LIBS) -fopenmp $(LDFLAGS)
++test_suite: $(TEST_OBJ) bnw_extend.h
++	$(CC) $(TEST_OBJ) -o $@ $(LIBS) -pthread -Lkentsrc -lTwoBit $(LIBFMIDX_LIBS) -fopenmp $(LDFLAGS)
+ 
+ version.c: Makefile $(BUILD_NUMBER_FILE)
+ 	echo "char const* Version = \"$(VERSION)\";" > version.c
+diff --git a/kentsrc/Makefile b/kentsrc/Makefile
+index 815304c..66e8051 100644
+--- a/kentsrc/Makefile
++++ b/kentsrc/Makefile
+@@ -1,6 +1,6 @@
+ 
+-CC=gcc
+-CFLAGS=-I.
++CC=$(CC)
++CFLAGS=-I. -I.. -O3
+ 
+ 
+ SRCS := twoBitNew.c common.c memalloc.c hash.c errAbort.c obscure.c localmem.c dnautil.c dlist.c dystring.c linefile.c options.c verbose.c fa.c dnaseq.c bits.c
