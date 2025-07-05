@@ -16,5 +16,5 @@ PREFIX="${PREFIX}" make install
 
 mkdir -p ${PREFIX}/etc/conda/activate.d
 mkdir -p ${PREFIX}/etc/conda/deactivate.d
-cp -f ${RECIPE_DIR}/activate.sh "${PREFIX}/etc/conda/activate.d/activate.sh"
-cp -f ${RECIPE_DIR}/deactivate.sh "${PREFIX}/etc/conda/deactivate.d/deactivate.sh"
+cp -f ${RECIPE_DIR}/activate.sh "${PREFIX}/etc/conda/activate.d/env_vars.sh"
+cp -f ${RECIPE_DIR}/deactivate.sh "${PREFIX}/etc/conda/deactivate.d/env_vars.sh"

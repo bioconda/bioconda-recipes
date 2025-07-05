@@ -1,0 +1,71 @@
+{% set name = "flanders" %}
+{% set version = "1.0.0" %}  # Set the package version
+
+package:
+  name: r-{{ name|lower }}     # Name must be lowercase
+  version: {{ version }}
+
+source:
+  url: https://github.com/Biostatistics-Unit-HT/flanders_r/releases/download/v{{ version }}/flanders_{{ version }}.tar.gz
+  sha256: 4e00eac007e6eae87f0fe2589ddba8462912fe87b3dd2754ae6827f5a19c5b78
+
+build:
+  run_exports:
+    - {{ pin_subpackage('r-flanders', max_pin="x") }}
+  number: 0
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  script: |
+    $R CMD INSTALL --build .
+
+requirements:
+  host:
+    - r-base >=4.0
+    - r-anndata
+    - r-coloc
+    - r-data.table
+    - r-dplyr
+    - r-matrix
+    - r-optparse
+    - r-susier
+    - bioconductor-singlecellexperiment
+    - bioconductor-zellkonverter
+    - bioconductor-scrnaseq
+  run:
+    - r-anndata
+    - r-base >=4.0
+    - r-coloc
+    - r-data.table
+    - r-dplyr
+    - r-matrix
+    - r-optparse
+    - r-susier
+    - bioconductor-singlecellexperiment
+    - bioconductor-zellkonverter
+    - bioconductor-scrnaseq
+
+test:
+  commands:
+    - $R -e "library('flanders')" # [not win]
+    - "\"%R%\" -e \"library('flanders')\""  # [win]
+
+about:
+  home: https://github.com/Biostatistics-Unit-HT/flanders_r
+  license: MIT
+  license_family: MIT
+  summary: "Fast colocalization using AnnData objects in R"
+  description: |
+    flanders is an R package designed to seamlessly convert finemapping output files from the nf-flanders pipeline
+    into a unified AnnData object and facilitate colocalization analysis.
+    The package provides functions to:
+    - Convert multiple *finemap.rds files into a single AnnData object with credible set metadata.
+    - Generate an input table (coloc_input) for colocalization testing.
+    - Run pairwise colocalization tests, with minimal runtime overhead (typically 5–10 tests per second on standard hardware).
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - Sodbo
+    - edg1983

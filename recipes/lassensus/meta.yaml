@@ -1,0 +1,60 @@
+{% set name = "lassensus" %}
+{% set version = "0.0.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/DaanJansen94/lassensus/archive/v0.0.2.tar.gz
+  sha256: 91024616f3be9bdb92def3ce950d62a87aa83c77a10ae980c3ea649f006f1da5
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - lassensus=lassensus.lassensus:main
+  script: |
+    {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools
+  run:
+    - python >=3.11
+    - minimap2
+    - samtools
+    - ivar
+    - seqtk
+    - numpy >=1.20.0
+    - biopython >=1.80
+    - pandas
+    - requests >=2.25.0
+    - lassaseq
+    - medaka
+
+test:
+  imports:
+    - lassensus
+  commands:
+    - lassensus --help
+
+about:
+  home: https://github.com/DaanJansen94/lassensus
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: Tool for creating Lassa virus consensus sequences
+  description: |
+    Lassensus is a command-line tool for creating consensus sequences from Lassa virus sequencing data.
+    It provides a streamlined workflow for processing raw sequencing data into high-quality consensus sequences.
+  doc_url: https://github.com/DaanJansen94/lassensus/blob/main/README.md
+  dev_url: https://github.com/DaanJansen94/lassensus
+
+extra:
+  recipe-maintainers:
+    - DaanJansen94

@@ -11,7 +11,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin="x") }}
 
@@ -19,25 +19,17 @@ requirements:
   build:
     - {{ compiler('cxx') }}
     - cmake
-    - make
-    - autoconf
-    - automake
-    - libtool
-    - pkg-config
     - ninja
+    - pkg-config
   host:
+    - eigen
+    # Use v1.86.0 to match the version pinned in conda-forge
+    - libboost-devel >=1.86.0,<1.87.0a0  # [linux]
     - zlib
-    - boost-cpp
-    - eigen
-    - clangdev
-    - llvmlite
-  run:
-    - boost-cpp
-    - eigen
 
 test:
   commands:
-    - test -e $PREFIX/lib/libcifpp.a
+    - test -e ${PREFIX}/lib/libcifpp.a
 
 about:
   home: "https://github.com/PDB-REDO/libcifpp"
@@ -47,6 +39,10 @@ about:
   summary: "Library containing code to manipulate mmCIF and PDB files."
   doc_url: "https://pdb-redo.github.io/libcifpp"
   dev_url: "https://github.com/PDB-REDO/libcifpp"
+  description: |
+    This library, libcifpp, is a generic CIF library with some specific additions to work with mmCIF files.
+    The main focus of this library is to make sure that files read or written are valid.
+    That is, they are syntactically valid and their content is valid with respect to a CIF dictionary, if such a dictionary is available and specified.
 
 extra:
   recipe-maintainers:

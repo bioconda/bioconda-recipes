@@ -1,0 +1,59 @@
+{% set version = "25.0.1" %}
+{% set sha256 = "2596a27686fb50bf80d7bbbe76534da1d41688cfd1d6d7eb32a87c8399c0412c" %}
+{% set galaxy_version = version.split(".")[:2]|join(".") %}
+
+package:
+  name: galaxy-job-execution
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/g/galaxy-job-execution/galaxy_job_execution-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('galaxy-job-execution', max_pin="x") }}
+  entry_points:
+    - galaxy-set-metadata=galaxy.metadata.set_metadata:set_metadata
+    - galaxy-container-monitor=galaxy.job_execution.container_monitor:main
+
+requirements:
+  host:
+    - pip
+    - python {{ python_min }}
+    - setuptools
+  run:
+    - python >={{ python_min }}
+    - galaxy-data >={{ galaxy_version }}
+    - galaxy-files >={{ galaxy_version }}
+    - galaxy-objectstore >={{ galaxy_version }}
+    - galaxy-tool-util >={{ galaxy_version }}
+    - galaxy-util >={{ galaxy_version }}
+    - markupsafe
+    - pypng
+    - sqlalchemy >=2.0,<2.1
+
+test:
+  imports:
+    - galaxy
+    - galaxy.job_execution
+    - galaxy.metadata
+
+about:
+  home: https://galaxyproject.org
+  license: AFL-3.0
+  license_file: LICENSE
+  summary: Galaxy job execution runtime utilities.
+  doc_url: https://docs.galaxyproject.org
+  dev_url: https://github.com/galaxyproject/galaxy
+
+extra:
+  identifiers:
+    - biotools:galaxy
+    - doi:10.1093/nar/gky379
+  recipe-maintainers:
+    - bernt-matthias
+    - natefoo

@@ -1,0 +1,54 @@
+{% set name = "drhip" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/d/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: f5235dfe36ef3666ba1e0b3c843048d524172eff86f889e0770b6348470fe333
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed .
+  entry_points:
+    - drhip=drhip.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+    - setuptools
+  run:
+    - python >=3.7
+    - numpy >=1.20.0
+    - pandas >=1.3.0
+    - scipy >=1.7.0
+    - biopython >=1.79
+
+test:
+  imports:
+    - drhip
+    - drhip.methods
+    - drhip.parsers
+    - drhip.utils
+  commands:
+    - drhip --help
+
+about:
+  home: https://github.com/veg/drhip
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "DRHIP - Data Reduction for HyPhy with Inference Processing"
+  description: |
+    DRHIP (Data Reduction for HyPhy with Inference Processing) is a Python package designed to analyze and summarize 
+    results from HyPhy evolutionary selection analyses. It provides tools for processing 
+    BUSTED, RELAX, MEME, and other HyPhy method outputs to generate summary statistics 
+    and site-specific analyses.
+  dev_url: https://github.com/veg/drhip
+  doc_url: https://github.com/veg/drhip
