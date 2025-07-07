@@ -1,26 +1,40 @@
+{% set name = "illumina-interop" %}
 {% set version = "1.5.0" %}
 {% set sha256 = "0335f20a6d46b3c57a7dd1c337594b156bc1e7558f44cb981f1100f396929baa" %}
 
 package:
-  name: illumina-interop
-  version: '{{version}}'
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Illumina/interop/archive/v{{ version }}.tar.gz
+  sha256: b081ae352ea0bb558da4e0292826633cc98f0aa0a0f3e5e59f5bdb78213aa919
 
 build:
   number: 0
-  skip: true  # [osx]
   run_exports:
-    - {{ pin_subpackage('illumina-interop', max_pin="x.x") }}
-    
-source:
-  url: https://github.com/Illumina/interop/archive/v{{version}}.tar.gz
-  sha256: b081ae352ea0bb558da4e0292826633cc98f0aa0a0f3e5e59f5bdb78213aa919
+    - {{ pin_subpackage('illumina-interop', max_pin="x") }}
 
 requirements:
   build:
     - make
     - cmake
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - pkg-config
+  host:
+    - python
+    - numpy
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - boost-cpp
+    - doxygen
+    - swig
+  run:
+    - python
+    - numpy
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - boost-cpp
 
 test:
   commands:
@@ -38,16 +52,19 @@ test:
     - interop_aggregate | grep Version > /dev/null
 
 about:
-  home: http://illumina.github.io/interop/index.html
-  license: GPL-3.0-only
-  summary: The Illumina InterOp libraries are a set of common routines used for reading
+  home: "https://illumina.github.io/interop"
+  license: "GPL-3.0-only"
+  summary: "The Illumina InterOp libraries are a set of common routines used for reading
     and writing InterOp metric files. These metric files are binary files produced
     during a run providing detailed statistics about a run. In a few cases, the metric
     files are produced after a run during secondary analysis (index metrics) or for
-    faster display of a subset of the original data (collapsed quality scores).
-  dev_url: https://github.com/Illumina/interop
-  license_family: GPL
+    faster display of a subset of the original data (collapsed quality scores)."
+  dev_url: "https://github.com/Illumina/interop"
+  license_family: GPL3
+  license_file: LICENSE
+  doc_url: "https://illumina.github.io/interop"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
