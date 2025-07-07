@@ -1,5 +1,5 @@
 diff --git a/src/clair3_full_alignment.c b/src/clair3_full_alignment.c
-index 603263e..4f1fb8a 100644
+index 603263e..e4367e0 100644
 --- a/src/clair3_full_alignment.c
 +++ b/src/clair3_full_alignment.c
 @@ -558,6 +558,7 @@ size_t min_mq, size_t min_bq, size_t matrix_depth, size_t max_indel_length)
@@ -23,12 +23,13 @@ index 603263e..4f1fb8a 100644
                      pos_info[offset].del_length = length;
                      int center_pos_index = kh_int_counter_val(candidates_p, ref_pos - 1);
                      if (center_pos_index != -1)
-@@ -623,8 +626,14 @@ size_t min_mq, size_t min_bq, size_t matrix_depth, size_t max_indel_length)
+@@ -623,8 +626,15 @@ size_t min_mq, size_t min_bq, size_t matrix_depth, size_t max_indel_length)
              else if (cigar_op == BAM_CINS)
              {
                  int flanking_index = kh_int_counter_val(flanking_candidates_p, ref_pos - 1);
 -                if (flanking_index != -1)
 +if (flanking_index != -1 && flanking_index < flanking_start) {
++size_t offset = flanking_index - flanking_start;
 +printf("CINS offset %i (overlap_candidates_num %i) flanking_index %i flanking_start %i\n", (int) offset, (int) overlap_candidates_num, (int) flanking_index, (int) flanking_start);
 +assert(offset >= 0);
 +assert(offset < overlap_candidates_num);
