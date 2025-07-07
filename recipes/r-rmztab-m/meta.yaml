@@ -1,0 +1,55 @@
+{% set name = "rmzTab-m" %}
+{% set version = "0.2.1" %}
+{% set github = "https://github.com/lifs-tools/rmzTab-m" %}
+
+package:
+  name: "r-{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "{{ github }}/archive/v{{ version }}.tar.gz"
+  sha256: 5ea38e91726cf60106a63db327ad19f048242041fca54a5b4859ee8e21c0d339
+
+build:
+  number: 0
+  noarch: generic
+  rpaths:
+    - lib/
+    - lib/R/lib/
+  script: R CMD INSTALL --build .
+  run_exports:
+    - {{ pin_subpackage("r-recetox-waveica", max_pin="x.x") }}
+
+requirements:
+  host:
+    - r-base
+    - r-waveslim
+    - r-jade
+    - r-corpcor
+    - r-mgcv
+  run:
+    - r-base
+    - r-waveslim
+    - r-jade
+    - r-corpcor
+    - r-mgcv
+
+test:
+  commands:
+    - $R -e "library('recetox.waveica')"
+
+about:
+  home: "{{ github }}"
+  license: MIT
+  summary: Removal of batch effects for large-scale untargeted metabolomics data based on wavelet transform.
+  description: Recetox-waveica is a fork of WaveICA package customized by RECETOX. 
+    This package is used to remove batch effects from large-scale untargeted metabolomics data and contains functionality of both original WaveICA and WaveICA 2.0 libraries.
+
+extra:
+  maintainers:
+    - hechth
+    - martenson
+    - maximskorik
+  identifiers:
+    - doi:10.1016/j.aca.2019.02.010
+    - doi:10.1007/s11306-021-01839-7
