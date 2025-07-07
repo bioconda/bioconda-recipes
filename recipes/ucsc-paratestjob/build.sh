@@ -36,7 +36,6 @@ if [[ "$(uname -m)" == "arm64" ]]; then
     install -v -m 755 paraTestJob "${PREFIX}/bin"
 else
     (cd kent/src && make libs PTHREADLIB=1 CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}")
-    (cd kent/src && make parasol CC="${CC}" CXX="${CXX}" -j "${CPU_COUNT}")
-    (cd kent/src/parasol/paraTestJob && make CC="${CC}" -j"${CPU_COUNT}")
+    (cd kent/src/parasol && make CC="${CC}" CXX="${CXX}" -j "${CPU_COUNT}")
     install -v -m 755 bin/paraTestJob "${PREFIX}/bin"
 fi
