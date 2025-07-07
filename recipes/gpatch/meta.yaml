@@ -1,0 +1,41 @@
+{% set name = "GPatch" %}
+{% set version = "0.3.8" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 2a36a5911f90cf44d100b2cff538bb8d76fb84447cc70a93fbe8bb6fb5b54384
+
+build:
+  number: 0
+  entry_points:
+    - GPatch = GPatch.GPatch:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('gpatch', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.7,<3.13
+    - pip
+  run:
+    - python >=3.7,<3.13
+    - biopython >=1.84
+    - pysam >=0.22.1
+
+test:
+  imports:
+    - GPatch
+  commands:
+    - GPatch --help
+
+about:
+  home: "https://github.com/adadiehl/GPatch.git"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Starting with alignments of contigs to a reference genome, produce a chromosome-scale pseudoassembly by patching gaps between mapped contigs with sequences from the reference."

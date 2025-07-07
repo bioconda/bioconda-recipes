@@ -1,5 +1,5 @@
 {% set name = "changeo" %}
-{% set version = "1.3.0" %}
+{% set version = "1.3.3" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,26 +7,33 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: febec2503086b4d76a177d60f9bcb742645d24417750e976409790e9b68288ad
+  sha256: 69a6d6e657909a8e28a77f4c78b74ac7a525f2d959c9491dd8f08d227e00e23d
 
 build:
   noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('changeo', max_pin="x") }}
 
 requirements:
   host:
+    - python >=3.10
     - pip
-    - python >=3.4
+    - setuptools
   run:
-    - airr >=1.2.1
-    - biopython >=1.65,<1.78
-    - numpy >=1.8
-    - pandas >=0.15
-    - presto >=0.5.10
-    - python >=3.4
-    - pyyaml >=3.12
-    - scipy >=0.14
+    - python >=3.10
+    - airr >=1.3.1
+    - biopython >=1.81
+    - numpy >=1.23.2
+    - pandas >=1.5.0
+    - presto >=0.7.1
+    - pyyaml >=6.0
+    - scipy >=1.9.3
+    - packaging >=23.2
+    - setuptools
+    - packaging >=21.3
+    - importlib-resources >=6.4.0
 
 test:
   imports:
@@ -40,15 +47,19 @@ test:
     - DefineClones.py --version
     - MakeDb.py --version
     - ParseDb.py --version
-    
 
 about:
-  home: http://changeo.readthedocs.io
-  license: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
-  license_family: CC
-  summary: 'A bioinformatics toolkit for processing high-throughput lymphocyte receptor sequencing data.
-    Citations: Gupta, et al (2015) <doi:10.1093/bioinformatics/btv359>.'
+  home: "https://github.com/immcantation/changeo"
+  dev_url: "https://github.com/immcantation/changeo"
+  doc_url: "https://changeo.readthedocs.io"
+  license: "AGPL-3.0-only"
+  license_family: AGPL
+  license_file: LICENSE
+  summary: "A bioinformatics toolkit for processing high-throughput lymphocyte receptor sequencing data."
 
 extra:
   recipe-maintainers:
     - PertuyF
+    - ggabernet
+  identifiers:
+    - doi:10.1093/bioinformatics/btv359

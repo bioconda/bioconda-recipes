@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "minionsummarydata-1.32.0"
+installBiocDataPackage.sh "minionsummarydata-1.36.0"

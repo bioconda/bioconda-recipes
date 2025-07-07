@@ -4,9 +4,8 @@ if [ "$(uname)" == "Darwin" ]; then
     cp -rf $SRC_DIR $PREFIX
 else
     cd ${SRC_DIR}/scripts
-    chmod +x pantax
-    chmod +x data_preprocessing
-    cp ${SRC_DIR}/scripts/pantax ${SRC_DIR}/scripts/data_preprocessing ${PREFIX}/bin
+    chmod +x pantax data_preprocessing pantax_utils
+    cp ${SRC_DIR}/scripts/pantax ${SRC_DIR}/scripts/data_preprocessing ${SRC_DIR}/scripts/pantax_utils ${PREFIX}/bin
     cp ${SRC_DIR}/scripts/*py ${PREFIX}/bin
 
     cd ${SRC_DIR}/tools/fastix

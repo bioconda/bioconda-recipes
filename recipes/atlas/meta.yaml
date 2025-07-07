@@ -1,39 +1,59 @@
-{% set version = "0.9.9" %}
+{% set version = "2.0.0" %}
 
-package: 
+package:
   name: atlas
   version: {{ version }}
 
 source:
-  url: https://bitbucket.org/wegmannlab/atlas/get/{{ version }}.tar.gz
-  sha256: 7b65eae5ab7ff439accd53febf8caa15ad9d8230278eee31fd5c2e95bf021990
+  url: https://bitbucket.org/wegmannlab/atlas/get/{{ version }}-rc.11.tar.gz
+  sha256: f980a41e415654a862ea929411dbe4e89c2573a51911248ee2ba99f448b167aa
 
 build:
-  number: 3
+  number: 6
+  run_exports:
+    - {{ pin_subpackage("atlas", max_pin="x") }}
 
 requirements:
-    build:
-      - make
-      - {{ compiler('cxx') }}
-      - zlib
-      - armadillo
-      - libblas
-      - openblas
-    host:
-      - zlib
-      - armadillo
-      - libblas
-      - openblas
-    run:
-      - libblas
-      - zlib
-      - armadillo
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - ninja
+  host:
+    - armadillo
+    - fmt
+    - htslib
+    - mkl # [x86]
+    - lapack
+    - nlohmann_json
+    - openblas
+    - jsoncpp
+    - zlib
+  run:
+    - armadillo
+    - fmt
+    - htslib
+    - mkl # [x86]
+    - lapack
+    - nlohmann_json
+    - openblas
+    - jsoncpp
 
 test:
-    commands:
-      - atlas task=recal | grep Wegmann
-      
+  commands:
+    - atlas | grep "successfully"
+    - atlas simulate
+    - atlas HKY85 --bam ATLAS_simulations.bam --fasta ATLAS_simulations.fasta
+    - atlas GLF --bam ATLAS_simulations.bam
+    - atlas saf --glf ATLAS_simulations.glf.gz --fasta ATLAS_simulations.fasta
+    - atlas majorMinor --glf ATLAS_simulations.glf.gz
+    - rm ATLAS_* *.parameters saf.saf.* || exit 1
+
 about:
-  home: https://bitbucket.org/wegmannlab/atlas/wiki/Home
-  license: GPLv3
-  summary: "ATLAS, a suite of methods to accurately genotype and estimate genetic diversity"
+  home: https://atlaswiki.netlify.app
+  license: MPL-2.0
+  summary: "ATLAS: Analysis Tools for Ancient and Low-depth Samples"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

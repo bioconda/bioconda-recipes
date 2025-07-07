@@ -1,41 +1,45 @@
 {% set name = "kmc" %}
 {% set version = "3.2.4" %}
-{% set url = "https://github.com/refresh-bio/KMC/releases/download/v3.2.4/KMC3.2.4.linux.x64.tar.gz" %}  # [linux and x86_64]
-{% set sha256 = "158f2084f8d928b3f33b8aaf7d1220fee4183bf46837787e5e6b16bbdf54d31d" %}  # [linux and x86_64]
-{% set url = "https://github.com/refresh-bio/KMC/releases/download/v3.2.4/KMC3.2.4.linux.arm64.tar.gz" %}  # [linux and aarch64]
-{% set sha256 = "3049745a71c4219fb05cf003a53b03a9f434e8afacb79c710488f1aefae0a9c8" %}  # [linux and aarch64]
-{% set url = "https://github.com/refresh-bio/KMC/releases/download/v3.2.4/KMC3.2.4.mac.x64.tar.gz" %}  # [osx and x86_64]
-{% set sha256 = "70d66545d5802cf116469e41acb2a04631271feac81ff5c4d1c299e9407ca326" %}  # [osx and x86_64]
-{% set url = "https://github.com/refresh-bio/KMC/releases/download/v3.2.4/KMC3.2.4.mac.arm64.tar.gz" %}  # [osx and arm64]
-{% set sha256 = "a84b07bc2097e71ee7d23588a58070d1dc8ae37d1f63d3daf79cb518cc6b66ae" %}  # [osx and arm64]
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: {{ url }}
-  sha256:  {{ sha256 }}
+  git_url: https://github.com/refresh-bio/KMC.git
+  git_rev: v{{version}}
+  sha256: unused
+  patches:
+    - 0001-master.patch
+    - 0002-cmake.patch
 
 build:
-  number: 2
+  number: 4
   run_exports:
     - {{ pin_subpackage("kmc", max_pin="x") }}
 
 requirements:
   build:
-    - make
     - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - make
+    - cmake
+    - pkg-config
+    - clangdev  # [osx]
+    - llvmlite  # [osx]
+    - python <3.11
+    - pytest
   host:
     - zlib
-    - bzip2
+  run:
+    - python <3.11
 
 test:
   commands:
     - kmc --help  # [not aarch64]
 
 about:
-  home: https://github.com/refresh-bio/kmc
+  home: "https://github.com/refresh-bio/kmc"
   summary: "Tools for efficient k-mer counting and filtering of reads based on k-mer content."
   description: |
     KMC is a utility designed for counting k-mers (sequences
@@ -43,7 +47,8 @@ about:
   license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: "gpl-3.0.txt"
-  dev_url: https://github.com/refresh-bio/kmc
+  dev_url: "https://github.com/refresh-bio/kmc"
+  doc_url: "https://github.com/refresh-bio/KMC/blob/v{{ version }}/README.md"
 
 extra:
   additional-platforms:
@@ -52,3 +57,7 @@ extra:
   identifiers:
     - biotools:kmc
     - doi:10.1093/bioinformatics/btx304
+    - doi:10.1093/bioinformatics/btv022
+    - doi:10.1186/1471-2105-14-160
+  skip-lints:
+    - uses_vcs_url
