@@ -17,7 +17,8 @@ fi
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}/interop" \
 	-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -Wno-dev -Wno-deprecated \
-	--no-warn-unused-cli -DENABLE_PYTHON=ON \
+	--no-warn-unused-cli -DENABLE_PYTHON=ON -DPython_EXECUTABLE="${PYTHON}" \
+	-DPython_ROOT_DIR="${PREFIX}/bin" -DPYTHON_VERSION=$(python -c 'import platform; print(platform.python_version())') \
 	"${CONFIG_ARGS}"
 cmake --build build --clean-first --target install -j "${CPU_COUNT}"
 
