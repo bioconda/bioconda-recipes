@@ -10,6 +10,10 @@ export CFLAGS="${CFLAGS} -O3"
 mkdir -p "${PREFIX}/bin"
 mkdir -p bin
 
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  sed -i.bak 's|-lnick -pthread|-lnick -pthread -largp|' src/Makefile
+fi
+
 sed -i.bak 's|TOP=../bin|TOP=$(PREFIX)/bin|' src/Makefile
 rm -rf src/*.bak
 
