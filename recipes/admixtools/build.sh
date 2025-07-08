@@ -10,14 +10,14 @@ export CFLAGS="${CFLAGS} -O3"
 mkdir -p "${PREFIX}/bin"
 mkdir -p bin
 
+sed -i.bak 's|TOP=../bin|TOP=$(PREFIX)/bin|' src/Makefile
+rm -rf src/*.bak
+
 # clear out pre-built objects and executables
 cd src
 
-if [[ "$(uname -s)" == "Linux" ]]; then
-  make clobber CC="${CC}" -j"${CPU_COUNT}"
-  make all CC="${CC}" -j"${CPU_COUNT}"
-  make install CC="${CC}" TOP="${PREFIX}/bin"
-else
-  make CC="${CC}" -j"${CPU_COUNT}"
-  make install CC="${CC}" TOP="${PREFIX}/bin"
-fi
+make clobber CC="${CC}" -j"${CPU_COUNT}"
+
+make all CC="${CC}" -j"${CPU_COUNT}"
+
+make install CC="${CC}"
