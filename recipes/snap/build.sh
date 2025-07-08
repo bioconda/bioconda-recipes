@@ -5,6 +5,8 @@ mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/share/snap
 mkdir -p ${PREFIX}/share/snap/bin
 
+make CC="${CC}" -j"${CPU_COUNT}"
+
 for perl_script in gff3_to_zff.pl hmm-assembler.pl zff2gff3.pl; do
 	sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${perl_script}
 done
