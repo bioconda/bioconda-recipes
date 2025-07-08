@@ -11,6 +11,8 @@ sed -i 's/$(CC) $(CFLAGS)/$(CC) $(CPPFLAGS) $(CFLAGS)/g' Makefile
 
 make
 
+./bin/n50 --version
+
 # Install the binaries
 mkdir -p "$PREFIX/bin"
 cp -v bin/* "$PREFIX/bin"
