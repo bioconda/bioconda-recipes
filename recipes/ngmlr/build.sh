@@ -1,12 +1,25 @@
 #!/bin/bash
-
 set -xe
 
-mkdir -p build
-cd build
-cmake -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=${PREFIX} -DSTATIC=OFF -DCMAKE_EXE_LINKER_FLAGS=-L${PREFIX}/lib ..
-make VERBOSE=1 -j ${CPU_COUNT}
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
-mkdir -p $PREFIX/bin
-cp ../bin/ngmlr-${PKG_VERSION}/ngmlr $PREFIX/bin/
+mkdir -p "${PREFIX}/bin"
 
+if [[ `uname -s` == "Darwin" ]]; then
+	export CONFIG_ARGS="-DSTATIC=OFF -DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+else
+	export CONFIG_ARGS="-DSTATIC=ON"
+fi
+
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+	-DCMAKE_BUILD_TYPE=RELEASE \
+	-DCMAKE_EXE_LINKER_FLAGS="-L${PREFIX}/lib" \
+	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-DCMAKE_C_COMPILER="${CC}" -DCMAKE_C_FLAGS="${CFLAGS}" \
+	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
+	"${CONFIG_ARGS}"
+
+cmake --build build --clean-first --target install -j "${CPU_COUNT}"
