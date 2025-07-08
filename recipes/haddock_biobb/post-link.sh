@@ -8,4 +8,4 @@ fi
 
 # Proceed with pip installation if gcc is available
 echo "gcc found, proceeding with Haddock3 installation..."
-pip install haddock3 --no-deps --ignore-installed --no-cache-dir -vvv
+pip install "haddock3==2025.5.0" --no-deps --ignore-installed --no-cache-dir -vvv
