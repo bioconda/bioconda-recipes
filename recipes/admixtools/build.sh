@@ -12,8 +12,12 @@ mkdir -p "${PREFIX}/bin"
 # clear out pre-built objects and executables
 cd src
 
-make CC="${CC}" clobber -j"${CPU_COUNT}"
-
-make CC="${CC}" all -j"${CPU_COUNT}"
-
-make install TOP="${PREFIX}/bin"
+if [[ "$(uname -s)" == "Linux" ]]; then
+  make clobber CC="${CC}" -j"${CPU_COUNT}"
+  make all CC="${CC}" -j"${CPU_COUNT}"
+  make install CC="${CC}" TOP="${PREFIX}/bin"
+else
+  make clobber -f Makefile.mac CC="${CC}" -j"${CPU_COUNT}"
+  make all -f Makefile.mac CC="${CC}" -j"${CPU_COUNT}"
+  make install -f Makefile.mac CC="${CC}" TOP="${PREFIX}/bin"
+fi
