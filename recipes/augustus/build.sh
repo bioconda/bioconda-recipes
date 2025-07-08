@@ -14,6 +14,19 @@ mkdir -p ${PREFIX}/config
 
 sed -i.bak 's|3.4.0|3.5.0|' common.mk
 rm -rf *.bak
+sed -i.bak 's|-std=gnu++0x -O2|-std=c++14 -O3|' auxprogs/joingenes/Makefile
+
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
 
 ## Make the software
 if [[ "$(uname -s)" = "Darwin" ]]; then
@@ -26,6 +39,7 @@ fi
 make \
 	CC="${CC}" \
 	CXX="${CXX}" \
+	CXXFLAGS="${CXXFLAGS}" \
 	INCLUDE_PATH_BAMTOOLS="-I${PREFIX}/include/bamtools" \
 	LIBRARY_PATH_BAMTOOLS="-L${PREFIX}/lib" \
 	INCLUDE_PATH_LPSOLVE="-I${PREFIX}/include/lpsolve" \
