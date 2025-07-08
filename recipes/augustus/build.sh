@@ -5,6 +5,7 @@ export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -DUSE_BOOST"
 export LC_ALL="en_US.UTF-8"
 
@@ -15,6 +16,11 @@ mkdir -p ${PREFIX}/config
 sed -i.bak 's|3.4.0|3.5.0|' common.mk
 rm -rf *.bak
 sed -i.bak 's|-std=gnu++0x -O2|-std=c++14 -O3|' auxprogs/joingenes/Makefile
+sed -i.bak 's|-lpthread|-pthread|' auxprogs/bam2wig/Makefile
+sed -i.bak 's|-lpthread|-pthread|' auxprogs/filterBam/src/Makefile
+sed -i.bak 's|-O2|-O3|' auxprogs/utrrnaseq/Makefile
+sed -i.bak 's|-std=c++11|-std=c++14|' auxprogs/utrrnaseq/Makefile
+sed -i.bak 's|-O2|-O3|' auxprogs/bam2wig/Makefile
 
 case $(uname -m) in
     aarch64)
@@ -39,7 +45,6 @@ fi
 make \
 	CC="${CC}" \
 	CXX="${CXX}" \
-	CXXFLAGS="${CXXFLAGS}" \
 	INCLUDE_PATH_BAMTOOLS="-I${PREFIX}/include/bamtools" \
 	LIBRARY_PATH_BAMTOOLS="-L${PREFIX}/lib" \
 	INCLUDE_PATH_LPSOLVE="-I${PREFIX}/include/lpsolve" \
