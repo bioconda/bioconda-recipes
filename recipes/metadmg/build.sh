@@ -1,6 +1,11 @@
-#! /bin/bash
-mkdir -p "${PREFIX}"/bin
+#!/bin/bash
 
-make clean
-make CFLAGS="${CFLAGS}" CPPFLAGS="${CPPFLAGS}" prefix="${PREFIX}" CC="${CC}" CXX="${CXX} -L${PREFIX}/lib" LDFLAGS+="-lz -lbz2 -llzma ${LDFLAGS} -L${PREFIX}/lib" HTSSRC="systemwide"
-mv ./metaDMG-cpp ./misc/compressbam "${PREFIX}"/bin/
+mkdir -p "${PREFIX}/bin"
+
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+make CC="${CC}" CXX="${CXX}" HTSSRC="systemwide" -j"${CPU_COUNT}"
+install -v -m 755 ./metaDMG-cpp ./misc/compressbam ./misc/extract_reads "${PREFIX}/bin"

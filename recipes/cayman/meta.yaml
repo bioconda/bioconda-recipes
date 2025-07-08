@@ -1,0 +1,49 @@
+{% set name = "cayman" %}
+{% set version = "0.10.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 25e10fe4ef14010dbeaab1ff5a652def9ddae558a867bc424f34e8ad4fc40dad
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv"
+  entry_points:
+    - cayman = cayman.__main__:main
+  run_exports:
+    - {{ pin_subpackage("cayman", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - bwa
+    - pyhmmer >=0.7.0
+    - gqlib >=2.14.3
+
+test:
+  imports:
+    - {{ name }}
+  commands:
+    - {{ name }} --help
+
+about:
+  home: "https://github.com/zellerlab/cayman"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A command-line profiling tool for profiling CAZyme abundances in metagenomic datasets."
+  dev_url: "https://github.com/zellerlab/cayman"
+
+extra:
+  recipe-maintainers:
+    - althonos
+  identifiers:
+    - doi:10.1101/2024.01.08.574624   # bioRxiv preprint
