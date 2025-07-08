@@ -1,0 +1,54 @@
+{% set version = "1.1.2" %}
+{% set sha256 = "d933407feb5791d74d24b5448462fcbec9b6018a1d88f82e726117652b4349b5" %}
+
+package:
+  name: coreprofiler
+  version: {{ version }}
+
+source:
+  url: https://gitlab.com/ifb-elixirfr/abromics/coreprofiler/-/archive/{{ version }}/coreprofiler-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  entry_points:
+    - coreprofiler = coreprofiler.__main__:main
+  run_exports:
+    - {{ pin_subpackage('coreprofiler', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools-scm
+    - poetry-core
+  run:
+    - python >=3.11
+    - pandas >=2.0.3
+    - biopython >=1.81.0
+    - tqdm >=4.65.0
+    - bio
+    - bs4
+    - blast
+
+test:
+  commands:
+    - coreprofiler --version
+
+about:
+  home: "https://gitlab.com/ifb-elixirfr/abromics"
+  dev_url: "https://gitlab.com/ifb-elixirfr/abromics/coreprofiler"
+  doc_url: "https://gitlab.com/ifb-elixirfr/abromics/coreprofiler/-/blob/main/docs/build/html/index.html"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "CoreProfiler, a robust and integrable cgMLST software."
+
+extra:
+  recipe-maintainers:
+    - bebatut
+    - clsiguret
