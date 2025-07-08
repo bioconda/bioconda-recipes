@@ -1,7 +1,9 @@
 #!/bin/bash
 set -euxo
 
-export CC=${CC:-gcc}
+# Patch
+sed -i 's/^CC = gcc$/CC ?= gcc/' Makefile
+
 # Compile the project
 make
 
