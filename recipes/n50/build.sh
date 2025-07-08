@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -euxo
 # Compile the project
 make
 
