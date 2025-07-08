@@ -1,16 +1,15 @@
 #!/bin/bash
-set -euxo
+set -euxo pipefail
 
 # Patch
 sed -i 's/^CC = gcc$/CC ?= gcc/' Makefile
 
-# Explicitly set include/library paths
-export CFLAGS="$CFLAGS -I$BUILD_PREFIX/include"
-export LDFLAGS="$LDFLAGS -L$BUILD_PREFIX/lib""
-export CPATH="$BUILD_PREFIX/include"
+# CPPFLAGS is PERFECT for include directories in C programs
+export CPPFLAGS="$CPPFLAGS -I$BUILD_PREFIX/include"
+sed -i 's/$(CC) $(CFLAGS)/$(CC) $(CPPFLAGS) $(CFLAGS)/g' Makefile
 
-# Compile the project
-make CC="$CC"
+
+make
 
 # Install the binaries
 mkdir -p "$PREFIX/bin"
