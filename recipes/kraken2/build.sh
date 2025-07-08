@@ -16,7 +16,8 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
 	export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
 fi
 
-CXX="${CXX}" ./install_kraken2.sh "${outdir}/libexec"
+./install_kraken2.sh "${outdir}/libexec"
+
 for bin in kraken2 kraken2-build kraken2-inspect k2; do
 	chmod 0755 "${outdir}/libexec/$bin"
 	ln -sf "${outdir}/libexec/$bin" "${PREFIX}/bin/$bin"
