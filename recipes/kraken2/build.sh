@@ -5,7 +5,7 @@ export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
-outdir="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
+outdir="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
 
 mkdir -p "${outdir}/libexec" "${PREFIX}/bin"
 
