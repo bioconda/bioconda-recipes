@@ -1,5 +1,7 @@
 #!/bin/bash
 set -euxo
+
+export CC=${CC:-gcc}
 # Compile the project
 make
 
