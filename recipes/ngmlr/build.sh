@@ -8,6 +8,10 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 
 mkdir -p "${PREFIX}/bin"
 
+if [[ "$(uname -m)" == "aarch64" ]]; then
+	cp -rf ${RECIPE_DIR}/Logging.cpp src/Logging.cpp
+fi
+
 if [[ `uname -s` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
