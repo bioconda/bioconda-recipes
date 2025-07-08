@@ -1,16 +1,15 @@
 #!/bin/bash
 set -xe
 
-cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/
-
-mkdir -p ${PREFIX}/bin
-
-mv configure.in configure.ac
-
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3"
 export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
 export CPATH="${PREFIX}/include"
+
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
+mkdir -p ${PREFIX}/bin
+
+mv configure.in configure.ac
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
     # Fix for install_name_tool error:
@@ -22,7 +21,6 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
 fi
 
 autoreconf -if
-
 ./configure --prefix="${PREFIX}" --enable-pthreads \
 	--disable-option-checking --enable-silent-rules --disable-dependency-tracking \
 	--enable-utilities CC="${CC}" LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}" \
