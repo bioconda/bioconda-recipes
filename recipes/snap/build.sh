@@ -15,6 +15,7 @@ rm -rf *.bak
 install -v -m 0755 snap fathom forge gff3_to_zff.pl hmm-assembler.pl zff2gff3.pl $PREFIX/share/snap/bin
 cp -prf HMM ${PREFIX}/share/snap
 cp -prf DNA ${PREFIX}/share/snap
+cp -prf DATA ${PREFIX}/share/snap
 
 for NAME in snap fathom forge gff3_to_zff.pl hmm-assembler.pl zff2gff3.pl; do
 	cp -f $RECIPE_DIR/wrapper ${PREFIX}/bin/${NAME}
