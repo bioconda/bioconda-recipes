@@ -1,10 +1,9 @@
 #!/bin/bash
 
-export CFLAGS="-I${PREFIX}/include"
+export CFLAGS="-I${PREFIX}/include -Ihtslib/htslib"
 export LDFLAGS="-L${PREFIX}/lib"
 
-# Respect the compiler provided by the conda environment
-make CC="${CC:-gcc}"
+make CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
 
 mkdir -p "${PREFIX}/bin"
 cp yame "${PREFIX}/bin/"
