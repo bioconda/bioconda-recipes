@@ -33,6 +33,8 @@ fi
 sed -i.bak 's|VERSION 3.1|VERSION 3.5|' CMakeLists.txt
 sed -i.bak 's|-lpthread|-pthread|' CMakeLists.txt
 rm -rf *.bak
+sed -i.bak 's|VERSION 2.8.11|VERSION 3.5|' deps/sdsl-lite/CMakeLists.txt
+sed -i.bak 's|VERSION 3.1|VERSION 3.5|' deps/paryfor/CMakeLists.txt
 
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Generic \
 	-DEXTRA_FLAGS="${EXTRA_FLAGS}" -DCMAKE_CXX_COMPILER="${CXX}" \
