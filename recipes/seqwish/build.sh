@@ -31,6 +31,7 @@ else
 fi
 
 sed -i.bak 's|VERSION 3.1|VERSION 3.5|' CMakeLists.txt
+sed -i.bak 's|-lpthread|-pthread|' CMakeLists.txt
 rm -rf *.bak
 
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Generic \
