@@ -22,7 +22,7 @@ cp -rf tests/data $PREFIX/gotree_test_data
 
 # Gotree test script
 echo "#!/usr/bin/env bash" > $PREFIX/bin/gotree_test.sh
-sed -i.bak 's+GOTREE=./gotree+GOTREE=gotree+g' test.sh \
-    | sed -i.bak "s+TESTDATA=\"tests/data\"+TESTDATA=\$(dirname \$0)/../gotree_test_data/+g" \
+sed 's+GOTREE=./gotree+GOTREE=gotree+g' test.sh \
+    | sed "s+TESTDATA=\"tests/data\"+TESTDATA=\$(dirname \$0)/../gotree_test_data/+g" \
     >> $PREFIX/bin/gotree_test.sh
 chmod a+x $PREFIX/bin/gotree_test.sh
