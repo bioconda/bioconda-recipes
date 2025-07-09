@@ -26,13 +26,13 @@ else
 	export CONFIG_ARGS="-DBUILD_STATIC=1"
 fi
 
-cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Generic \
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Generic \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DCMAKE_C_COMPILER="${CC}" \
  	-DCMAKE_C_FLAGS="${CFLAGS}" -DEXTRA_FLAGS="${EXTRA_FLAGS}" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
-ninja install -C build -j "${CPU_COUNT}"
+cmake --build build --clean-first --target install -j "${CPU_COUNT}"
 
 PYVER=`python -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version_info[1]))'`
 mkdir -p "${SP_DIR}/${PKG_NAME}-${PKG_VERSION}"
