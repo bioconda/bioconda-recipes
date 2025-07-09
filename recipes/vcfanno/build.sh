@@ -7,7 +7,7 @@ export GOCACHE="${PWD}/.cache"
 mkdir -p "${GOCACHE}"
 mkdir -p "${PREFIX}/bin"
 
-make get
+go get .
 
 make build
 
