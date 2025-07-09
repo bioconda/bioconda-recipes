@@ -7,8 +7,8 @@ export GOCACHE="${PWD}/.cache"
 mkdir -p "${GOCACHE}"
 mkdir -p "${PREFIX}/bin"
 
-go mod download "github.com/BurntSushi/toml@v0.3.1"
+make get
 
-make all -j"${CPU_COUNT}"
+make build
 
 install -v -m 0755 vcfanno* "${PREFIX}/bin"
