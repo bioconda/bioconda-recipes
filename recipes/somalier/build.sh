@@ -2,16 +2,10 @@
 
 mkdir -p "${PREFIX}/bin"
 
-case $(uname -m) in
-    aarch64)
+if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
 	sed -i.bak 's|--passC:"-mpopcnt"||' nim.cfg
-  rm -rf *.bak
-	;;
-    arm64)
-	sed -i.bak 's|--passC:"-mpopcnt"||' nim.cfg
-  rm -rf *.bak
-	;;
-esac
+	rm -rf *.bak
+fi
 
 nimble --localdeps build -y --verbose -d:release
 
