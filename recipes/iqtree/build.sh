@@ -18,7 +18,7 @@ export CFLAGS="${CFLAGS} -O3 -w"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -w"
 export CXXFLAGS="${CXXFLAGS} -O3 -w"
 
-if [[ "$(uname)" == Darwin ]]; then
+if [[ "$(uname -s)" == "Darwin" ]]; then
 	export CMAKE_C_COMPILER="clang"
 	export CMAKE_CXX_COMPILER="clang++"
 	export CXXFLAGS="${CXXFLAGS} -mmacosx-version-min=11"
@@ -44,7 +44,7 @@ else
 	export CONFIG_ARGS=""
 fi
 
-VERBOSE=1 cmake -S . -B build \
+cmake -S . -B build \
 	-GNinja \
 	-DCMAKE_POLICY_VERSION_MINIMUM=3.14.7 \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
@@ -69,7 +69,7 @@ if [[ "$(uname -m)" == "aarch64" ]] && [[ "${CPU_COUNT}" -lt 4 ]]; then
 	JOBS=1 # CircleCI's arm.medium VM runs out of memory with higher values
 fi
 
-VERBOSE=1 cmake --build build --target install -j "${JOBS}"
+ninja install -C build -j "${JOBS}"
 
 chmod 0755 "${PREFIX}/bin/iqtree3"
 
