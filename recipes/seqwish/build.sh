@@ -30,6 +30,9 @@ else
 	export CONFIG_ARGS="-DBUILD_STATIC=1"
 fi
 
+sed -i.bak 's|VERSION 3.1|VERSION 3.5|' CMakeLists.txt
+rm -rf *.bak
+
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Generic \
 	-DEXTRA_FLAGS="${EXTRA_FLAGS}" -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
