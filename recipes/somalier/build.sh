@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/bin/bash
+
+mkdir -p "${PREFIX}/bin"
 
 nimble --localdeps build -y --verbose -d:release
 
-mkdir -p "${PREFIX}/bin"
-cp somalier "${PREFIX}/bin/"
+install -v -m 0755 somalier "${PREFIX}/bin"
