@@ -5,5 +5,5 @@ set -euxo pipefail
 "${PYTHON}" -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
 
 mkdir -p $PREFIX/bin/
-cp bin/busco $PREFIX/bin/busco  #python script
+install -m 0755 bin/busco $PREFIX/bin/busco  #python script
 
