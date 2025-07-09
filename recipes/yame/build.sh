@@ -1,14 +1,18 @@
 #!/bin/bash
 
-export CFLAGS="-I${PREFIX}/include -Ihtslib/htslib"
-export LDFLAGS="-L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include -Ihtslib/htslib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-if [[ $(uname) == "Darwin" ]]; then
+mkdir -p "${PREFIX}/bin"
+
+if [[ "$(uname -s)" == "Darwin" ]]; then
   sed -i.bak 's/-ltinfo//g' Makefile
 fi
 
-make CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
+sed -i.bak 's|-std=gnu99|-std=c11|' Makefile
+sed -i.bak 's|-lpthread|-pthread|' Makefile
+rm -rf *.bak
 
-mkdir -p "${PREFIX}/bin"
-cp yame "${PREFIX}/bin/"
+make CC="${CC}" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
 
+install -v -m 0755 yame "${PREFIX}/bin"
