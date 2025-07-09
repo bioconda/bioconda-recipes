@@ -5,7 +5,7 @@ mkdir -p "${PREFIX}/lib"
 
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lomp"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3"
@@ -35,7 +35,7 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Generic \
 cmake --build build --clean-first --target install -j "${CPU_COUNT}"
 
 PYVER=`python -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version_info[1]))'`
-mkdir -p "${SP_DIR}/${PKG_NAME}-${PKG_VERSION}"
+mkdir -p "${SP_DIR}"
 
-cp -rf lib/*cpython* "${SP_DIR}/${PKG_NAME}-${PKG_VERSION}"
+cp -rf lib/*cpython* "${SP_DIR}"
 cp -rf lib/* "${PREFIX}/lib"
