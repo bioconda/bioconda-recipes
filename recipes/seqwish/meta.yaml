@@ -2,30 +2,32 @@
 {% set version = "0.7.11" %}
 
 package:
-  name: "{{ name }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/ekg/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
   sha256: 9cbf51990787a93c58a1ee04239608785beb7e8a38efeb02929121b3c8c4a103
 
 build:
-  skip: True  # [osx]
   run_exports:
-    - {{ pin_subpackage(name, max_pin='x.x') }}
-  number: 1
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  number: 2
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - llvm-openmp  # [osx]
     - cmake
     - make
+    - pkg-config
   host:
     - zlib
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - jemalloc
   run:
+    - libgomp  # [linux]
     - llvm-openmp  # [osx]
     - python >=3.6
 
@@ -36,13 +38,14 @@ test:
 about:
   home: https://github.com/ekg/seqwish
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: Alignment to variation graph inducer
+  summary: "Alignment to variation graph inducer."
+  dev_url: https://github.com/ekg/seqwish
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - AndreaGuarracino
-  skip-lints:
-    - uses_vcs_url
