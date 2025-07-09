@@ -3,7 +3,7 @@
 
 package:
   name: {{ name|lower }}
-  version: {{ version | replace("-", "_") }}
+  version: {{ version }}
 
 build:
   number: 0
@@ -11,13 +11,14 @@ build:
     - {{ pin_subpackage('iqtree', max_pin="x") }}
 
 source:
-  # using git_url rather than tarball due to use of 2 submodules by iqtree (lsd2, cmaple)
-  # Previously, the submodules were specified as source tarballs themselves
-  # But the submodules weren't updated when iqtree was, hence switch to git_url
-  # see discussion https://github.com/bioconda/bioconda-recipes/pull/49360/files#r1686415630
-  git_url: https://github.com/iqtree/iqtree3.git
-  git_rev: v{{ version }}
-  sha256: unused
+- url: https://github.com/iqtree/iqtree3/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 2daff8eaa24faaeac3dee9ac63af9fd7b79cc94cf7031671f0068b051b12c55f
+- url: https://github.com/iqtree/cmaple/archive/46f86a9d9e3ece6e4f1a54dc72325e8afeb88738.zip
+  sha256: 9a220795463da8b857105275571ae71ae043617e58f9a6118b8eafc93df567ab
+  folder: cmaple
+- url: https://github.com/tothuhien/lsd2/archive/c61110f3a4fa05325b45c97b2134792ff9d55d4c.zip 
+  sha256: a1f0cf7dab48d975713d70457f6b79403a74e3e7a27270bd14d5c92cba1fcf63
+  folder: lsd2
 
 requirements:
   build:
@@ -55,9 +56,6 @@ about:
   doc_url: "http://www.iqtree.org/doc"
 
 extra:
-  skip-lints:
-    # uses submodules
-    - uses_vcs_url
   additional-platforms:
     - linux-aarch64
     - osx-arm64
