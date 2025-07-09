@@ -2,23 +2,24 @@
 {% set name = "gotree" %}
 
 package:
-  name: {{name}}
+  name: {{ name }}
   version: {{ version }}
+
+source:
+  url: https://github.com/evolbioinfo/{{name}}/archive/v{{ version }}.tar.gz
+  sha256: 8a517811d455f74bfc3a01e00767407dbb795549b28b3896980c5361e1a57c9a
+  folder: src/github.com/evolbioinfo/{{name}}
 
 build:
   number: 0
-  binary_relocation: false
+  binary_relocation: False
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
-source:
-  - url: https://github.com/evolbioinfo/{{name}}/archive/v{{ version }}.tar.gz
-    sha256: 8a517811d455f74bfc3a01e00767407dbb795549b28b3896980c5361e1a57c9a
-    folder: src/github.com/evolbioinfo/{{name}}/
-
 requirements:
   build:
-    - go-nocgo
+    - {{ compiler('go') }}
+    - go-licenses
 
 test:
   commands:
@@ -27,11 +28,17 @@ test:
     - {{name}} version
 
 about:
-  home: https://github.com/evolbioinfo/{{name}}
-  license: GPL-2.0
-  summary: {{name}} is a set of command line tools to manipulate phylogenetic trees
+  home: "https://github.com/evolbioinfo/{{ name }}"
+  license: "GPL-2.0-or-later"
+  license_family: GPL
+  summary: "{{name}} is a set of command line tools to manipulate phylogenetic trees."
+  dev_url: "https://github.com/evolbioinfo/{{ name }}"
+  doc_url: "https://github.com/evolbioinfo/gotree/blob/v{{ version }}/README.md"
 
 extra:
-  skip-lints:
-    - should_be_noarch_generic
-    - should_not_be_noarch_source
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/nargab/lqab075
+    - biotools:gotree
