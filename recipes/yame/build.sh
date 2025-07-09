@@ -9,7 +9,7 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
   sed -i.bak 's/-ltinfo//g' Makefile
 fi
 
-sed -i.bak 's|-std=gnu99|-std=c11|' Makefile
+sed -i.bak 's|-std=gnu99|-std=c11 -I$(PREFIX)/include|' Makefile
 sed -i.bak 's|-lpthread|-pthread|' Makefile
 rm -rf *.bak
 
