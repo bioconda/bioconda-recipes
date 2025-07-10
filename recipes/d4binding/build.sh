@@ -18,5 +18,5 @@ cd d4binding
 RUST_BACKTRACE=1
 cargo build --release --package=d4binding --target-dir . -j "${CPU_COUNT}"
 
-cp -rf release/libd4binding.* "${PREFIX}/lib"
+#install -v -m 644 release/libd4binding.* "${PREFIX}/lib"
 install -v -m 644 include/d4.h "${PREFIX}/include"
