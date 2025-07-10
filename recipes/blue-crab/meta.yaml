@@ -1,18 +1,20 @@
-{% set name = "blue-crab" %}
-{% set sha256 = "f7413739a4a19ce52cd0ff819c479a2395e606652492fa98ae5a5fb8a35efe79" %}
+{% set name = "blue_crab" %}
 {% set version = "0.4.0" %}
 
 package:
-  name: {{ name }}
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/blue_crab-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/blue_crab-{{ version }}.tar.gz
+  sha256: f7413739a4a19ce52cd0ff819c479a2395e606652492fa98ae5a5fb8a35efe79
 
 build:
+  entry_points:
+    - blue-crab=src.blue_crab:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
-  noarch: generic
   run_exports:
     - {{ pin_subpackage('blue-crab', max_pin="x") }}
 
@@ -46,3 +48,5 @@ extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
+  recipe-maintainers:
+    - hasindu2008
