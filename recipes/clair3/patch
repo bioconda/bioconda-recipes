@@ -1,42 +1,24 @@
 diff --git a/src/clair3_full_alignment.c b/src/clair3_full_alignment.c
-index 603263e..e4367e0 100644
+index 603263e..be55a34 100644
 --- a/src/clair3_full_alignment.c
 +++ b/src/clair3_full_alignment.c
-@@ -558,6 +558,7 @@ size_t min_mq, size_t min_bq, size_t matrix_depth, size_t max_indel_length)
-         // index of current first overlapped flanking candidate
-         size_t flanking_start = kh_int_counter_val(flanking_candidates_p, flanking_candidates[candidate_current_index]);
-         read.flanking_start = flanking_start;
-+printf("flanking_start %i candidate_current_index %i equivalent of ref_pos-1 %i\n", (int) flanking_start, (int) candidate_current_index, (int) flanking_candidates[candidate_current_index]);
- 
-         // store all overlapped flanking candidates information and put all centered candidate information
-         // into pos_alt_info struct
-@@ -594,9 +595,11 @@ size_t min_mq, size_t min_bq, size_t matrix_depth, size_t max_indel_length)
+@@ -594,7 +594,8 @@ size_t min_mq, size_t min_bq, size_t matrix_depth, size_t max_indel_length)
              {
  
                  int flanking_index = kh_int_counter_val(flanking_candidates_p, ref_pos - 1);
 -                if (flanking_index != -1)
++                // If an alignment starts with an I/D operation, check that the offset is >= 0
 +                if (flanking_index != -1 && flanking_index >= flanking_start)
                  {
-+                    // If an alignment starts with an I/D operation, check that the offset is >= 0
                      size_t offset = flanking_index - flanking_start;
-+printf("CDEL offset %i (overlap_candidates_num %i) flanking_index %i flanking_start %i\n", (int) offset, (int) overlap_candidates_num, (int) flanking_index, (int) flanking_start);
                      pos_info[offset].del_length = length;
-                     int center_pos_index = kh_int_counter_val(candidates_p, ref_pos - 1);
-                     if (center_pos_index != -1)
-@@ -623,8 +626,15 @@ size_t min_mq, size_t min_bq, size_t matrix_depth, size_t max_indel_length)
+@@ -623,7 +624,8 @@ size_t min_mq, size_t min_bq, size_t matrix_depth, size_t max_indel_length)
              else if (cigar_op == BAM_CINS)
              {
                  int flanking_index = kh_int_counter_val(flanking_candidates_p, ref_pos - 1);
 -                if (flanking_index != -1)
-+if (flanking_index != -1 && flanking_index < flanking_start) {
-+size_t offset = flanking_index - flanking_start;
-+printf("CINS offset %i (overlap_candidates_num %i) flanking_index %i flanking_start %i\n", (int) offset, (int) overlap_candidates_num, (int) flanking_index, (int) flanking_start);
-+assert(offset >= 0);
-+assert(offset < overlap_candidates_num);
-+}
++                // If an alignment starts with an I/D operation, check that the offset is >= 0
 +                if (flanking_index != -1 && flanking_index >= flanking_start)
                  {
-+                    // If an alignment starts with an I/D operation, check that the offset is >= 0
                      size_t offset = flanking_index - flanking_start;
                      pos_info[offset].ins_bases = calloc(length + 1, sizeof(char));
-                     for (size_t ins_idx = 0; ins_idx < length; ins_idx++)
