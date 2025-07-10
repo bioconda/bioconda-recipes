@@ -20,3 +20,7 @@ cargo build --release --package=d4binding --target-dir . -j "${CPU_COUNT}"
 
 #install -v -m 644 release/libd4binding.* "${PREFIX}/lib"
 install -v -m 644 include/d4.h "${PREFIX}/include"
+
+ls ../
+ls
+ls release
