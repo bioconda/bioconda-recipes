@@ -9,8 +9,6 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 cp -f ${RECIPE_DIR}/build_htslib.sh d4-hts/build_htslib.sh
 
-cd d4binding
-
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
-./install.sh
+cargo install --verbose --no-track --path d4binding --root "${PREFIX}"
