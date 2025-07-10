@@ -1,8 +1,8 @@
 #!/bin/bash
 set -xe
 
-mkdir -p ${PREFIX}/include
-mkdir -p ${PREFIX}/lib
+mkdir -p "${PREFIX}/include"
+mkdir -p "${PREFIX}/lib"
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
@@ -18,5 +18,7 @@ cd d4binding
 RUST_BACKTRACE=1
 cargo build --release --package=d4binding
 
-install -m 644 include/d4.h ${PREFIX}/include
-install -m 644 target/release/libd4binding.* ${PREFIX}/lib
+cd ../
+
+install -v -m 644 "d4binding/include/d4.h" "${PREFIX}/include"
+install -v -m 644 "target/release/libd4binding.*" "${PREFIX}/lib"
