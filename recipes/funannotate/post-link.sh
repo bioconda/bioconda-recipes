@@ -28,10 +28,10 @@ Mac OSX Users:
   Install augustus using this repo:
     https://github.com/nextgenusfs/augustus
   
-  To install Trinity v2.8.6, download the source code and compile using GCC/G++:
-    wget https://github.com/trinityrnaseq/trinityrnaseq/releases/download/v2.8.6/trinityrnaseq-v2.8.6.FULL.tar.gz
-    tar xzvf trinityrnaseq-v2.8.6.FULL.tar.gz
-    cd trinityrnaseq-v2.8.6
+  To install Trinity v2.15.2, download the source code and compile using GCC/G++:
+    wget https://github.com/trinityrnaseq/trinityrnaseq/releases/download/Trinity-v2.15.2/trinityrnaseq-v2.15.2.FULL.tar.gz
+    tar xzvf trinityrnaseq-v2.15.2.FULL.tar.gz
+    cd trinityrnaseq-v2.15.2
     make CC=gcc-8 CXX=g++-8
     echo "export TRINITY_HOME=/your/path" > ${PREFIX}/etc/conda/activate.d/trinity.sh
     echo "unset TRINITY_HOME" > ${PREFIX}/etc/conda/deactivate.d/trinity.sh    

@@ -1,14 +1,34 @@
-#!/bin/sh
+#!/bin/bash
 set -eu -o pipefail
 
-VERSION="0.1.13"
-PSLIVAR_SHA256SUM="00ae0b0ca141af57aea7900183ef9ff0d2b8e1147a9d5ec6e0f8a4147ab40ce8"
+mkdir -p "${PREFIX}/bin"
 
-mkdir -p $PREFIX/bin
-chmod a+x slivar
-cp slivar $PREFIX/bin/slivar
+VERSION="0.3.1"
+PSLIVAR_SHA256SUM="4b103abacd83eb0b1c9082fd789f3f0eed78eb5d76710f037a1d3e1749d4f25e"
+
+case $(uname -m) in
+    aarch64)
+	sed -i.bak 's|--passC:"-mpopcnt"||' nim.cfg
+  rm -rf *.bak
+	;;
+    arm64)
+	sed -i.bak 's|--passC:"-mpopcnt"||' nim.cfg
+  rm -rf *.bak
+	;;
+esac
+
+case $(uname -s) in
+    Darwin)
+	sed -i.bak 's|--passC:"-static -no-pie"||' nim.cfg
+  rm -rf *.bak
+	;;
+esac
+
+nimble --localdeps build -y --verbose -d:release
+
+install -v -m 0755 slivar "${PREFIX}/bin"
 
 curl -L -s -o pslivar https://github.com/brentp/slivar/releases/download/v${VERSION}/pslivar
 sha256sum pslivar | grep ${PSLIVAR_SHA256SUM}
-chmod a+x pslivar
-cp pslivar $PREFIX/bin/pslivar
+
+install -v -m 0755 pslivar "${PREFIX}/bin"
