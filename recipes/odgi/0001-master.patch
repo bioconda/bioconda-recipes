@@ -1,16 +1,23 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index dd781923..3ff51768 100644
+index dd781923..320501a9 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -38,7 +38,6 @@ include(FeatureSummary)
+@@ -37,8 +37,12 @@ include(ExternalProject)
+ include(FeatureSummary)
  
  find_package(PkgConfig REQUIRED)
- find_package(pybind11 CONFIG)
+-find_package(pybind11 CONFIG)
 -find_package(OpenMP)
++set(PYBIND11_FINDPYTHON ON)
++find_package(pybind11 CONFIG REQUIRED)
++pkg_check_modules(JEMALLOC jemalloc)
++
++pkg_search_module(JEMALLOC REQUIRED jemalloc)
++include_directories(${JEMALLOC_INCLUDE_DIRS})
  # Find CUDA if GPU option is enabled
  if (USE_GPU)
      find_package(CUDA REQUIRED)  # Adjust this if you're using modern CMake with FindCUDAToolkit.
-@@ -59,6 +58,23 @@ feature_summary(
+@@ -59,6 +63,23 @@ feature_summary(
  pkg_check_modules(SDSLLITE sdsl-lite)
  pkg_check_modules(LIBDIVSUFSORT libdivsufsort)
  
@@ -34,7 +41,7 @@ index dd781923..3ff51768 100644
  if(NOT CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE Release CACHE STRING
            "Choose the type of build, options are: Release Debug Generic." FORCE)
-@@ -140,6 +156,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin") # untested
+@@ -140,6 +161,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin") # untested
    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS} -lomp")
@@ -42,7 +49,7 @@ index dd781923..3ff51768 100644
  elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
    find_package(OpenMP REQUIRED)
    # add the flags it detects to the compile flags
-@@ -148,6 +165,11 @@ elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+@@ -148,6 +170,11 @@ elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
  endif()
  
@@ -54,7 +61,7 @@ index dd781923..3ff51768 100644
  # Set the output folder where your program will be created
  set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin) # TODO Do we want to comment out this line so the binary lands in the actual build directory?
  set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-@@ -323,6 +345,7 @@ endif (NOT INLINE_HANDLEGRAPH_SOURCES)
+@@ -323,6 +350,7 @@ endif (NOT INLINE_HANDLEGRAPH_SOURCES)
  # taywee's C++ args library, header only
  ExternalProject_Add(tayweeargs
    SOURCE_DIR "${CMAKE_SOURCE_DIR}/deps/args"
@@ -62,7 +69,15 @@ index dd781923..3ff51768 100644
    UPDATE_COMMAND ""
    INSTALL_COMMAND "")
  ExternalProject_Get_property(tayweeargs SOURCE_DIR)
-@@ -709,7 +732,7 @@ if (USE_GPU)
+@@ -674,6 +702,7 @@ endif (NOT INLINE_HANDLEGRAPH_SOURCES)
+ add_dependencies(odgi_objs ${odgi_DEPS})
+ 
+ set(odgi_INCLUDES
++  "${PREFIX}/include"
+   "${CMAKE_SOURCE_DIR}/src"
+   "${CMAKE_SOURCE_DIR}/src/algorithms"
+   "${SDSLLITE_INCLUDE_DIRS}"
+@@ -709,7 +738,7 @@ if (USE_GPU)
  endif (USE_GPU)
  
  set(odgi_LIBS
@@ -71,6 +86,32 @@ index dd781923..3ff51768 100644
    ${SDSLLITE_LINK_LIBRARIES}
    ${LIBDIVSUFSORT_LINK_LIBRARIES}
    "-L${CMAKE_SOURCE_DIR}/lib"
+@@ -854,6 +883,7 @@ else (NOT PIC)
+   set_target_properties(libodgi_shared PROPERTIES OUTPUT_NAME "odgi")
+   set_target_properties(libodgi_shared PROPERTIES PUBLIC_HEADER "${odgi_HEADERS}")
+   target_link_libraries(libodgi_shared ${odgi_LIBS})
++  target_link_libraries(libodgi_shared ${JEMALLOC_LIBRARIES})
+   add_dependencies(libodgi_shared ${odgi_DEPS})
+ endif (NOT PIC)
+ 
+@@ -875,7 +905,7 @@ else (NOT PIC)
+   # as not to confuse things with the old bindings
+   pybind11_add_module(odgi_ffi "${CMAKE_SOURCE_DIR}/src/pythonffi.cpp")
+   add_dependencies(odgi_ffi ${odgi_DEPS} libodgi_shared)
+-  target_include_directories(odgi_ffi PUBLIC ${odgi_INCLUDES})
++  target_include_directories(odgi_ffi PUBLIC ${odgi_INCLUDES} ${PREFIX}/include)
+   target_link_libraries(odgi_ffi PUBLIC "${odgi_LIBS}" $<TARGET_FILE:libodgi_shared>)
+   set_target_properties(odgi_ffi PROPERTIES OUTPUT_NAME "odgi_ffi")
+   install(TARGETS odgi_ffi LIBRARY DESTINATION lib)
+@@ -885,7 +915,7 @@ else (NOT PIC)
+   # Build original Python module
+   pybind11_add_module(odgi_pybind11 "${CMAKE_SOURCE_DIR}/src/pythonmodule.cpp")
+   add_dependencies(odgi_pybind11 ${odgi_DEPS} libodgi_static)
+-  target_include_directories(odgi_pybind11 PUBLIC ${odgi_INCLUDES})
++  target_include_directories(odgi_pybind11 PUBLIC ${odgi_INCLUDES} ${PREFIX}/include)
+   target_link_libraries(odgi_pybind11 PRIVATE "${CMAKE_SOURCE_DIR}/lib/libodgi.a" "${odgi_LIBS}")
+   set_target_properties(odgi_pybind11 PROPERTIES OUTPUT_NAME "odgi")
+   install(TARGETS odgi_pybind11 LIBRARY DESTINATION lib)
 diff --git a/src/subcommand/stats_main.cpp b/src/subcommand/stats_main.cpp
 index 299f91b3..0c1931c0 100644
 --- a/src/subcommand/stats_main.cpp
