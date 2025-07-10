@@ -43,7 +43,7 @@ else
 fi
 cd zlib-1.2.11
 is_musl && CC=musl-gcc ./configure || ./configure
-make libz.a
+make libz.a CC=$CC -j$CPU_COUNT
 cp libz.a ..
 cd ..
 
@@ -52,7 +52,7 @@ curl -L http://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz | tar xz
 cd bzip2-1.0.8
 is_musl && perl -i -pe 's/gcc/musl-gcc/g' Makefile
 is_musl || perl -i -pe 's/CFLAGS=/CFLAGS=-fPIC /g' Makefile
-make
+make CC=$CC -j$CPU_COUNT
 cp libbz2.a ..
 cd ..
 
@@ -60,4 +60,4 @@ perl -i -pe 's/CPPFLAGS =/CPPFLAGS = -Izlib-1.2.11 -Ibzip2-1.0.8/g' Makefile
 
 is_musl || perl -i -pe 's/CFLAGS *=/CFLAGS = -fPIC/g' Makefile
 
-make -j8 lib-static
+make lib-static -j$CPU_COUNT
