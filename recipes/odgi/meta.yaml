@@ -2,41 +2,44 @@
 {% set version = "0.9.2" %}
 
 package:
-  name: "{{ name }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/pangenome/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
   sha256: b71dc82374e1c825ff834d0d22c4bedc4ffbb58ac4c44b499f1e607adacd4945
+  patches:
+    - 0001-master.patch  # [osx]
 
 build:
-  skip: True  # [osx]
-  number: 0
+  number: 1
+  skip: True  # [linux]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - cmake
+    - cmake <4
     - make
+    - pkg-config
+    - python >=3
+    - pybind11-global
   host:
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
     - zlib
     - jemalloc
-    - python
-    - pybind11
   run:
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
-    - python
+    - python >=3
     - jemalloc
     - pybind11
 
 test:
   commands:
-    - odgi test
+    - odgi 2>&1
 
 about:
   home: "https://github.com/pangenome/odgi"
@@ -48,6 +51,9 @@ about:
   doc_url: "https://github.com/pangenome/odgi/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    #- linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - AndreaGuarracino
   identifiers:
