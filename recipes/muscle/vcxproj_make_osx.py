@@ -46,8 +46,8 @@ if ProjFileName is None:
 binary = ProjFileName.replace(".vcxproj", "")
 sys.stderr.write("binary=" + binary + "\n")
 
-compiler_opts = "-ffast-math -march=x86-64-v3 -O3 -I${PREFIX}/include"
-linker_opts = "-ffast-math -march=x86-64-v3 -L${PREFIX}/lib "
+compiler_opts = "-I${PREFIX}/include -ffast-math -O3 -march=x86-64-v3 -static-libgcc -static-libstdc++"
+linker_opts = "-L${PREFIX}/lib -ffast-math -march=x86-64-v3 -static-libgcc -static-libstdc++"
 
 if std:
     compiler_opts += " --std=" + std
@@ -147,9 +147,9 @@ with open("Makefile", "w") as f:
     Out("")
     Out("UNAME_S := $(shell uname -s)")
     Out("LDFLAGS := $(LDFLAGS) " + linker_opts)
-    #Out("ifeq ($(UNAME_S),Linux)")
-    #Out("    LDFLAGS += -static")
-    #Out("endif")
+    Out("ifeq ($(UNAME_S),Linux)")
+    Out("    LDFLAGS += -static")
+    Out("endif")
 
     Out("")
     Out("HDRS = \\")
@@ -171,9 +171,9 @@ with open("Makefile", "w") as f:
     Out("$(BINPATH) : $(BINDIR)/ $(OBJDIR)/ $(OBJS)")
 
     if len(CXXNames) > 0:
-        Cmd = "\t$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) $(OBJS) -o $(BINPATH)"
+        Cmd = "\t$(CXX) $(LDFLAGS) $(OBJS) -o $(BINPATH)"
     else:
-        Cmd = "\t%(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(OBJS) -o $(BINPATH)"
+        Cmd = "\t%(CC) $(LDFLAGS) $(OBJS) -o $(BINPATH)"
 
     if Args.lrt:
         Cmd += " -lrt -ldl"
