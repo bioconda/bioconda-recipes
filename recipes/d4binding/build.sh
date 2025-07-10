@@ -16,9 +16,7 @@ cd d4binding
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
-cargo build --release --package=d4binding
+cargo build --release --package=d4binding --target-dir . -j "${CPU_COUNT}"
 
-cd ../
-
+install -v -m 644 release/libd4binding.* "${PREFIX}/lib"
 install -v -m 644 "d4binding/include/d4.h" "${PREFIX}/include"
-install -v -m 644 "target/release/libd4binding.*" "${PREFIX}/lib"
