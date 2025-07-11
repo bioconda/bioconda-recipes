@@ -1,0 +1,84 @@
+--- setup.py	2024-02-26 22:48:44.000000000 +0800
++++ setup.py	2025-06-26 15:48:30.558656640 +0800
+@@ -22,7 +22,7 @@
+             include_dirs=['src/rrikindp',  os.path.join(sys.prefix, 'include')],  # Include directories for header files
+             libraries=['boost_program_options' , 'boost_filesystem' ,'boost_system', 'boost_regex','IntaRNA', 'RNA', 'easylogging', 'omp'],         # Libraries to link against
+             library_dirs=['src/rrikindp', pybind11.get_include()],      # Library directories
+-            extra_compile_args=['-std=c++14', '-fopenmp', '-fpermissive'],  # Additional compiler arguments
++            extra_compile_args=['-std=c++17', '-fopenmp', '-fpermissive'],  # Additional compiler arguments
+             language='c++'
+             )
+         ],
+--- src/rrikindp/Makefile	2024-02-26 22:48:44.000000000 +0800
++++ src/rrikindp/Makefile	2025-06-26 15:59:33.366656640 +0800
+@@ -1,2 +1,2 @@
+ RRIkinDP: RRIkinDP.cpp
+-	$(CXX) -std=c++14 $(CXXFLAGS) $(LDFLAGS) RRIkinDP.cpp -o RRIkinDP -lboost_program_options -lboost_filesystem -lboost_system -lIntaRNA -fopenmp -lboost_regex -lRNA -leasylogging -fpermissive
++	$(CXX) -std=c++17 $(CXXFLAGS) $(LDFLAGS) RRIkinDP.cpp -o RRIkinDP -lboost_program_options -lboost_filesystem -lboost_system -lIntaRNA -fopenmp -lboost_regex -lRNA -leasylogging -fpermissive
+--- src/rrikindp/RRIkinDP.cpp	2025-06-26 16:25:02.446656640 +0800
++++ src/rrikindp/RRIkinDP.cpp	2025-06-26 16:25:18.194656640 +0800
+@@ -128,8 +128,8 @@
+     IntaRNA::AccessibilityVrna access2_;
+     IntaRNA::ReverseAccessibility rev_access2_;
+     IntaRNA::InteractionEnergyVrna energy_;
+-    bool dangle_;
+     bool use_pf_;
++    bool dangle_;
+ };
+ 
+ EM::EM(IntaRNA::Interaction input_interaction,
+@@ -711,7 +711,7 @@
+ 
+ 
+     if (vm.count("version")) {
+-        std::cout << "v0.0.1" << std::endl;
++        std::cout << "v0.0.2" << std::endl;
+         return 0;
+     }
+ 
+@@ -784,7 +784,7 @@
+ 
+     std::copy(bps_list_b1.begin(), bps_list_b1.end(),
+               back_inserter(bps_list_b0));
+-    for (int i = 0; i < bps_list_b0.size(); i++) {
++    for (size_t i = 0; i < bps_list_b0.size(); i++) {
+         bps_list_b0[i].first -= 1;
+         bps_list_b0[i].second -= 1;
+     }
+@@ -795,11 +795,16 @@
+     IntaRNA::RnaSequence s1(seq_a_id, seq_a);
+     IntaRNA::RnaSequence s2(seq_b_id, seq_b);
+     IntaRNA::Interaction interaction(s1, s2);
+-    interaction.basePairs = bps_list_b0;
++    IntaRNA::Interaction::PairingVec tmpPairs;
++    tmpPairs.reserve(bps_list_b0.size());
++    for (const auto& bp : bps_list_b0) {
++	    tmpPairs.emplace_back(bp.first, bp.second);
++    }
++    interaction.basePairs = tmpPairs;
+ 
+     // check input
+     //=============
+-    if (interaction.basePairs.size() < seed_len) {
++    if (interaction.basePairs.size() < static_cast<size_t>(seed_len)) {
+         std::cout << "seed longer than interaction" << std::endl;
+         //       throw std::exception();
+         return 1;
+@@ -817,7 +822,7 @@
+     int q = interaction.basePairs.size(); // number of base pairs in structure
+     double full_energy = em.get_e(0, q - 1);
+     double full_hybrid_energy = em.get_hybride_e(0, q - 1);
+-    int v = q * q + q; // size of energy matrix/array
++    //int v = q * q + q; // size of energy matrix/array
+ 
+ 
+     // output structures
+@@ -869,7 +874,7 @@
+     // iterate over all start points (seeds)
+     // =====================================
+ 
+-    for (int start = 0; start <= interaction.basePairs.size() - seed_len;
++    for (size_t start = 0; start <= interaction.basePairs.size() - static_cast<size_t>(seed_len);
+          start++) {
+         //   compute min barrier for current seed
+         //   ====================================
