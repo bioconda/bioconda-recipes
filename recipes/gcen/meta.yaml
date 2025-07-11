@@ -11,13 +11,18 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 2
+  number: 3
+  skip: True  # [not osx]
+  missing_dso_whitelist:
+    - /usr/lib/libSystem.B.dylib
+  run_exports:
+    - {{ pin_subpackage(name|lower) }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-
+    - cmake
 test:
   commands:
     - network_build -h
@@ -31,3 +36,5 @@ about:
 extra:
   identifiers:
     - biotools:gcen
+  additional-platforms:
+    - linux-aarch64
