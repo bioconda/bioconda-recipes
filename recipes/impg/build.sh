@@ -1,53 +1,28 @@
 #!/bin/bash -euo
-
 set -xe
 
-# On macOS, AGC makefile has strict version checks
+# On macOS, AGC requires actual GCC, not clang
 if [[ $(uname) == "Darwin" ]]; then
     # Set PLATFORM for ARM64 Macs as AGC expects
     if [[ $(uname -m) == "arm64" ]]; then
         export PLATFORM=arm8
     fi
     
-    # AGC expects standard compiler names, not conda's prefixed ones
-    # Create wrapper scripts that call the conda compilers
-    mkdir -p $BUILD_PREFIX/bin
+    # AGC-rs needs actual GCC on macOS, not clang
+    # The conda-forge gcc package provides this
+    # We need to use the actual gcc/g++ binaries from conda
+    export CC=$BUILD_PREFIX/bin/gcc
+    export CXX=$BUILD_PREFIX/bin/g++
     
-    # Create wrapper for gcc that calls clang
-    cat > $BUILD_PREFIX/bin/gcc << EOF
-#!/bin/bash
-exec $CC "\$@"
-EOF
-    chmod +x $BUILD_PREFIX/bin/gcc
+    # Set up Rust to use g++ as the linker
+    export RUSTFLAGS="-C linker=$CXX"
     
-    # Create wrapper for g++ that calls clang++
-    cat > $BUILD_PREFIX/bin/g++ << EOF
-#!/bin/bash
-exec $CXX "\$@"
-EOF
-    chmod +x $BUILD_PREFIX/bin/g++
-    
-    # Add to PATH
-    export PATH="$BUILD_PREFIX/bin:$PATH"
-    
-    # Force AGC to use our wrappers
-    export CC=gcc
-    export CXX=g++
-    
-    # Set make command for macOS (AGC looks for gmake on macOS)
+    # Set make command for macOS
     export MAKE=make
 else
-    # Linux: Create symlinks for standard compiler names
-    mkdir -p $BUILD_PREFIX/bin
-    ln -sf $CC $BUILD_PREFIX/bin/gcc
-    ln -sf $CXX $BUILD_PREFIX/bin/g++
-    
-    # Ensure the symlinks are in PATH
-    export PATH="$BUILD_PREFIX/bin:$PATH"
-    
-    # Export standard names
-    export CC=gcc
-    export CXX=g++
+    # Linux: standard setup
+    export CC=$BUILD_PREFIX/bin/gcc
+    export CXX=$BUILD_PREFIX/bin/g++
 fi
 
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
