@@ -15,13 +15,11 @@ CXX14=$CXX" > ~/.R/Makevars
 if [ $(uname) == 'Darwin' ];
 then
   if [[ $(uname -m) == 'x86_64' ]]; then
-    echo "OSX x86-64: attempting to fix broken (old) SDK behavior"
-    export CFLAGS="${CFLAGS} -D_LIBCPP_HAS_NO_C11_ALIGNED_ALLOC"
-    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_HAS_NO_C11_ALIGNED_ALLOC"
+    SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
+    echo "-isysroot is ${SDKROOT}"
+    export CFLAGS="${CFLAGS} -isysroot ${SDKROOT}"
+    export LDFLAGS="${LDFLAGS} -isysroot ${SDKROOT}"
   fi
-  # FIXME: this is hard-coded for troubleshooting purposes, don't merge
-  export SDKROOT="/Applications/Xcode_15.2.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk"
-  
   export MACOSX_DEPLOYMENT_TARGET=10.15
   export MACOSX_SDK_VERSION=10.15
   export CFLAGS="${CFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY -fno-define-target-os-macros"
