@@ -1,0 +1,63 @@
+{% set name = "gpsw" %}
+{% set version = "0.7.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - gpsw = gpsw.cli:main
+  script:
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('gpsw', max_pin="x.x") }}
+
+source:
+  url: https://github.com/niekwit/gps-orfeome/archive/refs/tags/{{ version }}.tar.gz
+  sha256: d5c4ab6bfdad7de1ed03a1487fd8cb6a045a881834daaffb7c48e022ceb30a19 
+
+requirements:
+  host:
+    - python ==3.12
+    - pip
+    - setuptools >=61.0 
+  run:
+    - python ==3.12
+    - pygithub ==2.6.1
+    - pydot ==3.0.4
+    - apptainer ==1.4.0
+    - snakemake-minimal ==8.25.5
+    - numpy ==2.2.6
+    - pandas ==2.2.3 
+    - pygments
+    - conda ==24.7.1
+
+test:
+  commands:
+    - gpsw --version 
+    - gpsw --help   
+
+  imports:
+    - gpsw 
+    - gpsw.cli
+    - gpsw.utils 
+
+about:
+  home: https://github.com/niekwit/gps-orfeome
+  summary: "GPSW is a tool for analysing Global Protein Stability Profiling data."
+  description: |
+    GPSW is a wrapper around a Snakemake workflow that analyses Global Protein Stability (GPS) Profiling data. GPS profiling is a powerfull genetic technique to study degron or protein stability at a massive scale in an unbiased manner.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/niekwit/gps-orfeome
+  doc_url: https://gps-orfeome.readthedocs.io/
+
+extra:
+  recipe_maintainers:
+    - niekwit
+  identifiers:
+    - doi:10.5281/zenodo.15473715
