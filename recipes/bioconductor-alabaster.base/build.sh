@@ -19,6 +19,9 @@ then
     export CFLAGS="${CFLAGS} -D_LIBCPP_HAS_NO_C11_ALIGNED_ALLOC"
     export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_HAS_NO_C11_ALIGNED_ALLOC"
   fi
+  # FIXME: this is hard-coded for troubleshooting purposes, don't merge
+  export SDKROOT="/Applications/Xcode_15.2.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk"
+  
   export MACOSX_DEPLOYMENT_TARGET=10.15
   export MACOSX_SDK_VERSION=10.15
   export CFLAGS="${CFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY -fno-define-target-os-macros"
