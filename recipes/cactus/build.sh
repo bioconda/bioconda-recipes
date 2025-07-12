@@ -7,8 +7,12 @@ make EXTRA_FLAGS="-Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_S
 cd ../../
 
 cd submodules/FASTGA
-make CFLAGS="${CFLAGS} -L${PREFIX}/lib" CC=${CC}
+make CFLAGS="${CFLAGS} -L${PREFIX}/lib" CC="${CC}"
 cd ../../
+
+cd submodules/cPecan/externalTools/lastz-distrib-1.03.54/src
+make CC="${CC}"
+cd ../../../../../
 
 ${PYTHON} -m pip install .
 make
