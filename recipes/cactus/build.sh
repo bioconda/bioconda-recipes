@@ -11,6 +11,7 @@ make CFLAGS="${CFLAGS} -L${PREFIX}/lib" CC="${CC}"
 cd ../../
 
 cd submodules/cPecan/externalTools/lastz-distrib-1.03.54/src
+export CFLAGS="${CFLAGS} -I${PREFIX}/include/libxml2"
 make CC="${CC}"
 cd ../../../../../
 
