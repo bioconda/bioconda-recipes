@@ -17,3 +17,4 @@ cd ../../../../../
 
 ${PYTHON} -m pip install .
 make
+mv bin/* ${PREFIX}/bin
