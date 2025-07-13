@@ -25,4 +25,6 @@ cmake -S . -B build -G Ninja \
     -DRFFTW2_LIBRARY="${PREFIX}/fftw2/lib/librfftw${SHLIB_EXT}" \
     ${CONFIG_ARGS}
 
-cmake --build build/ --target install -j "${CPU_COUNT}"
+cmake --build build --config Release --parallel "${CPU_COUNT}"
+ctest -V -C Release --test-dir build
+cmake --install build
