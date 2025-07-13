@@ -14,6 +14,7 @@ if [[ "${target_platform}" == "osx-"* ]]; then
     export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
     export CONFIG_ARGS=""
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath-link,${PREFIX}/lib"
 fi
 
 cmake -S . -B build -G Ninja \
