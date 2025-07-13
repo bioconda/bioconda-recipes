@@ -13,10 +13,6 @@ else
     export CONFIG_ARGS=""
 fi
 
-if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm64" ]]; then
-  export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
-fi
-
 cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
