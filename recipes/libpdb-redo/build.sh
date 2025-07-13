@@ -6,6 +6,9 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-int-conversion -Wno-implicit-function-declaration"
 export CXXFLAGS="${CXXFLAGS} -O3"
 export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig"
+export CMAKE_THREAD_LIBS_INIT="-lpthread"
+export CMAKE_USE_PTHREADS_INIT=1
+export CMAKE_HAVE_LIBC_PTHREAD=1
 
 if [[ "${target_platform}" == "osx-"* ]]; then
     export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
