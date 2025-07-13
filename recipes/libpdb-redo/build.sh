@@ -18,22 +18,14 @@ if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm6
 fi
 
 cmake -S . -B build -G Ninja \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-    -DCMAKE_PREFIX_PATH="${PREFIX}" \
-    -DCMAKE_INSTALL_INCLUDEDIR="include" \
-    -DCMAKE_INSTALL_LIBDIR="lib" \
-    -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" \
-    -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
-    -DCMAKE_CXX_COMPILER="${CXX}" \
+    ${CMAKE_ARGS} \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-    -DBUILD_TESTING=OFF \
     -DBUILD_SHARED_LIBS=ON \
+    -DBUILD_TESTING=OFF \
     -DFFTW2_INCLUDE_DIRS="${PREFIX}/fftw2/include" \
     -DFFTW2_LIBRARY="${PREFIX}/fftw2/lib/libfftw${SHLIB_EXT}" \
     -DRFFTW2_LIBRARY="${PREFIX}/fftw2/lib/librfftw${SHLIB_EXT}" \
     ${CONFIG_ARGS}
 
 cmake --build build --config Release --parallel "${CPU_COUNT}"
-ctest -V -C Release --test-dir build
 cmake --install build
