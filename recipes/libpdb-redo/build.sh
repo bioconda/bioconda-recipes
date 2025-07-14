@@ -17,7 +17,7 @@ else
     export LDFLAGS="${LDFLAGS} -Wl,-rpath-link,${PREFIX}/lib"
 fi
 
-cmake -S . -B build -G Ninja \
+cmake -S . -B build \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_INSTALL_LIBDIR="${PREFIX}/lib" \
     -DCMAKE_INSTALL_INCLUDEDIR="${PREFIX}/include" \
