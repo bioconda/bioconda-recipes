@@ -1,5 +1,5 @@
-{% set version = "2.1" %}
-{% set sha256 = "d6a32a1b17bbaa2314ffc38cba907fc5c7191312ee87d115c9504b2e7888e5f1" %}
+{% set version = "2.4" %}
+{% set sha256 = "4b217b6d3a2a1c932008caef55e69b9d691e61462c3bf309ee0f20b2aa584a4d" %}
 
 package:
   name: harpy
@@ -10,7 +10,7 @@ source:
   sha256: '{{ sha256 }}'
 
 build:
-  number: 0
+  number: 1
   noarch: python
   script_env:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
@@ -19,26 +19,25 @@ build:
   script: |
     mkdir -p ${PREFIX}/bin
     ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
-    chmod 0755 harpy/bin/* 
-    cp -rf harpy/bin/* ${PREFIX}/bin/
+    install -v -m 0755 harpy/bin/* ${PREFIX}/bin
   entry_points:
     - harpy = harpy.__main__:cli
 
 requirements:
   host:
-    - python
+    - python >=3.9
     - pip
     - setuptools-scm >=3.4
   run:
-    - apptainer
-    - bcftools =1.20
+    - apptainer # [linux]
+    - bcftools =1.22
     - conda >24.7
-    - htslib =1.20
-    - pysam =0.22
-    - python >=3.11
-    - rich-click
+    - htslib =1.22
+    - pysam =0.23
+    - python >=3.9
+    - rich-click >=1.8
     - snakemake-minimal =9
-    - samtools =1.20
+    - samtools =1.22
     - seqtk
 
 test:
@@ -48,7 +47,7 @@ test:
 
 about:
   home: "https://github.com/pdimens/harpy"
-  license: GPL-3.0-or-later
+  license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: LICENSE
   summary: "Process raw haplotagging data, from raw sequences to phased haplotypes."
