@@ -17,15 +17,8 @@ else
     export LDFLAGS="${LDFLAGS} -Wl,-rpath-link,${PREFIX}/lib"
 fi
 
-cmake -S . -B build \
-    -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-    -DCMAKE_INSTALL_LIBDIR="lib" \
-    -DCMAKE_INSTALL_INCLUDEDIR="include" \
-    -DCMAKE_PREFIX_PATH="${PREFIX}" \
-    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-    -DCMAKE_SHARED_LINKER_FLAGS="${LDFLAGS}" \
-    -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
-    -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" \
+cmake -S . -B build -G Ninja \
+    ${CMAKE_ARGS} \
     -DTHREADS_PREFER_PTHREAD_FLAG=ON \
     -DBUILD_SHARED_LIBS=ON \
     -DBUILD_TESTING=OFF \
