@@ -7,7 +7,7 @@ sed -i.bak 's|if (NOT TARGET dssp)|find_package(dssp QUIET)\nif(NOT TARGET dssp:
 # - sed -i 's/find_or_fetch_package(cifpp VERSION 7/find_package(cifpp QUIET)\nif(NOT cifpp_FOUND)\n  find_or_fetch_package(cifpp VERSION 7/g' CMakeLists.txt
 # - sed -i 's/GIT_TAG v7.0.9 VARIABLES "CIFPP_SHARE_DIR")/GIT_TAG v7.0.9 VARIABLES "CIFPP_SHARE_DIR")\nendif()/g' CMakeLists.txt
 
-cmake -S . -B build \
+cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
     -DCMAKE_PREFIX_PATH="${PREFIX}" \
     -DCMAKE_CXX_STANDARD=20 \
