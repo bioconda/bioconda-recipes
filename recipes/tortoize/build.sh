@@ -11,12 +11,10 @@ cmake -S . -B build \
     ${CMAKE_ARGS} \
     -DCMAKE_PREFIX_PATH="${PREFIX}" \
     -DCMAKE_CXX_STANDARD=20 \
-    -DBUILD_TESTING=OFF \
+    -DBUILD_TESTING=ON \
     -DBUILD_WEBSERVICE=ON \
-    -DCIFPP_DATA_DIR='' \
-    -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp" \
-    -Dcifpp_DIR="${PREFIX}/share/cmake/libcifpp" \
-    -Dmcfp_DIR="${PREFIX}/share/cmake/libmcfp" \
+    -Dcifpp_DIR="${PREFIX}/share/cmake/cifpp" \
+    -Dmcfp_DIR="${PREFIX}/share/cmake/mcfp" \
     -Dzeep_DIR="${PREFIX}/share/cmake/zeep"
 
 cmake --build build --config Release --parallel "${CPU_COUNT}"
