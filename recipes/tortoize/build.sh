@@ -16,6 +16,7 @@ if [[ "${target_platform}" == "linux-"* ]]; then
         -DCMAKE_CXX_STANDARD=20 \
         -DBUILD_TESTING=ON \
         -DBUILD_WEBSERVICE=ON \
+        -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp" \
         -Dcifpp_DIR="${PREFIX}/share/cmake/cifpp" \
         -Dmcfp_DIR="${PREFIX}/share/cmake/mcfp" \
         -Dzeep_DIR="${PREFIX}/share/cmake/zeep"
