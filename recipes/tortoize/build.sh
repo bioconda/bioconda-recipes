@@ -2,10 +2,6 @@
 
 set -exo pipefail
 
-if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm64" ]]; then
-  export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
-fi
-
 export CXXFLAGS="${CXXFLAGS} -O3"
 
 cp -fv ${SRC_DIR}/rsrc/torsion-data.bin ${PREFIX}/share/libcifpp/
