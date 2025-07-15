@@ -15,3 +15,6 @@ cmake -S . -B build -G Ninja \
 
 cmake --build build --parallel ${CPU_COUNT}
 cmake --install build
+
+install -m 755 build/srsgen ${PREFIX}/bin/
+install -m 755 build/srsview ${PREFIX}/bin/
