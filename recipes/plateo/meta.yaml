@@ -1,0 +1,64 @@
+{% set name = "plateo" %}
+{% set version = "0.3.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Edinburgh-Genome-Foundry/Plateo/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: a224c95f8ee8b8e09a305d8cd7e4cb2d3127eb969f011356b2ad7cf330f397ca
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports: 
+    - {{ pin_subpackage('sequenticon', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - setuptools
+    - pip
+  run:
+    - python >={{ python_min }}
+    - pandas
+    - xlwt
+    - xlrd
+    - openpyxl
+    - numpy
+    - matplotlib
+    - tqdm
+    - fuzzywuzzy
+    - sequenticon
+    - flametree
+    - pdf-reports
+
+test:
+  source_files: 
+    - tests/
+  imports:
+    - {{ name|lower }}
+  requires:
+    - python {{ python_min }}
+    - matplotlib-base
+    - pytest
+    - pytest-cov
+    - pytest-mock
+  commands:
+    - if command -v pytest >/dev/null 2>&1; then pytest tests/; else echo "pytest not available, skipping tests."; fi
+
+about:
+  home: https://github.com/Edinburgh-Genome-Foundry/Plateo
+  summary: "Read/write microplate and picklist data for lab automation"
+  license: MIT
+  license_family: MIT
+  dev_url: https://github.com/Edinburgh-Genome-Foundry/Plateo
+  doc_url: "https://github.com/Edinburgh-Genome-Foundry/Plateo/blob/v{{ version }}/README.rst"
+
+extra:
+  recipe-maintainers:
+    - ramez17khaled
+    - tduigou
+    - breakthewall
