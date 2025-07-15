@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "gse62944-1.30.0"
+installBiocDataPackage.sh "gse62944-1.34.0"

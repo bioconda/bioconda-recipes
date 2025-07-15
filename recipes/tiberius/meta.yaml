@@ -1,4 +1,4 @@
-{% set version = "1.0.0" %}
+{% set version = "1.1.6" %}
 {% set name = "tiberius" %}
 
 package:
@@ -7,37 +7,42 @@ package:
 
 source:
   url: https://github.com/Gaius-Augustus/Tiberius/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 05fc993a72a1881bac2ec85ae412d2a186daf9d5a2bebb60237c8437b3a68da0
+  sha256: 619352ad0aa19a33f8297036f906a91d32505ecbfe6fe7fea366b3e0b0b2adc8
 
 build:
   number: 0
   noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.10
     - pip
+    - hatchling
   run:
-    - python >=3.7
-    - pip
-    - tensorflow
-    - transformers
-    - pyBigWig
+    - python >=3.10
+    - learnmsa
+    - numpy
+    - tensorflow <2.18
     - biopython
-    - bcbio-gff
-    - requests
-    - jax
-    - jaxlib
+    - transformers
 
 test:
-  commands:
-    - tiberius -h
+  imports:
+    - tiberius
 
 about:
-  home: https://github.com/Gaius-Augustus/Tiberius
+  home: "https://github.com/Gaius-Augustus/Tiberius"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: |
-   Tiberius is a programme for quantifying and analysing genetic sequence data.
+  summary: "Tiberius is a deep learning gene-finder."
+  dev_url: "https://github.com/Gaius-Augustus/Tiberius"
+  doc_url: "https://github.com/Gaius-Augustus/Tiberius/blob/v{{ version }}/README.md"
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btae685
+    - biotools:tiberius

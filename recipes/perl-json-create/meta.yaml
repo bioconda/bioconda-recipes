@@ -11,14 +11,16 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 2
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  number: 5
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
   host:
-    - perl
+    - perl >=5.26.2
     - perl-carp
     - perl-extutils-makemaker
     - perl-unicode-utf8
@@ -26,7 +28,7 @@ requirements:
     - perl-file-spec
     - perl-file-temp
   run:
-    - perl
+    - perl >=5.26.2
     - perl-carp
     - perl-json-parse >=0.60
     - perl-unicode-utf8 >=0.62
@@ -39,3 +41,8 @@ about:
   home: http://metacpan.org/pod/JSON::Create
   license: perl_5
   summary: 'fast, minimal, UTF-8-only serialization of data to JSON'
+
+extra:
+  # osx-arm64 is erroring due to missing perl-encode in conda forge
+  additional-platforms:
+    - linux-aarch64

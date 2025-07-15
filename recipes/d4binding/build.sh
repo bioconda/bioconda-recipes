@@ -1,12 +1,22 @@
-#!/bin/bash -e
+#!/bin/bash
+set -xe
 
-set -x
+mkdir -p "${PREFIX}/include"
+mkdir -p "${PREFIX}/lib"
 
-# TODO: Remove the following export when pinning is updated and we use
-#       {{ compiler('rust') }} in the recipe.
-export \
-    CARGO_NET_GIT_FETCH_WITH_CLI=true \
-    CARGO_HOME="${BUILD_PREFIX}/.cargo"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
 
-cd d4binding 
-./install.sh
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+
+cp -f ${RECIPE_DIR}/build_htslib.sh d4-hts/build_htslib.sh
+
+cd d4binding
+
+# build statically linked binary with Rust
+RUST_BACKTRACE=1
+cargo build --release --package=d4binding --target-dir . -j "${CPU_COUNT}"
+
+install -v -m 644 include/d4.h "${PREFIX}/include"
+#install -v -m 644 release/libd4binding.* "${PREFIX}/lib"

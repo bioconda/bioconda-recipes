@@ -1,20 +1,28 @@
-#!/bin/sh
-
-if [[ ${target_platform}  == osx-64 ]] ; then
-    curl -SL https://github.com/nim-lang/nightlies/releases/download/latest-version-1-6/macosx_x64.tar.xz -o macosx_x64.tar.xz
-    tar -xzf macosx_x64.tar.xz
-    cd nim-1.6.*
-    export PATH="$PWD/bin:$PATH"
-    cd ..
-    curl -SL https://github.com/brentp/mosdepth/archive/refs/tags/v${PKG_VERSION}.tar.gz -o mosdepth-latest.tar.gz
-    tar -xzf mosdepth-latest.tar.gz
-    cd mosdepth-${PKG_VERSION}
-    nimble install -y "docopt@0.7.0"
-    nimble build -y --verbose -d:release
-else
-    curl -SL https://github.com/brentp/mosdepth/releases/download/v$PKG_VERSION/mosdepth -o mosdepth
-    chmod +x mosdepth
-fi
+#!/bin/bash
+set -x
 
 mkdir -p "${PREFIX}/bin"
-cp mosdepth "${PREFIX}/bin/"
+
+sed -i.bak 's|-lpthread|-pthread|' nim.cfg
+rm -rf *.bak
+
+if [[ "$(uname -m)" == "arm64" ]]; then
+	nim_build="macosx_arm64"
+	curl -SL https://github.com/nim-lang/nightlies/releases/download/latest-version-2-2/${nim_build}.tar.xz -o ${nim_build}.tar.xz
+	unxz -c ${nim_build}.tar.xz | tar -x
+
+	cd nim-2.2.*
+	export PATH="${PWD}/bin:${PATH}"
+	cd ..
+
+	echo "gcc.exe = \"${CC}\"" >> nim-2.2.*/config/nim.cfg
+	echo "gcc.linkerexe =\"${CC}\"" >>  nim-2.2.*/config/nim.cfg
+	echo "gcc.options.linker %= \"\${gcc.options.linker} ${LDFLAGS}\"" >>  nim-2.2.*/config/nim.cfg
+	cat nim-2.2.*/config/nim.cfg
+
+	nimble --localdeps build -y --verbose -d:release
+else
+	nimble --localdeps build -y --verbose -d:release
+fi
+
+install -v -m 0755 mosdepth "${PREFIX}/bin"

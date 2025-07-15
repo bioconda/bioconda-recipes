@@ -6,9 +6,6 @@ version=${PKG_VERSION%%.*}
 mkdir -p $target
 mkdir -p $PREFIX/bin
 
-
-# Use insecure CURL
-sed -i.bak 's/curl -s --location/curl -k -s --location/' INSTALL.pl
 # Use vep_convert_cache.pl from vep_install.pl
 sed -i.bak 's@/convert_cache.pl@/vep_convert_cache@' INSTALL.pl
 # Find plugins in install directory
@@ -38,14 +35,14 @@ vep_install -a a --NO_HTSLIB --NO_TEST --NO_BIOPERL --NO_UPDATE
 rm -rf t/
 
 # Install plugins
-curl -L -ks -o VEP_plugins.tar.gz https://github.com/Ensembl/VEP_plugins/archive/release/$version.tar.gz
+curl -L -s -o VEP_plugins.tar.gz https://github.com/Ensembl/VEP_plugins/archive/release/$version.tar.gz
 tar -xzvpf VEP_plugins.tar.gz
 mv VEP_plugins*/*.pm .
 mv VEP_plugins*/config .
 rm -rf VEP_plugins*
 
 # Install loftee
-curl -L -ks -o loftee.tar.gz https://github.com/konradjk/loftee/archive/v1.0.3.tar.gz
+curl -L -s -o loftee.tar.gz https://github.com/konradjk/loftee/archive/v1.0.3.tar.gz
 tar -xzvpf loftee.tar.gz
 mv loftee-*/*.pl .
 mv loftee-*/*.pm .
