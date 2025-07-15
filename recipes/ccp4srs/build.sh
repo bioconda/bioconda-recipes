@@ -2,28 +2,15 @@
 
 set -exo pipefail
 
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/
+# CMake設定
+cmake -S . -B build -G Ninja \
+    ${CMAKE_ARGS} \
+    -DCMAKE_C_FLAGS="${CFLAGS}" \
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+    -DBUILD_SHARED_LIBS=ON
 
-autoreconf -ifv
-./configure \
-    --prefix="${PREFIX}" \
-    --enable-shared \
-    --disable-static \
-    --disable-debug \
-    --disable-dependency-tracking \
-    --enable-silent-rules \
-    --disable-option-checking \
-    CC="${CC}" \
-    CXX="${CXX}" \
-    CFLAGS="${CFLAGS}" \
-    CXXFLAGS="${CXXFLAGS}" \
-    CPPFLAGS="${CPPFLAGS}" \
-    LDFLAGS="${LDFLAGS}" \
-
-make -j"${CPU_COUNT}"
-make install
+cmake --build build --parallel ${CPU_COUNT}
+cmake --install build
