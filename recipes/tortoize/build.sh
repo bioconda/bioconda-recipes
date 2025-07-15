@@ -7,7 +7,6 @@ if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm6
 fi
 
 export CXXFLAGS="${CXXFLAGS} -O3"
-export LIBCIFPP_DATA_DIR="${PREFIX}/share/libcifpp"
 
 cp -fv ${SRC_DIR}/rsrc/torsion-data.bin ${PREFIX}/share/libcifpp/
 cp -fv ${SRC_DIR}/rsrc/rama-data.bin ${PREFIX}/share/libcifpp/
@@ -17,6 +16,7 @@ sed -i.bak 's|if (NOT TARGET dssp)|find_package(dssp QUIET)\nif(NOT TARGET dssp:
 cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
     -DCMAKE_CXX_STANDARD=20 \
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DBUILD_TESTING=ON \
     -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp"
 
