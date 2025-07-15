@@ -2,6 +2,10 @@
 
 set -exo pipefail
 
+if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm64" ]]; then
+  export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
+fi
+
 export CXXFLAGS="${CXXFLAGS} -O3"
 
 sed -i.bak 's|if (NOT TARGET dssp)|find_package(dssp QUIET)\nif(NOT TARGET dssp::dssp AND NOT TARGET dssp)|g' CMakeLists.txt
