@@ -10,8 +10,8 @@ cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
     -DCMAKE_C_FLAGS="${CFLAGS}" \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-    -DBUILD_SHARED_LIBS=ON \
-    -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+    -DZLIB_ROOT="${PREFIX}"
 
 cmake --build build --parallel ${CPU_COUNT}
 cmake --install build
