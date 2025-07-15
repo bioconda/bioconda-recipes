@@ -1,9 +1,10 @@
-{% set version = "1.1.1" %}
-{% set sha256 = "7ffd732f7b04a964c188fc933d27f1decea7fc1b0d154b111636524e1ef2560f" %}
+{% set name = "captus" %}
+{% set version = "1.5.0" %}
+{% set sha256 = "bbb9985bed47ff75873c742102ed58a8236bba44d2dc5597cbd7e2855ef18c98" %}
 
 package:
-  name: captus
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/edgardomortiz/Captus/archive/v{{ version }}.tar.gz
@@ -12,25 +13,38 @@ source:
 build:
   number: 0
   noarch: python
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -rf *.bak
+    - ln -sf "${PREFIX}/lib/libbz2.so.1.0" "${PREFIX}/lib/libbz2.so.1"  # [linux]
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  entry_points:
+    - captus_assembly = captus.captus_assembly:main
+    - captus = captus.captus_assembly:main
+    - captus_design = captus.captus_design:main
+    - captusd = captus.captus_design:main
+    - concatenate_alignments = captus.concatenate_alignments:main
+    - most_common_target_per_locus = captus.most_common_target_per_locus:main
+    - new_targets_from_alignments = captus.new_targets_from_alignments:main
+    - phylo_commands = captus.phylo_commands:main
   run_exports:
-    - {{ pin_subpackage("captus", max_pin="x.x") }}
+    - {{ pin_subpackage("captus", max_pin="x") }}
 
 requirements:
-  build:
   host:
     - python >=3.6
     - pip
     - setuptools
+    - zlib  # [linux]
   run:
     - python >=3.6
-    - pip
     - bbmap
-    - clipkit >=1.3.0
-    - falco >=0.3.0
+    - clipkit
+    - falco
     - fastqc
     - mafft
-    - megahit >=1.2.9 # [linux]
-    - megahit =1.2.9=hfbae3c0_0 # [osx]
+    - megahit >=1.2.9  # [linux]
+    - megahit =1.2.9=hfbae3c0_0  # [osx]
     - mmseqs2
     - muscle >=5
     - pandas >=2.1.0
@@ -45,9 +59,23 @@ requirements:
 test:
   commands:
     - captus_assembly --help
+    - captus --help
+    - captus_design --help
+    - captusd --help
+    - concatenate_alignments --help
+    - most_common_target_per_locus --help
+    - new_targets_from_alignments --help
+    - phylo_commands --help
 
 about:
-  home: https://github.com/edgardomortiz/Captus
-  license: GPL3
-  license_file: LICENSE.txt
-  summary: "Captus: Assembly of Phylogenomic Datasets from High-Throughput Sequencing data"
+  home: "https://github.com/edgardomortiz/Captus"
+  dev_url: "https://github.com/edgardomortiz/Captus"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: "LICENSE.txt"
+  summary: "Captus: Assembly of Phylogenomic Datasets from High-Throughput Sequencing data."
+  doc_url: "https://edgardomortiz.github.io/captus.docs"
+
+extra:
+  identifiers:
+    - doi:10.1101/2023.10.27.564367
