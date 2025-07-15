@@ -1,0 +1,56 @@
+{% set name = "CCP4SRS" %}
+{% set version = "2024.06.14" %}
+{% set sha256 = "935b2d99b73f5f8b2396a5f2b6cdc617610131b5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://ccp4forge.rc-harwell.ac.uk/ccp4/{{ name|lower }}/-/archive/{{ sha256 }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin=None) }}
+
+requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - autoconf
+    - automake
+    - gnuconfig
+    - libtool
+    - make
+    - pkg-config
+  host:
+    - mmdb2
+    - zlib
+
+test:
+  commands:
+    - srsgen --version
+    - srsview --version
+    - pdb2to3 --version
+
+about:
+  home: "https://www.ccp4.ac.uk"
+  dev_url: "https://ccp4forge.rc-harwell.ac.uk/ccp4/ccp4srs"
+  doc_url: "https://www.ccp4.ac.uk/html"
+  license: "UNKNOWN"
+  summary: "Chemical structure reference system for macromolecular crystallography"
+  description: |
+    CCP4SRS is a chemical reference library used in macromolecular crystallography
+    for managing structural information of ligands, cofactors, modified amino acids,
+    and carbohydrates. It provides standardized chemical data for structural modeling,
+    refinement, and validation processes in structural biology research.
+
+extra:
+  identifiers:
+    - doi:10.1107/S0907444994003112
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - eunos-1128
