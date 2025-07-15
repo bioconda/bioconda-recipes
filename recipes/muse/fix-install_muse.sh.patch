@@ -1,0 +1,99 @@
+diff --git a/install_muse.sh b/install_muse.sh
+index 7bc2153..8a57cf7 100755
+--- a/install_muse.sh
++++ b/install_muse.sh
+@@ -4,13 +4,20 @@ make clean
+ 
+ mkdir -p lib
+ 
++if [[ `uname` == "Darwin" ]]; then
++	export TOOL=clang
++else
++	export TOOL=gcc
++fi
++
+ # compile boost library
+-cd boost_1_70_0/
+-./bootstrap.sh
+-./b2 --clean
+-./b2
++cd boost-1.87.0.beta1/
++./bootstrap.sh --with-toolset="${TOOL}" --prefix="$(pwd)"
++./b2 toolset="${TOOL}" --layout=system link=static \
++	threading=multi strip=on \
++	variant=release address-model=64 install
+ 
+-cp stage/lib/libboost_iostreams.a ../lib/
++cp -f lib/libboost_iostreams.a ../lib/
+ cd ..
+ 
+ # compile libtcmalloc
+@@ -22,12 +29,21 @@ fi
+ 
+ git clone https://github.com/gperftools/gperftools.git
+ cd gperftools
+-git checkout gperftools-2.9.1
++git checkout gperftools-2.10
+ ./autogen.sh
+-./configure --libdir="$PWD"
+-make -j4
+-make install
+-cp libtcmalloc_minimal.a ../lib/
++if [[ $(uname) == 'Darwin' ]]; then
++	export CFLAGS="$CFLAGS -D_XOPEN_SOURCE"
++	./configure --prefix="${PREFIX}" --libdir="${PWD}" \
++	--disable-debugalloc --disable-libunwind
++	make -j"${CPU_COUNT}"
++	make install
++else
++	./configure --prefix="${PREFIX}" --libdir="${PWD}" \
++	--enable-libunwind --enable-frame-pointers
++	make -j"${CPU_COUNT}"
++	make install
++fi
++cp -f libtcmalloc_minimal.a ../lib/
+ cd ..
+ 
+ # combine htslib
+@@ -41,28 +57,20 @@ git clone https://github.com/samtools/htslib.git
+ cd htslib
+ git checkout 1.9
+ #git submodule update --init --recursive
+-autoreconf -i
+-./configure
+-make -j4
+-cp libhts.a ../lib/
++autoreconf -if
++./configure --enable-libcurl --enable-plugins \
++	LDFLAGS="-L${PREFIX}/lib -Wl,-R${PREFIX}/lib" \
++	CPPFLAGS="-I${PREFIX}/include"
++make -j${CPU_COUNT}
++cp -f libhts.a ../lib/
+ 
+ cd ..
+ 
+-make
+-
+-#clean htslib and gperftools and boost libraries
+-rm -r boost_1_70_0/stage
+-
+-chmod -R 755 gperftools
+-rm -r gperftools
+-
+-chmod -R 755 htslib
+-rm -r htslib
+-
+-
+-
+-
+-
+-
+-
++CFLAGS="${CFLAGS} -O3 ${LDFLAGS}" \
++    CC="${CC}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include" \
++    LDFLAGS="${LDFLAGS} -L${PREFIX}/lib" \
++    make -j"${CPU_COUNT}"
+ 
++rm -rf htslib
++rm -rf gperftools
++rm -rf boost-1.87.0.beta1

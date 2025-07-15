@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import shutil
 import re
 import sys
 import yaml
@@ -201,6 +202,66 @@ SKIP = [
 SKIP_AARCH64 = [
     'pslCDnaFilter', # https://github.com/bioconda/bioconda-recipes/pull/49297
     'pslCheck',      # https://github.com/bioconda/bioconda-recipes/pull/50193
+    'bedCoverage',
+    'bedExtendRanges',
+    'bedItemOverlapCount',
+    'bedToGenePred',
+    'checkCoverageGaps',
+    'checkTableCoords',
+    'chromGraphFromBin',
+    'chromGraphToBin',
+    'dbTrash',
+    'estOrient',
+    'featureBits',
+    'gapToLift',
+    'genePredCheck',
+    'genePredFilter',
+    'genePredHisto',
+    'genePredSingleCover',
+    'genePredToBed',
+    'genePredToBigGenePred',
+    'genePredToFakePsl',
+    'genePredToGtf',
+    'genePredToMafFrames',
+    'genePredToProt',
+    'getRna',
+    'getRnaPred',
+    'gff3ToGenePred',
+    'gtfToGenePred',
+    'hgFindSpec',
+    'hgGcPercent',
+    'hgLoadBed',
+    'hgLoadChain',
+    'hgLoadMaf',
+    'hgLoadNet',
+    'hgLoadOut',
+    'hgLoadOutJoined',
+    'hgLoadWiggle',
+    'hgSpeciesRna',
+    'hgTrackDb',
+    'hubCheck',
+    'hubPublicCheck',
+    'ldHgGene',
+    'liftOver',
+    'liftUp',
+    'mafCoverage',
+    'mafFetch',
+    'mafFrag',
+    'mafFrags',
+    'mafGene',
+    'mafSplitPos',
+    'mafToSnpBed',
+    'makeTableList',
+    'mrnaToGene',
+    'netClass',
+    'overlapSelect',
+    'positionalTblCheck',
+    'pslLiftSubrangeBlat',
+    'pslToBigPsl',
+    'raSqlQuery',
+    'tdbQuery',
+    'transMapPslToGenePred',
+    'validateFiles'
 ]
 
 # Some programs need to be built differently. It seems that a subset of
@@ -299,7 +360,7 @@ for block in parse_footer('FOOTER'):
                 summary=description,
                 version=VERSION,
                 sha256=SHA256,
-                linux_aarch64='' if program in SKIP_AARCH64 else 'additional-platforms:\n    - linux-aarch64\n',
+                linux_aarch64='' if program in SKIP_AARCH64 else 'additional-platforms:\n    - linux-aarch64\n    - osx-arm64\n',
             )
         )
 
@@ -325,7 +386,6 @@ for block in parse_footer('FOOTER'):
             )
         )
 
-    with open(os.path.join(recipe_dir, 'include.patch'), 'w') as fout:
-        fout.write(open('include.patch').read())
+    shutil.copytree('patches', recipe_dir, dirs_exist_ok=True)
 
 sys.stderr.write('\n')

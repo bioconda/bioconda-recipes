@@ -1,50 +1,55 @@
-{% set version = "0.4.4" %}
-{% set sha256 = "39e9b2fb3370ee584fbeed8522260c44bb6053489819057f1a232267a526f72a" %}
-
+{% set name = "pcaone" %}
+{% set version = "0.5.3" %}
+{% set sha256 = "1a77101c3c8d1a473efbdbe0bd8cc1c71481137eab4e2b9c2ea026f9660f9ad2" %}
 
 package:
-  name: pcaone
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/Zilong-Li/PCAone/archive/refs/tags/v{{ version }}.tar.gz # [x86_64]
-  sha256: '{{ sha256 }}'
+  url: https://github.com/Zilong-Li/PCAone/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   run_exports:
-    - {{ pin_subpackage('pcaone', max_pin="x") }}
+    - {{ pin_subpackage('pcaone', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
-    - sysroot_linux-64 2.17 # [linux]
+    - sysroot_linux-64 2.17  # [linux]
+  host:
+    - mkl >=2025.1.0  # [linux and x86_64]
+    - mkl-include >=2025.1.0  # [linux and x86_64]
+    - zlib
     - llvm-openmp  # [osx]
     - libgomp  # [linux]
-
-  host:
-    - mkl
-    - mkl-include
-    - zlib
-
   run:
-    - mkl
+    - mkl >=2025.1.0  # [linux and x86_64]
+    - mkl-include >=2025.1.0  # [linux and x86_64]
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
 
 test:
   commands:
     - PCAone --help
 
 about:
-  home: https://github.com/Zilong-Li/PCAone
-  license: GPL-3.0-only
+  home: "https://github.com/Zilong-Li/PCAone"
+  license: "GPL-3.0-only"
   license_family: GPL3
   license_file: LICENSE
-  summary: PCAone - Principal Component Analysis All in One
-  doc_url: https://github.com/Zilong-Li/PCAone
-  dev_url: https://github.com/Zilong-Li/PCAone
+  summary: "PCAone - Principal Component Analysis All in One."
+  doc_url: "https://github.com/Zilong-Li/PCAone"
+  dev_url: "https://github.com/Zilong-Li/PCAone"
 
 extra:
   recipe-maintainers:
-    - Zilong
+    - Zilong-Li
+  additional-platforms:
+    # mkl and mkl-include not available for linux-aarch64
+    #- linux-aarch64
+    - osx-arm64

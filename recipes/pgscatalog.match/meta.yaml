@@ -1,47 +1,52 @@
 {% set name = "pgscatalog.match" %}
-{% set version = "0.3.1" %}
+{% set version = "0.4.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pgscatalog_match-{{ version }}.tar.gz
-  sha256: 316feb3337298ac54a2b8aa5baa68bb9144acc1f38795cce628d8cd9b2e3b7c1
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pgscatalog_match-{{ version }}.tar.gz
+  sha256: eed1a5d52d90002b6e4d4c815454985979238abd42ca34ba8f01364a1becfab3
 
 build:
   number: 0
   noarch: python
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   entry_points:
     - pgscatalog-match = pgscatalog.match.cli.match_cli:run_match
     - pgscatalog-matchmerge = pgscatalog.match.cli.merge_cli:run_merge
     - pgscatalog-intersect = pgscatalog.match.cli.intersect_cli:run_intersect
-  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage('pgscatalog.match', max_pin="x.x") }}
 
 requirements:
   host:
     - python >=3.10
-    - poetry-core
+    - setuptools-scm
     - pip
   run:
     - python >=3.10
-    - polars 0.20.30
-    - pyarrow >=15.0.0,<16.0.0
-    - pgscatalog.core >=0.2.1,<0.3.0
+    - polars ==0.20.30
+    - pyarrow >=15.0.0
+    - pgscatalog.core >=0.3.3
 
 test:
   imports:
     - pgscatalog.match
   commands:
+    - pip check
     - pgscatalog-match --help
     - pgscatalog-matchmerge --help
     - pgscatalog-intersect --help
 
 about:
-  home: https://github.com/PGScatalog/pygscatalog
+  home: "https://github.com/PGScatalog/pygscatalog"
   summary: "Tools for matching variants in PGS scoring files and target variant information files."
-  license: MIT
-  license_family: MIT
-  doc_url: https://pygscatalog.readthedocs.io
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: LICENSE
+  doc_url: "https://pygscatalog.readthedocs.io"
+  dev_url: "https://github.com/PGScatalog/pygscatalog"

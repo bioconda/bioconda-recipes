@@ -1,0 +1,61 @@
+{% set name = "wakhan" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/KolmogorovLab/Wakhan/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 0924e576c019301b09cb227b1faf37851eb7d33d307c66463b00e082e499bc76
+
+build:
+  entry_points: 
+    - wakhan = src.main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+    - setuptools
+  run:
+    - python >=3.7
+    - samtools >=1.14
+    - bcftools >=1.14
+    - pysam
+    - pandas
+    - pyfaidx
+    - numpy ==1.24.4
+    - plotly ==5.24.1
+    - scikit-learn ==1.2.0
+    - scipy ==1.9.2
+    - ruptures
+    - parse-vcf
+    - python-kaleido
+    - vcf_parser
+
+test:
+  imports:
+    - pysam
+    - vcf_parser
+  commands:
+    - wakhan --help
+  requires:
+    - pip
+
+about:
+  home: "https://github.com/KolmogorovLab/Wakhan"
+  summary: A tool to analyze haplotype-specific chromosome-scale somatic copy number aberrations and aneuploidy using long reads
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - ljwharbers
+    - villena-francis
