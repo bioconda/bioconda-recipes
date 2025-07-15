@@ -1,0 +1,79 @@
+{% set name = 'NetMD' %}
+{% set version = '1.0.0' %}
+{% set sha256 = "ac6772b1fd576e8091c55465f4a5e76ab9d2692ae52146fb86385d027fc12196" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ablab/nerpa/releases/download/v{{ version }}/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  # patches:
+    # - version.patch
+    # - setup.patch
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('NetMD', max_pin="x.x") }}
+
+requirements:
+  build:
+    - python >=3.10,<3.11
+    - git
+    - pip
+    - pytest-runner
+    - h5py
+    - hdf5
+  run:
+    - python >=3.10,<3.11
+    - matplotlib-base
+    - tslearn
+    - numpy >=1.22
+    - networkx >=3.3
+    - decorator ==5.1.*
+    - pandas >=1.2.0
+    - gensim >=4.0.0
+    - tqdm
+    - python-louvain
+    - scikit-learn
+    - scipy <1.13
+    - pygsp
+    - python-Levenshtein
+    - pyyaml
+    - h5py
+    - hdf5
+    - colorama
+    - plotly
+    - nbformat >=4.2.0
+    - ruptures
+    - ipykernel
+
+test:
+  imports:
+    - netmd
+  commands:
+    - netmd -h
+  requires:
+    - pytest
+
+about:
+  home: "https://github.com/mazzalab/NetMD"
+  dev_url: "https://github.com/mazzalab/NetMD"
+  summary: "NetMD is a computational method for identifying consensus behavior across multiple molecular dynamics simulations."
+  description: |
+    Using Graph-based Embeddings and Dynamic Time Warping, *NetMD* aligns trajectories that may be temporally out of sync and 
+    pinpoints the replicas that most faithfully represent the overall ensemble behavior. This enables consistent comparisons across simulations 
+    and supports reliable characterization of system variants, making it easier to detect shared patterns and reduce the influence of outliers 
+    or simulation artifacts.
+  license: MIT
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  doc_url: "https://github.com/mazzalab/NetMD/blob/main/example/netmd_notebook.ipynb"
+
+extra:
+  recipe-maintainers:
+    - PieroniM
+    - tm4zza
