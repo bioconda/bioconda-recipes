@@ -5,7 +5,6 @@ set -exo pipefail
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-# CMake設定
 cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
     -DCMAKE_C_FLAGS="${CFLAGS}" \
