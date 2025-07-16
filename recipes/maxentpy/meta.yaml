@@ -1,27 +1,27 @@
+{% set name = "maxentpy" %}
 {% set version = "0.0.3" %}
 
 package:
-  name: maxentpy
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 4
-  run_exports:
-    - {{ pin_subpackage("maxentpy", max_pin="x.x") }}
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 source:
   url: https://github.com/kepbod/maxentpy/archive/refs/tags/{{ version }}.tar.gz
   sha256: 1867c1786199b8219cb9be37fa8b055748d4e52d6e0c6c86c7da8aaaaadd771c
+
+build:
+  number: 4
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('maxentpy', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - pip
-    - python >=3.8,<3.10
-    - cython >=0.29
-    - setuptools >=59.5.0
+    - python
+    - cython
   run:
     - python
     - msgpack-python
@@ -31,12 +31,14 @@ test:
     - maxentpy
 
 about:
-  home: https://github.com/kepbod/maxentpy
+  home: "https://github.com/kepbod/maxentpy"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: maxentpy is a python wrapper for MaxEntScan to calculate splice site strength.
+  summary: "maxentpy is a python wrapper for MaxEntScan to calculate splice site strength."
+  dev_url: "https://github.com/kepbod/maxentpy"
 
 extra:
   additional-platforms:
     - linux-aarch64
-
+    - osx-arm64
