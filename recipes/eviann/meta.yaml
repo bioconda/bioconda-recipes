@@ -1,8 +1,9 @@
+{% set name = "eviann" %}
 {% set version = "2.0.3" %}
 {% set sha256 = "6c5585b64ad23b51e9da981948cd9c0d6f8311f45712709b1fe090c3aa08191d" %}
 
 package:
-  name: eviann
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -10,24 +11,31 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  skip: true  # [osx]
   number: 0
   run_exports:
-    - {{ pin_subpackage('eviann', max_pin="x.x") }}
+    - {{ pin_subpackage('eviann', max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
   host:
     - perl
     - zlib
     - bzip2
+    - tar
   run:
     - perl
     - blast
     - hisat2
     - minimap2
+    - miniprot
+    - samtools
+    - stringtie
     - wget
 
 test:
@@ -35,12 +43,17 @@ test:
     - eviann.sh --version
 
 about:
-  home: https://github.com/alekseyzimin/EviAnn-release
-  license: GPLv3
+  home: "https://github.com/alekseyzimin/EviAnn_release"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: Evidence-based eukaryotic genome annotation software
+  summary: "Evidence-based eukaryotic genome annotation software."
+  dev_url: "https://github.com/alekseyzimin/EviAnn_release"
+  doc_url: "https://github.com/alekseyzimin/EviAnn_release/blob/v{{ version }}/README.md"
 
 extra:
   additional-platforms:
-
-
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1101/2025.05.07.652745v1
