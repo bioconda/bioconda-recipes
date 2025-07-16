@@ -5,7 +5,7 @@ mkdir -p "$PREFIX"
 
 # debug: show available tool chains
 ./gradlew -q javaToolchains
-./gradlew --exclude-task test --debug --stacktrace build
+./gradlew --exclude-task test --debug --stacktrace jpackage
 
 cp -rv build/install/MZmine/* "$PREFIX"
 
