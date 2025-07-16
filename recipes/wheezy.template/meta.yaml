@@ -1,31 +1,42 @@
+{% set name = "wheezy.template" %}
+{% set version = "3.2.3" %}
+
 package:
-  name: wheezy.template
-  version: "3.1.0"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/9f/81/659038f48d53bb1a9f4ff97b8b2c53f2cb7ff60003b22d57b4dd22d8da0c/wheezy.template-3.1.0.tar.gz
-  sha256: e11007cac73368dce12998e34b66c476016bb461471ffc1e4d56e84002ec960f
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/wheezy_template-{{ version }}.tar.gz
+  sha256: a494fa2cd83b25d81af270d9ee62b533f7ccf85e7f8cfbad3ed762992ba268f6
 
 build:
-  noarch: python
   number: 0
+  noarch: python
+  entry_points:
+    - wheezy.template = wheezy.template.console:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('wheezy.template', max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.9
+    - pip
     - setuptools
-
   run:
-    - python
+    - python >=3.9
 
 test:
   imports:
     - wheezy
-    - wheezy.template
-    - wheezy.template.ext
+  commands:
+    - wheezy.template --help
 
 about:
-  home: https://bitbucket.org/akorn/wheezy.template
+  home: "https://github.com/akornatskyy/wheezy.template"
+  summary: "A lightweight template library."
+  doc_url: "https://wheezytemplate.readthedocs.io/en/latest"
   license: MIT
-  summary: 'A lightweight template library'
   license_family: MIT
+  license_file: LICENSE
+  dev_url: "https://github.com/akornatskyy/wheezy.template"
