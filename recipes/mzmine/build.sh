@@ -7,7 +7,7 @@ mkdir -p "${PREFIX}"
 ./gradlew -q javaToolchains
 ./gradlew --exclude-task test --debug --stacktrace jpackage
 
-cp -rfv build/jpackage/mzmine/* "${PREFIX}"
+cp -rfv mzmine-community/build/jpackage/mzmine/* "${PREFIX}"
 
 # MZmine does not run without --enable-preview
 # .. so we sneek in in the command line
