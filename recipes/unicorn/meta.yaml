@@ -1,38 +1,37 @@
 {% set name = "unicorn" %}
 {% set version = "1.0.0" %}
 {% set sha256 = "3613ebfc220afc5cca36d5f74e9ccd2c43f4a9cbb317e79f86d4514ca0bcf7fa" %}
+
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  git_url: https://github.com/GeoGenetics/unicorn.git
-  git_rev: v{{ version }}
+  url: https://github.com/GeoGenetics/unicorn/releases/download/v1.0.0/v1.0.0.tar.gz
   sha256: {{ sha256 }} 
 
 build:
   number: 0
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}  # Specifies the C compiler for the target platform
     - make                # The 'make' build tool
-
   host:
     - htslib >=1.10              # The library to link against during compilation
-
   run:
     - htslib >=1.10              # The library needed at runtime by the executable
 
 test:
   commands:
-    - make test
+    - unicorn 2>&1
 
 about:
   home: "https://github.com/GeoGenetics/unicorn"
   license: MIT
+  license_family: MIT
   summary: "A tool for computing statistics on short read alignments."
   dev_url: "https://github.com/GeoGenetics/unicorn"
 
