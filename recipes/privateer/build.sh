@@ -28,7 +28,7 @@ cmake -S . -B build -G Ninja \
     -DCMAKE_C_FLAGS="${CFLAGS}" \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DPYBIND11_INCLUDE_DIR="${PREFIX}/include/pybind11" \
-    -PYTHON_INCLUDE_DIRS="${PREFIX}/include/python${PY_VER}" \
+    -DPYTHON_INCLUDE_DIRS="${PREFIX}/include/python${PY_VER}" \
     -DMMDB2DEP="${PREFIX}/lib/libmmdb2${SHLIB_EXT}" \
     -DCCP4CDEP="${PREFIX}/lib/libccp4srs${SHLIB_EXT}" \
     -DCCP4SRSDEP="${PREFIX}/lib/libccp4c${SHLIB_EXT}" \
