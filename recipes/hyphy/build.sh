@@ -45,5 +45,4 @@ cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     "${HYPHY_OPTS}" \
     "${CONFIG_ARGS}"
 
-ninja -C build -j1 HYPHYMPI
-ninja -C build -j1 install
+ninja -C build -j"${CPU_COUNT}" install
