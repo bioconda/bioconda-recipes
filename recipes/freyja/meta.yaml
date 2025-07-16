@@ -1,30 +1,32 @@
-{% set version = "1.5.2" %}
 {% set name = "Freyja" %}
+{% set version = "2.0.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
+source:
+  url: https://github.com/andersen-lab/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 8b7b8304f5e488cd44fa3f25f27feeeff2355358416e5e9becbdf91822c3d96a
+
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
-  noarch: python
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -rf *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   entry_points:
-    - freyja=freyja._cli:cli
+    - freyja = freyja._cli:cli
   run_exports:
     - {{ pin_subpackage('freyja', max_pin="x") }}
 
-source:
-  url:  https://github.com/andersen-lab/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: e1703f2bff4bd747f80b7b3ebd97a8b06dc1b149d4306323c0408ee4cfeddab9
-
 requirements:
   host:
-    - python >=3.7
+    - python <3.12
     - pip
-    - setuptools
+    - setuptools <81
   run:
-    - python >=3.7
+    - python <3.12
     - click
     - cvxpy
     - ivar
@@ -42,18 +44,30 @@ requirements:
     - pysam
     - biopython
     - seaborn-base
-    - pyarrow
+    - pyarrow >=10.0.1
     - sphinx
     - sphinx_rtd_theme
+    - sphinx-click
 
 test:
   commands:
     - freyja variants --help
 
 about:
-  home: https://github.com/andersen-lab/Freyja
-  license: BSD-2-Clause
+  home: "https://github.com/andersen-lab/Freyja"
+  license: "BSD-2-Clause"
   license_family: BSD
   license_file: LICENSE
   summary: "Freyja recovers relative lineage abundances from mixed SARS-CoV-2 samples and provides functionality to analyze lineage dynamics."
-  dev_url: https://github.com/andersen-lab/Freyja
+  dev_url: "https://github.com/andersen-lab/Freyja"
+  doc_url: "https://andersen-lab.github.io/Freyja"
+
+extra:
+  identifiers:
+    - biotools:freyja
+    - usegalaxy-eu:freyja_demix
+    - usegalaxy-eu:freyja_variants
+    - usegalaxy-eu:freyja_boot
+    - usegalaxy-eu:freyja_aggregate_plot
+  skip-lints:
+    - should_be_noarch_generic

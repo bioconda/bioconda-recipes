@@ -1,20 +1,21 @@
 {% set name = "demuxlet" %}
 {% set version = "1.0" %}
-{% set sha256  = "6ca1427b08461eac292623041d4808c7216e18e5ac0eade0c8245930853b68ff" %}
+{% set sha256  = "0011c59b197fa8047ff918e07582c02b618472d89b722c580cb0b14aea704c77" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 6
-  skip: True # [osx]
-
 source:
-  url: https://github.com/statgen/demuxlet/archive/b99026f9298f46d897a23f6e7909e462e1b1fa1b.zip
+  url: https://github.com/statgen/{{ name }}/archive/f5044eb9ed5c6678aa3a80a8f2be7db7748ee732.zip
   sha256: {{ sha256 }}
   patches:
-    - Makefile.am.patch
+    - 0001-Makefile-am.patch
+
+build:
+  number: 7
+  run_exports:
+    - {{ pin_subpackage('demuxlet', max_pin="x") }}
 
 requirements:
   build:
@@ -24,20 +25,36 @@ requirements:
     - libtool
     - autoconf
     - automake
+    - pkg-config
+    - gnuconfig
   host:
-    - htslib
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - htslib 1.10
+    - zlib
   run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - samtools
-    - htslib
+    - htslib 1.10
 
 test:
   commands:
-    - demuxlet -help 2>&1 | grep 'Detailed' 
+    - demuxlet -help 2>&1 | grep 'Detailed'
 
 about:
-  home: https://github.com/statgen/demuxlet
-  license: GPL3
+  home: "https://github.com/statgen/demuxlet"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: Genetic multiplexing of barcoded single cell RNA-seq
-  dev_url: https://github.com/statgen/demuxlet
-  doc_url: https://github.com/statgen/demuxlet
+  summary: "Genetic multiplexing of barcoded single cell RNA-seq."
+  dev_url: "https://github.com/statgen/demuxlet"
+  doc_url: "https://github.com/statgen/demuxlet"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:demuxlet
+    - doi:10.1038/nbt.4042
