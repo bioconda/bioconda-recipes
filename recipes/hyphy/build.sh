@@ -1,10 +1,10 @@
 #!/bin/bash
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -fPIC -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -fPIC -I${PREFIX}/include -Wno-unused-variable"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-if [[ `uname` == "Darwin" ]]; then
+if [[ `uname -s` == "Darwin" ]]; then
     export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
     export CONFIG_ARGS=""
