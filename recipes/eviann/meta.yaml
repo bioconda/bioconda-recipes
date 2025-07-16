@@ -1,1 +1,58 @@
+{% set version = "2.0.3" %}
+{% set sha256 = "" %}
+
+package:
+  name: EviAnn
+  version: {{ version }}
+
+source:
+  url: https://github.com/alekseyzimin/EviAnn-release/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - krakenuniq.patch
+    - krakenuniq2.patch
+
+build:
+  skip: true  # [osx]
+  number: 4
+  run_exports:
+    - {{ pin_subpackage('eviann', max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+  host:
+    - perl
+    - zlib
+    - bzip2
+  run:
+    - perl
+    - makeblastdb
+    - blastp
+    - hisat2
+    - hisat2-build
+    - minimap2
+    - TransDecoder.LongOrfs
+    - TransDecoder.Predict
+    - wget
+    - samtools
+    - stringtie
+
+test:
+  commands:
+    - eviann.sh --version
+
+about:
+  home: https://github.com/alekseyzimin/EviAnn-release
+  license: GPLv3
+  license_file: LICENSE
+  summary: Evidence-based eukaryotic genome annotation software
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+
 
