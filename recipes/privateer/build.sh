@@ -19,7 +19,7 @@ fi
 #   export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
 # fi
 
-sed -i.bak "s|||g" "CMakeLists.txt"
+sed -i.bak 's|${PYTHON_LIBRARY}||g' "CMakeLists.txt"
 
 source ccp4.envsetup-sh
 
