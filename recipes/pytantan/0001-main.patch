@@ -1,0 +1,156 @@
+diff --git a/.github/workflows/requirements.txt b/.github/workflows/requirements.txt
+index b95f12f..1fd1775 100644
+--- a/.github/workflows/requirements.txt
++++ b/.github/workflows/requirements.txt
+@@ -1,7 +1,6 @@
+ coverage ~=6.0
+ cython ~=3.0
+ build
+-importlib-resources ; python_version < '3.7'
+ archspec ~=0.2      ; os_name != 'nt'
+ scoring-matrices ~=0.3.0
+ scikit-build-core
+diff --git a/docs/conf.py b/docs/conf.py
+index 870c1c9..de9ecce 100644
+--- a/docs/conf.py
++++ b/docs/conf.py
+@@ -12,6 +12,7 @@ import re
+ import semantic_version
+ import shutil
+ import sys
++import urllib.request
+ 
+ # -- Path setup --------------------------------------------------------------
+ 
+@@ -28,6 +29,13 @@ project_dir = os.path.dirname(docssrc_dir)
+ if os.getenv("READTHEDOCS", "False") != "True":
+     sys.path.insert(0, project_dir)
+ 
++# Download the *See Also* cards from a centralized location so it can be kept
++# up-to-date across all projects
++with urllib.request.urlopen("https://gist.githubusercontent.com/althonos/5d6bf5a512d64dc951c42a91d5fc3fb3/raw/related.rst") as src:
++    with open("related.rst", "wb") as dst:
++        shutil.copyfileobj(src, dst)
++
++
+ # -- Project information -----------------------------------------------------
+ # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+ 
+diff --git a/docs/requirements.txt b/docs/requirements.txt
+index ee3f2e5..86aa6f4 100644
+--- a/docs/requirements.txt
++++ b/docs/requirements.txt
+@@ -1,5 +1,4 @@
+ # build dependencies
+-setuptools >=46.4
+ cython >=3.0
+ scoring-matrices ~=0.2.0
+ 
+diff --git a/pyproject.toml b/pyproject.toml
+index 4bf88bd..69f0041 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -12,13 +12,12 @@ license = { file = "COPYING" }
+ authors = [
+   { name = "Martin Larralde", email = "martin.larralde@embl.de" },
+ ]
+-# platform = "posix"
+ keywords = ["bioinformatics", "sequence", "repeats", "masking"]
+ classifiers = [
+     "Development Status :: 4 - Beta",
+     "Intended Audience :: Developers",
+     "Intended Audience :: Science/Research",
+-    "License :: OSI Approved :: MIT License",
++    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+     "Operating System :: OS Independent",
+     "Programming Language :: C",
+     "Programming Language :: Cython",
+@@ -28,6 +27,7 @@ classifiers = [
+     "Programming Language :: Python :: 3.10",
+     "Programming Language :: Python :: 3.11",
+     "Programming Language :: Python :: 3.12",
++    "Programming Language :: Python :: 3.13",
+     "Programming Language :: Python :: Implementation :: CPython",
+     "Programming Language :: Python :: Implementation :: PyPy",
+     "Topic :: Scientific/Engineering :: Bio-Informatics",
+@@ -40,6 +40,7 @@ dependencies = [
+ ]
+ 
+ [project.urls]
++"Homepage" = "https://github.com/althonos/pytantan/"
+ "Documentation" = "https://pytantan.readthedocs.io/en/stable/"
+ "Bug Tracker" = "https://github.com/althonos/pytantan/issues"
+ "Changelog" = "https://github.com/althonos/pytantan/blob/main/CHANGELOG.md"
+@@ -47,19 +48,11 @@ dependencies = [
+ "Builds" = "https://github.com/althonos/pytantan/actions"
+ "PyPI" = "https://pypi.org/project/pytantan"
+ 
+-[project.optional-dependencies]
+-test = ["importlib-resources ; python_version < '3.9'"]
+-
+ [tool.scikit-build]
+ build-dir = "build/{build_type}"
+ editable.rebuild = true
+ editable.verbose = false
+ 
+-[[tool.scikit-build.generate]]
+-path = "src/pytantan/_version.py"
+-template = '__version__ = "${version}"'
+-location = 'source'
+-
+ [[tool.scikit-build.overrides]]
+ if.state = "editable"
+ cmake.build-type = "Debug"
+@@ -73,6 +66,13 @@ cmake.define.CMAKE_CXX_COMPILER_LAUNCHER = "sccache"
+ if.env.MOLD = true
+ cmake.define.CMAKE_LINKER_TYPE = "mold"
+ 
++[tool.cibuildwheel]
++before-build = "pip install scikit-build-core cython scoring-matrices"
++build-frontend = { name = "pip", args = ["--no-build-isolation"] }
++build-verbosity = 1
++test-command = "python -m unittest pytantan.tests -v"
++free-threaded-support = false
++
+ [tool.coverage.run]
+ plugins = ["Cython.Coverage"]
+ 
+diff --git a/src/pytantan/__init__.py b/src/pytantan/__init__.py
+index 362832d..38df521 100644
+--- a/src/pytantan/__init__.py
++++ b/src/pytantan/__init__.py
+@@ -1,6 +1,4 @@
+ # noqa: D104
+-from ._version import __version__
+-
+ __author__ = "Martin Larralde <martin.larralde@embl.de>"
+ __license__ = "GPLv3+"
+ __all__ = [
+@@ -13,7 +11,13 @@ __all__ = [
+ 
+ from . import lib
+ from ._mask import mask_repeats
+-from .lib import Alphabet, RepeatFinder, LikelihoodMatrix, default_scoring_matrix
++from .lib import (
++    __version__,
++    Alphabet,
++    RepeatFinder,
++    LikelihoodMatrix,
++    default_scoring_matrix
++)
+ 
+ # Use the library documentation
+ __doc__ = lib.__doc__
+diff --git a/src/pytantan/lib.pyx b/src/pytantan/lib.pyx
+index f41aed8..ab51bc9 100644
+--- a/src/pytantan/lib.pyx
++++ b/src/pytantan/lib.pyx
+@@ -45,6 +45,8 @@ cdef extern from "<cctype>" namespace "std" nogil:
+     cdef int toupper(int ch)
+     cdef int tolower(int ch)
+ 
++__version__ = PROJECT_VERSION
++
+ # --- Python imports -----------------------------------------------------------
+ 
+ import array
