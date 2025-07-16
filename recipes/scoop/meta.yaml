@@ -1,31 +1,34 @@
+{% set name = "scoop" %}
+{% set version = "0.7.2.0" %}
+
 package:
-  name: scoop
-  version: "0.7.2.0"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/cb/76/55d6cb5b4a4e221d0f4054420258045dea917f20f051d469a5b344535970/scoop-0.7.2.0.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/scoop-{{ version }}.tar.gz
   sha256: 7658faf751627f5507b6f636794721d89db1771234a36e1378ee6796dd7ee761
-#  patches:
-#    - setup.py.patch
 
 build:
-  noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  run_exports:
+    - {{ pin_subpackage('scoop', max_pin="x.x") }}
 
 requirements:
   host:
-    - python
+    - python >=3
+    - pip
     - setuptools
-    - greenlet >=0.3.4
-    - pyzmq >=13.1.0
   run:
-    - python
+    - python >=3
     - greenlet >=0.3.4
     - pyzmq >=13.1.0
     # Apparently pyzmq needs this (TODO fix that instead).
     # problem might go away when conda-forge priority is raised
     # after R migration.
+    - psutil
 
 test:
   imports:
@@ -37,6 +40,10 @@ test:
     - scoop.launch
 
 about:
-  home: http://github.com/soravux/scoop
-  license: GNU Library or Lesser General Public License (LGPL)
-  summary: 'Scalable COncurrent Operations in Python'
+  home: "https://github.com/soravux/scoop"
+  summary: "Scalable COncurrent Operations in Python."
+  license: "LGPL-3.0-only"
+  license_family: LGPL
+  license_file: "LICENSE.txt"
+  dev_url: "https://github.com/soravux/scoop"
+  doc_url: "https://scoop.readthedocs.io"
