@@ -19,12 +19,26 @@ fi
 #   export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
 # fi
 
-source "${SRC_DIR}/ccp4.envsetup-sh"
+sed -i.bak "s|||g" "CMakeLists.txt"
+
+source ccp4.envsetup-sh
 
 cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
     -DCMAKE_C_FLAGS="${CFLAGS}" \
-    -DCMAKE_CXX_FLAGS="${CXXFLAGS}"
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+    -DPYBIND11_INCLUDE_DIR="${PREFIX}/include/pybind11" \
+    -PYTHON_INCLUDE_DIRS="${PREFIX}/include/python${PY_VER}" \
+    -DMMDB2DEP="${PREFIX}/lib/libmmdb2${SHLIB_EXT}" \
+    -DCCP4CDEP="${PREFIX}/lib/libccp4srs${SHLIB_EXT}" \
+    -DCCP4SRSDEP="${PREFIX}/lib/libccp4c${SHLIB_EXT}" \
+    -DCLIPPERCOREDEP="${PREFIX}/lib/libclipper-core${SHLIB_EXT}" \
+    -DCLIPPERMMDBDEP="${PREFIX}/lib/libclipper-mmdb${SHLIB_EXT}" \
+    -DCLIPPERMINIMOLDEP="${PREFIX}/lib/libclipper-minimol${SHLIB_EXT}" \
+    -DCLIPPERCONTRIBDEP="${PREFIX}/lib/libclipper-contrib${SHLIB_EXT}" \
+    -DCLIPPERCCP4DEP="${PREFIX}/lib/libclipper-ccp4${SHLIB_EXT}" \
+    -DCLIPPERCIFDEP="${PREFIX}/lib/libclipper-cif${SHLIB_EXT}"
+
 cmake --build build --clean-first --parallel "${CPU_COUNT}"
 cmake --install build --parallel "${CPU_COUNT}"
 
