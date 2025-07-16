@@ -1,9 +1,18 @@
 #!/bin/bash
 
-mkdir -p ${PREFIX}/bin
-
 cd src
 mv Smoother.cpp smoother.cpp
 mv Binning.cpp binning.cpp
-make
-cp {StereoGene,Binner,Confounder,ParseGenes,Projector,Smoother} ${PREFIX}/bin
+make \
+    CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+    CPP="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS} -std=gnu++11"
+
+install -d "${PREFIX}/bin"
+install \
+    StereoGene \
+    Binner \
+    Confounder \
+    ParseGenes \
+    Projector \
+    Smoother \
+    "${PREFIX}/bin/"

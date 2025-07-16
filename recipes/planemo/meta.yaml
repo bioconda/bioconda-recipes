@@ -1,57 +1,58 @@
 {% set name = "planemo" %}
-{% set version = "0.70.0" %}
+{% set version = "0.75.31" %}
+{% set sha256 = "1daa5f75b6a2ba15894dfca8a5c2dd1b13a40503ef07b20d414a04732deec47c" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 31a02c72483b411f32dddd18794234928613bd89f01342503432b0cb22810bfd
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/planemo-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   entry_points:
-    - planemo=planemo.cli:planemo
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+    - planemo = planemo.cli:planemo
+  run_exports:
+    - {{ pin_subpackage('planemo', max_pin="x.x") }}
 
 requirements:
   host:
+    - python >=3.7
     - pip
-    - python
+    - setuptools
   run:
-    - aenum
-    - beautifulsoup4
-    - bioblend >=0.13.0
-    - click
-    - cwltool 1.0.20191225192155
-    - docutils
+    - python >=3.7
+    - allure-python-commons
+    - backports
+    - backports.strenum
+    - bioblend >=1.6.0
+    - click !=8.0.2
+    - cwltool >=1.0.20191225192155
     - ephemeris >=0.10.3
-    - galaxy-containers
-    - galaxy-tool-util >=19.9.1
-    - galaxy-util >=19.9.0
+    - galaxy-job-config-init >=0.1.3
+    - galaxy-tool-util >=24.1,<25.1
+    - galaxy-util >=24.1,<25.1
     - glob2
-    - gxformat2 >=0.8.0
+    - gxformat2 >=0.14.0
+    - h5py
     - jinja2
-    - lxml  # for planemo lint
+    - lxml
     - oyaml
-    - pyaml
-    - python
+    - pathvalidate
     - pyyaml
-    - six >=1.7.0
     - virtualenv
+    - stdlib-list  # [py < 310]
+    - tabulate
 
 test:
   imports:
     - planemo
-    - planemo.bioconda_scripts
     - planemo.commands
-    - planemo.conda_verify
-    - planemo.cwl
-    - planemo.cwl.cwl2script
     - planemo.database
-    - planemo.engine
     - planemo.galaxy
     - planemo.galaxy.test
     - planemo.linters
@@ -61,17 +62,14 @@ test:
     - planemo.test
     - planemo.training
     - planemo.xml
-
   commands:
     - planemo --help
 
 about:
-  home: https://github.com/galaxyproject/planemo
-  license: Academic Free License (AFL)
-  summary: 'Command-line utilities to assist in building tools for the Galaxy project (http://galaxyproject.org/).'
-  license_family: Apache
-
-extra:
-  container:
-    # click requires a Unicode locale
-    extended-base: True
+  home: "https://github.com/galaxyproject/planemo"
+  summary: "Command-line utilities to assist in building tools for the Galaxy project (https://galaxyproject.org)."
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: "https://planemo.readthedocs.io/en/latest"
+  dev_url: "https://github.com/galaxyproject/planemo"

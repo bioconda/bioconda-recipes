@@ -1,5 +1,6 @@
 #!/bin/bash
-set -eu -o pipefail
+set -vxeu -o pipefail
 
-make build
-make install
+chmod a+rx bin/falconc
+#bin/falconc version
+cp -r bin/falconc ${PREFIX}/bin/

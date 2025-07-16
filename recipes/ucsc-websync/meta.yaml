@@ -1,7 +1,7 @@
 {% set package = "ucsc-websync" %}
 {% set program = "webSync" %}
-{% set version = "377" %}
-{% set sha256 = "932f149c19641064a9cd3f2382cbb54b45a9292b8444792872d531346925d676" %}
+{% set version = "469" %}
+{% set sha256 = "3f95b26ccca854c965c05773481c269f2a0e6fb1906ae8a7fe2437c6ad543963" %}
 
 package:
   name: "{{ package }}"
@@ -14,7 +14,10 @@ source:
     - "include.patch"
 
 build:
-  number: 0
+  skip: True  # [osx]
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(package, max_pin=None) }}
 
 requirements:
   build:
@@ -23,14 +26,14 @@ requirements:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
+    - libopenssl-static
     - zlib
 
   run:
     - libpng
     - libuuid
     - mysql-connector-c
-    - openssl
+    - libopenssl-static
     - python
     - zlib
 
@@ -43,3 +46,12 @@ about:
   home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
   license: "varies; see http://genome.ucsc.edu/license"
   summary: "download from https server, using files.txt on their end to get the list of files"
+  dev_url: "https://github.com/ucscGenomeBrowser/kent"
+  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/master/README"
+
+extra:
+  identifiers:
+    - biotools:UCSC_Genome_Browser_Utilities
+    - doi:10.1093/bib/bbs038
+  additional-platforms:
+    - linux-aarch64

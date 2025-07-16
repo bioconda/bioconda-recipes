@@ -1,26 +1,16 @@
-# change directory
-cd 1.9
+#!/usr/bin/env bash
 
-## Portable sha1 sums across linux and os x
-#sed -i.bak -e "s/shasum/openssl sha1 -r/g" plink_first_compile
-#
-## Remove "make plink" so we can call it with overrides
-#sed -i.bak -e "s/make -f Makefile.std plink//g" plink_first_compile
-#
-## This downloads and builds a local zlib
-#./plink_first_compile
-#
-## Build using Makefile.std as recommended in the README
-#if [[ -z "$OSX_ARCH" ]]; then
-#    make CFLAGS="-Wall -O2 -I$PREFIX/include" BLASFLAGS="-L$PREFIX/lib -lopenblas" -f Makefile.std plink
-#else
-#    make -f Makefile.std plink
-#fi
-CFLAGS="$CFLAGS -DDYNAMIC_ZLIB"
-CXXFLAGS="$CXXFLAGS -DDYNAMIC_ZLIB"
-sed -i.bak "s#gfortran#${FC}#g" Makefile.std
-make -f Makefile.std LDFLAGS="$LDFLAGS -lm -lpthread -ldl -lgfortran" ZLIB="-lz" BLASFLAGS="-lopenblas"
+set -xe
 
-# Install as plink
-mkdir -p $PREFIX/bin
-cp plink $PREFIX/bin/
+wget https://github.com/simd-everywhere/simde/archive/refs/tags/v0.8.2.tar.gz
+tar zxvf v0.8.2.tar.gz
+
+export CFLAGS="${CFLAGS} -I ${SRC_DIR}/simde-0.8.2/simde -Wall -O2 -DDYNAMIC_ZLIB"
+export CXXFLAGS="${CXXFLAGS} -I ${SRC_DIR}/simde-0.8.2/simde -Wall -O2"
+export LDFLAGS="${LDFLAGS} -lopenblas -lpthread -ldl"
+
+echo Building ... 
+make -j CFLAGS="${CFLAGS}" DESTDIR="${PREFIX}" PREFIX="" CC="${CC}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" ZLIB="-lz" LDFLAGS="${LDFLAGS}" BLASFLAGS=""
+
+echo Installing
+make install DESTDIR="${PREFIX}" PREFIX="" 

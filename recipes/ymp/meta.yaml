@@ -1,5 +1,5 @@
 {% set name = "ymp" %}
-{% set version = "0.1.0" %}
+{% set version = "0.3.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 5e658389d29c9418c368476c24986f15484fd82eedd323ad4517ebc71af51d6f
+  sha256: dbd88b552584f1268c8b7b68df18a94a08eca127561bf60162b8e894711814b4
 
 build:
   number: 0
@@ -15,11 +15,15 @@ build:
     - ymp=ymp.cli:main
   noarch: python
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  run_exports:
+    - {{ pin_subpackage('ymp', max_pin="x.x") }}
+
 
 requirements:
   host:
-    - python >=3.6
-    - setuptools_scm >=3.2
+    - python >=3.10
+    - setuptools_scm >=3.4
+    - setuptools >=42
     - pytest-runner
     - aiohttp
     - click
@@ -30,35 +34,46 @@ requirements:
     - pandas >=0.20
     - pip
     - ruamel.yaml >0.15
-    - snakemake =5.4.*
+    - snakemake >=7.32.1,<8.0a0
     - tqdm >=4.21.0
     - xdg
     - xlrd
+    - openpyxl
+    - fastentrypoints
 
   run:
-    - python >=3.6
+    - python >=3.10
     - aiohttp
-    - click
+    - click >8
     - click-completion
     - coloredlogs
     - drmaa
     - networkx >=2
     - pandas >=0.20
     - ruamel.yaml >0.15
-    - snakemake =5.4.*
+    - snakemake >=7.32.1,<8.0a0
     - tqdm >=4.21.0
     - xdg
     - xlrd
+    - openpyxl
     - conda
+    - mamba
 
 test:
   imports:
     - ymp
     - ymp.cli
+    - ymp.stage
   commands:
+    - mkdir test; cd test
     - ymp --help
     - ymp init demo
     - ymp make -n toy.assemble_megahit.map_bbmap
+    # remove potential cache files written as root in docker:
+    - cd ..; rm -vrf test
+    - rm -vrf ~/.ymp ~/.cache/ymp .ymp  
+    - ls -lR
+    - find / -name conda | xargs ls -l
 
 about:
   home: https://ymp.readthedocs.io

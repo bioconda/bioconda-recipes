@@ -1,4 +1,4 @@
-{% set version = "1.3.0" %}
+{% set version = "1.7.2" %}
 
 package:
   name: lamassemble
@@ -6,17 +6,19 @@ package:
 
 source:
   url: https://gitlab.com/mcfrith/lamassemble/-/archive/{{ version }}/lamassemble-{{ version }}.tar.gz
-  sha256: 67fa455ceb011b3c7f77b19cfa6bd9268fcbaef72bf65564e285960a3747fcdc
+  sha256: 786f509c4b4b61521ff4d6bbe589acd7fdd49969bf190db345d501a823a91a75
 
 build:
-  number: 1
+  number: 0
   noarch: python
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  run_exports:
+    - {{ pin_subpackage('lamassemble', max_pin="x") }}
 
 requirements:
   host:
     - python
-    - setuptools
+    - pip
   run:
     - python
     - last
@@ -28,6 +30,7 @@ test:
 
 about:
   home: https://gitlab.com/mcfrith/lamassemble
-  summary: Merge overlapping "long" DNA reads into a consensus sequence
+  summary: 'Merge overlapping "long" DNA reads into a consensus sequence'
   license: MIT
+  license_family: MIT
   license_file: LICENSE

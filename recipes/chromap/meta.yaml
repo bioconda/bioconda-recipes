@@ -1,0 +1,44 @@
+{% set version = "0.3.1" %}
+
+package:
+  name: chromap
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('chromap', max_pin="x.x") }}
+
+source:
+  url: https://github.com/haowenz/chromap/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: bc04559016e5f2412233c0a4913576ca42fd344cb4a84a2ceda2cccead9325bd
+  patches:
+    - chromap-aarch64.patch # [aarch64 or arm64]
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  host:
+    - zlib
+  run:
+    - zlib
+
+test:
+  commands:
+    - chromap --help
+
+about:
+  home: https://github.com/haowenz/chromap
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Fast alignment and preprocessing of chromatin profiles
+  doc_url: https://zhanghaowen.com/chromap/
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

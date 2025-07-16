@@ -1,11 +1,10 @@
 #!/bin/bash
-export C_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    make no_omp
-else
-    make
+if [ `uname -m` == "aarch64" ]; then
+sed -i 's/\-mpopcnt//g' Makefile
 fi
-mkdir -p "${PREFIX}/bin"
-cp ./akt "${PREFIX}/bin"
+
+make \
+    CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+    CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+install -d "${PREFIX}/bin"
+install ./akt "${PREFIX}/bin/"

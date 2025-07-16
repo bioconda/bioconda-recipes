@@ -1,7 +1,6 @@
 #!/bin/bash
 
-export C_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-make
+make CC="${CC}" CFLAGS="-fcommon ${CFLAGS} ${LDFLAGS}" CPPFLAGS="${CPPFLAGS}"
+mkdir -p "${PREFIX}/"{bin,include}
 cp fml-asm ${PREFIX}/bin
 cp *.h ${PREFIX}/include

@@ -1,0 +1,51 @@
+{% set version = "25.0.1" %}
+{% set sha256 = "8e27fe25816d08e18015b7b88c1b341f2e4a5a9db7119960a68944b053b6bac8" %}
+{% set galaxy_version = version.split(".")[:2]|join(".") %}
+
+package:
+  name: galaxy-objectstore
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/g/galaxy-objectstore/galaxy_objectstore-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('galaxy-objectstore', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+    - setuptools
+  run:
+    - python >=3.7
+    - galaxy-util >={{ galaxy_version }}
+    - pyyaml
+    - pydantic !=2.6.0,!=2.6.1,>=2
+
+test:
+  imports:
+    - galaxy
+    - galaxy.objectstore
+    - galaxy.objectstore.cloud
+
+about:
+  home: "https://galaxyproject.org"
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: LICENSE
+  summary: "The Galaxy object store framework and default implementations."
+  doc_url: "https://docs.galaxyproject.org"
+  dev_url: "https://github.com/galaxyproject/galaxy"
+
+extra:
+  identifiers:
+    - biotools:galaxy
+    - doi:10.1093/nar/gky379
+  recipe-maintainers:
+    - bernt-matthias

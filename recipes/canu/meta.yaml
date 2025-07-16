@@ -1,40 +1,75 @@
-{% set version = "2.0" %}
-{% set sha256 = "e2e6e8b5ec4dd4cfba5e372f4a64b2c01fbd544d4b5867746021f10771a6f4ef" %}
+{% set name = "canu" %}
+{% set version = "2.3" %}
 
 package:
-  name: canu
-  version: '{{version}}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/marbl/canu/archive/v{{version}}.tar.gz
-  sha256: '{{sha256}}'
+  git_url: https://github.com/marbl/canu.git
+  git_commit: 13903848e95311cb437b78423cdee34ad55a8b2e
+  sha256: ignored
+  patches:
+    - arm_hwcap.patch  # [linux and aarch64]
 
 build:
-  number: 0
-  # This should actually work, but it explicitly checks for gcc
-  skip: True  # [osx]
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('canu', max_pin="x") }}
 
 requirements:
   build:
-    - '{{ compiler("c") }}'
-    - '{{ compiler("cxx") }}'
+    - make
+    - {{ compiler("cxx") }}
+    - pkg-config
   host:
     - gnuplot >=5.2
+    - xorg-libxfixes  # [linux]
+    - boost-cpp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - curl
+    - zlib
   run:
     - perl
     - perl-filesys-df
-    - openjdk
+    - openjdk >=20
+    - minimap2
+    - boost-cpp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - gnuplot >=5.2
+    - samtools
 
 test:
+  requires:
+    - curl
   commands:
     - canu --version
+    - sqStoreDumpFASTQ --version
 
 about:
-  home: http://canu.readthedocs.org/
-  license: GPLv2 and others
-  license_file: README.licenses
+  home: "https://github.com/marbl/canu"
+  license: "GPL-2.0-or-later and others"
+  license_file: "README.licenses"
   license_family: GPL
-  summary: Canu is a fork of the Celera Assembler designed for high-noise single-molecule
-    sequencing.
-  dev_url: https://github.com/marbl/canu
+  summary: "Canu is a fork of the Celera Assembler designed for high-noise single-molecule sequencing."
+  dev_url: "https://github.com/marbl/canu"
+  doc_url: "https://canu.readthedocs.org"
+
+extra:
+  container:
+    # libGL needed for gnuplot
+    extended-base: True
+  identifiers:
+    - usegalaxy-eu:canu
+    - biotools:canu
+    - biotools:hicanu
+    - doi:10.1101/gr.215087.116
+    - doi:10.1038/nbt.4277
+    - doi:10.1101/gr.263566.120
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - uses_vcs_url

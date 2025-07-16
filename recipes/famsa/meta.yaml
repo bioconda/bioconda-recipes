@@ -1,5 +1,15 @@
-{% set version = "1.6.1" %}
-{% set sha256 = "cd0fba467223019bdcadb7af71ea103f12d4ba4972fe192f9e6ae0f03d190108" %}
+{% set version = "2.4.1" %}
+
+{% set system = "x64_linux" %}       # [linux and x86_64]
+{% set system = "x64_mac" %}         # [osx and x86_64]
+{% set system = "arm64_linux" %}     # [linux and aarch64]
+{% set system = "arm64_mac" %}       # [osx and arm64]
+
+{% set sha256 = "fe3a8813f6c68d69552f3713820ec11b730dba0cc18c837c72c8659d8bbe8438" %}  # [linux and x86_64]
+{% set sha256 = "2fde5ac811608dd5d8bd266b54a939ff107727166d1e2f12469cb528d761fa32" %}  # [osx and x86_64]
+{% set sha256 = "583c577e25dd111e870f49e7ef9bc46c2a7a010e81d844b354ba23b422d6ed79" %}  # [linux and aarch64]
+{% set sha256 = "6d318d3904ad4e0adc5376f6a41d1f5afd74f234df4f3fcd42ebe5977cf75394" %}  # [osx and arm64]
+
 
 package:
   name: famsa
@@ -7,17 +17,16 @@ package:
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage('famsa', max_pin='x') }}
+  script: |
+    mkdir -p "${PREFIX}/bin"
+    cp -v famsa "${PREFIX}/bin/" || { echo "Error: Failed to copy famsa binary"; exit 1; }
+
 
 source:
-  url: https://github.com/refresh-bio/FAMSA/archive/v{{ version }}.tar.gz
+  url: https://github.com/refresh-bio/famsa/releases/download/v{{ version }}/famsa-v{{ version }}-{{ system }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - fix_const_template.patch
-
-requirements:
-  build:
-    - {{ compiler('cxx') }}
-    - make
 
 test:
   commands:
@@ -25,7 +34,20 @@ test:
 
 about:
   home: https://github.com/refresh-bio/FAMSA
-  summary: "Algorithm for large-scale multiple sequence alignments"
-  license: GPL-3
-  license_family: GPL
+  summary: "Algorithm for large-scale multiple sequence alignments."
+  license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: LICENSE
+  dev_url: https://github.com/refresh-bio/FAMSA
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1038/srep33964
+    - biotools:famsa
+  skip-lints:
+    - should_be_noarch_generic
+    - should_not_be_noarch_source
+

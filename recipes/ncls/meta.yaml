@@ -1,17 +1,21 @@
 {% set name = "ncls" %}
-{% set version = "0.0.53" %}
+{% set version = "0.0.70" %}
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: a1b927c8b4898f3071e502bb9bf42ceb5bcbc39910035bd1c1a987dc02061993
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/ncls-{{ version }}.tar.gz
+  sha256: 7d16634a8f57fa79659e9ae7e5cc6edd1e02d5acb0eb57128dbed03e9f4fdd9c
 
 build:
-  number: 2
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  number: 0
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x.x") }}
 
 requirements:
   build:
@@ -20,8 +24,10 @@ requirements:
     - python
     - cython
     - pip
+    - setuptools-scm >=6.2
   run:
     - python
+    - setuptools
     - numpy
 
 test:
@@ -29,10 +35,18 @@ test:
     - ncls
 
 about:
-  home: https://github.com/endrebak/ncls
-  license: BSD
-  summary: Fast overlap datastructure.
+  home: "https://github.com/endrebak/ncls"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: LICENSE
+  summary: "A fast interval tree-like implementation in C, wrapped for the Python ecosystem. Basically a static interval-tree that is silly fast for both construction and lookups."
+  dev_url: "https://github.com/endrebak/ncls"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - endrebak
+  skip-lints:
+    - uses_setuptools

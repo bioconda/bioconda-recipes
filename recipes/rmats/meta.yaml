@@ -1,25 +1,29 @@
-{% set version = "4.1.0" %}
+{% set name = "rmats" %}
+{% set version = "4.3.0" %}
 
 package:
-  name: rmats
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  sha256: 11cce1adcf391de2050b97e64c0be8e8ce762f711575237a3d14cdadb2f381e2
+  sha256: c78e6411b7c6634cc31511b69d37a6a3da2e2e076e87609679818debd513aa7a
   url: https://github.com/Xinglab/rmats-turbo/releases/download/v{{ version }}/rmats_turbo_v{{ version|replace(".","_") }}.tar.gz
   patches:
-    - linux.patch
-    - cc_cxx_env_var.patch
-    - parse_file_error.patch
+    # remove patch when a release includes: https://github.com/Xinglab/rmats-turbo/pull/453
+    - rmats_pipeline_setup.patch
 
 build:
-  number: 3
+  number: 5
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
+    - libgomp  # [linux]
     - cmake
   host:
     - python
@@ -28,13 +32,14 @@ requirements:
     - gsl
     - zlib
     - libblas
+    - liblapack
+    - setuptools
   run:
     - python
     - numpy
     - gsl
     - zlib
-    - star >=2.5
-    - libblas
+    - star >=2.5  # [not (osx and arm64)]
 
 test:
   commands:
@@ -46,3 +51,8 @@ about:
   license: Free for non-commercial use, see LICENSE file
   summary: MATS is a computational tool to detect differential alternative splicing events from RNA-Seq data.
   license_file: LICENSE
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,32 +1,56 @@
 {% set name = "meryl" %}
-{% set version = "v1.0" %}
-{% set sha256 = "6bf221b021c857ef6268494ca024f7cb7485d77df05883545f850ec3bb5986dd" %}
+{% set version = "1.4.1" %}
+{% set sha256 = "adaa713b8cd9151db2a08e7eadd8114d16bf91dae0d191674b75d7be72bdd53d" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
-about:
-  home: 'https://github.com/marbl/meryl'
-  summary: "meryl is a multi-threaded, multi-process, out-of-core k-mer counter"
-  license: PUBLIC DOMAIN
-  license_file: README.license
-
 source:
-  url: https://github.com/marbl/{{ name }}/archive/{{ version }}.tar.gz 
-  sha256: {{ sha256 }}
+  git_url: https://github.com/marbl/{{name}}
+  git_rev: v{{version}}
+  patches:
+    - 0001-Do-not-bail-out-for-Clang-on-macOS.patch # [osx]
+    - 0002-macos-cmath.patch  # [osx]
+    - 0003-align.patch  # [aarch64 or arm64]
+    - meryl-utility-aarch64.patch # [aarch64 or arm64]
 
 build:
-  number: 0
-  skip: True # [osx]
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('meryl', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - make
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
 
 test:
   commands:
-    - "meryl 2>&1 | grep 'usage: meryl'"
-    - "meryl-lookup 2>&1 | grep 'usage: meryl-lookup'"
-    - "meryl-import 2>&1 | grep 'usage: meryl-import'"
-    - "sequence 2>&1 | grep 'usage: sequence'"
+    - 'meryl 2>&1 | grep "usage: meryl"'
+    - 'meryl-analyze 2>&1 | grep "usage: meryl-analyze"'
+    - 'meryl-import 2>&1 | grep "usage: meryl-import"'
+    - 'meryl-lookup 2>&1 | grep "usage: meryl-lookup"'
+    - 'meryl-simple 2>&1 | grep "usage: meryl-simple"'
+
+about:
+  home: https://github.com/marbl/meryl
+  dev_url: https://github.com/marbl/meryl
+  doc_url: https://github.com/marbl/meryl
+  summary: "meryl is a multi-threaded, multi-process, out-of-core k-mer counter"
+  license: 'Public Domain'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:meryl
+    - usegalaxy-eu:meryl
+    - doi:10.1186/s13059-020-02134-9
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

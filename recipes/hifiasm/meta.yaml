@@ -1,23 +1,26 @@
-{% set version = "0.11" %}
+{% set version = "0.25.0" %}
 
 package:
   name: hifiasm
   version: {{ version }}
 
 source:
-  url: https://github.com/chhylp123/hifiasm/archive/v{{ version }}.tar.gz
-  sha256: 40e210fac697b6e76c9d791cbfcc464bf5006aa89211a8346dea3923bead4e1c
+  url: https://github.com/chhylp123/hifiasm/archive/{{ version }}.tar.gz
+  sha256: 51633138865207a9d41630da9377d46e4921ad4fc5facaa1740ceccae8611f1f
+  patches:
+    - linux-aarch64-support.patch  # [aarch64 or arm64]
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage('hifiasm', max_pin="x") }}
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - zlib
-  run:
     - zlib
 
 test:
@@ -27,4 +30,12 @@ test:
 about:
   home: https://github.com/chhylp123/hifiasm
   license: MIT
-  summary: 'Haplotype-resolved assembler for accurate Hifi reads'
+  license_family: MIT
+  summary: 'Haplotype-resolved assembler for accurate Hifi reads.'
+  doc_url: https://hifiasm.readthedocs.io/en/latest/index.html
+  dev_url: https://github.com/chhylp123/hifiasm
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

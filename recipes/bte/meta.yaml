@@ -1,0 +1,55 @@
+{% set name = "bte" %}
+{% set version = "0.9.3" %}
+{% set sha256 = "6eca1206ded4b322b42e8872d459ef493ffa02cb25ba3814e6139fd991d8c30a" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/jmcbroome/BTE/releases/download/v{{ version }}/bte.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True  # [py > 310 or py < 310]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  
+requirements:
+  build:
+    - make
+    - {{ compiler("cxx") }}
+    - pkg-config
+  host:
+    - cython
+    - python
+    - pip
+    - setuptools
+    - boost-cpp
+    - protobuf <4
+    - tbb-devel <2021.1.1
+  run:
+    - python
+    - boost-cpp
+    - protobuf <4
+    - tbb-devel <2021.1.1
+
+test:
+  commands:
+    - python3 -c "import bte"
+
+about:
+  home: "https://github.com/jmcbroome/BTE"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Cython wrapper enabling use of the MAT library in Python."
+  dev_url: "https://github.com/jmcbroome/BTE"
+  doc_url: "https://jmcbroome.github.io/BTE/build/html/index.html"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

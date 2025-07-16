@@ -1,0 +1,43 @@
+{% set name = "coatran" %}
+{% set version = "0.0.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('coatran', max_pin="x.x.x") }}
+
+source:
+  url: https://github.com/niemasd/CoaTran/archive/refs/tags/{{ version }}.tar.gz
+  sha256: b0af9eff5c78a7126ce5f36386c3c514e811d3470392a7a18566195e40765456
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
+about:
+  home: https://github.com/niemasd/CoaTran
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Coalescent tree simulation along a transmission network
+  dev_url: https://github.com/niemasd/CoaTran
+
+test:
+  commands:
+    - coatran_constant -h 2>&1 | grep "CoaTran"
+    - coatran_inftime -h 2>&1 | grep "CoaTran"
+    - coatran_transtree -h 2>&1 | grep "CoaTran"
+
+extra:
+  identifiers:
+    - biotools:coatran
+    - doi:10.1101/2020.11.10.377499
+  recipe-maintainers:
+    - acaprez
+    - niemasd

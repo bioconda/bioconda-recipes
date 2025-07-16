@@ -1,25 +1,28 @@
-#!/bin/sh
-# Compile nim
-pushd nim_source
-if [[ $OSTYPE == "darwin"* ]]; then
-  export HOME="/Users/distiller"
-  bash build.sh --os darwin --cpu x86_64
+#!/bin/bash
+set -x
+
+mkdir -p "${PREFIX}/bin"
+
+sed -i.bak 's|-lpthread|-pthread|' nim.cfg
+rm -rf *.bak
+
+if [[ "$(uname -m)" == "arm64" ]]; then
+	nim_build="macosx_arm64"
+	curl -SL https://github.com/nim-lang/nightlies/releases/download/latest-version-2-2/${nim_build}.tar.xz -o ${nim_build}.tar.xz
+	unxz -c ${nim_build}.tar.xz | tar -x
+
+	cd nim-2.2.*
+	export PATH="${PWD}/bin:${PATH}"
+	cd ..
+
+	echo "gcc.exe = \"${CC}\"" >> nim-2.2.*/config/nim.cfg
+	echo "gcc.linkerexe =\"${CC}\"" >>  nim-2.2.*/config/nim.cfg
+	echo "gcc.options.linker %= \"\${gcc.options.linker} ${LDFLAGS}\"" >>  nim-2.2.*/config/nim.cfg
+	cat nim-2.2.*/config/nim.cfg
+
+	nimble --localdeps build -y --verbose -d:release
 else
-  bash build.sh --os linux --cpu x86_64
+	nimble --localdeps build -y --verbose -d:release
 fi
-bname=`basename $CC`
-echo "gcc.exe = \"${bname}\"" >> config/nim.cfg
-echo "gcc.linkerexe = \"${bname}\"" >> config/nim.cfg
-echo "clang.exe = \"${bname}\"" >> config/nim.cfg
-echo "clang.linkerexe = \"${bname}\"" >> config/nim.cfg
-bin/nim c  koch
-./koch tools
-popd
 
-export PATH=$SRC_DIR/nim_source/bin:$PATH
-export LD_LIBRARY_PATH=$PREFIX/lib
-
-nimble install -y --verbose
-mkdir -p $PREFIX/bin
-chmod a+x mosdepth
-cp mosdepth $PREFIX/bin/mosdepth
+install -v -m 0755 mosdepth "${PREFIX}/bin"

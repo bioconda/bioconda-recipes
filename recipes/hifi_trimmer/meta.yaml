@@ -1,0 +1,51 @@
+{% set name = "hifi_trimmer" %}
+{% set version = "1.2.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/hifi_trimmer-{{ version }}.tar.gz
+  sha256: a8543fe82f5b635182408ca5b79ff771fa2d88596245e5188be1d56c6277777d
+
+build:
+  entry_points:
+    - hifi_trimmer = hifi_trimmer.hifi_trimmer:cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("hifi_trimmer", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.13
+    - hatchling
+    - pip
+  run:
+    - python >=3.10,<3.13
+    - py-bgzip >=0.5.0
+    - click >=8.1.8
+    - polars >=1.23.0
+    - pysam >=0.23.0
+    - pyyaml >=6.0.2
+
+test:
+  imports:
+    - hifi_trimmer
+  commands:
+    - pip check
+    - hifi_trimmer --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/sanger-tol/hifi-trimmer
+  summary: hifi_trimmer is a tool for filtering and trimming extraneous adapter hits from a HiFi read set using a BLAST search.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - prototaxites

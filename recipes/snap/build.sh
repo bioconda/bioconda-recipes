@@ -1,25 +1,25 @@
-#!/bin/sh
-cd Zoe
-make CC=${CC} CFLAGS="$CFLAGS" zoe-loop
-cd ..
-make CC=${CC} CFLAGS="$CFLAGS" snap
-make CC=${CC} CFLAGS="$CFLAGS" fathom
-make CC=${CC} CFLAGS="$CFLAGS" forge
-make CC=${CC} CFLAGS="$CFLAGS" hmm-info
-make CC=${CC} CFLAGS="$CFLAGS" exonpairs
+#!/bin/bash
+set -ex
 
-mkdir -p $PREFIX/bin
+mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/share/snap
 mkdir -p ${PREFIX}/share/snap/bin
-for perl_script in cds-trainer.pl hmm-assembler.pl noncoding-trainer.pl patch-hmm.pl zff2gff3.pl; do
-  sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${perl_script}
-done
-cp -p snap fathom forge hmm-info exonpairs cds-trainer.pl hmm-assembler.pl noncoding-trainer.pl patch-hmm.pl zff2gff3.pl $PREFIX/share/snap/bin
-cp -pr HMM ${PREFIX}/share/snap
-cp -pr DNA ${PREFIX}/share/snap
 
-for NAME in snap fathom forge hmm-info exonpairs cds-trainer.pl hmm-assembler.pl noncoding-trainer.pl patch-hmm.pl zff2gff3.pl ; do
-  cp $RECIPE_DIR/wrapper ${PREFIX}/bin/${NAME}
+export C_INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3"
+
+make CC="${CC}" -j"${CPU_COUNT}"
+
+for perl_script in gff3_to_zff.pl hmm-assembler.pl zff2gff3.pl; do
+	sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${perl_script}
 done
-chmod a+x ${PREFIX}/bin/*
-chmod a+x ${PREFIX}/share/snap/bin/*
+rm -rf *.bak
+
+install -v -m 0755 snap fathom forge gff3_to_zff.pl hmm-assembler.pl zff2gff3.pl $PREFIX/share/snap/bin
+cp -prf HMM ${PREFIX}/share/snap
+cp -prf DNA ${PREFIX}/share/snap
+cp -prf DATA ${PREFIX}/share/snap
+
+ln -sf $PREFIX/share/snap/bin/* ${PREFIX}/bin/

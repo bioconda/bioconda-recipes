@@ -1,62 +1,48 @@
 #!/bin/bash
 
-RM_DIR=${PREFIX}/share/RepeatMasker
-RM_OTHER_PROGRAMS="DateRepeats DupMasker ProcessRepeats RepeatProteinMask util/wublastToCrossmatch.pl util/buildRMLibFromEMBL.pl util/queryRepeatDatabase.pl util/queryTaxonomyDatabase.pl util/rmOutToGFF3.pl util/calcDivergenceFromAlign.pl util/createRepeatLandscape.pl util/dupliconToSVG.pl util/getRepeatMaskerBatch.pl util/rmOut2Fasta.pl util/trfMask util/rmToUCSCTables.pl util/buildSummary.pl"
-RM_PROGRAMS="RepeatMasker $RM_OTHER_PROGRAMS"
-
+RM_DIR="${PREFIX}/share/RepeatMasker"
 mkdir -p ${PREFIX}/bin
 mkdir -p ${RM_DIR}
-cp -r * ${RM_DIR}
-for name in ${RM_PROGRAMS} ; do
-  # sed -i 's$^#!.*perl.*$#!/usr/bin/env perl$g;' ${RM_DIR}/${name}
-  LC_ALL=C sed -i'' -e 's/^#!.*perl.*$/#!\/usr\/bin\/env perl/g' ${RM_DIR}/${name}
-done
+mv * ${RM_DIR}
 
-cp ${RECIPE_DIR}/RepeatMaskerConfig.pm ${RM_DIR}/RepeatMaskerConfig.pm
-# pvanheus - disabled this because the library included with RepeatMasker is too old to be usable
-# users will have to provide their own library and point to it using the REPEATMASKER_LIB_DIR environment variable
-#${RM_DIR}/util/buildRMLibFromEMBL.pl ${RM_DIR}/Libraries/RepeatMaskerLib.embl > ${RM_DIR}/Libraries/RepeatMasker.lib 2>/dev/null
-#makeblastdb -dbtype nucl -in ${RM_DIR}/Libraries/RepeatMasker.lib
+export LC_ALL="en_US.UTF-8"
 
-# important for RepeatModeler Package to keep this command
-makeblastdb -dbtype prot -in ${RM_DIR}/Libraries/RepeatPeps.lib
+# configure
+cd ${RM_DIR}
+perl ./configure -libdir "${RM_DIR}/Libraries" -trf_prgm "${PREFIX}/bin/trf" \
+	-rmblast_dir "${PREFIX}/bin" -hmmer_dir "${PREFIX}/bin" \
+	-abblast_dir "${PREFIX}/bin" -crossmatch_dir "${PREFIX}/bin" \
+	-default_search_engine rmblast
 
-cat <<END >>${PREFIX}/bin/RepeatMasker
-#!/bin/bash
+# Delete huge Dfam file, will be downloaded by post-link.sh
+# Do it now only, because configure needs the full version
+echo "Placeholder file, should be replaced on Conda package installation." > ${RM_DIR}/Libraries/Dfam.h5
 
-BINDIR=\$(dirname \$(which RepeatMasker))
-BASEDIR=\${BINDIR%/bin}
-REPEATMASKER_DIR=\${REPEATMASKER_DIR:-\${BASEDIR}/share/RepeatMasker}
-if [[ -z "\$REPEATMASKER_MATRICES_DIR" || "\$REPEATMASKER_MATRICES_DIR" == "NULL" ]] ; then
-  REPEATMASKER_MATRICES_DIR=\${BASEDIR}/share/RepeatMasker/Matrices
-fi
-if [[ -z "\$REPEATMASKER_LIB_DIR" || "\$REPEATMASKER_LIB_DIR" == "NULL" ]] ; then
-  REPEATMASKER_LIB_DIR=\${BASEDIR}/share/RepeatMasker/Libraries
-fi
+# ----- add tools within the bin ------
 
-if [[ -n "\$REPEATMASKER_REPBASE_FILE" && "\$REPEATMASKER_REPBASE_FILE" != "NULL" ]] ; then
-  if [[ ! -f \$REPEATMASKER_REPBASE_FILE || ! -d \$REPEATMASKER_LIB_DIR || ! -w \$REPEATMASKER_LIB_DIR ]] ; then
-    echo "If REPEATMASKER_REPBASE_FILE environment variable is specified it must point to a file and the library dir (\$REPEATMASKER_LIB_DIR) must be a writeable directory" >&2
-    exit 1
-  fi
-  cp \$REPEATMASKER_REPBASE_FILE \$REPEATMASKER_LIB_DIR
-fi
+# add RepeatMasker
+chmod 0755 ${RM_DIR}/RepeatMasker ${RM_DIR}/DupMasker ${RM_DIR}/ProcessRepeats ${RM_DIR}/RepeatProteinMask
+ln -sf ${RM_DIR}/RepeatMasker ${PREFIX}/bin/RepeatMasker
 
-TRF_DIR=${PREFIX}/bin
-RMBLAST_DIR=${PREFIX}/bin
-HMMER_DIR=${PREFIX}/bin
-export REPEATMASKER_DIR REPEATMASKER_LIB_DIR REPEATMASKER_MATRICES_DIR TRF_DIR RMBLAST_DIR HMMER_DIR REPEATMASKER_CACHE_DIR
-
-NAME=\$(basename \$0)
-
-perl ${RM_DIR}/\${NAME} \$@
-END
-
-chmod a+x ${PREFIX}/bin/RepeatMasker
+# add other tools
+RM_OTHER_PROGRAMS="DupMasker ProcessRepeats RepeatProteinMask"
 for name in ${RM_OTHER_PROGRAMS} ; do
-  ln -s ${PREFIX}/bin/RepeatMasker ${PREFIX}/bin/$(basename $name)
+  ln -sf ${RM_DIR}/${name} ${PREFIX}/bin/${name}
 done
 
-if [ -f ${RM_DIR}/conda_build.sh ] ; then
-  rm ${RM_DIR}/conda_build.sh
-fi
+# add all utils
+for name in ${RM_DIR}/util/* ; do
+  ln -sf $name ${PREFIX}/bin/$(basename $name)
+done
+
+# Fix perl shebang
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/RepeatMasker
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/DupMasker
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/ProcessRepeats
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/RepeatProteinMask
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/util/*.pl
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/*.pm
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/*.pl
+
+rm -rf ${RM_DIR}/util/*.bak
+rm -rf ${RM_DIR}/*.bak

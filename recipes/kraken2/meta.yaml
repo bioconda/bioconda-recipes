@@ -1,51 +1,66 @@
 {% set name = "kraken2" %}
-{% set version = "2.0.9beta" %}
-{% set kraken_ver = "2.0.9-beta" %}
-{% set sha256 = "0287cf4df4b5d5511a9132d9ab37a8d76864bae445579efb9cb76db7e9c09eba" %}
+{% set version = "2.1.6" %}
+{% set sha256 = "5bbd79392ff7c530124986dfdfe126bf638477db94fb7a901ec2daf9261707f3" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/DerrickWood/kraken2/archive/v{{kraken_ver}}.tar.gz
+  url: https://github.com/DerrickWood/kraken2/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - Makefile.patch
+    - 0001-src-Makefile.patch
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - llvm-openmp  # [osx]
+    - make
   host:
     - perl
-    - clangdev  # [osx]
+    - libgomp      # [linux]
     - llvm-openmp  # [osx]
-  run:
-    - perl
-    - blast
-    - libcxx >=4.0  # [osx]
-    - llvm-openmp  # [osx]
-    - rsync
     - wget
     - tar
-    - _openmp_mutex * *_gnu  # [linux]
+    - rsync
+    - zlib
+  run:
+    - python
+    - libgomp      # [linux]
+    - llvm-openmp  # [osx]
+    - blast
+    - perl
+    - wget
+    - tar
+    - rsync
+
 test:
   commands:
     - kraken2 --version
     - kraken2-build --version
     - kraken2-inspect --version
+    - k2 --help
 
 about:
-  home: https://ccb.jhu.edu/software/kraken2/
-  license: GPLv3
+  home: "https://ccb.jhu.edu/software/kraken2"
+  dev_url: "https://github.com/DerrickWood/kraken2"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: Kraken2 is a system for assigning taxonomic labels to short DNA sequences, usually obtained through metagenomic studies.
+  summary: "Kraken2 is a system for assigning taxonomic labels to short DNA sequences, usually obtained through metagenomic studies."
+  doc_url: "https://github.com/DerrickWood/kraken2/blob/v{{ version }}/docs/MANUAL.markdown"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:kraken2
+    - usegalaxy-eu:kraken2
     - doi:10.1186/gb-2014-15-3-r46
+    - doi:10.1186/s13059-019-1891-0

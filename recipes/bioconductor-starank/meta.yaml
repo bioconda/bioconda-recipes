@@ -1,6 +1,6 @@
-{% set version = "1.30.0" %}
+{% set version = "1.44.0" %}
 {% set name = "staRank" %}
-{% set bioc = "3.11" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,21 +8,23 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: b9adc6f66aa59bb08a931d00ccf4c013
+  md5: 6284ebc665a24e39437e707b4fc1ad80
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-starank", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-cellhts2 >=2.52.0,<2.53.0'
+    - 'bioconductor-cellhts2 >=2.66.0,<2.67.0'
     - r-base
   run:
-    - 'bioconductor-cellhts2 >=2.52.0,<2.53.0'
+    - 'bioconductor-cellhts2 >=2.66.0,<2.67.0'
     - r-base
 test:
   commands:
@@ -33,12 +35,4 @@ about:
   summary: 'Stability Ranking'
   description: 'Detecting all relevant variables from a data set is challenging, especially when only few samples are available and data is noisy. Stability ranking provides improved variable rankings of increased robustness using resampling or subsampling.'
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-extra:
-  identifiers:
-    - biotools:starank
-    - doi:10.1093/bioinformatics/bts192
-  parent_recipe:
-    name: bioconductor-starank
-    path: recipes/bioconductor-starank
-    version: 1.22.0
 

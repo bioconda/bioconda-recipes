@@ -1,34 +1,43 @@
+{% set name = "blastbesties" %}
+{% set version = "1.2.0" %}
+
 package:
-  name: blastbesties
-  version: "1.1.1"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.python.org/packages/86/61/b71bc19d93ac15bf69f2d883ec50ac36b351366d26b81761880ca2775587/blastbesties-1.1.1.tar.gz
-  md5: 42f74b3b5ba2c11ec3a2a39b1dee79ef
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/blastbesties-{{ version }}.tar.gz
+  sha256: 5d66264863667a505309e87e33bc186d40b98ff68c96c93c0273a68a8197757c
 
 build:
-  number: 2
+  number: 0
   noarch: python
   entry_points:
-    - blastbesties=blastbesties.cmd_rbb:main
+    - blastbesties = blastbesties.app:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('blastbesties', max_pin="x") }}
 
 requirements:
   host:
-    - python
-    - setuptools
-
+    - python >=3.8
+    - pip
+    - hatchling
+    - hatch-vcs
   run:
-    - python
+    - python >=3.8
+    - argparse-tui
 
 test:
   imports:
     - blastbesties
-
   commands:
     - blastbesties --help
 
 about:
-  home: https://github.com/Adamtaranto/blast-besties
-  license: MIT License
-  summary: 'Rapid discovery of reciprocal best blast pairs from BLAST output files.'
+  home: "https://github.com/Adamtaranto/blast-besties"
+  license: MIT
+  summary: "Rapid discovery of reciprocal best blast pairs from BLAST output files."
   license_family: MIT
+  license_file: LICENSE
+  dev_url: "https://github.com/Adamtaranto/blast-besties"

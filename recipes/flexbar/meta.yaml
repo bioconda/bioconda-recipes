@@ -1,0 +1,55 @@
+{% set name = "flexbar" %}
+{% set version = "3.5.0" %}
+{% set sha256 = "656168934b6cb367ee6d4adad0c40506bc107c888d129fe191c6f3f3446a4ac9" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/seqan/flexbar/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - march.patch
+    - onetbb.patch
+
+build:
+  number: 12
+  run_exports:
+    - {{ pin_subpackage('flexbar', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
+    - tbb-devel
+    - seqan-library  # [x86_64]
+    - wget
+    - bzip2
+    - zlib
+  run:
+    - tbb
+    - seqan-library  # [x86_64]
+
+test:
+  commands:
+    - flexbar -h
+
+about:
+  home: "https://github.com/seqan/flexbar"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  summary: "Flexible barcode and adapter removal."
+  dev_url: "https://github.com/seqan/flexbar"
+  doc_url: "https://github.com/seqan/flexbar/wiki"
+
+extra:
+  identifiers:
+    - biotools:flexbar
+    - doi:10.3390/biology1030895
+    - doi:10.1093/bioinformatics/btx330
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

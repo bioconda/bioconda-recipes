@@ -1,0 +1,47 @@
+{% set name = "dragmap" %}
+{% set version = "1.3.0" %}
+{% set sha256 = "baf546c2f53b13e2bce4c937201e38459f3ce2f1069722ca670d8726a4bae224" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Illumina/DRAGMAP/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - overflow.patch  # Don't break with CHM13 (https://github.com/Illumina/DRAGMAP/pull/55)
+    - PG.patch        # Remove extra space in @PG line after ID: (https://github.com/Illumina/DRAGMAP/pull/14)
+    - contigs.patch   # Handle large numbers of contigs (https://github.com/Illumina/DRAGMAP/pull/56)
+    - cstdint.patch   # Patch around missing cstdint
+    - boost.patch     # Fix boost
+
+build:
+  number: 5
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage("dragmap", max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - boost
+    - boost-cpp
+  run:
+    - zlib
+    - boost
+    - boost-cpp
+
+test:
+  commands:
+    - dragen-os -h
+
+about:
+  home: https://github.com/Illumina/DRAGMAP
+  license: GPL-3
+  licence_file: COPYRIGHT
+  summary: "Dragmap is the Dragen mapper/aligner Open Source Software."

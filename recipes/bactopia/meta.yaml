@@ -1,52 +1,47 @@
-{% set version = "1.4.1" %}
+{% set name = "bactopia" %}
+{% set version = "3.2.0" %}
 
 package:
-  name: bactopia
+  name: {{ name }}
   version: {{ version }}
 
 build:
   number: 0
   noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
 
 source:
   url: https://github.com/bactopia/bactopia/archive/v{{version}}.tar.gz
-  sha256: 3f28b40b74668ce34d6e149904dd39e541edc9ae220dc511c7abf69096bf70f4
+  sha256: c57e84f90a6daa2eef20147abcce3dae19fe311bd9d7dd8de4161c86ca85f2d6
 
 requirements:
   run:
-    - ariba
-    - beautifulsoup4
-    - biopython
-    - blast
-    - bowtie2 <2.4.0 
-    - cd-hit
-    - conda
-    - executor
-    - lxml
-    - mash
-    - ncbi-genome-download
-    - nextflow
-    - pysam >=0.15.3 # older versions have wrong openssl pinning
-    - python >3.6
-    - requests 
-    - unzip
+    - bactopia-py 1.5.0
+    - conda >=22.11.0
+    - coreutils
+    - mamba >=1.1.0
+    - nextflow >=23,<24
+    - python >=3.9,<3.13
+    - sed
     - wget
 
 test:
   commands:
-    - "bactopia --conda_help"
     - "bactopia --version"
-    - "bactopia datasets"
     - "bactopia prepare"
     - "bactopia search"
-    - "bactopia tools"
+
+about:
+  home: https://bactopia.github.io/
+  license: MIT
+  license_file: LICENSE
+  summary: Bactopia is a flexible pipeline for complete analysis of bacterial genomes.
+  dev_url: https://github.com/bactopia/bactopia/
 
 extra:
   recipe-maintainers:
     - rpetit3
-
-about:
-  home: https://github.com/bactopia/bactopia
-  license: MIT
-  license_file: LICENSE
-  summary: Bactopia is a flexible pipeline for complete analysis of bacterial genomes.
+  identifiers:
+    - biotools:bactopia
+    - doi:10.1128/mSystems.00190-20

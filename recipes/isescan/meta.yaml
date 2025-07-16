@@ -1,29 +1,28 @@
-{% set version = "1.7.2.1" %}
+{% set version = "1.7.3" %}
 
 package:
   name: isescan
   version: {{ version }}
 
 source:
-  url: https://github.com/xiezhq/ISEScan/archive/v{{ version }}.tar.gz
-  sha256: b971a3e86a8cddaa4bcd520ba9e75425bbe93190466f81a3791ae0cb4baf5e5d
-  patches:
-    # removes hard-coded paths from constants.py
-    - constants.patch
+  url: https://github.com/xiezhq/ISEScan/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: cf3d7f0c272aa3527dd14565e8c7b29b8fed23a3bf880b10eda0fdfee0873fd9
 
 build:
   number: 0
-  skip: True # [osx]
+  run_exports:
+      - {{ pin_subpackage('isescan', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    
   run:
     - python >=3
     - numpy >=1.8
     - scipy >=0.13.1
     - fastcluster
-    - fraggenescan <=1.30
+    - fraggenescan >=1.32
     - hmmer >=3.1b2
     - blast >=2.2.31
     - biopython >=1.62

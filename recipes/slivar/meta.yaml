@@ -1,33 +1,50 @@
 {% set name = "slivar" %}
-{% set version = "0.1.11" %}
-{% set sha256hash = "1ff92250818b5e3950fe80157d69ff3252ca8759457e196130dd7c8761e60d3b" %}
+{% set version = "0.3.2" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/brentp/slivar/releases/download/v{{ version }}/slivar
-  sha256: {{ sha256hash }}
+  url: https://github.com/brentp/slivar/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f76f4de9852f102fa3bb5da783d991b7168998a042fa89e2754f4c3e7993989e
+  patches:
+    - 0001-master.patch
 
 build:
   number: 0
-  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - nim >=2.0.4  # [not arm64]
+    - coreutils
+  host:
+    - curl
+    - tar
+    - htslib
   run:
     - htslib
-    - zlib
 
 test:
   commands:
-    - slivar 2>&1 | grep slivar
+    - test -x ${PREFIX}/bin/slivar
 
 about:
-  home: https://github.com/brentp/slivar
+  home: "https://github.com/brentp/slivar"
   license: MIT
-  summary: 'filter/annotate variants in VCF/BCF format with simple expressions'
+  license_family: MIT
+  license_file: LICENSE
+  summary: "filter/annotate variants in VCF/BCF format with simple expressions."
+  dev_url: "https://github.com/brentp/slivar"
+  doc_url: "https://github.com/brentp/slivar/blob/v{{ version }}/README.md"
 
 extra:
-  skip-lints:
-    - should_be_noarch_generic
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:somalier
+    - doi:10.1186/s13073-020-00761-2

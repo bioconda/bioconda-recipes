@@ -1,0 +1,57 @@
+{% set name = "zga" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: dd159db1cb4c0afcfb9bd47d9b4bd804e6b479507c49e77c38247abd1c8a4ca4
+
+build:
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  number: 0
+  entry_points:
+    - zga = zga.zga:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+
+requirements:
+  host:
+    - pip
+    - python >=3.8
+  run:
+    - biopython
+    - python >=3.8
+    - fastp
+    - bbmap
+    - mash >=2
+    - spades >=3.12
+    - unicycler
+    - flye >=2.6
+    - checkm-genome >=1.1.0
+    - blast
+    - samtools >=1.9
+    - bakta
+    - nxtrim
+    - racon
+    - minimap2
+
+test:
+  imports:
+    - zga
+  commands:
+    - zga --help
+
+about:
+  home: "https://github.com/laxeye/zga"
+  license: BSD-3-Clause
+  license_family: BSD
+  summary: "Prokaryotic genome assembly and annotation pipeline"
+  dev_url: https://github.com/laxeye/zga/
+
+extra:
+  recipe-maintainers:
+    - laxeye

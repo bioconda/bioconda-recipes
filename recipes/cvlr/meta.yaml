@@ -1,0 +1,50 @@
+{% set name = "cvlr" %}
+{% set version = "1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/EmanueleRaineri/cvlr/archive/d8ccd14f775fb2338309aaa1a692c7b6f96a0a11.zip
+  sha256: 8bff8cbd263112bfc08ccbe7090bdd144babad80d88f827d819f9d0f683bbbf2
+
+build:
+  number: 6
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('cvlr', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - htslib
+    - libdeflate
+    - zlib
+    - curl
+    - xz
+    - openssl
+    - bzip2
+  run:
+    - python >=3
+    - numpy
+    - matplotlib-base
+    - scipy
+
+test:
+  commands:
+    - which cvlr-cluster
+    - cvlr-stats.py -h
+
+about:
+  home: "https://github.com/EmanueleRaineri/cvlr"
+  license: MIT
+  license_family: MIT
+  summary: "Clustering and Visualization of Long Reads."
+  dev_url: "https://github.com/EmanueleRaineri/cvlr"
+
+extra:
+  additional-platforms:
+    - linux-aarch64

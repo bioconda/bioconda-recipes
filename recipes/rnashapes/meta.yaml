@@ -1,0 +1,56 @@
+{% set fold_grammars_version = "2.3.1" %}
+{% set rnashapes_version = "3.4.0" %}
+{% set packagename = "rnashapes" %}
+{% set sha256 = "0c5b7d91893d0a23189f4af3602e18f110f030eac49a3658f7acede23596fde0" %}
+
+package:
+  name: {{ packagename }}
+  version: {{ rnashapes_version }}
+
+source:
+  sha256: {{ sha256 }}
+  # the repository "fold-grammars" contains sources for several programs, i.e. pKiss, RNAshapes, ...
+  # thus, the version number does not correspond to the {{ packagename }} version number
+  url: https://github.com/jlab/fold-grammars/archive/{{ fold_grammars_version }}.tar.gz
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('rnashapes', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - libcxx <17 # [osx]
+  host:
+    - perl
+    - bellmans-gapc >=2024.01.12
+    - libopenblas
+    - libcxx <17 # [osx]
+  run:
+    - perl
+    - bellmans-gapc >=2024.01.12
+    - libopenblas
+
+test:
+  commands:
+    - RNAshapes -h
+    - RNAshapes CGCAUGCUAGUCGCG
+
+about:
+  home: https://bibiserv.cebitec.uni-bielefeld.de/{{ packagename }}
+  license: 'GPL-3.0-or-later'
+  license_file: LICENSE
+  summary: "RNAshape abstraction maps structures to a tree-like domain of shapes,
+    retaining adjacency and nesting of structural features, but disregarding helix
+    lengths. Shape abstraction integrates well with dynamic programming algorithms,
+    and hence it can be applied during structure prediction rather than afterwards.
+    This avoids exponential explosion and can still give us a non-heuristic and complete
+    account of properties of the molecule's folding space."
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - doi:10.1093/bioinformatics/btu649

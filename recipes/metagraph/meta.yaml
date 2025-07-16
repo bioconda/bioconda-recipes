@@ -1,0 +1,72 @@
+{% set name = "metagraph" %}
+{% set version = "0.4.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/ratschlab/metagraph.git
+  git_tag: v{{ version }}
+  sha256: unused
+  patches:
+    - 0001-boost-cmake.patch
+    - arm_hwcap.patch
+
+build:
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('metagraph', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+  host:
+    - bzip2
+    - htslib
+    - jemalloc
+    - boost-cpp ==1.71.0
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+    - clangdev  # [osx]
+    - llvmlite  # [osx]
+    - doxygen
+  run:
+    - htslib
+    - jemalloc
+    - boost-cpp ==1.71.0
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+
+test:
+  commands:
+    - metagraph_DNA --help
+    - metagraph_Protein --help
+    - metagraph --help
+
+about:
+  home: "https://github.com/ratschlab/metagraph"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Ultra Scalable Framework for DNA Search, Alignment, Assembly."
+  description: |
+    The MetaGraph framework allows for indexing and analysis of very large biological sequence collections, producing compressed indexes that can represent several petabases of input data. The indexes can be efficiently queried with any query sequence of interest.
+  doc_url: "https://metagraph.ethz.ch"
+  dev_url: "https://github.com/ratschlab/metagraph"
+
+extra:
+  recipe-maintainers:
+    - izcram
+    - karasikov
+  additional-platforms:
+    - linux-aarch64
+  skip-lints:
+    - uses_vcs_url

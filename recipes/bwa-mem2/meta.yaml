@@ -1,48 +1,56 @@
-{% set version = "2.0" %}
+{% set name = "bwa-mem2" %}
+{% set version = "2.3" %}
 
 package:
-  name: bwa-mem2
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  - url: https://github.com/bwa-mem2/bwa-mem2/releases/download/v{{ version }}/Source_code_including_submodule.tar.gz
-    sha256: 23a8aa9d295ed1e042aec255157313b0ddf45ae2271a9b878b5e05a4c1026d38
-    patches:
-      - Makefile.patch
-      - 771c7692aeb857d5b9241a08bbd68f2c6be01811.patch
-      # Below patch make sure the correct executables are found for older processors.
-      # TODO: remove this patch on the next update.
-      - find_executable.patch
+  url: https://github.com/bwa-mem2/bwa-mem2/releases/download/v{{ version }}/Source_code_including_submodules.tar.gz
+  sha256: 0c48a1ea800af499ae7264b4c8908c4ca35fbe5a7df2ad6106c79aa94bb49cbb
+  patches:
+    - Makefile.patch  # [ not aarch64 and not arm64 ]
+    - safestr-makefile.patch  # [ not aarch64 and not arm64 ] 
+    - sse2neon.patch  # [ aarch64 or arm64 ]
 
 build:
-  number: 1
-  # Compilation fails on OSX:
-  #   ext/safestringlib/include/safe_mem_lib.h:100:16: error: conflicting types for 'memset_s'
-  #   extern errno_t memset_s(void *dest, rsize_t dmax, uint8_t value);
-  #   /Applications/Xcode-9.4.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/usr/include/string.h:145:9: note: previous declaration is here
-  #   errno_t memset_s(void *__s, rsize_t __smax, int __c, rsize_t __n) __OSX_AVAILABLE_STARTING(__MAC_10_9, __IPHONE_7_0);
-  # Cause: https://github.com/intel/safestringlib/issues/14
-  skip: True  # [osx]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('bwa-mem2', max_pin="x") }}
 
 requirements:
   build:
+    - make
+    # bwa-mem2 needs gcc<11, see https://github.com/bwa-mem2/bwa-mem2/issues/222 and conda_build_config.yaml in this folder
     - {{ compiler('cxx') }}
   host:
     - zlib
+    - wget
 
 test:
   commands:
     - bwa-mem2 version
-    - bwa-mem2.sse41 version
-    - bwa-mem2.avx2 version
-    - bwa-mem2.avx512bw version
+    - bwa-mem2.sse41 version # [ not aarch64 and not arm64 ]
+    - bwa-mem2.sse42 version # [ not aarch64 and not arm64 ]
+    - bwa-mem2.avx version # [ not aarch64 and not arm64 ]
+    - bwa-mem2.avx2 version # [ not aarch64 and not arm64 ]
+    - bwa-mem2.avx512bw version # [ not aarch64 and not arm64 ]
 
 about:
-  home: https://github.com/bwa-mem2/bwa-mem2
+  home: "https://github.com/bwa-mem2/bwa-mem2"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: The next version of bwa-mem 
+  summary: "The next version of bwa-mem."
+  dev_url: "https://github.com/bwa-mem2/bwa-mem2"
+  doc_url: "https://github.com/bwa-mem2/bwa-mem2/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.1109/IPDPS.2019.00041
+    - biotools:bwa-mem2
+    - usegalaxy-eu:bwa_mem2
+    - usegalaxy-eu:bwa_mem2_idx

@@ -4,6 +4,7 @@
 chmod +x *.pl
 chmod +x gmcloser
 chmod +x gmvalue
+mkdir -p ${PREFIX}/bin
 cp *.pl ${PREFIX}/bin/
 cp gmcloser ${PREFIX}/bin/
 cp gmvalue ${PREFIX}/bin/

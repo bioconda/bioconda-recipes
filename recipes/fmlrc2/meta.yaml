@@ -1,0 +1,60 @@
+{% set name = "fmlrc2" %}
+{% set version = "0.1.8" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/HudsonAlpha/fmlrc2.git
+  git_rev: 8a45256
+  sha256: unused
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('fmlrc2', max_pin="x.x") }}
+
+# these are copied from rust-bio-tools since fmlrc2 depends on rust-bio
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cargo-bundle-licenses
+    - pkg-config
+    - clangdev
+  host:
+    - zlib
+    - clangdev
+    - gsl
+    - libopenblas
+    - openssl
+  run:
+    - gsl
+    - starcode
+    - libopenblas
+    - openssl
+
+test:
+  commands:
+    - fmlrc2 -h > /dev/null
+    - fmlrc2-convert -h > /dev/null
+
+about:
+  home: "https://github.com/HudsonAlpha/fmlrc2"
+  license: "MIT OR Apache-2.0"
+  license_family: MIT
+  license_file: "LICENSE-MIT"
+  summary: "A rust implementation of fmlrc with faster run times."
+  dev_url: "https://github.com/HudsonAlpha/fmlrc2"
+  doc_url: "https://github.com/HudsonAlpha/fmlrc2/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1186/s12859-018-2051-3
+  skip-lints:
+    - uses_vcs_url

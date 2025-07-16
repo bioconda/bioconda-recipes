@@ -1,0 +1,38 @@
+{% set name = "FastMLST" %}
+{% set version = "0.0.16" %}
+{% set user = "EnzoAndree" %}
+{% set sha256 = "3a2f45079f085481f381047c2b56e40fd47f2ae3a80a7add0642fa41dd068b61" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('fastmlst', max_pin="x") }}
+
+source:
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: "{{ sha256 }}"
+
+requirements:
+  build:
+    - python >=3
+  run:
+    - python >=3
+    - tqdm
+    - pandas
+    - blast
+    - biopython
+
+test:
+  commands:
+    - {{ name|lower }} -V
+
+about:
+  home: https://github.com/{{ user }}/{{ name }}
+  summary: A Fast Multilocus Sequence Typing scan against PubMLST typing schemes
+  license: LGPL-3.0-only

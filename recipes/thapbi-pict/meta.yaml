@@ -1,5 +1,5 @@
 {% set name = "thapbi-pict" %}
-{% set version = "0.7.0" %}
+{% set version = "1.0.20" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,42 +7,43 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name | replace("-", "_") }}/{{ name | replace("-", "_") }}-{{ version }}.tar.gz
-  sha256: 957fdb242eb2cd84f3e68d65fc913a2879a4a39ff222ffad1bb0c89cd32a3770
+  sha256: a0e4dd936a2f0b12eed989f6de0fad9b6b98369a973e802f58dd86b338c9f81b
 
 build:
   noarch: python
   number: 0
   entry_points:
     - thapbi_pict = thapbi_pict.__main__:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.6
+    - python >=3.10
+    - setuptools
   run:
     # Python
-    - biopython >=1.73
-    - matplotlib-base
-    - networkx
-    - pydot
-    - python >=3.6
-    - python-levenshtein
-    - sqlalchemy
-    - xlsxwriter
+    - biom-format >=2.1.14
+    - biopython >=1.84
+    - cutadapt >=4.9
+    - matplotlib-base >=3.9.2
+    - networkx >=3.4.2
+    - pydot >=3.0.1
+    - python >=3.10
+    - rapidfuzz >=3.10.1
+    - sqlalchemy >=2.0.36
+    - xlsxwriter >=3.2
     # Command line
     - blast
-    - cutadapt >=2.8
-    - flash
+    - flash >=1.2.11
     - graphviz
-    - hmmer
-    - swarm
-    - trimmomatic
+    - vsearch
 
 test:
   imports:
     - thapbi_pict
-    - thapbi_pict.hmm
   commands:
     - thapbi_pict --help
     - thapbi_pict -v

@@ -1,6 +1,6 @@
 #!/bin/bash
-# hmftools linx executable shell script
-# https://github.com/hartwigmedical/hmftools/tree/master/sv-linx
+# hmftools LINX executable shell script
+# https://github.com/hartwigmedical/hmftools/tree/master/linx
 set -eu -o pipefail
 
 export LC_ALL=en_US.UTF-8
@@ -60,10 +60,10 @@ if [ "$jvm_mem_opts" == "" ]; then
 fi
 
 pass_arr=($pass_args)
-if [[ ${pass_arr[0]:=} == org* ]]
+if [[ ${pass_arr[0]:=} == org\.* ]] || [[ ${pass_arr[0]:=} == com\.* ]]
 then
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/sv-linx.jar" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/linx.jar" $pass_args
 else
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/sv-linx.jar" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/linx.jar" $pass_args
 fi
 exit

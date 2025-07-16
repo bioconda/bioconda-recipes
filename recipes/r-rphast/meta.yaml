@@ -1,4 +1,4 @@
-{% set version = '1.6.9' %}
+{% set version = '1.6.11' %}
 {% set posix = 'm2-' if win else '' %}
 {% set native = 'm2w64-' if win else '' %}
 
@@ -8,15 +8,18 @@ package:
 
 source:
   url:
-    - {{ cran_mirror }}/src/contrib/rphast_{{ version }}.tar.gz
-    - {{ cran_mirror }}/src/contrib/Archive/rphast/rphast_{{ version }}.tar.gz
-  sha256: 2fc5fdd4dcf26ddf44427318925a69a743e97cb88ccc4964c314fcf389403584
+    - http://compgen.cshl.edu/rphast/downloads/rphast_{{ version }}.tar.gz
+  sha256: bda02d6d1129c01c625927321b341791dfee3e470aaad00dc74a2a705a94e5c7
+  patches:
+    - 0001-fix-lapack-interfaces.patch
 
 build:
-  number: 4
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports:
+    - {{ pin_subpackage('r-rphast', max_pin="x.x") }}
 
 requirements:
   build:
@@ -26,9 +29,15 @@ requirements:
     - {{posix}}pkg-config
     - {{posix}}make
   host:
-    - r-base
+    - r-base >=3.6.3
+    - pcre
+    - liblapack
+    - blis >=0.9.0           # [x86]
   run:
-    - r-base
+    - r-base >=3.6.3
+    - pcre
+    - liblapack
+    - blis >=0.9.0           # [x86]
 
 test:
   commands:
@@ -36,7 +45,7 @@ test:
 
 about:
   home: http://compgen.cshl.edu/rphast
-  license: BSD_3_clause
+  license: BSD_3_clause + file LICENSE
   summary: Provides an R interface to the 'PHAST'(<http://compgen.cshl.edu/phast/>) software
     (Phylogenetic Analysis with Space/Time Models).  It can be used for many types of
     analysis in comparative and evolutionary genomics, such as estimating models of
@@ -45,3 +54,5 @@ about:
     models.  It can also perform many basic operations on multiple sequence alignments
     and phylogenetic trees.
   license_family: BSD
+  additional-platforms:
+    - linux-aarch64

@@ -1,6 +1,6 @@
 {% set name = "mosca" %}
-{% set version = "1.1.0" %}
-{% set sha256 = "000518000a8593ee5d92052735d92d66b7823476841064a39d2c4c03a66c6fa2" %}
+{% set version = "2.3.0" %}
+{% set sha256 = "1eba9c082273dd46badd2d5ff8df56aabdc496214e337331d000f54399893a94" %}
 
 package:
   name: {{ name|lower }}
@@ -13,54 +13,27 @@ source:
 build:
   noarch: generic
   number: 0
+  run_exports:
+    - {{ pin_subpackage("mosca", max_pin="x.x") }}
+  script: >
+    mkdir -p $PREFIX/share/MOSCA $PREFIX/bin && 
+    cp -r workflow/* resources/*.json resources/*.txt $PREFIX/share/MOSCA && 
+    chmod +x $PREFIX/share/MOSCA/mosca.py && 
+    ln -s $PREFIX/share/MOSCA/mosca.py $PREFIX/bin/mosca
 
 requirements:
   run:
-    - python
-    - fastqc
-    - sortmerna=2.1
-    - seqtk
-    - trimmomatic
-    - megahit
-    - spades
-    - fraggenescan
-    - diamond
-    - upimapi
-    - htseq
-    - bowtie2
-    - maxbin2
-    - checkm-genome>=1.1.0
-    - bioconductor-deseq2=1.22.1
-    - bioconductor-edger=3.24.3
-    - r-pheatmap
-    - r-optparse
-    - blast
-    - krona
-    - seqkit
-    - svn
-    - reportlab
-    - openpyxl
-    - xlrd>=0.9.0
-    - r-rcolorbrewer
+    - python >=3.9, <3.12
     - pandas
-    - scikit-learn
-    - lxml
-    - biopython
-    - perl
-    - progressbar33
-    - tqdm>=4.33.0
-    - xlsxwriter
-    - recognizer
-    - maxquant
-    - quast
+    - snakemake <8
 
 test:
   commands:
-    - mosca.py -v
+    - mosca -v
 
 about:
   home: https://github.com/iquasere/MOSCA
-  license: GNU General Public License v3 (GPL-3.0)
+  license: GPL-3.0-or-later
   license_family: GPL
   license_file: LICENSE
   summary: 'MOSCA - Meta-Omics Software for Community Analysis'
@@ -77,7 +50,7 @@ about:
     Peptide-to-Spectrum matching, with the annotated ORFs as reference database.
     Final steps include differential expression analysis for both MT and MP, and
     metabolic pathways analysis through KEGG Pathways.
-  doc_url: https://github.com/iquasere/MOSCA/blob/master/README.md
+  doc_url: https://github.com/iquasere/MOSCA/wiki
   dev_url: https://github.com/iquasere/MOSCA
 
 extra:

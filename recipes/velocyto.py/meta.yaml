@@ -9,32 +9,37 @@ source:
   sha256: 2461eabf2ec6b152240c95f7ad8a0a5768a83c72822d9398beec2981732b890d
 
 build:
-  number: 1
+  number: 8
+  run_exports:
+    - {{ pin_subpackage("velocyto.py", max_pin="x.x") }}
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
-  skip: True  # [py2k]
   entry_points:
     - velocyto = velocyto.commands.velocyto:cli
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
   host:
     - python
     - pip
-    - numpy
+    - setuptools
+    - numpy <2
     - cython
   run:
     - python
     - {{ pin_compatible('numpy') }}
     - scipy
     - numba
-    - matplotlib
+    - matplotlib-base
     - scikit-learn
     - h5py
     - loompy
     - pysam
     - click
     - pandas
+    - samtools
 
 test:
   imports:

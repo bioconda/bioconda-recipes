@@ -1,0 +1,60 @@
+{% set version = "2.1.1b" %}
+{% set sha256 = "9be4f46cc6d8e7273c4d11f8ac8133a63fe2da39f420100d5d4e1828acaa6d47" %}
+
+package:
+  name: mapseq
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/meringlab/MAPseq/archive/v{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  skip: True # [osx]
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('mapseq', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - {{ compiler("cxx") }}
+    - automake
+    - autoconf
+    - libtool
+    - make
+    - subversion
+  host:
+    - zlib
+    - gsl
+    - zlib
+    - openssl
+    - readline
+    - ncurses
+    - libopenblas
+    - blis
+  run:
+    - gsl
+    - zlib
+    - openssl
+    - readline
+    - ncurses
+    - libopenblas
+    - blis
+    # for post-link script
+    - curl
+
+test:
+  commands:
+    - mapseq --help &> /dev/null
+
+about:
+  home: https://github.com/jfmrod/MAPseq
+  license: dual-licensed under GPL-3.0+ or BSD 2-clause
+  license_family: GPL
+  license_file: COPYING
+  summary: Open source metagenomic 16S/18S read classifier enabling comparative metagenomics.
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btx517

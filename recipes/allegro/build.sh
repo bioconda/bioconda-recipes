@@ -1,10 +1,9 @@
 #!/bin/bash
-export CPP_INCLUDE_PATH=${PREFIX}/include
-export CXX_INCLUDE_PATH=${PREFIX}/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-
+rm -rf src/config.guess
+rm -rf src/config.sub
+wget "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD" -O src/config.guess
+wget "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD" -O src/config.sub
 ./configure
-make
+make CXXFLAGS="${CXXFLAGS} -std=c++03"
 
 cp allegro $PREFIX/bin

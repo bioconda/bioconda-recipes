@@ -1,5 +1,5 @@
-{% set version = "0.6" %}
-{% set sha256 = "c44fb3139f9dc8d08c80b4d6942e5481254e2d56c458eb7cfc5c1ce5ede5a82b" %}
+{% set version = "0.10" %}
+{% set sha256 = "c6bbe91e4106dc49ce91a30072998eaccf0b1102b228a25031c9f3671aaa28a1" %}
 
 package:
   name: pytaxonkit
@@ -10,33 +10,38 @@ source:
   sha256: '{{sha256}}'
 
 build:
+  run_exports:
+    - {{ pin_subpackage("pytaxonkit", max_pin="x.x") }}
   noarch: python
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv
   number: 0
 
 requirements:
   host:
-    - python >=3
+    - python >=3,<3.12
     - pip
   run:
-    - python >=3
+    - python >=3,<3.12
     - pandas >=1.0
     - pytest >=5.4
-    - taxonkit >=0.6
+    - taxonkit >=0.20
 
 test:
   imports:
     - pytaxonkit
   requires:
+    - black =22.6.0
     - pytest-cov
 
 about:
   home: https://github.com/bioforensics/pytaxonkit/
-  license: BSD License
+  license: BSD-3-Clause
   license_family: BSD
+  license_file: LICENSE
   summary: Python bindings for the TaxonKit library.
   dev_url: https://github.com/bioforensics/pytaxonkit/
 
 extra:
   recipe-maintainers:
     - standage
+    - RyanBerger98

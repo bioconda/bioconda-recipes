@@ -18,4 +18,5 @@ else
     exit 1
 fi
 
-chmod u+rwx $PREFIX/bin/*
+chmod +rx $PREFIX/bin/debinhex.pl
+chmod +rx $PREFIX/bin/binhex.pl

@@ -1,0 +1,57 @@
+{% set name = "fuc" %}
+{% set version = "0.38.0" %} 
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 379ffdfeaa77ba4d9fd38360e1032986ad3e3da8b380f57652cbcf4b9c1c13dc
+
+build:
+  number: 0
+  entry_points:
+    - fuc=fuc.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - biopython
+    - lxml
+    - matplotlib-base
+    - matplotlib-venn
+    - numpy
+    - pandas
+    - pyranges
+    - pysam
+    - python
+    - scipy
+    - seaborn
+    - statsmodels
+
+test:
+  imports:
+    - fuc
+    - fuc.api
+    - fuc.cli
+  commands:
+    - fuc --help
+
+about:
+  home: "https://github.com/sbslee/fuc"
+  license: MIT
+  license_family: MIT
+  summary: "Frequently used commands in bioinformatics"
+  doc_url: "https://sbslee-fuc.readthedocs.io/en/latest/"
+  dev_url: "https://github.com/sbslee/fuc"
+
+extra:
+  recipe-maintainers:
+    - sbslee

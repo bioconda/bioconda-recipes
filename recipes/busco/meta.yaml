@@ -1,66 +1,87 @@
 {% set name = "busco" %}
-{% set version = "4.1.2" %}
-{% set sha256 = "c4fb4bd442c17a7b5be00d451a6eeb2d328791c288caac45bdc50f4feaffa3a6" %}
-{% set repo = "busco" %}
+{% set version = "6.0.0" %}
+{% set sha256 = "f5510d6e2eac7931fad8f0cb13445f706f2ddac4d7b9216c6d4c3eedc9289b03" %}
 
 package:
-  name: {{ name|lower }}
+  name: busco
   version: {{ version }}
 
 build:
   number: 0
-  noarch: generic
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 source:
-  url: https://gitlab.com/ezlab/{{ repo }}/-/archive/{{ version }}/busco-{{ version }}.tar.gz
+  url: https://gitlab.com/ezlab/busco/-/archive/{{ version }}/busco-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-Add-default-config-path-within-prefix-updated.patch
+    - 0001-Set-conda-distribution.patch
 
 requirements:
   host:
     - python >=3.3
     - pip
-    - findutils
-    - blast >=2.10.1 # There is a multithreading problem for all BLAST versions between 2.4 and 2.10.0
-    - hmmer >=3.1b2 # sepp needs this version
-    - augustus
-    - biopython
-    - r-base
-    - r-ggplot2 >=2.2.1
+    - wget
+    - blast >=2.10.1  # There is a multithreading problem for all BLAST versions between 2.4 and 2.10.0
+    - hmmer >=3.1b2  # sepp needs this version
+    - augustus >=3.3
+    - biopython >=1.79
     - prodigal
-    - sepp >=4.3.10
+    - sepp >=4.5.5
+    - metaeuk >=6.a5d39d9  # needed for gff bug fix
+    - pandas
+    - bbmap
+    - miniprot
+    - requests
+    - matplotlib-base
   run:
     - python >=3.3
-    - findutils
-    - blast >=2.10.1 # There is a multithreading problem for all BLAST versions between 2.4 and 2.10.0
-    - hmmer >=3.1b2 # sepp needs this version
-    - augustus
-    - biopython
-    - r-base
-    - r-ggplot2 >=2.2.1
+    - wget
+    - blast >=2.10.1  # There is a multithreading problem for all BLAST versions between 2.4 and 2.10.0
+    - hmmer >=3.1b2  # sepp needs this version
+    - augustus >=3.3
+    - biopython >=1.79
     - prodigal
-    - sepp >=4.3.10
+    - sepp >=4.5.5
+    - metaeuk >=6.a5d39d9  # needed for gff bug fix
+    - pandas
+    - bbmap
+    - miniprot
+    - requests
+    - matplotlib-base
+    - fonts-conda-ecosystem
 
 test:
-  requires:
-    - wget
   commands:
     - busco -h
-    - generate_plot.py -h
+  source_files:
+    # used in run_test.sh
+    - test_data
 
 about:
-  home: http://busco.ezlab.org/
+  home: "https://busco.ezlab.org"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: BUSCO provides measures for quantitative assessment of genome
+  summary: "Assessment of assembly completeness using Universal Single Copy Orthologs."
+  description: BUSCO provides measures for quantitative assessment of genome
            assembly, gene set, and transcriptome completeness based on
            evolutionarily informed expectations of gene content from
            near-universal single-copy orthologs selected from OrthoDB.
+  dev_url: "https://gitlab.com/ezlab/busco"
+  doc_url: "https://busco.ezlab.org/busco_userguide.html"
 
 extra:
+  container:
+    # Necessary to allow Busco to download files from the internet when used with Singularity
+    # and default bind paths (see also https://github.com/bioconda/bioconda-recipes/issues/11583).
+    # Should be removed again when the base container is fixed.
+    extended-base: True
   identifiers:
     - biotools:busco
     - doi:10.1093/bioinformatics/btv351
+    - usegalaxy-eu:busco
   recipe-maintainers:
-    - silask
-    - matsepp
     - berkelem

@@ -1,21 +1,28 @@
-{% set name = "bcov" %}
 {% set version = "1.0" %}
 
 
 package:
-  name: {{ name }}
+  name: bcov
   version: {{ version }}
 
 build:
-  number: 1
+  number: 10
+  run_exports:
+    - {{ pin_subpackage("bcov", max_pin="x.x.x") }}  
 
 source:
   url: http://biocomp.unibo.it/savojard/bcov/bcov-1.0.tar.gz
   sha256: f74f007a6e51f9719cafc0a90d77d2664c90714c3f71309f4b053dcf737a5beb
+  patches:
+    - 0001-Remove-explicit-gfortran-check.patch
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
+    - {{ compiler('fortran') }}
+    - autoconf
+    - automake
   host:
     - glpk
   run:
@@ -35,3 +42,5 @@ extra:
   identifiers:
     - biotools:bcov
     - doi:10.1093/bioinformatics/btt555
+  additional-platforms:
+    - linux-aarch64

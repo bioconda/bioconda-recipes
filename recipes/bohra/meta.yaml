@@ -1,6 +1,6 @@
 {% set name = "bohra" %}
-{% set version = "1.2.14" %}
-{% set sha256 = "b27a605f543258600b89a0d5dba8e80974ee8418772f97f2de0e9df028945002" %}
+{% set version = "2.3.8" %}
+{% set sha256 = "0f3c1f147b4993297dea3bcb9ee25f907ee41407fc7c958c7fdd7213a810d386" %}
 
 package:
   name: "{{ name }}"
@@ -15,38 +15,33 @@ build:
   number: 0
   entry_points:
     - bohra=bohra.bohra:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('bohra', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.7
+    - python >=3.8
     - pip
+    - setuptools
   run:
-    - python >=3.7
-    - biopython >=1.70
-    - snakemake >=5.10
-    - pandas >=1.0
-    - numpy >=1.18.1
-    - svgwrite
+    - python >=3.8
+    - altair
+    - biopython 1.81
+    - nextflow 22.10.6
+    - pandas 1.0.5
+    - numpy 1.23.1
     - jinja2
     - packaging
     - psutil
     - pytest-runner
     - pytest
     - sh
-    - snippy ==4.4.5
-    - shovill >=1.0.9
-    - prokka >=1.14.6
-    - abricate >=0.9.9
-    - mlst >=2.19
-    - snp-dists ==0.6.3
-    - iqtree
-    - seqtk
-    - roary
-    - kraken2
-    - abritamr
-    - mash
-    - toml
+    - any2fasta
+    - csvtk
+    - perl-list-moreutils
+    - perl-text-csv
+    - perl-svg
 
 test:
   imports:
@@ -56,11 +51,12 @@ test:
     - bohra --help
 
 about:
-  home: "https://github.com/kristyhoran/bohra"
-  license: "GNU General Public v3 (GPLv3)"
+  home: "https://github.com/MDU-PHL/bohra"
+  license: "GPL-3.0-or-later"
   license_family: "GPL3"
   license_file: "LICENSE.txt"
   summary: "Pipeline for analysing Illumina data for microbiological public health."
+  doc_url: "https://github.com/MDU-PHL/bohra/wiki"
 
 extra:
   recipe-maintainers:

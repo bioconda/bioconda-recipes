@@ -1,6 +1,9 @@
-export CPATH=${PREFIX}/include
-export INCLUDES="-I$PREFIX/include -I$PREFIX/include/ncurses"
-export LDFLAGS="-L$PREFIX/lib -ltinfo"
-export LIBRARY_PATH=${PREFIX}/lib
-make
-cp msisensor $PREFIX/bin
+#!/bin/bash
+
+set -xe
+
+CFLAGS="${CFLAGS} ${LDFLAGS}" \
+    make -j"${CPU_COUNT}" \
+    CXX="${CXX}" CC="${CC}"
+install -d "${PREFIX}/bin"
+install -m 755 msisensor "${PREFIX}/bin/"

@@ -1,8 +1,8 @@
 #!/bin/bash
+if [[ ${target_platform} == "linux-aarch64" ]];then
+  sed -i.bak '19s/#include <emmintrin.h>/\/\//' src/zinm.h
+fi
 
-export C_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-
-make
-mkdir -p $PREFIX/bin
-cp zerone $PREFIX/bin
+make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+mkdir -p "${PREFIX}/bin"
+cp zerone "${PREFIX}/bin/"

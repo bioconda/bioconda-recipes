@@ -1,0 +1,76 @@
+--- t/2_call.t	2020-07-03 22:04:07.000000000 +0200
++++ t/2_call.t.new	2022-02-01 23:02:42.354580072 +0100
+@@ -53,7 +53,7 @@
+ 
+ SKIP: {
+     # Test SVmerge:
+-    ($has_samtools && $has_edlib) or skip "Skipping SVmerge tests because one of samtools or edlib-aligner is missing from path", 2;
++    ($has_samtools && $has_edlib) or skip "Skipping SVmerge tests because one of samtools or edlib-aligner is missing from path", 4;
+     $script = 'blib/script/SVmerge';
+     
+     mkdir "t/test";
+@@ -81,36 +81,36 @@
+     $script = 'blib/script/SVcomp';
+     
+     mkdir "t/test";
+-	    system("perl -w -I blib/lib $script --first t/first.vcf --second t/second.vcf --prefix t/comp --ref t/hs37d5_1start.fa > t/test4.out 2>&1");
+-	    $out = `awk -F"\t" '\$2=="HG4_Ill_svaba_1" \&\& \$3=="HG3_Ill_GATKHC_1" {print \$6}' t/comp.distances`;
+-	    ok($out == -37, "$script compsize");
+-	    #system("rm t/comp.distances");
+-	    #system("rm t/test4.out");
+-	}
++    system("perl -w -I blib/lib $script --first t/first.vcf --second t/second.vcf --prefix t/comp --ref t/hs37d5_1start.fa > t/test4.out 2>&1");
++    $out = `awk -F"\t" '\$2=="HG4_Ill_svaba_1" \&\& \$3=="HG3_Ill_GATKHC_1" {print \$6}' t/comp.distances`;
++    ok($out == -37, "$script compsize");
++    #system("rm t/comp.distances");
++    #system("rm t/test4.out");
++}
+ 
+-	SKIP: {
+-	    # Test SVbenchmark:
+-	    ($has_samtools && $has_edlib) or skip "Skipping SVbenchmark tests because one of samtools or edlib-aligner is missing from path", 2;
+-	    $script = 'blib/script/SVbenchmark';
+-	    
+-	    mkdir "t/test";
+-	    system("perl -w -I blib/lib $script --test t/benchmark.test.vcf --truth t/benchmark.truth.vcf --prefix t/benchmark --ref t/hs37d5_1start.fa > t/test5.out 2>&1");
+-	    $out = `grep 'Precision' t/benchmark.report | awk '{print \$NF}'`;
+-	    like $out, qr/20.00/, "$script precision";
+-	    system("perl -w -I blib/lib $script --test t/benchmark.test.vcf --truth t/benchmark.truth.vcf --minsize 10000 --prefix t/benchmark.minsize --ref t/hs37d5_1start.fa  > t/test5.out 2>&1");
+-	    $out = `grep 'Precision' t/benchmark.minsize.report | awk '{print \$NF}'`;
+-	    like $out, qr/0.00/, "$script precision";
+-	    #system("rm t/benchmark.distances");
+-	    #system("rm t/test5.out");
+-	}
++SKIP: {
++    # Test SVbenchmark:
++    ($has_samtools && $has_edlib) or skip "Skipping SVbenchmark tests because one of samtools or edlib-aligner is missing from path", 2;
++    $script = 'blib/script/SVbenchmark';
++    
++    mkdir "t/test";
++    system("perl -w -I blib/lib $script --test t/benchmark.test.vcf --truth t/benchmark.truth.vcf --prefix t/benchmark --ref t/hs37d5_1start.fa > t/test5.out 2>&1");
++    $out = `grep 'Precision' t/benchmark.report | awk '{print \$NF}'`;
++    like $out, qr/20.00/, "$script precision";
++    system("perl -w -I blib/lib $script --test t/benchmark.test.vcf --truth t/benchmark.truth.vcf --minsize 10000 --prefix t/benchmark.minsize --ref t/hs37d5_1start.fa  > t/test5.out 2>&1");
++    $out = `grep 'Precision' t/benchmark.minsize.report | awk '{print \$NF}'`;
++    like $out, qr/0.00/, "$script precision";
++    #system("rm t/benchmark.distances");
++    #system("rm t/test5.out");
++}
+ 
+-	SKIP: {
+-	    # Test svanalyzer launch script, using SVcomp:
+-	    ($has_samtools && $has_edlib) or skip "Skipping svanalyzer tests because one of samtools or edlib-aligner is missing from path", 1;
+-	    $script = 'blib/script/svanalyzer';
+-	    
+-	    mkdir "t/test";
+-	    system("PATH=\$PATH:blib/script PERL5LIB=\$PERL5LIB:blib/lib $script comp --first t/first.vcf --second t/second.vcf --prefix t/comp --ref t/hs37d5_1start.fa > t/test6.out 2>&1");
++SKIP: {
++    # Test svanalyzer launch script, using SVcomp:
++    ($has_samtools && $has_edlib) or skip "Skipping svanalyzer tests because one of samtools or edlib-aligner is missing from path", 1;
++    $script = 'blib/script/svanalyzer';
++    
++    mkdir "t/test";
++    system("PATH=\$PATH:blib/script PERL5LIB=\$PERL5LIB:blib/lib $script comp --first t/first.vcf --second t/second.vcf --prefix t/comp --ref t/hs37d5_1start.fa > t/test6.out 2>&1");
+     $out = `awk -F"\t" '\$2=="HG4_Ill_svaba_1" \&\& \$3=="HG3_Ill_GATKHC_1" {print \$6}' t/comp.distances`;
+     ok($out == -37, "$script compsize");
+     #system("rm t/comp.distances");

@@ -1,6 +1,17 @@
-#!/bin/sh
+#!/bin/bash
 
-cd FamSeq/src
-make
-mkdir -p ${PREFIX}/bin
-mv FamSeq $PREFIX/bin/FamSeq 
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+install -d "${PREFIX}/bin"
+
+cd FamSeq || true
+cd src
+
+sed -i.bak 's|g++|$(CXX)|' makefile
+sed -i.bak 's|LDFLAGS=|LDFLAGS=-L$(PREFIX)/lib|' makefile
+rm -rf *.bak
+
+make CXX="${CXX}" -j"${CPU_COUNT}"
+
+install -v -m 0755 FamSeq "${PREFIX}/bin"

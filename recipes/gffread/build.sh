@@ -1,3 +1,8 @@
 #!/bin/bash
-mkdir -p $PREFIX/bin
-install gffread $PREFIX/bin
+
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+mkdir -p "$PREFIX"/bin
+
+make release -j"${CPU_COUNT}" CXX="${CXX}" LINKER="${CXX}"
+install -v -m 0755 gffread "${PREFIX}/bin"

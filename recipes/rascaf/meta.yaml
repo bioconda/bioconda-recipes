@@ -1,24 +1,28 @@
-{% set name = "Rascaf" %}
-{% set version = "20161129" %}
+{% set name = "rascaf" %}
+{% set version = "20180710" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 2
-
 source:
-  url: https://github.com/mourisl/Rascaf/archive/ed779e100853977307bbdc01c1644390d8556a7b.tar.gz
-  md5: b05116262162712098b357871f1a79e4
+  url: https://github.com/mourisl/Rascaf/archive/690f618e59b1f555fafa406ad1b6b95c1b0423b4.tar.gz
+  md5: 7478d8db1e4f5618ee9ab0dfae23815f
+  patches:
+    - 0001-Unvendor-samtools.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('rascaf', max_pin=None) }}
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
   host:
-    - zlib
-  run:
+    - samtools 0.1.19.*
     - zlib
 
 test:
@@ -27,7 +31,15 @@ test:
     - rascaf-join 2>&1 | grep usage > /dev/null
 
 about:
-  home: https://github.com/mourisl/Rascaf/commits/master
-  summary: Scaffolding with RNA-seq read alignment
-  license: GPL2
+  home: "https://github.com/mourisl/Rascaf"
+  summary: "Scaffolding with RNA-seq read alignment."
+  license: "GPL-2.0-or-later"
+  license_family: GPL
+  dev_url: "https://github.com/mourisl/Rascaf"
+  doc_url: "https://github.com/mourisl/Rascaf/blob/master/README.md"
 
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - doi:10.3835/plantgenome2016.03.0027

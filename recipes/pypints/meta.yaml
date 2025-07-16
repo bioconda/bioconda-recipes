@@ -1,0 +1,59 @@
+{% set name = "pyPINTS" %}
+{% set version = "1.2.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://files.pythonhosted.org/packages/b7/9b/c82f8aafbe10fcd9e6529f5c7c763a17108c13a69623a528875e507ce0fe/pypints-1.2.1.tar.gz"
+  sha256: afc4b4d6922aa39ca6d2982f104382b40cbf71e1ac8fcd765c6120de4bd98720
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('pypints', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - bedtools
+    - biopython
+    - matplotlib-base
+    - numpy
+    - pandas
+    - pybedtools
+    - pybigwig
+    - pysam
+    - python
+    - requests
+    - samtools
+    - scipy
+    - statsmodels
+    - tabix
+
+test:
+  imports:
+    - pints
+
+about:
+  home: "https://pints.yulab.org"
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Peak Identifier for Nascent Transcripts Starts (PINTS)"
+  dev_url: "https://github.com/hyulab/PINTS"
+
+extra:
+  identifiers:
+    - doi:10.1038/s41587-022-01211-7
+  notes: |
+    The tool provides a set of executable files: 
+    `pints_caller` (for peak calling, the main program), 
+    `pints_visualizer` (for generating bigwig files from bam files), 
+    `pints_normalizer` (for normalizing bigwig files by spikein counts), 
+    and `pints_boundary_extender`.

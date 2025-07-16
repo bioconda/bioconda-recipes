@@ -1,15 +1,21 @@
+{% set name = "whatshap" %}
+{% set version = "2.8" %}
+
 package:
-  name: whatshap
-  version: "1.0"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/c0/c8/98036e04fb95249128d6b49ca61691e1d8eea484dd94611f90efb5857174/whatshap-1.0.tar.gz
-  sha256: fcf0495793998da94054bdc4c6d6f3f6b145a7befa07ac96275e5e2272979aa2
+  url: https://files.pythonhosted.org/packages/1c/1a/78c4c6d188bea81d146b7e73fe12cf3e2d3c2b0e69542a2ca806908b6fa3/whatshap-2.8.tar.gz
+  sha256: 073ee7946d563e0125dbce58d9fc86a7a3fae377f27859dacb398309374b2cbe
 
 build:
-  skip: True  # [not py3k]
-  script: python -m pip install --no-deps --ignore-installed .
-  number: 1
+  number: 0
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  run_exports:
+    - {{ pin_subpackage('whatshap', max_pin="x") }}
 
 requirements:
   build:
@@ -17,29 +23,42 @@ requirements:
   host:
     - python
     - pip
-    - setuptools
+    - cython
     - setuptools-scm
   run:
     - python
-    - pysam >=0.15
+    - pysam >=0.18
     - pyfaidx >=0.5.5.2
     - networkx
     - biopython >=1.73
     - scipy
-    - xopen >=0.9.0
+    - xopen >=1.2.0
+    # This is not an actual requirement, but allows to run subsequent WhatsHap commands
+    # in the same container (input files need to be indexed with tabix)
+    - htslib
+    - pulp >=2
 
 test:
   imports:
     - whatshap
   commands:
-    - whatshap --help > /dev/null
+    - "whatshap --help > /dev/null"
 
 about:
-  home: https://whatshap.readthedocs.io/
-  license: MIT License
-  summary: 'phase genomic variants using DNA sequencing reads (haplotype assembly)'
+  home: "https://whatshap.readthedocs.io"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Phase genomic variants using DNA sequencing reads (haplotype assembly)."
+  dev_url: "https://github.com/whatshap/whatshap"
+  doc_url: "https://whatshap.readthedocs.io"
 
-bextra:
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:whatshap
     - doi:10.1089/cmb.2014.0157
+  recipe-maintainers:
+    - marcelm

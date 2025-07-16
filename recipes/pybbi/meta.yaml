@@ -1,0 +1,53 @@
+{% set name = "pybbi" %}
+{% set version = "0.4.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "6a193dcd0d4d4575c258d6cd5d2d7c5368a5cf58e939d8faae9f8fe192373a5c"
+
+build:
+  number: 2
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - python
+    - pip
+    - numpy
+    - cython
+    - setuptools
+    - pkgconfig
+    - six
+    - openssl
+    - libpng
+    - zlib
+  run:
+    - numpy
+    - python
+    - six
+    - {{ pin_compatible('numpy') }}
+
+test:
+  imports:
+    - bbi
+
+about:
+  home: "https://github.com/nvictus/pybbi"
+  license: "MIT"
+  license_family: "MIT"
+  summary: "Python bindings to UCSC Big Binary (bigWig/bigBed) file library"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - Nanguage

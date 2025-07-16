@@ -1,31 +1,33 @@
 #!/bin/bash
 
-# set path for libssw.so
-export LIBRARY_PATH=${PREFIX}/lib
-export C_INCLUDE_PATH=${PREFIX}/include:${PREFIX}/include/linux
-export CPP_INCLUDE_PATH=${PREFIX}/include:${PREFIX}/include/linux
-export CXX_INCLUDE_PATH=${PREFIX}/include:${PREFIX}/include/linux
-export CPLUS_INCLUDE_PATH=${PREFIX}/include:${PREFIX}/include/linux
-export JAVA_HOME="${PREFIX}/bin"
-export LDFLAGS="-L$PREFIX/lib"
+mkdir -p "${PREFIX}/"{lib,include}
+export JAVA_HOME="${PREFIX}/lib/jvm"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+if [[ `uname` == "Darwin" ]]; then
+	cp -rf ${PREFIX}/lib/jvm/include/darwin/jni_md.h ${PREFIX}/lib/jvm/include/
+else
+	cp -rf ${PREFIX}/lib/jvm/include/linux/jni_md.h ${PREFIX}/lib/jvm/include/
+fi
 
 cd src
-make
-make java
-chmod +x *
-cp example_cpp ${PREFIX}/bin
+make CC="${CC}" CXX="${CXX}" \
+	CFLAGS="${CFLAGS} ${LDFLAGS}" \
+	CXXFLAGS="${CXXFLAGS} ${LDFLAGS}" -j"${CPU_COUNT}"
+make java \
+	CC="${CC}" CXX="${CXX}" \
+	CFLAGS="${CFLAGS} ${LDFLAGS}" \
+	CXXFLAGS="${CXXFLAGS} ${LDFLAGS}" -j"${CPU_COUNT}"
 
-for i in *.py
-do
-sed -i.bak 's#!/usr/bin/env python#!/opt/anaconda1anaconda2anaconda3/bin/python#' $i
-done
+install -d "${PREFIX}/bin"
+install -v -m 0755 \
+	example_cpp \
+	*.py* \
+	ssw_test \
+	ssw.jar \
+	"${PREFIX}/bin"
 
-cp *.py* ${PREFIX}/bin
-cp ssw_test ${PREFIX}/bin
-cp ssw.jar ${PREFIX}/bin
-cp *.so ${PREFIX}/lib
-
-# copy c/c++ files
-cp *.h ${PREFIX}/include
-cp ssw.c ${PREFIX}/include
-cp ssw_cpp.cpp ${PREFIX}/include
+cp -rf *.so "${PREFIX}/lib"
+cp -rf *.h "${PREFIX}/include"
+cp -rf ssw.c "${PREFIX}/include"
+cp -rf ssw_cpp.cpp "${PREFIX}/include"

@@ -1,30 +1,29 @@
-{% set version = "0.6.2" %}
-{% set sha256 = "2a4c883f7886c258f9960d7d7e53651faa3b3481f8d51042bd0f529c20d9281b" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "0cc5697f090c02cd645954c1a282f4bf6d4bcd9f9f08416b9b2764ffdf922756" %}
 
 package:
   name: yacrd
-  version: '{{version}}'
+  version: {{ version }}
 
 source:
-  url: https://github.com/natir/yacrd/archive/v{{version}}.tar.gz
-  sha256: '{{sha256}}'
+  url: https://github.com/natir/yacrd/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 4
+  run_exports:
+    - {{ pin_subpackage('yacrd', max_pin="x") }}
 
 requirements:
   build:
-    - '{{ compiler("c") }}'
-    - rust
-    - pkg-config #[osx]
+    - {{ compiler("c") }}
+    - {{ compiler("rust") }}
+    - pkg-config  # [osx]
   host:
     - xz
     - zlib
     - bzip2
   run:
-    - xz
-    - zlib
-    - bzip2
 
 test:
   commands:
@@ -36,3 +35,7 @@ about:
   license_family: MIT
   license_file: LICENSE
   summary: Yet Another Chimeric Read Detector, with long-read mapper result as input.
+
+extra:
+  additional-platforms:
+    - linux-aarch64

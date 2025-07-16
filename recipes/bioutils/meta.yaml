@@ -1,0 +1,47 @@
+{% set name = "bioutils" %}
+{% set version = "0.6.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 6ad7a9b6da73beea798a935499339d8b60a434edc37dfc803474d2e93e0e64aa
+
+build:
+  number: 0
+  noarch: python
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir"
+  run_exports:
+    - {{ pin_subpackage('bioutils', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.10
+    - setuptools-scm
+  run:
+    - python >=3.10
+    - attrs
+    - requests
+    - urllib3 >=1.26,<2.dev0
+
+test:
+  imports:
+    - {{ name }}
+
+about:
+  home: https://github.com/biocommons/bioutils
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE.txt 
+  summary: "miscellaneous simple bioinformatics utilities and lookup tables"
+  doc_url: https://github.com/biocommons/bioutils
+  dev_url: https://github.com/biocommons/bioutils
+
+extra:
+  recipe-maintainers:
+    - ohsu-comp-bio

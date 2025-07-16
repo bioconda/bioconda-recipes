@@ -1,71 +1,59 @@
 {% set name = "GMAP" %}
-{% set version = "2020.06.30" %}
-{% set sha256 = "e60fcc85c55606503ddbd5a3ef7b5e61aecb38ac0c8a132e4aea8c8588ce38ee" %}
+{% set version = "2025.04.19" %}
+{% set sha256 = "68dd820ba14c97774e8619f1ccfdd60587de3f85d2e516f214548739800bd5a5" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: http://research-pub.gene.com/gmap/src/gmap-gsnap-2020-06-30.tar.gz
+  url: http://research-pub.gene.com/gmap/src/gmap-gsnap-{{ version | replace(".", "-") }}.tar.gz
   sha256: {{ sha256 }}
   patches:
     - single_quote_paths.patch
+    - 0002-genome_sites.patch  # [osx]
 
 build:
   number: 0
-  binary_has_prefix_files:
-    - bin/atoiindex
-    - bin/cmetindex
-    - bin/get-genome
-    - bin/gmap.sse42
-    - bin/gmap.nosimd
-    - bin/gmapl.sse42
-    - bin/gmapl.nosimd
-    - bin/gsnap.sse42
-    - bin/gsnap.nosimd
-    - bin/gsnapl.sse42
-    - bin/gsnapl.nosimd
-    - bin/sam_sort
-    - bin/snpindex
-    - bin/uniqscan
-    - bin/uniqscanl
-  has_prefix_files:
-    - bin/gff3_introns
-    - bin/gff3_splicesites
-    - bin/gmap_build
-    - bin/gmap_uncompress
-    - bin/gtf_introns
-    - bin/gtf_splicesites
+  run_exports:
+    - {{ pin_subpackage('gmap', max_pin=None) }}
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
+    - autoconf
+    - automake
+    - libtool
   host:
     - perl
-    # zlib is needed for gunzip
     - zlib
     - bzip2
   run:
     - perl
-    # zlib is needed for gunzip
-    - zlib
-    - bzip2
+    - perl-file-util
 
 test:
   commands:
-    - gmap --help
-    - gsnap --help
+    - "gmap --help"
+    - "gsnap --help"
 
 about:
-  home: http://research-pub.gene.com/gmap/
-  license: Apache-2.0
+  home: "http://research-pub.gene.com/gmap"
+  license: "Apache-2.0"
   license_family: APACHE
   license_file: LICENSE
   summary: "Genomic mapping and alignment program for mRNA and EST sequences."
+  dev_url: "http://research-pub.gene.com/gmap"
+  doc_url: "http://research-pub.gene.com/gmap"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    # bitpack64-access.c:2231:9: error: unrecognized instruction mnemonic, did you mean: abs, asr, b, blr, br, brk, bsl, lsr, msr, sri, str?
+    #- osx-arm64
   identifiers:
     - biotools:gmap
+    - biotools:gsnap
     - doi:10.1093/bioinformatics/bti310
     - doi:10.1093/bioinformatics/btq057

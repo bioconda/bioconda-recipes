@@ -1,9 +1,12 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
+set -xe
 
 mkdir build
 cd build
-cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX 
-make
+cmake \
+    -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+    -DBUILD_SHARED_LIBS=ON \
+    ..
+make -j ${CPU_COUNT}
 make install

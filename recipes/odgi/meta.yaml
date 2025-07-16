@@ -1,43 +1,63 @@
-{% set version = "0.3" %}
+{% set name = "odgi" %}
+{% set version = "0.9.2" %}
 
 package:
-  name: odgi
-  version: '{{version}}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  git_url: https://github.com/vgteam/odgi/
-  git_tag: v{{ version }}
-  sha256: unused
+  url: https://github.com/pangenome/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
+  sha256: b71dc82374e1c825ff834d0d22c4bedc4ffbb58ac4c44b499f1e607adacd4945
+  patches:
+    - 0001-master.patch  # [osx]
 
 build:
-  skip: True  # [osx or py27]
-  number: 0
+  number: 1
+  skip: True  # [linux]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - llvm-openmp  # [osx]
-    - cmake
+    - cmake <4
+    - make
+    - pkg-config
+    - python >=3
+    - pybind11-global
   host:
-    - zlib
-    - python
-  run: 
     - llvm-openmp  # [osx]
-    - python
+    - libgomp      # [linux]
     - zlib
+    - jemalloc
+  run:
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - python >=3
+    - jemalloc
+    - pybind11
 
 test:
   commands:
-    - odgi test
-  imports:
-    - odgi
+    - odgi 2>&1
 
 about:
-  home: https://github.com/vgteam/odgi
+  home: "https://github.com/pangenome/odgi"
   license: MIT
-  summary: An optimized dynamic genome graph implementation
+  license_family: MIT
+  license_file: LICENSE
+  summary: "An optimized dynamic genome/graph implementation."
+  dev_url: "https://github.com/pangenome/odgi"
+  doc_url: "https://github.com/pangenome/odgi/blob/v{{ version }}/README.md"
 
 extra:
-  skip-lints:
-    - uses_vcs_url
+  additional-platforms:
+    #- linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - AndreaGuarracino
+  identifiers:
+    - doi:10.1093/bioinformatics/btac308
+    - biotools:odgi
+    - usegalaxy-eu:odgi_viz
+    - usegalaxy-eu:odgi_build

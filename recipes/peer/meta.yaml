@@ -1,0 +1,38 @@
+{% set name = "peer" %}
+{% set version = "1.3" %}
+# no tags in upstream repository yet
+{% set commit = "40bc4b2cd92459ce42f44dfe279717436395f3f6" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PMBio/peer/archive/{{ commit }}.tar.gz
+  sha256: 80a549354569ae5ec7d4d92c78e7f8fa72da08fcd11322611f737044c34861ed
+  patches:
+    - patches/0001-Comment-out-SWIG-package-search.patch
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+
+test:
+  commands:
+    - peertool --help | grep -q USAGE
+
+about:
+  home: https://github.com/PMBio/peer
+  license: GPL-2.0-or-later
+  license_file:
+    - LICENSE
+    - External/yaml-cpp/license.txt
+  summary: 'A collection of Bayesian approaches to infer hidden determinants and their effects from gene expression profiles using factor analysis methods'

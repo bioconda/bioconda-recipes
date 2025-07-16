@@ -1,92 +1,59 @@
 #!/bin/bash
 
-if [ "$(uname)" == "Darwin" ]; then
-    # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14.
-    sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/g' vcflib/smithwaterman/Makefile
-    export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++"
-    sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' vcflib/intervaltree/Makefile
-    sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' vcflib/Makefile
-    sed -i.bak 's/if ( n_data/if ( \*n_data/' vcflib/src/cdflib.cpp
+mkdir -p ${PREFIX}/bin
+
+mkdir build
+
+export C_INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+
+sed -i.bak -e 's|"split.h"|<vcflib/split.h>|' src/*.h
+sed -i.bak -e 's|"split.h"|<vcflib/split.h>|' src/*.cpp
+sed -i.bak -e 's|"convert.h"|<vcflib/convert.h>|' src/*.h
+sed -i.bak -e 's|"convert.h"|<vcflib/convert.h>|' src/*.cpp
+sed -i.bak -e 's|"join.h"|<vcflib/join.h>|' src/*.h
+sed -i.bak -e 's|"join.h"|<vcflib/join.h>|' src/*.cpp
+sed -i.bak -e 's|"multichoose.h"|<vcflib/multichoose.h>|' src/*.h
+sed -i.bak -e 's|"multichoose.h"|<vcflib/multichoose.h>|' src/*.cpp
+sed -i.bak -e 's|<Variant.h>|<vcflib/Variant.h>|' src/*.h
+sed -i.bak -e 's|<intervaltree/IntervalTree.h>|<vcflib/IntervalTree.h>|' src/BedReader.h
+sed -i.bak -e 's|<IntervalTree.h>|<vcflib/IntervalTree.h>|' src/BedReader.cpp
+sed -i.bak -e 's|<Fasta.h>|"Fasta.h"|' ${PREFIX}/include/vcflib/Variant.h
+rm -rf src/*.bak
+
+OS=$(uname -s)
+ARCH=$(uname -m)
+
+if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
+	export CXXFLAGS="${CXXFLAGS} -arch x86_64"
+	sed -i.bak -e 's|c++17|c++14|' meson.build
+	rm -rf *.bak
+elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
+	export CXXFLAGS="${CXXFLAGS} -arch arm64"
+	sed -i.bak -e 's|c++17|c++14|' meson.build
+	rm -rf *.bak
 fi
 
+CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" meson setup --buildtype release \
+	--prefix "${PREFIX}" --strip --includedir "${PREFIX}/include" \
+	--libdir "${PREFIX}/lib" -Dc_args="-I${PREFIX}/include" \
+	-Dc_link_args="-L${PREFIX}/lib" build/
 
-# Fix this ridiculous build by going backwards and starting with vcflib manually
+cd build
 
-export C_INCLUDE_PATH=$PREFIX/include
-export CPLUS_INCLUDE_PATH=$PREFIX/include
+sed -i.bak -e 's|-I../src|-I../src -I../contrib -I../contrib/SeqLib -I../contrib/fastahack -I../contrib/smithwaterman|' build.ninja
+rm -rf *.bak
 
-export LDFLAGS="-L$PREFIX/lib -L\$(LIB_DIR) -lvcflib -lhts -lpthread -lz -lm -llzma -lbz2"
-export INCLUDES="-I . -Ihtslib -I$PREFIX/include -Itabixpp/htslib -I\$(INC_DIR) -L. -Ltabixpp/htslib"
-export LIBPATH="-L. -Lhtslib -L$PREFIX/lib"
-export CXXFLAGS="-O3 -D_FILE_OFFSET_BITS=64 -std=c++0x"
+ninja -v -j"${CPU_COUNT}"
+ninja install -v -j"${CPU_COUNT}"
 
-sed -i.bak 's/^CC.*//g' SeqLib/htslib/Makefile
-sed -i.bak 's/^CC.*//g' SeqLib/bwa/Makefile
-sed -i.bak 's/^CC.*//g' SeqLib/fermi-lite/Makefile
+## Copy scripts over to ${PREFIX}/bin ##
+install -v -m 0755 ../scripts/*.py "${PREFIX}/bin"
+install -v -m 0755 ../scripts/*.sh "${PREFIX}/bin"
+install -v -m 0755 ../scripts/*.pl "${PREFIX}/bin"
+install -v -m 0755 ../scripts/freebayes-parallel "${PREFIX}/bin"
 
-
-cd vcflib
-
-sed -i.bak 's/ld/$(LD)/' smithwaterman/Makefile
-sed -i.bak 's/gcc/$(CC) $(CFLAGS)/g' filevercmp/Makefile
-sed -i.bak 's/gcc/$(CC) $(CFLAGS)/g' multichoose/Makefile
-sed -i.bak 's/g++/$(CXX) $(CXXFLAGS)/g' multichoose/Makefile
-sed -i.bak 's/g++/$(CXX) $(CXXFLAGS)/g' intervaltree/Makefile
-
-make -e
-
-cp tabixpp/tabix.hpp ../src
-
-cd ../src
-
-sed -i.bak 's/^CXX=.*$//g' Makefile
-sed -i.bak 's/^C=gcc//g' Makefile
-sed -i.bak 's/C)/CC)/' Makefile
-sed -i.bak "s:INCLUDE =:INCLUDE = -I$PREFIX/include:" Makefile
-sed -i.bak 's/configure \&\& make/configure \&\& make -e/g' Makefile
-sed -i.bak 's/export C$//g' Makefile
-sed -i.bak 's/export CC$//g' Makefile
-sed -i.bak 's/export CXX$//g' Makefile
-
-#sed -i.bak "s:LIBS =:LIBS = -L$PREFIX/lib:" Makefile	
-
-# Set exports.
-export CFLAGS="-I$PREFIX/include"
-export C_INCLUDE_PATH=$PREFIX/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-
-
-sed -i.bak "s:LIBS):LIBS) -L$LIBRARY_PATH:g" Makefile
-
-# Make autoversion.
-make autoversion
-make CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" CFLAGS="-O3 -D_FILE_OFFSET_BITS=64 -g -fPIC -I$PREFIX/include -L$PREFIX/lib"
-cd ..
-
-# Translate for Python 3 if needed.
-pythonfiles="scripts/fasta_generate_regions.py scripts/coverage_to_regions.py vcflib/scripts/vcffirstheader"
-
-PY3_BUILD="${PY_VER%.*}"
-
-if [ $PY3_BUILD -eq 3 ]
-then
-    for i in $pythonfiles; do 2to3 --write $i; done
-fi
-
-# Copy executables.
-mkdir -p $PREFIX/bin
-cp -r bin/* $PREFIX/bin/
-
-sed -i.bak 's/..\/vcflib\/scripts\///g; s/..\/vcflib\/bin\///g' scripts/freebayes-parallel
-cp scripts/freebayes-parallel $PREFIX/bin
-
-sed -i.bak 's@#!/usr/bin/python@#!/usr/bin/env python@g' scripts/fasta_generate_regions.py
-cp scripts/fasta_generate_regions.py $PREFIX/bin
-
-cp scripts/coverage_to_regions.py $PREFIX/bin
-cp scripts/generate_freebayes_region_scripts.sh $PREFIX/bin
-
-cp vcflib/bin/vcfstreamsort $PREFIX/bin
-cp vcflib/bin/vcfuniq $PREFIX/bin
-cp vcflib/scripts/vcffirstheader $PREFIX/bin
+chmod 0755 "${PREFIX}/bin/freebayes"

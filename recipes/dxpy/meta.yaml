@@ -1,5 +1,5 @@
 {% set name = "dxpy" %}
-{% set version = "0.297.1" %}
+{% set version = "0.396.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 7cc680c5e2f44b80fb6ffd392eaffafd8b6ade722bf7e5c8d253c389b6602a64
+  sha256: b17c5cf26f1316d11c09f456e00559ebd2be022cfca35117cb96b9922eba8beb
 
 build:
   number: 0
@@ -16,24 +16,32 @@ build:
     - dx-build-applet = dxpy.scripts.dx_build_applet:main
     - dx-build-app = dxpy.scripts.dx_build_app:main
     - dx = dxpy.scripts.dx:main
-    - dx-build-report-html = dxpy.scripts.dx_build_report_html:main
     - dx-app-wizard = dxpy.scripts.dx_app_wizard:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('dxpy', max_pin="x.x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.8
     - pip
+    - setuptools
   run:
-    - argcomplete >=1.9.4
-    - beautifulsoup4 >=4.4.1
-    - cryptography <=2.2.2
-    - psutil >=3.3.0
-    - python
+    - python >=3.8
+    - argcomplete >=2.0.0 # [ py >= 310 ]
+    - argcomplete >=1.9.4,<2.0.0 # [ py < 310 ]
+    - websocket-client >=1.6.0,<1.8.0
     - python-dateutil >=2.5
-    - python-magic >=0.4.6
-    - requests >=2.8.0
-    - websocket-client >=0.53.0
+    - psutil >=5.9.3
+    - certifi
+    - urllib3 >=1.25,<2.2
+    - pyreadline3 ==3.4.1  # [win]
+    - colorama >=0.4.4,<=0.4.6  # [win]
+    - crc32c >=2.7.1
+    # optional dependencies needed for 'dx extract_dataset'
+    # - numpy
+    # - pandas >=1.3.5
+    # - xattr ==0.10.1 # [linux]
 
 test:
   imports:
@@ -48,20 +56,21 @@ test:
     - dx-build-applet --help
     - dx-build-app --help
     - dx --help
-    - dx-build-report-html --help
     - dx-app-wizard --help
   requires:
     - mock >=2.0.0
     - pexpect >=4.6
     - pyopenssl >=17.5.0
-    - pytest >=3.5.1
+    - pytest >=4.6.9
+    - pytest-timeout >=1.3.4
+    - pytest-xdist >=1.31.0
 
 about:
   home: https://github.com/dnanexus/dx-toolkit
   license: Apache-2.0
   license_family: Apache
   summary: DNAnexus Platform API bindings for Python
-  doc_url: https://wiki.dnanexus.com/downloads#DNAnexus-Platform-SDK
+  doc_url: http://autodoc.dnanexus.com/bindings/python/current/
   dev_url: https://github.com/dnanexus/dx-toolkit
 
 extra:

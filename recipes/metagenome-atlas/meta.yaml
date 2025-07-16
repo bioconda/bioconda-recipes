@@ -1,39 +1,42 @@
-{% set version = "2.4.1" %}
-{% set sha256 = "d77135a9707cb005c995cc8dbb0d98172cbb7270e510787eca38cd55516c2443" %}
-
+{% set version = "19.0.1" %}
 
 package:
   name: metagenome-atlas
   version: {{ version }}
 
 source:
-  url: https://github.com/metagenome-atlas/atlas/archive/{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  url: https://github.com/metagenome-atlas/atlas/archive/v{{ version }}.tar.gz
+  sha256: 8e85d2ca77ade948af5f4b31e13837efcd730af5b18660fd42b0a9845d61c09b
 
 build:
   number: 0
   entry_points:
     - atlas=atlas.atlas:cli
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
-
-
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('metagenome-atlas', max_pin="x") }}
 
 requirements:
   host:
-    - python >3.6,<3.7
+    - python >=3.8,<3.11
     - pip
-
   run:
-    - python >3.6,<3.7
-    - snakemake >=5.4.5,<=5.9
-    - pandas >=0.23,<1
+    - python >=3.8,<3.11
+    - mamba
+    - bbmap >=39.01,<40
+    - snakemake-minimal >=7.18.1,<7.26
+    - pygments
+    - networkx
+    - graphviz
+    - pandas >=1.2, <1.5
+    - pyarrow >=8 # for parquet reading
     - click >=7
-    - ruamel.yaml=0.15.99 # needs to be explicit
-    - biopython >=1.70,<2
-    - bbmap >=37.*
-    - git
+    - ruamel.yaml >=0.17
     - cookiecutter
+    - pathlib
+    # optional to help conda solve
+    - numpy =1.21
 
 test:
   imports:
@@ -57,7 +60,7 @@ about:
 
     Three commands to start analysing your metagenome data:
     ```
-        conda install -c bioconda -c conda-forge metagenome-atlas
+        mamba install -c bioconda -c conda-forge metagenome-atlas
         atlas init --db-dir databases path/to/fastq/files
         atlas run
     ```
@@ -74,3 +77,5 @@ extra:
     - silask
   container:
     extended-base: true  # unicode problem with click
+  identifiers:
+    - doi:10.1101/737528

@@ -1,0 +1,53 @@
+{% set name = "flippyr" %}
+{% set version = "0.6.1" %}
+{% set sha256 = "65bc37f44c8df60c33c1f82638034df874050204cd832918ba7b41d78a1d8452" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/BEFH/flippyr/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - pip
+  run:
+    - python
+    - pyfaidx
+    - pandas
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir"
+  entry_points:
+    - flippyr = flippyr:main
+  run_exports:
+    - {{ pin_subpackage('flippyr', max_pin="x.x") }}
+
+test:
+  commands:
+    - flippyr -h
+
+about:
+  home: https://github.com/BEFH/flippyr
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'This package is designed to align a PLINK fileset with a FASTA reference genome.'
+  description: |
+    Flippy is a simple, fast script to ensure that PLINK filesets are aligned to
+    a reference genome in FASTA format. It identifies and fixes strand flipping,
+    and reversed alleles. It removes ambiguous (palindromic) alleles and sites
+    that do not match the reference genome. It also recognizes and removes multi-
+    allelic sites and indels by default. Instructions and more details can be
+    found on GitHub.
+  doc_url: https://github.com/BEFH/flippyr
+
+extra:
+  recipe-maintainers:
+    - BEFH

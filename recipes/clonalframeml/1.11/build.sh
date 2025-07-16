@@ -1,6 +1,6 @@
 #!/bin/bash
 mkdir -p $PREFIX/bin
 cd src
-bash make.sh
-
+echo "#define ClonalFrameML_GITRevision \"v${PKG_VERSION}\"" > version.h
+make CC="${CXX} ${CXXFLAGS} ${CPPFLAGS}" LDFLAGS="${LDFLAGS}"
 cp ClonalFrameML $PREFIX/bin

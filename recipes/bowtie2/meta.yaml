@@ -1,34 +1,42 @@
-{% set version = "2.4.1" %}
+{% set name = "bowtie2" %}
+{% set version = "2.5.4" %}
 
 package:
-  name: bowtie2
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/BenLangmead/bowtie2/archive/v{{ version }}.tar.gz
-  sha256: 9fb25513886bf294217dd9c5ca26d18dd5e02e0ae999935ac7ba5700befc492e
+  sha256: 841a6a60111b690c11d1e123cb5c11560b4cd1502b5cee7e394fd50f83e74e13
 
 build:
-  number: 3
-  skip: True  # [py2k]
+  number: 6
+  run_exports:
+    - {{ pin_subpackage('bowtie2', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - git
   host:
-    - python
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
     - zlib
-    - tbb-devel
-    - tbb
+    - zstd
   run:
     - python
     - perl
-    - zlib
-    - tbb
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
 
 test:
   commands:
     - bowtie2 --help
+    - bowtie2 --version
+    # test if bowtie2 reports its version
+    - bowtie2 --version | grep -q "bowtie2-align-s version [0-9]"  # [linux]
     - bowtie2-align-l --help
     - bowtie2-align-s --help
     - bowtie2-build --help
@@ -39,13 +47,20 @@ test:
     - bowtie2-inspect-s --help
 
 about:
-  home: 'http://bowtie-bio.sourceforge.net/bowtie2/index.shtml'
-  license: GPLv3
+  home: "https://bowtie-bio.sourceforge.net/bowtie2/index.shtml"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: Fast and sensitive read alignment
+  summary: "A fast and sensitive gapped read aligner."
+  dev_url: "https://github.com/BenLangmead/bowtie2"
+  doc_url: "https://github.com/BenLangmead/bowtie2/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:bowtie2
     - doi:10.1038/nmeth.1923
     - debian:bowtie2
+    - usegalaxy-eu:bowtie2

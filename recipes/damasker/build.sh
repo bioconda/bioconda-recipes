@@ -1,14 +1,8 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
-make
+mkdir -p "${PREFIX}/bin"
 
-binaries="\
- REPmask \
- datander \
- TANmask \
- HPC.REPmask \
- HPC.TANmask
-"
+cp -rf ${RECIPE_DIR}/Makefile .
 
-for i in $binaries; do cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
+make CC="${CC}" -j"${CPU_COUNT}"
+make install

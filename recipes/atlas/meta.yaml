@@ -1,0 +1,59 @@
+{% set version = "2.0.0" %}
+
+package:
+  name: atlas
+  version: {{ version }}
+
+source:
+  url: https://bitbucket.org/wegmannlab/atlas/get/{{ version }}-rc.11.tar.gz
+  sha256: f980a41e415654a862ea929411dbe4e89c2573a51911248ee2ba99f448b167aa
+
+build:
+  number: 6
+  run_exports:
+    - {{ pin_subpackage("atlas", max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - ninja
+  host:
+    - armadillo
+    - fmt
+    - htslib
+    - mkl # [x86]
+    - lapack
+    - nlohmann_json
+    - openblas
+    - jsoncpp
+    - zlib
+  run:
+    - armadillo
+    - fmt
+    - htslib
+    - mkl # [x86]
+    - lapack
+    - nlohmann_json
+    - openblas
+    - jsoncpp
+
+test:
+  commands:
+    - atlas | grep "successfully"
+    - atlas simulate
+    - atlas HKY85 --bam ATLAS_simulations.bam --fasta ATLAS_simulations.fasta
+    - atlas GLF --bam ATLAS_simulations.bam
+    - atlas saf --glf ATLAS_simulations.glf.gz --fasta ATLAS_simulations.fasta
+    - atlas majorMinor --glf ATLAS_simulations.glf.gz
+    - rm ATLAS_* *.parameters saf.saf.* || exit 1
+
+about:
+  home: https://atlaswiki.netlify.app
+  license: MPL-2.0
+  summary: "ATLAS: Analysis Tools for Ancient and Low-depth Samples"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

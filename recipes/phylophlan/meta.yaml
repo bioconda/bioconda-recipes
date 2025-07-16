@@ -1,6 +1,6 @@
 {% set name = "phylophlan" %}
-{% set version = "3.0" %}
-{% set sha256 = "55f3720861b6be7ff998f3cb538df9361a2dd043bdc96f66156857f406fd5625" %}
+{% set version = "3.1.1" %}
+{% set sha256 = "67df67b60b5a361ee9354db031608213d3ecfa2f9ec78104cb3e81903a8cc07a" %}
 
 package:
   name: "{{ name|lower }}"
@@ -13,8 +13,10 @@ source:
 
 build:
   noarch: python
-  number: 5
+  number: 0
   script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+  run_exports:
+    - {{ pin_subpackage('phylophlan', max_pin='x.x') }}
 
 requirements:
   host:
@@ -38,13 +40,15 @@ requirements:
     - fasttree >=2.1.8
     - raxml >=8.2.10
     - iqtree >=1.6.6
+    - mash
+    - requests
 
 test:
   commands:
     - phylophlan --version
     - phylophlan_draw_metagenomic --version
     - phylophlan_get_reference --version
-    - phylophlan_metagenomic --version
+    - phylophlan_assign_sgbs --version
     - phylophlan_setup_database --version
     - phylophlan_strain_finder --version
     - phylophlan_write_config_file --version

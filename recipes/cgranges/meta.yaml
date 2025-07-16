@@ -1,0 +1,44 @@
+{% set name = "cgranges" %}
+{% set version = "0.1.1" %}
+{% set sha256 = "9445ec0cab97e736981db440cb306069d6fe33f638fbd142c106a0408ba10d6c" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/lh3/cgranges/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 3
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation -vvv .
+  run_exports:
+    - {{ pin_subpackage('cgranges', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - cython
+  run:
+    - python
+
+test:
+  imports:
+    - cgranges
+
+about:
+  home: "https://github.com/lh3/cgranges"
+  license: MIT
+  license_family: MIT
+  summary: "cgranges is a small C library for genomic interval overlap queries"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - nh13

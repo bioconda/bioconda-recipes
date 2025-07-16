@@ -1,0 +1,40 @@
+{% set version = "hamtv0.3.3" %}
+
+package:
+  name: hifiasm_meta
+  version: {{ version }}
+
+source:
+  url: https://github.com/xfengnefx/hifiasm-meta/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 4868bf3670bbbe9b3301116e5e4cff677b50f5b8dac6d98d1c92d378bcd0a11e
+  patches:
+    - hifiasm_meta-aarch64.patch # [arm64 or aarch64]
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('hifiasm_meta', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - zlib
+  run:
+    - zlib
+
+test:
+  commands:
+    - hifiasm_meta 2>&1 | grep 'Usage'
+
+about:
+  home: https://github.com/xfengnefx/hifiasm-meta
+  license: MIT
+  summary: 'Metagenome assembler for Hifi reads, based on hifiasm.'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

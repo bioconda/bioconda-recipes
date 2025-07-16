@@ -1,36 +1,49 @@
-{% set name = "irida-uploader" %}
-{% set version = "0.4.3" %}
+{% set name = "iridauploader" %}
+{% set version = "0.9.5" %}
+{% set pkg_name = "irida-uploader" %}
 
 package:
-  name: '{{ name }}'
-  version: '{{ version }}'
+  name: "{{ pkg_name }}"
+  version: "{{ version }}"
 
 source:
-  url: https://github.com/phac-nml/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: 5208beaddd0bf8b1008abe282fdf5284f24e65c2c6a0185b7fa8881cfe7ab5a2
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: fa2781ae005f9f194e8fc9c668ff893dceb1ba9f7139b57b141983362e99b3c0
 
 build:
   number: 0
-  noarch: generic
+  noarch: python
+  entry_points:
+    - irida-uploader = iridauploader.core.cli:main
+    - irida-uploader-gui = iridauploader.gui.gui:main
+    - integration-test = iridauploader.tests_integration.start_integration_tests:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('irida-uploader', max_pin="x.x") }}
 
 requirements:
+  host:
+    - python >=3.7
+    - pip
+    - setuptools
   run:
-    - python>=3.5.*
-    - rauth>=0.7.3
-    - requests>=2.21.0
-    - requests-toolbelt>=0.9.1
-    - appdirs>=1.4.3
+    - python >=3.7
+    - appdirs
     - cerberus
+    - chardet
+    - rauth
+    - requests
+    - requests-toolbelt
+
 test:
   commands:
     - irida-uploader --help
 
 about:
-  home: https://github.com/phac-nml/irida-uploader
-  license: Apache-2.0
+  home: "https://github.com/phac-nml/irida-uploader"
+  license: "Apache-2.0"
   license_family: APACHE
-  license_file: 'LICENSE'
-  summary: Sequence file uploader for IRIDA
+  summary: "Upload NGS data to IRIDA system."
   author: Jeffrey Thiessen
   doc_url: 'https://irida-uploader.readthedocs.io/en/latest'
   dev_url: 'https://github.com/phac-nml/irida-uploader'

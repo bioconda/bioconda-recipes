@@ -1,23 +1,25 @@
-{% set version = "1.10" %}
-{% set sha256 = "1bd137f8ecaa1cc5545eaa9e534c76178a70f1ee04d2084a75a32c2be1a4b09e" %}
+{% set version = "2.0.3" %}
+{% set beta_suffix = "" %}
+{% set sha256 = "1ab15faef4b43ebb1edf1f80da29cc81d97a5f2132ab3d387a223e5f4c07c87d" %}
 
 package:
   name: hmftools-linx
   version: '{{ version }}'
 
 source:
-  url: https://github.com/hartwigmedical/hmftools/releases/download/sv-linx-v{{ version }}/sv-linx_v{{ version }}.jar
+  url: https://github.com/hartwigmedical/hmftools/releases/download/linx-v{{ version }}/linx_v{{ version }}{{ beta_suffix }}.jar
   sha256: '{{ sha256 }}'
 
 build:
   noarch: generic
   number: 0
+  run_exports:
+    - {{ pin_subpackage('hmftools-linx', max_pin="x") }}
 
 requirements:
   run:
-    - openjdk >=8
+    - openjdk >=8,<=21
     - xorg-libxtst
-    - r-base ==3.6.*
     - r-tidyr
     - r-dplyr
     - r-ggplot2
@@ -25,13 +27,14 @@ requirements:
     - r-magick
     - bioconductor-gviz
     - circos >=0.69.6
+    - perl-gd >=2.76 # Fixes missing GD perl module error (even though circos does install GD)
 
 test:
   commands:
-    - 'linx 2>&1 | grep -q "batch mode requires a DB connection"'
+    - 'linx -version | grep Linx'
 
 about:
-  home: https://github.com/hartwigmedical/hmftools/tree/master/sv-linx
+  home: https://github.com/hartwigmedical/hmftools/tree/master/linx
   license: GPL-3.0-only
   license_family: GPL
-  summary: LINX is an annotation, interpretation and visualisation tool for structural variants
+  summary: LINX is an annotation, interpretation and visualisation tool for structural variants.

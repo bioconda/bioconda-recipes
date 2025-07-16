@@ -1,32 +1,39 @@
-package:
-  name: emboss
-  version: "6.6.0"
+{% set name = "emboss" %}
+{% set version = "6.6.0" %}
 
-build:
-  number: 3
-  skip: True  # [osx]
+package:
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: ftp://emboss.open-bio.org/pub/EMBOSS/EMBOSS-6.6.0.tar.gz
+  url: ftp://emboss.open-bio.org/pub/EMBOSS/EMBOSS-{{ version }}.tar.gz
   md5: cc3fca80cb0618deb10fa0d29fe90e4b
+
+build:
+  number: 13
+  run_exports:
+    - {{ pin_subpackage("emboss", max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-  host:
+    - make
+    - automake
+    - autoconf
+    - libtool
+    - pkg-config
+    - gnuconfig
     - python
+  host:
     - zlib
+    - openjdk
     - libgd
     - libpng
+    - libharu
   run:
-    - zlib
     - libgd
     - libpng
-
-about:
-  home: http://emboss.open-bio.org/
-  license: GPL
-  summary: The European Molecular Biology Open Software Suite
+    - libharu
 
 test:
   commands:
@@ -35,3 +42,20 @@ test:
     -  transeq --help
     -  sixpack --help
     -  seqret --help
+
+about:
+  home: "http://emboss.open-bio.org"
+  license: "GPL-2.0-only"
+  license_family: GPL
+  license_file: LICENSE
+  summary: "The European Molecular Biology Open Software Suite."
+  doc_url: "http://emboss.open-bio.org"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:emboss
+    - usegalaxy-eu:emboss_needleall
+    - usegalaxy-eu:emboss_needle

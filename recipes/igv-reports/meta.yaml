@@ -1,5 +1,5 @@
 {% set name = "igv-reports" %}
-{% set version = "1.0.1" %}
+{% set version = "1.15.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,15 +7,17 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: b14664512c76595cb1f27d19b1b4ed2e6bb80abe90e66b4ba8153f00eae93594
+  sha256: 54377eb168d590d18dc70a057d0c626daf21863fc28915dabbda4f226011268c
 
 build:
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
-  number: 1
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  number: 0
   entry_points:
-    - create_report=igv_reports.report:main
-    - create_datauri=igv_reports.datauri:main
+    - create_report = igv_reports.report:main
+    - create_datauri = igv_reports.datauri:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
@@ -26,16 +28,21 @@ requirements:
     - pysam
     - python
     - requests
+    - pytwobit
+    - pyyaml
 
 test:
   imports:
     - igv_reports
-  commands:
-    - create_report --help
-    - create_datauri --help
+  #commands:
+    #- create_report --help
+    #- create_datauri --help
 
 about:
-  home: https://github.com/igvteam/igv-reports
+  home: "https://github.com/igvteam/igv-reports"
   license: MIT
   license_family: MIT
-  summary: Creates self-contained html pages for visual variant review with IGV (igv.js).
+  license_file: "LICENSE.md"
+  summary: "Creates self-contained html pages for visual variant review with IGV (igv.js)."
+  dev_url: "https://github.com/igvteam/igv-reports"
+  doc_url: "https://github.com/igvteam/igv-reports/blob/v{{ version }}/README.md"

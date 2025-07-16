@@ -1,29 +1,34 @@
 {% set name = "ThermoRawFileParser" %}
-{% set version = "1.2.3" %}
+{% set version = "1.4.5" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
+  run_exports:
+    - {{ pin_subpackage('thermorawfileparser', max_pin="x.x.x") }}
   number: 1
   noarch: generic
   script:
     - mkdir $PREFIX/bin
-    - cp * $PREFIX/bin
+    - cp -r * $PREFIX/bin
     - cp $RECIPE_DIR/ThermoRawFileParser.sh $PREFIX/bin
     - chmod +x $PREFIX/bin/ThermoRawFileParser.sh
     - ln -s $PREFIX/bin/ThermoRawFileParser.sh $PREFIX/bin/ThermoRawFileParser
     - ln -s $PREFIX/bin/ThermoRawFileParser.sh $PREFIX/bin/thermorawfileparser
 
 source:
-  # downloading pre-compiled packages, msbuild is a hell to compile unter Linux
-  url: https://github.com/compomics/ThermoRawFileParser/releases/download/v{{ version }}/ThermoRawFileParser.zip
-  sha256: 764bee60b13cfb0b2f856079677cc511d579d4775cddbf46e47902ef3e454300
+  # downloading pre-compiled packages, msbuild is a hell to compile under Linux
+  url: https://github.com/compomics/ThermoRawFileParser/releases/download/v{{ version }}/ThermoRawFileParser{{ version }}.zip
+  sha256: be1f8fd6f85b20750d5f59c324f031882f911035ff4e93c4e98c9b2d73944b37
 
 requirements:
+  build:
+    - zlib
   run:
     - mono >=5
+    - zlib
 
 test:
   commands:
@@ -31,8 +36,14 @@ test:
 
 about:
   home: https://github.com/compomics/ThermoRawFileParser
-  license: Other
-  license_file: LICENSE
+  license: Apache Software
+  license_family: APACHE
+  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
   summary: Wrapper around the .net (C#) ThermoFisher ThermoRawFileReader library for running on Linux with mono
   dev_url: https://github.com/compomics/ThermoRawFileParser
   doc_url: https://github.com/compomics/ThermoRawFileParser/blob/master/README.md
+
+extra:
+  recipe-maintainers:
+    - RECETOX
+    - hechth

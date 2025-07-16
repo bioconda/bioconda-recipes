@@ -1,7 +1,6 @@
 #!/bin/bash
-set -eu -o pipefail
 
-make
+make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
-# No make install, README says just move/copy binary
-mv sabre $PREFIX/bin/
+install -d "${PREFIX}/bin"
+install sabre "${PREFIX}/bin/"

@@ -1,0 +1,50 @@
+{% set name = "mg-toolkit" %}
+{% set version = "0.10.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "087042ccaac9601fecfdc2e121330b650426ec373ce5353fc32cd5337ef823a9"
+
+build:
+  number: 0
+  entry_points:
+    - mg-toolkit=mg_toolkit.__main__:main
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('mg-toolkit', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - pytest-runner
+  run:
+    - jsonapi-client >=0.9.9
+    - pandas ==2.0.3
+    - python >=3.8
+    - requests >=2.31.0
+    - tqdm >=4.49.0
+    - urllib3 >=2.2.1
+
+test:
+  imports:
+    - mg_toolkit
+  commands:
+    - mg-toolkit --help
+
+about:
+  home: "https://www.ebi.ac.uk/metagenomics"
+  license: Apache-2.0
+  license_file: LICENSE
+  license_family: "APACHE"
+  summary: "Metagenomics toolkit."
+  dev_url: "https://github.com/EBI-metagenomics/emg-toolkit"
+
+extra:
+  identifiers:
+    - biotools:MGnify

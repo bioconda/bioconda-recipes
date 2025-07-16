@@ -1,0 +1,70 @@
+{% set name = "apscale" %}
+{% set version = "4.0.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/apscale-{{ version }}.tar.gz
+  sha256: d034c0c3d43901570ecc3d0ad75556f1916ff44182ab9a9928f4af2876610316
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - apscale = apscale.__main__:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('apscale', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.11
+    - setuptools
+  run:
+    - python >=3.11
+    - openpyxl >=3.0.10
+    - dask-core >=2025.3.0
+    - psutil >=5.8.0
+    - python-duckdb >=1.3.1
+    - more-itertools >=10.5.0
+    - demultiplexer2 >=1.1.6
+    - joblib >=1.0.0
+    - biopython >=1.85
+    - cutadapt >=5.0
+    - tqdm >=4.56.0
+    - fastparquet >=0.8.0
+    - numpy
+    - pandas >=2.3.0
+    - powerlaw
+    - pyarrow >=17.0.0
+    - pygbif >=0.6.4
+    - pyproj >=3.4.1
+    - pytables >=3.9.0
+    - shapely >=2.1.1
+    - streamlit >=1.45.1
+    - zict >=3.0.0
+    - vsearch
+
+test:
+  imports:
+    - apscale
+  commands:
+    - apscale --help
+
+about:
+  home: "https://github.com/DominikBuchner/apscale"
+  summary: "Advanced Pipeline for Simple yet Comprehensive AnaLysEs of DNA metabarcoding data."
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: "https://github.com/DominikBuchner/apscale"
+  doc_url: "https://github.com/DominikBuchner/apscale/blob/main/README.md"
+
+extra:
+  recipe-maintainers:
+    - DominikBuchner
+  identifiers:
+    - biotools:apscale

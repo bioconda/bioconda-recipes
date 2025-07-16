@@ -1,38 +1,32 @@
-### Dumping preset flags because they break the build process on linux
-# Linker flags
-unset LDFLAGS
-export LDFLAGS="-L${PREFIX}/lib"
-# Compiler flags
-unset CXXFLAGS
-export CXXFLAGS="-I${PREFIX}/include"
+#!/bin/bash
 
+export CPLUS_INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export INCLUDES="-I${PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
 
-### Configuring settings within mothur Makefile
-# Enabling dependencies for full functionality
-sed 's;\(USEBOOST ?\=\) no;\1 yes;' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
-sed 's;\(USEHDF5 ?\=\) no;\1 yes;' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
-sed 's;\(USEGSL ?\=\) no;\1 yes;' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
-# Specifying dependency locations
-sed 's;\(BOOST_LIBRARY_DIR ?\=\) \"\\\"Enter_your_boost_library_path_here\\\"\";\1 \"'"${PREFIX}"'\/lib/\";' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
-sed 's;\(BOOST_INCLUDE_DIR ?\=\) \"\\\"Enter_your_boost_include_path_here\\\"\";\1 \"'"${PREFIX}"'\/include/boost/\";' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
-sed 's;\(HDF5_LIBRARY_DIR ?\=\) \"\\\"Enter_your_HDF5_library_path_here\\\"\";\1 \"'"${PREFIX}"'\/lib/\";' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
-sed 's;\(HDF5_INCLUDE_DIR ?\=\) \"\\\"Enter_your_HDF5_include_path_here\\\"\";\1 \"'"${PREFIX}"'\/include/\";' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
-sed 's;\(GSL_LIBRARY_DIR ?\=\) \"\\\"Enter_your_GSL_library_path_here\\\"\";\1 \"'"${PREFIX}"'\/lib/\";' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
-sed 's;\(GSL_INCLUDE_DIR ?\=\) \"\\\"Enter_your_GSL_include_path_here\\\"\";\1 \"'"${PREFIX}"'\/include/gsl/\";' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
+if [[ "$(uname -s)" == "Darwin" ]]; then
+	export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names"
+	sed -i.bak 's/-std=c++14/-std=c++14 -stdlib=libc++/' Makefile
+ 	sed -i.bak 's/-std=c++14/-std=c++14 -stdlib=libc++/' source/uchime_src/makefile
+else
+	### Dumping preset flags because they break the build process on linux
+	# Linker flags
+	unset LDFLAGS
+	export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+fi
 
+sed -i.bak 's/OPTIMIZE ?= yes/OPTIMIZE ?= no/' Makefile
+rm -rf *.bak
 
 ### Compiling mothur
 make clean
-make
 
+make CXX="${CXX}" -j"${CPU_COUNT}"
 
-### Compiling uchime
-cd source/uchime_src && ./mk && mv uchime ../../ && cd ../../
+make install
+install -v -m 0755 uchime "${PREFIX}/bin"
 
-
-### Organizing bin
-# Copy mothur and uchime executables to bin
-cp {mothur,uchime} "${PREFIX}"/bin/
 # Linking BLAST binaries to default location for mothur
-mkdir -pv "${PREFIX}"/bin/blast/bin/
-ln -s "${PREFIX}"/bin/{blastall,formatdb,megablast} "${PREFIX}"/bin/blast/bin/
+mkdir -pv "${PREFIX}/bin/blast/bin"
+ln -sf "${PREFIX}"/bin/{blastall,formatdb,megablast} "${PREFIX}/bin/blast/bin/"

@@ -1,0 +1,87 @@
+{% set version = "25.0.1" %}
+{% set sha256 = "f64a3b7b6383fdc3fa11905d42d8ca2c4ba72f011196887665a68fb05a55ba66" %}
+{% set galaxy_version = version.split(".")[:2]|join(".") %}
+
+package:
+  name: galaxy-data
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/g/galaxy-data/galaxy_data-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('galaxy-data', max_pin="x") }}
+  entry_points:
+    - galaxy-build-objects=galaxy.model.store.build_objects:main
+    - galaxy-load-objects=galaxy.model.store.load_objects:main
+    - galaxy-manage-db=galaxy.model.orm.scripts:manage_db
+    - galaxy-prune-histories=galaxy.model.scripts:prune_history_table
+
+requirements:
+  host:
+    - pip
+    - python >=3.8
+    - setuptools
+  run:
+    - python >=3.8
+    - galaxy-files >={{ galaxy_version }}
+    - galaxy-objectstore >={{ galaxy_version }}
+    - galaxy-schema >={{ galaxy_version }}
+    - galaxy-tool-util >={{ galaxy_version }}
+    - galaxy-util >={{ galaxy_version }}
+    - alembic
+    - alembic-utils
+    - bdbag >=1.6.3
+    - bx-python
+    - dnspython
+    - galaxy_sequence_utils
+    - h5grove >=1.2.1
+    - h5py
+    - isa-rwval >=0.10.10
+    - python-isal
+    - markupsafe
+    - mrcfile
+    - msal
+    - numpy
+    - parsley
+    - pycryptodome
+    - pydantic >=2.7.4
+    - email-validator
+    # - pylibmagic # Pending https://github.com/kratsg/pylibmagic/issues/54
+    - pysam >=0.21
+    - python-magic
+    - rocrate
+    - social-auth-core ==4.0.3
+    - sqlalchemy >=2.0,<2.1
+    - tifffile
+    - typing-extensions
+    - webob
+
+test:
+  imports:
+    - galaxy
+    - galaxy.exceptions
+    - galaxy.model
+    - galaxy.datatypes.dataproviders
+    - galaxy.quota
+    - galaxy.security
+
+about:
+  home: https://galaxyproject.org
+  license: AFL-3.0
+  license_file: LICENSE
+  summary: The Galaxy models, datatype framework, and datatype implementations.
+  doc_url: https://docs.galaxyproject.org
+  dev_url: https://github.com/galaxyproject/galaxy
+
+extra:
+  identifiers:
+    - biotools:galaxy
+    - doi:10.1093/nar/gky379
+  recipe-maintainers:
+    - bernt-matthias
