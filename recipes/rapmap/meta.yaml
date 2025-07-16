@@ -1,12 +1,18 @@
-{% set version="0.6.0" %}
+{% set name = "rapmap" %}
+{% set version = "0.6.0" %}
 
 package:
-  name: rapmap
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/COMBINE-lab/RapMap/archive/v{{ version }}.tar.gz
   sha256: 1ebb4f9b9b0b20cb73cb3663a57e3d8781f1e56953aec6d2f86e4a037dde11f6
+
+build:
+  number: 7
+  run_exports:
+    - {{ pin_subpackage('rapmap', max_pin="x.x") }}
 
 requirements:
   build:
@@ -15,26 +21,34 @@ requirements:
     - {{ compiler('c') }}
     - cmake
     - autoconf
+    - automake
+    - libtool
+    - pkg-config
   host:
     - zlib
     - bzip2
     - unzip
+    - tbb-devel ==2021.4.0
     - jemalloc >=5.1.0
   run:
     - jemalloc >=5.1.0
-    - tbb
-    - zlib
-    - bzip2
-
-build:
-  number: 6
-  #skip: True # [osx]
-
-about:
-  home: https://github.com/COMBINE-lab/RapMap
-  license: GPL
-  summary: Rapid sensitive and accurate read mapping via quasi-mapping
+    - tbb-devel  ==2021.4.0
 
 test:
   commands:
     - rapmap --help
+
+about:
+  home: "https://github.com/COMBINE-lab/RapMap"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "License.md"
+  summary: "Rapid sensitive and accurate read mapping via quasi-mapping."
+  dev_url: "https://github.com/COMBINE-lab/RapMap"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:rapmap
