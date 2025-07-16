@@ -1,28 +1,28 @@
+{% set name = "mzmine" %}
 {% set version = "4.0.8" %}
 
 package:
-  name: mzmine
+  name: {{ name }}
   version: {{ version }}
+
+source:
+  url: https://github.com/mzmine/mzmine3/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ab4bae632cf31524bc28c3aef9da1a240484d58cd56151676a4a06466d4ebfdc
+  patches:
+    - build.patch
 
 build:
   number: 0
   noarch: generic
   run_exports:
-    - {{ pin_subpackage('mzmine', max_pin='x') }}
-
-source:
-  - url: https://github.com/mzmine/mzmine3/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: ab4bae632cf31524bc28c3aef9da1a240484d58cd56151676a4a06466d4ebfdc
-    patches:
-      - "build.patch"
+    - {{ pin_subpackage('mzmine', max_pin="x") }}
 
 requirements:
   build:
-    - openjdk =20
+    - openjdk >=21
     - rpm-tools
-
   run:
-    - openjdk =20
+    - openjdk >=21
     - pango  # /home/conda/.openjfx/cache/16/libjavafx_font_pango.so: libpangoft2-1.0.so.0: cannot open shared object file
 
 test:
@@ -31,18 +31,23 @@ test:
     - MZmine --help |& grep "Starting MZmine {{ version }}"
     - MZmine --version
     - MZmine --version |& grep " MZmine version:{{ version }}"
+
 about:
-  home: http://mzmine.github.io/
+  home: "https://github.com/mzmine/mzmine"
   license: MIT
-  summary: Integrative analysis of multimodal mass spectrometry data
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  summary: "Integrative analysis of multimodal mass spectrometry data."
   description: |
     MZmine 3 is an open-source and platform-independent software for mass
     spectrometry (MS) data processing and visualization. It enables large-scale
     metabolomics and lipidomics research by spectral preprocessing, feature
     detection, and various options for compound identification, including
     spectral library querying and creation.
+  dev_url: "https://github.com/mzmine/mzmine"
+  doc_url: "https://mzmine.github.io/mzmine_documentation"
 
 extra:
   # needed for libGL.so
   container:
-    extended-base: true
+    extended-base: True

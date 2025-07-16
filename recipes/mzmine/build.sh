@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -ex
 
 # debug: show available tool chains
@@ -14,5 +13,5 @@ ln -fs "$PREFIX"/bin/MZmine "$PREFIX"/bin/mzmine
 
 # MZmine does not run without --enable-preview
 # .. so we sneek in in the command line
-sed -i -e 's/exec "$JAVACMD" "$@"/exec "$JAVACMD" --enable-preview "$@"/' "$PREFIX"/bin/MZmine
-
+sed -i.bak -e 's/exec "$JAVACMD" "$@"/exec "$JAVACMD" --enable-preview "$@"/' "$PREFIX/bin/MZmine"
+rm -rf "$PREFIX/bin/*.bak"
