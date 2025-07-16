@@ -1,0 +1,85 @@
+{% set name = "Privateer" %}
+{% set version = "MKV" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/glycojones/{{ name|lower }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 2c0f8b1d3e4f5c6a7b8d9e0f1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0
+
+build:
+  number: 0
+  run_exports:
+    - pin_subpackage(name|lower, max_pin=None)
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+    - cmake
+    - m4
+    - ninja
+    - pkg-config
+  host:
+    - clipper
+    - gemmi
+    - libccp4
+    - mmdb2
+    - pip
+    - pybind11
+    - python {{ python }}
+    - setuptools
+    - zlib
+  run:
+    - {{ pin_compatible("gemmi") }}
+    - {{ pin_compatible("python") }}
+    - matplotlib
+    - numpy
+    - requests
+    - prettytable
+    - pytest
+    - seaborn
+
+test:
+  imports:
+    - privateer
+    - privateer.privateer_core
+  commands:
+    - privateer --version
+    - privateer --help
+  source_files:
+    - src/privateer/privateer_database.json
+    - tests/test_data/2h6o_carbremediation.pdb
+    - tests/test_data/5fjj.pdb
+    - tests/test_data/5fjj.mtz
+
+about:
+  home: "https://github.com/glycojones/privateer"
+  dev_url: "https://github.com/glycojones/privateer"
+  doc_url: "https://www.ccp4.ac.uk/html/privateer.html"
+  license: LGPL-3.0
+  license_family: LGPL
+  license_file: LICENSE
+  summary: "The Swiss Army knife for carbohydrate structure validation, refinement and analysis"
+  description: >
+    Privateer is a tool for carbohydrate structure validation, re-refinement and graphical analysis.
+    It carries out automatic assignments of ring conformation (IUPAC nomenclature), anomeric form, absolute configuration and comparison to reference values for validation.
+    It computes omit mFo-DFc maps and calculates a correlation coefficient between model and electron density.
+    For structure refinement, it is able to generate chemical dictionaries with unimodal torsion restraints which will help keep the lowest energy conformation.
+    In terms of graphical analysis, it will produce vector diagrams in SNFG nomenclature (SVG format), which are annotated using the validation information (ring conformation, anomeric form, etc).
+
+    Privateer is implemented in C++11 and Python3 (via pybind11), and produces Scheme and Python scripts for use with Coot (https://github.com/pemsley/coot).
+
+extra:
+  identifiers:
+    - doi:10.1107/S2053230X24000359
+    - doi:10.1038/nsmb.3115
+    - doi:10.3762/bjoc.16.204
+    - doi:10.1107/S2059798323003510
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - eunos-1128
