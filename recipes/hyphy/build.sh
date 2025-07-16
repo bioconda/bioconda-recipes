@@ -44,5 +44,6 @@ cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -Wno-deprecated --no-warn-unused-cli \
     "${HYPHY_OPTS}" \
     "${CONFIG_ARGS}"
-ninja -C build -j"${CPU_COUNT}" HYPHYMPI
-ninja -C build -j"${CPU_COUNT}" install
+
+ninja -C build -j1 HYPHYMPI
+ninja -C build -j1 install
