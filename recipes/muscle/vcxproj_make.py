@@ -163,9 +163,9 @@ with open("Makefile", "w") as f:
     Out("")
     Out("UNAME_S := $(shell uname -s)")
     Out("LDFLAGS := $(LDFLAGS) " + linker_opts)
-    Out("ifeq ($(UNAME_S),Linux)")
-    Out("    LDFLAGS += -static")
-    Out("endif")
+    #Out("ifeq ($(UNAME_S),Linux)")
+    #Out("    LDFLAGS += -static")
+    #Out("endif")
 
     Out("")
     Out("HDRS = \\")
