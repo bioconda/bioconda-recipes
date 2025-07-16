@@ -11,9 +11,6 @@ export LD="${CC}"
 
 export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
-sed -i.bak 's|prelude.lua||' src/pprint.rs
-rm -rf src/*.bak
-
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # build statically linked binary with Rust
