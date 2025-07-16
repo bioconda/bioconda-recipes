@@ -1,0 +1,304 @@
+diff --git a/.gitignore b/.gitignore
+index f5e9a3e..32de1bf 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -35,6 +35,9 @@ Icon
+ .Spotlight-V100
+ .Trashes
+ 
++# Compilation database
++compile_commands.json
++
+ # Directories potentially created on remote AFP share
+ .AppleDB
+ .AppleDesktop
+diff --git a/3rd_party/CMakeLists.txt b/3rd_party/CMakeLists.txt
+new file mode 100644
+index 0000000..5665baa
+--- /dev/null
++++ b/3rd_party/CMakeLists.txt
+@@ -0,0 +1,12 @@
++# -*- cmake -*-
++include(ExternalProject)
++
++include(FetchContent)
++
++FetchContent_Declare(cloudflare_zlib
++  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cloudflare")
++FetchContent_GetProperties(cloudflare_zlib)
++if (NOT cloudflare_zlib_POPULATED)
++  FetchContent_Populate(cloudflare_zlib)
++  add_subdirectory(${cloudflare_zlib_SOURCE_DIR} ${cloudflare_zlib_BINARY_DIR} EXCLUDE_FROM_ALL)
++endif()
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 0000000..2fa8e83
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,71 @@
++# -*- cmake -*-
++
++# Hard prerequisites
++cmake_minimum_required(VERSION 3.16)
++
++project(KMC
++        VERSION 3.2.4
++        LANGUAGES C CXX)
++
++# Sanity check our source directory to make sure that we are not trying to
++# generate an in-tree build
++if ((CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR) OR
++    (CMAKE_SOURCE_DIR STREQUAL "${CMAKE_BINARY_DIR}/src"))
++  message(FATAL_ERROR "In-source builds are not allowed.
++Please create a directory and run cmake from there, passing the path
++to this source directory as the last argument.
++This process created the file `CMakeCache.txt' and the directory `CMakeFiles'.
++Please delete them.")
++endif()
++
++set(CMAKE_CXX_STANDARD 14)
++set(CMAKE_CXX_STANDARD_REQUIRED ON)
++
++# Options
++option(KMC_BUILD_PYTHON_API "Turn on / off building python API" ON)
++
++# External dependencies
++add_subdirectory(3rd_party)
++
++# Default build configuration
++set(KMC_DEFAULT_BUILD_TYPE "RelWithDebInfo" CACHE STRING "KMC default build type")
++if (NOT CMAKE_BUILD_TYPE)
++  message("Setting default build configuration: ${KMC_DEFAULT_BUILD_TYPE}")
++  set(CMAKE_BUILD_TYPE "${KMC_DEFAULT_BUILD_TYPE}" CACHE STRING
++    "Choose the type of build, options are: None Debug Release RelWithAsserts RelWithDebInfo."
++    FORCE)
++endif()
++
++# Default compiler flags
++if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
++  message("Making Debug Configuration...")
++
++  add_compile_options(-g3)
++  add_definitions(-D_GLIBCXX_DEBUG)
++else()
++  message("Making Release Configuration...")
++
++  if (${CMAKE_BUILD_TYPE} STREQUAL "RelWithDebInfo")
++    add_compile_options(-g1)
++  else()
++    add_compile_options(-g0)
++  endif()
++
++  add_compile_options(-O3)
++  if (${CMAKE_BUILD_TYPE} STREQUAL "RelWithAsserts" OR
++      ${CMAKE_BUILD_TYPE} STREQUAL "RelWithDebInfo")
++    add_definitions(-UNDEBUG)
++  else()
++    add_definitions(-DNDEBUG)
++  endif()
++endif()
++add_compile_options(-I${PREFIX}/include -Wall -fsigned-char -Wno-unused-variable -Wno-return-type -Wno-deprecated-declarations -pthread)
++
++add_subdirectory(kmc_api)
++add_subdirectory(kmc_core)
++add_subdirectory(kmc_CLI)
++add_subdirectory(kmc_dump)
++add_subdirectory(kmc_tools)
++if (KMC_BUILD_PYTHON_API)
++  add_subdirectory(py_kmc_api)
++endif()
+diff --git a/kmc_CLI/CMakeLists.txt b/kmc_CLI/CMakeLists.txt
+new file mode 100644
+index 0000000..576de0a
+--- /dev/null
++++ b/kmc_CLI/CMakeLists.txt
+@@ -0,0 +1,11 @@
++# -*- cmake -*-
++
++project(KMC_CLI
++        LANGUAGES CXX)
++
++add_executable(kmc kmc.cpp)
++target_link_libraries(kmc kmc_core)
++
++install(TARGETS kmc
++        DESTINATION bin
++        COMPONENT kmc)
+diff --git a/kmc_api/CMakeLists.txt b/kmc_api/CMakeLists.txt
+new file mode 100644
+index 0000000..3490491
+--- /dev/null
++++ b/kmc_api/CMakeLists.txt
+@@ -0,0 +1,13 @@
++# -*- cmake -*-
++
++project(KMC_API
++        VERSION 3.2.4
++        LANGUAGES C CXX)
++
++# make list of all API source files
++file(GLOB sources "[a-zA-Z]*.cpp")
++# export it to the parent scope, so python module could reuse it
++set(PY_KMC_API_SOURCES ${sources} PARENT_SCOPE)
++
++add_library(kmc_api OBJECT
++            ${sources})
+diff --git a/kmc_api/kmer_defs.h b/kmc_api/kmer_defs.h
+index 027f410..c4a7b60 100644
+--- a/kmc_api/kmer_defs.h
++++ b/kmc_api/kmer_defs.h
+@@ -34,9 +34,13 @@
+ 
+ 
+ 	#include <stdio.h>
+-	#include <ext/algorithm>
+-	#include <iostream>
+-
++    #if defined(__clang__)
++        #include <algorithm>
++    #elif defined(__GNUC__)
++        #include <ext/algorithm>
++        using __gnu_cxx::copy_n;
++    #endif
++    #include <iostream>
+ #else
+ 	#define my_fopen    fopen
+ 	#define my_fseek    _fseeki64
+diff --git a/kmc_core/CMakeLists.txt b/kmc_core/CMakeLists.txt
+new file mode 100644
+index 0000000..6e17eed
+--- /dev/null
++++ b/kmc_core/CMakeLists.txt
+@@ -0,0 +1,47 @@
++# -*- cmake -*-
++
++project(KMC_CORE
++        LANGUAGES C CXX)
++
++# determine & normalize architecture
++set(_system_processor ${CMAKE_SYSTEM_PROCESSOR})
++if (APPLE AND NOT "${CMAKE_OSX_ARCHITECTURES}" STREQUAL "")
++  set(_system_processor ${CMAKE_OSX_ARCHITECTURES})
++endif()
++if (${_system_processor} STREQUAL "arm64")
++  set(ARCH "arm64")
++elseif (${_system_processor} STREQUAL "aarch64")
++  set(ARCH "arm64")
++elseif (${_system_processor} STREQUAL "x86_64")
++  set(ARCH "x86_64")
++elseif (${_system_processor} STREQUAL "AMD64")
++  set(ARCH "x86_64")
++else()
++  message(FATAL_ERROR "unknown architecture " ${_system_processor})
++endif()
++
++if (${ARCH} STREQUAL "arm64")
++  set(raduls_sources raduls_neon.cpp)
++elseif (${ARCH} STREQUAL "x86_64")
++  set(raduls_sources
++    raduls_sse2.cpp
++    raduls_sse41.cpp
++    raduls_avx2.cpp
++    raduls_avx.cpp)
++  set_source_files_properties(raduls_sse2.cpp PROPERTIES COMPILE_OPTIONS "-msse2")
++  set_source_files_properties(raduls_sse41.cpp PROPERTIES COMPILE_OPTIONS "-msse4.1")
++  set_source_files_properties(raduls_avx.cpp PROPERTIES COMPILE_OPTIONS "-mavx")
++  set_source_files_properties(raduls_avx2.cpp PROPERTIES COMPILE_OPTIONS "-mavx2")
++endif()
++
++add_library(kff_core OBJECT
++  kff_writer.cpp)
++
++add_library(kmc_core STATIC
++  mem_disk_file.cpp rev_byte.cpp bkb_writer.cpp 
++  cpu_info.cpp bkb_reader.cpp fastq_reader.cpp 
++  timer.cpp develop.cpp kb_completer.cpp 
++  kb_storer.cpp kmer.cpp splitter.cpp kb_collector.cpp kmc_runner.cpp
++  ${raduls_sources}
++)
++target_link_libraries(kmc_core kmc_api kff_core zlib pthread)
+diff --git a/kmc_core/defs.h b/kmc_core/defs.h
+index 151332a..83cea43 100644
+--- a/kmc_core/defs.h
++++ b/kmc_core/defs.h
+@@ -109,9 +109,13 @@ using uint64 = uint64_t;
+ #include <string.h>
+ 
+ #include <stdio.h>
++
++#if defined(__clang__)
++#include <algorithm>
++#elif defined(__GNUC__)
+ #include <ext/algorithm>
+ using __gnu_cxx::copy_n;
+-
++#endif
+ #endif
+ 
+ 
+diff --git a/kmc_dump/CMakeLists.txt b/kmc_dump/CMakeLists.txt
+new file mode 100644
+index 0000000..1220eab
+--- /dev/null
++++ b/kmc_dump/CMakeLists.txt
+@@ -0,0 +1,11 @@
++# -*- cmake -*-
++
++project(KMC_DUMP
++        LANGUAGES CXX)
++
++add_executable(kmc_dump kmc_dump.cpp nc_utils.cpp)
++target_link_libraries(kmc_dump kmc_api)
++
++install(TARGETS kmc_dump
++        DESTINATION bin
++        COMPONENT kmc)
+diff --git a/kmc_tools/CMakeLists.txt b/kmc_tools/CMakeLists.txt
+new file mode 100644
+index 0000000..bf2be09
+--- /dev/null
++++ b/kmc_tools/CMakeLists.txt
+@@ -0,0 +1,16 @@
++# -*- cmake -*-
++
++project(KMC_TOOLS
++        LANGUAGES CXX)
++
++add_executable(kmc_tools
++  kmer_file_header.cpp kmc_tools.cpp nc_utils.cpp
++  parameters_parser.cpp parser.cpp tokenizer.cpp
++  fastq_filter.cpp fastq_reader.cpp fastq_writer.cpp
++  percent_progress.cpp kff_info_reader.cpp)
++target_link_libraries(kmc_tools kmc_api kff_core zlib pthread)
++
++install(TARGETS kmc_tools
++        DESTINATION bin
++        COMPONENT kmc)
++
+diff --git a/py_kmc_api/CMakeLists.txt b/py_kmc_api/CMakeLists.txt
+new file mode 100644
+index 0000000..145d2e8
+--- /dev/null
++++ b/py_kmc_api/CMakeLists.txt
+@@ -0,0 +1,21 @@
++# -*- cmake -*-
++
++project(PY_KMC_API
++        LANGUAGES C CXX)
++
++find_package(Python COMPONENTS Interpreter Development REQUIRED)
++
++# FIXME: switch to pybind11 cmake
++Python_add_library(py_kmc_api MODULE
++  ${PY_KMC_API_SOURCES}
++  py_kmc_api.cpp)
++target_include_directories(py_kmc_api PRIVATE "libs/pybind11/include")
++# FIXME: a bit hacky
++target_include_directories(py_kmc_api PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../kmc_api)
++
++install(TARGETS py_kmc_api
++        DESTINATION bin
++        COMPONENT python_module)
++install(FILES py_kmc_dump.py
++        DESTINATION bin
++        COMPONENT python_module)
