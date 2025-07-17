@@ -6,7 +6,7 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-elif [[ "${target_platform}" == "osx-"* ]]; then
+if [[ "${target_platform}" == "osx-"* ]]; then
     export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup"
 fi
 
