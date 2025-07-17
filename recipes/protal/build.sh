@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -ldl"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
@@ -24,7 +24,7 @@ cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 
 echo "Step 2"
 echo $PWD
-echo "cmake --build cmake-build-release --target protal -- -j 6"
+echo "cmake --build cmake-build-release --target protal -- -j ${CPU_COUNT}"
 
 cmake --build cmake-build-release --clean-first --target protal -- -j ${CPU_COUNT}
 cmake --build cmake-build-release --clean-first --target protal_avx2 -- -j ${CPU_COUNT}
