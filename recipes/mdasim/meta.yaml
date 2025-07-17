@@ -11,17 +11,13 @@ source:
 
 build:
   # omitting OSX as the Makefile wasn't made for this (tried debugging, never ends)
-  number: 7
-  run_exports:
-    - {{ pin_subpackage('mdasim', max_pin='x.x') }}
-      #script: sed -i 's/-m64/-mcpu=cortex-a53/g' Makefile && make prefix=$PREFIX CPP="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+  number: 7 
   script: |
     if [[ "${target_platform}" == "linux-aarch64" ]]; then
-      sed -i 's/-m64/-mcpu=cortex-a53/g' Makefile
-    else
-      sed -i 's/-m64//g' Makefile
+      sed -i.bak 's/-m64/-mcpu=cortex-a53/g' Makefile
     fi
     make prefix=$PREFIX CPP="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+
 
 requirements:
   build:
@@ -44,6 +40,7 @@ about:
   license_file: LICENSE.txt
   summary: 'This is MDAsim 2+, a tool to simulate whole genome amplification'
 
+
 extra:
   additional-platforms:
-    - linux-aarch64  
+    - linux-aarch64
