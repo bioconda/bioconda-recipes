@@ -5,7 +5,7 @@ set -exo pipefail
 export CXXFLAGS="${CXXFLAGS} -O3"
 
 sed -i.bak 's|if (NOT TARGET dssp)|find_package(dssp QUIET)\nif(NOT TARGET dssp::dssp AND NOT TARGET dssp)|g' CMakeLists.txt
-sed -i.bak 's|${CIFPP_SHARE_DIR}|ENV${PREFIX}/share/libcifpp|g' CMakeLists.txt
+sed -i.bak 's|${CIFPP_SHARE_DIR}|$ENV{PREFIX}/share/libcifpp|g' CMakeLists.txt
 
 cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
