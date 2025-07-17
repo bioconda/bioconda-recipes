@@ -12,7 +12,7 @@ fi
 
 sed -i.bak \
   's|target_link_libraries(mmtbx_reduceOrig_ext PRIVATE reducelib ${Boost_LIBRARIES} ${PYTHON_LIBRARIES})|target_link_libraries(mmtbx_reduceOrig_ext PRIVATE reducelib ${Boost_LIBRARIES})|' \
-  CMakeLists.txt
+  reduce_src/CMakeLists.txt
 
 # Refer to https://github.com/rlabduke/reduce/issues/60 for `-DHET_DICTIONARY` and `-DHET_DICTOLD` flags
 cmake -S . -B build -G Ninja \
