@@ -11,22 +11,13 @@ source:
 
 build:
   # omitting OSX as the Makefile wasn't made for this (tried debugging, never ends)
+  skip: true # [macOS]
   number: 7
   run_exports:
     - {{ pin_subpackage('mdasim', max_pin='x.x') }}
   script: |
     if [[ "${target_platform}" == "linux-aarch64" ]]; then
       sed -i.bak 's/-m64/-mcpu=cortex-a53/g' Makefile
-    else
-      # macOS平台添加必要头文件
-      if [[ "${target_platform}" == "osx-"* ]]; then
-          if ! grep -q "#include <malloc.h>" src/mdasim.C; then
-              sed -i.bak '1i #include <malloc.h>' src/mdasim.C
-          fi
-          if ! grep -q "#include <stdlib.h>" src/mdasim.C; then
-              sed -i.bak '1i #include <stdlib.h>' src/mdasim.C
-          fi
-      fi
     fi
     make prefix=$PREFIX CPP="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
