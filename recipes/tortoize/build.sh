@@ -15,7 +15,8 @@ if [[ "${target_platform}" == "linux-"* ]]; then
         -DBUILD_TESTING=ON \
         -DBUILD_WEBSERVICE=ON \
         -DUSE_RSRC=ON \
-        -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp"
+        -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp" \
+        -Dzeep_DIR="${PREFIX}/lib/cmake/zeep"
 elif [[ "${target_platform}" == "osx-"* ]]; then
     cmake -S . -B build -G Ninja \
         ${CMAKE_ARGS} \
