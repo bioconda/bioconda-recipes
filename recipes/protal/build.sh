@@ -1,13 +1,13 @@
 #!/bin/bash
+set -ex
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -ldl"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
 mkdir -p ${PREFIX}/bin
 
 rm -rf cmake-build-release
-mkdir -p cmake-build-release
 
 echo "Step 1"
 echo ${PWD}
@@ -19,6 +19,18 @@ if [[ `uname -s` == "Darwin" ]]; then
 else
 	export CONFIG_ARGS=""
 fi
+
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
 
 cmake -S . -B cmake-build-release -G Ninja \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
@@ -34,4 +46,5 @@ echo "ninja -C cmake-build-release -j ${CPU_COUNT} install"
 
 ninja -C cmake-build-release -j "${CPU_COUNT}" install
 
-cp -f protal_launcher ${PREFIX}/bin/protal
+install -v -m 0755 cmake-build-release/protal* "${PREFIX}/bin"
+cp -fv protal_launcher "${PREFIX}/bin/protal"
