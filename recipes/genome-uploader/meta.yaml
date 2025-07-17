@@ -1,22 +1,22 @@
 {% set name = "genome-uploader" %}
-{% set version = "2.3.3" %}
+{% set version = "2.3.4" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/EBI-Metagenomics/genome_uploader/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: b42e9b8a4ed072c6fe2100c46327a1929eeab76c2c4c57d66d3bf0a87f20646c
+  url: https://github.com/EBI-Metagenomics/genome_uploader/archive/v{{ version }}.tar.gz
+  sha256: 57596200bf72dcddf34d2a48ec71acd922e098d804da484642774223302cc4dd
 
 build:
+  number: 0
+  noarch: python
   entry_points:
     - genome_upload = genomeuploader.genome_upload:main
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage('genome-uploader', max_pin="x.x") }}
+    - {{ pin_subpackage('genome-uploader', max_pin="x") }}
 
 requirements:
   host:
@@ -29,23 +29,22 @@ requirements:
     - pandas ==1.4.1
     - python-dotenv ==1.0.1
     - numpy ==1.24.4
-    - ena-webin-cli
     - click ==8.1.7
+    - ena-webin-cli
 
 test:
   imports:
     - genomeuploader
   commands:
-    - pip check
     - genome_upload --help
-  requires:
-    - pip
 
 about:
-  home: https://github.com/EBI-Metagenomics/genome_uploader
-  summary: Python script to upload bins and MAGs in fasta format to ENA (European Nucleotide Archive).
-  license: Apache-2.0
-  license_file: LICENSE.md
+  home: "https://github.com/EBI-Metagenomics/genome_uploader"
+  summary: "Python script to upload bins and MAGs in fasta format to ENA (European Nucleotide Archive)."
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: "LICENSE.md"
+  dev_url: "https://github.com/EBI-Metagenomics/genome_uploader"
 
 extra:
   recipe-maintainers:
