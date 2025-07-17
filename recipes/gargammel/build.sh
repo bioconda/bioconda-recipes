@@ -4,15 +4,20 @@ export CPATH="${PREFIX}/include"
 
 mkdir -p "${PREFIX}/bin"
 
-cd "${SRC_DIR}"/gargammel || { echo "Folder ${SRC_DIR}/gargammel not found"; exit 1; }
+cd "${SRC_DIR}/gargammel" || { echo "Folder ${SRC_DIR}/gargammel not found"; exit 1; }
 
 # Avoid conflicts with C++20  
 mv "${SRC_DIR}"/gargammel/libgab/gzstream/version "${SRC_DIR}"/gargammel/libgab/gzstream/version.txt
 
-mkdir -p "${SRC_DIR}"/gargammel/bamtools/{lib,api,shared} 
+mkdir -p "${SRC_DIR}/gargammel/bamtools/{lib,api,shared}"
 ln -sf "${PREFIX}"/lib/libbamtools* "${SRC_DIR}"/gargammel/bamtools/lib/
 ln -sf "${PREFIX}"/include/bamtools/api/* "${SRC_DIR}"/gargammel/bamtools/api/
 ln -sf "${PREFIX}"/include/bamtools/shared/* "${SRC_DIR}"/gargammel/bamtools/shared/
+
+sed -i.bak 's|ar cr|$(AR) rcs|' libgab/Makefile
+sed -i.bak 's|ar cr|$(AR) rcs|' libgab/gzstream/Makefile
+sed -i.bak 's|g++|$(CXX)|' src/Makefile
+sed -i.bak 's|-std=c++0x|-std=c++14|' src/Makefile
 
 ## Following https://bioconda.github.io/contributor/troubleshooting.html#g-or-gcc-not-found
 binaries=(src/fragSim src/deamSim src/adptSim src/fasta2fastas)
