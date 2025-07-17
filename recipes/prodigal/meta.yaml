@@ -1,11 +1,16 @@
+{% set name = "prodigal" %}
+{% set version = "2.6.3" %}
+{% set sha256 = "4f73f64ea09be8421e08afabdc641db7775632210f5ef896f5fab4604c9dfcd9" %}
+
 package:
-  name: prodigal
-  version: "2.6.3"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/hyattpd/Prodigal/archive/v2.6.3.zip
-  sha256: 4f73f64ea09be8421e08afabdc641db7775632210f5ef896f5fab4604c9dfcd9
+  url: https://github.com/hyattpd/Prodigal/archive/v{{ version }}.zip
+  sha256: {{ sha256 }}
   patches:
+    - 0001-GoogleImport.patch
     # accepted PR https://github.com/hyattpd/Prodigal/pull/88
     - score_nodes.patch
     # accepted PR https://github.com/hyattpd/Prodigal/pull/100
@@ -13,26 +18,36 @@ source:
     - sd_motif_B.patch
 
 build:
-  number: 10
+  number: 11
   run_exports:
-     - {{ pin_subpackage('prodigal', max_pin=None) }}
+     - {{ pin_subpackage('prodigal', max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
+  host:
     - unzip
+    - zlib
 
 test:
   commands:
     - prodigal -h
 
 about:
-  home: http://prodigal.ornl.gov/
-  dev_url: https://github.com/hyattpd/Prodigal
-  license: GPL v3
-  summary: Prodigal (Prokaryotic Dynamic Programming Genefinding Algorithm) is a microbial (bacterial and archaeal) gene finding program
+  home: "https://github.com/hyattpd/Prodigal"
+  dev_url: "https://github.com/hyattpd/Prodigal"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  summary: "Prodigal (Prokaryotic Dynamic Programming Genefinding Algorithm) is a microbial (bacterial and archaeal) gene finding program."
+  license_file: LICENSE
+  doc_url: "https://github.com/hyattpd/Prodigal/wiki"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1186/1471-2105-11-119
+    - biotools:prodigal
+    - usegalaxy-eu:prodigal
