@@ -11,9 +11,11 @@ source:
 
 build:
   # omitting OSX as the Makefile wasn't made for this (tried debugging, never ends)
-  skip: true # [not linux64]
-  number: 6
-  script: make prefix=$PREFIX CPP="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+  number: 7
+  run_exports:
+    - {{ pin_subpackage('mdasim', max_pin='x.x') }}
+  noarch: generic
+  script: sed -i 's/-m64/-mcpu=cortex-a53/g' Makefile && make prefix=$PREFIX CPP="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
 requirements:
   build:
@@ -34,9 +36,4 @@ about:
   license: GPL-3.0
   license_family: GPL
   license_file: LICENSE.txt
-  summary: 'This is MDAsim 2+, a tool to simulate whole genome amplification of a
-    DNA sequence with multiple displacement amplification. A citation for this version
-    will be provided when available. MDAsim 2+ extends MDAsim 1.2, so please also
-    always cite: Tagliavi Z, Draghici S. MDAsim: A multiple displacement amplification
-    simulator. 2012 IEEE International Conference on Bioinformatics and Biomedicine
-    (BIBM). 2012. pp. 1–4. doi:10.1109/BIBM.2012.6392622'
+  summary: 'This is MDAsim 2+, a tool to simulate whole genome amplification'
