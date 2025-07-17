@@ -1,18 +1,15 @@
 #!/bin/bash
 
+set -exo pipefail
+
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-
-if [[ `uname` == "Darwin" ]]; then
-  export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
-else
-  export CONFIG_ARGS=""
-fi
+export CXXFLAGS="${CXXFLAGS} -O3"
 
 # Refer to https://github.com/rlabduke/reduce/issues/60 for `-DHET_DICTIONARY` and `-DHET_DICTOLD` flags
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-  -DCMAKE_BUILD_TYPE=Release \
+cmake -S . -B build \
+  ${CMAKE_ARGS} \
+  -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
   -DHET_DICTIONARY="${PREFIX}/reduce_wwPDB_het_dict.txt" \
-  -DHET_DICTOLD="${PREFIX}/reduce_get_dict.txt" \
-  "${CONFIG_ARGS}"
-cmake --build build/ --target install -j "${CPU_COUNT}"
+  -DHET_DICTOLD="${PREFIX}/reduce_get_dict.txt"
+cmake --build build --target install -j "${CPU_COUNT}"
