@@ -25,5 +25,6 @@ cmake -S . -B build -G Ninja \
 cmake --build build --clean-first --target install -j "${CPU_COUNT}"
 
 # Install a shared library file and a Python module
-install -Dm644 build/reduce_src/mmtbx_reduceOrig_ext.so "${SP_DIR}"
-install -Dm644 build/reduce_src/reduce.py "${SP_DIR}"
+mkdir -p "${SP_DIR}"
+install -m 644 build/reduce_src/mmtbx_reduceOrig_ext.so "${SP_DIR}"
+install -m 644 build/reduce_src/reduce.py "${SP_DIR}"
