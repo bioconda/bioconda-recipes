@@ -22,7 +22,7 @@ binaries=(src/fragSim src/deamSim src/adptSim src/fasta2fastas)
 # We list the targets explicitly to prevent the Makefile from downloading and
 # building the external art_illumina.o dependency (added as a runtime
 # requirement instead)
-make CC="${CXX}" "${binaries[@]}" -j"${CPU_COUNT}"
+make CC="${CXX}" CXX="${CXX}" "${binaries[@]}" -j"${CPU_COUNT}"
 
 cp -f "${binaries[@]}" "${PREFIX}/bin"
 
