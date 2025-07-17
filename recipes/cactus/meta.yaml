@@ -1,64 +1,71 @@
+{% set version = "2.9.9" %}
+
 package:
   name: cactus
-  # Version prefixed with 0.0. since there is now an official
-  # https://github.com/ComparativeGenomicsToolkit/cactus/releases/tag/v1.0.0
-  # TODO: Old builds with 2019.03.01 may be moved off the main label.
-  version: "0.0.2019.03.01"
+  version: {{ version }}
 
 source:
-  # This uses non-upstream sources!
-  # When updating the recipe, please use https://github.com/ComparativeGenomicsToolkit/cactus .
-  url: https://github.com/pbasting/cactus/archive/833d8ca015deecdfa5d0aca01211632cdaca9e58.zip
-  md5: 61ba6e8093a6649c43da1950074d9d5f
+  url: https://github.com/ComparativeGenomicsToolkit/cactus/releases/download/v{{ version }}/cactus-v{{ version }}.tar.gz
+  sha256: 946542c62b3ea46d1fe05b60f8cec324af9a10451fbb2ae81f2b703e07645a7e
   patches:
-    - 0001-Unvendor-HDF5-and-do-not-copy-hal-bin.patch
-    - 0002-Do-not-make-redundant-copies-of-hal-bin.patch
-    - 0003-Remove-unused-Cython-import.patch
-    # changes setup.py so it doesn't call git and doesn't try and install dependencies
-    - setup.patch
+    - include.mk.patch
+    - makefile.patch
 
 build:
-  number: 5
-  skip: true # [osx or py>27]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("cactus", max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - pkg-config
   host:
+    - libxml2
     - pip
     - python
     - hdf5
+    - libdeflate
     - zlib
-    - kyototycoon
-    - cython
-  run:
     - decorator
-    - subprocess32
-    - psutil
-    - networkx >=2,<3
-    - python
-    - hdf5
-    - zlib
-    - kyototycoon
+    - networkx >=2,<2.8.1
+    - cigar
     - biopython
-    - toil 3.14.0
-    - ucsc-fatotwobit
-    - ucsc-bedsort
-    - ucsc-bedtobigbed
-    - ucsc-bigbedtobed
-    - openssl
-    - sonlib
-    - jobtree
+    - pysam
+    - toil
+    - backports.zoneinfo # [py39]
+  run:
+    - libxml2
+    - python
+    - decorator
+    - networkx >=2,<2.8.1
+    - cigar
+    - biopython
+    - pysam
+    - toil
+    - backports.zoneinfo # [py39]
+    - samtools
+    - bcftools
+    - parallel
+    - lastz
+    # These are from downloadPangenomeTools
+    - minimap2
+    - minigraph
+    - gfatools
+    #- dna-brnn
+    #- cactus-gfa-tools
+    - bedtools
 
 test:
   commands:
     - cactus -h
-    - hal2assemblyHub.py -h
 
 about:
   home: https://github.com/ComparativeGenomicsToolkit/cactus
-  license: https://github.com/ComparativeGenomicsToolkit/cactus/blob/master/LICENSE.txt
+  license: MIT
+  license_file: LICENSE.txt
   summary: 'Cactus is a reference-free whole-genome multiple alignment program based upon notion of Cactus graphs'

@@ -1,9 +1,14 @@
 #!/bin/bash
-
 set -xe
 
+mkdir -p "${PREFIX}/bin"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wformat"
 LINKPATH="${LDFLAGS}"
-if [ "$(uname -m)" == "x86_64" ]; then
+
+if [[ "$(uname -m)" == "x86_64" ]]; then
     # use samtools 0.1.19 as a dependency
     sed -i.bak 's/-f .\/samtools-0.1.19\/libbam.a/1/' Makefile
 else
@@ -12,12 +17,16 @@ else
     LINKPATH="${LDFLAGS} -I./samtools-0.1.19 -L./samtools-0.1.19"
 fi
 
-make -j ${CPU_COUNT} \
-    CXX="${CXX}" \
-    CXXFLAGS="${CXXFLAGS} -Wformat -O3" \
-    LINKPATH="${LINKPATH}"
-install -d "${PREFIX}/bin"
-install trust4 fastq-extractor bam-extractor annotator run-trust4 \
-    trust-simplerep.pl trust-barcoderep.pl trust-smartseq.pl trust-airr.pl \
-    BuildDatabaseFa.pl BuildImgtAnnot.pl \
-    "${PREFIX}/bin/"
+sed -i.bak 's|g++|$(CXX)|' Makefile
+sed -i.bak 's|-lpthread|-pthread|' Makefile
+rm -rf *.bak
+
+make CXX="${CXX}" \
+    CXXFLAGS="${CXXFLAGS}" \
+    LINKPATH="${LINKPATH}" \
+    -j"${CPU_COUNT}"
+
+install -v -m 755 scripts/*.py "${PREFIX}/bin"
+install -v -m 755 scripts/*.pl "${PREFIX}/bin"
+install -v -m 755 *.pl "${PREFIX}/bin"
+install -v -m 755 trust4 fastq-extractor bam-extractor annotator run-trust4 "${PREFIX}/bin"

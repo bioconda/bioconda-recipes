@@ -1,6 +1,6 @@
 {% set name = "enaBrowserTools" %}
-{% set version = "1.5.4" %}
-{% set sha256 = "450c3c35be787939b51369a2706f8dfb3b43ed13641711ef1bc6efe3c4e1b4f1" %}
+{% set version = "1.7.1" %}
+{% set sha256 = "bf04d481ab0d6fef8ff49ad3fbe8b76c1a7475fe8c6f9d3ea891d4089d4966d5" %}
 
 package:
   name: {{ name|lower }}
@@ -10,28 +10,31 @@ source:
   url: https://github.com/enasequence/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - assemblyget_py.patch
-    - enadataget.patch  
-    - enadataget_py.patch 
-    - enagroupget.patch 
-    - enagroupget_py.patch 
-    - readget_py.patch 
-    - sequenceget_py.patch
+    - 0001-shebang.patch
 
 build:
   number: 0
   noarch: python
+  script:
+    - mkdir -p ${PREFIX}/bin
+    - install -v -m 0755 python3/*.py ${PREFIX}/bin
+  run_exports:
+    - {{ pin_subpackage("enabrowsertools", max_pin="x") }}
 
 requirements:
   run:
-    - python
-  
+    - python >=3,<3.12
+    - requests
+
 test:
   commands:
-   - enaDataGet --help |grep enaDataGet >/dev/null
-   - enaGroupGet --help |grep enaGroupGet >/dev/null
+   - enaDataGet.py --help | grep enaDataGet
+   - enaGroupGet.py --help | grep enaGroupGet
 
 about:
-  home: https://github.com/enasequence/enaBrowserTools
-  summary: 'enaBrowserTools is a set of scripts that interface with the ENA web services to download data from ENA easily'
-  license: Apache-2.0
+  home: "https://github.com/enasequence/enaBrowserTools"
+  summary: "enaBrowserTools is a set of scripts that interface with the ENA web services to download data from ENA easily."
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: LICENSE
+  dev_url: "https://github.com/enasequence/enaBrowserTools"

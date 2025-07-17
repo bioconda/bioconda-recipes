@@ -19,7 +19,7 @@ unzip bioconda-test-data.zip
 echo " ** TEST DATA DOWNLOAD OK."
 
 echo " ** BEGIN GRAMPA TEST."
-if ! grampa --tests; then
+if ! grampa --tests bioconda; then
   echo " ** ERROR: GRAMPA tests failed." >&2
   exit 1
 fi
