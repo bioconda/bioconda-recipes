@@ -14,17 +14,14 @@ ln -sf "${PREFIX}"/lib/libbamtools* "${SRC_DIR}"/gargammel/bamtools/lib/
 ln -sf "${PREFIX}"/include/bamtools/api/* "${SRC_DIR}"/gargammel/bamtools/api/
 ln -sf "${PREFIX}"/include/bamtools/shared/* "${SRC_DIR}"/gargammel/bamtools/shared/
 
-sed -i.bak 's|g++|$(CXX)|' src/Makefile
-sed -i.bak 's|-std=c++0x|-std=c++14|' src/Makefile
-
 ## Following https://bioconda.github.io/contributor/troubleshooting.html#g-or-gcc-not-found
 binaries=(src/fragSim src/deamSim src/adptSim src/fasta2fastas)
 # We list the targets explicitly to prevent the Makefile from downloading and
 # building the external art_illumina.o dependency (added as a runtime
 # requirement instead)
-make CC="${CXX}" CXX="${CXX}" "${binaries[@]}" -j"${CPU_COUNT}"
+make CC="${CC}" CXX="${CXX}" "${binaries[@]}"
 
-cp -f "${binaries[@]}" "${PREFIX}/bin"
+install -v -m 0755 "${binaries[@]}" "${PREFIX}/bin"
 
 # Fix hard-coded paths to external tools
 sed \
