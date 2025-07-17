@@ -1,6 +1,6 @@
 #!/bin/bash
 chmod +x eKLIPse.py
-sed -i '1s|.*|#!/usr/bin/env python2\n&|' eKLIPse.py
+sed -i '1s|.*|#!/usr/bin/env python\n&|' eKLIPse.py
 mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/bin/data
 mkdir -p ${PREFIX}/bin/doc
