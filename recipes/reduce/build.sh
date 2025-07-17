@@ -21,5 +21,9 @@ cmake -S . -B build -G Ninja \
   -DPython_ROOT_DIR="${PREFIX}" \
   -DPYTHON_SITE_PACKAGES="${SP_DIR}" \
   -DHET_DICTIONARY="${PREFIX}/reduce_wwPDB_het_dict.txt" \
-  -DHET_DICTOLD="${PREFIX}/reduce_get_dict.txt"
+  -DHET_DICTOLD="${PREFIX}/reduce_het_dict.txt"
 cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+
+# Install a shared library file and a Python module
+install -Dm644 build/reduce_src/mmtbx_reduceOrig_ext.so "${SP_DIR}"
+install -Dm644 build/reduce_src/reduce.py "${SP_DIR}"
