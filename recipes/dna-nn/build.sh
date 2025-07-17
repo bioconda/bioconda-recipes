@@ -9,6 +9,6 @@ sed -i.bak 's|-O2|-O3|' Makefile
 sed -i.bak 's|-lpthread|-pthread|' Makefile
 rm -rf *.bak
 
-make CC="${CC}" INCLUDES="${PREFIX}/include" -j"${CPU_COUNT}"
+make CC="${CC}" -j"${CPU_COUNT}"
 
 install -v -m 0755 dna-brnn dna-cnn gen-fq parse-rm.js "${PREFIX}/bin"
