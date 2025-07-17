@@ -1,0 +1,47 @@
+{% set name = "pupmapper" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pupmapper-{{ version }}.tar.gz
+  sha256: 12eacaf6482b06a16556b3bc6d129614d34fe356de775846895ea1e393e73c6f
+
+build:
+  entry_points:
+    - pupmapper = pupmapper.__init__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.8
+    - hatchling
+    - pip
+  run:
+    - python >=3.8
+    - pandas
+    - numpy
+    - tqdm
+    - bioframe >=0.7.2
+
+test:
+  imports:
+    - pupmapper
+  commands:
+    - pip check
+    - pupmapper --help
+  requires:
+    - pip
+
+about:
+  summary: Tool & python package for calculating genome wide pileup mappability
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - max
