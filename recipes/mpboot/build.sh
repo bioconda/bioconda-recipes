@@ -10,17 +10,17 @@ mkdir -p "${PREFIX}/bin"
 
 # On x86 use -DIQTREE_FLAGS=avx, on arm use -DIQTREE_FLAGS=sse4
 if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
-    DCMAKE_ARGS+=(-DIQTREE_FLAGS=omp)
-    EXE_NAME=mpboot
+	export EXTRA_ARGS="-DIQTREE_FLAGS=omp"
+	export EXE_NAME="mpboot"
 elif [[ "$(uname -m)" == "x86_64" ]]; then
-    DCMAKE_ARGS+=(-DIQTREE_FLAGS=avx)
-    EXE_NAME=mpboot-avx
+	export EXTRA_ARGS="-DIQTREE_FLAGS=avx"
+	export EXE_NAME="mpboot-avx"
 else
-    echo "Unsupported architecture: $(uname -m)"
-    exit 1
+	echo "Unsupported architecture: $(uname -m)"
+	exit 1
 fi
 
-if [[ `uname` == "Darwin" ]]; then
+if [[ `uname -s` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 	export CFLAGS="${CFLAGS} -fno-define-target-os-macros"
 else
@@ -32,11 +32,11 @@ sed -i.bak -e 's|VERSION 2.8|VERSION 3.5|' CMakeLists.txt
 rm -rf *.bak
 rm -rf zlib-1.2.7/*.bak
 
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_C_COMPILER="${CC}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_C_FLAGS="${CFLAGS}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
-	"${DCMAKE_ARGS[@]}" \
+	"${EXTRA_ARGS}" \
 	"${CONFIG_ARGS}"
 
 # Detect if we are running on CircleCI's arm.medium VM
@@ -46,9 +46,7 @@ if [[ "$(uname -m)" == "aarch64" ]] && [[ "${CPU_COUNT}" -lt 4 ]]; then
 	JOBS=1  # CircleCI's arm.medium VM runs out of memory with higher values
 fi
 
-cd build
-VERBOSE=1 make -j"${JOBS}"
-cd ..
+ninja -C build -j "${JOBS}"
 
 # install
 install -v -m 0755 "${SRC_DIR}/build/${EXE_NAME}" "${PREFIX}/bin"
