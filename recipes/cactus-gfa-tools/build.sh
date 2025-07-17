@@ -11,7 +11,7 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
 	rm -rf *.bak
 fi
 
-make CXX="${CXX}"
+make
 
 install -v -m 0755 faprefix.sh gaf2paf gaf2unstable gaffilter \
 	mzgaf2paf paf2lastz paf2stable pafcoverage pafmask \
