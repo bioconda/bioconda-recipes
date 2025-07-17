@@ -1,8 +1,5 @@
-#!/bin/bash
-set -x -e
-
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+#!/bin/sh
+set -ex
 
 mkdir -p "${PREFIX}/bin"
 
