@@ -4,8 +4,8 @@ set -exo pipefail
 
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-cp -fv ${SRC_DIR}/rsrc/torsion-data.bin ${PREFIX}/share/libcifpp/
-cp -fv ${SRC_DIR}/rsrc/rama-data.bin ${PREFIX}/share/libcifpp/
+# cp -fv ${SRC_DIR}/rsrc/torsion-data.bin ${PREFIX}/share/libcifpp/
+# cp -fv ${SRC_DIR}/rsrc/rama-data.bin ${PREFIX}/share/libcifpp/
 
 sed -i.bak 's|if (NOT TARGET dssp)|find_package(dssp QUIET)\nif(NOT TARGET dssp::dssp AND NOT TARGET dssp)|g' CMakeLists.txt
 
