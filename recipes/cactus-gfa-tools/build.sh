@@ -4,8 +4,7 @@ set -ex
 mkdir -p "${PREFIX}/bin"
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
-	sed -i.bak 's|-lomp||' Makefile
-	sed -i.bak 's|$(LIB_FLAGS)||' Makefile
+	sed -i.bak 's|-lomp|-L$(PREFIX)/lib -lomp|' Makefile
 	rm -rf *.bak
 fi
 
