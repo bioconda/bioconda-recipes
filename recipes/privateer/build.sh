@@ -24,6 +24,7 @@ fi
 # fi
 
 sed -i '/^project(/a find_package(pybind11 REQUIRED)' CMakeLists.txt
+sed -i 's|add_subdirectory(${CMAKE_SOURCE_DIR}/dependencies/pybind11)||' "CMakeLists.txt"
 sed -i 's|${PYTHON_LIBRARY}||g' "CMakeLists.txt"
 
 source ccp4.envsetup-sh
