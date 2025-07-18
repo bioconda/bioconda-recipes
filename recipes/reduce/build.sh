@@ -19,7 +19,6 @@ cmake -S . -B build -G Ninja \
   ${CMAKE_ARGS} \
   -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
   -DPython_ROOT_DIR="${PREFIX}" \
-  -DPYTHON_SITE_PACKAGES="${SP_DIR}" \
   -DHET_DICTIONARY="${PREFIX}/reduce_wwPDB_het_dict.txt" \
   -DHET_DICTOLD="${PREFIX}/reduce_het_dict.txt"
 cmake --build build --clean-first --target install -j "${CPU_COUNT}"
