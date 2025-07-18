@@ -3,6 +3,9 @@ set -x
 
 mkdir -p "${PREFIX}/bin"
 
+export LIBRARY_PATH="$LIBRARY_PATH:$PREFIX/lib"
+export C_INCLUDE_PATH="$C_INCLUDE_PATH:$PREFIX/include"
+
 sed -i.bak 's|-lpthread|-pthread|' nim.cfg
 rm -rf *.bak
 
@@ -25,4 +28,4 @@ else
 	nim c -y --verbose -d:d4 -d:release --mm:refc --passC:"-I$PREFIX/include" --passL:"-L$PREFIX/lib" ./mosdepth.nim
 fi
 
-install -v -m 0755 mosdepth "${PREFIX}/bin"
+install -v -m 755 mosdepth "${PREFIX}/bin"
