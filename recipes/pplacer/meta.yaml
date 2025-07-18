@@ -1,17 +1,31 @@
+{% set name = 'pplacer' %}
 {% set version = "1.1.alpha19" %}
-{% set sha256 = "9131b45c35ddb927f866385f149cf64af5dffe724234cd4548c22303a992347d" %}
+{% set sha256 = "5eaf0d48eb93d29059c26267fdabfd62403812495ded7d2962c5ea7fbb6a6930" %}
 
 package:
   name: pplacer
   version: '{{ version }}'
 
 source:
-  url: https://github.com/matsen/pplacer/releases/download/v{{ version }}/pplacer-linux-v{{ version }}.zip
+  url: https://github.com/matsen/pplacer/archive/refs/heads/385-update-ocaml.zip
   sha256: '{{ sha256 }}'
 
 build:
-  skip: true   # [osx]
-  number: 2
+  skip: true   # [osx]i
+  number: 4
+  run_exports:
+    - {{ pin_subpackage(name|lower) }}
+
+requirements:
+  build:
+    - gsl
+    - patch
+    - git
+    - curl
+  host:
+    - gsl
+  run: 
+    - gsl
 
 test:
   commands:
@@ -31,3 +45,5 @@ about:
 extra:
   skip-lints:
     - should_be_noarch_generic
+  additional-platforms:
+    - linux-aarch64
