@@ -23,9 +23,9 @@ if [[ "$(uname -m)" == "arm64" ]]; then
 	echo "gcc.options.linker %= \"\${gcc.options.linker} ${LDFLAGS}\"" >>  nim-2.2.*/config/nim.cfg
 	cat nim-2.2.*/config/nim.cfg
 
-	nim c -y --verbose -d:d4 -d:release --mm:refc --passC:"-I$PREFIX/include" --passL:"-L$PREFIX/lib" ./mosdepth.nim
+	nim c -d:d4 -d:release --mm:refc --passC:"-I$PREFIX/include" --passL:"-L$PREFIX/lib" ./mosdepth.nim
 else
-	nim c -y --verbose -d:d4 -d:release --mm:refc --passC:"-I$PREFIX/include" --passL:"-L$PREFIX/lib" ./mosdepth.nim
+	nim c -d:d4 -d:release --mm:refc --passC:"-I$PREFIX/include" --passL:"-L$PREFIX/lib" ./mosdepth.nim
 fi
 
 install -v -m 755 mosdepth "${PREFIX}/bin"
