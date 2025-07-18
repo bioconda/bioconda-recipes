@@ -1,0 +1,101 @@
+#!/bin/bash
+te_gff=""
+output_prefix=""
+species=""
+script_dir=$(cd $(dirname $0);pwd)
+# echo ${script_dir}
+
+# Usage
+usage() {
+	echo "  Usage: $0" 
+	echo "  -s <Target species> (cattle, sheep, goat, pig, chicken)"
+	echo "  -r <TE annotation file (GFF)>" 
+	echo "  -o <Output prefix> (default: working directory)"
+	exit 1
+}
+
+# getopts
+while getopts ":r:s:o:" opt; do
+    case $opt in
+        r)
+            te_gff="$OPTARG"
+            ;;
+        o)
+            output_prefix="$OPTARG"
+            ;;
+        s)
+            species="$OPTARG"
+            ;;
+        :)
+            echo "option -$OPTARG requires a parameter."
+            usage
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+
+#  
+shift $((OPTIND - 1))
+
+#  
+if [ -z "$species" ] || [ -z "$te_gff" ] ; then
+    echo "Error:  -s and -r is necessary"
+    usage
+fi
+
+# absolute path (in case)
+absPathTeGff=$(readlink -f ${te_gff})
+if [ -z "$absPathTeGff" ]; then
+    echo "TE annotation file not existed"
+    usage
+fi
+te_gff=$absPathTeGff
+
+# default output path
+# output prefix
+if [ -z ${output_prefix} ] ; then
+	output_prefix=$(pwd | sed "s/$/\/$(basename $te_gff)&/g")
+else
+	# dir 
+	absPathOutput=$(dirname ${output_prefix})
+	if [ ! -d "$absPathOutput" ] ; then
+		echo "Error: no such output directory"
+		usage
+	fi
+	# prefix
+	absPathPrefix=$(readlink -f "$output_prefix")
+	if [ ${absPathPrefix} == $(pwd) ] ; then
+		output_prefix=$(pwd | sed "s/$/\/$(basename $te_gff)&/g")
+  else
+		output_prefix=$absPathPrefix
+	fi
+fi
+
+# Choosing by species 
+if [ "$species" == "cattle" ]; then
+    cp $script_dir/expTEsub_cattle ./
+    awk -v OFS="\t" 'BEGIN { while(getline<"expTEsub_cattle") b[$1]=1; close("expTEsub_cattle");} { split($10,a,":"); split(a[2],aa,"\""); if ( b[aa[1]]==1) print $0; }' ${te_gff} > ${output_prefix}_filtered
+    rm expTEsub_cattle
+elif [ "$species" == "chicken" ]; then
+    cp $script_dir/expTEsub_chicken ./
+    awk -v OFS="\t" 'BEGIN { while(getline<"expTEsub_chicken") b[$1]=1; close("expTEsub_chicken");} { split($10,a,":"); split(a[2],aa,"\""); if ( b[aa[1]]==1) print $0; }' ${te_gff} > ${output_prefix}_filtered
+    rm expTEsub_chicken
+elif [ "$species" == "goat" ]; then
+    cp $script_dir/expTEsub_goat ./
+    awk -v OFS="\t" 'BEGIN { while(getline<"expTEsub_goat") b[$1]=1; close("expTEsub_goat");} { split($10,a,":"); split(a[2],aa,"\""); if ( b[aa[1]]==1) print $0; }' ${te_gff} > ${output_prefix}_filtered
+    rm expTEsub_goat
+elif [ "$species" == "pig" ]; then
+    cp $script_dir/expTEsub_pig ./
+    awk -v OFS="\t" 'BEGIN { while(getline<"expTEsub_pig") b[$1]=1; close("expTEsub_pig");} { split($10,a,":"); split(a[2],aa,"\""); if ( b[aa[1]]==1) print $0; }' ${te_gff} > ${output_prefix}_filtered
+    rm expTEsub_pig
+elif [ "$species" == "sheep" ]; then
+    cp $script_dir/expTEsub_sheep ./
+    awk -v OFS="\t" 'BEGIN { while(getline<"expTEsub_sheep") b[$1]=1; close("expTEsub_sheep");} { split($10,a,":"); split(a[2],aa,"\""); if ( b[aa[1]]==1) print $0; }' ${te_gff} > ${output_prefix}_filtered
+    rm expTEsub_sheep
+else
+    echo "Unknown species: $species"
+    exit 1
+fi
+
