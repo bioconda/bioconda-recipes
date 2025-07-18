@@ -8,3 +8,4 @@ sed -i '10c\add_definitions(-D_GNU_SOURCE)' CMakeLists.txt
 cd build
 cmake -DINSTALL_PREFIX:PATH=$PREFIX  .. 
 make install
+chmod 755 $PREFIX/bin/taxonomy-reader
