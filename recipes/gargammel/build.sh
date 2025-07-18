@@ -16,7 +16,6 @@ ln -sf "${PREFIX}"/include/bamtools/shared/* "${SRC_DIR}"/gargammel/bamtools/sha
 
 sed -i.bak 's|ar cr|$(AR) rcs|' libgab/Makefile
 sed -i.bak 's|g++|$(CXX)|' src/Makefile
-sed -i.bak 's|-std=c++0x|-std=c++14|' src/Makefile
 
 ## Following https://bioconda.github.io/contributor/troubleshooting.html#g-or-gcc-not-found
 binaries=(src/fragSim src/deamSim src/adptSim src/fasta2fastas)
