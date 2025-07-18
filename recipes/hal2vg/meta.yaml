@@ -6,9 +6,11 @@ package:
   version: {{ version }}
 
 source:
-  git_url: https://github.com/ComparativeGenomicsToolkit/{{ name }}.git
-  git_rev: v{{ version }}
-  sha256: unused
+  url: https://github.com/ComparativeGenomicsToolkit/hal2vg/releases/download/v{{ version }}/hal2vg-v{{ version }}.tar.gz
+  sha256: 84a7e994d6d394635084b9f5d4851bd038f0042ce2e7deda54c1e74346683352
+  patches:
+    - sdsl.patch
+    - makefile.patch
 
 build:
   number: 0
@@ -21,9 +23,13 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake <4
     - make
+    - libgomp      # [linux]
+    - llvm-openmp  # [osx]
+    - pkg-config
   host:
     - hdf5
     - zlib
+    - jansson
 
 test:
   commands:
@@ -42,5 +48,3 @@ extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
-  skip-lints:
-    - uses_vcs_url
