@@ -7,6 +7,10 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3 -frtti"
 
+if [[ "${target_platform}" == "osx-"* ]]; then
+  export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup"
+fi
+
 if [[ "${target_platform}" == "linux-aarch64" ]]; then
   export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
 elif [[ "${target_platform}" == "osx-arm64" ]]; then
