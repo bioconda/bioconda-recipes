@@ -12,6 +12,9 @@ cp -f ${RECIPE_DIR}/build_htslib.sh d4-hts/build_htslib.sh
 
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
+curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --profile=minimal -y
+export PATH="${HOME}/.cargo/bin:${PATH}"
+
 cd d4binding
 
 # build statically linked binary with Rust
