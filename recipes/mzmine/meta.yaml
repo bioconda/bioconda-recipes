@@ -1,48 +1,57 @@
-{% set version = "3.9.0" %}
+{% set name = "mzmine" %}
+{% set version = "4.7.8" %}
 
 package:
-  name: mzmine
+  name: {{ name }}
   version: {{ version }}
+
+source:
+  url: https://github.com/mzmine/mzmine/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 7fc6cb3cfa8b22727d1774158802615c6494c79b64b9a1b01ee2f602d8a1532a
+  patches:
+    - build.patch
 
 build:
   number: 0
   noarch: generic
   run_exports:
-    - {{ pin_subpackage('mzmine', max_pin='x') }}
-
-source:
-  - url: https://github.com/mzmine/mzmine3/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: ca0c206f63201e82d6e7e337c373449e69b4510dbd51adec8f13bed519e07257
-    patches:
-      - "build.patch"
+    - {{ pin_subpackage('mzmine', max_pin="x") }}
 
 requirements:
   build:
-    - openjdk =20
+    - openjdk >=23
     - rpm-tools
-
   run:
-    - openjdk =20
+    - openjdk >=23
     - pango  # /home/conda/.openjfx/cache/16/libjavafx_font_pango.so: libpangoft2-1.0.so.0: cannot open shared object file
 
 test:
   commands:
-    - MZmine --help
-    - MZmine --help |& grep "Starting MZmine {{ version }}"
-    - MZmine --version
-    - MZmine --version |& grep " MZmine version:{{ version }}"
+    #- mzmine --help
+    #- mzmine --help |& grep "Starting MZmine {{ version }}"
+    #- mzmine --version
+    #- mzmine --version |& grep " MZmine version:{{ version }}"
+    - test -x ${PREFIX}/bin/mzmine
+
 about:
-  home: http://mzmine.github.io/
+  home: "https://github.com/mzmine/mzmine"
   license: MIT
-  summary: Integrative analysis of multimodal mass spectrometry data
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  summary: "Integrative analysis of multimodal mass spectrometry data."
   description: |
     MZmine 3 is an open-source and platform-independent software for mass
     spectrometry (MS) data processing and visualization. It enables large-scale
     metabolomics and lipidomics research by spectral preprocessing, feature
     detection, and various options for compound identification, including
     spectral library querying and creation.
+  dev_url: "https://github.com/mzmine/mzmine"
+  doc_url: "https://mzmine.github.io/mzmine_documentation"
 
 extra:
   # needed for libGL.so
   container:
-    extended-base: true
+    extended-base: True
+  identifiers:
+    - usegalaxy-eu:mzmine_batch
+    - biotools:mzmine

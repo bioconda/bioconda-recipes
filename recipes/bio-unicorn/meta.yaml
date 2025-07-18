@@ -1,0 +1,45 @@
+{% set name = "unicorn" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "3613ebfc220afc5cca36d5f74e9ccd2c43f4a9cbb317e79f86d4514ca0bcf7fa" %}
+
+package:
+  name: bio-{{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/GeoGenetics/unicorn/releases/download/v{{ version }}/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('bio-unicorn', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}  # Specifies the C compiler for the target platform
+    - make                # The 'make' build tool
+  host:
+    - htslib >=1.10              # The library to link against during compilation
+  run:
+    - htslib >=1.10              # The library needed at runtime by the executable
+
+test:
+  commands:
+    - unicorn 2>&1 | grep "{{ version }}"
+
+about:
+  home: "https://github.com/GeoGenetics/unicorn"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A tool for computing statistics on short read alignments."
+  dev_url: "https://github.com/GeoGenetics/unicorn"
+  doc_url: "https://github.com/GeoGenetics/unicorn/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - 7pintsofcherrygarcia
