@@ -8,30 +8,26 @@ export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
 
 mkdir -p "${PREFIX}/bin"
 
-sed -i.bak 's|VERSION 3.1|VERSION 3.5|' siprosV4CmakeAll/CMakeLists.txt
 sed -i.bak 's|"gcc-11"|"$CC"|' siprosV4CmakeAll/make
 sed -i.bak 's|"g++-11"|"$CXX"|' siprosV4CmakeAll/make
 rm -rf siprosV4CmakeAll/*.bak
-sed -i.bak 's|-static|-static -ldl|' siprosV4CmakeAll/openmp/CMakeLists.txt
-rm -rf siprosV4CmakeAll/openmp/*.bak
 
 if [[ `uname -s` == "Darwin" ]]; then
-    export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
-    export CONFIG_ARGS=""
+	export CONFIG_ARGS=""
 fi
 
 cd siprosV4CmakeAll
-export CMAKE_EXE_LINKER_FLAGS="-ldl"
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DCMAKE_C_COMPILER="${CC}" -DCMAKE_C_FLAGS="${CFLAGS}" \
     -Wno-dev -Wno-deprecated --no-warn-unused-cli \
     "${CONFIG_ARGS}"
-cmake --build build --clean-first -j "${CPU_COUNT}"
-cd -
+ninja -C build -j "${CPU_COUNT}"
 
-install -v -m 755 bin/* "${PREFIX}/bin"
+cd ..
 
 cp -rf EnsembleScripts "${PREFIX}"
 cp -rf V4Scripts "${PREFIX}"
