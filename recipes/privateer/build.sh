@@ -23,7 +23,8 @@ fi
 #   export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
 # fi
 
-sed -i.bak 's|${PYTHON_LIBRARY}||g' "CMakeLists.txt"
+sed -i '/^project(/a find_package(pybind11 REQUIRED)' CMakeLists.txt
+sed -i 's|${PYTHON_LIBRARY}||g' "CMakeLists.txt"
 
 source ccp4.envsetup-sh
 
