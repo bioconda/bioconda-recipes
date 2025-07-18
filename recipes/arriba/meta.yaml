@@ -10,7 +10,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('arriba', max_pin="x") }}
 
@@ -19,31 +19,44 @@ requirements:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - wget
+    - pkg-config
   host:
-    - htslib
+    - htslib <1.22
+    - libdeflate
+    - bzip2
     - xz
+    - zlib
+    - wget
   run:
-    - htslib
-    - xz
-    - star >=2.7.11b
-    - samtools >=1.9
-    - r-base >=3.3.0
+    - htslib <1.22
+    - samtools
+    - star >=2.7.10a
+    - r-base
+    - r-circlize
     - bioconductor-genomicalignments
     - bioconductor-genomicranges
-    - r-circlize
-
-about:
-  home: https://github.com/suhrig/arriba
-  license: MIT
-  license_file: LICENSE
-  summary: Fast and accurate gene fusion detection from RNA-Seq data
 
 test:
   commands:
     - arriba -h > /dev/null
-    - draw_fusions.R 2>&1 | grep -q Usage
+    - draw_fusions.R 2>&1 | grep -q "Usage"
+
+about:
+  home: "https://github.com/suhrig/arriba"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Fast and accurate gene fusion detection from RNA-Seq data."
+  dev_url: "https://github.com/suhrig/arriba"
+  doc_url: "https://github.com/suhrig/arriba/wiki/01-Home"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1101/gr.257246.119
+    - biotools:Arriba
+    - usegalaxy-eu:arriba
+    - usegalaxy-eu:arriba_draw_fusions
+    - usegalaxy-eu:arriba_get_filters
