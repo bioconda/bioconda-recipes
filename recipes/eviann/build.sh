@@ -18,7 +18,6 @@ PATH="${PATH}:${ROOT}/dist-bin"
 ln -sf $(which make) "${ROOT}/dist-bin/gmake"
 ln -sf "${ROOT}/PkgConfig.pm" "${ROOT}/dist-bin/pkg-config"
 
-export NUM_THREADS=`grep -c '^processor' /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1`;
 BINDIR="${PREFIX}/bin"
 LIBDIR="${PREFIX}/lib"
 export PKG_CONFIG_PATH="${LIBDIR}/pkgconfig:${PKG_CONFIG_PATH}"
