@@ -2,13 +2,13 @@
 
 set -exo pipefail
 
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
-export CXXFLAGS="${CXXFLAGS} -O3 -frtti"
+export CXXFLAGS="${CXXFLAGS} -O3 -frtti -include cstdint"
 
-if [[ "${target_platform}" == "osx-"* ]]; then
-  export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup"
+if [[ "${target_platform}" == "linux-"* ]]; then
+    export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined,--export-dynamic"
+elif [[ "${target_platform}" == "osx-"* ]]; then
+    export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic"
 fi
 
 if [[ "${target_platform}" == "linux-aarch64" ]]; then
@@ -23,9 +23,13 @@ fi
 #   export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
 # fi
 
-sed -i '/^project(/a find_package(pybind11 REQUIRED)' CMakeLists.txt
-sed -i 's|add_subdirectory(${CMAKE_SOURCE_DIR}/dependencies/pybind11)||' "CMakeLists.txt"
-sed -i 's|${PYTHON_LIBRARY}||g' "CMakeLists.txt"
+sed -i '/^project(/a set(PYBIND11_FINDPYTHON ON CACHE BOOL "Use FindPython")' CMakeLists.txt
+sed -i '/^project(/a find_package(Python3 COMPONENTS Interpreter Development REQUIRED)' CMakeLists.txt
+sed -i '/^project(/a find_package(pybind11 CONFIG REQUIRED)' CMakeLists.txt
+sed -i 's|add_subdirectory(${CMAKE_SOURCE_DIR}/dependencies/pybind11)||' CMakeLists.txt
+sed -i 's|${PYTHON_LIBRARY}||g' CMakeLists.txt
+sed -i 's|${CMAKE_SOURCE_DIR}/dependencies/gemmi/include|${GEMMI_INCLUDE_DIR}|' CMakeLists.txt
+sed -i 's|DESTINATION ${PROJECT_SOURCE_DIR}|DESTINATION ${CMAKE_INSTALL_PREFIX}|g' CMakeLists.txt
 
 source ccp4.envsetup-sh
 
@@ -33,6 +37,9 @@ cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
     -DCMAKE_C_FLAGS="${CFLAGS}" \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+    -DPython3_EXECUTABLE="${PYTHON}" \
+    -DPython3_ROOT_DIR="${PREFIX}" \
+    -DGEMMI_INCLUDE_DIR="${PREFIX}/include/gemmi" \
     -DPYBIND11_INCLUDE_DIR="${PREFIX}/include/pybind11" \
     -DPYTHON_INCLUDE_DIRS="${PREFIX}/include/python${PY_VER}" \
     -DMMDB2DEP="${PREFIX}/lib/libmmdb2${SHLIB_EXT}" \
