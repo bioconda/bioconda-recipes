@@ -36,17 +36,19 @@ sed -i '/^project(/a set(PYBIND11_FINDPYTHON ON CACHE BOOL "Use FindPython")' CM
 sed -i '/^project(/a find_package(Python3 COMPONENTS Interpreter Development REQUIRED)' CMakeLists.txt
 sed -i '/^project(/a find_package(pybind11 CONFIG REQUIRED)' CMakeLists.txt
 sed -i 's|add_subdirectory(${CMAKE_SOURCE_DIR}/dependencies/pybind11)||' CMakeLists.txt
-sed -i 's|${PYTHON_LIBRARY}||g' CMakeLists.txt
 sed -i 's|${CMAKE_SOURCE_DIR}/dependencies/gemmi/include|${GEMMI_INCLUDE_DIR}|' CMakeLists.txt
+sed -i 's|${PYTHON_LIBRARY}||g' CMakeLists.txt
+
+# Modify installation paths except python modules
+sed -i 's|TARGETS privateer_lib LIBRARY DESTINATION ${PROJECT_SOURCE_DIR}|TARGETS privateer_lib LIBRARY DESTINATION lib|' CMakeLists.txt
+sed -i 's|TARGETS privateer_exec DESTINATION ${PROJECT_SOURCE_DIR}|TARGETS privateer_exec RUNTIME DESTINATION bin|' CMakeLists.txt
 
 # Modify python module installation paths
 mkdir -p "${SP_DIR}/privateer"
 cp -f "${SRC_DIR}/src/privateer/"*.py "${SP_DIR}/privateer/"
 cp -rf "${SRC_DIR}/src/privateer/utils" "${SP_DIR}/privateer/"
 sed -i 's|TARGETS privateer_core DESTINATION ${PROJECT_SOURCE_DIR}|TARGETS privateer_core DESTINATION $ENV{SP_DIR}/privateer|' CMakeLists.txt
-
-# Modify installation paths except python modules
-sed -i 's|DESTINATION ${PROJECT_SOURCE_DIR}|DESTINATION ${CMAKE_INSTALL_PREFIX}|g' CMakeLists.txt
+sed -i 's|TARGETS privateer_modelling DESTINATION ${PROJECT_SOURCE_DIR}|TARGETS privateer_modelling DESTINATION $ENV{SP_DIR}/privateer|' CMakeLists.txt
 
 cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
