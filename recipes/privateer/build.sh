@@ -19,10 +19,6 @@ else
   export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
 
-# if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm64" ]]; then
-#   export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
-# fi
-
 export CCP4_MASTER=${SRC_DIR}
 export CCP4=$CCP4_MASTER/dependencies
 export CLIBD="${PREFIX}/share/privateer/data"
@@ -54,6 +50,10 @@ sed -i 's|DESTINATION ${PROJECT_SOURCE_DIR}|DESTINATION ${CMAKE_INSTALL_PREFIX}|
 
 cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
+    -DCMAKE_INSTALL_RPATH="${PREFIX}/lib"  \
+    -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON  \
+    -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON \
+    -DCMAKE_MACOSX_RPATH=ON \
     -DCMAKE_C_FLAGS="${CFLAGS}" \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DPython3_EXECUTABLE="${PYTHON}" \
