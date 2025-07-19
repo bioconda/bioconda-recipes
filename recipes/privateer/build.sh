@@ -2,13 +2,18 @@
 
 set -exo pipefail
 
-export CFLAGS="${CFLAGS} -O3"
-export CXXFLAGS="${CXXFLAGS} -O3 -frtti -include cstdint"
+export CXXFLAGS="${CXXFLAGS} -frtti -include cstdint"
 
 if [[ "${target_platform}" == "linux-"* ]]; then
     export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined,--export-dynamic"
 elif [[ "${target_platform}" == "osx-"* ]]; then
     export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic"
+fi
+
+if [[ "${target_platform}" == "linux-"* ]]; then
+    export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined -Wl,--export-dynamic -Wl,--unresolved-symbols=ignore-all"
+elif [[ "${target_platform}" == "osx-"* ]]; then
+    export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic -flat_namespace"
 fi
 
 if [[ "${target_platform}" == "linux-aarch64" ]]; then
