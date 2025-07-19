@@ -23,6 +23,19 @@ fi
 #   export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
 # fi
 
+export CCP4_MASTER=${SRC_DIR}
+export CCP4=$CCP4_MASTER/dependencies
+export CLIBD="${PREFIX}/share/privateer/data"
+export CINCL="${PREFIX}/include"
+export CLIBS="${PREFIX}/lib/libccp4"
+export CLIBD_MON="${CLIBD}/monomers/"
+export PRIVATEERSRC="${CCP4_MASTER}/src/privateer"
+export PRIVATEERDATA="${CCP4_MASTER}/data"
+export PRIVATEERRESULTS="${CCP4_MASTER}/results"
+
+mkdir -p "${CLIBD}"
+mkdir -p "${CLIBD_MON}"
+
 sed -i '/^project(/a set(PYBIND11_FINDPYTHON ON CACHE BOOL "Use FindPython")' CMakeLists.txt
 sed -i '/^project(/a find_package(Python3 COMPONENTS Interpreter Development REQUIRED)' CMakeLists.txt
 sed -i '/^project(/a find_package(pybind11 CONFIG REQUIRED)' CMakeLists.txt
@@ -30,12 +43,14 @@ sed -i 's|add_subdirectory(${CMAKE_SOURCE_DIR}/dependencies/pybind11)||' CMakeLi
 sed -i 's|${PYTHON_LIBRARY}||g' CMakeLists.txt
 sed -i 's|${CMAKE_SOURCE_DIR}/dependencies/gemmi/include|${GEMMI_INCLUDE_DIR}|' CMakeLists.txt
 
+# Modify python module installation paths
 mkdir -p "${SP_DIR}/privateer"
-touch "${SP_DIR}/privateer/__init__.py"
+cp -f "${SRC_DIR}/src/privateer/"*.py "${SP_DIR}/privateer/"
+cp -rf "${SRC_DIR}/src/privateer/utils" "${SP_DIR}/privateer/"
 sed -i 's|TARGETS privateer_core DESTINATION ${PROJECT_SOURCE_DIR}|TARGETS privateer_core DESTINATION $ENV{SP_DIR}/privateer|' CMakeLists.txt
-sed -i 's|DESTINATION ${PROJECT_SOURCE_DIR}|DESTINATION ${CMAKE_INSTALL_PREFIX}|g' CMakeLists.txt
 
-source ccp4.envsetup-sh
+# Modify installation paths except python modules
+sed -i 's|DESTINATION ${PROJECT_SOURCE_DIR}|DESTINATION ${CMAKE_INSTALL_PREFIX}|g' CMakeLists.txt
 
 cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
@@ -59,10 +74,7 @@ cmake -S . -B build -G Ninja \
 cmake --build build --clean-first --parallel "${CPU_COUNT}"
 cmake --install build --parallel "${CPU_COUNT}"
 
-mkdir -p ${PREFIX}/share/privateer/data/
-mkdir -p ${PREFIX}/share/privateer/results/
-cp -r ${SRC_DIR}/data/* ${PREFIX}/share/privateer/data/
-
+# Install activation and deactivation scripts
 mkdir -p "${PREFIX}/etc/conda/activate.d"
 mkdir -p "${PREFIX}/etc/conda/deactivate.d"
 install -m 644 "${RECIPE_DIR}/activate.sh" "${PREFIX}/etc/conda/activate.d/env_vars.sh"
