@@ -29,6 +29,10 @@ sed -i '/^project(/a find_package(pybind11 CONFIG REQUIRED)' CMakeLists.txt
 sed -i 's|add_subdirectory(${CMAKE_SOURCE_DIR}/dependencies/pybind11)||' CMakeLists.txt
 sed -i 's|${PYTHON_LIBRARY}||g' CMakeLists.txt
 sed -i 's|${CMAKE_SOURCE_DIR}/dependencies/gemmi/include|${GEMMI_INCLUDE_DIR}|' CMakeLists.txt
+
+mkdir -p "${SP_DIR}/privateer"
+touch "${SP_DIR}/privateer/__init__.py"
+sed -i 's|TARGETS privateer_core DESTINATION ${PROJECT_SOURCE_DIR}|TARGETS privateer_core DESTINATION $ENV{SP_DIR}/privateer|' CMakeLists.txt
 sed -i 's|DESTINATION ${PROJECT_SOURCE_DIR}|DESTINATION ${CMAKE_INSTALL_PREFIX}|g' CMakeLists.txt
 
 source ccp4.envsetup-sh
