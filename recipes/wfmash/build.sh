@@ -33,6 +33,7 @@ ls $SRC_DIR/build/lib/* -lh
 # mv $SRC_DIR/build/lib/libwfa2.so.0 $PREFIX/lib
 # mv $SRC_DIR/build/lib/libwfa2.so $PREFIX/lib
 cp $SRC_DIR/build/lib/libwfa2* $PREFIX/lib
+cp $SRC_DIR/build/lib/libwflign* $PREFIX/lib
 
 mkdir -p $PREFIX/bin
 cp build/bin/* $PREFIX/bin

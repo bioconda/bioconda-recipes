@@ -1,0 +1,46 @@
+{% set name = "snakemake-interface-logger-plugins" %}
+{% set version = "1.2.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/snakemake_interface_logger_plugins-{{ version }}.tar.gz
+  sha256: 9228cc01f2cc0b35e9144c02d10f71cc9874296272896aeb86f9fac7db5e2c69
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("snakemake-interface-logger-plugins", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11,<4.0
+    - poetry-core
+    - pip
+    - hatchling
+  run:
+    - python >=3.11.0,<4.0.0
+    - snakemake-interface-common >=1.17.4,<2.0.0
+
+test:
+  imports:
+    - snakemake_interface_logger_plugins
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  summary: This package provides a stable interface for interactions between Snakemake and its logger plugins.
+  home: https://github.com/snakemake/snakemake-interface-logger-plugins
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - koesterlab
+    - cademirch

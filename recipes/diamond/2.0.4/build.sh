@@ -17,4 +17,4 @@ cmake -S. -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_OSX_DEPLOYMENT_TARGET="" \
 	"${CONFIG_ARGS}"
 
-cmake --build build --target install -v
+cmake --build build --target install -v -j ${CPU_COUNT}

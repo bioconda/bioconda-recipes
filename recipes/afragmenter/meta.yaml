@@ -1,0 +1,52 @@
+{% set name = "afragmenter" %}
+{% set version = "0.0.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/afragmenter-{{ version }}.tar.gz
+  sha256: d10649ae945108da5975d117c483900883eabe5826be2103c5244ce99887dce9
+
+build:
+  entry_points:
+    - afragmenter = afragmenter.cli:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - poetry-core
+    - pip
+  run:
+    - python >=3.9.0
+    - python-igraph >=0.10.3
+    - numpy >=2.0.0
+    - matplotlib-base >=3.9.2
+    - rich >=13.8.1
+    - rich-click >=1.8.3
+    - biopython >=1.76.0
+    - requests >=2.32.3
+
+test:
+  imports:
+    - afragmenter
+  commands:
+    - afragmenter --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/sverwimp/AFragmenter
+  summary: 'Schema-free, tunable protein domain segmentation tool for AlphaFold structures'
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - 59533725
