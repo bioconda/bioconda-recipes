@@ -16,15 +16,9 @@ elif [[ `uname -m` == "arm64" ]]; then
 	sed -i.bak 's/-march=native/-mtune=generic/g' makefile
 fi
 
-if [[ "$(uname)" == "Darwin" ]]; then
-	sed -i.bak 's/g++/${CXX}/g' makefile
-	sed -i.bak 's/g++/${CXX}/g' makefile
-	make -j"${CPU_COUNT}"
-else
-	sed -i.bak 's/g++/${CXX}/g' makefile
-	sed -i.bak 's/g++/${CXX}/g' makefile
-	make -j"${CPU_COUNT}"
-fi
+sed -i.bak 's/g++/${CXX}/g' makefile
+sed -i.bak 's/g++/${CXX}/g' makefile
+make -j"${CPU_COUNT}"
 
 sed -i.bak 's|-O2|-O3|' makefile
 rm -rf *.bak
