@@ -4,10 +4,14 @@ if [ "$(uname)" == "Darwin" ]; then
     cp -rf $SRC_DIR $PREFIX
 else
     cd ${SRC_DIR}/scripts
-    chmod +x pantax data_preprocessing pantax_utils
-    cp ${SRC_DIR}/scripts/pantax ${SRC_DIR}/scripts/data_preprocessing ${SRC_DIR}/scripts/pantax_utils ${PREFIX}/bin
+    chmod +x pantax
+    chmod +x data_preprocessing
+    cp ${SRC_DIR}/scripts/pantax ${SRC_DIR}/scripts/data_preprocessing ${PREFIX}/bin
     cp ${SRC_DIR}/scripts/*py ${PREFIX}/bin
-
-    cd ${SRC_DIR}/tools/fastix
-    RUST_BACKTRACE=1 cargo install --verbose --locked --no-track --root ${PREFIX} --path .
+    export GUROBI_HOME="$(cd ${SRC_DIR}/gurobi1103/linux64 && pwd)"
+    cp -rf "$GUROBI_HOME/lib/libgurobi110.so" "$PREFIX/lib"
+    
+    cd ${SRC_DIR}/pantaxr
+    RUST_BACKTRACE=1 RUSTFLAGS="-C link-args=-Wl,-rpath,${PREFIX}/lib" cargo build -r
+    cp ${SRC_DIR}/pantaxr/target/release/pantaxr ${PREFIX}/bin/pantaxr
 fi
