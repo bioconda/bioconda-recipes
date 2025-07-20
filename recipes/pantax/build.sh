@@ -16,6 +16,7 @@ else
     export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
     export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
     export LIBCLANG_PATH=$PREFIX/lib/libclang-*.so.*
+    find $PREFIX -name "*libclang*"
     ls $PREFIX/lib/libclang-*.so.*
     echo "libclang path: $LIBCLANG_PATH"
     export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
