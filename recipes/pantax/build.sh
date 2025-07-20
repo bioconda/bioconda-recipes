@@ -19,5 +19,5 @@ else
     export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
     RUST_BACKTRACE=1 RUSTFLAGS="-C link-args=-Wl,-rpath,${PREFIX}/lib" cargo build --release
     ls target/release/
-    cp $SRC_DIR/target/*/release/pantaxr ${PREFIX}/bin/pantaxr
+    cp target/*/release/pantaxr ${PREFIX}/bin/pantaxr
 fi
