@@ -16,10 +16,8 @@ else
     export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
     export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
     export LIBCLANG_PATH=$PREFIX/lib
-    find $PREFIX -name "*libclang*"
-    ls $PREFIX/lib/libclang-*.so.*
-    echo "libclang path: $LIBCLANG_PATH"
     export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
-    RUST_BACKTRACE=1 RUSTFLAGS="-C link-args=-Wl,-rpath,${PREFIX}/lib" cargo build -r
-    cp ${SRC_DIR}/pantaxr/target/release/pantaxr ${PREFIX}/bin/pantaxr
+    RUST_BACKTRACE=1 RUSTFLAGS="-C link-args=-Wl,-rpath,${PREFIX}/lib" cargo build --release
+    ls target/release/
+    cp target/release/pantaxr ${PREFIX}/bin/pantaxr
 fi
