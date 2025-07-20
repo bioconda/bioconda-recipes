@@ -1,5 +1,5 @@
 {% set name = "pantax" %}
-{% set version = "1.2.0" %}
+{% set version = "2.0.0" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,11 @@ package:
 
 source:
   - url: https://github.com/LuoGroup2023/PanTax/releases/download/v{{ version }}/{{ name }}.tar.gz  
-    sha256: 2ca6c057c5f09ef49f7ae41111fd1b5d3690d1afdfac86a704be6236eea103ed
+    sha256: sha256:63461c19997ee3ecf22325878df52013109949abcb7d5011fb3fa2ddf3a9cfd1
+
+  - url: https://packages.gurobi.com/11.0/gurobi11.0.3_linux64.tar.gz # [not osx]
+    sha256: 82a2c8671c234bbaa9dc64da22b1951abf41c62047fdf77004e65f24a91dfd13  # [not osx]
+    folder: gurobi1103  # [not osx]
 
 build:
   skip: True  # [osx]
@@ -18,20 +22,26 @@ build:
 requirements:
   build:
     - {{ compiler('rust') }}
+    - clang =19 # [linux] 
+    - cmake
+    - make
+    - glpk
   host:
     - python ==3.10
     - pip
+    - glpk
   run:
     - python =3.10
     - r-base >=4.2
+    - glpk
     - samtools =1.19.2
     - bcftools =1.19
     - htslib =1.19.1
-    - pggb >=0.6.0
+    - pggb =0.6.0
     - vg >=1.59
     - graphaligner =1.0.17 
-    - sylph
-    - h5py =3.10.0
+    - sylph =0.6.1
+    - hdf5=1.10.5
     - pandas =2.2.0
     - tqdm
     - numpy =1.26.3
