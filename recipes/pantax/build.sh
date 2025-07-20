@@ -18,6 +18,5 @@ else
     # export LIBCLANG_PATH=$PREFIX/lib
     # export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
     RUST_BACKTRACE=1 RUSTFLAGS="-C link-args=-Wl,-rpath,${PREFIX}/lib" cargo build --release
-    ls target/release/
     cp target/*/release/pantaxr ${PREFIX}/bin/pantaxr
 fi
