@@ -15,7 +15,7 @@ else
     export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
     export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
     export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-    export LIBCLANG_PATH=$PREFIX/lib
+    export LIBCLANG_PATH=$PREFIX/lib/libclang.so
     export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
     RUST_BACKTRACE=1 RUSTFLAGS="-C link-args=-Wl,-rpath,${PREFIX}/lib" cargo build -r
     cp ${SRC_DIR}/pantaxr/target/release/pantaxr ${PREFIX}/bin/pantaxr
