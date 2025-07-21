@@ -2,6 +2,7 @@
 
 export CPPLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+set -euxo pipefail
 sed -i '40i#include <cstdint>\n#include <iterator>' ./src/utils/fast-liftover.cpp
 sed -i '22i#include <cstdint>\n#include <iterator>' ./src/analysis/hmr_rep.cpp
 sed -i '22i#include <cstdint>\n#include <iterator>' ./src/smithlab_cpp/sam_record.hpp
