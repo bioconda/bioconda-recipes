@@ -28,6 +28,8 @@ export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include/libxml2"
 make CC="${CC}" -j"${CPU_COUNT}"
 cd ../../../../../
 
+sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+rm -rf *.bak
 ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
 
 make
