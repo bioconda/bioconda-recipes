@@ -15,7 +15,10 @@ autoreconf -if
 
 cd ../../
 
-make CC="${CC}" -j"${CPU_COUNT}"
+case $(uname -m) in
+	aarch64|arm64) export arm_neon=1 && make arm_neon=1 CC="${CC}" -j"${CPU_COUNT}" ;;
+  *) make CC="${CC}" -j"${CPU_COUNT}" ;;
+esac
 
 install -v -m 755 bin/* "${OUTDIR}"
 cp -rf ${SRC_DIR}/* "${OUTDIR}"
