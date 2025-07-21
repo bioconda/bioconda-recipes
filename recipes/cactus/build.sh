@@ -1,7 +1,17 @@
 #!/bin/bash
 set -ex
 
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
 mkdir -p "${PREFIX}/bin"
+
+case $(uname -m) in
+	aarch64|arm64) sed -i.bak 's|-mavx2||' include.mk && sed -i.bak 's|-D__AVX2__||' include.mk && rm -rf *.bak
+  ;;
+esac
 
 cd submodules/abPOA
 make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" -j"${CPU_COUNT}"
@@ -20,7 +30,7 @@ cd ../../../../../
 
 ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
 
-make -j"${CPU_COUNT}"
+make
 
 install -v -m 755 bin/* "${PREFIX}/bin"
 
