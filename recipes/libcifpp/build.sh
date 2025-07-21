@@ -28,6 +28,7 @@ cmake -S . -B build -G Ninja \
     ${CONFIG_ARGS}
 
 cmake --build build/ --target install -j "${CPU_COUNT}"
+install -m 644 "${SRC_DIR}/rsrc/components.cif" "${PREFIX}/share/libcifpp/components.cif"
 
 # activaton and deactivation scripts
 mkdir -p "${PREFIX}/etc/conda/activate.d"
