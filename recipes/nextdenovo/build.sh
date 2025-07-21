@@ -1,6 +1,9 @@
 #!/bin/bash
 set -ex
 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3"
+
 OUTDIR="${SP_DIR}/nextdenovo"
 
 mkdir -p ${PREFIX}/bin ${OUTDIR}
