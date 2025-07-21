@@ -23,6 +23,9 @@ cmake -S . -B build -G Ninja \
     -DBUILD_TESTING=OFF \
     -DCIFPP_DOWNLOAD_CCD=ON \
     -DCIFPP_INSTALL_UPDATE_SCRIPT=ON \
+    -DCIFPP_CRON_DIR="${PREFIX}/share/libcifpp" \
+    -DCIFPP_ETC_DIR="${PREFIX}/etc/libcifpp" \
+    -DCIFPP_CACHE_DIR="${PREFIX}/share/libcifpp" \
     -DCIFPP_DATA_DIR='' \
     -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp" \
     ${CONFIG_ARGS}
