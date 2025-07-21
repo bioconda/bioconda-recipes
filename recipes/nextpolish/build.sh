@@ -26,7 +26,7 @@ mkdir -p ${SHARE_DIR}
 cp -rf ./lib ${SHARE_DIR}/
 
 # Build
-make CC="${CC}" AR="${AR}" LDFLAGS="-L${PREFIX}/lib"
+make CC="${CC}" AR="${AR}" LDFLAGS="${LDFLAGS}"
 mkdir -p ${PREFIX}/bin
 install -v -m 755 bin/* ${PREFIX}/bin
 
