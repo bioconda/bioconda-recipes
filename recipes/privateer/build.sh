@@ -2,13 +2,9 @@
 
 set -exo pipefail
 
-export CXXFLAGS="${CXXFLAGS} -frtti -include cstdint"
 
-if [[ "${target_platform}" == "linux-"* ]]; then
-    export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined,--export-dynamic"
-elif [[ "${target_platform}" == "osx-"* ]]; then
-    export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic"
-fi
+
+export CXXFLAGS="${CXXFLAGS} -frtti -include cstdint"
 
 if [[ "${target_platform}" == "linux-"* ]]; then
     export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined -Wl,--export-dynamic -Wl,--unresolved-symbols=ignore-all"
@@ -42,7 +38,6 @@ sed -i '/^project(/a find_package(Python3 COMPONENTS Interpreter Development REQ
 sed -i '/^project(/a find_package(pybind11 CONFIG REQUIRED)' CMakeLists.txt
 sed -i 's|add_subdirectory(${CMAKE_SOURCE_DIR}/dependencies/pybind11)||' CMakeLists.txt
 sed -i 's|${CMAKE_SOURCE_DIR}/dependencies/gemmi/include|${GEMMI_INCLUDE_DIR}|' CMakeLists.txt
-# sed -i 's|${PYTHON_LIBRARY}||g' CMakeLists.txt
 
 # Modify installation paths except python modules
 sed -i 's|TARGETS privateer_lib LIBRARY DESTINATION ${PROJECT_SOURCE_DIR}|TARGETS privateer_lib LIBRARY DESTINATION lib|' CMakeLists.txt
