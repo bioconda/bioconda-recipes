@@ -6,6 +6,3 @@ export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1 C_INCLUDE_PATH=$PREFIX/include LIBRARY_PATH=$PREFIX/lib cargo install --verbose --root $PREFIX --path .
-
-#install clap
-cargo install clap --features derive
