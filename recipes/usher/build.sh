@@ -51,13 +51,10 @@ else
 fi
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
+    ls -lah
     install -v -m 755 usher* mat* ripples* "${PREFIX}/bin"
 else
     install -v -m 755 usher* mat* transpose* ripples* compareVCF check_samples_place "${PREFIX}/bin"
-fi
-
-if [[ -d ./tbb_cmake_build ]]; then
-    cp -rf ./tbb_cmake_build/tbb_cmake_build_subdir_release/* ${PREFIX}/lib/
 fi
 
 popd
