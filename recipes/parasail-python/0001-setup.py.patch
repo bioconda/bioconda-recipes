@@ -1,5 +1,5 @@
 diff --git a/setup.py b/setup.py
-index 4465048..fb692c3 100644
+index 4465048..5d954ea 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -28,7 +28,6 @@ CLASSIFIERS = [
@@ -57,20 +57,34 @@ index 4465048..fb692c3 100644
              print("PATH={}".format(os.environ['PATH']))
              if not build_autotools():
                  if not build_autotools(True):
-@@ -347,7 +351,11 @@ def build_parasail(libname):
+@@ -344,11 +348,24 @@ def build_parasail(libname):
+ 
+     if find_file('config.status', parasail_root) is None:
+         print("configuring parasail in directory {}".format(parasail_root))
++        my_env = os.environ.copy()
          retcode = subprocess.Popen([
              './configure',
              '--enable-shared',
 -            '--disable-static'
+-            ], cwd=parasail_root).wait()
 +            '--disable-static',
 +            '--disable-option-checking',
 +            '--enable-silent-rules',
 +            '--disable-dependency-tracking',
-+            '--with-zlib'
-             ], cwd=parasail_root).wait()
++            '--with-zlib',
++            "--libdir='$PREFIX/lib'",
++            "CC='$CC'",
++            "CFLAGS='$CFLAGS -O3'",
++            "CXX='$CXX'",
++            "CXXFLAGS='$CXXFLAGS -O3'",
++            "CPPFLAGS='$CPPFLAGS -I$PREFIX/include'",
++            "LDFLAGS='$LDFLAGS -L$PREFIX/lib'",
++            "PKG_CONFIG_PATH='$PREFIX/lib/pkgconfig'"
++            ], shell=True, env=my_env, cwd=parasail_root).wait()
          if 0 != retcode:
              raise RuntimeError("configure failed")
-@@ -530,5 +538,6 @@ if __name__ == "__main__":
+     else:
+@@ -530,5 +547,6 @@ if __name__ == "__main__":
          zip_safe=False,
          classifiers=CLASSIFIERS,
          install_requires=INSTALL_REQUIRES,
