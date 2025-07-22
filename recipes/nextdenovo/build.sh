@@ -6,7 +6,12 @@ export CFLAGS="${CFLAGS} -O3"
 
 OUTDIR="${SP_DIR}/nextdenovo"
 
-mkdir -p ${PREFIX}/bin ${OUTDIR}
+mkdir -p "${PREFIX}/bin" "${OUTDIR}"
+
+sed -i.bak 's|INCLUDES =|INCLUDES = -I$(PREFIX)/include|' util/Makefile
+case $(uname -s) in
+	"Darwin") sed -i.bak 's|-lcrypto||' util/Makefile && sed -i.bak 's|-lcrypto||' lib/Makefile ;;
+esac
 
 cd lib/htslib
 
@@ -17,7 +22,7 @@ cd ../../
 
 case $(uname -m) in
 	aarch64|arm64) export arm_neon=1 && export aarch64=1 && make arm_neon=1 aarch64=1 CC="${CC}" -j"${CPU_COUNT}" ;;
-  *) make CC="${CC}" -j"${CPU_COUNT}" ;;
+	*) make CC="${CC}" -j"${CPU_COUNT}" ;;
 esac
 
 install -v -m 755 bin/* "${OUTDIR}"
