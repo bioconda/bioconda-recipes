@@ -1,8 +1,8 @@
 #!/bin/sh
 set -x -e
 
-export PYTHONPATH=$PREFIX/lib/python2.7/site-packages:$PYTHONPATH
 unset _CONDA_PYTHON_SYSCONFIGDATA_NAME
+export PYTHONPATH=$PREFIX/lib/python2.7/site-packages:$PYTHONPATH
 
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
