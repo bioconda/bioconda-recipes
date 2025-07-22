@@ -8,6 +8,10 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
+mkdir -p "$PREFIX/bin"
+mkdir -p "$PREFIX/share/EMBOSS/data"
+mkdir -p "$PREFIX/share/EMBOSS/acd"
+
 # use newer config.guess and config.sub that support osx-arm64
 cp -rf ${BUILD_PREFIX}/share/gnuconfig/config.* .
 
@@ -31,14 +35,11 @@ fi
 # Regenerate configure to fix flat namespace errors on macOS 11+
 autoreconf -if
 ./configure --prefix="${PREFIX}" \
-    --without-x --disable-debug --with-thread --enable-64 --disable-option-checking \
-    --disable-dependency-tracking --enable-silent-rules \
-    CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}" \
-    CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" "${EXTRA_ARGS}"
+	--without-x --with-thread --disable-debug --disable-option-checking \
+	--disable-dependency-tracking --enable-silent-rules \
+	CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" \
+	CPPFLAGS="${CPPFLAGS}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" \
+	"${EXTRA_ARGS}"
 
 make -j"${CPU_COUNT}"
 make install
-
-cp -rf ${RECIPE_DIR}/fix_acd_path.py .
-chmod +rx ./fix_acd_path.py
-${PYTHON} ./fix_acd_path.py "${PREFIX}/bin"
