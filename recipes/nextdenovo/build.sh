@@ -8,7 +8,6 @@ OUTDIR="${SP_DIR}/nextdenovo"
 
 mkdir -p "${PREFIX}/bin" "${OUTDIR}"
 
-sed -i.bak 's|INCLUDES =|INCLUDES = -I$(PREFIX)/include|' util/Makefile
 case $(uname -s) in
 	"Darwin") sed -i.bak 's|-lcrypto||' util/Makefile && sed -i.bak 's|-lcrypto||' lib/Makefile ;;
 esac

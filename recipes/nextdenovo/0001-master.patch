@@ -1,183 +1,74 @@
-diff --git a/.gitignore b/.gitignore
-index 9dfde90..f8f8799 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -102,4 +102,3 @@ venv.bak/
- # mypy
- .mypy_cache/
- 
--doc/conf.py
-diff --git a/.readthedocs.yaml b/.readthedocs.yaml
-new file mode 100644
-index 0000000..a92f737
---- /dev/null
-+++ b/.readthedocs.yaml
-@@ -0,0 +1,22 @@
-+# .readthedocs.yaml
-+# Read the Docs configuration file
-+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
-+
-+# Required
-+version: 2
-+
-+# Set the version of Python and other tools you might need
-+build:
-+  os: ubuntu-22.04
-+  tools:
-+    python: "3.11"
-+
-+# Build documentation in the docs/ directory with Sphinx
-+sphinx:
-+  configuration: doc/conf.py
-+
-+# We recommend specifying your dependencies to enable reproducible builds:
-+# https://docs.readthedocs.io/en/stable/guides/reproducible-builds.html
-+python:
-+  install:
-+  - requirements: doc/requirements.txt
-\ No newline at end of file
-diff --git a/README.md b/README.md
-index 659dcae..9bdfbd2 100644
---- a/README.md
-+++ b/README.md
-@@ -1,6 +1,7 @@
- [![Downloads](https://img.shields.io/github/downloads/Nextomics/NextDenovo/total?logo=github)](https://github.com/Nextomics/NextDenovo/releases/latest/download/NextDenovo.tgz)
- [![Release](https://img.shields.io/github/release/Nextomics/NextDenovo.svg)](https://github.com/Nextomics/NextDenovo/releases)
- [![Documentation Status](https://readthedocs.org/projects/nextdenovo/badge/?version=latest)](https://nextdenovo.readthedocs.io/en/latest/?badge=latest)
-+[![DOI](https://img.shields.io/badge/DOI-10.1186%2Fs13059--024--03252--4-blue)](https://doi.org/10.1186/s13059-024-03252-4)
- 
- # NextDenovo
- NextDenovo is a string graph-based *de novo* assembler for long reads (CLR, ~~HiFi~~ and ONT). It uses a "correct-then-assemble" strategy similar to canu (no correction step for PacBio HiFi reads), but requires significantly less computing resources and storages. After assembly, the per-base accuracy is about 98-99.8%, to further improve single base accuracy, try [NextPolish](https://github.com/Nextomics/NextPolish).
-diff --git a/doc/QSTART.rst b/doc/QSTART.rst
-index ef17c9f..c86196d 100644
---- a/doc/QSTART.rst
-+++ b/doc/QSTART.rst
-@@ -117,15 +117,10 @@ Getting Help
-    
-    For additional help, please send an email to huj\_at\_grandomics\_dot\_com.
- 
--Copyright
--~~~~~~~~~
--
--NextDenovo is only freely available for academic use and other non-commercial use. For commercial use, please contact `GrandOmics <https://www.nextomics.cn/en/>`_.
--
- Cite
- ~~~~
- 
--Hu, J. et al. An efficient error correction and accurate assembly tool for noisy long reads. bioRxiv 2023.03.09.531669 (2023) doi:10.1101/2023.03.09.531669.
-+Hu J, Wang Z, Sun Z, et al. NextDenovo: an efficient error correction and accurate assembly tool for noisy long reads[J]. Genome Biology, 2024, 25(1): 1-19.
- 
- Limitations
- ~~~~~~~~~~~
-diff --git a/doc/conf.py b/doc/conf.py
-new file mode 100644
-index 0000000..cbb4978
---- /dev/null
-+++ b/doc/conf.py
-@@ -0,0 +1,54 @@
-+# Configuration file for the Sphinx documentation builder.
-+#
-+# This file only contains a selection of the most common options. For a full
-+# list see the documentation:
-+# https://www.sphinx-doc.org/en/master/usage/configuration.html
-+
-+# -- Path setup --------------------------------------------------------------
-+
-+# If extensions (or modules to document with autodoc) are in another directory,
-+# add these directories to sys.path here. If the directory is relative to the
-+# documentation root, use os.path.abspath to make it absolute, like shown here.
-+#
-+# import os
-+# import sys
-+# sys.path.insert(0, os.path.abspath('.'))
-+
-+
-+# -- Project information -----------------------------------------------------
-+
-+project = 'nextdenovo'
-+copyright = '2020, jiang'
-+author = 'jiang'
-+
-+
-+# -- General configuration ---------------------------------------------------
-+
-+# Add any Sphinx extension module names here, as strings. They can be
-+# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
-+# ones.
-+extensions = [
-+	'sphinx_copybutton',
-+	'sphinx_rtd_theme',
-+]
-+
-+# Add any paths that contain templates here, relative to this directory.
-+templates_path = ['_templates']
-+
-+# List of patterns, relative to source directory, that match files and
-+# directories to ignore when looking for source files.
-+# This pattern also affects html_static_path and html_extra_path.
-+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-+
-+
-+# -- Options for HTML output -------------------------------------------------
-+
-+# The theme to use for HTML and HTML Help pages.  See the documentation for
-+# a list of builtin themes.
-+#
-+html_theme = 'sphinx_rtd_theme'
-+
-+# Add any paths that contain custom static files (such as style sheets) here,
-+# relative to this directory. They are copied after the builtin static files,
-+# so a file named "default.css" will overwrite the builtin "default.css".
-+html_static_path = ['_static']
-diff --git a/doc/requirements.txt b/doc/requirements.txt
-new file mode 100644
-index 0000000..4271467
---- /dev/null
-+++ b/doc/requirements.txt
-@@ -0,0 +1,2 @@
-+sphinx_copybutton==0.5.2
-+sphinx_rtd_theme==1.1.1
-\ No newline at end of file
 diff --git a/lib/Makefile b/lib/Makefile
-index 30ce1a5..ef1d703 100644
+index ef1d703..08aa688 100644
 --- a/lib/Makefile
 +++ b/lib/Makefile
-@@ -1,15 +1,14 @@
- CC=gcc
--INCLUDES =
- CFLAGS = -std=c99 -O3 -Wall -Wno-unused-function
+@@ -1,18 +1,19 @@
+-CC=gcc
+-CFLAGS = -std=c99 -O3 -Wall -Wno-unused-function
++CC=$(CC)
++INCLUDES = -I$(PREFIX)/include
++CFLAGS = -std=c11 -O3 -Wall -Wno-unused-function -Wno-implicit-function-declaration -Wno-format -Wno-unused-but-set-variable
  FPIC = -fPIC -shared
- HTSDIR = ./htslib/
+-HTSDIR = ./htslib/
++HTSDIR = ./htslib
  LIB_OBJECT = nextcorrect.so ovlseq.so ctg_cns.so ckit.so
--CTG_CNS_CFLAGS = -D_SVID_SOURCE -DLGS_CORRECT -I $(HTSDIR) -lm -lpthread -lz $(HTSLIB_CFLAGS)
+-CTG_CNS_CFLAGS = -D_SVID_SOURCE -DLGS_CORRECT -I $(HTSDIR) -lcurl -lcrypto -lm -lpthread -lz $(HTSLIB_CFLAGS)
 +CTG_CNS_CFLAGS = -D_SVID_SOURCE -DLGS_CORRECT -I $(HTSDIR) -lcurl -lcrypto -lm -pthread -lz $(HTSLIB_CFLAGS)
  
  all: $(LIB_OBJECT)
  
  $(HTSDIR)/libhts.a:
--	cd  $(HTSDIR) && ./configure  --disable-bz2 --disable-lzma
-+	cd  $(HTSDIR) && ./configure --disable-bz2 --disable-lzma
+-	cd  $(HTSDIR) && ./configure --disable-bz2 --disable-lzma
++	cd $(HTSDIR) && ./configure --disable-bz2 --disable-lzma
  	@+make -C $(HTSDIR) CPPFLAGS+=-fPIC $(INCLUDES)
  
  nextcorrect.so: align.c dag.c nextcorrect.c
-@@ -31,7 +30,7 @@ ckit: kit.c bseq.c
- 	$(CC) $(CFLAGS) -o $@ $^ -lz
+-	$(CC) $(CFLAGS) $(FPIC) $(INCLUDES) -o $@ $^ 
++	$(CC) $(CFLAGS) $(FPIC) $(INCLUDES) -o $@ $^
  
- ctg_cns: bseq.c align.c dag.c bsort.c ctg_cns.c $(HTSDIR)/libhts.a
--	$(CC) $(CFLAGS) -o $@ $^ $(CTG_CNS_CFLAGS)
-+	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^ $(CTG_CNS_CFLAGS)
+ ovlseq.so: ovlseq.c bseq.c ovl.c index.c
+ 	$(CC) $(CFLAGS) $(FPIC) $(INCLUDES) -o $@ $^ -lz
+@@ -21,7 +22,7 @@ nextcorrect: align.c dag.c nextcorrect.c
+ 	$(CC) $(CFLAGS) -o $@ $^
  
- ovlseq: ovlseq.c bseq.c ovl.c index.c
- 	$(CC) $(CFLAGS) -lz -Wno-unused-function -o $@ $^
+ ctg_cns.so: bseq.c align.c bsort.c dag.c ctg_cns.c $(HTSDIR)/libhts.a
+-	$(CC) $(CFLAGS) $(FPIC) $(INCLUDES) -o $@ $^ $(CTG_CNS_CFLAGS) 
++	$(CC) $(CFLAGS) $(FPIC) $(INCLUDES) -o $@ $^ $(CTG_CNS_CFLAGS)
+ 
+ ckit.so: kit.c bseq.c
+ 	$(CC) $(CFLAGS) $(FPIC) $(INCLUDES) -o $@ $^ -lz
 diff --git a/util/Makefile b/util/Makefile
-index 11328f0..917f932 100644
+index 917f932..6ce004a 100644
 --- a/util/Makefile
 +++ b/util/Makefile
-@@ -27,7 +27,7 @@ seq_stat: seq_stat.c
- 	$(CC) $(CFLAGS) -std=c99 $(INCLUDES) -o $@ $^ -lz
+@@ -1,6 +1,6 @@
+-CC = gcc
+-CFLAGS = -Wall -O3 -Wno-unused-function 
+-INCLUDES =
++CC = $(CC)
++CFLAGS = -Wall -O3 -Wno-unused-function -Wno-implicit-function-declaration -Wno-format -Wno-unused-but-set-variable
++INCLUDES = -I$(PREFIX)/include
+ PROGS = seq_dump ovl_sort seq_stat ovl_cvt seq_bit bam_sort nextgraph
+ HTSDIR = ../lib/htslib/
+ NEXTGRPHDIR = ./ng
+@@ -15,7 +15,7 @@ seq_dump: seq_dump.c ../lib/bseq.c
+ 	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^ -lz
+ 
+ ovl_sort: ovl_sort.c thpool.c ../lib/ovl.c
+-	$(CC) $(CFLAGS) -std=c99 -pthread $(INCLUDES) -o $@ $^
++	$(CC) $(CFLAGS) -std=c11 -pthread $(INCLUDES) -o $@ $^
+ 
+ ovl_cvt: ovl_cvt.c ../lib/ovl.c
+ 	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
+@@ -24,10 +24,10 @@ seq_bit: seq_bit.c ../lib/bseq.c
+ 	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^ -lz
+ 
+ seq_stat: seq_stat.c
+-	$(CC) $(CFLAGS) -std=c99 $(INCLUDES) -o $@ $^ -lz
++	$(CC) $(CFLAGS) -std=c11 $(INCLUDES) -o $@ $^ -lz
  
  bam_sort: bam_sort.c ../lib/bsort.c $(HTSDIR)/libhts.a
--	$(CC) $(CFLAGS) -o $@ $^ -I $(HTSDIR) $(INCLUDES) -lpthread -lm -lz
+-	$(CC) $(CFLAGS) -o $@ $^ -I $(HTSDIR) $(INCLUDES) -lpthread -lcurl -lm -lz -lcrypto
 +	$(CC) $(CFLAGS) -o $@ $^ -I $(HTSDIR) $(INCLUDES) -pthread -lcurl -lm -lz -lcrypto -ldeflate
  
  # align: realign.c ../lib/ovl.c ../lib/bseq.c ../lib/align.c
