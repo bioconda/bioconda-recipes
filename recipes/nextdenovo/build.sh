@@ -16,7 +16,7 @@ autoreconf -if
 cd ../../
 
 case $(uname -m) in
-	aarch64|arm64) export arm_neon=1 && make arm_neon=1 CC="${CC}" -j"${CPU_COUNT}" ;;
+	aarch64|arm64) export arm_neon=1 && export aarch64=1 && make arm_neon=1 aarch64=1 CC="${CC}" -j"${CPU_COUNT}" ;;
   *) make CC="${CC}" -j"${CPU_COUNT}" ;;
 esac
 
