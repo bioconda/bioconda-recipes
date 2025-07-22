@@ -1,8 +1,16 @@
-diff --git a/setup.py b/setup.py
-index 4465048..fcf4451 100644
+diff --git a/setup.py b/setup.py2
+index 4465048..48b7a24 100644
 --- a/setup.py
-+++ b/setup.py
-@@ -239,6 +239,10 @@ def build_autotools(patch_m4=False):
++++ b/setup.py2
+@@ -28,7 +28,6 @@ CLASSIFIERS = [
+     "Development Status :: 5 - Production/Stable",
+     "Intended Audience :: Science/Research",
+     "Natural Language :: English",
+-    "License :: OSI Approved :: BSD License",
+     "Operating System :: OS Independent",
+     "Programming Language :: C",
+     "Programming Language :: Python",
+@@ -239,6 +238,10 @@ def build_autotools(patch_m4=False):
              print("{} already exists! Skipping build.".format(binary))
          else:
              os.chdir(os.path.join(top,tdir))
@@ -13,19 +21,19 @@ index 4465048..fcf4451 100644
              CPPFLAGS=""
              if tool == 'm4' and patch_m4:
                  CPPFLAGS="CPPFLAGS=-D_IO_IN_BACKUP=0x100"
-@@ -265,12 +269,13 @@ def build_autotools(patch_m4=False):
+@@ -265,12 +268,14 @@ def build_autotools(patch_m4=False):
                  os.chdir(save_cwd)
                  return False
              print("making and installing {}".format(tool))
 -            proc = subprocess.Popen([
 -                'make', '-j', str(cpu_count()), 'install'
 -                ], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
--            stdout,stderr = proc.communicate()
 +            subprocess.run('cp -rf ${BUILD_PREFIX}/bin/make ${PREFIX}/bin/make', shell=True, executable="/bin/bash")
 +            subprocess.run('export PATH=${PREFIX}/bin:${PATH}', shell=True, executable="/bin/bash")
 +            proc = subprocess.run([
 +                'make -j${CPU_COUNT} install',
 +                ], shell=True, executable="/bin/bash", text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+             stdout,stderr = proc.communicate()
              if 0 != proc.returncode:
 -                print(stdout)
 +                print(proc.stdout)
@@ -49,3 +57,30 @@ index 4465048..fcf4451 100644
              print("PATH={}".format(os.environ['PATH']))
              if not build_autotools():
                  if not build_autotools(True):
+@@ -344,12 +349,22 @@ def build_parasail(libname):
+ 
+     if find_file('config.status', parasail_root) is None:
+         print("configuring parasail in directory {}".format(parasail_root))
+-        retcode = subprocess.Popen([
++        retcode = subprocess.run([
+             './configure',
+             '--enable-shared',
+-            '--disable-static'
+-            ], cwd=parasail_root).wait()
+-        if 0 != retcode:
++            '--disable-static',
++            '--disable-option-checking',
++            '--enable-silent-rules',
++            '--disable-dependency-tracking',
++            '--with-zlib',
++            'CC=$CC',
++            'CFLAGS=$CFLAGS -O3',
++            'LDFLAGS=$LDFLAGS -L$PREFIX/lib',
++            'CPPFLAGS=$CPPFLAGS -I$PREFIX/include',
++            'CXX=$CXX',
++            'CXXFLAGS=$CXXFLAGS -O3',
++            ], shell=True, executable="/bin/bash", text=True, cwd=parasail_root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
++        if 0 != retcode.stdout:
+             raise RuntimeError("configure failed")
+     else:
+         print("parasail already configured in directory {}".format(parasail_root))
