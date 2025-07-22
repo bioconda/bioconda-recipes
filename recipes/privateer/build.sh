@@ -2,8 +2,6 @@
 
 set -exo pipefail
 
-
-
 export CXXFLAGS="${CXXFLAGS} -frtti -include cstdint"
 
 if [[ "${target_platform}" == "linux-"* ]]; then
@@ -22,7 +20,7 @@ fi
 
 export CCP4_MASTER=${SRC_DIR}
 export CCP4=$CCP4_MASTER/dependencies
-export CLIBD="${PREFIX}/share/privateer/data"
+export CLIBD="${PREFIX}/share/privateer"
 export CINCL="${PREFIX}/include"
 export CLIBS="${PREFIX}/lib/libccp4"
 export CLIBD_MON="${CLIBD}/monomers/"
@@ -79,3 +77,5 @@ mkdir -p "${PREFIX}/etc/conda/activate.d"
 mkdir -p "${PREFIX}/etc/conda/deactivate.d"
 install -m 644 "${RECIPE_DIR}/activate.sh" "${PREFIX}/etc/conda/activate.d/env_vars.sh"
 install -m 644 "${RECIPE_DIR}/deactivate.sh" "${PREFIX}/etc/conda/deactivate.d/env_vars.sh"
+install -m 644 "${RECIPE_DIR}/activate.fish" "${PREFIX}/etc/conda/activate.d/env_vars.fish"
+install -m 644 "${RECIPE_DIR}/deactivate.fish" "${PREFIX}/etc/conda/deactivate.d/env_vars.fish"
