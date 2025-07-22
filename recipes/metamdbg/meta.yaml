@@ -1,18 +1,17 @@
 {% set name = "metamdbg" %}
-{% set version = "1.1" %}
+{% set version = "1.2" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/GaetanBenoitDev/metaMDBG/archive/refs/tags/metaMDBG-{{ version }}.tar.gz
-  sha256: cee0dea2d354d9ea503eb60d545b99133d11670f1606e0d50cfb6530a1fce267
-  patches:
-    - 0001-CMakeLists.patch
+  git_url: https://github.com/GaetanBenoitDev/metaMDBG.git
+  git_rev: c5a9182
+  sha256: unused
 
 build:
-  number: 2
+  number: 0
   run_exports:
     - {{ pin_subpackage('metamdbg', max_pin="x") }}
 
@@ -20,7 +19,8 @@ requirements:
   build:
     - {{ compiler('cxx') }}
     - cmake
-    - make
+    - ninja
+    - pkg-config
   host:
     - zlib
     - libgomp  # [linux]
@@ -28,8 +28,8 @@ requirements:
   run:
     - libgomp # [linux]
     - llvm-openmp  # [osx]
-    - minimap2 =2.28
-    - time =1.8
+    - minimap2
+    - time
 
 test:
   commands:
@@ -50,3 +50,5 @@ extra:
     - osx-arm64
   identifiers:
     - doi:10.1038/s41587-023-01983-6
+  skip-lints:
+    - uses_vcs_url
