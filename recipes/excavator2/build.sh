@@ -5,6 +5,11 @@ mkdir -p "${DEST_DIR}"
 SOURCE_SUBDIR="${SRC_DIR}/${PKG_NAME}"
 # copy in share
 cp -r "${SOURCE_SUBDIR}"/* "${DEST_DIR}/"
+# compile them 
+lib_files=$(find ${DEST_DIR}/lib/F77 -type f -name "*.f")
+for lib_file in lib_files ; do
+       R CMD SHLIB $lib_file 
+done      
 chmod -R a+rX "${DEST_DIR}"
 # symlink them
 mkdir -p "${PREFIX}/bin"
