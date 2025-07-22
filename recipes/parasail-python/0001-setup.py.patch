@@ -1,8 +1,16 @@
 diff --git a/setup.py b/setup.py
-index 4465048..5d954ea 100644
+index 4465048..2ff8a33 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -28,7 +28,6 @@ CLASSIFIERS = [
+@@ -15,6 +15,7 @@ import zipfile
+ 
+ from distutils.dir_util import copy_tree
+ from distutils.util import get_platform
++import setuptools
+ from setuptools import setup
+ from setuptools.command.install import install as install_
+ 
+@@ -28,7 +29,6 @@ CLASSIFIERS = [
      "Development Status :: 5 - Production/Stable",
      "Intended Audience :: Science/Research",
      "Natural Language :: English",
@@ -10,14 +18,28 @@ index 4465048..5d954ea 100644
      "Operating System :: OS Independent",
      "Programming Language :: C",
      "Programming Language :: Python",
+@@ -180,10 +180,9 @@ def run_autoreconf(root):
+     if all_good:
+         retcode = -1
+         try:
+-            retcode = subprocess.Popen([
+-                'autoreconf',
+-                '-fi',
+-                ], cwd=root).wait()
++            retcode = subprocess.run([
++                "${BUILD_PREFIX}/bin/autoreconf -if"
++                ], shell=True, cwd=root)
+         except Exception as e:
+             all_good = False
+         else:
 @@ -239,6 +238,10 @@ def build_autotools(patch_m4=False):
              print("{} already exists! Skipping build.".format(binary))
          else:
              os.chdir(os.path.join(top,tdir))
-+            subprocess.run('mkdir -p build-aux', shell=True, executable="/bin/bash")
-+            subprocess.run('mkdir -p lib', shell=True, executable="/bin/bash")
-+            subprocess.run('cp -rfv ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/', shell=True, executable="/bin/bash")
-+            subprocess.run('cp -rfv ${BUILD_PREFIX}/share/gnuconfig/config.* lib/', shell=True, executable="/bin/bash")
++            subprocess.run("mkdir -p build-aux", executable="/bin/bash")
++            subprocess.run("mkdir -p lib", executable="/bin/bash")
++            subprocess.run("cp -rfv ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/", shell=True, executable="/bin/bash")
++            subprocess.run("cp -rfv ${BUILD_PREFIX}/share/gnuconfig/config.* lib/", shell=True, executable="/bin/bash")
              CPPFLAGS=""
              if tool == 'm4' and patch_m4:
                  CPPFLAGS="CPPFLAGS=-D_IO_IN_BACKUP=0x100"
@@ -29,11 +51,11 @@ index 4465048..5d954ea 100644
 -                'make', '-j', str(cpu_count()), 'install'
 -                ], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 -            stdout,stderr = proc.communicate()
-+            subprocess.run('cp -rf ${BUILD_PREFIX}/bin/make ${PREFIX}/bin/make', shell=True, executable="/bin/bash")
-+            subprocess.run('export PATH=${PREFIX}/bin:${PATH}', shell=True, executable="/bin/bash")
++            subprocess.run("cp -rf ${BUILD_PREFIX}/bin/make ${PREFIX}/bin/make", shell=True, executable="/bin/bash")
++            subprocess.run("export PATH=${PREFIX}/bin:${PATH}", shell=True, executable="/bin/bash")
 +            proc = subprocess.run([
-+                'make -j${CPU_COUNT} install',
-+                ], shell=True, executable="/bin/bash", text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
++                "make -j${CPU_COUNT} install",
++                ], shell=True, stdout=subprocess.PIPE)
              if 0 != proc.returncode:
 -                print(stdout)
 +                print(proc.stdout)
@@ -84,7 +106,31 @@ index 4465048..5d954ea 100644
          if 0 != retcode:
              raise RuntimeError("configure failed")
      else:
-@@ -530,5 +547,6 @@ if __name__ == "__main__":
+@@ -356,12 +373,10 @@ def build_parasail(libname):
+ 
+     if find_file(libname, parasail_root) is None:
+         print("making parasail")
+-        retcode = subprocess.Popen([
+-            'make',
+-            '-j',
+-            str(cpu_count())
+-            ], cwd=parasail_root).wait()
+-        if 0 != retcode:
++        retcode = subprocess.run([
++            "make -j${CPU_COUNT}"
++            ], shell=True, cwd=parasail_root)
++        if 0 != retcode.returncode:
+             raise RuntimeError("make failed")
+     else:
+         print("parasail library '{}' already made".format(libname))
+@@ -524,11 +539,12 @@ if __name__ == "__main__":
+         maintainer=find_meta("author"),
+         maintainer_email=find_meta("email"),
+         keywords=KEYWORDS,
+-        packages=PACKAGES,
++        packages=setuptools.find_packages(where="."),
+         package_data={"parasail": [get_libname()] + get_includes()},
+         cmdclass=cmdclass,
          zip_safe=False,
          classifiers=CLASSIFIERS,
          install_requires=INSTALL_REQUIRES,
