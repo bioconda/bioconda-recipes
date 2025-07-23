@@ -10,5 +10,5 @@ if [[ ${target_platform} == "linux-aarch64" ]]; then
  sed -i "27s/-static //" Makefile
  sed -i "27s/-m64 //" Makefile
 fi
-make $CC $CXX
+make CC=$CC CXX=$CXX
 cp gctb $PREFIX/bin/
