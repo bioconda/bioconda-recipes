@@ -15,6 +15,6 @@ ln -s ${CRAQ_DIR}/bin/craq ${PREFIX}/bin/craq
 # Add the `src` folder with scripts that are called by the main `craq` executable with a relative path
 mkdir -p ${PREFIX}/src
 for fn in ${CRAQ_DIR}/src/*; do
-  bn=$(basename fn)
+  bn=$(basename $fn)
   ln -s $fn ${PREFIX}/src/${bn}
 done
