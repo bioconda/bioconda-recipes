@@ -5,6 +5,7 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
 
 mkdir -p "${PREFIX}/bin"
 
@@ -19,7 +20,8 @@ fi
 
 cmake -S . -B build -G Ninja -DCMAKE_CXX_FLAGS="$CXXFLAGS -DUSE_NEW_CXX" \
 	-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-	-DCMAKE_CXX_COMPILER="${CXX}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
+	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_C_COMPILER="${CC}" \
+	-DCMAKE_C_FLAGS="${CFLAGS}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
 ninja -C build -j "${CPU_COUNT}" minia
