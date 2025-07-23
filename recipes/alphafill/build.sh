@@ -19,6 +19,7 @@ if [[ "${target_platform}" == "linux-"* ]]; then
     -DZLIB_ROOT="${PREFIX}" \
     -DBUILD_WEB_APPLICATION=ON \
     -DALPHAFILL_DATA_DIR="${PREFIX}/share/alphafill" \
+    -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp" \
     -DBUILD_TESTING=ON
 elif [[ "${target_platform}" == "osx-"* ]]; then
   cmake -S . -B build -G Ninja \
@@ -27,6 +28,7 @@ elif [[ "${target_platform}" == "osx-"* ]]; then
     -DZLIB_ROOT="${PREFIX}" \
     -DBUILD_WEB_APPLICATION=OFF \
     -DALPHAFILL_DATA_DIR="${PREFIX}/share/alphafill" \
+    -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp" \
     -DBUILD_TESTING=ON
 fi
 
