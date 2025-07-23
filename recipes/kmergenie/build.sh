@@ -13,7 +13,7 @@ export LC_ALL="en_US.UTF-8"
 
 mkdir -p "${PREFIX}/bin"
 
-2to3 -w scripts/*.py third_party/*.py *.py
+2to3 -w scripts/*.py third_party/*.py *.py kmergenie
 
 sed -i.bak 's|print sys.hexversion>=0x02050000|print(sys.hexversion>=0x02050000)|' makefile
 sed -i.bak 's|-O4|-O3|' makefile
@@ -21,9 +21,10 @@ rm -rf *.bak
 
 make CXX="${CXX}" -j"${CPU_COUNT}"
 
-sed -i.bak 's/third_party\.//g' scripts/*
-sed -i.bak 's/third_party\.//g' kmergenie
-sed -i.bak 's/scripts\///g' kmergenie
+sed -i.bak 's|third_party|.|' scripts/*
+sed -i.bak 's|usr/bin/Rscript|opt/anaconda1/anaconda2anaconda3/bin/Rscript|' scripts/*.r
+sed -i.bak 's|third_party|.|' kmergenie
+sed -i.bak 's|scripts|.|' kmergenie
 rm -rf scripts/*.bak
 rm -rf third_party/*.bak
 
