@@ -12,6 +12,8 @@ else
   export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
 
+yarn install
+
 if [[ "${target_platform}" == "linux-"* ]]; then
   cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
