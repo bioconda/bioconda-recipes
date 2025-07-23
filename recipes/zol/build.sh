@@ -15,8 +15,8 @@ chmod +x ${PREFIX}/bin/splitDiamondResults
 chmod +x ${PREFIX}/bin/splitDiamondResultsForFai
 
 # create folder for database download
-ZOL_DATA_PATH="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}/db"
-ZOL_EXEC_PATH="${PREFIX}/bin"
+ZOL_DATA_PATH="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}/db/"
+ZOL_EXEC_PATH="${PREFIX}/bin/"
 mkdir -p "${ZOL_DATA_PATH}"
 echo 'Default conda space for downloading annotation databases.\n' > ${ZOL_DATA_PATH}/README.txt
 
