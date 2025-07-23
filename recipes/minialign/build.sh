@@ -6,7 +6,10 @@ export CPATH="${PREFIX}/include"
 
 mkdir -p "$PREFIX/bin"
 
-sed -i.bak 's|-march=native|-msse4.2 -mpopcnt|' Makefile
+case $(uname -m) in
+  aarch64|arm64) sed -i.bak 's|-march=native||' Makefile && rm -rf *.bak ;;
+  *) sed -i.bak 's|-march=native|-msse4.2 -mpopcnt|' Makefile && rm -rf *.bak ;;
+esac
 
 make CC="${CC}" -j"${CPU_COUNT}"
 
