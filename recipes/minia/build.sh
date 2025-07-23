@@ -5,7 +5,7 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
-export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration -Wno-incompatible-function-pointer-types"
 
 mkdir -p "${PREFIX}/bin"
 
