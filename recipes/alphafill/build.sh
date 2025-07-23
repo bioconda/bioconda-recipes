@@ -13,19 +13,21 @@ else
 fi
 
 if [[ "${target_platform}" == "linux-"* ]]; then
-    cmake -S . -B build -G Ninja \
-        ${CMAKE_ARGS} \
-        -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-        -DBUILD_WEB_APPLICATION=ON \
-        -DALPHAFILL_DATA_DIR="${PREFIX}/share/alphafill" \
-        -DBUILD_TESTING=ON
+  cmake -S . -B build -G Ninja \
+    ${CMAKE_ARGS} \
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+    -DZLIB_ROOT="${PREFIX}" \
+    -DBUILD_WEB_APPLICATION=ON \
+    -DALPHAFILL_DATA_DIR="${PREFIX}/share/alphafill" \
+    -DBUILD_TESTING=ON
 elif [[ "${target_platform}" == "osx-"* ]]; then
-    cmake -S . -B build -G Ninja \
-        ${CMAKE_ARGS} \
-        -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-        -DBUILD_WEB_APPLICATION=OFF \
-        -DALPHAFILL_DATA_DIR="${PREFIX}/share/alphafill" \
-        -DBUILD_TESTING=ON
+  cmake -S . -B build -G Ninja \
+    ${CMAKE_ARGS} \
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+    -DZLIB_ROOT="${PREFIX}" \
+    -DBUILD_WEB_APPLICATION=OFF \
+    -DALPHAFILL_DATA_DIR="${PREFIX}/share/alphafill" \
+    -DBUILD_TESTING=ON
 fi
 
 cmake --build build --parallel "${CPU_COUNT}"
