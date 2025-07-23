@@ -12,6 +12,6 @@ if [[ ${target_platform} == "linux-aarch64" ]]; then
  make CC=$CC CXX=$CXX
  cp gctb $PREFIX/bin/
 else
- cp gctb_2.0_linux/gctb $PREFIX/bin/
+ cp gctb_2.0_scr/gctb $PREFIX/bin/
 fi
 
