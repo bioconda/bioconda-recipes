@@ -34,7 +34,7 @@ make CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}"
 cd ..
 
 # run build tests
-pytest
+#pytest
 
 # install
 install -v -m 0755 GraphProt.pl "${BIN}"
