@@ -2,7 +2,7 @@
 
 set -exo pipefail
 
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -D_LIBCPP_DISABLE_AVAILABILITY"
 
 if [[ "${target_platform}" == "linux-aarch64" ]]; then
   export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
