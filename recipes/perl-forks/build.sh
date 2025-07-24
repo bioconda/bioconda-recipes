@@ -10,7 +10,7 @@ if [ -f Build.PL ]; then
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
     perl Makefile.PL INSTALLDIRS=site
-    make
+    make -j"${CPU_COUNT}"
     make test
     make install
 else
