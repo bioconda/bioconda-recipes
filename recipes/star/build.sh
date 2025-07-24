@@ -3,7 +3,7 @@
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3 -fopenmp"
+export CXXFLAGS="${CXXFLAGS} -O3 -fopenmp -Wno-register"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 mkdir -p "${PREFIX}/bin"
