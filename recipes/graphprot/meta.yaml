@@ -1,51 +1,47 @@
+{% set name = "graphprot" %}
 {% set version = "1.1.7" %}
 {% set sha256 = "663ae26b8f14bcce645a64c5f83e6a0b634bea8fda94f2cab21482b42cace1b0" %}
 
 package:
-  name: graphprot
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/dmaticzka/GraphProt/archive/v{{ version }}.tar.gz
-  sha256: "{{ sha256 }}"
+  sha256: {{ sha256 }}
   patches:
-    # don't fix C and CXX vars in Makefile
-    make.patch
+    - make.patch
+    - 0001-master.patch
 
 build:
-  number: 5
-  skip: True # [osx]
+  number: 6
+  run_exports:
+    - {{ pin_subpackage('graphprot', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - pkg-config
+    - make
+    - coreutils
   host:
-    - openmp
-    - zlib
-    - make
-    - gawk
-    - pytest
-    - coreutils
-    - scripttest
-    - rnashapes <3
-    - weblogo >=3
-    - libsvm
-    - perl-getopt-long
-    - r-plyr
-    - r-prroc
-  run:
-    - openmp
-    - zlib
-    - make
-    - coreutils
-    - gawk
-    - rnashapes <3
-    - weblogo >=3
-    - libsvm
-    - perl-getopt-long
-    - r-plyr
-    - r-prroc
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - curl
+    - zlib
+    - gawk
+    - scripttest
+    - libsvm
+    - pytest
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - rnashapes <3
+    - weblogo >=3
+    - perl-getopt-long
+    - r-plyr
+    - r-prroc
 
 test:
   commands:
@@ -95,6 +91,19 @@ test:
       -abstraction 1 -R 0 -D 0 -epsilon 0.11 -c 11 -bitsize 10
 
 about:
-  home: https://github.com/dmaticzka/graphprot
+  home: "https://github.com/dmaticzka/graphprot"
   license: MIT
-  summary: GraphProt is a tool for modelling binding preferences of RNA-binding proteins from high-throughput experiments such as CLIP-seq and RNAcompete.
+  license_family: MIT
+  license_file: LICENSE
+  summary: "GraphProt is a tool for modelling binding preferences of RNA-binding proteins from high-throughput experiments such as CLIP-seq and RNAcompete."
+  dev_url: "https://github.com/dmaticzka/graphprot"
+  doc_url: "https://github.com/dmaticzka/GraphProt/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1186/gb-2014-15-1-r17
+    - biotools:graphprot
+    - usegalaxy-eu:graphprot_predict_profile

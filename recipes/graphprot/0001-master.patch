@@ -1,0 +1,109 @@
+diff --git a/.travis.yml b/.travis.yml
+index 5dbad9c..2cda83f 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -26,9 +26,9 @@ install:
+   - conda config --add channels conda-forge
+   - conda config --add channels bioconda
+   # setup general python testing
+-  - conda install pytest scripttest
++  - conda install -q pytest scripttest
+   # setup for GraphProt
+-  - conda install gcc libgcc rnashapes==2.1.6 weblogo libsvm make r-plyr perl perl-getopt-long gawk libcxx zlib coreutils r-prroc
++  - conda install -q gcc libgcc rnashapes==2.1.6 weblogo libsvm make r-plyr perl perl-getopt-long gawk libcxx zlib coreutils r-prroc perl-ipc-system-simple
+ 
+   # build eden
+   - cd EDeN
+diff --git a/GraphProt.pl b/GraphProt.pl
+index 6086ff0..23a2f68 100755
+--- a/GraphProt.pl
++++ b/GraphProt.pl
+@@ -9,6 +9,7 @@ use File::Temp qw(tempdir);
+ use File::Basename;
+ use Cwd qw/abs_path getcwd/;
+ use File::Copy;
++use autodie qw(system);
+ 
+ =head1 NAME
+ 
+@@ -208,14 +209,14 @@ if (!-e "$scriptdir/check_sync_gspan_class.sh") {
+ if ( $? != 256 ) {
+ 	print STDERR "\n\nfastapl call returned: '$?'\n";
+   print STDERR "error running fastapl. perhaps your perl version is very old?\n";
+-  exit;
++  exit 1;
+ }
+ 
+ # check RNAshapes
+ `RNAshapes -h`;
+ if ( $? != 0 ) {
+   print STDERR "please check if RNAshapes is installed and in your PATH.\n";
+-  exit;
++  exit 127;
+ }
+ 
+ # check EDeN
+@@ -223,14 +224,14 @@ if ( $? != 0 ) {
+ if ( $? != 0 ) {
+   print STDERR
+     "please check if the EDeN binary is executable on your system.\n";
+-  exit;
++  exit 127;
+ }
+ 
+ # check make
+ `make -h`;
+ if ( $? != 0 ) {
+   print STDERR "please check if GNU make is installed and in your PATH.\n";
+-  exit;
++  exit 127;
+ }
+ 
+ if ( defined $mode and $mode eq 'regression' ) {
+@@ -240,13 +241,13 @@ if ( defined $mode and $mode eq 'regression' ) {
+   if ( $? != 256 ) {
+     print STDERR
+ "please check if libsvm is installed and in your PATH (can't call smv-train).\n";
+-    exit;
++    exit 127;
+   }
+   `svm-predict`;
+   if ( $? != 256 ) {
+     print STDERR
+ "please check if libsvm is installed and in your PATH (can't call svm-predict).\n";
+-    exit;
++    exit 127;
+   }
+ }
+ 
+@@ -255,26 +256,26 @@ if ( defined $action and $action eq 'motif' ) {
+   if ( $? != 0 ) {
+     print STDERR
+       "please check if R is installed and in your path (can't call R).\n";
+-    exit;
++    exit 127;
+   }
+   `echo 'library(plyr)' | R --slave &> /dev/null`;
+   if ( $? != 0 ) {
+     print STDERR
+       "please make sure that the R package 'plyr' is installed.\nfrom within R, call: install.packages('plyr')";
+-    exit;
++    exit 127;
+   }
+   `echo 'library(stats)' | R --slave &> /dev/null`;
+   if ( $? != 0 ) {
+     print STDERR
+       "please make sure that the R package 'stats' is installed.\nfrom within R, call: install.packages('stats')";
+-    exit;
++    exit 127;
+   }
+   my $weblogo_version = `weblogo --version`;
+   chomp $weblogo_version;
+   if ( $? != 0 ) {
+     print STDERR
+       "please make sure that WebLogo is installed and in your PATH (can't call weblogo).\n";
+-    exit;
++    exit 127;
+   }
+ }
+ 
