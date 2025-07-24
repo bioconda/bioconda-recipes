@@ -1,0 +1,43 @@
+{% set version = "1.1" %}
+
+package:
+  name: svpg
+  version: {{ version }}
+
+source:
+  url: https://github.com/coopsor/SVPG/releases/download/v{{ version }}/svpg-{{ version }}.tar.gz
+  sha256: 0dc6c246a6f2d6de2a0e53b3419e66d81473c571fd3662d7e618397134a57a43
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir -vvv .
+  run_exports:
+    - {{ pin_subpackage("svpg", max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3
+    - setuptools
+  run:
+    - numpy
+    - pysam >=0.15.0
+    - python >=3
+    - scipy
+
+test:
+  commands:
+    - svpg -h
+
+about:
+  home: 'https://github.com/coopsor/SVPG'
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Pangenome-based structural variation caller"
+  dev_url: 'https://github.com/coopsor/SVPG'
+
+extra:
+  recipe-maintainers:
+    - coopsor
