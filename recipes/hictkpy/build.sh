@@ -49,6 +49,10 @@ echo "CMAKE_ARGS='${CMAKE_ARGS}'"
 
 export CMAKE_ARGS CMAKE_BUILD_PARALLEL_LEVEL CFLAGS CXXFLAGS HICTKPY_BUILD_SHARED_LIBS
 
+# Workaround UnicodeDecodeError: 'utf-8' codec can't decode byte 0xf3 in position 2: invalid continuation byte
+# when trying to map Python types to C++ types. See https://github.com/paulsengroup/hictkpy/pull/179
+patch src/type.cpp < "${RECIPE_DIR}/type.cpp.patch"
+
 SETUPTOOLS_SCM_PRETEND_VERSION="${PKG_VERSION}" \
 "${PYTHON}" -m pip install "${SRC_DIR}" -vv
 
