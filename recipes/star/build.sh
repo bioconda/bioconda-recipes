@@ -28,8 +28,8 @@ if [[ "$(uname -s)" == "Darwin"  ]] && [[ "$(uname -m)" == "x86_64" ]]; then
     #install -v -m 0755 bin/MacOSX_x86_64/STAR ${PREFIX}/bin
     #install -v -m 0755 bin/MacOSX_x86_64/STARlong ${PREFIX}/bin
     cd source
-    make STARforMacStatic CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -DSHM_NORESERVE=0" -j"${CPU_COUNT}"
-    install -v -m 0755 STAR "${PREFIX}/bin"
+    make STAR STARlong CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -DSHM_NORESERVE=0" -j"${CPU_COUNT}"
+    install -v -m 0755 STAR STARlong "${PREFIX}/bin"
 else
     echo "Building STAR from source"
     cd source
@@ -41,8 +41,7 @@ else
             make STAR STARlong CXX="${CXX}" CXXFLAGSextra="-m${SIMD}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}"
             cp -rf STAR ${PREFIX}/bin/STAR-${SIMD}
             cp -rf STARlong ${PREFIX}/bin/STARlong-${SIMD}
-	    chmod 0755 ${PREFIX}/bin/STAR-${SIMD}
-	    chmod 0755 ${PREFIX}/bin/STARlong-${SIMD}
+	    chmod 0755 ${PREFIX}/bin/STAR-${SIMD} ${PREFIX}/bin/STARlong-${SIMD}
             make clean
         done
         make STAR STARlong -j"${CPU_COUNT}"
@@ -53,7 +52,6 @@ else
 	chmod 0755 ${PREFIX}/bin/STAR-plain ${PREFIX}/bin/STARlong-plain
     else
         make STAR STARlong CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -DSHM_NORESERVE=0" -j"${CPU_COUNT}"
-        install -v -m 0755 STAR "${PREFIX}/bin"
-        install -v -m 0755 STARlong "${PREFIX}/bin"
+        install -v -m 0755 STAR STARlong "${PREFIX}/bin"
     fi
 fi
