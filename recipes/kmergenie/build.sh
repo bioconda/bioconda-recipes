@@ -18,9 +18,9 @@ sed -i.bak 's|-O4|-O3|' makefile
 
 make CXX="${CXX}" -j"${CPU_COUNT}"
 
-sed -i.bak 's|third_party|.|' scripts/*
+sed -i.bak 's|third_party|./|' scripts/*
 sed -i.bak 's|usr/bin/Rscript|opt/anaconda1/anaconda2anaconda3/bin/Rscript|' scripts/*.r
-sed -i.bak 's|third_party|.|' kmergenie
+sed -i.bak 's|third_party|./|' kmergenie
 rm -rf *.bak
 rm -rf scripts/*.bak
 rm -rf third_party/*.bak
