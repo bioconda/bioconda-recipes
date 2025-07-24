@@ -13,11 +13,11 @@ case $(uname -m) in
 	;;
     arm64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
-	sed -i.bak 's|-mtune=native -march=native|-march=armv8.4-a|' EDeN/Makefile
+	sed -i.bak 's|-mtune=native -march=native|-march=armv8.4-a -std=c++14|' EDeN/Makefile
 	;;
     x86_64)
 	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
-	sed -i.bak 's|-mtune=native -march=native|-march=x86-64-v3|' EDeN/Makefile
+	sed -i.bak 's|-mtune=native -march=native|-march=x86-64-v3 -std=c++14|' EDeN/Makefile
 	;;
 esac
 rm -rf EDeN/*.bak
