@@ -1,23 +1,24 @@
 {% set name = "perl-inline-c" %}
-{% set version = "0.81" %}
-{% set sha256 = "f185258d9050d7f79b4f00f12625cc469c2f700ff62d3e831cb18d80d2c87aac" %}
+{% set version = "0.82" %}
+{% set sha256 = "10fbcf1e158d1c8d77e1dd934e379165b126a45c13645ad0be9dc07d151dd0cc" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://cpan.metacpan.org/authors/id/T/TI/TINITA/Inline-C-{{ version }}.tar.gz
+  url: https://cpan.metacpan.org/authors/id/E/ET/ETJ/Inline-C-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 3
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - make
-
   host:
     - perl
     - perl-file-sharedir-install >=0.06
@@ -29,14 +30,15 @@ requirements:
     - perl-file-copy-recursive
     - perl-autodie
     - perl-extutils-makemaker
+    - perl-test-more
     - perl-test-warn
     # GCC is required for tests (see below)
     - {{ compiler('c') }}
-
   run:
     - perl
     - perl-inline
     - perl-extutils-makemaker
+    - perl-file-spec
     - perl-pegex
     - perl-parse-recdescent
     - make
@@ -46,10 +48,17 @@ requirements:
 test:
 
 about:
-  home: https://github.com/ingydotnet/inline-c-pm
-  license: perl_5
-  summary: 'C Language Support for Inline'
+  home: "https://github.com/ingydotnet/inline-c-pm"
+  license: "Perl_5"
+  summary: 'C Language Support for Inline.'
+  dev_url: "https://github.com/ingydotnet/inline-c-pm"
+  doc_url: "https://metacpan.org/dist/Inline-C"
 
 extra:
+  #additional-platforms:
+    # Missing perl-yaml-libyaml
+    #- linux-aarch64
+    #- osx-arm64
   skip-lints:
     - compilers_must_be_in_build
+    - missing_tests
