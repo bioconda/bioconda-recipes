@@ -6,7 +6,6 @@ export SYSTEM_SUFFIX="_linux-gnu"
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 
-autoreconf -if
 ./configure --with-boost-libdir="${PREFIX}/lib" \
 	CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include" \
 	LDFLAGS="${LDFLAGS} -L${PREFIX}/lib" \
