@@ -14,6 +14,8 @@ fi
 
 yarn install
 
+sed -i.bak 's|zeep::zeep|zeep::zeep zeep::http|g' CMakeLists.txt
+
 if [[ "${target_platform}" == "linux-"* ]]; then
   cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
