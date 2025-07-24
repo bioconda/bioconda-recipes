@@ -21,6 +21,7 @@ if [[ "${target_platform}" == "linux-"* ]]; then
     -DZLIB_ROOT="${PREFIX}" \
     -DBUILD_WEB_APPLICATION=ON \
     -DUSE_RSRC=ON \
+    -Dzeep_DIR="${PREFIX}/lib/cmake/zeep" \
     -DALPHAFILL_DATA_DIR="${PREFIX}/share/alphafill" \
     -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp" \
     -DBUILD_TESTING=ON
