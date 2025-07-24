@@ -33,7 +33,7 @@ autoreconf -if
 ./configure CC="${CC}" CFLAGS="${CFLAGS}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}"
 cd ../
 
-make release CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LINKER="${CXX}" -j"${CPU_COUNT}"
+make release CXX="${CXX}" LINKER="${CXX}" -j"${CPU_COUNT}"
 install -v -m 0755 stringtie "${PREFIX}/bin"
 
 # Prepare prepDE
