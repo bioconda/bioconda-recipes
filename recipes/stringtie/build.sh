@@ -27,10 +27,10 @@ esac
 
 cd SuperReads_RNA/global-1
 autoreconf -if
-./configure CC="${CC}" CFLAGS="${CFLAGS}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}"
+./configure CC="${CC}" CFLAGS="${CFLAGS}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}"
 cd ../../htslib
 autoreconf -if
-./configure CC="${CC}" CFLAGS="${CFLAGS}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}"
+./configure CC="${CC}" CFLAGS="${CFLAGS}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}"
 cd ../
 
 make release CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LINKER="${CXX}" -j"${CPU_COUNT}"
