@@ -1,5 +1,32 @@
-#!/usr/bin/env bash
+#!/bin/bash
+set -xe
 
-# Sawfish already auto-extracts to bin directory, so just need to move it to PREFIX 
-cp -r bin "${PREFIX}"/
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
 
+mkdir -p "${PREFIX}/bin"
+
+curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --profile=minimal -y
+export PATH="${HOME}/.cargo/bin:${PATH}"
+
+OS=$(uname -s)
+ARCH=$(uname -m)
+
+if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
+  export TARGET="aarch64-apple-darwin"
+elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
+  export TARGET="aarch64-unknown-linux-gnu"
+elif [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
+  export TARGET="x86_64-apple-darwin"
+elif [[ "${OS}" == "Linux" && "${ARCH}" == "x86_64" ]]; then
+  export TARGET="x86_64-unknown-linux-gnu"
+fi
+
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+
+# build statically linked binary with Rust
+RUST_BACKTRACE=1
+cargo build --release -j "${CPU_COUNT}"
+
+install -v -m 0755 target/${TARGET}/release/sawfish "${PREFIX}/bin"
