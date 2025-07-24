@@ -13,8 +13,6 @@ export LC_ALL="en_US.UTF-8"
 
 mkdir -p "${PREFIX}/bin"
 
-2to3 -w scripts/*.py third_party/*.py *.py kmergenie
-
 sed -i.bak 's|print sys.hexversion>=0x02050000|print(sys.hexversion>=0x02050000)|' makefile
 sed -i.bak 's|-O4|-O3|' makefile
 rm -rf *.bak
