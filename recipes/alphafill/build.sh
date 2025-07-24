@@ -22,6 +22,7 @@ if [[ "${target_platform}" == "linux-"* ]]; then
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DZLIB_ROOT="${PREFIX}" \
     -DBUILD_WEB_APPLICATION=ON \
+    -DUSE_RSRC=ON \
     -DALPHAFILL_DATA_DIR="${PREFIX}/share/alphafill" \
     -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp" \
     -DBUILD_TESTING=ON
