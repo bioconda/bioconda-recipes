@@ -28,7 +28,7 @@ if [[ "$(uname -s)" == "Darwin"  ]] && [[ "$(uname -m)" == "x86_64" ]]; then
     #install -v -m 0755 bin/MacOSX_x86_64/STAR ${PREFIX}/bin
     #install -v -m 0755 bin/MacOSX_x86_64/STARlong ${PREFIX}/bin
     cd source
-    make STARforMacStatic CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}"
+    make STARforMacStatic CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -DSHM_NORESERVE=0" -j"${CPU_COUNT}"
     install -v -m 0755 STAR "${PREFIX}/bin"
 else
     echo "Building STAR from source"
