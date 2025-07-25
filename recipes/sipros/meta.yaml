@@ -6,26 +6,38 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/thepanlab/Sipros4/releases/download/{{ version }}/siprosRelease.zip
-  sha256: 6e79761a147bd33a2a5feb522a153831f3d9fad0c75a7f9c811053da806d3cac
+  url: https://github.com/thepanlab/Sipros4/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 517c03f96eccc48249ccdc3d3d645b014df3f5ccd8f13581d81c72d59dba96ff
+  patches:
+    - 0001-CMakeLists.patch
 
 build:
-  noarch: generic
-  number: 1
-  skip: False
+  number: 2
   run_exports:
     - {{ pin_subpackage('sipros', max_pin="x") }}
-    
+
 requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - ninja
+    - pkg-config
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - openmpi
   run:
-    - bioconductor-biostrings
-    - mono <6
-    - numpy =1.16
-    - python =2.7
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - openmpi
+    - python <3
+    - scikit-learn
+    - numpy
+    - mono
     - r-base
     - r-stringr
     - r-tidyr
-    - scikit-learn =0.20.3
+    - bioconductor-biostrings
 
 test:
   commands:
@@ -40,13 +52,15 @@ test:
     - copyConfigTemplate -SIP
 
 about:
-  home: https://github.com/thepanlab/Sipros4
+  home: "https://github.com/thepanlab/Sipros4"
+  dev_url: "https://github.com/thepanlab/Sipros4"
   license: MIT
-  # currently include in the recipe folder because from the release (https://github.com/thepanlab/Sipros4/issues/3)
+  license_family: MIT
   license_file: LICENSE
-  summary: "Tools for stable isotopic mass spectrometry-based metaproteomics"
+  summary: "Tools for stable isotopic mass spectrometry-based metaproteomics."
   description: |
       "Tools for stable isotopic mass spectrometry-based metaproteomics research developed by Sipros team. These include Raxport, SiprosV4, SiprosEnsemble and some python / R scripts."
+  doc_url: "https://github.com/thepanlab/Sipros4/wiki"
 
 extra:
   recipe-maintainers:
@@ -55,3 +69,5 @@ extra:
   identifiers:
     - biotools:sipros
     - doi:10.1186/s40168-024-01866-1
+  additional-platforms:
+    - linux-aarch64
