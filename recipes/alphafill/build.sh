@@ -12,6 +12,9 @@ else
   export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
 
+mkdir -p "${PREFIX}/share/alphafill"
+mkdir -p "${PREFIX}/share/libcifpp"
+
 sed -i.bak 's|${CIFPP_SHARE_DIR}|$ENV{PREFIX}/share/libcifpp|g' CMakeLists.txt
 
 cmake -S . -B build -G Ninja \
