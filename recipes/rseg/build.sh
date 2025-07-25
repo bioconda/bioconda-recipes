@@ -1,7 +1,8 @@
 #!/bin/bash
 arch=$(uname -m)
+sed -i '/gsl_complex_rect/,/^}/d' src/rseg/gsl/math.c
+CFLAGS="${CPPFLAGS} -DHIDE_INLINE_STATIC"
 if [[ ${target_platform} == "linux-aarch64" ]]; then
-    CFLAGS="${CPPFLAGS} -DHIDE_INLINE_STATIC"
     CPPFLAGS="${CPPFLAGS} -Xlinker -zmuldefs"
 fi
     make \
