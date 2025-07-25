@@ -12,6 +12,8 @@ else
   export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
 
+sed -i.bak 's|${CIFPP_SHARE_DIR}|$ENV{PREFIX}/share/libcifpp|g' CMakeLists.txt
+
 cmake -S . -B build -G Ninja \
   ${CMAKE_ARGS} \
   -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
