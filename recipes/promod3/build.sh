@@ -7,6 +7,11 @@ set -exo pipefail
 if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm64" ]]; then
   export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
 fi
+if [[ $(uname -m) == "x86_64" ]]; then
+    export CMAKE_ARGS="${CMAKE_ARGS} -DENABLE_SSE=1"
+else
+    export CMAKE_ARGS="${CMAKE_ARGS} -DENABLE_SSE=0"
+fi
 
 if [[ "${target_platform}" == "linux-"* ]]; then
     export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined,--export-dynamic"
@@ -24,7 +29,6 @@ cmake .. \
     -DCXX_FLAGS="${CXXFLAGS}" \
     -DCMAKE_CXX_STANDARD=17 \
     -DOPTIMIZE=ON \
-    -DENABLE_SSE=ON \
     -DDISABLE_DOCUMENTATION=1 \
     -DCMAKE_VERBOSE_MAKEFILE=ON
 
