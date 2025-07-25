@@ -26,6 +26,7 @@ cmake -S . -B build -G Ninja \
   -DBUILD_DOCUMENTATION=OFF \
   -DALPHAFILL_DATA_DIR="${PREFIX}/share/alphafill" \
   -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp" \
+  -DCIFPP_DATA_DIR="" \
   -DBUILD_TESTING=ON
 
 cmake --build build --parallel "${CPU_COUNT}"
