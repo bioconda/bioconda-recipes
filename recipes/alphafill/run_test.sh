@@ -2,6 +2,8 @@
 
 set -exo pipefail
 
+export LIBCIFPP_DATA_DIR="${PREFIX}/share/libcifpp"
+
 cat <<EOF > alphafill.conf
 pdb-dir=test/mini-pdb-redo/
 pdb-fasta=pdb-redo.fa
