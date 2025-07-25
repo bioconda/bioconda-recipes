@@ -1,53 +1,60 @@
-{% set version = "1.38.0" %}
+{% set version = "1.46.0" %}
 {% set name = "HD2013SGI" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: b830f54da9280d3265cb70439bf5509b
+about:
+  description: 'This package contains the experimental data and a complete executable transcript (vignette) of the analysis of the HCT116 genetic interaction matrix presented in the paper "Mapping genetic interactions in human cancer cells with RNAi and multiparametric phenotyping" by C. Laufer, B. Fischer, M. Billmann, W. Huber, M. Boutros; Nature Methods (2013) 10:427-31. doi: 10.1038/nmeth.2436.'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Mapping genetic interactions in human cancer cells with RNAi and multiparametric phenotyping
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-hd2013sgi", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle
 # SystemRequirements: GNU make
 requirements:
   host:
-    - 'bioconductor-ebimage >=4.40.0,<4.41.0'
-    - 'bioconductor-geneplotter >=1.76.0,<1.77.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-splots >=1.64.0,<1.65.0'
+    - bioconductor-ebimage >=4.48.0,<4.49.0
+    - bioconductor-geneplotter >=1.84.0,<1.85.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-splots >=1.72.0,<1.73.0
     - r-base
     - r-gplots
     - r-lsd
     - r-rcolorbrewer
     - r-vcd
   run:
-    - 'bioconductor-ebimage >=4.40.0,<4.41.0'
-    - 'bioconductor-geneplotter >=1.76.0,<1.77.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-splots >=1.64.0,<1.65.0'
+    - bioconductor-ebimage >=4.48.0,<4.49.0
+    - bioconductor-geneplotter >=1.84.0,<1.85.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-splots >=1.72.0,<1.73.0
     - r-base
     - r-gplots
     - r-lsd
     - r-rcolorbrewer
     - r-vcd
     - curl
-    - bioconductor-data-packages>=20221108
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: 1cb210d619cf563fb29d05ba42f1cefa
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Mapping genetic interactions in human cancer cells with RNAi and multiparametric phenotyping'
-  description: 'This package contains the experimental data and a complete executable transcript (vignette) of the analysis of the HCT116 genetic interaction matrix presented in the paper "Mapping genetic interactions in human cancer cells with RNAi and multiparametric phenotyping" by C. Laufer, B. Fischer, M. Billmann, W. Huber, M. Boutros; Nature Methods (2013) 10:427-31. doi: 10.1038/nmeth.2436.'
+    - $R -e "library('{{ name }}')"
 

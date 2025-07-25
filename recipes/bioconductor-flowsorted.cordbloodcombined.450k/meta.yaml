@@ -1,49 +1,56 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "FlowSorted.CordBloodCombined.450k" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 449c6036f08827fa2c72481bcb5b8974
+about:
+  description: Raw data objects to be used for umbilical cord blood cell proportion estimation in minfi and similar packages. The FlowSorted.CordBloodCombined.450k object is based in samples assayed by Bakulski et al, Gervin et al., de Goede et al., and Lin et al.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Illumina 450k/EPIC data on FACS and MACS umbilical blood cells
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-flowsorted.cordbloodcombined.450k", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: FlowSorted.Blood.EPIC, knitr, rmarkdown, testthat, IlluminaHumanMethylation450kmanifest(>= 0.2.0), IlluminaHumanMethylationEPICanno.ilm10b2.hg19
 requirements:
   host:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
-    - 'bioconductor-illuminahumanmethylation450kanno.ilmn12.hg19 >=0.6.0,<0.7.0'
-    - 'bioconductor-illuminahumanmethylationepicanno.ilm10b4.hg19 >=0.6.0,<0.7.0'
-    - 'bioconductor-minfi >=1.44.0,<1.45.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-illuminahumanmethylation450kanno.ilmn12.hg19 >=0.6.0,<0.7.0
+    - bioconductor-illuminahumanmethylationepicanno.ilm10b4.hg19 >=0.6.0,<0.7.0
+    - bioconductor-minfi >=1.52.0,<1.53.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
   run:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
-    - 'bioconductor-illuminahumanmethylation450kanno.ilmn12.hg19 >=0.6.0,<0.7.0'
-    - 'bioconductor-illuminahumanmethylationepicanno.ilm10b4.hg19 >=0.6.0,<0.7.0'
-    - 'bioconductor-minfi >=1.44.0,<1.45.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-illuminahumanmethylation450kanno.ilmn12.hg19 >=0.6.0,<0.7.0
+    - bioconductor-illuminahumanmethylationepicanno.ilm10b4.hg19 >=0.6.0,<0.7.0
+    - bioconductor-minfi >=1.52.0,<1.53.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221110
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: edafe41e6489b95f1b3279e8bfd324a7
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Illumina 450k/EPIC data on FACS and MACS umbilical blood cells'
-  description: 'Raw data objects to be used for umbilical cord blood cell proportion estimation in minfi and similar packages. The FlowSorted.CordBloodCombined.450k object is based in samples assayed by Bakulski et al, Gervin et al., de Goede et al., and Lin et al.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

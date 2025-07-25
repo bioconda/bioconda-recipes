@@ -1,6 +1,6 @@
 {% set name = "keggcharter" %}
-{% set version = "0.5.0" %}
-{% set sha256 = "312d57b494a6d5d3caafb967e5366323675c45567598189adda75ac93649bd71" %}
+{% set version = "1.1.2" %}
+{% set sha256 = "53735598428a7a2eb75c763f2eba04efecd9c8fae3d69ea7a29747ffc60396cd" %}
 
 package:
   name: {{ name|lower }}
@@ -14,9 +14,13 @@ build:
   noarch: generic
   number: 0
   script: >
-    mkdir -p $PREFIX/bin && 
-    cp *.py KEGGCharter_prokaryotic_maps.txt $PREFIX/bin &&
-    ln -s $PREFIX/bin/keggcharter.py $PREFIX/bin/keggcharter
+    mkdir -p $PREFIX/bin &&
+    mkdir -p $PREFIX/share &&
+    cp *.py resources/*.txt resources/*.tsv $PREFIX/share &&
+    chmod +x $PREFIX/share/keggcharter.py &&
+    ln -s $PREFIX/share/keggcharter.py $PREFIX/bin/keggcharter
+  run_exports:
+    - {{ pin_subpackage("keggcharter", max_pin="x.x") }}
 
 requirements:
   run:
@@ -28,6 +32,8 @@ requirements:
     - openpyxl
     - poppler
     - mscorefonts
+    - requests
+    - lxml
 
 test:
   commands:

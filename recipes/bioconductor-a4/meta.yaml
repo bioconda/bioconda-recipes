@@ -1,45 +1,52 @@
-{% set version = "1.46.0" %}
+{% set version = "1.54.0" %}
 {% set name = "a4" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 4fe2823df78513c79777d009196856fd
+about:
+  description: Umbrella package is available for the entire Automated Affymetrix Array Analysis suite of package.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Automated Affymetrix Array Analysis Umbrella Package
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: MLP, nlcv, ALL, Cairo, Rgraphviz, GOstats
+  run_exports: '{{ pin_subpackage("bioconductor-a4", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: MLP, nlcv, ALL, Cairo, Rgraphviz, GOstats, hgu95av2.db
 requirements:
   host:
-    - 'bioconductor-a4base >=1.46.0,<1.47.0'
-    - 'bioconductor-a4classif >=1.46.0,<1.47.0'
-    - 'bioconductor-a4core >=1.46.0,<1.47.0'
-    - 'bioconductor-a4preproc >=1.46.0,<1.47.0'
-    - 'bioconductor-a4reporting >=1.46.0,<1.47.0'
+    - bioconductor-a4base >=1.54.0,<1.55.0
+    - bioconductor-a4classif >=1.54.0,<1.55.0
+    - bioconductor-a4core >=1.54.0,<1.55.0
+    - bioconductor-a4preproc >=1.54.0,<1.55.0
+    - bioconductor-a4reporting >=1.54.0,<1.55.0
     - r-base
   run:
-    - 'bioconductor-a4base >=1.46.0,<1.47.0'
-    - 'bioconductor-a4classif >=1.46.0,<1.47.0'
-    - 'bioconductor-a4core >=1.46.0,<1.47.0'
-    - 'bioconductor-a4preproc >=1.46.0,<1.47.0'
-    - 'bioconductor-a4reporting >=1.46.0,<1.47.0'
+    - bioconductor-a4base >=1.54.0,<1.55.0
+    - bioconductor-a4classif >=1.54.0,<1.55.0
+    - bioconductor-a4core >=1.54.0,<1.55.0
+    - bioconductor-a4preproc >=1.54.0,<1.55.0
+    - bioconductor-a4reporting >=1.54.0,<1.55.0
     - r-base
+
+source:
+  md5: 40f370dbf39df0f5d4182463c5bbd9d7
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Automated Affymetrix Array Analysis Umbrella Package'
-  description: 'Umbrella package is available for the entire Automated Affymetrix Array Analysis suite of package.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

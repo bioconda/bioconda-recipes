@@ -1,48 +1,55 @@
-{% set version = "0.5.7" %}
+{% set version = "0.12.0" %}
 {% set name = "aviary" %}
-{% set sha256 = "5a3583b5cb226d5087b11f02e0932c6219645fb2664bd88476721b53a7230266" %}
+{% set sha256 = "aa097db9fa8304aa11d447c3610e56606c9c962013ca47d07a77b6f73a0396c7" %}
 
 package:
-  name: aviary
+  name: {{ name }}
   version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/aviary-genome/aviary_genome-v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
-
-source:
-  url: https://github.com/rhysnewell/{{ name }}/releases/download/v{{ version }}/aviary-genome-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  entry_points:
+    - aviary = aviary.aviary:main
+  run_exports:
+    - {{ pin_subpackage('aviary', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.8
+    - python >=3.8,<3.12
     - pip
+    - setuptools
   run:
-    - python >=3.8, <3.11
-    - snakemake >=6.0.6
-    - ruamel.yaml >=0.15.99 # needs to be explicit
+    - python >=3.8,<3.12
+    - snakemake-minimal >=7.0.0,<=7.32.4
+    - ruamel.yaml >=0.15.99
     - numpy
-    - pandas >=1.2
+    - pandas
     - biopython
-    - mamba >=0.8.2
-    - pigz >=2.6
+    - mamba >=1.5.12
+    - pigz
     - parallel
     - bbmap
+    - extern
 
 test:
   commands:
     - {{ name }} --version | grep '{{ version }}'
 
 about:
-  home: https://github.com/rhysnewell/aviary/
-  doc_url: https://rhysnewell.github.io/aviary/
-  license: GPL3
+  home: "https://github.com/rhysnewell/aviary"
+  doc_url: "https://rhysnewell.github.io/aviary"
+  dev_url: "https://github.com/rhysnewell/aviary"
+  license: "GPL-3.0-only"
+  license_family: GPL3
   license_file: LICENSE
-  summary: End-to-end metagenomics hybrid assembly and binning pipeline.
+  summary: "aviary - Metagenomics pipeline using long and short reads."
   description: |
     Aviary is an easy to use hybrid assembler and metagenomic pipeline
 
-    For more details see documentation: https://rhysnewell.github.io/aviary/.
-
+    For more details see documentation: https://rhysnewell.github.io/aviary.

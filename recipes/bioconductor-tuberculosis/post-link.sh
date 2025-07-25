@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "tuberculosis-1.4.0"
+installBiocDataPackage.sh "tuberculosis-1.12.0"

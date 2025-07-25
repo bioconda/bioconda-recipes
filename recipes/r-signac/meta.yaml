@@ -1,20 +1,23 @@
-{% set version = '1.9.0' %}
+{% set name = "r-signac" %}
+{% set version = '1.14.0' %}
 
 package:
-  name: r-signac
+  name: {{ name }}
   version: {{ version|replace("-", "_") }}
 
 source:
   url:
     - {{ cran_mirror }}/src/contrib/Signac_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/Signac/Signac_{{ version }}.tar.gz
-  sha256: b8ff36427e5919fd420daa1f50cf8c71935293ee7f88560041acb993b5e3afa8
+  sha256: e0aad9e2c27c148fdd376081c2de1e3db46b1835eac83ef41fe562e08363c59e
 
 build:
-  number: 0
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports:
+    - {{ pin_subpackage("r-signac", max_pin="x") }}
 
 requirements:
   build:
@@ -32,7 +35,7 @@ requirements:
     - r-rcpproll
     - bioconductor-rsamtools
     - bioconductor-s4vectors
-    - r-seuratobject >=4.0.0
+    - r-seuratobject >=5.0.2
     - r-data.table
     - r-dplyr >=1.0.0
     - r-fastmatch
@@ -42,11 +45,13 @@ requirements:
     - r-irlba
     - r-patchwork
     - r-pbapply
+    - r-rlang
     - r-scales
     - r-stringi
     - r-tidyr
     - r-tidyselect
     - r-vctrs
+    - zlib
   run:
     - r-base
     - bioconductor-biocgenerics
@@ -58,7 +63,7 @@ requirements:
     - r-rcpproll
     - bioconductor-rsamtools
     - bioconductor-s4vectors
-    - r-seuratobject >=4.0.0
+    - r-seuratobject >=5.0.2
     - r-data.table
     - r-dplyr >=1.0.0
     - r-fastmatch
@@ -68,6 +73,7 @@ requirements:
     - r-irlba
     - r-patchwork
     - r-pbapply
+    - r-rlang
     - r-scales
     - r-stringi
     - r-tidyr
@@ -79,7 +85,7 @@ test:
     - $R -e "library('Signac')"
 
 about:
-  home: https://github.com/timoast/signac, https://satijalab.org/signac
+  home: "https://github.com/timoast/signac"
   license: MIT
   summary: 'A framework for the analysis and exploration of single-cell chromatin data. The ''Signac''
     package contains functions for quantifying single-cell chromatin data, computing
@@ -89,3 +95,8 @@ about:
   license_file:
     - {{ environ["PREFIX"] }}/lib/R/share/licenses/MIT
     - LICENSE
+  doc_url: "https://satijalab.org/signac"
+  dev_url: "https://github.com/timoast/signac"
+extra:
+  additional-platforms:
+    - linux-aarch64

@@ -1,44 +1,21 @@
-{% set version = "1.32.0" %}
+{% set version = "1.40.0" %}
 {% set name = "RUVSeq" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 932b00f30b3650bc5d84d56bc4a228f3
+about:
+  description: This package implements the remove unwanted variation (RUV) methods of Risso et al. (2014) for the normalization of RNA-Seq read counts between samples.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Remove Unwanted Variation from RNA-Seq Data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, knitr, RColorBrewer, zebrafishRNASeq, DESeq2
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-edaseq >=2.32.0,<2.33.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - r-base
-    - r-mass
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-edaseq >=2.32.0,<2.33.0'
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - r-base
-    - r-mass
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Remove Unwanted Variation from RNA-Seq Data'
-  description: 'This package implements the remove unwanted variation (RUV) methods of Risso et al. (2014) for the normalization of RNA-Seq read counts between samples.'
+  run_exports: '{{ pin_subpackage("bioconductor-ruvseq", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:ruvseq
@@ -46,4 +23,35 @@ extra:
     name: bioconductor-ruvseq
     path: recipes/bioconductor-ruvseq
     version: 1.14.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, RColorBrewer, zebrafishRNASeq, DESeq2
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-edaseq >=2.40.0,<2.41.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - r-base
+    - r-mass
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-edaseq >=2.40.0,<2.41.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - r-base
+    - r-mass
+
+source:
+  md5: 086e8941b21a0fba238044a475b925b7
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

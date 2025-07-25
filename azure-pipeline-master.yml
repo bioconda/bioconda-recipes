@@ -1,111 +1,99 @@
+# Disable Azure checks in favor of GitHub Actions due to memory issues
 pr: none
-trigger:
-- master
+trigger: none
+# trigger:
+#   - master
 
 jobs:
-- job: 'build_and_push_linux'
-  pool:
-    vmImage: 'ubuntu-latest'
-  strategy:
-    maxParallel: 8
-  timeoutInMinutes: 360
+  - job: "build_and_push_linux"
+    pool:
+      vmImage: "ubuntu-latest"
+    strategy:
+      maxParallel: 8
+    timeoutInMinutes: 360
 
-  steps:
-  - script: |
-      git checkout master
+    steps:
+      - script: |
+          git checkout master
 
-  - bash: echo "##vso[task.prependpath]/opt/miniconda/bin"
-    displayName: Add conda to PATH
+      - bash: echo "##vso[task.prependpath]/opt/mambaforge/bin"
+        displayName: Add conda to PATH
 
-  - bash: |
-      wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/install-and-set-up-conda.sh
-    displayName: Fetch bioconda install script
+      - bash: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
+        displayName: Fetch bioconda install script
 
-  - task: Cache@2
-    inputs:
-      path: "/opt/miniconda"
-      key: '"$(Agent.OS)" | **/install-and-set-up-conda.sh'
-      cacheHitVar: CACHE_RESTORED
-    displayName: Restore cache
+      - script: bash install-and-set-up-conda.sh
+        displayName: Install bioconda-utils
 
-  - script: bash install-and-set-up-conda.sh
-    condition: ne(variables.CACHE_RESTORED, 'true')
-    displayName: Install bioconda-utils
+      # We reconfigure conda to use the right channel setup.
+      - script: bash configure-conda.sh
+        displayName: Configure conda
 
-  - bash: |
-      set -e
-      eval "$(conda shell.bash hook)"
-      conda activate bioconda
+      - bash: |
+          set -e
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
 
-      export OSTYPE="linux-gnu"
-      export CI="true"
+          export OSTYPE="linux-gnu"
+          export CI="true"
 
-      docker pull quay.io/dpryan79/mulled_container:latest
+          bioconda-utils handle-merged-pr recipes config.yml \
+            --repo bioconda/bioconda-recipes \
+            --git-range $(Build.SourceVersion)~1 $(Build.SourceVersion) \
+            --quay-upload-target biocontainers
 
-      bioconda-utils handle-merged-pr recipes config.yml \
-        --repo bioconda/bioconda-recipes \
-        --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
-        --quay-upload-target biocontainers \
-        --fallback build
+        env:
+          QUAY_LOGIN: $(QUAY_LOGIN)
+          QUAY_OAUTH_TOKEN: $(QUAY_OAUTH_TOKEN)
+          ANACONDA_TOKEN: $(ANACONDA_TOKEN)
+          INVOLUCRO_AUTH: $(INVOLUCRO_AUTH)
+          GITHUB_TOKEN: $(GITHUB_TOKEN)
+        displayName: Handle merged PR
 
-      docker rmi quay.io/dpryan79/mulled_container:latest
-    env:
-      QUAY_LOGIN: $(QUAY_LOGIN)
-      QUAY_OAUTH_TOKEN: $(QUAY_OAUTH_TOKEN)
-      ANACONDA_TOKEN: $(ANACONDA_TOKEN)
-      INVOLUCRO_AUTH: $(INVOLUCRO_AUTH)
-      GITHUB_TOKEN: $(GITHUB_TOKEN)
-    displayName: Handle merged PR
+  - job: "build_and_push_osx"
+    pool:
+      vmImage: "macOS-latest"
+    strategy:
+      maxParallel: 4
+    timeoutInMinutes: 360
 
-- job: 'build_and_push_osx'
-  pool:
-    vmImage: 'macOS-latest'
-  strategy:
-    maxParallel: 4
-  timeoutInMinutes: 360
+    steps:
+      - script: |
+          git checkout master
 
-  steps:
-  - script: |
-      git checkout master
+      - bash: echo "##vso[task.prependpath]/opt/mambaforge/bin"
+        displayName: Add conda to PATH
 
-  - bash: echo "##vso[task.prependpath]/opt/miniconda/bin"
-    displayName: Add conda to PATH
+      - bash: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
+        displayName: Fetch bioconda install script
 
-  - bash: |
-      wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/install-and-set-up-conda.sh
-    displayName: Fetch bioconda install script
 
-  - bash: |
-      sudo mkdir -p /opt
-      sudo chown -R $USER /opt
-    displayName: Ensure cache has path to restore to
+      - script: bash install-and-set-up-conda.sh
+        displayName: Install bioconda-utils
 
-  - task: Cache@2
-    inputs:
-      path: "/opt/miniconda"
-      key: '"$(Agent.OS)" | **/install-and-set-up-conda.sh'
-      cacheHitVar: CACHE_RESTORED
-    displayName: Restore cache
+      # We reconfigure conda to use the right channel setup.
+      - script: bash configure-conda.sh
+        displayName: Configure conda
 
-  - script: bash install-and-set-up-conda.sh
-    condition: ne(variables.CACHE_RESTORED, 'true')
-    displayName: Install bioconda-utils
+      - bash: |
+          set -e
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+          export OSTYPE="darwin"
+          export CI="true"
 
-  - bash: |
-      set -e
-      eval "$(conda shell.bash hook)"
-      conda activate bioconda
-      export OSTYPE="darwin"
-      export CI="true"
-      export HOME=`pwd`
+          # Get MACOSX vars
+          source common.sh
 
-      bioconda-utils handle-merged-pr recipes config.yml \
-        --repo bioconda/bioconda-recipes \
-        --git-range ${BUILD_SOURCEVERSION}~1 ${BUILD_SOURCEVERSION} \
-        --fallback build
-    env:
-      QUAY_LOGIN: $(QUAY_LOGIN)
-      ANACONDA_TOKEN: $(ANACONDA_TOKEN)
-      INVOLUCRO_AUTH: $(INVOLUCRO_AUTH)
-      GITHUB_TOKEN: $(GITHUB_TOKEN)
-    displayName: Handle merged PR
+          bioconda-utils handle-merged-pr recipes config.yml \
+            --repo bioconda/bioconda-recipes \
+            --git-range $(Build.SourceVersion)~1 $(Build.SourceVersion) \
+            --fallback build
+        env:
+          QUAY_LOGIN: $(QUAY_LOGIN)
+          ANACONDA_TOKEN: $(ANACONDA_TOKEN)
+          INVOLUCRO_AUTH: $(INVOLUCRO_AUTH)
+          GITHUB_TOKEN: $(GITHUB_TOKEN)
+        displayName: Handle merged PR

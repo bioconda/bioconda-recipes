@@ -1,66 +1,73 @@
 {% set name = "pegasusio" %}
-{% set version = "0.8.0" %}
+{% set version = "0.10.0" %}
 
 package:
-    name: {{ name|lower }}
-    version: {{ version }}
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-    url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-    sha256: "3b9dea24a5b90632ac1fc0c117c89d36d6033e46920e91a841a5c2ac95afcea1"
-
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "a0e4151ad6ba14d1c0b9fbf8ed073308cdb541439cd61134afc94760d245a31f"
 
 build:
-    number: 0
-    skip: True  # [py<37]
-    entry_points:
-        - pegasusio = pegasusio.__main__:main
-    script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  number: 0
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  entry_points:
+    - pegasusio = pegasusio.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv"
+  run_exports:
+    - {{ pin_subpackage('pegasusio', max_pin="x.x") }}
 
 requirements:
-    build:
-        - {{ compiler('c') }}
-    host:
-        - python
-        - cython
-        - setuptools_scm
-        - pip
-    run:
-        - python
-        - numpy
-        - pandas >=1.2.0
-        - anndata >=0.7
-        - h5py >=3.0.0
-        - loompy
-        - docopt
-        - natsort
-        - scipy
-        - importlib_metadata >=0.7  # [py<38]
-        - zarr
-        - pillow
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - cython
+    - setuptools_scm
+    - pip
+  run:
+    - python
+    - numpy
+    - pandas >=1.2.0
+    - anndata >=0.7
+    - h5py >=3.0.0
+    - loompy
+    - docopt
+    - natsort
+    - scipy
+    - importlib_metadata >=0.7  # [py < 38]
+    - zarr <=2.18.7
+    - pillow
 
 test:
-    requires:
-        - anndata
-        - loompy
-        - h5py
-        - zarr
-    imports:
-        - pegasusio
-        - pegasusio.commands
-        - pegasusio.cylib.funcs
-        - pegasusio.cylib.io
-    commands:
-        - pegasusio --help
+  requires:
+    - anndata
+    - loompy
+    - h5py
+    - zarr
+  imports:
+    - pegasusio
+    - pegasusio.commands
+    - pegasusio.cylib.funcs
+    - pegasusio.cylib.io
+  commands:
+    - pegasusio --help
 
 about:
-    home: https://github.com/lilab-bcb/pegasusio
-    doc_url: https://pegasusio.readthedocs.io
-    license: BSD
-    license_file: LICENSE
-    summary: "PegasusIO is the IO package for Pegasus."
+  home: "https://github.com/lilab-bcb/pegasusio"
+  doc_url: "https://pegasusio.readthedocs.io"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: LICENSE
+  summary: "PegasusIO is the IO package for Pegasus."
+  dev_url: "https://github.com/lilab-bcb/pegasusio"
 
 extra:
-    recipe-maintainers:
-        - yihming
-        - bli25
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - yihming
+    - bli25

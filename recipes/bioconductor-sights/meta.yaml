@@ -1,47 +1,22 @@
-{% set version = "1.24.0" %}
+{% set version = "1.32.0" %}
 {% set name = "sights" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 1ecdb67af4330d0b22f1f422f43915f5
+about:
+  description: SIGHTS is a suite of normalization methods, statistical tests, and diagnostic graphical tools for high throughput screening (HTS) assays. HTS assays use microtitre plates to screen large libraries of compounds for their biological, chemical, or biochemical activity.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 | file LICENSE
+  license_file: LICENSE
+  summary: Statistics and dIagnostic Graphs for HTS
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: testthat, knitr, rmarkdown, ggthemes, gridExtra, xlsx
-requirements:
-  host:
-    - 'bioconductor-qvalue >=2.30.0,<2.31.0'
-    - r-base
-    - 'r-ggplot2 >=2.0'
-    - 'r-lattice >=0.2'
-    - 'r-mass >=7.3'
-    - 'r-reshape2 >=1.4'
-  run:
-    - 'bioconductor-qvalue >=2.30.0,<2.31.0'
-    - r-base
-    - 'r-ggplot2 >=2.0'
-    - 'r-lattice >=0.2'
-    - 'r-mass >=7.3'
-    - 'r-reshape2 >=1.4'
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL-3 | file LICENSE'
-  summary: 'Statistics and dIagnostic Graphs for HTS'
-  description: 'SIGHTS is a suite of normalization methods, statistical tests, and diagnostic graphical tools for high throughput screening (HTS) assays. HTS assays use microtitre plates to screen large libraries of compounds for their biological, chemical, or biochemical activity.'
-  license_file: LICENSE
+  run_exports: '{{ pin_subpackage("bioconductor-sights", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:sights
@@ -50,4 +25,37 @@ extra:
     name: bioconductor-sights
     path: recipes/bioconductor-sights
     version: 1.6.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, knitr, rmarkdown, ggthemes, gridExtra, xlsx
+requirements:
+  host:
+    - bioconductor-qvalue >=2.38.0,<2.39.0
+    - r-base
+    - r-ggplot2 >=2.0
+    - r-lattice >=0.2
+    - r-mass >=7.3
+    - r-reshape2 >=1.4
+  run:
+    - bioconductor-qvalue >=2.38.0,<2.39.0
+    - r-base
+    - r-ggplot2 >=2.0
+    - r-lattice >=0.2
+    - r-mass >=7.3
+    - r-reshape2 >=1.4
+
+source:
+  md5: fcb27503e3f774c56e849c62da44697f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

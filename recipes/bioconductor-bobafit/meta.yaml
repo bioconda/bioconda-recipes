@@ -1,28 +1,32 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "BOBaFIT" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: ea9ad057b5982223cd55b4c6dfc9508d
+about:
+  description: 'This package provides a method to refit and correct the diploid region in copy number profiles. It uses a clustering algorithm to identify pathology-specific normal (diploid) chromosomes and then use their copy number signal to refit the whole profile.  The package is composed by three functions: DRrefit (the main function), ComputeNormalChromosome and PlotCluster.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 3)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Refitting diploid region profiles using a clustering procedure
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-bobafit", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: rmarkdown, markdown, BiocStyle, knitr, testthat (>= 3.0.0), utils, testthat
 requirements:
   host:
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-ggbio >=1.46.0,<1.47.0'
-    - 'bioconductor-plyranges >=1.18.0,<1.19.0'
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-ggbio >=1.54.0,<1.55.0
+    - bioconductor-plyranges >=1.26.0,<1.27.0
     - r-base
     - r-dplyr
     - r-ggforce
@@ -32,9 +36,9 @@ requirements:
     - r-stringr
     - r-tidyr
   run:
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-ggbio >=1.46.0,<1.47.0'
-    - 'bioconductor-plyranges >=1.18.0,<1.19.0'
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-ggbio >=1.54.0,<1.55.0
+    - bioconductor-plyranges >=1.26.0,<1.27.0
     - r-base
     - r-dplyr
     - r-ggforce
@@ -43,13 +47,16 @@ requirements:
     - r-nbclust
     - r-stringr
     - r-tidyr
+
+source:
+  md5: 05eeacc049e8d4eb8ae3918b85ac3963
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 3)'
-  summary: 'Refitting diploid region profiles using a clustering procedure'
-  description: 'This package provides a method to refit and correct the diploid region in copy number profiles. It uses a clustering algorithm to identify pathology-specific normal (diploid) chromosomes and then use their copy number signal to refit the whole profile.  The package is composed by three functions: DRrefit (the main function), ComputeNormalChromosome and PlotCluster.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

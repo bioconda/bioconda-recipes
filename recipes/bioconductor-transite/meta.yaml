@@ -1,61 +1,66 @@
-{% set version = "1.16.0" %}
+{% set version = "1.24.0" %}
 {% set name = "transite" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: d4df2cace9fd17d5781ba2484b1353af
+about:
+  description: transite is a computational method that allows comprehensive analysis of the regulatory role of RNA-binding proteins in various cellular processes by leveraging preexisting gene expression data and current knowledge of binding preferences of RNA-binding proteins.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: RNA-binding protein motif analysis
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-transite", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr (>= 1.20), rmarkdown (>= 1.10), roxygen2 (>= 6.1.0), testthat (>= 2.1.0)
 # SystemRequirements: C++11
 requirements:
-  host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - r-base
-    - 'r-dplyr >=0.7.6'
-    - 'r-ggplot2 >=3.0.0'
-    - 'r-ggseqlogo >=0.1'
-    - 'r-gridextra >=2.3'
-    - 'r-rcpp >=1.0.4.8'
-    - 'r-scales >=1.0.0'
-    - 'r-tfmpvalue >=0.0.8'
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - r-base
-    - 'r-dplyr >=0.7.6'
-    - 'r-ggplot2 >=3.0.0'
-    - 'r-ggseqlogo >=0.1'
-    - 'r-gridextra >=2.3'
-    - 'r-rcpp >=1.0.4.8'
-    - 'r-scales >=1.0.0'
-    - 'r-tfmpvalue >=0.0.8'
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - r-base
+    - r-dplyr >=0.7.6
+    - r-ggplot2 >=3.0.0
+    - r-gridextra >=2.3
+    - r-rcpp >=1.0.4.8
+    - r-scales >=1.0.0
+    - r-tfmpvalue >=0.0.8
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - r-base
+    - r-dplyr >=0.7.6
+    - r-ggplot2 >=3.0.0
+    - r-gridextra >=2.3
+    - r-rcpp >=1.0.4.8
+    - r-scales >=1.0.0
+    - r-tfmpvalue >=0.0.8
+
+source:
+  md5: bf4806708f88dd36f55e12337f207d90
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'RNA-binding protein motif analysis'
-  description: 'transite is a computational method that allows comprehensive analysis of the regulatory role of RNA-binding proteins in various cellular processes by leveraging preexisting gene expression data and current knowledge of binding preferences of RNA-binding proteins.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

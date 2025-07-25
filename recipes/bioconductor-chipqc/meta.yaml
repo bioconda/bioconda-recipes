@@ -1,81 +1,22 @@
-{% set version = "1.34.0" %}
+{% set version = "1.42.0" %}
 {% set name = "ChIPQC" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 0677bc17ae2aa8e2369b68e30adef7fa
+about:
+  description: Quality metrics for ChIPseq data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 3)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Quality metrics for ChIPseq data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-chipseq >=1.48.0,<1.49.0'
-    - 'bioconductor-diffbind >=3.8.0,<3.9.0'
-    - 'bioconductor-genomicalignments >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-txdb.celegans.ucsc.ce6.ensgene >=3.2.0,<3.3.0'
-    - 'bioconductor-txdb.dmelanogaster.ucsc.dm3.ensgene >=3.2.0,<3.3.0'
-    - 'bioconductor-txdb.hsapiens.ucsc.hg18.knowngene >=3.2.0,<3.3.0'
-    - 'bioconductor-txdb.hsapiens.ucsc.hg19.knowngene >=3.2.0,<3.3.0'
-    - 'bioconductor-txdb.mmusculus.ucsc.mm10.knowngene >=3.10.0,<3.11.0'
-    - 'bioconductor-txdb.mmusculus.ucsc.mm9.knowngene >=3.2.0,<3.3.0'
-    - 'bioconductor-txdb.rnorvegicus.ucsc.rn4.ensgene >=3.2.0,<3.3.0'
-    - r-base
-    - r-ggplot2
-    - r-gtools
-    - r-nozzle.r1
-    - r-reshape2
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-chipseq >=1.48.0,<1.49.0'
-    - 'bioconductor-diffbind >=3.8.0,<3.9.0'
-    - 'bioconductor-genomicalignments >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-txdb.celegans.ucsc.ce6.ensgene >=3.2.0,<3.3.0'
-    - 'bioconductor-txdb.dmelanogaster.ucsc.dm3.ensgene >=3.2.0,<3.3.0'
-    - 'bioconductor-txdb.hsapiens.ucsc.hg18.knowngene >=3.2.0,<3.3.0'
-    - 'bioconductor-txdb.hsapiens.ucsc.hg19.knowngene >=3.2.0,<3.3.0'
-    - 'bioconductor-txdb.mmusculus.ucsc.mm10.knowngene >=3.10.0,<3.11.0'
-    - 'bioconductor-txdb.mmusculus.ucsc.mm9.knowngene >=3.2.0,<3.3.0'
-    - 'bioconductor-txdb.rnorvegicus.ucsc.rn4.ensgene >=3.2.0,<3.3.0'
-    - r-base
-    - r-ggplot2
-    - r-gtools
-    - r-nozzle.r1
-    - r-reshape2
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 3)'
-  summary: 'Quality metrics for ChIPseq data'
-  description: 'Quality metrics for ChIPseq data.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-chipqc", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:chipqc
@@ -83,4 +24,73 @@ extra:
     name: bioconductor-chipqc
     path: recipes/bioconductor-chipqc
     version: 1.16.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle
+requirements:
+
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-chipseq >=1.56.0,<1.57.0
+    - bioconductor-diffbind >=3.16.0,<3.17.0
+    - bioconductor-genomicalignments >=1.42.0,<1.43.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-txdb.celegans.ucsc.ce6.ensgene >=3.2.0,<3.3.0
+    - bioconductor-txdb.dmelanogaster.ucsc.dm3.ensgene >=3.2.0,<3.3.0
+    - bioconductor-txdb.hsapiens.ucsc.hg18.knowngene >=3.2.0,<3.3.0
+    - bioconductor-txdb.hsapiens.ucsc.hg19.knowngene >=3.2.0,<3.3.0
+    - bioconductor-txdb.mmusculus.ucsc.mm10.knowngene >=3.10.0,<3.11.0
+    - bioconductor-txdb.mmusculus.ucsc.mm9.knowngene >=3.2.0,<3.3.0
+    - bioconductor-txdb.rnorvegicus.ucsc.rn4.ensgene >=3.2.0,<3.3.0
+    - r-base
+    - r-ggplot2
+    - r-gtools
+    - r-nozzle.r1
+    - r-reshape2
+
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-chipseq >=1.56.0,<1.57.0
+    - bioconductor-diffbind >=3.16.0,<3.17.0
+    - bioconductor-genomicalignments >=1.42.0,<1.43.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-txdb.celegans.ucsc.ce6.ensgene >=3.2.0,<3.3.0
+    - bioconductor-txdb.dmelanogaster.ucsc.dm3.ensgene >=3.2.0,<3.3.0
+    - bioconductor-txdb.hsapiens.ucsc.hg18.knowngene >=3.2.0,<3.3.0
+    - bioconductor-txdb.hsapiens.ucsc.hg19.knowngene >=3.2.0,<3.3.0
+    - bioconductor-txdb.mmusculus.ucsc.mm10.knowngene >=3.10.0,<3.11.0
+    - bioconductor-txdb.mmusculus.ucsc.mm9.knowngene >=3.2.0,<3.3.0
+    - bioconductor-txdb.rnorvegicus.ucsc.rn4.ensgene >=3.2.0,<3.3.0
+    - r-base
+    - r-ggplot2
+    - r-gtools
+    - r-nozzle.r1
+    - r-reshape2
+
+source:
+  md5: a312266b6573e840b379a867597fcc87
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

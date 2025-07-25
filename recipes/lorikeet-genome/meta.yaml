@@ -1,62 +1,57 @@
-{% set version = "0.7.3" %}
-{% set name = "lorikeet" %}
-{% set sha256 = "663e53c2451e06af3334b612a7518180fa528e2d12ebe869f74f78996e2a82a5" %}
+{% set version = "0.8.2" %}
+{% set name = "lorikeet-genome" %}
+{% set sha256 = "125fb87f7aa586aa92183ed2c11721477d0b2ba2481f80a1e047ab581e3ff50b" %}
 
 package:
-  name: lorikeet-genome
+  name: {{ name }}
   version: {{ version }}
 
 build:
   number: 1
   skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 source:
-  url: https://github.com/rhysnewell/{{ name }}/archive/v{{ version }}.tar.gz
+  url: https://github.com/rhysnewell/lorikeet/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 requirements:
   build:
-    - rust >=1.40
-    - python >=3.9
+    - rust >=1.70
+    - python ==3.10
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - perl
     - pkg-config
     - make
     - cmake
   host:
     - zlib
-    - gsl
+    - blis
     - libblas
+    - openblas
     - openssl
-    - htslib
+    - clangdev
   run:
-    - python >=3.9
-    - htslib
-    - parallel
-    - numpy
-    - matplotlib-base
-    - prodigal
-    - svim
     - samtools >=1.9
-    - bcftools
-    - vt
-    - zlib
-    - gsl
-    - starcode
+    - coreutils
+    - python ==3.10
+    - prodigal
+    - minimap2 >=2.24
     - bwa >=0.7.17
-    - bwa-mem2 >=2.2.1
-    - minimap2
-    - fastani
-    - dashing
-    - ngmlr
-    - scikit-allel
-    - polars
-    - scipy
+    - bwa-mem2
+    - numpy
+    - scikit-allel >=1.3.6
+    - svim
+    - bcftools
+    - pip
+    - polars >=0.18
+    - scipy >=1.11
+    - cmake >=3.21
 
 test:
   commands:
-    - {{ name }} --version | grep '{{ version }}'
+    - lorikeet --version | grep '{{ version }}'
 
 about:
   home: https://github.com/rhysnewell/Lorikeet

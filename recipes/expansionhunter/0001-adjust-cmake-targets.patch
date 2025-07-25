@@ -1,0 +1,180 @@
+From 0edec7bfc6ecf2c5401f17abe10c96ccfdb193b3 Mon Sep 17 00:00:00 2001
+From: Lightning Auriga <lightning.auriga@gmail.com>
+Date: Mon, 11 Sep 2023 09:55:05 -0400
+Subject: [PATCH 1/4] adjust cmake targets
+
+---
+ CMakeLists.txt                                | 74 +------------------
+ ehunter/CMakeLists.txt                        | 10 +--
+ .../graph-tools-master-f421f4c/CMakeLists.txt |  4 +-
+ 3 files changed, 10 insertions(+), 78 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 461343e..e3bf3f2 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,7 +1,7 @@
+ cmake_minimum_required(VERSION 3.13)
+ project(ExpansionHunter)
+ 
+-set(CMAKE_CXX_STANDARD 11)
++set(CMAKE_CXX_STANDARD 14)
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ 
+ # Check for required packages:
+@@ -9,79 +9,11 @@ find_package(ZLIB REQUIRED)
+ find_package(BZip2 REQUIRED)
+ find_package(LibLZMA REQUIRED)
+ find_package(CURL REQUIRED)
+-find_package(Git REQUIRED)
+ 
+ include(ExternalProject)
+ set(installDir ${CMAKE_CURRENT_BINARY_DIR}/install)
+ 
+ 
+-ExternalProject_Add(htslib
+-	BUILD_IN_SOURCE YES
+-	GIT_REPOSITORY "https://github.com/samtools/htslib.git"
+-	GIT_TAG "1.10.2"
+-	UPDATE_COMMAND ""
+-	CONFIGURE_COMMAND ""
+-	BUILD_COMMAND $(MAKE)
+-	INSTALL_COMMAND $(MAKE) install prefix=${installDir}
+-	LOG_DOWNLOAD YES
+-)
+-
+-
+-# Setup user config to force same c++ compiler in boost
+-if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU") OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
+-    set(BOOST_UCONFIG "${CMAKE_BINARY_DIR}/user-config.jam")
+-    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+-        file(WRITE "${BOOST_UCONFIG}" "using gcc : : \"${CMAKE_CXX_COMPILER}\" ;\n")
+-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+-        file(WRITE "${BOOST_UCONFIG}" "using clang : : \"${CMAKE_CXX_COMPILER}\" ;\n")
+-        set(B2_OPTIONS ${B2_OPTIONS} "toolset=clang")
+-    endif()
+-    set(BOOST_PATCH_COMMAND ${CMAKE_COMMAND} -E copy ${BOOST_UCONFIG} tools/build/src/user-config.jam)
+-endif()
+-
+-ExternalProject_Add(Boost
+-	BUILD_IN_SOURCE YES
+-	URL https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.tar.bz2
+-	UPDATE_COMMAND ""
+-	PATCH_COMMAND ${BOOST_PATCH_COMMAND}
+-	CONFIGURE_COMMAND ./bootstrap.sh --prefix=${installDir}/lib
+-	BUILD_COMMAND ./b2 install -j8   --prefix=${installDir} --with-filesystem --with-system --with-program_options link=static ${B2_OPTIONS}
+-	INSTALL_COMMAND ""
+-)
+-
+-
+-ExternalProject_Add(spdlog
+-	GIT_REPOSITORY "https://github.com/gabime/spdlog.git"
+-	GIT_TAG "v1.6.1"
+-	UPDATE_COMMAND ""
+-	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${installDir}
+-		-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+-		-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+-)
+-
+-
+-ExternalProject_Add(googletest
+-	GIT_REPOSITORY "https://github.com/google/googletest.git"
+-	GIT_TAG "release-1.10.0"
+-	UPDATE_COMMAND ""
+-	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${installDir}
+-		-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+-		-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+-)
+-
+-
+-# CMAKE_CXX_STANDARD is required for OS X 10.15
+-ExternalProject_Add(abseil
+-	GIT_REPOSITORY "https://github.com/abseil/abseil-cpp"
+-	GIT_TAG "20210324.2"
+-	UPDATE_COMMAND ""
+-	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${installDir}
+-		-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+-		-DCMAKE_CXX_STANDARD=11
+-		-DBUILD_TESTING=OFF
+-)
+-
+-
+ ExternalProject_Add(ehunter
+ 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/ehunter
+ 	BUILD_ALWAYS YES
+@@ -94,6 +26,6 @@ ExternalProject_Add(ehunter
+ )
+ 
+ 
+-ExternalProject_Add_StepDependencies(ehunter configure
+-	Boost spdlog htslib googletest abseil)
++ExternalProject_Add_StepDependencies(ehunter configure)
++
+ 
+diff --git a/ehunter/CMakeLists.txt b/ehunter/CMakeLists.txt
+index de31781..f02a717 100644
+--- a/ehunter/CMakeLists.txt
++++ b/ehunter/CMakeLists.txt
+@@ -1,7 +1,7 @@
+ cmake_minimum_required(VERSION 3.13)
+ project(ExpansionHunter LANGUAGES C CXX)
+ 
+-set(CMAKE_CXX_STANDARD 11)
++set(CMAKE_CXX_STANDARD 14)
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ 
+ if (NOT CMAKE_BUILD_TYPE)
+@@ -12,11 +12,11 @@ endif ()
+ 
+ message(STATUS "BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+ 
+-set(Boost_USE_STATIC_LIBS ON)
++set(Boost_USE_STATIC_LIBS OFF)
+ find_package(Boost 1.73 REQUIRED COMPONENTS program_options filesystem system)
+ 
+ 
+-add_compile_options(-Wall -Werror -Wextra)
++add_compile_options(-Wall -Wextra)
+ 
+ enable_testing()
+ 
+@@ -120,12 +120,12 @@ target_link_libraries(ExpansionHunterLib PUBLIC
+         BZip2::BZip2
+         Threads::Threads
+         spdlog::spdlog
+-        absl::flat_hash_set)
++        absl::flat_hash_set -ldl -ldeflate)
+ 
+ add_executable(ExpansionHunter
+         app/ExpansionHunter.cpp
+         )
+-target_link_libraries(ExpansionHunter ExpansionHunterLib)
++target_link_libraries(ExpansionHunter ExpansionHunterLib -ldl -ldeflate)
+ 
+ add_executable(UnitTests
+         tests/AlignMatrixTest.cpp
+diff --git a/ehunter/thirdparty/graph-tools-master-f421f4c/CMakeLists.txt b/ehunter/thirdparty/graph-tools-master-f421f4c/CMakeLists.txt
+index f45b519..7575a61 100644
+--- a/ehunter/thirdparty/graph-tools-master-f421f4c/CMakeLists.txt
++++ b/ehunter/thirdparty/graph-tools-master-f421f4c/CMakeLists.txt
+@@ -4,7 +4,7 @@ project(graphtools CXX)
+ 
+ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+ 
+-set(CMAKE_CXX_STANDARD 11)
++set(CMAKE_CXX_STANDARD 14)
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+ 
+@@ -28,7 +28,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+     set(GRAPHTOOLS_CXX_OPTIMIZATION_FLAGS "${GRAPHTOOLS_VECTORIZATION} -O2 -ftree-vectorize -finline-functions -fpredictive-commoning -fgcse-after-reload -funswitch-loops -ftree-slp-vectorize -fvect-cost-model -fipa-cp-clone -ftree-phiprop")
+ endif ()
+ 
+-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GRAPHTOOLS_CXX_OPTIMIZATION_FLAGS} -Wall -Werror -pedantic -Wsign-compare -Wno-missing-braces -Wno-deprecated-copy -Wno-unknown-warning-option")
++SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GRAPHTOOLS_CXX_OPTIMIZATION_FLAGS} -Wall -pedantic -Wsign-compare -Wno-missing-braces -Wno-deprecated-copy -Wno-unknown-warning-option")
+ 
+ if (USE_ASAN)
+     SET(CLANG_ASAN "-O1 -g -fsanitize=address -fno-omit-frame-pointer")
+-- 
+2.39.1
+

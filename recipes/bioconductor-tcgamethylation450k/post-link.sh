@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "tcgamethylation450k-1.33.0"
+installBiocDataPackage.sh "tcgamethylation450k-1.42.0"

@@ -1,42 +1,44 @@
 {% set version = "2.99.0" %}
 {% set name = "EnsDb.Hsapiens.v75" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 6c896475252903972bfc6c0eb0d8f334
+about:
+  description: Exposes an annotation databases generated from Ensembl.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Ensembl based annotation package
 build:
-  number: 13
+  noarch: generic
+  number: 16
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-ensembldb >=2.22.0,<2.23.0'
-    - r-base
-  run:
-    - 'bioconductor-ensembldb >=2.22.0,<2.23.0'
-    - r-base
-    - curl
-    - bioconductor-data-packages>=20221102
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Ensembl based annotation package'
-  description: 'Exposes an annotation databases generated from Ensembl.'
+  run_exports: '{{ pin_subpackage("bioconductor-ensdb.hsapiens.v75", max_pin="x.x") }}'
 extra:
   parent_recipe:
     name: bioconductor-ensdb.hsapiens.v75
     path: recipes/bioconductor-ensdb.hsapiens.v75
     version: 2.99.0
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+requirements:
+  host:
+    - bioconductor-ensembldb >=2.30.0,<2.31.0
+    - r-base
+  run:
+    - bioconductor-ensembldb >=2.30.0,<2.31.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 6c896475252903972bfc6c0eb0d8f334
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

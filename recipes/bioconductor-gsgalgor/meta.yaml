@@ -1,22 +1,26 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "GSgalgoR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 8a92531fef208ec8cca196ecb84545a1
+about:
+  description: A multi-objective optimization algorithm for disease sub-type discovery based on a non-dominated sorting genetic algorithm. The 'Galgo' framework combines the advantages of clustering algorithms for grouping heterogeneous 'omics' data and the searching properties of genetic algorithms for feature selection. The algorithm search for the optimal number of clusters determination considering the features that maximize the survival difference between sub-types while keeping cluster consistency high.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: An Evolutionary Framework for the Identification and Study of Prognostic Gene Expression Signatures in Cancer
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-gsgalgor", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, ggplot2, BiocStyle, genefu, survcomp, Biobase, survminer, breastCancerTRANSBIG, breastCancerUPP, iC10TrainingData, pamr, testthat
 requirements:
   host:
@@ -37,13 +41,16 @@ requirements:
     - r-nsga2r
     - r-proxy
     - r-survival
+
+source:
+  md5: e8e7811793c9610d8981316c7043c129
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'An Evolutionary Framework for the Identification and Study of Prognostic Gene Expression Signatures in Cancer'
-  description: 'A multi-objective optimization algorithm for disease sub-type discovery based on a non-dominated sorting genetic algorithm. The ''Galgo'' framework combines the advantages of clustering algorithms for grouping heterogeneous ''omics'' data and the searching properties of genetic algorithms for feature selection. The algorithm search for the optimal number of clusters determination considering the features that maximize the survival difference between sub-types while keeping cluster consistency high.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

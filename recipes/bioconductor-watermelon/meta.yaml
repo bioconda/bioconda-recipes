@@ -1,53 +1,22 @@
-{% set version = "2.4.0" %}
+{% set version = "2.12.0" %}
 {% set name = "wateRmelon" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 80eea74751dc0e3314c5e5a44224f7be
+about:
+  description: 15 flavours of betas and three performance metrics, with methods for objects produced by methylumi and minfi packages.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Illumina DNA methylation array normalization and metrics
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: RPMM, IlluminaHumanMethylationEPICanno.ilm10b2.hg19, BiocStyle, knitr, rmarkdown, IlluminaHumanMethylationEPICmanifest, irlba, FlowSorted.Blood.EPIC, FlowSorted.Blood.450k, preprocessCore
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-illuminahumanmethylation450kanno.ilmn12.hg19 >=0.6.0,<0.7.0'
-    - 'bioconductor-illuminaio >=0.40.0,<0.41.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-lumi >=2.50.0,<2.51.0'
-    - 'bioconductor-methylumi >=2.44.0,<2.45.0'
-    - 'bioconductor-roc >=1.74.0,<1.75.0'
-    - r-base
-    - r-matrixstats
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-illuminahumanmethylation450kanno.ilmn12.hg19 >=0.6.0,<0.7.0'
-    - 'bioconductor-illuminaio >=0.40.0,<0.41.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-lumi >=2.50.0,<2.51.0'
-    - 'bioconductor-methylumi >=2.44.0,<2.45.0'
-    - 'bioconductor-roc >=1.74.0,<1.75.0'
-    - r-base
-    - r-matrixstats
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Illumina 450 and EPIC methylation array normalization and metrics'
-  description: '15 flavours of betas and three performance metrics, with methods for objects produced by methylumi and minfi packages.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-watermelon", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:watermelon
@@ -55,4 +24,43 @@ extra:
     name: bioconductor-watermelon
     path: recipes/bioconductor-watermelon
     version: 1.24.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: RPMM, IlluminaHumanMethylationEPICanno.ilm10b2.hg19, BiocStyle, knitr, rmarkdown, IlluminaHumanMethylationEPICmanifest, irlba, FlowSorted.Blood.EPIC, FlowSorted.Blood.450k, preprocessCore
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-illuminahumanmethylation450kanno.ilmn12.hg19 >=0.6.0,<0.7.0
+    - bioconductor-illuminaio >=0.48.0,<0.49.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-lumi >=2.58.0,<2.59.0
+    - bioconductor-methylumi >=2.52.0,<2.53.0
+    - bioconductor-roc >=1.82.0,<1.83.0
+    - r-base
+    - r-matrixstats
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-illuminahumanmethylation450kanno.ilmn12.hg19 >=0.6.0,<0.7.0
+    - bioconductor-illuminaio >=0.48.0,<0.49.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-lumi >=2.58.0,<2.59.0
+    - bioconductor-methylumi >=2.52.0,<2.53.0
+    - bioconductor-roc >=1.82.0,<1.83.0
+    - r-base
+    - r-matrixstats
+
+source:
+  md5: 3044edac0be669399cdb295bb084c4f2
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

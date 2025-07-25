@@ -1,51 +1,54 @@
-{% set version = "1.12.0" %}
+{% set version = "1.20.0" %}
 {% set name = "SQLDataFrame" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f5f9e191ee962da9f8ac38f890fcc6c1
+about:
+  description: Implements bindings for SQL tables that are compatible with Bioconductor S4 data structures, namely the DataFrame and DelayedArray. This allows SQL-derived data to be easily used inside other Bioconductor objects (e.g., SummarizedExperiments) while keeping everything on disk.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL (>= 3); File LICENSE
+  license_file: LICENSE
+  summary: Representation of SQL tables in DataFrame metaphor
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: RMySQL, bigrquery, testthat, knitr, rmarkdown, DelayedArray
+  run_exports: '{{ pin_subpackage("bioconductor-sqldataframe", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, BiocStyle, testthat
 requirements:
   host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-dbi
-    - 'r-dbplyr >=1.4.0'
-    - 'r-dplyr >=0.8.0.1'
-    - r-lazyeval
+    - r-duckdb
     - r-rsqlite
-    - r-tibble
   run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-dbi
-    - 'r-dbplyr >=1.4.0'
-    - 'r-dplyr >=0.8.0.1'
-    - r-lazyeval
+    - r-duckdb
     - r-rsqlite
-    - r-tibble
+
+source:
+  md5: 2448466a5203b92539fe0e1b7522379b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Representation of SQL database in DataFrame metaphor'
-  description: 'SQLDataFrame is developed to lazily represent and efficiently analyze SQL-based tables in _R_. SQLDataFrame supports common and familiar ''DataFrame'' operations such as ''['' subsetting, rbind, cbind, etc.. The internal implementation is based on the widely adopted dplyr grammar and SQL commands. In-memory datasets or plain text files (.txt, .csv, etc.) could also be easily converted into SQLDataFrames objects (which generates a new database on-disk).'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

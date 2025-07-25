@@ -1,0 +1,48 @@
+{% set name = "bam2plot" %}
+{% set version = "0.3.7" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/bam2plot-{{ version }}.tar.gz
+  sha256: 5ce0c875cf3c52365ee295c5bf5c6cb5997cab6725e38e44c4473a841b2693c8
+
+build:
+  entry_points:
+    - bam2plot=bam2plot.main:cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('bam2plot', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+  run:
+    - python >=3.10
+    - pysam >=0.22.0
+    - seaborn >=0.13.2
+    - polars >=0.20.15
+    - mappy >=2.28
+    - pyfastx
+    - pyarrow
+    - mosdepth
+
+test:
+  imports:
+    - bam2plot
+  commands:
+    - bam2plot from_bam --help
+    - bam2plot from_reads --help
+    - bam2plot guci --help
+
+about:
+  home: https://github.com/willros/bam2plot
+  summary: Plot of coverage from bam file
+  license: GPL-3.0-only
+  license_file: LICENSE

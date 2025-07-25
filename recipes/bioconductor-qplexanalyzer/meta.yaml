@@ -1,35 +1,40 @@
-{% set version = "1.16.0" %}
+{% set version = "1.24.0" %}
 {% set name = "qPLEXanalyzer" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: da88a8d81790bd52c6b088451b3cc9f2
+about:
+  description: Tools for TMT based quantitative proteomics data analysis.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Tools for quantitative proteomics data analysis
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: gridExtra, knitr, qPLEXdata, rmarkdown, testthat, UniProt.ws, vdiffr
+  run_exports: '{{ pin_subpackage("bioconductor-qplexanalyzer", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: patchwork, knitr, qPLEXdata, rmarkdown, statmod, testthat, UniProt.ws, vdiffr
 requirements:
+
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-msnbase >=2.24.0,<2.25.0'
-    - 'bioconductor-preprocesscore >=1.60.0,<1.61.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-msnbase >=2.32.0,<2.33.0
+    - bioconductor-preprocesscore >=1.68.0,<1.69.0
     - r-assertthat
     - r-base
-    - 'r-dplyr >=1.0.0'
+    - r-dplyr >=1.0.0
     - r-ggdendro
     - r-ggplot2
     - r-magrittr
@@ -42,17 +47,18 @@ requirements:
     - r-tibble
     - r-tidyr
     - r-tidyselect
+
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-msnbase >=2.24.0,<2.25.0'
-    - 'bioconductor-preprocesscore >=1.60.0,<1.61.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-msnbase >=2.32.0,<2.33.0
+    - bioconductor-preprocesscore >=1.68.0,<1.69.0
     - r-assertthat
     - r-base
-    - 'r-dplyr >=1.0.0'
+    - r-dplyr >=1.0.0
     - r-ggdendro
     - r-ggplot2
     - r-magrittr
@@ -65,13 +71,16 @@ requirements:
     - r-tibble
     - r-tidyr
     - r-tidyselect
+
+source:
+  md5: 079b6b261234e203346710c930541607
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Tools for quantitative proteomics data analysis'
-  description: 'Tools for TMT based quantitative proteomics data analysis.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+    - $R -e "library('{{ name }}')"
 

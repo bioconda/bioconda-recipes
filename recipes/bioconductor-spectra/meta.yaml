@@ -1,48 +1,57 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "Spectra" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 9d5f66bc371858dcafa7651ccd3fd76d
+about:
+  description: The Spectra package defines an efficient infrastructure for storing and handling mass spectrometry spectra and functionality to subset, process, visualize and compare spectra data. It provides different implementations (backends) to store mass spectrometry data. These comprise backends tuned for fast data access and processing and backends for very large data sets ensuring a small memory footprint.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Spectra Infrastructure for Mass Spectrometry Data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: testthat, knitr (>= 1.1.0), msdata (>= 0.19.3), roxygen2, BiocStyle (>= 2.5.19), mzR (>= 2.19.6), rhdf5 (>= 2.32.0), rmarkdown, vdiffr (>= 1.0.0)
+  run_exports: '{{ pin_subpackage("bioconductor-spectra", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, knitr (>= 1.1.0), msdata (>= 0.19.3), roxygen2, BiocStyle (>= 2.5.19), mzR (>= 2.19.6), rhdf5 (>= 2.32.0), rmarkdown, vdiffr (>= 1.0.0), msentropy, patrick
 requirements:
   host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-mscoreutils >=1.10.0,<1.11.0'
-    - 'bioconductor-protgenerics >=1.30.0,<1.31.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-metabocoreutils >=1.14.0,<1.15.0
+    - bioconductor-mscoreutils >=1.18.0,<1.19.0
+    - bioconductor-protgenerics >=1.38.0,<1.39.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-fs
   run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-mscoreutils >=1.10.0,<1.11.0'
-    - 'bioconductor-protgenerics >=1.30.0,<1.31.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-metabocoreutils >=1.14.0,<1.15.0
+    - bioconductor-mscoreutils >=1.18.0,<1.19.0
+    - bioconductor-protgenerics >=1.38.0,<1.39.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-fs
+
+source:
+  md5: cb974efa2343f87a21128ee11b972932
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Spectra Infrastructure for Mass Spectrometry Data'
-  description: 'The Spectra package defines an efficient infrastructure for storing and handling mass spectrometry spectra and functionality to subset, process, visualize and compare spectra data. It provides different implementations (backends) to store mass spectrometry data. These comprise backends tuned for fast data access and processing and backends for very large data sets ensuring a small memory footprint.'
+    - $R -e "library('{{ name }}')"
 

@@ -1,30 +1,44 @@
 {% set name = "pairtools" %}
-{% set version = "1.0.2" %}
+{% set version = "1.1.3" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: af031b369b9d99ecd6388b2c116425a9d5c6fdb98146d44d5d013c92b3704917
+  url: https://github.com/open2c/pairtools/archive/v{{ version }}.tar.gz
+  sha256: 5d342e18538312d0592b8ab70ff380d3b27e22a5a590c943a17e4b51e543babf
 
 build:
   number: 0
-  skip: True  # [osx or py<37]
+  skip: True  # [py < 39]
   entry_points:
     - pairtools = pairtools.cli:cli
+  script:
+    - export M4="${BUILD_PREFIX}/bin/m4"
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"  # [osx]
+    - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+    - export MACOSX_DEPLOYMENT_TARGET=13.0  # [osx and x86_64]
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv  # [linux]
+    - {{ PYTHON }} -m build -n  # [osx]
+    - DYLD_LIBRARY_PATH=$(python -c 'import pysam, os; print(os.path.dirname(pysam.get_libraries()[0]))') delocate-wheel -v dist/*.whl  # [osx]
+    - {{ PYTHON }} -m pip install dist/*.whl --no-deps --no-build-isolation --no-cache-dir -vvv  # [osx]
+  run_exports:
+    - {{ pin_subpackage('pairtools', max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
   host:
     - python
-    - setuptools
+    - pip
     - cython
     - numpy
-    - pysam >=0.19
+    - pysam
+    - delocate  # [osx]
+    - python-build  # [osx]
   run:
     - python
     - coreutils
@@ -32,36 +46,45 @@ requirements:
     - click
     - lz4-c
     - samtools
-    - htslib  # for bgzip
-    - pbgzip
+    # for bgzip
+    - htslib
+    - pbgzip  # [not arm64]
     - pysam >=0.19
     - pandas
     - scipy >=1.7
     - pyyaml
     - bioframe >=0.3.3
 
-
 test:
   imports:
     - pairtools
-
   commands:
     # click requires a unicode locale
     - pairtools --help
 
 about:
-  home: https://github.com/open2c/pairtools
+  home: "https://github.com/open2c/pairtools"
   license: MIT
   license_family: MIT
-  summary: 'CLI tools to process mapped Hi-C data'
+  summary: 'CLI tools to process mapped Hi-C data.'
   license_file: LICENSE
-  doc_url: http://pairtools.readthedocs.io/
-  dev_url: https://github.com/open2c/pairtools
+  doc_url: "https://pairtools.readthedocs.io"
+  dev_url: "https://github.com/open2c/pairtools"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   container:
     # click requires a unicode locale when used with Python 3
     # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
-    extended-base: true  # [py3k]
-    recipe-maintainers:
-      - golobor
+    extended-base: True
+  recipe-maintainers:
+    - golobor
+  identifiers:
+    - doi:10.1101/2023.02.13.528389
+    - usegalaxy-eu:pairtools_dedup
+    - usegalaxy-eu:pairtools_parse
+    - usegalaxy-eu:pairtools_split
+    - usegalaxy-eu:pairtools_sort
+    - usegalaxy-eu:pairtools_stats

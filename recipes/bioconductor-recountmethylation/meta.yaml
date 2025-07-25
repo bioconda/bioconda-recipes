@@ -1,50 +1,61 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "recountmethylation" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 38d2bf8b344905440dee99591b5238fa
+about:
+  description: Resources for cross-study analyses of public DNAm array data from NCBI GEO repo, produced using Illumina's Infinium HumanMethylation450K (HM450K) and MethylationEPIC (EPIC) platforms. Provided functions enable download, summary, and filtering of large compilation files. Vignettes detail background about file formats, example analyses, and more. Note the disclaimer on package load and consult the main manuscripts for further info.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Access and analyze public DNA methylation array data compilations
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, testthat, ggplot2, gridExtra, rmarkdown, BiocStyle, GenomicRanges, limma, ExperimentHub, AnnotationHub
+  run_exports: '{{ pin_subpackage("bioconductor-recountmethylation", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: minfiData, minfiDataEPIC, knitr, testthat, ggplot2, gridExtra, rmarkdown, BiocStyle, GenomicRanges, limma, ExperimentHub, AnnotationHub
 requirements:
   host:
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
-    - 'bioconductor-hdf5array >=1.26.0,<1.27.0'
-    - 'bioconductor-illuminahumanmethylation450kmanifest >=0.4.0,<0.5.0'
-    - 'bioconductor-minfi >=1.44.0,<1.45.0'
-    - 'bioconductor-rhdf5 >=2.42.0,<2.43.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-basilisk >=1.18.0,<1.19.0
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-delayedmatrixstats >=1.28.0,<1.29.0
+    - bioconductor-hdf5array >=1.34.0,<1.35.0
+    - bioconductor-minfi >=1.52.0,<1.53.0
+    - bioconductor-rhdf5 >=2.50.0,<2.51.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-r.utils
     - r-rcurl
+    - r-reticulate
   run:
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
-    - 'bioconductor-hdf5array >=1.26.0,<1.27.0'
-    - 'bioconductor-illuminahumanmethylation450kmanifest >=0.4.0,<0.5.0'
-    - 'bioconductor-minfi >=1.44.0,<1.45.0'
-    - 'bioconductor-rhdf5 >=2.42.0,<2.43.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-basilisk >=1.18.0,<1.19.0
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-delayedmatrixstats >=1.28.0,<1.29.0
+    - bioconductor-hdf5array >=1.34.0,<1.35.0
+    - bioconductor-minfi >=1.52.0,<1.53.0
+    - bioconductor-rhdf5 >=2.50.0,<2.51.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-r.utils
     - r-rcurl
+    - r-reticulate
+
+source:
+  md5: bc6547f4dc230ade1e241686514d57dd
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Access and analyze public DNA methylation array data compilations'
-  description: 'Resources for cross-study analyses of public DNAm array data from NCBI GEO repo, produced using Illumina''s Infinium HumanMethylation450K (HM450K) and MethylationEPIC (EPIC) platforms. Provided functions enable download, summary, and filtering of large compilation files. Vignettes detail background about file formats, example analyses, and more. Note the disclaimer on package load and consult the main manuscripts for further info.'
+    - $R -e "library('{{ name }}')"
 

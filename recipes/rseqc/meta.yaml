@@ -1,49 +1,51 @@
-{% set name = "RSeQC" %}
-{% set version = "5.0.1" %}
+{% set name = "rseqc" %}
+{% set version = "5.0.4" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 3c7d458784861af352d8da3f4f1cc8941934b37643164e9b74f929a32bd9ca80
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/rseqc-{{ version }}.tar.gz
+  sha256: b7f3996f3de0b0b0a09eec949281a8f3e665a20827fcb3cbbd7546b94574a088
 
 build:
   number: 0
-  skip: True  # [py2k]
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
     - pip
-    - python
-    - cython >=0.12
-    - nose
+    - python >=3.5
+    - setuptools
   run:
     - bx-python
     - numpy
-    - pip
     - pybigwig
     - pysam
-    - python
-    - r-base
+    - python >=3.5
+    - logomaker
 
 test:
   imports:
     - qcmodule
     - qcmodule.SAM
+    - psyco_full
   commands:
     - read_distribution.py 2>&1 | grep Usage > /dev/null
     - geneBody_coverage.py 2>&1 | grep Usage > /dev/null
 
 about:
-  home: http://rseqc.sourceforge.net/
-  license: GNU General Public License v2 (GPLv2)
-  summary: 'RNA-seq QC Package'
+  home: "https://rseqc.sourceforge.net"
+  license: "GPL-2.0-or-later"
+  summary: 'QC package for RNA-seq data.'
   license_family: GPL2
+  license_file: LICENSE
+  dev_url: "https://rseqc.sourceforge.net"
+  doc_url: "https://rseqc.sourceforge.net/#usage-information"
 
 extra:
   identifiers:

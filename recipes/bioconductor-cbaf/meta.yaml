@@ -1,46 +1,55 @@
-{% set version = "1.20.0" %}
+{% set version = "1.28.0" %}
 {% set name = "cbaf" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: a17ebd630a923bc0544e27ba753b2c37
+about:
+  description: This package contains functions that allow analysing and comparing omic data across various cancers/cancer subgroups easily. So far, it is compatible with RNA-seq, microRNA-seq, microarray and methylation datasets that are stored on cbioportal.org.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Automated functions for comparing various omic data from cbioportal.org
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-cbaf", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, BiocStyle
 requirements:
   host:
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
-    - 'bioconductor-cbioportaldata >=2.10.0,<2.11.0'
-    - 'bioconductor-genefilter >=1.80.0,<1.81.0'
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-cbioportaldata >=2.18.0,<2.19.0
+    - bioconductor-genefilter >=1.88.0,<1.89.0
     - r-base
     - r-gplots
     - r-openxlsx
     - r-rcolorbrewer
+    - r-zip
   run:
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
-    - 'bioconductor-cbioportaldata >=2.10.0,<2.11.0'
-    - 'bioconductor-genefilter >=1.80.0,<1.81.0'
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-cbioportaldata >=2.18.0,<2.19.0
+    - bioconductor-genefilter >=1.88.0,<1.89.0
     - r-base
     - r-gplots
     - r-openxlsx
     - r-rcolorbrewer
+    - r-zip
+
+source:
+  md5: 718fd18e73d785240a766ca4282ff05c
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Automated functions for comparing various omic data from cbioportal.org'
-  description: 'This package contains functions that allow analysing and comparing omic data across various cancers/cancer subgroups easily. So far, it is compatible with RNA-seq, microRNA-seq, microarray and methylation datasets that are stored on cbioportal.org.'
+    - $R -e "library('{{ name }}')"
 

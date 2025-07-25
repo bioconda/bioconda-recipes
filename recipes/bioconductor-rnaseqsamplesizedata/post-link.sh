@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "rnaseqsamplesizedata-1.30.0"
+installBiocDataPackage.sh "rnaseqsamplesizedata-1.38.0"

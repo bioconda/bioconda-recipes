@@ -1,46 +1,24 @@
-{% set version = "1.74.0" %}
+{% set version = "1.82.0" %}
 {% set name = "RBGL" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 3ae6e552c4fb6de1d33c276fd5a1446f
+about:
+  description: A fairly extensive and comprehensive interface to the graph algorithms contained in the BOOST library.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: An interface to the BOOST graph library
+
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: Rgraphviz, XML, RUnit, BiocGenerics
-requirements:
-  host:
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - r-base
-    - r-bh
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - r-base
-    - r-bh
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'An interface to the BOOST graph library'
-  description: 'A fairly extensive and comprehensive interface to the graph algorithms contained in the BOOST library.'
+  run_exports: '{{ pin_subpackage("bioconductor-rbgl", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:rbgl
     - doi:10.1093/bioinformatics/bth458
@@ -48,4 +26,37 @@ extra:
     name: bioconductor-rbgl
     path: recipes/bioconductor-rbgl
     version: 1.56.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: Rgraphviz, XML, RUnit, BiocGenerics, BiocStyle, knitr
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - r-base
+    - r-bh
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - r-base
+    - r-bh
+
+source:
+  md5: 3c15ded2511af5c004e3e541d1a243f8
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

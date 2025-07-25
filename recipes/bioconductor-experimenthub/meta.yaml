@@ -1,53 +1,59 @@
-{% set version = "2.6.0" %}
+{% set version = "2.14.0" %}
 {% set name = "ExperimentHub" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: cc5c46814f9be117919fabc695236536
+about:
+  description: This package provides a client for the Bioconductor ExperimentHub web resource. ExperimentHub provides a central location where curated data from experiments, publications or training courses can be accessed. Each resource has associated metadata, tags and date of modification. The client creates and manages a local cache of files retrieved enabling quick and reproducible access.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Client to access ExperimentHub resources
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, BiocStyle, rmarkdown, HubPub
-requirements:
-  host:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - r-biocmanager
-    - r-curl
-    - r-rappdirs
-  run:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - r-biocmanager
-    - r-curl
-    - r-rappdirs
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Client to access ExperimentHub resources'
-  description: 'This package provides a client for the Bioconductor ExperimentHub web resource. ExperimentHub provides a central location where curated data from experiments, publications or training courses can be accessed. Each resource has associated metadata, tags and date of modification. The client creates and manages a local cache of files retrieved enabling quick and reproducible access.'
+  run_exports: '{{ pin_subpackage("bioconductor-experimenthub", max_pin="x.x") }}'
+
 extra:
   parent_recipe:
     name: bioconductor-experimenthub
     path: recipes/bioconductor-experimenthub
     version: 1.6.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, BiocStyle, rmarkdown, HubPub, GenomicAlignments
+requirements:
+  host:
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-biocmanager
+    - r-rappdirs
+  run:
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-biocmanager
+    - r-rappdirs
+
+source:
+  md5: 3608b4b40bdde65c4ed1b960412c2d47
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

@@ -1,32 +1,35 @@
-{% set version = "1.0.5" %}
-{% set name_pypi = "iow" %}
+{% set version = "1.0.8" %}
+{% set name = "iow" %}
 
 package:
-  name: iow
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/i/{{ name_pypi }}/{{ name_pypi }}-{{ version }}.tar.gz
-  sha256: 6b3ddb08f7ec1dec265de4a0f6025c7a4c81df5aa613f3ead5633073b0fe2271
+  url: https://pypi.org/packages/source/i/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 8f2397addcf77dfc439686114d5df86c559f705f9ee73a21df4519ce28008ad9
 
 build:
-  number: 2
-  skip: True  # [py2k]
+  number: 1
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir --use-pep517
+  entry_points:
+    - bp = bp._cli:cli
+  run_exports:
+    - {{ pin_subpackage('iow', max_pin='x') }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
     - make
   host:
     - python
     - pip
-    - cython >=0.28.3
+    - cython
     - numpy >=1.12.1
   run:
     - python
+    - pytest
     - {{ pin_compatible('numpy') }}
-    - {{ pin_compatible('h5py', max_pin='x') }}
     - scikit-bio >=0.5.1
     - click
     - pandas
@@ -36,19 +39,22 @@ test:
     - bp
   commands:
     - bp --help
-  
+
 about:
-  home: https://github.com/biocore/improved-octo-waddle
-  license: BSD-3-Clause
+  home: "https://github.com/biocore/improved-octo-waddle"
+  license: "BSD-3-Clause"
   license_family: BSD
   license_file: LICENSE
-  summary: 'Implementation of Balanced Parentheses'
+  summary: 'Implementation of Balanced Parentheses.'
   description: |
     An implementation of the balanced parentheses tree structure as described by
-    [Cordova and Navarro](http://www.dcc.uchile.cl/~gnavarro/ps/tcs16.2.pdf). 
-  doc_url: https://github.com/biocore/improved-octo-waddle
-  dev_url: https://github.com/biocore/improved-octo-waddle
+    [Cordova and Navarro](http://www.dcc.uchile.cl/~gnavarro/ps/tcs16.2.pdf).
+  doc_url: "https://github.com/biocore/improved-octo-waddle"
+  dev_url: "https://github.com/biocore/improved-octo-waddle/blob/{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - wasade

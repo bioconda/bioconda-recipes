@@ -1,23 +1,40 @@
-{% set version = "0.40.0" %}
+{% set version = "0.48.0" %}
 {% set name = "illuminaio" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 09720bf90cecb5bdf6ce8a459e293341
+about:
+  description: Tools for parsing Illumina's microarray output files, including IDAT.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Parsing Illumina Microarray Output Files
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-illuminaio", max_pin="x.x") }}'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:illuminaio
+  parent_recipe:
+    name: bioconductor-illuminaio
+    path: recipes/bioconductor-illuminaio
+    version: 0.22.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: RUnit, BiocGenerics, IlluminaDataTestFiles (>= 1.0.2), BiocStyle
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
   host:
     - r-base
     - r-base64
@@ -26,23 +43,16 @@ requirements:
   run:
     - r-base
     - r-base64
-  build:
-    - {{ compiler('c') }}
-    - make
+
+source:
+  md5: 96c3a34369cebbffbd6e13da17d4344a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Parsing Illumina Microarray Output Files'
-  description: 'Tools for parsing Illumina''s microarray output files, including IDAT.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
-extra:
-  identifiers:
-    - biotools:illuminaio
-  parent_recipe:
-    name: bioconductor-illuminaio
-    path: recipes/bioconductor-illuminaio
-    version: 0.22.0
+    - $R -e "library('{{ name }}')"
 

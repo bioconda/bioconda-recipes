@@ -1,28 +1,37 @@
+{% set name = "presto" %}
+{% set version = "0.7.4" %}
+{% set sha256 = "77d780b9b1c803bf4b8bfc301dc985779741b07521ef7a5dcbb357e97c0776be" %}
+
 package:
-  name: presto
-  version: "0.7.1"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/ca/12/09123b431758827082924054e03277207067853c6af19803f67d1ad1dea9/presto-0.7.1.tar.gz
-  sha256: 8b5787b3a3206fda5e5cd0fd1804a6c0ecb8821f9de2b78d9a5e5a5a31ba43e9
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/presto-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
   noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('presto', max_pin="x.x") }}
 
 requirements:
   host:
     - python >=3
+    - pip
     - setuptools
   run:
     - python >=3
     - numpy >=1.8
     - scipy >=0.14
     - pandas >=0.24
-    - biopython >=1.71
+    - biopython >=1.81
     - blast >=2.5
     - muscle >=3.8
     - vsearch >=2.3.2
+    - packaging
 
 test:
   commands:
@@ -41,7 +50,14 @@ test:
     - SplitSeq.py --version
 
 about:
-  home: https://presto.readthedocs.io
-  license: AGPL-3.0
+  home: https://bitbucket.org/kleinstein/presto
+  license: AGPL-3.0-or-later
   summary: 'A bioinformatics toolkit for processing high-throughput lymphocyte receptor sequencing data.'
   license_family: AGPL
+  license_file: LICENSE
+  doc_url: https://presto.readthedocs.io
+  dev_url: https://bitbucket.org/kleinstein/presto
+
+extra:
+  identifier:
+    - doi:10.1093/bioinformatics/btu138

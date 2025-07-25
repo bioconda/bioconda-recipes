@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "etec16s-1.26.0"
+installBiocDataPackage.sh "etec16s-1.33.0"

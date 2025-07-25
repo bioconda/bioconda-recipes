@@ -1,45 +1,22 @@
-{% set version = "1.58.0" %}
+{% set version = "1.66.0" %}
 {% set name = "KEGGgraph" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: fec14c8fa2c7e0d9663d6ad32b5e0fc2
+about:
+  description: KEGGGraph is an interface between KEGG pathway and graph object as well as a collection of tools to analyze, dissect and visualize these graphs. It parses the regularly updated KGML (KEGG XML) files into graph models maintaining all essential pathway attributes. The package offers functionalities including parsing, graph operation, visualization and etc.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: 'KEGGgraph: A graph approach to KEGG PATHWAY in R and Bioconductor'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: RBGL, testthat, RColorBrewer, org.Hs.eg.db, hgu133plus2.db, SPIA
-requirements:
-  host:
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-rgraphviz >=2.42.0,<2.43.0'
-    - r-base
-    - r-rcurl
-    - 'r-xml >=2.3-0'
-  run:
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-rgraphviz >=2.42.0,<2.43.0'
-    - r-base
-    - r-rcurl
-    - 'r-xml >=2.3-0'
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'KEGGgraph: A graph approach to KEGG PATHWAY in R and Bioconductor'
-  description: 'KEGGGraph is an interface between KEGG pathway and graph object as well as a collection of tools to analyze, dissect and visualize these graphs. It parses the regularly updated KGML (KEGG XML) files into graph models maintaining all essential pathway attributes. The package offers functionalities including parsing, graph operation, visualization and etc.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-kegggraph", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:kegggraph
@@ -47,4 +24,35 @@ extra:
     name: bioconductor-kegggraph
     path: recipes/bioconductor-kegggraph
     version: 1.40.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: RBGL, testthat, RColorBrewer, org.Hs.eg.db, hgu133plus2.db, SPIA
+requirements:
+  host:
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
+    - r-base
+    - r-rcurl
+    - r-xml >=2.3-0
+  run:
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
+    - r-base
+    - r-rcurl
+    - r-xml >=2.3-0
+
+source:
+  md5: 81b027ccaf08ba3c8665bfa057d2be60
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

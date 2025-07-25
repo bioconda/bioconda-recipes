@@ -1,34 +1,39 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "netZooR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 321ba1f8cf38867733ad06da95546a4b
+about:
+  description: netZooR unifies the implementations of several Network Zoo methods (netzoo, netzoo.github.io) into a single package by creating interfaces between network inference and network analysis methods. Currently, the package has 3 methods for network inference including PANDA and its optimized implementation OTTER (network reconstruction using mutliple lines of biological evidence), LIONESS (single-sample network inference), and EGRET (genotype-specific networks). Network analysis methods include CONDOR (community detection), ALPACA (differential community detection), CRANE (significance estimation of differential modules), MONSTER (estimation of network transition states). In addition, YARN allows to process gene expresssion data for tissue-specific analyses and SAMBAR infers missing mutation data based on pathway information.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Unified methods for the inference and analysis of gene regulatory networks
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-netzoor", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: testthat (>= 2.1.0), knitr, rmarkdown, pkgdown
 requirements:
+
   host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-go.db >=3.16.0,<3.17.0'
-    - 'bioconductor-gostats >=2.64.0,<2.65.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-pandar >=1.30.0,<1.31.0'
-    - 'bioconductor-rcy3 >=2.18.0,<2.19.0'
-    - 'bioconductor-stringdb >=2.10.0,<2.11.0'
-    - 'bioconductor-yarn >=1.24.0,<1.25.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-go.db >=3.20.0,<3.21.0
+    - bioconductor-gostats >=2.72.0,<2.73.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-pandar >=1.38.0,<1.39.0
+    - bioconductor-rcy3 >=2.26.0,<2.27.0
+    - bioconductor-stringdb >=2.18.0,<2.19.0
+    - bioconductor-yarn >=1.32.0,<1.33.0
     - r-assertthat
     - r-base
     - r-data.table
@@ -41,6 +46,7 @@ requirements:
     - r-igraph
     - r-mass
     - r-matrix
+    - r-matrixcalc
     - r-matrixstats
     - r-nnet
     - r-penalized
@@ -50,16 +56,17 @@ requirements:
     - r-tidyr
     - r-vegan
     - r-viridislite
+
   run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-go.db >=3.16.0,<3.17.0'
-    - 'bioconductor-gostats >=2.64.0,<2.65.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-pandar >=1.30.0,<1.31.0'
-    - 'bioconductor-rcy3 >=2.18.0,<2.19.0'
-    - 'bioconductor-stringdb >=2.10.0,<2.11.0'
-    - 'bioconductor-yarn >=1.24.0,<1.25.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-go.db >=3.20.0,<3.21.0
+    - bioconductor-gostats >=2.72.0,<2.73.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-pandar >=1.38.0,<1.39.0
+    - bioconductor-rcy3 >=2.26.0,<2.27.0
+    - bioconductor-stringdb >=2.18.0,<2.19.0
+    - bioconductor-yarn >=1.32.0,<1.33.0
     - r-assertthat
     - r-base
     - r-data.table
@@ -72,6 +79,7 @@ requirements:
     - r-igraph
     - r-mass
     - r-matrix
+    - r-matrixcalc
     - r-matrixstats
     - r-nnet
     - r-penalized
@@ -81,13 +89,16 @@ requirements:
     - r-tidyr
     - r-vegan
     - r-viridislite
+
+source:
+  md5: dcb15929eca8b8b2db4a935e9c204f77
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Unified methods for the inference and analysis of gene regulatory networks'
-  description: 'netZooR unifies the implementations of several Network Zoo methods (netzoo, netzoo.github.io) into a single package by creating interfaces between network inference and network analysis methods. Currently, the package has 3 methods for network inference including PANDA and its optimized implementation OTTER (network reconstruction using mutliple lines of biological evidence), LIONESS (single-sample network inference), and EGRET (genotype-specific networks). Network analysis methods include CONDOR (community detection), ALPACA (differential community detection), CRANE (significance estimation of differential modules), MONSTER (estimation of network transition states). In addition, YARN allows to process gene expresssion data for tissue-specific analyses and SAMBAR infers missing mutation data based on pathway information.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

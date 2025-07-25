@@ -1,4 +1,4 @@
-{% set version = "1.9.2" %}
+{% set version = "1.10.1" %}
 
 package:
   name: kaiju
@@ -6,12 +6,14 @@ package:
 
 source:
   url: https://github.com/bioinformatics-centre/kaiju/archive/v{{ version }}.tar.gz
-  sha256: 58d922358dfa4a608be888ec5c9e615b45b1e4be50615429183b0c5355e89c78
+  sha256: 3cc05533bf6007ffeff2d755c935354952b09a6b903c5e538dff14285b3c86e8
 
 build:
-  number: 0
+  number: 2
   no_link:
     - bin/kaiju-makedb.sh
+  run_exports:
+    - {{ pin_subpackage('kaiju', max_pin="x") }}
 
 requirements:
   build:
@@ -25,18 +27,23 @@ requirements:
     - wget
     - zlib
     - python
+    - curl
 
 test:
   commands:
     - kaiju 2>&1 | grep "Kaiju {{ version }}"
 
 about:
-  home: http://kaiju.binf.ku.dk/
-  license: GNU GPL v3
+  home: https://kaiju.binf.ku.dk/
+  license: GPL-3.0-or-later
+  license_family: GPL3
   summary: 'Fast and sensitive taxonomic classification for metagenomics'
   license_file: LICENSE
+  dev_url: https://github.com/bioinformatics-centre/kaiju
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:kaiju
     - doi:10.1038/ncomms11257

@@ -1,0 +1,157 @@
+Author: Steffen Moeller <moeller@debian.org>,
+Last-Changed: Thu, 29 Jan 2015 14:18:44 +0100
+Description: Use Debian packaged htslib
+Forwarded: not-needed
+--- a/source/Makefile
++++ b/source/Makefile
+@@ -12,8 +12,8 @@
+ CXX ?= g++
+ 
+ # pre-defined flags
+-LDFLAGS_shared := -pthread -Lhtslib -Bstatic -lhts -Bdynamic -lz
+-LDFLAGS_static := -static -static-libgcc -pthread -Lhtslib -lhts -lz
++LDFLAGS_shared := -pthread -lhts -Bdynamic -lz
++LDFLAGS_static := -static -static-libgcc -pthread -lhts -lz
+ LDFLAGS_Mac :=-pthread -lz htslib/libhts.a
+ LDFLAGS_Mac_static :=-pthread -lz -static-libgcc htslib/libhts.a
+ LDFLAGS_gdb := $(LDFLAGS_shared)
+@@ -45,7 +45,7 @@
+ CXXFLAGS_SIMD ?= -mavx2
+ 
+ # Unconditionally set essential flags and optimization options
+-CXXFLAGS_common := -std=c++11 -fopenmp $(COMPTIMEPLACE) $(GIT_BRANCH_COMMIT_DIFF)
++CXXFLAGS_common := -std=c++11 -fopenmp $(COMPTIMEPLACE) $(CCFLAGS_common_add)
+ CXXFLAGS_main := -O3 $(CXXFLAGS_common)
+ CXXFLAGS_gdb := -O0 -g3 $(CXXFLAGS_common)
+ 
+@@ -97,10 +97,10 @@
+ 
+ 
+ %.o : %.cpp
+-	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $<
++	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $(COMPTIMEPLACE) $<
+ 
+ %.o : %.c
+-	$(CXX) -c $(CPPFLAGS) $(CFLAGS) $<
++	$(CXX) -c $(CPPFLAGS) $(CFLAGS) $(COMPTIMEPLACE) $<
+ 
+ all: cleanCompileInfo STAR$(SFX)
+ 
+@@ -114,8 +114,6 @@
+ 
+ .PHONY: CLEAN
+ CLEAN: clean
+-	$(MAKE) -C htslib clean
+-
+ 
+ .PHONY: clean_solo
+ clean_solo:
+@@ -131,7 +129,7 @@
+ ifneq ($(MAKECMDGOALS),clean_solo)
+ ifneq ($(MAKECMDGOALS),STARforMac)
+ ifneq ($(MAKECMDGOALS),STARforMacGDB)
+-Depend.list: $(SOURCES) parametersDefault.xxd htslib
++Depend.list: $(SOURCES) parametersDefault.xxd
+ 	echo $(SOURCES)
+ 	'rm' -f ./Depend.list
+ 	$(CXX) $(CXXFLAGS_common) -MM $^ >> Depend.list
+@@ -143,11 +141,6 @@
+ endif
+ endif
+ 
+-htslib : htslib/libhts.a
+-
+-htslib/libhts.a :
+-	$(MAKE) -C htslib lib-static
+-
+ parametersDefault.xxd: parametersDefault
+ 	xxd -i parametersDefault > parametersDefault.xxd
+ 
+--- a/source/bamRemoveDuplicates.cpp
++++ b/source/bamRemoveDuplicates.cpp
+@@ -1,7 +1,7 @@
+ #include <unordered_map>
+ #include "bamRemoveDuplicates.h"
+ #include <iostream>
+-#include "htslib/htslib/sam.h"
++#include <htslib/sam.h>
+ #include "IncludeDefine.h"
+ #include SAMTOOLS_BGZF_H
+ #include "ErrorWarning.h"
+--- a/source/bam_cat.c
++++ b/source/bam_cat.c
+@@ -52,8 +52,8 @@
+ #include <stdlib.h>
+ #include <unistd.h>
+ 
+-#include "htslib/htslib/bgzf.h"
+-#include "htslib/htslib/sam.h"
++#include <htslib/bgzf.h>
++#include <htslib/sam.h>
+ #include <cstring>
+ 
+ #define BUF_SIZE 0x10000
+--- a/source/signalFromBAM.h
++++ b/source/signalFromBAM.h
+@@ -1,6 +1,6 @@
+ #ifndef CODE_signalFromBAM
+ #define CODE_signalFromBAM
+-#include "htslib/htslib/sam.h"
++#include <htslib/sam.h>
+ #include  <fstream>
+ #include <string>
+ #include "Stats.h"
+--- a/source/IncludeDefine.h
++++ b/source/IncludeDefine.h
+@@ -30,8 +30,8 @@
+ #define ERROR_OUT string ( __FILE__ ) +":"+ to_string ( (uint) __LINE__ ) +":"+ string ( __FUNCTION__ )
+ 
+ //external libs
+-#define SAMTOOLS_BGZF_H "htslib/htslib/bgzf.h"
+-#define SAMTOOLS_SAM_H  "htslib/htslib/sam.h"
++#define SAMTOOLS_BGZF_H <htslib/bgzf.h>
++#define SAMTOOLS_SAM_H  <htslib/sam.h>
+ 
+ using namespace std;
+ 
+--- a/source/BAMfunctions.cpp
++++ b/source/BAMfunctions.cpp
+@@ -1,5 +1,5 @@
+ #include "BAMfunctions.h"
+-#include "htslib/htslib/kstring.h"
++#include <htslib/kstring.h>
+ 
+ 
+ string bam_cigarString (bam1_t *b) {//output CIGAR string
+--- a/source/STAR.cpp
++++ b/source/STAR.cpp
+@@ -30,7 +30,7 @@
+ 
+ #include "twoPassRunPass1.h"
+ 
+-#include "htslib/htslib/sam.h"
++#include <htslib/sam.h>
+ #include "parametersDefault.xxd"
+ 
+ void usage(int usageType) {
+--- a/source/bam_cat.h
++++ b/source/bam_cat.h
+@@ -1,7 +1,7 @@
+ #ifndef CODE_bam_cat
+ #define CODE_bam_cat
+ 
+-#include "htslib/htslib/sam.h"
++#include <htslib/sam.h>
+ 
+ int bam_cat(int nfn, char * const *fn, const bam_hdr_t *h, const char* outbam);
+ 
+--- a/source/Parameters.cpp
++++ b/source/Parameters.cpp
+@@ -376,7 +376,6 @@
+ 
+     inOut->logMain << "STAR version=" << STAR_VERSION << "\n";
+     inOut->logMain << "STAR compilation time,server,dir=" << COMPILATION_TIME_PLACE << "\n";
+-    inOut->logMain << "STAR git: " << GIT_BRANCH_COMMIT_DIFF << "\n";
+     #ifdef COMPILE_FOR_LONG_READS
+            inOut->logMain << "Compiled for LONG reads" << "\n";
+     #endif

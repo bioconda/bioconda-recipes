@@ -1,5 +1,5 @@
 {% set name = "pegasuspy" %}
-{% set version = "1.7.1" %}
+{% set version = "1.10.2" %}
 
 package:
     name: {{ name|lower }}
@@ -7,15 +7,18 @@ package:
 
 source:
     url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-    sha256: d7dae5356cb7af85ba3cd5b82bae3d1c7d04955eb3bfbc5471acd99279005fbc
-
+    sha256: 3d5aac1ec249f093ff1cbaaba226bdd202092d675b5d966f4d8dc86f84374be1
 
 build:
-    number: 1
-    skip: True  # [py<37 or py > 39]
+    number: 0
+    skip: True  # [py < 38 or py > 311]
+    script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
     entry_points:
-        - pegasus = pegasus.__main__:main
-    script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+      - pegasus = pegasus.__main__:main
+    script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv"
+    run_exports:
+        - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
     build:
@@ -23,18 +26,17 @@ requirements:
     host:
         - python
         - cython
-        - setuptools_scm
+        - setuptools-scm
         - pip
     run:
         - python
-        - numpy
+        - numpy <2
         - pandas >=1.2.0
         - anndata >=0.7.1
-        - loompy >=3
+        - loompy
         - docopt
-        - scipy >=1.7
-        - importlib_metadata >=0.7
-        - pegasusio >=0.5.1
+        - scipy
+        - pegasusio >=0.9.1
         - psutil
         - threadpoolctl
         - adjusttext
@@ -45,19 +47,23 @@ requirements:
         - lightgbm >=2.2.1
         - louvain >=0.7.0
         - leidenalg >=0.8.0
-        - matplotlib-base >=2.0.0
+        - matplotlib-base >=3.7.0
         - natsort
         - numba
         - pybind11
         - python-igraph >=0.8.0
         - scikit-learn >=0.23.2
         - scikit-misc
-        - seaborn
+        - seaborn-base >=0.13.0
         - statsmodels
         - pyfit-sne >=1.1.1
         - umap-learn >=0.5.2
         - xlsxwriter
         - wordcloud
+        - forceatlas2-python
+        # brought in by numba, trying to ensure it comes from conda-forge rather than defaults
+        - tbb
+        - zarr <3
 
 test:
     imports:

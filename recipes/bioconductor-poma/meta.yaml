@@ -1,72 +1,33 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "POMA" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 62f4d7ae06dc971d3ac6cfa99cac45e4
+about:
+  description: 'The POMA package offers a comprehensive toolkit designed for omics data analysis, streamlining the process from initial visualization to final statistical analysis. Its primary goal is to simplify and unify the various steps involved in omics data processing, making it more accessible and manageable within a single, intuitive R package. Emphasizing on reproducibility and user-friendliness, POMA leverages the standardized SummarizedExperiment class from Bioconductor, ensuring seamless integration and compatibility with a wide array of Bioconductor tools. This approach guarantees maximum flexibility and replicability, making POMA an essential asset for researchers handling omics datasets. See https://github.com/pcastellanoescuder/POMAShiny. Paper: Castellano-Escuder et al. (2021) <doi:10.1371/journal.pcbi.1009148> for more details.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Tools for Omics Data Analysis
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, covr, ggraph, knitr, patchwork, plotly, tidyverse, testthat (>= 2.3.2)
+  run_exports: '{{ pin_subpackage("bioconductor-poma", max_pin="x.x") }}'
+
+extra:
+  container:
+    extended-base: yes
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, covr, ggraph, ggtext, knitr, patchwork, plotly, tidyverse, testthat (>= 2.3.2)
 requirements:
-  host:
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-impute >=1.72.0,<1.73.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-mixomics >=6.22.0,<6.23.0'
-    - 'bioconductor-rankprod >=3.24.0,<3.25.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - r-base
-    - r-broom
-    - r-caret
-    - r-dbscan
-    - r-dplyr
-    - r-ggplot2
-    - r-ggrepel
-    - 'r-glasso >=1.11'
-    - r-glmnet
-    - r-magrittr
-    - r-randomforest
-    - r-rmarkdown
-    - r-tibble
-    - r-tidyr
-    - r-uwot
-    - r-vegan
-  run:
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-impute >=1.72.0,<1.73.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-mixomics >=6.22.0,<6.23.0'
-    - 'bioconductor-rankprod >=3.24.0,<3.25.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - r-base
-    - r-broom
-    - r-caret
-    - r-dbscan
-    - r-dplyr
-    - r-ggplot2
-    - r-ggrepel
-    - 'r-glasso >=1.11'
-    - r-glmnet
-    - r-magrittr
-    - r-randomforest
-    - r-rmarkdown
-    - r-tibble
-    - r-tidyr
-    - r-uwot
-    - r-vegan
+
   build:
     - {{ cdt('mesa-libgl-devel') }}  # [linux]
     - {{ cdt('mesa-dri-drivers') }}  # [linux]
@@ -74,16 +35,84 @@ requirements:
     - {{ cdt('libxdamage') }}  # [linux]
     - {{ cdt('libxxf86vm') }}  # [linux]
     - xorg-libxfixes  # [linux]
+
+  host:
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-fgsea >=1.32.0,<1.33.0
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-mixomics >=6.30.0,<6.31.0
+    - bioconductor-rankprod >=3.32.0,<3.33.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-sva >=3.54.0,<3.55.0
+    - r-base
+    - r-broom
+    - r-caret
+    - r-dbscan
+    - r-dplyr
+    - r-fsa
+    - r-ggcorrplot
+    - r-ggplot2
+    - r-ggrepel
+    - r-glmnet
+    - r-janitor
+    - r-lme4
+    - r-magrittr
+    - r-mass
+    - r-msigdbr
+    - r-multcomp
+    - r-purrr
+    - r-randomforest
+    - r-rlang
+    - r-tibble
+    - r-tidyr
+    - r-uwot
+    - r-vegan
+
+  run:
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-fgsea >=1.32.0,<1.33.0
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-mixomics >=6.30.0,<6.31.0
+    - bioconductor-rankprod >=3.32.0,<3.33.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-sva >=3.54.0,<3.55.0
+    - r-base
+    - r-broom
+    - r-caret
+    - r-dbscan
+    - r-dplyr
+    - r-fsa
+    - r-ggcorrplot
+    - r-ggplot2
+    - r-ggrepel
+    - r-glmnet
+    - r-janitor
+    - r-lme4
+    - r-magrittr
+    - r-mass
+    - r-msigdbr
+    - r-multcomp
+    - r-purrr
+    - r-randomforest
+    - r-rlang
+    - r-tibble
+    - r-tidyr
+    - r-uwot
+    - r-vegan
+
+source:
+  md5: d1f2cc9db15e981cab28d5dc0dbca5d8
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Tools for Omics Data Analysis'
-  description: 'A reproducible and easy-to-use toolkit for visualization, pre-processing, exploration, and statistical analysis of omics datasets. The main aim of POMA is to enable a flexible data cleaning and statistical analysis processes in one comprehensible and user-friendly R package. This package has a Shiny app version called POMAShiny that implements all POMA functions. See https://github.com/pcastellanoescuder/POMAShiny. See Castellano-Escuder P, González-Domínguez R, Carmona-Pontaque F, et al. (2021) <doi:10.1371/journal.pcbi.1009148> for more details.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-extra:
-  container:
-    extended-base: true
+    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library('{{ name }}')"
 

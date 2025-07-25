@@ -1,45 +1,54 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "transomics2cytoscape" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 1e3aed736e319cfd99e796fbb91d9f26
+about:
+  description: transomics2cytoscape generates a file for 3D transomics visualization by providing input that specifies the IDs of multiple KEGG pathway layers, their corresponding Z-axis heights, and an input that represents the edges between the pathway layers. The edges are used, for example, to describe the relationships between kinase on a pathway and enzyme on another pathway. This package automates creation of a transomics network as shown in the figure in Yugi.2014 (https://doi.org/10.1016/j.celrep.2014.07.021) using Cytoscape automation (https://doi.org/10.1186/s13059-019-1758-4).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: A tool set for 3D Trans-Omic network visualization with Cytoscape
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-transomics2cytoscape", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: testthat, roxygen2, knitr, BiocStyle, rmarkdown
-# SystemRequirements: Cytoscape >= 3.9.1
+# SystemRequirements: Cytoscape >= 3.10.0
 requirements:
   host:
-    - 'bioconductor-keggrest >=1.38.0,<1.39.0'
-    - 'bioconductor-rcy3 >=2.18.0,<2.19.0'
+    - bioconductor-keggrest >=1.46.0,<1.47.0
+    - bioconductor-rcy3 >=2.26.0,<2.27.0
     - r-base
     - r-dplyr
+    - r-pbapply
     - r-purrr
     - r-tibble
   run:
-    - 'bioconductor-keggrest >=1.38.0,<1.39.0'
-    - 'bioconductor-rcy3 >=2.18.0,<2.19.0'
+    - bioconductor-keggrest >=1.46.0,<1.47.0
+    - bioconductor-rcy3 >=2.26.0,<2.27.0
     - r-base
     - r-dplyr
+    - r-pbapply
     - r-purrr
     - r-tibble
+
+source:
+  md5: cb6bf8cc64f438a03e2058a3082437ee
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'A tool set for 3D Trans-Omic network visualization with Cytoscape'
-  description: 'transomics2cytoscape generates a file for 3D transomics visualization by providing input that specifies the IDs of multiple KEGG pathway layers, their corresponding Z-axis heights, and an input that represents the edges between the pathway layers. The edges are used, for example, to describe the relationships between kinase on a pathway and enzyme on another pathway. This package automates creation of a transomics network as shown in the figure in Yugi.2014 (https://doi.org/10.1016/j.celrep.2014.07.021) using Cytoscape automation (https://doi.org/10.1186/s13059-019-1758-4).'
+    - $R -e "library('{{ name }}')"
 

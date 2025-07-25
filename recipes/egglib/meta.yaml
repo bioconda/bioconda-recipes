@@ -1,18 +1,23 @@
 {% set name = "egglib" %}
-{% set version = "3.1.0" %}
+{% set version = "3.3.5" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://files.pythonhosted.org/packages/8e/f1/4eacf0858c363251c21dffd01804a66343f3a02e0d2adfafbe08bed58a0e/EggLib-3.1.0.zip"
-  sha256: 82ec602a2497b2f37637b88c24ba6da6b6d575fb46e9771fc3c94519e1934144
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/EggLib-{{ version }}.zip
+  sha256: 69dad3b35adb4cddb59d4ab13ba807d980fa3eed09e5520f9963b2aeb189ca3c
 
 build:
   number: 0
-  skip: True  # [py2k]
-  script: {{ PYTHON }} -m pip install . -vv
+  skip: True  # [py < 38 or osx]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - egglib-config = egglib.cli.config:main
+    - egglib-test = egglib.cli.test:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
   build:
@@ -24,6 +29,8 @@ requirements:
     - setuptools
   run:
     - python
+    - platformdirs
+    - click
 
 test:
   imports:
@@ -35,16 +42,19 @@ test:
     - egglib.wrappers
 
 about:
-  home: "https://egglib.org/"
-  license: "GNU General Public v3 or later (GPLv3+)"
+  home: "https://egglib.org"
+  license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: LICENSE
   summary: "Evolutionary Genetics and Genomics Library. EggLib is a C++/Python library and program package for evolutionary genetics and genomics. Main features are sequence data management, sequence polymorphism analysis, and coalescent simulations. EggLib is a flexible Python module with a performant underlying C++ library and allows fast and intuitive development of Python programs and scripts."
   doc_url: "https://www.egglib.org/index.html"
-  dev_url: "https://gitlab.com/demita/egglib/"
+  dev_url: "https://gitlab.com/demita/egglib"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
     - ranwez
   identifiers:
-    - https://doi.org/10.1111/1755-0998.13672
+    - doi:10.1111/1755-0998.13672
+    - biotools:egglib

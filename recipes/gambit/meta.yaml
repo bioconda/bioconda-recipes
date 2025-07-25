@@ -1,4 +1,4 @@
-{% set version = "1.0.0" %}
+{% set version = "1.1.0" %}
 
 package:
   name: gambit
@@ -6,34 +6,38 @@ package:
 
 source:
   url: https://github.com/jlumpe/gambit/archive/v{{ version }}.tar.gz
-  sha256: a2d6465a482d2113d2b03c56689871fa088b0443dd663652bf9304a9befa1470
-
+  sha256: 19ec968f75366a5129f4db79024f8a717575fef88b0265c9dd281f767a0d888d
 
 build:
-  number: 0
-  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed ."
-  skip: True  # [py < 37]
+  number: 2
+  # Biopython not currently available for 3.13
+  skip: True  # [py < 39 or py > 312]
+  script: "{{ PYTHON }} -m pip install --no-deps -vvv ."
+  entry_points:
+    - gambit = gambit.cli:cli
+  run_exports:
+    - {{ pin_subpackage("gambit", max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - libgomp      # [linux]
+    - llvm-openmp  # [osx]
   host:
     - python
     - pip
-    - numpy >=1.13
-    - cython
+    - cython >=3
   run:
     - python
-    - numpy >=1.13
-    - sqlalchemy >=1.1
-    - biopython >=1.69
-    - alembic >=1.0
+    - numpy >=1.13,<2
+    - sqlalchemy >=1.4
+    - biopython >=1.79
     - attrs >=20
-    - cattrs >=1.0
+    - cattrs >=23.2
     - click >=7.0
     - h5py >=3.0
-    - setuptools
     - scipy >=1.7
+    - typing-extensions >=4
 
 test:
   requires:
@@ -56,9 +60,17 @@ about:
     approximately 50,000 reference genomes (derived from NCBI RefSeq) to identify
     unknown bacterial genomes within seconds.
   license: AGPL-3.0-or-later
+  license_family: AGPL
   license_file: LICENSE
   doc_url: https://gambit-genomics.readthedocs.io/en/latest
+  dev_url: https://github.com/jlumpe/gambit
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - jlumpe
+  identifiers:
+    - doi:10.1371/journal.pone.0277575
+    - biotools:gambit_bacterial

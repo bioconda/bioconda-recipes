@@ -1,0 +1,51 @@
+{% set version = "0.2.1" %}
+{% set sha256 = "3b101a7d15be0d31a43451368046a39ab04e006fa006e240b02fe6c80e6cc8eb" %}
+
+package:
+  name: amplisim
+  version: {{ version }}
+
+source:
+  url: https://github.com/rki-mf1/amplisim/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 3
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('amplisim', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - make
+  host:
+    - zlib
+    - xz
+    - bzip2
+    - libcurl
+    - libdeflate
+  run:
+    - zlib
+    - xz
+    - bzip2
+    - libcurl
+    - libdeflate
+
+test:
+  source_files:
+    - test/MN908947.3.spike.fasta
+    - test/SARS-CoV-2.spike.primer.bed
+  commands:
+    - amplisim --help
+
+about:
+  home: https://github.com/rki-mf1/amplisim
+  license_file: LICENSE
+  license: Apache License 2.0
+  summary: Plain simple amplicon sequence simulator for in-silico genomic sequencing assays.
+
+extra:
+  additional-platforms:
+    - linux-aarch64

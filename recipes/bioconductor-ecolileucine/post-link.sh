@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "ecolileucine-1.38.0"
+installBiocDataPackage.sh "ecolileucine-1.46.0"

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "reactome.db-1.82.0"
+installBiocDataPackage.sh "reactome.db-1.89.0"

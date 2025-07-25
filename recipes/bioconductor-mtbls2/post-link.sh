@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "mtbls2-1.27.0"
+installBiocDataPackage.sh "mtbls2-1.36.0"

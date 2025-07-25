@@ -1,178 +1,157 @@
-pr:
-  autoCancel: true
-trigger:
-  branches:
-    exclude:
-      - master
-      - '*'
+# Disable Azure checks in favor of GitHub Actions due to memory issues
+# pr:
+#   autoCancel: true
+pr: none
+trigger: none
+# trigger: 
+  # branches:
+  #   exclude:
+  #     - master
+  #     - "*"
 
 stages:
-- stage: 'lint'
-  jobs:
-  - job: 'lint'
-    pool:
-      vmImage: 'ubuntu-latest'
-    strategy:
-      maxParallel: 8
+  - stage: "lint"
+    jobs:
+      - job: "lint"
+        pool:
+          vmImage: "ubuntu-latest"
+        strategy:
+          maxParallel: 8
 
-    steps:
-    - bash: echo "##vso[task.prependpath]/opt/miniconda/bin"
-      displayName: Add conda to PATH
+        steps:
+          - bash: echo "##vso[task.prependpath]/opt/mambaforge/bin"
+            displayName: Add conda to PATH
 
-    - bash: |
-        wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/install-and-set-up-conda.sh
-      displayName: Fetch bioconda install script
+          - bash: |
+              wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
+            displayName: Fetch bioconda install script
 
-    - bash: |
-        sudo mkdir -p /opt
-        sudo chown -R $USER /opt
-      displayName: Ensure cache has path to restore to
+          - script: bash install-and-set-up-conda.sh
+            displayName: Install bioconda-utils
 
-    - task: Cache@2
-      inputs:
-        path: "/opt/miniconda"
-        key: '"$(Agent.OS)" | **/install-and-set-up-conda.sh'
-        cacheHitVar: CACHE_RESTORED
-      displayName: Restore cache
+          # We reconfigure conda to use the right channel setup.
+          - script: bash configure-conda.sh
+            displayName: Configure conda
 
-    - script: bash install-and-set-up-conda.sh
-      condition: ne(variables.CACHE_RESTORED, 'true')
-      displayName: Install bioconda-utils
+          - bash: |
+              set -e
+              eval "$(conda shell.bash hook)"
+              conda activate bioconda
+              source=`echo $(Build.SourceBranch) | sed -e "s#^refs/pull/#pull/#"`
+              bioconda-utils lint --loglevel debug --full-report --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH" "$source"
+            displayName: Lint
 
-    - bash: |
-        set -e
-        eval "$(conda shell.bash hook)"
-        conda activate bioconda
-        source=`echo $(Build.SourceBranch) | sed -e "s#^refs/pull/#pull/#"`
-        bioconda-utils lint --loglevel debug --full-report --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH" "$source"
-      displayName: Lint
+  - stage: "test_linux"
+    jobs:
+      - job: "test_linux"
+        ##timeoutInMinutes: 90 # how long to run the job before automatically cancelling
+        ##cancelTimeoutInMinutes: 40 # how much time to give 'run always even if cancelled tasks' before stopping them
+        pool:
+          vmImage: "ubuntu-latest"
+        strategy:
+          maxParallel: 8
+        timeoutInMinutes: 360
 
-- stage: 'test_linux'
-  jobs:
-  - job: 'test_linux'
-    pool:
-      vmImage: 'ubuntu-latest'
-    strategy:
-      maxParallel: 8
-    timeoutInMinutes: 360
+        steps:
+          - bash: echo "##vso[task.prependpath]/opt/mambaforge/bin"
+            displayName: Add conda to PATH
 
-    steps:
-    - bash: echo "##vso[task.prependpath]/opt/miniconda/bin"
-      displayName: Add conda to PATH
+          - bash: |
+              wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
+            displayName: Fetch bioconda install script
 
-    - bash: |
-        wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/install-and-set-up-conda.sh
-      displayName: Fetch bioconda install script
+          - script: bash install-and-set-up-conda.sh
+            displayName: Install bioconda-utils
 
-    - bash: |
-        sudo mkdir -p /opt
-        sudo chown -R $USER /opt
-      displayName: Ensure cache has path to restore to
+          # We reconfigure conda to use the right channel setup.
+          - script: bash configure-conda.sh
+            displayName: Configure conda
 
-    - task: Cache@2
-      inputs:
-        path: "/opt/miniconda"
-        key: '"$(Agent.OS)" | **/install-and-set-up-conda.sh'
-        cacheHitVar: CACHE_RESTORED
-      displayName: Restore cache
+          - bash: |
+              set -e
+              eval "$(conda shell.bash hook)"
+              conda activate bioconda
+              export OSTYPE="linux-gnu"
+              export CI="true"
+              bioconda-utils build recipes config.yml \
+                  --docker --mulled-test \
+                  --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH" HEAD
+            displayName: Test
 
-    - script: bash install-and-set-up-conda.sh
-      condition: ne(variables.CACHE_RESTORED, 'true')
-      displayName: Install bioconda-utils
+          - bash: |
+              (
+              mkdir -p /tmp/artifacts/packages
+              cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
+              find -name .cache | xargs rm -rf || true
+              for n in index.html channeldata.json linux-64 osx-64 noarch; do
+                cp -rv $n /tmp/artifacts/packages || true
+              done
+              if command -V docker >/dev/null; then
+                mkdir -p /tmp/artifacts/images
+                cd /tmp/artifacts/images
+                docker image ls --format='{{.Repository}}:{{.Tag}}' | \
+                  { grep biocontainers || true ; } | \
+                  xargs -n1 -P4 bash -c '
+                    test -n "${1+x}" || exit 0
+                    echo "Start compressing docker image ${1} ..."
+                    docker save "${1}" | gzip -c > "${1##*/}.tar.gz"
+                    echo "Finished compressing docker image ${1} ."
+                    ' --
+              fi
+              ) || true
+            displayName: Prepare artifacts
 
-    - bash: |
-        set -e
-        eval "$(conda shell.bash hook)"
-        conda activate bioconda
-        docker pull quay.io/dpryan79/mulled_container:latest
-        export OSTYPE="linux-gnu"
-        export CI="true"
-        bioconda-utils build recipes config.yml \
-            --docker --mulled-test \
-            --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH" HEAD
-        docker rmi quay.io/dpryan79/mulled_container:latest
-      displayName: Test
+          - publish: /tmp/artifacts
+            artifact: LinuxArtifacts
 
-    - bash: |
-        (
-        mkdir -p /tmp/artifacts/packages
-        cd /opt/miniconda/envs/bioconda/conda-bld || exit 0
-        find -name .cache | xargs rm -rf || true
-        for n in index.html channeldata.json linux-64 osx-64 noarch; do
-          cp -rv $n /tmp/artifacts/packages || true
-        done
-        if command -V docker >/dev/null; then
-          mkdir -p /tmp/artifacts/images
-          cd /tmp/artifacts/images
-          docker image ls --format='{{.Repository}}:{{.Tag}}' | \
-            { grep biocontainers || true ; } | \
-            xargs -n1 -P4 bash -c '
-              test -n "${1+x}" || exit 0
-              echo "Start compressing docker image ${1} ..."
-              docker save "${1}" | gzip -c > "${1##*/}.tar.gz"
-              echo "Finished compressing docker image ${1} ."
-              ' --
-        fi
-        ) || true
-      displayName: Prepare artifacts
+  - stage: "test_osx"
+    jobs:
+      - job: "test_osx"
+        pool:
+          vmImage: "macOS-latest"
+        strategy:
+          maxParallel: 4
+        timeoutInMinutes: 360
 
-    - publish: /tmp/artifacts
-      artifact: LinuxArtifacts
+        steps:
+          - bash: echo "##vso[task.prependpath]/opt/mambaforge/bin"
+            displayName: Add conda to PATH
 
-- stage: 'test_osx'
-  jobs:
-  - job: 'test_osx'
-    pool:
-      vmImage: 'macOS-latest'
-    strategy:
-      maxParallel: 4
-    timeoutInMinutes: 360
+          - bash: |
+              wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
+            displayName: Fetch setup scripts
 
-    steps:
-    - bash: echo "##vso[task.prependpath]/opt/miniconda/bin"
-      displayName: Add conda to PATH
+          - script: bash install-and-set-up-conda.sh
+            displayName: Install bioconda-utils
 
-    - bash: |
-        wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/install-and-set-up-conda.sh
-      displayName: Fetch bioconda install script
+          # We reconfigure conda to use the right channel setup.
+          - script: bash configure-conda.sh
+            displayName: Configure conda
 
-    - bash: |
-        sudo mkdir -p /opt
-        sudo chown -R $USER /opt
-      displayName: Ensure cache has path to restore to
+          - bash: |
+              set -e
+              eval "$(conda shell.bash hook)"
+              conda activate bioconda
+              export OSTYPE="darwin"
+              export CI="true"
 
-    - task: Cache@2
-      inputs:
-        path: "/opt/miniconda"
-        key: '"$(Agent.OS)" | **/install-and-set-up-conda.sh'
-        cacheHitVar: CACHE_RESTORED
-      displayName: Restore cache
+              # Get MACOSX vars
+              source common.sh
 
-    - script: bash install-and-set-up-conda.sh
-      condition: ne(variables.CACHE_RESTORED, 'true')
-      displayName: Install bioconda-utils
+              bioconda-utils build recipes config.yml \
+                  --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH" HEAD
+            displayName: Test
 
-    - bash: |
-        set -e
-        eval "$(conda shell.bash hook)"
-        conda activate bioconda
-        export OSTYPE="darwin"
-        export CI="true"
-        export HOME=`pwd`
-        bioconda-utils build recipes config.yml \
-            --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH" HEAD
-      displayName: Test
+          - bash: |
+              (
+              mkdir -p /tmp/artifacts/packages
+              cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
+              find -name .cache | xargs rm -rf || true
+              for n in index.html channeldata.json linux-64 osx-64 noarch; do
+                cp -rv $n /tmp/artifacts/packages || true
+              done
+              ) || true
+            displayName: Prepare artifacts
 
-    - bash: |
-        (
-        mkdir -p /tmp/artifacts/packages
-        cd /opt/miniconda/envs/bioconda/conda-bld || exit 0
-        find -name .cache | xargs rm -rf || true
-        for n in index.html channeldata.json linux-64 osx-64 noarch; do
-          cp -rv $n /tmp/artifacts/packages || true
-        done
-        ) || true
-      displayName: Prepare artifacts
-
-    - publish: /tmp/artifacts
-      artifact: OSXArtifacts
+          - publish: /tmp/artifacts
+            artifact: OSXArtifacts

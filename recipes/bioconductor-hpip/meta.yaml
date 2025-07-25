@@ -1,31 +1,35 @@
-{% set version = "1.4.0" %}
+{% set version = "1.12.0" %}
 {% set name = "HPiP" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: ff7e0dac99f2db657009a80e4232c085
+about:
+  description: HPiP (Host-Pathogen Interaction Prediction) uses an ensemble learning algorithm for prediction of host-pathogen protein-protein interactions (HP-PPIs) using structural and physicochemical descriptors computed from amino acid-composition of host and pathogen proteins.The proposed package can effectively address data shortages and data unavailability for HP-PPI network reconstructions. Moreover, establishing computational frameworks in that regard will reveal mechanistic insights into infectious diseases and suggest potential HP-PPI targets, thus narrowing down the range of possible candidates for subsequent wet-lab experimental validations.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Host-Pathogen Interaction Prediction
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-hpip", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: rmarkdown, colorspace, e1071, kernlab, ranger, SummarizedExperiment, Biostrings, randomForest, gprofiler2, gridExtra, ggthemes, BiocStyle, BiocGenerics, RUnit, tools, knitr
 requirements:
   host:
     - r-base
     - r-caret
     - r-corrplot
-    - 'r-dplyr >=1.0.6'
+    - r-dplyr >=1.0.6
     - r-ggplot2
-    - 'r-httr >=1.4.2'
+    - r-httr >=1.4.2
     - r-igraph
     - r-magrittr
     - r-mcl
@@ -41,9 +45,9 @@ requirements:
     - r-base
     - r-caret
     - r-corrplot
-    - 'r-dplyr >=1.0.6'
+    - r-dplyr >=1.0.6
     - r-ggplot2
-    - 'r-httr >=1.4.2'
+    - r-httr >=1.4.2
     - r-igraph
     - r-magrittr
     - r-mcl
@@ -55,13 +59,16 @@ requirements:
     - r-stringr
     - r-tibble
     - r-tidyr
+
+source:
+  md5: 2704b380252bc6db2d60f9354a2e7f47
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Host-Pathogen Interaction Prediction'
-  description: 'HPiP (Host-Pathogen Interaction Prediction) uses an ensemble learning algorithm for prediction of host-pathogen protein-protein interactions (HP-PPIs) using structural and physicochemical descriptors computed from amino acid-composition of host and pathogen proteins.The proposed package can effectively address data shortages and data unavailability for HP-PPI network reconstructions. Moreover, establishing computational frameworks in that regard will reveal mechanistic insights into infectious diseases and suggest potential HP-PPI targets, thus narrowing down the range of possible candidates for subsequent wet-lab experimental validations.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

@@ -26,8 +26,8 @@ chmod 0755 FindVariants.pl
 chmod 0755 FindSomatic.pl
 
 ls -lh $BUILD_PREFIX/include/bamtools
-make INCLUDES="-I$BUILD_PREFIX/include/bamtools -L $BUILD_PREFIX/lib" Microassembler
-make INCLUDES="-I$BUILD_PREFIX/include/bamtools -L $BUILD_PREFIX/lib"
+make INCLUDES="-I$BUILD_PREFIX/include/bamtools -L $BUILD_PREFIX/lib" -j ${CPU_COUNT} Microassembler
+make INCLUDES="-I$BUILD_PREFIX/include/bamtools -L $BUILD_PREFIX/lib" -j ${CPU_COUNT}
 
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir

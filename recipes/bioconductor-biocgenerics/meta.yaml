@@ -1,37 +1,39 @@
-{% set version = "0.44.0" %}
+{% set version = "0.52.0" %}
 {% set name = "BiocGenerics" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 9438855e3f8bb24cecc7588c519ec8dd
+about:
+  description: The package defines many S4 generic functions used in Bioconductor.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: S4 generic functions used in Bioconductor
 build:
-  number: 0
+  noarch: generic
+  number: 3
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: Biobase, S4Vectors, IRanges, GenomicRanges, DelayedArray, Biostrings, Rsamtools, AnnotationDbi, affy, affyPLM, DESeq2, flowClust, MSnbase, annotate, RUnit
+  run_exports: '{{ pin_subpackage("bioconductor-biocgenerics", max_pin="x.x") }}'
+extra:
+  identifiers:
+    - biotools:biocgenerics
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: Biobase, S4Vectors, IRanges, S4Arrays, SparseArray, DelayedArray, HDF5Array, GenomicRanges, pwalign, Rsamtools, AnnotationDbi, affy, affyPLM, DESeq2, flowClust, MSnbase, annotate, RUnit
 requirements:
   host:
     - r-base
   run:
     - r-base
+source:
+  md5: 17433e48365e2cb89bc5e59de7ead46b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'S4 generic functions used in Bioconductor'
-  description: 'The package defines many S4 generic functions used in Bioconductor.'
-extra:
-  identifiers:
-    - biotools:biocgenerics
+    - $R -e "library('{{ name }}')"
 

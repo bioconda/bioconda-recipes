@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "msmb-1.15.2"
+installBiocDataPackage.sh "msmb-1.24.0"

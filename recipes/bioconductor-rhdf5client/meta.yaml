@@ -1,48 +1,53 @@
-{% set version = "1.20.0" %}
+{% set version = "1.28.0" %}
 {% set name = "rhdf5client" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 976fb4075570891731b3343caa40341f
+about:
+  description: This package provides functionality for reading data from HDF Scalable Data Service from within R.  The HSDSArray function bridges from HSDS to the user via the DelayedArray interface.  Bioconductor manages an open HSDS instance graciously provided by John Readey of the HDF Group.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Access HDF5 content from HDF Scalable Data Service
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-rhdf5client", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, testthat, BiocStyle, DT, rmarkdown
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
   host:
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
     - r-base
+    - r-data.table
     - r-httr
-    - r-r6
     - r-rjson
     - libblas
     - liblapack
   run:
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
     - r-base
+    - r-data.table
     - r-httr
-    - r-r6
     - r-rjson
-  build:
-    - {{ compiler('c') }}
-    - make
+
+source:
+  md5: 61c367b6450eacb2dd7283daf399a80c
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Access HDF5 content from h5serv'
-  description: 'Provides functionality for reading data from h5serv server from within R.'
+    - $R -e "library('{{ name }}')"
 

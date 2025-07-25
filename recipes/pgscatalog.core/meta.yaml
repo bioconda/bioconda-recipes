@@ -1,0 +1,60 @@
+{% set name = "pgscatalog.core" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pgscatalog_core-{{ version }}.tar.gz
+  sha256: 9dcc5d2e2dac23cf90b7ea50f35e482d8fd881c2e0dffe1c6a4251effe1b0d3a
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - pgscatalog-download = pgscatalog.core.cli.download_cli:run
+    - pgscatalog-combine = pgscatalog.core.cli.format_cli:run
+    - pgscatalog-format = pgscatalog.core.cli.format_cli:run
+    - pgscatalog-relabel = pgscatalog.core.cli.relabel_cli:run
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-deps
+  run_exports:
+    - {{ pin_subpackage('pgscatalog.core', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools-scm
+    - pip
+  run:
+    - python >=3.10
+    - httpx >=0.28.1
+    - tenacity >=9.0.0
+    - pyliftover >=0.4.1
+    - xopen >=2.0.2
+    - tqdm >=4.67.1
+    - natsort >=8.4.0
+    - pydantic >=2.10.6
+    # for xopen
+    - python-zlib-ng
+
+test:
+  imports:
+    - pgscatalog.core
+  commands:
+    - pgscatalog-download --help
+    - pgscatalog-combine --help
+    - pgscatalog-format --help
+    - pgscatalog-relabel --help
+
+about:
+  home: "https://github.com/PGScatalog/pygscatalog"
+  summary: "Core tools for working with polygenic scores (PGS) and the PGS Catalog."
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: LICENSE
+  dev_url: "https://github.com/PGScatalog/pygscatalog"
+
+extra:
+  recipe-maintainers:
+    - nebfield

@@ -1,30 +1,36 @@
-{% set version = "2.4.0" %}
+{% set version = "2.12.0" %}
 {% set name = "decoupleR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 5bcdf1db35f539ea6e7e32ed40e3d434
+about:
+  description: Many methods allow us to extract biological activities from omics data using information from prior knowledge resources, reducing the dimensionality for increased statistical power and better interpretability. Here, we present decoupleR, a Bioconductor package containing different statistical methods to extract these signatures within a unified framework. decoupleR allows the user to flexibly test any method with any resource. It incorporates methods that take into account the sign and weight of network interactions. decoupleR can be used with any omic, as long as its features can be linked to a biological process based on prior knowledge. For example, in transcriptomics gene sets regulated by a transcription factor, or in phospho-proteomics phosphosites that are targeted by a kinase.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 + file LICENSE
+  license_file: LICENSE
+  summary: 'decoupleR: Ensemble of computational methods to infer biological activities from omics data'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: glmnet (>= 4.1.0), GSVA, viper, fgsea (>= 1.15.4), AUCell, SummarizedExperiment, rpart, ranger, BiocStyle, covr, knitr, pkgdown, RefManageR, rmarkdown, roxygen2, sessioninfo, pheatmap, testthat, OmnipathR, Seurat, ggplot2, ggrepel, patchwork
+  run_exports: '{{ pin_subpackage("bioconductor-decoupler", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: glmnet (>= 4.1-7), GSVA, viper, fgsea (>= 1.15.4), AUCell, SummarizedExperiment, rpart, ranger, BiocStyle, covr, knitr, pkgdown, RefManageR, rmarkdown, roxygen2, sessioninfo, pheatmap, testthat, OmnipathR, Seurat, ggplot2, ggrepel, patchwork, magick
 requirements:
   host:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
     - r-base
     - r-broom
     - r-dplyr
     - r-magrittr
     - r-matrix
+    - r-parallelly
     - r-purrr
     - r-rlang
     - r-stringr
@@ -33,11 +39,13 @@ requirements:
     - r-tidyselect
     - r-withr
   run:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
     - r-base
     - r-broom
     - r-dplyr
     - r-magrittr
     - r-matrix
+    - r-parallelly
     - r-purrr
     - r-rlang
     - r-stringr
@@ -45,13 +53,16 @@ requirements:
     - r-tidyr
     - r-tidyselect
     - r-withr
+
+source:
+  md5: d5e3f97892978162549b29bdd78b9f65
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL-3 + file LICENSE'
-  summary: 'decoupleR: Ensemble of computational methods to infer biological activities from omics data'
-  description: 'Many methods allow us to extract biological activities from omics data using information from prior knowledge resources, reducing the dimensionality for increased statistical power and better interpretability. Here, we present decoupleR, a Bioconductor package containing different statistical methods to extract these signatures within a unified framework. decoupleR allows the user to flexibly test any method with any resource. It incorporates methods that take into account the sign and weight of network interactions. decoupleR can be used with any omic, as long as its features can be linked to a biological process based on prior knowledge. For example, in transcriptomics gene sets regulated by a transcription factor, or in phospho-proteomics phosphosites that are targeted by a kinase.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

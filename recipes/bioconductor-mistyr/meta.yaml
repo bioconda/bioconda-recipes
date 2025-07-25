@@ -1,24 +1,29 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "mistyR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 474353b56ce2f693ef1ee680ced8f713
+about:
+  description: mistyR is an implementation of the Multiview Intercellular SpaTialmodeling framework (MISTy). MISTy is an explainable machine learning framework for knowledge extraction and analysis of single-cell, highly multiplexed, spatially resolved data. MISTy facilitates an in-depth understanding of marker interactions by profiling the intra- and intercellular relationships. MISTy is a flexible framework able to process a custom number of views. Each of these views can describe a different spatial context, i.e., define a relationship among the observed expressions of the markers, such as intracellular regulation or paracrine regulation, but also, the views can also capture cell-type specific relationships, capture relations between functional footprints or focus on relations between different anatomical regions. Each MISTy view is considered as a potential source of variability in the measured marker expressions. Each MISTy view is then analyzed for its contribution to the total expression of each marker and is explained in terms of the interactions with other measurements that led to the observed contribution.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Multiview Intercellular SpaTial modeling framework
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-mistyr", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, covr, earth, future, igraph (>= 1.2.7), iml, kernlab, knitr, MASS, rmarkdown, RSNNS, testthat (>= 3.0.0), xgboost
 requirements:
+
   host:
     - r-assertthat
     - r-base
@@ -26,22 +31,23 @@ requirements:
     - r-deldir
     - r-digest
     - r-distances
-    - r-dplyr
+    - r-dplyr >=1.1.0
     - r-filelock
-    - 'r-furrr >=0.2.0'
+    - r-furrr >=0.2.0
     - r-ggplot2
     - r-purrr
     - r-r.utils
     - r-ranger
-    - r-readr
+    - r-readr >=2.0.0
     - r-ridge
     - r-rlang
     - r-rlist
     - r-stringr
     - r-tibble
     - r-tidyr
-    - r-tidyselect
+    - r-tidyselect >=1.2.0
     - r-withr
+
   run:
     - r-assertthat
     - r-base
@@ -49,29 +55,32 @@ requirements:
     - r-deldir
     - r-digest
     - r-distances
-    - r-dplyr
+    - r-dplyr >=1.1.0
     - r-filelock
-    - 'r-furrr >=0.2.0'
+    - r-furrr >=0.2.0
     - r-ggplot2
     - r-purrr
     - r-r.utils
     - r-ranger
-    - r-readr
+    - r-readr >=2.0.0
     - r-ridge
     - r-rlang
     - r-rlist
     - r-stringr
     - r-tibble
     - r-tidyr
-    - r-tidyselect
+    - r-tidyselect >=1.2.0
     - r-withr
+
+source:
+  md5: 94b404f8a6094afe2761ba69b3c59648
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Multiview Intercellular SpaTial modeling framework'
-  description: 'mistyR is an implementation of the Multiview Intercellular SpaTialmodeling framework (MISTy). MISTy is an explainable machine learning framework for knowledge extraction and analysis of single-cell, highly multiplexed, spatially resolved data. MISTy facilitates an in-depth understanding of marker interactions by profiling the intra- and intercellular relationships. MISTy is a flexible framework able to process a custom number of views. Each of these views can describe a different spatial context, i.e., define a relationship among the observed expressions of the markers, such as intracellular regulation or paracrine regulation, but also, the views can also capture cell-type specific relationships, capture relations between functional footprints or focus on relations between different anatomical regions. Each MISTy view is considered as a potential source of variability in the measured marker expressions. Each MISTy view is then analyzed for its contribution to the total expression of each marker and is explained in terms of the interactions with other measurements that led to the observed contribution.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

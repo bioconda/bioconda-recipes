@@ -1,53 +1,65 @@
-{% set version = "2.10.0" %}
+{% set version = "2.18.0" %}
 {% set name = "cytolib" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: dffea2c7c4519d63c8ff184cb6ff7f96
+about:
+  description: This package provides the core data structure and API to represent and interact with the gated cytometry data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: AGPL-3.0-only
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: C++ infrastructure for representing and interacting with the gated cytometry data
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-cytolib", max_pin="x.x") }}'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:cytolib
+  parent_recipe:
+    name: bioconductor-cytolib
+    path: recipes/bioconductor-cytolib
+    version: 1.4.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown
 # SystemRequirements: GNU make, C++11
 requirements:
-  host:
-    - 'bioconductor-rhdf5lib >=1.20.0,<1.21.0'
-    - 'bioconductor-rprotobuflib >=2.10.0,<2.11.0'
-    - r-base
-    - 'r-bh >=1.75.0.0'
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-rhdf5lib >=1.20.0,<1.21.0'
-    - 'bioconductor-rprotobuflib >=2.10.0,<2.11.0'
-    - r-base
-    - 'r-bh >=1.75.0.0'
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - automake
     - make
+  host:
+    - bioconductor-rhdf5lib >=1.28.0,<1.29.0
+    - bioconductor-rprotobuflib >=2.18.0,<2.19.0
+    - r-base
+    - r-bh >=1.84.0.0
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-rhdf5lib >=1.28.0,<1.29.0
+    - bioconductor-rprotobuflib >=2.18.0,<2.19.0
+    - r-base
+    - r-bh >=1.84.0.0
+
+source:
+  md5: 315a10e5ab4beca630554a17eaf56853
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: AGPL-3.0-only
-  summary: 'C++ infrastructure for representing and interacting with the gated cytometry data'
-  description: 'This package provides the core data structure and API to represent and interact with the gated cytometry data.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-extra:
-  parent_recipe:
-    name: bioconductor-cytolib
-    path: recipes/bioconductor-cytolib
-    version: 1.4.0
+    - $R -e "library('{{ name }}')"
 

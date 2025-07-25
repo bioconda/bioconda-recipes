@@ -1,87 +1,98 @@
-{% set version = "1.24.0" %}
+{% set version = "1.32.0" %}
 {% set name = "BPRMeth" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 7f6bfa39db8a97bde1baf08617e827dc
+about:
+  description: The BPRMeth package is a probabilistic method to quantify explicit features of methylation profiles, in a way that would make it easier to formally use such profiles in downstream modelling efforts, such as predicting gene expression levels or clustering genomic regions or cells according to their methylation profiles.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 | file LICENSE
+  license_file: LICENSE
+  summary: Model higher-order methylation profiles
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: testthat, knitr, rmarkdown
-requirements:
-  host:
-    - 'bioconductor-biocstyle >=2.26.0,<2.27.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-assertthat
-    - r-base
-    - r-cowplot
-    - r-data.table
-    - r-doparallel
-    - r-e1071
-    - r-earth
-    - r-foreach
-    - r-ggplot2
-    - r-kernlab
-    - r-magrittr
-    - r-mass
-    - r-matrixcalc
-    - r-mvtnorm
-    - r-randomforest
-    - 'r-rcpp >=0.12.14'
-    - r-rcpparmadillo
-    - r-truncnorm
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biocstyle >=2.26.0,<2.27.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-assertthat
-    - r-base
-    - r-cowplot
-    - r-data.table
-    - r-doparallel
-    - r-e1071
-    - r-earth
-    - r-foreach
-    - r-ggplot2
-    - r-kernlab
-    - r-magrittr
-    - r-mass
-    - r-matrixcalc
-    - r-mvtnorm
-    - r-randomforest
-    - 'r-rcpp >=0.12.14'
-    - r-rcpparmadillo
-    - r-truncnorm
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL-3 | file LICENSE'
-  summary: 'Model higher-order methylation profiles'
-  description: 'The BPRMeth package is a probabilistic method to quantify explicit features of methylation profiles, in a way that would make it easier to formally use such profiles in downstream modelling efforts, such as predicting gene expression levels or clustering genomic regions or cells according to their methylation profiles.'
-  license_file: LICENSE
+  run_exports: '{{ pin_subpackage("bioconductor-bprmeth", max_pin="x.x") }}'
+
 extra:
   parent_recipe:
     name: bioconductor-bprmeth
     path: recipes/bioconductor-bprmeth
     version: 1.8.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, knitr, rmarkdown
+requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
+  host:
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-assertthat
+    - r-base
+    - r-cowplot
+    - r-data.table
+    - r-doparallel
+    - r-e1071
+    - r-earth
+    - r-foreach
+    - r-ggplot2
+    - r-kernlab
+    - r-magrittr
+    - r-mass
+    - r-matrixcalc
+    - r-mvtnorm
+    - r-randomforest
+    - r-rcpp >=0.12.14
+    - r-rcpparmadillo
+    - r-truncnorm
+    - libblas
+    - liblapack
+
+  run:
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-assertthat
+    - r-base
+    - r-cowplot
+    - r-data.table
+    - r-doparallel
+    - r-e1071
+    - r-earth
+    - r-foreach
+    - r-ggplot2
+    - r-kernlab
+    - r-magrittr
+    - r-mass
+    - r-matrixcalc
+    - r-mvtnorm
+    - r-randomforest
+    - r-rcpp >=0.12.14
+    - r-rcpparmadillo
+    - r-truncnorm
+
+source:
+  md5: ddcbd96422007aa7889349a9626589f3
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

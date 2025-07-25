@@ -7,15 +7,18 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/TGAC/KAT/archive/Release-{{version}}.tar.gz
+  url: https://github.com/TGAC/KAT/archive/Release-{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - patch
-    - patch2
+    - 0001-install.patch
+    - 0002-libs.patch
+    - 0003-kat.patch
 
 build:
-  number: 3
-  skip: True  # [osx or py27 or py > 39]
+  number: 5
+  skip: True  # [py > 39]
+  run_exports:
+    - {{ pin_subpackage('kat', max_pin="x") }}
 
 requirements:
   build:
@@ -24,33 +27,38 @@ requirements:
     - autoconf
     - automake
     - libtool
+    - pkg-config
   host:
-    - zlib
     - python
+    - pip
+    - zlib
     - numpy
     - scipy
     - matplotlib-base
     - tabulate
-    - boost-cpp
+    - boost-cpp <1.84.0
   run:
     - python
-    - zlib
-    - tabulate
-    - matplotlib-base
-    - scipy
     - numpy
-    - boost-cpp
+    - scipy
+    - matplotlib-base
+    - tabulate
+    - boost-cpp <1.84.0
 
 test:
   commands:
     - kat --version
 
 about:
-  home: https://github.com/TGAC/KAT
-  license: GPL3
+  home: "https://github.com/TGAC/KAT"
+  dev_url: "https://github.com/TGAC/KAT"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: COPYING
-  summary: 'KAT is a suite of tools that analyse jellyfish hashes or sequence files (fasta or fastq) using kmer counts'
+  summary: "KAT is a suite of tools that analyse jellyfish hashes or sequence files (fasta or fastq) using kmer counts."
+  doc_url: "https://kat.readthedocs.io/en/latest"
 
 extra:
   identifiers:
-    - biotools:KAT
+    - biotools:kat
+    - doi:10.1093/bioinformatics/btw663

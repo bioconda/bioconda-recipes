@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "ptairdata-1.5.0"
+installBiocDataPackage.sh "ptairdata-1.14.0"

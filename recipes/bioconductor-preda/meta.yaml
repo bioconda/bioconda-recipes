@@ -1,45 +1,22 @@
-{% set version = "1.44.0" %}
+{% set version = "1.52.0" %}
 {% set name = "PREDA" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 5859c6d37d24cd88d1dfa5232716db3e
+about:
+  description: Package for the position related analysis of quantitative functional genomics data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Position Related Data Analysis
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: quantsmooth, qvalue, limma, caTools, affy, PREDAsampledata
-requirements:
-  host:
-    - 'bioconductor-annotate >=1.76.0,<1.77.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-multtest >=2.54.0,<2.55.0'
-    - r-base
-    - 'r-lokern >=1.0.9'
-  run:
-    - 'bioconductor-annotate >=1.76.0,<1.77.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-multtest >=2.54.0,<2.55.0'
-    - r-base
-    - 'r-lokern >=1.0.9'
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Position Related Data Analysis'
-  description: 'Package for the position related analysis of quantitative functional genomics data.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-preda", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:preda
@@ -48,4 +25,35 @@ extra:
     name: bioconductor-preda
     path: recipes/bioconductor-preda
     version: 1.26.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: quantsmooth, qvalue, limma, caTools, affy, PREDAsampledata
+requirements:
+  host:
+    - bioconductor-annotate >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-multtest >=2.62.0,<2.63.0
+    - r-base
+    - r-lokern >=1.0.9
+  run:
+    - bioconductor-annotate >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-multtest >=2.62.0,<2.63.0
+    - r-base
+    - r-lokern >=1.0.9
+
+source:
+  md5: bcdc80537f37f8daaba13323d8f378e2
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

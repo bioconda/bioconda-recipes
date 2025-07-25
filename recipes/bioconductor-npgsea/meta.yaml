@@ -1,42 +1,21 @@
-{% set version = "1.34.0" %}
+{% set version = "1.42.0" %}
 {% set name = "npGSEA" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: d6b8f4012dbb085ae2ecf4519cdf2833
+about:
+  description: Current gene set enrichment methods rely upon permutations for inference.  These approaches are computationally expensive and have minimum achievable p-values based on the number of permutations, not on the actual observed statistics.  We have derived three parametric approximations to the permutation distributions of two gene set enrichment test statistics.  We are able to reduce the computational burden and granularity issues of permutation testing with our method, which is implemented in this package. npGSEA calculates gene set enrichment statistics and p-values without the computational cost of permutations.  It is applicable in settings where one or many gene sets are of interest.  There are also built-in plotting functions to help users visualize results.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Permutation approximation methods for gene set enrichment analysis (non-permutation GSEA)
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: ALL, genefilter, limma, hgu95av2.db, ReportingTools, BiocStyle
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-gseabase >=1.60.0,<1.61.0'
-    - r-base
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-gseabase >=1.60.0,<1.61.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Permutation approximation methods for gene set enrichment analysis (non-permutation GSEA)'
-  description: 'Current gene set enrichment methods rely upon permutations for inference.  These approaches are computationally expensive and have minimum achievable p-values based on the number of permutations, not on the actual observed statistics.  We have derived three parametric approximations to the permutation distributions of two gene set enrichment test statistics.  We are able to reduce the computational burden and granularity issues of permutation testing with our method, which is implemented in this package. npGSEA calculates gene set enrichment statistics and p-values without the computational cost of permutations.  It is applicable in settings where one or many gene sets are of interest.  There are also built-in plotting functions to help users visualize results.'
+  run_exports: '{{ pin_subpackage("bioconductor-npgsea", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:npgsea
@@ -44,4 +23,33 @@ extra:
     name: bioconductor-npgsea
     path: recipes/bioconductor-npgsea
     version: 1.16.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: ALL, genefilter, limma, hgu95av2.db, ReportingTools, BiocStyle
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-gseabase >=1.68.0,<1.69.0
+    - r-base
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-gseabase >=1.68.0,<1.69.0
+    - r-base
+
+source:
+  md5: f6148e3dd59ae51db08a01279ae93d97
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

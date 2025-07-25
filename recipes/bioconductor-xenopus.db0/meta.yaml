@@ -1,37 +1,39 @@
-{% set version = "3.16.0" %}
+{% set version = "3.20.0" %}
 {% set name = "xenopus.db0" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 007bfcf52abad16cb04f1e95cdbee49a
+about:
+  description: Base annotation databases for xenopus, intended ONLY to be used by AnnotationDbi to produce regular annotation packages.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Base Level Annotation databases for xenopus
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-xenopus.db0", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
     - r-base
   run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221103
+    - bioconductor-data-packages >=20241103
+source:
+  md5: aeaf9b5fddc97f1c79ef98ff452b4858
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Base Level Annotation databases for xenopus'
-  description: 'Base annotation databases for xenopus, intended ONLY to be used by AnnotationDbi to produce regular annotation packages.'
+    - $R -e "library('{{ name }}')"
 

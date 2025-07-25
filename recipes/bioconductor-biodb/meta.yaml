@@ -1,27 +1,38 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "biodb" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 4e630c60af28c3bf79fce517ebb3311d
+about:
+  description: The biodb package provides access to standard remote chemical and biological databases (ChEBI, KEGG, HMDB, ...), as well as to in-house local database files (CSV, SQLite), with easy retrieval of entries, access to web services, search of compounds by mass and/or name, and mass spectra matching for LCMS and MSMS. Its architecture as a development framework facilitates the development of new database connectors for local projects or inside separate published packages.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: AGPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+  summary: biodb, a library and a development framework for connecting to chemical and biological databases
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: BiocStyle, roxygen2, devtools, testthat (>= 2.0.0), knitr, rmarkdown, covr, xml2, git2r
+  run_exports: '{{ pin_subpackage("bioconductor-biodb", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, roxygen2, devtools, testthat (>= 2.0.0), knitr, rmarkdown, covr, xml2
 requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
   host:
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
     - r-base
     - r-chk
+    - r-git2r
     - r-jsonlite
     - r-lgr
     - r-lifecycle
@@ -40,10 +51,12 @@ requirements:
     - r-yaml
     - libblas
     - liblapack
+
   run:
-    - 'bioconductor-biocfilecache >=2.6.0,<2.7.0'
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
     - r-base
     - r-chk
+    - r-git2r
     - r-jsonlite
     - r-lgr
     - r-lifecycle
@@ -60,17 +73,16 @@ requirements:
     - r-withr
     - r-xml
     - r-yaml
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: a1b7adef44ebc05598d5e45645d6571e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: AGPL-3
-  summary: 'biodb, a library and a development framework for connecting to chemical and biological databases'
-  description: 'The biodb package provides access to standard remote chemical and biological databases (ChEBI, KEGG, HMDB, ...), as well as to in-house local database files (CSV, SQLite), with easy retrieval of entries, access to web services, search of compounds by mass and/or name, and mass spectra matching for LCMS and MSMS. Its architecture as a development framework facilitates the development of new database connectors for local projects or inside separate published packages.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+    - $R -e "library('{{ name }}')"
 

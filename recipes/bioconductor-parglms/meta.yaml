@@ -1,42 +1,44 @@
-{% set version = "1.30.0" %}
+{% set version = "1.38.0" %}
 {% set name = "parglms" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 55bbe9f3d2b9406cb3083f82b5224ac6
+about:
+  description: This package provides support for parallelized estimation of GLMs/GEEs, catering for dispersed data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: support for parallelized estimation of GLMs/GEEs
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-parglms", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: RUnit, sandwich, MASS, knitr, GenomeInfoDb, GenomicRanges, gwascat, BiocStyle, rmarkdown
 requirements:
   host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
     - r-base
     - r-batchjobs
     - r-doparallel
     - r-foreach
   run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
     - r-base
     - r-batchjobs
     - r-doparallel
     - r-foreach
+source:
+  md5: 3472a411a84595ceec22c75f4992caeb
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'support for parallelized estimation of GLMs/GEEs'
-  description: 'This package provides support for parallelized estimation of GLMs/GEEs, catering for dispersed data.'
+    - $R -e "library('{{ name }}')"
 

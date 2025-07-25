@@ -1,33 +1,47 @@
-{% set version = "2.10.0" %}
+{% set version = "2.18.0" %}
 {% set name = "openCyto" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 547a298d44b2bfe51b6562c95796750f
+about:
+  description: This package is designed to facilitate the automated gating methods in sequential way to mimic the manual gating strategy.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: AGPL-3.0-only
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Hierarchical Gating Pipeline for flow cytometry data
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-opencyto", max_pin="x.x") }}'
+
+extra:
+  parent_recipe:
+    name: bioconductor-opencyto
+    path: recipes/bioconductor-opencyto
+    version: 1.20.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: flowWorkspaceData, knitr, rmarkdown, markdown, testthat, utils, tools, parallel, ggcyto, CytoML, flowStats(>= 4.5.2), MASS
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-flowclust >=3.36.0,<3.37.0'
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-flowviz >=1.62.0,<1.63.0'
-    - 'bioconductor-flowworkspace >=4.10.0,<4.11.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-ncdfflow >=2.44.0,<2.45.0'
-    - 'bioconductor-rbgl >=1.74.0,<1.75.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-flowclust >=3.44.0,<3.45.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-flowviz >=1.70.0,<1.71.0
+    - bioconductor-flowworkspace >=4.18.0,<4.19.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-ncdfflow >=2.52.0,<2.53.0
+    - bioconductor-rbgl >=1.82.0,<1.83.0
     - r-base
     - r-bh
     - r-cpp11
@@ -36,36 +50,30 @@ requirements:
     - libblas
     - liblapack
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-flowclust >=3.36.0,<3.37.0'
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-flowviz >=1.62.0,<1.63.0'
-    - 'bioconductor-flowworkspace >=4.10.0,<4.11.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-ncdfflow >=2.44.0,<2.45.0'
-    - 'bioconductor-rbgl >=1.74.0,<1.75.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-flowclust >=3.44.0,<3.45.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-flowviz >=1.70.0,<1.71.0
+    - bioconductor-flowworkspace >=4.18.0,<4.19.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-ncdfflow >=2.52.0,<2.53.0
+    - bioconductor-rbgl >=1.82.0,<1.83.0
     - r-base
     - r-bh
     - r-cpp11
     - r-data.table
     - r-rcolorbrewer
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: 5d9c6a6851d56037f75a9369838768d4
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: AGPL-3.0-only
-  summary: 'Hierarchical Gating Pipeline for flow cytometry data'
-  description: 'This package is designed to facilitate the automated gating methods in sequential way to mimic the manual gating strategy.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-extra:
-  parent_recipe:
-    name: bioconductor-opencyto
-    path: recipes/bioconductor-opencyto
-    version: 1.20.0
+    - $R -e "library('{{ name }}')"
 

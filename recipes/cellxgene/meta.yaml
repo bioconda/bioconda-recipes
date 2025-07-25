@@ -1,6 +1,6 @@
 {% set name = "cellxgene" %}
-{% set version = "1.1.1" %}
-{% set sha256 = "23ce7f653d31989ad3b1f2e299ecd844a45f2437379701054120ba9d9a368a52" %}
+{% set version = "1.3.0" %}
+{% set sha256 = "4c220c5b34f121c17b94a302119ac30fc31a308c3eb9101d05fa905cd133925e" %}
 
 package:
   name: "{{ name|lower }}"
@@ -15,12 +15,14 @@ build:
   noarch: python
   entry_points:
     - cellxgene = server.cli.cli:cli
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('cellxgene', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.6
+    - python >=3.6,<3.12
   run:
     - anndata >=0.7.6
     - boto3 >=1.12.18
@@ -41,7 +43,7 @@ requirements:
     - numpy >=1.17.5
     - packaging >=20.0
     - pandas >=1.0,!=1.1
-    - python >=3.6
+    - python >=3.6,<3.12
     - pyyaml >=5.4
     - requests >=2.22.0
     - s3fs ==0.4.2

@@ -1,37 +1,36 @@
-{% set version = "4.5.1" %}
-{% set sha256 = "51e052569ae89f586a1a94c804f09fe1b7910a3ffff7664e2005f18c7d3f717b" %}
+{% set name = "sepp" %}
+{% set version = "4.5.5" %}
+{% set sha256 = "af6b985bc16c96cd7c57bf78b3decce448f976aea612b3fad07b91697e4e1cfd" %}
+
 package:
-  name: sepp
-  version: '{{version}}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  - url: https://github.com/smirarab/sepp/archive/{{version}}.tar.gz
-    sha256: '{{sha256}}'
-    patches:
-      - relocate.run-sepp.sh.patch
-      - relocate.sepp.config.patch
-      # prevent python's setup to search for dendropy dependency via pip.
-      # Instead use dendropy provided by conda:
-      - nodeps.setup.py.patch
+  url: https://github.com/smirarab/sepp/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - relocate.run-sepp.sh.patch
+    - relocate.sepp.config.patch
 
 build:
-  number: 1
-  skip: true  # [py != 37]
+  number: 3
+  run_exports:
+    - {{ pin_subpackage('sepp', max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
     - python
     - setuptools
     - pip
     - dendropy
     - openjdk
-    - hmmer ==3.1b2
-
+    - hmmer
   run:
     - python
-    - dendropy
-    - openjdk
-    - hmmer ==3.1b2
+    - pasta
     # TODO: source bundled binaries as conda packages.
     # But pplacer / guppy are not available for OSX.
     # - pplacer
@@ -39,23 +38,20 @@ requirements:
 test:
   commands:
     - run_sepp.py --help
-    # for now, ignore "upp" 
-    #- run_upp.py --help
     - run-sepp.sh $PREFIX/share/sepp/ref/input_fragments.fasta testrun_tiny -a $PREFIX/share/sepp/ref/reference_alignment_tiny.fasta -t $PREFIX/share/sepp/ref/reference_phylogeny_tiny.nwk -r $PREFIX/share/sepp/ref/RAxML_info-reference-gg-raxml-bl.info -x 1 -b 1
     - grep "f__Halomonadaceae" testrun_tiny_placement.tog.relabelled.tre
     - grep "testseqd" testrun_tiny_placement.tog.relabelled.tre
+    - run_upp.py --help
 
 about:
-  home: https://github.com/smirarab/sepp
-  license: GPLv3
+  home: "https://github.com/smirarab/sepp"
+  license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: LICENSE
-  summary: SATe-enabled phylogenetic placement
+  summary: "SATe-enabled phylogenetic placement."
+  dev_url: "https://github.com/smirarab/sepp"
+  doc_url: "https://github.com/smirarab/sepp/blob/v{{ version }}/README.md"
 
 extra:
   identifiers:
     - biotools:sepp
-  skip-lints:
-    # necessary, because sepp is NOT platform independent:
-    # during build time, platform specific binaries for pplacer / guppy are copied into the PREFIX/bin dir
-    - should_be_noarch_generic

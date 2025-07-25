@@ -1,17 +1,22 @@
-{% set version = "1.2" %}
+{% set name = "unifrac" %}
+{% set version = "1.5" %}
 
 package:
-  name: unifrac
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/biocore/unifrac/archive/refs/tags/{{ version }}.tar.gz
-  sha256: f275a5281d151b9a44b3cd34d80397fd6a9ed52595e4ed5d45a82f368053b364
+  sha256: ab2298db4e92aba081444d8b979f142a0f77455233670f8cfb0d464c758c8167
 
 build:
   number: 0
-
-  skip: True  # [py<38]
+  script:
+    - sed -i.bak "s#CONDA_PREFIX#PREFIX#g" setup.py
+    - rm -rf *.bak
+    - {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage("unifrac", max_pin="x") }}
 
 requirements:
   build:
@@ -19,22 +24,22 @@ requirements:
   host:
     - python
     - pip
-    - h5py <3.0.0 | >3.3.0
+    - h5py >=3.3.0
     - cython >=0.26
     - numpy >=1.21
     - biom-format
     - scipy >=1.9.0
-    - scikit-bio >=0.5.8
-    - unifrac-binaries >=1.2
+    - scikit-bio >=0.6.0
+    - unifrac-binaries >={{ version }}
     - iow
   run:
     - python
     - {{ pin_compatible('numpy') }}
-    - h5py <3.0.0 | >3.3.0
+    - h5py >=3.3.0
     - biom-format
     - scipy >=1.9.0
-    - scikit-bio >=0.5.8
-    - unifrac-binaries >=1.2
+    - scikit-bio >=0.6.0
+    - unifrac-binaries >={{ version }}
     - iow
 
 test:
@@ -47,22 +52,26 @@ test:
     - python -m unittest unifrac.tests.test_api
   
 about:
-  home: https://github.com/biocore/unifrac
-  license: BSD-3-Clause
+  home: "https://github.com/biocore/unifrac"
+  license: "BSD-3-Clause"
   license_family: BSD
   license_file: LICENSE
-  summary: 'Fast phylogenetic diversity calculations'
+  summary: 'Fast phylogenetic diversity calculations.'
   description: |
     UniFrac is a commonly phylogenetic diversity distance metric used in 
     microbiome research. The metric relates two microbiome samples together
     within the context of an evolutionary history, and produces a distance
     that corresponds to how similar two samples by the amount of overlapping
-    branch length.  
-  
-  doc_url: https://github.com/biocore/unifrac
-  dev_url: https://github.com/biocore/unifrac
+    branch length.
+  doc_url: "https://github.com/biocore/unifrac/blob/{{ version }}/README.md"
+  dev_url: "https://github.com/biocore/unifrac"
 
 extra:
+  additional-platforms:
+    - osx-arm64
   recipe-maintainers:
     - wasade
     - sfiligoi
+  identifiers:
+    - doi:10.1038/s41592-018-0187-8
+    - doi:10.1128/msystems.00028-22

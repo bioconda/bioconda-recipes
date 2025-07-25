@@ -1,23 +1,41 @@
-{% set version = "1.74.0" %}
+{% set version = "1.82.0" %}
 {% set name = "ROC" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 37c04dc7d0ac3571ff0da51098afb706
+about:
+  description: Provide utilities for ROC, with microarray focus.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: utilities for ROC, with microarray focus
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: rmarkdown, Biobase
+  run_exports: '{{ pin_subpackage("bioconductor-roc", max_pin="x.x") }}'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:roc
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-roc
+    path: recipes/bioconductor-roc
+    version: 1.56.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: rmarkdown, Biobase, BiocStyle
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
     - r-base
     - r-knitr
@@ -26,24 +44,16 @@ requirements:
   run:
     - r-base
     - r-knitr
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: 4a2c9c81127df2c4fd0f6e2008462919
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'utilities for ROC, with microarray focus'
-  description: 'Provide utilities for ROC, with microarray focus.'
-extra:
-  identifiers:
-    - biotools:roc
-    - doi:10.1038/nmeth.3252
-  parent_recipe:
-    name: bioconductor-roc
-    path: recipes/bioconductor-roc
-    version: 1.56.0
+    - $R -e "library('{{ name }}')"
 

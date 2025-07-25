@@ -1,53 +1,22 @@
-{% set version = "1.28.0" %}
+{% set version = "1.36.0" %}
 {% set name = "MetCirc" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 66d09727991fe6ab93188f52f1a7f48e
+about:
+  description: MetCirc comprises a workflow to interactively explore high-resolution MS/MS metabolomics data. MetCirc uses the Spectra object infrastructure defined in the package Spectra that stores MS/MS spectra. MetCirc offers functionality to calculate similarity between precursors based on the normalised dot product, neutral losses or user-defined functions and visualise similarities in a circular layout. Within the interactive framework the user can annotate MS/MS features based on their similarity to (known) related MS/MS features.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 3)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Navigating mass spectral similarity in high-resolution MS/MS metabolomics data metabolomics data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocGenerics, graphics (>= 3.5), grDevices (>= 3.5), knitr (>= 1.11), testthat (>= 2.2.1)
-requirements:
-  host:
-    - 'bioconductor-mscoreutils >=1.10.0,<1.11.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-spectra >=1.8.0,<1.9.0'
-    - 'r-amap >=0.8'
-    - r-base
-    - 'r-circlize >=0.3.9'
-    - 'r-ggplot2 >=3.2.1'
-    - 'r-scales >=0.3.0'
-    - 'r-shiny >=1.0.0'
-  run:
-    - 'bioconductor-mscoreutils >=1.10.0,<1.11.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-spectra >=1.8.0,<1.9.0'
-    - 'r-amap >=0.8'
-    - r-base
-    - 'r-circlize >=0.3.9'
-    - 'r-ggplot2 >=3.2.1'
-    - 'r-scales >=0.3.0'
-    - 'r-shiny >=1.0.0'
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 3)'
-  summary: 'Navigating mass spectral similarity in high-resolution MS/MS metabolomics data'
-  description: 'MetCirc comprises a workflow to interactively explore high-resolution MS/MS metabolomics data. MetCirc uses the Spectra object infrastructure defined in the package Spectra that stores MS/MS spectra. MetCirc offers functionality to calculate similarity between precursors based on the normalised dot product, neutral losses or user-defined functions and visualise similarities in a circular layout. Within the interactive framework the user can annotate MS/MS features based on their similarity to (known) related MS/MS features.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-metcirc", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:metcirc
@@ -56,4 +25,43 @@ extra:
     name: bioconductor-metcirc
     path: recipes/bioconductor-metcirc
     version: 1.12.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocGenerics, graphics (>= 4.4), grDevices (>= 4.4), knitr (>= 1.48), testthat (>= 3.2.1.1)
+requirements:
+  host:
+    - bioconductor-mscoreutils >=1.18.0,<1.19.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-spectra >=1.16.0,<1.17.0
+    - r-amap >=0.8
+    - r-base
+    - r-circlize >=0.4.16
+    - r-ggplot2 >=3.5.1
+    - r-scales >=1.3.0
+    - r-shiny >=1.8.1.1
+  run:
+    - bioconductor-mscoreutils >=1.18.0,<1.19.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-spectra >=1.16.0,<1.17.0
+    - r-amap >=0.8
+    - r-base
+    - r-circlize >=0.4.16
+    - r-ggplot2 >=3.5.1
+    - r-scales >=1.3.0
+    - r-shiny >=1.8.1.1
+
+source:
+  md5: e94760cb48342a59a9e4bfece8819176
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

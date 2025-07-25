@@ -1,0 +1,78 @@
+{% set name = "ms2rescore" %}
+{% set version = "3.1.5" %}
+{% set sha256 = "c178a2ee53dc120c8849908c7c2b5950e9c13e7923262f63c94afe88068e1bb9" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/ms2rescore-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+  entry_points:
+    - ms2rescore = ms2rescore.__main__:main
+    - ms2rescore-gui = ms2rescore.gui.__main__:main
+    - ms2rescore-report = ms2rescore.report.__main__:main
+    - tims2rescore = ms2rescore.__main__:main_tims
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+
+requirements:
+  host:
+    - python
+    - flit-core
+    - pip
+  run:
+    - python
+    - cascade-config >=0.4.0
+    - click >=7
+    - customtkinter >=5,<6
+    - deeplc >=3.0
+    - deeplcretrainer
+    - im2deep >=0.1.3
+    - jinja2 >=3
+    - lxml >=4.5
+    - mokapot ==0.10
+    - ms2pip >=4.0
+    - ms2rescore-rs
+    - numpy >=1.25
+    - pandas >=1
+    - plotly >=5
+    - psm-utils >=1.1
+    - pyopenms >=3.0
+    - pyteomics >=4.7.2
+    - rich >=12
+    - tomli >=2  # [py < 311]
+
+test:
+  imports:
+    - ms2rescore
+  commands:
+    - ms2rescore --help
+    - ms2rescore-report --help
+    - tims2rescore --help
+
+about:
+  home: https://github.com/compomics/ms2rescore
+  summary: 'Modular and user-friendly platform for AI-assisted rescoring of peptide identifications'
+  dev_url: https://github.com/compomics/ms2rescore
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  doc_url: https://ms2rescore.readthedocs.io/en/stable
+
+extra:
+  container:
+    # Click requires the extended container
+    extended-base: true
+  recipe-maintainers:
+    - CompOmics
+    - RalfG
+  additional-platforms:
+    # - linux-aarch64  # No Tensorflow, pyOpenMS, nor Gooey support
+    - osx-arm64

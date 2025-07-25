@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "crcl18-1.18.0"
+installBiocDataPackage.sh "crcl18-1.26.0"

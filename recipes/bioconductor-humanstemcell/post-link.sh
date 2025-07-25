@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "humanstemcell-0.38.0"
+installBiocDataPackage.sh "humanstemcell-0.46.0"

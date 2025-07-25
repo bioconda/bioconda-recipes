@@ -1,0 +1,51 @@
+{% set name = "circulocov" %}
+{% set version = "0.1.20240104" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 6c585c90e63ff5ce4028157cb7f943f4abb679234daadb0349778bfb8141cd87
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - circulocov=circulocov.circulocov:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('circulocov', max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.8,<4.0
+    - pip
+  run:
+    - python >=3.8,<4.0
+    - matplotlib-base >=3.8.2
+    - biopython >=1.58
+    - numpy >=1.26.2
+    - pandas >=2.1.4
+    - pysam >=0.22.0
+    - pycirclize >=1.3.0
+    - minimap2 >=2.25
+
+test:
+  imports:
+    - circulocov
+  commands:
+    - circulocov --help
+
+about:
+  home: https://github.com/erinyoung/CirculoCov
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: CirculoCov is a Python tool designed for circular-aware coverage analysis of draft genomes
+  doc_url: https://github.com/erinyoung/CirculoCov/blob/main/README.md
+
+extra:
+  recipe-maintainers:
+    - erinyoung

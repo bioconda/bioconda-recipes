@@ -1,27 +1,35 @@
-{% set version = "1.4.0" %}
+{% set version = "1.12.0" %}
 {% set name = "mosbi" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 92da211f59f0b9f354ec33245ca38244
+about:
+  description: This package is a implementation of biclustering ensemble method MoSBi (Molecular signature Identification from Biclustering). MoSBi provides standardized interfaces for biclustering results and can combine their results with a multi-algorithm ensemble approach to compute robust ensemble biclusters on molecular omics data. This is done by computing similarity networks of biclusters and filtering for overlaps using a custom error model. After that, the louvain modularity it used to extract bicluster communities from the similarity network, which can then be converted to ensemble biclusters. Additionally, MoSBi includes several network visualization methods to give an intuitive and scalable overview of the results. MoSBi comes with several biclustering algorithms, but can be easily extended to new biclustering algorithms.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: AGPL-3 + file LICENSE
+  license_file: LICENSE
+  summary: Molecular Signature identification using Biclustering
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-mosbi", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, BiocGenerics, runibic, BiocStyle, testthat (>= 3.0.0)
 # SystemRequirements: C++17, GNU make
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - 'bioconductor-fabia >=2.44.0,<2.45.0'
-    - 'bioconductor-qubic >=1.26.0,<1.27.0'
+    - bioconductor-fabia >=2.52.0,<2.53.0
+    - bioconductor-qubic >=1.34.0,<1.35.0
     - r-akmbiclust
     - r-base
     - r-bh
@@ -35,8 +43,8 @@ requirements:
     - libblas
     - liblapack
   run:
-    - 'bioconductor-fabia >=2.44.0,<2.45.0'
-    - 'bioconductor-qubic >=1.26.0,<1.27.0'
+    - bioconductor-fabia >=2.52.0,<2.53.0
+    - bioconductor-qubic >=1.34.0,<1.35.0
     - r-akmbiclust
     - r-base
     - r-bh
@@ -47,17 +55,16 @@ requirements:
     - r-rcpp
     - r-rcppparallel
     - r-xml2
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: 1e4037cfe8ee2351fcb55e3079b8804c
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'AGPL-3 + file LICENSE'
-  summary: 'Molecular Signature identification using Biclustering'
-  description: 'This package is a implementation of biclustering ensemble method MoSBi (Molecular signature Identification from Biclustering). MoSBi provides standardized interfaces for biclustering results and can combine their results with a multi-algorithm ensemble approach to compute robust ensemble biclusters on molecular omics data. This is done by computing similarity networks of biclusters and filtering for overlaps using a custom error model. After that, the louvain modularity it used to extract bicluster communities from the similarity network, which can then be converted to ensemble biclusters. Additionally, MoSBi includes several network visualization methods to give an intuitive and scalable overview of the results. MoSBi comes with several biclustering algorithms, but can be easily extended to new biclustering algorithms.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

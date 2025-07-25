@@ -1,0 +1,91 @@
+{% set name = "cleangeostreamr" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: r-{{ name }}
+  version: {{ version }}
+
+source:
+  url: "https://codebase.helmholtz.cloud/department-computational-biology/software/{{ name }}/-/archive/v{{ version }}/{{ name }}-v{{ version }}.tar.gz"
+  sha256: 8d9b345d47e0739d9664119162c5aff1e3ca91c99c76be2a09baf7bd82c63258
+
+build:
+  number: 1
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage("r-cleangeostreamr", max_pin="x.x") }}
+  script: |
+    cp $RECIPE_DIR/curate_chemical_data $PREFIX/bin/
+    cp $RECIPE_DIR/curate_spatial_data $PREFIX/bin/
+    R CMD INSTALL --build .
+
+requirements:
+  host:
+    - r-base
+    - r-devtools
+    - r-dt
+    - r-tidyverse
+    - r-optparse
+    - r-lubridate
+    - r-tidygeocoder
+    - r-readr 
+    - r-r.utils
+    - r-rnaturalearth
+    - r-rnaturalearthdata
+    - r-sf
+    - r-sp
+    - r-leaflet
+    - r-jsonlite
+    - r-magrittr
+    - r-stringi
+    - r-dplyr
+    - r-ggplot2
+    - r-stringr
+    - r-tibble
+    - r-tidyr
+  run:
+    - r-base
+    - r-devtools
+    - r-dt
+    - r-tidyverse
+    - r-optparse
+    - r-lubridate
+    - r-tidygeocoder
+    - r-readr 
+    - r-r.utils
+    - r-rnaturalearth
+    - r-rnaturalearthdata
+    - r-sf
+    - r-sp
+    - r-leaflet
+    - r-jsonlite
+    - r-magrittr
+    - r-stringi
+    - r-dplyr
+    - r-ggplot2
+    - r-stringr
+    - r-tibble
+    - r-tidyr
+
+test:
+  commands:
+    - $R -e "library('CleanGeoStreamR')"
+    - curate_chemical_data --help
+    - curate_spatial_data --help
+about:
+  home: https://codebase.helmholtz.cloud/department-computational-biology/software/cleangeostreamr
+  license: GPL-3.0
+  license_file: LICENSE.md
+  summary: Automatic curation of spatially annotated data.
+  description: |
+    CleanGeoStreamR package is designed to automate the curation of spatially annotated data which frequently present challenges due to inconsistencies, errors, and missing information. CleanGeoStreamR tackles these issues by providing a range of tools for preprocessing, curating, and finalizing spatial data, ensuring its accuracy and integrity.
+
+extra:
+  identifiers:
+    - biotools:cleangeostreamr
+  recipe-maintainers:
+    - ilhan-mutlu
+

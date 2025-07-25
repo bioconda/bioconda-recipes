@@ -1,45 +1,58 @@
-{% set name = "macs2" %}
-{% set version = "2.2.7.1" %}
+{% set name = "MACS2" %}
+{% set version = "2.2.9.1" %}
+{% set sha256 = "8d56bc37fb823fc6387d78138ce968405c54a0a8cd9776682705fd0983252d16" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/e2/61/85d30ecdd34525113e28cb0c5a9f393f93578165f8d848be5925c0208dfb/MACS2-2.2.7.1.tar.gz
-  sha256: ad2ca69bdd02a8942a68aae23133289b5c16ba382bcbe20c39fabf3948929de5
-  patches:
-    - patch
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/MACS2-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 5
-  skip: True  # [py2k]
-  script: "rm MACS2/Prob.c MACS2/IO/Parser.c MACS2/Pileup.c MACS2/PeakModel.c MACS2/PeakDetect.c MACS2/Signal.c MACS2/IO/PeakIO.c MACS2/IO/BedGraphIO.c MACS2/IO/FixWidthTrack.c MACS2/IO/PairedEndTrack.c MACS2/IO/BedGraph.c MACS2/IO/ScoreTrack.c MACS2/IO/CallPeakUnit.c; {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  number: 3
+  script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps --no-cache-dir -vvv
+  skip: True  # [py == 312]
+  run_exports:
+    - {{ pin_subpackage('macs2', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - python
-    - numpy >=1.17
-    - cython
+    - cython <3.0.0
     - pip
+    - cykhash >=2.0.0
+    - hmmlearn >=0.3.0
+    - numpy >=1.19.0
+    - wheel
   run:
-    - numpy >=1.17
     - python
+    - {{ pin_compatible('numpy') }}
     - r-base
 
 test:
+  imports:
+    - MACS2
   commands:
     - macs2 -h
 
 about:
-  home: http://github.com/taoliu/MACS/
-  license: BSD
+  home: 'https://pypi.org/project/MACS2/'
+  summary: 'Model Based Analysis for ChIP-Seq data'
+  license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE
-  summary: Model Based Analysis for ChIP-Seq data
+  doc_url: 'https://macs3-project.github.io/MACS/'
+  dev_url: 'https://github.com/macs3-project/MACS/'
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   identifiers:
     - usegalaxy-eu:peakcalling_macs
+    - biotools:macs
+    - doi:10.1186/gb-2008-9-9-r137

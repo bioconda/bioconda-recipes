@@ -1,18 +1,24 @@
-{% set version = "0.9.1" %}
+{% set name = "kmcp" %}
+{% set version = "0.9.4" %}
 
 package:
-  name: kmcp
+  name: {{name}}
   version: {{ version }}
 
 source:
-  url: https://github.com/shenwei356/kmcp/releases/download/v{{ version }}/kmcp_darwin_amd64.tar.gz # [osx]
-  md5: 6a38cf5ea3313aadfd550e5b83bbc6c0 # [osx]
-
-  url: https://github.com/shenwei356/kmcp/releases/download/v{{ version }}/kmcp_linux_amd64.tar.gz # [linux]
-  md5: 83704aeeaf4769b39b462387315496fc # [linux]
+  - url: https://github.com/shenwei356/kmcp/releases/download/v{{ version }}/kmcp_darwin_amd64.tar.gz  # [osx and x86_64]
+    md5: 744d24450760913571b89d9188bd52b0  # [osx and x86_64]
+  - url: https://github.com/shenwei356/kmcp/releases/download/v{{ version }}/kmcp_linux_amd64.tar.gz  # [linux and x86_64]
+    md5: f2161625f31d2b553c055832ea560c07  # [linux and x86_64]
+  - url: https://github.com/shenwei356/kmcp/releases/download/v{{ version }}/kmcp_linux_arm64.tar.gz  # [linux and aarch64]
+    md5: ef3b2e60c8397b57047dc5bd5014124b  # [linux and aarch64]
+  - url: https://github.com/shenwei356/kmcp/releases/download/v{{ version }}/kmcp_darwin_arm64.tar.gz  # [osx and arm64]
+    md5: 65ca0e05b6a30f512cbd6b090940291f  # [osx and arm64]
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('kmcp', max_pin='x') }}
 
 test:
   commands:
@@ -24,6 +30,10 @@ about:
   license: MIT
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+    
   skip-lints:
     - should_be_noarch_generic
     - should_not_be_noarch_source

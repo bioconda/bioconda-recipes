@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "blimatestingdata-1.17.0"
+installBiocDataPackage.sh "blimatestingdata-1.26.0"

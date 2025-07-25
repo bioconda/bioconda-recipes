@@ -1,13 +1,20 @@
+{% set name = "perl-math-random" %}
+{% set version = "0.72" %}
+
 package:
-  name: perl-math-random
-  version: "0.72"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://cpan.metacpan.org/authors/id/G/GR/GROMMEL/Math-Random-0.72.tar.gz
+  url: https://cpan.metacpan.org/authors/id/G/GR/GROMMEL/Math-Random-{{ version }}.tar.gz
   md5: b0b961e2ae06920801a9c9843c48d0bc
 
 build:
-  number: 4
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  number: 8
+  # skip osx on x86 - builds fail in CI
+  skip: True # [osx]
 
 requirements:
   build:
@@ -29,3 +36,8 @@ about:
   home: http://metacpan.org/pod/Math-Random
   license: unknown
   summary: 'Random Number Generators'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

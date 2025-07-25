@@ -1,5 +1,5 @@
-{% set version = "0.0.8" %}
-{% set sha256 = "124abc76cd65d13dbc3f1bc701af266d55e3d58be618f01b772d6d9dd6b185ee" %}
+{% set version = "0.2.3" %}
+{% set sha256 = "83982c90b53d538a7b65b787d886bf28fcad04e42f4e55b6db65e525dc8123af" %}
 
 package:
   name: sansa
@@ -10,16 +10,24 @@ source:
   sha256: '{{ sha256 }}'
 
 build:
-  number: 4
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('sansa', max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
   host:
+    - zlib
+    - bzip2
+    - libdeflate
     - boost-cpp
     - htslib
   run:
+    - zlib
+    - bzip2
+    - libdeflate
     - boost-cpp
     - htslib
 
@@ -29,7 +37,12 @@ test:
 
 about:
   home: https://github.com/dellytools/sansa
-  license: BSD License
+  license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE
   summary: Structural variant annotation
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

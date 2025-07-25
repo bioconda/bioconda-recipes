@@ -1,55 +1,62 @@
-{% set version = "1.12.0" %}
+{% set version = "1.20.0" %}
 {% set name = "AlphaBeta" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 2822aaf9b95e6ef87dbf7f28931009d1
+about:
+  description: 'AlphaBeta is a computational method for estimating epimutation rates and spectra from high-throughput DNA methylation data in plants. The method has been specifically designed to: 1. analyze ''germline'' epimutations in the context of multi-generational mutation accumulation lines (MA-lines). 2. analyze ''somatic'' epimutations in the context of plant development and aging.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Computational inference of epimutation rates and spectra from high-throughput DNA methylation data in plants
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-alphabeta", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
     - r-base
-    - 'r-data.table >=1.10'
-    - 'r-dplyr >=0.7'
-    - 'r-expm >=0.999-4'
-    - 'r-ggplot2 >=3.2'
-    - 'r-gtools >=3.8.0'
-    - 'r-igraph >=1.2.4'
-    - 'r-optimx >=2018-7.10'
-    - 'r-plotly >=4.9'
-    - 'r-stringr >=1.3'
+    - r-data.table >=1.10
+    - r-dplyr >=0.7
+    - r-expm >=0.999-4
+    - r-ggplot2 >=3.2
+    - r-gtools >=3.8.0
+    - r-igraph >=1.2.4
+    - r-optimx >=2018-7.10
+    - r-plotly >=4.9
+    - r-stringr >=1.3
   run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
     - r-base
-    - 'r-data.table >=1.10'
-    - 'r-dplyr >=0.7'
-    - 'r-expm >=0.999-4'
-    - 'r-ggplot2 >=3.2'
-    - 'r-gtools >=3.8.0'
-    - 'r-igraph >=1.2.4'
-    - 'r-optimx >=2018-7.10'
-    - 'r-plotly >=4.9'
-    - 'r-stringr >=1.3'
+    - r-data.table >=1.10
+    - r-dplyr >=0.7
+    - r-expm >=0.999-4
+    - r-ggplot2 >=3.2
+    - r-gtools >=3.8.0
+    - r-igraph >=1.2.4
+    - r-optimx >=2018-7.10
+    - r-plotly >=4.9
+    - r-stringr >=1.3
+
+source:
+  md5: 86a786c66cba570f3f556cf9b8125dbb
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Computational inference of epimutation rates and spectra from high-throughput DNA methylation data in plants'
-  description: 'AlphaBeta is a computational method for estimating epimutation rates and spectra from high-throughput DNA methylation data in plants. The method has been specifically designed to: 1. analyze ''germline'' epimutations in the context of multi-generational mutation accumulation lines (MA-lines). 2. analyze ''somatic'' epimutations in the context of plant development and aging.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

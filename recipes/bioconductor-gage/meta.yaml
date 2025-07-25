@@ -1,45 +1,22 @@
-{% set version = "2.48.0" %}
+{% set version = "2.56.0" %}
 {% set name = "gage" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 9bce542740c670a1cd4f3ba1aa39fcd3
+about:
+  description: GAGE is a published method for gene set (enrichment or GSEA) or pathway analysis. GAGE is generally applicable independent of microarray or RNA-Seq data attributes including sample sizes, experimental designs, assay platforms, and other types of heterogeneity, and consistently achieves superior performance over other frequently used methods. In gage package, we provide functions for basic GAGE analysis, result processing and presentation. We have also built pipeline routines for of multiple GAGE analyses in a batch, comparison between parallel analyses, and combined analysis of heterogeneous data from different sources/studies. In addition, we provide demo microarray data and commonly used gene set data based on KEGG pathways and GO terms. These funtions and data are also useful for gene set analysis using other methods.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=2.0)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Generally Applicable Gene-set Enrichment for Pathway Analysis
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: pathview, gageData, org.Hs.eg.db, hgu133a.db, GSEABase, Rsamtools, GenomicAlignments, TxDb.Hsapiens.UCSC.hg19.knownGene, DESeq2, edgeR, limma
-requirements:
-  host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-go.db >=3.16.0,<3.17.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-keggrest >=1.38.0,<1.39.0'
-    - r-base
-  run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-go.db >=3.16.0,<3.17.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-keggrest >=1.38.0,<1.39.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>=2.0)'
-  summary: 'Generally Applicable Gene-set Enrichment for Pathway Analysis'
-  description: 'GAGE is a published method for gene set (enrichment or GSEA) or pathway analysis. GAGE is generally applicable independent of microarray or RNA-Seq data attributes including sample sizes, experimental designs, assay platforms, and other types of heterogeneity, and consistently achieves superior performance over other frequently used methods. In gage package, we provide functions for basic GAGE analysis, result processing and presentation. We have also built pipeline routines for of multiple GAGE analyses in a batch, comparison between parallel analyses, and combined analysis of heterogeneous data from different sources/studies. In addition, we provide demo microarray data and commonly used gene set data based on KEGG pathways and GO terms. These funtions and data are also useful for gene set analysis using other methods.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-gage", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:gage
@@ -47,4 +24,35 @@ extra:
     name: bioconductor-gage
     path: recipes/bioconductor-gage
     version: 2.30.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: pathview, gageData, org.Hs.eg.db, hgu133a.db, GSEABase, Rsamtools, GenomicAlignments, TxDb.Hsapiens.UCSC.hg19.knownGene, DESeq2, edgeR, limma
+requirements:
+  host:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-go.db >=3.20.0,<3.21.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-keggrest >=1.46.0,<1.47.0
+    - r-base
+  run:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-go.db >=3.20.0,<3.21.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-keggrest >=1.46.0,<1.47.0
+    - r-base
+
+source:
+  md5: b911a6e61d639d7b20accdfd00600806
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

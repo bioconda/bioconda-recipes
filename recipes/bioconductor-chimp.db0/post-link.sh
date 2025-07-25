@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "chimp.db0-3.16.0"
+installBiocDataPackage.sh "chimp.db0-3.20.0"

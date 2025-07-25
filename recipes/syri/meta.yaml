@@ -1,18 +1,23 @@
-{% set version = "1.6.3" %}
-{% set sha256 = "e05b7511d9b18bc8e7b78b999e8fd61664e56645a475399d654b2dbdde871902" %}
+{% set version = "1.7.1" %}
+{% set sha256 = "37dc0ff99669e1111110843620719d88641075081c3104d37460525146f4705e" %}
 
 package:
   name: syri
   version: {{ version }}
 
 source:
-  url: https://github.com/schneebergerlab/syri/archive/v{{ version }}.tar.gz
+  url: https://github.com/schneebergerlab/syri/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   number: 0
-  skip: True  # [py < 38 or py > 39]
-  script: "{{ PYTHON }} setup.py install --single-version-externally-managed --record=record.txt"
+  skip: True  # [py > 311]
+  entry_points:
+    - syri = syri.scripts.syri:main
+    - chroder = syri.scripts.chroder:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('syri', max_pin="x") }}
 
 requirements:
   build:
@@ -20,12 +25,15 @@ requirements:
     - {{ compiler('cxx') }}
   host:
     - python
+    - pip
     - setuptools
-    - numpy >=1.20 
+    - numpy
+    # Please review cython pinning on future releases
+    # see: https://github.com/schneebergerlab/syri/pull/217
     - cython
   run:
     - python
-    - numpy  >=1.20
+    - numpy
     - pandas
     - scipy
     - psutil
@@ -41,10 +49,19 @@ test:
 
 about:
   home: https://github.com/schneebergerlab/syri
-  license: MIT License
+  license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: Synteny and rearrangement identifier between whole-genome assemblies
+  summary: "Synteny and rearrangement identifier between whole-genome assemblies."
+  dev_url: https://github.com/schneebergerlab/syri
+  doc_url: "https://schneebergerlab.github.io/syri"
 
 extra:
-  maintainers:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
     - mnshgl0110
+  identifiers:
+    - doi:10.1186/s13059-019-1911-0
+    - biotools:SyRI

@@ -1,48 +1,21 @@
-{% set version = "1.30.0" %}
+{% set version = "1.38.0" %}
 {% set name = "TIN" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: d861f54c0fbb411b291242e97c22dfe0
+about:
+  description: The TIN package implements a set of tools for transcriptome instability analysis based on exon expression profiles. Deviating exon usage is studied in the context of splicing factors to analyse to what degree transcriptome instability is correlated to splicing factor expression. In the transcriptome instability correlation analysis, the data is compared to both random permutations of alternative splicing scores and expression of random gene sets.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Transcriptome instability analysis
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, aroma.light, affxparser, RUnit, BiocGenerics
-requirements:
-  host:
-    - 'bioconductor-impute >=1.72.0,<1.73.0'
-    - r-aroma.affymetrix
-    - r-base
-    - r-data.table
-    - r-squash
-    - r-stringr
-    - r-wgcna
-  run:
-    - 'bioconductor-impute >=1.72.0,<1.73.0'
-    - r-aroma.affymetrix
-    - r-base
-    - r-data.table
-    - r-squash
-    - r-stringr
-    - r-wgcna
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Transcriptome instability analysis'
-  description: 'The TIN package implements a set of tools for transcriptome instability analysis based on exon expression profiles. Deviating exon usage is studied in the context of splicing factors to analyse to what degree transcriptome instability is correlated to splicing factor expression. In the transcriptome instability correlation analysis, the data is compared to both random permutations of alternative splicing scores and expression of random gene sets.'
+  run_exports: '{{ pin_subpackage("bioconductor-tin", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:tin
@@ -51,4 +24,39 @@ extra:
     name: bioconductor-tin
     path: recipes/bioconductor-tin
     version: 1.12.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, aroma.light, affxparser, RUnit, BiocGenerics
+requirements:
+  host:
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - r-aroma.affymetrix
+    - r-base
+    - r-data.table
+    - r-squash
+    - r-stringr
+    - r-wgcna
+  run:
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - r-aroma.affymetrix
+    - r-base
+    - r-data.table
+    - r-squash
+    - r-stringr
+    - r-wgcna
+
+source:
+  md5: f63cd84da454fa397ab8936a2dbded8d
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

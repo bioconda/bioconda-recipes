@@ -1,13 +1,13 @@
 {% set name = "geofetch" %}
-{% set version = "0.12.1" %}
+{% set version = "0.12.8" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 636155668020aafd040926bf66ec5ae1f3a5b1208d8e1f41e766b6b983bb7483
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 645278be8811b8ae4817da63ac213f481e16ed4ab733bb38515c11d5c9beb6fd
 
 build:
   number: 0
@@ -15,20 +15,23 @@ build:
     - geofetch = geofetch.geofetch:main
     - sraconvert = geofetch.sraconvert:main
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
 
 requirements:
   host:
     - pip
     - python >=3.8
+    - setuptools
   run:
+    - python >=3.8
     - attmap >=0.1.8
     - colorama >=0.3.9
     - coloredlogs >=15.0.1
     - logmuse >=0.2.6
     - pandas >=1.3.5
     - peppy >=0.35.1
-    - python
     - requests >=2.28.1
     - rich >=12.5.1
     - ubiquerg >=0.6.0
@@ -41,17 +44,15 @@ test:
   commands:
     - geofetch --help
     - sraconvert --help
-  requires:
-    - mock >=2.0.0
-    - pytest ==3.10.1
 
 about:
-  home: "https://github.com/pepkit/geofetch/"
+  home: "https://github.com/pepkit/geofetch"
   license: "BSD-2-Clause"
-  license_family: "BSD"
+  license_family: BSD
   license_file: "LICENSE.txt"
   summary: "Downloads data and metadata from GEO and SRA and creates standard PEPs."
-  doc_url: "http://geofetch.databio.org/"
+  doc_url: "http://geofetch.databio.org"
+  dev_url: "https://github.com/pepkit/geofetch"
 
 extra:
   recipe-maintainers:

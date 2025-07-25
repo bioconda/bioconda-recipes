@@ -1,44 +1,46 @@
-{% set version = "1.56.0" %}
+{% set version = "1.64.0" %}
 {% set name = "HilbertVisGUI" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: bf19ae216b55d12ba9fed073a2ffe6fa
+about:
+  description: An interactive tool to visualize long vectors of integer data by means of Hilbert curves
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 3)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: HilbertVisGUI
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-hilbertvisgui", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: lattice, IRanges
 # SystemRequirements: gtkmm-2.4, GNU make
 requirements:
-  host:
-    - 'bioconductor-hilbertvis >=1.56.0,<1.57.0'
-    - r-base
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-hilbertvis >=1.56.0,<1.57.0'
-    - r-base
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - automake
     - make
+  host:
+    - bioconductor-hilbertvis >=1.64.0,<1.65.0
+    - r-base
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-hilbertvis >=1.64.0,<1.65.0
+    - r-base
+source:
+  md5: dc316bebd3431b7778ab5c7acc27c52e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 3)'
-  summary: HilbertVisGUI
-  description: 'An interactive tool to visualize long vectors of integer data by means of Hilbert curves'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

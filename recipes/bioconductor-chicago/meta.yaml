@@ -1,22 +1,33 @@
-{% set version = "1.26.0" %}
+{% set version = "1.34.0" %}
 {% set name = "Chicago" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: b9c3508624df6f3cebbc449010119456
+about:
+  description: A pipeline for analysing Capture Hi-C data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: 'CHiCAGO: Capture Hi-C Analysis of Genomic Organization'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-chicago", max_pin="x.x") }}'
+
+extra:
+  identifiers:
+    - biotools:chicago
+  parent_recipe:
+    name: bioconductor-chicago
+    path: recipes/bioconductor-chicago
+    version: 1.10.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: argparser, BiocStyle, knitr, rmarkdown, PCHiCdata, testthat, Rsamtools, GenomicInteractions, GenomicRanges, IRanges, AnnotationHub
 requirements:
   host:
@@ -33,19 +44,16 @@ requirements:
     - r-hmisc
     - r-mass
     - r-matrixstats
+
+source:
+  md5: 02766cae10fde3a8843b053fb1612715
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'CHiCAGO: Capture Hi-C Analysis of Genomic Organization'
-  description: 'A pipeline for analysing Capture Hi-C data.'
-extra:
-  identifiers:
-    - biotools:chicago
-  parent_recipe:
-    name: bioconductor-chicago
-    path: recipes/bioconductor-chicago
-    version: 1.10.0
+    - $R -e "library('{{ name }}')"
 

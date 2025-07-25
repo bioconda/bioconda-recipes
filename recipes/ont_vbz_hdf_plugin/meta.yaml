@@ -1,17 +1,23 @@
-{% set version = "1.0.1" %}
+{% set name = "ont_vbz_hdf_plugin" %}
+{% set version = "1.0.12" %}
 
 package:
-  name: ont_vbz_hdf_plugin
+  name: {{name}}
   version: '{{version}}'
 
 source:
   git_url: https://github.com/nanoporetech/vbz_compression.git
-  git_rev: v{{ version }}
+  git_rev: {{ version }}
 
 build:
-  number: 3
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("ont_vbz_hdf_plugin", max_pin="x") }}
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   skip-lints:
     # This needs git for recursive checkouts
     - uses_vcs_url
@@ -24,6 +30,7 @@ requirements:
     - '{{ compiler("c") }}'
     - '{{ compiler("cxx") }}'
     - cmake
+    - git-lfs
   host:
     - hdf5
     - zstd

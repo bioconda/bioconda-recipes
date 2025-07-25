@@ -1,43 +1,45 @@
-{% set version = "1.18.0" %}
+{% set version = "1.26.0" %}
 {% set name = "decontam" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: b948a8d78cc9f506a0163ff386efe2b1
+about:
+  description: Simple statistical identification of contaminating sequence features in marker-gene or metagenomics data. Works on any kind of feature derived from environmental sequencing data (e.g. ASVs, OTUs, taxonomic groups, MAGs,...). Requires DNA quantitation data or sequenced negative control samples.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Identify Contaminants in Marker-gene and Metagenomics Sequencing Data
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, knitr, rmarkdown, phyloseq
-requirements:
-  host:
-    - r-base
-    - 'r-ggplot2 >=2.1.0'
-    - 'r-reshape2 >=1.4.1'
-  run:
-    - r-base
-    - 'r-ggplot2 >=2.1.0'
-    - 'r-reshape2 >=1.4.1'
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Identify Contaminants in Marker-gene and Metagenomics Sequencing Data'
-  description: 'Simple statistical identification of contaminating sequence features in marker-gene or metagenomics data. Works on any kind of feature derived from environmental sequencing data (e.g. ASVs, OTUs, taxonomic groups, MAGs,...). Requires DNA quantitation data or sequenced negative control samples.'
+  run_exports: '{{ pin_subpackage("bioconductor-decontam", max_pin="x.x") }}'
 extra:
   parent_recipe:
     name: bioconductor-decontam
     path: recipes/bioconductor-decontam
     version: 1.2.0
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: BiocStyle, knitr, rmarkdown, phyloseq
+requirements:
+  host:
+    - r-base
+    - r-ggplot2 >=2.1.0
+    - r-reshape2 >=1.4.1
+  run:
+    - r-base
+    - r-ggplot2 >=2.1.0
+    - r-reshape2 >=1.4.1
+source:
+  md5: 8f7e6f21488cf6384358db33630651d6
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

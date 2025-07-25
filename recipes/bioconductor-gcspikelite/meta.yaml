@@ -1,41 +1,43 @@
-{% set version = "1.36.0" %}
+{% set version = "1.44.0" %}
 {% set name = "gcspikelite" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 0de3fbbe9db74d87ded035be2d1f8228
+about:
+  description: Spike-in data for GC/MS data and methods within flagme
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: LGPL
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: Spike-in data for GC/MS data and methods within flagme
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-gcspikelite", max_pin="x.x") }}'
+extra:
+  parent_recipe:
+    name: bioconductor-gcspikelite
+    path: recipes/bioconductor-gcspikelite
+    version: 1.18.0
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 requirements:
   host:
     - r-base
   run:
     - r-base
     - curl
-    - bioconductor-data-packages>=20221107
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 3b8732b7eb8743bd3f92cb0eaa1308b3
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: LGPL
-  summary: 'Spike-in data for GC/MS data and methods within flagme'
-  description: 'Spike-in data for GC/MS data and methods within flagme'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
-extra:
-  parent_recipe:
-    name: bioconductor-gcspikelite
-    path: recipes/bioconductor-gcspikelite
-    version: 1.18.0
+    - $R -e "library('{{ name }}')"
 

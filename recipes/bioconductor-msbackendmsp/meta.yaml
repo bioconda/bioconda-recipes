@@ -1,44 +1,53 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "MsBackendMsp" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 96f533dfd6955624cb6ea70c6419dacb
+about:
+  description: Mass spectrometry (MS) data backend supporting import and handling of MS/MS spectra from NIST MSP Format (msp) files. Import of data from files with different MSP *flavours* is supported. Objects from this package add support for MSP files to Bioconductor's Spectra package. This package is thus not supposed to be used without the Spectra package that provides a complete infrastructure for MS data handling.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Mass Spectrometry Data Backend for NIST msp Files
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-msbackendmsp", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: testthat, knitr (>= 1.1.0), roxygen2, BiocStyle (>= 2.5.19), rmarkdown
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-mscoreutils >=1.10.0,<1.11.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-spectra >=1.8.0,<1.9.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-mscoreutils >=1.18.0,<1.19.0
+    - bioconductor-protgenerics >=1.38.0,<1.39.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-spectra >=1.16.0,<1.17.0
     - r-base
   run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-mscoreutils >=1.10.0,<1.11.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-spectra >=1.8.0,<1.9.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-mscoreutils >=1.18.0,<1.19.0
+    - bioconductor-protgenerics >=1.38.0,<1.39.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-spectra >=1.16.0,<1.17.0
     - r-base
+
+source:
+  md5: cd1d33e6c98c6cc2900a0e3dbf857275
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Mass Spectrometry Data Backend for NIST msp Files'
-  description: 'Mass spectrometry (MS) data backend supporting import and handling of MS/MS spectra from NIST MSP Format (msp) files. Import of data from files with different MSP *flavours* is supported. Objects from this package add support for MSP files to Bioconductor''s Spectra package. This package is thus not supposed to be used without the Spectra package that provides a complete infrastructure for MS data handling.'
+    - $R -e "library('{{ name }}')"
 

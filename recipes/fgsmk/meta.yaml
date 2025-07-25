@@ -1,0 +1,46 @@
+{% set name = "fgsmk" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/fgsmk-{{ version }}.tar.gz
+  sha256: 41541915a57e370e5e040a0e12ff3b87e6b6f62138c60cadc914570864f0d070
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('fgsmk', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11,<3.13
+    - poetry-core
+    - pip
+  run:
+    - python >=3.11.0,<3.13
+    - fgpyo 1.0.0
+    - snakemake >=8.27.1,<9.0.0
+    - strenum >=0.4.15,<0.5
+
+test:
+  imports:
+    - fgsmk
+
+about:
+  home: https://pypi.org/project/fgsmk/
+  summary: Supporting functions for running Snakemake workflows.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/fulcrumgenomics/fgsmk
+
+extra:
+  recipe-maintainers:
+    - nh13
+  identifiers:
+    - DOI:10.5281/zenodo.15558165

@@ -1,52 +1,69 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "TEKRABber" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 16a4253a47f26d2ac6b4fcdf21d4f1fb
+about:
+  description: TEKRABber is made to provide a user-friendly pipeline for comparing orthologs and transposable elements (TEs) between two species. It considers the orthology confidence between two species from BioMart to normalize expression counts and detect differentially expressed orthologs/TEs. Then it provides one to one correlation analysis for desired orthologs and TEs. There is also an app function to have a first insight on the result. Users can prepare orthologs/TEs RNA-seq expression data by their own preference to run TEKRABber following the data structure mentioned in the vignettes.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL (>=3)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: An R package estimates the correlations of orthologs and transposable elements between two species
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: BiocStyle, ggpubr, rmarkdown, shiny, knitr, testthat (>= 3.0.0)
+  run_exports: '{{ pin_subpackage("bioconductor-tekrabber", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, bslib, ggplot2, ggpubr, plotly, rmarkdown, shiny, knitr, testthat (>= 3.0.0)
 requirements:
-  host:
-    - 'bioconductor-apeglm >=1.20.0,<1.21.0'
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-scbn >=1.16.0,<1.17.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - r-base
-    - 'r-rcpp >=1.0.7'
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-apeglm >=1.20.0,<1.21.0'
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-scbn >=1.16.0,<1.17.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - r-base
-    - 'r-rcpp >=1.0.7'
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+  host:
+    - bioconductor-apeglm >=1.28.0,<1.29.0
+    - bioconductor-biomart >=2.62.0,<2.63.0
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-scbn >=1.24.0,<1.25.0
+    - r-base
+    - r-doparallel
+    - r-dplyr
+    - r-foreach
+    - r-magrittr
+    - r-rcpp >=1.0.7
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-apeglm >=1.28.0,<1.29.0
+    - bioconductor-biomart >=2.62.0,<2.63.0
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-scbn >=1.24.0,<1.25.0
+    - r-base
+    - r-doparallel
+    - r-dplyr
+    - r-foreach
+    - r-magrittr
+    - r-rcpp >=1.0.7
+
+source:
+  md5: 06eae4ec275e8f28223fa119009b3dc6
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'An R package estimates the correlations of orthologs and transposable elements between two species'
-  description: 'TEKRABber is made to provide a user-friendly pipeline for comparing orthologs and transposable elements (TEs) between two species. It considers the orthology confidence between two species from BioMart to normalize expression counts and detect differentially expressed orthologs/TEs. Then it provides one to one correlation analysis for desired orthologs and TEs. There is also an app function to have a first insight on the result. Users can prepare orthologs/TEs RNA-seq expression data by their own preference to run TEKRABber following the data structure mentioned in the vignettes.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

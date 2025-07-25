@@ -1,43 +1,51 @@
-{% set version = "1.28.0" %}
+{% set version = "1.36.0" %}
 {% set name = "QDNAseq.mm10" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 1b0602ec8a5b3288a467873f2c1ac7a4
+about:
+  description: This package provides QDNAseq bin annotations for the mouse genome build mm10.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: GPL
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Bin annotation mm10
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-qdnaseq >=1.34.0,<1.35.0'
-    - r-base
-  run:
-    - 'bioconductor-qdnaseq >=1.34.0,<1.35.0'
-    - r-base
-    - curl
-    - bioconductor-data-packages>=20221107
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: GPL
-  summary: 'Bin annotation mm10'
-  description: 'This package provides QDNAseq bin annotations for the mouse genome build mm10.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-qdnaseq.mm10", max_pin="x.x") }}'
+
 extra:
   parent_recipe:
     name: bioconductor-qdnaseq.mm10
     path: recipes/bioconductor-qdnaseq.mm10
     version: 1.10.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  host:
+    - bioconductor-qdnaseq >=1.42.0,<1.43.0
+    - r-base
+  run:
+    - bioconductor-qdnaseq >=1.42.0,<1.43.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: 777629429e38d4c424de62579fa35b3b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

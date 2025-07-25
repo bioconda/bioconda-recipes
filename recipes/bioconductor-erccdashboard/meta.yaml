@@ -1,32 +1,38 @@
-{% set version = "1.32.0" %}
+{% set version = "1.40.0" %}
 {% set name = "erccdashboard" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: ba26cc07920c686e3010e7bbed975d3e
+about:
+  description: Technical performance metrics for differential gene expression experiments using External RNA Controls Consortium (ERCC) spike-in ratio mixtures.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Assess Differential Gene Expression Experiments with ERCC Controls
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-erccdashboard", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, rmarkdown
 requirements:
   host:
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-qvalue >=2.30.0,<2.31.0'
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-qvalue >=2.38.0,<2.39.0
     - r-base
-    - 'r-ggplot2 >=2.1.0'
+    - r-ggplot2 >=2.1.0
     - r-gplots
-    - 'r-gridextra >=2.0.0'
+    - r-gridextra >=2.0.0
     - r-gtools
+    - r-knitr
     - r-locfit
     - r-mass
     - r-plyr
@@ -35,14 +41,15 @@ requirements:
     - r-scales
     - r-stringr
   run:
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-qvalue >=2.30.0,<2.31.0'
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-qvalue >=2.38.0,<2.39.0
     - r-base
-    - 'r-ggplot2 >=2.1.0'
+    - r-ggplot2 >=2.1.0
     - r-gplots
-    - 'r-gridextra >=2.0.0'
+    - r-gridextra >=2.0.0
     - r-gtools
+    - r-knitr
     - r-locfit
     - r-mass
     - r-plyr
@@ -50,13 +57,16 @@ requirements:
     - r-rocr
     - r-scales
     - r-stringr
+
+source:
+  md5: 937e15f505e42ce6d612dfb53423772c
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>=2)'
-  summary: 'Assess Differential Gene Expression Experiments with ERCC Controls'
-  description: 'Technical performance metrics for differential gene expression experiments using External RNA Controls Consortium (ERCC) spike-in ratio mixtures.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

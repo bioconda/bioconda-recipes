@@ -1,53 +1,75 @@
+{% set name = "flair" %}
+{% set version = "2.2.0" %}
+
 package:
-  name: flair
-  version: "1.7.0"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/4f/24/5b988c065cacb0e847fb5ce78fa4d9e4dc5b4690503f0c9a775833f87935/flair-brookslab-1.7.0.tar.gz
-  sha256: 7bc0e88b25d45d1c233495da20a481089376c2f4e01e14530d1e4550da245cdb
+  url: https://files.pythonhosted.org/packages/68/f8/fec1e31eb870cae355ed585f691f5c3a3bf1d04bae0e8c63dadfc57d1e9d/flair_brookslab-2.2.0.tar.gz
+  sha256: 6a3445b8a9ec7cba01618b7c481e61506cdeb2af705ec069dfc5f72f65c35255
 
 build:
   noarch: python
-  number: 1
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  entry_points:
+    - flair = flair.flair_cli:main
+    - assign_variants_to_transcripts = flair.assign_variants_to_transcripts:main
+    - junctions_from_sam = flair.junctions_from_sam:main
+    - mark_intron_retention = flair.mark_intron_retention:main
+    - mark_productivity = flair.mark_productivity:main
+    - normalize_counts_matrix = flair.normalize_counts_matrix:main
+    - bam2Bed12 = flair.bam2Bed12:main
+    - plot_isoform_usage = flair.plot_isoform_usage:main
+    - predictProductivity = flair.predictProductivity:main
+    - sam_to_map = flair.sam_to_map:main
+    - fasta_seq_lengths = flair.fasta_seq_lengths:main
+    - gtf_to_bed = flair.gtf_to_bed:main
+    - bed_to_sequence = flair.bed_to_sequence:main
+    - identify_annotated_gene = flair.identify_annotated_gene:main
+    - identify_gene_isoform = flair.identify_gene_isoform:main
+    - diff_iso_usage = flair.diff_iso_usage:main
+    - diffsplice_fishers_exact = flair.diffsplice_fishers_exact:main
+    - flair_combine = flair.flair_combine:main
+    - bed_to_gtf = flair.bed_to_gtf:main
+  run_exports:
+    - {{ pin_subpackage('flair', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.12,<3.13
     - pip
+    - poetry-core
   run:
-    - python >=3.6
-    - samtools
-    - bedtools
-    - scipy
-    - pandas
-    - rpy2
-    - tqdm
-    - ncls
-    - pybedtools
-    - mappy 2.24.*
-    - pysam
-    - minimap2
-    - r-ggplot2
-    - r-qqman
-    - r-lazyeval
-    - bioconductor-deseq2
-    - bioconductor-drimseq
-    - bioconductor-stager
-    - bioconductor-apeglm
-    - matplotlib-base
-    - seaborn-base
+    - python >=3.12,<3.13
+    - pysam >=0.22.1,<0.23.0
+    - pipettor >=1.1,<2.0.0
+    - pybedtools >=0.11.0,<0.12.0
+    - ncls >=0.0.68,<0.0.69
+    - mappy >=2.28,<3.0
+    - numpy >=2.2,<3.0
+    - scipy >=1.15.1,<2.0.0
+    - setuptools >=75.8.0,<76.0.0
+    - minimap2 >=2.28,<3.00
+    - samtools >=1.21
+    - bedtools >=2.31.1,<3.0
+
 test:
   imports:
     - flair
   commands:
-    - flair diffExp --help
+    - flair align --help
 
 about:
-  home: https://github.com/BrooksLabUCSC/flair 
-  license: BSD-3
-  summary: Correction, isoform definition, and alternative splicing analysis of noisy reads (ONT and PacBio).
+  home: "https://github.com/BrooksLabUCSC/flair"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: "LICENSE.txt"
+  summary: "Correction, isoform definition, and alternative splicing analysis of noisy reads (ONT and PacBio)."
+  dev_url: "https://github.com/BrooksLabUCSC/flair"
+  doc_url: "https://flair.readthedocs.io"
 
 extra:
   identifiers:
-    - doi:10.1101/410183
+    - doi:10.1038/s41467-020-15171-6

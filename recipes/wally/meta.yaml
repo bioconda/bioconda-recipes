@@ -1,5 +1,5 @@
-{% set version = "0.5.8" %}
-{% set sha256 = "ddd3376ad4dc3a37ccdafd813a9f6824fd3d78f35b440be7f810471b250facbd" %}
+{% set version = "0.7.1" %}
+{% set sha256 = "f99dba611dd1509eaad20475ed380b4e271a70ca9cd9e00ae9d9250a544f3d45" %}
 
 package:
   name: wally
@@ -11,28 +11,24 @@ source:
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage("wally", max_pin="x.x") }}
 
 requirements:
   build:
-    - {{ compiler('cxx') }}
-    - {{ cdt('mesa-libgl-devel') }}  # [linux]
-    - {{ cdt('mesa-dri-drivers') }}  # [linux]
-    - {{ cdt('libselinux') }}  # [linux]
-    - {{ cdt('libxdamage') }}  # [linux]
-    - {{ cdt('libxxf86vm') }}  # [linux]
-    - {{ cdt('libxext') }}     # [linux]
-    - xorg-libxfixes  # [linux]
     - make
-    - pkg-config  # [osx]
+    - {{ compiler('cxx') }}
   host:
     - zlib
     - bzip2
+    - libdeflate
     - boost-cpp
     - libopencv >=4.5.3
     - htslib
   run:
     - zlib
     - bzip2
+    - libdeflate
     - boost-cpp
     - libopencv >=4.5.3
     - htslib
@@ -41,13 +37,13 @@ test:
   commands:
     - wally --help
 
-extra:
-  container:
-    extended-base: True
-
 about:
   home: https://github.com/tobiasrausch/wally
   license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE
   summary: Visualization of aligned sequencing reads and genomic variants.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
