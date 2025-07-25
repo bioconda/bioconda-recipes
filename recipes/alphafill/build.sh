@@ -19,7 +19,7 @@ sed -i.bak 's|${CIFPP_SHARE_DIR}|$ENV{PREFIX}/share/libcifpp|g' CMakeLists.txt
 
 cmake -S . -B build -G Ninja \
   ${CMAKE_ARGS} \
-  -DCMAKE_INSTALL_FULL_SYSCONFDIR="${PREFIX}/etc" \
+  -DCMAKE_INSTALL_SYSCONFDIR="${PREFIX}/etc" \
   -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
   -DZLIB_ROOT="${PREFIX}" \
   -DBUILD_WEB_APPLICATION=OFF \
