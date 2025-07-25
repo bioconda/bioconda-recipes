@@ -5,6 +5,18 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# For debugging ./configure
+cat << EOF >&2
+ENVIRONMENT
+-----------
+  uname -a   $(uname -a)
+KERNEL
+  uname -s   $(uname -s)
+  uname -r   $(uname -r)
+  uname -v   $(uname -v)
+ARCHITECTURE
+  uname -m   $(uname -m)
+EOF
 
 # Source path
 BLAST_SRC_DIR="$SRC_DIR/c++"
@@ -112,8 +124,8 @@ if [[ "$(uname)" = "Linux" ]]; then
 	# --with(out)-64:
 	#   Compile in 64-bit mode instead of 32-bit.
 	#   Flag not available for osx build.
-        if [[ "$(arch)" = "x86_64" ]]; then
-            CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-64"
+	if [[ "$(arch)" = "x86_64" ]]; then
+		CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-64"
 	fi
 	# --with(out)-openmp:
 	#   Enable OpenMP extensions for all projects.
