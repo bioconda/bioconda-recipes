@@ -12,29 +12,14 @@ else
   export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
 
-yarn install
-
-if [[ "${target_platform}" == "linux-"* ]]; then
-  cmake -S . -B build -G Ninja \
-    ${CMAKE_ARGS} \
-    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-    -DZLIB_ROOT="${PREFIX}" \
-    -DBUILD_WEB_APPLICATION=ON \
-    -DUSE_RSRC=ON \
-    -Dzeep_DIR="${PREFIX}/lib/cmake/zeep" \
-    -DALPHAFILL_DATA_DIR="${PREFIX}/share/alphafill" \
-    -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp" \
-    -DBUILD_TESTING=ON
-elif [[ "${target_platform}" == "osx-"* ]]; then
-  cmake -S . -B build -G Ninja \
-    ${CMAKE_ARGS} \
-    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-    -DZLIB_ROOT="${PREFIX}" \
-    -DBUILD_WEB_APPLICATION=OFF \
-    -DALPHAFILL_DATA_DIR="${PREFIX}/share/alphafill" \
-    -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp" \
-    -DBUILD_TESTING=ON
-fi
+cmake -S . -B build -G Ninja \
+  ${CMAKE_ARGS} \
+  -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+  -DZLIB_ROOT="${PREFIX}" \
+  -DBUILD_WEB_APPLICATION=OFF \
+  -DALPHAFILL_DATA_DIR="${PREFIX}/share/alphafill" \
+  -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp" \
+  -DBUILD_TESTING=ON
 
 cmake --build build --parallel "${CPU_COUNT}"
 ctest -V -C Release --test-dir build
