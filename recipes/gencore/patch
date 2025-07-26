@@ -1,21 +1,66 @@
 diff --git a/Makefile b/Makefile
-index fc60ab3..4a906b9 100644
+index fc60ab3..cf95f28 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -2,6 +2,7 @@ DIR_INC = ./inc
+@@ -2,20 +2,21 @@ DIR_INC = ./inc
  DIR_SRC = ./src
  DIR_OBJ = ./obj
  BINDIR=/usr/local/bin
-+LDFLAGS = 
++LDFLAGS = -L$(PREFIX)/lib
  
- SRC = $(wildcard ${DIR_SRC}/*.cpp)  
- OBJ = $(patsubst %.cpp,${DIR_OBJ}/%.o,$(notdir ${SRC})) 
-@@ -14,7 +15,7 @@ CC = g++
- CFLAGS = -std=c++11 -g -I${DIR_INC}
+-SRC = $(wildcard ${DIR_SRC}/*.cpp)  
+-OBJ = $(patsubst %.cpp,${DIR_OBJ}/%.o,$(notdir ${SRC})) 
++SRC = $(wildcard ${DIR_SRC}/*.cpp)
++OBJ = $(patsubst %.cpp,${DIR_OBJ}/%.o,$(notdir ${SRC}))
+ 
+ TARGET = gencore
+ 
+ BIN_TARGET = ${TARGET}
+ 
+-CC = g++
+-CFLAGS = -std=c++11 -g -I${DIR_INC}
++CC = $(CXX)
++CFLAGS = -std=c++14 -march=x86-64-v3 -g -I${DIR_INC}
  
  ${BIN_TARGET}:${OBJ}
 -	$(CC) $(OBJ) -L. -lhts -lz -lpthread -o $@
-+	$(CC) $(OBJ) $(LDFLAGS) -L. -lhts -lz -lpthread -o $@
-     
+-    
++	$(CC) $(OBJ) $(LDFLAGS) -L. -lhts -lz -pthread -o $@
++
  ${DIR_OBJ}/%.o:${DIR_SRC}/%.cpp make_obj_dir
  	$(CC) $(CFLAGS) -O3 -c $< -o $@
+ .PHONY:clean
+@@ -31,4 +32,3 @@ make_obj_dir:
+ 
+ install:
+ 	install $(TARGET) $(BINDIR)/$(TARGET)
+-	@echo "Installed."
+diff --git a/src/group.cpp b/src/group.cpp
+index dd81490..e93a52b 100644
+--- a/src/group.cpp
++++ b/src/group.cpp
+@@ -395,7 +395,7 @@ int Group::makeConsensus(vector<bam1_t* >& reads, bam1_t* out, vector<char*>& sc
+         uint8_t topBase=0;
+         int topScore = -0x7FFFFFFF;
+         for(uint8_t b=0; b<16; b++) {
+-            if(baseScores[b] > topScore || (baseScores[b] == topScore && quals[b] > quals[topBase])) {
++            if(baseScores[b] > topScore || (baseScores[b] == topScore && quals[b] >= quals[topBase])) {
+                 topScore = baseScores[b];
+                 topBase = b;
+             }
+@@ -409,7 +409,7 @@ int Group::makeConsensus(vector<bam1_t* >& reads, bam1_t* out, vector<char*>& sc
+         for(uint8_t b=0; b<16; b++) {
+             if(b == topBase)
+                 continue;
+-            if(baseScores[b] > secScore || (baseScores[b] == secScore && quals[b] > quals[secBase])) {
++            if(baseScores[b] > secScore || (baseScores[b] == secScore && quals[b] >= quals[secBase])) {
+                 secScore = baseScores[b];
+                 secBase = b;
+             }
+@@ -606,4 +606,4 @@ bool Group::test(){
+     passed &= isDuplex("CTAG", "CCCAGG") == false;
+     passed &= isDuplex("", "") == false;
+     return passed;
+-}
+\ No newline at end of file
++}

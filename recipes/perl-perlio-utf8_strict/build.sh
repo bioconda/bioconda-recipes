@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# 检测并配置xlocale兼容路径
+if [ ! -f "/usr/include/xlocale.h" ]; then
+    [ -f "/usr/include/locale.h" ] && \
+    sudo ln -sf /usr/include/locale.h /usr/include/xlocale.h
+fi
+
+# 设置编译器包含路径
+export C_INCLUDE_PATH=/usr/include:$C_INCLUDE_PATH
+
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     perl Build.PL

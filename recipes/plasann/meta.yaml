@@ -1,41 +1,50 @@
 {% set name = "PlasAnn" %}
-{% set version = "1.0.8" %}
+{% set version = "1.1.3" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/ajlopatkin/PlasAnn/archive/v{{ version }}.tar.gz
-  sha256: b2080a07da25033d5c8f681fa44dbbd507a2caac7d65c86ffa5c5592a59d2195
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/plasann-{{ version }}.tar.gz
+  sha256: e15b608abea6bc4b9a4b8153284c51acd7cf9053bc28d3d4ae85f8f506b26a98
 
 build:
-  number: 1
+  number: 0
   noarch: python
   script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
   entry_points:
-    - PlasAnn = Scripts.annotate_plasmid:cli
+    - PlasAnn = plasann:main
   run_exports:
     - {{ pin_subpackage('plasann', max_pin='x.x') }}
 
 requirements:
   host:
     - pip
-    - python >=3.6
+    - python >=3.8
     - setuptools >=42
+    - wheel
   run:
-    - python >=3.6
-    - biopython >=1.78
-    - pandas >=1.0.0
+    - python >=3.8
+    - biopython >=1.79
+    - pandas >=1.3.0
     - gdown >=4.0.0
-    - matplotlib-base >=3.0.0
-    - pycirclize >=0.1.0
+    - numpy >=1.21.0
+    - matplotlib-base >=3.5.0
+    - pycirclize >=0.3.0
+    - requests >=2.25.0
     - prodigal  # [not arm64]
     - blast
+    - infernal
 
 test:
+  imports:
+    - plasann
   commands:
+    - pip check
     - PlasAnn --help
+  requires:
+    - pip
 
 about:
   home: https://github.com/ajlopatkin/PlasAnn
