@@ -16,6 +16,7 @@ mkdir -p "${PREFIX}/share/alphafill"
 mkdir -p "${PREFIX}/share/libcifpp"
 
 sed -i.bak 's|${CIFPP_SHARE_DIR}|$ENV{PREFIX}/share/libcifpp|g' CMakeLists.txt
+sed -i.bak 's|DESTINATION ${ALPHAFILL_DATA_DIR}|DESTINATION $ENV{PREFIX}/share/alphafill|g' CMakeLists.txt
 
 cmake -S . -B build -G Ninja \
   ${CMAKE_ARGS} \
