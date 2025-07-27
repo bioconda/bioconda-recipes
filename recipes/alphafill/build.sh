@@ -16,6 +16,7 @@ mkdir -p "${PREFIX}/share/alphafill"
 mkdir -p "${PREFIX}/share/libcifpp"
 
 sed -i.bak 's|${CIFPP_SHARE_DIR}|$ENV{PREFIX}/share/libcifpp|g' CMakeLists.txt
+sed -i.bak 's|${CMAKE_INSTALL_FULL_DATADIR}/alphafill|$ENV{PREFIX}/share/alphafill|' CMakeLists.txt
 
 cmake -S . -B build -G Ninja \
   ${CMAKE_ARGS} \
@@ -25,8 +26,6 @@ cmake -S . -B build -G Ninja \
   -DBUILD_WEB_APPLICATION=OFF \
   -DBUILD_DOCUMENTATION=OFF \
   -DALPHAFILL_DATA_DIR="${PREFIX}/share/alphafill" \
-  -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp" \
-  -DCIFPP_DATA_DIR='' \
   -DBUILD_TESTING=ON
 
 cmake --build build --parallel "${CPU_COUNT}"
