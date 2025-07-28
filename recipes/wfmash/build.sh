@@ -1,12 +1,13 @@
 #!/bin/bash
 set -ex
-export LIBRARY_PATH=${PREFIX}/lib
-export LD_LIBRARY_PATH=${PREFIX}/lib
-export CPATH=${PREFIX}/include
-export C_INCLUDE_PATH=${PREFIX}/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export CPP_INCLUDE_PATH=${PREFIX}/include
-export CXX_INCLUDE_PATH=${PREFIX}/include
+
+export LIBRARY_PATH="${PREFIX}/lib"
+export CPATH="${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
+mkdir -p $PREFIX/bin
 
 case $(uname -m) in
     x86_64)
@@ -19,9 +20,10 @@ case $(uname -m) in
         ;;
 esac
 
-sed -i "s/-march=x86-64-v3/-march=${MARCH}/g" src/common/wflign/deps/WFA2-lib/Makefile
+sed -i.bak "s/-march=x86-64-v3/-march=${MARCH}/g" src/common/wflign/CMakeLists.txt
+
 cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Generic -DEXTRA_FLAGS="${EXTRA_FLAGS}"
-cmake --build build -j ${CPU_COUNT}
+cmake --build build -j "${CPU_COUNT}"
 
 # Libraries aren't getting installed
 mkdir -p $PREFIX/lib
@@ -35,6 +37,5 @@ ls $SRC_DIR/build/lib/* -lh
 cp $SRC_DIR/build/lib/libwfa2* $PREFIX/lib
 cp $SRC_DIR/build/lib/libwflign* $PREFIX/lib
 
-mkdir -p $PREFIX/bin
-cp build/bin/* $PREFIX/bin
+install -v -m 0755 build/bin/* $PREFIX/bin
 cp scripts/split_approx_mappings_in_chunks.py $PREFIX/bin
