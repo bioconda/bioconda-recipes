@@ -49,7 +49,7 @@ echo ""
 EOF
 	chmod a+x ripples-fast
 else
-	ninja -j"${CPU_COUNT}"
+	cmake --build . --clean-first --target install -j "${CPU_COUNT}"
 fi
 
 if [[ "$(uname -s)" == "Darwin" && "$(uname -m)" == "x86_64" ]]; then
