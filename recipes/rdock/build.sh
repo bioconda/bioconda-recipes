@@ -4,7 +4,7 @@ set -euo pipefail
 export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-if [[ 'uname -s' == "Darwin" ]]; then
+if [[ "${target_platform}" == "osx-"* ]]; then
     export CXXFLAGS="${CXXFLAGS} -I${BUILD_PREFIX}/lib/clang/18/include"
 fi
 
@@ -16,5 +16,7 @@ PREFIX="${PREFIX}" make install
 
 mkdir -p ${PREFIX}/etc/conda/activate.d
 mkdir -p ${PREFIX}/etc/conda/deactivate.d
-cp -f ${RECIPE_DIR}/activate.sh "${PREFIX}/etc/conda/activate.d/env_vars.sh"
-cp -f ${RECIPE_DIR}/deactivate.sh "${PREFIX}/etc/conda/deactivate.d/env_vars.sh"
+install -m 755 ${RECIPE_DIR}/activate.sh "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.sh"
+install -m 755 ${RECIPE_DIR}/deactivate.sh "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.sh"
+install -m 755 ${RECIPE_DIR}/activate.fish "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.fish"
+install -m 755 ${RECIPE_DIR}/deactivate.fish "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.fish"
