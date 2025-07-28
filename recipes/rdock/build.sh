@@ -5,10 +5,6 @@ set -euo pipefail
 export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include -O3"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-if [[ "${target_platform}" == "osx-"* ]]; then
-    export CXXFLAGS="${CXXFLAGS} -I${BUILD_PREFIX}/lib/clang/18/include"
-fi
-
 mkdir -p "${PREFIX}/share/rDock"
 cp -rf lib data tests "${PREFIX}/share/rDock"
 rm -f lib/*
