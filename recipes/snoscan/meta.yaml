@@ -2,15 +2,17 @@
 {% set version = "1.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 6
 
 source:
   url: http://lowelab.ucsc.edu/software/snoscan-{{ version }}.tar.gz
   sha256: 57d7b5a23a5d871c95c648fa502ec16f966f487cc206ecf5ca7d171595e72148
+
+build:
+  number: 7
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -19,7 +21,6 @@ requirements:
   host:
     - perl
     - perl-module-build
-
   run:
     - perl
 
@@ -29,14 +30,19 @@ test:
     - snoscanA -h
     - snoscanH -h
     - snoscanY -h
-    - sort-snos 2>&1 | grep "Usage" 
+    - sort-snos 2>&1 | grep "Usage"
 
 about:
-  home: http://lowelab.ucsc.edu/snoscan
-  summary: Search for C/D box methylation guide snoRNA genes in a genomic sequence
-  license: GNU General Public License, version 2
+  home: "http://lowelab.ucsc.edu/snoscan"
+  summary: "Search for C/D box methylation guide snoRNA genes in a genomic sequence."
+  license: "GPL-2.0-or-later"
+  license_family: GPL
   license_file: GNULICENSE
+  doc_url: "http://lowelab.ucsc.edu/snoscan"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:snoscan
