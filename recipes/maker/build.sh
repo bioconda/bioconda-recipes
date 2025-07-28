@@ -13,7 +13,7 @@ cd src/
 # enable mpi
 echo "yes" | perl Build.PL
 
-./Build install
+perl ./Build install
 
 cd ..
 
@@ -22,6 +22,6 @@ mv perl/lib/* "${PREFIX}/perl/lib/"
 mv lib/* "${PREFIX}/lib"
 
 # Run a first time MPI_Init() to pre compile inline C code
-mpiexec -n 1 $PREFIX/bin/maker_mpi_init || true
+mpiexec -n 1 ${PREFIX}/bin/maker_mpi_init || true
 # This is not needed anymore
-rm -f $PREFIX/bin/maker_mpi_init
+rm -f ${PREFIX}/bin/maker_mpi_init
