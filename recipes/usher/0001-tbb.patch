@@ -1,15 +1,15 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 10a2a28..44f5e68 100644
+index 10a2a28..29147fe 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,5 +1,5 @@
  
 -cmake_minimum_required (VERSION 3.8) 
-+cmake_minimum_required (VERSION 3.14) 
++cmake_minimum_required (VERSION 3.14)
  cmake_policy(SET CMP0069 NEW)
  project(usher)
  if(NOT CMAKE_BUILD_TYPE)
-@@ -16,6 +16,19 @@ if ("${VERSION_PATCH}" MATCHES "[0-9]+")
+@@ -16,19 +16,32 @@ if ("${VERSION_PATCH}" MATCHES "[0-9]+")
  endif()
  message(STATUS "${usher_VERSION}")
  
@@ -28,8 +28,27 @@ index 10a2a28..44f5e68 100644
 +
  configure_file(src/version.hpp.in version.hpp)
  
- set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -pipe -g -ggdb3 -Wno-unused-function  -Wno-deprecated-declarations") 
-@@ -39,11 +52,7 @@ find_package(MPI REQUIRED)
+-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -pipe -g -ggdb3 -Wno-unused-function  -Wno-deprecated-declarations") 
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -pipe -g -ggdb3 -Wno-unused-function -Wno-deprecated-declarations -Wno-maybe-uninitialized -Wno-sign-compare -Wno-unused-variable") 
+ #-DDEBUG_PARSIMONY_SCORE_CHANGE_CORRECT -fsanitize=address -DCHECK_PAR_MAIN  -DEASY_DEBUG -DSTOP_ON_ERROR  -DDETAILED_MERGER_CHECK -O0
+-set(CMAKE_CXX_FLAGS_DEBUG "  -fno-eliminate-unused-debug-symbols -O0")
++set(CMAKE_CXX_FLAGS_DEBUG " -fno-eliminate-unused-debug-symbols -O0")
+ set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-DNDEBUG -O3")
+ set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 ")
+-set(CMAKE_INCLUDE_CURRENT_DIR ON) 
++set(CMAKE_INCLUDE_CURRENT_DIR ON)
+ 
+-if(DEFINED Protobuf_PATH) 
+-    find_package(Protobuf REQUIRED HINTS ${Protobuf_PATH}) 
++if(DEFINED Protobuf_PATH)
++    find_package(Protobuf REQUIRED HINTS ${Protobuf_PATH})
+ else()
+-    find_package(Protobuf REQUIRED) 
++    find_package(Protobuf REQUIRED)
+ endif()
+ 
+ # Print version messages
+@@ -39,18 +52,14 @@ find_package(MPI REQUIRED)
  include_directories(SYSTEM ${MPI_INCLUDE_PATH})
  include_directories(${Protobuf_INCLUDE_DIRS})
  
@@ -38,32 +57,51 @@ index 10a2a28..44f5e68 100644
 -find_package(TBB REQUIRED tbbmalloc tbbmalloc_proxy tbb_preview)
 -
 -FIND_PACKAGE(Boost COMPONENTS program_options iostreams filesystem date_time REQUIRED)
-+FIND_PACKAGE(Boost COMPONENTS program_options iostreams filesystem date_time REQUIRED CONFIG)
++find_package(Boost COMPONENTS program_options iostreams filesystem date_time REQUIRED CONFIG)
  
  #find_package(OpenMP REQUIRED)
  
+ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
+-AUX_SOURCE_DIRECTORY(src/matOptimize/Profitable_Moves_Enumerators New_Profitable_Moves_Enumerators) 
+-AUX_SOURCE_DIRECTORY(src/matOptimize/apply_move patch_tree) 
+-AUX_SOURCE_DIRECTORY(src/check_samples_place check_samples_place) 
++AUX_SOURCE_DIRECTORY(src/matOptimize/Profitable_Moves_Enumerators New_Profitable_Moves_Enumerators)
++AUX_SOURCE_DIRECTORY(src/matOptimize/apply_move patch_tree)
++AUX_SOURCE_DIRECTORY(src/check_samples_place check_samples_place)
+ file(GLOB MATUTIL_SRCS "src/matUtils/*.cpp" "src/matUtils/*.hpp")
+ file(GLOB RIPPLES_SRCS "src/ripples/*.cpp" "src/ripples/*.hpp")
+ file(GLOB USHER_SAMPLED_SRCS "src/usher-sampled/static_tree_mapper/*" "src/usher-sampled/*.cpp" "src/usher-sampled/*.hpp")
+@@ -58,7 +67,7 @@ file(GLOB RIPPLES_FAST_SRCS "src/ripples/ripples_fast/*.cpp" "src/ripples/ripple
+ file(GLOB RIPPLES_UTILS_SRCS "src/ripples/util/*.cpp" "src/ripples/util/*.hpp")
+ 
+ set_source_files_properties(src/mutation_annotated_tree.cpp PROPERTIES COMPILE_FLAGS -O3)
+-set_source_files_properties(src/usher-sampled/wait_debug.cpp PROPERTIES COMPILE_FLAGS -O0)
++set_source_files_properties(src/usher-sampled/wait_debug.cpp PROPERTIES COMPILE_FLAGS -O3)
+ #set_source_files_properties(src/matOptimize/Profitable_Moves_Enumerators/range_tree.cpp PROPERTIES COMPILE_FLAGS -O0)
+ 
+ #set_source_files_properties(src/matOptimize/detailed_mutations_store.cpp PROPERTIES COMPILE_FLAGS -O0)
 @@ -475,47 +484,47 @@ endif()
  
  if(SAVE_PROFILE)
      if(DEBUG)
 -        TARGET_COMPILE_OPTIONS(usher PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES -DSAVE_PROFILE=1 -DDEBUG=1)
-+        TARGET_COMPILE_OPTIONS(usher PRIVATE  -DSAVE_PROFILE=1 -DDEBUG=1)
++        TARGET_COMPILE_OPTIONS(usher PRIVATE  -O3 -DSAVE_PROFILE=1 -DDEBUG=1)
      else(DEBUG)
 -        TARGET_COMPILE_OPTIONS(usher PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES -DSAVE_PROFILE=1)
-+        TARGET_COMPILE_OPTIONS(usher PRIVATE  -DSAVE_PROFILE=1)
++        TARGET_COMPILE_OPTIONS(usher PRIVATE  -O3 -DSAVE_PROFILE=1)
      endif(DEBUG)
  else(SAVE_PROFILE)
      if(DEBUG)
 -        TARGET_COMPILE_OPTIONS(usher PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES -DDEBUG=1)
-+        TARGET_COMPILE_OPTIONS(usher PRIVATE  -DDEBUG=1)
++        TARGET_COMPILE_OPTIONS(usher PRIVATE  -O3 -DDEBUG=1)
      else(DEBUG)
 -        TARGET_COMPILE_OPTIONS(usher PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES)
-+        TARGET_COMPILE_OPTIONS(usher PRIVATE )
++        TARGET_COMPILE_OPTIONS(usher PRIVATE  -O3)
      endif(DEBUG)
  endif(SAVE_PROFILE)
  #set_property(TARGET matOptimize PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 -TARGET_LINK_LIBRARIES(compareVCF PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
-+TARGET_LINK_LIBRARIES(compareVCF PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++target_link_libraries(compareVCF PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
  
  
 -TARGET_LINK_LIBRARIES(check_samples_place PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
@@ -74,43 +112,43 @@ index 10a2a28..44f5e68 100644
 -TARGET_LINK_LIBRARIES(transposed_vcf_to_vcf PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
 -TARGET_LINK_LIBRARIES(transposed_vcf_to_fa PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
 -TARGET_LINK_LIBRARIES(transposed_vcf_print_name PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
-+TARGET_LINK_LIBRARIES(check_samples_place PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
-+TARGET_LINK_LIBRARIES(matOptimize PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
-+TARGET_LINK_LIBRARIES(usher-sampled PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
-+#TARGET_LINK_LIBRARIES(output_final_protobuf PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ) # OpenMP::OpenMP_CXX)
-+TARGET_LINK_LIBRARIES(transpose_vcf PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
-+TARGET_LINK_LIBRARIES(transposed_vcf_to_vcf PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
-+TARGET_LINK_LIBRARIES(transposed_vcf_to_fa PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
-+TARGET_LINK_LIBRARIES(transposed_vcf_print_name PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++target_link_libraries(check_samples_place PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
++target_link_libraries(matOptimize PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
++target_link_libraries(usher-sampled PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
++#target_link_libraries(output_final_protobuf PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ) # OpenMP::OpenMP_CXX)
++target_link_libraries(transpose_vcf PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++target_link_libraries(transposed_vcf_to_vcf PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++target_link_libraries(transposed_vcf_to_fa PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++target_link_libraries(transposed_vcf_print_name PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
  
 -TARGET_LINK_LIBRARIES(usher PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
-+TARGET_LINK_LIBRARIES(usher PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++target_link_libraries(usher PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
  target_include_directories(usher PUBLIC "${PROJECT_BINARY_DIR}")
  
 -TARGET_COMPILE_OPTIONS(matUtils PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES)
 -TARGET_LINK_LIBRARIES(matUtils PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
-+TARGET_COMPILE_OPTIONS(matUtils PRIVATE)
-+TARGET_LINK_LIBRARIES(matUtils PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
++target_compile_options(matUtils PRIVATE -O3)
++target_link_libraries(matUtils PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
  
 -TARGET_LINK_LIBRARIES(ripplesUtils PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
 -TARGET_LINK_LIBRARIES(ripplesInit PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
-+TARGET_LINK_LIBRARIES(ripplesUtils PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
-+TARGET_LINK_LIBRARIES(ripplesInit PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
++target_link_libraries(ripplesUtils PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
++target_link_libraries(ripplesInit PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
  
 -TARGET_COMPILE_OPTIONS(ripples PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES)
 -TARGET_LINK_LIBRARIES(ripples PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
 -TARGET_LINK_LIBRARIES(ripples-fast PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
-+TARGET_COMPILE_OPTIONS(ripples PRIVATE)
-+TARGET_LINK_LIBRARIES(ripples PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
-+TARGET_LINK_LIBRARIES(ripples-fast PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
++target_compile_options(ripples PRIVATE -O3)
++target_link_libraries(ripples PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
++target_link_libraries(ripples-fast PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
  
  if(USHER_SERVER)
 -    TARGET_COMPILE_OPTIONS(usher_server PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES)
 -    TARGET_LINK_LIBRARIES(usher_server PRIVATE stdc++ ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
 -    TARGET_LINK_LIBRARIES(usher-sampled-server PRIVATE stdc++ ${CMAKE_DL_LIBS} ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
-+    TARGET_COMPILE_OPTIONS(usher_server PRIVATE)
-+    TARGET_LINK_LIBRARIES(usher_server PRIVATE stdc++ ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
-+    TARGET_LINK_LIBRARIES(usher-sampled-server PRIVATE stdc++ ${CMAKE_DL_LIBS} ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
++    target_compile_options(usher_server PRIVATE -O3)
++    target_link_libraries(usher_server PRIVATE stdc++ ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++    target_link_libraries(usher-sampled-server PRIVATE stdc++ ${CMAKE_DL_LIBS} ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
      install(TARGETS usher matUtils matOptimize ripples usher_server DESTINATION bin)
  else()
      install(TARGETS usher matUtils matOptimize ripples DESTINATION bin)
@@ -1758,10 +1796,18 @@ index 02c9f08..126fbfe 100644
              //raise(SIGTRAP);
              fd(queue);
 diff --git a/src/matOptimize/main.cpp b/src/matOptimize/main.cpp
-index bdfb658..11d9702 100644
+index bdfb658..4532dd0 100644
 --- a/src/matOptimize/main.cpp
 +++ b/src/matOptimize/main.cpp
-@@ -29,7 +29,8 @@
+@@ -8,6 +8,7 @@
+ #include <atomic>
+ #include <boost/filesystem/operations.hpp>
+ #include <boost/filesystem/path.hpp>
++#include <boost/filesystem.hpp>
+ #include <boost/program_options/value_semantic.hpp>
+ #include <chrono>
+ #include <climits>
+@@ -29,7 +30,8 @@
  #include <cstdio>
  #include <fcntl.h>
  #include <string>
@@ -1771,7 +1817,7 @@ index bdfb658..11d9702 100644
  #include <thread>
  #include <unistd.h>
  #include <sys/stat.h>
-@@ -148,7 +149,7 @@ int main(int argc, char **argv) {
+@@ -148,7 +150,7 @@ int main(int argc, char **argv) {
      std::string branch_support_newick_out;
  
      po::options_description desc{"Options"};
@@ -1780,7 +1826,7 @@ index bdfb658..11d9702 100644
      std::string num_threads_message = "Number of threads to use when possible [DEFAULT uses all available cores, " + std::to_string(num_cores) + " detected on this machine]";
      desc.add_options()
      ("vcf,v", po::value<std::string>(&input_vcf_path)->default_value(""), "Input VCF file (in uncompressed or gzip-compressed .gz format) ")
-@@ -323,7 +324,7 @@ int main(int argc, char **argv) {
+@@ -323,7 +325,7 @@ int main(int argc, char **argv) {
          //Loading tree
          Original_State_t origin_states;
          {
@@ -1789,7 +1835,7 @@ index bdfb658..11d9702 100644
              if (input_complete_pb_path!="") {
                  t.load_detatiled_mutations(input_complete_pb_path);
              } else {
-@@ -432,7 +433,7 @@ int main(int argc, char **argv) {
+@@ -432,7 +434,7 @@ int main(int argc, char **argv) {
          bool isfirst=true;
          bool allow_drift=false;
          int iteration=1;
@@ -1798,7 +1844,7 @@ index bdfb658..11d9702 100644
          if(branch_support_newick_out!=""){
              if(radius<0){
                  radius=2*t.get_max_level();
-@@ -449,7 +450,7 @@ int main(int argc, char **argv) {
+@@ -449,7 +451,7 @@ int main(int argc, char **argv) {
                      out.moves=new std::vector<Profitable_Moves_ptr_t>;
                      auto node=all_nodes[idx];
                      Reachable reachable{true,true};
@@ -1807,7 +1853,7 @@ index bdfb658..11d9702 100644
                      std::unordered_map<size_t, bool> filtered;
                      if(out.score_change==-1){
                          filtered.emplace(node->node_id,false);
-@@ -582,7 +583,7 @@ int main(int argc, char **argv) {
+@@ -582,7 +584,7 @@ int main(int argc, char **argv) {
          save_final_tree(t, output_path);
          MPI_Wait(&req, MPI_STATUS_IGNORE);
      } else {
@@ -1816,7 +1862,7 @@ index bdfb658..11d9702 100644
          while(true) {
              MPI_Request request;
              fprintf(stderr, "Wait radius\n");
-@@ -609,7 +610,7 @@ int main(int argc, char **argv) {
+@@ -609,7 +611,7 @@ int main(int argc, char **argv) {
              t.MPI_receive_tree();
              adjust_all(t);
              use_bound=true;
