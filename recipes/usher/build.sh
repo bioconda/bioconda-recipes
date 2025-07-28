@@ -36,7 +36,7 @@ cmake -S .. -B . -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 
 if [[ "$(uname -s)" == "Darwin" && "$(uname -m)" == "x86_64" ]]; then
 	# omit ripples-fast due to problems building on Mac
-	ninja -j"${CPU_COUNT}" usher matUtils matOptimize usher-sampled ripples
+	ninja -j"${CPU_COUNT}" usher matUtils matOptimize usher-sampled ripples ripplesUtils ripplesInit compareVCF check_samples_place transpose_vcf transposed_vcf_to_vcf transposed_vcf_to_fa transposed_vcf_print_name
 	cat > ripples-fast <<EOF
 #!/bin/bash
 # This is a placeholder for the program ripples-fast on Mac where the build is currently failing.
@@ -53,7 +53,7 @@ else
 fi
 
 if [[ "$(uname -s)" == "Darwin" && "$(uname -m)" == "x86_64" ]]; then
-	install -v -m 755 usher* mat* ripples* "${PREFIX}/bin"
+	install -v -m 755 usher* mat* transpose* ripples* compareVCF check_samples_place "${PREFIX}/bin"
 else
 	install -v -m 755 usher* mat* transpose* ripples* compareVCF check_samples_place "${PREFIX}/bin"
 fi
