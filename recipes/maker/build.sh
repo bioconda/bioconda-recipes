@@ -19,7 +19,7 @@ cd ..
 
 install -v -m 755 bin/* "${PREFIX}/bin"
 mv perl/lib/* "${PREFIX}/perl/lib/"
-mv lib/* "${PREFIX}/lib/"
+mv lib/* "${PREFIX}/lib"
 
 # Run a first time MPI_Init() to pre compile inline C code
 mpiexec -n 1 $PREFIX/bin/maker_mpi_init || true
