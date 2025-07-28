@@ -28,7 +28,7 @@ fi
 
 sed -i.bak "s/-march=x86-64-v3/-march=${MARCH}/g" src/common/wflign/CMakeLists.txt
 
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Generic \
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Generic \
 	-DEXTRA_FLAGS="${EXTRA_FLAGS}" -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DCMAKE_C_COMPILER="${CC}" \
 	-DCMAKE_C_FLAGS="${CFLAGS}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
