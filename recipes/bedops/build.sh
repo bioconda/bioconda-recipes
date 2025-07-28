@@ -1,6 +1,11 @@
 #!/bin/bash
 set -eu -o pipefail
-make all CC=$CC CXX=$CXX SFLAGS=
-make install_all
+
 mkdir -p $PREFIX/bin
-cp bin/* $PREFIX/bin
+
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
+
+make all CC=$CC CXX=$CXX SFLAGS= -j"${CPU_COUNT}"
+make install_all
+
+install -v -m 0755 bin/* $PREFIX/bin
