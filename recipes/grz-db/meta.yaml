@@ -1,0 +1,46 @@
+{% set name = "grz-db" %}
+{% set version = "0.2.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/grz_db-{{ version }}.tar.gz
+  sha256: 318eb441eb2dcfcd09df8ec7c057db20ae3225b41334dccce5386c32c1a2016d
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.12,<4.0
+    - hatchling
+    - pip
+  run:
+    - python >=3.12,<4.0
+    - alembic >=1.16.1
+    - cryptography >=45.0.3
+    - sqlmodel >=0.0.24
+
+test:
+  imports:
+    - grz_db
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/BfArM-MVH/grz-tools
+  summary: SQL models for grz-cli and grz-watchdog
+  license: MIT
+
+extra:
+  recipe-maintainers:
+    - twrightsman
+    - tedil
