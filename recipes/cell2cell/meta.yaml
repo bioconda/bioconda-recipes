@@ -1,0 +1,66 @@
+{% set name = "cell2cell" %}
+{% set version = "0.7.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/cell2cell-{{ version }}.tar.gz
+  sha256: 2e17a1556d90c187434aa492000b2ced0d755cf6d437732f07df42e6670370e0
+  patches:
+    - cell2cell-aarch64.patch # [aarch64]
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 3
+  run_exports:
+    - {{ pin_subpackage("cell2cell", max_pin="x.x.x") }}
+
+requirements:
+  build:
+    - {{ compiler("cxx") }}
+
+  host:
+    - python <=3.10
+    - cython
+    - pip
+  run:
+    - python <=3.10
+    - numpy >=1.16,<2.0
+    - pandas >=1.0.0
+    - xlrd >=1.1
+    - openpyxl >=2.6.2
+    - networkx >=2.3
+    - matplotlib-base >=3.2.0,<3.7.3
+    - seaborn >=0.11.0
+    - scikit-learn
+    - umap-learn
+    - tqdm
+    - statsmodels
+    - statannotations
+    - tensorly ==0.8.1
+    - kneed
+    - scanpy <=1.9.3
+    - gseapy ==1.0.3 # [x86_64]
+    - gseapy >=1.1.3 # [aarch64]
+test:
+  imports:
+    - benchmarks
+    - cell2cell
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/earmingol/cell2cell
+  summary: Inferring cell-cell interactions from transcriptomes with cell2cell
+  license: BSD-3-Clause
+  license_file: LICENSE.txt
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - nilchia
