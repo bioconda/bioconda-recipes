@@ -1,10 +1,6 @@
 #!/bin/bash
 set -exo pipefail
 
-if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm64" ]]; then
-  export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
-fi
-
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -frtti"
