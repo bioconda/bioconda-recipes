@@ -24,7 +24,17 @@ case $(uname -s) in
 	;;
 esac
 
-nimble --localdeps build -y --verbose -d:release
+if [[ "$(uname -m)" == "arm64" ]]; then
+	nim_build="macosx_arm64"
+	curl -SL https://github.com/nim-lang/nightlies/releases/download/latest-version-2-2/${nim_build}.tar.xz -o ${nim_build}.tar.xz
+	unxz -c ${nim_build}.tar.xz | tar -x
+	cd nim-2.2.*
+	export PATH="$PWD/bin:$PATH"
+	cd ..
+	nimble --localdeps build -y --verbose -d:release
+else
+	nimble --localdeps build -y --verbose -d:release
+fi
 
 install -v -m 0755 slivar "${PREFIX}/bin"
 
