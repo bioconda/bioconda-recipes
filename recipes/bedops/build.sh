@@ -18,9 +18,10 @@ if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	export SDKROOT="/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
 	export MACOSX_DEPLOYMENT_TARGET=13.3
 	export MACOSX_SDK_VERSION=13.3
+	export CFLAGS="${CFLAGS} -fno-define-target-os-macros"
 fi
 
-make all CC="${CC}" CXX="${CXX}" SFLAGS= -j"${CPU_COUNT}"
+make all CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" SFLAGS= -j"${CPU_COUNT}"
 make install_all
 
 install -v -m 0755 bin/* "${PREFIX}/bin"
