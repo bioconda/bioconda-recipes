@@ -2,56 +2,19 @@ diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 3ff51768..2e4a7888 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -37,7 +37,12 @@ include(ExternalProject)
+@@ -37,7 +37,11 @@ include(ExternalProject)
  include(FeatureSummary)
  
  find_package(PkgConfig REQUIRED)
 +set(PYBIND11_FINDPYTHON ON)
  find_package(pybind11 CONFIG)
-+pkg_check_modules(JEMALLOC jemalloc)
 +
-+pkg_search_module(JEMALLOC REQUIRED jemalloc)
-+include_directories(${JEMALLOC_INCLUDE_DIRS})
++# Find jemalloc
++pkg_search_module(JEMALLOC jemalloc)
  # Find CUDA if GPU option is enabled
  if (USE_GPU)
      find_package(CUDA REQUIRED)  # Adjust this if you're using modern CMake with FindCUDAToolkit.
-@@ -75,6 +80,23 @@ if (APPLE AND (CMAKE_SYSTEM_PROCESSOR MATCHES "arm64" OR CMAKE_SYSTEM_PROCESSOR
- endif ()
- # --- End: Logic for using Homebrew HTSlib, GSL, and LibDeflate on Apple Silicon ---
- 
-+# --- Start: Logic for using JEMALLOC on Apple Silicon ---
-+set(JEMALLOC_LINK_LIBRARIES "jemalloc")
-+
-+if (APPLE AND (CMAKE_SYSTEM_PROCESSOR MATCHES "arm64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64"))
-+  pkg_check_modules(HOMEBREW_JEMALLOC QUIET jemalloc)
-+  if (HOMEBREW_JEMALLOC_FOUND)
-+    set(JEMALLOC_LINK_LIBRARIES ${HOMEBREW_JEMALLOC_LINK_LIBRARIES})
-+    message(STATUS "Apple Silicon: Found Homebrew Jemalloc. Will use it.")
-+    message(STATUS "  Homebrew jemalloc Includes: ${HOMEBREW_JEMALLOC_INCLUDE_DIRS}")
-+    message(STATUS "  Homebrew jemalloc Link Libraries: ${HOMEBREW_JEMALLOC_LINK_LIBRARIES}")
-+  else()
-+    message(WARNING "Apple Silicon: Homebrew jemalloc not found via pkg-config. Will try using default jemalloc.")
-+  endif ()
-+  message(STATUS "jemalloc Link Library: ${JEMALLOC_LINK_LIBRARIES}")
-+endif ()
-+# --- End: Logic for using Homebrew HTSlib, GSL, and LibDeflate on Apple Silicon ---
-+
- if(NOT CMAKE_BUILD_TYPE)
-   set(CMAKE_BUILD_TYPE Release CACHE STRING
-           "Choose the type of build, options are: Release Debug Generic." FORCE)
-@@ -170,6 +192,11 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "4.0")
-   set(CMAKE_ARGS "${CMAKE_ARGS};-DCMAKE_POLICY_VERSION_MINIMUM=3.5")
- endif()
- 
-+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "4.0")
-+  # Compatibility with CMake < 3.5 has been removed from CMake starting 4.0
-+  set(CMAKE_ARGS "${CMAKE_ARGS};-DCMAKE_POLICY_VERSION_MINIMUM=3.5")
-+endif()
-+
- # Set the output folder where your program will be created
- set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin) # TODO Do we want to comment out this line so the binary lands in the actual build directory?
- set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-@@ -697,6 +724,7 @@ endif (NOT INLINE_HANDLEGRAPH_SOURCES)
+@@ -697,6 +701,7 @@ endif (NOT INLINE_HANDLEGRAPH_SOURCES)
  add_dependencies(odgi_objs ${odgi_DEPS})
  
  set(odgi_INCLUDES
@@ -59,15 +22,17 @@ index 3ff51768..2e4a7888 100644
    "${CMAKE_SOURCE_DIR}/src"
    "${CMAKE_SOURCE_DIR}/src/algorithms"
    "${SDSLLITE_INCLUDE_DIRS}"
-@@ -877,6 +905,7 @@ else (NOT PIC)
+@@ -877,6 +882,9 @@ else (NOT PIC)
    set_target_properties(libodgi_shared PROPERTIES OUTPUT_NAME "odgi")
    set_target_properties(libodgi_shared PROPERTIES PUBLIC_HEADER "${odgi_HEADERS}")
    target_link_libraries(libodgi_shared ${odgi_LIBS})
-+  target_link_libraries(libodgi_shared ${JEMALLOC_LIBRARIES})
++  if(JEMALLOC_FOUND)
++    target_link_libraries(libodgi_shared ${JEMALLOC_LDFLAGS})
++  endif()
    add_dependencies(libodgi_shared ${odgi_DEPS})
  endif (NOT PIC)
  
-@@ -898,7 +927,7 @@ else (NOT PIC)
+@@ -898,7 +906,7 @@ else (NOT PIC)
    # as not to confuse things with the old bindings
    pybind11_add_module(odgi_ffi "${CMAKE_SOURCE_DIR}/src/pythonffi.cpp")
    add_dependencies(odgi_ffi ${odgi_DEPS} libodgi_shared)
@@ -76,7 +41,7 @@ index 3ff51768..2e4a7888 100644
    target_link_libraries(odgi_ffi PUBLIC "${odgi_LIBS}" $<TARGET_FILE:libodgi_shared>)
    set_target_properties(odgi_ffi PROPERTIES OUTPUT_NAME "odgi_ffi")
    install(TARGETS odgi_ffi LIBRARY DESTINATION lib)
-@@ -908,7 +937,7 @@ else (NOT PIC)
+@@ -908,7 +916,7 @@ else (NOT PIC)
    # Build original Python module
    pybind11_add_module(odgi_pybind11 "${CMAKE_SOURCE_DIR}/src/pythonmodule.cpp")
    add_dependencies(odgi_pybind11 ${odgi_DEPS} libodgi_static)
