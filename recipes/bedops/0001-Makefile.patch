@@ -1,0 +1,26 @@
+diff --git a/system.mk/Makefile.darwin b/system.mk/Makefile.darwin
+index 5b4adf5..23d88fd 100644
+--- a/system.mk/Makefile.darwin
++++ b/system.mk/Makefile.darwin
+@@ -92,7 +92,7 @@ support: | mkdirs
+ 
+ jansson_support_c:
+ 	bzcat ${WHICHJANSSON}.tar.bz2 | tar -x -C ${PARTY3}/darwin_intel_${BUILD_ARCH}/
+-	cd ${PARTY3}/darwin_intel_${BUILD_ARCH}/${JANSSONVERSION} && export MACOSX_DEPLOYMENT_TARGET=${MIN_OSX_VERSION} && export ARCH=${BUILD_ARCH} && export CC=${CC} && export CXX=${CXX} && ./configure --prefix=${WDIR}/${PARTY3}/darwin_intel_${BUILD_ARCH}/${JANSSONVERSION} CFLAGS="-arch ${BUILD_ARCH}" --build="${BUILD_ARCH}" && $(MAKE) && $(MAKE) install && cd ../ && rm -f jansson && ln -sf ${JANSSONVERSION} jansson && cd ${WDIR}
++	cd ${PARTY3}/darwin_intel_${BUILD_ARCH}/${JANSSONVERSION} && export MACOSX_DEPLOYMENT_TARGET=${MIN_OSX_VERSION} && export ARCH=${BUILD_ARCH} && export CC=${CC} && export CXX=${CXX} && cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* . && autoreconf -if && ./configure --prefix=${WDIR}/${PARTY3}/darwin_intel_${BUILD_ARCH}/${JANSSONVERSION} CFLAGS="-arch ${BUILD_ARCH}" --build="${BUILD_ARCH}" && $(MAKE) && $(MAKE) install && cd ../ && rm -f jansson && ln -sf ${JANSSONVERSION} jansson && cd ${WDIR}
+ 
+ bzip2_support_c:
+ 	bzcat ${WHICHBZIP2}.tar.bz2 | tar -x -C ${PARTY3}/darwin_intel_${BUILD_ARCH}/
+diff --git a/system.mk/Makefile.linux b/system.mk/Makefile.linux
+index 5f05d1f..b6dea3f 100644
+--- a/system.mk/Makefile.linux
++++ b/system.mk/Makefile.linux
+@@ -66,7 +66,7 @@ support: $(LIBS)
+ 
+ ${PARTY3}/jansson/lib/libjansson.a: $(WHICHJANSSON).tar.bz2
+ 	bzcat $^ | tar -x -C ${PARTY3}
+-	cd ${PARTY3}/${JANSSONVERSION} && ./configure --prefix=${WDIR}/${PARTY3}/${JANSSONVERSION} && $(MAKE) && $(MAKE) install && cd ${WDIR} && rm -f jansson && ln -sf ${JANSSONVERSION} ${PARTY3}/jansson
++	cd ${PARTY3}/${JANSSONVERSION} && cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* . && autoreconf -if && ./configure --prefix=${WDIR}/${PARTY3}/${JANSSONVERSION} && $(MAKE) && $(MAKE) install && cd ${WDIR} && rm -f jansson && ln -sf ${JANSSONVERSION} ${PARTY3}/jansson
+ 
+ $(PARTY3)/bzip2/libbz2.a: $(WHICHBZIP2).tar.bz2
+ 	bzcat $^ | tar -x -C ${PARTY3}

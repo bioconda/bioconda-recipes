@@ -1,11 +1,14 @@
 #!/bin/bash
 set -eu -o pipefail
 
-mkdir -p $PREFIX/bin
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
-cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
+mkdir -p "$PREFIX/bin"
 
-make all CC=$CC CXX=$CXX SFLAGS= -j"${CPU_COUNT}"
+make all CC="${CC}" CXX="${CXX}" SFLAGS= -j"${CPU_COUNT}"
 make install_all
 
-install -v -m 0755 bin/* $PREFIX/bin
+install -v -m 0755 bin/* "$PREFIX/bin"
