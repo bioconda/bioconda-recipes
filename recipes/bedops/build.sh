@@ -20,12 +20,7 @@ if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	export MACOSX_SDK_VERSION=13.3
 fi
 
-if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
-	make all CC="${CC}" CXX="${CXX}" BUILD_ARCH="arm64" SFLAGS= -j"${CPU_COUNT}"
-else
-	make all CC="${CC}" CXX="${CXX}" SFLAGS= -j"${CPU_COUNT}"
-fi
-
+make all CC="${CC}" CXX="${CXX}" SFLAGS= -j"${CPU_COUNT}"
 make install_all
 
 install -v -m 0755 bin/* "${PREFIX}/bin"
