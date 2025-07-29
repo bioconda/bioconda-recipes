@@ -1,6 +1,6 @@
 {% set name = "medaka" %}
-{% set version = "2.0.1" %}
-{% set sha256 = "7b7a0dc558f19d10fe8eb588f709a179ef5204a53aad5cfdfbd5c57039193a9f" %}
+{% set version = "2.1.0" %}
+{% set sha256 = "6c53af6687f73ad31cecd4f800f967f208a7eeed9c72a5e5aa4f7cdc1ffdfdd6" %}
 # Bot PRs - Always review requirements.txt for new release
 
 package:
@@ -11,11 +11,11 @@ source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/medaka-{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - patch
+    - 0001-setup.py.patch
 
 build:
-  number: 1
-  skip: True  # [osx or py < 38 or py > 311]
+  number: 0
+  skip: True  # [osx]
   entry_points:
     - medaka = medaka.medaka:main
     - medaka_counts = medaka.medaka_counts:main
@@ -30,38 +30,37 @@ requirements:
     - cmake
     - make
   host:
-    - python
+    - python =3.8
     - pip
     - cffi
-    - htslib >=1.14
     - libcurl
-    - openssl
     - bzip2
     - xz
     - zlib
+    - htslib >=1.20
   run:
-    - python
-    - cffi
+    - python =3.8
     - grpcio
     - h5py
     - intervaltree
-    - pytorch >=2.3,<2.4
+    - mappy
     - numpy >=1.21.0,<2.0.0
     - nomkl  # [osx]
-    - mappy
     - ont-fast5-api
     - parasail-python
     - pyabpoa
     - pyspoa >=0.2.1
     - pysam >=0.16.0.1
     - python-edlib
+    - pytorch >=2.3,<2.4
     - requests
-    - samtools >=1.14
-    - bcftools >=1.14
-    - minimap2 >=2.17
-    - htslib >=1.14
+    - toml
     - tqdm
     - wurlitzer
+    - samtools >=1.14
+    - bcftools >=1.14
+    - minimap2 >=2.28
+    - htslib >=1.20
 
 test:
   imports:
@@ -75,13 +74,15 @@ test:
 about:
   home: "https://github.com/nanoporetech/medaka"
   summary: "A tool to create consensus sequences and variant calls from nanopore sequencing data using neural networks."
-  license: "MPL-2.0"
+  license: "Oxford Nanopore Technologies PLC. Public License Version 1.0"
   license_family: OTHER
   license_file: "LICENSE"
   dev_url: "https://github.com/nanoporetech/medaka"
   doc_url: "https://github.com/nanoporetech/medaka/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - usegalaxy-eu:medaka_consensus
     - usegalaxy-eu:medaka_consensus_pipeline
