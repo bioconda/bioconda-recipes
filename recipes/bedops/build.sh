@@ -6,9 +6,26 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-mkdir -p "$PREFIX/bin"
+mkdir -p "${PREFIX}/bin"
 
-make all CC="${CC}" CXX="${CXX}" SFLAGS= -j"${CPU_COUNT}"
+OS=$(uname -s)
+ARCH=$(uname -m)
+
+if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
+	wget https://github.com/alexey-lysiuk/macos-sdk/releases/download/13.3/MacOSX13.3.tar.xz
+	tar -xf MacOSX13.3.tar.xz
+	cp -rH MacOSX13.3.sdk /Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
+	export SDKROOT="/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
+	export MACOSX_DEPLOYMENT_TARGET=13.3
+	export MACOSX_SDK_VERSION=13.3
+fi
+
+if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
+	make all CC="${CC}" CXX="${CXX}" BUILD_ARCH="arm64" SFLAGS= -j"${CPU_COUNT}"
+else
+	make all CC="${CC}" CXX="${CXX}" SFLAGS= -j"${CPU_COUNT}"
+fi
+
 make install_all
 
-install -v -m 0755 bin/* "$PREFIX/bin"
+install -v -m 0755 bin/* "${PREFIX}/bin"
