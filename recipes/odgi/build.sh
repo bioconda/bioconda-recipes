@@ -26,6 +26,10 @@ case $(uname -m) in
         sed -i.bak 's|arch=x86-64|arch=x86-64-v3|' src/main.cpp
         ;;
 esac
+
+# Fix type mismatch in similarity_main.cpp
+sed -i.bak 's/std::min(3UL, num_threads)/std::min(uint64_t(3), uint64_t(num_threads))/' src/subcommand/similarity_main.cpp
+
 rm -rf src/*.bak
 
 # Don't build static on Linux due to jemalloc/atomic issues
