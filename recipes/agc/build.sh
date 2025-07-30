@@ -13,15 +13,15 @@ rm -rf *.bak
 case $(uname -m) in
     aarch64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
-	make PLATFORM=arm8 all
+	make PLATFORM=arm8 CXX="${CXX}"
 	;;
     arm64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
-	make PLATFORM=m1 all
+	make PLATFORM=m1 CXX="${CXX}"
 	;;
     x86_64)
 	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
-	make PLATFORM=avx2 all
+	make PLATFORM=avx2 CXX="${CXX}"
 	;;
 esac
 
