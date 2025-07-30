@@ -10,9 +10,9 @@ mkdir -p "${PREFIX}/bin"
 cd src
 
 case $(uname -m) in
-	aarch64) sed -i.bak 's|-march=x86-64|-march=armv8-a|' CMakeLists.txt && rm -rf *.bak ;;
-	arm64) sed -i.bak 's|-march=x86-64|-march=armv8.4-a|' CMakeLists.txt && rm -rf *.bak ;;
-	x86_64) sed -i.bak 's|-march=x86-64|-march=x86-64-v3|' CMakeLists.txt && rm -rf *.bak ;;
+	aarch64) sed -i.bak 's|-march=x86-64|-march=armv8-a|' CMakeLists.txt && sed -i.bak 's|-march=x86-64|-march=armv8-a|' HS_GenomeTailor/CMakeLists.txt ;;
+	arm64) sed -i.bak 's|-march=x86-64|-march=armv8.4-a|' CMakeLists.txt && sed -i.bak 's|-march=x86-64|-march=armv8.4-a|' HS_GenomeTailor/CMakeLists.txt ;;
+	x86_64) sed -i.bak 's|-march=x86-64|-march=x86-64-v3|' CMakeLists.txt && sed -i.bak 's|-march=x86-64|-march=x86-64-v3|' HS_GenomeTailor/CMakeLists.txt ;;
 esac
 
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
