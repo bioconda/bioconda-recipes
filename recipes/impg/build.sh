@@ -12,16 +12,37 @@ if [[ $(uname) == "Darwin" ]]; then
     # The conda-forge gcc package provides this
     # We need to use the actual gcc/g++ binaries from conda
     mkdir -p "$BUILD_PREFIX/bin"
-    ln -sf $CC $BUILD_PREFIX/bin/clang
-    ln -sf $CXX $BUILD_PREFIX/bin/clang++
-    export CC="$BUILD_PREFIX/bin/clang"
-    export CXX="$BUILD_PREFIX/bin/clang++"
+    
+    # Find the GCC binaries - they should be named gcc-<version> and g++-<version>
+    # Get the actual gcc/g++ binaries from conda-forge
+    if [ -f "$BUILD_PREFIX/bin/gcc" ]; then
+        export CC="$BUILD_PREFIX/bin/gcc"
+        export CXX="$BUILD_PREFIX/bin/g++"
+    else
+        # Find versioned gcc/g++ binaries
+        export CC=$(find "$BUILD_PREFIX/bin" -name 'gcc-*' | grep -v 'gcc-ar' | grep -v 'gcc-nm' | grep -v 'gcc-ranlib' | head -1)
+        export CXX=$(find "$BUILD_PREFIX/bin" -name 'g++-*' | head -1)
+    fi
+    
+    # Ensure we found GCC
+    if [ -z "$CC" ] || [ -z "$CXX" ]; then
+        echo "ERROR: Could not find GCC/G++ in conda environment"
+        exit 1
+    fi
     
     # Set up Rust to use g++ as the linker
     export RUSTFLAGS="-C linker=${CXX}"
     
     # Set make command for macOS
     export MAKE="$(which make)"
+    
+    # Override any clang settings from conda
+    unset CLANG
+    unset CLANGXX
+    
+    # Ensure GCC standard libraries are used
+    export CXXFLAGS="${CXXFLAGS//-stdlib=libc++/}"
+    export LDFLAGS="${LDFLAGS//-stdlib=libc++/}"
 else
     # Create symlinks for standard compiler names that AGC makefile expects
     mkdir -p "$BUILD_PREFIX/bin"
