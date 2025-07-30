@@ -12,11 +12,11 @@ case $(uname -m) in
 	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v4"
         ;;
     aarch64)
-        export SPOA_OPTS="-Dspoa_use_simde=ON -Dspoa_use_simde_nonvec=ON -Dspoa_use_simde_openmp=ON -DBUILD_TESTING=OFF"
+        export SPOA_OPTS="-Dspoa_optimize_for_native=ON -Dspoa_use_simde=ON -Dspoa_use_simde_nonvec=ON -Dspoa_use_simde_openmp=ON -DBUILD_TESTING=OFF"
 	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
         ;;
     arm64)
-	export SPOA_OPTS="-Dspoa_optimize_for_portability=ON"
+	export SPOA_OPTS="-Dspoa_optimize_for_native=ON -Dspoa_use_simde=ON -Dspoa_use_simde_nonvec=ON -Dspoa_use_simde_openmp=ON -DBUILD_TESTING=OFF"
 	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
 	;;
     *)
