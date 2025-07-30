@@ -1,41 +1,47 @@
+{% set version = "0.6.0" %}
+
 package:
   name: selene-sdk
-  version: 0.5.0 
+  version: {{ version }}
 
 source:
-  url: https://github.com/FunctionLab/selene/archive/refs/tags/0.5.0.tar.gz
-  sha256: daa7969fc99f6ffa00dda2f7657442f4a1d84771b7a83c8b3464db0221ca8b32
+  url: https://github.com/FunctionLab/selene/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 9eaf17fe0135d05a605403214086ec29d3189c45804fd61de444254c7eb3102d
 
 build:
-  number: 2
-  # torchvision py3.8 builds not available through conda-forge.
-  skip: True  # [py<30 or py>=38 or osx]
+  number: 1
   script: python setup.py install --single-version-externally-managed --record=record.txt
+  run_exports:
+    - {{ pin_subpackage("selene-sdk", max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }} 
   host:
-    - python  
+    - python >=3.8,<3.9 
     - setuptools
-    - cython>=0.29.3
-    - numpy
+    - wheel
+    - cython >=0.29.24
+    - numpy >=1.21.4
+    - poetry-core
+    - pip
   run:
-    - python
+    - python >=3.8,<3.9
     - click
     - h5py
-    - matplotlib-base
-    - numpy
+    - matplotlib-base >=2.2.3
+    - {{ pin_compatible('numpy') }}
     - pandas
     - plotly
     - pyfaidx
     - pytabix
-    - pyyaml>=5.1
+    - pyyaml >=5.1
+    - ruamel.yaml
     - scikit-learn
     - scipy
     - seaborn
     - statsmodels
-    - torchvision
+    - pytorch >=1.0.0,<=2.3.1
 
 test:
   imports:
@@ -50,5 +56,7 @@ about:
   license_file: LICENSE
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
     - kathyxchen

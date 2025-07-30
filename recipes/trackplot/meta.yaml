@@ -1,6 +1,5 @@
 {% set name = "trackplot" %}
-{% set version = "0.3.4" %}
-
+{% set version = "0.5.3" %}
 
 package:
   name: trackplot
@@ -8,19 +7,24 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: eafa09a8ead4e5da43fe6237e2e59ad62e4fb874c079598026fa362fd602c8ef
+  sha256: 5bfbe51600d40a087cc504d7a8ac6885722af9b4d14448ec0b6284fb6042170b
 
 build:
   noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - trackplot = trackplot.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
 
 requirements:
   host:
-    - python
-    - poetry >=1.4.2
+    - python >=3.8,<3.12
+    - pip
+    - poetry-core
   run:
-    - wheel
+    - python >=3.8,<3.12
     - adjusttext >=0.7.3
     - cairocffi >=1.4.0
     - click
@@ -42,7 +46,6 @@ requirements:
 test:
   imports:
     - trackplot
-
   commands:
     - trackplot --help
 

@@ -1,0 +1,42 @@
+{% set version = "1.0.2" %}
+
+package:
+    name: hpcblast
+    version: {{ version }}
+
+build:
+    number: 0
+    noarch: python
+    script: {{ PYTHON }} -m pip install -vvv .
+    entry_points:
+      - hpc-blast = hpcblast.main:main
+    run_exports:
+      - {{ pin_subpackage('hpcblast', max_pin="x") }}
+
+source:
+    url: https://github.com/yodeng/hpc-blast/archive/v{{ version }}.tar.gz
+    sha256: 71f3fa343dc553fa447af26474e90204843abe395a98ff27cf88f0cb3ba9ca21
+
+requirements:
+    host:
+      - python >=3.5
+      - pip
+    run:
+      - python >=3.5
+      - pip
+      - runjob >=2.10.5
+      - blast
+
+test:
+  imports:
+    - hpcblast
+  commands:
+    - hpc-blast --version
+
+about:
+    home: https://github.com/yodeng/hpc-blast
+    license: MIT
+    license_family: MIT
+    license_file: LICENSE
+    summary: "A wrapper for NCBI-BLAST+ suite which provides a simple and efficient method to accelerate the blast search"
+    description: "hpcblast provides a simple and efficient method for running the NCBI-BLAST+ suite program in localhost or the HPC environment (Sun Grid Engine). It splits the input sequence file and run all chunked tasks in parallel to accelerate the blast search speed. When there are many sequences in the input file for blast comparison and the running speed is slow, using hpcblast can significantly improve the performance. All of this can be easy done only by adding the hpc-blast command at the head of your blast command line."

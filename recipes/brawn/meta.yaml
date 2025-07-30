@@ -1,6 +1,6 @@
 {% set name = "brawn" %}
-{% set version = "1.0.1" %}
-{% set sha256 = "dd76831a9dee955692082f46209db645bceb2e48509cbe0eeb9d9e20f53cbb6c" %}
+{% set version = "1.0.2" %}
+{% set sha256 = "8c993df898fdf359cd619f035c5c14a0e4ab7587dc6be3d1d970eb7efaf30ec9" %}
 
 package:
   name: {{ name|lower }}
@@ -13,7 +13,9 @@ source:
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('brawn', max_pin="x") }}
   entry_points:
     - brawn=brawn.__main__:entrypoint
 
@@ -21,6 +23,7 @@ requirements:
   host:
     - python >=3.8
     - pip
+    - setuptools
   run:
     - python >=3.8
 
@@ -30,7 +33,8 @@ test:
 
 about:
   home: "https://github.com/SJShaw/brawn"
-  summary: "A tool for handling repetitive insertions into sequence alignments"
+  summary: "A tool for handling repetitive insertions into sequence alignments."
   description: "A python port of MUSCLE's profile-profile mode for aligning sequences."
   license: "GPL-3.0"
   license_file: "LICENSE"
+  dev_url: "https://github.com/SJShaw/brawn"

@@ -1,5 +1,5 @@
-{% set version = "1.4.2" %}
-{% set sha256 = "fda0ba84447d83b162434f8eb8f6f6d366ef715bdbf1b05179a6ef3d4670830d" %}
+{% set version = "1.4.4" %}
+{% set sha256 = "e5c3905ffefb910a22aee44dc9374bf597b1cad84821c5f3b9e780d73513c083" %}
 
 package:
   name: ivar
@@ -10,12 +10,13 @@ source:
   sha256: "{{ sha256 }}"
 
 build:
-  number: 2
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('ivar', max_pin='x') }}
 
 requirements:
   build:
-    - '{{ compiler("c") }}'
-    - '{{ compiler("cxx") }}'
+    - {{ compiler("cxx") }}
     - make
     - automake
     - autoconf
@@ -23,6 +24,7 @@ requirements:
     - pkg-config
   host:
     - htslib
+    - zlib
   run:
     - htslib
     - samtools
@@ -32,13 +34,28 @@ test:
     - ivar version
 
 about:
-  home: https://andersen-lab.github.io/ivar/html/
-  license: GPL-3.0
+  home: "https://github.com/andersen-lab/ivar"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: iVar is a computational package that contains functions broadly useful for viral amplicon-based sequencing.
-  dev_url: https://github.com/andersen-lab/ivar
+  summary: "iVar is a computational package that contains functions broadly useful for viral amplicon-based sequencing."
+  dev_url: "https://github.com/andersen-lab/ivar"
+  doc_url: "https://andersen-lab.github.io/ivar/html"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  watch:
+    - enable: yes
   identifiers:
     - biotools:ivar
     - usegalaxy-eu:ivar_variants
+    - usegalaxy-eu:ivar_filtervariants
+    - usegalaxy-eu:ivar_consensus
+    - usegalaxy-eu:ivar_removereads
+    - usegalaxy-eu:ivar_trim
+    - usegalaxy-eu:ivar_getmasked
+    - doi:10.1186/s13059-018-1618-7
+  recipe-maintainers:
+    - gkarthik

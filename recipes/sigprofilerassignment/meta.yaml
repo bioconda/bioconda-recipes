@@ -1,0 +1,49 @@
+{% set name = "SigProfilerAssignment" %}
+{% set version = "0.2.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/source/s/sigprofilerassignment/sigprofilerassignment-{{ version }}.tar.gz
+  sha256: 0b271828ecacaaff064e7a2105b6fa3aba5668aecbb79e796dc1f0d14159ed1d
+
+build:
+  entry_points:
+    - SigProfilerAssignment=SigProfilerAssignment.SigProfilerAssignment_CLI:main_function
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=61
+  run:
+    - python >=3.9
+    - scipy >=1.13
+    - numpy >=2.0.0
+    - pandas >=2.0.0
+    - sigprofilermatrixgenerator >=1.3.0
+    - sigprofilerplotting >=1.4.0
+    - reportlab >=3.5.42
+    - pypdf >=5.0.0
+    - alive-progress >=2.4.1
+    - pdf2image >=1.16.0
+    - poppler  # required by pdf2image for PDF to PNG conversion
+
+test:
+  imports:
+    - SigProfilerAssignment
+  commands:
+    - SigProfilerAssignment -h
+
+about:
+  home: https://github.com/AlexandrovLab/SigProfilerAssignment.git
+  summary: SigProfilerAssignment - Assignment of known mutational signatures to individual samples and individual somatic mutations
+  license: BSD-2-Clause
+  license_file: LICENSE.txt
