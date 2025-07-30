@@ -10,41 +10,56 @@ if [[ $(uname) == "Darwin" ]]; then
     
     # AGC-rs needs actual GCC on macOS, not clang
     # The conda-forge gcc package provides this
-    # We need to use the actual gcc/g++ binaries from conda
-    mkdir -p "$BUILD_PREFIX/bin"
+    # Find the actual gcc/g++ binaries from conda
     
-    # Find the GCC binaries - they should be named gcc-<version> and g++-<version>
-    # Get the actual gcc/g++ binaries from conda-forge
-    if [ -f "$BUILD_PREFIX/bin/gcc" ]; then
-        export CC="$BUILD_PREFIX/bin/gcc"
-        export CXX="$BUILD_PREFIX/bin/g++"
+    # Look for versioned GCC binaries (conda-forge typically provides gcc-XX and g++-XX)
+    GCC_VERSION=""
+    for ver in 13 12 11; do
+        if [ -f "$BUILD_PREFIX/bin/gcc-${ver}" ] && [ -f "$BUILD_PREFIX/bin/g++-${ver}" ]; then
+            GCC_VERSION="${ver}"
+            break
+        fi
+    done
+    
+    if [ -z "$GCC_VERSION" ]; then
+        # Try to find any gcc/g++ binary
+        if [ -f "$BUILD_PREFIX/bin/gcc" ] && [ -f "$BUILD_PREFIX/bin/g++" ]; then
+            export CC="$BUILD_PREFIX/bin/gcc"
+            export CXX="$BUILD_PREFIX/bin/g++"
+        else
+            echo "ERROR: Could not find GCC/G++ in conda environment"
+            echo "Available compilers in $BUILD_PREFIX/bin:"
+            ls -la "$BUILD_PREFIX/bin" | grep -E "(gcc|g\+\+|clang)" || true
+            exit 1
+        fi
     else
-        # Find versioned gcc/g++ binaries
-        export CC=$(find "$BUILD_PREFIX/bin" -name 'gcc-*' | grep -v 'gcc-ar' | grep -v 'gcc-nm' | grep -v 'gcc-ranlib' | head -1)
-        export CXX=$(find "$BUILD_PREFIX/bin" -name 'g++-*' | head -1)
+        export CC="$BUILD_PREFIX/bin/gcc-${GCC_VERSION}"
+        export CXX="$BUILD_PREFIX/bin/g++-${GCC_VERSION}"
+        echo "Using GCC version ${GCC_VERSION}"
     fi
     
-    # Ensure we found GCC
-    if [ -z "$CC" ] || [ -z "$CXX" ]; then
-        echo "ERROR: Could not find GCC/G++ in conda environment"
-        exit 1
-    fi
+    # Set up environment for static linking (following agc-rs approach)
+    export LDFLAGS="${LDFLAGS} -static-libgcc -static-libstdc++"
     
     # Set up Rust to use g++ as the linker
     export RUSTFLAGS="-C linker=${CXX}"
     
-    # Set make command for macOS
-    export MAKE="$(which make)"
+    # Remove any clang-specific flags
+    export CXXFLAGS="${CXXFLAGS//-stdlib=libc++/}"
+    export CFLAGS="${CFLAGS//-stdlib=libc++/}"
     
-    # Override any clang settings from conda
+    # Use gmake if available, otherwise make
+    if command -v gmake >/dev/null 2>&1; then
+        export MAKE="gmake"
+    else
+        export MAKE="make"
+    fi
+    
+    # Unset clang variables to avoid conflicts
     unset CLANG
     unset CLANGXX
-    
-    # Ensure GCC standard libraries are used
-    export CXXFLAGS="${CXXFLAGS//-stdlib=libc++/}"
-    export LDFLAGS="${LDFLAGS//-stdlib=libc++/}"
 else
-    # Create symlinks for standard compiler names that AGC makefile expects
+    # Linux: Create symlinks for standard compiler names that AGC makefile expects
     mkdir -p "$BUILD_PREFIX/bin"
     ln -sf $CC "$BUILD_PREFIX/bin/gcc"
     ln -sf $CXX "$BUILD_PREFIX/bin/g++"
@@ -56,6 +71,12 @@ else
     export CC="$BUILD_PREFIX/bin/gcc"
     export CXX="$BUILD_PREFIX/bin/g++"
 fi
+
+# Debug: Print compiler information
+echo "Using CC: $CC"
+echo "Using CXX: $CXX"
+$CC --version || true
+$CXX --version || true
 
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
