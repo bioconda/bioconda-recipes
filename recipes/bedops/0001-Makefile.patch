@@ -1,26 +1,21 @@
 diff --git a/system.mk/Makefile.darwin b/system.mk/Makefile.darwin
-index 5b4adf5..23d88fd 100644
+index 5b4adf5..d82f204 100644
 --- a/system.mk/Makefile.darwin
 +++ b/system.mk/Makefile.darwin
-@@ -92,7 +92,7 @@ support: | mkdirs
+@@ -92,13 +92,13 @@ support: | mkdirs
  
  jansson_support_c:
  	bzcat ${WHICHJANSSON}.tar.bz2 | tar -x -C ${PARTY3}/darwin_intel_${BUILD_ARCH}/
 -	cd ${PARTY3}/darwin_intel_${BUILD_ARCH}/${JANSSONVERSION} && export MACOSX_DEPLOYMENT_TARGET=${MIN_OSX_VERSION} && export ARCH=${BUILD_ARCH} && export CC=${CC} && export CXX=${CXX} && ./configure --prefix=${WDIR}/${PARTY3}/darwin_intel_${BUILD_ARCH}/${JANSSONVERSION} CFLAGS="-arch ${BUILD_ARCH}" --build="${BUILD_ARCH}" && $(MAKE) && $(MAKE) install && cd ../ && rm -f jansson && ln -sf ${JANSSONVERSION} jansson && cd ${WDIR}
-+	cd ${PARTY3}/darwin_intel_${BUILD_ARCH}/${JANSSONVERSION} && export MACOSX_DEPLOYMENT_TARGET=${MIN_OSX_VERSION} && export ARCH=${BUILD_ARCH} && export CC=${CC} && export CXX=${CXX} && cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* . && autoreconf -if && ./configure --prefix=${WDIR}/${PARTY3}/darwin_intel_${BUILD_ARCH}/${JANSSONVERSION} CFLAGS="-arch ${BUILD_ARCH}" --build="${BUILD_ARCH}" && $(MAKE) && $(MAKE) install && cd ../ && rm -f jansson && ln -sf ${JANSSONVERSION} jansson && cd ${WDIR}
++	cd ${PARTY3}/darwin_intel_${BUILD_ARCH}/${JANSSONVERSION} && export MACOSX_DEPLOYMENT_TARGET=${MIN_OSX_VERSION} && export ARCH=arm64 && export CC=${CC} && export CXX=${CXX} && cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* . && ./configure --prefix=${WDIR}/${PARTY3}/darwin_intel_${BUILD_ARCH}/${JANSSONVERSION} CFLAGS="${CFLAGS} -arch arm64" --build="arm64" && $(MAKE) && $(MAKE) install && cd ../ && rm -f jansson && ln -sf ${JANSSONVERSION} jansson && cd ${WDIR}
  
  bzip2_support_c:
  	bzcat ${WHICHBZIP2}.tar.bz2 | tar -x -C ${PARTY3}/darwin_intel_${BUILD_ARCH}/
-diff --git a/system.mk/Makefile.linux b/system.mk/Makefile.linux
-index 5f05d1f..b6dea3f 100644
---- a/system.mk/Makefile.linux
-+++ b/system.mk/Makefile.linux
-@@ -66,7 +66,7 @@ support: $(LIBS)
+-	cd ${PARTY3}/darwin_intel_${BUILD_ARCH}/${BZIP2VERSION} && export MACOSX_DEPLOYMENT_TARGET=${MIN_OSX_VERSION} && export ARCH=${BUILD_ARCH} && export CC=${CC} && export CXX=${CXX} && $(MAKE) -f Makefile.darwin_${BUILD_ARCH} libbz2.a && cd ../ && rm -f bzip2 && ln -sf ${BZIP2VERSION} bzip2 && cd ${WDIR}
++	cd ${PARTY3}/darwin_intel_${BUILD_ARCH}/${BZIP2VERSION} && export MACOSX_DEPLOYMENT_TARGET=${MIN_OSX_VERSION} && export ARCH="arm64" && export CC=${CC} && export CXX=${CXX} && sed -i.bak 's|x86_64|arm64|' Makefile.darwin_x86_64 && $(MAKE) -f Makefile.darwin_${BUILD_ARCH} libbz2.a && cd ../ && rm -f bzip2 && ln -sf ${BZIP2VERSION} bzip2 && cd ${WDIR}
  
- ${PARTY3}/jansson/lib/libjansson.a: $(WHICHJANSSON).tar.bz2
- 	bzcat $^ | tar -x -C ${PARTY3}
--	cd ${PARTY3}/${JANSSONVERSION} && ./configure --prefix=${WDIR}/${PARTY3}/${JANSSONVERSION} && $(MAKE) && $(MAKE) install && cd ${WDIR} && rm -f jansson && ln -sf ${JANSSONVERSION} ${PARTY3}/jansson
-+	cd ${PARTY3}/${JANSSONVERSION} && cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* . && autoreconf -if && ./configure --prefix=${WDIR}/${PARTY3}/${JANSSONVERSION} && $(MAKE) && $(MAKE) install && cd ${WDIR} && rm -f jansson && ln -sf ${JANSSONVERSION} ${PARTY3}/jansson
+ zlib_support_intel_c:
+ 	bzcat ${WHICHZLIB}.tar.bz2 | tar -x -C ${PARTY3}/darwin_intel_${BUILD_ARCH}/
+-	cd ${PARTY3}/darwin_intel_${BUILD_ARCH}/${ZLIBVERSION} && export MACOSX_DEPLOYMENT_TARGET=${MIN_OSX_VERSION} && export ARCH=${BUILD_ARCH} && export CC=${CC} && export CXX=${CXX} && ./configure --static --archs="-arch ${BUILD_ARCH}" && $(MAKE) && cd ../ && rm -f zlib && ln -sf ${ZLIBVERSION} zlib && cd ${WDIR}
++	cd ${PARTY3}/darwin_intel_${BUILD_ARCH}/${ZLIBVERSION} && export MACOSX_DEPLOYMENT_TARGET=${MIN_OSX_VERSION} && export ARCH="arm64" && export CC=${CC} && export CXX=${CXX} && cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* . && ./configure --static --archs="-arch arm64" && $(MAKE) && cd ../ && rm -f zlib && ln -sf ${ZLIBVERSION} zlib && cd ${WDIR}
  
- $(PARTY3)/bzip2/libbz2.a: $(WHICHBZIP2).tar.bz2
- 	bzcat $^ | tar -x -C ${PARTY3}
