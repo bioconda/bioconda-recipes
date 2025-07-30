@@ -1,4 +1,4 @@
-#ifndef SSE2NEON_H
+#ifndef SSE2NEON_H1
 #define SSE2NEON_H
 
 /*
