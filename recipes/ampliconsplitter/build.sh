@@ -1,36 +1,30 @@
-#!/usr/bin/env bash
-
+#!/bin/bash
 set -xe
 
-mkdir -p $PREFIX/bin
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
-mkdir src/build
-cd src/build/
-cmake ..
-make -j ${CPU_COUNT}
+mkdir -p "${PREFIX}/bin"
 
-cp ../../ampliconsplitter.py $PREFIX/bin
-chmod +x $PREFIX/bin/ampliconsplitter.py
-cp -r ./HS_call_variants $PREFIX/bin
-cp -r ./HS_create_new_contigs $PREFIX/bin
-cp -r ./HS_fa2gfa $PREFIX/bin
-cp -r ./HS_gfa2fa $PREFIX/bin
-cp -r ./HS_separate_reads $PREFIX/bin
-cp -r ./HS_GenomeTailor/HS_GenomeTailor $PREFIX/bin
-cp -r ../cut_gfa.py $PREFIX/bin
-chmod +x $PREFIX/bin/cut_gfa.py
+cd src
 
-cp -r ../GraphUnzip/graphunzip.py $PREFIX/bin
-chmod +x $PREFIX/bin/graphunzip.py
-cp -r ../GraphUnzip/segment.py $PREFIX/bin
-cp -r ../GraphUnzip/finish_untangling.py $PREFIX/bin
-cp -r ../GraphUnzip/simple_unzip.py $PREFIX/bin
-cp -r ../GraphUnzip/repolish.py $PREFIX/bin
-cp -r ../GraphUnzip/transform_gfa.py $PREFIX/bin
-cp -r ../GraphUnzip/input_output.py $PREFIX/bin
-cp -r ../GraphUnzip/determine_multiplicity.py $PREFIX/bin
-cp -r ../GraphUnzip/solve_with_long_reads.py $PREFIX/bin
-cp -r ../GraphUnzip/solve_with_HiC.py $PREFIX/bin
-cp -r ../GraphUnzip/contig_DBG.py $PREFIX/bin
-chmod +x $PREFIX/bin/determine_multiplicity.py
+case $(uname -m) in
+	aarch64) sed -i.bak 's|-march=x86-64|-march=armv8-a|' CMakeLists.txt && rm -rf *.bak ;;
+	arm64) sed -i.bak 's|-march=x86-64|-march=armv8.4-a|' CMakeLists.txt && rm -rf *.bak ;;
+	x86_64) sed -i.bak 's|-march=x86-64|-march=x86-64-v3|' CMakeLists.txt && rm -rf *.bak ;;
+esac
 
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
+	"${CONFIG_ARGS}"
+
+ninja -C build -j "${CPU_COUNT}"
+
+install -v -m 0755 build/HS_call_variants build/HS_create_new_contigs \
+	build/HS_fa2gfa build/HS_gfa2fa build/HS_separate_reads \
+	build/HS_GenomeTailor/HS_GenomeTailor cut_gfa.py \
+	../ampliconsplitter.py "${PREFIX}/bin"
+
+install -v -m 0755 GraphUnzip/*.py "${PREFIX}/bin"
