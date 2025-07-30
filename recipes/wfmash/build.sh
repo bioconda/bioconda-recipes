@@ -7,16 +7,32 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-mkdir -p $PREFIX/bin
+mkdir -p "$PREFIX/bin"
+
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v4"
+	;;
+esac
 
 case $(uname -m) in
     x86_64)
-        EXTRA_FLAGS="-march=sandybridge -Ofast"
-        MARCH="sandybridge"
+        EXTRA_FLAGS="-march=x86-64-v4 -Ofast"
+        MARCH="x86-64-v4"
         ;;
-    *)
-        EXTRA_FLAGS="-march=native -Ofast"
-        MARCH="native"
+    aarch64)
+        EXTRA_FLAGS="-march=armv8-a -Ofast"
+        MARCH="armv8-a"
+        ;;
+    arm64)
+        EXTRA_FLAGS="-march=armv8.4-a -Ofast"
+        MARCH="armv8.4-a"
         ;;
 esac
 
@@ -28,15 +44,15 @@ fi
 
 sed -i.bak "s/-march=x86-64-v3/-march=${MARCH}/g" src/common/wflign/CMakeLists.txt
 
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Generic \
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release \
 	-DEXTRA_FLAGS="${EXTRA_FLAGS}" -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DCMAKE_C_COMPILER="${CC}" \
 	-DCMAKE_C_FLAGS="${CFLAGS}" -Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
-cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+cmake --build build --target install -j "${CPU_COUNT}"
 
 # Libraries aren't getting installed
-mkdir -p $PREFIX/lib
+mkdir -p "$PREFIX/lib"
 
 ls $SRC_DIR/build/lib/* -lh
 
@@ -44,4 +60,4 @@ cp -f $SRC_DIR/build/lib/libwfa2* $PREFIX/lib
 cp -f $SRC_DIR/build/lib/libwflign* $PREFIX/lib
 
 install -v -m 0755 build/bin/* $PREFIX/bin
-cp -f scripts/split_approx_mappings_in_chunks.py $PREFIX/bin
+install -v -m 0755 scripts/split_approx_mappings_in_chunks.py $PREFIX/bin
