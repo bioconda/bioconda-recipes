@@ -23,15 +23,15 @@ if [[ "${OS}" == "Darwin" ]]; then
 fi
 
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
-	echo $(pwd)/zig-macos-x86_64-*
-	export PATH="$(pwd)/zig-macos-x86_64-0.15.0-dev/lib:${PATH}"
-	export PATH="$(pwd)/zig-macos-x86_64-0.15.0-dev:${PATH}"
+	echo $(pwd)/zig-macos-${ARCH}-*
+	export PATH="$(pwd)/zig-macos-${ARCH}-0.15.0-dev/lib:${PATH}"
+	export PATH="$(pwd)/zig-macos-${ARCH}-0.15.0-dev:${PATH}"
 	wget https://github.com/alexey-lysiuk/macos-sdk/releases/download/13.3/MacOSX13.3.tar.xz
 	tar -xf MacOSX13.3.tar.xz
 	cp -rH MacOSX13.3.sdk /Applications/Xcode_15.2.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
 	export SDKROOT="/Applications/Xcode_15.2.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
-	export MACOSX_DEPLOYMENT_TARGET=13.0
-	export MACOSX_SDK_VERSION=13.0
+	export MACOSX_DEPLOYMENT_TARGET="13.3"
+	export MACOSX_SDK_VERSION="13.3"
 elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	echo $(pwd)/zig-macos-aarch64-*
 	export PATH="$(pwd)/zig-macos-aarch64-0.15.0-dev/lib:${PATH}"
@@ -79,7 +79,7 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-DOPENMP=ON -DPROFILING=ON -DZIG=ON -DBUILD_SHARED_LIBS=ON \
+	-DOPENMP=ON -DZIG=ON -DBUILD_SHARED_LIBS=ON \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
