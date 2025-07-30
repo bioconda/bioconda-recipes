@@ -9,36 +9,51 @@ if [[ $(uname) == "Darwin" ]]; then
     fi
     
     # AGC-rs needs actual GCC on macOS, not clang
-    # The conda-forge gcc package provides this
-    # Find the actual gcc/g++ binaries from conda
+    # Look for GCC from the gcc_impl packages
+    GCC_BIN=""
+    GXX_BIN=""
     
-    # Look for versioned GCC binaries (conda-forge typically provides gcc-XX and g++-XX)
-    GCC_VERSION=""
-    for ver in 13 12 11; do
-        if [ -f "$BUILD_PREFIX/bin/gcc-${ver}" ] && [ -f "$BUILD_PREFIX/bin/g++-${ver}" ]; then
-            GCC_VERSION="${ver}"
+    # Search for GCC binaries - conda-forge gcc_impl packages install them with specific names
+    for gcc_candidate in "$BUILD_PREFIX"/bin/*-gcc*; do
+        if [[ -f "$gcc_candidate" ]] && [[ ! "$gcc_candidate" =~ -gcc-(ar|nm|ranlib) ]]; then
+            GCC_BIN="$gcc_candidate"
             break
         fi
     done
     
-    if [ -z "$GCC_VERSION" ]; then
-        # Try to find any gcc/g++ binary
-        if [ -f "$BUILD_PREFIX/bin/gcc" ] && [ -f "$BUILD_PREFIX/bin/g++" ]; then
-            export CC="$BUILD_PREFIX/bin/gcc"
-            export CXX="$BUILD_PREFIX/bin/g++"
-        else
-            echo "ERROR: Could not find GCC/G++ in conda environment"
-            echo "Available compilers in $BUILD_PREFIX/bin:"
-            ls -la "$BUILD_PREFIX/bin" | grep -E "(gcc|g\+\+|clang)" || true
-            exit 1
+    for gxx_candidate in "$BUILD_PREFIX"/bin/*-g++*; do
+        if [[ -f "$gxx_candidate" ]]; then
+            GXX_BIN="$gxx_candidate"
+            break
         fi
-    else
-        export CC="$BUILD_PREFIX/bin/gcc-${GCC_VERSION}"
-        export CXX="$BUILD_PREFIX/bin/g++-${GCC_VERSION}"
-        echo "Using GCC version ${GCC_VERSION}"
+    done
+    
+    # If not found with full names, try simpler patterns
+    if [[ -z "$GCC_BIN" ]] || [[ -z "$GXX_BIN" ]]; then
+        # On macOS ARM64, gcc_impl packages might install as aarch64-apple-darwin20.0.0-gcc
+        if [[ $(uname -m) == "arm64" ]]; then
+            GCC_BIN="${BUILD_PREFIX}/bin/aarch64-apple-darwin20.0.0-gcc"
+            GXX_BIN="${BUILD_PREFIX}/bin/aarch64-apple-darwin20.0.0-g++"
+        else
+            GCC_BIN="${BUILD_PREFIX}/bin/x86_64-apple-darwin13.4.0-gcc"
+            GXX_BIN="${BUILD_PREFIX}/bin/x86_64-apple-darwin13.4.0-g++"
+        fi
     fi
     
-    # Set up environment for static linking (following agc-rs approach)
+    if [[ ! -f "$GCC_BIN" ]] || [[ ! -f "$GXX_BIN" ]]; then
+        echo "ERROR: Could not find GCC/G++ in conda environment"
+        echo "Looking for GCC in: $BUILD_PREFIX/bin"
+        ls -la "$BUILD_PREFIX/bin" | grep -E "(gcc|g\+\+)" || true
+        exit 1
+    fi
+    
+    export CC="$GCC_BIN"
+    export CXX="$GXX_BIN"
+    
+    echo "Using CC: $CC"
+    echo "Using CXX: $CXX"
+    
+    # Set up environment for static linking
     export LDFLAGS="${LDFLAGS} -static-libgcc -static-libstdc++"
     
     # Set up Rust to use g++ as the linker
@@ -73,8 +88,8 @@ else
 fi
 
 # Debug: Print compiler information
-echo "Using CC: $CC"
-echo "Using CXX: $CXX"
+echo "Final CC: $CC"
+echo "Final CXX: $CXX"
 $CC --version || true
 $CXX --version || true
 
