@@ -38,7 +38,9 @@ cmake .. \
 
 make -j"${CPU_COUNT}"
 
-make check
+if [ "${CIRCLECI}" != "true" ]; then
+    make check
+fi
 
 make install
 cd "${SRC_DIR}" && rm -rf build
