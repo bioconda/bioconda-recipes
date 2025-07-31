@@ -3,6 +3,7 @@ set -exo pipefail
 
 cd test
 
+# Only operation check (error due to lack of monomer data)
 echo -e "MAKE HYDROGENS YES\nREFI TYPE RESTA\nNCYC 10\nEND" | \
     refmac5 \
         HKLIN rnasa-1.8-all_refmac1.mtz \
