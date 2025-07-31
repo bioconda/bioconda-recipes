@@ -9,41 +9,37 @@ if [[ $(uname) == "Darwin" ]]; then
     fi
     
     # AGC-rs needs actual GCC on macOS, not clang
-    # Look for GCC from the gcc_impl packages
+    # Override the conda-forge default compilers
+    
+    # First, try to find GCC/G++ in the environment
     GCC_BIN=""
     GXX_BIN=""
     
-    # Search for GCC binaries - conda-forge gcc_impl packages install them with specific names
-    for gcc_candidate in "$BUILD_PREFIX"/bin/*-gcc*; do
-        if [[ -f "$gcc_candidate" ]] && [[ ! "$gcc_candidate" =~ -gcc-(ar|nm|ranlib) ]]; then
-            GCC_BIN="$gcc_candidate"
-            break
-        fi
-    done
-    
-    for gxx_candidate in "$BUILD_PREFIX"/bin/*-g++*; do
-        if [[ -f "$gxx_candidate" ]]; then
-            GXX_BIN="$gxx_candidate"
-            break
-        fi
-    done
-    
-    # If not found with full names, try simpler patterns
-    if [[ -z "$GCC_BIN" ]] || [[ -z "$GXX_BIN" ]]; then
-        # On macOS ARM64, gcc_impl packages might install as aarch64-apple-darwin20.0.0-gcc
-        if [[ $(uname -m) == "arm64" ]]; then
-            GCC_BIN="${BUILD_PREFIX}/bin/aarch64-apple-darwin20.0.0-gcc"
-            GXX_BIN="${BUILD_PREFIX}/bin/aarch64-apple-darwin20.0.0-g++"
-        else
-            GCC_BIN="${BUILD_PREFIX}/bin/x86_64-apple-darwin13.4.0-gcc"
-            GXX_BIN="${BUILD_PREFIX}/bin/x86_64-apple-darwin13.4.0-g++"
-        fi
+    # Check for gcc/g++ directly
+    if command -v gcc >/dev/null 2>&1 && command -v g++ >/dev/null 2>&1; then
+        GCC_BIN=$(command -v gcc)
+        GXX_BIN=$(command -v g++)
+    elif [[ -f "$BUILD_PREFIX/bin/gcc" ]] && [[ -f "$BUILD_PREFIX/bin/g++" ]]; then
+        GCC_BIN="$BUILD_PREFIX/bin/gcc"
+        GXX_BIN="$BUILD_PREFIX/bin/g++"
+    else
+        # Try to find versioned GCC binaries
+        for ver in 14 13 12 11; do
+            if [[ -f "$BUILD_PREFIX/bin/gcc-${ver}" ]] && [[ -f "$BUILD_PREFIX/bin/g++-${ver}" ]]; then
+                GCC_BIN="$BUILD_PREFIX/bin/gcc-${ver}"
+                GXX_BIN="$BUILD_PREFIX/bin/g++-${ver}"
+                break
+            fi
+        done
     fi
     
-    if [[ ! -f "$GCC_BIN" ]] || [[ ! -f "$GXX_BIN" ]]; then
+    if [[ -z "$GCC_BIN" ]] || [[ -z "$GXX_BIN" ]]; then
         echo "ERROR: Could not find GCC/G++ in conda environment"
-        echo "Looking for GCC in: $BUILD_PREFIX/bin"
-        ls -la "$BUILD_PREFIX/bin" | grep -E "(gcc|g\+\+)" || true
+        echo "Available compilers in PATH:"
+        which gcc || echo "gcc not found in PATH"
+        which g++ || echo "g++ not found in PATH"
+        echo "Available in BUILD_PREFIX:"
+        ls -la "$BUILD_PREFIX/bin" | grep -E "(gcc|g\+\+|clang)" || true
         exit 1
     fi
     
@@ -52,6 +48,8 @@ if [[ $(uname) == "Darwin" ]]; then
     
     echo "Using CC: $CC"
     echo "Using CXX: $CXX"
+    $CC --version || true
+    $CXX --version || true
     
     # Set up environment for static linking
     export LDFLAGS="${LDFLAGS} -static-libgcc -static-libstdc++"
@@ -87,7 +85,7 @@ else
     export CXX="$BUILD_PREFIX/bin/g++"
 fi
 
-# Debug: Print compiler information
+# Debug: Print final compiler information
 echo "Final CC: $CC"
 echo "Final CXX: $CXX"
 $CC --version || true
