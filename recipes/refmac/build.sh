@@ -3,8 +3,11 @@ set -exo pipefail
 
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3"
-export FC="${BUILD_PREFIX}/bin/gfortran"
-export F77="${BUILD_PREFIX}/bin/gfortran"
+
+if [[ "${target_platform}" == "osx-64" ]]; then
+  export FC="${BUILD_PREFIX}/bin/gfortran"
+  export F77="${BUILD_PREFIX}/bin/gfortran"
+fi
 
 pushd fftw2
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
