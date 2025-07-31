@@ -19,7 +19,6 @@ rm -rf *.bak
 
 pushd src
 make CC="${CC} -fcommon" LIBPATH="${LDFLAGS}" -j"${CPU_COUNT}"
-make 63mer=1 CC="${CC} -fcommon" LIBPATH="${LDFLAGS}" -j"${CPU_COUNT}"
 make 127mer=1 CC="${CC} -fcommon" LIBPATH="${LDFLAGS}" -j"${CPU_COUNT}"
 popd
 
