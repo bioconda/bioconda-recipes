@@ -6,17 +6,16 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-#CAIRO_OPT=
-#LIBS=
-#if [[ "$(uname -s)" == "Darwin" ]]; then
-	#CAIRO_OPT="cairo=no"
-	#LIBS="LIBS=-lc"
-#fi
+if [[ "$(uname -s)" == "Darwin" ]]; then
+	export CAIRO_OPT="cairo=no"
+	export LIBS="LIBS=-lc"
+else
+	export CAIRO_OPT="cairo=yes"
+	export LIBS=""
+fi
 
-#"${CAIRO_OPT}"
-#"${LIBS}"
-make CC="${CC}" CXX="${CXX}" errorcheck=no -j"${CPU_COUNT}"
-make prefix="${PREFIX}" install
+make "${CAIRO_OPT}" errorcheck=no "${LIBS}" -j"${CPU_COUNT}"
+make "${CAIRO_OPT}" prefix="${PREFIX}" install
 
 cd gtpython
 
