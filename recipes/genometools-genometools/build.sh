@@ -11,4 +11,4 @@ make prefix="${PREFIX}" cairo=yes 64bit=yes errorcheck=no install
 
 cd gtpython
 
-${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+${PYTHON} setup.py install
