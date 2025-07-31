@@ -6,6 +6,11 @@ mkdir -p "${PREFIX}/bin"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
 
+if [[ "$(uname -s)" == "Darwin" ]]; then
+	sed -i.bak 's|-O3|-O3 -std=c11|' src/Makefile
+	rm -rf src/*.bak
+fi
+
 cd src
 
 make CC="${CC}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
