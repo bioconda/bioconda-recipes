@@ -32,7 +32,8 @@ cmake .. \
     -DDISABLE_DOCUMENTATION=1 \
     -DCMAKE_VERBOSE_MAKEFILE=ON
 
-make VERBOSE=1 -j"${CPU_COUNT}"
+make VERBOSE=1
+#make VERBOSE=1 -j"${CPU_COUNT}"
 
 make check
 
