@@ -1,21 +1,20 @@
 #!/bin/bash
-
 set -eu -o pipefail
 
-mkdir -p ${PREFIX}/bin
+mkdir -p "${PREFIX}/bin"
+
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
 
 cd src
-make -j 4 CC=$CC CFLAGS="${CFLAGS} -fcommon"
 
-cp baseml ${PREFIX}/bin/
-cp basemlg ${PREFIX}/bin/
-cp chi2 ${PREFIX}/bin/
-cp codeml ${PREFIX}/bin/
-cp evolver ${PREFIX}/bin/
-cp infinitesites ${PREFIX}/bin/
-cp mcmctree ${PREFIX}/bin/
-cp pamp ${PREFIX}/bin/
-cp yn00 ${PREFIX}/bin/
+make CC="${CC}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
+"${CC}" -o ds -O3 ds.c tools.c -lm
+
+install -v -m 0755 baseml basemlg \
+	chi2 codeml ds evolver infinitesites \
+	mcmctree pamp yn00 \
+	"${PREFIX}/bin"
 
 cd ..
-cp -r dat ${PREFIX}/
+cp -rf dat ${PREFIX}/
