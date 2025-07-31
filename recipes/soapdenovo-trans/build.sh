@@ -18,11 +18,13 @@ rm -rf src/*.bak
 rm -rf *.bak
 
 pushd src
-make CC="${CC}" LIBPATH="${LDFLAGS}" -j"${CPU_COUNT}"
+make 127mer=1 CC="${CC}" -j"${CPU_COUNT}"
 make CC="${CC}" clean
-make 127mer=1 CC="${CC}" LIBPATH="${LDFLAGS}" -j"${CPU_COUNT}"
+make 63mer=1 CC="${CC}" -j"${CPU_COUNT}"
+make CC="${CC}" clean
+make CC="${CC}" -j"${CPU_COUNT}"
 popd
 
-"${STRIP}" SOAPdenovo-Trans-*
+"${STRIP}" SOAPdenovo-Trans-*mer
 
-install -v -m 0755 SOAPdenovo-Trans-* "${PREFIX}/bin"
+install -v -m 0755 SOAPdenovo-Trans-*mer "${PREFIX}/bin"
