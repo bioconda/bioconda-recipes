@@ -33,3 +33,6 @@ cmake -S . -B build \
 cmake --build build --parallel "${CPU_COUNT}"
 cmake --install build
 popd
+
+# `refmac5` requires these CCP4 config files to be run successfully
+touch "${PREFIX}/share/ccp4/"{default.def,environ.def}
