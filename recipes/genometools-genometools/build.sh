@@ -13,8 +13,10 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 	#LIBS="LIBS=-lc"
 #fi
 
-make "${CAIRO_OPT}" "${LIBS}" CC="${CC}" CXX="${CXX}" errorcheck=no -j"${CPU_COUNT}"
-make "${CAIRO_OPT}" prefix="${PREFIX}" install
+#"${CAIRO_OPT}"
+#"${LIBS}"
+make CC="${CC}" CXX="${CXX}" errorcheck=no -j"${CPU_COUNT}"
+make prefix="${PREFIX}" install
 
 cd gtpython
 
