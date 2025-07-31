@@ -12,27 +12,6 @@ source:
 
 build:
   number: 1
-  script: build.sh
-  run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
-
-requirements:
-  build:
-    - make
-    - {{ compiler('cxx') }}
-  host:
-    - zlib
-    - bzip2
-    - libdeflate
-    - boost-cpp
-    - htslib
-  run:
-    - boost-cpp
-    - htslib
-
-test:
-  commands:
-    - delly --help
 
 about:
   home: "https://github.com/dellytools/delly"
@@ -42,6 +21,9 @@ about:
   summary: "Structural variant discovery by integrated paired-end and split-read analysis."
   dev_url: "https://github.com/dellytools/delly"
   doc_url: "https://github.com/dellytools/delly/blob/v{{ version }}/README.md"
+  description: |
+    Structural variant discovery by integrated paired-end and split-read analysis.
+    Python scripts like delly2bnd can be obtained with the delly-scripts subpackage.
 
 extra:
   additional-platforms:
@@ -58,8 +40,32 @@ extra:
     - usegalaxy-eu:delly_filter
 
 outputs:
+
+  - name: {{ name }}
+    build:
+      script: bash build.sh
+      run_exports:
+        - {{ pin_subpackage(name, max_pin="x") }}
+    
+    requirements:
+      build:
+        - make
+        - {{ compiler('cxx') }}
+      host:
+        - zlib
+        - bzip2
+        - libdeflate
+        - boost-cpp
+        - htslib
+      run:
+        - boost-cpp
+        - htslib
+    
+    test:
+      commands:
+        - delly --help
+
   - name: delly-scripts
-    version: {{ version }}
 
     build:
       noarch: python
@@ -81,14 +87,3 @@ outputs:
     test:
       commands:
         - delly2bnd --help
-
-    about:
-      home: "https://github.com/dellytools/delly/"
-      license: "BSD-3-Clause"
-      license_family: BSD
-      license_file: LICENSE.md
-      dev_url: "https://github.com/dellytools/delly"
-      doc_url: "https://github.com/dellytools/delly/blob/c{{ version }}/scripts#readme"
-
-      summary: Python scripts to do with delly.
-      description: Python scripts to do with delly.
