@@ -4,9 +4,9 @@ set -exo pipefail
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-if [[ "${target_platform}" == "osx-64" ]]; then
-  export FC="${BUILD_PREFIX}/bin/gfortran"
-  export F77="${BUILD_PREFIX}/bin/gfortran"
+if [[ "${target_platform}" == osx-64 ]]; then
+  export FFLAGS="-m64 -fPIC -O3"
+  export FCFLAGS="-m64 -fPIC -O3"
 fi
 
 pushd fftw2
