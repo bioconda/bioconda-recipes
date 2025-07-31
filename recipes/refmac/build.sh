@@ -28,7 +28,6 @@ popd
 pushd refmac
 cmake -S . -B build \
     ${CMAKE_ARGS} \
-    -DCMAKE_Fortran_COMPILER="${FC}" \
     -DCMAKE_C_FLAGS="${CFLAGS}" \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
