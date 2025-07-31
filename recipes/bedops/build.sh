@@ -19,7 +19,7 @@ if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	export MACOSX_DEPLOYMENT_TARGET="13.3"
 	export MACOSX_SDK_VERSION="13.3"
 
-	sed -i.bak 's|-static|-static -O3 -march=armv8.4-a|' applications/bed/starch/src/Makefile
+	#sed -i.bak 's|-static|-static -O3 -march=armv8.4-a|' applications/bed/starch/src/Makefile
 fi
 
 make all CC="${CC}" CXX="${CXX}" SFLAGS= -j"${CPU_COUNT}"
