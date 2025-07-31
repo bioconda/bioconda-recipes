@@ -27,7 +27,7 @@ if [[ $(uname) == "Darwin" ]]; then
     if [[ -z "$GCC_BIN" ]] || [[ -z "$GXX_BIN" ]]; then
         if [[ -f "$BUILD_PREFIX/bin/gcc" ]] && [[ -f "$BUILD_PREFIX/bin/g++" ]]; then
             # Verify these are real GCC, not clang wrappers
-            if "$BUILD_PREFIX/bin/gcc" --version 2>&1 | grep -q "GNU"; then
+            if "$BUILD_PREFIX/bin/gcc" --version 2>&1 | grep -qE "(GNU|gcc)"; then
                 GCC_BIN="$BUILD_PREFIX/bin/gcc"
                 GXX_BIN="$BUILD_PREFIX/bin/g++"
             fi
@@ -90,8 +90,8 @@ echo "Final CXX: $CXX"
 $CC --version || true
 $CXX --version || true
 
-# Verify we have real GCC
-if ! $CC --version 2>&1 | grep -q "GNU"; then
+# Verify we have real GCC (check for either "GNU" or "gcc" in the output)
+if ! $CC --version 2>&1 | grep -qE "(GNU|gcc)"; then
     echo "ERROR: CC is not GNU GCC!"
     exit 1
 fi
