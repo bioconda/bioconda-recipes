@@ -8,38 +8,37 @@ if [[ $(uname) == "Darwin" ]]; then
         export PLATFORM=arm8
     fi
     
-    # AGC-rs needs actual GCC on macOS, not clang
-    # Override the conda-forge default compilers
-    
-    # First, try to find GCC/G++ in the environment
+    # The gfortran packages install real GCC alongside gfortran
+    # Find the real GCC/G++ binaries
     GCC_BIN=""
     GXX_BIN=""
     
-    # Check for gcc/g++ directly
-    if command -v gcc >/dev/null 2>&1 && command -v g++ >/dev/null 2>&1; then
-        GCC_BIN=$(command -v gcc)
-        GXX_BIN=$(command -v g++)
-    elif [[ -f "$BUILD_PREFIX/bin/gcc" ]] && [[ -f "$BUILD_PREFIX/bin/g++" ]]; then
-        GCC_BIN="$BUILD_PREFIX/bin/gcc"
-        GXX_BIN="$BUILD_PREFIX/bin/g++"
-    else
-        # Try to find versioned GCC binaries
-        for ver in 14 13 12 11; do
-            if [[ -f "$BUILD_PREFIX/bin/gcc-${ver}" ]] && [[ -f "$BUILD_PREFIX/bin/g++-${ver}" ]]; then
-                GCC_BIN="$BUILD_PREFIX/bin/gcc-${ver}"
-                GXX_BIN="$BUILD_PREFIX/bin/g++-${ver}"
-                break
+    # Look for GCC binaries with version suffixes (gfortran packages typically install as gcc-XX)
+    for ver in 14 13 12 11; do
+        if [[ -f "$BUILD_PREFIX/bin/gcc-${ver}" ]] && [[ -f "$BUILD_PREFIX/bin/g++-${ver}" ]]; then
+            GCC_BIN="$BUILD_PREFIX/bin/gcc-${ver}"
+            GXX_BIN="$BUILD_PREFIX/bin/g++-${ver}"
+            echo "Found GCC version ${ver}"
+            break
+        fi
+    done
+    
+    # If not found with version suffix, look for plain gcc/g++
+    if [[ -z "$GCC_BIN" ]] || [[ -z "$GXX_BIN" ]]; then
+        if [[ -f "$BUILD_PREFIX/bin/gcc" ]] && [[ -f "$BUILD_PREFIX/bin/g++" ]]; then
+            # Verify these are real GCC, not clang wrappers
+            if "$BUILD_PREFIX/bin/gcc" --version 2>&1 | grep -q "GNU"; then
+                GCC_BIN="$BUILD_PREFIX/bin/gcc"
+                GXX_BIN="$BUILD_PREFIX/bin/g++"
             fi
-        done
+        fi
     fi
     
     if [[ -z "$GCC_BIN" ]] || [[ -z "$GXX_BIN" ]]; then
-        echo "ERROR: Could not find GCC/G++ in conda environment"
-        echo "Available compilers in PATH:"
-        which gcc || echo "gcc not found in PATH"
-        which g++ || echo "g++ not found in PATH"
-        echo "Available in BUILD_PREFIX:"
-        ls -la "$BUILD_PREFIX/bin" | grep -E "(gcc|g\+\+|clang)" || true
+        echo "ERROR: Could not find real GCC/G++ in conda environment"
+        echo "Looking in: $BUILD_PREFIX/bin"
+        echo "Available compilers:"
+        ls -la "$BUILD_PREFIX/bin" | grep -E "(gcc|g\+\+)" || true
         exit 1
     fi
     
@@ -90,6 +89,12 @@ echo "Final CC: $CC"
 echo "Final CXX: $CXX"
 $CC --version || true
 $CXX --version || true
+
+# Verify we have real GCC
+if ! $CC --version 2>&1 | grep -q "GNU"; then
+    echo "ERROR: CC is not GNU GCC!"
+    exit 1
+fi
 
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
