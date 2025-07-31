@@ -4,7 +4,7 @@ export CPATH="${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3"
-export CXXFLAGS="${CXXFLAGS} -O3 -Wno-array-bounds"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-array-bounds -Wno-vla-cxx-extension"
 
 autoreconf -if
 ./configure --prefix="${PREFIX}" \
