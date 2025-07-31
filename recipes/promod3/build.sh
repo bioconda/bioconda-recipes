@@ -5,7 +5,12 @@ set -exo pipefail
 # Prevent build failures due to insufficient memory in the CI environment
 # Use parallel build because of serial build on osx-arm64 causing occasional errors
 if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm64" ]]; then
-  export CPU_COUNT=$(( CPU_COUNT * 70 ))
+  export CPU_COUNT=$(( CPU_COUNT * 70 / 100))
+  if [ "$CPU_COUNT" -gt 8 ]; then
+    CPU_COUNT=8
+  fi
+  export CPU_COUNT
+  echo "CPU_COUNT for build = $CPU_COUNT"
 fi
 if [[ $(uname -m) == "x86_64" ]]; then
     export CMAKE_ARGS="${CMAKE_ARGS} -DENABLE_SSE=1"
