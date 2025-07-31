@@ -3,8 +3,8 @@ set -exo pipefail
 
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3"
-export FC=$(command -v gfortran)
-export F77=$(command -v gfortran)
+export FC="${BUILD_PREFIX}/bin/gfortran"
+export F77="${BUILD_PREFIX}/bin/gfortran"
 
 pushd fftw2
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
