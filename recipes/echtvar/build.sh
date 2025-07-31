@@ -14,4 +14,4 @@ export CFLAGS="${CFLAGS} -O3"
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # build statically linked binary with Rust
-cargo install --bins --all-features --no-track --locked --root "${PREFIX}" --path .
+cargo install --no-track --locked --root "${PREFIX}" --path .
