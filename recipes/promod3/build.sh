@@ -33,7 +33,7 @@ cmake .. \
 
 make -j"${CPU_COUNT}"
 
-make check -j"${CPU_COUNT}"
+make check
 
 make install
 cd "${SRC_DIR}" && rm -rf build
