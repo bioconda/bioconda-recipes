@@ -11,4 +11,4 @@ make prefix="${PREFIX}" cairo=yes 64bit=yes errorcheck=no install
 
 cd gtpython
 
-${PYTHON} setup.py install
+$PYTHON setup.py install
