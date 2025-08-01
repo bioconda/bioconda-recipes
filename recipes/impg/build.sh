@@ -12,15 +12,17 @@ if [[ $(uname) == "Darwin" ]]; then
     fi
     
     # Use the conda-provided Clang compilers
-    # CC and CXX are already set by conda to clang/clang++
     echo "Using CC: $CC"
     echo "Using CXX: $CXX"
     $CC --version || true
     $CXX --version || true
     
-    # Remove any clang-specific flags that might cause issues
+    # Remove duplicate stdlib flag (it's already in CXXFLAGS)
     export CXXFLAGS="${CXXFLAGS//-stdlib=libc++/}"
     export CFLAGS="${CFLAGS//-stdlib=libc++/}"
+    
+    # Set up Rust to link with libc++ on macOS
+    export RUSTFLAGS="-C linker=${CXX} -C link-arg=-lc++"
     
     # Use gmake if available, otherwise make
     if command -v gmake >/dev/null 2>&1; then
