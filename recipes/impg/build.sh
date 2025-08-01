@@ -3,6 +3,9 @@ set -xe
 
 # On macOS, AGC requires actual GCC, not clang
 if [[ $(uname) == "Darwin" ]]; then
+    # This disables AGC support. AGC requires a real GCC compiler, not clang.
+    CARGO_EXTRA_FLAGS="--no-default-features"
+
     # Set PLATFORM for ARM64 Macs as AGC expects
     if [[ $(uname -m) == "arm64" ]]; then
         export PLATFORM=arm8
@@ -71,6 +74,8 @@ if [[ $(uname) == "Darwin" ]]; then
     unset CLANG
     unset CLANGXX
 else
+    CARGO_EXTRA_FLAGS=""
+
     # Linux: Create symlinks for standard compiler names that AGC makefile expects
     mkdir -p "$BUILD_PREFIX/bin"
     ln -sf $CC "$BUILD_PREFIX/bin/gcc"
@@ -100,4 +105,4 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
-cargo install -v --no-track --path . --root "${PREFIX}"
+cargo install -v --no-track --path . --root "${PREFIX}" ${CARGO_EXTRA_FLAGS}
