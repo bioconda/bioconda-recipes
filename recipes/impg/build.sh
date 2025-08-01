@@ -1,7 +1,7 @@
 #!/bin/bash -euo
 set -xe
 
-# On macOS, disable AGC support and use Clang
+# On macOS, AGC requires actual GCC, not clang
 if [[ $(uname) == "Darwin" ]]; then
     # This disables AGC support. AGC requires a real GCC compiler, not clang.
     CARGO_EXTRA_FLAGS="--no-default-features"
@@ -50,10 +50,13 @@ echo "Final CXX: $CXX"
 $CC --version || true
 $CXX --version || true
 
-# Verify we have real GCC (check for either "GNU" or "gcc" in the output)
-if ! $CC --version 2>&1 | grep -qE "(GNU|gcc)"; then
-    echo "ERROR: CC is not GNU GCC!"
-    exit 1
+# Only verify GCC on Linux where AGC support is enabled
+if [[ $(uname) != "Darwin" ]]; then
+    # Verify we have real GCC (check for either "GNU" or "gcc" in the output)
+    if ! $CC --version 2>&1 | grep -qE "(GNU|gcc)"; then
+        echo "ERROR: CC is not GNU GCC!"
+        exit 1
+    fi
 fi
 
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
