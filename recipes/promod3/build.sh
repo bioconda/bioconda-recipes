@@ -18,6 +18,7 @@ mkdir -p build && cd build
 
 cmake .. \
     ${CMAKE_ARGS} \
+    -DPython_EXECUTABLE="${PYTHON}" \
     -DCMAKE_PREFIX_PATH="${PREFIX}" \
     -DOST_ROOT="${PREFIX}" \
     -DCMAKE_CXX_COMPILER="${CXX}" \
