@@ -17,9 +17,6 @@ if [[ $(uname) == "Darwin" ]]; then
     $CC --version || true
     $CXX --version || true
     
-    # IMPORTANT: Do NOT remove -stdlib=libc++ on macOS!
-    # The spoa_rs C++ code needs to be compiled with the same stdlib setting
-    
     # Find the C++ standard library location
     LIBCXX_DIR="$BUILD_PREFIX/lib"
     if [[ ! -f "$LIBCXX_DIR/libc++.dylib" ]] && [[ ! -f "$LIBCXX_DIR/libc++.a" ]]; then
@@ -31,7 +28,6 @@ if [[ $(uname) == "Darwin" ]]; then
     export RUSTFLAGS="-C linker=${CXX} -C link-arg=-L${LIBCXX_DIR} -C link-arg=-lc++ -C link-arg=-Wl,-rpath,${PREFIX}/lib"
     
     # Ensure C++ builds within cargo use the same settings
-    # These are often picked up by cmake and other build systems
     export CMAKE_CXX_FLAGS="${CXXFLAGS}"
     export CMAKE_C_FLAGS="${CFLAGS}"
     export CMAKE_CXX_COMPILER="${CXX}"
@@ -44,8 +40,9 @@ if [[ $(uname) == "Darwin" ]]; then
     # Ensure the C++ standard library is available
     export LDFLAGS="${LDFLAGS} -L${LIBCXX_DIR} -lc++"
     export LIBRARY_PATH="${LIBCXX_DIR}:${LIBRARY_PATH:-}"
-    export LD_LIBRARY_PATH="${LIBCXX_DIR}:${LD_LIBRARY_PATH:-}"
-    export DYLD_LIBRARY_PATH="${LIBCXX_DIR}:${DYLD_LIBRARY_PATH:-}"
+    
+    # NOTE: We do NOT set DYLD_LIBRARY_PATH as it can interfere with system tools
+    # The rpath settings in RUSTFLAGS should be sufficient
     
     # For C++ builds that might not respect LDFLAGS
     export CXXFLAGS="${CXXFLAGS} -L${LIBCXX_DIR}"
@@ -92,7 +89,19 @@ if [[ $(uname) != "Darwin" ]]; then
     fi
 fi
 
+# Run cargo-bundle-licenses before setting up any special environment
+# Save current environment
+SAVED_LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}"
+SAVED_DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH:-}"
+
+# Temporarily unset problematic variables for cargo-bundle-licenses
+unset LD_LIBRARY_PATH
+unset DYLD_LIBRARY_PATH
+
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+
+# Restore environment if needed (though we don't use DYLD_LIBRARY_PATH anymore)
+export LD_LIBRARY_PATH="${SAVED_LD_LIBRARY_PATH}"
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
