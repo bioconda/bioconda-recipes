@@ -41,8 +41,9 @@ if [[ $(uname) == "Darwin" ]]; then
     export LDFLAGS="${LDFLAGS} -L${LIBCXX_DIR} -lc++"
     export LIBRARY_PATH="${LIBCXX_DIR}:${LIBRARY_PATH:-}"
     
-    # NOTE: We do NOT set DYLD_LIBRARY_PATH as it can interfere with system tools
-    # The rpath settings in RUSTFLAGS should be sufficient
+    # IMPORTANT: Set DYLD_FALLBACK_LIBRARY_PATH to help cmake find its libraries
+    # This is safer than DYLD_LIBRARY_PATH as it only gets used if libraries aren't found normally
+    export DYLD_FALLBACK_LIBRARY_PATH="${BUILD_PREFIX}/lib:${PREFIX}/lib:/usr/lib:/System/Library/Frameworks"
     
     # For C++ builds that might not respect LDFLAGS
     export CXXFLAGS="${CXXFLAGS} -L${LIBCXX_DIR}"
@@ -77,6 +78,7 @@ echo "Final LDFLAGS: $LDFLAGS"
 echo "Final RUSTFLAGS: $RUSTFLAGS"
 echo "Final CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS:-}"
 echo "Final LIBRARY_PATH: ${LIBRARY_PATH:-}"
+echo "Final DYLD_FALLBACK_LIBRARY_PATH: ${DYLD_FALLBACK_LIBRARY_PATH:-}"
 $CC --version || true
 $CXX --version || true
 
@@ -89,19 +91,8 @@ if [[ $(uname) != "Darwin" ]]; then
     fi
 fi
 
-# Run cargo-bundle-licenses before setting up any special environment
-# Save current environment
-SAVED_LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}"
-SAVED_DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH:-}"
-
-# Temporarily unset problematic variables for cargo-bundle-licenses
-unset LD_LIBRARY_PATH
-unset DYLD_LIBRARY_PATH
-
+# Run cargo-bundle-licenses
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
-
-# Restore environment if needed (though we don't use DYLD_LIBRARY_PATH anymore)
-export LD_LIBRARY_PATH="${SAVED_LD_LIBRARY_PATH}"
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
