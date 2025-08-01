@@ -1,0 +1,57 @@
+{% set name = "amulety" %}
+{% set version = "1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/amulety-{{ version }}.tar.gz
+  sha256: fd00cfce179902b422ac818138d2ea6317c1e91cf78082ac1177315214e6c09a
+
+build:
+  entry_points:
+    - amulety=amulety.amulety:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('amulety', max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.8,<4.0
+    - setuptools >=61.0
+    - pip
+  run:
+    - python >=3.8,<4.0
+    - numpy
+    - pandas
+    - pytorch
+    - transformers
+    - typer
+    - antiberty
+    - rjieba
+    - pre-commit
+    - pytest-workflow >=1.6.0
+    - pytest >=7.0.0
+    - protobuf
+
+test:
+  imports:
+    - amulety
+  commands:
+    - pip check
+    - amulety --help
+  requires:
+    - igblast
+
+about:
+  home: https://github.com/immcantation/amulety
+  summary: Python package to create embeddings of BCR amino acid sequences.
+  license: GPL-3.0-only
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - ggabernet

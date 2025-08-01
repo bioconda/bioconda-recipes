@@ -1,23 +1,27 @@
-{% set version = "2.30.0" %}
-{% set sha256 = "d4c127c337fd40de57013f0e01006e1fbad2c000b87dbfdcaba6234b451a80b1" %}
+{% set name = "solvebio" %}
+{% set version = "2.31.2" %}
+{% set sha256 = "7da6c4985cbdc23c7f7be686e73d5adf12cb3c4f98733cbda9bd80f95a93c606" %}
 
 package:
-  name: solvebio
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/s/solvebio/solvebio-{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/solvebio-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  noarch: python
   number: 0
+  noarch: python
   entry_points:
     - solvebio = solvebio.cli.main:main
     - solvebio-recipes = recipes.sync_recipes:sync_recipes
-  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -rf *.bak
+    - {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir --use-pep517 . -vvv
   run_exports:
-    - {{ pin_subpackage("solvebio", max_pin="x.x") }}
+    - {{ pin_subpackage('solvebio', max_pin="x") }}
 
 requirements:
   host:
@@ -35,7 +39,7 @@ requirements:
     - dash-core-components
     - flask
     - flask-seasurf
-
+    
 test:
   imports:
     - solvebio
@@ -50,9 +54,10 @@ test:
     - solvebio --help
 
 about:
-  home: https://github.com/solvebio/solvebio-python
+  home: "https://github.com/solvebio/solvebio-python"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: The SolveBio Python client
-  doc_url: https://docs.solvebio.com/
+  summary: "The SolveBio Python client."
+  doc_url: "https://docs.solvebio.com"
+  dev_url: "https://github.com/solvebio/solvebio-python"

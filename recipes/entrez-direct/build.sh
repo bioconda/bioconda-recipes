@@ -3,7 +3,7 @@
 # Keep track of the process
 set -uex
 
-mkdir bin nobin
+mkdir -p bin nobin
 # Don't install these most bespoke scripts
 mv custom-* idx-* pm-* xy-* nobin
 # Move ordinary scripts into a subdirectory for convenience
