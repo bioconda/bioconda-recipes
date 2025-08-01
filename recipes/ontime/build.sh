@@ -10,6 +10,6 @@ export CXXFLAGS="${CFLAGS} -O3"
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 RUST_BACKTRACE=full
-cargo install -v --locked --root "$PREFIX" --path .
+cargo install -v --no-track --root "${PREFIX}" --path .
 
-"$STRIP" "$PREFIX/bin/ontime"
+"${STRIP}" "${PREFIX}/bin/ontime"
