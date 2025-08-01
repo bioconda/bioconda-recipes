@@ -3,7 +3,8 @@
 # Make sure pipes to tee don't hide configuration or test failures
 set -o pipefail
 
-export C_INCLUDE_PATH=${PREFIX}/include
+export C_INCLUDE_PATH="${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 # Tell the build system where to find samtools
 export SAMTOOLS="${PREFIX}"
@@ -19,7 +20,7 @@ if [ -f Build.PL ]; then
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
     perl Makefile.PL INSTALLDIRS=site
-    make -j ${CPU_COUNT}
+    make -j"${CPU_COUNT}"
     make test 2>&1
     make install
 else
