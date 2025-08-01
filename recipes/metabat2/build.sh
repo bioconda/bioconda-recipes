@@ -11,17 +11,29 @@ sed -i.bak 's|2.17|2.18|' VERSION
 # make check_git_repository
 sed -i.bak 's/GIT-NOTFOUND/'$PKG_VERSION' (Bioconda)/' version.h
 
-sed -i.bak 's|VERSION 3.5.1|VERSION 3.5|' CMakeLists.txt
-rm -rf *.bak
-
-if [[ `uname` == "Darwin" ]]; then
+if [[ `uname -s` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 	export CXXFLAGS="${CXXFLAGS} -std=c++14 -D_LIBCPP_DISABLE_AVAILABILITY"
+	sed -i.bak 's|CMAKE_CXX_STANDARD 17|CMAKE_CXX_STANDARD 14|' CMakeLists.txt
+	sed -i.bak 's|CMAKE_C_STANDARD 17|CMAKE_C_STANDARD 11|' CMakeLists.txt
+	rm -rf *.bak
 else
 	export CONFIG_ARGS=""
 fi
 
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+case $(uname -m) in
+    aarch64)
+        export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+        ;;
+    arm64)
+        export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+        ;;
+    x86_64)
+        export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+        ;;
+esac
+
+cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=Release -DBOOST_ROOT="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-DCMAKE_C_COMPILER="${CC}" -DCMAKE_C_FLAGS="${CFLAGS}" \
@@ -29,4 +41,11 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	"${CONFIG_ARGS}"
 
 # Build & install
-cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+ninja -C build install -j "${CPU_COUNT}"
+
+# Fix perl shebang
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/aggregateBinDepths.pl
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/aggregateContigOverlapsByBin.pl
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/merge_depths-DEPRECATED.pl
+
+rm -rf ${PREFIX}/bin/*.bak
