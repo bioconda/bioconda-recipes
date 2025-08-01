@@ -40,7 +40,7 @@ else
 fi
 
 echo "## Automatic build: make"
-make CC=${CC} CXX="${CXX}" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
+make CC=${CC} CXX="${CXX}"
 
 ./bin/seqfu version || true
 
