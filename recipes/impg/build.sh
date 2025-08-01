@@ -17,11 +17,10 @@ if [[ $(uname) == "Darwin" ]]; then
     $CC --version || true
     $CXX --version || true
     
-    # Remove duplicate stdlib flag (it's already in CXXFLAGS)
-    export CXXFLAGS="${CXXFLAGS//-stdlib=libc++/}"
-    export CFLAGS="${CFLAGS//-stdlib=libc++/}"
+    # IMPORTANT: Do NOT remove -stdlib=libc++ on macOS!
+    # The spoa_rs C++ code needs to be compiled with the same stdlib setting
     
-    # Set up Rust to link with libc++ on macOS
+    # Set up Rust to use clang++ as the linker and link with libc++
     export RUSTFLAGS="-C linker=${CXX} -C link-arg=-lc++"
     
     # Use gmake if available, otherwise make
@@ -49,6 +48,8 @@ fi
 # Debug: Print final compiler information
 echo "Final CC: $CC"
 echo "Final CXX: $CXX"
+echo "Final CXXFLAGS: $CXXFLAGS"
+echo "Final RUSTFLAGS: $RUSTFLAGS"
 $CC --version || true
 $CXX --version || true
 
