@@ -1,7 +1,7 @@
 #!/bin/bash -euo
 set -xe
 
-# On macOS, AGC requires actual GCC, not clang
+# On macOS, disable AGC support and use Clang
 if [[ $(uname) == "Darwin" ]]; then
     # This disables AGC support. AGC requires a real GCC compiler, not clang.
     CARGO_EXTRA_FLAGS="--no-default-features"
@@ -11,55 +11,14 @@ if [[ $(uname) == "Darwin" ]]; then
         export PLATFORM=arm8
     fi
     
-    # The gfortran packages install real GCC alongside gfortran
-    # Find the real GCC/G++ binaries
-    GCC_BIN=""
-    GXX_BIN=""
-    
-    # Look for GCC binaries with version suffixes (gfortran packages typically install as gcc-XX)
-    for ver in 14 13 12 11; do
-        if [[ -f "$BUILD_PREFIX/bin/gcc-${ver}" ]] && [[ -f "$BUILD_PREFIX/bin/g++-${ver}" ]]; then
-            GCC_BIN="$BUILD_PREFIX/bin/gcc-${ver}"
-            GXX_BIN="$BUILD_PREFIX/bin/g++-${ver}"
-            echo "Found GCC version ${ver}"
-            break
-        fi
-    done
-    
-    # If not found with version suffix, look for plain gcc/g++
-    if [[ -z "$GCC_BIN" ]] || [[ -z "$GXX_BIN" ]]; then
-        if [[ -f "$BUILD_PREFIX/bin/gcc" ]] && [[ -f "$BUILD_PREFIX/bin/g++" ]]; then
-            # Verify these are real GCC, not clang wrappers
-            if "$BUILD_PREFIX/bin/gcc" --version 2>&1 | grep -qE "(GNU|gcc)"; then
-                GCC_BIN="$BUILD_PREFIX/bin/gcc"
-                GXX_BIN="$BUILD_PREFIX/bin/g++"
-            fi
-        fi
-    fi
-    
-    if [[ -z "$GCC_BIN" ]] || [[ -z "$GXX_BIN" ]]; then
-        echo "ERROR: Could not find real GCC/G++ in conda environment"
-        echo "Looking in: $BUILD_PREFIX/bin"
-        echo "Available compilers:"
-        ls -la "$BUILD_PREFIX/bin" | grep -E "(gcc|g\+\+)" || true
-        exit 1
-    fi
-    
-    export CC="$GCC_BIN"
-    export CXX="$GXX_BIN"
-    
+    # Use the conda-provided Clang compilers
+    # CC and CXX are already set by conda to clang/clang++
     echo "Using CC: $CC"
     echo "Using CXX: $CXX"
     $CC --version || true
     $CXX --version || true
     
-    # Set up environment for static linking
-    export LDFLAGS="${LDFLAGS} -static-libgcc -static-libstdc++"
-    
-    # Set up Rust to use g++ as the linker
-    export RUSTFLAGS="-C linker=${CXX}"
-    
-    # Remove any clang-specific flags
+    # Remove any clang-specific flags that might cause issues
     export CXXFLAGS="${CXXFLAGS//-stdlib=libc++/}"
     export CFLAGS="${CFLAGS//-stdlib=libc++/}"
     
@@ -69,10 +28,6 @@ if [[ $(uname) == "Darwin" ]]; then
     else
         export MAKE="make"
     fi
-    
-    # Unset clang variables to avoid conflicts
-    unset CLANG
-    unset CLANGXX
 else
     CARGO_EXTRA_FLAGS=""
 
