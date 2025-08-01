@@ -39,8 +39,6 @@ else
 	rm -rf *.bak
 fi
 
-echo "## Automatic build: install deps"
-nimble install -y --depsOnly
 echo "## Automatic build: make"
 make CC=${CC} CXX="${CXX}" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
 
