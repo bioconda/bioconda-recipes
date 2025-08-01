@@ -20,8 +20,15 @@ if [[ $(uname) == "Darwin" ]]; then
     # IMPORTANT: Do NOT remove -stdlib=libc++ on macOS!
     # The spoa_rs C++ code needs to be compiled with the same stdlib setting
     
+    # Find the C++ standard library location
+    LIBCXX_DIR="$BUILD_PREFIX/lib"
+    if [[ ! -f "$LIBCXX_DIR/libc++.dylib" ]] && [[ ! -f "$LIBCXX_DIR/libc++.a" ]]; then
+        # Try to find libc++ in the conda environment
+        LIBCXX_DIR="$PREFIX/lib"
+    fi
+    
     # Set up Rust to use clang++ as the linker and link with libc++
-    export RUSTFLAGS="-C linker=${CXX} -C link-arg=-lc++"
+    export RUSTFLAGS="-C linker=${CXX} -C link-arg=-L${LIBCXX_DIR} -C link-arg=-lc++ -C link-arg=-Wl,-rpath,${PREFIX}/lib"
     
     # Ensure C++ builds within cargo use the same settings
     # These are often picked up by cmake and other build systems
@@ -29,12 +36,19 @@ if [[ $(uname) == "Darwin" ]]; then
     export CMAKE_C_FLAGS="${CFLAGS}"
     export CMAKE_CXX_COMPILER="${CXX}"
     export CMAKE_C_COMPILER="${CC}"
+    export CMAKE_PREFIX_PATH="${PREFIX}"
     
     # For builds that use pkg-config
     export PKG_CONFIG_ALLOW_CROSS=1
     
     # Ensure the C++ standard library is available
-    export LDFLAGS="${LDFLAGS} -lc++"
+    export LDFLAGS="${LDFLAGS} -L${LIBCXX_DIR} -lc++"
+    export LIBRARY_PATH="${LIBCXX_DIR}:${LIBRARY_PATH:-}"
+    export LD_LIBRARY_PATH="${LIBCXX_DIR}:${LD_LIBRARY_PATH:-}"
+    export DYLD_LIBRARY_PATH="${LIBCXX_DIR}:${DYLD_LIBRARY_PATH:-}"
+    
+    # For C++ builds that might not respect LDFLAGS
+    export CXXFLAGS="${CXXFLAGS} -L${LIBCXX_DIR}"
     
     # Use gmake if available, otherwise make
     if command -v gmake >/dev/null 2>&1; then
@@ -65,6 +79,7 @@ echo "Final CXXFLAGS: $CXXFLAGS"
 echo "Final LDFLAGS: $LDFLAGS"
 echo "Final RUSTFLAGS: $RUSTFLAGS"
 echo "Final CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS:-}"
+echo "Final LIBRARY_PATH: ${LIBRARY_PATH:-}"
 $CC --version || true
 $CXX --version || true
 
