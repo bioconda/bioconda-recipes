@@ -205,7 +205,7 @@ windowmasker.exe \
 ln -s "$RESULT_PATH/lib" "$LIB_INSTALL_DIR"
 
 n_workers=4
-if [[ -n "${CIRCLECI:-}" ]]; then
+if [[ "$(uname -m)" = "aarch64" || "$(uname -m)" = "arm64" ]]; then
 	# double it on CircleCI as resource usage is quite low with 4 workers
 	n_workers=8
 fi
