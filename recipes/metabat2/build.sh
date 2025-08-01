@@ -9,7 +9,8 @@ export CFLAGS="${CFLAGS} -O3"
 # Fix the version
 sed -i.bak 's|2.17|2.18|' VERSION
 # make check_git_repository
-sed -i.bak 's/GIT-NOTFOUND/'$PKG_VERSION' (Bioconda)/' version.h
+sed -i.bak 's/GIT-NOTFOUND/'$PKG_VERSION'/' version.h
+rm -rf *.bak
 
 if [[ `uname -s` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
