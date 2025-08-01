@@ -11,4 +11,6 @@ cd seqkit
 
 go build
 
+"${STRIP}" seqkit
+
 install -v -m 0755 seqkit "${PREFIX}/bin"
