@@ -1,11 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 set -ex
-aclocal
-libtoolize --automake --force --copy
-automake --add-missing
-autoconf
-mkdir -p ${PREFIX}
+autoreconf -if
 
-./configure --prefix=$PREFIX CXXFLAGS="-I${PREFIX}/include"
+./configure --prefix="${PREFIX}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include" LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 make
 make install
