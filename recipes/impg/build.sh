@@ -23,6 +23,19 @@ if [[ $(uname) == "Darwin" ]]; then
     # Set up Rust to use clang++ as the linker and link with libc++
     export RUSTFLAGS="-C linker=${CXX} -C link-arg=-lc++"
     
+    # Ensure C++ builds within cargo use the same settings
+    # These are often picked up by cmake and other build systems
+    export CMAKE_CXX_FLAGS="${CXXFLAGS}"
+    export CMAKE_C_FLAGS="${CFLAGS}"
+    export CMAKE_CXX_COMPILER="${CXX}"
+    export CMAKE_C_COMPILER="${CC}"
+    
+    # For builds that use pkg-config
+    export PKG_CONFIG_ALLOW_CROSS=1
+    
+    # Ensure the C++ standard library is available
+    export LDFLAGS="${LDFLAGS} -lc++"
+    
     # Use gmake if available, otherwise make
     if command -v gmake >/dev/null 2>&1; then
         export MAKE="gmake"
@@ -49,7 +62,9 @@ fi
 echo "Final CC: $CC"
 echo "Final CXX: $CXX"
 echo "Final CXXFLAGS: $CXXFLAGS"
+echo "Final LDFLAGS: $LDFLAGS"
 echo "Final RUSTFLAGS: $RUSTFLAGS"
+echo "Final CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS:-}"
 $CC --version || true
 $CXX --version || true
 
