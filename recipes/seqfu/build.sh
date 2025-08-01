@@ -3,6 +3,16 @@ set -euxo pipefail
 
 mkdir -p "${PREFIX}/bin"
 
+echo " Setting environment variables"
+# Fix zlib
+export CFLAGS="${CFLAGS} -O3 -I$PREFIX/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPATH="${PREFIX}/include"
+
+echo "CXX: ${CXX:-'not set'}"
+echo "CC: ${CC:-'not set'}"
+echo "----------"
+
 if [[ "$(uname -m)" == "arm64" ]]; then
 	nim_build="macosx_arm64"
 	curl -SL https://github.com/nim-lang/nightlies/releases/download/latest-version-2-2/${nim_build}.tar.xz -o ${nim_build}.tar.xz
@@ -16,45 +26,25 @@ echo "--- NIM BUILD ---"
 nim --version
 echo "----------"
 
-
-
-echo " Setting environment variables"
-# Fix zlib
-export CFLAGS="${CFLAGS} -O3 -I$PREFIX/include"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPATH="${PREFIX}/include"
-
-echo "GXX: ${GXX:-'not set'}"
-echo "GCC: ${GCC:-'not set'}"
-echo "----------"
-
-
-
 if [[ "$(uname -s)" == "Darwin" ]]; then
-	echo "OSX"
-	export HOME="/Users/distiller"
-	export HOME=`pwd`
+	echo "OSX: Patching Makefile"
+ 	sed -i.bak 's|gcc|$(CC)|' Makefile
+	sed -i.bak 's|g++|$(CXX)|' Makefile
+	rm -rf *.bak
 else
 	# Trying to fix build when gcc or g++ are required
-	echo "LINUX: Patching makefile"
-	sed -i 's/gcc/gcc $(LDFLAGS)/g' Makefile
-	sed -i 's/g++/g++ $(LDFLAGS)/g' Makefile
-	sed -i 's/gcc/$(GCC)/g' Makefile
-	sed -i 's/g++/$(GXX)/g' Makefile
-	sed -i '1iGCC ?= gcc' Makefile
-	sed -i '1iGXX ?= g++' Makefile
+	echo "LINUX: Patching Makefile"
+	sed -i 's/gcc/$(CC) $(LDFLAGS)/g' Makefile
+	sed -i 's/g++/$(CXX) $(LDFLAGS)/g' Makefile
+	rm -rf *.bak
 fi
-
 
 echo "## Automatic build: install deps"
 nimble install -y --depsOnly
 echo "## Automatic build: make"
-make
+make CC=${CC} CXX="${CXX}" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
 
 ./bin/seqfu version || true
 
 echo "## Current dir: $(pwd)"
-install -v -m 0755 bin/* "$PREFIX/bin"
-
-echo "## List files in \$PREFIX/bin:"
-ls -ltr "$PREFIX/bin"
+install -v -m 0755 bin/* "${PREFIX}/bin"
