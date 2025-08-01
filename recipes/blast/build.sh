@@ -204,9 +204,15 @@ windowmasker.exe \
 # link from final install path to lib build dir:
 ln -s "$RESULT_PATH/lib" "$LIB_INSTALL_DIR"
 
+n_workers=4
+if [[ -n "${CIRCLECI:-}" ]]; then
+	# double it on CircleCI as resource usage is quite low with 4 workers
+	n_workers=8
+fi
+
 cd "$RESULT_PATH/build"
 echo "RUNNING MAKE" >&2
-make -j 4 -f Makefile.flat $apps >&2
+make -j $n_workers -f Makefile.flat $apps >&2
 
 # remove temporary link
 rm "$LIB_INSTALL_DIR"
