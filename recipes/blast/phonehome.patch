@@ -1,12 +1,27 @@
-# See: https://github.com/bioconda/bioconda-recipes/pull/32791
---- c++/include/connect/ncbi_usage_report.hpp	2020-09-25 19:21:05 +0200
-+++ c++/include/connect/ncbi_usage_report.hpp	2022-07-18 23:39:42 +0200
-@@ -39,7 +39,7 @@
- // API is available for MT builds only,
- // for single thread builds all API is available but disabled.
- #if defined(NCBI_THREADS)
--#  define NCBI_USAGE_REPORT_SUPPORTED 1
-+// #  define NCBI_USAGE_REPORT_SUPPORTED 1
- #endif
+# See:
+# https://github.com/bioconda/bioconda-recipes/pull/32791
+# https://github.com/bioconda/bioconda-recipes/issues/53165
+--- c++/src/connect/ncbi_usage_report.cpp
++++ c++/src/connect/ncbi_usage_report.cpp
+@@ -126,22 +126,6 @@
 
- #if defined(NCBI_USAGE_REPORT_SUPPORTED)
+ bool CUsageReportAPI::IsEnabled(void)
+ {
+-#if defined(NCBI_USAGE_REPORT_SUPPORTED)
+-    if (!gs_IsEnabled) {
+-        return false;
+-    };
+-    const char* do_not_track = ::getenv("DO_NOT_TRACK");
+-    if (!do_not_track) {
+-        return true;
+-    }
+-    try {
+-        if (!NStr::StringToBool(do_not_track)) {
+-            return true;
+-        }
+-    }
+-    catch (CStringException&) {
+-    }
+-#endif
+     return false;
+ }

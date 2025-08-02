@@ -5,6 +5,18 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# For debugging ./configure
+cat << EOF >&2
+ENVIRONMENT
+-----------
+  uname -a   $(uname -a)
+KERNEL
+  uname -s   $(uname -s)
+  uname -r   $(uname -r)
+  uname -v   $(uname -v)
+ARCHITECTURE
+  uname -m   $(uname -m)
+EOF
 
 # Source path
 BLAST_SRC_DIR="$SRC_DIR/c++"
@@ -112,8 +124,8 @@ if [[ "$(uname)" = "Linux" ]]; then
 	# --with(out)-64:
 	#   Compile in 64-bit mode instead of 32-bit.
 	#   Flag not available for osx build.
-        if [[ "$(arch)" = "x86_64" ]]; then
-            CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-64"
+	if [[ "$(arch)" = "x86_64" ]]; then
+		CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-64"
 	fi
 	# --with(out)-openmp:
 	#   Enable OpenMP extensions for all projects.
@@ -192,9 +204,15 @@ windowmasker.exe \
 # link from final install path to lib build dir:
 ln -s "$RESULT_PATH/lib" "$LIB_INSTALL_DIR"
 
+n_workers=4
+if [[ "$(uname -m)" = "aarch64" || "$(uname -m)" = "arm64" ]]; then
+	# double it on CircleCI as resource usage is quite low with 4 workers
+	n_workers=8
+fi
+
 cd "$RESULT_PATH/build"
 echo "RUNNING MAKE" >&2
-make -j 4 -f Makefile.flat $apps >&2
+make -j $n_workers -f Makefile.flat $apps >&2
 
 # remove temporary link
 rm "$LIB_INSTALL_DIR"
