@@ -3,22 +3,25 @@
 {% set bioc = "3.20" %}
 
 about:
-  description: Gene Set Variation Analysis (GSVA) is a non-parametric, unsupervised method for estimating variation of gene set enrichment through the samples of a expression data set. GSVA performs a change in coordinate systems, transforming the data from a gene by sample matrix to a gene-set by sample matrix, thereby allowing the evaluation of pathway enrichment for each sample. This new matrix of GSVA enrichment scores facilitates applying standard analytical methods like functional enrichment, survival analysis, clustering, CNV-pathway analysis or cross-tissue pathway analysis, in a pathway-centric manner.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL (>= 2)
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-  summary: Gene Set Variation Analysis for Microarray and RNA-Seq Data
+  description: "Gene Set Variation Analysis (GSVA) is a non-parametric, unsupervised method for estimating variation of gene set enrichment through the samples of a expression data set. GSVA performs a change in coordinate systems, transforming the data from a gene by sample matrix to a gene-set by sample matrix, thereby allowing the evaluation of pathway enrichment for each sample. This new matrix of GSVA enrichment scores facilitates applying standard analytical methods like functional enrichment, survival analysis, clustering, CNV-pathway analysis or cross-tissue pathway analysis, in a pathway-centric manner."
+  home: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
+  license: "GPL-2.0-or-later"
+  license_family: GPL
+  license_file: "{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3"
+  summary: "Gene Set Variation Analysis for Microarray and RNA-Seq Data."
 
 build:
-  number: 1
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
-  run_exports: '{{ pin_subpackage("bioconductor-gsva", max_pin="x.x") }}'
+  run_exports:
+    - {{ pin_subpackage('bioconductor-gsva', max_pin="x") }}
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:gsva
   parent_recipe:
@@ -28,7 +31,7 @@ extra:
 
 package:
   name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
+  version: {{ version }}
 
 # Suggests: BiocGenerics, RUnit, BiocStyle, knitr, rmarkdown, limma, RColorBrewer, org.Hs.eg.db, genefilter, edgeR, GSVAdata, shiny, shinydashboard, ggplot2, data.table, plotly, future, promises, shinybusy, shinyjs
 requirements:
@@ -83,4 +86,3 @@ source:
 test:
   commands:
     - $R -e "library('{{ name }}')"
-
