@@ -1,27 +1,28 @@
+{% set name = "harpy" %}
 {% set version = "2.5.0" %}
 {% set sha256 = "81cf7eb16808efe13ae39c80c6ddf70fb475c3df34d2b163f50a65bdd3bc013f" %}
 
 package:
-  name: harpy
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/pdimens/harpy/releases/download/{{ version }}/harpy.{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  sha256: {{ sha256 }}
 
 build:
   number: 1
-  noarch: python
+  noarch: generic
   script_env:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
-  run_exports:
-    - {{ pin_subpackage('harpy', max_pin="x") }}
   script: |
     mkdir -p ${PREFIX}/bin
     ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
     install -v -m 0755 harpy/bin/* ${PREFIX}/bin
   entry_points:
     - harpy = harpy.__main__:cli
+  run_exports:
+    - {{ pin_subpackage('harpy', max_pin="x") }}
 
 requirements:
   host:
