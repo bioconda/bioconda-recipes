@@ -34,7 +34,10 @@ ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-p
 
 make
 
-install -v -m 755 bin/* "${PREFIX}/bin"
+case $(uname -s) in
+	Linux) install -v -m 755 bin/* "${PREFIX}/bin" ;;
+	Darwin) mv bin/* "${PREFIX}/bin" ;;
+esac
 
 # cactus-gfa-tools is required but doesn't have tags. They just use exact commits in their scripts
 git clone https://github.com/ComparativeGenomicsToolkit/cactus-gfa-tools.git
