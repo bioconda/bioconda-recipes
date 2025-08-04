@@ -2,5 +2,20 @@
 
 install -d "${PREFIX}/bin"
 
-make CC="${CC} ${CFLAGS} ${CPPFLAGS}" LL="${CC} ${LDFLAGS}" -j"${CPU_COUNT}"
-install -v -m 0755 GotohScan "${PREFIX}/bin"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations"
+
+autoreconf -if
+./configure --prefix="${PREFIX}" \
+  --disable-option-checking \
+  --enable-silent-rules \
+  --disable-dependency-tracking \
+  CC="${CC} -fcommon" \
+  CFLAGS="${CFLAGS}" \
+  LDFLAGS="${LDFLAGS}" \
+  CPPFLAGS="${CPPFLAGS}"
+
+make -j"${CPU_COUNT}"
+
+make install
