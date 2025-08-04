@@ -9,6 +9,6 @@ autoreconf -if
 	CC="${CC} -fcommon" CFLAGS="${CFLAGS}" \
 	LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}"
 
-make libs -j"${CPU_COUNT}"
+make -j"${CPU_COUNT}"
 
-make all install
+make install
