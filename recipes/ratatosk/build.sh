@@ -21,8 +21,8 @@ case $(uname -m) in
 	;;
     arm64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
-	sed -i.bak 's|-DCOMPILATION_ARCH=OFF|-DCOMPILATION_ARCH=ON|' src/CMakeLists.txt
-	rm -rf src/*.bak
+	#sed -i.bak 's|-DCOMPILATION_ARCH=OFF|-DCOMPILATION_ARCH=ON|' src/CMakeLists.txt
+	#rm -rf src/*.bak
 	;;
     x86_64)
 	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
@@ -39,4 +39,4 @@ cmake -S . -B build \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
-cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+cmake --build build --clean-first --target install -j 1
