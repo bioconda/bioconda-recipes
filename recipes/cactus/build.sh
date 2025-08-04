@@ -44,6 +44,11 @@ git clone https://github.com/ComparativeGenomicsToolkit/cactus-gfa-tools.git
 cd cactus-gfa-tools
 git checkout 1121e370880ee187ba2963f0e46e632e0e762cc5
 
-make
+if [[ "$(uname -s)" == "Darwin" ]]; then
+	sed -i.bak 's|-L$(CWD)|-L$(CWD) -L$(PREFIX)/lib|' Makefile
+	rm -rf *.bak
+fi
+
+make CXX="${CXX}" -j"${CPU_COUNT}"
 
 install -v -m 755 mzgaf2paf pafcoverage rgfa-split paf2lastz pafmask gaf2paf gaf2unstable gaffilter rgfa2paf paf2stable "${PREFIX}/bin"
