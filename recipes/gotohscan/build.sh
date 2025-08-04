@@ -1,5 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-make CC="${CC} ${CFLAGS} ${CPPFLAGS}" LL="${CC} ${LDFLAGS}"
 install -d "${PREFIX}/bin"
-install GotohScan "${PREFIX}/bin/"
+
+make CC="${CC} ${CFLAGS} ${CPPFLAGS}" LL="${CC} ${LDFLAGS}" -j"${CPU_COUNT}"
+install -v -m 0755 GotohScan "${PREFIX}/bin"
