@@ -1,0 +1,122 @@
+diff --git a/src/idba/contig_builder.h b/src/idba/contig_builder.h
+index 94ae031..bce4b2f 100644
+--- a/src/idba/contig_builder.h
++++ b/src/idba/contig_builder.h
+@@ -39,7 +39,7 @@ class ContigBuilder {
+       contig_ += x.kmer()[x.kmer().size() - 1];
+       contig_info_.out_edges_ = x.out_edges();
+       contig_info_.kmer_count_ += x.count();
+-      contig_info_.counts_ += x.count();
++      contig_info_.counts_.push_back(x.count());
+     }
+   }
+ 
+@@ -57,15 +57,31 @@ class ContigBuilder {
+         contig_info_.out_edges_ = x.out_edges();
+         contig_info_.kmer_count_ += x.kmer_count();
+         SequenceCount counts = x.counts();
+-        contig_info_.counts_ += counts.substr(
+-            std::min(-d - contig_info_.kmer_size_ + 1, (int)counts.size()));
++        {
++          int start = std::min(-d - (int)contig_info_.kmer_size_ + 1,
++                               (int)counts.size());
++          contig_info_.counts_.insert(
++            contig_info_.counts_.end(),
++            counts.begin() + start,
++            counts.end()
++          );
++        }
+       } else {
+         contig_.Append(d, 4);
+         contig_.Append(x.contig());
+         contig_info_.out_edges_ = x.out_edges();
+         contig_info_.kmer_count_ += x.kmer_count();
+-        contig_info_.counts_.append(d, 0);
+-        contig_info_.counts_ += x.counts();
++        contig_info_.counts_.insert(
++          contig_info_.counts_.end(),
++          d, 0
++        );
++
++        const SequenceCount &more = x.counts();
++        contig_info_.counts_.insert(
++          contig_info_.counts_.end(),
++          more.begin(),
++          more.end()
++        );
+       }
+     }
+   }
+diff --git a/src/idba/contig_info.h b/src/idba/contig_info.h
+index 0eeb115..60f16dc 100644
+--- a/src/idba/contig_info.h
++++ b/src/idba/contig_info.h
+@@ -14,12 +14,13 @@
+ 
+ #include <algorithm>
+ #include <deque>
++#include <vector>
+ #include <istream>
+ #include <ostream>
+ #include <string>
+ 
+ typedef uint32_t SequenceCountUnitType;
+-typedef std::basic_string<SequenceCountUnitType> SequenceCount;
++typedef std::vector<SequenceCountUnitType> SequenceCount;
+ 
+ class ContigBuilder;
+ 
+diff --git a/src/megahit b/src/megahit
+index eb56a29..b070425 100755
+--- a/src/megahit
++++ b/src/megahit
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ 
+ # -------------------------------------------------------------------------
+ # MEGAHIT
+@@ -19,7 +19,6 @@
+ # -------------------------------------------------------------------------
+ 
+ 
+-from __future__ import print_function
+ 
+ import getopt
+ import json
+@@ -58,7 +57,7 @@ Optional Arguments:
+   Another way to set --k-list (overrides --k-list if one of them set):
+     --k-min                  <int>          minimum kmer size (<= {0}), must be odd number [21]
+     --k-max                  <int>          maximum kmer size (<= {0}), must be odd number [141]
+-    --k-step                 <int>          increment of kmer size of each iteration (<= 28), must be even number [12]
++    --k-step                 <int>          increment of kmer size of each iteration (<= 28), must be even number [10]
+ 
+   Advanced assembly options:
+     --no-mercy                              do not add mercy kmers
+@@ -375,7 +374,7 @@ def parse_option(argv):
+         elif option == '--max-tip-len':
+             opt.max_tip_len = int(value)
+         elif option == '--merge-level':
+-            (opt.merge_len, opt.merge_similar) = map(float, value.split(','))
++            (opt.merge_len, opt.merge_similar) = list(map(float, value.split(',')))
+             opt.merge_len = int(opt.merge_len)
+         elif option == '--prune-level':
+             opt.prune_level = int(value)
+@@ -553,12 +552,12 @@ def check_and_correct_option():
+         raise Usage('--low-local-ratio should be in (0, 0.5].')
+     if opt.cleaning_rounds <= 0:
+         raise Usage('--cleaning-rounds must be >= 1')
+-    if opt.num_cpu_threads > multiprocessing.cpu_count():
+-        logger.warning('Maximum number of available CPU thread is %d.' % multiprocessing.cpu_count())
+-        logger.warning('Number of thread is reset to the %d.' % multiprocessing.cpu_count())
+-        opt.num_cpu_threads = multiprocessing.cpu_count()
++    if opt.num_cpu_threads > len(os.sched_getaffinity(0)):
++        logger.warning('Maximum number of available CPU thread is %d.' % len(os.sched_getaffinity(0)))
++        logger.warning('Number of thread is reset to the %d.' % len(os.sched_getaffinity(0)))
++        opt.num_cpu_threads = len(os.sched_getaffinity(0))
+     if opt.num_cpu_threads == 0:
+-        opt.num_cpu_threads = multiprocessing.cpu_count()
++        opt.num_cpu_threads = len(os.sched_getaffinity(0))
+     if opt.prune_depth < 0 and opt.prune_level < 3:
+         opt.prune_depth = opt.min_count
+     if opt.bubble_level < 0:
