@@ -2,7 +2,7 @@
 set -x -e
 
 unset _CONDA_PYTHON_SYSCONFIGDATA_NAME
-export PYTHONPATH="${PREFIX}/lib/python${PY_VER}/site-packages:${PYTHONPATH}"
+export PYTHONPATH="${PREFIX}/lib/python2.7/site-packages:${PYTHONPATH}"
 
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
@@ -39,9 +39,9 @@ ln -sf $PREFIX/bin/decide $PREFIX/bin/scripts/decide
 ln -sf $PREFIX/bin/ntcard $PREFIX/bin/ntCard/ntcard
 
 # Download and install readfq Python module
-mkdir -p "$PREFIX/lib/python${PY_VER}/site-packages"
-wget -q -O "$PREFIX/lib/python${PY_VER}/site-packages/readfq.py" \
+mkdir -p "$PREFIX/lib/python2.7/site-packages"
+wget -q -O "$PREFIX/lib/python2.7/site-packages/readfq.py" \
     https://raw.githubusercontent.com/lh3/readfq/master/readfq.py
 
 # Make readfq.py executable
-chmod +x "$PREFIX/lib/python${PY_VER}/site-packages/readfq.py"
+chmod +x "$PREFIX/lib/python2.7/site-packages/readfq.py"
