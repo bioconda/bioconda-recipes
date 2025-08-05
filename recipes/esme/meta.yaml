@@ -1,53 +1,53 @@
-{% set esme_version = "1.0.1" %}
-{% set pnetcdf_version = "1.14.0" %}
-{% set hdf5_version = "1.14.5" %}
-{% set netcdf_c_version = "4.9.2" %}
-{% set netcdf_fortran_version = "4.6.1" %}
-{% set pio_version = "2.6.5" %}
+{% set esme_version = "1.0.2" %}
+{% set pnetcdf_version = "1.14.1" %}
+{% set hdf5_version = "1.14.6" %}
+{% set netcdf_c_version = "4.9.3" %}
+{% set netcdf_fortran_version = "4.6.2" %}
+{% set pio_version = "2.6.6" %}
 {% set pio_pkg_version = pio_version.replace('.', '_') %}
-{% set esmf_version = "8.8.0" %}
-{% set omb_version = "7.5" %}
+{% set esmf_version = "8.8.1" %}
+{% set omb_version = "7.5.1" %}
 {% set build = 0 %}
 
 {% set mpi_name, mpi_version = mpi.split('=') if '=' in mpi else (mpi, '') %}
 {% set mpi_version_name = mpi_version | replace('.', '_') %}
 
 package:
-  name: esme_psmpi_{{ mpi_version_name }}
+  name: esme_mpich_{{ mpi_version_name }}
   version: {{ esme_version }}
 
 build:
   number: {{ build }}
   string: {{ mpi_name }}_h{{ PKG_HASH }}_{{ build }}
-  skip: true  # [win or osx]
+  skip: true  # [not (linux and (x86_64 or aarch64))]
   ignore_run_exports:
     - libacl
     - libstdcxx
     - zlib
   run_exports:
-    - {{ pin_compatible('esme_mvapich', max_pin='x.x.x') }}
+    - {{ pin_compatible('esme_mpich', max_pin='x.x.x') }}
 
 source:
   - url: https://parallel-netcdf.github.io/Release/pnetcdf-{{ pnetcdf_version }}.tar.gz
-    sha256: 575f189fb01c53f93b3d6ae0e506f46e19694807c81af0b9548e947995acf704  # 1.14.0
+    sha256: 6f0f7221006c211fce9ddd2c008796b8c69dd717b2ad1be0b4027fc328fd3220  # 1.14.1
     folder: esme_pnetcdf
   - url: https://github.com/HDFGroup/hdf5/releases/download/hdf5_{{ hdf5_version }}/hdf5-{{ hdf5_version }}.tar.gz
-    sha256: ec2e13c52e60f9a01491bb3158cb3778c985697131fc6a342262d32a26e58e44  # 1.14.5
+    sha256: e4defbac30f50d64e1556374aa49e574417c9e72c6b1de7a4ff88c4b1bea6e9b  # 1.14.6
     folder: esme_hdf5
   - url: https://github.com/Unidata/netcdf-c/archive/refs/tags/v{{ netcdf_c_version }}.tar.gz
-    sha256: bc104d101278c68b303359b3dc4192f81592ae8640f1aee486921138f7f88cb7  # 4.9.2
+    sha256: 990f46d49525d6ab5dc4249f8684c6deeaf54de6fec63a187e9fb382cc0ffdff  # 4.9.3
     folder: esme_netcdf-c
   - url: https://github.com/Unidata/netcdf-fortran/archive/refs/tags/v{{ netcdf_fortran_version }}.tar.gz
-    sha256: 40b534e0c81b853081c67ccde095367bd8a5eead2ee883431331674e7aa9509f  # 4.6.1
+    sha256: 44cc7b5626b0b054a8503b8fe7c1b0ac4e0a79a69dad792c212454906a9224ca  # 4.6.2
     folder: esme_netcdf-fortran
   - url: https://github.com/NCAR/ParallelIO/archive/refs/tags/pio{{ pio_pkg_version }}.tar.gz
-    sha256: 6ae51aa3f76e597a3a840a292ae14eca21359b1a4ea75e476a93aa2088c0677a  # 2.6.5
+    sha256: e32e018a521d38c9424940c7cfa7e9b1931b605f3511ee7ab3a718b69faeeb04  # 2.6.6
     folder: esme_pio
   - url: https://github.com/esmf-org/esmf/archive/refs/tags/v{{ esmf_version }}.tar.gz
-    sha256: f89327428aeef6ad34660b5b78f30d1c55ec67efb8f7df1991fdaa6b1eb3a27c  # 8.8.0
+    sha256: b0acb59d4f000bfbdfddc121a24819bd2a50997c7b257b0db2ceb96f3111b173  # 8.8.1
     folder: esme_esmf
   - url: https://mvapich.cse.ohio-state.edu/download/mvapich/osu-micro-benchmarks-{{ omb_version }}.tar.gz
-    sha256: 1cf84ac5419456202757a757c5f9a4f5c6ecd05c65783c7976421cfd6020b3b3  # 7.5
+    sha256: 160d0d5e3c3cb022520ecb247e9875bb0973b1d3cadccd6c17624f8407c52e22  # 7.5.1
     folder: esme_omb
 
 requirements:
@@ -318,3 +318,5 @@ extra:
     - version_constraints_missing_whitespace
     - compilers_must_be_in_build
     - folder_and_package_name_must_match
+  additional-platforms:
+    - linux-aarch64
