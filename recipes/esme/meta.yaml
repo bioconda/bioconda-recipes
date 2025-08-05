@@ -55,9 +55,12 @@ requirements:
     - cmake
     - esme_esmf_{{ mpi_name }}_{{ mpi_version_name }}
     - make
+    {% if mpi_name != "mvapich" %}
     - esme_omb_{{ mpi_name }}_{{ mpi_version_name }}
+    {% endif %}
     - perl-xml-libxml
     - python=3.8
+
 test:
   commands:
     - echo "Skipping ESME tests, since individual packages were already tested"
@@ -275,6 +278,8 @@ outputs:
       commands:
         {% if mpi_name == "psmpi" %}
           - echo "PSMPI does not have mpiexec, skipping test."
+        {% elif mpi_name == "mvapich" %}
+          - echo "MVAPIch has built-in OSU benchmarks, no separate package needed."
         {% elif mpi_name == "openmpi" %}
           - echo "Setting plm_rsh_agent and allowing root execution for OpenMPI"
           - export OMPI_MCA_plm_rsh_agent=$(command -v ssh)
