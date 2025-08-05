@@ -2,9 +2,6 @@
 
 set -euo pipefail
 
-# Initialize git submodules to get htslib
-git submodule update --init --recursive
-
 # Create build directory
 mkdir -p build
 cd build
