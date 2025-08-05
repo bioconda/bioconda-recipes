@@ -2,21 +2,23 @@
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CFLAGS="${CFLAGS} -O3 -DHIDE_INLINE_STATIC"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CFLAGS="${CFLAGS} -Wall -O3 -fPIC -DHIDE_INLINE_STATIC"
+export CXXFLAGS="${CXXFLAGS} -Wall -O3 -fPIC -fmessage-length=50"
 arch=$(uname -m)
 
 install -d "${PREFIX}/bin"
 
-if [[ ${target_platform} == "linux-aarch64" ]]; then
+if [[ "${arch}" == "aarch64" ]]; then
     export CPPFLAGS="${CPPFLAGS} -Xlinker -zmuldefs"
 fi
 
+make clean
 make CC="${CC} -fcommon" \
-    CXX="${CXX}" \
-    CCFLAGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
-    CXXFLAGS="${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
-    -j"${CPU_COUNT}"
+    CXX="${CXX} -fcommon" \
+    CCFLAGS="${CFLAGS}" \
+    CXXFLAGS="${CXXFLAGS}" \
+    OPTFLAGS="-O3" \
+    -j1
 
 make install
 install -v -m 755 bin/* "${PREFIX}/bin"
