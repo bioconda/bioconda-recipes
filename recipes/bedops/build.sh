@@ -13,9 +13,11 @@ rm -rf third-party
 make BUILD_ARCH="$(uname -m)" \
 	JPARALLEL="${CPU_COUNT}" \
 	CC="${CC}" CXX="${CXX}" \
+	LIBLOCATION="${PREFIX}/lib" \
+	INCLUDES="-iquote$(HEAD) -I${PREFIX}/include" \
 	LOCALBZIP2LIB="-lbz2" \
 	LOCALJANSSONLIB="-ljansson" \
 	LOCALZLIBLIB="-lz"
 make install_all BINDIR="${PREFIX}/bin"
 
-chmod 755 "${PREFIX}/bin/*"
+chmod 755 ${PREFIX}/bin/*
