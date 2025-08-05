@@ -1,21 +1,25 @@
 #!/bin/bash
-
 set -euo pipefail
 
-# Create build directory
-mkdir -p build
-cd build
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -fPIE"
+
+if [[ `uname -s` == "Darwin" ]]; then
+    export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+else
+    export CONFIG_ARGS=""
+fi
 
 # Configure with CMake
-cmake \
+cmake -S . -B build \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_CXX_STANDARD=17 \
-    -DCMAKE_CXX_FLAGS="-O3 -fPIE" \
-    "${SRC_DIR}"
+    -DCMAKE_CXX_STANDARD=14 \
+    -DCMAKE_CXX_COMPILER="${CXX}" \
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+    -Wno-dev -Wno-deprecated --no-warn-unused-cli \
+    "${CONFIG_ARGS}"
 
 # Build
-cmake --build . -j ${CPU_COUNT}
-
-# Install
-cmake --install .
+cmake --build build --target install -j "${CPU_COUNT}"
