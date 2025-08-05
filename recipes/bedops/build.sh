@@ -8,6 +8,7 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 
 mkdir -p "${PREFIX}/bin"
 
+sed -i.bak 's|${LOCALJANSSONLIB} ${LOCALBZIP2LIB} ${LOCALZLIBLIB}|-L$(PREFIX)/lib -ljansson -lz -lbz2|' applications/bed/*/src/Makefile.darwin
 rm -rf third-party
 
 make BUILD_ARCH="$(uname -m)" \
@@ -16,6 +17,5 @@ make BUILD_ARCH="$(uname -m)" \
 	LOCALBZIP2LIB="-lbz2" \
 	LOCALJANSSONLIB="-ljansson" \
 	LOCALZLIBLIB="-lz"
-make install_all BINDIR="${PREFIX}/bin"
 
-chmod 755 ${PREFIX}/bin/*
+make install BINDIR="${PREFIX}/bin"
