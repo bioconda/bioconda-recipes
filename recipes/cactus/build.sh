@@ -32,7 +32,7 @@ sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
 rm -rf *.bak
 ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
 
-make
+make -j"${CPU_COUNT}"
 
 case $(uname -s) in
 	Linux) install -v -m 755 bin/* "${PREFIX}/bin" ;;
@@ -46,6 +46,7 @@ git checkout 1121e370880ee187ba2963f0e46e632e0e762cc5
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
 	sed -i.bak 's|-L$(CWD)|-L$(CWD) -L$(PREFIX)/lib|' Makefile
+	sed -i.bak 's|-lomp||' Makefile
 	rm -rf *.bak
 fi
 
