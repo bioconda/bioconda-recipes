@@ -15,8 +15,8 @@ fi
 make clean
 make CC="${CC} -fcommon" \
     CXX="${CXX} -fcommon" \
-    CCFLAGS="${CFLAGS}" \
-    CXXFLAGS="${CXXFLAGS}" \
+    CCFLAGS="${CFLAGS} -L${PREFIX}/lib" \
+    CXXFLAGS="${CXXFLAGS} -L${PREFIX}/lib" \
     OPTFLAGS="-O3" \
     -j1
 
