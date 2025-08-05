@@ -1,0 +1,54 @@
+{% set name = "agtools" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/Vini2/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: 992ecf9adbf5bf3a2bafd09cd38a35f49a5b44ebc1ce3d02acf0d72e7730e7d9
+
+build:
+  number: 0
+  noarch: true
+  entry_points:
+    - agtools = agtools.cli:main
+  script:
+    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('agtools', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.9
+    - flit-core
+  run:
+    - python >=3.9
+    - click
+    - loguru
+    - bidict
+    - biopython
+    - python-igraph
+    - pycairo
+    - pandas
+
+test:
+  commands:
+    - agtools --help
+
+about:
+  home: "https://github.com/Vini2/agtools"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "agtools: Tools for manipulating assembly graphs"
+  description: |
+    agtools is a toolkit for manipulating assembly graphs for downstream metagenomic applications, with a focus on the Graphical Fragment Assembly (GFA) format.
+  doc_url: "https://agtools.readthedocs.io/"
+  dev_url: "https://github.com/Vini2/agtools"
+
+extra:
+  recipe-maintainers:
+    - Vini2  
