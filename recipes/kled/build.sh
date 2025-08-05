@@ -15,7 +15,7 @@ cmake \
     "${SRC_DIR}"
 
 # Build
-make -j ${CPU_COUNT}
+cmake --build . -j ${CPU_COUNT}
 
 # Install
-make install
+cmake --install .
