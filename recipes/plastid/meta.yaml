@@ -6,27 +6,45 @@ package:
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/source/p/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/plastid-{{ version }}.tar.gz
   sha256: 7a63f8a3b760e9c91e7c6d95ff781d9a8f2f967d705fcd8555ebb1e6d3b08b7b
 
 build:
+  number: 3
   # We're not rebuilding old biopython versions on conda-forge for this
-  skip: true  # [py > 39]
-  number: 2
-
-extra:
-  skip-lints:
-    - cython_must_be_in_host  # Plastid mistakenly checks for Cython at runtime (pkg_resources.DistributionNotFound)
+  skip: True  # [py > 39]
+  entry_points:
+    - phase_by_size = plastid.bin.phase_by_size:main
+    - cs = plastid.bin.cs:main
+    - crossmap = plastid.bin.crossmap:main
+    - metagene = plastid.bin.metagene:main
+    - gff_parent_types = plastid.bin.gff_parent_types:main
+    - findjuncs = plastid.bin.findjuncs:main
+    - make_wiggle = plastid.bin.make_wiggle:main
+    - get_count_vectors = plastid.bin.get_count_vectors:main
+    - slidejuncs = plastid.bin.slidejuncs:main
+    - psite = plastid.bin.psite:main
+    - test_table_equality = plastid.bin.test_table_equality:main
+    - counts_in_region = plastid.bin.counts_in_region:main
+    - reformat_transcripts = plastid.bin.reformat_transcripts:main
+  script:
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+    - export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations -Wno-int-conversion -Wno-sign-compare"
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - python
-    - cython >=0.22.0
+    - pip
+    - cython
     - setuptools
-    - numpy >=1.9.4,<=1.23.5 # numpy 1.24 removes np.TYPE (reported https://github.com/joshuagryphon/plastid/issues/55)
-    - pysam >=0.8.4
+    - numpy >=1.9.4,<=1.23.5  # numpy 1.24 removes np.TYPE (reported https://github.com/joshuagryphon/plastid/issues/55)
+    - pysam
     - termcolor
     - scipy >=0.15.1
     - pandas >=0.17.0
@@ -36,23 +54,22 @@ requirements:
     - zlib
     - openssl
     - htslib
-    
   run:
     - python
     - numpy <=1.23.5
-    - {{ pin_compatible('pysam', max_pin='x.x.x') }}
+    - pysam
     - setuptools
-    - cython >=0.22.0
+    - cython
     - termcolor
     - scipy >=0.15.1
     - pandas >=0.17.0
     - matplotlib-base >=1.4.0
     - biopython >=1.64,<1.78
     - twobitreader >=3.0.0
-    - zlib
     - bowtie
     - fastx_toolkit
     - htslib
+
 test:
   imports:
     - plastid
@@ -71,6 +88,15 @@ test:
     - slidejuncs -h
 
 about:
-  home: http://plastid.readthedocs.io/en/latest/
-  license: BSD 3-Clause
-  summary: plastid is a Python library for genomic analysis -- in particular, high-throughput sequencing data
+  home: "https://github.com/joshuagryphon/plastid"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  summary: "plastid is a Python library for genomic analysis -- in particular, high-throughput sequencing data."
+  dev_url: "https://github.com/joshuagryphon/plastid"
+  doc_url: "https://plastid.readthedocs.io/en/latest"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  skip-lints:
+    - cython_must_be_in_host  # Plastid mistakenly checks for Cython at runtime (pkg_resources.DistributionNotFound)
