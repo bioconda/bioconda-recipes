@@ -13,7 +13,7 @@
 {% set mpi_version_name = mpi_version | replace('.', '_') %}
 
 package:
-  name: esme_mpich_{{ mpi_version_name }}
+  name: esme_mvapich_{{ mpi_version_name }}
   version: {{ esme_version }}
 
 build:
@@ -25,7 +25,7 @@ build:
     - libstdcxx
     - zlib
   run_exports:
-    - {{ pin_compatible('esme_mpich', max_pin='x.x.x') }}
+    - {{ pin_compatible('esme_mvapich', max_pin='x.x.x') }}
 
 source:
   - url: https://parallel-netcdf.github.io/Release/pnetcdf-{{ pnetcdf_version }}.tar.gz
@@ -55,9 +55,12 @@ requirements:
     - cmake
     - esme_esmf_{{ mpi_name }}_{{ mpi_version_name }}
     - make
+    {% if mpi_name != "mvapich" %}
     - esme_omb_{{ mpi_name }}_{{ mpi_version_name }}
+    {% endif %}
     - perl-xml-libxml
     - python=3.8
+
 test:
   commands:
     - echo "Skipping ESME tests, since individual packages were already tested"
@@ -258,6 +261,7 @@ outputs:
       description: |
         The Earth System Modeling Framework (ESMF) is a suite of software tools for developing high-performance, multi-component Earth science modeling applications.
 
+  {% if mpi_name != "mvapich" %}
   - name: esme_omb_{{ mpi_name }}_{{ mpi_version_name }}
     version: {{ omb_version }}
     script: build_omb.sh
@@ -275,6 +279,8 @@ outputs:
       commands:
         {% if mpi_name == "psmpi" %}
           - echo "PSMPI does not have mpiexec, skipping test."
+        {% elif mpi_name == "mvapich" %}
+          - echo "MVAPIch has built-in OSU benchmarks, no separate package needed."
         {% elif mpi_name == "openmpi" %}
           - echo "Setting plm_rsh_agent and allowing root execution for OpenMPI"
           - export OMPI_MCA_plm_rsh_agent=$(command -v ssh)
@@ -285,7 +291,6 @@ outputs:
         {% endif %}
     build:
       string: h{{ PKG_HASH }}_{{ build }}
-#     skip: true  # [mpi_name == "mvapich"]
     about:
       home: https://mvapich.cse.ohio-state.edu/
       license: BSD-3-Clause
@@ -294,6 +299,7 @@ outputs:
       summary: OSU Micro Benchmarks
       description: |
         The OSU Micro Benchmarks (OMB) is a suite of performance measurement tools developed by The Ohio State University.
+  {% endif %}
 
 about:
   home: https://github.com/j34ni/bioconda-recipes
