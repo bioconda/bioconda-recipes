@@ -5,7 +5,7 @@ mkdir -p "${PREFIX}/bin"
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-deprecated-copy"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -Wno-deprecated-copy"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-deprecated-copy"
 
 case $(uname -m) in
     aarch64)
