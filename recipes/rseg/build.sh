@@ -13,12 +13,10 @@ if [[ "${arch}" == "aarch64" ]]; then
 fi
 
 make clean
-make CC="${CC} -fcommon" \
-    CXX="${CXX} -fcommon" \
-    CCFLAGS="${CFLAGS} -L${PREFIX}/lib" \
-    CXXFLAGS="${CXXFLAGS} -L${PREFIX}/lib" \
+make CC="${CC} -fcommon ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+    CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
     OPTFLAGS="-O3" \
-    -j1
+    -j"${CPU_COUNT}"
 
 make install
 install -v -m 755 bin/* "${PREFIX}/bin"
