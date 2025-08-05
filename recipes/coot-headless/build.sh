@@ -19,7 +19,6 @@ else
   export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
 
-sed -i.bak 's|find_package(Python 3.12.4|find_package(Python 3|' CMakeLists.txt
 sed -i.bak '/find_package(RDKit CONFIG COMPONENTS RDGeneral REQUIRED)/a\
 set_target_properties(RDKit::rdkit_base PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${RDKit_INCLUDE_DIRS}")' CMakeLists.txt
 rm -rf *.bak
