@@ -8,21 +8,14 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 
 mkdir -p "${PREFIX}/bin"
 
-OS=$(uname -s)
-ARCH=$(uname -m)
+rm -rf third-party
 
-if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
-	wget https://github.com/alexey-lysiuk/macos-sdk/releases/download/13.3/MacOSX13.3.tar.xz
-	tar -xf MacOSX13.3.tar.xz
-	cp -rH MacOSX13.3.sdk /Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
-	export SDKROOT="/Applications/Xcode-15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
-	export MACOSX_DEPLOYMENT_TARGET="13.3"
-	export MACOSX_SDK_VERSION="13.3"
+make BUILD_ARCH="$(uname -m)" \
+	JPARALLEL="${CPU_COUNT}" \
+	CC="${CC}" CXX="${CXX}" \
+	LOCALBZIP2LIB="-lbz2" \
+	LOCALJANSSONLIB="-ljansson" \
+	LOCALZLIBLIB="-lz"
+make install_all BINDIR="${PREFIX}/bin"
 
-	#sed -i.bak 's|-static|-static -O3 -march=armv8.4-a|' applications/bed/starch/src/Makefile
-fi
-
-make all CC="${CC}" CXX="${CXX}" SFLAGS= -j"${CPU_COUNT}"
-make install_all
-
-install -v -m 0755 bin/* "${PREFIX}/bin"
+chmod 755 "${PREFIX}/bin/*"
