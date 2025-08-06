@@ -8,8 +8,6 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 export LC_ALL="en_US.UTF-8"
 
-cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* config/
-
 if [[ "$(uname -s)" == "Darwin" ]]; then
     # for Mac OSX
 	export LDFLAGS="${LDFLAGS} -headerpad_max_install_names -Wl,-dead_strip_dylibs -Wl,-rpath,${PREFIX}/lib"
