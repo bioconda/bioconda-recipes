@@ -2,7 +2,7 @@
 set -ex
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations"
 
 autoreconf -if
