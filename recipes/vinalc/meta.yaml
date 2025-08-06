@@ -12,12 +12,6 @@ build:
   number: 0
   skip: True  # [not py3k]
   script: |
-    # Set environment variables to help with include paths
-    #export CPLUS_INCLUDE_PATH="$SRC_DIR/include:$PREFIX/include:$CPLUS_INCLUDE_PATH"
-    #export C_INCLUDE_PATH="$SRC_DIR/include:$PREFIX/include:$C_INCLUDE_PATH"
-    # Create build directory and run cmake from source root
-    #mkdir -p build
-    #cd build
     cmake -DCMAKE_INSTALL_PREFIX=$PREFIX \
         -DCMAKE_C_COMPILER=$CC \
         -DCMAKE_CXX_COMPILER=$CXX \
@@ -30,6 +24,9 @@ build:
         -DCMAKE_SKIP_BUILD_RPATH=FALSE
     make -j{{ CPU_COUNT }}
     make install
+  run_exports:
+    - {{ pin_subpackage('vinalc', exact=True) }}
+
 
 requirements:
   build:
@@ -60,5 +57,3 @@ about:
   summary: "VinaLC: MPI-accelerated molecular docking program for virtual screening."
   license: Apache
   license_file: License
-run_exports:
-  - {{ pin_subpackage('vinalc', exact=True) }}
