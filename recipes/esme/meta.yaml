@@ -12,24 +12,26 @@
 # BUILD TRIGGER - manually change this for each MPI variant to force bioconda rebuild
 {% set build_trigger = "mvapich_ucx" %}  # Change to: openmpi, mpich, psmpi or mvapich_ucx/mvapich_ofi
 
-# Updated parsing logic to handle MVAPIch build strings
-{% set mpi_parts = mpi.split('=') %}
-{% set mpi_name = mpi_parts[0] %}
-{% set mpi_version = mpi_parts[1] if mpi_parts|length > 1 else '' %}
-{% if mpi_version %}
-  {% set mpi_version_name = mpi_version.replace('.', '_') %}
+# Simple type-safe parsing
+{% if mpi and mpi is string %}
+  {% set mpi_parts = mpi.split('=') %}
+  {% set mpi_name = mpi_parts[0] %}
+  {% set mpi_version = mpi_parts[1] if mpi_parts|length > 1 else '' %}
 {% else %}
-  {% set mpi_version_name = '' %}
+  {% set mpi_name = 'mvapich' %}
+  {% set mpi_version = '' %}
 {% endif %}
 
-# Special handling for MVAPIch variants - extract from build_trigger
+{% set mpi_version_name = mpi_version.replace('.', '_') if mpi_version else '' %}
+
+# MVApich variants
 {% if mpi_name == "mvapich" %}
   {% if "ucx" in build_trigger %}
     {% set mpi_build_variant = "ucx" %}
   {% elif "ofi" in build_trigger %}
     {% set mpi_build_variant = "ofi" %}
   {% else %}
-    {% set mpi_build_variant = "ucx" %}  # default
+    {% set mpi_build_variant = "ucx" %}
   {% endif %}
   {% set mpi_pkg_suffix = mpi_name + '_' + mpi_version_name + '_' + mpi_build_variant %}
   {% set mpi_spec = mpi_name + '=' + mpi_version + '=' + mpi_build_variant + '*' %}
