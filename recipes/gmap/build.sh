@@ -12,9 +12,9 @@ cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* config/
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
     # for Mac OSX
-    export LDFLAGS="${LDFLAGS} -headerpad_max_install_names -Wl,-dead_strip_dylibs -Wl,-rpath,${PREFIX}/lib"
-    export CFLAGS="${CFLAGS} -O3 -fno-define-target-os-macros -Wno-implicit-function-declaration -Wno-deprecated-non-prototype -Wno-asm-operand-widths"
-    export LC_ALL=C
+	export LDFLAGS="${LDFLAGS} -headerpad_max_install_names -Wl,-dead_strip_dylibs -Wl,-rpath,${PREFIX}/lib"
+	export CFLAGS="${CFLAGS} -O3 -fno-define-target-os-macros -Wno-implicit-function-declaration -Wno-deprecated-non-prototype -Wno-asm-operand-widths -Wno-unused-result"
+ 	export LC_ALL=C
 fi
 
 case $(uname -m) in
@@ -33,7 +33,8 @@ case $(uname -m) in
 esac
 
 autoreconf -if
-./configure CC="${CC}" CFLAGS="${CFLAGS}" \
+./configure CC="${CC}" \
+	CFLAGS="${CFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" \
 	LDFLAGS="${LDFLAGS}" \
 	--prefix="${PREFIX}" \
