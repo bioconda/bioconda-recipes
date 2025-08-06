@@ -1,0 +1,52 @@
+package:
+  name: clasv
+  version: "0.1.0"
+
+source:
+  path: .
+
+build:
+  noarch: python
+  script:
+    - echo "Contents of work directory:"
+    - set +e
+    - chmod +x $HOME/.local/bin/nextclade
+    - echo "Installing the clasv package..."
+    - "{{ PYTHON }} -m pip install ."
+    - "{{ PYTHON }} -c 'from CLASV.install_nextclade import install_nextclade; install_nextclade()'"
+
+requirements:
+  build:
+    - python >=3.6
+    - pip
+    - curl
+  run:
+    - biopython
+    - pandas
+    - matplotlib
+    - scikit-learn
+    - numpy
+    - PyYAML
+
+test:
+  imports:
+    - CLASV
+  commands:
+    - clasv --help
+
+about:
+  home: https://github.com/JoiRichi/CLASV
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "CLASV: Lassa Virus Lineage Assignment based on Machine Learning"
+  description: |
+    CLASV is a pipeline designed for rapidly predicting Lassa virus lineages using a Random Forest model.
+  dev_url: https://github.com/JoiRichi/CLASV
+
+extra:
+  channels:
+    - bioconda
+    - conda-forge
+  recipe-maintainers:
+    - JoiRichi
