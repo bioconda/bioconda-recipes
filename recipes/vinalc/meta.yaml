@@ -1,0 +1,62 @@
+{% set name = "vinalc" %}
+{% set version = "1.4.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/XiaohuaZhangLLNL/VinaLC/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ab73e3cced10adb76ec720cd05585d961b769eaf2610046420366f9c47d792cd
+build:
+  number: 0
+  skip: True  # [not py3k]
+  script: |
+    # Set environment variables to help with include paths
+    #export CPLUS_INCLUDE_PATH="$SRC_DIR/include:$PREFIX/include:$CPLUS_INCLUDE_PATH"
+    #export C_INCLUDE_PATH="$SRC_DIR/include:$PREFIX/include:$C_INCLUDE_PATH"
+    # Create build directory and run cmake from source root
+    #mkdir -p build
+    #cd build
+    cmake -DCMAKE_INSTALL_PREFIX=$PREFIX \
+        -DCMAKE_C_COMPILER=$CC \
+        -DCMAKE_CXX_COMPILER=$CXX \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DWITH_MPI=ON \
+        -DWITH_OPENMP=ON \
+        -DCMAKE_INSTALL_RPATH=$PREFIX/lib \
+        -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE \
+        -DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE \
+        -DCMAKE_SKIP_BUILD_RPATH=FALSE
+    make -j{{ CPU_COUNT }}
+    make install
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - pkg-config
+    - openmpi >=4.0
+    - autoconf
+    - automake
+    - libtool
+    - openmpi >=4.0
+    - cmake >=3.29
+    - libboost-mpi >=1.88
+    - boost
+    - zlib >=1.3.1
+  run:
+    - openmpi >=4.0
+    - libboost-mpi >=1.88
+    - boost
+    - zlib >=1.3.1
+
+test:
+  commands:
+    - mpirun -n 2 vinalc --help
+
+about:
+  home: https://github.com/XiaohuaZhangLLNL/VinaLC
+  summary: "VinaLC (Virtual Screening with Local Conformational Search) is a MPI-accelerated molecular docking program for virtual screening."
+  license: Apache
+  license_file: License
