@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -I{PREFIX}/include ${LDFLAGS}"
+export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include ${LDFLAGS}"
 
 mkdir -p ${PREFIX}/bin
 

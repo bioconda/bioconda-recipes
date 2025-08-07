@@ -1,20 +1,21 @@
-{% set name = "Medaka" %}
-{% set version = "1.11.3" %}
-{% set sha256 = "940568212d152f573270967b02f6e841561cc43138b6aa15783c371457fef7b9" %}
+{% set name = "medaka" %}
+{% set version = "2.1.0" %}
+{% set sha256 = "6c53af6687f73ad31cecd4f800f967f208a7eeed9c72a5e5aa4f7cdc1ffdfdd6" %}
 # Bot PRs - Always review requirements.txt for new release
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/nanoporetech/medaka/releases/download/v{{ version }}/medaka-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/medaka-{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - patch
+    - 0001-setup.py.patch
 
 build:
-  number: 1
+  number: 0
+  skip: True  # [osx]
   entry_points:
     - medaka = medaka.medaka:main
     - medaka_counts = medaka.medaka_counts:main
@@ -26,62 +27,65 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
-    - coreutils
+    - cmake
+    - make
   host:
-    - python
+    - python =3.8
     - pip
-    - cffi >=1.15.0
-    - htslib >=1.14
+    - cffi
     - libcurl
-    - openssl
     - bzip2
     - xz
     - zlib
+    - htslib >=1.20
   run:
-    - python
-    - cffi >=1.15.0
+    - python =3.8
     - grpcio
     - h5py
     - intervaltree
-    # Please review the need for the conda_build_config.yaml
-    # if a more recent version of Tensorflow is supported.
-    - tensorflow >=2.10,<2.11
-    - numpy >=1.21.6
-    - nomkl  # [osx]
     - mappy
+    - numpy >=1.21.0,<2.0.0
+    - nomkl  # [osx]
     - ont-fast5-api
     - parasail-python
     - pyabpoa
     - pyspoa >=0.2.1
     - pysam >=0.16.0.1
     - python-edlib
+    - pytorch >=2.3,<2.4
     - requests
+    - toml
+    - tqdm
+    - wurlitzer
     - samtools >=1.14
     - bcftools >=1.14
-    - minimap2 >=2.17
-    - htslib >=1.14
-    - libcurl
-    - openssl
-    - wurlitzer
+    - minimap2 >=2.28
+    - htslib >=1.20
 
 test:
   imports:
     - medaka
   commands:
     - medaka --help
-    - medaka consensus --help
+    - medaka inference --help
     - medaka_data_path
     - medaka_version_report
 
 about:
-  home: https://github.com/nanoporetech/medaka
-  summary: Neural network sequence error correction.
-  license: MPL-2.0
+  home: "https://github.com/nanoporetech/medaka"
+  summary: "A tool to create consensus sequences and variant calls from nanopore sequencing data using neural networks."
+  license: "Oxford Nanopore Technologies PLC. Public License Version 1.0"
   license_family: OTHER
-  license_file: LICENSE.md
-  dev_url: https://github.com/nanoporetech/medaka
+  license_file: "LICENSE"
+  dev_url: "https://github.com/nanoporetech/medaka"
+  doc_url: "https://github.com/nanoporetech/medaka/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - usegalaxy-eu:medaka_consensus
+    - usegalaxy-eu:medaka_consensus_pipeline
+    - usegalaxy-eu:medaka_variant
+    - usegalaxy-eu:medaka_variant_pipeline
     - biotools:medaka

@@ -1,20 +1,22 @@
 {% set package = "ucsc-genepredtogtf" %}
 {% set program = "genePredToGtf" %}
-{% set version = "465" %}
-{% set sha256 = "eef17b1f3182d1d9dc99b5c73a6b0468d5d3bd80470f25d3f7706cc1372e04b0" %}
+{% set version = "482" %}
+{% set sha256 = "745d0f0a980e9f863373b0b0a6ad7961a1d0f53a9d7c446e92fc28fc4909431a" %}
 
 package:
-  name: "{{ package }}"
-  version: "{{ version }}"
+  name: {{ package }}
+  version: {{ version }}
 
 source:
-  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
-  sha256: "{{ sha256 }}"
+  url: https://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz
+  sha256: {{ sha256 }}
   patches:
-    - "include.patch"
+    - 0001-include.patch
+    - 0002-include.linux.patch  # [linux]
+    - 0003-common.mk.patch
+    - 0004-straw.patch
 
 build:
-  skip: True  # [osx]
   number: 0
   run_exports:
     - {{ pin_subpackage(package, max_pin=None) }}
@@ -23,19 +25,24 @@ requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
     - libpng
     - libuuid
-    - mysql-connector-c
+    - mysql-connector-c  # [not arm64]
+    - mariadb-connector-c
     - libopenssl-static
+    - clangdev  # [osx]
+    - rsync  # [osx]
+    - bzip2
+    - liblzma-devel
+    - libiconv
     - zlib
-
   run:
     - libpng
     - libuuid
-    - mysql-connector-c
+    - mysql-connector-c  # [not arm64]
     - libopenssl-static
-    - zlib
 
 test:
   commands:
@@ -43,10 +50,16 @@ test:
     - test -x ${PREFIX}/bin/{{ program }}
 
 about:
-  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "varies; see http://genome.ucsc.edu/license"
+  home: "https://hgdownload.cse.ucsc.edu/admin/exe"
+  license: "Varies; see https://genome.ucsc.edu/license"
   summary: "Convert genePred table or file to gtf."
+  dev_url: "https://github.com/ucscGenomeBrowser/kent"
+  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/v{{ version }}_base/README"
 
 extra:
+  identifiers:
+    - biotools:UCSC_Genome_Browser_Utilities
+    - doi:10.1093/bib/bbs038
   additional-platforms:
     - linux-aarch64
+    - osx-arm64

@@ -1,45 +1,21 @@
-{% set version = "1.56.1" %}
+{% set version = "1.60.0" %}
 {% set name = "DEGseq" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: cc89e25cb7e9afc38b5fb2bba34722b5
+about:
+  description: DEGseq is an R package to identify differentially expressed genes from RNA-Seq data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL (>=2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: Identify Differentially Expressed Genes from RNA-seq data
+
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-degseq", max_pin="x.x") }}'
-requirements:
-  host:
-    - 'bioconductor-qvalue >=2.34.0,<2.35.0'
-    - r-base
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-qvalue >=2.34.0,<2.35.0'
-    - r-base
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'LGPL-3-or-above'
-  summary: 'Identify Differentially Expressed Genes from RNA-seq data'
-  description: 'DEGseq is an R package to identify differentially expressed genes from RNA-Seq data.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+
 extra:
   additional-platforms:
     - linux-aarch64
@@ -50,4 +26,34 @@ extra:
     name: bioconductor-degseq
     path: recipes/bioconductor-degseq
     version: 1.34.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-qvalue >=2.38.0,<2.39.0
+    - r-base
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-qvalue >=2.38.0,<2.39.0
+    - r-base
+
+source:
+  md5: 145b014bc5a5494fdc9d361b383c9017
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

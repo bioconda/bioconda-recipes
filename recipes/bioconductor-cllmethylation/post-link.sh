@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "cllmethylation-1.22.0"
+installBiocDataPackage.sh "cllmethylation-1.26.0"
