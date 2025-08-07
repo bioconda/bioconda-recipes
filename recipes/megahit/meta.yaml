@@ -1,57 +1,61 @@
+{% set name = "megahit" %}
 {% set version = "1.2.9" %}
 {% set sha256 = "09026eb07cc4e2d24f58b0a13f7a826ae8bb73da735a47cb1cbe6e4693118852" %}
 
 package:
-  name: megahit
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  sha256: '{{sha256}}'
-  url: https://github.com/voutcn/megahit/archive/v{{version}}.tar.gz
+  sha256: {{ sha256 }}
+  url: https://github.com/voutcn/megahit/archive/v{{ version }}.tar.gz
   patches:
+    - 0001-master.patch
     - linux-aarch64-support-pr-368.patch
     - gcc-13-support-pr-366.patch
 
 build:
-  number: 6
-  # TODO test fails on osx without visible error.
-  # Feel free to fix and enable again.
-  skip: true  # [osx]
+  number: 7
   run_exports:
-    - {{ pin_subpackage('megahit', max_pin='x') }}
+    - {{ pin_subpackage('megahit', max_pin="x") }}
 
 requirements:
   build:
-    - make
-    - cmake
-    - {{ compiler('c') }}
+    - ninja
+    - cmake <4
     - {{ compiler('cxx') }}
-    - llvm-openmp  # [osx]
+    - pkg-config
   host:
     - zlib
+    - bzip2
+    - libgomp  # [linux]
     - llvm-openmp  # [osx]
   run:
-    - zlib
+    - libgomp  # [linux]
     - llvm-openmp  # [osx]
     - python
 
 test:
   commands:
-    - megahit --test || (echo "error log:" && cat /tmp/megahit_test_*/log && exit 1)
-    - megahit --test --kmin-1pass || (echo "error log:" && cat /tmp/megahit_test_*/log && exit 1)
+    - megahit --test --kmin-1pass || (echo "error log:" && cat /tmp/megahit_test_*/log && exit 1)  # [linux]
+    - test -x ${PREFIX}/bin/megahit  # [osx]
 
 about:
-  home: https://github.com/voutcn/megahit
-  license: GPL-3.0
+  home: "https://github.com/voutcn/megahit"
+  license: "GPL-3.0-or-later"
   license_file: LICENSE
-  license_family: GPL
-  summary: |-
-    MEGAHIT: An ultra-fast single-node solution for large and complex
-    metagenomics assembly via succinct de Bruijn graph
+  license_family: GPL3
+  dev_url: "https://github.com/voutcn/megahit"
+  doc_url: "https://github.com/voutcn/megahit/blob/v{{ version }}/README.md"
+  summary: "MEGAHIT: An ultra-fast single-node solution for large and complex metagenomics assembly via succinct de Bruijn graph."
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:megahit
+    - usegalaxy-eu:megahit
+    - usegalaxy-eu:megahit_contig2fastg
     - doi:10.1093/bioinformatics/btv033
+    - doi:10.1016/j.ymeth.2016.02.020

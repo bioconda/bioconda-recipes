@@ -1,8 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
-# the executable is not installed in $PREFIX though
-# make install prefix=$PREFIX
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-make CC=$CC
-mkdir -p $PREFIX/bin
-cp $PKG_NAME $PREFIX/bin
+mkdir -p "${PREFIX}/bin"
+
+sed -i.bak 's|/usr/local/bin|$(PREFIX)/bin|' Makefile
+rm -rf *.bak
+
+make CC="${CC}" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
+make install
