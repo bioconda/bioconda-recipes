@@ -19,12 +19,12 @@ fi
 sed -i.bak \
     -e 's|lib64|lib|g' \
     -e 's|set(CMAKE_CXX_STANDARD 17)|set(CMAKE_CXX_STANDARD 11)|' \
+    -e 's|${Python_LIBRARIES}||' \
     cmake_support/PROMOD3.cmake
 
 cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
     -DPython_EXECUTABLE="${PYTHON}" \
-    -DOST_PYMOD_PATH="${SP_DIR}" \
     -DOST_ROOT="${PREFIX}" \
     -DCXX_FLAGS="${CXXFLAGS}" \
     -DOPTIMIZE=ON \
