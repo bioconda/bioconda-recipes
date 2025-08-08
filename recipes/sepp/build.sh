@@ -9,6 +9,7 @@ config_upp -c
 echo "${PREFIX}/share/sepp/sepp" > home.path
 # ensure directory is created ... ($SP_DIR = Python's site-packages location, see https://docs.conda.io/projects/conda-build/en/stable/user-guide/environment-variables.html#environment-variables-set-during-the-build-process)
 mkdir -p $SP_DIR/
+echo "STEFAN SP_DIR>$SP_DIR< ääääääääääääääääääääääääääääääääääääääääääääää"
 # ... before we copy content into it
 cp -rfv home.path $SP_DIR/
 mkdir -p $PREFIX/share/sepp/sepp
@@ -16,6 +17,9 @@ mkdir -p $PREFIX/share/sepp/sepp
 mv -v sepp-package/sepp/default.main.config $PREFIX/share/sepp/sepp/main.config
 # copy upp config, as it's still needed
 cp -f ./.sepp/upp.config $PREFIX/share/sepp/sepp/upp.config
+
+help=`cat $PREFIX/share/sepp/sepp/main.config` && echo "STEFAN $PREFIX/share/sepp/sepp/main.config: >$help< ääääääääääääääääääääääääääääääääääääääääääääää"
+
 
 # replace $PREFIX with /opt/anaconda1anaconda2anaconda3 for later replacement of concrete build PREFIX
 # note: can't apply a patch here, as upp.config is not part of upstream but gets generated during python setup
