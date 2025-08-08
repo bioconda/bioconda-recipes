@@ -14,9 +14,7 @@ elif [[ "${target_platform}" == "osx-"* ]]; then
     export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic"
 fi
 
-mkdir -p build && cd build
-
-cmake .. \
+cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
     -DPython_EXECUTABLE="${PYTHON}" \
     -DCMAKE_PREFIX_PATH="${PREFIX}" \
@@ -26,11 +24,5 @@ cmake .. \
     -DOPTIMIZE=ON \
     -DDISABLE_DOCUMENTATION=1
 
-make -j"${CPU_COUNT}"
-
-if [ "${CIRCLECI}" != "true" ]; then
-    make check
-fi
-
-make install
-cd "${SRC_DIR}" && rm -rf build
+cmake --build build --parallel "${CPU_COUNT}"
+cmake --install build --parallel "${CPU_COUNT}"
