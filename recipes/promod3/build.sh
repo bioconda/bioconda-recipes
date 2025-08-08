@@ -17,9 +17,7 @@ fi
 cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
     -DPython_EXECUTABLE="${PYTHON}" \
-    -DCMAKE_PREFIX_PATH="${PREFIX}" \
     -DOST_ROOT="${PREFIX}" \
-    -DCMAKE_CXX_COMPILER="${CXX}" \
     -DCXX_FLAGS="${CXXFLAGS}" \
     -DOPTIMIZE=ON \
     -DDISABLE_DOCUMENTATION=ON
