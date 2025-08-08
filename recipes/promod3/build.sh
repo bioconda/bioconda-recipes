@@ -24,6 +24,7 @@ sed -i.bak \
 cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
     -DPython_EXECUTABLE="${PYTHON}" \
+    -DOST_PYMOD_PATH="${SP_DIR}" \
     -DOST_ROOT="${PREFIX}" \
     -DCXX_FLAGS="${CXXFLAGS}" \
     -DOPTIMIZE=ON \
