@@ -10,6 +10,7 @@ echo "${PREFIX}/share/sepp/sepp" > home.path
 # ensure directory is created ... ($SP_DIR = Python's site-packages location, see https://docs.conda.io/projects/conda-build/en/stable/user-guide/environment-variables.html#environment-variables-set-during-the-build-process)
 mkdir -p $SP_DIR/
 echo "STEFAN SP_DIR>$SP_DIR< ääääääääääääääääääääääääääääääääääääääääääääää"
+echo "STEFAN PREFIX>$PREFIX< öööööööööööööööööööööööööööööööööööööööööööööö"
 # ... before we copy content into it
 cp -rfv home.path $SP_DIR/
 mkdir -p $PREFIX/share/sepp/sepp
