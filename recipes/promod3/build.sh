@@ -3,9 +3,9 @@
 set -exo pipefail
 
 if [[ $(uname -m) == "x86_64" ]]; then
-    export CMAKE_ARGS="${CMAKE_ARGS} -DENABLE_SSE=1"
+    export CMAKE_ARGS="${CMAKE_ARGS} -DENABLE_SSE=ON"
 else
-    export CMAKE_ARGS="${CMAKE_ARGS} -DENABLE_SSE=0"
+    export CMAKE_ARGS="${CMAKE_ARGS} -DENABLE_SSE=OFF"
 fi
 
 if [[ "${target_platform}" == "linux-"* ]]; then
@@ -22,7 +22,7 @@ cmake -S . -B build -G Ninja \
     -DCMAKE_CXX_COMPILER="${CXX}" \
     -DCXX_FLAGS="${CXXFLAGS}" \
     -DOPTIMIZE=ON \
-    -DDISABLE_DOCUMENTATION=1
+    -DDISABLE_DOCUMENTATION=ON
 
 cmake --build build --parallel "${CPU_COUNT}"
 cmake --install build --parallel "${CPU_COUNT}"
