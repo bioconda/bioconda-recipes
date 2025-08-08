@@ -8,12 +8,21 @@ package:
 source:
   url: https://github.com/etal/cnvkit/archive/v{{ version }}.tar.gz
   sha256: 39d65ba3d9c541dfd80986ace298b2d521067d1b81edef7169196b8dcc5d63d5
+  patches:
+    - install-scripts.patch # remove once upstream is merged: https://github.com/etal/cnvkit/pull/957
 
 build:
   noarch: python
-  number: 0
+  number: 1
   entry_points:
     - cnvkit.py = cnvlib.cnvkit:main
+    - cnv_annotate.py = cnvlib.cli.cnv_annotate:main
+    - cnv_expression_correlate.py = cnvlib.cli.cnv_expression_correlate:main
+    - cnv_updater.py = cnvlib.cli.cnv_updater:main
+    - genome_instability_index.py = cnvlib.cli.genome_instability_index:main
+    - guess_baits.py = cnvlib.cli.guess_baits:main
+    - reference2targets.py = cnvlib.cli.reference2targets:main
+    - skg_convert.py = skgenome.cli.skg_convert:main
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage('cnvkit', max_pin="x.x") }}
@@ -43,11 +52,15 @@ requirements:
 test:
   imports:
     - cnvlib
+    - cnvlib.cli
     - cnvlib.segmentation
     - skgenome
+    - skgenome.cli
     - skgenome.tabio
   commands:
     - cnvkit.py -h
+    - cnv_updater.py --help
+    - skg_convert.py --help
 
 about:
   home: "https://github.com/etal/cnvkit"

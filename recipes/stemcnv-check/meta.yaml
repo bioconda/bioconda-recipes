@@ -1,63 +1,58 @@
-{% set version = "0.5.1" %}
-{% set sha256 = "7c84cd31c72bdfd66b7eb9561c44bf77cc971e7497c4b3db8f51a4f237798643" %}
+{% set name = "StemCNV-check" %}
+{% set version = "0.5.3" %}
+{% set sha256 = "a77d6dd96972e8787978a378bc05c7dc456dfd20268174f061ed3751d661c27e" %}
 
 package:
-  name: stemcnv-check
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/bihealth/StemCNV-check/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  url: https://github.com/bihealth/StemCNV-check/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
   noarch: python
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   entry_points:
-    - stemcnv-check=stemcnv_check.__main__:main
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv
+    - stemcnv-check = stemcnv_check.__main__:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage('stemcnv-check', max_pin="x") }}
-  always_include_files:
-    - app
-    - control_files
-    - envs
-    - rules
-    - scripts
-    - supplemental-files  
+    - {{ pin_subpackage('stemcnv-check', max_pin="x.x") }}
 
 requirements:
   host:
     - python >=3.12
     - pip
-    - setuptools
     - setuptools-scm
   run:
     - python >=3.12
-    - snakemake-minimal >=8,<9
-    - ruamel.yaml >=0.18
-    - loguru >=0.7
+    # These are also all in the pyproject.toml
+    - snakemake-minimal >=8.28.0,<9
+    - ruamel.yaml >=0.18.6
+    - loguru >=0.7.2
     - pandas >=2.2
     - openpyxl >=3.1
     - xlsxwriter >=3.2
     - pydantic >=2.8
     - deepdiff >=8.0
-    - apptainer
+    - psutil >=7.0.0
+    # Unsure if this is inherited from snakemake-minimal or not, but it is needed for the app
+    - apptainer >=1.4  # [linux]
+  # The actual snakemake workflow has a runtime dependency on bcftools-gtc2vcf-plugin & therefore linux
+    - bcftools-gtc2vcf-plugin =1.22
 
 test:
-  # imports:
-  #   - stemcnv_check
   commands:
     - stemcnv-check --help
     - stemcnv-check setup-files
 
 about:
-  home: https://github.com/bihealth/StemCNV-check
-  license: MIT License
-  summary: 'StemCNV-check: CNV Based Quality Control Workflow for Stem Cell SNP Array Data'
+  home: "https://github.com/bihealth/StemCNV-check"
+  license: MIT
+  summary: "StemCNV-check: CNV Based Quality Control Workflow for Stem Cell SNP Array Data."
   license_family: MIT
   license_file: LICENSE
-  # doc_url: https://...
-
-# extra:
-#   identifiers:
-#      - doi:...
+  dev_url: "https://github.com/bihealth/StemCNV-check"
+  doc_url: "https://github.com/bihealth/StemCNV-check/blob/v{{ version }}/README.md"
