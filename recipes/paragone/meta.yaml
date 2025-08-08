@@ -6,12 +6,12 @@ package:
   version: {{ version }}
 
 source:
-  url: "https://github.com/chrisjackson-pellicle/ParaGone/archive/refs/tags/v{{ version }}.tar.gz"
+  url: https://github.com/chrisjackson-pellicle/ParaGone/archive/refs/tags/v{{ version }}.tar.gz
   sha256: b6bf77b0ed9641f8d5a85ab3870dc24703410b5beb993c77e7c2803174911182
 
 build:
-  number: 0
-  skip: True  # [win]
+  number: 1
+  noarch: python
   entry_points:
     - paragone = paragone.paragone_main:main
   run_exports:
@@ -19,10 +19,11 @@ build:
 
 requirements:
   host:
-    - python <=3.9.16
+    - python >=3.6
     - pip
+    - setuptools
   run:
-    - python <=3.9.16
+    - python >=3.6
     - biopython >=1.79
     - clustalo >=1.2.4
     - ete3 >=3.1.2
@@ -32,7 +33,7 @@ requirements:
     - iqtree >=2.2.0.3
     - mafft >=7.245
     - llvm-openmp >=14.0.3  # [osx]
-    - openmp >=8.0.1  # [linux]
+    - libgomp  # [linux]
     - r-base >=4.0.3
     - treeshrink
     - trimal >=1.4.1
@@ -54,17 +55,18 @@ test:
     - paragone.prune_paralogs_mi
     - paragone.strip_names_and_align
     - paragone.utils
+  commands:
+    - paragone --help
 
 about:
-    home: "https://github.com/chrisjackson-pellicle/ParaGone"
-    doc_url: "https://github.com/chrisjackson-pellicle/ParaGone/wiki"
-    license: "GPL-3.0-or-later"
-    license_family: GPL3
-    license_file: "LICENSE.txt"
-    summary: "Identify ortholog groups from a set of paralog sequences from multiple taxa."
+  home: "https://github.com/chrisjackson-pellicle/ParaGone"
+  doc_url: "https://github.com/chrisjackson-pellicle/ParaGone/wiki"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "LICENSE.txt"
+  summary: "Identify ortholog groups from a set of paralog sequences from multiple taxa."
+  dev_url: "https://github.com/chrisjackson-pellicle/ParaGone"
 
 extra:
-    recipe-maintainers:
-      - chrisjackson-pellicle
-    skip-lints:
-      - should_be_noarch_generic  # Can not be noarch as selectors are required for llvm-openmp and openmp
+  recipe-maintainers:
+    - chrisjackson-pellicle

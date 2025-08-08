@@ -1,0 +1,41 @@
+diff --git a/Cargo.toml b/Cargo.toml
+index e8d72fe..502b22e 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -61,7 +61,7 @@ prost = "0.13.4"
+ quick_cache = "0.6.12"
+ rand = "0.9"
+ rayon = "1.10.0"
+-rocksdb = { version = "0.22.0", features = ["multi-threaded-cf"] }
++rocksdb = { version = "0.22.0", features = ["multi-threaded-cf", "jemalloc"] }
+ rustc-hash = "2.1.0"
+ seqrepo = { version = "0.10.2", features = ["cached"] }
+ serde_json = "1.0"
+@@ -81,6 +81,9 @@ utoipa-swagger-ui = { version = "9.0.0", features = ["actix-web"] }
+ memmap2 = "0.9.5"
+ serde-aux = "4.6.0"
+ 
++[target.'cfg(not(target_env = "msvc"))'.dependencies]
++tikv-jemallocator = "0.5.4"
++
+ [dependencies.dhat]
+ version = "0.3.3"
+ optional = true
+diff --git a/src/main.rs b/src/main.rs
+index 7a289ca..a2bd301 100644
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -72,6 +72,13 @@
+ //! $ cargo add mehari
+ //! ```
+ 
++#[cfg(not(target_env = "msvc"))]
++use tikv_jemallocator::Jemalloc;
++
++#[cfg(not(target_env = "msvc"))]
++#[global_allocator]
++static GLOBAL: Jemalloc = Jemalloc;
++
+ #[cfg(feature = "dhat-heap")]
+ #[global_allocator]
+ static ALLOC: dhat::Alloc = dhat::Alloc;

@@ -1,0 +1,52 @@
+{% set name = "vambcore" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 10f19ba46fa87f64ce4f7449e1643792f8e0208e303ff08c6deafe82204a118c
+
+build:
+  number: 1
+  skip: True  # [py < 310]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --disable-pip-version-check -vvv
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - {{ compiler("rust") }}
+    - {{ stdlib("c") }}
+    - cargo-bundle-licenses
+    - pkg-config
+  host:
+    - python
+    - pip
+    - maturin >=1.8,<2
+  run:
+    - python
+
+test:
+  imports:
+    - vambcore
+
+about:
+  home: https://github.com/jakobnissen/vambcore
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Performant backend functions for the Vamb binning tool."
+  dev_url: https://github.com/jakobnissen/vambcore
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - version_constraints_missing_whitespace  # see https://github.com/bioconda/bioconda-recipes/issues/51185

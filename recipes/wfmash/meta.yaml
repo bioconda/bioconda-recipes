@@ -1,35 +1,40 @@
 {% set name = "wfmash" %}
-{% set version = "0.21.0" %}
+{% set version = "0.24.1" %}
 
 package:
-  name: "{{ name }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/waveygang/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
-  sha256: fc1482c0098f36bb5fe4730ad4504ed7c8037c902e7fa3339b33d18e338e2f6d
+  sha256: 82c55ebdfa506a1e8c44e3a84e6a5e07e3c1af26a2752237d140cb35c14c08f9
 
 build:
-  skip: True # [osx]
-  run_exports:
-    - {{ pin_subpackage(name, max_pin='x.x') }}
   number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - llvm-openmp  # [osx]
     - cmake
     - make
+    - pkg-config
   host:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
     - gsl
     - zlib
     - jemalloc
     - htslib
     - libblas
+    - liblzma
+    - xz
   run:
     - llvm-openmp  # [osx]
+    - libgomp  # [linux]
     - python >=3.7
 
 test:
@@ -37,10 +42,13 @@ test:
     - wfmash --help
 
 about:
-  home: https://github.com/waveygang/wfmash
+  home: "https://github.com/waveygang/wfmash"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: a pangenome-scale aligner
+  summary: "A pangenome-scale aligner."
+  dev_url: "https://github.com/waveygang/wfmash"
+  doc_url: "https://github.com/waveygang/wfmash/blob/v{{ version }}/README.md"
 
 extra:
   additional-platforms:

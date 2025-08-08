@@ -1,0 +1,50 @@
+{% set name = "uniqsketch" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/amazon-science/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 1bd0401686b63f25b877be7c08220af5c8ffbd6adb269becf097231d044ab8cd
+  patches:
+    - 0001-SequenceUtil.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - zlib
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - uniqsketch --help
+
+about:
+  home: "https://github.com/amazon-science/{{ name }}"
+  license: "MIT"
+  license_family: "MIT"
+  license_file: "LICENSE"
+  summary: "UniqSketch: sensitive and resource-efficient strain-level detection in metagenomes."
+  dev_url: "https://github.com/amazon-science/{{ name }}"
+  doc_url: "https://github.com/amazon-science/{{ name }}/README.md"
+
+extra:
+  recipe-maintainers:
+    - dr-joe-wirth
+    - hamidamz
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
