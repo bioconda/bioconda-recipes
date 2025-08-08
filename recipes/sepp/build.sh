@@ -1,8 +1,9 @@
 #!/bin/bash
 set -ex
 
-${PYTHON} setup.py config -c
-${PYTHON} setup.py upp -c
+pip install .
+config_sepp -c
+config_upp -c
 
 # ensure SEPP's configuration file is at the correct location ...
 echo "${PREFIX}/share/sepp/sepp" > home.path
@@ -33,10 +34,6 @@ ${PYTHON} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
 mkdir -p $PREFIX/bin/
 cp -v `cat $SRC_DIR/.sepp/main.config | grep "^path" | grep -v "hmm" | grep -v "pplacer" | grep -v "guppy" | cut -d "=" -f 2` $PREFIX/bin/
 cp -v `cat $SRC_DIR/.sepp/upp.config | grep "^path" | grep -v "hmm" | grep -v "pplacer" | grep -v "guppy" | grep -v "run_pasta" | cut -d "=" -f 2` $PREFIX/bin/
-
-# as long as upstream does not merge my PR https://github.com/smirarab/sepp/pull/138, I manually obtain the fixed seppJsonMerger.jar here
-wget https://raw.githubusercontent.com/jlab/sepp/refs/heads/fix_merger/tools/merge/seppJsonMerger.jar
-mv seppJsonMerger.jar $PREFIX/bin/
 
 # configure run-sepp.sh for qiime2 fragment-insertion
 mv -v sepp-package/run-sepp.sh $PREFIX/bin/run-sepp.sh
