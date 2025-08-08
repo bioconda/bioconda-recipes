@@ -2,8 +2,6 @@
 
 set -exo pipefail
 
-export CXXFLAGS="${CXXFLAGS} -O3"
-
 if [[ $(uname -m) == "x86_64" ]]; then
     export CMAKE_ARGS="${CMAKE_ARGS} -DENABLE_SSE=ON"
 else
@@ -16,11 +14,7 @@ elif [[ "${target_platform}" == "osx-"* ]]; then
     export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic"
 fi
 
-sed -i.bak \
-    -e 's|lib64|lib|g' \
-    -e 's|set(CMAKE_CXX_STANDARD 17)|set(CMAKE_CXX_STANDARD 11)|' \
-    -e 's|${Python_LIBRARIES}||' \
-    cmake_support/PROMOD3.cmake
+sed -i.bak 's|${Python_LIBRARIES}||' cmake_support/PROMOD3.cmake
 
 cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
@@ -30,5 +24,5 @@ cmake -S . -B build -G Ninja \
     -DOPTIMIZE=ON \
     -DDISABLE_DOCUMENTATION=ON
 
-cmake --build build --clean-first -j "${CPU_COUNT}"
-cmake --install build -j "${CPU_COUNT}"
+cmake --build build --parallel "${CPU_COUNT}"
+cmake --install build --parallel "${CPU_COUNT}"
