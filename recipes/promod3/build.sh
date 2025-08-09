@@ -23,5 +23,5 @@ cmake -S . -B build -G Ninja \
     -DDISABLE_DOCUMENTATION=ON
 
 cmake --build build --parallel "${CPU_COUNT}"
-ninja -C build check
+cmake --build build --target check --parallel 1
 cmake --install build --parallel "${CPU_COUNT}"
