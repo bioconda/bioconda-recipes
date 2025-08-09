@@ -1,0 +1,44 @@
+{% set name = "taxburst" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/taxburst-{{ version }}.tar.gz
+  sha256: ae031b5c0cf71e8d9ee8125c727df4d6dfb1babb1cc6f04a1064a4f454359a72
+
+build:
+  entry_points:
+    - taxburst = taxburst.__main__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+  run:
+    - python >=3.11
+    - pytest >=8.3.4,<9
+    - jinja2 >=3.1.2,<4
+
+test:
+  imports:
+    - taxburst
+  commands:
+    - pip check
+    - taxburst --help
+  requires:
+    - pip
+
+about:
+  summary: sunburst plots for taxonomy
+  license: BSD-3-Clause
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - ctb
