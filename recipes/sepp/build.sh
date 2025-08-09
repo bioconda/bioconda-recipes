@@ -1,6 +1,8 @@
 #!/bin/bash
 set -ex
 
+${PYTHON} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+
 ${PYTHON} setup.py config -c
 ${PYTHON} setup.py upp -c
 
@@ -19,8 +21,6 @@ cp -f ./.sepp/upp.config $PREFIX/share/sepp/sepp/upp.config
 # replace $PREFIX with /opt/anaconda1anaconda2anaconda3 for later replacement of concrete build PREFIX
 # note: can't apply a patch here, as upp.config is not part of upstream but gets generated during python setup
 sed -i.bak "s|path=.*/|path=/opt/anaconda1anaconda2anaconda3/bin/|g" $PREFIX/share/sepp/sepp/upp.config
-
-${PYTHON} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
 
 # copy bundled binaries, but hmmer which should be provided by conda, into $PREFIX/bin/
 mkdir -p $PREFIX/bin/
