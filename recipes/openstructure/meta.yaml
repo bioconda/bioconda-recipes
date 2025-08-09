@@ -1,5 +1,5 @@
 {% set name = "OpenStructure" %}
-{% set version = "2.11.0" %}
+{% set version = "2.11.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,12 +7,13 @@ package:
 
 source:
   url: https://git.scicore.unibas.ch/schwede/{{ name|lower }}/-/archive/{{ version }}/{{ name|lower }}-{{ version }}.tar.gz
-  sha256: 46c91d0499f54818e3039cb6d51c9cc296b7e1a2ff34521dcc207cee18c38b60
+  sha256: 9ac12e1ce8ec879ec900b69bdbcc71632ed05d8cf8c09d3e847a57814d8a7e7b
 
 build:
-  number: 1
+  number: 0
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+  skip: True # [py<312 and aarch64]
 
 requirements:
   build:
@@ -34,7 +35,8 @@ requirements:
     - numpy >=1,<2
     - pandas >=1
     - scipy >=1,<2
-    - networkx >=2,<3
+    - libgfortran5  # [osx]
+    - networkx >=2
     - sqlite >=3,<4
     - openmm >=7  # Officially uses 7.7.0, but relaxes the requirement to use Python >= 3.10
     - qt >=5,<6
