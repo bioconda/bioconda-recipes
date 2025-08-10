@@ -13,6 +13,7 @@ mkdir -p "${SP_DIR}"
 # ... before we copy content into it
 cp -rfv home.path ${SP_DIR}/
 mkdir -p "${PREFIX}/share/sepp/sepp"
+mkdir -p "${PREFIX}/.sepp"
 # ... and holds correct path names
 cp -fv sepp-package/sepp/default.main.config $PREFIX/share/sepp/sepp/main.config
 mv -v sepp-package/sepp/default.main.config $PREFIX/.sepp/main.config
