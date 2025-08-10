@@ -20,7 +20,7 @@ sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" CometSearch/Makefile
 sed -i.bak 's|-I$(MSTOOLKIT)/include|-I$(PREFIX)/include -I$(MSTOOLKIT)/include|' Makefile
 rm -rf *.bak && rm -rf MSToolkit/*.bak && rm -rf CometSearch/*.bak
 
-make CXX="${CXX}" -j"${CPU_COUNT}"
+make CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}"
 
 install -v -m 755 comet.exe "${PREFIX}/bin"
 
