@@ -12,7 +12,7 @@ sed -i \
     -e '/^void[[:space:]]\+\*calloc.*malloc.*;/d' \
     -e 's|main|int main|' \
     sspred_avpred.c
-make
+make -j "${CPU_COUNT}"
 make install
 popd
 install -m 755 bin/* "${PREFIX}/bin"
