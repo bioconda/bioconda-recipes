@@ -20,7 +20,7 @@ case $(uname -m) in
 esac
 
 cd ext/htslib || exit 1
-autoreconf --force --install
+autoreconf -if
 ./configure
 cd ../.. || exit 1
 
@@ -38,7 +38,7 @@ case $(uname -m) in
 	;;
 esac
 
-if [[ `uname -s` == "Darwin" ]]; then
+if [[ "$(uname -s)" == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
 	export CONFIG_ARGS="-DZLIBNG=ON"
@@ -60,4 +60,4 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	"${ARCH_OPTS}" \
 	"${CONFIG_ARGS}"
 
-cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+cmake --build build --clean-first --target install
