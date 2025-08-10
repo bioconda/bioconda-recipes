@@ -14,6 +14,8 @@ mkdir -p "$PREFIX/bin"
 # Dynamic linking does not work with mulled container tests
 #sed -i.bak 's#-static##' Makefile
 sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" MSToolkit/Makefile
+sed -i.bak 's|-I./include|-I$(PREFIX)/include -I./include|' MSToolkit/Makefile
+sed -i.bak 's|ar rcs|$(AR) rcs|' MSToolkit/Makefile
 sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" CometSearch/Makefile
 sed -i.bak 's|-I$(MSTOOLKIT)/include|-I$(PREFIX)/include -I$(MSTOOLKIT)/include|' Makefile
 rm -rf *.bak && rm -rf MSToolkit/*.bak && rm -rf CometSearch/*.bak
