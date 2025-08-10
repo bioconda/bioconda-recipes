@@ -44,6 +44,11 @@ else
 	export CONFIG_ARGS="-DZLIBNG=ON"
 fi
 
+if [[ "$(uname -m)" == "arm64" ]]; then
+	sed -i.bak 's|-mno-avx2||' ext/bifrost/CMakeLists.txt
+	rm -rf ext/bifrost/*.bak
+fi
+
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
