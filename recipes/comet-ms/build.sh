@@ -2,7 +2,7 @@
 set -e
 set -x
 
-export INCLUDE_PATH="${PREFIX}/MSToolkit/include"
+export INCLUDE_PATH="${PREFIX}/include"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -I${PREFIX}/MSToolkit/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3"
@@ -15,6 +15,8 @@ mkdir -p "$PREFIX/bin"
 #sed -i.bak 's#-static##' Makefile
 sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" MSToolkit/Makefile
 sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" CometSearch/Makefile
+sed -i.bak 's|-I$(MSTOOLKIT)/include|-I$(PREFIX)/include -I$(MSTOOLKIT)/include|' Makefile
+rm -rf *.bak && rm -rf MSToolkit/*.bak && rm -rf CometSearch/*.bak
 
 make CXX="${CXX}" -j"${CPU_COUNT}"
 
