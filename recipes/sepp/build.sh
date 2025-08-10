@@ -10,9 +10,7 @@ cp -rfv home.path ${SP_DIR}/
 mkdir -p "${PREFIX}/share/sepp/sepp"
 
 # ... and holds correct path names
-mkdir -p "${PREFIX}/.sepp"
 cp -f sepp-package/sepp/default.main.config $PREFIX/share/sepp/sepp/main.config
-cp -f sepp-package/sepp/default.main.config $SRC_DIR/
 
 ${PYTHON} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
 
