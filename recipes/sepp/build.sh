@@ -20,7 +20,7 @@ config_sepp -c
 config_upp -c
 
 # copy upp config, as it's still needed
-cp -f $SRC_DIR/.sepp/upp.config $PREFIX/share/sepp/sepp/upp.config
+cp -f ./.sepp/upp.config $PREFIX/share/sepp/sepp/upp.config
 
 # replace $PREFIX with /opt/anaconda1anaconda2anaconda3 for later replacement of concrete build PREFIX
 # note: can't apply a patch here, as upp.config is not part of upstream but gets generated during python setup
@@ -28,8 +28,8 @@ sed -i.bak "s|path=.*/|path=/opt/anaconda1anaconda2anaconda3/bin/|g" $PREFIX/sha
 
 # copy bundled binaries, but hmmer which should be provided by conda, into $PREFIX/bin/
 mkdir -p "${PREFIX}/bin"
-cp `cat $SRC_DIR/.sepp/main.config | grep "^path" -m 1 | grep -v "hmm" | cut -d "=" -f 2 | xargs dirname`/* $PREFIX/bin/
-cp `cat $SRC_DIR/.sepp/upp.config | grep "^path" -m 1 | grep -v "hmm" | cut -d "=" -f 2 | xargs dirname`/* $PREFIX/bin/
+cp -f `cat $SRC_DIR/.sepp/main.config | grep "^path" -m 1 | grep -v "hmm" | cut -d "=" -f 2 | xargs dirname`/* $PREFIX/bin/
+cp -f `cat $SRC_DIR/.sepp/upp.config | grep "^path" -m 1 | grep -v "hmm" | cut -d "=" -f 2 | xargs dirname`/* $PREFIX/bin/
 
 # configure run-sepp.sh for qiime2 fragment-insertion
 mv -v sepp-package/run-sepp.sh $PREFIX/bin/run-sepp.sh
