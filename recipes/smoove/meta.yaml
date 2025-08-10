@@ -3,22 +3,27 @@
 
 package:
   name: smoove
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   url: https://github.com/brentp/smoove/releases/download/v{{ version }}/smoove
-  sha256: '{{ sha256 }}'
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-smoove.patch
 
 build:
-  number: 1
-  binary_relocation: false
-  skip: true  # [not linux]
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('smoove', max_pin="x.x") }}
 
 requirements:
+  build:
+    - {{ compiler('go') }}
+    - go-licenses
   run:
     - bcftools
-    - duphold
-    - gsort
+    - duphold  # [linux and x86_64]
+    - gsort  # [linux and x86_64]
     - htslib
     - lumpy-sv >=0.3
     - mosdepth
@@ -32,12 +37,15 @@ test:
     - smoove call -h
 
 about:
-  home: https://github.com/brentp/smoove
-  license: Apache-2.0
-  license_family: Apache
-  summary: structural variant calling and genotyping with existing tools, but, smoothly
+  home: "https://github.com/brentp/smoove"
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: LICENSE
+  summary: "Structural variant calling and genotyping with existing tools, but, smoothly."
+  dev_url: "https://github.com/brentp/smoove"
+  doc_url: "https://github.com/brentp/smoove/blob/v{{ version }}/README.md"
 
 extra:
-  skip-lints:
-    # Installs a precompiled binary
-    - should_be_noarch_generic
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
