@@ -9,8 +9,9 @@ case $(uname -m) in
 esac
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
-	sed -i.bak 's|-lomp||' include.mk
+	sed -i.bak 's|-Xpreprocessor -fopenmp -lomp|-Xclang -fopenmp -L$(PREFIX)/lib -I$(PREFIX)/include -lomp|' include.mk
 	rm -rf *.bak
+	export LDFLAGS="${LDFLAGS} -lomp"
 fi
 
 cd submodules/abPOA
@@ -45,8 +46,9 @@ cd cactus-gfa-tools
 git checkout 1121e370880ee187ba2963f0e46e632e0e762cc5
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
-	sed -i.bak 's|-L$(CWD)|-L$(CWD) -L$(PREFIX)/lib|' Makefile
-	sed -i.bak 's|-lomp||' Makefile
+	sed -i.bak 's|-Xpreprocessor -fopenmp|-Xclang -fopenmp|' Makefile
+	sed -i.bak 's|-lomp|-L$(PREFIX)/lib -I$(PREFIX)/include -lomp|' Makefile
+	sed -i.bak 's|-I$(CWD)|-I$(PREFIX)/include -I$(CWD)|' Makefile
 	rm -rf *.bak
 fi
 
