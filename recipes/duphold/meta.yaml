@@ -1,17 +1,18 @@
-{% set version = "0.2.1" %}
+{% set version = "duphold" %}
+{% set version = "0.2.3" %}
 
 package:
-  name: duphold
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  - url: https://github.com/brentp/duphold/archive/v{{ version }}.tar.gz
-    sha256: f5211f405b4580b409f0b11d2322703a6639efb7377ec439dcbf8d698368ca32
+  - url: https://github.com/brentp/duphold/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: 0fbfcaa16646381e360a6b3ffef2e1c2ace0c1ad6c94de68d01e6727119cf97b
     patches:
       - 0001-duphold-dep-restrict-hts-nim-upper-version.patch
       - 0002-1332db6bf455d2b0caf0eed95d02154100d4bec7.patch
-  - url: https://github.com/brentp/hts-nim/archive/v0.2.23.tar.gz
-    sha256: 19f46dd89a7f13df5a679a93113aedab55fa99e1fa0bd4d2c5fed51b0526f56c
+  - url: https://github.com/brentp/hts-nim/archive/refs/tags/v0.3.25.tar.gz
+    sha256: b13b9bb5aa567a69bf17547aadbbd39e37beb4f71a28f267b83dfea9ea4d05e8
     folder: hts-nim
   - url: https://github.com/brentp/genoiser/archive/v0.2.7.tar.gz
     sha256: ff8dee83cca89a1ebbb357334308460134fcd18121322f3fe709276b0cc1b4d5
@@ -20,24 +21,39 @@ source:
       - 0001-genoiser-dep-restrict-hts-nim-upper-version.patch
 
 build:
-  number: 5
-  skip: True  # [osx]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('duphold', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - nim
+    - nim  # [not arm64]
+    - coreutils
   host:
-    - htslib 1.9.*
+    - htslib >=1.10
+    - curl
+    - tar
+    - libdeflate
   run:
-    - htslib 1.9.*
+    - htslib >=1.10
 
 test:
   commands:
     - duphold -h
 
 about:
-  home: https://github.com/brentp/duphold
+  home: "https://github.com/brentp/duphold"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: SV callers like lumpy look at split-reads and pair distances to find structural variants. This tool is a fast way to add depth information to those calls.
+  summary: "SV callers like lumpy look at split-reads and pair distances to find structural variants. This tool is a fast way to add depth information to those calls."
+  dev_url: "https://github.com/brentp/duphold"
+  doc_url: "https://github.com/brentp/duphold/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/gigascience/giz040
