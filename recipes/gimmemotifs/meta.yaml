@@ -10,16 +10,19 @@ source:
   sha256: 8e7d23a898174a962c845b22433a74e3ddde619c5d77f3a5b5dbfb8fa61e7351
 
 build:
-  number: 7
+  number: 6
   run_exports:
     - {{ pin_subpackage('gimmemotifs', max_pin="x.x") }}
     - {{ pin_subpackage('gimmemotifs-minimal', max_pin="x.x") }}
 
 outputs:
-  - name: gimmemotifs-minimal
+  - name: {{ name }}-minimal
 
     build:
       script:
+        - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+        - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+        - export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations"
         - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
         - sed -i.bak 's|"CONDA_BUILD"|"PREFIX"|' setup.py
         - sed -i.bak 's|SafeConfigParser|ConfigParser|' versioneer.py
