@@ -6,6 +6,7 @@ mkdir -p "${PREFIX}/bin"
 rm bin/*
 
 pushd src
+sed -i '/CC.*= cc/d' Makefile
 sed -i \
     -e '1i#include <stdlib.h>' \
     -e '/^void[[:space:]]\+\*calloc.*malloc.*;/d' \
