@@ -6,7 +6,7 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 
 mkdir -p "${PREFIX}/bin"
 
-sed -i.bak 's|ar rcs|$(AR) rcs|' kent
+sed -i.bak 's|ar rcs|$(AR) rcs|' Makefile
 
 make CC="${CXX}" \
 	C="${CC}" \
