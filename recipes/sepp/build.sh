@@ -14,9 +14,11 @@ mkdir -p "${SP_DIR}"
 cp -rfv home.path ${SP_DIR}/
 mkdir -p "${PREFIX}/share/sepp/sepp"
 # ... and holds correct path names
-mv -v sepp-package/sepp/default.main.config $PREFIX/share/sepp/sepp/main.config
+cp -fv sepp-package/sepp/default.main.config $PREFIX/share/sepp/sepp/main.config
+mv -v sepp-package/sepp/default.main.config $PREFIX/.sepp/main.config
 # copy upp config, as it's still needed
 cp -f $SRC_DIR/.sepp/upp.config $PREFIX/share/sepp/sepp/upp.config
+cp -f $SRC_DIR/.sepp/upp.config $PREFIX/.sepp/upp.config
 
 # replace $PREFIX with /opt/anaconda1anaconda2anaconda3 for later replacement of concrete build PREFIX
 # note: can't apply a patch here, as upp.config is not part of upstream but gets generated during python setup
