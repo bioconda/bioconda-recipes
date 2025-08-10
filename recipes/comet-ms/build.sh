@@ -24,4 +24,4 @@ make CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}"
 
 install -v -m 755 comet.exe "${PREFIX}/bin"
 
-ln -sf $PREFIX/bin/comet.exe comet
+ln -sf $PREFIX/bin/comet.exe $PREFIX/bin/comet
