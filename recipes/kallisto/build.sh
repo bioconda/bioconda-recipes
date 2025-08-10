@@ -32,7 +32,7 @@ case $(uname -m) in
 	ARCH_OPTS="-DCOMPILATION_ARCH=OFF"
 	;;
     arm64)
-	ARCH_OPTS="-DENABLE_AVX2=OFF -DCOMPILATION_ARCH=OFF"
+	ARCH_OPTS="-DCOMPILATION_ARCH=ON"
 	;;
     *)
 	;;
@@ -55,4 +55,4 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	"${ARCH_OPTS}" \
 	"${CONFIG_ARGS}"
 
-cmake --build build --clean-first --target install
+cmake --build build --clean-first --target install -j "${CPU_COUNT}"
