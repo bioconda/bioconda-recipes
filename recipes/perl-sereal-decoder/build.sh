@@ -1,4 +1,4 @@
-#!/bin/bash1
+#!/bin/bash
 
 export LC_ALL=C
 
