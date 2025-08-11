@@ -4,14 +4,9 @@ mkdir build
 cd build
 
 if [[ $(uname -s) == "Darwin" ]]; then
-	RPATH="@loader_path/../lib"
-	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DCMAKE_MACOSX_RPATH=ON -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
-	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names"
+	RPATH='@loader_path/../lib'
 else
-	ORIGIN="$ORIGIN"
-	export ORIGIN
-	RPATH="$${ORIGIN}/../lib"
-	export CONFIG_ARGS=""
+	RPATH='$ORIGIN/../lib'
 fi
 
 cmake -S .. -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
@@ -22,7 +17,6 @@ cmake -S .. -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
 	-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON -DCMAKE_BUILD_WITH_INSTALL_NAME_DIR=ON \
 	-DHAS_XSERVER=OFF -DENABLE_TUTORIALS=OFF -DWITH_GUI=OFF -DBOOST_USE_STATIC=OFF \
 	-DBoost_NO_BOOST_CMAKE=ON -DBoost_ARCHITECTURE="-x64" -DQT_HOST_PATH="${BUILD_PREFIX}" -DQT_HOST_PATH_CMAKE_DIR="${PREFIX}" \
-	-DBUILD_EXAMPLES=OFF -DWITH_HDF5=OFF \
-	"${CONFIG_ARGS}"
+	-DBUILD_EXAMPLES=OFF -DWITH_HDF5=OFF
 
 ninja -j"${CPU_COUNT}"
