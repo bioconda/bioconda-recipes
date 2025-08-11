@@ -19,7 +19,7 @@ export CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
 BUILD_ARCH=$(uname -m)
 BUILD_OS=$(uname -s)
 
-if [[ "$BUILD_ARCH" == "ppc64le" ] || [ "$BUILD_ARCH" == "aarch64" ] || ["$BUILD_ARCH" == "arm64" ]]; then
+if [ "$BUILD_ARCH" == "ppc64le" ] || [ "$BUILD_ARCH" == "aarch64" ] || ["$BUILD_ARCH" == "arm64" ]; then
     # Just in case; make the same assumptions about plain "char" declarations
     # on little-endian POWER8 + aarch64/arm64 as we do on x86_64.
     export CFLAGS="${CFLAGS} -fsigned-char"
