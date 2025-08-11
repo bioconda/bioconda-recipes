@@ -17,7 +17,7 @@ chmod u+x install_kraken_conda.sh
 
 sed -i.bak 's|-C src install|-C src install CXX=${CXX}|' install_kraken_conda.sh
 
-./install_kraken_conda.sh "$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
+CXX="${CXX}" ./install_kraken_conda.sh "$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
 for bin in kraken kraken-build kraken-filter kraken-mpa-report kraken-report kraken-translate; do
     sed -i.bak 's|#!/usr/bin/perl|#!/usr/bin/env perl|' $PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/$bin
     rm -f $PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/$bin.bak
