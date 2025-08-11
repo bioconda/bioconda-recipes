@@ -51,6 +51,8 @@ echo "${PREFIX}/share/sepp/sepp" > $SP_DIR/sepp-*.dist-info/home.path
 ls -la $SP_DIR/sepp-*.dist-info/
 help=`cat $SP_DIR/sepp-*.dist-info/home.path` && echo "STEFAN >$help<"
 
+help2=`cat $PREFIX/share/sepp/sepp/main.config` && echo "STEFAN_main >$help2<"
+help3=`cat ./.sepp/upp.config/main.config` && echo "STEFAN_3_main >$help3<"
 # # ensure SEPP's configuration file is at the correct location ...
 # # ensure directory is created ... ($SP_DIR = Python's site-packages location, see https://docs.conda.io/projects/conda-build/en/stable/user-guide/environment-variables.html#environment-variables-set-during-the-build-process)
 # mkdir -p $SP_DIR/
