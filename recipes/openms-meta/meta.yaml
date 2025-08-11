@@ -26,7 +26,7 @@ build:
 #    extended-base: True
 
 # Note: pinning of sysroot_linux-64 =2.17 enforces cos7 and is currently needed to prevent an memcpy@GLIBC2.14 error
-{% set data = namespace(host_deps=[
+{% set host_deps = [
     "bzip2",
     "coinmp",
     "eigen >=3.4.0",
@@ -36,15 +36,10 @@ build:
     "xerces-c",
     "yaml-cpp",
     "zlib"
-]) %}
-
-{% if linux %}
-    {% do data.host_deps.append("libgomp") %}
-    {% do data.host_deps.append("sysroot_linux-64 =2.17") %}
-{% endif %}
-{% if osx %}
-    {% do data.host_deps.append("llvm-openmp") %}
-{% endif %}
+]
++ (["libgomp", "sysroot_linux-64 =2.17"] if linux else [])
++ (["llvm-openmp"] if osx else [])
+%}
 
 requirements:
     
@@ -54,7 +49,7 @@ requirements:
       - ninja
     
     host:
-    {% for dep in data.host_deps %}
+    {% for dep in host_deps %}
       - {{ dep }}
     {% endfor %}
 
@@ -76,7 +71,7 @@ outputs:
         build:
           - cmake
         host:
-        {% for dep in data.host_deps %}
+        {% for dep in host_deps %}
           - {{ dep }}
         {% endfor %}
 
@@ -102,7 +97,7 @@ outputs:
       # see https://github.com/conda/conda-build/issues/3478
       # so specify everything again, such that EXACTLY the same versions are used!
       # I could not get the "resolved_packages" jinja function to gather dependencies from other subpackages.
-        {% for dep in data.host_deps %}
+        {% for dep in host_deps %}
         - {{ dep }}
         {% endfor %}
 
