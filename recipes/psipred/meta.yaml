@@ -1,0 +1,63 @@
+{% set name = "PSIPRED" %}
+{% set version = "4.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/psipred/{{ name|lower }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ce4c901c8f152f6e93e4f70dc8079a5432fc64d02bcc0215893e33fbacb1fed2
+
+build:
+  number: 0
+  run_exports: []
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - make
+    - sed  # [osx]
+  run:
+    - blast-legacy
+    - tcsh
+
+test:
+  commands:
+    - chkparse 2>&1 | grep -q 'chkparse'
+    - pfilt 2>&1 | grep -q 'pfilt'
+    - psipass2 2>&1 | grep -q 'psipass2'
+    - psipred 2>&1 | grep -q 'psipred'
+    - seq2mtx 2>&1 | grep -q 'seq2psi'
+  source_files:
+    - example/*
+
+about:
+  home: https://bioinf.cs.ucl.ac.uk/psipred
+  dev_url: https://github.com/psipred/psipred
+  doc_url: https://github.com/psipred/psipred/blob/v{{ version }}/README
+  license: "CUSTOM (academic-only)"
+  license_family: OTHER
+  license_file: LICENSE
+  summary: "Protein Secondary Structure Predictor"
+  description: |
+    PSIPRED is a  simple and accurate secondary structure prediction method, incorporating two feed-forward neural networks which perform an analysis on output obtained from
+    [PSI-BLAST](http://www.ncbi.nlm.nih.gov/blast) (Position Specific Iterated - BLAST).
+    Using a very stringent cross validation method to evaluate the method's performance, PSIPRED 3.2 achieves an average Q3 score of 81.6%.
+    Predictions produced by PSIPRED were also submitted to the [CASP4](http://predictioncenter.llnl.gov/casp4/) evaluation and assessed during the CASP4 meeting, which took place in December 2000 at Asilomar.
+    PSIPRED 2.0 achieved an average Q3 score of 80.6% across all 40 submitted target domains with no obvious sequence similarity to structures present in PDB, which ranked PSIPRED top out of 20 evaluated methods
+    (an earlier version of PSIPRED was also ranked top in CASP3 held in 1998).
+    It is important to realise, however, that due to the small sample sizes, the results from CASP are not statistically significant, although they do give a rough guide as to the current "state of the art".
+    For a more reliable evaluation, the [EVA](http://pdg.cnb.uam.es/eva/) web site at Columbia University provides a continuous evaluation. NOTE that at the time of writing, the EVA site is no longer being updated.
+    Downloads: The PSIPRED V3.2 software can be downloaded from [HERE](http://bioinfadmin.cs.ucl.ac.uk/downloads/psipred/).
+    Please note that you should read the license terms given in the [README](http://bioinfadmin.cs.ucl.ac.uk/downloads/psipred/README) file if you wish to incorporate PSIPRED in another program or Web server.
+    Older releases of PSIPRED can be downloaded here [HERE](http://bioinfadmin.cs.ucl.ac.uk/downloads/psipred/old/).
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1006/jmbi.1999.3091
+  recipe-maintainers:
+    - eunos-1128
