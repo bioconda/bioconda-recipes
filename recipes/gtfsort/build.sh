@@ -13,4 +13,4 @@ cd gtfsort
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
-cargo build --package gtfsort --release -j "${CPU_COUNT}"
+cargo install --verbose --path "${SRC_DIR}/gtfsort" --root "${PREFIX}"
