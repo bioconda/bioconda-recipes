@@ -3,7 +3,7 @@
 export CPPLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
-if [[ "$(uname -m)" = "aarch64" ]]; then
+if [[ "$(uname -s)" = "Linux" ]]; then
   sed -i '40i#include <cstdint>\n#include <iterator>' ./src/utils/fast-liftover.cpp
   sed -i '22i#include <cstdint>\n#include <iterator>' ./src/analysis/hmr_rep.cpp
   sed -i '22i#include <cstdint>\n#include <iterator>' ./src/smithlab_cpp/sam_record.hpp
