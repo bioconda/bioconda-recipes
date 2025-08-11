@@ -24,11 +24,11 @@ mv -v sepp-package/run-sepp.sh $PREFIX/bin/run-sepp.sh
 #   b) determine the correct path as the content of the "home.path" file
 #   c) store the "home.path" file in the correct directory
 
-# a)
+# === a ===: create sub-directory
 mkdir -p $PREFIX/share/sepp/sepp
-# ... and holds correct path names
+# copy SEPP config
 mv -v sepp-package/sepp/default.main.config $PREFIX/share/sepp/sepp/main.config
-# copy upp config, as it's still needed
+# copy UPP config
 cp -f ./.sepp/upp.config $PREFIX/share/sepp/sepp/upp.config
 
 # replace $PREFIX with /opt/anaconda1anaconda2anaconda3 for later replacement of concrete build PREFIX
@@ -42,22 +42,28 @@ then
 	sed -i '' 's@'"$PREFIX"'@/opt/anaconda1anaconda2anaconda3@g' $PREFIX/share/sepp/sepp/upp.config
 fi
 
-
-# ensure SEPP's configuration file is at the correct location ...
-echo "${PREFIX}/share/sepp/sepp" > home.path
-# ensure directory is created ... ($SP_DIR = Python's site-packages location, see https://docs.conda.io/projects/conda-build/en/stable/user-guide/environment-variables.html#environment-variables-set-during-the-build-process)
-mkdir -p $SP_DIR/
-echo "STEFAN SP_DIR>$SP_DIR< ääääääääääääääääääääääääääääääääääääääääääääää"
-echo "STEFAN PREFIX>$PREFIX< öööööööööööööööööööööööööööööööööööööööööööööö"
 ls -la $SP_DIR/
-# ... before we copy content into it
-cp -rfv home.path $SP_DIR/sepp-*.dist-info/
+ls -la $SP_DIR/sepp-*.dist-info/
+# === b ===: determine correct path for source sub-directory in deployment and store in home.path
+echo "${PREFIX}/share/sepp/sepp" > $SP_DIR/sepp-*.dist-info/home.path
 
-help=`cat $PREFIX/share/sepp/sepp/main.config` && echo "STEFAN $PREFIX/share/sepp/sepp/main.config: >$help< ääääääääääääääääääääääääääääääääääääääääääääää"
+# debugging
+ls -la $SP_DIR/sepp-*.dist-info/
+help=`cat $SP_DIR/sepp-*.dist-info/home.path` && echo "STEFAN >$help<"
+
+# # ensure SEPP's configuration file is at the correct location ...
+# # ensure directory is created ... ($SP_DIR = Python's site-packages location, see https://docs.conda.io/projects/conda-build/en/stable/user-guide/environment-variables.html#environment-variables-set-during-the-build-process)
+# mkdir -p $SP_DIR/
+# echo "STEFAN SP_DIR>$SP_DIR< ääääääääääääääääääääääääääääääääääääääääääääää"
+# echo "STEFAN PREFIX>$PREFIX< öööööööööööööööööööööööööööööööööööööööööööööö"
+# # ... before we copy content into it
+# cp -rfv home.path 
+
+# help=`cat $PREFIX/share/sepp/sepp/main.config` && echo "STEFAN $PREFIX/share/sepp/sepp/main.config: >$help< ääääääääääääääääääääääääääääääääääääääääääääää"
 
 
 
-$#{PYTHON} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+# $#{PYTHON} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
 
 
 
