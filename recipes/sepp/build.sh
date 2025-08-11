@@ -11,6 +11,7 @@ echo "${PREFIX}/share/sepp/sepp" > home.path
 mkdir -p $SP_DIR/
 echo "STEFAN SP_DIR>$SP_DIR< ääääääääääääääääääääääääääääääääääääääääääääää"
 echo "STEFAN PREFIX>$PREFIX< öööööööööööööööööööööööööööööööööööööööööööööö"
+ls -la $SP_DIR/
 # ... before we copy content into it
 cp -rfv home.path $SP_DIR/
 mkdir -p $PREFIX/share/sepp/sepp
