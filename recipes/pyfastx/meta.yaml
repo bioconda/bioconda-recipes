@@ -3,7 +3,7 @@
 {% set sha256 = "e5b797b9e231ad5cf3822222329af4bbf133acdd9d8f6e556beb06d9656e867e" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -11,9 +11,12 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
   entry_points:
     - pyfastx = pyfastxcli:main
+  script:
+    - export CFLAGS="${CFLAGS} -O3 -fno-define-target-os-macros"  # [osx]
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
     - {{ pin_subpackage('pyfastx', max_pin="x") }}
 
@@ -21,12 +24,12 @@ requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - python
+    - python {{ python }}
     - zlib
     - pip
     - setuptools
   run:
-    - python
+    - {{ pin_compatible("python") }}
 
 test:
   imports:
@@ -35,16 +38,18 @@ test:
     - pyfastx --help
 
 about:
-  home: https://github.com/lmdu/pyfastx
+  home: "https://github.com/lmdu/pyfastx"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary:  |
-          pyfastx is a python module for fast random
-          access to sequences from plain and gzipped
-          FASTA/Q file
+  summary: "pyfastx is a python module for fast random access to sequences from plain and gzipped FASTA/Q file."
+  dev_url: "https://github.com/lmdu/pyfastx"
+  doc_url: "https://pyfastx.readthedocs.io/en/latest"
 
 extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
+  identifiers:
+    - doi:10.1093/bib/bbaa368
+    - biotools:pyfastx
