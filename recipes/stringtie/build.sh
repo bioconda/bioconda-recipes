@@ -3,7 +3,6 @@
 mkdir -p "${PREFIX}/bin"
 ln -sf $PREFIX/lib/libz.so.1 $PREFIX/lib/libz.so
 
-export M4="${BUILD_PREFIX}/bin/m4"
 export C_INCLUDE_PATH="${PREFIX}/include"
 export CPLUS_INCLUDE_PATH="${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
@@ -29,10 +28,6 @@ cd SuperReads_RNA/global-1
 autoreconf -if
 ./configure CC="${CC}" CFLAGS="${CFLAGS}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}"
 cd ../../
-#cd ../../htslib
-#autoreconf -if
-#./configure CC="${CC}" CFLAGS="${CFLAGS}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}"
-#cd ../
 
 make release CXX="${CXX}" LINKER="${CXX}" -j"${CPU_COUNT}"
 install -v -m 0755 stringtie "${PREFIX}/bin"
