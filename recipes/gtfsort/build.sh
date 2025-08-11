@@ -9,6 +9,8 @@ export PATH="${HOME}/.cargo/bin:${PATH}"
 
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
+cd gtfsort
+
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
-cargo install --verbose --no-track --path "${SRC_DIR}/gtfsort" --root "${PREFIX}"
+cargo install --verbose --no-track --path . --root "${PREFIX}"
