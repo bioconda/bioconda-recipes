@@ -16,10 +16,10 @@ export CFLAGS="${CFLAGS} ${BB_ARCH_FLAGS} ${BB_OPT_FLAGS}"
 export CFLAGS="${CFLAGS} -fomit-frame-pointer -DUNX"
 
 export CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
-BUILD_ARCH=$(uname -m)
-BUILD_OS=$(uname -s)
+BUILD_ARCH="$(uname -m)"
+BUILD_OS="$(uname -s)"
 
-if [ "$BUILD_ARCH" == "ppc64le" ] || [ "$BUILD_ARCH" == "aarch64" ] || ["$BUILD_ARCH" == "arm64" ]; then
+if [ "${BUILD_ARCH}" == "ppc64le" ] || [ "${BUILD_ARCH}" == "aarch64" ] || ["${BUILD_ARCH}" == "arm64" ]; then
     # Just in case; make the same assumptions about plain "char" declarations
     # on little-endian POWER8 + aarch64/arm64 as we do on x86_64.
     export CFLAGS="${CFLAGS} -fsigned-char"
@@ -28,7 +28,7 @@ fi
 # Build
 cd src
 sed -i.bak "s:@@prefix@@:${PREFIX}:" phylip.h
-if [[ "$BUILD_OS" == "Darwin" ]]; then
+if [[ "${BUILD_OS}" == "Darwin" ]]; then
     # Tweak a few things for building shared libraries on OS X.
     sed -i.bak 's/-Wl,-soname/-Wl,-install_name/g' Makefile.unx
     sed -i.bak 's/\.so/.dylib/g' Makefile.unx
