@@ -2,7 +2,8 @@
 
 export CPPLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-if [ "$(uname -m)" = "aarch64" ]; then
+
+if [[ "$(uname -m)" = "aarch64" ]]; then
   sed -i '40i#include <cstdint>\n#include <iterator>' ./src/utils/fast-liftover.cpp
   sed -i '22i#include <cstdint>\n#include <iterator>' ./src/analysis/hmr_rep.cpp
   sed -i '22i#include <cstdint>\n#include <iterator>' ./src/smithlab_cpp/sam_record.hpp
@@ -13,7 +14,10 @@ if [ "$(uname -m)" = "aarch64" ]; then
   sed -i 's/make_partial_meth(reads, meth)/make_partial_meth(reads_vector, meth_vector)/g' src/analysis/hmr.cpp
 fi
 
-mkdir build && cd build
-../configure --prefix ${PREFIX}
-make
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
+
+autoreconf -if
+./configure --prefix "${PREFIX}"
+
+make -j"${CPU_COUNT}"
 make install
