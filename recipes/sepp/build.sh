@@ -42,33 +42,8 @@ then
 	sed -i '' 's@'"$PREFIX"'@/opt/anaconda1anaconda2anaconda3@g' $PREFIX/share/sepp/sepp/upp.config
 fi
 
-ls -la $SP_DIR/
-ls -la $SP_DIR/sepp-*.dist-info/
-# === b ===: determine correct path for source sub-directory in deployment and store in home.path
+# === b+c ===: determine correct path for source sub-directory in deployment and store in home.path
 echo "${PREFIX}/share/sepp/sepp" > $SP_DIR/sepp-*.dist-info/home.path
-
-# debugging
-ls -la $SP_DIR/sepp-*.dist-info/
-help=`cat $SP_DIR/sepp-*.dist-info/home.path` && echo "STEFAN >$help<"
-
-help2=`cat $PREFIX/share/sepp/sepp/main.config` && echo "STEFAN_main >$help2<"
-help3=`cat ./.sepp/upp.config/main.config` && echo "STEFAN_3_main >$help3<"
-# # ensure SEPP's configuration file is at the correct location ...
-# # ensure directory is created ... ($SP_DIR = Python's site-packages location, see https://docs.conda.io/projects/conda-build/en/stable/user-guide/environment-variables.html#environment-variables-set-during-the-build-process)
-# mkdir -p $SP_DIR/
-# echo "STEFAN SP_DIR>$SP_DIR< ääääääääääääääääääääääääääääääääääääääääääääää"
-# echo "STEFAN PREFIX>$PREFIX< öööööööööööööööööööööööööööööööööööööööööööööö"
-# # ... before we copy content into it
-# cp -rfv home.path 
-
-# help=`cat $PREFIX/share/sepp/sepp/main.config` && echo "STEFAN $PREFIX/share/sepp/sepp/main.config: >$help< ääääääääääääääääääääääääääääääääääääääääääääää"
-
-
-
-# $#{PYTHON} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
-
-
-
 
 # copy files for tests to shared conda directory
 mkdir -p $PREFIX/share/sepp/ref/
