@@ -1,5 +1,5 @@
 {% set name = "pyopenms" %}
-{% set version = "3.4.0" %}  # if ends with 'dev' it is considered a development release and pulled from GitHub
+{% set version = "3.4.1" %}  # if ends with 'dev' it is considered a development release and pulled from GitHub
 
 package:
   name: {{ name|lower }}
@@ -13,15 +13,22 @@ source:
 {% else %}
 
 source:
-  url: https://github.com/OpenMS/OpenMS/releases/download/release%2F{{ version }}/OpenMS-{{ version.split('.')[0] }}.{{ version.split('.')[1] }}.tar.gz
-  md5: b4125500bd1180f222d3640588b45b8a
+  # Remove trailing zeros for major releases
+  {% set version_parts = version.split('.') %}
+  {% if version_parts|length == 3 and version_parts[2] == '0' %}
+    {% set short_version = version_parts[0] ~ '.' ~ version_parts[1] %}
+  {% else %}
+    {% set short_version = version %}
+  {% endif %}
+  url: https://github.com/OpenMS/OpenMS/releases/download/release%2F{{ version }}/OpenMS-{{ short_version }}.tar.gz
+  md5: 8d0b4d1d333f069959f7d5ff1c77a90f
 {% endif %}
 
 build:
   number: 0
-  skip: True  # [osx or py < 39]
+  skip: True  # [py < 39]
   run_exports:
-    - {{ pin_subpackage("pyopenms", max_pin="x.x") }}  
+    - {{ pin_subpackage("pyopenms", max_pin="x") }}
 
 requirements:
   build:
@@ -92,6 +99,6 @@ extra:
   skip-lints:
     - uses_vcs_url
 {% endif %}
-  identifiers:  
+  identifiers:
     - biotools:openms
     - doi:10.1038/s41592-024-02197-7
