@@ -4,9 +4,9 @@ mkdir build
 cd build
 
 if [[ $(uname -s) == "Darwin" ]]; then
-	RPATH='@loader_path/../lib'
+	RPATH='@loader_path/../lib;${PREFIX}/lib'
 else
-	RPATH='$ORIGIN/../lib'
+	RPATH='$ORIGIN/../lib:${PREFIX}/lib'
 fi
 
 cmake -S .. -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
