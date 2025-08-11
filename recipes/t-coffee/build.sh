@@ -14,7 +14,7 @@ mkdir -p "${PREFIX}/bin"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 # -fsigned-char is needed for aarch64; register needs to be hidden for os-x's C++ compiler
-export CFLAGS="${CFLAGS} -O1 -fsigned-char -Wno-write-strings -Dregister=''"
+export CFLAGS="${CFLAGS} -O3 -fsigned-char -Wno-write-strings -Dregister=''"
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
