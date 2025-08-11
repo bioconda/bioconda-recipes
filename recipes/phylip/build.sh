@@ -33,7 +33,9 @@ if [[ "${BUILD_OS}" == "Darwin" ]]; then
     sed -i.bak 's/-Wl,-soname/-Wl,-install_name/g' Makefile.unx
     sed -i.bak 's/\.so/.dylib/g' Makefile.unx
 fi
-make -f Makefile.unx CFLAGS="${CFLAGS}" CC="${CC}" install -j"${CPU_COUNT}"
+rm -rf *.bak
+
+make -f Makefile.unx CFLAGS="${CFLAGS}" CC="${CC}" install
 
 # Install
 cd ..
@@ -54,12 +56,12 @@ ln -s $SHARE_DIR/exe/* $PREFIX/bin/
 # link them to $PREFIX/bin
 ln -s $SHARE_DIR/java/* $PREFIX/bin/
 
-cp $RECIPE_DIR/phylip.py $PREFIX/bin/phylip
+cp -f $RECIPE_DIR/phylip.py $PREFIX/bin/phylip
 
-cp $RECIPE_DIR/drawtree.py $SHARE_DIR/drawtree_gui
+cp -f $RECIPE_DIR/drawtree.py $SHARE_DIR/drawtree_gui
 ln -s $SHARE_DIR/drawtree_gui $PREFIX/bin
 
-cp $RECIPE_DIR/drawgram.py $SHARE_DIR/drawgram_gui
+cp -f $RECIPE_DIR/drawgram.py $SHARE_DIR/drawgram_gui
 ln -s $SHARE_DIR/drawgram_gui $PREFIX/bin
 
 cd "${PREFIX}/bin"
