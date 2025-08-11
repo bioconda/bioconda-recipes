@@ -8,11 +8,9 @@ export CFLAGS="${CFLAGS} -O3 -I$PREFIX/include"
 export LDFLAGS="${LDFLAGS} -L$PREFIX/lib -L. -lkraken -lz"
 export CPATH="${PREFIX}/include"
 
-sed -i.bak "s|g++|${CXX}|" src/Makefile
+sed -i.bak "s|CXX = g++|CXX := ${CXX}|" src/Makefile
 sed -i.bak 's|AR       =|#AR       =|' src/Makefile
-sed -i.bak 's|${AR}|${AR} rcs|' src/Makefile
-sed -i.bak 's|$(CXX)|${CXX}|' src/Makefile
-sed -i.bak 's|$(CXXFLAGS)|${CXXFLAGS}|' src/Makefile
+sed -i.bak 's|${AR}|$(AR) rcs|' src/Makefile
 rm -rf src/*.bak
 
 chmod u+x install_kraken_conda.sh
