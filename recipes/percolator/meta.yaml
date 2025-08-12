@@ -8,9 +8,10 @@ package:
 source:
   url: https://github.com/percolator/percolator/archive/refs/tags/rel-3-07-01.tar.gz
   sha256: f1c9833063cb4e99c51a632efc3f80c6b8f48a43fd440ea3eb0968af5c84b97a
-
+  patches:
+    - boost-dynamic.patch
 build:
-  number: 1
+  number: 2
   skip: True  # [osx]
   run_exports:
     - {{ pin_subpackage('percolator', max_pin="x") }}
@@ -21,15 +22,18 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake
   host:
-    - boost-cpp 1.71  # last version to have static libs
+    - boost-cpp
     - sqlite
     - bzip2
     - xerces-c
     - xsd
+    - zlib
   run:
+    - boost-cpp
     - sqlite
     - xerces-c
     - xsd
+    - zlib
 
 test:
   commands:
@@ -48,6 +52,9 @@ about:
   doc_url: "http://percolator.ms"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   container:
     extended-base: True  # Add UTF-8 for percolator converters
   identifiers:
