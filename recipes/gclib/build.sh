@@ -1,8 +1,4 @@
 #!/bin/bash
-which gcc
-which g++
-echo $CC
-echo $CXX
 ls $CONDA_PREFIX/bin | grep -E "(gcc|g\+\+)"
 mkdir -p $PREFIX/lib $PREFIX/bin $PREFIX/include
 
