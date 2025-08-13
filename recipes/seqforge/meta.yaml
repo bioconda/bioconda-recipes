@@ -35,13 +35,12 @@ test:
   requires:
     - python
   commands:
+    - python -c "import sys, seqforge; print('ok')"
     - seqforge --version
     - seqforge --module-health
-    - python -c "from pathlib import Path; Path('t.fa').write_text('>a\nACGT\n>b\nACGT\n')"
-    - mkdir -p out
-    - seqforge unique-headers -f t.fa -o out --progress none
-    - test -f out/t.fa
-    - python -c "from pathlib import Path; print((Path('out')/'t.fa').read_text()); print('OK')"
+    - python -c "from pathlib import Path; Path('t.fa').write_text('>a\\nACGT\\n>b\\nACGT\\n')"
+    - seqforge unique-headers -f t.fa -o sf_out --progress none
+    - python -c "from pathlib import Path; p=Path('sf_out')/'t.fa'; assert p.exists(); print(p.read_text()); print('OK')"
 
 about:
   home: https://github.com/ERBringHorvath/SeqForge
