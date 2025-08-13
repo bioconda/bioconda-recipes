@@ -47,11 +47,6 @@ requirements:
       - sysroot_linux-64 =2.17  # [linux]
       - llvm-openmp  # [osx]
 
-test:
-  commands:
-    - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
-    - conda inspect objects -p $PREFIX $PKG_NAME  # [osx]
-
 outputs:
   - name: libopenms
     version: {{ version }}
@@ -77,6 +72,7 @@ outputs:
           - libgomp  # [linux]
           - sysroot_linux-64 =2.17  # [linux]
           - llvm-openmp  # [osx]
+        # run dependencies are fully managed by run_exports of our host deps
 
     build:
       run_exports:
@@ -84,8 +80,13 @@ outputs:
           - {{ pin_compatible('xerces-c', max_pin='x.x') }}
           - {{ pin_compatible('eigen', max_pin='x.x') }}
           - {{ pin_compatible('qt6-main', max_pin='x.x') }}
-          - {{ pin_compatible('libsvm', max_pin='x.x') }}
+          - {{ pin_compatible('libsvm', upper_bound='400') }} # libsvm is usually more compatible than it says
           - libopenms {{ version }}
+
+    test:
+      commands:
+        - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
+        - conda inspect objects -p $PREFIX $PKG_NAME  # [osx]
 
   - name: openms
     version: {{ version }}
@@ -96,25 +97,29 @@ outputs:
         - cmake
       host:
         - {{ pin_subpackage('libopenms', exact=True) }}
-        # conda apparently does not support run_exports in subpackages yet, otherwise having libopenms in host would be enough.
+        - xerces-c
+        - eigen
+        - qt6-main
+        - libsvm
+      ignore_run_exports:
+        - libsvm
+      run:
+        # conda does not support run_exports from outputs in other outputs of the same package yet,
+        # otherwise having libopenms in host would be enough.
         # see https://github.com/conda/conda-build/issues/3478
         # so specify everything again, such that EXACTLY the same versions are used!
+        # Note that for this to work, 
         # I could not get the "resolved_packages" jinja function to gather dependencies from other subpackages.
-        - bzip2
-        - coinmp
-        - eigen >=3.4.0
-        - libboost-devel
-        - libsvm
-        - qt6-main
-        - xerces-c
-        - yaml-cpp
-        - zlib
-        - libgomp  # [linux]
-        - sysroot_linux-64 =2.17  # [linux]
-        - llvm-openmp  # [osx]
+        - {{ pin_subpackage('libopenms', exact=True) }}
+        - {{ pin_compatible('xerces-c', max_pin='x.x') }}
+        - {{ pin_compatible('eigen', max_pin='x.x') }}
+        - {{ pin_compatible('qt6-main', max_pin='x.x') }}
+        - {{ pin_compatible('libsvm', upper_bound='400') }}
 
     test:
       commands:
+        - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
+        - conda inspect objects -p $PREFIX $PKG_NAME  # [osx]
         - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/OpenMSInfo
         - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/FileMerger --help
 
