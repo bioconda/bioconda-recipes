@@ -1,34 +1,48 @@
-{% set name = "pairsnp" %}
-{% set version = "0.3.1" %}
+{% set name = "paladin" %}
+{% set version = "1.4.6" %}
+{% set sha256 = "fd23a8907d832cada060e112addb1b3b3751353dda515887c69c1772fd37cc4a" %}
 
 package:
-    name: {{ name }}
-    version: {{ version }}
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/gtonkinhill/{{ name }}-cpp/archive/v{{ version }}.tar.gz
-  sha256: 5d3be3fe446cbd0861ea601e48641e13e8039de1e02c469f73cdce61e099fbc4
+  url: https://github.com/twestbrookunh/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 3
+  number: 7
+  run_exports:
+    - {{ pin_subpackage('paladin', max_pin='x.x') }}
 
 requirements:
   build:
     - make
-    - {{ compiler('cxx') }}
-    - libgomp      # [linux]
-    - llvm-openmp  # [osx]
+    - {{ compiler('c') }}
   host:
     - zlib
+    - curl
+
   run:
     - zlib
-
-about:
-  home: https://github.com/gtonkinhill/pairsnp
-  license: MIT
-  summary: "pairsnp calculates pairwise SNP distance matrices from multiple sequence alignment fasta files."
-  license_file: LICENSE
+    - curl
 
 test:
   commands:
-    - pairsnp -h
+    - command -v paladin
+
+about:
+  home: http://genomebio.org/paladin/
+  license: MIT
+  summary: Protein Alignment and Detection Interface
+  description: |
+    PALADIN is a protein sequence alignment tool designed for the accurate
+    functional characterization of metagenomes.
+  dev_url: https://github.com/twestbrookunh/paladin
+
+
+extra:
+  recipe-maintainers:
+    - keuv-grvl
+  additional-platforms:
+    - linux-aarch64
