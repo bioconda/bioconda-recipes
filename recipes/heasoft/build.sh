@@ -45,7 +45,8 @@ cd heasoft/BUILD_DIR
     --x-libraries="${PREFIX}/lib" \
     --enable-static=no \
     --with-components="heacore ftools Xspec nustar suzaku swift integral ixpe heasim heagen heatools attitude"
-make -j"${CPU_COUNT}"
+
+make
 make install
 
 # Remove modelData to reduce package size
