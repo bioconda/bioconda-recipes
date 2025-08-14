@@ -5,7 +5,7 @@ set -ex
 export CC="${CC}"
 export CXX="${CXX}"
 export FC="${FC}"
-export PERL="${PERL:-${BUILD_PREFIX}/bin/perl}"
+export PERL="${PERL:-${PREFIX}/bin/perl}"
 export PYTHON="${PYTHON}"
 
 # Create symbolic links for build tools
@@ -16,8 +16,9 @@ for tool in ar ld nm objdump ranlib; do
 done
 
 # Set compilation flags
-export CFLAGS="-I${PREFIX}/include"
-export LDFLAGS="-L${PREFIX}/lib -lgsl -lgslcblas -lz -lgfortran -lstdc++ -lcurl -ltinfo -Wl,-rpath,${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lgsl -lgslcblas -lz -lgfortran -lstdc++ -lcurl -ltinfo -Wl,-rpath,${PREFIX}/lib"
 export PERL_MM_USE_DEFAULT=1
 export PERL_EXTUTILS_AUTOINSTALL="--defaultdeps"
 
@@ -44,7 +45,7 @@ cd heasoft/BUILD_DIR
     --x-libraries="${PREFIX}/lib" \
     --enable-static=no \
     --with-components="heacore ftools Xspec nustar suzaku swift integral ixpe heasim heagen heatools attitude"
-make -j1
+make -j"${CPU_COUNT}"
 make install
 
 # Remove modelData to reduce package size

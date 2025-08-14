@@ -1,5 +1,5 @@
 {% set version = "6.35.2" %}
-{% set build = 0 %}
+{% set build = "1" %}
 
 package:
   name: heasoft
@@ -12,10 +12,10 @@ source:
 
 build:
   number: {{ build }}
-  skip: true  # [win or osx]
+  skip: True  # [osx or py < 312]
   string: h{{ PKG_HASH }}_{{ build }}
   run_exports:
-    - {{ pin_subpackage('heasoft', max_pin='x.y') }}
+    - {{ pin_subpackage('heasoft', max_pin="x.x") }}
 
 requirements:
   build:
@@ -23,17 +23,12 @@ requirements:
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
     - make
-    - perl >=5.32.1
-    - pip
     - pkg-config
-    - python >=3.12
-    - setuptools >=61.0
-    - wheel
   host:
     - astropy >=6.1.4
     - astropy-iers-data
     - curl
-    - gsl =2.7
+    - gsl
     - libgcc-ng
     - libgfortran-ng
     - libpng
@@ -41,12 +36,12 @@ requirements:
     - matplotlib-base >=3.9.2
     - ncurses
     - numpy >=2.1.2
+    - perl >=5.32.1
     - pip
-    - python >=3.12
+    - python
     - readline
     - scipy >=1.14.1
-    - setuptools >=61.0
-    - wheel
+    - setuptools
     - xorg-inputproto
     - xorg-kbproto
     - xorg-libx11
@@ -60,41 +55,41 @@ requirements:
   run:
     - astropy >=6.1.4
     - astropy-iers-data
-    - {{ pin_compatible('curl') }}
-    - {{ pin_compatible('gsl') }}
+    - curl
+    - gsl
     - {{ pin_compatible('libgcc-ng') }}
     - {{ pin_compatible('libgfortran-ng') }}
-    - {{ pin_compatible('libpng') }}
+    - libpng
     - {{ pin_compatible('libstdcxx-ng') }}
     - matplotlib-base >=3.9.2
-    - {{ pin_compatible('ncurses') }}
-    - {{ pin_compatible('numpy') }}
+    - ncurses
+    - numpy
     - perl >=5.32.1
-    - python >=3.12
+    - python
     - {{ pin_compatible('readline') }}
     - scipy >=1.14.1
     - {{ pin_compatible('xorg-libx11') }}
     - {{ pin_compatible('xorg-libxext') }}
     - {{ pin_compatible('xorg-libxt') }}
     - {{ pin_compatible('xorg-xproto') }}
-    - {{ pin_compatible('zlib') }}
 
 test:
   commands:
-    {% if target_platform == "linux-64" %}
+    {% if "${target_platform}" == "linux-64" %}
     - export HEADAS=$(ls -d "${PREFIX}/x86_64-pc-linux-gnu-libc"*/ | head -n 1)
-    - source $HEADAS/headas-init.sh
-    - export LHEAPERL=$PREFIX/bin/perl
+    - source ${HEADAS}/headas-init.sh
+    - export LHEAPERL="${PREFIX}/bin/perl"
     - fversion
     {% else %}
     - echo "Tests skipped on non-Linux-64 platforms"
     {% endif %}
 
 about:
-  home: https://heasarc.gsfc.nasa.gov/lheasoft/
-  license: Clear BSD License
+  home: "https://heasarc.gsfc.nasa.gov/lheasoft"
+  license: "Clear BSD License"
+  license_family: BSD
   license_file: LICENSE
-  summary: NASA High Energy Astrophysics Software (HEAsoft)
+  summary: "NASA High Energy Astrophysics Software (HEAsoft)"
   description: |
     HEAsoft is a unified release of the FTOOLS and XANADU software packages for high-energy astrophysics data analysis, including tools like XSPEC.
 
@@ -133,7 +128,7 @@ about:
        cp -r heasoft-{{ version }}/Xspec/src/spectral/modelData "${CONDA_PREFIX}/spectral/"
        ```
 
-  doc_url: https://heasarc.gsfc.nasa.gov/docs/software/heasoft/
+  doc_url: "https://heasarc.gsfc.nasa.gov/docs/software/heasoft"
 
 extra:
   recipe-maintainers:
