@@ -25,7 +25,7 @@ if [[ -f Build.PL ]]; then
 elif [[ -f Makefile.PL ]]; then
     # Make sure this goes in site
     perl Makefile.PL INSTALLDIRS=site
-    make -j"${CPU_COUNT}"
+    make cc="${CXX}" -j"${CPU_COUNT}"
     make test cc="${CXX}"
     make install
 else
