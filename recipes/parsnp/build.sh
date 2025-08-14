@@ -6,6 +6,11 @@ export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3 -fopenmp"
 
+sed -i.bak 's|-m64||' Makefile.am
+sed -i.bak 's|-m64||' src/Makefile.am
+rm -rf *.bak
+rm -rf src/*.bak
+
 cd muscle
 
 autoreconf -if
