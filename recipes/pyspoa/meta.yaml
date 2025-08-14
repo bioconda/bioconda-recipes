@@ -7,13 +7,14 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pyspoa-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  git_url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pyspoa-{{ version }}.tar.gz
+  git_rev: v{{ version }}
+  sha256: unused
 
 build:
   number: 0
   skip: True  # [py < 38]
-  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage('pyspoa', max_pin="x.x") }}
 
@@ -22,6 +23,7 @@ requirements:
     - {{ compiler('cxx') }}
     - make
     - cmake
+    - pkg-config
   host:
     - python
     - pip
@@ -36,13 +38,13 @@ test:
     - spoa
 
 about:
-  home: https://github.com/nanoporetech/pyspoa
+  home: "https://github.com/nanoporetech/pyspoa"
   license: MIT
   license_family: MIT
-  license_file: src/LICENSE
-  summary: Python binding to spoa library.
-  doc_url: https://github.com/nanoporetech/spoa
-  dev_url: https://github.com/nanoporetech/spoa
+  license_file: "src/LICENSE"
+  summary: "Python binding to spoa library."
+  doc_url: "https://github.com/nanoporetech/spoa"
+  dev_url: "https://github.com/nanoporetech/pyspoa/blob/v{{ version }}/README.md"
 
 extra:
   recipe-maintainers:
@@ -51,3 +53,5 @@ extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
+  skip-lints:
+    - uses_vcs_url
