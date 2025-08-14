@@ -34,14 +34,18 @@ elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
     export HYPHY_OPTS="${HYPHY_OPTS}"
 elif [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
     export HYPHY_OPTS="${HYPHY_OPTS} -DNONEON=ON"
+	sed -i.bak 's|-mcpu=native||' CMakeLists.txt
+	sed -i.bak 's|;-mtune=native|-mtune=native|' CMakeLists.txt
+	rm -rf *.bak
 elif [[ "${OS}" == "Linux" && "${ARCH}" == "x86_64" ]]; then
     export HYPHY_OPTS="${HYPHY_OPTS} -DNONEON=ON"
 fi
 
 cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-    -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
-    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" -Wno-dev \
-    -Wno-deprecated --no-warn-unused-cli \
+    -DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_CXX_COMPILER="${CXX}" \
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
     "${HYPHY_OPTS}" \
     "${CONFIG_ARGS}"
 
