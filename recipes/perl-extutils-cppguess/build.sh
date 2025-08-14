@@ -6,6 +6,9 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
+sed -i.bak "s|g++|${CXX}|" t/002_icpp.t
+rm -rf t/*.bak
+
 if [[ -f Build.PL ]]; then
     perl Build.PL
     perl ./Build
