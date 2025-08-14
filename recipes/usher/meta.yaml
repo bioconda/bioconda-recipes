@@ -1,5 +1,5 @@
 {% set name = "usher" %}
-{% set version = "0.6.5" %}
+{% set version = "0.6.6" %}
 
 package:
   name: {{ name }}
@@ -7,13 +7,12 @@ package:
 
 source:
   url: https://github.com/yatisht/usher/archive/v{{ version  }}.tar.gz
-  sha256: 79db3e9bcc4ea41d48740bc0b33ce626d642c7a250cea1ec4c8f23c3d48c3997
+  sha256: 9630654895050a0cf83a60b66299c2ad940694580dcdae3536227ce5a521baec
   patches:
-    - 0001-CMakeLists.patch
-    - 0002-main-cpp.patch
+    - 0001-tbb.patch
 
 build:
-  number: 0
+  number: 2
   run_exports:
     - {{ pin_subpackage('usher', max_pin="x.x") }}
 
@@ -21,7 +20,6 @@ requirements:
   build:
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
-    - make
     - cmake
     - autoconf
     - automake
@@ -30,32 +28,32 @@ requirements:
     - pkg-config
   host:
     - boost-cpp
-    - protobuf <4
+    - protobuf <5
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
     - openmpi
     - openssh
-    - tbb-devel <2021.1.1
+    - tbb-devel ==2022.2.0
     - isa-l
     - wget
   run:
     - mafft
     - boost-cpp
-    - protobuf <4
-    - ucsc-fatovcf  # [not arm64]
+    - protobuf <5
+    - ucsc-fatovcf
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
     - openmpi
     - openssh
-    - tbb-devel <2021.1.1
+    - tbb-devel ==2022.2.0
     - isa-l
 
 test:
   commands:
     - usher --help
     - usher-sampled --help
-    - matOptimize --help
-    - matUtils --help
+    - matOptimize --help  # [not (osx and x86_64)]
+    - matUtils --help  # [not (osx and x86_64)]
 
 about:
   home: "https://github.com/yatisht/usher"

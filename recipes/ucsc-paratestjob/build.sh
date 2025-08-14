@@ -35,8 +35,7 @@ if [[ "$(uname -m)" == "arm64" ]]; then
     rsync -aP rsync://hgdownload.cse.ucsc.edu/genome/admin/exe/macOSX.arm64/paraTestJob .
     install -v -m 755 paraTestJob "${PREFIX}/bin"
 else
-    (cd kent/src && make libs PTHREADLIB=1 CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}")
-    mkdir -p kent/src/parasol/bin
-    (cd kent/src/parasol/paraTestJob && make CC="${CC}" -j"${CPU_COUNT}")
-    install -v -m 755 kent/src/parasol/bin/paraTestJob "${PREFIX}/bin"
+  (cd kent/src && make libs PTHREADLIB=1 CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}")
+  (cd kent/src/parasol && make CC="${CC}" -j"${CPU_COUNT}")
+  install -v -m 0755 kent/src/parasol/bin/paraTestJob "${PREFIX}/bin"
 fi
