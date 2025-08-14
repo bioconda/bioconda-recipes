@@ -5,7 +5,7 @@ set -ex
 export CC="${CC}"
 export CXX="${CXX}"
 export FC="${FC}"
-export PERL="${PERL:-${PREFIX}/bin/perl}"
+export PERL="${PERL:-${BUILD_PREFIX}/bin/perl}"
 export PYTHON="${PYTHON}"
 
 # Create symbolic links for build tools
@@ -46,7 +46,7 @@ cd heasoft/BUILD_DIR
     --enable-static=no \
     --with-components="heacore ftools Xspec nustar suzaku swift integral ixpe heasim heagen heatools attitude"
 
-make
+make -j1
 make install
 
 # Remove modelData to reduce package size
