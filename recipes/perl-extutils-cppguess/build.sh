@@ -16,9 +16,9 @@ if [[ -f Build.PL ]]; then
     perl ./Build install --installdirs site
 elif [[ -f Makefile.PL ]]; then
     # Make sure this goes in site
-    perl Makefile.PL INSTALLDIRS=site CC="${CXX}"
-    make CC="${CXX}"
-    make test CC="${CXX}" -j"${CPU_COUNT}"
+    perl Makefile.PL INSTALLDIRS=site CC="${CXX}" cc="${CXX}"
+    make CC="${CXX}" cc="${CXX}"
+    make test CC="${CXX}" cc="${CXX}" -j"${CPU_COUNT}"
     make install
 else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
