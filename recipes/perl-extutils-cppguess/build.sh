@@ -8,7 +8,7 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-sed -i.bak "s|^    cc => .*$|    cc => '${CXX}',|" ${PREFIX}/lib/perl5/5.32/core_perl/Config.pm
+sed -i.bak "s|^    cc => .*$|    cc => '${CC}',|" ${PREFIX}/lib/perl5/5.32/core_perl/Config.pm
 rm -rf ${PREFIX}/lib/perl5/5.32/core_perl/*.bak
 
 if [[ -f Build.PL ]]; then
