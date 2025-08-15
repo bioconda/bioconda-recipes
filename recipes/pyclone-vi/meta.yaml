@@ -1,29 +1,27 @@
-{% set version = "0.1.2" %}
+{% set name = "pyclone-vi" %}
+{% set version = "0.1.6" %}
 
 package:
-  name: pyclone-vi
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/Roth-Lab/pyclone-vi/archive/{{ version }}.tar.gz
-  sha256: 3e0d598f475baffbf15209d283bb3d98b6fb025b9682fc571651ef450de09a60
+  sha256: 883ac95dd7903a9fb0418314e38a4bb5d028b5569942ab02135427201cef4f1f
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  entry_points:
+    - pyclone-vi= pyclone_vi.cli:main
+  run_exports:
+    - {{ pin_subpackage('pyclone-vi', max_pin="x.x") }}
 
 requirements:
   host:
     - python >=3.7
     - pip
-    - click
-    - h5py
-    - numba
-    - numpy
-    - pandas
-    - scipy
-
   run:
     - python >=3.7
     - click
@@ -41,15 +39,14 @@ test:
 
 about:
   home: https://github.com/Roth-Lab/pyclone-vi
-  license: GPLv3
-  license_file: LICENSE.txt
+  license: "GPL-3.0-or-later"
+  license_file: "LICENSE.txt"
   summary: 'A fast method for inferring clonal population structure'
   license_family: GPL3
+  dev_url: https://github.com/Roth-Lab/pyclone-vi
 
 extra:
-  maintainers:
-  - aroth85
+  recipe-maintainers:
+    - aroth85
   identifiers:
-  - doi:10.1186/s12859-020-03919-2
-  container:
-    extended-base: true
+    - doi:10.1186/s12859-020-03919-2

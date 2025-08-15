@@ -1,15 +1,23 @@
-{% set version = "2.9.1" %}
+{% set name = "flye" %}
+{% set version = "2.9.6" %}
+{% set sha256 = "f05a3889b1c7aafed4cc0ed1adc1f19c22618c1c7b97ab5f80d388c8192bd32a" %}
 
 package:
-  name: flye
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/fenderglass/Flye/archive/{{ version }}.tar.gz
-  sha256: 25a2375cd9ba6b2285f930951ad0fde81628baa97d8709172aa59e931a96678e
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Makefile-aarch64.patch
 
 build:
   number: 0
+  entry_points:
+    - flye = flye.main:main
+  run_exports:
+    - {{ pin_subpackage("flye", max_pin="x") }}
 
 requirements:
   build:
@@ -17,23 +25,33 @@ requirements:
     - make
   host:
     - python
-    - setuptools
+    - pip
     - zlib
   run:
     - python
-    - setuptools
-
-extra:
-  skip-lints:
-    - uses_setuptools  #uses pkg_resources
+    - setuptools  # [osx]
 
 test:
   commands:
-    - flye -h | grep Assembly
-      #skip failing tests for now, some kind of trouble with minimap2
+    - flye -h | grep "Assembly"
     - python -c "import flye.tests.test_toy as t; t.main()"
 
 about:
-  home: https://github.com/fenderglass/Flye/
-  license: BSD-3-Clause
-  summary: Fast and accurate de novo assembler for single molecule sequencing reads
+  home: "https://github.com/mikolmogorov/Flye"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: LICENSE
+  summary: "A fast and accurate de novo assembler for single molecule sequencing reads using repeat graphs."
+  doc_url: "https://github.com/mikolmogorov/Flye/blob/flye/docs/USAGE.md"
+  dev_url: "https://github.com/mikolmogorov/Flye"
+
+extra:
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64
+  identifiers:
+    - biotools:Flye
+    - usegalaxy-eu:flye
+    - doi:10.1038/s41592-020-00971-x
+    - doi:10.1038/s41587-019-0072-8
+    - doi:10.1073/pnas.1604560113

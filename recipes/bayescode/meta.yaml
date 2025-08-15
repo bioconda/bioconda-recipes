@@ -1,12 +1,15 @@
-{% set version = "1.1.6" %}
-{% set sha256 = "de135fc290f61ff3fb73526742d55effe84c2d25511a7454a7f7dfb48f6415ef" %}
+{% set name = "bayescode" %}
+{% set version = "1.3.4" %}
+{% set sha256 = "a85df0bf67ba51cd7cfc5af3622c750a71297cbeda994fcca5c16a6fd457a9f6" %}
 
 package:
-  name: bayescode
-  version: {{ version }} 
+  name: {{ name }}
+  version: {{ version }}
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 source:
   url: https://github.com/ThibaultLatrille/bayescode/archive/refs/tags/v{{ version }}.tar.gz
@@ -17,14 +20,14 @@ requirements:
     - make
     - cmake
     - {{ compiler('cxx') }}
-    - {{ compiler('c') }}
-  host:
   run:
     - python >=3.6
     - numpy
     - pandas
     - ete3
     - matplotlib-base
+    - legacy-cgi
+
 test:
   commands:
     - fasta_to_ali.py --help
@@ -32,13 +35,26 @@ test:
     - calibs_coevol_to_mutsel.py --help
     - traits_coevol_to_mutsel.py --help
     - plot_tree.py --help
+    - neutrality_index.py --help
     - mutselomega --help
     - readmutselomega --help
     - nodemutsel --help
     - readnodemutsel --help
+    - nodeomega --help
+    - readnodeomega --help
+    - nodetraits --help
+    - readnodetraits --help
 
 about:
-  home: https://github.com/ThibaultLatrille/bayescode
+  home: "https://github.com/ThibaultLatrille/bayescode"
   license: MIT
-  license_file: License.MD
-  summary: Mutation-Selection phylogenetic codon models to detect site-specific adaptive evolution or to infer long-term effective population size
+  license_family: MIT
+  license_file: "License.MD"
+  summary: "Mutation-Selection phylogenetic codon models to detect site-specific adaptive evolution or to infer long-term effective population size."
+  dev_url: "https://github.com/ThibaultLatrille/bayescode"
+  doc_url: "https://github.com/ThibaultLatrille/bayescode/wiki"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

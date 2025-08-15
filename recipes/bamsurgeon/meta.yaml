@@ -1,0 +1,44 @@
+{% set name = "Bamsurgeon" %}
+{% set version = "1.4.1" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/adamewing/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 137981f16df21fe5b4f602c641372a20643a8bb92e6c6dddace499427417213f
+  patches:
+    - pyproject.patch
+
+build:
+  run_exports:
+    - {{ pin_subpackage('bamsurgeon', max_pin="x") }}
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed --no-cache-dir -vvv ."
+  number: 0
+  noarch: python
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - samtools >=1.2
+    - bwa >=0.7.12
+    - exonerate >=2.2
+    - velvet >=1.2
+    - wgsim >=0.2
+    - pysam
+    - picard
+
+test:
+  commands:
+    - addsv.py -h
+    - addsnv.py -h
+    - addindel.py -h
+about:
+  home: https://github.com/adamewing/bamsurgeon
+  license: MIT-license
+  license_file: LICENSE.txt
+  summary: Tools for adding genomic variants to BAM/SAM/CRAM files. Can be used to test variant callers.

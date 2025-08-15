@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+set -xe
+
 mkdir build
 cd build
 
@@ -7,7 +11,7 @@ cmake \
 -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX \
 ../src/decifer/cpp/
 
-make VERBOSE=1
+make -j ${CPU_COUNT} VERBOSE=1
 cp mergestatetrees $PREFIX/bin
 cp generatestatetrees $PREFIX/bin
 

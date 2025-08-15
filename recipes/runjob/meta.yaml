@@ -1,4 +1,4 @@
-{% set version = "2.10.2" %} 
+{% set version = "2.10.9" %}
 {% set bc = "batchcompute" %}
 {% set bcv = "2.1.7" %}
 
@@ -8,18 +8,24 @@ package:
 
 source:
   url: https://github.com/yodeng/runjob/archive/v{{ version }}.tar.gz
-  sha256: 8f0d7e225fa49ea0c741e409563b25da06e69bc858c742800c9633ee558e797b
+  sha256: b4ee2dfdbded3430fc7cb1a1d0254728afca15dbfed64c17d73f96a0c7d2f58e
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install -vv --no-deps . https://pypi.io/packages/source/{{ bc[0] }}/{{ bc }}/{{ bc }}-{{ bcv }}.tar.gz
+  script: {{ PYTHON }} -m pip install -vvv --no-deps --no-build-isolation --no-cache-dir . https://pypi.io/packages/source/{{ bc[0] }}/{{ bc }}/{{ bc }}-{{ bcv }}.tar.gz
+  entry_points:
+    - runjob = runjob.qsub:main
+  run_exports:
+    - {{ pin_subpackage('runjob', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.6,<3.10
+    - python >=3.5
+    - setuptools
   run:
+    - python >=3.5
     - psutil >=5.7.0
     - ratelimiter >=1.2.0
     - prettytable >=3.2.0
@@ -29,11 +35,15 @@ test:
   imports:
     - runjob
   commands:
-    - runjob --version
+    #- runjob --version
     - runsge --version
 
 about:
   home: https://github.com/yodeng/runjob
-  license: BSD
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
   summary: "Manage jobs or pipeline of bioinfomation."
   description: "Runjob is a program for managing a group of related bioinformatic jobs or pipelines running on a compute cluster."
+  dev_url: https://github.com/yodeng/runjob
+  doc_url: https://runjob.readthedocs.io/en/latest

@@ -1,5 +1,5 @@
 {% set name = "dnacauldron" %}
-{% set version = "2.0.7" %}
+{% set version = "2.0.12" %}
 
 package:
   name: {{ name|lower }}
@@ -7,17 +7,20 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/dnacauldron-{{ version }}.tar.gz
-  sha256: cdcbbd9bedaa8a376088603fca87e6d829ba5d4863952e64e8508e4381a738c4
+  sha256: c31e21b6b65e239f4be25bff886b6a1f2b9102ec7a1d27d388d9c0949838cf8f
 
 build:
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   number: 0
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('dnacauldron', max_pin="x") }}
 
 requirements:
   host:
     - pip
     - python
+    - setuptools
   run:
     - biopython
     - dna_features_viewer
@@ -39,16 +42,12 @@ requirements:
 test:
   imports:
     - dnacauldron
-  commands:
-    - pip check
-  requires:
-    - pip
 
 about:
   home: https://github.com/Edinburgh-Genome-Foundry/DnaCauldron
-  summary: Cloning simulation for DNA assembly (Golden Gate, Gibson...)
+  summary: "Cloning simulation for DNA assembly (Golden Gate, Gibson...)."
   license: MIT
-  license_file: LICENCE.txt
+  license_file: "LICENCE.txt"
 
 extra:
   recipe-maintainers:

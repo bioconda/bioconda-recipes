@@ -1,5 +1,5 @@
 {% set name = "bioframe" %}
-{% set version = "0.3.3" %}
+{% set version = "0.8.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,25 +7,30 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: de625f2cd7b52cc754730b3750d49730d238b847a22c475dddc92d11d6ea2c55
+  sha256: ea87d7c3f26235bf35396d41bbdcddd21fe7434f7406f8182a67aad241b96fa2
 
 build:
   noarch: python
   number: 0
-  script: "touch requirements.txt && {{ PYTHON }} -m pip install . -vv"
+  script: "touch requirements.txt && {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('bioframe', max_pin="x") }}
 
 requirements:
   host:
     - pip
     - python >=3.7
+    - hatchling
+    - hatch-vcs
   run:
-    - numpy >=1.9
-    - pandas >=0.17
+    - numpy >=1.10
+    - pandas >=1.3
     - matplotlib-base
     - pyfaidx
     - pairix
     - pysam
     - python >=3.7
+    - pyyaml
     - requests
     - six
     - cytoolz

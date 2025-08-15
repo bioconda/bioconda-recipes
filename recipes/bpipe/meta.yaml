@@ -1,5 +1,5 @@
 {% set name = "bpipe" %}
-{% set version = "0.9.11" %}
+{% set version = "0.9.13" %}
 
 package:
   name: {{ name }}
@@ -7,25 +7,28 @@ package:
 
 source:
   url: https://github.com/ssadedin/bpipe/releases/download/{{ version }}/bpipe-{{ version }}.tar.gz
-  sha256: 'f640ab3c32ba8393b47a0019f5a9d3d168da1d741f5f2690797080037a6ce374'
+  sha256: '206939fe11d47d3d5d93667317d6acfdf23fb0bdc3ffb0e7a891c3010d390339'
 
 build:
   number: 0
   noarch: generic
+  run_exports:
+    - {{ pin_subpackage('bpipe', max_pin="x") }}
 
 requirements:
   run:
-    - openjdk
+    # incompatible with newer JDK versions, see https://github.com/ssadedin/bpipe/issues/274
+    - openjdk =11
     - coreutils
 
 test:
   commands:
-    - bpipe -v --help
+    - bpipe --help | grep "Bpipe Version"
     - rm -rf .bpipe
 
 about:
   home: 'http://docs.bpipe.org/'
-  license: BSD-3-clause
+  license: BSD-3-Clause
   license_file: LICENSE
   summary: Bpipe - a tool for running and managing bioinformatics pipelines
 

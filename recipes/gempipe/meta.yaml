@@ -1,0 +1,74 @@
+{% set name = "gempipe" %}
+{% set version = "1.38.1" %}
+
+package:
+    name: {{ name }}
+    version: {{ version }}
+
+source:
+    # with https://github.com/lazzarigioele/{name}/archive/v{version}.tar.gz :
+    url: https://github.com/lazzarigioele/{{ name }}/archive/v{{ version }}.tar.gz
+    # with https://pypi.org/packages/source/{first-letter}/{package-name}/{package-name}-{version}.tar.gz :
+    #url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: 608f2369144a6b170523c4c699fe99b2167cc3b7e62317e9ed2efe10de8be113
+
+build:
+    number: 0  
+    noarch: python
+    script: 
+        - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+    entry_points:
+        - gempipe = gempipe:main
+    run_exports:
+        - {{ pin_subpackage('gempipe', max_pin="x") }}
+    
+requirements:
+    host:
+        - python >=3.9
+        - pip
+        - poetry-core >=1.0.0
+        - ipython >=8.7.0
+    run:
+        - python >=3.9
+        - ipython >=8.7.0
+        - cobra >=0.29
+        - pandas >=2.0.0
+        - openpyxl >=3.1.0
+        - ncbi-genome-download >=0.3.3
+        - biopython >=1.80
+        - pigz >=2.5
+        - prodigal >=2.6.3
+        - prokka >=1.14.6
+        - busco >=5.4.0
+        - seqkit >=2.2.0
+        - cd-hit >=4.8.1
+        - blast >=2.12.0
+        - diamond >=2.0.15
+        - eggnog-mapper >=2.1.7
+        - matplotlib-base >=3.7.0
+        - seaborn >=0.13.0
+        - scipy >=1.10.0
+        - scikit-learn >=1.3.0
+
+test:
+    imports:
+        - gempipe
+    commands:
+        - gempipe --help
+        - gempipe recon --help
+        - gempipe derive --help
+        - gempipe autopilot --help
+
+about:
+    home: "https://github.com/lazzarigioele/gempipe"
+    summary: 'gempipe is a tool for the reconstruction of strain-specific genome-scale metabolic models.'
+    license: GPL-3.0-only
+    license_family: GPL3
+    license_file: LICENSE.txt
+    doc_url: "https://gempipe.readthedocs.io/"
+    dev_url: "https://github.com/lazzarigioele/gempipe"
+
+extra:
+    recipe-maintainers:
+        - lazzarigioele
+        

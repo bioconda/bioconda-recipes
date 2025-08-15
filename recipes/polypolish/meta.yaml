@@ -1,4 +1,4 @@
-{% set version = "0.5.0" %}
+{% set version = "0.6.0" %}
 
 package:
   name: polypolish
@@ -6,31 +6,41 @@ package:
 
 source:
   url: https://github.com/rrwick/Polypolish/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 183156093c03094290951f140010b3aef6222a672bf538e9136914178775fb1f
+  sha256: 99ea799352cecf6723b73fb4c5c64dd2091ff1cdab6eef10309e06c642e56855
 
 build:
-  number: 2
+  number: 3
+  run_exports:
+    - {{ pin_subpackage('polypolish', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - rust >=1.39
+    - {{ compiler('rust') }}
     - pkg-config
     - clangdev
     - make
     - cmake
-  run:
-    - python >=3.6
 
 test:
   commands:
-    - polypolish -h
-    - polypolish_insert_filter.py --help
+    - polypolish polish --help
+    - polypolish filter --help
 
 about:
   home: https://github.com/rrwick/Polypolish
-  license: GPLv3
-  license_family: GPL
+  license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: LICENSE
   summary: Polishing genome assemblies with short reads.
+  doc_url: https://github.com/rrwick/Polypolish/wiki
+  dev_url: https://github.com/rrwick/Polypolish
+
+extra:
+  identifiers:
+    - doi:10.1371/journal.pcbi.1009802
+    - biotools:polypolish
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -8,10 +8,15 @@ package:
 source:
   url: https://github.com/EI-CoreBioinformatics/portcullis/archive/refs/tags/Release-{{ version }}.tar.gz
   sha256: 9183c4e8108af1e813dbc35e537e16e5d0e13f53ed4c0a36b182c3f8bfcea438
+  patches:
+    - boost-leaf.patch
+    - m64.patch
 
 build:
-  number: 0
+  number: 3
   skip: True # [osx or py27 or py == 310]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -21,16 +26,17 @@ requirements:
     - autoconf
     - automake >=1.15.1
     - libtool
-    - perl
   host:
     - zlib
     - pandas
-    - python
-    - samtools >=1.9
+    - python <3.10    # configure script logic thinks 3.10 is < 3.5.. so avoid
     - boost-cpp
+    - libboost-python-devel
+    - samtools >=1.9
   run:
     - python
-    - boost-cpp
+    - libboost
+    - libboost-python-devel
     - tabulate
     - numpy
     - pandas
@@ -40,6 +46,10 @@ test:
   commands:
     - portcullis --version
     - junctools --help  
+
+extra:
+  additional-platforms:
+    - linux-aarch64
 
 about:
   home: https://github.com/maplesond/portcullis

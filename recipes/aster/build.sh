@@ -1,22 +1,34 @@
 #!/bin/bash
 
-if [ "$(uname)" == "Darwin" ];
-then
-    sed -i.bak1 's/g++/${CXX}/g' makefile
-    sed -i.bak2 's/astral-hybrid astral-hybrid_precise //g' makefile
-    make
-else
-    sed -i.bak 's/g++/${GXX}/g' makefile
-    make
+export CXXFLAGS="${CXXFLAGS} -O3"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+for CHANGE in "activate" "deactivate"
+do
+	mkdir -p "${PREFIX}/etc/conda/${CHANGE}.d"
+	cp -rf "${RECIPE_DIR}/${CHANGE}.sh" "${PREFIX}/etc/conda/${CHANGE}.d/${PKG_NAME}_${CHANGE}.sh"
+done
+
+if [[ `uname -m` == "x86_64" ]]; then
+	sed -i.bak 's/-march=native/-march=x86-64 -mtune=generic/g' makefile
+elif [[ `uname -m` == "arm64" ]]; then
+	sed -i.bak 's/-march=native/-mtune=generic/g' makefile
 fi
 
-[ ! -d $PREFIX/bin ] && mkdir -p $PREFIX/bin
+if [[ "$(uname)" == "Darwin" ]]; then
+	sed -i.bak 's/g++/${CXX}/g' makefile
+	sed -i.bak 's/g++/${CXX}/g' makefile
+	make -j"${CPU_COUNT}"
+else
+	sed -i.bak 's/g++/${CXX}/g' makefile
+	sed -i.bak 's/g++/${CXX}/g' makefile
+	make -j"${CPU_COUNT}"
+fi
 
-cp bin/astral $PREFIX/bin/
-cp bin/astral-pro $PREFIX/bin/
-cp bin/asterisk $PREFIX/bin/
+sed -i.bak 's|-O2|-O3|' makefile
+rm -rf *.bak
 
-chmod a+x $PREFIX/bin/astral
-chmod a+x $PREFIX/bin/astral-pro
-chmod a+x $PREFIX/bin/asterisk
+[[ ! -d ${PREFIX}/bin ]] && mkdir -p "${PREFIX}/bin"
 
+install -v -m 0755 bin/* "${PREFIX}/bin"

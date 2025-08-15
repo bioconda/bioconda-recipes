@@ -15,7 +15,9 @@ grep -va '^Priority: ' DESCRIPTION.old > DESCRIPTION
 # shellcheck disable=SC2086
 ${R} CMD INSTALL --build . ${R_ARGS}
 
-# Add more build steps here, if they are necessary.
+# Adding command line tools
+mkdir -p ${PREFIX}/bin
+cp -v ${SRC_DIR}/scripts/calder ${PREFIX}/bin/calder
 
 # See
 # https://docs.conda.io/projects/conda-build

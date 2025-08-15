@@ -1,5 +1,5 @@
 {% set name = "singlem" %}
-{% set version = "0.13.2" %}
+{% set version = "0.19.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,52 +7,68 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 46daead5d6ab89b741700544c26027d07b0ca3652c06a91e0a8215634845ea3b
+  sha256: 78ee347e8be31a39ce89af0f0df49aaacf503a0c8d10ba56cf7a6407f14297b1
 
 build:
-  number: 2
+  number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('singlem', max_pin="x.x") }}
 
+# Requirements can be adapated from the environment.yml file at https://github.com/wwood/singlem/blob/main/admin/environment.yml
 requirements:
   host:
     - pip
-    - python >=3.6
-    - nose >=1.0
+    - python >=3.7
+    - setuptools
   run:
-    - python >=3.6
-    - graftm =0.13.1 # 0.14 requires python 3.7+, which is incompatible because of tempdir, but the first graftm 0.14.0 recipe is flawed - it will install but not work when.
-    - extern >=0.0.4
-    - tempdir >=0.6
-    - biopython >=1.64
-    - dendropy >=0.4.0
-    - pandas
-    - biom-format >=2.1.6
-    - orator >=0.9.7
-    - squarify >=0.3.0
-    - matplotlib-base >=2.0.2
-    - smafa >=0.5.0
-    - vsearch
-    - diamond >=0.9
-    - hmmer >=3.1b1
-    - h5py
-    - krona >=2.4
-    - orfm >=0.2.0
-    - pplacer >=1.1.alpha17
-    - mfqe >=0.5.0
-    - expressbetadiversity
+    - biopython =1.*
+    - bird_tool_utils_python =0.*, >=0.4.1
+    - cd-hit =4.8.*
+    - diamond =2.1.10
+    - expressbetadiversity =1.0.*
+    - extern =0.4.*
+    - fastalite =0.4.*
+    - fasttree =2.1.*
+    - galah =0.4.*
+    - graftm =0.15.*
+    - gtdbtk =2.4.1
+    - hmmer =3.2.*
+    - jinja2 =3.1.*
+    - krona =2.8.*
+    - mafft =7.*
+    - mfqe =0.5.*
+    - ncbi-ngs-sdk =3.0.*
+    - orfm =1.*
+    - pandas =2.*
+    - polars =1.27.*
+    - pplacer =1.1.alpha19
+    - prodigal =2.*
+    - pyarrow =16.*
+    - pyranges =0.1.*
+    - python >=3.7
+    - seqmagick =0.*
+    - smafa =0.8.*
+    - sqlalchemy =2.0.*
+    - sqlite =3.*
+    - sqlparse =0.*
+    - squarify =0.4.*
+    - sra-tools =2.9.*
+    - tqdm >=4.66.0, <5.0
+    - zenodo_backpack =0.3.*
 
 test:
   imports:
     - singlem
-  requires:
-    - nose >=1.0
   commands:
     - singlem -h
 
 about:
-  home: https://github.com/wwood/singlem
-  license: GNU General Public v3 (GPLv3)
-  license_family: GPL3
-  license_file: LICENSE
-  summary: 'SingleM is a tool to find the abundances of discrete operational taxonomic units (OTUs) directly from shotgun metagenome data, without heavy reliance on reference sequence databases. It is able to differentiate closely related species even if those species are from lineages new to science.'
+  home: "https://github.com/wwood/singlem"
+  license: "GPL-3.0-or-later"
+  license_family: "GPL3"
+  license_file: "LICENCE.txt"
+  summary: 'At heart, SingleM is a tool for profiling shotgun metagenomes. It was originally designed to determine the relative abundance of bacterial and archaeal taxa in a sample. As of version 0.19.0, it can also be used to profile dsDNA phages (see Lyrebird). It shows good accuracy in estimating the relative abundances of community members, and has a particular strength in dealing with novel lineages. The method it uses also makes it suitable for some related tasks, such as assessing eukaryotic contamination, finding bias in genome recovery, and lineage-targeted MAG recovery. It can also be used as the basis for choosing metagenomes which, when coassembled, maximise the recovery of novel MAGs (see Bin Chicken).'
+  dev_url: "https://github.com/wwood/singlem"
+  doc_url: "https://wwood.github.io/singlem/"

@@ -1,0 +1,44 @@
+--- delplot.R.old	2022-02-17 10:09:20.283421032 -0600
++++ delplot.R	2022-02-17 10:10:50.456740467 -0600
+@@ -1,41 +1,3 @@
+-#https://rdrr.io/github/PredictiveEcology/Require/src/R/setLibPaths.R (add MitoSAlt bin to paths)
+-setLibPaths <- function(libPaths, standAlone = TRUE) {
+-  oldLibPaths <- .libPaths()
+-  #libPaths <- checkPath(normPath(libPaths), create = TRUE)#, mustWork = TRUE)
+-
+-  shim_fun <- .libPaths
+-  shim_env <- new.env(parent = environment(shim_fun))
+-  if (isTRUE(standAlone)) {
+-    shim_env$.Library <- tail(.libPaths(), 1)
+-  } else {
+-    shim_env$.Library <- .libPaths()
+-  }
+-  shim_env$.Library.site <- character()
+-
+-  environment(shim_fun) <- shim_env
+-  shim_fun(unique(libPaths))
+-}
+-
+-setLibPaths("bin/",standAlone=FALSE) #add MitoSAlt bin to paths
+-
+-#check Biostring library
+-check.biostring<-"Biostrings" %in% installed.packages()
+-
+-if(check.biostring=="FALSE"){
+-    cat("Biostrings not installed, installing now!\n")
+-    
+-    rversion<-as.numeric(gsub(".*version\\s(.{3}).*","\\1",R.version.string))
+-    if(rversion<=3.5){
+-        source("http://bioconductor.org/biocLite.R")
+-        biocLite("Biostrings")
+-    }
+-    else if(rversion>3.5){
+-        if (!requireNamespace("BiocManager", quietly = TRUE))
+-            install.packages("BiocManager")
+-        BiocManager::install("Biostrings",lib="bin")
+-    }
+-} 
+-
+ #LOAD LIBRARIES
+ library(plotrix)
+ library(RColorBrewer)
