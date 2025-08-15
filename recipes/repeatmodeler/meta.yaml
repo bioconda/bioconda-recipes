@@ -1,67 +1,67 @@
 {% set name = "RepeatModeler" %}
-{% set version = "2.0.3" %}
-{% set sha256 = "063bb8ab6b9f4bf18458504f6f90c0022ef5a5aebf2176f78f87f9e69faf7408" %}
+{% set version = "2.0.7" %}
+{% set sha256 = "2873697a885e7115bf5e940cf880f47de17efb7a200ec2d3a1627d5a689f7a8f" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/Dfam-consortium/RepeatModeler/archive/{{ version }}.tar.gz
+  url: https://github.com/Dfam-consortium/RepeatModeler/archive/refs/tags/{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
     - patch
 
 build:
-  skip: True  # [osx]
   number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('repeatmodeler', max_pin="x") }}
 
 requirements:
   host:
     - perl
-    - perl-file-which
-    - rmblast >=2.11.0
-    - perl-uri
-    - perl-libwww-perl
     - perl-devel-size
+    - perl-file-which
+    - perl-libwww-perl
+    - perl-lwp-protocol-https
+    - perl-uri
+    - rmblast >=2.14.1
   run:
     - perl
+    - perl-devel-size
     - perl-file-which
-    - perl-devel-size
-    - perl-uri
     - perl-libwww-perl
-    - perl-devel-size
-    - repeatmasker
-    - rmblast >=2.11.0
+    - perl-lwp-protocol-https
+    - perl-uri
+    - rmblast >=2.14.1
+    - repeatmasker >=4.1.5
     - trf >=4.09
     - repeatscout >=1.0.6
     - recon >=1.08
+    - repeatafterme
     - cd-hit >=4.8.1
     - ltr_retriever >=2.9
     - mafft >=7.471
     - genometools-genometools >=1.6
+    - ninja-nj
     - ucsc-twobitinfo
     - ucsc-twobittofa
     - ucsc-fatotwobit
-    - ninja-nj    # [not osx]
-# to be complete it is missing ABBlast
 
 test:
-  files:
-    - test.fa
   commands:
-     # (see run_test.sh )
-    - "RepeatModeler -h | grep SYNOPSIS"
+    - 'RepeatModeler -h | grep "SYNOPSIS"'
 
 about:
-  home: 'http://www.repeatmasker.org/RepeatModeler/'
+  home: 'https://www.repeatmasker.org/RepeatModeler'
   license: 'Open Software License v2.1'
   license_file: LICENSE
   summary: 'RepeatModeler is a de-novo repeat family identification and modeling package.'
-  dev_url: https://github.com/Dfam-consortium/RepeatModeler
+  dev_url: "https://github.com/Dfam-consortium/RepeatModeler"
+  doc_url: "https://www.repeatmasker.org/RepeatModeler"
 
 extra:
   identifiers:
     - biotools:RepeatModeler
-  skip-lints:
-    - should_be_noarch_generic
+    - usegalaxy-eu:repeatmodeler

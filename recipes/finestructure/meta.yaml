@@ -1,38 +1,34 @@
+{% set version = "4.1.1" %}
 {% set variant = "openblas" %}
 
 package:
   name: finestructure
-  version: '2.1.3'
+  version: '{{ version }}'
 
 source:
-  url: https://people.maths.bris.ac.uk/~madjl/finestructure/fs-2.1.3.tar.gz
-  sha256: f771ee6795b2ce6a5032412b3f856598c3c37308f722ddfcb62174baaf7779f2
+  url: https://people.maths.bris.ac.uk/~madjl/finestructure/fs_{{ version }}.zip
+  sha256: 7af2dd51b02bf117e364f70e76d03920b0cd9ec17111b5be94dd2a5ab906b75e
   patches:
+    - perl.patch
     - noSwitch.patch
 
 build:
-  number: 5
-  skip: true # [win]
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('finestructure', max_pin='x.x') }}
 
 requirements:
-  build:
-    - make
-    - {{ compiler('cxx') }}
-    - patch
   host:
-    - gsl
-    - zlib
     - perl
-    # Force openblas here to ensure that we use GSL from conda-forge
-    # Following the conventions from the scipy feedstock. See below in 'run' also.
-    - blas 1.1 {{ variant }}  # [unix]
-    - openblas  # [unix]
+    - clang
+    - r-xml
+    - r-ape
   run:
-    - gsl
-    - zlib
     - perl
-    - blas 1.1 {{ variant }}  # [unix]
-    - openblas  # [unix]
+    - clang
+    - r-xml
+    - r-ape
 
 about:
   home: https://people.maths.bris.ac.uk/~madjl/finestructure/finestructure.html
@@ -42,7 +38,17 @@ about:
 
 test:
   commands:
-    - fs --help >> /dev/null
+    - fs -help | grep "USAGE"
+    - beagle2chromopainter.pl | grep "usage" 
+    - chromopainter2chromopainterv2.pl | grep "usage"
+    - convertrecfile.pl | grep "Usage"
+    - impute2chromopainter.pl | grep "usage"
+    - makeuniformrecfile.pl | grep "Usage"
+    - msms2cp.pl | grep "usage"
+    - phasescreen.pl | grep "usage"
+    - phasesubsample.pl | grep "usage"
+    - plink2chromopainter.pl | grep "Usage"
+
 
 extra:
   identifiers:

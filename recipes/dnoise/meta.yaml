@@ -1,0 +1,48 @@
+{% set name = "DnoisE" %}
+{% set version = "1.4.1" %}
+{% set sha256 = "39c728faea03732df906cb90bf541efdb8d7ebf4858c9bf2717fa8a75e9157b1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/adriantich/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256 : {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --ignore-installed"
+  run_exports:
+    - {{ pin_subpackage('dnoise', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools
+    - pip
+  run:
+    - python >=3.8
+    - pandas =2.0
+    - numpy >=1.21
+    - tqdm
+    - python-levenshtein =0.21
+
+about:
+  home: https://github.com/adriantich/DnoisE
+  license: GPL-3.0-only
+  license_family: GPL
+  license_file: LICENSE
+  summary: "Denoise sequence data sets from Illumina using distance corrected according to the entropy of each codon position"
+
+test:
+  imports:
+    - dnoise
+  commands:
+    - dnoise -h
+
+extra:
+  recipe-maintainers:
+    - adriantich
+    - kbseah

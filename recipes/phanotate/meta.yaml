@@ -1,5 +1,5 @@
 {% set name = "phanotate" %}
-{% set version = "1.5.0" %}
+{% set version = "1.6.7" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,12 +7,14 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "589e441d2369e5550aef98b8d99fd079d130363bf881a70ac862fc7a8e0d2c88"
+  sha256: "81889ccaa04bd530a7f2f0b93064c748940b573d736c824f2e97450df5b2033e"
 
 build:
-  number: 2
-  skip: True  # [py27]
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv "
+  number: 0
+  skip: True  # [py < 36]
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('phanotate', max_pin="x") }}
 
 requirements:
   build:
@@ -21,6 +23,7 @@ requirements:
     - pip
     - python
   run:
+    - python
     - fastpath
     - matplotlib-base
     - scipy
@@ -28,8 +31,9 @@ requirements:
     - statsmodels
     - backports.tempfile
     - textwrap3
-    - setuptools
     - trnascan-se
+    - genbank
+    - setuptools  # uses pkg_resources
 
 test:
   commands:

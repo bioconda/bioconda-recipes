@@ -1,47 +1,75 @@
-{% set version="0.5.6" %}
+{% set name = "usher" %}
+{% set version = "0.6.6" %}
 
 package:
-  name: usher
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  - url: https://github.com/yatisht/usher/archive/v{{ version  }}.tar.gz
-    sha256: c832c984f540a9a401220db7b03029ad175149fc95cc8de2b79af1837b3950d5
+  url: https://github.com/yatisht/usher/archive/v{{ version  }}.tar.gz
+  sha256: 9630654895050a0cf83a60b66299c2ad940694580dcdae3536227ce5a521baec
+  patches:
+    - 0001-tbb.patch
 
 build:
-  number: 0
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('usher', max_pin="x.x") }}
 
 requirements:
   build:
-    - make
-    - autoconf
-    - cmake
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
-    - wget
+    - cmake
+    - autoconf
+    - automake
+    - libtool
+    - ninja
+    - pkg-config
   host:
     - boost-cpp
-    - libprotobuf
-    - openmpi=4.1.2
+    - protobuf <5
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - openmpi
     - openssh
+    - tbb-devel ==2022.2.0
     - isa-l
+    - wget
   run:
     - mafft
     - boost-cpp
+    - protobuf <5
     - ucsc-fatovcf
-    - openmpi=4.1.2
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - openmpi
     - openssh
+    - tbb-devel ==2022.2.0
     - isa-l
 
 test:
   commands:
     - usher --help
-    - matOptimize --help
-    - matUtils --help
+    - usher-sampled --help
+    - matOptimize --help  # [not (osx and x86_64)]
+    - matUtils --help  # [not (osx and x86_64)]
 
 about:
-  home: https://github.com/yatisht/usher
+  home: "https://github.com/yatisht/usher"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: Ultrafast Sample Placement on Existing Trees (UShER)
+  summary: "Ultrafast Sample Placement on Existing Trees (UShER)."
+  doc_url: "https://usher-wiki.readthedocs.io/en/latest"
+  dev_url: "https://github.com/yatisht/usher"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1038/s41588-021-00862-7
+    - biotools:usher
+    - usegalaxy-eu:usher_matutils
+    - usegalaxy-eu:usher

@@ -1,0 +1,38 @@
+{% set name = "deacon" %}
+{% set version = "0.8.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bede/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: 1b36571b7f9b7310ea76710266cc6d9ea286e447ef0381b56536a9ca30a086c0
+
+build:
+  number: 0
+  script: "cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
+  run_exports:
+    - {{ pin_subpackage('deacon', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+
+test:
+  commands:
+    - deacon index build --help
+    - deacon filter --help
+
+about:
+  home: https://github.com/bede/deacon
+  license: MIT
+  license_file: LICENSE
+  summary: Fast alignment-free sequence filter
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - bede

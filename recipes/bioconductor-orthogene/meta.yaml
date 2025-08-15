@@ -1,28 +1,31 @@
-{% set version = "1.0.0" %}
+{% set version = "1.12.0" %}
 {% set name = "orthogene" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: c0fd1f16abd99610b480a5938a9d0038
+about:
+  description: '`orthogene` is an R package for easy mapping of orthologous genes across hundreds of species. It pulls up-to-date gene ortholog mappings across **700+ organisms**. It also provides various utility functions to aggregate/expand common objects (e.g. data.frames, gene expression matrices, lists) using **1:1**, **many:1**, **1:many** or **many:many** gene mappings, both within- and between-species.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Interspecies gene mapping
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: remotes, knitr, BiocStyle, covr, markdown, rmarkdown, here, testthat (>= 3.0.0), piggyback, badger
+  run_exports: '{{ pin_subpackage("bioconductor-orthogene", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: rworkflows, remotes, knitr, BiocStyle, markdown, rmarkdown, testthat (>= 3.0.0), piggyback, magick, GenomeInfoDbData, ape, phytools, rphylopic (>= 1.0.0), TreeTools, ggimage, OmaDB
 requirements:
   host:
-    - 'bioconductor-delayedarray >=0.20.0,<0.21.0'
-    - 'bioconductor-delayedmatrixstats >=1.16.0,<1.17.0'
-    - 'bioconductor-genomeinfodbdata >=1.2.0,<1.3.0'
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-ggtree >=3.14.0,<3.15.0
     - r-babelgene
     - r-base
     - r-data.table
@@ -34,13 +37,11 @@ requirements:
     - r-homologene
     - r-jsonlite
     - r-matrix
-    - r-matrix.utils
     - r-patchwork
     - r-repmis
   run:
-    - 'bioconductor-delayedarray >=0.20.0,<0.21.0'
-    - 'bioconductor-delayedmatrixstats >=1.16.0,<1.17.0'
-    - 'bioconductor-genomeinfodbdata >=1.2.0,<1.3.0'
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-ggtree >=3.14.0,<3.15.0
     - r-babelgene
     - r-base
     - r-data.table
@@ -52,16 +53,18 @@ requirements:
     - r-homologene
     - r-jsonlite
     - r-matrix
-    - r-matrix.utils
     - r-patchwork
     - r-repmis
+
+source:
+  md5: bab026b422920faf5d5263fa2dfa3c51
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Interspecies gene mapping'
-  description: 'orthogene is an R package for easy mapping of orthologous genes across hundreds of species. It pulls up-to-date interspecies gene ortholog mappings across 700+ organisms. It also provides various utility functions to map common objects (e.g. data.frames, gene expression matrices, lists) onto 1:1 gene orthologs from any other species.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

@@ -1,4 +1,4 @@
-{% set version = "1.1.1" %}
+{% set version = "1.5" %}
 
 package:
   name: unifrac-binaries
@@ -6,38 +6,40 @@ package:
 
 source:
   url: https://github.com/biocore/unifrac-binaries/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 7bf3847bf14fc57b6edcbae5e20230f88a590867b51c92f7881bcf2b2063dde5
+  sha256: 566cae407e4bb0f94dbc712cc367177ac24bd894254ded39f1157f7d2837ff1b
 
 build:
-  number: 1
-
-  # Building on OSX gives the following error:
-  # api.cpp:202:14: error: use of undeclared identifier 'mkostemp'; did you mean 'mkstemps'?
-  #       int fd=mkostemp((char *) mmap_template.c_str(), O_NOATIME );
-  #              ^~~~~~~~
-  #              mkstemps
-  skip: true # [osx]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("unifrac-binaries", max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - hdf5
-    - mkl-include
-    - hdf5-static
+    - libcxx-devel # [osx]
+    - llvm-openmp # [osx]
+    - hdf5 =*=nompi*
+    - hdf5-static =*=nompi*
     - lz4
+    - zlib # [linux]
     - libcblas
+    - blas-devel
     - liblapacke
     - make
     - curl
   host:
     - lz4
+    - zlib # [linux]
     - libcblas
     - liblapacke
+    - libaec # [linux]
   run:
     - lz4
+    - zlib # [linux]
     - libcblas
     - liblapacke
+    - libaec # [linux]
 
 test:
   commands:
@@ -62,6 +64,9 @@ about:
   dev_url: https://github.com/biocore/unifrac-binaries
 
 extra:
+  additional-platforms:
+    - osx-arm64
+
   recipe-maintainers:
     - sfiligoi
     - wasade

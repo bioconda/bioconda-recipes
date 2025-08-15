@@ -1,0 +1,48 @@
+{% set name = "vpt-segmentation-packing" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/vpt_segmentation_packing-{{ version }}.tar.gz
+  sha256: 51f4e0a2a5099ddf8b2d442f2025dd2e835e48d0a1e7db6966453fd3983db9c7
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("vpt-segmentation-packing", max_pin="x.x.x") }}
+
+requirements:
+  host:
+    - python >=3.9,<3.11
+    - poetry-core
+    - pip
+  run:
+    - python >=3.9,<3.11
+    - mapbox_earcut >=1.0.1
+    - numpy >=1.24.3
+    - pandas >=2.0.3
+    - pyarrow >=8.0.0
+    - shapely >=2.0.0
+
+test:
+  imports:
+    - vpt_segmentation_packing
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/Vizgen/vpt-segmentation-packing
+  summary: Packs cell boundaries for the Vizgen vzg2 file format
+  license: Apache-2.0
+  license_file: LICENSE.md
+
+extra:
+  recipe-maintainers:
+    - nilchia

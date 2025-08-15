@@ -1,0 +1,45 @@
+{% set version = "1.6.0" %}
+{% set name = "FeatSeekR" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: FeatSeekR performs unsupervised feature selection using replicated measurements. It iteratively selects features with the highest reproducibility across replicates, after projecting out those dimensions from the data that are spanned by the previously selected features. The selected a set of features has a high replicate reproducibility and a high degree of uniqueness.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: FeatSeekR an R package for unsupervised feature selection
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-featseekr", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: rmarkdown, knitr, BiocStyle, DmelSGI, testthat (>= 3.0.0)
+requirements:
+  host:
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-mass
+    - r-pheatmap
+    - r-pracma
+  run:
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-mass
+    - r-pheatmap
+    - r-pracma
+source:
+  md5: 23c49ca8d640009f029e1d88ae812f0c
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

@@ -1,0 +1,51 @@
+{% set name = "sistem" %}
+{% set version = "1.0.3" %}
+
+package:
+  name: '{{ name }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/samsonweiner/sistem/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 8f39c5b52d2cac958d5dae6a3eda6b261216da4e3b5e9283aec437f715cbff76
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('sistem', max_pin="x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools
+  run:
+    - python >={{ python_min }}
+    - numpy >=1.24.3
+    - scikit-learn >=1.6.1
+    - scipy >=1.10.1
+    - biopython >=1.8.1
+    - pyfaidx >=0.7.2.1
+    - samtools
+    - dwgsim
+
+test:
+  imports:
+    - sistem
+
+about:
+  home: "https://github.com/samsonweiner/sistem"
+  dev_url: "https://github.com/samsonweiner/sistem"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "A tool for simulating tumor growth, metastasis, and DNA-seq data."
+  description: |
+    SISTEM (SImulation of Single-cell Tumor Evolution and Metastasis) is a software package and mathematical model for simulating tumor evolution, cell migrations, and DNA-seq data at single-cell resolution.
+  doc_url: "https://sistem.readthedocs.io/en/latest"
+
+extra:
+  recipe-maintainers:
+    - samsonweiner
