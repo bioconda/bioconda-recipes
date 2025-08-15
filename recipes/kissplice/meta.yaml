@@ -1,27 +1,32 @@
+{% set name = "kissplice" %}
+{% set version = "2.6.5" %}
+
 package:
-  name: kissplice
-  version: '2.5.5'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: "ftp://pbil.univ-lyon1.fr/pub/logiciel/kissplice/download/kissplice-2.5.5.tar.gz"
-  sha256: "d75d17393938d94b98811a7ef602e07d7c936d84c4ba2531bfd0830e9bf2a261"
+  url: "https://gitlab.inria.fr/erable/{{ name }}/-/archive/{{ version }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "79fa50c8fdd83d5b1235fe5ac9293cd9aa241bb86b7badb3b524edd96b781380"
 
 build:
-  number: 0
-#  skip: True # [py2k]
+  number: 1
+  run_exports:
+  - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 requirements:
   build:
-    - make
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake
+    - libgomp  # [linux]
     - llvm-openmp  # [osx]
-    - libgomp      # [linux]
+    - cmake
+    - make
+    - bcalm >=2.2.3
   host:
     - zlib
   run:
-    - python >=3
+    - python >=3.8
+    - bcalm >=2.2.3
 
 test:
   commands:
@@ -31,3 +36,8 @@ about:
   home: http://kissplice.prabi.fr
   license: CeCILL license
   summary: A local transcriptome assembler for SNPs, indels and AS events
+
+extra:
+  recipe-maintainers:
+    - MONJEAUD Cyril
+    - leoisl

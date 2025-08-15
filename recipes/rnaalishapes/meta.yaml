@@ -1,0 +1,49 @@
+{% set fold_grammars_version = "2.3.1" %}
+{% set rnaalishapes_version = "2.5.0" %}
+{% set packagename = "rnaalishapes" %}
+{% set sha256 = "0c5b7d91893d0a23189f4af3602e18f110f030eac49a3658f7acede23596fde0" %}
+
+package:
+  name: {{ packagename }}
+  version: {{ rnaalishapes_version }}
+
+source:
+  sha256: {{ sha256 }}
+  # the repository "fold-grammars" contains sources for several programs, i.e. pKiss, RNAshapes, ...
+  # thus, the version number does not correspond to the {{ packagename }} version number
+  url: https://github.com/jlab/fold-grammars/archive/{{ fold_grammars_version }}.tar.gz
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('rnaalishapes', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - libcxx <17 # [osx]
+  host:
+    - perl
+    - bellmans-gapc >=2024.01.12
+    - libopenblas
+    - libcxx <17 # [osx]
+  run:
+    - perl
+    - bellmans-gapc >=2024.01.12
+    - libopenblas
+
+test:
+  commands:
+    - RNAalishapes -h
+    - echo -e "CLUSTAL W (1.83) multiple sequence alignment\ntest CGCAUGCUAGUCGCG" | RNAalishapes
+
+about:
+  home: https://bibiserv.cebitec.uni-bielefeld.de/{{ packagename }}
+  license: 'GPL-3.0-or-later'
+  license_file: LICENSE
+  summary: "RNAalishapes is a tool for secondary structure prediction, using shape abstraction. Input is a multiple sequence alignment. Pseudoknots are not considered at all."
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btu649

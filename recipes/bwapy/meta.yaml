@@ -1,17 +1,21 @@
+{% set name = "bwapy" %}
 package:
-  name: bwapy
+  name: {{name}}
   version: 0.1.4
 
 source:
   - url: https://github.com/nanoporetech/bwapy/archive/v0.1.4.tar.gz
     sha256: c884aa3c612f1b85568339c5db4bf226a76305a958fefe90ee683662ca31f0bf
-  - url: https://github.com/lh3/bwa/releases/download/v0.7.15/bwa-0.7.15.tar.bz2
-    sha256: 2f56afefa49acc9bf45f12edb58e412565086cc20be098b8bf15ec07de8c0515
+  - url: https://github.com/lh3/bwa/archive/v0.7.19.tar.gz
+    sha256: cdff5db67652c5b805a3df08c4e813a822c65791913eccfb3cf7d528588f37bc
     folder: bwa
 
 build:
-  number: 4
-  skip: True  # [py<30]
+  number: 10
+  # imp was removed from python 3.12
+  skip: true # [py == 312 ]
+  run_exports:
+    - {{ pin_subpackage("bwapy", max_pin="x.x") }}
 
 requirements:
   build:
@@ -37,6 +41,9 @@ about:
   summary: "Bwapy provides python wrappers for bwa."
  
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   skip-lints:
     - uses_vcs_url
     - missing_hash

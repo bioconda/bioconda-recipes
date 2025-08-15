@@ -1,38 +1,55 @@
+{% set name = "r-cimpl" %}
+{% set version = "1.1" %}
+
 package:
-  name: r-cimpl
-  version: 1.1
+  name: {{ name }}
+  version: {{ version }}
+
 source:
-  url: https://github.com/NKI-CCB/cimpl/archive/v1.1.tar.gz
+  url: https://github.com/NKI-CCB/cimpl/archive/v{{ version }}.tar.gz
   sha256: 4895f221e8d12efc65d892684efbd151e909b32d5c5041d4bcefea9e832995f5
+
 build:
-  number: 4
+  number: 8
+  noarch: generic
   rpaths:
     - lib/R/lib/
     - lib/
+  script:
+    - export LC_ALL="en_US.UTF-8"
+    - export DISABLE_AUTOBREW=1
+    - $R CMD INSTALL --build . "${R_ARGS}"
+  run_exports: 
+    - {{ pin_subpackage('r-cimpl', max_pin="x") }}
+
 requirements:
   host:
-    - r-base
+    - 'r-base >=3.6.3'
     - 'r-kernsmooth'
     - 'r-mass'
     - 'r-xtable'
     - 'bioconductor-biomart'
     - 'bioconductor-biostrings'
   run:
-    - r-base
+    - 'r-base >=3.6.3'
     - 'r-kernsmooth'
     - 'r-mass'
     - 'r-xtable'
     - 'bioconductor-biomart'
     - 'bioconductor-biostrings'
+
 test:
   commands:
     - '$R -e "library(''cimpl'')"'
+
 about:
-  home: http://ccb.nki.nl/software/
-  license: GPL-3
-  summary: 'An analysis package for multi sample insertional mutagenesis data
-    (including viral- and transposon-based systems) using Gaussian kernel
-    convolution to identify common insertion sites.'
+  home: "https://www.nki.nl/research/research-groups/lodewyk-wessels/our-resources"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  summary: 'An analysis package for multi sample insertional mutagenesis data (including viral- and transposon-based systems) using Gaussian kernel convolution to identify common insertion sites.'
+  dev_url: "https://github.com/NKI-CCB/cimpl"
+  doc_url: "https://github.com/NKI-CCB/cimpl/blob/v{{ version }}/README.md"
+
 extra:
   recipe-maintainers:
     - MathiasHaudgaard

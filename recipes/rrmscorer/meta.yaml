@@ -1,0 +1,84 @@
+{% set name = "rrmscorer" %}
+{% set version = "1.0.11" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 38e69ae7b3cc2e7e7fb5c1758d70c2e3a72ff15fc2ad8738e5d8485ebb6e4873
+
+build:
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  number: 0
+  entry_points:
+    - rrmscorer=rrmscorer.__main__:main
+  run_exports:
+    - {{ pin_subpackage('rrmscorer', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.9
+    - setuptools
+  run:
+    - biopython
+    - hmmer
+    - logomaker
+    - matplotlib-base
+    - numpy
+    - pandas
+    - python >=3.9
+    - requests
+    - scikit-learn
+    - seaborn-base
+
+test:
+  commands:
+    - rrmscorer --version
+    - rrmscorer --help
+    - python -m rrmscorer --help
+  imports:
+    - rrmscorer
+
+about:
+  author: Joel Roca-Martínez, Wim Vranken
+  home: https://bio2byte.be/rrmscorer/
+  dev_url: https://bitbucket.org/bio2byte/rrmscorer/
+  doc_url: https://pypi.org/project/rrmscorer
+  doc_source_url: https://bitbucket.org/bio2byte/rrmscorer/raw/master/readme.md
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "RRMScorer (RRM-RNA score predictor) predicts how likely a single RRM is to bind ssRNA"
+  description: |
+    RRMScorer (RRM-RNA score predictor) allows the user to easily predict
+    how likely a single RRM is to bind ssRNA using a carefully generated
+    alignment for the RRM structures in complex with RNA, from which we
+    analyzed the interaction patterns and derived the scores (please
+    address to the publication for more details on the method REF).
+
+    RRMScorer has several features to either calculate the binding score
+    for a specific RRM and RNA sequences, for a set of RRM sequences in a
+    FASTA file, or to explore which are the best RNA binders according to our scoring method.
+
+    RRMScorer has been developed by Bio2Byte within the RNAct project. This project has received
+    funding from the European Union's Horizon 2020 research and innovation programme under
+    the Marie Skłodowska-Curie grant agreement No. 813239.
+
+    Wim Vranken, Bio2Byte group within the RNAct project, VUB, Belgium.
+
+extra:
+  recipe-maintainers:
+    - JoelRoca
+  identifiers:
+    - doi:10.1371/journal.pcbi.1010859
+  notes:
+    - |
+      More details are available from the publication related to this work. Please also reference this publication if you use this code:
+      Roca-Martínez J, Dhondge H, Sattler M, Vranken WF (2023) Deciphering the RRM-RNA recognition code: A computational analysis.
+      PLOS Computational Biology 19(1): e1010859.
+    - |
+      DOI: https://doi.org/10.1371/journal.pcbi.1010859

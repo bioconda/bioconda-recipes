@@ -15,18 +15,19 @@ if ! grep "/LIBS/GUID" ~/.ncbi/user-settings.mkfg &> /dev/null; then
     # check whether this is via interactive terminal
     # see: https://www.tldp.org/LDP/abs/html/intandnonint.html
     fd=0   # stdin
-    if [[ -t "$fd" || -p /dev/stdin ]]; then
-        # if this is an interactive terminal, run the official config tool
-        echo "No entry for '/LIBS/GUID' in ~/.ncbi/user-settings.mkfg; calling 'vdb-config --interactive'..."
-        vdb-config --interactive
-        # if still no GUID, add one
-        if ! grep "/LIBS/GUID" ~/.ncbi/user-settings.mkfg &> /dev/null; then mkdir -p ~/.ncbi && printf '/LIBS/GUID = "%s"\n' `uuid` >> ~/.ncbi/user-settings.mkfg; fi
-    else
+    # This no longer actually works, it triggers in non-interactive sessions too!
+    #if [[ -t "$fd" || -p /dev/stdin ]]; then
+    #    # if this is an interactive terminal, run the official config tool
+    #    echo "No entry for '/LIBS/GUID' in ~/.ncbi/user-settings.mkfg; calling 'vdb-config --interactive'..."
+    #    vdb-config --interactive
+    #    # if still no GUID, add one
+    #    if ! grep "/LIBS/GUID" ~/.ncbi/user-settings.mkfg &> /dev/null; then mkdir -p ~/.ncbi && printf '/LIBS/GUID = "%s"\n' `uuid` >> ~/.ncbi/user-settings.mkfg; fi
+    #else
         # if this is an unattended install, just insert a new GUID into the config file
         echo "No entry for '/LIBS/GUID' in ~/.ncbi/user-settings.mkfg; adding..."
         mkdir -p ~/.ncbi
         printf '/LIBS/GUID = "%s"\n' `uuid` >> ~/.ncbi/user-settings.mkfg
-    fi
+    #fi
 else
     echo "~/.ncbi/user-settings.mkfg has entry for '/LIBS/GUID'; continuing..."
 fi

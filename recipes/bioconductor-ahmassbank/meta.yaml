@@ -1,0 +1,38 @@
+{% set version = "1.6.0" %}
+{% set name = "AHMassBank" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: Supplies AnnotationHub with MassBank metabolite/compound annotations bundled in CompDb SQLite databases. CompDb SQLite databases contain general compound annotation as well as fragment spectra representing fragmentation patterns of compounds' ions. MassBank data is retrieved from https://massbank.eu/MassBank and processed using helper functions from the CompoundDb Bioconductor package into redistributable SQLite databases.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: MassBank Annotation Resources for AnnotationHub
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-ahmassbank", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: BiocStyle, knitr, AnnotationHub (>= 2.7.13), rmarkdown, methods, CompoundDb (>= 1.1.4)
+requirements:
+  host:
+    - bioconductor-annotationhubdata >=1.36.0,<1.37.0
+    - r-base
+  run:
+    - bioconductor-annotationhubdata >=1.36.0,<1.37.0
+    - r-base
+source:
+  md5: 771a7ffcb78436003de5c057e9c665de
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

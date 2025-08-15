@@ -1,5 +1,5 @@
 {% set name = "MetaCoAG" %}
-{% set version = "1.1" %}
+{% set version = "1.2.2" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,27 +7,26 @@ package:
 
 source:
   url: "https://github.com/metagentools/{{ name }}/archive/v{{ version }}.tar.gz"
-  sha256: 8e57ae26bd81b872b95d878291d9279b2d89934c14dbb8016ac9bb2d7103c97a
+  sha256: 1a8d91cb02fdad9ba15c636eeaf167e34f118bc4d12f57366e107ebf160781c7
 
 build:
   number: 0
-  noarch: python
+  entry_points:
+    - metacoag = metacoag.cli:main
+    - combine_cov = metacoag.metacoag_utils.support.combine_cov:main
   script:
-    - "{{ PYTHON }} -m pip install . -vv"
+    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('metacoag', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
-    - biopython
-    - cairocffi
-    - python-igraph
-    - networkx
-    - scipy
-    - numpy
-    - tqdm
+    - python >=3.9,<3.13
+    - flit-core >=3.2
   run:
-    - python
+    - python >=3.9,<3.13
+    - click
     - biopython
     - cairocffi
     - python-igraph
@@ -36,22 +35,28 @@ requirements:
     - networkx
     - scipy
     - numpy
+    - pandas
     - tqdm
 
 test:
   commands:
-    - metacoag -h
+    - metacoag --help
+    - combine_cov --help
 
 about:
   home: "https://github.com/metagentools/MetaCoAG"
-  license: GPL-3.0
-  license_family: GPL
+  license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: LICENSE
   summary: "MetaCoAG: Binning Metagenomic Contigs via Composition, Coverage and Assembly Graphs"
+  description: |
+    MetaCoAG is a metagenomic contig binning tool that makes use of the connectivity information found in assembly graphs.
   doc_url: "https://metacoag.readthedocs.io/"
   dev_url: "https://github.com/metagentools/MetaCoAG"
 
 extra:
+  skip-lints:
+    - should_be_noarch_generic
   recipe-maintainers:
     - Vini2
   identifiers:

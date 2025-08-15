@@ -1,18 +1,18 @@
-{% set version = "1.3.10" %}
+{% set name = "pyseer" %}
+{% set version = "1.4.0" %}
 
 package:
-  name: pyseer
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/mgalardini/pyseer/releases/download/{{ version }}/pyseer-{{ version }}.tar.gz
-  sha256: 5b262b3fd5688d10ae27e21ed8350b6f7c4e6df354dc9363cb52f8e30538cd71
-
+  sha256: 2e4ec019728b6034c7a301d6851205fc2d63e929da1e984d0a863bf13db6372d
 
 build:
   number: 0
   noarch: python
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   entry_points:
     - pyseer = pyseer.__main__:main
     - square_mash = pyseer.mash:main
@@ -21,14 +21,16 @@ build:
     - phandango_mapper = pyseer.kmer_mapping.phandango_plot:main
     - annotate_hits_pyseer = pyseer.kmer_mapping.annotate_hits:main
     - enet_predict_pyseer = pyseer.enet_predict:main
+  run_exports:
+    - {{ pin_subpackage('pyseer', max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.6
     - pip
-
+    - setuptools
   run:
-    - python
+    - python >=3.6
     - numpy
     - scipy
     - python-dateutil >=2.5.0
@@ -36,7 +38,7 @@ requirements:
     - statsmodels >=0.10
     - scikit-learn
     - glmnet_py
-    - pysam >=0.15.3 # older versions have wrong openssl pinning
+    - pysam >=0.15.3  # older versions have wrong openssl pinning
     - dendropy
     - matplotlib-base
     - pybedtools
@@ -51,7 +53,6 @@ test:
     - pyseer
     - pyseer.fastlmm
     - pyseer.kmer_mapping
-
   commands:
     - pyseer --help
     - square_mash --help
@@ -62,12 +63,15 @@ test:
     - enet_predict_pyseer --help
 
 about:
-  home: https://github.com/mgalardini/pyseer
-  license: Apache-2.0
+  home: "https://github.com/mgalardini/pyseer"
+  license: "Apache-2.0"
   license_family: APACHE
-  summary: 'Sequence Element Enrichment Analysis (SEER), python implementation'
+  license_file: LICENSE
+  summary: 'Sequence Element Enrichment Analysis (SEER), python implementation.'
+  dev_url: "https://github.com/mgalardini/pyseer"
+  doc_url: "https://pyseer.readthedocs.io/en/master"
 
 extra:
-   identifiers:
-     - doi:10.1093/bioinformatics/bty539
-     - doi:10.1101/852426v1
+  identifiers:
+    - doi:10.1093/bioinformatics/bty539
+    - doi:10.1101/852426v1

@@ -1,0 +1,64 @@
+{% set name = "cvanmf" %}
+{% set version = "0.5.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/cvanmf-{{ version }}.tar.gz
+  sha256: e2715e3f629d7496ee1adb5c76910a1f19cf25f7b3b3928fa6090729e2a5b85a
+
+build:
+  entry_points:
+    - reapply = cvanmf.reapply:cli
+    - rank_select = cvanmf.denovo:cli_rank_selection
+    - regu_select = cvanmf.denovo:cli_regu_selection
+    - decompose = cvanmf.denovo:cli_decompose
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('cvanmf', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.12,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.12.0,<4.0.0
+    - scikit-learn >=1.3.2,<2.0.0
+    - click >=8.1.7,<9.0.0
+    - pandas >=2.1.4,<3.0.0
+    - plotnine >=0.13.0,<0.14.0
+    - tqdm >=4.66.1,<5.0.0
+    - pyyaml >=6.0.1,<7.0.0
+    - setuptools >=69.1.1,<70.0.0
+    - scikit-bio >=0.6.0,<0.7.0
+    - kneed >=0.8.5,<0.9.0
+    - marsilea >=0.4.3,<0.5.0
+    - multimethod >=1.12.0,<2.0.0
+    - scikit-posthocs >=0.9.0,<0.10.0
+
+test:
+  imports:
+    - cvanmf
+  commands:
+    - pip check
+    - reapply --help
+    - rank_select --help
+    - regu_select --help
+    - decompose --help
+  requires:
+    - pip
+
+about:
+  summary: Bi-cross validation of NMF and signature generation and analysis
+  license: GPL-2.0-only
+  license_file: LICENSE
+  home: https://github.com/apduncan/cvanmf
+
+extra:
+  recipe-maintainers:
+    - apduncan

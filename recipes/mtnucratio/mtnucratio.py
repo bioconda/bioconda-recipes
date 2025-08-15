@@ -11,7 +11,7 @@ import os
 import sys
 import subprocess
 from os import access, getenv, X_OK
-jar_file = 'MTNucRatioCalculator-0.7.jar'
+jar_file = 'MTNucRatioCalculator-0.7.1.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 

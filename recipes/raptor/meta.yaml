@@ -1,29 +1,33 @@
-{% set name = "Raptor" %}
-{% set version = "2.0.0" %}
+{% set name = "raptor" %}
+{% set version = "3.0.1" %}
 
 package:
-  name: "{{ name|lower }}"
+  name: "{{ name }}"
   version: "{{ version }}"
 
 source:
-  git_url: https://github.com/seqan/raptor # recursive checkout
-  git_rev: raptor-v{{ version }}
+  url: https://github.com/seqan/{{ name }}/releases/download/{{ name }}-v{{ version }}/{{ name }}-{{ version }}-Source.tar.xz
+  sha256: be44e7b2635e110c940cf40ff132956200551a2e25765d9f057e844f7a3ccebb
 
 build:
-  number: 1
+  number: 4
   skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-    - cmake >=3.8
+    - cmake >=3.18
   host:
     - bzip2
     - zlib
+    - yaml-cpp
   run:
     - bzip2
     - zlib
+    - yaml-cpp
 
 test:
   commands:
@@ -39,12 +43,16 @@ about:
   license: BSD-3-Clause License
   license_family: BSD
   license_file: LICENSE.md
+  doc_url: https://seqan-raptor.vercel.app
+  doc_source_url: https://github.com/seqan/raptor/blob/main/README.md
+  dev_url: https://github.com/seqan/raptor
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   identifiers:
     - doi:10.1016/j.isci.2021.102782
+    - doi:10.1186/s13059-023-02971-4
   recipe-maintainers:
     - eseiler
-  skip-lints:
-    - uses_vcs_url
-    - missing_hash

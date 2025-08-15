@@ -1,0 +1,75 @@
+{% set name = "lib-pod5" %}
+{% set version = "0.3.27" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/nanoporetech/pod5-file-format.git
+  git_rev: {{ version }}
+  sha256: unused
+
+build:
+  number: 0
+  skip: True  # [py < 38]
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  run_exports:
+    - {{ pin_subpackage('lib-pod5', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - pkg-config
+  host:
+    - python
+    - pip
+    - setuptools
+    - setuptools-scm
+    - pybind11
+    - flatbuffers
+    - pyarrow
+    - zstd
+    - zlib
+  run:
+    - python
+    - numpy >=1.21.0
+    - pyarrow
+
+test:
+  imports:
+    - lib_pod5
+
+about:
+  home: "https://github.com/nanoporetech/pod5-file-format"
+  summary: "Python bindings for the POD5 file format."
+  license: "MPL-2.0"
+  license_family: OTHER
+  license_file: "LICENSE.md"
+  description: |
+    [![Documentation Status](https://readthedocs.org/projects/pod5-file-format/badge/?version=latest)](https://pod5-file-format.readthedocs.io/)
+
+    **Python bindings for the POD5 file format**
+
+    What does this project contain
+    ------------------------------
+
+    This project contains the low-level core library (extension modules) for reading and writing POD5 files.
+    This project forms the basis of the pure-python [pod5 package](https://github.com/nanoporetech/pod5-file-format) which is probably the project you want.
+
+    Documentation
+    -------------
+
+    Full documentation is found at https://pod5-file-format.readthedocs.io
+  dev_url: "https://github.com/nanoporetech/pod5-file-format"
+  doc_url: "https://pod5-file-format.readthedocs.io/en/latest"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - uses_vcs_url

@@ -1,0 +1,25 @@
+diff --git a/mk b/mk
+index 5509a8e..b003eba 100755
+--- a/mk
++++ b/mk
+@@ -7,17 +7,17 @@ rm -f *.o mk.stdout mk.stderr tmp.stderr
+ for CPPName in $CPPNames
+ do
+   echo $CPPName >> /dev/tty
+-  g++ $ENV_GCC_OPTS -c -O3 -msse2 -mfpmath=sse -D_FILE_OFFSET_BITS=64 -DNDEBUG=1 -DUCHIMES=1 $CPPName.cpp -o $CPPName.o  >> mk.stdout 2>> tmp.stderr
++  $CXX $ENV_GCC_OPTS -O3 -std=c++14 -msse2 -mfpmath=sse -D_FILE_OFFSET_BITS=64 -DNDEBUG=1 -DUCHIMES=1 -I$PREFIX/include -c $CPPName.cpp -o $CPPName.o  >> mk.stdout 2>> tmp.stderr
+ 	cat tmp.stderr
+ 	cat tmp.stderr >> mk.stderr
+ 	rm -f tmp.stderr
+ done
+ 
+-LINK_OPTS=
++LINK_OPTS=-L$PREFIX/lib
+ if [ `uname -s` == Linux ] ; then
+     LINK_OPTS=-static
+ fi
+-g++ $LINK_OPTS $ENV_LINK_OPTS -g -o uchime $ObjNames  >> mk.stdout 2>> tmp.stderr
++$CXX $LINK_OPTS $ENV_LINK_OPTS -O3 -std=c++14 -g -o uchime $ObjNames >> mk.stdout 2>> tmp.stderr
+ cat tmp.stderr
+ cat tmp.stderr >> mk.stderr
+ rm -f tmp.stderr
