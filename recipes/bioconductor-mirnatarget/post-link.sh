@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "mirnatarget-1.38.0"
+installBiocDataPackage.sh "mirnatarget-1.44.0"

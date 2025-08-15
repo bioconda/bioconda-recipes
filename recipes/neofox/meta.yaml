@@ -1,5 +1,5 @@
 {% set name = "neofox" %}
-{% set version = "1.0.2" %}
+{% set version = "1.2.3" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,70 +7,56 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: e93ea0c146fe4fbf9e477ecef8d973b0b84121733135702b581a1ff0b565edb8
+  sha256: 3b3d7ce296a435f6a03749950ed58f964760feef9f8c3a7ce12b7cbdaff6c93f
 
 build:
   number: 0
   noarch: python
   entry_points:
     - neofox=neofox.command_line:neofox_cli
+    - neofox-epitope=neofox.command_line:neofox_epitope_cli
     - neofox-configure=neofox.command_line:neofox_configure
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('neofox', max_pin="x") }}
 
 requirements:
   host:
+    - cython >3
     - betterproto >=1.2.5,<1.3.0
-    - biopython ==1.76
-    - dask[complete] >=2021.10.0
-    - distributed >=2021.10.0
-    - faker >=6.6.2,<7.0.0
+    - biopython >1.80
+    - dask[complete] >=2024.2.0,<=2024.6.3
+    - distributed >=2024.2.0,<=2024.6.3
+    - faker >=13.13.0,<13.14.0
     - logzero >=1.5.0
-    - mock >=4.0.3,<5.0.0
-    - numpy >=1.21
-    - orjson >=3.5.2,<4.0.0
-    - pandas >=1.1.5
+    - mock >=4.0.3,<4.1.0
+    - numpy >=1.24,<1.27
+    - pandas >=2.1,<2.3
     - pip
-    - pysam >=0.19.1,<0.20.0
-    - python >=3.7,<=3.8
+    - pysam >0.20
+    - python ==3.11
     - python-dotenv >=0.12.0,<0.13.0
-    - scikit-learn >=0.22.1,<0.23.0
-    - scipy >=1.5.4
+    - scipy >=1.10.0
     - xmltodict >=0.12.0,<0.13.0
-    - blast ==2.10.1
-    - r-base
-    - r-lattice
-    - r-ggplot2
-    - r-caret
-    - r-peptides
-    - r-doparallel
-    - r-gbm
-    - bioconductor-biostrings
+    - blast
+    - poetry ==1.8.2
   run:
     - betterproto >=1.2.5,<1.3.0
-    - biopython ==1.76
-    - dask[complete] >=2021.10.0
-    - distributed >=2021.10.0
-    - faker >=6.6.2,<7.0.0
+    - biopython >1.80
+    - dask[complete] >=2024.0.0,<=2024.6.3
+    - distributed >=2024.0.0,<=2024.6.2
+    - faker >=13.13.0,<13.14.0
     - logzero >=1.5.0
-    - mock >=4.0.3,<5.0.0
-    - numpy >=1.21
-    - orjson >=3.5.2,<4.0.0
-    - pandas >=1.1.5
-    - pysam >=0.19.1,<0.20.0
-    - python >=3.7,<=3.8
+    - mock >=4.0.3,<4.1.0
+    - numpy >=1.24,<1.27
+    - pandas >=2.1,<2.3
+    - pysam >0.20
+    - python ==3.11
     - python-dotenv >=0.12.0,<0.13.0
-    - scikit-learn >=0.22.1,<0.23.0
-    - scipy >=1.5.4
+    - scipy >=1.10.0
     - xmltodict >=0.12.0,<0.13.0
-    - blast ==2.10.1
-    - r-base
-    - r-lattice
-    - r-ggplot2
-    - r-caret
-    - r-peptides
-    - r-doparallel
-    - r-gbm
-    - bioconductor-biostrings
+    - blast
+    - poetry ==1.8.2
 
 test:
   imports:
@@ -80,16 +66,15 @@ test:
     - neofox.MHC_predictors.netmhcpan
     - neofox.annotation_resources
     - neofox.annotation_resources.uniprot
+    - neofox.annotator
     - neofox.expression_imputation
     - neofox.helpers
     - neofox.model
     - neofox.published_features
-    - neofox.published_features.Tcell_predictor
     - neofox.published_features.differential_binding
     - neofox.published_features.dissimilarity_garnish
     - neofox.published_features.hex
     - neofox.published_features.iedb_immunogenicity
-    - neofox.published_features.neoag
     - neofox.published_features.neoantigen_fitness
     - neofox.published_features.self_similarity
     - neofox.published_features.vaxrank
@@ -104,16 +89,19 @@ test:
 
 about:
   home: "https://github.com/tron-bioinformatics/neofox"
-  license: "GNU General Public v3 (GPLv3)"
+  license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: LICENSE
   summary: "Annotation of mutated peptide sequences (mps) with published or novel potential neo-epitope descriptors"
   doc_url: "https://neofox.readthedocs.io/"
 
 extra:
+  skip-lints:
+    - cython_must_be_in_host
   recipe-maintainers:
     - priesgo
     - franla23
+    - lkress
   identifiers:
     - doi:10.1093/bioinformatics/btab344
   notes: 'NeoFox has some required and optional third party dependencies that have a non commercial use license.

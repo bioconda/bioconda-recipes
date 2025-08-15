@@ -1,0 +1,80 @@
+{% set name = "pyscenic" %}
+{% set version = "0.12.1" %}
+{% set sha256 = "ae8fafa707d2578ffe08f9eed85f14a4cd9e1b53d57217420e2e956f0a8ddba2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "{{ sha256 }}"
+  patches:
+    - dill_patch.patch
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - pyscenic = pyscenic.cli.pyscenic:main
+    - db2feather = pyscenic.cli.db2feather:main
+    - csv2loom = pyscenic.cli.csv2loom:main
+    - invertdb = pyscenic.cli.invertdb:main
+    - gmt2regions = pyscenic.cli.gmt2regions:main
+  run_exports:
+    - "{{ pin_subpackage(name, max_pin='x.x') }}"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - setuptools
+  run:
+    - python >=3.6
+    - aiohttp
+    - arboreto
+    - attrs
+    - boltons
+    - cloudpickle
+    - cytoolz
+    - dill
+    - dask-core >=2023.4.1
+    - distributed >=2023.4.1,<2023.5.0
+    - frozendict
+    - fsspec
+    - llvmlite
+    - loompy
+    - networkx
+    - numba >=0.51.2
+    - numexpr
+    - pandas >=1.3.5
+    - pyyaml
+    - requests
+    - scikit-learn
+    - scipy
+    - tqdm
+    - umap-learn
+    - numpy ==1.23.5
+    - pyarrow
+    - interlap
+    - ctxcore
+
+test:
+  imports:
+    - pyscenic
+
+about:
+  home: "https://github.com/aertslab/pySCENIC"
+  summary: "Python implementation of the SCENIC pipeline for transcription factor inference from single-cell transcriptomics experiments."
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "LICENSE.txt"
+  dev_url: "https://github.com/aertslab/pySCENIC"
+  doc_url: "https://scenic.aertslab.org"
+
+extra:
+  identifiers:
+    - doi:10.1038/nmeth.4463
+    - doi:10.1038/s41592-023-01938-4
+    - biotools:scenic

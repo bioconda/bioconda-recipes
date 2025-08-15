@@ -3,14 +3,17 @@ package:
   version: 4.0.0_dep
 
 source:
-  url: http://www.codesynthesis.com/download/xsd/4.0/xsd-4.0.0+dep.tar.bz2
+  url: https://www.codesynthesis.com/download/xsd/4.0/xsd-4.0.0+dep.tar.bz2
   md5: ae64d7fcd258addc9b045fe3f96208bb
-
+  patches:
+    - ostream-include.patch 
 build:
-  number: 5
+  number: 6
   # OSX failing due to
   #   make: *** No rule to make target '-lxerces-c', needed by '/anaconda/conda-bld/xsd_1475059274085/work/xsd-4.0.0+dep/libxsd-frontend/xsd-frontend/xsd-frontend.l'.  Stop.
   skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage("xsd", max_pin="x") }}
 
 requirements:
   build:
@@ -30,3 +33,7 @@ about:
   home: http://www.codesynthesis.com/products/xsd/
   license: GPL
   summary: CodeSynthesis XSD is an open-source, cross-platform W3C XML Schema to C++ data binding compiler. Provided with an XML instance specification (XML Schema), it generates C++ classes that represent the given vocabulary as well as XML parsing and serialization code.
+
+extra:
+  additional-platforms:
+    - linux-aarch64

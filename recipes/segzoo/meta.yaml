@@ -1,5 +1,5 @@
 {% set name = "segzoo" %}
-{% set version = "1.0.11" %}
+{% set version = "1.0.13" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,26 +7,29 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 3422fc3e29320253e15bafef22d378470ed1d0d88b8364ecb553b756bb9a9d53
+  sha256: 03903414891982e4d296f253119cf404a525844abdc84b02285923866926a708
 
 build:
   noarch: python
   number: 0
   entry_points:
     - segzoo=segzoo.main:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage('segzoo', max_pin="x") }}
 
 requirements:
   host:
-   - python >=3.8
+   - python >=3.7
    - pip
   run:
-    - python >=3.8
+    - python >=3.7
     - seaborn
     - segtools
     - ggd
-    - snakemake
+    - snakemake-minimal
     - pybedtools
+
 test:
   imports:
     - segzoo
@@ -35,7 +38,7 @@ test:
 
 about:
   home: "https://github.com/hoffmangroup/segzoo"
-  license: "GNU General Public v2 (GPLv2)"
+  license: "GPL-2.0-or-later"
   license_family: GPL2
   license_file: LICENSE.txt
   summary: "System for turnkey analysis of semi-automated genome annotations"

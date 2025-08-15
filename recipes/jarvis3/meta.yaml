@@ -1,0 +1,39 @@
+{% set version = "3.7" %}
+
+package:
+  name: jarvis3
+  version: {{ version }}
+
+build:
+  # Passes some invalid flags for clang
+  skip: True  # [osx]
+  number: 3
+  run_exports:
+    - {{ pin_subpackage("jarvis3", max_pin="x") }}
+
+source:
+  url: https://github.com/cobilab/jarvis3/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 7600b4da05d27150e96f3481ca5e8cbc1dc75ee1b537727abf717224ed42c613
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+
+test:
+  commands:
+    - JARVIS3 --version 2>&1 | grep "Version 3, Release 7"
+    - printf ">test_seq\nACGTCGCGCGCGCG\n" > test.fa; JARVIS3.sh -i test.fa | grep "test.fa.tar"
+
+about:
+  home: https://github.com/cobilab/jarvis3
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  license_family: GPL3
+  summary: Improved encoder for genomic sequences.
+  dev_url: https://github.com/cobilab/jarvis3
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

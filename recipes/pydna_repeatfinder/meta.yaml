@@ -1,0 +1,53 @@
+{% set name = "pydna_repeatfinder" %}
+{% set version = "0.2.9" %}
+{% set pypiname = "pydnarepeatfinder" %}
+{% set sha256 = "2f88be25392e2fbb3f0d524b527725b4c9b2578a1ece0949a8dd0f72d1b137a6" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: "https://pypi.io/packages/source/{{ pypiname[0] }}/{{ pypiname }}/{{ pypiname }}-{{ version }}.tar.gz"
+  sha256: {{ sha256 }}
+
+build:
+  number: 2
+  script: "{{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv" 
+  entry_points:
+    - pydna_repeatfinder = pydna_repeatfinder.cli:run
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake >=3.15
+  host:
+    - python
+    - pip
+    - scikit-build-core
+  run:
+    - python
+
+test:
+  imports:
+    - PyRepeatFinder
+  commands:
+    - pydna_repeatfinder --version
+
+about:
+  home: "https://github.com/linsalrob/repeatfinder"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Search for direct and inverted repeats in DNA sequences."
+  doc_url: "https://github.com/linsalrob/repeatfinder"
+  dev_url: "https://github.com/linsalrob/repeatfinder"
+
+extra:
+  recipe-maintainers:
+    - linsalrob
+  identifiers:
+    - doi:10.5281/zenodo.5006657
