@@ -1,0 +1,83 @@
+{% set version = '0.3.8' %}
+
+package:
+  name: r-locuszoomr
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/locuszoomr_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/locuszoomr/locuszoomr_{{ version }}.tar.gz
+  sha256: 150849224679b80ea3fff42e9940ee35eba7e3e4714a7b2437638ca1e96dbde6
+
+build:
+  run_exports: 
+    - {{ pin_subpackage("r-locuszoomr", max_pin="x.x") }}
+  noarch: generic
+  merge_build_host: True  # [win]
+  number: 0
+
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  host:
+    - r-base
+    - bioconductor-annotationfilter
+    - bioconductor-biocgenerics
+    - bioconductor-genomeinfodb
+    - bioconductor-genomicranges
+    - bioconductor-iranges
+    - r-ldlinkr
+    - r-cowplot
+    - r-dplyr
+    - bioconductor-ensembldb
+    - r-gggrid
+    - r-ggplot2
+    - r-ggrepel
+    - r-memoise
+    - r-plotly
+    - r-rlang
+    - bioconductor-rtracklayer
+    - r-zoo
+
+  run:
+    - r-base
+    - bioconductor-annotationfilter
+    - bioconductor-biocgenerics
+    - bioconductor-genomeinfodb
+    - bioconductor-genomicranges
+    - bioconductor-iranges
+    - r-ldlinkr
+    - r-cowplot
+    - r-dplyr
+    - bioconductor-ensembldb
+    - r-gggrid
+    - r-ggplot2
+    - r-ggrepel
+    - r-memoise
+    - r-plotly
+    - r-rlang
+    - bioconductor-rtracklayer
+    - r-zoo
+
+test:
+  commands:
+    - $R -e "library('locuszoomr')"
+    - $R -e "packageVersion('locuszoomr')"
+    - $R -e "help(package = 'locuszoomr')"
+
+about:
+  home: https://github.com/myles-lewis/locuszoomr
+  license: GPL-3
+  summary: Publication-ready regional gene locus plots similar to those produced by the web interface
+    'LocusZoom' <https://my.locuszoom.org>, but running locally in R. Genetic or genomic
+    data with gene annotation tracks are plotted via R base graphics, 'ggplot2' or 'plotly',
+    allowing flexibility and easy customisation including laying out multiple locus
+    plots on the same page. It uses the 'LDlink' API <https://ldlink.nih.gov/?tab=apiaccess>
+    to query linkage disequilibrium data from the 1000 Genomes Project and can overlay
+    this on plots.
+  license_family: GPL3
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'

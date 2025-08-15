@@ -1,33 +1,44 @@
 {% set name = "sistr_cmd" %}
-{% set version = "1.1.1" %}
+{% set version = "1.1.3" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: bf6f076b2bf4b7df78ff86bc905f11f19f982bddc812effb1ae373de86d4ae6f
+  url: https://github.com/phac-nml/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f5618c136f87859790d0c2612f14bed6b52dd4c60c974a05ab469528d7478ec6
+  
 
 build:
+  number: 2
   noarch: python
-  number: 3
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  entry_points:
+    - sistr=sistr.sistr_cmd:main
+    - sistr_init=sistr.sistr_cmd:setup_sistr_dbs
 
 requirements:
   host:
-    - python
+    - python >=3.4
     - pip
-  run:
-    - python
-    - numpy >=1.11.1,<1.23.5
-    - pandas >=0.18.1,<=1.0.5
-    - pytables >=3.3.0
-    - pycurl >=7.43.0,<8
+    - setuptools ==58.2.0
+    - pandas >=0.22,<3
+    - pycurl
     - scipy >=1.1.0,<2
-    - blast
+    - pytables >=3.3.0
+    - numpy
+  run:
+    - python >=3.4
+    - {{ pin_compatible('numpy', max_pin="x") }}
+    - pandas >=0.22,<3
+    - pytables >=3.3.0,<3.10.2
+    - {{ pin_compatible('scipy', max_pin="x.x") }}
+    - {{ pin_compatible('pycurl') }}
+    - blast >=2.9.0
     - mafft
-    - mash
+    - mash >=2.0
     - python-dateutil
 
 test:
@@ -36,8 +47,15 @@ test:
     - sistr -V
 
 about:
-  home: https://github.com/peterk87/sistr_cmd/
+  home: https://github.com/phac-nml/sistr_cmd/
   license: Apache-2.0
   license_family: APACHE
   license_file: LICENSE
   summary: "Salmonella In Silico Typing Resource (SISTR) commandline tool for serovar prediction"
+  dev_url: https://github.com/phac-nml/sistr_cmd
+
+extra:
+  identifiers:
+    - usegalaxy-eu:sistr_cmd
+    - doi:10.1371/journal.pone.0147101
+    - biotools:SISTR

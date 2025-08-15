@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "davidtiling-1.42.0"
+installBiocDataPackage.sh "davidtiling-1.46.0"

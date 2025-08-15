@@ -1,0 +1,52 @@
+diff --git a/src/MBG/makefile b/src/MBG/makefile
+index 0c0113b..c6fd847 100644
+--- a/src/MBG/makefile
++++ b/src/MBG/makefile
+@@ -1,7 +1,7 @@
+ PLATFORM=$(shell uname -s)
+ 
+ GPP=$(CXX)
+-CPPFLAGS=-Wall -Wextra -std=c++17 -O3 -g -Izstr/src -Iparallel-hashmap/parallel_hashmap/ -Wno-unused-parameter -Icxxopts/include -Iconcurrentqueue `pkg-config --cflags zlib`
++CPPFLAGS=-Wall -Wextra -std=c++17 -O3 -g -Izstr/src -Iparallel-hashmap/parallel_hashmap/ -Wno-unused-parameter -Icxxopts/include -Iconcurrentqueue `pkg-config --cflags zlib` -D_LIBCPP_DISABLE_AVAILABILITY
+ 
+ ODIR=obj
+ BINDIR=bin
+diff --git a/src/hifioverlapper/MBG/makefile b/src/hifioverlapper/MBG/makefile
+index 0c0113b..c6fd847 100644
+--- a/src/hifioverlapper/MBG/makefile
++++ b/src/hifioverlapper/MBG/makefile
+@@ -1,7 +1,7 @@
+ PLATFORM=$(shell uname -s)
+ 
+ GPP=$(CXX)
+-CPPFLAGS=-Wall -Wextra -std=c++17 -O3 -g -Izstr/src -Iparallel-hashmap/parallel_hashmap/ -Wno-unused-parameter -Icxxopts/include -Iconcurrentqueue `pkg-config --cflags zlib`
++CPPFLAGS=-Wall -Wextra -std=c++17 -O3 -g -Izstr/src -Iparallel-hashmap/parallel_hashmap/ -Wno-unused-parameter -Icxxopts/include -Iconcurrentqueue `pkg-config --cflags zlib` -D_LIBCPP_DISABLE_AVAILABILITY
+ 
+ ODIR=obj
+ BINDIR=bin
+diff --git a/src/hifioverlapper/makefile b/src/hifioverlapper/makefile
+index 0bc9ee7..0f53de7 100644
+--- a/src/hifioverlapper/makefile
++++ b/src/hifioverlapper/makefile
+@@ -1,5 +1,7 @@
++PLATFORM=$(shell uname -s)
++
+ GPP=$(CXX)
+-CPPFLAGS=-Wall -Wextra -std=c++17 -O3 -g -Izstr/src -Iparallel-hashmap/parallel_hashmap/ -Icxxopts/include -Wno-unused-parameter `pkg-config --cflags zlib` -IMBG/src -Iconcurrentqueue
++CPPFLAGS=-Wall -Wextra -std=c++17 -O3 -g -Izstr/src -Iparallel-hashmap/parallel_hashmap/ -Icxxopts/include -Wno-unused-parameter `pkg-config --cflags zlib` -IMBG/src -Iconcurrentqueue -D_LIBCPP_DISABLE_AVAILABILITY
+ 
+ ODIR=obj
+ BINDIR=bin
+@@ -14,7 +16,11 @@ DEPS = $(patsubst %, $(SRCDIR)/%, $(_DEPS))
+ _OBJ = MatchIndex.o MinimizerIterator.o TwobitString.o ReadStorage.o UnitigKmerCorrector.o UnitigStorage.o ReadMatchposStorage.o
+ OBJ = $(patsubst %, $(ODIR)/%, $(_OBJ))
+ 
+-LINKFLAGS = $(CPPFLAGS) -Wl,-Bstatic $(LIBS) -Wl,-Bdynamic -Wl,--as-needed -lpthread -pthread -static-libstdc++
++ifeq ($(PLATFORM),Linux)
++   LINKFLAGS = $(CPPFLAGS) -Wl,-Bstatic $(LIBS) -Wl,-Bdynamic -Wl,--as-needed -lpthread -pthread -static-libstdc++
++else
++   LINKFLAGS = $(CPPFLAGS) $(LIBS) -lpthread -pthread -static-libstdc++
++endif
+ 
+ VERSION := Branch $(shell git rev-parse --abbrev-ref HEAD) commit $(shell git rev-parse HEAD) $(shell git show -s --format=%ci)
+ 

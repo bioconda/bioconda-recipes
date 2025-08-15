@@ -1,0 +1,48 @@
+{% set name = "promotercalculator" %}
+{% set version = "1.2.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/promotercalculator-{{ version }}.tar.gz
+  sha256: 8ab36fa50266b5e1fa958a7e331e6c352a68d09d255931dfa9c319fc3e856b49
+
+build:
+  entry_points:
+    - promoter-calculator = promoter_calculator.cli:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("promotercalculator", max_pin="x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - biopython
+    - numpy
+    - scikit-learn
+    - scipy
+
+test:
+  imports:
+    - promoter_calculator
+  commands:
+    - promoter-calculator --help
+
+about:
+  home: https://github.com/barricklab/promoter-calculator
+  summary: "Promoter-Calculator (Barrick Lab Fork)"
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  dev_url: https://github.com/barricklab/promoter-calculator
+
+extra:
+  recipe-maintainers:
+    - croots
