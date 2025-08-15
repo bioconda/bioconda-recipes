@@ -8,7 +8,7 @@ if [[ -f Build.PL ]]; then
     ./Build test
     ./Build install --installdirs site
 elif [[ -f Makefile.PL ]]; then
-    perl Makefile.PL INSTALLDIRS=site
+    perl Makefile.PL INSTALLDIRS=site NO_PACKLIST=1 NO_PERLLOCAL=1
     make
     #make test
     make install
