@@ -8,6 +8,8 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
 
+sed -i.bak 's|AR       =|#AR       =|' zstd/Makefile.PL
+
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [[ -f Build.PL ]]; then
     perl Build.PL
@@ -18,7 +20,7 @@ if [[ -f Build.PL ]]; then
 elif [[ -f Makefile.PL ]]; then
     # Make sure this goes in site
     perl Makefile.PL INSTALLDIRS=site
-    make -j"${CPU_COUNT}"
+    make
     make install
 else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
