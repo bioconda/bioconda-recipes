@@ -12,7 +12,7 @@ elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
     perl Makefile.PL INSTALLDIRS=site
     make
-    make test -j"${CPU_COUNT}"
+    make test
     make install
 else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
