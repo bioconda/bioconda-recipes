@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "simbenchdata-1.8.0"
+installBiocDataPackage.sh "simbenchdata-1.14.0"

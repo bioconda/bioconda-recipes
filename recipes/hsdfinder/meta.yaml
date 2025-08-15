@@ -1,0 +1,32 @@
+{% set name = "HSDFinder" %}
+{% set version = "1.1.1" %}
+{% set sha256 = "2e578bc3161290ff64dfd3e24c91199b562d117d2d3f2aa45dde47142899478c" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/zx0223winner/hsdfinder_conda/archive/refs/tags/{{ name|lower }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: bash conda_build_package.sh
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  run:
+    - python >=3.7
+    - pandas
+test:
+  commands:
+    - hsdfinder -h
+    - hsd_to_kegg -h
+about:
+  home: https://github.com/zx0223winner/HSDFinder
+  summary: a tool to predict highly similar duplicates (HSDs) in eukaryotes
+  license: MIT
+  license_file: LICENSE.md

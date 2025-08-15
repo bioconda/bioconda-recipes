@@ -1,0 +1,51 @@
+{% set name = "snakemake-storage-plugin-fs" %}
+{% set version = "1.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/snakemake_storage_plugin_fs-{{ version }}.tar.gz
+  sha256: 3796ac89a27d4076588fc5464486c44114246612964ac08736ae5993993b6656
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.11.0,<4.0.0
+    - snakemake-interface-common >=1.17.0,<2.0.0
+    - snakemake-interface-storage-plugins >=4.1.0,<5.0.0
+    - sysrsync >=1.1.1,<2.0.0
+    - reretry >=0.11.8,<0.12.0
+    - rsync
+    - humanfriendly
+
+test:
+  # We do not test the import as the plugin needs snakemake for importing, but adding
+  # it would create a circular dependency.
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/snakemake/snakemake-storage-plugin-fs
+  summary: 'A Snakemake storage plugin that reads and writes from a locally mounted filesystem using rsync.'
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/snakemake/snakemake-storage-plugin-fs
+
+extra:
+  recipe-maintainers:
+    - koesterlab

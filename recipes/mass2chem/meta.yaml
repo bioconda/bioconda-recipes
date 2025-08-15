@@ -1,0 +1,48 @@
+{% set name = "mass2chem" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/mass2chem-{{ version }}.tar.gz
+  sha256: 0ef8a49e9ae7e39502edf881249bbdeb445225ae91e6b96da3828a3793f0f8f5
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+  run_exports:
+      - {{ pin_subpackage('mass2chem', max_pin="x.x") }}
+
+
+requirements:
+  host:
+    - python >=3.7
+    - setuptools >=42
+    - wheel
+    - pip
+  run:
+    - python >=3.7
+    - numpy
+    - scipy
+    - treelib
+
+test:
+  imports:
+    - mass2chem
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/shuzhao-li/mass2chem
+  summary: Common utilities for interpreting mass spectrometry data
+  license: BSD-Protection
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - hechth

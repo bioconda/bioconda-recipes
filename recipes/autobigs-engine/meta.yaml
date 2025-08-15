@@ -1,0 +1,45 @@
+{% set name = "autoBIGS.engine" %}
+{% set version = "0.14.2" %}
+
+package:
+  name: {{ name|lower|replace(".", "-") }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/autobigs_engine-{{ version }}.tar.gz
+  sha256: 64845ae6fb0641b8df955cb8c76bdb4528b517703c6b895e157f24a8a5b56138
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage( name|lower|replace(".", "-"), max_pin="x.x") }}
+requirements:
+  host:
+    - python >=3.12
+    - setuptools >=64
+    - setuptools-scm >=8
+    - pip
+  run:
+    - python >=3.12
+    - biopython ==1.85
+    - aiohttp ==3.11.*
+
+test:
+  imports:
+    - autobigs
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  summary: A library to rapidly fetch fetch MLST profiles given sequences for various diseases.
+  dev_url: https://github.com/Syph-and-VPD-Lab/autoBIGS.engine
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  home: https://github.com/Syph-and-VPD-Lab/autoBIGS.engine
+extra:
+  recipe-maintainers:
+    - Harrison Deng

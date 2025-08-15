@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "mofadata-1.16.1"
+installBiocDataPackage.sh "mofadata-1.22.0"

@@ -1,0 +1,47 @@
+{% set name = "snakemake-storage-plugin-http" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/snakemake_storage_plugin_http-{{ version }}.tar.gz
+  sha256: 34617ceb22332959315d304ea491ab3f48c12f9cb9e02d061891af59f4a8930b
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11.0,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.11.0,<4.0.0
+    - requests >=2.31.0,<3.0.0
+    - requests-oauthlib >=1.3.1,<2.0.0
+    - snakemake-interface-common >=1.14.0,<2.0.0
+    - snakemake-interface-storage-plugins >=4.1.0,<5.0.0
+
+test:
+  # We do not test the import as the plugin needs snakemake for importing, but adding
+  # it would create a circular dependency.
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  summary: Snakemake storage plugin for donwloading input files from HTTP(s).
+  home: https://github.com/snakemake/snakemake-storage-plugin-http
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - koesterlab

@@ -1,26 +1,30 @@
 {% set name = "phables" %}
-{% set version = "1.2.0" %}
+{% set version = "1.4.1" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://github.com/Vini2/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz"
-  sha256: 09702e1e9ece66e08e0cf0430febc2d543b4e3b8dbbbad04d50315ee7220a7b6
+  url: https://github.com/Vini2/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f456260bf710073986ecd524975e09083c5cf7d0ad3a0e6808ba48a2b7dc0ee4
 
 build:
-  number: 0
+  number: 2
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
+  entry_points:
+    - phables = phables.__main__:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('phables', max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.9,<3.11
     - pip
   run:
-    - python >=3.8,<3.11
-    - snakemake >=7.14.0
+    - python >=3.9,<3.11
+    - snakemake-minimal >=7.14.0
     - pyyaml >=6.0
     - click >=8.1.3
     - jinja2 >=3.0.2
@@ -37,10 +41,9 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: "Phables: from fragmented assemblies to high-quality bacteriophage genomes"
-  description: |
-    Phables resolves bacteriophage genomes using phage bubbles in viral metagenomic data.
-  doc_url: "https://phables.readthedocs.io/"
+  summary: "Phables: from fragmented assemblies to high-quality bacteriophage genomes."
+  description: "Phables resolves bacteriophage genomes using phage bubbles in viral metagenomic data."
+  doc_url: "https://phables.readthedocs.io"
   dev_url: "https://github.com/Vini2/phables"
 
 extra:

@@ -1,5 +1,5 @@
 {% set name = "teloclip" %}
-{% set version = "0.0.3" %}
+{% set version = "0.1.1" %}
 
 package:
   name: '{{ name|lower }}'
@@ -7,22 +7,26 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 48b25ce0a3dce9f44bc2703ccbcb9738861c260568a9ce1f3687c4aca054b14d
+  sha256: 4e5fe0d8f4b64381975936daca1838ea7aa262234b53caa83f632a32f87fa69f
 
 build:
+  run_exports:
+    - {{ pin_subpackage('teloclip', max_pin="x.x") }}
   noarch: python
-  number: 1
+  number: 0
   entry_points:
-    - teloclip=teloclip.run_self:main
-    - teloclip-extract=teloclip.run_extract:main
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+    - teloclip=teloclip.app:main
+    - teloclip-extract=teloclip.app_extract:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
 
 requirements:
   host:
-    - python >=3
-    - setuptools
+    - python >=3.8
+    - pip
+    - hatchling
+    - hatch-vcs
   run:
-    - python >=3
+    - python >=3.8
 
 test:
   imports:
@@ -32,14 +36,14 @@ test:
     - teloclip-extract --help
 
 about:
-  home: https://github.com/Adamtaranto/teloclip
-  license: MIT License
+  home: "https://github.com/Adamtaranto/teloclip"
+  license: MIT
   license_family: MIT
-  license_file: ''
-  summary: A tool for the recovery of unassembled telomeres from soft-clipped read alignments.
-  description: ''
-  doc_url: ''
-  dev_url: ''
+  license_file: 'LICENSE'
+  summary: "A tool for the recovery of unassembled telomeres from soft-clipped read alignments."
+  doc_url: 'https://github.com/Adamtaranto/teloclip/blob/{{ version }}/README.md'
+  dev_url: 'https://github.com/Adamtaranto/teloclip'
 
 extra:
-  recipe-maintainers: 'Adam Taranto'
+  recipe-maintainers: 
+    - 'Adamtaranto'
