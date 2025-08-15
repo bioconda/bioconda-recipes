@@ -1,0 +1,70 @@
+{% set version = "1.4.0" %}
+{% set name = "CaDrA" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: Performs both stepwise and backward heuristic search for candidate (epi)genetic drivers based on a binary multi-omics dataset. CaDrA's main objective is to identify features which, together, are significantly skewed or enriched pertaining to a given vector of continuous scores (e.g. sample-specific scores representing a phenotypic readout of interest, such as protein expression, pathway activity, etc.), based on the union occurence (i.e. logical OR) of the events.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 + file LICENSE
+  license_file: LICENSE
+  summary: Candidate Driver Analysis
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-cadra", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocManager, devtools, knitr, pheatmap, rmarkdown, testthat (>= 3.1.6)
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-doparallel
+    - r-ggplot2
+    - r-gplots
+    - r-gtable
+    - r-knnmi
+    - r-mass
+    - r-misc3d
+    - r-plyr
+    - r-ppcor
+    - r-r.cache
+    - r-reshape2
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-doparallel
+    - r-ggplot2
+    - r-gplots
+    - r-gtable
+    - r-knnmi
+    - r-mass
+    - r-misc3d
+    - r-plyr
+    - r-ppcor
+    - r-r.cache
+    - r-reshape2
+
+source:
+  md5: cab1dab6ad03235b3aa01ad002fdd406
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

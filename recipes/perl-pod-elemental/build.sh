@@ -2,11 +2,11 @@
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 # If it has Build.PL use that, otherwise use Makefile.PL
-if [ "$(uname)" == "Darwin" ]; then
-    HOME=/tmp cpanm --installdeps .
-else
-    cpanm --installdeps .
-fi
+#if [ "$(uname)" == "Darwin" ]; then
+#    HOME=/tmp cpanm --installdeps .
+#else
+#    cpanm --installdeps .
+#fi
 
 if [ -f Build.PL ]; then
     perl Build.PL

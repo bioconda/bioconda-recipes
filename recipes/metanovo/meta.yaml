@@ -1,0 +1,66 @@
+{% set name = "metanovo" %}
+{% set version = "1.9.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/uct-cbio/proteomics-pipelines/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: 009acafadd49e7da9d09697a919764aeed09570aeddc26619b618b4ce8245c01
+    folder: metanovo_source
+  - url: https://genesis.ugent.be/maven2/com/compomics/denovogui/DeNovoGUI/1.15.11/DeNovoGUI-1.15.11-mac_and_linux.tar.gz
+    sha256: b5088ddef834ae5943c1d92245c243f95e10696e540cf43ba90b3201f8af08f4
+    folder: denovogui_download
+  - url: https://genesis.ugent.be/maven2/com/compomics/utilities/4.12.0/utilities-4.12.0.zip
+    sha256: d4dd1cd3f86f1b2a990a562e063094535964271f884110b20d5e84ff03c9eec8
+    folder: compomics_utilities_download
+  - url: https://genesis.ugent.be/maven2/eu/isas/searchgui/SearchGUI/3.2.20/SearchGUI-3.2.20-mac_and_linux.tar.gz
+    sha256: 0e8ebf087036fd4680d45207e6be388282b6b5948f6992146608cc891ffbef94
+    folder: searchgui_download
+
+build:
+  noarch: generic
+  number: 10
+  run_exports:
+    - {{ pin_subpackage('metanovo', max_pin="x.x") }}
+
+requirements:
+  build:
+    - python =3.9.9
+    - setuptools =59.8.0
+    - pip =22.0.4
+    - unzip =6.0
+    - wget =1.20.1
+  run:
+    - python =3.9.9
+    - parallel >=20240122
+    - biopython ==1.79
+    - numpy ==1.22.1
+    - pandas ==1.3.5
+    - openjdk =8.0.312
+    - bc >=1.07.1
+
+test:
+  commands:
+    - test -f $PREFIX/bin/metanovo.sh
+    - test -f $PREFIX/bin/compomics.sh
+    - test -f $PREFIX/bin/bp_export_tags.py
+    - test -f $PREFIX/bin/bp_mapped_tags.py
+    - test -f $PREFIX/bin/bp_export_proteins.py
+    - test -f $PREFIX/bin/bp_fasta_prepare.py
+    - test -f $PREFIX/bin/bp_parse_tags.py
+    - test -d $PREFIX/bio/DeNovoGUI
+    - test -d $PREFIX/bio/SearchGUI
+    - test -d $PREFIX/bio/utilities
+
+about:
+  home: "https://github.com/uct-cbio/proteomics-pipelines"
+  license: MIT
+  license_family: MIT
+  summary: "Produce targeted databases for mass spectrometry analysis."
+  dev_url: "https://github.com/uct-cbio/proteomics-pipelines"
+
+extra:
+  skip-lints:
+    - should_be_noarch_python

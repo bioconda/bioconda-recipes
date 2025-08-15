@@ -1,4 +1,4 @@
-{% set version = '1.1.1' %}
+{% set version = '1.2.15' %}
 {% set name = "cellbrowser" %}
 
 package:
@@ -7,10 +7,10 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "a622e94a1111865c5bd7ae6d95b4e83512ff6505b51626c0a9f7149c2652ab58"
+  sha256: "08a140631762c2255802457760911826dc98e615ae62002bca22dd74f93b965e"
 
 build:
-  number: 1
+  number: 0
   entry_points:
     - cbBuild = cellbrowser.cellbrowser:cbBuildCli
     - cbScanpy = cellbrowser.cellbrowser:cbScanpyCli
@@ -25,14 +25,16 @@ build:
     - cbGenes = cellbrowser.genes:cbGenesCli
     - cbHub = cellbrowser.hubmaker:cbHubCli
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('ucsc-cell-browser', max_pin="x") }}
 
 requirements:
     host:
-        - python >=3.6
+        - python >=3.6,<3.12
         - pip
     run:
-        - python >=3.6
+        - python >=3.6,<3.12
         - numpy
         - anndata
 
@@ -53,7 +55,14 @@ test:
         - which cbGenes
 
 about:
-  home: http://cells.ucsc.edu
-  license: GPL
+  home: https://cells.ucsc.edu
+  license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: LICENSE
   summary: A browser for single-cell data, main site at http://cells.ucsc.edu. UCSC Cellbrowser, an interactive browser for single cell data. Includes importers and basic pipelines for text files, Seurat, Scanpy and Cellranger. All Javascript - does not require a server backend.
+  doc_url: https://cellbrowser.readthedocs.io/en/master/
+  dev_url: https://github.com/maximilianh/cellBrowser
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btab503

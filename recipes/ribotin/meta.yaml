@@ -1,0 +1,53 @@
+{% set name = "ribotin" %}
+{% set version = "1.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/maickrau/{{ name }}
+  git_rev: v{{ version }}
+  sha256: unused
+  patches:
+    - makefile.patch
+
+build:
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('ribotin', max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - pkg-config
+  host:
+    - zlib
+    - bamtools ==2.5.3
+  run:
+    - graphaligner
+    - mbg >=1.0.17
+    - liftoff =1.6.3  # Use a specific version to make sure the annotation index files are compatible
+    - winnowmap
+    - samtools
+
+test:
+  commands:
+    - (ribotin-ref -h 2>&1 || true) | grep 'ribotin'
+
+about:
+  home: "https://github.com/maickrau/ribotin"
+  license: MIT
+  license_family: MIT
+  license_file: "LICENSE.md"
+  summary: "Ribosomal DNA assembly tool."
+  dev_url: "https://github.com/maickrau/ribotin"
+  doc_url: "https://github.com/maickrau/ribotin/blob/v{{ version }}/README.md"
+
+extra:
+  recipe-maintainers:
+    - maickrau
+  skip-lints:
+    - uses_vcs_url

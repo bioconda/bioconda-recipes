@@ -31,7 +31,7 @@ mkdir -p ${PREFIX}/bin
 ln -s $IPR_DIR/interproscan.sh  ${PREFIX}/bin/
 
 # copy properties file to replace the default one
-cp ${RECIPE_DIR}/interproscan.properties ${IPR_DIR}/interproscan.properties
+sed "s|__PKG_PREFIX__|${PREFIX}|g" ${RECIPE_DIR}/interproscan.properties > ${IPR_DIR}/interproscan.properties
 
 # Add more build steps here, if they are necessary.
 

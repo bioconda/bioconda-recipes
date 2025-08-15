@@ -5,7 +5,9 @@ package:
   version: {{ version }}
 
 build:
-  number: 7
+  number: 12
+  run_exports:
+    - {{ pin_subpackage("samtools", max_pin="x") }}
 
 source:
   url: https://github.com/samtools/samtools/releases/download/{{ version }}/samtools-{{ version }}.tar.bz2
@@ -18,26 +20,30 @@ requirements:
   host:
     # ncurses not compatible with samtools, see note in build.sh
     #- ncurses
-    - zlib
     - bzip2
     - curl
+    - openssl  # [not osx]
     - xz
+    - zlib
   run:
     #- ncurses
-    - zlib
     - bzip2
     - curl
+    - openssl  # [not osx]
     - xz
+    - zlib
+
+test:
+  commands:
+    - samtools --help
 
 about:
   home: https://github.com/samtools/samtools
   license: MIT
   summary: Tools for dealing with SAM, BAM and CRAM files
 
-test:
-  commands:
-    - samtools --help
-
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:samtools

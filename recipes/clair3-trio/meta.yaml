@@ -1,0 +1,52 @@
+{% set name = "clair3-trio" %}
+{% set version = "0.7" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: http://www.bio8.cs.hku.hk/clair3_trio/bioconda/clair3_trio_v{{ version }}.zip
+  sha256: 0ce6c0ebd0db1c7fb9e0a0ecd39d7bdf54ec15de2c1c1a77ec54448141057b63
+
+build:
+  number: 2
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - cffi
+    - bzip2
+    - xz
+    - zlib
+    - python 3.9.0
+    - automake
+    - make
+    
+  run:
+    - python 3.9.0
+    - pypy3.6
+    - numpy
+    - tensorflow 2.8.0
+    - pytables
+    - samtools 1.15.1
+    - whatshap 1.7
+    - pigz
+    - parallel 20191122
+    - zstd
+    - cffi
+test:
+  imports:
+    - tensorflow
+  commands:
+    - which clair3.py
+    - run_clair3_trio.sh -v
+
+about:
+  home: 'https://github.com/HKU-BAL/Clair3-Trio'
+  license: BSD-3-Clause
+  license_file: LICENSE.md
+  summary: "Clair3-Trio is a variants caller tailored for family trios from nanopore long-reads. Clair3-Trio employs a Trio-to-Trio deep neural network model that allows it to input all trio’s sequencing information and output all trio’s predicted variants within a single model, to perform far better variant calling. We also present MCVLoss, the first loss function that can improve variants calling in trios by leveraging the explicitly encoding of the priors of the Mendelian inheritance in trios. Clair3-Trio showed comprehensive improvement in experiments. It predicted much fewer Mendelian inheritance violation variations than current state-of-the-art methods."

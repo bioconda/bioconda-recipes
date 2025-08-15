@@ -1,0 +1,57 @@
+{% set version = "1.10.0" %}
+{% set name = "fastreeR" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: Calculate distances, build phylogenetic trees or perform hierarchical clustering between the samples of a VCF or FASTA file. Functions are implemented in Java and called via rJava. Parallel implementation that operates directly on the VCF or FASTA file for fast execution.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Phylogenetic, Distance and Other Calculations on VCF and Fasta Files
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-fastreer", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocFileCache, BiocStyle, graphics, knitr, memuse, rmarkdown, spelling, testthat (>= 3.0.0)
+# SystemRequirements: Java (>= 8)
+requirements:
+  host:
+    - r-ape
+    - r-base
+    - r-data.table
+    - r-dynamictreecut
+    - r-r.utils
+    - r-rjava
+    - r-stringr
+    - openjdk
+  run:
+    - r-ape
+    - r-base
+    - r-data.table
+    - r-dynamictreecut
+    - r-r.utils
+    - r-rjava
+    - r-stringr
+    - openjdk
+
+source:
+  md5: a6a0b1b9179ba80a049c4f873f216154
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

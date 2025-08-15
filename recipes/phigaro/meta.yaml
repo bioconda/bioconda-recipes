@@ -1,5 +1,5 @@
 {% set name = "phigaro" %}
-{% set version = "2.3.0" %}
+{% set version = "2.4.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,36 +7,23 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 758012cabec53841f6c18f90ef5a1dc0819e72c9b765b2c86bc0401afd7c5e8a
+  sha256: fd764d792a37984bcabaea0da39185dc6c864b8ecfbd8a806553a68ac876d800
 
 build:
-  number: 1
-  noarch: python 
+  number: 0
+  noarch: python
   entry_points:
     - phigaro = phigaro.cli.batch:main
     - phigaro-setup = phigaro.cli.helper:main
-  script: "{{ PYTHON }} -m pip install . -vv; echo https://files.pythonhosted.org/packages/51/d3/0271413b3b9d1ed2a532e2575287bec9481d2183e445ecc0ebc1df8f1ddc/singleton-0.1.0.tar.gz > requirements.txt; {{ PYTHON }} -m pip install -r requirements.txt"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv; echo https://files.pythonhosted.org/packages/51/d3/0271413b3b9d1ed2a532e2575287bec9481d2183e445ecc0ebc1df8f1ddc/singleton-0.1.0.tar.gz > requirements.txt; {{ PYTHON }} -m pip install -r requirements.txt"
+  run_exports:
+    - {{ pin_subpackage('phigaro', max_pin="x") }}
 
 requirements:
   host:
-    - argparse
-    - beautifulsoup4 >=4.4.0
-    - biopython
-    - bs4
-    - future
-    - lxml
-    - numpy
-    - pandas >=0.23.4
     - pip
-    - plotly
-    - python >=3.6
-    - pyyaml >=5.1
-    - sh
-    - six >=1.7.0
-    - prodigal
-    - hmmer
+    - python >=3.6,<=3.11.7
   run:
-    - argparse
     - beautifulsoup4 >=4.4.0
     - biopython
     - bs4
@@ -45,7 +32,7 @@ requirements:
     - numpy
     - pandas >=0.23.4
     - plotly
-    - python >=3.6
+    - python >=3.6,<=3.11.7
     - pyyaml >=5.1
     - sh
     - six >=1.7.0
@@ -67,7 +54,8 @@ test:
     - phigaro-setup --help
 
 about:
-  home: "https://phigaro.readthedocs.io/"
+  home: https://github.com/bobeobibo/phigaro
+  doc_url: "https://phigaro.readthedocs.io/"
   license: MIT
   license_family: MIT
   license_file: "LICENSE.md"

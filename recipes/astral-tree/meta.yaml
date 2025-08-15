@@ -1,0 +1,55 @@
+# Do not forget to update the version string in the astral_wrapper.py file
+{% set name = "Astral" %}
+{% set version = "5.7.8" %}
+{% set sha256 = "7b3d89ca4fee42b00e547ed2485e60bebfdf7f0179cfc503f0c522d682483dea" %}
+
+package:
+  name: {{ name|lower }}-tree
+  version: {{ version }}
+
+build:
+  number: 1
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('astral-tree', max_pin="x") }}
+
+source:
+  url: https://github.com/smirarab/ASTRAL/raw/master/{{ name }}.{{ version }}.zip
+  sha256: {{ sha256 }}
+
+requirements:
+  host:
+  run:
+    - openjdk >=11
+    - python
+
+test:
+  files:
+    - test.tre
+
+about:
+  home: https://github.com/smirarab/ASTRAL
+  license: Apache License 2.0
+  license_family: APACHE
+  summary: ASTRAL is a tool for estimating an unrooted species tree given a set of unrooted gene trees.
+  description: |
+    ASTRAL is a tool for estimating an unrooted species tree given a set of unrooted gene trees. 
+    ASTRAL is statistically consistent under the multi-species coalescent model 
+    (and thus is useful for handling incomplete lineage sorting, i.e., ILS). 
+    ASTRAL finds the species tree that has the maximum number of shared induced 
+    quartet trees with the set of gene trees, subject to the constraint that 
+    the set of bipartitions in the species tree comes from a predefined set of bipartitions. 
+    This predefined set is empirically decided by ASTRAL (but see tutorial on how to expand it). 
+    The current code corresponds to ASTRAL-III.
+
+extra:
+  notes: 'astral is a Java program that comes with a custom wrapper
+    shell script. By default ''no default java option'' is set in the wrapper. The
+    command that runs the program is ''astral''. If you want to overwrite
+    it you can specify memory options directly after your binaries. If you have _JAVA_OPTIONS
+    set globally this will take precedence. For example run it with ''biopet-fastqsplitter
+    -Xms512m -Xmx1g''. '
+  identifiers:
+    - doi:10.1186/s12859-018-2129-y
+  recipe-maintainers:
+    - pauldg

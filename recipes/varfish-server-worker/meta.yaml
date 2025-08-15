@@ -1,0 +1,54 @@
+{% set version = "0.17.2" %}
+
+package:
+  name: varfish-server-worker
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage("varfish-server-worker", max_pin="x.x") }}
+
+source:
+  url: https://github.com/varfish-org/varfish-server-worker/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: c1257b32efb5e482b739e133ab086ff0d4f41d4780978122683c1d41b59b15e3
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cmake
+    - make
+    - cargo-bundle-licenses
+    - pkg-config
+  host:
+    - clangdev
+    - llvmlite
+    - openssl
+    - protobuf
+    - libprotobuf
+    - zlib
+    - sqlite
+  run:
+    - sqlite
+
+test:
+  commands:
+    - varfish-server-worker --help
+
+about:
+  home: https://github.com/varfish-org/varfish-server-worker
+  license: MIT
+  summary: |
+    Rust-based tool for the heavy lifting in varfish-server.
+  dev_url: "https://github.com/varfish-org/varfish-server-worker"
+  doc_url: "https://github.com/varfish-org/varfish-server-worker"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - holtgrewe
+    - tedil

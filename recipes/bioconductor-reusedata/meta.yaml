@@ -1,0 +1,56 @@
+{% set version = "1.6.0" %}
+{% set name = "ReUseData" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: ReUseData is an _R/Bioconductor_ software tool to provide a systematic and versatile approach for standardized and reproducible data management. ReUseData facilitates transformation of shell or other ad hoc scripts for data preprocessing into workflow-based data recipes. Evaluation of data recipes generate curated data files in their generic formats (e.g., VCF, bed). Both recipes and data are cached using database infrastructure for easy data management and reuse. Prebuilt data recipes are available through ReUseData portal ("https://rcwl.org/dataRecipes/") with full annotation and user instructions. Pregenerated data are available through ReUseData cloud bucket that is directly downloadable through "getCloudData()".
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Reusable and reproducible Data Management
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-reusedata", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, testthat (>= 3.0.0), BiocStyle
+requirements:
+  host:
+    - bioconductor-basilisk >=1.18.0,<1.19.0
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-rcwl >=1.22.0,<1.23.0
+    - bioconductor-rcwlpipelines >=1.22.0,<1.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-jsonlite
+    - r-yaml
+  run:
+    - bioconductor-basilisk >=1.18.0,<1.19.0
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-rcwl >=1.22.0,<1.23.0
+    - bioconductor-rcwlpipelines >=1.22.0,<1.23.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-jsonlite
+    - r-yaml
+
+source:
+  md5: c96d63fa9beb9571fd690ff5525f0713
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
