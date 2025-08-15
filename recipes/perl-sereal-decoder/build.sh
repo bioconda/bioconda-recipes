@@ -2,6 +2,12 @@
 
 export LC_ALL="en_US.UTF-8"
 
+export USE_UNALIGNED=no
+export NO_ASM=yes
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3"
+
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [[ -f Build.PL ]]; then
     perl Build.PL
@@ -12,7 +18,7 @@ if [[ -f Build.PL ]]; then
 elif [[ -f Makefile.PL ]]; then
     # Make sure this goes in site
     perl Makefile.PL INSTALLDIRS=site
-    make -j1
+    make -j"${CPU_COUNT}"
     make install
 else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
