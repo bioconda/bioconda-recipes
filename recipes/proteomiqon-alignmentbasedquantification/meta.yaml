@@ -1,0 +1,37 @@
+{% set version = "0.0.2" %}
+{% set sha256 = "64cfd914a7be8527e60abf2cc1faf73eb61a1f7f47f4afdaeb4b6f5c3511058e" %}
+
+package:
+  name: proteomiqon-alignmentbasedquantification
+  version: '{{ version }}'
+
+source:
+  url: https://www.nuget.org/api/v2/package/ProteomIQon.AlignmentBasedQuantification/{{ version }}
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+
+requirements:
+  host:
+    - unzip
+  run:
+    - dotnet-runtime =5.0
+    - openssl =1.1
+
+test:
+  commands:
+    - proteomiqon-alignmentbasedquantification --help
+
+about:
+  home: https://csbiology.github.io/ProteomIQon/
+  license: MIT
+  summary: Given an MS run in the mzLite or mzml format and a list of a list of peptides deduced by alignment, this tool iterates accross all and performs an XIC extration and quantification in similar to the PSMbasedQuantification tool.
+  description: | 
+    Given an MS run in the mzLite or mzml format and a list of a list of peptides deduced by alignment., this tool iterates accross all and performs an XIC extration and quantification in similar to the PSMbasedQuantification tool. 
+    One of the drawbacks of data-dependent acquisition is the stochastic nature of peptide ion selection for MSMS fragmentation as a prerequisite for peptide identification and quantification. A way to overcome this drawback is the transfer of identified ions from one run to another using the assumption that the run is merely lacking a successful MSMS scan, but still containing the peptide itself. 
+    For each peptide ion the tools uses the scan time prediction derived using the quant based alignment tool to extract a XIC. To refine the derived scan time estimate, we then locally align the extracted XIC to the XIC of the aligned peptide using dynamic time warping. 
+    Using this scan time estimate, we use wavelet based peak detection techniques to identify all peaks present in the XIC and select the most probable peak as our target for quantification. Using parameter estimation techniques we subsequently use peak fitting to fit a set of two gaussian models to the detected peak, from whom the one with the better fit is selected. This allows us not only to report how well the signal fitted to the theoretical expected peak shape but also to obtain accurate estimates for the peak area, our estimator for peptide ion abundance.
+  dev_url: https://github.com/CSBiology/ProteomIQon
+  doc_url: https://csbiology.github.io/ProteomIQon/tools/AlignmentBasedQuantification.html

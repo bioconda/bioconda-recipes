@@ -1,5 +1,5 @@
 {% set name = "fastq-filter" %}
-{% set version = "0.1.1" %}
+{% set version = "0.3.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,11 +7,13 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 2bd51b1b1954e139da44b0f6d0fef1c6f55926ad956b81ee1c6bfc67918f995e
+  sha256: 8f28ea8124871b7c2cba2b558b7b64abdcbd4b0fdb7197a82056f7e6202b3e4b
 
 build:
-  number: 1
-  skip: true  # [py < 38]
+  number: 4
+  run_exports:
+    - {{ pin_subpackage(name, max_pin = "x.x") }}
+
   entry_points:
     - fastq-filter=fastq_filter:main
   script: "{{ PYTHON }} -m pip install . -vv"
@@ -44,5 +46,8 @@ about:
   summary: A fast FASTQ filter program.
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   recipe-maintainers:
     - rhpvorderman

@@ -1,0 +1,48 @@
+{% set version = "2.2.5" %}
+{% set name = "ParDRe" %}
+{% set sha256sum = "c5c5311f9492de52c32f77cb225952bfc5638b3837653198061022fd9123ba80" %}
+
+package:
+  name: {{ name | lower }}
+  version: {{ version }}
+
+source:
+  url: https://sourceforge.net/projects/{{ name | lower }}/files/{{ name }}-rel{{ version }}.tar.gz 
+  sha256: {{ sha256sum }}
+
+build:
+  number: 4
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - mpich-mpicxx
+    - zlib
+  host:
+    - mpich
+    - zlib
+
+  run:
+    - mpich
+    - zlib
+
+test:
+  commands:
+    - ParDRe -h
+
+about:
+  home: https://sourceforge.net/projects/pardre/
+  license: GPL-3.0-only
+  license_file: LICENSE
+  summary: ParDRe is a parallel tool to remove duplicate reads.
+
+
+extra:
+  recipe-maintainers:
+    - rhpvorderman
+  container:
+    # openmpi needs ssh/rsh
+    extended-base: true
+  identifiers:
+    - https://doi.org/10.1093/bioinformatics/btw038  # Journal article

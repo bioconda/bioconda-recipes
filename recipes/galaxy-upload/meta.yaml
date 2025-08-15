@@ -1,0 +1,50 @@
+{% set version = "1.0.1" %}
+{% set sha256 = "0decf84e1f605684d51f8bfb084c03318661ba452895d029e32c5ab3a83435de" %}
+
+package:
+  name: galaxy-upload
+  version: {{ version }}
+
+source:
+  url: https://github.com/galaxyproject/galaxy-upload/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+  entry_points:
+    - galaxy-upload = galaxy_upload.upload:main
+    - galaxy-history-search = galaxy_upload.history:main
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+  run:
+    - bioblend >=0.18.0
+    - click
+    - click-option-group
+    - rich
+    - tuspy >=1.0.0
+
+test:
+  imports:
+    - galaxy_upload
+  commands:
+    - galaxy-upload --help
+
+about:
+  home: https://github.com/galaxyproject/galaxy-upload
+  license: MIT
+  license_file: LICENSE
+  summary: Galaxy Command-Line Upload Utility
+  doc_url: https://galaxy-upload.readthedocs.org
+  dev_url: https://github.com/galaxyproject/galaxy-upload
+
+extra:
+  identifiers:
+    - biotools:galaxy
+    - doi:10.1093/nar/gky379
+  recipe-maintainers:
+    - natefoo

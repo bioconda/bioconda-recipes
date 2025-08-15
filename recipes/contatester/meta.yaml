@@ -1,0 +1,69 @@
+{% set name = "contatester" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/CNRGH/contatester/archive/v{{ version }}.tar.gz
+  sha256: 998521b200ef7cb2ddab47348122e8c3e7c0c807de38cab7f9ec5a8282758f6f
+
+build:
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  skip: true  # [py2k]
+  number: 4
+  entry_points:
+    - contatester = fr.cea.cnrgh.lbi.contatester.__main__:main
+ 
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - libcurl
+    - make
+    - openmpi
+    - python
+    - r-base
+    - setuptools >=40.0.0
+  host:
+    - openmpi
+    - pip
+    - pytest-runner
+    - python
+    - setuptools
+    - r-base
+    - r-gridbase
+    - r-gridextra
+    - r-optparse
+  run:
+    - openmpi
+    - python
+    - r-base
+    - r-gridbase
+    - r-gridextra
+    - r-optparse
+    - bcftools >=1.9
+    - python-pegasus-wms >=4.8.2
+
+test:
+  imports:
+    - fr.cea.cnrgh.lbi.contatester
+  commands:
+    - contatester --help
+
+about:
+  home: https://github.com/CNRGH/contatester
+  summary: Compute the Allelic Balance of a sample from a VCF file. 
+  description: |
+    Contatester computes the Allelic Balance of a sample from a VCF file, 
+    check if a cross human contamination is present and estimate the degree 
+    of contamination, using pegasus for high efficiency.
+  license: CeCILL
+  license_file: LICENSE
+
+extra:
+  identifiers:
+    - biotools:contatester
+  recipe-maintainers:
+    - alienzj

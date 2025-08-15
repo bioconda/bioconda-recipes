@@ -1,21 +1,30 @@
+{% set name = "r-sleuth" %}
+{% set version = "0.30.2" %}
+{% set github = "https://github.com/pachterlab/sleuth" %}
+
 package:
-  name: r-sleuth
-  version: 0.30.0
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/pachterlab/sleuth/archive/v{{ PKG_VERSION }}.tar.gz
-  sha256: c25158dff35416865931f7c95f02c64be764c5b2ce964fe9f40972d96150ddb2
+  url: "{{ github }}/archive/v{{ version }}.tar.gz"
+  sha256: 043ce093124cef931090ceb1933111f43e92d324d16a5aa1d97e1597f67b9f91
 
 build:
+  number: 0
   noarch: generic
-  number: 5
+  script: ${R} CMD INSTALL --build . ${R_ARGS}
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports:
+    - {{ pin_subpackage('r-sleuth', max_pin="x.x") }}
 
 requirements:
   host:
-    - r-base
+    # Depends:
+    - r-base >=3.2.1
+    # Imports:
     - bioconductor-rhdf5
     - r-aggregation
     - r-data.table
@@ -27,8 +36,12 @@ requirements:
     - r-reshape2
     - r-shiny
     - r-tidyr
+    # Suggests:
+    - r-mass
   run:
-    - r-base
+    # Depends:
+    - r-base >=3.2.1
+    # Imports:
     - bioconductor-rhdf5
     - r-aggregation
     - r-data.table
@@ -40,12 +53,22 @@ requirements:
     - r-reshape2
     - r-shiny
     - r-tidyr
+    # Suggests:
+    - r-mass
 
 test:
   commands:
-    - '$R -e "library(''sleuth'')"'
+    - $R -e "library('sleuth')"
 
 about:
-  home: http://pachterlab.github.io/sleuth
-  license: GPLv3
-  summary: "Sleuth is an R library for analysis of RNA-Seq experiments for which transcript abundances have been quantified with kallisto."
+  home: "https://pachterlab.github.io/sleuth"
+  dev_url: "{{ github }}"
+  license: "GPL-3.0-or-later"
+  license_file: LICENSE
+  license_family: GPL3
+  summary: "Tools for investigating RNA-Seq."
+  doc_url: "https://pachterlab.github.io/sleuth"
+
+extra:
+  recipe-maintainers:
+    - mjsteinbaugh

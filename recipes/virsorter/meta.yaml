@@ -1,5 +1,5 @@
-{% set version = "2.2.3" %}
-{% set sha256 = "b883966e63291147389526fc4ea3b1d844b525a9b092ab0c4969a96b3f02162e" %}
+{% set version = "2.2.4" %}
+{% set sha256 = "f9d1c291f773d9c4d70d7ec096e76c21208950d74d7bd5046da7c4a77cd54c07" %}
 
 package:
   name: virsorter
@@ -10,24 +10,27 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1      # must start from 0
+  number: 2      # must start from 0
   entry_points:
     - virsorter=virsorter.virsorter:cli
   noarch: python
   script: {{ PYTHON }} -m pip install . --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage('virsorter', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.6,<=3.10
     - pip
   run:
-    - python >=3.6
+    - python >=3.6,<=3.10
     - ruamel.yaml =0.16
     - snakemake-minimal >=5.18,<=5.26
     - click >=7
     - git
     - cookiecutter
-    - mamba
+    - mamba <2
+    - conda-package-handling <=1.9
 
 test:
   imports:

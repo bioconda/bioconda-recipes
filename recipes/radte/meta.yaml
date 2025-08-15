@@ -1,0 +1,51 @@
+{% set name = "radte" %}
+{% set version = "0.2.3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/kfuku52/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: c2084ac220e632c339a23484be0fa57f248cacdbbee210962caeaffe66b1b160
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('radte', max_pin="x.x") }}
+
+requirements:
+  host:
+    - r-base
+    - r-ape
+    - bioconductor-treeio  # NHXの処理に必要
+
+run:
+    - r-base >=3.5
+    - r-ape
+    - bioconductor-treeio
+    - notung
+    - generax
+
+test:
+  commands:
+    - radte --help || [[ "$?" == 1 ]]  # 引数なしでエラーでもOK
+  files:
+    - radte.r
+
+about:
+  home: "https://github.com/kfuku52/radte"
+  license: MIT
+  license_file: LICENSE
+  summary: "Reconciliation-Assisted Divergence Time Estimation for gene families."
+
+extra:
+  recipe-maintainers:
+    - kfuku52
+  build:
+    test-matrix:
+      - r-base 3.6.*
+      - r-base 4.1.*
+      - r-base 4.2.*
+      - r-base 4.3.*

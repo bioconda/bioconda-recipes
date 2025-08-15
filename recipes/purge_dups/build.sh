@@ -1,29 +1,15 @@
 #!/bin/bash
 
-export C_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-export LD_LIBRARY_PATH="${PREFIX}/lib"
+mkdir -p ${PREFIX}/bin
 
-export CFLAGS="$CFLAGS -I$PREFIX/include -g -Wall"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib -lz -lm"
+export CFLAGS="${CFLAGS} -I${PREFIX}/include -O3 -g -Wall"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lz -lm"
 
-export CPATH=${PREFIX}/include
+# Compile purge_dups
+cd src
+make CC="${CC}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
+cd ../bin
 
-cd ./src
-sed -i.bak '1,3d' makefile
-COMPILER=${CC} make
-
-cp ./purge_dups ${PREFIX}/bin/purge_dups
-cp ./split_fa ${PREFIX}/bin/split_fa
-cp ./pbcstat ${PREFIX}/bin/pbcstat
-cp ./ngscstat ${PREFIX}/bin/ngscstat
-cp ./calcuts ${PREFIX}/bin/calcuts
-cp ./get_seqs ${PREFIX}/bin/get_seqs
-
-
-chmod +x ${PREFIX}/bin/purge_dups
-chmod +x ${PREFIX}/bin/split_fa
-chmod +x ${PREFIX}/bin/pbcstat
-chmod +x ${PREFIX}/bin/ngscstat
-chmod +x ${PREFIX}/bin/calcuts
-chmod +x ${PREFIX}/bin/get_seqs
+install -v -m 0755 calcuts get_seqs ngscstat pbcstat purge_dups split_fa "${PREFIX}/bin"
+# Copy scripts
+cp -rf ../scripts/* "${PREFIX}/bin"

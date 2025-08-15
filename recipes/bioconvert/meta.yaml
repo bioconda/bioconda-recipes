@@ -1,80 +1,104 @@
 {% set name = "bioconvert" %}
-{% set version = "0.4.3" %}
-{% set sha256 =  "4dc8f91b185a7668fa13f29d28331b67364e608ca9db712686e911509188b67f" %}
+{% set version = "1.1.1" %}
+{% set sha256 = "5f0ddbe5ce90a3273cfa24792058dd584859f801984fe6bc47890cfabf7cfc96" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/bioconvert-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
+  number: 1
   noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --use-pep517 -vv
   entry_points:
     - bioconvert=bioconvert.scripts.converter:main
     - bioconvert_init=bioconvert.scripts.init_convert:main
-  number: 0
+    - bioconvert_stats=bioconvert.scripts.stats:main
+  run_exports:
+    - {{ pin_subpackage("bioconvert", max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3
-    - setuptools
+    - python >=3.8
+    - pip
+    - cython
   run:
-    - python >=3
-    - easydev >=0.9.36
+    - python >=3.8
+    - easydev
+    - biosniff
     - colorlog
+    - deeptools
+    - gffread
+    - goalign
+    - gotree
     - pandas
-    - biopython>=1.70
+    - biopython >=1.70
     - mappy
-    - matplotlib
+    - matplotlib-base
     - networkx
+    - picard-slim
     - pyyaml
     - pysam
     - pyexcel
     - pyexcel-ods3
     - pyexcel-xls
-    - pyBigWig
-    - xlrd
+    - pyexcel-xlsx
+    - psutil
+    - xlrd >2.0
+    - pybigwig
+    - py2bit
+    - statsmodels
+    - tqdm
     - bamtools
     - bcftools
-    - bedops
     - bedtools
-    - bioawk
-    - deeptools
+    - bedops
     - dsrc
-    - go ==1.10.3
+    - go 1.10.*
+    - mosdepth
     - pbzip2
     - pigz
     - plink
     - sambamba
-    - samtools>=1.9
+    - samtools >=1.17
     - seqtk
+    - seqkit
     - squizz
     - sra-tools
     - ucsc-bedgraphtobigwig
     - ucsc-bigwigtobedgraph
+    - ucsc-wigtobigwig
     - ucsc-fatotwobit
     - ucsc-twobittofa
-    - wiggletools
+    - wiggletools 1.2.*
     - sed
     - mawk
+    - graphviz
+    - numpydoc  # required by deeptools
+    - jinja2 <3.1  # required by numpydoc/deeptools
+    - openpyxl <=3.0.10  # pin on bioconvert requirements
 
 test:
   imports:
     - bioconvert
     - bioconvert.core
-    - bioconvert.data
-    - bioconvert.misc
     - bioconvert.scripts
-    - bioconvert.simulator
-    - bioconvert.validator
-
   commands:
     - MPLBACKEND=agg bioconvert --help
     - MPLBACKEND=agg bioconvert_init --help
     - MPLBACKEND=agg bioconvert_stats --help
+
+about:
+  home: https://pypi.org/project/bioconvert/
+  summary: Convert between bioinformatics formats
+  license: GPL-3.0
+  license_file: COPYING
+  dev_url: https://github.com/bioconvert/bioconvert
+  doc_url: https://bioconvert.readthedocs.io/en/dev/
 
 extra:
   container:
@@ -82,9 +106,3 @@ extra:
     extended-base: true
   skip-lints:
     - should_use_compilers
-
-about:
-  home: http://bioconvert.readthedocs.io/
-  license: GPL3
-  summary: 'convert various bioinformatics formats'
-  license_family: GPL

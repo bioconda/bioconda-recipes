@@ -1,0 +1,44 @@
+{% set version = "0.7.0" %}
+{% set sha256 = "e3d75d2ee20fa5acce2db7456c00f9ad806e2355e2936dc7db2dcfff6038a3cb" %}
+
+package:
+  name: scar
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/Novartis/scar/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps"
+  run_exports:
+    - {{pin_subpackage("scar", max_pin="x.x")}}
+
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+  run:
+    - python >=3.10
+    - setuptools >=68.1.2
+    - pytorch >=1.10.0
+    - torchvision >=0.9.0
+    - tqdm >=4.62.3
+    - seaborn >=0.11.2
+    - tensorboard >=2.2.1
+    - scikit-learn >=1.0.1
+    - scanpy
+    - pyro-ppl >=1.8.0
+
+test:
+  commands:
+    - scar -h
+
+about:
+  home: https://github.com/Novartis/scar
+  license: MIT
+  license_file: docs/License.rst
+  summary: 'scAR (single-cell Ambient Remover) is a deep learning model for ambient signal removal in droplet-based single cell omicsis.'

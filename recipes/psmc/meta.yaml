@@ -1,0 +1,43 @@
+{% set name = "psmc" %}
+{% set version = "0.6.5" %} # Remember to update sha256 below
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/lh3/psmc/archive/refs/tags/0.6.5.tar.gz
+  sha256: 0954b3e28dda4ae350bdb9ebe9eeb3afb3a6d4448cf794dac3b4fde895c3489b
+
+    
+build:
+  number: 4
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - libzlib
+    - zlib
+  run:
+    - zlib
+
+about:
+  home: https://github.com/lh3/psmc
+  license: MIT license 
+  license_file: LICENSE.txt
+  summary: |
+    This software package infers population size history from a diploid sequence using the Pairwise Sequentially Markovian Coalescent (PSMC) model
+
+test:
+  commands:
+    - psmc -h 2>&1 | cat > /dev/null
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
