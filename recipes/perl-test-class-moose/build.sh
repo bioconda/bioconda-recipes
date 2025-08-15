@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export LC_ALL="en_US.UTF-8"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     perl Build.PL
@@ -17,4 +20,3 @@ else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
 fi
-
