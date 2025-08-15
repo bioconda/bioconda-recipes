@@ -2,7 +2,9 @@
 
 export LC_ALL="en_US.UTF-8"
 
-chmod +rx inc/bin/testml-cpan
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' inc/bin/testml-cpan
+rm -rf inc/bin/*.bak
+chmod 755 inc/bin/testml-cpan
 
 if [[ -f Build.PL ]]; then
     perl Build.PL
@@ -12,7 +14,7 @@ if [[ -f Build.PL ]]; then
     ./Build install --installdirs site
 elif [[ -f Makefile.PL ]]; then
     # Make sure this goes in site
-    perl Makefile.PL INSTALLDIRS=site NO_PACKLIST=1 NO_PERLLOCAL=1
+    perl Makefile.PL INSTALLDIRS=site
     make
     make test
     make install
