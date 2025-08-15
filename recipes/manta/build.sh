@@ -1,13 +1,20 @@
 #!/bin/bash
 set -eu
+set -x
 
-outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-mkdir -p $outdir
-mkdir -p $PREFIX/bin
+mkdir build ; cd build
+BOOST_ROOT=${PREFIX} ../configure --prefix=${PREFIX} --verbose
 
-cp -r * $outdir
-rm -rf $outdir/share/demo
-sed -i.bak 's/__file__/os.path.realpath(__file__)/' $outdir/bin/configManta.py
-ln -s $outdir/bin/configManta.py $PREFIX/bin
-ln -s $outdir/libexec/convertInversion.py $PREFIX/bin
-ln -s $outdir/libexec/denovo_scoring.py $PREFIX/bin
+
+export INCLUDES="-I${PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+make PREFIX="${PREFIX}" CXX="${CXX}" VERBOSE=1 \
+  CXXFLAGS="${CXXFLAGS} -O3 -std=c++14" \
+  INCLUDE_DIRS="$PREFIX/include" \
+  LIBRARY_DIRS="$PREFIX/lib" -j"${CPU_COUNT}"
+make install
+
+ln -s $PREFIX/libexec/convertInversion.py $PREFIX/bin
+ln -s $PREFIX/libexec/denovo_scoring.py $PREFIX/bin
