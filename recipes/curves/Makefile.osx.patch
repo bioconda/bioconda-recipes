@@ -1,0 +1,90 @@
+--- Makefile.original	2025-01-28 13:59:51.000000000 +0100
++++ Makefile	2025-01-28 14:04:27.000000000 +0100
+@@ -3,6 +3,8 @@
+ 
+ CC= cc
+ CFLAG= 
++CFLAGS += -isysroot $(shell xcrun --show-sdk-path)
++LDFLAGS += -isysroot $(shell xcrun --show-sdk-path)
+ 
+ FC= gfortran
+ #FFLAG= -w -fbounds-check -O2
+@@ -21,7 +23,7 @@
+ ## 
+ ## If you have AmberTools installed (version >=13), please set
+ ## NETCDF to the location of your AmberTools installation; e.g.:
+-## NETCDF=/software/amber14/AmberTools
++NETCDF=$(AMBERHOME)
+ ##
+ ## If you installed netcdf-fortran using macports on MACOSX,
+ ## set NETCDF to the location of your macports tree; e.g.:
+@@ -35,48 +37,56 @@
+ 
+ ###------------------ Gromacs XTC input support -------------------###
+ ## To enable XTC support, uncomment the following line:
+-## XTC= yes
++XTC= yes
+ 
+ ## Please do not edit below this line.
+ ###----------------------------------------------------------------###
+ ifdef NETCDF
+-FFLAG_NC= -I$(NETCDF)/include/ -DNETCDF
+-ifneq ("$(wildcard $(NETCDF)/lib/libnetcdff.a)","")
++FFLAG_NC= -I$(NETCDF)/include/ -DNETCDF -Wno-argument-mismatch
++## ifneq ("$(wildcard $(NETCDF)/lib/libnetcdff.a)","")
+ libnetcdf= netcdff
+-else
+-libnetcdf= netcdf
+-endif
++## else
++## libnetcdf= netcdf
++## endif
+ LDFLAG_NC= -L$(NETCDF)/lib -l$(libnetcdf)
+ endif
+ 
+ ifdef XTC
+ XTC_OBJ= f77_molfile.o
+-FFLAG_XTC= -DXTC
++FFLAG_XTC= -DXTC -fallow-argument-mismatch
+ LDFLAG_XTC= -L. -lmolfile_plugin -lstdc++
+ endif
+ 
++CFLAG= -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include
++
+ OBJ= aacur.o axis.o axref.o backbo.o bisection.o dotdelta.o eigen.o \
+ findaxis.o getdate.o ionbld.o ionpar.o input.o intaxe.o intop.o \
+ locate.o lsfit.o manta.o ncerror.o nml.o \
+ params.o pdbout.o curpar.o screw.o setup.o smooth.o torp.o xtcerror.o $(XTC_OBJ)
+ 
+-Cur+ : $(OBJ) 
+-	$(FC) $(OBJ) $(LDFLAG_NC) $(LDFLAG_XTC) -o Cur+
++all: Cur+ Canal Canion
++
++Cur+ : $(OBJ)
++	$(FC) $(OBJ) $(LDFLAG_NC) -L/usr/local/lib/gcc/current $(LDFLAG_XTC) -lgfortran -o Cur+
++Canal : canal.o
++	$(FC) $(FFLAG) canal.o -o Canal
++Canion : canion.o
++	$(FC) $(FFLAG) canion.o -o Canion
+ 
+ .SUFFIXES : .o .c .f
+ .c.o :
+-	$(CC) -cpp $(CFLAG) -c $<
++	$(CC) $(CFLAG) -Iinclude -dM -c $<
+ 
+ .f.o :
+ 	$(FC) -cpp $(FFLAG) $(FFLAG_NC) $(FFLAG_XTC) -c $<
+ 
+ clean: 
+-	rm -f Cur+ *.o *.a
++	rm -f Cur+ Canal Canion *.o *.a
+ 
+ f77_molfile.o: f77_molfile.c plugins
+-	$(CC) $(CFLAG) -Iinclude -c $<
++	$(CC) $(CFLAG) -Iinclude -dM -c $<
+ 
+ plugins: gromacsplugin.C
+-	$(CC) -D"STATIC_PLUGIN" -Iinclude -D"VMDPLUGIN=molfile_gromacsplugin" -c gromacsplugin.C -o gromacsplugin-s.o
++	$(CXX) -D"STATIC_PLUGIN" -Iinclude -dM -D"VMDPLUGIN=molfile_gromacsplugin" -c gromacsplugin.C -o gromacsplugin-s.o
+ 	ar cr libmolfile_plugin.a gromacsplugin-s.o
+ 
