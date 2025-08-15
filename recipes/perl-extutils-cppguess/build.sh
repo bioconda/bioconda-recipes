@@ -8,6 +8,9 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
+sed -i.bak "s|^    cc => .*$|    cc => '${CXX}',|" ${PREFIX}/lib/perl5/5.32/core_perl/Config.pm
+rm -rf ${PREFIX}/lib/perl5/5.32/core_perl/*.bak
+
 if [[ -f Build.PL ]]; then
     perl Build.PL
     perl ./Build
@@ -16,7 +19,7 @@ if [[ -f Build.PL ]]; then
     perl ./Build install --installdirs site
 elif [[ -f Makefile.PL ]]; then
     # Make sure this goes in site
-    perl Makefile.PL INSTALLDIRS=site CC="${CXX}"
+    perl Makefile.PL INSTALLDIRS=site --config CC="${CXX}"
     make CC="${CXX}"
     make test CC="${CXX}" -j"${CPU_COUNT}"
     make install
