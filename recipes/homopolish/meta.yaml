@@ -10,21 +10,27 @@ source:
   sha256: 3fb54f41d5dd6a1458a8765c096262c4d7609e99d815b1a2541095800ba325b6
 
 build:
-  entry_points:
-    - homopolish = homopolish.homopolish:main
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  entry_points:
+    - homopolish = homopolish.homopolish:main
+  script:
+    - mkdir -p "${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
+    - mkdir -p "${PREFIX}/bin"
+    - sed -i.bak 's|0.4.1|0.4.2|' version.py && rm -rf *.bak
+    - chmod +x homopolish.py
+    - cp -rf * "${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/" && install -v -m 0755 homopolish.py "${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
+    - ln -sf ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/homopolish.py ${PREFIX}/bin/homopolish
   run_exports:
     - {{ pin_subpackage('homopolish', max_pin="x.x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.7.7,<3.13
+    - python >=3.7,<3.13
     - setuptools
   run:
-    - python >=3.7.7,<3.13
+    - python >=3.7,<3.13
     - scikit-learn =0.21.3
     - mash
     - minimap2 >=2.17
@@ -44,6 +50,8 @@ requirements:
 test:
   imports:
     - homopolish
+  commands:
+    - homopolish -v
 
 about:
   home: "https://github.com/ythuang0522/homopolish"
