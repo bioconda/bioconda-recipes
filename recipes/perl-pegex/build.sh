@@ -2,6 +2,8 @@
 
 export LC_ALL="en_US.UTF-8"
 
+chmod +rx inc/bin/testml-cpan
+
 if [[ -f Build.PL ]]; then
     perl Build.PL
     ./Build
