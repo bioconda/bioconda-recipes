@@ -2,15 +2,19 @@
 
 export LC_ALL="en_US.UTF-8"
 
-if [ -f Build.PL ]; then
+# Fix perl shebang
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' inc/bin/testml-cpan
+rm -rf inc/bin/*.bak
+
+if [[ -f Build.PL ]]; then
     perl Build.PL
     ./Build
     ./Build test
     # Make sure this goes in site
     ./Build install --installdirs site
-elif [ -f Makefile.PL ]; then
+elif [[ -f Makefile.PL ]]; then
     # Make sure this goes in site
-    perl Makefile.PL INSTALLDIRS=site
+    perl Makefile.PL INSTALLDIRS=site NO_PACKLIST=1 NO_PERLLOCAL=1
     make
     make test
     make install
