@@ -8,6 +8,8 @@ export FC="${FC}"
 export PERL="${PERL:-${BUILD_PREFIX}/bin/perl}"
 export PYTHON="${PYTHON}"
 
+export LC_ALL="en_US.UTF-8"
+
 # Create symbolic links for build tools
 for tool in ar ld nm objdump ranlib; do
     if [[ -e "${PREFIX}/bin/x86_64-conda-linux-gnu-${tool}" ]]; then
@@ -44,7 +46,8 @@ cd heasoft/BUILD_DIR
     --x-includes="${PREFIX}/include" \
     --x-libraries="${PREFIX}/lib" \
     --enable-static=no \
-    --with-components="heacore ftools Xspec nustar suzaku swift integral ixpe heasim heagen heatools attitude"
+    --with-components="heacore ftools Xspec nustar suzaku swift integral ixpe heasim heagen heatools attitude" \
+    --enable-silent-rules --disable-dependency-tracking --disable-option-checking
 
 make -j1
 make install
