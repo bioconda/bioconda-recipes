@@ -1,9 +1,6 @@
 #!/bin/bash
 set -ex
 
-sed -i 's/mpiexec/prterun/g' configure
-sed -i 's/mpirun/prterun/g' configure
-
 export CC=mpicc
 export CXX=mpicxx
 export FC=mpifort
@@ -12,6 +9,9 @@ export RUNSERIAL="prterun -n 1"
 export RUNPARALLEL="prterun -n \$\${NPROCS:=6}"
 
 cd esme_hdf5
+
+sed -i 's/mpiexec/prterun/g' configure
+sed -i 's/mpirun/prterun/g' configure
 
 ./configure --prefix="${PREFIX}" \
             --with-zlib="${PREFIX}" \
