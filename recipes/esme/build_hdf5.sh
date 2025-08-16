@@ -1,25 +1,35 @@
 #!/bin/bash
-
 set -ex
 
 export CC=mpicc
+export CXX=mpicxx
 export FC=mpifort
 
+export RUNSERIAL="prterun -n 1"
+export RUNPARALLEL="prterun -n \$\${NPROCS:=6}"
+
+export CFLAGS="-fPIC" 
+export FFLAGS="-fPICt" 
+export CXXFLAGS="-fPIC" 
+
 cd esme_hdf5
+
+sed -i 's/mpiexec/prterun/g' configure
+sed -i 's/mpirun/prterun/g' configure
 
 ./configure --prefix="${PREFIX}" \
             --with-zlib="${PREFIX}" \
             --with-szlib="${PREFIX}" \
             --enable-fortran \
-	    --enable-parallel \
+            --enable-parallel \
             --enable-threadsafe \
-	    --enable-unsupported \
-	    --enable-optimization=high \
-            --enable-build-mode=production \
-	    --disable-dependency-tracking \
+            --enable-unsupported \
+            --enable-optimization=high \
+#           --enable-build-mode=production \
+            --disable-dependency-tracking \
             --enable-static=no \
-	    --disable-doxygen-doc
+            --disable-doxygen-doc \
+	    --disable-silent-rules --enable-build-mode=debug --enable-show-all-warnings
 
 make -j ${CPU_COUNT}
-
 make install
