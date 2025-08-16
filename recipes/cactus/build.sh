@@ -11,7 +11,7 @@ esac
 if [[ "$(uname -s)" == "Darwin" ]]; then
 	sed -i.bak 's|-Xpreprocessor -fopenmp -lomp|-Xclang -fopenmp -L$(PREFIX)/lib -I$(PREFIX)/include -lomp|' include.mk
 	rm -rf *.bak
-	export LDFLAGS="${LDFLAGS} -lomp"
+	export LDFLAGS="${LDFLAGS}"
 fi
 
 cd submodules/abPOA
@@ -52,6 +52,6 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
 	rm -rf *.bak
 fi
 
-make CXX="${CXX}" -j"${CPU_COUNT}"
+make
 
 install -v -m 755 mzgaf2paf pafcoverage rgfa-split paf2lastz pafmask gaf2paf gaf2unstable gaffilter rgfa2paf paf2stable "${PREFIX}/bin"
