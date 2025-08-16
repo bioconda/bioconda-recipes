@@ -19,6 +19,8 @@ source:
 
 build:
   number: 1
+  overlinking_ignore_patterns: "*"
+  # Linking is checked in the outputs not meta recipe
 
 # Try this when building with GUI
 #extra:
@@ -60,8 +62,10 @@ outputs:
         #  from the main "package"
         # But since the other packages depend on its run_exports we want to make
         #  sure that the versions of the dependencies used are the same as above. So list them
-        #  again
+        #  again. Also we want the compiler jinja func to have the run dependencies such that
+        #  dso linker checks dont complain
         build:
+          - {{ compiler('cxx') }}
           - cmake
         host:
           - bzip2
@@ -98,6 +102,7 @@ outputs:
     requirements:
       # no actual build is done. CMake is used to install different parts of the existing build
       build:
+        - {{ compiler('cxx') }}
         - cmake
       host:
         - {{ pin_subpackage('libopenms', exact=True) }}
