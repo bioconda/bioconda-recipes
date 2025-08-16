@@ -6,6 +6,7 @@ config_sepp -c
 config_upp -c
 
 # copy bundled binaries, but hmmer, pplacer and guppy which should be provided by conda, into $PREFIX/bin/
+# looks like only binary remaining after the exclusions is now a .jar file
 mkdir -p $PREFIX/bin/
 cp -v `cat $SRC_DIR/.sepp/main.config | grep "^path" | grep -v "hmm" | grep -v "pplacer" | grep -v "guppy" | cut -d "=" -f 2` $PREFIX/bin/
 cp -v `cat $SRC_DIR/.sepp/upp.config | grep "^path" | grep -v "hmm" | grep -v "pplacer" | grep -v "guppy" | grep -v "run_pasta" | cut -d "=" -f 2` $PREFIX/bin/
