@@ -28,7 +28,8 @@ sed -i 's/mpirun/prterun/g' configure
             --enable-build-mode=production \
             --disable-dependency-tracking \
             --enable-static=no \
-            --disable-doxygen-doc
+            --disable-doxygen-doc \
+	    --disable-silent-rules --enable-build-mode=debug --enable-show-all-warnings
 
 make -j ${CPU_COUNT}
 make install
