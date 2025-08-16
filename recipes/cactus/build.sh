@@ -52,6 +52,6 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
 	rm -rf *.bak
 fi
 
-make
+make -j"${CPU_COUNT}"
 
 install -v -m 755 mzgaf2paf pafcoverage rgfa-split paf2lastz pafmask gaf2paf gaf2unstable gaffilter rgfa2paf paf2stable "${PREFIX}/bin"
