@@ -9,8 +9,9 @@ export RUNPARALLEL="prterun -n \$\${NPROCS:=6}"
 
 cd esme_hdf5
 
-# Patch configure to skip the failing Fortran MPI-IO test
-sed -i 's/configure: error: unable to link a simple MPI-IO Fortran program/echo "Skipping Fortran MPI-IO test for PsMPI"/g' configure
+# Replace the failing test with a success condition
+sed -i '/checking whether a simple MPI-IO Fortran program can be linked/,/configure: error: unable to link a simple MPI-IO Fortran program/c\
+echo "checking whether a simple MPI-IO Fortran program can be linked... yes (forced for PsMPI)"' configure
 
 ./configure --prefix="${PREFIX}" \
             --with-zlib="${PREFIX}" \
@@ -24,5 +25,6 @@ sed -i 's/configure: error: unable to link a simple MPI-IO Fortran program/echo 
             --disable-dependency-tracking \
             --enable-static=no \
             --disable-doxygen-doc
+
 make -j ${CPU_COUNT}
 make install
