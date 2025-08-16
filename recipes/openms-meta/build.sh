@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ "$CXX" == *gcc* ]]; then
+if [[ "$CXX" == *gnu-c++* ]]; then
   # For stuff like this GCC bug (especially on ARM) https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111516
   echo "Detected gcc: ignoring some compile warnings."
   export CXXFLAGS="${CXXFLAGS} -Wno-psabi"
@@ -16,6 +16,6 @@ cmake -S .. -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
 	-DCMAKE_PREFIX_PATH="${PREFIX}" -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_SKIP_RPATH=On \
 	-DHAS_XSERVER=OFF -DENABLE_CLASS_TESTING=OFF -DENABLE_TOPP_TESTING=Off -DWITH_GUI=OFF -DBOOST_USE_STATIC=OFF \
 	-DBoost_NO_BOOST_CMAKE=ON -DBoost_ARCHITECTURE="-x64" -DQT_HOST_PATH="${BUILD_PREFIX}" -DQT_HOST_PATH_CMAKE_DIR="${PREFIX}" \
-	-DBUILD_EXAMPLES=OFF -DENABLE_TDL=OFF -DWITH_HDF5=OFF -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}
+	-DBUILD_EXAMPLES=OFF -DENABLE_CWL=OFF -DWITH_HDF5=OFF -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}
 
 ninja -j"${CPU_COUNT}"
