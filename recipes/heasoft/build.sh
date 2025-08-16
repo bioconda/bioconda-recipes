@@ -1,21 +1,7 @@
 #!/bin/bash
 set -ex
 
-# Set up compilers
-export CC="${CC}"
-export CXX="${CXX}"
-export FC="${FC}"
-export PERL="${PERL:-${BUILD_PREFIX}/bin/perl}"
-export PYTHON="${PYTHON}"
-
 export LC_ALL="en_US.UTF-8"
-
-# Create symbolic links for build tools
-for tool in ar ld nm objdump ranlib; do
-    if [[ -e "${PREFIX}/bin/x86_64-conda-linux-gnu-${tool}" ]]; then
-        ln -sf "${PREFIX}/bin/x86_64-conda-linux-gnu-${tool}" "${PREFIX}/bin/${tool}" || true
-    fi
-done
 
 # Set compilation flags
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
@@ -23,6 +9,13 @@ export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lgsl -lgslcblas -lz -lgfortran -lstdc++ -lcurl -ltinfo -Wl,-rpath,${PREFIX}/lib"
 export PERL_MM_USE_DEFAULT=1
 export PERL_EXTUTILS_AUTOINSTALL="--defaultdeps"
+
+# Create symbolic links for build tools
+for tool in ar ld nm objdump ranlib; do
+    if [[ -e "${PREFIX}/bin/x86_64-conda-linux-gnu-${tool}" ]]; then
+        ln -sf "${PREFIX}/bin/x86_64-conda-linux-gnu-${tool}" "${PREFIX}/bin/${tool}" || true
+    fi
+done
 
 # Ensure pkg-config finds GSL
 export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
@@ -45,7 +38,7 @@ cd heasoft/BUILD_DIR
 ./configure --prefix="${PREFIX}" \
     --x-includes="${PREFIX}/include" \
     --x-libraries="${PREFIX}/lib" \
-    --enable-static=no \
+    --enable-static=no CC="${CC}" CXX="${CXX}" \
     --with-components="heacore ftools Xspec nustar suzaku swift integral ixpe heasim heagen heatools attitude" \
     --enable-silent-rules --disable-dependency-tracking --disable-option-checking
 
