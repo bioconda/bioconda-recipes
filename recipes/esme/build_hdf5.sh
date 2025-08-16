@@ -8,7 +8,14 @@ export hdf5_cv_mpi_io=yes
 export hdf5_cv_mpi_special_collective_io_works=yes
 export hdf5_cv_mpi_complex_derived_datatype_works=yes
 
+# Add Fortran-specific cache variables
+export hdf5_cv_fortran_mpi_io=yes
+export pac_cv_have_mpi_io=yes
+export pac_cv_mpi_io=yes
+
+# Set MPI compilers
 export CC=mpicc
+export CXX=mpicxx
 export FC=mpifort
 
 cd esme_hdf5
