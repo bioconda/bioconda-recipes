@@ -13,6 +13,8 @@ else  ## linux
 	export CXXFLAGS="${CXXFLAGS}"
 fi
 
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
+
 ./configure --prefix="${PREFIX}" \
 	--with-vrna="${PREFIX}" \
 	--with-boost="${PREFIX}" \
