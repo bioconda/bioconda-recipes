@@ -6,9 +6,8 @@ export CC=mpicc
 export CXX=mpicxx
 export FC=mpifort
 
-# Bypass mpiexec dependency and runtime checks
-export RUNPARALLEL=none
-export cross_compiling=yes  # Skip runtime checks by enabling cross-compilation mode
+export RUNSERIAL="prterun -n 1"
+export RUNPARALLEL="prterun -n \$\${NPROCS:=6}"
 
 cd esme_hdf5
 
