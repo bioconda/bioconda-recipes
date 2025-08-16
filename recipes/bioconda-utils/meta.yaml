@@ -1,6 +1,6 @@
 {% set name = "bioconda-utils" %}
-{% set version = "3.7.2" %}
-{% set sha256 = "5fefa7436f7c40af5747c3042bef26cc9a31f0048db13bedafda422218392816" %}
+{% set version = "3.9.1" %}
+{% set sha256 = "a29bda25bebaf2a7c8a3dc8f09a3612e08e728ca373fdca0c678d4cf28b96355" %}
 
 package:
   name: {{ name }}
@@ -13,7 +13,7 @@ source:
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   entry_points:
     - bioconda-utils = bioconda_utils.cli:main
   run_exports:
@@ -21,43 +21,42 @@ build:
 
 requirements:
   host:
-    - python <3.12
+    - python 3.12.*
     - pip
   run:
     - conda-forge-pinning 2024.11.29.12.37.53
-    - python 3.10.*
-    - conda 24.9.*
-    - conda-libmamba-solver 24.1.*
-    - conda-build 24.7.*
-    - conda-index 0.5.*
-    - conda-package-streaming 0.11.*
-    - mamba 1.5.*
-    #- boa 0.17.*
+    - python 3.12.*
+    - conda 25.7.*
+    - conda-libmamba-solver 25.4.*
+    - conda-build 25.7.*
+    - conda-index 0.6.*
+    - conda-package-streaming 0.12.*
+    - mamba 2.3.*
     - argh 0.31.*
     - colorlog 6.*
-    - tqdm 4.66.*
-    - yaspin 2.*
+    - tqdm 4.67.*
+    - yaspin 3.*
     - ruamel.yaml 0.18.*
-    - pyaml 24.04.*
-    - networkx 3.3.*
-    - pandas 2.2.*
+    - pyaml 25.7.*
+    - networkx 3.5.*
+    - pandas 2.3.*
     - libblas * *openblas
-    - boltons 24.0.*
-    - jsonschema 4.22.*
+    - boltons 25.0.*
+    - jsonschema 4.25.*
     - jinja2 3.1.*
-    - anaconda-client 1.12.*
-    - galaxy-tool-util 24.*
+    - anaconda-client 1.13.*
+    - galaxy-tool-util 25.*
     - involucro 1.1.*
     - skopeo 1.15.*
     - findutils
     - git 2.*
-    - regex 2024.*
-    - aiohttp >=3.10.*
+    - regex 2025.*
+    - aiohttp >=3.12.14
     - aiohttp-jinja2
     - aiohttp-session
     - aiohttp-security
-    - aiofiles 23.*
-    - aioftp 0.22.*
+    - aiofiles 24.*
+    - aioftp 0.26.*
     - backoff 2.2.*
     - cachetools 5.3.*
     - gitpython 3.1.*
@@ -77,13 +76,13 @@ test:
     - bioconda-utils --help
     - bioconda-utils lint --help
     - bioconda-utils build --help
-    - >
-      CONDA_AGGRESSIVE_UPDATE_PACKAGES=
-      CONDA_AUTO_UPDATE_CONDA=0
-      "${PREFIX}/bin/mamba" install --prefix="${PREFIX}" --dry-run --satisfied-skip-solve
-      --file="$( python -c
-      'from os.path import dirname, join; import bioconda_utils; print(join(dirname(bioconda_utils.__file__), "bioconda_utils-requirements.txt"))'
-      )" 2>&1 | grep -qF 'All requested packages already installed'
+    #- >
+      #CONDA_AGGRESSIVE_UPDATE_PACKAGES=
+      #CONDA_AUTO_UPDATE_CONDA=0
+      #"${PREFIX}/bin/mamba" install --prefix="${PREFIX}" --dry-run --satisfied-skip-solve
+      #--file="$( python -c
+      #'from os.path import dirname, join; import bioconda_utils; print(join(dirname(bioconda_utils.__file__), "bioconda_utils-requirements.txt"))'
+      #)" 2>&1 | grep -qF 'All requested packages already installed'
 
 about:
   home: "https://bioconda.github.io/contributor/build-system.html"

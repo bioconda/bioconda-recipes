@@ -67,7 +67,7 @@ index 0eeb115..60f16dc 100644
  class ContigBuilder;
  
 diff --git a/src/megahit b/src/megahit
-index eb56a29..b070425 100755
+index eb56a29..c031504 100755
 --- a/src/megahit
 +++ b/src/megahit
 @@ -1,4 +1,4 @@
@@ -102,21 +102,3 @@ index eb56a29..b070425 100755
              opt.merge_len = int(opt.merge_len)
          elif option == '--prune-level':
              opt.prune_level = int(value)
-@@ -553,12 +552,12 @@ def check_and_correct_option():
-         raise Usage('--low-local-ratio should be in (0, 0.5].')
-     if opt.cleaning_rounds <= 0:
-         raise Usage('--cleaning-rounds must be >= 1')
--    if opt.num_cpu_threads > multiprocessing.cpu_count():
--        logger.warning('Maximum number of available CPU thread is %d.' % multiprocessing.cpu_count())
--        logger.warning('Number of thread is reset to the %d.' % multiprocessing.cpu_count())
--        opt.num_cpu_threads = multiprocessing.cpu_count()
-+    if opt.num_cpu_threads > len(os.sched_getaffinity(0)):
-+        logger.warning('Maximum number of available CPU thread is %d.' % len(os.sched_getaffinity(0)))
-+        logger.warning('Number of thread is reset to the %d.' % len(os.sched_getaffinity(0)))
-+        opt.num_cpu_threads = len(os.sched_getaffinity(0))
-     if opt.num_cpu_threads == 0:
--        opt.num_cpu_threads = multiprocessing.cpu_count()
-+        opt.num_cpu_threads = len(os.sched_getaffinity(0))
-     if opt.prune_depth < 0 and opt.prune_level < 3:
-         opt.prune_depth = opt.min_count
-     if opt.bubble_level < 0:
