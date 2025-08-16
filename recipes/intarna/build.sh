@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# suppress warnings
-# add -fopenmp to compilation due to viennarna setup
+# suppress warnings and add -fopenmp to compilation due to viennarna setup
 export CXXFLAGS="${CXXFLAGS} -O3 -w -fopenmp";
 export LDFLAGS="${LDFLAGS} -Wl,-rpath ${PREFIX}/lib";
 
@@ -20,10 +19,12 @@ fi
 	--disable-log-coloring \
 	--with-boost-libdir="${PREFIX}/lib" \
 	--disable-intarnapvalue \
+	CXX="${CXX}" \
 	${extra_config_options}
 
 
 make -j"${CPU_COUNT}"
+
 if [[ `uname -s` != "Darwin" ]]; then  # skip tests for osx to avoid timeout
 	make tests -j"${CPU_COUNT}"
 fi
