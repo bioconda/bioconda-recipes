@@ -1,14 +1,13 @@
 #!/bin/bash
 set -ex
 
-export LC_ALL="en_US.UTF-8"
-
 # Set compilation flags
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lgsl -lgslcblas -lz -lgfortran -lstdc++ -lcurl -ltinfo -Wl,-rpath,${PREFIX}/lib"
 export PERL_MM_USE_DEFAULT=1
 export PERL_EXTUTILS_AUTOINSTALL="--defaultdeps"
+export LC_ALL="en_US.UTF-8"
 
 # Create symbolic links for build tools
 for tool in ar ld nm objdump ranlib; do
@@ -37,7 +36,7 @@ unset build_alias host_alias
 cd heasoft/BUILD_DIR
 ./configure --prefix="${PREFIX}" \
     --x-includes="${PREFIX}/include" \
-    --x-libraries="${PREFIX}/lib" \
+    --x-libraries="${PREFIX}/lib" --with-gsl="${PREFIX}" \
     --enable-static=no CC="${CC}" CXX="${CXX}" \
     --with-components="heacore ftools Xspec nustar suzaku swift integral ixpe heasim heagen heatools attitude" \
     --enable-silent-rules --disable-dependency-tracking --disable-option-checking
