@@ -20,6 +20,10 @@ export CXXFLAGS="-fPIC $CXXFLAGS"
 export FCFLAGS="-fPIC $FCFLAGS"
 export FFLAGS="-fPIC $FFLAGS"
 
+export CC=mpicc
+export CXX=mpicxx
+export FC=mpifort
+
 export RUNSERIAL="prterun -n 1"
 export RUNPARALLEL="prterun -n \$\${NPROCS:=6}"
 
