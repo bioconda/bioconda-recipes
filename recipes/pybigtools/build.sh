@@ -4,14 +4,19 @@
 # -x = print every executed command
 set -ex
 
-# Add workaround for SSH-based Git connections from Rust/cargo.  See https://github.com/rust-lang/cargo/issues/2078 for details.
-# We set CARGO_HOME because we don't pass on HOME to conda-build, thus rendering the default "${HOME}/.cargo" defunct.
-export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="${BUILD_PREFIX}/.cargo"
+# There is some issue here building with Python 3.8 on macOS >= 11
+# See https://github.com/pypa/cibuildwheel/issues/1410
+export MACOSX_DEPLOYMENT_TARGET=12.7
+export MACOS_DEPLOYMENT_TARGET=12.7
+export SYSTEM_VERSION_COMPAT=0
 
-# Use a custom temporary directory as home on macOS.
-# (not sure why this is useful, but people use it in bioconda recipes)
-if [ `uname` == Darwin ]; then
-	export HOME=`mktemp -d`
+# See https://github.com/conda/conda-build/issues/4392#issuecomment-1370281802
+if [[ $target_platform == osx-* ]]; then
+    for toolname in "otool" "install_name_tool"; do
+        tool=$(find "${BUILD_PREFIX}/bin/" -name "*apple*-$toolname")
+        mv "${tool}" "${tool}.bak"
+        ln -s "/Library/Developer/CommandLineTools/usr/bin/${toolname}" "$tool"
+    done
 fi
 
 # Build statically linked binary with Rust
