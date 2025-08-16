@@ -39,11 +39,8 @@ rm -rf ${SRC_DIR}/sample_data
 cd ${BINARY_HOME}
 ln -sf util/*.pl .
 ln -sf Analysis/DifferentialExpression/PtR .
-ln -sf Analysis/DifferentialExpression/run_DE_analysis.pl .
-ln -sf Analysis/DifferentialExpression/analyze_diff_expr.pl .
-ln -sf Analysis/DifferentialExpression/define_clusters_by_cutting_tree.pl .
-ln -sf Analysis/SuperTranscripts/Trinity_gene_splice_modeler.py .
-ln -sf Analysis/SuperTranscripts/extract_supertranscript_from_reference.py .
+ln -sf Analysis/DifferentialExpression/*.pl .
+ln -sf Analysis/SuperTranscripts/*.py .
 ln -sf util/support_scripts/get_Trinity_gene_to_trans_map.pl .
 ln -sf util/misc/contig_ExN50_statistic.pl .
 cp -rf trinity-plugins/BIN/seqtk-trinity .
@@ -67,5 +64,5 @@ echo "export TRINITY_HOME=${BINARY_HOME}" > ${PREFIX}/etc/conda/activate.d/${PKG
 mkdir -p ${PREFIX}/etc/conda/deactivate.d/
 echo "unset TRINITY_HOME" > ${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}-${PKG_VERSION}.sh
 
-rm -rf trinityrnaseq.wiki sample_data WDL Docker
+rm -rf trinityrnaseq.wiki sample_data WDL Docker make.macOSX.sh
 rm -rf *.patch LICENSE* README* developer.notes Changelog.txt Makefile
