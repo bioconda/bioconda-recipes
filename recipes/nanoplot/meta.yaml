@@ -1,23 +1,30 @@
-{% set version = "1.44.1" %}
+{% set name = "nanoplot" %}
+{% set version = "1.46.0" %}
 
 package:
-  name: nanoplot
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/n/nanoplot/NanoPlot-{{ version }}.tar.gz 
-  sha256: c9d6b3c807d46fb3eb293bc826a94b699d17f50fb7fd0dcc3f17f56b0cee8e57
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/nanoplot-{{ version }}.tar.gz
+  sha256: 432d9f382462fe33270c4a580a060e0101eb49b90609bb4467c3ac7ed72c7865
 
 build:
-  entry_points:
-    - NanoPlot=nanoplot.NanoPlot:main
   number: 0
   noarch: python
+  entry_points:
+    - NanoPlot = nanoplot.NanoPlot:main
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -rf *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
-    - {{ pin_subpackage("nanoplot", max_pin="x.x") }}
+    - {{ pin_subpackage('nanoplot', max_pin="x") }}
+
 requirements:
   host:
     - python >=3
+    - pip
     - setuptools
   run:
     - python >=3
@@ -40,8 +47,9 @@ test:
     - NanoPlot --help
 
 about:
-  home: https://github.com/wdecoster/NanoPlot
+  home: "https://github.com/wdecoster/NanoPlot"
   license: MIT
-  summary: 'Plotting suite for long read sequencing data and alignments'
+  summary: "Plotting suite for long read sequencing data and alignments."
   license_family: MIT
   license_file: LICENSE
+  dev_url: "https://github.com/wdecoster/NanoPlot"
