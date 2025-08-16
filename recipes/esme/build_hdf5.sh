@@ -8,9 +8,9 @@ export FC=mpifort
 export RUNSERIAL="prterun -n 1"
 export RUNPARALLEL="prterun -n \$\${NPROCS:=6}"
 
-export CFLAGS="-fPIC -O3 -xHost" 
-export FFLAGS="-fPIC -O3 -xHost" 
-export CXXFLAGS="-fPIC -O3 -xHost" 
+export CFLAGS="-fPIC" 
+export FFLAGS="-fPICt" 
+export CXXFLAGS="-fPIC" 
 
 cd esme_hdf5
 
@@ -25,7 +25,7 @@ sed -i 's/mpirun/prterun/g' configure
             --enable-threadsafe \
             --enable-unsupported \
             --enable-optimization=high \
-            --enable-build-mode=production \
+#           --enable-build-mode=production \
             --disable-dependency-tracking \
             --enable-static=no \
             --disable-doxygen-doc \
