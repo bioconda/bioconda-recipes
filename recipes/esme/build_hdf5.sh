@@ -8,6 +8,10 @@ export FC=mpifort
 export RUNSERIAL="prterun -n 1"
 export RUNPARALLEL="prterun -n \$\${NPROCS:=6}"
 
+export CFLAGS="-fPIC -O3 -xHost" 
+export FFLAGS="-fPIC -O3 -xHost" 
+export CXXFLAGS="-fPIC -O3 -xHost" 
+
 cd esme_hdf5
 
 sed -i 's/mpiexec/prterun/g' configure
