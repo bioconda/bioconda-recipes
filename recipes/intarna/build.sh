@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # suppress warnings and add -fopenmp to compilation due to viennarna setup
-export CXXFLAGS="${CXXFLAGS} -O3 -w -fopenmp";
 export LDFLAGS="${LDFLAGS} -Wl,-rpath ${PREFIX}/lib";
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include";
+export CXXFLAGS="${CXXFLAGS} -O3 -w -fopenmp";
 
 if [[ `uname -s` == "Darwin" ]] ; then
 	export CXXFLAGS="${CXXFLAGS} -stdlib=libc++"
