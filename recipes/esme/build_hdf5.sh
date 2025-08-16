@@ -2,9 +2,23 @@
 
 set -ex
 
-export CC=mpicc
-export CXX=mpicxx
-export FC=mpifort
+# Set MPI environment variables for PsMPI
+export MPICC=mpicc
+export MPICXX=mpicxx
+export MPIFC=mpifort
+export MPIF77=mpifort
+export MPIF90=mpifort
+
+# Ensure MPI libraries are found
+export MPI_C_COMPILER=mpicc
+export MPI_CXX_COMPILER=mpicxx
+export MPI_Fortran_COMPILER=mpifort
+
+# Set compiler flags to ensure proper linking
+export CFLAGS="-fPIC $CFLAGS"
+export CXXFLAGS="-fPIC $CXXFLAGS"
+export FCFLAGS="-fPIC $FCFLAGS"
+export FFLAGS="-fPIC $FFLAGS"
 
 export RUNSERIAL="prterun -n 1"
 export RUNPARALLEL="prterun -n \$\${NPROCS:=6}"
