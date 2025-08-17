@@ -1,0 +1,49 @@
+{% set version = "1-db7f503" %}
+{% set sha256 = "b23e949a4964145d0dc78a5d761076952f2f07a12fd037138c5f99ea8aff70f7" %}
+
+package:
+  name: folddisco
+  version: {{ version }}
+
+source:
+  url: https://github.com/steineggerlab/folddisco/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('mypackage', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }} # Foldcomp dependencies
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  host:
+    - zlib
+  run:
+    - zlib
+  
+test:
+  commands:
+    - folddisco > /dev/null
+
+about:
+  home: https://github.com/steineggerlab/folddisco
+  summary: "Folddisco: fast indexing and search of discontinuous motifs in protein structures"
+  license: GPL-3
+  license_family: GPL
+  license_file: LICENSE.md 
+
+extra:
+  identifiers:
+    - doi:10.1101/2025.07.06.663357 
+  recipe-maintainers:
+    - khb7840
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
