@@ -6,8 +6,7 @@ export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="$(pwd)/.cargo"
 
 # Set C++ linking flags for macOS to ensure proper C++ standard library linking
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    export RUSTFLAGS="-C link-arg=-lc++ -C link-arg=-L${PREFIX}/lib"
-    export CXXFLAGS="${CXXFLAGS} -stdlib=libc++"
+    export RUSTFLAGS="-C link-arg=-L${PREFIX}/lib"
 fi
 
 # build statically linked binary with Rust
