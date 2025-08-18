@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "prostatecancercamcap-1.28.0"
+installBiocDataPackage.sh "prostatecancercamcap-1.34.0"

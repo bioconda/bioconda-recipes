@@ -1,46 +1,52 @@
-{% set version = "1.12.0" %}
+{% set version = "1.18.0" %}
 {% set name = "cmapR" %}
-{% set bioc = "3.17" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: de47953e61c6df4cd2db9d5551cdcffc
+about:
+  description: The Connectivity Map (CMap) is a massive resource of perturbational gene expression profiles built by researchers at the Broad Institute and funded by the NIH Library of Integrated Network-Based Cellular Signatures (LINCS) program. Please visit https://clue.io for more information. The cmapR package implements methods to parse, manipulate, and write common CMap data objects, such as annotated matrices and collections of gene sets.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: file LICENSE
+  license_file: LICENSE
+  summary: CMap Tools in R
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-cmapr", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, testthat, BiocStyle, rmarkdown
 requirements:
   host:
-    - 'bioconductor-flowcore >=2.12.0,<2.13.0'
-    - 'bioconductor-rhdf5 >=2.44.0,<2.45.0'
-    - 'bioconductor-summarizedexperiment >=1.30.0,<1.31.0'
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-rhdf5 >=2.50.0,<2.51.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-data.table
     - r-matrixstats
   run:
-    - 'bioconductor-flowcore >=2.12.0,<2.13.0'
-    - 'bioconductor-rhdf5 >=2.44.0,<2.45.0'
-    - 'bioconductor-summarizedexperiment >=1.30.0,<1.31.0'
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-rhdf5 >=2.50.0,<2.51.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-data.table
     - r-matrixstats
+
+source:
+  md5: 270cc4e8c96925b30015eefb5870fd63
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'file LICENSE'
-  summary: 'CMap Tools in R'
-  description: 'The Connectivity Map (CMap) is a massive resource of perturbational gene expression profiles built by researchers at the Broad Institute and funded by the NIH Library of Integrated Network-Based Cellular Signatures (LINCS) program. Please visit https://clue.io for more information. The cmapR package implements methods to parse, manipulate, and write common CMap data objects, such as annotated matrices and collections of gene sets.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

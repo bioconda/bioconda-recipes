@@ -1,53 +1,59 @@
-{% set version = "1.14.0" %}
+{% set version = "1.20.0" %}
 {% set name = "signatureSearchData" %}
-{% set bioc = "3.17" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 5b3174e0e3af77fea49a107ef423adb3
+about:
+  description: CMAP/LINCS hdf5 databases and other annotations used for signatureSearch software package.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Datasets for signatureSearch package
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-signaturesearchdata", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown
 requirements:
   host:
-    - 'bioconductor-affy >=1.78.0,<1.79.0'
-    - 'bioconductor-biobase >=2.60.0,<2.61.0'
-    - 'bioconductor-experimenthub >=2.8.0,<2.9.0'
-    - 'bioconductor-limma >=3.56.0,<3.57.0'
-    - 'bioconductor-rhdf5 >=2.44.0,<2.45.0'
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-rhdf5 >=2.50.0,<2.51.0
     - r-base
     - r-dplyr
     - r-magrittr
     - r-r.utils
   run:
-    - 'bioconductor-affy >=1.78.0,<1.79.0'
-    - 'bioconductor-biobase >=2.60.0,<2.61.0'
-    - 'bioconductor-experimenthub >=2.8.0,<2.9.0'
-    - 'bioconductor-limma >=3.56.0,<3.57.0'
-    - 'bioconductor-rhdf5 >=2.44.0,<2.45.0'
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-rhdf5 >=2.50.0,<2.51.0
     - r-base
     - r-dplyr
     - r-magrittr
     - r-r.utils
     - curl
-    - bioconductor-data-packages>=20230706
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: 98c11cb295e59f4f3caae25cdc4d616e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Datasets for signatureSearch package'
-  description: 'CMAP/LINCS hdf5 databases and other annotations used for signatureSearch software package.'
+    - $R -e "library('{{ name }}')"
 

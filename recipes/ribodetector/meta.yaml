@@ -1,24 +1,29 @@
-{% set version = "0.2.7" %}
+{% set version = "0.3.1" %}
 
 package:
   name: ribodetector
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/d8/66/f1f7445866fe5a80058eace33a4d1888ab9531cf42b08ce9a764c993902a/ribodetector-0.2.7.tar.gz
-  sha256: 39633b2642eb961f61a827f7733acfe0de95e43a66749c6c46ddecd910e602d2
+  url: https://files.pythonhosted.org/packages/7a/83/da07dc151cea39c3f6edb55ac41581f5d6eb248464ac8fcdedc70b52cf5f/ribodetector-0.3.1.tar.gz
+  sha256: a520a411879a193f813ba5f7ad530e57aed31c0519c622de47490bb5144f0595
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  entry_points:
+    - ribodetector = ribodetector.detect:main
+    - ribodetector_cpu = ribodetector.detect_cpu:main
+  run_exports:
+    - {{ pin_subpackage('ribodetector', max_pin="x.x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.8
+    - python >=3.8,<=3.10
   run:
-    - python >=3.8
+    - python >=3.8,<=3.10
     - pandas
     - numpy
     - tqdm
@@ -34,9 +39,11 @@ test:
     - ribodetector_cpu --help
 
 about:
-  home: https://github.com/hzi-bifo/RiboDetector 
-  license: GPL-3
-  summary: Accurate and rapid RiboRNA sequences Detector based on deep learning  
+  home: https://github.com/hzi-bifo/RiboDetector
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Accurate and rapid RiboRNA sequences Detector based on deep learning
 
 extra:
   recipe-maintainers:
