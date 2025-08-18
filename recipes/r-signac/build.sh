@@ -2,8 +2,10 @@
 set -o errexit -o pipefail
 
 export DISABLE_AUTOBREW=1
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
-if [[ "${target_platform}" =~ linux.* ]] || [[ "${target_platform}" == "win-32" ]] || [[ "${target_platform}" == "win-64" ]] || [[ "${target_platform}" == "osx-64" ]]; then
+if [[ "${target_platform}" =~ linux.* ]] || [[ "${target_platform}" == "win-32" ]] || [[ "${target_platform}" == "win-64" ]] || [[ "${target_platform}" == "osx-64" ]] || [[ "${target_platform}" == "osx-arm64" ]]; then
   mv DESCRIPTION DESCRIPTION.old
   grep -va '^Priority: ' DESCRIPTION.old > DESCRIPTION
   ${R} CMD INSTALL --build . "${R_ARGS}"
