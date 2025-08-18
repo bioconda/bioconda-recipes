@@ -1,11 +1,12 @@
 #!/bin/bash
 set -xe
 
-export CXXFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+mkdir -p "$PREFIX/bin"
 
-make -j ${CPU_COUNT} COMPILER=$CXX
-chmod 0755 krepp
+export CXXFLAGS="${CXXFLAGS} -O3"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
 
-mkdir -p $PREFIX/bin
-cp krepp $PREFIX/bin
+make COMPILER="${CXX}" -j"${CPU_COUNT}"
+
+install -v -m 0755 krepp "$PREFIX/bin"
