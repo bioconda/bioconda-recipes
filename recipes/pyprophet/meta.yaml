@@ -1,23 +1,22 @@
 {% set name = "pyprophet" %}
 {% set version = "3.0.1" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "21dad53852fa969fa028d520f24786f53d32e66613d58b65d14d19149dbaf921" %}
+{% set sha256 = "21dad53852fa969fa028d520f24786f53d32e66613d58b65d14d19149dbaf921" %}
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pyprophet-{{ version }}.tar.gz
-  '{{ hash_type }}': '{{ hash_value }}'
+  sha256: {{ sha256 }}
 
 build:
   number: 0
-  run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
   entry_points:
     - pyprophet = pyprophet.main:cli
-  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -26,7 +25,7 @@ requirements:
     - python
     - pip
     - cython
-    - numpy
+    - numpy ==2.0.2
     - pypdf
     - libgomp  # [linux]  
     - llvm-openmp  # [osx]
@@ -34,14 +33,14 @@ requirements:
     - python
     - libgomp  # [linux]  
     - llvm-openmp  # [osx]
-    - {{ pin_compatible("numpy") }}
+    - numpy ==2.0.2
     - scipy
     - python-duckdb
     #- duckdb-extensions
     #- duckdb-extension-sqlite-scanner
     - pandas >=2.0
     - polars
-    - numexpr >=2.10.1
+    - numexpr ==2.10.2
     - scikit-learn >=1.5
     - matplotlib-base
     - seaborn-base
