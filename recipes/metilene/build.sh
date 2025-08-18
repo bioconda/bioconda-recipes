@@ -1,12 +1,10 @@
-#!/bin/sh
-mkdir -p ${PREFIX}/bin
-make CC=$CC
+#!/bin/bash
 
-cp metilene ${PREFIX}/bin/
-cp metilene_input.pl ${PREFIX}/bin/
-cp metilene_output.pl ${PREFIX}/bin/
-cp metilene_output.R ${PREFIX}/bin/
+mkdir -p "${PREFIX}/bin"
+install -d "${PREFIX}/share/doc/metilene"
 
-install -d ${PREFIX}/share/doc/metilene
-install manual.pdf ${PREFIX}/share/doc/metilene
-install README ${PREFIX}/share/doc/metilene
+make CC="${CC}" -j"${CPU_COUNT}"
+
+install -v -m 0755 metilene metilene_input.pl metilene_output.pl metilene_output.R "${PREFIX}/bin"
+install -v manual.pdf "${PREFIX}/share/doc/metilene"
+install -v README "${PREFIX}/share/doc/metilene"

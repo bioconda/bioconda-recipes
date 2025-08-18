@@ -1,52 +1,52 @@
 {% set name = "ibridges" %}
-{% set version = "1.2.0" %}
+{% set version = "1.5.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/0e/09/dccdec5b2a6a02715d134d623b57a0e41b9459b7e1176452ce857ee6c665/ibridges-1.2.0.tar.gz
-  sha256: ca068d37f147d8ce30a6b676cd6ae3e9c19f7af248bf7af1ef09c582b9d2f9b6
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/ibridges-{{ version }}.tar.gz
+  sha256: 4524296aff353150e78a4a8cf73273d28264d6450a7119e8cf37a5f5c71ac6c9
+
 build:
-  entry_points:
-    - ibridges = ibridges.__main__:main
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
   noarch: python
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  entry_points:
+    - ibridges = ibridges.cli.__main__:main
   run_exports:
     - {{ pin_subpackage('ibridges', max_pin="x") }}
 
 requirements:
   host:
     - python >=3.8
-    - setuptools >=45
+    - setuptools >=61.0
     - setuptools-scm >=6.2
     - pip
   run:
     - python >=3.8
     - python-irodsclient >=2.0.0
     - tqdm
-    - importlib-metadata  # [py<310]
+    - importlib-metadata >=4.6  # [py < 310]
 
 test:
   imports:
     - ibridges
   commands:
-    - pip check
     - ibridges --help
-  requires:
-    - pip
 
 about:
   home: "https://github.com/iBridges-for-iRODS/iBridges"
-  summary: Package for accessing data and metadata on iRods servers.
+  summary: "Package for accessing data and metadata on iRods servers."
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  doc_url: "https://ibridges.readthedocs.io/en/latest/"
+  doc_url: "https://ibridges.readthedocs.io/en/latest"
   dev_url: "https://github.com/iBridges-for-iRODS/iBridges"
 
 extra:
   recipe-maintainers:
     - Christine Staiger
-
