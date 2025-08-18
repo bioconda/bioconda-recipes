@@ -1,43 +1,47 @@
+{% set name = "seqkit" %}
 {% set version = "2.10.0" %}
 
 package:
-  name: seqkit
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/shenwei356/seqkit/releases/download/v{{ version }}/seqkit_darwin_amd64.tar.gz # [osx]
-  md5: 17f289ed73acae7d43bf3fc83f33b8f2 # [osx]
-
-  url: https://github.com/shenwei356/seqkit/releases/download/v{{ version }}/seqkit_darwin_arm64.tar.gz # [arm64]
-  md5: beb72f9a5e8b9a4933e3e8fc7bb4f8f0 # [arm64]
-
-  url: https://github.com/shenwei356/seqkit/releases/download/v{{ version }}/seqkit_linux_amd64.tar.gz # [linux]
-  md5: 03e8d475f9c06dde333c257f1f112ffb # [linux]
-
-  url: https://github.com/shenwei356/seqkit/releases/download/v{{ version }}/seqkit_linux_arm64.tar.gz # [aarch64]
-  md5: 4c222f6ea9ed571ba0d7598c4864189f # [aarch64]
+  url: https://github.com/shenwei356/seqkit/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 5ebb8bd72b52a0b17064c7afda54a784bd71940fa28ca03114334af550734437
 
 build:
-  number: 0
-  skip: False
+  number: 1
   run_exports:
-    - {{ pin_subpackage("seqkit", max_pin="x.x") }}
+    - {{ pin_subpackage('seqkit', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('go') }}
+    - go-licenses
+
 test:
   commands:
     - seqkit version --help
 
 about:
-  home: https://github.com/shenwei356/seqkit
-  summary: a cross-platform and ultrafast toolkit for FASTA/Q file manipulation
+  home: "https://github.com/shenwei356/seqkit"
+  summary: "A cross-platform and ultrafast toolkit for FASTA/Q file manipulation."
   license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: "https://github.com/shenwei356/seqkit"
+  doc_url: "https://bioinf.shenwei.me/seqkit"
 
 extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
-  skip-lints:
-    - should_be_noarch_generic
-    - should_not_be_noarch_source
   identifiers:
     - biotools:seqkit
+    - usegalaxy-eu:seqkit_head
+    - usegalaxy-eu:seqkit_stats
+    - usegalaxy-eu:seqkit_fx2tab
+    - usegalaxy-eu:seqkit_locate
+    - usegalaxy-eu:seqkit_translate
+    - usegalaxy-eu:seqkit_sort
     - doi:10.1371/journal.pone.0163962

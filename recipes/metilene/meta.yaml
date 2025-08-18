@@ -1,27 +1,25 @@
+{% set name = "metilene" %}
+{% set version = "0.2.8" %}
+
 package:
-  name: metilene
-  version: "0.2.8"
-
-about:
-  home: http://www.bioinf.uni-leipzig.de/Software/metilene/
-  license: GPLv2
-  license_file: LICENSE
-  summary: Fast and sensitive detection of differential DNA methylation
-
-build:
-  number: 4
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "http://www.bioinf.uni-leipzig.de/Software/metilene/metilene_v02-8.tar.gz"
+  url: http://www.bioinf.uni-leipzig.de/Software/metilene/metilene_v02-8.tar.gz
   sha256: d0bef6ebae4905290fae4c0794c1bffe46acd3fb9f228cb5e9c1fae268baed91
   patches:
     - patch.0
+
+build:
+  number: 5
+  run_exports:
+    - {{ pin_subpackage('metilene', max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
-
   run:
     - perl
     - bedtools >=2.24
@@ -30,6 +28,21 @@ requirements:
 
 test:
   commands:
-    - metilene --help 2>&1 | grep VERSION
-    - metilene_input.pl --help 2>&1 | grep usage
-    - metilene_output.pl --help 2>&1 | grep usage
+    - metilene --help 2>&1 | grep 'VERSION'
+    - metilene_input.pl --help 2>&1 | grep 'usage'
+    - metilene_output.pl --help 2>&1 | grep 'usage'
+
+about:
+  home: "http://www.bioinf.uni-leipzig.de/Software/metilene"
+  license: "GPL-2.0-or-later"
+  license_family: GPL
+  license_file: LICENSE
+  summary: "Fast and sensitive detection of differential DNA methylation."
+  doc_url: "http://www.bioinf.uni-leipzig.de/Software/metilene/manual_v02-8.pdf"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1101/gr.196394.115
