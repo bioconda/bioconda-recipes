@@ -9,13 +9,19 @@ fi
 mkdir build
 cd build
 
-# Skip adding any rpath. Conda binary_relocation tools will do it.
+# QT_HOST_PATH(_CMAKE_DIR) only needed when you actually need use the Qt MOC executable on source files with signals and slots
+#  i.e. when OpenMS is built with GUI (which it is not). Note: You will need to move qt6-main from "host"
+#  to "build" in your dependencies of the meta.yml recipe.
+#  See also: https://stackoverflow.com/questions/39075040/cmake-cmake-automoc-in-cross-compilation
+# Set INSTALL_RPATH to PREFIX such that there are no warnings during linkage fixing of conda-build
+#  and make sure nothing is added by the compiler with CMAKE_INSTALL_REMOVE_ENVIRONMENT_RPATH
 cmake -S .. -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
 	-DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" -DOPENMS_GIT_SHORT_SHA1="e88b120" \
  	-DOPENMS_CONTRIB_LIBS="SILENCE_WARNING_SINCE_NOT_NEEDED" \
-	-DCMAKE_PREFIX_PATH="${PREFIX}" -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" \
-	-DHAS_XSERVER=OFF -DENABLE_CLASS_TESTING=OFF -DENABLE_TOPP_TESTING=Off -DWITH_GUI=OFF -DBOOST_USE_STATIC=OFF \
-	-DBoost_NO_BOOST_CMAKE=ON -DBoost_ARCHITECTURE="-x64" -DQT_HOST_PATH="${BUILD_PREFIX}" -DQT_HOST_PATH_CMAKE_DIR="${PREFIX}" \
-	-DBUILD_EXAMPLES=OFF -DENABLE_CWL=OFF -DWITH_HDF5=OFF -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}
+	-DCMAKE_PREFIX_PATH="${PREFIX}" -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" -DCMAKE_INSTALL_REMOVE_ENVIRONMENT_RPATH=ON \
+	-DHAS_XSERVER=OFF -DWITH_GUI=OFF -DENABLE_CLASS_TESTING=OFF -DENABLE_TOPP_TESTING=OFF -DBOOST_USE_STATIC=OFF -DBUILD_EXAMPLES=OFF -DENABLE_CWL=OFF -DWITH_HDF5=OFF \
+	-DBoost_NO_BOOST_CMAKE=ON -DBoost_ARCHITECTURE="-x64" \
+ 	-DQT_HOST_PATH="${BUILD_PREFIX}" -DQT_HOST_PATH_CMAKE_DIR="${PREFIX}" \
+	-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}
 
 ninja -j"${CPU_COUNT}"
