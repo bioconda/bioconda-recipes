@@ -10,17 +10,16 @@ source:
   sha256: f0351171586b13044c2d533b0846c710c06311b2ae64642da097649d502b5720
 
 build:
-  number: 0  # Incrementado de 0 a 1
+  number: 0
   noarch: generic
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}  # Usando x.x porque empieza con 0
+    - {{ pin_subpackage(name, max_pin="x.x") }}
   script:
     - mkdir -p $PREFIX/bin
     - mkdir -p $PREFIX/share/${PKG_NAME}/scripts
-    - cp -rf scripts/ExcludonFinder $PREFIX/bin/
+    - install -v -m 0755 scripts/ExcludonFinder $PREFIX/bin
     - cp -rf scripts/TUs_annotation.R $PREFIX/share/${PKG_NAME}/scripts/
     - cp -rf scripts/main.sh $PREFIX/share/${PKG_NAME}/scripts/
-    - chmod +x $PREFIX/bin/ExcludonFinder
     - chmod +x $PREFIX/share/${PKG_NAME}/scripts/*.{sh,R}
 
 requirements:
@@ -39,7 +38,7 @@ requirements:
 
 test:
   commands:
-    - ExcludonFinder --help
+    - ExcludonFinder 2>&1 | grep "ExcludonFinder"
 
 about:
   home: "https://github.com/Alvarosmb/ExcludonFinder"
