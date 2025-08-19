@@ -1,4 +1,4 @@
-{% set version = "0.1.5" %}
+{% set version = "0.1.8" %}
 
 package:
   name: graphembed
@@ -6,30 +6,50 @@ package:
 
 build:
   number: 0
-  skip: True  # [osx]
   run_exports:
       - {{ pin_subpackage('graphembed', max_pin="x.x") }}
-
 source:
   url: https://github.com/jianshu93/graphembed/archive/v{{ version }}.tar.gz
-  sha256: fb9e5a340a5ff5cbe7c796649736426eb41edd856a1c6b8fcb807ce75331a18f
+  sha256: d00e1d2647b4c1bfaba80e6c552b6607ece0498a5e93159e395457d480a290d2
 
 requirements:
   build:
     - {{ compiler("cxx") }}
     - {{ compiler('c') }}
+    - {{ compiler('fortran') }}
     - {{ compiler('rust') }}
     - make
     - cmake
     - cargo-bundle-licenses
     - pkg-config
-  host:
-    - openblas # [aarch64]
-    - openssl  # [aarch64]
-  run:
-    - openblas # [aarch64]
-    - openssl  # [aarch64]
+    # BLAS/LAPACK — macOS
+    - openblas        # [osx]
+    - liblapack       # [osx]
+    - liblapacke      # [osx]
+    # BLAS/LAPACK — Linux aarch64
+    - openblas        # [linux and aarch64]
+    - liblapack       # [linux and aarch64]
+    - liblapacke      # [linux and aarch64]
 
+  host:
+    # macOS
+    - openblas        # [osx]
+    - liblapack       # [osx]
+    - liblapacke      # [osx]
+    # Linux aarch64
+    - openblas        # [linux and aarch64]
+    - liblapack       # [linux and aarch64]
+    - liblapacke      # [linux and aarch64]
+
+  run:
+    # macOS
+    - openblas        # [osx]
+    - liblapack       # [osx]
+    - liblapacke      # [osx]
+    # Linux aarch64
+    - openblas        # [linux and aarch64]
+    - liblapack       # [linux and aarch64]
+    - liblapacke      # [linux and aarch64]
 test:
   commands:
     - graphembed -h
@@ -42,10 +62,10 @@ about:
   dev_url: https://github.com/jianshu93/graphembed
 
 extra:
+  additional-platforms:
+    - osx-arm64
   recipe-maintainers:
     - jianshu93
     - jean-pierreBoth
-    
-  #additional-platforms:
-    #- osx-arm64
-    #- linux-aarch64
+  identifiers:
+    - doi:10.1101/2025.06.18.660497
