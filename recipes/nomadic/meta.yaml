@@ -1,0 +1,73 @@
+{% set name = "nomadic" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/JasonAHendry/nomadic/archive/refs/tags/v{{version}}.tar.gz
+  sha256: f658d974b5488bf25fee6637de42c1500dc74f03f2f10fcc0cca2a629c81ae99
+
+build:
+  entry_points:
+    - nomadic = nomadic.cli:cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('nomadic', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools >=42.0
+    - wheel
+    - pip
+  run:
+    # python
+    - python >=3.10
+    - numpy
+    - pandas
+    - seaborn
+    - click
+    - platformdirs
+    - dash
+    - pysam
+    - pyyaml
+    - i18nice
+    # tools
+    - minimap2
+    - samtools >=1.20
+    - bcftools >=1.20
+    - bedtools
+
+test:
+  imports:
+    - nomadic
+  commands:
+    - pip check
+    - nomadic --help
+    # Check dependencies are installed correctly
+    - samtools --help
+    - bcftools --help
+  requires:
+    - pip
+
+about:
+  license: MIT
+  license_file: LICENSE
+  home: https://jasonahendry.github.io/nomadic/
+  summary: 'Mobile sequencing and analysis in real-time'
+  description: >
+    Nomadic is a real-time bioinformatics pipeline and dashboard for nanopore sequencing data.
+    While sequencing is still ongoing, it performs read mapping and sample quality control,
+    as well as variant calling and annotation. This information is displayed in real-time to a
+    graphical dashboard that has interactive features.
+  dev_url: https://github.com/JasonAHendry/nomadic
+  doc_url: https://jasonahendry.github.io/nomadic/
+
+extra:
+  recipe-maintainers:
+    - berndbohmeier
+    - JasonAHendry

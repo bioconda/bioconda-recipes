@@ -7,7 +7,7 @@ mkdir -p $PREFIX/bin
 export CPATH="${PREFIX}/include"
 
 if [[ "$(uname)" == "Darwin" ]]; then
-	cp -rf ${RECIPE_DIR}/ContigPolisher.hpp src/polish/
+	#cp -rf ${RECIPE_DIR}/ContigPolisher.hpp src/polish/
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 	export CXXFLAGS="${CXXFLAGS} -O3 -D_LIBCPP_DISABLE_AVAILABILITY"
 else
