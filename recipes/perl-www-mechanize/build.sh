@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 export OPENSSL_PREFIX=$PREFIX
