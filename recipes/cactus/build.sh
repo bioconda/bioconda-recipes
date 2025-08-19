@@ -6,17 +6,10 @@ case $(uname -m) in
   ;;
 esac
 
-case $(uname -m) in
-	x86_64) export EXTRA_FLAGS="avx2=1"
-  ;;
-	*) export EXTRA_FLAGS="avx2=0"
-  ;;
-esac
-
 cd submodules/abPOA
 make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" -j"${CPU_COUNT}"
 make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" src/abpoa_align_simd.o -j"${CPU_COUNT}"
-make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" "${EXTRA_ARGS}" -j"${CPU_COUNT}"
+make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" avx2=1 -j"${CPU_COUNT}"
 cd ../../
 
 cd submodules/FASTGA
