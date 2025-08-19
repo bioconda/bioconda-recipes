@@ -1,32 +1,24 @@
 #!/bin/bash
-set -ex
-
-mkdir -p "${PREFIX}/bin"
+set -ex 
 
 case $(uname -m) in
 	aarch64|arm64) sed -i.bak 's|-mavx2||' include.mk && sed -i.bak 's|-D__AVX2__||' include.mk && rm -rf *.bak
   ;;
 esac
 
-if [[ "$(uname -s)" == "Darwin" ]]; then
-	sed -i.bak 's|-Xpreprocessor -fopenmp -lomp|-Xclang -fopenmp -L$(PREFIX)/lib -I$(PREFIX)/include -lomp|' include.mk
-	rm -rf *.bak
-	export LDFLAGS="${LDFLAGS}"
-fi
-
 cd submodules/abPOA
-make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" -j"${CPU_COUNT}"
-make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" src/abpoa_align_simd.o
-make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" avx2=1 -j"${CPU_COUNT}"
+make EXTRA_FLAGS="-Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib"
+make EXTRA_FLAGS="-Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" src/abpoa_align_simd.o
+make EXTRA_FLAGS="-Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" avx2=1
 cd ../../
 
 cd submodules/FASTGA
-make CFLAGS="${CFLAGS} -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}"
+make CFLAGS="${CFLAGS} -L${PREFIX}/lib" CC="${CC}"
 cd ../../
 
 cd submodules/cPecan/externalTools/lastz-distrib-1.03.54/src
-export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include/libxml2"
-make CC="${CC}" -j"${CPU_COUNT}"
+export CFLAGS="${CFLAGS} -I${PREFIX}/include/libxml2"
+make CC="${CC}"
 cd ../../../../../
 
 sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
@@ -34,24 +26,13 @@ rm -rf *.bak
 ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
 
 make
-
-case $(uname -s) in
-	Linux) install -v -m 755 bin/* "${PREFIX}/bin" ;;
-	Darwin) mv bin/* "${PREFIX}/bin" ;;
-esac
+mv bin/* ${PREFIX}/bin
 
 # cactus-gfa-tools is required but doesn't have tags. They just use exact commits in their scripts
 git clone https://github.com/ComparativeGenomicsToolkit/cactus-gfa-tools.git
 cd cactus-gfa-tools
 git checkout 1121e370880ee187ba2963f0e46e632e0e762cc5
 
-if [[ "$(uname -s)" == "Darwin" ]]; then
-	sed -i.bak 's|-Xpreprocessor -fopenmp|-Xclang -fopenmp|' Makefile
-	sed -i.bak 's|-lomp|-L$(PREFIX)/lib -I$(PREFIX)/include -lomp|' Makefile
-	sed -i.bak 's|-I$(CWD)|-I$(PREFIX)/include -I$(CWD)|' Makefile
-	rm -rf *.bak
-fi
-
-make -j"${CPU_COUNT}"
+make
 
 install -v -m 755 mzgaf2paf pafcoverage rgfa-split paf2lastz pafmask gaf2paf gaf2unstable gaffilter rgfa2paf paf2stable "${PREFIX}/bin"
