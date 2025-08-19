@@ -4,14 +4,10 @@ set -xe
 
 mkdir -p $PREFIX/bin
 
-export LC_ALL=C.UTF-8
-export LANG=C.UTF-8
+export LC_ALL="en_US.UTF-8"
+export DISABLE_AUTOBREW=1
 
-cp -rf $SRC_DIR/QUILT.R $PREFIX/bin/
-cp -rf $SRC_DIR/QUILT_prepare_reference.R $PREFIX/bin/
-cp -rf $SRC_DIR/QUILT_HLA_prepare_reference.R $PREFIX/bin/
-cp -rf $SRC_DIR/QUILT2.R $PREFIX/bin/
-cp -rf $SRC_DIR/QUILT2_prepare_reference.R $PREFIX/bin/
+install -v -m 0755 ${SRC_DIR}/*.R "${PREFIX}/bin"
 
-cd $SRC_DIR/QUILT
-${R} CMD INSTALL --build --install-tests . ${R_ARGS}
+cd ${SRC_DIR}/QUILT
+${R} CMD INSTALL --build --install-tests . "${R_ARGS}"
