@@ -2,7 +2,7 @@
 
 package:
   name: hesslab-gambit
-  version: "{{ version }}"
+  version: {{ version }}
 
 source:
   url: https://github.com/jlumpe/gambit/archive/v{{ version }}.tar.gz
@@ -10,7 +10,7 @@ source:
 
 build:
   number: 1
-  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed ."
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
   skip: True  # [py < 37]
   run_exports:
     - {{ pin_subpackage('hesslab-gambit',max_pin="x.x") }}
@@ -20,12 +20,13 @@ requirements:
     - {{ compiler('c') }}
     - make
   host:
-    - python >=3.7,<3.9
+    - python
     - pip
     - numpy >=1.16,<1.20
     - cython >=0.29.21,<0.30
+    - pytest
   run:
-    - python >=3.7,<3.9
+    - python
     - numpy >=1.16,<1.20
     - sqlalchemy >=1.3,<2.0
     - biopython >=1.69
@@ -35,6 +36,7 @@ requirements:
     - click >=7.0
     - h5py >=3.0
     - setuptools
+    - pytest
 
 test:
   requires:
@@ -49,7 +51,7 @@ test:
     - pytest tests/ -v -k "not test_db_migrate"
 
 about:
-  home: https://github.com/jlumpe/gambit
+  home: "https://github.com/jlumpe/gambit"
   summary: 'IMPORTANT: This recipe is out of date. Use "gambit" instead: http://bioconda.github.io/recipes/gambit/README.html'
   description: |
     GAMBIT (Genomic Approximation Method for Bacterial Identification and Tracking)
@@ -57,12 +59,13 @@ about:
     extremely efficient genomic distance metric along with a curated database of
     approximately 50,000 reference genomes (derived from NCBI RefSeq) to identify
     unknown bacterial genomes within seconds.
-  license: AGPL-3.0-or-later
+  license: "AGPL-3.0-or-later"
   license_file: LICENSE
-  doc_url: https://gambit-genomics.readthedocs.io/en/latest
+  doc_url: "https://gambit-genomics.readthedocs.io/en/latest"
 
 extra:
   recipe-maintainers:
     - jlumpe
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
