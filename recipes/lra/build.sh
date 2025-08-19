@@ -9,6 +9,6 @@ export CPATH="${PREFIX}/include"
 export CFLAGS="$CFLAGS -O3"
 export CXXFLAGS="$CXXFLAGS -O3"
 
-make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"  CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}" -j"${CPU_COUNT}"
+make CXX="${CXX}" -j"${CPU_COUNT}"
 
 install -v -m 0755 lra "$PREFIX/bin"
