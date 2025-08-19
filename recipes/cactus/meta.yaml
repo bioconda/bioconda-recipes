@@ -1,7 +1,8 @@
+{% set name = "cactus" %}
 {% set version = "2.9.9" %}
 
 package:
-  name: cactus
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -12,22 +13,42 @@ source:
     - makefile.patch
 
 build:
-  number: 1
+  number: 2
+  skip: True  # [aarch64 and py < 310]
+  entry_points:
+    - cactus = cactus.progressive.cactus_progressive:main
+    - cactus-preprocess = cactus.preprocessor.cactus_preprocessor:main
+    - cactus-prepare = cactus.progressive.cactus_prepare:main
+    - cactus-prepare-toil = cactus.progressive.cactus_prepare:main_toil
+    - cactus-blast = cactus.blast.cactus_blast:main
+    - cactus-refmap = cactus.refmap.cactus_refmap:main
+    - cactus-minigraph = cactus.refmap.cactus_minigraph:main
+    - cactus-graphmap = cactus.refmap.cactus_graphmap:main
+    - cactus-graphmap-split = cactus.refmap.cactus_graphmap_split:main
+    - cactus-graphmap-join = cactus.refmap.cactus_graphmap_join:main
+    - cactus-align = cactus.setup.cactus_align:main
+    - cactus-align-batch = cactus.setup.cactus_align:main_batch
+    - cactus-update-prepare = cactus.update.cactus_update_prepare:main
+    - cactus-terra-helper = cactus.progressive.cactus_terra_helper:main
+    - cactus-hal2maf = cactus.maf.cactus_hal2maf:main
+    - cactus-hal2chains = cactus.maf.cactus_hal2chains:main
+    - cactus-maf2bigmaf = cactus.maf.cactus_maf2bigmaf:main
+    - cactus-pangenome = cactus.refmap.cactus_pangenome:main
   run_exports:
-    - {{ pin_subpackage("cactus", max_pin="x.x") }}
+    - {{ pin_subpackage('cactus', max_pin="x.x") }}
 
 requirements:
   build:
-    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - make
+    - pkg-config
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
-    - pkg-config
   host:
-    - libxml2
-    - pip
     - python
+    - pip
+    - libxml2
     - hdf5
     - libdeflate
     - zlib
@@ -37,18 +58,20 @@ requirements:
     - cigar
     - biopython
     - pysam
-    - toil
-    - backports.zoneinfo # [py39]
+    - toil  # [x86_64]
+    - backports.zoneinfo  # [py39]
   run:
-    - libxml2
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
     - python
+    - libxml2
     - decorator
     - networkx >=2,<2.8.1
     - cigar
     - biopython
     - pysam
-    - toil
-    - backports.zoneinfo # [py39]
+    - toil  # [x86_64]
+    - backports.zoneinfo  # [py39]
     - samtools
     - bcftools
     - parallel
@@ -59,15 +82,30 @@ requirements:
     - minimap2
     - minigraph
     - gfatools
-    #- dna-brnn
+    - dna-nn
     - bedtools
 
 test:
   commands:
-    - cactus -h
+    - cactus -h  # [x86_64]
+    - test -x ${PREFIX}/bin/cactus  # [aarch64 or arm64]
 
 about:
-  home: https://github.com/ComparativeGenomicsToolkit/cactus
+  home: "https://github.com/ComparativeGenomicsToolkit/cactus"
   license: MIT
-  license_file: LICENSE.txt
-  summary: 'Cactus is a reference-free whole-genome multiple alignment program based upon notion of Cactus graphs'
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  summary: "Cactus is a reference-free whole-genome multiple alignment program based upon notion of Cactus graphs."
+  dev_url: "https://github.com/ComparativeGenomicsToolkit/cactus"
+  doc_url: "https://github.com/ComparativeGenomicsToolkit/cactus/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:cactus
+    - usegalaxy-eu:cactus_cactus
+    - usegalaxy-eu:cactus_export
+    - doi:10.1038/s41586-020-2871-y
+    - doi:10.1101/gr.123356.111
+    - doi:10.1089/cmb.2010.0252
