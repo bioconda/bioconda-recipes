@@ -11,6 +11,7 @@
 
 # BUILD TRIGGER - manually change this for each MPI variant to force bioconda rebuild
 {% set build_trigger = "psmpi" %}  # Change to: openmpi, mpich, psmpi or mvapich_ucx/mvapich_ofi
+                                   # Do not forget to select the correct logic for the skip accordingly
 
 # Simple type-safe parsing
 {% if mpi and mpi is string %}
@@ -48,7 +49,8 @@ package:
 build:
   number: {{ build }}
   string: {{ mpi_name }}_{{ mpi_build_variant }}_h{{ PKG_HASH }}_{{ build }}
-  skip: false  # [linux and (((x86_64 or aarch64) and (mpi_name != "psmpi")) or (x86_64 and (mpi_name == "psmpi"))]
+# skip: true  # [not (linux and (x86_64 or aarch64))]
+  skip: false  # [linux and x86_64]
   ignore_run_exports:
     - libacl
     - libstdcxx
