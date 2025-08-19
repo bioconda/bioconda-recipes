@@ -1,15 +1,15 @@
 #!/bin/bash
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wno-unused-command-line-argument"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-unused-command-line-argument"
 
 mkdir -p "${PREFIX}/bin"
 
 cd angsd
 
-sed -i.bak 's|-dm0755|-d|' Makefile
+sed -i.bak 's|$(INSTALL_DIR) $(DESTDIR)$(bindir)|mkdir -p $(DESTDIR)$(bindir)|' Makefile
 sed -i.bak 's|-m0755|-m 0755|' Makefile
 rm -rf *.bak
 
