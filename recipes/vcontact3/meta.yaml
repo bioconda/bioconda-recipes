@@ -1,5 +1,5 @@
 {% set name = "vcontact3" %}
-{% set version = "3.0.5" %}
+{% set version = "3.1.4" %}
 
 package:
   name: {{ name|lower }}
@@ -7,14 +7,16 @@ package:
 
 source:
   url: https://bitbucket.org/MAVERICLab/vcontact3/get/{{ version }}.tar.gz
-  sha256: a48f0ef0257d0ce851a815d2baa87acd8e2a63072d800a7e66a9d685adc13942
+  sha256: a51a1deb6779693faac4f4191dc58080968c2121c9e5d41bf49f5a6d022676bf
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install .
   run_exports:
     - {{ pin_subpackage('vcontact3', max_pin='x') }}
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: {{ PYTHON }} -m pip install . --no-deps
 
 requirements:
   host:
@@ -50,6 +52,7 @@ requirements:
 test:
   commands:
     - vcontact3 --help
+    - vcontact3 version
 
 about:
   home: "https://bitbucket.org/MAVERICLab/vcontact3"
