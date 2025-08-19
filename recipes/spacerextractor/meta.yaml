@@ -1,0 +1,57 @@
+{% set name = "spacerextractor" %}
+  {% set version = "0.9.7" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: "https://code.jgi.doe.gov/SRoux/{{ name }}/-/archive/{{ version }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 690e6a409aec13d476aea3b59b04cc8f6c5b2894723ee59365e49956d77b8898
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - spacerextractor = spacerextractor.cli:cli
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('spacerextractor', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - flit-core >=3.2,<4
+  run:
+    - python >=3.8
+    - pandas >=2.0,<2.4
+    - biopython >=1.78,<2
+    - blast >=2,<3
+    - scipy >=1.10,<=1.11
+    - cd-hit >=4.8,<4.9
+    - bbmap >=39.06,<39.07
+    - polyleven >=0.8,<0.9
+    - rich-click >=1.4
+    - seqkit >=2.5,<2.6
+    - kcounter >=0.1.1,<0.2
+    - bowtie >=1.3.1,<1.4
+    - pyfaidx >=0.8.1.3,<0.9
+    - cctyper >=1.8,<2
+
+test:
+  commands:
+    - spacerextractor --help
+
+about:
+  home: "https://code.jgi.doe.gov/SRoux/spacerextractor"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "LICENSE.txt"
+  summary: "Extract CRISPR spacers from metagenome short reads."
+  dev_url: "https://code.jgi.doe.gov/SRoux/spacerextractor"
+  doc_url: "https://code.jgi.doe.gov/SRoux/spacerextractor/-/blob/{{ version }}/README.md"
+
+extra:
+  recipe-maintainers:
+    - simroux
