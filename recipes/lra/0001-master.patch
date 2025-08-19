@@ -1,0 +1,141 @@
+diff --git a/Input.h b/Input.h
+index 093b6da..3e5b83c 100644
+--- a/Input.h
++++ b/Input.h
+@@ -188,6 +188,22 @@ public:
+     string name;
+     string seq;
+     string qual;
++	  //----------------------------------------------
++             if (inputType == FASTA and strmPtr->eof())  // Any more FASTA files?
++             {
++                   strm.close(); // at eof so close before checking if another file is in input list
++                   ++curFile;
++
++                   if (curFile >= allReads.size()) // any more input file in list
++                   { // no more read files?
++                         return 0;
++                   }
++                   if (Initialize(allReads[curFile]) == false) // does next input file initialise?
++                   {
++                         return 0;
++                   }
++             }	  
++	  //----------------------------------------------
+     if (inputType == FASTA or inputType == FASTQ) {
+       if (strmPtr->eof()) {
+ 	     return 0;
+@@ -224,9 +240,34 @@ public:
+ 	getline(*strmPtr, qual);
+ 
+ 	if (header.size() ==0 or seq.size() == 0 or sep.size() == 0 or qual.size() == 0) {
+-	  readOne=false;
+-	  return 0;
+-	}
++		// -------------------------------------------
++                  strm.close();
++                  ++curFile;
++                  if (curFile >= allReads.size())    // Exit if no more input files.
++                  { // no more read files?
++                        readOne = false;
++                        return 0;
++                  }
++                  if (Initialize(allReads[curFile]) == false)
++                  {
++                       readOne = false;
++                       return 0;
++                  }
++                  // opened next input file - is it fastq? (set in Initialize())
++                  if (inputType == FASTQ)
++                  {
++                       getline(*strmPtr, header);
++                       getline(*strmPtr, seq);
++                       getline(*strmPtr, sep);
++                       getline(*strmPtr, qual);
++                  }
++        }		
++        if (header.size() == 0 or seq.size() == 0 or sep.size() == 0 or qual.size() == 0)
++        {
++            readOne = false;
++            return 0;
++        }		
++		// -------------------------------------------
+ 	else {
+ 	  stringstream nameStrm(header);
+ 	  nameStrm >> c >> read.name;
+diff --git a/Makefile b/Makefile
+index fc43e90..e97e222 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,19 +1,19 @@
+ PROG=   lra
+ PROG_EXTRA= alchemy2 qti
+-LIBS=   -lz -lpthread -lhts
++LIBS=   -lz -pthread -lhts
+ PROF=/home/cmb-16/mjc/shared/lib/
+ DEBUG?=""
+ OPT?=""
+ STATIC=
+-CXX=g++ -std=c++14 
+-CFLAGS=-g
++CXX?=$(CXX) -std=c++14
++CFLAGS=-g -O3 -I$(PREFIX)/include
+ asan?=""
+ tsan?=""
+ 
+ ifneq ($(DEBUG), "")
+ CFLAGS=-g
+ else
+-CFLAGS=-O2  -DNDEBUG 
++CFLAGS=-O3  -DNDEBUG
+ endif
+ 
+ ifneq ($(asan), "")
+@@ -74,34 +74,35 @@ HEADERS=MinCount.h \
+   SplitClusters.h \
+   RefineBreakpoint.h
+ 
+-all:$(PROG) 
++all:$(PROG)
+ 
+ # tag: TestAffineOneGapAlign.cpp AffineOneGapAlign.h
+-# 	$(CXX) -g TestAffineOneGapAlign.cpp -o tag 
++# 	$(CXX) -g TestAffineOneGapAlign.cpp -o tag
+ # # -D _MAT_PRINT_
+ 
+ # tgc: TestGlobalChain.cpp GlobalChain.h Fragment.h BasicEndpoint.h PrioritySearchTree.h
+ # 	$(CXX) -g TestGlobalChain.cpp -o tgc
+ 
+ # tir: TestIndelRefine.cpp IndelRefine.h
+-# 	$(CXX) -g TestIndelRefine.cpp  -I $(CONDA_PREFIX)/include -L $(CONDA_PREFIX)/lib  -lhts -o tir -lbz2 -lz
++# 	$(CXX) -g TestIndelRefine.cpp  -I $(PREFIX)/include -L $(PREFIX)/lib  -lhts -o tir -lbz2 -lz
+ 
+ lra: lra.o
+-	$(CXX) $(CFLAGS) $(STATIC) $^ -I  -L/usr/lib64  -L $(CONDA_PREFIX)/lib $(LIBS) -o $@ -Wl,-rpath-link=$(CONDA_PREFIX)/lib 
++	$(CXX) $(CFLAGS) $(STATIC) $^ -I  -L/usr/lib64  -L $(PREFIX)/lib $(LIBS) -o $@ -Wl,-rpath-link=$(PREFIX)/lib
+ 
+ alchemy2: Alchemy2.o
+-	$(CXX) $(CFLAGS) $(STATIC)  $^  -L $(CONDA_PREFIX)/lib  $(LIBS) -o $@  -Wl,-rpath,$(CONDA_PREFIX)/lib
++	$(CXX) $(CFLAGS) $(STATIC)  $^  -L $(PREFIX)/lib  $(LIBS) -o $@  -Wl,-rpath,$(PREFIX)/lib
+ 
+ qti: QueryTime.o
+-	$(CXX) $(CFLAGS) $(STATIC) $^  -L $(CONDA_PREFIX)/lib $(LIBS) -o $@
++	$(CXX) $(CFLAGS) $(STATIC) $^  -L $(PREFIX)/lib $(LIBS) -o $@
+ 
+-lra.o: lra.cpp $(HEADERS) 
+-	$(CXX) $(CFLAGS) -c  -I $(CONDA_PREFIX)/include  lra.cpp 
++lra.o: lra.cpp $(HEADERS)
++	$(CXX) $(CFLAGS) -c  -I $(PREFIX)/include  lra.cpp
+ 
+ Alchemy2.o: Alchemy2.cpp Genome.h
+-	$(CXX) $(CFLAGS) -c  -I $(CONDA_PREFIX)/include Alchemy2.cpp
++	$(CXX) $(CFLAGS) -c  -I $(PREFIX)/include Alchemy2.cpp
++
++QueryTime.o: QueryTime.cpp $(HEADERS) $(PREFIX)/lib/libhts.a
++	$(CXX) $(CFLAGS) -c  -I $(PREFIX)/include QueryTime.cpp
+ 
+-QueryTime.o: QueryTime.cpp $(HEADERS) $(CONDA_PREFIX)/lib/libhts.a
+-	$(CXX) $(CFLAGS) -c  -I $(CONDA_PREFIX)/include QueryTime.cpp
+ clean:
+-	rm -f $(PROG) $(PROG_EXTRA) *.o 
++	rm -f $(PROG) $(PROG_EXTRA) *.o
