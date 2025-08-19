@@ -2,6 +2,10 @@
 
 mkdir -p "${PREFIX}/bin"
 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
 if [[ "${target_platform}" == "osx-64" ]]; then
   export CONDA_BUILD_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
 fi
@@ -15,9 +19,9 @@ case $(uname -m) in
 	;;
 esac
 
-${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
 
 cd src/rrikindp
 
-make CXXFLAGS+="-O3 -I${CONDA_PREFIX}/include" -j"${CPU_COUNT}"
+make CXXFLAGS+="-I${PREFIX}/include" -j"${CPU_COUNT}"
 install -v -m 0755 RRIkinDP "${PREFIX}/bin"
