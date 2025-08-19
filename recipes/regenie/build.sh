@@ -9,15 +9,15 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 export CPATH="${PREFIX}/include"
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
-  # LDFLAGS fix: https://github.com/AnacondaRecipes/intel_repack-feedstock/issues/8
-  export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -Wl,-pie -Wl,-headerpad_max_install_names"
-  export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+  export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -lopenblas"
+  export BLAS=openblas
+  export LAPACK=openblas
+  export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DBLA_VENDOR=OpenBLAS"
+  export DYLD_FALLBACK_LIBRARY_PATH="${PREFIX}/lib:${DYLD_FALLBACK_LIBRARY_PATH}"
 else
-  export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
   export MKL_THREADING_LAYER="GNU"
   export CONFIG_ARGS=""
 fi
-
 if [[ ${target_platform} == "linux-aarch64" ]]; then
 # Conda does not yet support the MKL library for aarch64
   sed -i.bak '/set(MKLROOT/s/^/#/' CMakeLists.txt
