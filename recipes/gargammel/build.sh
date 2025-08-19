@@ -1,6 +1,9 @@
 #!/bin/bash
 
-export CPATH=${PREFIX}/include
+export CPATH="${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
 
 cd "${SRC_DIR}"/gargammel || { echo "Folder ${SRC_DIR}/gargammel not found"; exit 1; }
 
@@ -17,7 +20,7 @@ binaries=(src/fragSim src/deamSim src/adptSim src/fasta2fastas)
 # We list the targets explicitly to prevent the Makefile from downloading and
 # building the external art_illumina.o dependency (added as a runtime
 # requirement instead)
-make CC="${CXX}" "${binaries[@]}"
+make CC="${CXX}" "${binaries[@]}" -j"${CPU_COUNT}"
 mkdir -p "${PREFIX}"/bin
 cp "${binaries[@]}" "${PREFIX}"/bin
 
