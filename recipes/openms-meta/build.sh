@@ -28,4 +28,7 @@ cmake -S .. -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
  	-DQT_HOST_PATH="${BUILD_PREFIX}" -DQT_HOST_PATH_CMAKE_DIR="${PREFIX}" \
 	-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}
 
+
+cat src/openms/cmake_install.cmake
+
 ninja -j"${CPU_COUNT}"
