@@ -1,5 +1,7 @@
 export HAS_GTEST=0
 
+if [ $target_platform == "linux-aarch64" ];then
+
 # fix build number in config
 sed -i.bak 's/VERSION_STRING.*/VERSION_STRING="${PKG_VERSION}"/' config.mk
 
@@ -34,7 +36,9 @@ sed -i '560a #endif' 					 ./thirdparty/dragen/src/common/hash_generation/hash_t
 
 sed -i '/#include <memory>/a #include <cstdint>'         ./stubs/dragen/src/host/metrics/public/run_stats.hpp
 
-sed -i 's/__m256i\*/void*/g'  ./thirdparty/sswlib/ssw/ssw_internal.hpp
+sed -i 's/__m256i\*/void*/g'  				 ./thirdparty/sswlib/ssw/ssw_internal.hpp
+
+sed -i '/CXXFLAGS +=/ s/$/ -march=armv8-a /'   ./make/lib.mk
 
 git clone https://github.com/DLTcollab/sse2neon.git
 cp sse2neon/sse2neon.h ./thirdparty/dragen/src/host/metrics/public
@@ -43,7 +47,10 @@ cp sse2neon/sse2neon.h ./src/include/align
 cp sse2neon/sse2neon.h ./src/lib/align
 cp sse2neon/sse2neon.h ./src/lib/sequences
 echo "pwd:----------------------------$PWD----------------"
-
+make CXX=$CXX CC=$CC CXXFLAGS="$CXXFLAGS" CFLAGS="$CFLAGS -march=armv8-a" CXXFLAGS="-march=armv8-a"
+else
 make CXX=$CXX CC=$CC CXXFLAGS="$CXXFLAGS" CFLAGS="$CFLAGS"
+fi
+
 mkdir -p "${PREFIX}/bin"
 mv build/release/dragen-os ${PREFIX}/bin/
