@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -O3 -I${PREFIX}/include -Wno-deprecated-declarations -Wno-implicit-function-declaration"
 export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations -Wno-implicit-function-declaration"
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
