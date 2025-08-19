@@ -8,6 +8,16 @@ cp -f maker_mpi_init $PREFIX/bin/
 rm -f maker_mpi_init
 chmod a+x $PREFIX/bin/maker_mpi_init
 
+# Fix perl shebang
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' src/bin/*
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' src/inc/bundle/bin/config_data
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' MWAS/bin/*
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' src/Build.PL
+rm -rf src/*.bak
+rm -rf MWAS/bin/*.bak
+rm -rf src/bin/*.bak
+rm -rf src/inc/bundle/bin/*.bak
+
 cd src/
 
 # enable mpi
