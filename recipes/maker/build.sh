@@ -3,6 +3,9 @@
 mkdir -p "${PREFIX}/bin"
 mkdir -p "${PREFIX}/perl/lib"
 
+export LC_ALL="en_US.UTF-8"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
 # We will need this script to precompile inline C code for MPI support
 cp -f maker_mpi_init $PREFIX/bin/
 rm -f maker_mpi_init
