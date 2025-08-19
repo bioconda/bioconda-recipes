@@ -18,6 +18,9 @@ mkdir -p "$PREFIX/bin"
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* lib/htslib
 
+# Avoid conflicts with C++20 
+mv src/utils/gzstream/version src/utils/gzstream/version.txt
+
 pushd src/utils/sqlite3
 sed -i.bak "s#@gcc#${CC}#g" Makefile
 popd
@@ -28,6 +31,7 @@ make CC="${CC}" \
 	CFLAGS="${CFLAGS}" \
 	CXXFLAGS="${CXXFLAGS}" \
 	LDFLAGS="${LDFLAGS}" \
-	ZLIB_PATH="${PREFIX}/lib" -j"${CPU_COUNT}"
+	ZLIB_PATH="${PREFIX}/lib" \
+	-j"${CPU_COUNT}"
 
 install -v -m 0755 bin/* "$PREFIX/bin"
