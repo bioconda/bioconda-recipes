@@ -8,9 +8,10 @@ cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 
 autoreconf -if
 ./configure --prefix="${PREFIX}" \
-	CC="${CC}" CFLAGS="${CFLAGS}" \
-	CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" \
+	CC="${CC}" \
+	CFLAGS="${CFLAGS}" \
+	CPPFLAGS="${CPPFLAGS}" \
+	LDFLAGS="${LDFLAGS}" \
 	--enable-silent-rules --disable-dependency-tracking --disable-option-checking
 
-make -j"${CPU_COUNT}"
-make install
+make install -j"${CPU_COUNT}"
