@@ -3,10 +3,6 @@ set -eu -o pipefail
 
 mkdir -p "${PREFIX}/bin"
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations -Wno-implicit-function-declaration -Wno-unused-result"
-
 sed -i.bak 's|CC = gcc|CC ?= $(CC)|' src/Makefile
 rm -rf src/*.bak
 
