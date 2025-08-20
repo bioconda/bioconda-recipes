@@ -35,5 +35,5 @@ autoconf
 	--disable-dependency-tracking \
 	"${EXTRA_ARGS}"
 
-make
+make -j"${CPU_COUNT}"
 make install
