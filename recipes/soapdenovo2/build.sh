@@ -1,19 +1,25 @@
-#!/bin/sh
-
+#!/bin/bash
 set -x -e
+
+mkdir -p "$PREFIX/bin"
 
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3 ${LDFLAGS} ${CPPFLAGS}"
 
-export LDFLAGS="-L${PREFIX}/lib"
-export CPPFLAGS="-I${PREFIX}/include"
+cp -f ${PREFIX}/lib/libbam.a standardPregraph/inc/
+cp -f ${PREFIX}/lib/libbam.a sparsePregraph/inc/
 
-export CXXFLAGS="${LDFLAGS} ${CPPFLAGS}"
+make SOAPdenovo-63mer
+make SOAPdenovo-127mer
 
-mkdir -p $PREFIX/bin
+install -v -m 0755 SOAPdenovo-127mer "$PREFIX/bin"
+install -v -m 0755 SOAPdenovo-63mer "$PREFIX/bin"
+
+cd fusion
 
 make
 
-cp SOAPdenovo-127mer $PREFIX/bin
-cp SOAPdenovo-63mer $PREFIX/bin
+install -v -m 0755 SOAPdenovo-fusion "$PREFIX/bin"
