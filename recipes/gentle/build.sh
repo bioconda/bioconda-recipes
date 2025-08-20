@@ -9,6 +9,7 @@ export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
 
 cp -rf ${BUILD_PREFIX}/share/gnuconfig/config.* .
+cp -rf ${BUILD_PREFIX}/share/gnuconfig/config.* m4/
 
 OS=$(uname -s)
 ARCH=$(uname -m)
@@ -21,7 +22,7 @@ else
 	export EXTRA_ARGS="--host=x86_64"
 fi
 
-autoreconf -if
+./autogen.sh
 ./configure --prefix="${PREFIX}" \
 	CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" \
