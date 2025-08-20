@@ -1,0 +1,39 @@
+diff --git a/src/Makefile b/src/Makefile
+index 6ddf50b..e56725d 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -44,7 +44,7 @@ samtools/%.o: samtools/%.c
+ $(GSTRUCT_LIB) $(GSTRUCT_INCLUDE_DIR): gstruct
+ 
+ $(SAMTOOLS_LIB): $(BAMOBJ)
+-	$(AR) -crus $@ $(BAMOBJ)
++	$(AR) -rcs $@ $(BAMOBJ)
+ 
+ $(SUBDIRS): %: %/Makefile $(SAMTOOLS_LIB)
+ 	cd $@; \
+@@ -52,7 +52,8 @@ $(SUBDIRS): %: %/Makefile $(SAMTOOLS_LIB)
+ 
+ gstruct/Makefile: gstruct/configure
+ 	cd $(dir $@); \
+-        CFLAGS="-g -O3" \
++        autoreconf -if; \
++        CFLAGS="-g -O3 -Wno-deprecated-declarations -Wno-implicit-function-declaration" \
+ 	./configure --enable-static --disable-shared \
+ 	            --prefix=${PREFIX} --includedir=${GSTRUCT_INCLUDE_DIR} \
+ 	            --libdir=${PREFIX}/${LIBnn} \
+@@ -64,7 +65,9 @@ gstruct/Makefile: gstruct/configure
+ 
+ gmap/Makefile: gmap/configure
+ 	cd $(dir $@); \
+-	 ./configure --with-gmapdb=${GMAPDB} --prefix=${PREFIX} \
++        autoreconf -if; \
++        CFLAGS="-g -O3 -Wno-deprecated-declarations -Wno-implicit-function-declaration" \
++	./configure --with-gmapdb=${GMAPDB} --prefix=${PREFIX} \
+ 	            --libdir=${PREFIX}/${LIBnn} --disable-maintainer-mode
+ 
+ clean:
+@@ -72,4 +75,3 @@ clean:
+ 	  $(MAKE) -C $$dir distclean; \
+ 	done
+ 	rm -f *.o *.so *.dll
+-
