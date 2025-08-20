@@ -1,5 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 set -x -e
+
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations -Wno-implicit-function-declaration"
 
 # Coils Dir
 COILS_DIR=${PREFIX}/share/coils
@@ -7,12 +10,10 @@ COILS_DIR=${PREFIX}/share/coils
 COILS_PROGRAMS="coils-svr.pl coils-wrap.pl"
 
 
-
-
 # remove the precompilated one
-rm ncoils-linux
+rm -rf ncoils-linux
 #compile
-${CC} -O2 -I. -o ncoils-osf ncoils.c read_matrix.c -lm
+${CC} -O3 -I. -o ncoils-osf ncoils.c read_matrix.c -lm
 
 # get the name of the ncoils program build
 NCOILS=$(ls ncoils-*)
@@ -23,10 +24,10 @@ ls -l
 # copy tools in the bin
 mkdir -p ${PREFIX}/bin
 mkdir -p ${COILS_DIR}
-cp -r * ${COILS_DIR}
+cp -rf * ${COILS_DIR}
 
 # Add main tools
-cp ${NCOILS} ${PREFIX}/bin/ncoils
+cp f ${NCOILS} ${PREFIX}/bin/ncoils
 chmod a+x ${PREFIX}/bin/ncoils
 
 # Add extra programs
