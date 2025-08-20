@@ -7,13 +7,12 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3"
 
-cd src
-
 if [[ "$(uname -s)" == "Darwin" && "$(uname -m)" == "arm64" ]]; then
 	wget "https://github.com/abacus-gene/paml/releases/download/v${PKG_VERSION}/paml-${PKG_VERSION}-mac-arm64.tar.gz"
 	tar -xvzf paml-${PKG_VERSION}-mac-arm64.tar.gz
 	cd paml-${PKG_VERSION}-mac-arm64/bin
 else
+	cd src
 	make CC="${CC}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
 	"${CC}" -o ds -O3 ds.c tools.c -lm
 fi
