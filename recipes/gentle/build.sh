@@ -6,7 +6,7 @@ mkdir -p "${PREFIX}"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3"
-export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
 cp -rf ${BUILD_PREFIX}/share/gnuconfig/config.* .
 cp -rf ${BUILD_PREFIX}/share/gnuconfig/config.* m4/
@@ -22,14 +22,18 @@ else
 	export EXTRA_ARGS="--host=x86_64"
 fi
 
-./autogen.sh
+aclocal
+libtoolize --automake --force --copy
+automake --add-missing
+autoconf
+
 ./configure --prefix="${PREFIX}" \
 	CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" \
-	CC="${CC}" CFLAGS="${CFLAGS}" \
+	CC="${CC}" CFLAGS="${CFLAGS}" --with-clustalw=yes \
 	--disable-option-checking --enable-silent-rules \
-	--disable-dependency-tracking --with-clustalw=yes \
+	--disable-dependency-tracking \
 	"${EXTRA_ARGS}"
 
-make -j"${CPU_COUNT}"
+make
 make install
