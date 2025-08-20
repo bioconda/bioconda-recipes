@@ -18,5 +18,5 @@ else
   make all CC="${CC}" CCMPI="mpicc" -j"${CPU_COUNT}"
 fi
 
-chmod +x "$SRC_DIR/bin/*"
-cp -pr "$SRC_DIR/bin" "$PREFIX"
+chmod +x ../bin/*
+cp -pr ../bin "$PREFIX"
