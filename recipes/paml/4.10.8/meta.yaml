@@ -1,0 +1,48 @@
+{% set name = "PAML" %}
+{% set version = "4.10.8" %}
+{% set sha256 = "c7b75cd10a278c39a609c297937c3ad13fa498f4a9b4c279712bc03ad5df6e64" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/abacus-gene/paml/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('paml', max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+
+test:
+  commands:
+    # The following cannot be tested because they require
+    # input files which, if not provided, prompt and wait:
+    # baseml, basemlg, codeml, infinitesites, mcmctree,
+    # pamp, yn00
+    - chi2 1 .1
+    - evolver 1 | grep EVOLVER
+    - codeml /dev/null 2>&1 | grep paml
+
+about:
+  home: "https://evomics.org/resources/software/molecular-evolution-software/paml"
+  summary: "A package of programs for phylogenetic analyses of DNA or protein sequences using maximum likelihood."
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  dev_url: "https://github.com/abacus-gene/paml"
+  doc_url: "https://github.com/abacus-gene/paml/wiki"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:paml
+    - doi:10.1093/bioinformatics/13.5.555
