@@ -13,16 +13,16 @@ rm -rf src/*.bak
 cd src
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
-	"${CC}" -I${PREFIX}/include -O3 -Wno-unused-result -nostdinc -o baseml baseml.c tools.c -lm
-	"${CC}" -I${PREFIX}/include -O3 -Wno-unused-result -nostdinc -o basemlg basemlg.c tools.c -lm
-	"${CC}" -I${PREFIX}/include -O3 -Wno-unused-result -nostdinc -o codeml codeml.c tools.c -lm
-	"${CC}" -I${PREFIX}/include -O3 -Wno-unused-result -nostdinc -o pamp pamp.c tools.c -lm
-	"${CC}" -I${PREFIX}/include -O3 -Wno-unused-result -nostdinc -o mcmctree mcmctree.c tools.c -lm
-	"${CC}" -I${PREFIX}/include -O3 -Wno-unused-result -nostdinc -o infinitesites -D INFINITESITES mcmctree.c tools.c -lm
-	"${CC}" -I${PREFIX}/include -O3 -Wno-unused-result -nostdinc -o evolver evolver.c tools.c -lm
-	"${CC}" -I${PREFIX}/include -O3 -Wno-unused-result -nostdinc -o yn00 yn00.c tools.c -lm
-	"${CC}" -I${PREFIX}/include -O3 -Wno-unused-result -nostdinc -o chi2 chi2.c -lm
-	"${CC}" -I${PREFIX}/include -O3 -Wno-unused-result -nostdinc -o ds ds.c tools.c -lm
+	"${CC}" -I${PREFIX}/include -O3 -Wno-unused-result -o baseml baseml.c tools.c -lm
+	"${CC}" -I${PREFIX}/include -O3 -Wno-unused-result -o basemlg basemlg.c tools.c -lm
+	"${CC}" -I${PREFIX}/include -O3 -Wno-unused-result -o codeml codeml.c tools.c -lm
+	"${CC}" -I${PREFIX}/include -O3 -Wno-unused-result -o pamp pamp.c tools.c -lm
+	"${CC}" -I${PREFIX}/include -O3 -Wno-unused-result -o mcmctree mcmctree.c tools.c -lm
+	"${CC}" -I${PREFIX}/include -O3 -Wno-unused-result -o infinitesites -D INFINITESITES mcmctree.c tools.c -lm
+	"${CC}" -I${PREFIX}/include -O3 -Wno-unused-result -o evolver evolver.c tools.c -lm
+	"${CC}" -I${PREFIX}/include -O3 -Wno-unused-result -o yn00 yn00.c tools.c -lm
+	"${CC}" -I${PREFIX}/include -O3 -Wno-unused-result -o chi2 chi2.c -lm
+	"${CC}" -I${PREFIX}/include -O3 -Wno-unused-result -o ds ds.c tools.c -lm
 else
 	make -j"${CPU_COUNT}"
 	"${CC}" -O3 -o ds ds.c tools.c -lm
