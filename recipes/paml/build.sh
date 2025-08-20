@@ -13,16 +13,16 @@ rm -rf src/*.bak
 cd src
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
-	"${CC}" ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -o baseml baseml.c tools.c -lm
-	"${CC}" ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -o basemlg basemlg.c tools.c -lm
-	"${CC}" ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -o codeml codeml.c tools.c -lm
-	"${CC}" ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -o pamp pamp.c tools.c -lm
-	"${CC}" ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -o mcmctree mcmctree.c tools.c -lm
-	"${CC}" ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -o infinitesites -D INFINITESITES mcmctree.c tools.c -lm
-	"${CC}" ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -o evolver evolver.c tools.c -lm
-	"${CC}" ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -o yn00 yn00.c tools.c -lm
-	"${CC}" ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -o chi2 chi2.c -lm
-	"${CC}" ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -o ds ds.c tools.c -lm
+	"${CC}" -O3 -Wno-unused-result -L. -o baseml baseml.c tools.c -lm
+	"${CC}" -O3 -Wno-unused-result -L. -o basemlg basemlg.c tools.c -lm
+	"${CC}" -O3 -Wno-unused-result -L. -o codeml codeml.c tools.c -lm
+	"${CC}" -O3 -Wno-unused-result -L. -o pamp pamp.c tools.c -lm
+	"${CC}" -O3 -Wno-unused-result -L. -o mcmctree mcmctree.c tools.c -lm
+	"${CC}" -O3 -Wno-unused-result -L. -o infinitesites -D INFINITESITES mcmctree.c tools.c -lm
+	"${CC}" -O3 -Wno-unused-result -L. -o evolver evolver.c tools.c -lm
+	"${CC}" -O3 -Wno-unused-result -L. -o yn00 yn00.c tools.c -lm
+	"${CC}" -O3 -Wno-unused-result -L. -o chi2 chi2.c -lm
+	"${CC}" -O3 -Wno-unused-result -L. -o ds ds.c tools.c -lm
 else
 	make -j"${CPU_COUNT}"
 	"${CC}" -O3 -o ds ds.c tools.c -lm
