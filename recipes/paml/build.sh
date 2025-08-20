@@ -3,6 +3,10 @@ set -eu -o pipefail
 
 mkdir -p "${PREFIX}/bin"
 
+export C_INCLUDE_PATH="${PREFIX}/include"
+export INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+
 sed -i.bak 's|CC = gcc|CC ?= $(CC)|' src/Makefile
 rm -rf src/*.bak
 
