@@ -4,7 +4,6 @@ export DISABLE_AUTOBREW=1
 
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
-
 mkdir -p ~/.R
 
 echo -e "CC=$CC
