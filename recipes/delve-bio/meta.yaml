@@ -1,0 +1,46 @@
+{% set version = "0.1.0" %}
+{% set name = "delve-bio" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/berndbohmeier/delve/archive/v{{ version }}.tar.gz
+  sha256: 10a138d4da69c8385e263ebc29e8cc8ca94ab7e8e849fe41ede10418415aedb2
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('delve-bio', max_pin="x.x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path .
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - clangdev
+    # - {{ compiler('c') }} add these C/C++ compilers if needed
+    # - {{ compiler('cxx') }}
+
+test:
+  commands:
+    - delve --version
+
+about:
+  home: https://github.com/berndbohmeier/delve
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: A variant caller for mixed infections
+
+extra:
+  recipe-maintainers:
+    - berndbohmeier
+    - JasonAHendry
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
