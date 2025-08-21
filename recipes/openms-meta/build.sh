@@ -7,7 +7,7 @@ echo "LD_RUN_PATH: $LD_RUN_PATH"
 export PLATFORM_CMAKE_EXTRAS=""
 if [[ "$CXX" == *gnu-c++* ]]; then
   # IS THIS A WRAPPER SCRIPT OR WHAT IS HAPPENING?
-  file $(which $CXX)
+  cat $(which $CXX)
   # For stuff like this GCC bug (especially on ARM) https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111516
   echo "Detected gcc: ignoring some compile warnings."
   export CXXFLAGS="${CXXFLAGS} -Wno-psabi"
