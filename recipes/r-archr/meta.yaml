@@ -1,9 +1,10 @@
+{% set name = "r-archr" %}
 {% set version = "1.0.3" %}
 {% set github = "https://github.com/GreenleafLab/ArchR" %}
 {% set posix = 'm2-' if win else '' %}
 
 package:
-  name: r-archr
+  name: {{ name }}
   version: {{ version|replace('-', '_') }}
 
 source:
@@ -16,7 +17,7 @@ build:
     - lib/R/lib/
     - lib/
   run_exports:
-    - {{ pin_subpackage('r-archr', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -24,7 +25,8 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - r-base
+    # bioconductor-chromvar requires r-base <4.4 as 8/21/2025
+    - r-base <4.4
     - bioconductor-biocgenerics
     - bioconductor-biostrings
     - bioconductor-chromvar
@@ -58,7 +60,8 @@ requirements:
     - r-stringr
     - r-uwot
   run:
-    - r-base
+    # bioconductor-chromvar requires r-base <4.4 as 8/21/2025
+    - r-base <4.4
     - bioconductor-biocgenerics
     - bioconductor-biostrings
     - bioconductor-chromvar
