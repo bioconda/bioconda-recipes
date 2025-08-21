@@ -4,11 +4,13 @@
 #LDFLAGS="-Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined"
 echo "LD_RUN_PATH: $LD_RUN_PATH"
 
+export PLATFORM_CMAKE_EXTRAS=""
 if [[ "$CXX" == *gnu-c++* ]]; then
   # For stuff like this GCC bug (especially on ARM) https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111516
   echo "Detected gcc: ignoring some compile warnings."
   export CXXFLAGS="${CXXFLAGS} -Wno-psabi"
   $CXX -dumpspecs
+  export PLATFORM_CMAKE_EXTRAS="-DCMAKE_LINKER_TYPE=GOLD"
 fi
 
 mkdir build
@@ -27,7 +29,8 @@ cmake -S .. -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
 	-DHAS_XSERVER=OFF -DWITH_GUI=OFF -DENABLE_CLASS_TESTING=OFF -DENABLE_TOPP_TESTING=OFF -DBOOST_USE_STATIC=OFF -DBUILD_EXAMPLES=OFF -DENABLE_CWL=OFF -DWITH_HDF5=OFF \
 	-DBoost_NO_BOOST_CMAKE=ON -DBoost_ARCHITECTURE="-x64" \
  	-DQT_HOST_PATH="${BUILD_PREFIX}" -DQT_HOST_PATH_CMAKE_DIR="${PREFIX}" \
-	-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}
+	-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} \
+ 	${PLATFORM_CMAKE_EXTRAS}
 
 
 cat src/openms/cmake_install.cmake
