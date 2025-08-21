@@ -8,7 +8,7 @@ if [[ "$CXX" == *gnu-c++* ]]; then
   # For stuff like this GCC bug (especially on ARM) https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111516
   echo "Detected gcc: ignoring some compile warnings."
   export CXXFLAGS="${CXXFLAGS} -Wno-psabi"
-  $CXX -dump-specs
+  $CXX -dumpspecs
 fi
 
 mkdir build
