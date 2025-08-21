@@ -1,6 +1,6 @@
 {% set name = "r-presto" %}
 {% set version = "1.0.0" %}
-{% set github = "https://github.com/immunogenomics/presto" %}
+{% set github = 'https://github.com/immunogenomics/presto' %}
 
 package:
   name: {{ name }}
@@ -15,7 +15,7 @@ build:
   rpaths:
     - lib/R/lib/
     - lib/
-  script: R CMD INSTALL --build .
+  script: $R CMD INSTALL --build . $R_ARGS
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
@@ -23,7 +23,7 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - make
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
   host:
     - r-base
     - r-matrix
@@ -56,7 +56,7 @@ about:
   doc_url: "https://immunogenomics.github.io/presto"
   license: "GPL-3.0-only"
   license_family: GPL3
-  license_file: "{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3"
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
   summary: "Scalable implementation of the Wilcoxon rank sum test and auROC statistic. Interfaces to dense and sparse matrices, as well as genomics analysis frameworks Seurat and SingleCellExperiment."
   dev_url: {{ github }}
 
