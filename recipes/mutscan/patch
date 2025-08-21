@@ -1,28 +1,36 @@
 diff --git a/Makefile b/Makefile
-index 8110b4c..7912d2d 100644
+index c35dded..b585754 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -2,6 +2,7 @@ DIR_INC = ./inc
  DIR_SRC = ./src
  DIR_OBJ = ./obj
  BINDIR=/usr/local/bin
-+LDFLAGS = 
++LDFLAGS = -L$(PREFIX)/lib
  
  SRC = $(wildcard ${DIR_SRC}/*.cpp)  
  OBJ = $(patsubst %.cpp,${DIR_OBJ}/%.o,$(notdir ${SRC})) 
-@@ -14,7 +15,7 @@ CC = g++
- CFLAGS = -std=c++11 -g -I${DIR_INC}
+@@ -10,13 +11,13 @@ TARGET = mutscan
+ 
+ BIN_TARGET = ${TARGET}
+ 
+-CC = g++
+-CPPFLAGS = -Wall
+-CFLAGS = -std=c++11 -g -I${DIR_INC}
++CC = $(CXX)
++CPPFLAGS = -Wall -I$(PREFIX)/include
++CFLAGS = -std=c++14 -march=x86-64-v3 -g -I${DIR_INC}
  
  ${BIN_TARGET}:${OBJ}
 -	$(CC) $(OBJ) -lz -lpthread -o $@
-+	$(CC) $(OBJ) $(LDFLAGS) -lz -lpthread -o $@
-     
- ${DIR_OBJ}/%.o:${DIR_SRC}/%.cpp make_obj_dir
- 	$(CC) $(CFLAGS) -O3 -c  $< -o $@
-@@ -31,4 +32,4 @@ make_obj_dir:
+-    
++	$(CC) $(OBJ) $(LDFLAGS) -lz -pthread -o $@
++
+ ${DIR_OBJ}/%.o:${DIR_SRC}/%.cpp
+ 	@mkdir -p "${DIR_OBJ}"
+ 	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -O3 -c  $< -o $@
+@@ -31,4 +32,3 @@ clean:
  
  install:
- 	install $(TARGET) $(BINDIR)/$(TARGET)
+ 	install $(TARGET) $(DESTDIR)$(BINDIR)/$(TARGET)
 -	@echo "Installed."
-\ No newline at end of file
-+	@echo "Installed."

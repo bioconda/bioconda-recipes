@@ -2,18 +2,21 @@
 {% set version = "1.4.1" %}
 
 package:
-  name: {{ name | lower }}
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/Nextomics/NextPolish/releases/download/v{{ version }}/{{ name }}.tgz
-  sha256: 2a5f66f3db7f76e583a6b6e28f9c1f3c392258b8d755050d7abe129a2fbb48c4
+  git_url: https://github.com/Nextomics/NextPolish.git
+  git_rev: cfa7b1b
+  sha256: unused
   patches:
+    - 0001-master.patch
+    - 0002-rle.patch
     - fix_nextpolish_paths.patch
     - fix_get_version.patch
 
 build:
-  number: 4
+  number: 5
   run_exports:
     - {{ pin_subpackage('nextpolish', max_pin="x") }}
 
@@ -21,17 +24,17 @@ requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - python >=3
+    - zlib
   host:
-    - python
-    - pip
-    - paralleltask
     - bzip2
+    - xz
     - zlib
   run:
-    - python
+    - python >=3
+    - paralleltask
     - bwa
     - minimap2
-    - paralleltask
     - samtools
 
 test:
@@ -49,8 +52,13 @@ about:
   license_file: LICENSE
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - rpetit3
   identifiers:
     - biotools:NextPolish
     - doi:10.1093/bioinformatics/btz891
+  skip-lints:
+    - uses_vcs_url
