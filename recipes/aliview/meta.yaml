@@ -1,0 +1,45 @@
+{% set name = "AliView" %}
+{% set version = "1.30" %}
+{% set sha256 = "3ed6af471a2e5c77355c1a0d06a31e44478a84ee93cb15b7295861549b5332f7" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/AliView/AliView/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  run_exports:
+    - {{ pin_subpackage("aliview", max_pin="x") }}
+  noarch: generic
+  number: 0
+  script: |
+    mvn clean package -DskipTests
+    mkdir -p $PREFIX/share/aliview
+    cp target/aliview.jar $PREFIX/share/aliview/
+    mkdir -p $PREFIX/bin
+    echo -e "#!/bin/bash\njava -jar $PREFIX/share/aliview/aliview.jar \"\$@\"" > $PREFIX/bin/aliview
+    chmod +x $PREFIX/bin/aliview
+    echo -e "#!/bin/bash\njava -cp $PREFIX/share/aliview/aliview.jar \"\$@\"" > $PREFIX/bin/aliview-test
+    chmod +x $PREFIX/bin/aliview-test
+    
+requirements:
+  build:
+    - openjdk >=8
+    - maven
+  run:
+    - openjdk >=8
+
+test:
+  commands:
+    - "aliview-test -D aliview.test.RegexTest"
+
+about:
+  home: https://ormbunkar.se/aliview/
+  dev_url: https://github.com/AliView/AliView
+  summary: "AliView is an intuitive and fast alignment viewer and editor for DNA and amino acid sequences."
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+

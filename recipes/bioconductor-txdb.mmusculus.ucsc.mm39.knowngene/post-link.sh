@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "txdb.mmusculus.ucsc.mm39.knowngene-3.18.0"
+installBiocDataPackage.sh "txdb.mmusculus.ucsc.mm39.knowngene-3.20.0"
