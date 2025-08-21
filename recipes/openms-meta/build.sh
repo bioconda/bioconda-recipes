@@ -8,11 +8,11 @@ if [[ "$CXX" == *gnu-c++* ]]; then
 
   # If you want GOLD linker (which is faster), try the following next two exports. But you will get warnings because GOLD
   #  uses RUNPATH by default (even with -disable-new-tags, which conda adds in the default LDFLAGS).
-  #  Usually this should lead to RPATH being used.
+  #  Usually this should lead to RPATH being used which is why Conda finds a mismatch between readelf and its own link check tool. I think the warning can be ignored, so if you want to shave off 10 of 48mins, go ahead.
   #export PLATFORM_CMAKE_EXTRAS="-DCMAKE_LINKER_TYPE=GOLD"
   # the gcc spec file uses push-state in the hybrid libgcc linking case, which is not supported by GOLD linker
   #export LDFLAGS="-shared-libgcc ${LD_FLAGS}"
-  # Debug to see what kinf of nonsense gcc does under the hood with rpaths
+  # Debug if you see what kind of nonsense gcc does under the hood with rpaths
   #export LDFLAGS="-v ${LDFLAGS}"
 fi
 
@@ -41,4 +41,4 @@ cmake -S .. -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
 
 cat src/openms/cmake_install.cmake
 
-ninja -v -j"${CPU_COUNT}"
+ninja -j"${CPU_COUNT}"
