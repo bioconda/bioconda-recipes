@@ -29,7 +29,6 @@ esac
 make -f Makefile.nongs \
 	BOOST_PATH="${PREFIX}" \
 	CC="${CXX} -std=c++14 ${CXXFLAGS}" \
-	LDFLAGS="${LDFLAGS}" \
-	-j"${CPU_COUNT}"
+	LDFLAGS="${LDFLAGS}"
 
 install -v -m 0755 skesa saute saute_prot gfa_connector kmercounter "${PREFIX}/bin"
