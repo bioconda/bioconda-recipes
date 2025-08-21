@@ -12,7 +12,7 @@ if [[ "$CXX" == *gnu-c++* ]]; then
   $CXX -dumpspecs
   export PLATFORM_CMAKE_EXTRAS="-DCMAKE_LINKER_TYPE=GOLD"
   # the gcc spec file uses push-state in the hybrid libgcc linking case, which is not supported by GOLD linker
-  export LD_FLAGS="-shared-libgcc ${LD_FLAGS}" 
+  export LDFLAGS="-shared-libgcc ${LD_FLAGS}" 
 fi
 
 mkdir build
