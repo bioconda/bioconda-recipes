@@ -99,8 +99,8 @@ outputs:
 
     test:
       commands:
-        - command -v conda >/dev/null 2>&1 && conda inspect linkages -p $PREFIX $PKG_NAME || echo "Mulled container.. skip tests" # [not win]
-        - command -v conda >/dev/null 2>&1 && conda inspect objects -p $PREFIX $PKG_NAME || echo "Mulled container.. skip tests"  # [osx]
+        - command -v readelf >/dev/null 2>&1 && readelf -d ${PREFIX}/lib/libOpenMS.so | grep 'R.*PATH' || echo "Mulled container.. skip tests" # [linux]
+        - command -v otool >/dev/null 2>&1 && otool -L ${PREFIX}/lib/libOpenMS.dylib || echo "Mulled container.. skip tests"  # [osx]
 
   - name: openms
     version: {{ version }}
@@ -134,8 +134,7 @@ outputs:
     test:
       commands:
         - command -v readelf >/dev/null 2>&1 && readelf -d ${PREFIX}/bin/OpenMSInfo | grep 'R.*PATH' || echo "Mulled container.. skip tests" # [linux]
-        - command -v conda >/dev/null 2>&1 && conda inspect linkages -p $PREFIX $PKG_NAME || echo "Mulled container.. skip tests" # [not win]
-        - command -v conda >/dev/null 2>&1 && conda inspect objects -p $PREFIX $PKG_NAME || echo "Mulled container.. skip tests"  # [osx]
+        - command -v otool >/dev/null 2>&1 && otool -L ${PREFIX}/bin/OpenMSInfo || echo "Mulled container.. skip tests"  # [osx]
         - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/OpenMSInfo
         - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/FileMerger --help
 
