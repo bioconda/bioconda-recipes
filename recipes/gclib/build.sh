@@ -1,8 +1,9 @@
 #!/bin/bash
+
 ls $CONDA_PREFIX/bin | grep -E "(gcc|g\+\+)"
 mkdir -p $PREFIX/lib $PREFIX/bin $PREFIX/include
 
-make -j"${CPU_COUNT}"
+make LINKER="${CXX}" -j"${CPU_COUNT}"
 
 if [ -f libgffc.so ] ; then
     install *.so $PREFIX/lib/
