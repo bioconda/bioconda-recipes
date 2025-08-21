@@ -39,6 +39,4 @@ cmake -S .. -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
  	${PLATFORM_CMAKE_EXTRAS}
 
 
-cat src/openms/cmake_install.cmake
-
 ninja -j"${CPU_COUNT}"
