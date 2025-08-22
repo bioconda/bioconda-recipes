@@ -11,7 +11,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 2
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
@@ -19,16 +19,17 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - nim >=2.0.0
+    - nim >=2.0.4  # [not arm64]
     - make
-    - zlib
+    - pkg-config
+    - coreutils
   host:
-    - zlib
+    - curl
     - pcre
+    - zlib
   run:
-    - zlib
     - pcre
-    
+
 test:
   commands:
     - seqfu
@@ -37,19 +38,22 @@ test:
     - "seqfu --version | grep '{{ version }}'"
 
 about:
-  home: https://github.com/telatin/seqfu2/
-  docs: https://telatin.github.io/seqfu2
-  license: GPL-3.0-only
+  home: "https://github.com/telatin/seqfu2"
+  docs: "https://telatin.github.io/seqfu2"
+  license: "GPL-3.0-only"
+  license_family: GPL3
   license_file: LICENSE
-  summary: 'DNA sequence utilities'
+  summary: "DNA sequence utilities."
   description: |
     A collection of utilities to work with FASTX (FASTA or FASTQ) files
     that accept gzipped input.
     Tools to interleave and deinterleave, to calculate stats, and extract
     portions of sequence datasets.
+
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - telatin
   identifiers:
