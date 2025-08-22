@@ -1,24 +1,33 @@
-{% set version = "0.0.1" %}
-{% set sha256 = "2936fef22984551932064fa0cbf22f4f992d73dfde9b67ca81339a20a4a53abc" %}
+{% set version = "1.0.1" %}
+{% set sha256 = "d31aa539ae0900d381f627647b6e6d6df4c1a852e68808792178fb2a205fd566" %}
 
 package:
-  name: HyPlAs
+  name: hyplas
   version: {{ version }}
 
 source:
-    url: https://github.com/f0t1h/HyPlAs/archive/refs/tags/v{{ version }}.zip
+    url: https://github.com/cchauve/HyPlAs/archive/refs/tags/v{{ version }}.zip
     sha256: {{ sha256 }}
 
 build:
   number: 0
+  entry_points:
+    - hyplas = hyplas.hyplas:main
+      #  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
   run_exports:
     - {{ pin_subpackage('hyplas', max_pin="x.x") }}
 
 requirements:
   build:
     - python
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-
+    - make
+    - zlib
+  host:
+    - python
+    - pip
+    - zlib
   run:
     - python
     - numpy
@@ -29,13 +38,14 @@ requirements:
     - minigraph
     - racon
     - spades
-
+    - miniasm
+    - spades >=4.0.0
 test:
   commands:
-    - hyplas.py --help
+    - hyplas --help
 
 about:
-  home: https://github.com/f0t1h/hyplas
+  home: https://github.com/cchauve/hyplas
   license: MIT
   license_family: MIT
   license_file: LICENSE
