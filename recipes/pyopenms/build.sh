@@ -25,7 +25,7 @@ cd build
 #  and make sure nothing is added by the compiler with CMAKE_INSTALL_REMOVE_ENVIRONMENT_RPATH.
 # We set the BUILD_RPATH to the BUILD_PREFIX just to make CMake aware that the stupid compiler will add
 #  this RPATH to the end of the link line (visible with -v linker flag). With this CMake can remove it at install time.
-cmake -S ../src/pyopenms -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
+cmake -S ../src/pyOpenMS -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
 	-DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" -DOPENMS_GIT_SHORT_SHA1="27e3601" \
  	-DOPENMS_CONTRIB_LIBS="SILENCE_WARNING_SINCE_NOT_NEEDED" \
 	-DCMAKE_PREFIX_PATH="${PREFIX}" -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
