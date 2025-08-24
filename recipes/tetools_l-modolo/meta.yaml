@@ -1,0 +1,44 @@
+{% set version = "1.0.0" %}
+{% set sha256 = "b884fce471e90b35b9be898e68095379f84cc2d807054667c3daaaa8f46ec30c" %}
+
+package:
+  name: tetools_l-modolo
+  version: {{ version }}
+
+source:
+  url: https://github.com/l-modolo/TEtools/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True # [osx]
+
+requirements:
+  run:
+    - python >=3
+    - bowtie2
+    - bowtie
+    - bioconductor-deseq2
+    - r-gplots
+    - r-ggplot2
+    - r-rcolorbrewer
+
+test:
+  commands:
+    - TEcount.py -version | grep "1.0.0"
+    - TEdiff.R --args --version --outdir=\".\"
+    - PingPong.py -version | grep "1.0.0"
+    - pingpongpro 2>&1 | grep "pingpongpro version"
+    - UrQt | grep "UrQt.1.0.18"
+
+about:
+  home: https://github.com/l-modolo/TEtools
+  license: GPL-3
+  license_family: GPL3
+  license_file: LICENSE
+  summary: TEtools is composed of three tools (TEcount, TEdiff and PingPong)
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic
+
