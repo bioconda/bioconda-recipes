@@ -4,6 +4,10 @@ install -d $PREFIX/bin
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
+if [[ `uname -s` == "Darwin" ]]; then
+    export CFLAGS="${CFLAGS} -Wno-error=int-conversion -Wno-error=implicit-function-declaration"
+    export CXXFLAGS="${CXXFLAGS} -Wno-error=int-conversion"
+fi
 
 sed -i.bak 's|Boost_USE_STATIC_LIBS   ON|Boost_USE_STATIC_LIBS   OFF|' CMakeLists.txt
 sed -i.bak 's|-Wnested-externs -Winline|-Wnested-externs -Winline -Wno-int-conversion -Wno-implicit-function-declaration|' gatb-core/gatb-core/thirdparty/hdf5/config/cmake/HDFCompilerFlags.cmake
