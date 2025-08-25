@@ -1,5 +1,8 @@
 #!/bin/bash
-
+export CFLAGS="-I$BUILD_PREFIX/aarch64-conda-linux-gnu/sysroot/usr/include $CFLAGS"
+mkdir -p "$BUILD_PREFIX/aarch64-conda-linux-gnu/sysroot/usr/include"
+ln -sf "$BUILD_PREFIX/aarch64-conda-linux-gnu/sysroot/usr/include/locale.h" \
+       "$BUILD_PREFIX/aarch64-conda-linux-gnu/sysroot/usr/include/xlocale.h"
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     perl Build.PL
