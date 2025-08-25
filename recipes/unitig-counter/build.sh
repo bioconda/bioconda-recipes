@@ -11,14 +11,14 @@ if [[ `uname -s` == "Darwin" ]]; then
     export HDF5_SKIP_MPI_TEST=1
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
     export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DHDF5_BUILD_CPP_LIB=OFF -DHDF5_ENABLE_PARALLEL=OFF"
+	sed -i.bak 's|set(MPI_TEST_EXECUTABLE ${MPIEXEC_EXECUTABLE})|set(MPI_TEST_EXECUTABLE ${MPIEXEC_EXECUTABLE} CACHE INTERNAL "")|' gatb-core/gatb-core/thirdparty/hdf5/config/cmake_ext_mod/HDFMacros.cmake
+    sed -i.bak 's|set_target_properties (${libtarget} PROPERTIES OUTPUT_NAME ${libname})|set_target_properties (${libtarget} PROPERTIES OUTPUT_NAME ${libname} MACOSX_RPATH ON)|' gatb-core/gatb-core/thirdparty/hdf5/config/cmake/HDFMacros.cmake
 else
     export CONFIG_ARGS="-DHDF5_BUILD_CPP_LIB=OFF -DHDF5_ENABLE_PARALLEL=OFF"
 fi
 
 sed -i.bak 's|Boost_USE_STATIC_LIBS   ON|Boost_USE_STATIC_LIBS   OFF|' CMakeLists.txt
 sed -i.bak 's|-Wnested-externs -Winline|-Wnested-externs -Winline -Wno-int-conversion -Wno-implicit-function-declaration|' gatb-core/gatb-core/thirdparty/hdf5/config/cmake/HDFCompilerFlags.cmake
-sed -i.bak 's|set(MPI_TEST_EXECUTABLE ${MPIEXEC_EXECUTABLE})|set(MPI_TEST_EXECUTABLE ${MPIEXEC_EXECUTABLE} CACHE INTERNAL "")|' gatb-core/gatb-core/thirdparty/hdf5/config/cmake_ext_mod/HDFMacros.cmake
-sed -i.bak 's|set_target_properties (${libtarget} PROPERTIES OUTPUT_NAME ${libname})|set_target_properties (${libtarget} PROPERTIES OUTPUT_NAME ${libname} MACOSX_RPATH ON)|' gatb-core/gatb-core/thirdparty/hdf5/config/cmake/HDFMacros.cmake
 rm -rf *.bak
 
 if [[ `uname -s` == "Darwin" ]]; then
