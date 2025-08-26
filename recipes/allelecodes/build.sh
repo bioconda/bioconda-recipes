@@ -1,10 +1,10 @@
 #!/bin/bash
 set -ex
 
-export CONDA_BLD_PATH=/tmp/conda-bld
+#export CONDA_BLD_PATH=/tmp/conda-bld
 
-mkdir -pv $CONDA_BLD_PATH
-chmod 755 $CONDA_BLD_PATH
+#mkdir -pv $CONDA_BLD_PATH
+#chmod 755 $CONDA_BLD_PATH
 
 mkdir -p $PREFIX/bin
 
