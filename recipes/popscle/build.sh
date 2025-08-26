@@ -1,5 +1,13 @@
 #!/bin/bash
 
+sed -i 's/cmake_minimum_required(VERSION 2\.8\.4)/cmake_minimum_required(VERSION 3.5)/g' CMakeLists.txt
+sed -i '1i #include <random>' cmd_cram_freemuxlet.cpp
+sed -i '304i     std::random_device rd;\n    std::mt19937 g(rd());' cmd_cram_freemuxlet.cpp
+sed -i 's/std::random_shuffle(orand.begin(), orand.end())/std::shuffle(orand.begin(), orand.end(), g)/g' cmd_cram_freemuxlet.cpp
+sed -i '28i #include <limits>' gtf_interval_tree.h
+sed -i '1i #include <cstdint>' gtf.h
+
+
 
 #For libhts:
 #  - $ cmake -DHTS_INCLUDE_DIRS=/hts_absolute_path/include/  -DHTS_LIBRARIES=/hts_absolute_path/lib/libhts.a ..
