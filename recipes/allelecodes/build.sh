@@ -1,4 +1,7 @@
 #!/bin/bash
+
+export CONDA_BLD_PATH=/tmp/conda-bld
+
 mkdir -p $PREFIX/bin
 cp assignAlleleCodes_py3.6.py $PREFIX/bin/assignAlleleCodes
 chmod +x $PREFIX/bin/assignAlleleCodes
