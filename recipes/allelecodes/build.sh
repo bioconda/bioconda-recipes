@@ -10,8 +10,10 @@ mkdir -p $PREFIX/bin
 
 cp assignAlleleCodes_py3.6.py $PREFIX/bin/assignAlleleCodes
 chmod +x $PREFIX/bin/assignAlleleCodes
-# ensure backward compatibility
-ln -sv assignAllelecodes $PREFIX/bin/assignAlleleCodes_py3.6.py
-ln -sv $PREFIX/bin/assignAllelecodes assignAlleleCodes_py3.6.py
+
+# ensure backward compatibility with a symlink
+pushd $PREFIX/bin
+ln -sv assignAllelecodes assignAlleleCodes_py3.6.py
+popd
 
 echo "=== DONE WITH $0 ==="
