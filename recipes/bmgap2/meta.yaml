@@ -1,0 +1,65 @@
+{% set name = "bmgap2" %}
+{% set version = "2.2.0" %}
+{% set sha256 = "4f588cf0444ac91856ce2a73a0aada9b99c8483732e75f166a98102d835b7b9c" %}
+
+package:
+  name: {{ name | lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/CDCgov/BMGAP2/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  host:
+    - biopython==1.78
+    - executor
+    - openpyxl
+    - pandas
+    - pigz
+    - python==3.7.3
+    - requests
+    - urllib3==1.24.2
+  run:
+    - cutadapt
+    - pandas
+    - pigz
+    - mash
+    - matplotlib
+    - blast
+    - openpyxl
+    - biopython==1.78
+    - spades
+    - requests
+    - python==3.7.3
+    - urllib3==1.24.2
+    - bbmap
+    - executor
+    - bowtie2
+
+test:
+  commands:
+    - SpeciesDB/bin/identify_species.py --help
+
+about:
+  home: https://github.com/CDCgov/BMGAP2
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE
+  summary: "Genomic analysis of bacterial pathogens Neisseria and Haemophilus for public health"
+  description: |
+    BMGAP2 is a bioinformatics pipeline for the genomic analysis of bacterial pathogens Neisseria and Haemophilus for public health.
+    It performs quality control, assembly, annotation, and various analyses including MLST, AMR gene detection, and phylogenetic analysis.
+    BMGAP2 is designed to be user-friendly and efficient, making it suitable for public health laboratories.
+
+extra:
+  recipe-maintainers:
+    - lskatz
+    - c-wiest
+
