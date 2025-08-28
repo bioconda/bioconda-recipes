@@ -2,13 +2,6 @@
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-#if [[ "$(uname -m)" == "aarch64" ]]; then
-       #export CFLAGS="${CFLAGS} -O3 -I$BUILD_PREFIX/aarch64-conda-linux-gnu/sysroot/usr/include"
-       #mkdir -p "$BUILD_PREFIX/aarch64-conda-linux-gnu/sysroot/usr/include"
-       #ln -sf "$BUILD_PREFIX/aarch64-conda-linux-gnu/sysroot/usr/include/locale.h" \
-              #"$BUILD_PREFIX/aarch64-conda-linux-gnu/sysroot/usr/include/xlocale.h"
-#fi
-
 export LC_ALL="en_US.UTF-8"
 
 if [[ -f Build.PL ]]; then
