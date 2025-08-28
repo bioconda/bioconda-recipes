@@ -2,12 +2,17 @@
 {% set version = "3.1.5" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/torognes/swarm/archive/v{{ version }}.tar.gz
   sha256: 68ccd814adc06e5325b73e102d7c8a34ee1367d0bfca704d513e4f06bab860d0
+
+build:
+  number: 3
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -17,26 +22,24 @@ requirements:
     - python >=3
     - python-igraph
 
-build:
-  number: 2
-  run_exports:
-    - {{ pin_subpackage('swarm', max_pin="x") }}
-
 test:
   commands:
     - swarm -v
     - graph_plot.py --version
 
 about:
-  home: https://github.com/torognes/swarm
-  license: Affero GPL
+  home: "https://github.com/torognes/swarm"
+  license: "AGPL-3.0-or-later"
   license_file: LICENSE
-  license_family: GPL
-  summary: A robust and fast clustering method for amplicon-based studies.
+  license_family: AGPL
+  summary: "A robust and fast clustering method for amplicon-based studies."
+  dev_url: "https://github.com/torognes/swarm"
+  doc_url: "https://github.com/torognes/swarm/blob/v{{ version }}/man/swarm_manual.pdf"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:swarm
     - doi:10.7717/peerj.593
