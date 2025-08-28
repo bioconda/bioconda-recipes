@@ -53,8 +53,10 @@ else
 fi
 
 if [[ "$(uname -s)" == "Darwin" && "$(uname -m)" == "x86_64" ]]; then
+	"${STRIP}" usher* mat* ripples*
 	install -v -m 755 usher* mat* ripples* "${PREFIX}/bin"
 else
+	"${STRIP}" usher* mat* transpose* ripples* compareVCF check_samples_place
 	install -v -m 755 usher* mat* transpose* ripples* compareVCF check_samples_place "${PREFIX}/bin"
 fi
 

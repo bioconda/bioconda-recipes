@@ -1,15 +1,15 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 10a2a28..29147fe 100644
+index 10a2a28..546a81a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,5 +1,5 @@
  
 -cmake_minimum_required (VERSION 3.8) 
-+cmake_minimum_required (VERSION 3.14)
++cmake_minimum_required (VERSION 3.14) 
  cmake_policy(SET CMP0069 NEW)
  project(usher)
  if(NOT CMAKE_BUILD_TYPE)
-@@ -16,19 +16,32 @@ if ("${VERSION_PATCH}" MATCHES "[0-9]+")
+@@ -16,6 +16,19 @@ if ("${VERSION_PATCH}" MATCHES "[0-9]+")
  endif()
  message(STATUS "${usher_VERSION}")
  
@@ -28,27 +28,18 @@ index 10a2a28..29147fe 100644
 +
  configure_file(src/version.hpp.in version.hpp)
  
--set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -pipe -g -ggdb3 -Wno-unused-function  -Wno-deprecated-declarations") 
-+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -pipe -g -ggdb3 -Wno-unused-function -Wno-deprecated-declarations -Wno-maybe-uninitialized -Wno-sign-compare -Wno-unused-variable") 
- #-DDEBUG_PARSIMONY_SCORE_CHANGE_CORRECT -fsanitize=address -DCHECK_PAR_MAIN  -DEASY_DEBUG -DSTOP_ON_ERROR  -DDETAILED_MERGER_CHECK -O0
--set(CMAKE_CXX_FLAGS_DEBUG "  -fno-eliminate-unused-debug-symbols -O0")
-+set(CMAKE_CXX_FLAGS_DEBUG " -fno-eliminate-unused-debug-symbols -O0")
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -pipe -g -ggdb3 -Wno-unused-function  -Wno-deprecated-declarations") 
+@@ -23,7 +36,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -pipe -g -ggdb3 -Wno-un
+ set(CMAKE_CXX_FLAGS_DEBUG "  -fno-eliminate-unused-debug-symbols -O0")
  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-DNDEBUG -O3")
  set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 ")
 -set(CMAKE_INCLUDE_CURRENT_DIR ON) 
 +set(CMAKE_INCLUDE_CURRENT_DIR ON)
++set(CMAKE_EXE_LINKER_FLAGS "-Wl,--copy-dt-needed-entries")
  
--if(DEFINED Protobuf_PATH) 
--    find_package(Protobuf REQUIRED HINTS ${Protobuf_PATH}) 
-+if(DEFINED Protobuf_PATH)
-+    find_package(Protobuf REQUIRED HINTS ${Protobuf_PATH})
- else()
--    find_package(Protobuf REQUIRED) 
-+    find_package(Protobuf REQUIRED)
- endif()
- 
- # Print version messages
-@@ -39,18 +52,14 @@ find_package(MPI REQUIRED)
+ if(DEFINED Protobuf_PATH) 
+     find_package(Protobuf REQUIRED HINTS ${Protobuf_PATH}) 
+@@ -39,11 +53,7 @@ find_package(MPI REQUIRED)
  include_directories(SYSTEM ${MPI_INCLUDE_PATH})
  include_directories(${Protobuf_INCLUDE_DIRS})
  
@@ -57,51 +48,32 @@ index 10a2a28..29147fe 100644
 -find_package(TBB REQUIRED tbbmalloc tbbmalloc_proxy tbb_preview)
 -
 -FIND_PACKAGE(Boost COMPONENTS program_options iostreams filesystem date_time REQUIRED)
-+find_package(Boost COMPONENTS program_options iostreams filesystem date_time REQUIRED CONFIG)
++FIND_PACKAGE(Boost COMPONENTS program_options iostreams filesystem date_time REQUIRED CONFIG)
  
  #find_package(OpenMP REQUIRED)
  
- INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
--AUX_SOURCE_DIRECTORY(src/matOptimize/Profitable_Moves_Enumerators New_Profitable_Moves_Enumerators) 
--AUX_SOURCE_DIRECTORY(src/matOptimize/apply_move patch_tree) 
--AUX_SOURCE_DIRECTORY(src/check_samples_place check_samples_place) 
-+AUX_SOURCE_DIRECTORY(src/matOptimize/Profitable_Moves_Enumerators New_Profitable_Moves_Enumerators)
-+AUX_SOURCE_DIRECTORY(src/matOptimize/apply_move patch_tree)
-+AUX_SOURCE_DIRECTORY(src/check_samples_place check_samples_place)
- file(GLOB MATUTIL_SRCS "src/matUtils/*.cpp" "src/matUtils/*.hpp")
- file(GLOB RIPPLES_SRCS "src/ripples/*.cpp" "src/ripples/*.hpp")
- file(GLOB USHER_SAMPLED_SRCS "src/usher-sampled/static_tree_mapper/*" "src/usher-sampled/*.cpp" "src/usher-sampled/*.hpp")
-@@ -58,7 +67,7 @@ file(GLOB RIPPLES_FAST_SRCS "src/ripples/ripples_fast/*.cpp" "src/ripples/ripple
- file(GLOB RIPPLES_UTILS_SRCS "src/ripples/util/*.cpp" "src/ripples/util/*.hpp")
- 
- set_source_files_properties(src/mutation_annotated_tree.cpp PROPERTIES COMPILE_FLAGS -O3)
--set_source_files_properties(src/usher-sampled/wait_debug.cpp PROPERTIES COMPILE_FLAGS -O0)
-+set_source_files_properties(src/usher-sampled/wait_debug.cpp PROPERTIES COMPILE_FLAGS -O3)
- #set_source_files_properties(src/matOptimize/Profitable_Moves_Enumerators/range_tree.cpp PROPERTIES COMPILE_FLAGS -O0)
- 
- #set_source_files_properties(src/matOptimize/detailed_mutations_store.cpp PROPERTIES COMPILE_FLAGS -O0)
-@@ -475,47 +484,47 @@ endif()
+@@ -475,47 +485,47 @@ endif()
  
  if(SAVE_PROFILE)
      if(DEBUG)
 -        TARGET_COMPILE_OPTIONS(usher PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES -DSAVE_PROFILE=1 -DDEBUG=1)
-+        TARGET_COMPILE_OPTIONS(usher PRIVATE  -O3 -DSAVE_PROFILE=1 -DDEBUG=1)
++        TARGET_COMPILE_OPTIONS(usher PRIVATE  -DSAVE_PROFILE=1 -DDEBUG=1)
      else(DEBUG)
 -        TARGET_COMPILE_OPTIONS(usher PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES -DSAVE_PROFILE=1)
-+        TARGET_COMPILE_OPTIONS(usher PRIVATE  -O3 -DSAVE_PROFILE=1)
++        TARGET_COMPILE_OPTIONS(usher PRIVATE  -DSAVE_PROFILE=1)
      endif(DEBUG)
  else(SAVE_PROFILE)
      if(DEBUG)
 -        TARGET_COMPILE_OPTIONS(usher PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES -DDEBUG=1)
-+        TARGET_COMPILE_OPTIONS(usher PRIVATE  -O3 -DDEBUG=1)
++        TARGET_COMPILE_OPTIONS(usher PRIVATE  -DDEBUG=1)
      else(DEBUG)
 -        TARGET_COMPILE_OPTIONS(usher PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES)
-+        TARGET_COMPILE_OPTIONS(usher PRIVATE  -O3)
++        TARGET_COMPILE_OPTIONS(usher PRIVATE )
      endif(DEBUG)
  endif(SAVE_PROFILE)
  #set_property(TARGET matOptimize PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 -TARGET_LINK_LIBRARIES(compareVCF PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
-+target_link_libraries(compareVCF PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++TARGET_LINK_LIBRARIES(compareVCF PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
  
  
 -TARGET_LINK_LIBRARIES(check_samples_place PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
@@ -112,43 +84,43 @@ index 10a2a28..29147fe 100644
 -TARGET_LINK_LIBRARIES(transposed_vcf_to_vcf PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
 -TARGET_LINK_LIBRARIES(transposed_vcf_to_fa PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
 -TARGET_LINK_LIBRARIES(transposed_vcf_print_name PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
-+target_link_libraries(check_samples_place PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
-+target_link_libraries(matOptimize PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
-+target_link_libraries(usher-sampled PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
-+#target_link_libraries(output_final_protobuf PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ) # OpenMP::OpenMP_CXX)
-+target_link_libraries(transpose_vcf PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
-+target_link_libraries(transposed_vcf_to_vcf PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
-+target_link_libraries(transposed_vcf_to_fa PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
-+target_link_libraries(transposed_vcf_print_name PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++TARGET_LINK_LIBRARIES(check_samples_place PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
++TARGET_LINK_LIBRARIES(matOptimize PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
++TARGET_LINK_LIBRARIES(usher-sampled PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
++#TARGET_LINK_LIBRARIES(output_final_protobuf PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ) # OpenMP::OpenMP_CXX)
++TARGET_LINK_LIBRARIES(transpose_vcf PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++TARGET_LINK_LIBRARIES(transposed_vcf_to_vcf PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++TARGET_LINK_LIBRARIES(transposed_vcf_to_fa PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++TARGET_LINK_LIBRARIES(transposed_vcf_print_name PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
  
 -TARGET_LINK_LIBRARIES(usher PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
-+target_link_libraries(usher PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++TARGET_LINK_LIBRARIES(usher PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
  target_include_directories(usher PUBLIC "${PROJECT_BINARY_DIR}")
  
 -TARGET_COMPILE_OPTIONS(matUtils PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES)
 -TARGET_LINK_LIBRARIES(matUtils PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
-+target_compile_options(matUtils PRIVATE -O3)
-+target_link_libraries(matUtils PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
++TARGET_COMPILE_OPTIONS(matUtils PRIVATE)
++TARGET_LINK_LIBRARIES(matUtils PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
  
 -TARGET_LINK_LIBRARIES(ripplesUtils PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
 -TARGET_LINK_LIBRARIES(ripplesInit PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
-+target_link_libraries(ripplesUtils PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
-+target_link_libraries(ripplesInit PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
++TARGET_LINK_LIBRARIES(ripplesUtils PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
++TARGET_LINK_LIBRARIES(ripplesInit PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
  
 -TARGET_COMPILE_OPTIONS(ripples PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES)
 -TARGET_LINK_LIBRARIES(ripples PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
 -TARGET_LINK_LIBRARIES(ripples-fast PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
-+target_compile_options(ripples PRIVATE -O3)
-+target_link_libraries(ripples PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
-+target_link_libraries(ripples-fast PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
++TARGET_COMPILE_OPTIONS(ripples PRIVATE)
++TARGET_LINK_LIBRARIES(ripples PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
++TARGET_LINK_LIBRARIES(ripples-fast PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
  
  if(USHER_SERVER)
 -    TARGET_COMPILE_OPTIONS(usher_server PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES)
 -    TARGET_LINK_LIBRARIES(usher_server PRIVATE stdc++ ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
 -    TARGET_LINK_LIBRARIES(usher-sampled-server PRIVATE stdc++ ${CMAKE_DL_LIBS} ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
-+    target_compile_options(usher_server PRIVATE -O3)
-+    target_link_libraries(usher_server PRIVATE stdc++ ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
-+    target_link_libraries(usher-sampled-server PRIVATE stdc++ ${CMAKE_DL_LIBS} ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
++    TARGET_COMPILE_OPTIONS(usher_server PRIVATE)
++    TARGET_LINK_LIBRARIES(usher_server PRIVATE stdc++ ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++    TARGET_LINK_LIBRARIES(usher-sampled-server PRIVATE stdc++ ${CMAKE_DL_LIBS} ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
      install(TARGETS usher matUtils matOptimize ripples usher_server DESTINATION bin)
  else()
      install(TARGETS usher matUtils matOptimize ripples DESTINATION bin)
@@ -1796,14 +1768,14 @@ index 02c9f08..126fbfe 100644
              //raise(SIGTRAP);
              fd(queue);
 diff --git a/src/matOptimize/main.cpp b/src/matOptimize/main.cpp
-index bdfb658..4532dd0 100644
+index bdfb658..e1ebba1 100644
 --- a/src/matOptimize/main.cpp
 +++ b/src/matOptimize/main.cpp
 @@ -8,6 +8,7 @@
  #include <atomic>
  #include <boost/filesystem/operations.hpp>
  #include <boost/filesystem/path.hpp>
-+#include <boost/filesystem.hpp>
++#include <boost/filesystem/exception.hpp>
  #include <boost/program_options/value_semantic.hpp>
  #include <chrono>
  #include <climits>
@@ -1817,7 +1789,13 @@ index bdfb658..4532dd0 100644
  #include <thread>
  #include <unistd.h>
  #include <sys/stat.h>
-@@ -148,7 +150,7 @@ int main(int argc, char **argv) {
+@@ -143,12 +145,12 @@ int main(int argc, char **argv) {
+     unsigned int minutes_between_save;
+     int max_round;
+     float min_improvement;
+-    bool no_write_intermediate;
++    bool no_write_intermediate = false;
+     std::string diff_file_path;
      std::string branch_support_newick_out;
  
      po::options_description desc{"Options"};
@@ -2837,6 +2815,19 @@ index 15cca3c..13458e4 100644
  
      timer.Start();
      fprintf(stderr, "Loading input MAT file %s.\n", input_mat_filename.c_str());
+diff --git a/src/matUtils/translate.hpp b/src/matUtils/translate.hpp
+index edb07af..84cd4e5 100644
+--- a/src/matUtils/translate.hpp
++++ b/src/matUtils/translate.hpp
+@@ -81,7 +81,7 @@ struct Codon {
+         nucleotides += nt[0];
+         nucleotides += nt[1];
+         nucleotides += nt[2];
+-        protein = translate_codon(nt);
++        protein = translate_codon({nt, nt + 3});
+     }
+ 
+     inline std::string get_string() const {
 diff --git a/src/matUtils/uncertainty.cpp b/src/matUtils/uncertainty.cpp
 index a574f03..0f890b5 100644
 --- a/src/matUtils/uncertainty.cpp
@@ -2903,7 +2894,7 @@ index f78c224..deb4e15 100644
          mapper_graph.wait_for_all();
      } else {
 diff --git a/src/mutation_annotated_tree.hpp b/src/mutation_annotated_tree.hpp
-index fe5f1a2..b297ba9 100644
+index fe5f1a2..2d159bd 100644
 --- a/src/mutation_annotated_tree.hpp
 +++ b/src/mutation_annotated_tree.hpp
 @@ -11,9 +11,10 @@
@@ -2911,7 +2902,7 @@ index fe5f1a2..b297ba9 100644
  #include <cassert>
  #include <tbb/flow_graph.h>
 -#include <tbb/reader_writer_lock.h>
-+#include <tbb/spin_rw_mutex.h>
++#include <tbb/rw_mutex.h>
  #include <tbb/scalable_allocator.h>
 -#include <tbb/task_scheduler_init.h>
 +#include <tbb/global_control.h>
@@ -3733,7 +3724,7 @@ index e54982a..a3a498d 100644
      MAT::Tree tmp_T;
      MAT::Tree* T = NULL;
 diff --git a/src/usher_mapper.cpp b/src/usher_mapper.cpp
-index ac48043..b060ac9 100644
+index ac48043..6145839 100644
 --- a/src/usher_mapper.cpp
 +++ b/src/usher_mapper.cpp
 @@ -1,7 +1,7 @@
@@ -3741,7 +3732,7 @@ index ac48043..b060ac9 100644
  
  tbb::mutex data_lock;
 -tbb::reader_writer_lock rd_wr_lock;
-+tbb::spin_rw_mutex rd_wr_lock;
++tbb::rw_mutex rd_wr_lock;
  
  int mapper_body::operator()(mapper_input input) {
      TIMEIT();
@@ -3754,7 +3745,7 @@ index ac48043..b060ac9 100644
 -            rd_wr_lock.unlock();
 -            return;
 +        {
-+            tbb::spin_rw_mutex::scoped_lock lock(rd_wr_lock, false); // read lock
++            tbb::rw_mutex::scoped_lock lock(rd_wr_lock, false); // read lock
 +            if (set_difference > *input.best_set_difference) {
 +                return;
 +            }
@@ -3762,7 +3753,7 @@ index ac48043..b060ac9 100644
 -        rd_wr_lock.unlock();
  
 -        rd_wr_lock.lock();
-+        tbb::spin_rw_mutex::scoped_lock lock(rd_wr_lock, true); // write lock
++        tbb::rw_mutex::scoped_lock lock(rd_wr_lock, true); // write lock
          size_t num_leaves = input.T->get_num_leaves(input.node);
          if (set_difference < *input.best_set_difference) {
              *input.best_set_difference = set_difference;
