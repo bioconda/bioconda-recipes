@@ -6,14 +6,14 @@ package:
   name: {{ name }}
   version: {{ version }}
 
+source:
+  url: https://data.orthodb.org/current/download/software/orthologer_{{ version }}.tgz
+  sha256: {{ sha256 }}
+
 build:
   number: 0
   run_exports:
     - {{ pin_subpackage('orthologer', max_pin="x") }}
-
-source:
-  url: https://data.orthodb.org/current/download/software/orthologer_{{ version }}.tgz
-  sha256: {{ sha256 }}
 
 requirements:
   build:
@@ -21,6 +21,9 @@ requirements:
     - {{ compiler('c') }}
     - cmake
     - make
+    - pkg-config
+    # python not used for installation?
+    - python >=3.4,<3.12
   host:
     - bash >=4.1
     - llvm-openmp  # [osx]
@@ -28,7 +31,6 @@ requirements:
     - rsync
     - wget
     - bash >=4.1
-    - python >=3.4,<3.12
     - spdlog
     - ete3
     - boost-cpp
@@ -64,6 +66,8 @@ about:
   doc_url: "https://orthologer.ezlab.org/#on-orthodb-data"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   container:
     # Necessary to allow Orthologer to download files from the internet when used with Singularity
     # and default bind paths (see also https://github.com/bioconda/bioconda-recipes/issues/11583).
