@@ -5,12 +5,12 @@
 {% set netcdf_fortran_version = "4.6.2" %}
 {% set pio_version = "2.6.6" %}
 {% set pio_pkg_version = pio_version.replace('.', '_') %}
-{% set esmf_version = "8.8.1" %}
+{% set esmf_version = "8.9.0" %}
 {% set omb_version = "7.5.1" %}
 {% set build = 0 %}
 
 # BUILD TRIGGER - manually change this for each MPI variant to force bioconda rebuild
-{% set build_trigger = "mvapich_ofi" %}  # Change to: openmpi, mpich, psmpi or mvapich_ucx/mvapich_ofi
+{% set build_trigger = "psmpi" %}  # Change to: openmpi, mpich, psmpi or mvapich_ucx/mvapich_ofi
 
 # Simple type-safe parsing
 {% if mpi and mpi is string %}
@@ -48,7 +48,7 @@ package:
 build:
   number: {{ build }}
   string: {{ mpi_name }}_{{ mpi_build_variant }}_h{{ PKG_HASH }}_{{ build }}
-  skip: true  # [not (linux and (x86_64 or aarch64))]
+  skip: true  # [not ((linux and (build_trigger != 'psmpi') and (x86_64 or aarch64)) or (linux and (build_trigger == 'psmpi') and (x86_64)))]
   ignore_run_exports:
     - libacl
     - libstdcxx
@@ -73,7 +73,7 @@ source:
     sha256: e32e018a521d38c9424940c7cfa7e9b1931b605f3511ee7ab3a718b69faeeb04  # 2.6.6
     folder: esme_pio
   - url: https://github.com/esmf-org/esmf/archive/refs/tags/v{{ esmf_version }}.tar.gz
-    sha256: b0acb59d4f000bfbdfddc121a24819bd2a50997c7b257b0db2ceb96f3111b173  # 8.8.1
+    sha256: 586e0101d76ff9842d9ad43567fae50317ee794d80293430d9f1847dec0eefa5  # 8.9.0
     folder: esme_esmf
   - url: https://mvapich.cse.ohio-state.edu/download/mvapich/osu-micro-benchmarks-{{ omb_version }}.tar.gz
     sha256: 160d0d5e3c3cb022520ecb247e9875bb0973b1d3cadccd6c17624f8407c52e22  # 7.5.1
@@ -353,5 +353,5 @@ extra:
     - version_constraints_missing_whitespace
     - compilers_must_be_in_build
     - folder_and_package_name_must_match
-  additional-platforms:
-    - linux-aarch64
+# additional-platforms:
+#   - linux-aarch64
