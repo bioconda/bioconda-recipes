@@ -3,8 +3,11 @@
 mkdir -pv $PREFIX/bin
 mkdir -pv $PREFIX/src
 
-cp -rvf analysis_scripts/* $PREFIX/bin/
+# executables are sh and py scripts
 find analysis_scripts/ -type f -name '*.py' -exec cp -vf {} $PREFIX/bin/ \;
+find analysis_scripts/ -type f -name '*.sh' -exec cp -vf {} $PREFIX/bin/ \;
+# ensure they can be executed
+chmod +x $PREFIX/bin/*.py $PREFIX/bin/*.sh
 
 # scripts in bmgap2 look for scripts in analysis_scripts and so make a simple symlink
 ln -sv $PREFIX/bin $PREFIX/analysis_scripts
