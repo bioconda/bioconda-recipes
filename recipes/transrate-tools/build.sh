@@ -28,6 +28,6 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
-cmake --build build --clean-first -j "${CPU_COUNT}"
+cmake --build build -j 1
 
 install -v -m 0755 build/src/bam-read "$PREFIX/bin"
