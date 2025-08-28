@@ -1,7 +1,8 @@
 #!/bin/bash
 
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-reserved-user-defined-literal"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-reserved-user-defined-literal"
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* m4/
@@ -17,8 +18,10 @@ autoreconf -if
 ./configure --prefix="${PREFIX}" \
 	--with-xerces="${PREFIX}" \
 	--enable-rendering \
-	CPPFLAGS="$CPPFLAGS" \
-	LDFLAGS="$LDFLAGS"
+	CXX="${CXX}" \
+	CXXFLAGS="${CXXFLAGS}" \
+	CPPFLAGS="${CPPFLAGS}" \
+	LDFLAGS="${LDFLAGS}"
 
 make -j"${CPU_COUNT}"
 make install
