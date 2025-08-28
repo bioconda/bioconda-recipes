@@ -22,11 +22,6 @@ else
 	export EXTRA_ARGS="--host=x86_64"
 fi
 
-aclocal
-libtoolize --automake --force --copy
-automake --add-missing
-autoreconf -if
-
 ./configure --prefix="${PREFIX}" \
 	CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" \
