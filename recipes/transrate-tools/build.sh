@@ -9,8 +9,9 @@ ln -sf $PREFIX/lib bamtools/
 ln -sf $PREFIX/include/bamtools/api bamtools/include/
 ln -sf $PREFIX/include/bamtools/shared bamtools/include/
 
-if [[ "${target_platform}"  == "linux-aarch64" ]]; then
-	sed -i "43c \\\  find_package (ZLIB REQUIRED)" CMakeLists.txt
+if [[ "$(uname -s)"  == "Linux" ]]; then
+	sed -i.bak 's|ZLIB REQUIRED STATIC|ZLIB REQUIRED|' CMakeLists.txt
+	rm -rf *.bak
 fi
 
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
