@@ -9,7 +9,7 @@ ln -sf $PREFIX/lib bamtools/
 ln -sf $PREFIX/include/bamtools/api bamtools/include/
 ln -sf $PREFIX/include/bamtools/shared bamtools/include/
 
-if [[ "$(uname -s)"  == "Linux" ]]; then
+if [[ "$(uname -s)" == "Linux" ]]; then
 	sed -i.bak 's|ZLIB REQUIRED STATIC|ZLIB REQUIRED|' CMakeLists.txt
 	rm -rf *.bak
 fi
