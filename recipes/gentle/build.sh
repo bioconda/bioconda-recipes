@@ -22,6 +22,11 @@ else
 	export EXTRA_ARGS="--host=x86_64"
 fi
 
+aclocal
+autoheader
+automake --add-missing
+autoconf
+
 ./configure --prefix="${PREFIX}" \
 	CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" \
