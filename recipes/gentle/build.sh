@@ -22,10 +22,7 @@ else
 	export EXTRA_ARGS="--host=x86_64"
 fi
 
-aclocal
-autoheader
-automake --add-missing
-autoconf
+autoreconf -i
 
 ./configure --prefix="${PREFIX}" \
 	CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" \
