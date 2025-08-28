@@ -14,12 +14,15 @@ build:
   number: 0
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
-  script: python -m pip install . --no-deps --ignore-installed -vvv
+  # 关键：关闭构建隔离，使用 host 里的 setuptools/wheel
+  script: python -m pip install . --no-deps --no-build-isolation -vvv
 
 requirements:
   host:
     - python >=3.8
     - pip
+    - setuptools >=61
+    - wheel
   run:
     - python >=3.8
     - biopython ==1.85
@@ -33,6 +36,8 @@ requirements:
 test:
   commands:
     - cdst --help
+  imports:
+    - cdst
 
 about:
   home: https://github.com/l1-mh/CDST
