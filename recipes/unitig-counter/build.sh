@@ -1,10 +1,13 @@
 #!/bin/bash
 
-install -d $PREFIX/bin
+install -d "$PREFIX/bin"
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
-if [[ `uname -s` == "Darwin" ]]; then
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
+if [[ "$(uname -s)" == "Darwin" ]]; then
     export CFLAGS="${CFLAGS} -Wno-error=int-conversion -Wno-error=incompatible-pointer-types"
     export CXXFLAGS="${CXXFLAGS} -Wno-error=int-conversion -Wno-error=incompatible-pointer-types"
 	export HDF5_DISABLE_VERSION_CHECK=1
@@ -21,7 +24,7 @@ sed -i.bak 's|Boost_USE_STATIC_LIBS   ON|Boost_USE_STATIC_LIBS   OFF|' CMakeList
 sed -i.bak 's|-Wnested-externs -Winline|-Wnested-externs -Winline -Wno-int-conversion -Wno-implicit-function-declaration|' gatb-core/gatb-core/thirdparty/hdf5/config/cmake/HDFCompilerFlags.cmake
 rm -rf *.bak
 
-if [[ `uname -s` == "Darwin" ]]; then
+if [[ "$(uname -s)" == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
 	export CONFIG_ARGS=""
@@ -37,7 +40,7 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
     -DHDF5_ENABLE_SZIP_ENCODING=OFF \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
-cmake --build build -j "${CPU_COUNT}"
+cmake --build build -j 1
 
 cd build
-install -v -m 0755 unitig-counter cdbg-ops ext/gatb-core/bin/Release/gatb-h5dump $PREFIX/bin
+install -v -m 0755 unitig-counter cdbg-ops ext/gatb-core/bin/Release/gatb-h5dump "$PREFIX/bin"
