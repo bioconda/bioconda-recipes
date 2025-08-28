@@ -5,9 +5,9 @@ mkdir -p "$PREFIX/bin"
 
 rm -rf bamtools
 mkdir -p bamtools/include
-ln -sf $BUILD_PREFIX/lib bamtools/
-ln -sf $BUILD_PREFIX/include/bamtools/api bamtools/include/
-ln -sf $BUILD_PREFIX/include/bamtools/shared bamtools/include/
+ln -sf $PREFIX/lib bamtools/
+ln -sf $PREFIX/include/bamtools/api bamtools/include/
+ln -sf $PREFIX/include/bamtools/shared bamtools/include/
 
 if [[ "${target_platform}"  == "linux-aarch64" ]]; then
 	sed -i "43c \\\  find_package (ZLIB REQUIRED)" CMakeLists.txt
