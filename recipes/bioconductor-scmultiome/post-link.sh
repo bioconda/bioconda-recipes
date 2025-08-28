@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "scmultiome-1.2.0"
+installBiocDataPackage.sh "scmultiome-1.6.0"
