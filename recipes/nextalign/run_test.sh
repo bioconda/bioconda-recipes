@@ -2,10 +2,14 @@
 
 set -euxo pipefail
 
-nextalign \
---sequences test-data/sequences.fasta \
---reference test-data/reference.fasta \
---genemap test-data/genemap.gff \
---genes E,M,N,ORF1a,ORF1b,ORF3a,ORF6,ORF7a,ORF7b,ORF8,ORF9b,S \
---output-dir output/ \
---output-basename nextalign
+# the binary needs GLIBC 2.18+ on Linux ARM64 while 2.17 is available
+if [ $(uname -m) != "aarch64" ]; then
+
+nextalign run \
+    test-data/sequences.fasta \
+    --reference test-data/reference.fasta \
+    --genemap test-data/genemap.gff \
+    --output-all output/ \
+    --output-basename nextalign
+
+fi

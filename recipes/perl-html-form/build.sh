@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     perl Build.PL
@@ -17,5 +17,3 @@ else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
 fi
-
-chmod -R u+w $PREFIX/*

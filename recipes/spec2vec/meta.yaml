@@ -1,0 +1,51 @@
+{% set name = "spec2vec" %}
+{% set version = "0.8.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/spec2vec-{{ version }}.tar.gz
+  sha256: 0a5a4c3d79dcc4e2b22ad44bc04a67aee1f7789e42f1f0143c9a7ffef54ce5b0
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('spec2vec', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+  run:
+    - python >=3.7
+    - gensim >=4.2.0
+    - matchms >=0.14.0,<=0.26.4
+    - numba >=0.51
+    - numpy
+    - fuzzytm
+    - scipy <=1.10.1
+    - tqdm
+    
+test:
+  imports:
+    - spec2vec
+
+about:
+  home: "https://github.com/iomega/spec2vec"
+  summary: "Word2Vec based similarity measure of mass spectrometry data."
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: LICENSE
+  dev_url: "https://github.com/iomega/spec2vec"
+  doc_url: "https://spec2vec.readthedocs.io/en/latest"
+
+extra:
+  recipe-maintainers:
+    - bgruening
+    - hechth
+  identifiers:
+    - doi:10.1371/journal.pcbi.1008724

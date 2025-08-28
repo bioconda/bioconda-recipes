@@ -1,0 +1,51 @@
+{% set name = "AminoExtract" %}
+{% set version = "0.3.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/AminoExtract-{{ version }}.tar.gz
+  sha256: a859268e1da5f41e70acd3fa8163ac12843bdaefd2aa12f4a141ce4f1dc5df91
+
+build:
+  entry_points:
+    - aminoextract = AminoExtract.__main__:main
+    - AminoExtract = AminoExtract.__main__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('aminoextract', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+  run:
+    - python >=3.10
+    - biopython >=1.79
+    - pandas
+    - rich ==13.*
+    - python-magic ==0.4.*
+
+test:
+  imports:
+    - AminoExtract
+  commands:
+    - aminoextract --help
+    - AminoExtract --help
+
+about:
+  home: https://pypi.org/project/AminoExtract/
+  summary: AminoExtract is an application to extract aminoacid sequences from a fasta file based on a GFF.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/RIVM-bioinformatics/AminoExtract
+
+extra:
+  recipe-maintainers:
+    - florianzwagemaker
+    - ids-bioinformatics

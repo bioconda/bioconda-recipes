@@ -1,0 +1,50 @@
+{% set version = "0.5.1" %}
+
+package:
+  name: pgr-tk
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/GeneDx/pgr-tk.git
+  git_tag: v{{ version }}
+  sha256: f7252d6ef3640f28ca8c88cb9e469fad63799e467272dcdba24fa40026635864
+
+build:
+  number: 1
+  skip: True # [osx or py != 38]
+  run_exports:
+    - {{ pin_subpackage('pgr-tk', max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - maturin
+    - make
+  host:
+    - python
+    - clangdev
+  run:
+    - python
+    - numpy
+    - minimap2
+    - graphviz
+    - samtools
+
+test:
+  commands:
+    - python -c "import pgrtk; print(pgrtk.__version__)"
+
+about:
+  home: https://github.com/GeneDx/pgr-tk
+  license: CC BY-NC-SA 4.0
+  license_family: CC
+  license_file: LICENSE
+  summary: A PanGenomic Research Took Kit. This repository is a project to provide Python and Rust libraries to facilitate pangenomics analysis.
+
+extra:
+  recipe-maintainers:
+    - cschin
+  skip-lints:
+    - uses_vcs_url

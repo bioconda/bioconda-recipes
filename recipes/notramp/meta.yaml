@@ -1,0 +1,51 @@
+{% set name = "notramp" %}
+{% set version = "1.1.9" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 9fc40c0236718b2a7b7da1a07d2471b72a0fb96d26f73222f80bcb6ebdf60118
+
+build:
+  number: 0
+  entry_points:
+    - notramp = notramp.notramp_main:run_notramp
+  script: "{{ PYTHON }} -m pip install . -vv"
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage("notramp", max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - psutil
+    - python
+    - minimap2
+
+test:
+  imports:
+    - notramp
+  commands:
+    - notramp --help
+
+about:
+  home: "https://github.com/simakro/NoTrAmp.git"
+  license: BSD-2
+  license_family: BSD
+  license_file: LICENSE
+  summary: "Super-fast Normalization and Trimming for Amplicon Sequencing Data (Long- and Short-read)"
+  description: "NoTrAmp is a Tool for super fast trimming and read-depth normalization of amplicon reads. It is designed to be used in amplicon-tiling panels\
+    \ (or similar multiplexed amplicon sequencing approaches) to cap coverage of each amplicon (if desired) and to trim amplicons to their appropriate length\
+    \ removing barcodes, adpaters and primers (if desired) in a single clipping step.\n\nNoTrAmp is suitable for use with both long (e.g. ONT/PacBio) and short\
+    \ reads (e.g Illumina). When using reads that are significantly shorter than amplicon sizes, you should adjust the minimum required alignment length\
+    \ using the --set_min_len argument.\n\nSee the projects [home](https://github.com/simakro/NoTrAmp) for usage and additional documentation."
+  doc_url: "https://github.com/simakro/NoTrAmp/blob/main/README.md"
+
+extra:
+  recipe-maintainers:
+    - simakro (simon.magin)

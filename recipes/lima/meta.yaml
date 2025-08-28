@@ -1,24 +1,28 @@
 {% set name = "lima" %}
-{% set version = "2.4.0" %}
+{% set version = "2.13.0" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/PacificBiosciences/barcoding/releases/download/v{{ version }}/lima
-  sha256: 6b007494c751bf94d6dbc7a36fbae77be0be8bc014ad5526512e189179ab3095
+  url: https://github.com/PacificBiosciences/barcoding/releases/download/v{{ version }}/lima.tar.gz
+  sha256: 89601814e220f3bc4e062113281ce282767dffa8d65b4bf085597c9db47033da
 
 build:
-  number: 1
+  number: 0
   skip: True  # [osx]
+  binary_relocation: False
+  run_exports:
+    - {{ pin_subpackage('lima', max_pin='x.x') }}
 
 test:
   commands:
     - lima -h
+    - lima-undo -h
 
 about:
-  home: https://github.com/PacificBiosciences/pbbioconda
+  home: https://lima.how
   license: BSD-3-Clause-Clear
   summary: lima - The PacBio Barcode Demultiplexer
 
@@ -26,7 +30,6 @@ extra:
   recipe-maintainers:
     - armintoepfer
     - pb-dseifert
-    - mhsieh
   skip-lints:
     #repackaged binary
     - should_be_noarch_generic

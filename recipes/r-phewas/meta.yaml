@@ -1,18 +1,20 @@
-{% set version = '0.12.1' %}
+{% set version = '0.99.6' %}
 {% set name = 'PHeWAS' %}
-{% set hash = '7063af0c3759e37e44f4ee2b92e22e579d9c58e15f0a529de593540489878544' %}
+{% set sha256 = 'd462db49cd32dcbacc8e1f0e4611f1e1de21a7e9e227f0d53a63de16272533c7' %}
 
 package:
   name: 'r-{{ name|lower }}'
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
-  url: 'https://github.com/{{ name }}/{{ name }}/archive/v0.12.tar.gz'
-  sha256: '{{ hash }}'
+  url: https://github.com/{{ name }}/{{ name }}/archive/v{{ version }}-1.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 3
-  skip: true  # [win32]
+  number: 2
+  skip: True  # [win32]
+  run_exports:
+    - {{ pin_subpackage("r-phewas", max_pin="x.x") }}
 
   rpaths:
     - lib/R/lib/
@@ -23,9 +25,8 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('fortran') }}
     - make
-
   host:
-    - r-base
+    - r-base >=3.6.3
     - r-dplyr
     - r-tidyr
     - r-ggplot2 >=2.2.0
@@ -36,9 +37,8 @@ requirements:
     - r-lmtest
     - r-logistf
     - r-survival
-
   run:
-    - r-base
+    - r-base >=3.6.3
     - r-dplyr
     - r-tidyr
     - r-ggplot2 >=2.2.0
@@ -55,12 +55,12 @@ test:
     - $R -e "library('PheWAS')"
 
 about:
-  home: 'https://github.com/PheWAS/PheWAS'
-  license: 'GPL-3'
-  license_family: 'GPL'
+  home: "https://github.com/PheWAS/PheWAS"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
-  summary: 'Phenome Wide Association Studies (PheWAS) - Functions to perform Phenome Wide Association Studies (PheWAS).
-      These functions include the conversion of ICD9 codes to PheWAS codes (v1.2), statistical analysis, and plotting.'
+  summary: "Phenome Wide Association Studies (PheWAS) - Functions to perform Phenome Wide Association Studies (PheWAS). These functions include the conversion of ICD9 codes to PheWAS codes (v1.2), statistical analysis, and plotting."
+  dev_url: "https://github.com/PheWAS/PheWAS"
 
 extra:
   identifiers:
@@ -73,3 +73,6 @@ extra:
     - bgruening
     - daler
     - jdblischak
+  additional-platforms:
+    - linux-aarch64      
+    - osx-arm64

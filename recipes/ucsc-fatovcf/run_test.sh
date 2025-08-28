@@ -1,2 +1,2 @@
 #!/bin/bash
-faToVcf 2> /dev/null || [[ "$?" == 255 ]]
+faToVcf 2> /dev/null || [[ "$?" == 1 ]]

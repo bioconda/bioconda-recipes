@@ -1,0 +1,50 @@
+{% set name = "prymer" %}
+{% set version = "3.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/fulcrumgenomics/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 855d366e7a94a7197afd512985daeb036ae907ea364cf3cd15eb0b3d24b56ac6
+
+build:
+  noarch: python
+  number: 1
+  script: {{ PYTHON }} -m pip install . -vvv --no-build-isolation --no-deps
+  run_exports:
+    - {{ pin_subpackage('prymer', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.11
+    - poetry
+  run:
+    - bwa-aln-interactive >=0.7.18
+    - python >=3.11
+    - pysam >=0.22.0
+    - primer3 >=2.6.1
+
+test:
+  imports:
+    - prymer
+
+about:
+  home: https://pypi.org/project/prymer/
+  summary: Python Primer Design Library
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/fulcrumgenomics/prymer
+  doc_url: https://prymer.readthedocs.io/en/latest/
+
+extra:
+  recipe-maintainers:
+    - emmcauley
+    - geoffjentry
+    - nh13
+    - tfenne
+  identifier:
+    - DOI:10.5281/zenodo.15029066
