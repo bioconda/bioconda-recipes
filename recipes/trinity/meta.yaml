@@ -11,9 +11,11 @@ source:
   sha256: {{ sha256 }}
   patches:
     - makefile.patch
+    - cflags-remove-m64.patch
+    - 0003-installer.patch
 
 build:
-  number: 0
+  number: 5
   run_exports:
     - {{ pin_subpackage('trinity', max_pin="x") }}
 
@@ -28,7 +30,10 @@ requirements:
     - zlib
     - htslib
     - perl
+    - rsync
   run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - openjdk >=17
     - perl
     - perl-db_file
@@ -40,6 +45,7 @@ requirements:
     - samtools >=1.14
     - salmon
     - kallisto
+    - coreutils
     - r-base
     - r-cluster
     - r-gplots
@@ -49,12 +55,12 @@ requirements:
     - r-phangorn
     - r-gplots
     - r-tidyverse
-    - r-sm
-    - r-vioplot
+    - r-sm  # [not arm64]
+    - r-vioplot  # [not arm64]
     - bioconductor-qvalue
-    - bioconductor-ctc
+    - bioconductor-ctc  # [not arm64]
     - bioconductor-edger
-    - bioconductor-goseq
+    - bioconductor-goseq  # [not arm64]
     - bioconductor-go.db
     - bioconductor-dexseq
 
@@ -80,6 +86,9 @@ about:
   dev_url: "https://github.com/trinityrnaseq/trinityrnaseq"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:trinity
     - usegalaxy-eu:trinity

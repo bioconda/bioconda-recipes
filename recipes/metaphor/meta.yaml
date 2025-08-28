@@ -1,5 +1,5 @@
 {% set name = "metaphor" %}
-{% set version = "1.7.13" %}
+{% set version = "1.7.14" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,20 +7,22 @@ package:
 
 source:
   url: https://github.com/vinisalazar/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 88f959b4eb30cb7794d361015b386220cc5a0e1c0e09d710a575890febed57d9
+  sha256: 86025b04ffa49d0f6430c02bba06533ce30e4ea5e45daeac3564d4be3a98bb84
 
 build:
   number: 0
   noarch: python
+  entry_points:
+    - metaphor = metaphor.cli.cli:main
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
   script:
-    - "{{ PYTHON }} -m pip install . -vv"
+    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
 
 requirements:
   host:
     - pip
-    - python >=3.9
+    - python >=3.9,<3.12
   run:
     - jinja2
     - networkx
@@ -28,7 +30,7 @@ requirements:
     - python >=3.9,<3.12
     - pyyaml
     - requests
-    - snakemake >=7.5
+    - snakemake-minimal >=7.5,<8.0
     - snakemake-wrapper-utils
     - tqdm
     - zstandard

@@ -1,0 +1,56 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e494ea2..84cb5d7 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -50,8 +50,8 @@ ExternalProject_Add(utils
+     GIT_TAG 5f4aeabb42229440a99a5286f8052d3e5dc665cb
+     DOWNLOAD_DIR ${LIB_DIR}
+     SOURCE_DIR ${LIB_DIR}/utils
+-    CONFIGURE_COMMAND ""
+-    BUILD_COMMAND make libutils.a
++    CONFIGURE_COMMAND patch -p1 < $(RECIPE_DIR)/0002-utils-Makefile.patch
++    BUILD_COMMAND make CC=$ENV{CC} CFLAGS=$ENV{CFLAGS} libutils.a
+     INSTALL_COMMAND ""
+     BUILD_IN_SOURCE 1
+     )
+@@ -62,8 +62,8 @@ ExternalProject_Add(sgsl
+     GIT_TAG 6533277fd490b68b0c664efc168a1f05de54b010
+     DOWNLOAD_DIR ${LIB_DIR}
+     SOURCE_DIR ${LIB_DIR}/sgsl
+-    CONFIGURE_COMMAND ""
+-    BUILD_COMMAND make libgsl.a
++    CONFIGURE_COMMAND patch -p1 < $(RECIPE_DIR)/0003-sgsl-Makefile.patch
++    BUILD_COMMAND make CC=$ENV{CC} CFLAGS=$ENV{CFLAGS} libgsl.a
+     INSTALL_COMMAND ""
+     BUILD_IN_SOURCE 1
+     )
+@@ -94,11 +94,11 @@ if(APPLE)
+             mkdir -p ${htslib_base} &&
+             tar -jxf ${htslib_base}.tar.bz2 --strip-components=1 -C ${htslib_base} &&
+             rm -rf htslib &&
+-            mv -f ${htslib_base} htslib
++            mv -f ${htslib_base} htslib && patch -p1 < $(RECIPE_DIR)/arm_hwcap.patch
+         SOURCE_DIR ${LIB_DIR}/htslib
+         INSTALL_DIR ${LIB_DIR}/install
+-        CONFIGURE_COMMAND ${LIB_DIR}/htslib/configure --prefix=<INSTALL_DIR> --disable-bz2 --disable-lzma --disable-libcurl ${LIBDEFLATE_FLAG}
+-        BUILD_COMMAND make lib-static
++        CONFIGURE_COMMAND ${LIB_DIR}/htslib/configure --prefix=<INSTALL_DIR> CC=$ENV{CC} --disable-bz2 --disable-lzma --disable-libcurl ${LIBDEFLATE_FLAG}
++        BUILD_COMMAND make lib-static CFLAGS=$ENV{CFLAGS}
+         INSTALL_COMMAND ""
+         BUILD_IN_SOURCE 1
+         )
+@@ -110,11 +110,11 @@ else()
+             mkdir -p ${htslib_base} &&
+             tar -jxf ${htslib_base}.tar.bz2 --strip-components=1 -C ${htslib_base} &&
+             rm -rf htslib &&
+-            mv -f ${htslib_base} htslib
++            mv -f ${htslib_base} htslib && patch -p1 < $(RECIPE_DIR)/arm_hwcap.patch
+         SOURCE_DIR ${LIB_DIR}/htslib
+         INSTALL_DIR ${LIB_DIR}/install
+-        CONFIGURE_COMMAND ${LIB_DIR}/htslib/configure --prefix=<INSTALL_DIR> --disable-bz2 --disable-lzma --disable-libcurl ${LIBDEFLATE_FLAG}
+-        BUILD_COMMAND make lib-static
++        CONFIGURE_COMMAND ${LIB_DIR}/htslib/configure --prefix=<INSTALL_DIR> CC=$ENV{CC} --disable-bz2 --disable-lzma --disable-libcurl ${LIBDEFLATE_FLAG}
++        BUILD_COMMAND make lib-static CFLAGS=$ENV{CFLAGS}
+         INSTALL_COMMAND ""
+         BUILD_IN_SOURCE 1
+         )
