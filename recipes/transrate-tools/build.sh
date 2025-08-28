@@ -5,7 +5,7 @@ mkdir -p "$PREFIX/bin"
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
 rm -rf bamtools
 mkdir -p bamtools/include
@@ -23,7 +23,6 @@ else
 fi
 
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-	-DCMAKE_STATIC_LIBRARY_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
