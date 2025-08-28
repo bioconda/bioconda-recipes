@@ -1,0 +1,56 @@
+{% set name = "symclatron" %}
+{% set version = "0.5.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/symclatron-{{ version }}.tar.gz
+  sha256: 2bb1ec456209148edb80a7704ae0d73fd633c7ace21f6fe53894d8783e94952b
+
+build:
+  entry_points:
+    - symclatron = symclatron.symclatron:app
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('symclatron', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - flit-core >=3.2,<4
+    - pip
+  run:
+    - python >=3.12
+    - typer >=0.12.3
+    - pandas >=2.2.2
+    - numpy >=1.26.4
+    - xgboost >=2.1.1
+    - shap >=0.45.1
+    - scikit-learn >=1.5.1
+    - tensorflow >=2.18.0
+    - joblib >=1.4.2
+    - pyhmmer >=0.11.1
+    - psutil >=5.9.0
+
+test:
+  imports:
+    - symclatron
+  commands:
+    - pip check
+    - symclatron --help
+  requires:
+    - pip
+
+about:
+  summary: 'symclatron: symbiont classifier'
+  home: https://pypi.org/project/symclatron/
+  license: BSD-3-Clause
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - Juan C. Villada <jvillada@lbl.gov>
