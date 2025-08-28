@@ -1,0 +1,45 @@
+{% set name = "ctyper" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ChaissonLab/Ctyper/archive/refs/tags/v{{version}}.tar.gz 
+  sha256: f1651a80f437cb7f9e0f3b8a5b384eb24bd240cb001599d2a025b7b088930e1a
+
+build:
+  number: 0
+  skip: True [osx]
+  run_exports:
+    - {{ pin_subpackage('ctyper', max_pin='x') }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - htslib
+    - boost-cpp
+    - eigen
+  run:
+    - htslib
+    - eigen
+    
+test:
+  commands:
+    - ctyper | grep 'Usage'
+
+about:
+  home: https://github.com/ChaissonLab/Ctyper
+  license: "USC-RL v1.0"
+  license_file: License.txt
+  summary: 'Genotyping sequence-resolved copy-number variation using pangenomes.'
+  dev_url: https://github.com/ChaissonLab/Ctyper
+
+extra:
+  additional-platforms:
+    - linux-aarch64
