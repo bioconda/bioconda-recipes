@@ -1,5 +1,5 @@
 {% set name = "SeqAn3" %}
-{% set version = "3.3.0" %}
+{% set version = "3.4.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,13 +7,10 @@ package:
 
 source:
   url: https://github.com/seqan/{{ name|lower }}/releases/download/{{ version }}/seqan3-{{ version }}-Source.tar.xz
-  sha256: da2fb621268ebc52b9cc26087e96f4a94109db1f4f28d363d19c7c9cdbd788b1
-  patches:
-    - fix_glibcxx_debug.patch # Fix will be included in 3.4.0
+  sha256: 98d43fd1472d755b5d3b86ae2a7e4efddfdec70d7b7687efed195b7339c6ad17
 
 build:
-  noarch: generic
-  number: 1
+  number: 0
   run_exports:
     - {{ pin_subpackage('seqan3', max_pin="x") }}
 
@@ -21,7 +18,10 @@ requirements:
   build:
     - make
     - cmake >=3.14
-  run:
+    - {{ compiler('cxx') }}
+    - pkg-config
+  host:
+    - cereal
     - bzip2
     - zlib
 
@@ -31,15 +31,17 @@ test:
     - test -f $PREFIX/include/seqan3/version.hpp
 
 about:
-  home: https://www.seqan.de
-  dev_url: https://github.com/seqan/seqan3
-  license: BSD-3-Clause
+  home: "https://www.seqan.de"
+  dev_url: "https://github.com/seqan/seqan3"
+  license: "BSD-3-Clause"
   license_family: BSD
-  license_file: LICENSE.md
-  doc_url: https://docs.seqan.de/seqan/3-master-user/
-  doc_source_url: https://github.com/seqan/seqan3/blob/master/README.md
-  summary: 'SeqAn3 is the new version of the popular SeqAn template library for the analysis of biological sequences.'
+  license_file: "LICENSE.md"
+  doc_url: "https://github.com/seqan/seqan3/blob/{{ version }}/README.md"
+  summary: "SeqAn3 is the new version of the popular SeqAn template library for the analysis of biological sequences."
 
 extra:
-  maintainers:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
     - eseiler
