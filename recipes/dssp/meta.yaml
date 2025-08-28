@@ -1,0 +1,45 @@
+{% set version = "4.5.5" %}
+
+package:
+  name: dssp
+  version: {{ version }}
+
+# A dssp package already exists in conda-forge. This recipe is for a rewrite
+# of dssp, and bioconda is the preferred channel for bioinformatics software.
+source:
+  url: https://github.com/PDB-REDO/dssp/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 68bda916ade0bcb439929069b306788b389c4edfbe8b933dd32218d4124b5104
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('dssp', max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake >=3.28
+    - make
+  host:
+    - zlib
+  run:
+    - zlib
+
+test:
+  commands:
+    - mkdssp --version
+
+about:
+  home: https://pdb-redo.eu/dssp
+  license: Boost Software License 1.0
+  license_family: OTHER
+  license_file: LICENSE
+  summary: 'Application to assign secondary structure to proteins.'
+  description: |
+    DSSP is a database of secondary structure assignments (and much more) for all
+    protein entries in the Protein Data Bank (PDB). This is a rewrite of DSSP,
+    now offering full mmCIF support.
+
+extra:
+  recipe-maintainers:
+    - zephyris
