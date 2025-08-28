@@ -1,8 +1,8 @@
 {% set name = "itsxpress" %}
-{% set version = "2.0.1" %}
+{% set version = "2.1.4" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "b5797107ee3f21cbaba0b9625aa931741babdee3eeb5a3218a8b8bc9783e2e72" %}
+{% set hash_value = "c4a289e9eff17f9e728156af4c5964305d4fc56c6ebac2d428d06993d57e9d35" %}
 
 package:
   name: '{{ name|lower }}'
@@ -15,23 +15,27 @@ source:
 build:
   noarch: python
   number: 0
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   entry_points:
     - itsxpress=itsxpress.main:main
-  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
   run_exports:
     - {{ pin_subpackage('itsxpress', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.8
+    - python >=3.7
+    - setuptools
+    - setuptools-scm >=8
   run:
-    - pip
-    - python >=3.8
+    - python >=3.7
     - biopython >=1.79
-    - hmmer =3.1b2
-    - vsearch =2.22.1
+    - hmmer >=3.1b2
+    - vsearch
     - pyzstd
+    - pandas
 
 test:
   imports:
@@ -43,8 +47,8 @@ about:
   home: http://github.com/usda-ars-gbru/itsxpress
   license: CC0-1.0
   license_family: 'PUBLIC-DOMAIN'
-  summary: 'ITSxpress: Software to rapidly trim the Internally Transcribed Spacer (ITS) region from FASTQ files'
-
+  summary: 'ITSxpress: Software to rapidly trim the Internally Transcribed Spacer (ITS) region from FASTQ files.'
+  dev_url: http://github.com/usda-ars-gbru/itsxpress
 
 extra:
   recipe-maintainers:

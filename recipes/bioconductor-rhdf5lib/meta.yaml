@@ -1,31 +1,32 @@
-{% set version = "1.22.0" %}
+{% set version = "1.28.0" %}
 {% set name = "Rhdf5lib" %}
-{% set full_name = "bioconductor-" ~ name|lower %}
-{% set bioc = "3.17" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: '{{ full_name }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ full_name }}/{{ full_name }}_{{ version }}_src_all.tar.gz'
-  md5: 27c19bd24858ba26ff4762d41f3b2a16
+about:
+  description: Provides C and C++ hdf5 libraries.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: hdf5 library as an R package
+
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  run_exports:
-    # This pinning is preliminary. It should be changed if either:
-    # * a general policy for pinning bioconductor packages is decided and differs:
-    #   https://github.com/bioconda/bioconda-recipes/issues/43905
-    # * the author of this package assures us that he adheres to semantic
-    #   versioning, in which case we can unpin the minor version, see:
-    #   https://github.com/grimbough/rhdf5/issues/131#issuecomment-1782567153
-    - {{ pin_subpackage(full_name, max_pin="x.x") }}
+  run_exports: '{{ pin_subpackage("bioconductor-rhdf5lib", max_pin="x.x") }}'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  parent_recipe:
+    name: bioconductor-rhdf5lib
+    path: recipes/bioconductor-rhdf5lib
+    version: 1.2.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, knitr, rmarkdown, tinytest, mockery
 # SystemRequirements: GNU make
 requirements:
@@ -37,20 +38,19 @@ requirements:
     - r-base
     - libblas
     - liblapack
-    - libcurl
+    - zlib
   run:
     - r-base
+
+source:
+  md5: 2038bed88d3c7b81f8cc9caaf0b0a068
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'hdf5 library as an R package'
-  description: 'Provides C and C++ hdf5 libraries.'
-extra:
-  parent_recipe:
-    name: '{{ full_name }}'
-    path: 'recipes/{{ full_name }}'
-    version: 1.2.1
+    - $R -e "library('{{ name }}')"
 

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "micrornaome-1.22.0"
+installBiocDataPackage.sh "micrornaome-1.28.0"

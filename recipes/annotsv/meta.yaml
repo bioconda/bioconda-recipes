@@ -1,10 +1,14 @@
 {% set name = "annotsv" %}
-{% set version = "3.3.7" %}
-{% set sha256 = "abf2a0a1604275d8ded66aba7a7084659430d43242eb28fa2a59467487efe7bf" %}
+{% set version = "3.5.1" %}
+{% set sha256 = "484517249f078c598ed3b48b5a1baf22466daed63eb4f92113111b666e10de79" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
+
+source:
+  url: https://github.com/lgmgeo/AnnotSV/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
@@ -12,21 +16,17 @@ build:
   run_exports:
     - {{ pin_subpackage('annotsv', max_pin="x") }}
 
-source:
-  url: https://github.com/lgmgeo/AnnotSV/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
-
 requirements:
   build:
     - make
   host:
     - python >=3.8
   run:
+    - python >=3.8
     - tk >=8.5
     - bedtools >=2.25
     - bcftools >=1.10
     - openjdk >=8
-    - python >=3.8
     - coreutils
     - curl
     - unzip
@@ -34,17 +34,23 @@ requirements:
     - natsort >=7.1.1
     - pandas >=1.5.2
     - tqdm >=4.64.1
+    - polars >=0.16.5
+    - appdirs
+    - git
+    - make
+    - bash
 
 # Tests AnnotSV, the annotations install script and variantconvert (needed for VCF outputs)
 test:
   commands:
     - AnnotSV -help
     - bash -n INSTALL_annotations.sh
-    - variantconvert -h
 
 about:
-  home: https://github.com/lgmgeo/AnnotSV
-  license: GPL-3.0-only
+  home: "https://github.com/lgmgeo/AnnotSV"
+  summary: "Annotation and Ranking of Structural Variation."
+  dev_url: "https://github.com/lgmgeo/AnnotSV"
+  doc_url: "https://github.com/lgmgeo/AnnotSV/blob/master/README.AnnotSV_{{ version }}.pdf"
+  license: "GPL-3.0-only"
   license_family: GPL3
-  license_file: License.txt
-  summary: Annotation and Ranking of Structural Variation
+  license_file: "License.txt"

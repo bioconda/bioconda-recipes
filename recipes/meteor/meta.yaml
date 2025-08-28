@@ -1,0 +1,52 @@
+{% set name = "meteor" %}
+{% set version = "2.0.18" %}
+{% set sha256 = "1b6ee1753de16b6a0a008a3af2bf31ba963cf176640fc499bcf91d4b6905a96c" %}
+
+package:
+    name: {{ name }}
+    version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/meteor-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - meteor = meteor.meteor:main
+  run_exports:
+    - {{ pin_subpackage('meteor', max_pin="x") }}
+
+requirements:
+    host:
+        - python >=3.10,<3.13
+        - pip
+        - poetry-core
+    run:
+        - python >=3.10,<3.13
+        - bowtie2 >=2.3.5
+        - pysam
+        - pyarrow
+        - pandas
+        - ete3
+        - packaging
+        - cogent3
+        - py-bgzip
+        - biom-format
+        - freebayes >=1.3.6
+
+test:
+    commands:
+        - "meteor -h"
+
+about:
+  home: https://github.com/metagenopolis/meteor
+  license: GPL-3.0-or-later
+  license_file: COPYING
+  summary: 'Meteor is a plateform for quantitative metagenomics profiling of complex ecosystems.'
+  description: |
+    Meteor relies on genes catalogue to perform specie level taxonomic assignments, functional and strain diffusion analysis.
+  license_family: GPL3
+  dev_url: https://github.com/metagenopolis/meteor
