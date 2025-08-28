@@ -1,61 +1,22 @@
-{% set version = "1.36.0" %}
+{% set version = "1.44.0" %}
 {% set name = "maPredictDSC" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: bb396b8e675728dcee062276413210fc
+about:
+  description: This package implements the classification pipeline of the best overall team (Team221) in the IMPROVER Diagnostic Signature Challenge. Additional functionality is added to compare 27 combinations of data preprocessing, feature selection and classifier types.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: 'Phenotype prediction using microarray data: approach of the best overall team in the IMPROVER Diagnostic Signature Challenge'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: parallel
-requirements:
-  host:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-gcrma >=2.70.0,<2.71.0'
-    - 'bioconductor-hgu133plus2.db >=3.13.0,<3.14.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-lungcanceracvssccgeo >=1.34.0,<1.35.0'
-    - 'bioconductor-roc >=1.74.0,<1.75.0'
-    - r-base
-    - r-caret
-    - r-class
-    - r-e1071
-    - r-mass
-    - r-rocr
-  run:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-gcrma >=2.70.0,<2.71.0'
-    - 'bioconductor-hgu133plus2.db >=3.13.0,<3.14.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-lungcanceracvssccgeo >=1.34.0,<1.35.0'
-    - 'bioconductor-roc >=1.74.0,<1.75.0'
-    - r-base
-    - r-caret
-    - r-class
-    - r-e1071
-    - r-mass
-    - r-rocr
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Phenotype prediction using microarray data: approach of the best overall team in the IMPROVER Diagnostic Signature Challenge'
-  description: 'This package implements the classification pipeline of the best overall team (Team221) in the IMPROVER Diagnostic Signature Challenge. Additional functionality is added to compare 27 combinations of data preprocessing, feature selection and classifier types.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-mapredictdsc", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:mapredictdsc
@@ -64,4 +25,51 @@ extra:
     name: bioconductor-mapredictdsc
     path: recipes/bioconductor-mapredictdsc
     version: 1.18.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: parallel
+requirements:
+  host:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-gcrma >=2.78.0,<2.79.0
+    - bioconductor-hgu133plus2.db >=3.13.0,<3.14.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-lungcanceracvssccgeo >=1.42.0,<1.43.0
+    - bioconductor-roc >=1.82.0,<1.83.0
+    - r-base
+    - r-caret
+    - r-class
+    - r-e1071
+    - r-mass
+    - r-rocr
+  run:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-gcrma >=2.78.0,<2.79.0
+    - bioconductor-hgu133plus2.db >=3.13.0,<3.14.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-lungcanceracvssccgeo >=1.42.0,<1.43.0
+    - bioconductor-roc >=1.82.0,<1.83.0
+    - r-base
+    - r-caret
+    - r-class
+    - r-e1071
+    - r-mass
+    - r-rocr
+
+source:
+  md5: 82667d2efe4e487d74f046e066000822
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

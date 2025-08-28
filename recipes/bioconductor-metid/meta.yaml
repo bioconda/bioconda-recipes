@@ -1,44 +1,51 @@
-{% set version = "1.16.0" %}
+{% set version = "1.24.0" %}
 {% set name = "MetID" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 58a99e831a5559c9c157f2f3db33421b
+about:
+  description: This package uses an innovative network-based approach that will enhance our ability to determine the identities of significant ions detected by LC-MS.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Network-based prioritization of putative metabolite IDs
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-metid", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr (>= 1.19), rmarkdown (>= 1.8)
 requirements:
   host:
-    - 'bioconductor-chemminer >=3.50.0,<3.51.0'
+    - bioconductor-chemminer >=3.58.0,<3.59.0
     - r-base
-    - 'r-devtools >=1.13.0'
-    - 'r-igraph >=1.2.1'
-    - 'r-matrix >=1.2-12'
-    - 'r-stringr >=1.3.0'
+    - r-devtools >=1.13.0
+    - r-igraph >=1.2.1
+    - r-matrix >=1.2-12
+    - r-stringr >=1.3.0
   run:
-    - 'bioconductor-chemminer >=3.50.0,<3.51.0'
+    - bioconductor-chemminer >=3.58.0,<3.59.0
     - r-base
-    - 'r-devtools >=1.13.0'
-    - 'r-igraph >=1.2.1'
-    - 'r-matrix >=1.2-12'
-    - 'r-stringr >=1.3.0'
+    - r-devtools >=1.13.0
+    - r-igraph >=1.2.1
+    - r-matrix >=1.2-12
+    - r-stringr >=1.3.0
+
+source:
+  md5: 8778c3a8e0f7f73850b9fbc0daf71776
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Network-based prioritization of putative metabolite IDs'
-  description: 'This package uses an innovative network-based approach that will enhance our ability to determine the identities of significant ions detected by LC-MS.'
+    - $R -e "library('{{ name }}')"
 

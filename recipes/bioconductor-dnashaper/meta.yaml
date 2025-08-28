@@ -1,50 +1,21 @@
-{% set version = "1.26.0" %}
+{% set version = "1.34.0" %}
 {% set name = "DNAshapeR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 44687dd0152a4bfeb6d072ede8a9a217
+about:
+  description: DNAhapeR is an R/BioConductor package for ultra-fast, high-throughput predictions of DNA shape features. The package allows to predict, visualize and encode DNA shape features for statistical learning.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: High-throughput prediction of DNA shape features
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: AnnotationHub, knitr, rmarkdown, testthat, BSgenome.Scerevisiae.UCSC.sacCer3, BSgenome.Hsapiens.UCSC.hg19, caret
-requirements:
-  host:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - r-base
-    - r-fields
-    - 'r-rcpp >=0.12.1'
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - r-base
-    - r-fields
-    - 'r-rcpp >=0.12.1'
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'High-throughput prediction of DNA shape features'
-  description: 'DNAhapeR is an R/BioConductor package for ultra-fast, high-throughput predictions of DNA shape features. The package allows to predict, visualize and encode DNA shape features for statistical learning.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-dnashaper", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:dnashaper
@@ -52,4 +23,41 @@ extra:
     name: bioconductor-dnashaper
     path: recipes/bioconductor-dnashaper
     version: 1.8.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: AnnotationHub, knitr, rmarkdown, testthat, BSgenome.Scerevisiae.UCSC.sacCer3, BSgenome.Hsapiens.UCSC.hg19, caret
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - r-base
+    - r-fields
+    - r-rcpp >=0.12.1
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - r-base
+    - r-fields
+    - r-rcpp >=0.12.1
+
+source:
+  md5: f6735dc4a979507e5af6b7385bab61da
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

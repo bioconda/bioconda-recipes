@@ -1,32 +1,37 @@
-{% set version = "1.6.0" %}
+{% set version = "1.13.0" %}
 {% set name = "dce" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 2d5262b4d89619cb9749b4a994c6b3aa
+about:
+  description: Compute differential causal effects (dce) on (biological) networks. Given observational samples from a control experiment and non-control (e.g., cancer) for two genes A and B, we can compute differential causal effects with a (generalized) linear regression. If the causal effect of gene A on gene B in the control samples is different from the causal effect in the non-control samples the dce will differ from zero. We regularize the dce computation by the inclusion of prior network information from pathway databases such as KEGG.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Pathway Enrichment Based on Differential Causal Effects
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-dce", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, testthat (>= 2.1.0), BiocStyle, formatR, cowplot, ggplotify, dagitty, lmtest, sandwich, devtools, curatedTCGAData, TCGAutils, SummarizedExperiment, RcppParallel, docopt, CARNIVAL
 requirements:
+
   host:
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-epinem >=1.22.0,<1.23.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-graphite >=1.44.0,<1.45.0'
-    - 'bioconductor-mnem >=1.14.0,<1.15.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-rgraphviz >=2.42.0,<2.43.0'
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-epinem >=1.30.0,<1.31.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-graphite >=1.52.0,<1.53.0
+    - bioconductor-mnem >=1.22.0,<1.23.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
     - r-assertthat
     - r-base
     - r-dplyr
@@ -51,14 +56,15 @@ requirements:
     - r-shadowtext
     - r-tidygraph
     - r-tidyverse
+
   run:
-    - 'bioconductor-edger >=3.40.0,<3.41.0'
-    - 'bioconductor-epinem >=1.22.0,<1.23.0'
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - 'bioconductor-graphite >=1.44.0,<1.45.0'
-    - 'bioconductor-mnem >=1.14.0,<1.15.0'
-    - 'bioconductor-org.hs.eg.db >=3.16.0,<3.17.0'
-    - 'bioconductor-rgraphviz >=2.42.0,<2.43.0'
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-epinem >=1.30.0,<1.31.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-graphite >=1.52.0,<1.53.0
+    - bioconductor-mnem >=1.22.0,<1.23.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
     - r-assertthat
     - r-base
     - r-dplyr
@@ -83,13 +89,16 @@ requirements:
     - r-shadowtext
     - r-tidygraph
     - r-tidyverse
+
+source:
+  md5: 9079525e96b53b9b2d11fe7eed33f328
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Pathway Enrichment Based on Differential Causal Effects'
-  description: 'Compute differential causal effects (dce) on (biological) networks. Given observational samples from a control experiment and non-control (e.g., cancer) for two genes A and B, we can compute differential causal effects with a (generalized) linear regression. If the causal effect of gene A on gene B in the control samples is different from the causal effect in the non-control samples the dce will differ from zero. We regularize the dce computation by the inclusion of prior network information from pathway databases such as KEGG.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

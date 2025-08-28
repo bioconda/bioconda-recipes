@@ -1,37 +1,60 @@
-{% set version = "2.4.0" %}
+{% set version = "2.12.0" %}
 {% set name = "Summix" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: bc5f7036a26622c777fdd02b400c2996
+about:
+  description: This package contains the Summix2 method for estimating and adjusting for substructure in genetic summary allele frequency data. The function summix() estimates reference group proportions using a mixture model. The adjAF() function produces adjusted allele frequencies for an observed group with reference group proportions matching a target individual or sample. The summix_local() function estimates local ancestry mixture proportions and performs selection scans in genetic summary data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: 'Summix2: A suite of methods to estimate, adjust, and leverage substructure in genetic summary data'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: rmarkdown, markdown, knitr
+  run_exports: '{{ pin_subpackage("bioconductor-summix", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: rmarkdown, markdown, knitr, testthat (>= 3.0.0)
 requirements:
   host:
     - r-base
+    - r-bedassle
+    - r-dplyr
+    - r-magrittr
     - r-nloptr
+    - r-randomcolor
+    - r-scales
+    - r-tibble
+    - r-tidyselect
+    - r-visnetwork
   run:
     - r-base
+    - r-bedassle
+    - r-dplyr
+    - r-magrittr
     - r-nloptr
+    - r-randomcolor
+    - r-scales
+    - r-tibble
+    - r-tidyselect
+    - r-visnetwork
+
+source:
+  md5: 7fe653455de7f81c916b60eab39de2d2
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Summix: A method to estimate and adjust for population structure in genetic summary data'
-  description: 'This package contains the Summix method for estimating and adjusting for ancestry in genetic summary allele frequency data. The function summix estimates reference ancestry proportions using a mixture model. The adjAF function produces ancestry adjusted allele frequencies for an observed sample with ancestry proportions matching a target person or sample.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

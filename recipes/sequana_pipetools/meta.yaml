@@ -1,54 +1,56 @@
-{% set version = "0.9.4" %}
 {% set name = "sequana_pipetools" %}
-{% set sha = "d2eea9079e58c6154363613f421360efc336b0e41263c099d4f0db65399f71a1" %}
+{% set version = "1.2.2" %}
+{% set sha256 = "bcc6d054a1f4f9573d93d473676941d46de62db3c19631b808683476e8d84d17" %}
 
 package:
-  name: {{ name }}
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/s/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: {{ sha }}
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/sequana_pipetools-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  noarch: python
   number: 0
-  entry_points:
-    - sequana_completion=sequana_pipetools.completion:main
-    - sequana_slurm_status=sequana_pipetools.slurm:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  run_exports:
+    - {{ pin_subpackage('sequana_pipetools', max_pin="x.x") }}
 
 requirements:
   host:
-    - python
-    - setuptools
+    - python >=3.8
     - pip
+    - poetry-core >=1.0.0
   run:
-    - python
-    - deprecated
-    - easydev
-    - parse
-    - ruamel.yaml
-    - pykwalify
-    - importlib_resources
-    - pyyaml
-    - aiohttp
-    - tqdm
+    - python >=3.8
+    - deprecated >=1.2.13
+    - easydev >=0.12.1
+    - parse >=1.19.0
+    - ruamel.yaml >=0.17.32
+    - packaging >=23.1
+    - pykwalify >=1.8
+    - importlib_resources >=5.4.0
+    - pyyaml >=1.3
+    - aiohttp >=3.8.4
+    - tqdm >=4.65
+    - charset-normalizer >=2.0.0,<3.0.0
+    - versionix >=0.2.0
+    - requests
 
 test:
   imports:
     - sequana_pipetools
   commands:
-    - sequana_completion --help 1>out 2>err
-    - sequana_slurm_status --help 1>out 2>err
-
+    - sequana_pipetools --help
 
 about:
-  home: "https://github.com/sequana/sequana_pipetools"
-  license: "BSD 3-clause"
-  summary: "A set of tools to help building or using Sequana pipelines"
+  home: https://github.com/sequana/sequana_pipetools
+  summary: A set of tools to help building or using Sequana pipelines
+  license: BSD-3-Clause
   license_family: BSD
+  doc_url: https://sequana.readthedocs.io/en/main/
 
 extra:
-  recipe-maintainers: 
+  recipe-maintainers:
     - cokelaer

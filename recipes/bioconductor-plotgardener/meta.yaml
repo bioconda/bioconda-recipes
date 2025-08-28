@@ -1,62 +1,82 @@
-{% set version = "1.4.1" %}
+{% set version = "1.12.0" %}
 {% set name = "plotgardener" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: e9fc9a2c4a0b65aae3b00ef69ed02666
+about:
+  description: Coordinate-based genomic visualization package for R. It grants users the ability to programmatically produce complex, multi-paneled figures. Tailored for genomics, plotgardener allows users to visualize large complex genomic datasets and provides exquisite control over how plots are placed and arranged on a page.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Coordinate-Based Genomic Visualization Package for R
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: AnnotationDbi, AnnotationHub, BSgenome, BSgenome.Hsapiens.UCSC.hg19, ComplexHeatmap, GenomicFeatures, GenomeInfoDb, GenomicRanges, ggplot2, InteractionSet, knitr, org.Hs.eg.db, rtracklayer, plotgardenerData, png, rmarkdown, scales, showtext, testthat (>= 3.0.0), TxDb.Hsapiens.UCSC.hg19.knownGene
+  run_exports: '{{ pin_subpackage("bioconductor-plotgardener", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: AnnotationDbi, AnnotationHub, BSgenome, BSgenome.Hsapiens.UCSC.hg19, ComplexHeatmap, GenomicFeatures, ggplot2, InteractionSet, knitr, org.Hs.eg.db, rtracklayer, plotgardenerData, pdftools, png, rmarkdown, scales, showtext, testthat (>= 3.0.0), TxDb.Hsapiens.UCSC.hg19.knownGene
 requirements:
-  host:
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-plyranges >=1.18.0,<1.19.0'
-    - r-base
-    - r-curl
-    - r-data.table
-    - r-dplyr
-    - r-ggplotify
-    - r-purrr
-    - r-rcolorbrewer
-    - r-rcpp
-    - r-rlang
-    - r-strawr
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-plyranges >=1.18.0,<1.19.0'
-    - r-base
-    - r-curl
-    - r-data.table
-    - r-dplyr
-    - r-ggplotify
-    - r-purrr
-    - r-rcolorbrewer
-    - r-rcpp
-    - r-rlang
-    - r-strawr
+
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+
+  host:
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-plyranges >=1.26.0,<1.27.0
+    - bioconductor-rhdf5 >=2.50.0,<2.51.0
+    - r-base
+    - r-curl
+    - r-data.table
+    - r-dplyr
+    - r-ggplotify
+    - r-glue
+    - r-purrr
+    - r-rcolorbrewer
+    - r-rcpp
+    - r-rlang
+    - r-strawr
+    - r-withr
+    - libblas
+    - liblapack
+
+  run:
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-plyranges >=1.26.0,<1.27.0
+    - bioconductor-rhdf5 >=2.50.0,<2.51.0
+    - r-base
+    - r-curl
+    - r-data.table
+    - r-dplyr
+    - r-ggplotify
+    - r-glue
+    - r-purrr
+    - r-rcolorbrewer
+    - r-rcpp
+    - r-rlang
+    - r-strawr
+    - r-withr
+
+source:
+  md5: 736a74f491008039018f254193f46aad
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Coordinate-Based Genomic Visualization Package for R'
-  description: 'Coordinate-based genomic visualization package for R. It grants users the ability to programmatically produce complex, multi-paneled figures. Tailored for genomics, plotgardener allows users to visualize large complex genomic datasets and provides exquisite control over how plots are placed and arranged on a page.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

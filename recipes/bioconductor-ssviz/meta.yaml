@@ -1,47 +1,22 @@
-{% set version = "1.32.0" %}
+{% set version = "1.40.0" %}
 {% set name = "ssviz" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: cd6def90c1942acb00bb22ba471a14c1
+about:
+  description: Small RNA sequencing viewer
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: A small RNA-seq visualizer and analysis toolkit
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr
-requirements:
-  host:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - r-base
-    - r-ggplot2
-    - r-rcolorbrewer
-    - r-reshape
-  run:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - r-base
-    - r-ggplot2
-    - r-rcolorbrewer
-    - r-reshape
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'A small RNA-seq visualizer and analysis toolkit'
-  description: 'Small RNA sequencing viewer'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-ssviz", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:ssviz
@@ -50,4 +25,37 @@ extra:
     name: bioconductor-ssviz
     path: recipes/bioconductor-ssviz
     version: 1.14.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr
+requirements:
+  host:
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - r-base
+    - r-ggplot2
+    - r-rcolorbrewer
+    - r-reshape
+  run:
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - r-base
+    - r-ggplot2
+    - r-rcolorbrewer
+    - r-reshape
+
+source:
+  md5: 5a9f304b4fdae1b67425470948684237
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

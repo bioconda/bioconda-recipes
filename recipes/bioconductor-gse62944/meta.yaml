@@ -1,40 +1,42 @@
-{% set version = "1.26.0" %}
+{% set version = "1.34.0" %}
 {% set name = "GSE62944" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 940bca93dee5fe79b30078c3c56a70b1
+about:
+  description: TCGA processed RNA-Seq data for 9264 tumor and 741 normal samples across 24 cancer types and made them available as GEO accession [GSE62944](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE62944). GSE62944 data have been parsed into a SummarizedExperiment object available in ExperimentHub.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: GEO accession data GSE62944 as a SummarizedExperiment
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: ExperimentHub (>= 0.99.6), knitr, BiocStyle, rmarkdown
+  run_exports: '{{ pin_subpackage("bioconductor-gse62944", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: ExperimentHub (>= 0.99.6), knitr, BiocStyle, rmarkdown, DESeq2
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-geoquery >=2.66.0,<2.67.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-geoquery >=2.74.0,<2.75.0
     - r-base
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-geoquery >=2.66.0,<2.67.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-geoquery >=2.74.0,<2.75.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221104
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 314ad5bf5a423531bc075f753658e28a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'GEO accession data GSE62944 as a SummarizedExperiment'
-  description: 'TCGA processed RNA-Seq data for 9264 tumor and 741 normal samples across 24 cancer types and made them available as GEO accession [GSE62944](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE62944). GSE62944 data have been parsed into a SummarizedExperiment object available in ExperimentHub.'
+    - $R -e "library('{{ name }}')"
 

@@ -1,55 +1,62 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "MEAT" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 697c230d4cff7cccca0acbc5712f2d52
+about:
+  description: This package estimates epigenetic age in skeletal muscle, using DNA methylation data generated with the Illumina Infinium technology (HM27, HM450 and HMEPIC).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Muscle Epigenetic Age Test
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-meat", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, markdown, rmarkdown, BiocStyle, testthat (>= 2.1.0)
 requirements:
   host:
-    - 'bioconductor-impute >=1.72.0,<1.73.0'
-    - 'bioconductor-minfi >=1.44.0,<1.45.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-watermelon >=2.4.0,<2.5.0'
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - bioconductor-minfi >=1.52.0,<1.53.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-watermelon >=2.12.0,<2.13.0
     - r-base
     - r-dplyr
-    - 'r-dynamictreecut >=1.63'
-    - 'r-glmnet >=2.0'
-    - 'r-rpmm >=1.25'
+    - r-dynamictreecut >=1.63
+    - r-glmnet >=2.0
+    - r-rpmm >=1.25
     - r-stringr
     - r-tibble
   run:
-    - 'bioconductor-impute >=1.72.0,<1.73.0'
-    - 'bioconductor-minfi >=1.44.0,<1.45.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-watermelon >=2.4.0,<2.5.0'
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - bioconductor-minfi >=1.52.0,<1.53.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-watermelon >=2.12.0,<2.13.0
     - r-base
     - r-dplyr
-    - 'r-dynamictreecut >=1.63'
-    - 'r-glmnet >=2.0'
-    - 'r-rpmm >=1.25'
+    - r-dynamictreecut >=1.63
+    - r-glmnet >=2.0
+    - r-rpmm >=1.25
     - r-stringr
     - r-tibble
+
+source:
+  md5: 627f3f2501cb213070b3a30f58429175
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Muscle Epigenetic Age Test'
-  description: 'This package estimates epigenetic age in skeletal muscle, using DNA methylation data generated with the Illumina Infinium technology (HM27, HM450 and HMEPIC).'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

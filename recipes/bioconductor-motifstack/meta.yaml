@@ -1,49 +1,22 @@
-{% set version = "1.42.0" %}
+{% set version = "1.50.0" %}
 {% set name = "motifStack" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 446df0cffd8663471bef7e94735b3b4b
+about:
+  description: The motifStack package is designed for graphic representation of multiple motifs with different similarity scores. It works with both DNA/RNA sequence motif and amino acid sequence motif. In addition, it provides the flexibility for users to customize the graphic parameters such as the font type and symbol colors.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Plot stacked logos for single or multiple DNA, RNA and amino acid sequence
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: grImport, grImport2, BiocGenerics, MotifDb, RColorBrewer, BiocStyle, knitr, RUnit, rmarkdown, JASPAR2020
-requirements:
-  host:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-tfbstools >=1.36.0,<1.37.0'
-    - r-ade4
-    - r-base
-    - r-ggplot2
-    - r-htmlwidgets
-    - r-xml
-  run:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-tfbstools >=1.36.0,<1.37.0'
-    - r-ade4
-    - r-base
-    - r-ggplot2
-    - r-htmlwidgets
-    - r-xml
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Plot stacked logos for single or multiple DNA, RNA and amino acid sequence'
-  description: 'The motifStack package is designed for graphic representation of multiple motifs with different similarity scores. It works with both DNA/RNA sequence motif and amino acid sequence motif. In addition, it provides the flexibility for users to customize the graphic parameters such as the font type and symbol colors.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-motifstack", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:motifstack
@@ -52,4 +25,39 @@ extra:
     name: bioconductor-motifstack
     path: recipes/bioconductor-motifstack
     version: 1.24.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: Cairo, grImport, grImport2, BiocGenerics, MotifDb, RColorBrewer, BiocStyle, knitr, RUnit, rmarkdown, JASPAR2020
+requirements:
+  host:
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-tfbstools >=1.44.0,<1.45.0
+    - r-ade4
+    - r-base
+    - r-ggplot2
+    - r-htmlwidgets
+    - r-xml
+  run:
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-tfbstools >=1.44.0,<1.45.0
+    - r-ade4
+    - r-base
+    - r-ggplot2
+    - r-htmlwidgets
+    - r-xml
+
+source:
+  md5: c3d5c6ef197f3ebce4eb1f95ee0e0208
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

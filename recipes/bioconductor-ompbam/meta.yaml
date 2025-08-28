@@ -1,43 +1,43 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "ompBAM" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 885c1ca56ac6107961f421b118f7ff73
+about:
+  description: This packages provides C++ header files for developers wishing to create R packages that processes BAM files. ompBAM automates file access, memory management, and handling of multiple threads 'behind the scenes', so developers can focus on creating domain-specific functionality. The included vignette contains detailed documentation of this API, including quick-start instructions to create a new ompBAM-based package, and step-by-step explanation of the functionality behind the example packaged included within ompBAM.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: C++ Library for OpenMP-based multi-threaded sequential profiling of Binary Alignment Map (BAM) files
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-ompbam", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: RcppProgress, knitr, rmarkdown, roxygen2, devtools, usethis, desc, testthat (>= 3.0.0)
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
-    - 'bioconductor-zlibbioc >=1.44.0,<1.45.0'
     - r-base
     - r-rcpp
     - libblas
     - liblapack
   run:
-    - 'bioconductor-zlibbioc >=1.44.0,<1.45.0'
     - r-base
     - r-rcpp
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
+source:
+  md5: d88dc9ccb61fdc23ad3660bffa5d78f6
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'C++ Library for OpenMP-based multi-threaded sequential profiling of Binary Alignment Map (BAM) files'
-  description: 'This packages provides C++ header files for developers wishing to create R packages that processes BAM files. ompBAM automates file access, memory management, and handling of multiple threads ''behind the scenes'', so developers can focus on creating domain-specific functionality. The included vignette contains detailed documentation of this API, including quick-start instructions to create a new ompBAM-based package, and step-by-step explanation of the functionality behind the example packaged included within ompBAM.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

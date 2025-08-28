@@ -1,24 +1,42 @@
-{% set version = "1.24.0" %}
+{% set version = "1.32.0" %}
 {% set name = "AMOUNTAIN" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: dc945636cf4935aecde8f0a309be8ada
+about:
+  description: A pure data-driven gene network, weighted gene co-expression network (WGCN) could be constructed only from expression profile. Different layers in such networks may represent different time points, multiple conditions or various species. AMOUNTAIN aims to search active modules in multi-layer WGCN using a continuous optimization approach.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: 'Active modules for multilayer weighted gene co-expression networks: a continuous optimization approach'
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-amountain", max_pin="x.x") }}'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:amountain
+    - doi:10.1101/056952
+  parent_recipe:
+    name: bioconductor-amountain
+    path: recipes/bioconductor-amountain
+    version: 1.6.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, qgraph, knitr, rmarkdown
 # SystemRequirements: gsl
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
   host:
     - r-base
     - libblas
@@ -27,24 +45,16 @@ requirements:
   run:
     - r-base
     - gsl
-  build:
-    - {{ compiler('c') }}
-    - make
+
+source:
+  md5: 7c1d2a6ea5ea79a745fa9b4d03fa1e91
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Active modules for multilayer weighted gene co-expression networks: a continuous optimization approach'
-  description: 'A pure data-driven gene network, weighted gene co-expression network (WGCN) could be constructed only from expression profile. Different layers in such networks may represent different time points, multiple conditions or various species. AMOUNTAIN aims to search active modules in multi-layer WGCN using a continuous optimization approach.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-extra:
-  identifiers:
-    - biotools:amountain
-    - doi:10.1101/056952
-  parent_recipe:
-    name: bioconductor-amountain
-    path: recipes/bioconductor-amountain
-    version: 1.6.0
+    - $R -e "library('{{ name }}')"
 

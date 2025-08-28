@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "mammaprintdata-1.33.0"
+installBiocDataPackage.sh "mammaprintdata-1.42.0"

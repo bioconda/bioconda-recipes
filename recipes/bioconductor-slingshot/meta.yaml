@@ -1,51 +1,59 @@
-{% set version = "2.6.0" %}
+{% set version = "2.14.0" %}
 {% set name = "slingshot" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 25f2470b7f5f3d2e2757391ceebbe33c
+about:
+  description: Provides functions for inferring continuous, branching lineage structures in low-dimensional data. Slingshot was designed to model developmental trajectories in single-cell RNA sequencing data and serve as a component in an analysis pipeline after dimensionality reduction and clustering. It is flexible enough to handle arbitrarily many branching events and allows for the incorporation of prior knowledge through supervised graph construction.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Tools for ordering single-cell sequencing
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-slingshot", max_pin="x.x") }}'
+
+extra:
+  container:
+    extended-base: yes
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocGenerics, BiocStyle, clusterExperiment, DelayedMatrixStats, knitr, mclust, mgcv, RColorBrewer, rgl, rmarkdown, testthat, uwot, covr
 requirements:
   host:
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-trajectoryutils >=1.6.0,<1.7.0'
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-trajectoryutils >=1.14.0,<1.15.0
     - r-base
     - r-igraph
     - r-matrixstats
-    - 'r-princurve >=2.0.4'
+    - r-princurve >=2.0.4
   run:
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-trajectoryutils >=1.6.0,<1.7.0'
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-trajectoryutils >=1.14.0,<1.15.0
     - r-base
     - r-igraph
     - r-matrixstats
-    - 'r-princurve >=2.0.4'
+    - r-princurve >=2.0.4
+
+source:
+  md5: 127a8d3a7c6cb6521059f882b12a9c8e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Tools for ordering single-cell sequencing'
-  description: 'Provides functions for inferring continuous, branching lineage structures in low-dimensional data. Slingshot was designed to model developmental trajectories in single-cell RNA sequencing data and serve as a component in an analysis pipeline after dimensionality reduction and clustering. It is flexible enough to handle arbitrarily many branching events and allows for the incorporation of prior knowledge through supervised graph construction.'
-extra:
-  container:
-    extended-base: true
+    - $R -e "library('{{ name }}')"
 

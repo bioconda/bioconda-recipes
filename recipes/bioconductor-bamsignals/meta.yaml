@@ -1,56 +1,24 @@
-{% set version = "1.30.0" %}
+{% set version = "1.38.0" %}
 {% set name = "bamsignals" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 15da3cbccec7fa05126994cd29321527
+about:
+  description: This package allows to efficiently obtain count vectors from indexed bam files. It counts the number of reads in given genomic ranges and it computes reads profiles and coverage profiles. It also handles paired-end data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Extract read count signals from bam files
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: testthat (>= 0.9), Rsamtools, BiocStyle, knitr, rmarkdown
-# SystemRequirements: GNU make
-requirements:
-  host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rhtslib >=2.0.0,<2.1.0'
-    - 'bioconductor-zlibbioc >=1.44.0,<1.45.0'
-    - r-base
-    - 'r-rcpp >=0.10.6'
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rhtslib >=2.0.0,<2.1.0'
-    - 'bioconductor-zlibbioc >=1.44.0,<1.45.0'
-    - r-base
-    - 'r-rcpp >=0.10.6'
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Extract read count signals from bam files'
-  description: 'This package allows to efficiently obtain count vectors from indexed bam files. It counts the number of reads in given genomic ranges and it computes reads profiles and coverage profiles. It also handles paired-end data.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-bamsignals", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:bamsignals
     - doi:10.1038/nmeth.3252
@@ -58,4 +26,48 @@ extra:
     name: bioconductor-bamsignals
     path: recipes/bioconductor-bamsignals
     version: 1.12.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat (>= 0.9), Rsamtools, BiocStyle, knitr, rmarkdown
+# SystemRequirements: GNU make
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rhtslib >=3.2.0,<3.3.0
+    - bioconductor-zlibbioc >=1.52.0,<1.53.0
+    - r-base
+    - r-rcpp >=0.10.6
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rhtslib >=3.2.0,<3.3.0
+    - bioconductor-zlibbioc >=1.52.0,<1.53.0
+    - r-base
+    - r-rcpp >=0.10.6
+
+source:
+  md5: 5a5aa95943909f70466d770764923ba8
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

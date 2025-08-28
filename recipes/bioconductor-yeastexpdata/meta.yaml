@@ -1,44 +1,52 @@
-{% set version = "0.44.0" %}
+{% set version = "0.52.0" %}
 {% set name = "yeastExpData" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: d78dff0ef4e93825abaf4facd0dab782
+about:
+  description: A collection of different sets of experimental data from yeast.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: GPL
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Yeast Experimental Data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: Biobase, GO.db, RBGL, org.Sc.sgd.db
-requirements:
-  host:
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - r-base
-  run:
-    - 'bioconductor-graph >=1.76.0,<1.77.0'
-    - r-base
-    - curl
-    - bioconductor-data-packages>=20221104
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: GPL
-  summary: 'Yeast Experimental Data'
-  description: 'A collection of different sets of experimental data from yeast.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-yeastexpdata", max_pin="x.x") }}'
+
 extra:
   parent_recipe:
     name: bioconductor-yeastexpdata
     path: recipes/bioconductor-yeastexpdata
     version: 0.26.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: Biobase, GO.db, RBGL, org.Sc.sgd.db
+requirements:
+  host:
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - r-base
+  run:
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: 2298a34217fed5055d1526e3d72c1231
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

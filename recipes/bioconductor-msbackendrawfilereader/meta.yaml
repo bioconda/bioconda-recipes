@@ -1,48 +1,57 @@
-{% set version = "1.4.0" %}
+{% set version = "1.12.0" %}
 {% set name = "MsBackendRawFileReader" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 368010c70d67f3febaecc347068f4c2b
+about:
+  description: implements a MsBackend for the Spectra package using Thermo Fisher Scientific's NewRawFileReader .Net libraries. The package is generalizing the functionality introduced by the rawrr package Methods defined in this package are supposed to extend the Spectra Bioconductor package.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Mass Spectrometry Backend for Reading Thermo Fisher Scientific raw Files
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-msbackendrawfilereader", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle (>= 2.5), ExperimentHub, MsBackendMgf, knitr, lattice, mzR, protViz (>= 0.7), rmarkdown, tartare (>= 1.5), testthat
 # SystemRequirements: mono-runtime 4.x or higher (including System.Data library) on Linux/macOS, .Net Framework (>= 4.5.1) on Microsoft Windows.
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-mscoreutils >=1.10.0,<1.11.0'
-    - 'bioconductor-rawrr >=1.6.0,<1.7.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-spectra >=1.8.0,<1.9.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-mscoreutils >=1.18.0,<1.19.0
+    - bioconductor-protgenerics >=1.38.0,<1.39.0
+    - bioconductor-rawrr >=1.14.0,<1.15.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-spectra >=1.16.0,<1.17.0
     - r-base
   run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-mscoreutils >=1.10.0,<1.11.0'
-    - 'bioconductor-rawrr >=1.6.0,<1.7.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-spectra >=1.8.0,<1.9.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-mscoreutils >=1.18.0,<1.19.0
+    - bioconductor-protgenerics >=1.38.0,<1.39.0
+    - bioconductor-rawrr >=1.14.0,<1.15.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-spectra >=1.16.0,<1.17.0
     - r-base
+
+source:
+  md5: b572fa8fcb5d29ece30da3539d5eba91
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Mass Spectrometry Backend for Reading Thermo Fisher Scientific raw Files'
-  description: 'implements a MsBackend for the Spectra package using Thermo Fisher Scientific''s NewRawFileReader .Net libraries. The package is generalizing the functionality introduced by the rawrr package (Kockmann T. et al. (2020) <doi:10.1101/2020.10.30.362533>) Methods defined in this package are supposed to extend the Spectra Bioconductor package.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

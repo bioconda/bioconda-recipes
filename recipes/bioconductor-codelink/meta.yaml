@@ -1,45 +1,22 @@
-{% set version = "1.66.0" %}
+{% set version = "1.74.0" %}
 {% set name = "codelink" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 20e9a7bbe95d5dc0b776cb942bb94827
+about:
+  description: This package facilitates reading, preprocessing and manipulating Codelink microarray data. The raw data must be exported as text file using the Codelink software.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Manipulation of Codelink microarray data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: genefilter, parallel, knitr
-requirements:
-  host:
-    - 'bioconductor-annotate >=1.76.0,<1.77.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - r-base
-  run:
-    - 'bioconductor-annotate >=1.76.0,<1.77.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Manipulation of Codelink microarray data'
-  description: 'This package facilitates reading, preprocessing and manipulating Codelink microarray data. The raw data must be exported as text file using the Codelink software.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-codelink", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:codelink
@@ -47,4 +24,35 @@ extra:
     name: bioconductor-codelink
     path: recipes/bioconductor-codelink
     version: 1.48.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: genefilter, parallel, knitr
+requirements:
+  host:
+    - bioconductor-annotate >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - r-base
+  run:
+    - bioconductor-annotate >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - r-base
+
+source:
+  md5: 387c8424b0f557fb62bd72dd48ca34c2
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

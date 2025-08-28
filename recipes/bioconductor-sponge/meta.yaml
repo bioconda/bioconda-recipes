@@ -1,29 +1,33 @@
-{% set version = "1.20.0" %}
+{% set version = "1.28.0" %}
 {% set name = "SPONGE" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f178a02957a183a3b3ca0b03cab8d269
+about:
+  description: 'This package provides methods to efficiently detect competitive endogeneous RNA interactions between two genes. Such interactions are mediated by one or several miRNAs such that both gene and miRNA expression data for a larger number of samples is needed as input. The SPONGE package now also includes spongEffects: ceRNA modules offer patient-specific insights into the miRNA regulatory landscape.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=3)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Sparse Partial Correlations On Gene Expression
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: testthat, knitr, rmarkdown, visNetwork, ggrepel, gridExtra, digest, doParallel, bigmemory
+  run_exports: '{{ pin_subpackage("bioconductor-sponge", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, knitr, rmarkdown, visNetwork, ggrepel, gridExtra, digest, doParallel, bigmemory, GSVA
 requirements:
+
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
-    - 'bioconductor-mirbaseconverter >=1.22.0,<1.23.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biomart >=2.62.0,<2.63.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
     - r-base
     - r-caret
     - r-cvms
@@ -49,11 +53,11 @@ requirements:
     - r-tidyr
     - r-tidyverse
     - r-tnet
+
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
-    - 'bioconductor-mirbaseconverter >=1.22.0,<1.23.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biomart >=2.62.0,<2.63.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
     - r-base
     - r-caret
     - r-cvms
@@ -79,13 +83,16 @@ requirements:
     - r-tidyr
     - r-tidyverse
     - r-tnet
+
+source:
+  md5: 2133e52cd4046b2fa7e40988ac2cdc0c
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>=3)'
-  summary: 'Sparse Partial Correlations On Gene Expression'
-  description: 'This package provides methods to efficiently detect competitive endogeneous RNA interactions between two genes. Such interactions are mediated by one or several miRNAs such that both gene and miRNA expression data for a larger number of samples is needed as input. The SPONGE package now also includes spongEffects: ceRNA modules offer patient-specific insights into the miRNA regulatory landscape.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

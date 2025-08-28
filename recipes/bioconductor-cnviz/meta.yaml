@@ -1,52 +1,59 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "CNViz" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 37a75170c81c1080176a3b1a14ac2fd1
+about:
+  description: CNViz takes probe, gene, and segment-level log2 copy number ratios and launches a Shiny app to visualize your sample's copy number profile. You can also integrate loss of heterozygosity (LOH) and single nucleotide variant (SNV) data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Copy Number Visualization
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-cnviz", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: rmarkdown, knitr
 requirements:
   host:
-    - 'bioconductor-copynumberplots >=1.14.0,<1.15.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-karyoploter >=1.24.0,<1.25.0'
+    - bioconductor-copynumberplots >=1.22.0,<1.23.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-karyoploter >=1.32.0,<1.33.0
     - r-base
     - r-dplyr
     - r-dt
     - r-magrittr
     - r-plotly
     - r-scales
-    - 'r-shiny >=1.5.0'
+    - r-shiny >=1.5.0
   run:
-    - 'bioconductor-copynumberplots >=1.14.0,<1.15.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-karyoploter >=1.24.0,<1.25.0'
+    - bioconductor-copynumberplots >=1.22.0,<1.23.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-karyoploter >=1.32.0,<1.33.0
     - r-base
     - r-dplyr
     - r-dt
     - r-magrittr
     - r-plotly
     - r-scales
-    - 'r-shiny >=1.5.0'
+    - r-shiny >=1.5.0
+
+source:
+  md5: 7e459d52fa8d539173d08c277f26709e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Copy Number Visualization'
-  description: 'CNViz takes probe, gene, and segment-level log2 copy number ratios and launches a Shiny app to visualize your sample''s copy number profile. You can also integrate loss of heterozygosity (LOH) and single nucleotide variant (SNV) data.'
+    - $R -e "library('{{ name }}')"
 

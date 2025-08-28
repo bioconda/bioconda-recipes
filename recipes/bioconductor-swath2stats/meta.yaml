@@ -1,45 +1,22 @@
-{% set version = "1.28.0" %}
+{% set version = "1.36.0" %}
 {% set name = "SWATH2stats" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 652a9e37d37dedd750fb32021152278d
+about:
+  description: This package is intended to transform SWATH data from the OpenSWATH software into a format readable by other statistics packages while performing filtering, annotation and FDR estimation.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Transform and Filter SWATH Data for Statistical Packages
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: testthat, knitr, rmarkdown
-requirements:
-  host:
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
-    - r-base
-    - r-data.table
-    - r-ggplot2
-    - r-reshape2
-  run:
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
-    - r-base
-    - r-data.table
-    - r-ggplot2
-    - r-reshape2
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Transform and Filter SWATH Data for Statistical Packages'
-  description: 'This package is intended to transform SWATH data from the OpenSWATH software into a format readable by other statistics packages while performing filtering, annotation and FDR estimation.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-swath2stats", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:swath2stats
@@ -47,4 +24,35 @@ extra:
     name: bioconductor-swath2stats
     path: recipes/bioconductor-swath2stats
     version: 1.10.2
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, knitr, rmarkdown
+requirements:
+  host:
+    - bioconductor-biomart >=2.62.0,<2.63.0
+    - r-base
+    - r-data.table
+    - r-ggplot2
+    - r-reshape2
+  run:
+    - bioconductor-biomart >=2.62.0,<2.63.0
+    - r-base
+    - r-data.table
+    - r-ggplot2
+    - r-reshape2
+
+source:
+  md5: 39357a6c5cf510962679418ecc1d4e95
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

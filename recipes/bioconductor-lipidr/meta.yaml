@@ -1,30 +1,34 @@
-{% set version = "2.12.0" %}
+{% set version = "2.20.0" %}
 {% set name = "lipidr" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 4098a17c293c4e67d0042820b4f76235
+about:
+  description: lipidr an easy-to-use R package implementing a complete workflow for downstream analysis of targeted and untargeted lipidomics data. lipidomics results can be imported into lipidr as a numerical matrix or a Skyline export, allowing integration into current analysis frameworks. Data mining of lipidomics datasets is enabled through integration with Metabolomics Workbench API. lipidr allows data inspection, normalization, univariate and multivariate analysis, displaying informative visualizations. lipidr also implements a novel Lipid Set Enrichment Analysis (LSEA), harnessing molecular information such as lipid class, total chain length and unsaturation.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Data Mining and Analysis of Lipidomics Datasets
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, rmarkdown, BiocStyle, ggrepel, plotly, iheatmapr, spelling, testthat
+  run_exports: '{{ pin_subpackage("bioconductor-lipidr", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, BiocStyle, ggrepel, plotly, spelling, testthat
 requirements:
   host:
-    - 'bioconductor-fgsea >=1.24.0,<1.25.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-ropls >=1.30.0,<1.31.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-fgsea >=1.32.0,<1.33.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-ropls >=1.38.0,<1.39.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-data.table
     - r-dplyr
@@ -35,11 +39,11 @@ requirements:
     - r-rlang
     - r-tidyr
   run:
-    - 'bioconductor-fgsea >=1.24.0,<1.25.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-ropls >=1.30.0,<1.31.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-fgsea >=1.32.0,<1.33.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-ropls >=1.38.0,<1.39.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-data.table
     - r-dplyr
@@ -49,13 +53,16 @@ requirements:
     - r-magrittr
     - r-rlang
     - r-tidyr
+
+source:
+  md5: 3bba856da2703ced5be1ceb7323bc1ac
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Data Mining and Analysis of Lipidomics Datasets'
-  description: 'lipidr an easy-to-use R package implementing a complete workflow for downstream analysis of targeted and untargeted lipidomics data. lipidomics results can be imported into lipidr as a numerical matrix or a Skyline export, allowing integration into current analysis frameworks. Data mining of lipidomics datasets is enabled through integration with Metabolomics Workbench API. lipidr allows data inspection, normalization, univariate and multivariate analysis, displaying informative visualizations. lipidr also implements a novel Lipid Set Enrichment Analysis (LSEA), harnessing molecular information such as lipid class, total chain length and unsaturation.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

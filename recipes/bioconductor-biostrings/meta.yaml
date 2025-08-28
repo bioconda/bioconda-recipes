@@ -1,53 +1,24 @@
-{% set version = "2.66.0" %}
+{% set version = "2.74.0" %}
 {% set name = "Biostrings" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 0a8f1876901ffad59e00da7c74db5352
+about:
+  description: Memory efficient string containers, string matching algorithms, and other utilities, for fast manipulation of large biological sequences or sets of sequences.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Efficient manipulation of biological strings
+
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: BSgenome (>= 1.13.14), BSgenome.Celegans.UCSC.ce2 (>= 1.3.11), BSgenome.Dmelanogaster.UCSC.dm3 (>= 1.3.11), BSgenome.Hsapiens.UCSC.hg18, drosophila2probe, hgu95av2probe, hgu133aprobe, GenomicFeatures (>= 1.3.14), hgu95av2cdf, affy (>= 1.41.3), affydata (>= 1.11.5), RUnit
-requirements:
-  host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-xvector >=0.38.0,<0.39.0'
-    - r-base
-    - r-crayon
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-xvector >=0.38.0,<0.39.0'
-    - r-base
-    - r-crayon
-  build:
-    - {{ compiler('c') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Efficient manipulation of biological strings'
-  description: 'Memory efficient string containers, string matching algorithms, and other utilities, for fast manipulation of large biological sequences or sets of sequences.'
+  run_exports: '{{ pin_subpackage("bioconductor-biostrings", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:biostrings
     - doi:10.1038/nmeth.3252
@@ -55,4 +26,44 @@ extra:
     name: bioconductor-biostrings
     path: recipes/bioconductor-biostrings
     version: 2.48.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: graphics, pwalign, BSgenome (>= 1.13.14), BSgenome.Celegans.UCSC.ce2 (>= 1.3.11), BSgenome.Dmelanogaster.UCSC.dm3 (>= 1.3.11), BSgenome.Hsapiens.UCSC.hg18, drosophila2probe, hgu95av2probe, hgu133aprobe, GenomicFeatures (>= 1.3.14), hgu95av2cdf, affy (>= 1.41.3), affydata (>= 1.11.5), RUnit, BiocStyle, knitr, testthat (>= 3.0.0), covr
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-xvector >=0.46.0,<0.47.0
+    - r-base
+    - r-crayon
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-xvector >=0.46.0,<0.47.0
+    - r-base
+    - r-crayon
+
+source:
+  md5: 9c1fa1b00da834f1dc7c2976af36b00c
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

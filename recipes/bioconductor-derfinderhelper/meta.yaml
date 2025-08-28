@@ -1,42 +1,21 @@
-{% set version = "1.32.0" %}
+{% set version = "1.40.0" %}
 {% set name = "derfinderHelper" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: bba4cb39cd85594b1c413fe93b74cfaf
+about:
+  description: Helper package for speeding up the derfinder package when using multiple cores. This package is particularly useful when using BiocParallel and it helps reduce the time spent loading the full derfinder package when running the F-statistics calculation in parallel.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: derfinder helper package
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: sessioninfo, knitr (>= 1.6), BiocStyle (>= 2.5.19), RefManageR, rmarkdown (>= 0.3.3), testthat, covr
-requirements:
-  host:
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - r-matrix
-  run:
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - r-matrix
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'derfinder helper package'
-  description: 'Helper package for speeding up the derfinder package when using multiple cores. This package is particularly useful when using BiocParallel and it helps reduce the time spent loading the full derfinder package when running the F-statistics calculation in parallel.'
+  run_exports: '{{ pin_subpackage("bioconductor-derfinderhelper", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:derfinderhelper
@@ -44,4 +23,33 @@ extra:
     name: bioconductor-derfinderhelper
     path: recipes/bioconductor-derfinderhelper
     version: 1.14.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: sessioninfo, knitr (>= 1.6), BiocStyle (>= 2.5.19), RefManageR, rmarkdown (>= 0.3.3), testthat, covr
+requirements:
+  host:
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-matrix
+  run:
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - r-base
+    - r-matrix
+
+source:
+  md5: 214937e15ae7769c646482c71ca7f02a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

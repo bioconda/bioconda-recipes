@@ -8,9 +8,14 @@ package:
 source:
   url: https://github.com/PapenfussLab/gridss/releases/download/v{{ version }}/gridss-{{ version }}.tar.gz
   sha256: '{{ sha256 }}'
+  patches:
+    - 0001-fix-samtools-version-check.patch
+    - 0002-set-gridssargs-for-virusbreakend-annotation.patch
 
 build:
-  number: 1
+  number: 5
+  run_exports:
+    - {{ pin_subpackage('gridss', max_pin="x.x.x") }}
   skip: True # [osx]
 
 requirements:
@@ -23,6 +28,7 @@ requirements:
     - ncurses
     - zlib
     - htslib >=1.14
+    - liblzma-devel
   run:
     - bc
     - ncurses
@@ -64,6 +70,8 @@ about:
   summary: 'GRIDSS: the Genomic Rearrangement IDentification Software Suite'
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:gridss
     - doi:10.1101/gr.222109.117

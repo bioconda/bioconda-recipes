@@ -1,40 +1,37 @@
-{% set version = "1.16.0" %}
+{% set version = "1.24.0" %}
 {% set name = "nuCpos" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: a1276adaff2bb2ef3b792ac86e016414
+about:
+  description: 'nuCpos, a derivative of NuPoP, is an R package for prediction of nucleosome positions. nuCpos calculates local and whole nucleosomal histone binding affinity (HBA) scores for a given 147-bp sequence. Note: This package was designed to demonstrate the use of chemical maps in prediction. As the parental package NuPoP now provides chemical-map-based prediction, the function for dHMM-based prediction was removed from this package. nuCpos continues to provide functions for HBA calculation.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: An R package for prediction of nucleosome positions
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-nucpos", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: NuPoP, Biostrings, testthat
 requirements:
   host:
     - r-base
-    - libblas
-    - liblapack
   run:
     - r-base
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('fortran') }}
-    - make
+source:
+  md5: 99e983e13fa6b7e2307f04f97ea9a1e5
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'An R package for prediction of nucleosome positions'
-  description: 'nuCpos, a derivative of NuPoP, is an R package for prediction of nucleosome positions. In nuCpos, a duration hidden Markov model is trained with a chemical map of nucleosomes either from budding yeast, fission yeast, or mouse embryonic stem cells. nuCpos outputs the Viterbi (most probable) path of nucleosome-linker states, predicted nucleosome occupancy scores and histone binding affinity (HBA) scores as NuPoP does. nuCpos can also calculate local and whole nucleosomal HBA scores for a given 147-bp sequence. Note: This package was designed to demonstrate the use of chemical maps in prediction. As the parental package NuPoP now provide chemical-map-based prediction, users are strongly encouraged to use it for dHMM-based prediction.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+    - $R -e "library('{{ name }}')"
 

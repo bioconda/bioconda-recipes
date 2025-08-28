@@ -1,43 +1,22 @@
-{% set version = "1.76.0" %}
+{% set version = "1.84.0" %}
 {% set name = "OLIN" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 36fce7f8e3e622d43d865acd7ffa3bf2
+about:
+  description: Functions for normalisation of two-color microarrays by optimised local regression and for detection of artefacts in microarray data
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Optimized local intensity-dependent normalisation of two-color microarrays
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: convert
-requirements:
-  host:
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-marray >=1.76.0,<1.77.0'
-    - r-base
-    - r-locfit
-  run:
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-marray >=1.76.0,<1.77.0'
-    - r-base
-    - r-locfit
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Optimized local intensity-dependent normalisation of two-color microarrays'
-  description: 'Functions for normalisation of two-color microarrays by optimised local regression and for detection of artefacts in microarray data'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-olin", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:olin
@@ -45,4 +24,33 @@ extra:
     name: bioconductor-olin
     path: recipes/bioconductor-olin
     version: 1.58.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: convert
+requirements:
+  host:
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-marray >=1.84.0,<1.85.0
+    - r-base
+    - r-locfit
+  run:
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-marray >=1.84.0,<1.85.0
+    - r-base
+    - r-locfit
+
+source:
+  md5: 6db425fd29cdbd12bce61e9be6cf7878
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

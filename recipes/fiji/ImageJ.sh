@@ -11,4 +11,4 @@ elif ! grep -q "Djava.util.prefs.userRoot" "${cfg}"; then
     cat ${cfg}.bk | awk -v prefsuser="${dir}/../uprefs/" 'NR<3{print}NR==3{print "-Djava.util.prefs.userRoot="prefsuser" "$0}' > ${cfg}
 fi
 
-ImageJ_bin "$@"
+$(readlink -n -f ${dir}/ImageJ_bin) --jar-path ${dir}/../share/jars "$@"

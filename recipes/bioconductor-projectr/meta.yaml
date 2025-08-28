@@ -1,59 +1,82 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "projectR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 368115c6fc3d01d73938f1bf4788bfa5
+about:
+  description: Functions for the projection of data into the spaces defined by PCA, CoGAPS, NMF, correlation, and clustering.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (==2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Functions for the projection of weights from PCA, CoGAPS, NMF, correlation, and clustering
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, gridExtra, grid, testthat, devtools, knitr, rmarkdown, ComplexHeatmap
+  run_exports: '{{ pin_subpackage("bioconductor-projectr", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, CoGAPS, gridExtra, grid, testthat, devtools, knitr, rmarkdown, ComplexHeatmap, gplots, SeuratObject
 requirements:
+
   host:
-    - 'bioconductor-cogaps >=3.18.0,<3.19.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
+    - bioconductor-fgsea >=1.32.0,<1.33.0
+    - bioconductor-limma >=3.62.0,<3.63.0
     - r-base
     - r-cluster
+    - r-cowplot
     - r-dplyr
     - r-ggalluvial
     - r-ggplot2
+    - r-ggrepel
+    - r-matrix
+    - r-matrixmodels
+    - r-msigdbr
     - r-nmf
     - r-rcolorbrewer
     - r-reshape2
     - r-rocr
     - r-scales
+    - r-tsne
+    - r-umap
     - r-viridis
+
   run:
-    - 'bioconductor-cogaps >=3.18.0,<3.19.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
+    - bioconductor-fgsea >=1.32.0,<1.33.0
+    - bioconductor-limma >=3.62.0,<3.63.0
     - r-base
     - r-cluster
+    - r-cowplot
     - r-dplyr
     - r-ggalluvial
     - r-ggplot2
+    - r-ggrepel
+    - r-matrix
+    - r-matrixmodels
+    - r-msigdbr
     - r-nmf
     - r-rcolorbrewer
     - r-reshape2
     - r-rocr
     - r-scales
+    - r-tsne
+    - r-umap
     - r-viridis
+
+source:
+  md5: 31626fd24bbeeaaf849ed5487f363a39
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (==2)'
-  summary: 'Functions for the projection of weights from PCA, CoGAPS, NMF, correlation, and clustering'
-  description: 'Functions for the projection of data into the spaces defined by PCA, CoGAPS, NMF, correlation, and clustering.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+    - $R -e "library('{{ name }}')"
 

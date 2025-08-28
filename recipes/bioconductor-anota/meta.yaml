@@ -1,40 +1,22 @@
-{% set version = "1.46.0" %}
+{% set version = "1.54.0" %}
 {% set name = "anota" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 3d3e04a8fb10434fb98e3026a5cb4943
+about:
+  description: Genome wide studies of translational control is emerging as a tool to study verious biological conditions. The output from such analysis is both the mRNA level (e.g. cytosolic mRNA level) and the levl of mRNA actively involved in translation (the actively translating mRNA level) for each mRNA. The standard analysis of such data strives towards identifying differential translational between two or more sample classes - i.e. differences in actively translated mRNA levels that are independent of underlying differences in cytosolic mRNA levels. This package allows for such analysis using partial variances and the random variance model. As 10s of thousands of mRNAs are analyzed in parallell the library performs a number of tests to assure that the data set is suitable for such analysis.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: ANalysis Of Translational Activity (ANOTA).
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-multtest >=2.54.0,<2.55.0'
-    - 'bioconductor-qvalue >=2.30.0,<2.31.0'
-    - r-base
-  run:
-    - 'bioconductor-multtest >=2.54.0,<2.55.0'
-    - 'bioconductor-qvalue >=2.30.0,<2.31.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'ANalysis Of Translational Activity (ANOTA).'
-  description: 'Genome wide studies of translational control is emerging as a tool to study verious biological conditions. The output from such analysis is both the mRNA level (e.g. cytosolic mRNA level) and the levl of mRNA actively involved in translation (the actively translating mRNA level) for each mRNA. The standard analysis of such data strives towards identifying differential translational between two or more sample classes - i.e. differences in actively translated mRNA levels that are independent of underlying differences in cytosolic mRNA levels. This package allows for such analysis using partial variances and the random variance model. As 10s of thousands of mRNAs are analyzed in parallell the library performs a number of tests to assure that the data set is suitable for such analysis.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-anota", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:anota
@@ -43,4 +25,30 @@ extra:
     name: bioconductor-anota
     path: recipes/bioconductor-anota
     version: 1.28.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  host:
+    - bioconductor-multtest >=2.62.0,<2.63.0
+    - bioconductor-qvalue >=2.38.0,<2.39.0
+    - r-base
+  run:
+    - bioconductor-multtest >=2.62.0,<2.63.0
+    - bioconductor-qvalue >=2.38.0,<2.39.0
+    - r-base
+
+source:
+  md5: 0a28d2588bcff721d1b6e4d179c5204e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

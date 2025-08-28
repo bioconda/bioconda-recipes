@@ -1,43 +1,22 @@
-{% set version = "1.28.0" %}
+{% set version = "2.6.0" %}
 {% set name = "gcatest" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 4e297528478abf6660797866f4d9c662
+about:
+  description: GCAT is an association test for genome wide association studies that controls for population structure under a general class of trait models.  This test conditions on the trait, which makes it immune to confounding by unmodeled environmental factors.  Population structure is modeled via logistic factors, which are estimated using the `lfa` package.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 3)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Genotype Conditional Association TEST
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: knitr, ggplot2
-requirements:
-  host:
-    - 'bioconductor-lfa >=1.28.0,<1.29.0'
-    - r-base
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-lfa >=1.28.0,<1.29.0'
-    - r-base
-  build:
-    - {{ compiler('c') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Genotype Conditional Association TEST'
-  description: 'GCAT is an association test for genome wide association studies that controls for population structure under a general class of trait. models.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-gcatest", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:gcatest
@@ -46,4 +25,29 @@ extra:
     name: bioconductor-gcatest
     path: recipes/bioconductor-gcatest
     version: 1.10.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, ggplot2, testthat, BEDMatrix, genio
+requirements:
+  host:
+    - bioconductor-lfa >=2.6.0,<2.7.0
+    - r-base
+  run:
+    - bioconductor-lfa >=2.6.0,<2.7.0
+    - r-base
+
+source:
+  md5: 4b1cc9bf33fbed8d138db711a9fbd6cd
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

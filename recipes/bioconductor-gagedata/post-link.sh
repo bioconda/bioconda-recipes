@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "gagedata-2.35.0"
+installBiocDataPackage.sh "gagedata-2.44.0"

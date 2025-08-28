@@ -1,90 +1,100 @@
-{% set version = "1.26.0" %}
+{% set version = "1.34.1" %}
 {% set name = "scater" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 8b07d9c0182070a69856294d34b400cf
+about:
+  description: A collection of tools for doing various analyses of single-cell RNA-seq gene expression data, with a focus on quality control and visualization.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Single-Cell Analysis Toolkit for Gene Expression Data in R
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, snifter, cowplot, biomaRt, knitr, scRNAseq, robustbase, rmarkdown, testthat, Biobase
-requirements:
-  host:
-    - 'bioconductor-beachmat >=2.14.0,<2.15.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocneighbors >=1.16.0,<1.17.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-biocsingular >=1.14.0,<1.15.0'
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-delayedmatrixstats >=1.20.0,<1.21.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-scuttle >=1.8.0,<1.9.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - r-base
-    - r-ggbeeswarm
-    - r-ggplot2
-    - r-ggrastr
-    - r-ggrepel
-    - r-gridextra
-    - r-matrix
-    - r-pheatmap
-    - r-rcolorbrewer
-    - r-rcppml
-    - r-rlang
-    - r-rtsne
-    - r-uwot
-    - r-viridis
-  run:
-    - 'bioconductor-beachmat >=2.14.0,<2.15.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocneighbors >=1.16.0,<1.17.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-biocsingular >=1.14.0,<1.15.0'
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-delayedmatrixstats >=1.20.0,<1.21.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-scuttle >=1.8.0,<1.9.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - r-base
-    - r-ggbeeswarm
-    - r-ggplot2
-    - r-ggrastr
-    - r-ggrepel
-    - r-gridextra
-    - r-matrix
-    - r-pheatmap
-    - r-rcolorbrewer
-    - r-rcppml
-    - r-rlang
-    - r-rtsne
-    - r-uwot
-    - r-viridis
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Single-Cell Analysis Toolkit for Gene Expression Data in R'
-  description: 'A collection of tools for doing various analyses of single-cell RNA-seq gene expression data, with a focus on quality control and visualization.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-scater", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:scater
   parent_recipe:
     name: bioconductor-scater
     path: recipes/bioconductor-scater
-    version: 1.8.4
+    version: 1.34.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, DelayedMatrixStats, snifter, densvis, cowplot, biomaRt, knitr, scRNAseq, robustbase, rmarkdown, testthat, Biobase, scattermore
+requirements:
+
+  host:
+    - bioconductor-beachmat >=2.22.0,<2.23.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocneighbors >=2.0.0,<2.1.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-biocsingular >=1.22.0,<1.23.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-scuttle >=1.16.0,<1.17.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-sparsearray >=1.6.0,<1.7.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-ggbeeswarm
+    - r-ggplot2
+    - r-ggrastr
+    - r-ggrepel
+    - r-matrix
+    - r-pheatmap
+    - r-rcolorbrewer
+    - r-rcppml
+    - r-rlang
+    - r-rtsne
+    - r-uwot
+    - r-viridis
+
+  run:
+    - bioconductor-beachmat >=2.22.0,<2.23.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocneighbors >=2.0.0,<2.1.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-biocsingular >=1.22.0,<1.23.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-scuttle >=1.16.0,<1.17.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-sparsearray >=1.6.0,<1.7.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-ggbeeswarm
+    - r-ggplot2
+    - r-ggrastr
+    - r-ggrepel
+    - r-matrix
+    - r-pheatmap
+    - r-rcolorbrewer
+    - r-rcppml
+    - r-rlang
+    - r-rtsne
+    - r-uwot
+    - r-viridis
+
+source:
+  md5: a05deaff576e3e02ed28a512d7c07dea
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

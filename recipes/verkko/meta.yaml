@@ -1,5 +1,5 @@
 {% set name = "verkko" %}
-{% set version = "1.2" %}
+{% set version = "2.2.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,38 +7,63 @@ package:
 
 source:
   url: https://github.com/marbl/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
-  md5: 2975d74b265e22f9748385b08269d709
-
+  sha256: 4ab40961352cac22eebfb37606c82bb5a589f9361c36430e7278227e62db3860
   patches:
-    - version.patch
+    - osx_availability.patch  # [osx]
 
 build:
-  number: 0
+  number: 1
+  run_exports:
+      - {{ pin_subpackage('verkko', max_pin="x.x") }}
 
 requirements:
   build:
     - make
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
     - {{ compiler('cxx') }}
-    - rust
+    - rust >=1.74
   host:
+    - boost-cpp >=1.56  #[osx]
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
     - gsl
+    - zlib
+    - htslib
   run:
-    - python >=3.7
-    - snakemake-minimal >=7.8.0
-    - graphaligner >=1.0.16
-    - mbg >=1.0.12
+    - python >=3.9
+    - boost-cpp >=1.56  #[osx]
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+    - pulp <=2.7.0
+    - perl >=5.6
+    - seqtk
+    - parasail-python >=1.3.3
+    - networkx >=2.6.3
+    - biopython
+    - pysam
+    - snakemake-minimal >=7.8.0,<8.0
+    - graphaligner >=1.0.19
     - findutils >=4.6.0
+    - mashmap >=3.0.6
+    - winnowmap >=2.0
+    - bwa >=0.7.17
+    - minimap2 >=2.28
+    - samtools >=1.17
 
 test:
   requires:
     - curl
   commands:
-     - verkko --version
+    - verkko --version
 
 about:
-  home: https://github.com/marbl/verkko
+  home: "https://github.com/marbl/verkko"
   license: CC0
   license_file: README.licenses
-  summary: Assembler for hybrid combinations of long reads
+  summary: "A hybrid genome assembly pipeline developed for telomere-to-telomere assembly of accurate (HiFi, ONT Duplex, ONT HERRO) and long (ONT UL) reads."
+  dev_url: "https://github.com/marbl/verkko"
+  doc_url: "https://github.com/marbl/verkko/blob/v{{ version }}/README.md"
+
+extra:
+  identifiers:
+    - doi:10.1038/s41587-023-01662-6
+    - usegalaxy-eu:verkko

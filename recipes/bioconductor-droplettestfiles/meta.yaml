@@ -1,43 +1,45 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "DropletTestFiles" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 79168f83ce62f2185f71ba18ab5a7964
+about:
+  description: Assorted files generated from droplet-based single-cell protocols, to be used for testing functions in DropletUtils. Primarily intended for storing files that directly come out of processing pipelines like 10X Genomics' CellRanger software, prior to the formation of a SingleCellExperiment object. Unlike other packages, this is not designed to provide objects that are immediately ready for analysis.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Test Files for Single-Cell Droplet Utilities
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-droplettestfiles", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: BiocStyle, knitr, rmarkdown, testthat, DropletUtils
 requirements:
   host:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
   run:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221108
+    - bioconductor-data-packages >=20241103
+source:
+  md5: a63075748b3844f580a535c87b92440c
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Test Files for Single-Cell Droplet Utilities'
-  description: 'Assorted files generated from droplet-based single-cell protocols, to be used for testing functions in DropletUtils. Primarily intended for storing files that directly come out of processing pipelines like 10X Genomics'' CellRanger software, prior to the formation of a SingleCellExperiment object. Unlike other packages, this is not designed to provide objects that are immediately ready for analysis.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

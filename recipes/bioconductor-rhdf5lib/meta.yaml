@@ -1,45 +1,56 @@
-{% set version = "1.20.0" %}
+{% set version = "1.28.0" %}
 {% set name = "Rhdf5lib" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 94c1bdfe7799bf8db8402e8a42746129
+about:
+  description: Provides C and C++ hdf5 libraries.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: hdf5 library as an R package
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: BiocStyle, knitr, rmarkdown, tinytest, mockery
-# SystemRequirements: GNU make
-requirements:
-  host:
-    - r-base
-    - libblas
-    - liblapack
-  run:
-    - r-base
-  build:
-    - {{ compiler('c') }}
-    - automake
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'hdf5 library as an R package'
-  description: 'Provides C and C++ hdf5 libraries.'
+  run_exports: '{{ pin_subpackage("bioconductor-rhdf5lib", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
   parent_recipe:
     name: bioconductor-rhdf5lib
     path: recipes/bioconductor-rhdf5lib
     version: 1.2.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, rmarkdown, tinytest, mockery
+# SystemRequirements: GNU make
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - automake
+    - make
+  host:
+    - r-base
+    - libblas
+    - liblapack
+    - zlib
+  run:
+    - r-base
+
+source:
+  md5: 2038bed88d3c7b81f8cc9caaf0b0a068
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

@@ -1,0 +1,44 @@
+{% set version = "0.0.1" %}
+{% set sha256 = "99fa125603dbf5f55d80c0e42430e6a79b535ec40de51905b4b4117897022dd4" %}
+
+package:
+  name: shortseq
+  version: {{ version }}
+
+source:
+  url: https://github.com/AlexTate/ShortSeq/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  skip: True  # [not unix]
+  number: 1
+  script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage('shortseq', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - python 3.10.*
+    - setuptools
+    - cython
+    - numpy
+  run:
+    - python 3.10.*
+
+test:
+  imports:
+    - ShortSeq
+    - numpy
+  commands:
+    - python -m unittest ShortSeq.tests.unit_tests_main
+
+about:
+  home: https://github.com/AlexTate/ShortSeq
+  license: MIT
+  summary: \
+    ShortSeqs are compact and efficient Python objects that hold short sequences 
+    while using up to 73% less memory compared to built-in types. They have a 
+    pre-computed hash value, can be compared for equality, and are 
+    easily converted back to the original sequence string.

@@ -1,15 +1,22 @@
-package:
-  name: eigensoft
-  version: "8.0.0"
+{% set name = "eigensoft" %}
+{% set version = "8.0.0" %}
 
-build:
-  number: 1
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/DReichLab/EIG/archive/refs/tags/v8.0.0.tar.gz
+  url: https://github.com/DReichLab/EIG/archive/v{{ version }}.tar.gz
   sha256: e3459e8ac0134da369910454854eae5c7b261e8816318ccbd2d371b4c6c35741
   patches:
     - 0001-Add-gfortran-to-LDLIBS.patch
+    - 0002-replace-finite.patch
+    - 0003-remove-wrong-cflag.patch  # [osx]
+
+build:
+  number: 6
+  run_exports:
+    - {{ pin_subpackage('eigensoft', max_pin='x.x') }}
 
 requirements:
   build:
@@ -25,14 +32,21 @@ requirements:
 
 test:
   commands:
-    - smartpca > /dev/null 2>&1
+    - smartpca
+    # both tools crash without input, there is other way to check whether installation worked...
+    - which convertf
+    - which mergeit
 
 about:
   home: https://github.com/DReichLab/EIG
   license: Custom OSS
+  license_file: LICENSE.txt
   summary: The EIGENSOFT package implements methods for analzing population structure and performing stratification correction
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:Eigensoft
     - doi:10.1371/journal.pgen.0020190

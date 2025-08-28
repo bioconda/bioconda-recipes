@@ -1,41 +1,22 @@
-{% set version = "1.68.0" %}
+{% set version = "1.76.0" %}
 {% set name = "panp" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 019428c38c81cf30c084bc931667e016
+about:
+  description: A function to make gene presence/absence calls based on distance from negative strand matching probesets (NSMP) which are derived from Affymetrix annotation. PANP is applied after gene expression values are created, and therefore can be used after any preprocessing method such as MAS5 or GCRMA, or PM-only methods like RMA. NSMP sets have been established for the HGU133A and HGU133-Plus-2.0 chipsets to date.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Presence-Absence Calls from Negative Strand Matching Probesets
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: gcrma
-requirements:
-  host:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - r-base
-  run:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Presence-Absence Calls from Negative Strand Matching Probesets'
-  description: 'A function to make gene presence/absence calls based on distance from negative strand matching probesets (NSMP) which are derived from Affymetrix annotation. PANP is applied after gene expression values are created, and therefore can be used after any preprocessing method such as MAS5 or GCRMA, or PM-only methods like RMA. NSMP sets have been established for the HGU133A and HGU133-Plus-2.0 chipsets to date.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-panp", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:panp
@@ -44,4 +25,31 @@ extra:
     name: bioconductor-panp
     path: recipes/bioconductor-panp
     version: 1.50.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: gcrma
+requirements:
+  host:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+  run:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+
+source:
+  md5: f36d65252a6f9a5773a88a721a1fb976
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

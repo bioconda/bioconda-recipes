@@ -1,38 +1,43 @@
-{% set version = "1.50.0" %}
+{% set version = "1.58.0" %}
 {% set name = "genoCN" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 4c53f4efeea51711c6658d1e7048bf5c
+about:
+  description: Simultaneous identification of copy number states and genotype calls for regions of either copy number variations or copy number aberrations
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: genotyping and copy number study tools
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-genocn", max_pin="x.x") }}'
+extra:
+  additional-platforms:
+    - linux-aarch64
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
   host:
     - r-base
     - libblas
     - liblapack
   run:
     - r-base
-  build:
-    - {{ compiler('c') }}
-    - make
+source:
+  md5: f1d64e3799c3378276c6921f175ec367
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>=2)'
-  summary: 'genotyping and copy number study tools'
-  description: 'Simultaneous identification of copy number states and genotype calls for regions of either copy number variations or copy number aberrations'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

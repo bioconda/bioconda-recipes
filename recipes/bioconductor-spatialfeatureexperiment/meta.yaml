@@ -1,52 +1,83 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "SpatialFeatureExperiment" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 8b8d0d266cb382af72561001a0825aea
+about:
+  description: A new S4 class integrating Simple Features with the R package sf to bring geospatial data analysis methods based on vector data to spatial transcriptomics. Also implements management of spatial neighborhood graphs and geometric operations. This pakage builds upon SpatialExperiment and SingleCellExperiment, hence methods for these parent classes can still be used.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Integrating SpatialExperiment with Simple Features in sf
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, DropletUtils, knitr, Matrix, rmarkdown, SFEData, testthat (>= 3.0.0)
+  run_exports: '{{ pin_subpackage("bioconductor-spatialfeatureexperiment", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: arrow, BiocStyle, dplyr, knitr, RBioFormats, rhdf5, rmarkdown, scater, sfarrow, SFEData (>= 1.5.3), Seurat, SeuratObject, sparseMatrixStats, testthat (>= 3.0.0), tidyr, Voyager (>= 1.7.2), xml2
 requirements:
+
   host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-spatialexperiment >=1.8.0,<1.9.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocneighbors >=2.0.0,<2.1.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-dropletutils >=1.26.0,<1.27.0
+    - bioconductor-ebimage >=4.48.0,<4.49.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-spatialexperiment >=1.16.0,<1.17.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
+    - r-data.table
+    - r-lifecycle
+    - r-matrix
     - r-rjson
+    - r-rlang
     - r-sf
-    - 'r-spdep >=1.1-7'
+    - r-sfheaders
+    - r-spdep >=1.1-7
+    - r-terra
+    - r-zeallot
+
   run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-spatialexperiment >=1.8.0,<1.9.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocneighbors >=2.0.0,<2.1.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-dropletutils >=1.26.0,<1.27.0
+    - bioconductor-ebimage >=4.48.0,<4.49.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-spatialexperiment >=1.16.0,<1.17.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
+    - r-data.table
+    - r-lifecycle
+    - r-matrix
     - r-rjson
+    - r-rlang
     - r-sf
-    - 'r-spdep >=1.1-7'
+    - r-sfheaders
+    - r-spdep >=1.1-7
+    - r-terra
+    - r-zeallot
+
+source:
+  md5: d2194357fbb7ff0f69305a15fae9c4bb
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Integrating SpatialExperiment with Simple Features in sf'
-  description: 'A new S4 class integrating Simple Features with the R package sf to bring geospatial data analysis methods based on vector data to spatial transcriptomics. Also implements management of spatial neighborhood graphs and geometric operations. This pakage builds upon SpatialExperiment and SingleCellExperiment, hence methods for these parent classes can still be used.'
+    - $R -e "library('{{ name }}')"
 

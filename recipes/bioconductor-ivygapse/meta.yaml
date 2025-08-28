@@ -1,27 +1,30 @@
-{% set version = "1.20.0" %}
+{% set version = "1.28.0" %}
 {% set name = "ivygapSE" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: efc34e82eebaaa523f9b062c273949e3
+about:
+  description: Define a SummarizedExperiment and exploratory app for Ivy-GAP glioblastoma image, expression, and clinical data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: A SummarizedExperiment for Ivy-GAP data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, png, limma, grid, DT, randomForest, digest, testthat, rmarkdown
+  run_exports: '{{ pin_subpackage("bioconductor-ivygapse", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, png, limma, grid, DT, randomForest, digest, testthat, rmarkdown, BiocStyle, magick, statmod, codetools
 requirements:
   host:
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-ggplot2
     - r-hwriter
@@ -31,8 +34,8 @@ requirements:
     - r-survminer
     - r-upsetr
   run:
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-ggplot2
     - r-hwriter
@@ -41,12 +44,16 @@ requirements:
     - r-survival
     - r-survminer
     - r-upsetr
+
+source:
+  md5: fad5a7d0a0eca3adce4fe6f88093d7a6
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'A SummarizedExperiment for Ivy-GAP data'
-  description: 'Define a SummarizedExperiment and exploratory app for Ivy-GAP glioblastoma image, expression, and clinical data.'
+    - $R -e "library('{{ name }}')"
 

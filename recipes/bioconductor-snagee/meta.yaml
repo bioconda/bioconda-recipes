@@ -1,38 +1,21 @@
-{% set version = "1.38.0" %}
+{% set version = "1.46.0" %}
 {% set name = "SNAGEE" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: c443368f611cb4f692541821c80bd722
+about:
+  description: Signal-to-Noise applied to Gene Expression Experiments. Signal-to-noise ratios can be used as a proxy for quality of gene expression studies and samples. The SNRs can be calculated on any gene expression data set as long as gene IDs are available, no access to the raw data files is necessary. This allows to flag problematic studies and samples in any public data set.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Signal-to-Noise applied to Gene Expression Experiments
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: ALL, hgu95av2.db
-requirements:
-  host:
-    - 'bioconductor-snageedata >=1.33.0,<1.34.0'
-    - r-base
-  run:
-    - 'bioconductor-snageedata >=1.33.0,<1.34.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Signal-to-Noise applied to Gene Expression Experiments'
-  description: 'Signal-to-Noise applied to Gene Expression Experiments. Signal-to-noise ratios can be used as a proxy for quality of gene expression studies and samples. The SNRs can be calculated on any gene expression data set as long as gene IDs are available, no access to the raw data files is necessary. This allows to flag problematic studies and samples in any public data set.'
+  run_exports: '{{ pin_subpackage("bioconductor-snagee", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:snagee
@@ -41,4 +24,29 @@ extra:
     name: bioconductor-snagee
     path: recipes/bioconductor-snagee
     version: 1.20.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: ALL, hgu95av2.db
+requirements:
+  host:
+    - bioconductor-snageedata >=1.42.0,<1.43.0
+    - r-base
+  run:
+    - bioconductor-snageedata >=1.42.0,<1.43.0
+    - r-base
+
+source:
+  md5: ca322a39ca0a32a55a45b53bfda91db9
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

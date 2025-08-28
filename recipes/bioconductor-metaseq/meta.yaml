@@ -1,46 +1,23 @@
-{% set version = "1.38.0" %}
+{% set version = "1.46.0" %}
 {% set name = "metaSeq" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 926c2f82c7410bce7ebfa51e93895157
+about:
+  description: The probabilities by one-sided NOISeq are combined by Fisher's method or Stouffer's method
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Meta-analysis of RNA-Seq count data in multiple studies
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-requirements:
-  host:
-    - 'bioconductor-noiseq >=2.42.0,<2.43.0'
-    - r-base
-    - r-rcpp
-    - r-snow
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-noiseq >=2.42.0,<2.43.0'
-    - r-base
-    - r-rcpp
-    - r-snow
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Meta-analysis of RNA-Seq count data in multiple studies'
-  description: 'The probabilities by one-sided NOISeq are combined by Fisher''s method or Stouffer''s method'
+  run_exports: '{{ pin_subpackage("bioconductor-metaseq", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:metaseq
     - doi:10.1038/nmeth.3252
@@ -48,4 +25,37 @@ extra:
     name: bioconductor-metaseq
     path: recipes/bioconductor-metaseq
     version: 1.20.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - bioconductor-noiseq >=2.50.0,<2.51.0
+    - r-base
+    - r-rcpp
+    - r-snow
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-noiseq >=2.50.0,<2.51.0
+    - r-base
+    - r-rcpp
+    - r-snow
+
+source:
+  md5: be93adc0d88b6db57cf47d684bdd7c68
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

@@ -1,25 +1,33 @@
-{% set version = "1.22.0" %}
+{% set version = "1.30.0" %}
 {% set name = "discordant" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 6df3ea65dc1532d8541e81e6c7bf55fd
+about:
+  description: Discordant is an R package that identifies pairs of features that correlate differently between phenotypic groups, with application to -omics data sets. Discordant uses a mixture model that “bins” molecular feature pairs based on their type of coexpression or coabbundance. Algorithm is explained further in "Differential Correlation for Sequencing Data"" (Siska et al. 2016).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: 'The Discordant Method: A Novel Approach for Differential Correlation'
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-discordant", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, knitr, testthat (>= 3.0.0)
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
     - r-base
     - r-biwt
     - r-dplyr
@@ -29,24 +37,23 @@ requirements:
     - libblas
     - liblapack
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
     - r-base
     - r-biwt
     - r-dplyr
     - r-gtools
     - r-mass
     - r-rcpp
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: 7498dbbb0f00998da67fb537e1fe5ed0
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'The Discordant Method: A Novel Approach for Differential Correlation'
-  description: 'Discordant is an R package that identifies pairs of features that correlate differently between phenotypic groups, with application to -omics data sets. Discordant uses a mixture model that “bins” molecular feature pairs based on their type of coexpression or coabbundance. Algorithm is explained further in "Differential Correlation for Sequencing Data"" (Siska et al. 2016).'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

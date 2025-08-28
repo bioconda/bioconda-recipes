@@ -1,34 +1,33 @@
-{% set version = "2.5.0" %}
-{% set sha256 = "f8ae3cb591f880c4ff71bd8832cdd6b0f969033b31b5433eda947d76530bcc1f" %}
+{% set name = "nextdenovo" %}
+{% set version = "2.5.2" %}
+{% set sha256 = "5c7ca4aa3de234f4e0efd8aaf9eaf60ebd79b5e545ad2878a76162b29d815fe0" %}
 
 package:
-  name: nextdenovo
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/Nextomics/NextDenovo/releases/download/v2.5.0/NextDenovo.tgz
+  url: https://github.com/Nextomics/NextDenovo/releases/download/{{ version }}/NextDenovo.tgz
+  # Source URL for version 2.5.2 does not have a 'v' preceding the version like previous releases
   sha256: {{ sha256 }}
 
 build:
-  number: 0
-  # repackages binaries
-  skip: True  # [osx or py < 36]
+  number: 6
+  binary_has_prefix_files:
+    - nextDenovo
+  run_exports:
+    - {{ pin_subpackage('nextdenovo', max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
   host:
     - python
-    - bzip2
-    - ca-certificates
-    - zlib
-    - ncurses
-    - openssl
     - pip
-    - readline
-    - setuptools
-    - tk
-    - tzdata
-    - wheel
-    - xz
+    - paralleltask
+    - bzip2
+    - zlib
   run:
     - python
     - paralleltask
@@ -38,13 +37,20 @@ test:
     - test_data
   commands:
     - 'nextDenovo --help'
-    #- 'nextDenovo test_data/run.cfg' # Partly success: some jobs are submitted, but others are killed before completion
+    #- 'nextDenovo test_data/run.cfg
+    # Partly success: some jobs are submitted, but others are killed before completion
 
 about:
-  home: https://github.com/Nextomics/NextDenovo
-  license: GNU General Public License v3.0
-  summary: String graph-based de novo assembler for long reads (CLR, HiFi and ONT)
+  home: "https://github.com/Nextomics/NextDenovo"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "String graph-based de novo assembler for long reads (CLR, HiFi and ONT)"
+  dev_url: "https://github.com/Nextomics/NextDenovo"
+  doc_url: "https://nextdenovo.readthedocs.io/en/latest"
 
 extra:
-  skip-lints:
-    - should_be_noarch_generic
+  identifiers:
+    - doi:10.1101/2023.03.09.531669
+    - biotools:nextdenovo
+    - usegalaxy-eu:nextdenovo

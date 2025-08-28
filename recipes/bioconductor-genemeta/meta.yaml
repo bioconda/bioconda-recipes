@@ -1,40 +1,21 @@
-{% set version = "1.70.0" %}
+{% set version = "1.78.0" %}
 {% set name = "GeneMeta" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: dbe85479610c82bc4799ad1a03cc4466
+about:
+  description: A collection of meta-analysis tools for analysing high throughput experimental data
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: MetaAnalysis for High Throughput Experiments
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: RColorBrewer
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-genefilter >=1.80.0,<1.81.0'
-    - r-base
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-genefilter >=1.80.0,<1.81.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'MetaAnalysis for High Throughput Experiments'
-  description: 'A collection of meta-analysis tools for analysing high throughput experimental data'
+  run_exports: '{{ pin_subpackage("bioconductor-genemeta", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:genemeta
@@ -43,4 +24,31 @@ extra:
     name: bioconductor-genemeta
     path: recipes/bioconductor-genemeta
     version: 1.52.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: RColorBrewer
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-genefilter >=1.88.0,<1.89.0
+    - r-base
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-genefilter >=1.88.0,<1.89.0
+    - r-base
+
+source:
+  md5: 485b54a222fe7a17466df0c1d85c9107
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

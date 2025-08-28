@@ -1,44 +1,21 @@
-{% set version = "1.44.0" %}
+{% set version = "1.52.0" %}
 {% set name = "cqn" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: a7756a2cb20d4ff524581a71d9cbd2dd
+about:
+  description: A normalization tool for RNA-Seq data, implementing the conditional quantile normalization method.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Conditional quantile normalization
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: scales, edgeR
-requirements:
-  host:
-    - 'bioconductor-preprocesscore >=1.60.0,<1.61.0'
-    - r-base
-    - r-mclust
-    - r-nor1mix
-    - r-quantreg
-  run:
-    - 'bioconductor-preprocesscore >=1.60.0,<1.61.0'
-    - r-base
-    - r-mclust
-    - r-nor1mix
-    - r-quantreg
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Conditional quantile normalization'
-  description: 'A normalization tool for RNA-Seq data, implementing the conditional quantile normalization method.'
+  run_exports: '{{ pin_subpackage("bioconductor-cqn", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:cqn
@@ -46,4 +23,33 @@ extra:
     name: bioconductor-cqn
     path: recipes/bioconductor-cqn
     version: 1.26.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: scales, edgeR
+requirements:
+  host:
+    - r-base
+    - r-mclust
+    - r-nor1mix
+    - r-quantreg
+  run:
+    - r-base
+    - r-mclust
+    - r-nor1mix
+    - r-quantreg
+
+source:
+  md5: f75885ab51fd672d84d12fd909ba8432
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

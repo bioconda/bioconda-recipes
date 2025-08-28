@@ -1,23 +1,31 @@
-{% set version = "3.34.0" %}
+{% set version = "3.42.0" %}
 {% set name = "CGEN" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: e9bf77b09a94b53a3c3e1f6052ec007a
+about:
+  description: This is a package for analysis of case-control data in genetic epidemiology. It provides a set of statistical methods for evaluating gene-environment (or gene-genes) interactions under multiplicative and additive risk models, with or without assuming gene-environment (or gene-gene) independence in the underlying population.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2 + file LICENSE
+  license_file: LICENSE
+  summary: An R package for analysis of case-control studies in genetic epidemiology
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-cgen", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: cluster
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('fortran') }}
+    - make
   host:
     - r-base
     - r-mvtnorm
@@ -28,17 +36,16 @@ requirements:
     - r-base
     - r-mvtnorm
     - r-survival
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('fortran') }}
-    - make
+
+source:
+  md5: 2123e174ef8bc31e4d07896c434e5ae5
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL-2 + file LICENSE'
-  summary: 'An R package for analysis of case-control studies in genetic epidemiology'
-  description: 'This is a package for analysis of case-control data in genetic epidemiology. It provides a set of statistical methods for evaluating gene-environment (or gene-genes) interactions under multiplicative and additive risk models, with or without assuming gene-environment (or gene-gene) independence in the underlying population.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

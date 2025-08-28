@@ -1,13 +1,18 @@
+{% set version = "1.0.9" %}
+{% set github = "https://github.com/vals/umis" %}
+
 package:
   name: umis
-  version: '1.0.8'
+  version: "{{ version }}"
 
 build:
-  number: 0
+  number: 4
+  run_exports:
+    - {{ pin_subpackage('umis', max_pin='x') }}
 
 source:
-  url: https://github.com/vals/umis/archive/refs/tags/v1.0.8.tar.gz
-  sha256: 965056cbe7a20454327c8f1c4f91e349c64864af307e41c41e41e6771c2e3e0b
+  url: "{{ github }}/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: 7d446da4cc31f075e539db6b6d7b31a3309e0c4c708875981d61780c2de7ed82
 
 requirements:
   build:
@@ -27,15 +32,22 @@ requirements:
 
 test:
   commands:
-    - LC_ALL="en_US.UTF-8" umis version
+    - LC_ALL=C.UTF-8 LANG=C.UTF-8 umis version  # [linux]
+    - LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 umis version  # [osx]
 
 about:
-  home: https://github.com/vals/umis
+  home: "{{ github }}"
+  dev_url: "{{ github }}"
   license: MIT
   summary: Tools for processing UMI RNA-tag data
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   container:
     # click requires a unicode locale when used with Python 3
     # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
     extended-base: true  # [py3k]
+  recipe-maintainers:
+    - mjsteinbaugh
+    - roryk

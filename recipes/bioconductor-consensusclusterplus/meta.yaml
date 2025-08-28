@@ -1,42 +1,22 @@
-{% set version = "1.62.0" %}
+{% set version = "1.70.0" %}
 {% set name = "ConsensusClusterPlus" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 37640754a7b0ce9b833b696163bf896f
+about:
+  description: algorithm for determining cluster count and membership by stability evidence in unsupervised analysis
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL version 2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: ConsensusClusterPlus
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-all >=1.40.0,<1.41.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - r-base
-    - r-cluster
-  run:
-    - 'bioconductor-all >=1.40.0,<1.41.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - r-base
-    - r-cluster
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL version 2'
-  summary: ConsensusClusterPlus
-  description: 'algorithm for determining cluster count and membership by stability evidence in unsupervised analysis'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-consensusclusterplus", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:consensusclusterplus
@@ -44,4 +24,32 @@ extra:
     name: bioconductor-consensusclusterplus
     path: recipes/bioconductor-consensusclusterplus
     version: 1.44.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  host:
+    - bioconductor-all >=1.48.0,<1.49.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+    - r-cluster
+  run:
+    - bioconductor-all >=1.48.0,<1.49.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+    - r-cluster
+
+source:
+  md5: 262afe9b8f479d8a98f655ef64d133b3
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

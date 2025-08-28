@@ -1,31 +1,47 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "CiteFuse" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 14f2a647d9266f4dfca6300610dadaf9
+about:
+  description: CiteFuse pacakage implements a suite of methods and tools for CITE-seq data from pre-processing to integrative analytics, including doublet detection, network-based modality integration, cell type clustering, differential RNA and protein expression analysis, ADT evaluation, ligand-receptor interaction analysis, and interactive web-based visualisation of the analyses.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: 'CiteFuse: multi-modal analysis of CITE-seq data'
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-citefuse", max_pin="x.x") }}'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:citefuse
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, DT, mclust, scater, ExPosition, BiocStyle, pkgdown
 requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
   host:
-    - 'bioconductor-rhdf5 >=2.42.0,<2.43.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-scran >=1.26.0,<1.27.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-rhdf5 >=2.50.0,<2.51.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-scran >=1.34.0,<1.35.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
+    - r-compositions
     - r-cowplot
     - r-dbscan
     - r-ggplot2
@@ -36,20 +52,24 @@ requirements:
     - r-matrix
     - r-mixtools
     - r-pheatmap
-    - r-propr
     - r-randomforest
+    - r-rcpp
     - r-reshape2
     - r-rlang
     - r-rtsne
     - r-scales
     - r-uwot
+    - libblas
+    - liblapack
+
   run:
-    - 'bioconductor-rhdf5 >=2.42.0,<2.43.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-scran >=1.26.0,<1.27.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-rhdf5 >=2.50.0,<2.51.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-scran >=1.34.0,<1.35.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
+    - r-compositions
     - r-cowplot
     - r-dbscan
     - r-ggplot2
@@ -60,20 +80,23 @@ requirements:
     - r-matrix
     - r-mixtools
     - r-pheatmap
-    - r-propr
     - r-randomforest
+    - r-rcpp
     - r-reshape2
     - r-rlang
     - r-rtsne
     - r-scales
     - r-uwot
+
+source:
+  md5: 8c6f27fdda8b6d29ad294d101213a00d
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'CiteFuse: multi-modal analysis of CITE-seq data'
-  description: 'CiteFuse pacakage implements a suite of methods and tools for CITE-seq data from pre-processing to integrative analytics, including doublet detection, network-based modality integration, cell type clustering, differential RNA and protein expression analysis, ADT evaluation, ligand-receptor interaction analysis, and interactive web-based visualisation of the analyses.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

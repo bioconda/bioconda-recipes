@@ -1,34 +1,48 @@
-{% set version = "1.34.0" %}
+{% set version = "1.42.0" %}
 {% set name = "DeSousa2013" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 8fbba6b634001af0bcce09be50b3c457
+about:
+  description: This package reproduces the main pipeline to analyze the AMC-AJCCII-90 microarray data set in De Sousa et al. accepted by Nature Medicine in 2013.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Poor prognosis colon cancer is defined by a molecularly distinct subtype and precursor lesion
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-desousa2013", max_pin="x.x") }}'
+
+extra:
+  container:
+    extended-base: yes
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 requirements:
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
   host:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-consensusclusterplus >=1.62.0,<1.63.0'
-    - 'bioconductor-frma >=1.50.0,<1.51.0'
-    - 'bioconductor-frmatools >=1.50.0,<1.51.0'
-    - 'bioconductor-hgu133plus2.db >=3.13.0,<3.14.0'
-    - 'bioconductor-hgu133plus2frmavecs >=1.5.0,<1.6.0'
-    - 'bioconductor-siggenes >=1.72.0,<1.73.0'
-    - 'bioconductor-sva >=3.46.0,<3.47.0'
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-consensusclusterplus >=1.70.0,<1.71.0
+    - bioconductor-frma >=1.58.0,<1.59.0
+    - bioconductor-frmatools >=1.58.0,<1.59.0
+    - bioconductor-hgu133plus2.db >=3.13.0,<3.14.0
+    - bioconductor-hgu133plus2frmavecs >=1.5.0,<1.6.0
+    - bioconductor-siggenes >=1.80.0,<1.81.0
+    - bioconductor-sva >=3.54.0,<3.55.0
     - r-base
     - r-cluster
     - r-gplots
@@ -37,16 +51,16 @@ requirements:
     - r-rocr
     - r-survival
   run:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-consensusclusterplus >=1.62.0,<1.63.0'
-    - 'bioconductor-frma >=1.50.0,<1.51.0'
-    - 'bioconductor-frmatools >=1.50.0,<1.51.0'
-    - 'bioconductor-hgu133plus2.db >=3.13.0,<3.14.0'
-    - 'bioconductor-hgu133plus2frmavecs >=1.5.0,<1.6.0'
-    - 'bioconductor-siggenes >=1.72.0,<1.73.0'
-    - 'bioconductor-sva >=3.46.0,<3.47.0'
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-consensusclusterplus >=1.70.0,<1.71.0
+    - bioconductor-frma >=1.58.0,<1.59.0
+    - bioconductor-frmatools >=1.58.0,<1.59.0
+    - bioconductor-hgu133plus2.db >=3.13.0,<3.14.0
+    - bioconductor-hgu133plus2frmavecs >=1.5.0,<1.6.0
+    - bioconductor-siggenes >=1.80.0,<1.81.0
+    - bioconductor-sva >=3.54.0,<3.55.0
     - r-base
     - r-cluster
     - r-gplots
@@ -55,23 +69,17 @@ requirements:
     - r-rocr
     - r-survival
     - curl
-    - bioconductor-data-packages>=20221111
-  build:
-    - {{ cdt('mesa-libgl-devel') }}  # [linux]
-    - {{ cdt('mesa-dri-drivers') }}  # [linux]
-    - {{ cdt('libselinux') }}  # [linux]
-    - {{ cdt('libxdamage') }}  # [linux]
-    - {{ cdt('libxxf86vm') }}  # [linux]
-    - xorg-libxfixes  # [linux]
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: 62b95939db5cc4149c72f97a4dbd5ca6
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Poor prognosis colon cancer is defined by a molecularly distinct subtype and precursor lesion'
-  description: 'This package reproduces the main pipeline to analyze the AMC-AJCCII-90 microarray data set in De Sousa et al. accepted by Nature Medicine in 2013.'
-extra:
-  container:
-    extended-base: true
+    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library('{{ name }}')"
 

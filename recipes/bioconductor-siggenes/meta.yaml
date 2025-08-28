@@ -1,43 +1,22 @@
-{% set version = "1.72.0" %}
+{% set version = "1.80.0" %}
 {% set name = "siggenes" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: b86e037261fa175b95e97adc1f975ed5
+about:
+  description: Identification of differentially expressed genes and estimation of the False Discovery Rate (FDR) using both the Significance Analysis of Microarrays (SAM) and the Empirical Bayes Analyses of Microarrays (EBAM).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: Multiple Testing using SAM and Efron's Empirical Bayes Approaches
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: affy, annotate, genefilter, KernSmooth
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-multtest >=2.54.0,<2.55.0'
-    - r-base
-    - 'r-scrime >=1.2.5'
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-multtest >=2.54.0,<2.55.0'
-    - r-base
-    - 'r-scrime >=1.2.5'
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'LGPL (>= 2)'
-  summary: 'Multiple Testing using SAM and Efron''s Empirical Bayes Approaches'
-  description: 'Identification of differentially expressed genes and estimation of the False Discovery Rate (FDR) using both the Significance Analysis of Microarrays (SAM) and the Empirical Bayes Analyses of Microarrays (EBAM).'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-siggenes", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:siggenes
@@ -46,4 +25,33 @@ extra:
     name: bioconductor-siggenes
     path: recipes/bioconductor-siggenes
     version: 1.54.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: affy, annotate, genefilter, KernSmooth
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-multtest >=2.62.0,<2.63.0
+    - r-base
+    - r-scrime >=1.2.5
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-multtest >=2.62.0,<2.63.0
+    - r-base
+    - r-scrime >=1.2.5
+
+source:
+  md5: 9273fff292c699d7045af85d7b064917
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

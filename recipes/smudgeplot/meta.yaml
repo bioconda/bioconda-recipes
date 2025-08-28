@@ -1,16 +1,19 @@
-{% set version = "0.2.5" %}
+{% set version = "0.4.0" %}
 
 package:
   name: smudgeplot
   version: {{ version }}
 
 build:
-  number: 0
-  skip: True  # [py2k]
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('smudgeplot', max_pin="x.x") }}
 
 source:
   url: https://github.com/KamilSJaron/smudgeplot/archive/v{{ version }}.tar.gz
-  sha256: 189c910b28e59d52f52ae1f7b2fc0c7e8c603525e4383e19753eccbb65afb5cc
+  sha256: 61ca437e29830a415e6f18f39d5d1fd994d20ea4a9bd46d1ab5fdcc52fa4008d
+  patches:
+    - 0001-Makefile.patch
 
 requirements:
   build:
@@ -23,6 +26,7 @@ requirements:
     - r-viridis
     - python
     - xorg-libxrender
+    - zlib
   run:
     - python
     - r-base
@@ -30,12 +34,21 @@ requirements:
     - r-argparse
     - numpy
     - scipy
+    - pandas
+
 test:
   commands:
-    - smudgeplot.py --version 2>&1 | grep 'Running'
+    - "smudgeplot.py --version 2>&1"
 
 about:
   home: https://github.com/KamilSJaron/smudgeplot
   license: Apache-2.0
+  license_family: APACHE
   license_file: LICENSE
-  summary: Inference of ploidy and heterozygosity structure using whole genome sequencing data
+  summary: "Inference of ploidy and heterozygosity structure using whole genome sequencing data."
+  dev_url: https://github.com/KamilSJaron/smudgeplot
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

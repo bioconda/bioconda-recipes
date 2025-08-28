@@ -1,61 +1,68 @@
-{% set version = "1.0.0" %}
+{% set version = "1.8.0" %}
 {% set name = "omada" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 3b2d84056e696e87e55dc340b8697f49
+about:
+  description: Symptomatic heterogeneity in complex diseases reveals differences in molecular states that need to be investigated. However, selecting the numerous parameters of an exploratory clustering analysis in RNA profiling studies requires deep understanding of machine learning and extensive computational experimentation. Tools that assist with such decisions without prior field knowledge are nonexistent and further gene association analyses need to be performed independently. We have developed a suite of tools to automate these processes and make robust unsupervised clustering of transcriptomic data more accessible through automated machine learning based functions. The efficiency of each tool was tested with four datasets characterised by different expression signal strengths. Our toolkit’s decisions reflected the real number of stable partitions in datasets where the subgroups are discernible. Even in datasets with less clear biological distinctions, stable subgroups with different expression profiles and clinical associations were found.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Machine learning tools for automated transcriptome clustering analysis
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-omada", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: rmarkdown, knitr, testthat
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
     - r-base
-    - 'r-clustercrit >=1.2.8'
-    - 'r-clvalid >=0.7'
-    - 'r-dicer >=0.6.0'
-    - 'r-dplyr >=1.0.7'
-    - 'r-fpc >=2.2-9'
-    - 'r-ggplot2 >=3.3.5'
-    - 'r-glmnet >=4.1_3'
-    - 'r-kernlab >=0.9-29'
-    - 'r-pdfcluster >=1.0-3'
-    - 'r-rcpp >=1.0.7'
-    - 'r-reshape >=0.8.8'
+    - r-clvalid >=0.7
+    - r-dicer >=0.6.0
+    - r-dplyr >=1.0.7
+    - r-fpc >=2.2-9
+    - r-genieclust >=1.1.3
+    - r-ggplot2 >=3.3.5
+    - r-glmnet >=4.1.3
+    - r-kernlab >=0.9-29
+    - r-pdfcluster >=1.0-3
+    - r-rcpp >=1.0.7
+    - r-reshape >=0.8.8
     - libblas
     - liblapack
   run:
     - r-base
-    - 'r-clustercrit >=1.2.8'
-    - 'r-clvalid >=0.7'
-    - 'r-dicer >=0.6.0'
-    - 'r-dplyr >=1.0.7'
-    - 'r-fpc >=2.2-9'
-    - 'r-ggplot2 >=3.3.5'
-    - 'r-glmnet >=4.1_3'
-    - 'r-kernlab >=0.9-29'
-    - 'r-pdfcluster >=1.0-3'
-    - 'r-rcpp >=1.0.7'
-    - 'r-reshape >=0.8.8'
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
+    - r-clvalid >=0.7
+    - r-dicer >=0.6.0
+    - r-dplyr >=1.0.7
+    - r-fpc >=2.2-9
+    - r-genieclust >=1.1.3
+    - r-ggplot2 >=3.3.5
+    - r-glmnet >=4.1.3
+    - r-kernlab >=0.9-29
+    - r-pdfcluster >=1.0-3
+    - r-rcpp >=1.0.7
+    - r-reshape >=0.8.8
+
+source:
+  md5: c0ddb89b287d5c6efd9788f289e5710b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Machine learning tools for automated transcriptome clustering analysis'
-  description: 'Symptomatic heterogeneity in complex diseases reveals differences in molecular states that need to be investigated. However, selecting the numerous parameters of an exploratory clustering analysis in RNA profiling studies requires deep understanding of machine learning and extensive computational experimentation. Tools that assist with such decisions without prior field knowledge are nonexistent and further gene association analyses need to be performed independently. We have developed a suite of tools to automate these processes and make robust unsupervised clustering of transcriptomic data more accessible through automated machine learning based functions. The efficiency of each tool was tested with four datasets characterised by different expression signal strengths. Our toolkit’s decisions reflected the real number of stable partitions in datasets where the subgroups are discernible. Even in datasets with less clear biological distinctions, stable subgroups with different expression profiles and clinical associations were found.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

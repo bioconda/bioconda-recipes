@@ -1,46 +1,53 @@
-{% set version = "1.16.0" %}
+{% set version = "1.24.0" %}
 {% set name = "gwasurvivr" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 048a4ddf00bd11725a335df2cdbcf173
+about:
+  description: gwasurvivr is a package to perform survival analysis using Cox proportional hazard models on imputed genetic data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: 'gwasurvivr: an R package for genome wide survival analysis'
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-gwasurvivr", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, knitr, rmarkdown
 requirements:
   host:
-    - 'bioconductor-gwastools >=1.44.0,<1.45.0'
-    - 'bioconductor-snprelate >=1.32.0,<1.33.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-variantannotation >=1.44.0,<1.45.0'
+    - bioconductor-gwastools >=1.52.0,<1.53.0
+    - bioconductor-snprelate >=1.40.0,<1.41.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
     - r-base
     - r-matrixstats
     - r-survival
   run:
-    - 'bioconductor-gwastools >=1.44.0,<1.45.0'
-    - 'bioconductor-snprelate >=1.32.0,<1.33.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-variantannotation >=1.44.0,<1.45.0'
+    - bioconductor-gwastools >=1.52.0,<1.53.0
+    - bioconductor-snprelate >=1.40.0,<1.41.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
     - r-base
     - r-matrixstats
     - r-survival
+
+source:
+  md5: 63649a8022aff721b2010c4cc9e0f641
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'gwasurvivr: an R package for genome wide survival analysis'
-  description: 'gwasurvivr is a package to perform survival analysis using Cox proportional hazard models on imputed genetic data.'
+    - $R -e "library('{{ name }}')"
 

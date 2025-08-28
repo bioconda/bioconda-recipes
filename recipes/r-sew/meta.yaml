@@ -10,8 +10,10 @@ source:
   sha256: '{{ sha256 }}'
 
 build:
-  number: 2
+  number: 5
   script: '$R CMD INSTALL --build --install-tests .'
+  run_exports:
+    - {{ pin_subpackage('r-sew', max_pin="x") }}
 
 requirements:
   build:
@@ -53,3 +55,7 @@ about:
 extra:
   recipe-maintainers:
     - rwdavies
+  container:
+    # SEW can phase a sample at high coverage with long reads ('test-acceptance-sew.R:37:5') -
+    # Your system is mis-configured /var/db/timezone/localtime’ is not a symlink
+    extended-base: true

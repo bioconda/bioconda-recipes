@@ -1,22 +1,23 @@
-{% set version = "1.12.0" %}
+{% set version = "1.20.0" %}
 {% set name = "SBGNview.data" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 226d4bdd8b8a2997daefbab058f6f092
+about:
+  description: 'This package contains: 1. A microarray gene expression dataset from a human breast cancer study. 2. A RNA-Seq gene expression dataset from a mouse study on IFNG knockout. 3. ID mapping tables between gene IDs and SBGN-ML file glyph IDs. 4. Percent of orthologs detected in other species of the genes in a pathway. Cutoffs of this percentage for defining if a pathway exists in another species. 5. XML text of SBGN-ML files for all pre-collected pathways.'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: AGPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+  summary: Supporting datasets for SBGNview package
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-sbgnview.data", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: SummarizedExperiment
 requirements:
   host:
@@ -30,14 +31,15 @@ requirements:
     - r-knitr
     - r-rmarkdown
     - curl
-    - bioconductor-data-packages>=20221107
+    - bioconductor-data-packages >=20241103
+source:
+  md5: bccffd0ac4bad51dd8d5d2f78b4a84a0
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: AGPL-3
-  summary: 'Supporting datasets for SBGNview package'
-  description: 'This package contains: 1. A microarray gene expression dataset from a human breast cancer study. 2. A RNA-Seq gene expression dataset from a mouse study on IFNG knockout. 3. ID mapping tables between gene IDs and SBGN-ML file glyph IDs. 4. Percent of orthologs detected in other species of the genes in a pathway. Cutoffs of this percentage for defining if a pathway exists in another species. 5. XML text of SBGN-ML files for all pre-collected pathways.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+    - $R -e "library('{{ name }}')"
 

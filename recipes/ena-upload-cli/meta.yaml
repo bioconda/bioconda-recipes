@@ -1,13 +1,13 @@
 {% set name = "ena-upload-cli" %}
-{% set version = "0.6.1" %}
+{% set version = "0.9.0" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: ed01685433bd3db88c1f20f5de9be5a8b97f6af64cd24b1ed8fc3c98b4479a3d
+  url: "https://github.com/usegalaxy-eu/ena-upload-cli/archive/refs/tags/{{ version }}.tar.gz"
+  sha256: c1a1a1dd93c47aee31933cf353089cd33315b13c15a933ba75bbdcd9d2546e7f
 
 build:
   number: 0
@@ -15,21 +15,28 @@ build:
   entry_points:
     - ena-upload-cli = ena_upload.ena_upload:main
   script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage('ena-upload-cli', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.8
+    - setuptools >=24.2.0
   run:
-    - genshi
-    - lxml
-    - pandas >=1.2.0
-    - pyyaml
-    - requests
-    - openpyxl
-    - python
+    - genshi ==0.7.*
+    - lxml =5.3.0
+    - pandas >=2.0.3,<=3.0.0
+    - pyyaml ==6.0.*
+    - requests >=2.31.0,<=3.0.0
+    - openpyxl >=3.1.2,<=4.0.0
+    - jsonschema >=4.19.1
+    - pytest ==7.4.*
+    - python >=3.8
 
 test:
+  imports:
+    - ena_upload
   commands:
     - ena-upload-cli --help
 

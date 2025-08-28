@@ -1,6 +1,7 @@
 {% set name = "Gap2Seq" %}
-{% set version = "3.1" %}
-{% set sha256 = "2df2143932ece6224817d1aa80e635ebf6f3f6f91ccb0b94ce3951a354071d61" %}
+{% set version = "3.1.1a" %}
+{% set git_rev = "0e1b35b0b8b26c561b0aa65031289f1b7353c423" %}
+{% set sha256 = "d8bcd2c25d98c4f26e14fa17a34b15d247094feecd07bdcb4516d41b54e6d5cf" %}
 {% set gatb_core_version = "1.4.1" %}
 {% set gatb_core_sha256 = "2a20b8ec21d2876dbeffd43de894f7d43f8b62d4431f0c7ae41b630d3d387188" %}
 
@@ -9,11 +10,15 @@ package:
   version: {{ version }}
 
 build:
-  number: 3
+  number: 5
   skip: True  # [osx or py2k]
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 source:
-  - url: https://github.com/rikuu/{{ name }}/archive/v{{ version }}.tar.gz
+  #- url: https://github.com/rikuu/{{ name }}/archive/v{{ version }}.tar.gz
+  #  sha256: {{ sha256 }}
+  - url: https://github.com/rikuu/{{ name }}/archive/{{ git_rev }}.zip
     sha256: {{ sha256 }}
   - url: https://github.com/GATB/gatb-core/archive/v{{ gatb_core_version }}.tar.gz
     sha256: {{ gatb_core_sha256 }}
@@ -33,6 +38,7 @@ requirements:
     - boost-cpp
     - python
     - htslib
+    - zlib
   run:
     - zlib
     - python
@@ -51,6 +57,7 @@ about:
   summary: Gap2Seq is a tool for filling gaps between contigs in genome assemblies.
 
 extra:
-  notes: "Gap2Seq is only tested on Linux x86_64 by its author."
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
     - notestaff

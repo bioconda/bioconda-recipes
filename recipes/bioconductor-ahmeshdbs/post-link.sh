@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "ahmeshdbs-1.5.0"
+installBiocDataPackage.sh "ahmeshdbs-1.8.0"

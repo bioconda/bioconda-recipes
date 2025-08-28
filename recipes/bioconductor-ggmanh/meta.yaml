@@ -1,49 +1,77 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "ggmanh" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 5074934ed49281781bcced61d8ec68b4
+about:
+  description: Manhattan plot and QQ Plot are commonly used to visualize the end result of Genome Wide Association Study. The "ggmanh" package aims to keep the generation of these plots simple while maintaining customizability. Main functions include manhattan_plot, qqunif, and thinPoints.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Visualization Tool for GWAS Result
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, rmarkdown, knitr, testthat (>= 3.0.0), markdown, GenomicRanges
+  run_exports: '{{ pin_subpackage("bioconductor-ggmanh", max_pin="x.x") }}'
+
+extra:
+  container:
+    extended-base: yes
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, rmarkdown, knitr, testthat (>= 3.0.0), GenomicRanges
 requirements:
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
   host:
-    - 'bioconductor-gdsfmt >=1.34.0,<1.35.0'
-    - 'bioconductor-seqarray >=1.38.0,<1.39.0'
+    - bioconductor-gdsfmt >=1.42.0,<1.43.0
+    - bioconductor-seqarray >=1.46.0,<1.47.0
     - r-base
+    - r-dplyr
     - r-ggplot2
     - r-ggrepel
+    - r-magrittr
+    - r-paletteer
+    - r-pals
     - r-rcolorbrewer
     - r-rlang
     - r-scales
+    - r-tidyr
   run:
-    - 'bioconductor-gdsfmt >=1.34.0,<1.35.0'
-    - 'bioconductor-seqarray >=1.38.0,<1.39.0'
+    - bioconductor-gdsfmt >=1.42.0,<1.43.0
+    - bioconductor-seqarray >=1.46.0,<1.47.0
     - r-base
+    - r-dplyr
     - r-ggplot2
     - r-ggrepel
+    - r-magrittr
+    - r-paletteer
+    - r-pals
     - r-rcolorbrewer
     - r-rlang
     - r-scales
+    - r-tidyr
+
+source:
+  md5: d94150a3e04430c48f8fa76d3b0bf870
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Visualization Tool for GWAS Result'
-  description: 'Manhattan plot and QQ Plot are commonly used to visualize the end result of Genome Wide Association Study. The "ggmanh" package aims to keep the generation of these plots simple while maintaining customizability. Main functions include manhattan_plot, qqunif, and thinPoints.'
-  license_file: LICENSE
+    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library('{{ name }}')"
 

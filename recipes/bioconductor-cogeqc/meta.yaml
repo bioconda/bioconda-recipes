@@ -1,48 +1,63 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "cogeqc" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 5678f211d7d6958f531e3baa49289a5a
+about:
+  description: 'cogeqc aims to facilitate systematic quality checks on standard comparative genomics analyses to help researchers detect issues and select the most suitable parameters for each data set. cogeqc can be used to asses: i. genome assembly and annotation quality with BUSCOs and comparisons of statistics with publicly available genomes on the NCBI; ii. orthogroup inference using a protein domain-based approach and; iii. synteny detection using synteny network properties. There are also data visualization functions to explore QC summary statistics.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Systematic quality checks on comparative genomics analyses
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-cogeqc", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: testthat (>= 3.0.0), sessioninfo, knitr, BiocStyle, rmarkdown, covr
 # SystemRequirements: BUSCO (>= 5.1.3) <https://busco.ezlab.org/>
 requirements:
   host:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-ggtree >=3.6.0,<3.7.0'
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-ggtree >=3.14.0,<3.15.0
     - r-base
+    - r-ggbeeswarm
     - r-ggplot2
     - r-igraph
+    - r-jsonlite
     - r-patchwork
     - r-reshape2
+    - r-rlang
+    - r-scales
   run:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-ggtree >=3.6.0,<3.7.0'
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-ggtree >=3.14.0,<3.15.0
     - r-base
+    - r-ggbeeswarm
     - r-ggplot2
     - r-igraph
+    - r-jsonlite
     - r-patchwork
     - r-reshape2
+    - r-rlang
+    - r-scales
+
+source:
+  md5: fcade09d62bdf4581ae0b470ad66ea5d
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Systematic quality checks on comparative genomics analyses'
-  description: 'cogeqc aims to facilitate systematic quality checks on standard comparative genomics analyses to help researchers detect issues and select the most suitable parameters for each data set. cogeqc can be used to asses: i. genome assembly quality with BUSCOs; ii. orthogroup inference using a protein domain-based approach and; iii. synteny detection using synteny network properties. There are also data visualization functions to explore QC summary statistics.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

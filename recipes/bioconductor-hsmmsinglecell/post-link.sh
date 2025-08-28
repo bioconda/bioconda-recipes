@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "hsmmsinglecell-1.18.0"
+installBiocDataPackage.sh "hsmmsinglecell-1.26.0"

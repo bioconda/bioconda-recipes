@@ -1,31 +1,34 @@
-{% set version = "1.12.0" %}
+{% set version = "1.20.0" %}
 {% set name = "HMP2Data" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 2945af451892098684b5fb0bdace152d
+about:
+  description: HMP2Data is a Bioconductor package of the Human Microbiome Project 2 (HMP2) 16S rRNA sequencing data. Processed data is provided as phyloseq, SummarizedExperiment, and MultiAssayExperiment class objects. Individual matrices and data.frames used for building these S4 class objects are also provided in the package.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: 16s rRNA sequencing data from the Human Microbiome Project 2
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-hmp2data", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: Biobase, BiocCheck, BiocManager, BiocStyle, cowplot, devtools, ggplot2, gridExtra, haven, rmarkdown, roxygen2, stats, testthat, tibble, UpSetR
 requirements:
   host:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
-    - 'bioconductor-multiassayexperiment >=1.24.0,<1.25.0'
-    - 'bioconductor-phyloseq >=1.42.0,<1.43.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-multiassayexperiment >=1.32.0,<1.33.0
+    - bioconductor-phyloseq >=1.50.0,<1.51.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-assertthat
     - r-base
     - r-data.table
@@ -35,12 +38,12 @@ requirements:
     - r-magrittr
     - r-readr
   run:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
-    - 'bioconductor-multiassayexperiment >=1.24.0,<1.25.0'
-    - 'bioconductor-phyloseq >=1.42.0,<1.43.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-multiassayexperiment >=1.32.0,<1.33.0
+    - bioconductor-phyloseq >=1.50.0,<1.51.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-assertthat
     - r-base
     - r-data.table
@@ -50,13 +53,17 @@ requirements:
     - r-magrittr
     - r-readr
     - curl
-    - bioconductor-data-packages>=20221109
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: 6d8778e92c4375d4bc35c25ab174473d
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: '16s rRNA sequencing data from the Human Microbiome Project 2'
-  description: 'HMP2Data is a Bioconductor package of the Human Microbiome Project 2 (HMP2) 16S rRNA sequencing data. Processed data is provided as phyloseq, SummarizedExperiment, and MultiAssayExperiment class objects. Individual matrices and data.frames used for building these S4 class objects are also provided in the package.'
+    - $R -e "library('{{ name }}')"
 

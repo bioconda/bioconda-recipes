@@ -1,42 +1,22 @@
-{% set version = "1.32.0" %}
+{% set version = "1.40.0" %}
 {% set name = "rRDP" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 1ecfab12fa08878c4717417a6faa8a92
+about:
+  description: This package installs and interfaces the naive Bayesian classifier for 16S rRNA sequences developed by the Ribosomal Database Project (RDP). With this package the classifier trained with the standard training set can be used or a custom classifier can be trained.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2 + file LICENSE
+  license_file: LICENSE
+  summary: Interface to the RDP Classifier
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: rRDPData
-# SystemRequirements: Java
-requirements:
-  host:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - r-base
-    - openjdk
-  run:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - r-base
-    - openjdk
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL-2 | file LICENSE'
-  summary: 'Interface to the RDP Classifier'
-  description: 'Seamlessly interfaces RDP classifier (version 2.9).'
-  license_file: LICENSE
+  run_exports: '{{ pin_subpackage("bioconductor-rrdp", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:rrdp
@@ -45,4 +25,32 @@ extra:
     name: bioconductor-rrdp
     path: recipes/bioconductor-rrdp
     version: 1.14.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: rRDPData, knitr, rmarkdown
+# SystemRequirements: Java JDK 1.4 or higher
+requirements:
+  host:
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - r-base
+    - r-rjava
+  run:
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - r-base
+    - r-rjava
+
+source:
+  md5: 2dc3e7d6baa2781859dbf38bc08ecbc5
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

@@ -1,80 +1,33 @@
-{% set version = "4.0.0" %}
+{% set version = "4.8.0" %}
 {% set name = "AlpsNMR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: e26f97302feb6f0403ed25ec18d2b330
+about:
+  description: Reads Bruker NMR data directories both zipped and unzipped. It provides automated and efficient signal processing for untargeted NMR metabolomics. It is able to interpolate the samples, detect outliers, exclude regions, normalize, detect peaks, align the spectra, integrate peaks, manage metadata and visualize the spectra. After spectra proccessing, it can apply multivariate analysis on extracted data. Efficient plotting with 1-D data is also available. Basic reading of 1D ACD/Labs exported JDX samples is also available.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Automated spectraL Processing System for NMR
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: archive, BiocStyle, ChemoSpec, cowplot, curl, DT (>= 0.5), GGally (>= 1.4.0), ggrepel (>= 0.8.0), gridExtra, knitr, plotly (>= 4.7.1), progressr, SummarizedExperiment, S4Vectors, testthat (>= 2.0.0), writexl (>= 1.0), zip (>= 2.0.4)
+  run_exports: '{{ pin_subpackage("bioconductor-alpsnmr", max_pin="x.x") }}'
+
+extra:
+  container:
+    extended-base: yes
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: ASICS, BiocStyle, ChemoSpec, cowplot, curl, DT (>= 0.5), GGally (>= 1.4.0), ggrepel (>= 0.8.0), gridExtra, knitr, NMRphasing, plotly (>= 4.7.1), progressr, SummarizedExperiment, S4Vectors, testthat (>= 2.0.0), writexl (>= 1.0), zip (>= 2.0.4)
 requirements:
-  host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-mixomics >=6.22.0,<6.23.0'
-    - r-base
-    - 'r-baseline >=1.2-1'
-    - 'r-dplyr >=0.7.5'
-    - 'r-fs >=1.2.6'
-    - 'r-future >=1.10.0'
-    - r-generics
-    - 'r-ggplot2 >=3.1.0'
-    - 'r-glue >=1.2.0'
-    - 'r-htmltools >=0.3.6'
-    - 'r-magrittr >=1.5'
-    - 'r-matrixstats >=0.54.0'
-    - 'r-pcapp >=1.9-73'
-    - 'r-purrr >=0.2.5'
-    - 'r-readxl >=1.1.0'
-    - 'r-reshape2 >=1.4.3'
-    - 'r-rlang >=0.3.0.1'
-    - 'r-rmarkdown >=1.10'
-    - 'r-scales >=1.2.0'
-    - 'r-signal >=0.7-6'
-    - 'r-speaq >=2.4.0'
-    - 'r-stringr >=1.3.1'
-    - 'r-tibble >=1.3.4'
-    - 'r-tidyr >=1.0.0'
-    - r-tidyselect
-    - 'r-vctrs >=0.3.0'
-  run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-mixomics >=6.22.0,<6.23.0'
-    - r-base
-    - 'r-baseline >=1.2-1'
-    - 'r-dplyr >=0.7.5'
-    - 'r-fs >=1.2.6'
-    - 'r-future >=1.10.0'
-    - r-generics
-    - 'r-ggplot2 >=3.1.0'
-    - 'r-glue >=1.2.0'
-    - 'r-htmltools >=0.3.6'
-    - 'r-magrittr >=1.5'
-    - 'r-matrixstats >=0.54.0'
-    - 'r-pcapp >=1.9-73'
-    - 'r-purrr >=0.2.5'
-    - 'r-readxl >=1.1.0'
-    - 'r-reshape2 >=1.4.3'
-    - 'r-rlang >=0.3.0.1'
-    - 'r-rmarkdown >=1.10'
-    - 'r-scales >=1.2.0'
-    - 'r-signal >=0.7-6'
-    - 'r-speaq >=2.4.0'
-    - 'r-stringr >=1.3.1'
-    - 'r-tibble >=1.3.4'
-    - 'r-tidyr >=1.0.0'
-    - r-tidyselect
-    - 'r-vctrs >=0.3.0'
+
   build:
     - {{ cdt('mesa-libgl-devel') }}  # [linux]
     - {{ cdt('mesa-dri-drivers') }}  # [linux]
@@ -82,16 +35,74 @@ requirements:
     - {{ cdt('libxdamage') }}  # [linux]
     - {{ cdt('libxxf86vm') }}  # [linux]
     - xorg-libxfixes  # [linux]
+
+  host:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-mixomics >=6.30.0,<6.31.0
+    - r-base
+    - r-baseline >=1.2-1
+    - r-cli
+    - r-dplyr >=1.1.0
+    - r-fs >=1.2.6
+    - r-generics
+    - r-ggplot2 >=3.1.0
+    - r-glue >=1.2.0
+    - r-htmltools >=0.3.6
+    - r-magrittr >=1.5
+    - r-matrixstats >=0.54.0
+    - r-pcapp >=1.9-73
+    - r-purrr >=0.2.5
+    - r-readxl >=1.1.0
+    - r-reshape2 >=1.4.3
+    - r-rlang >=0.3.0.1
+    - r-rmarkdown >=1.10
+    - r-scales >=1.2.0
+    - r-signal >=0.7-6
+    - r-speaq >=2.4.0
+    - r-stringr >=1.3.1
+    - r-tibble >=1.3.4
+    - r-tidyr >=1.0.0
+    - r-tidyselect
+    - r-vctrs >=0.3.0
+
+  run:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-mixomics >=6.30.0,<6.31.0
+    - r-base
+    - r-baseline >=1.2-1
+    - r-cli
+    - r-dplyr >=1.1.0
+    - r-fs >=1.2.6
+    - r-generics
+    - r-ggplot2 >=3.1.0
+    - r-glue >=1.2.0
+    - r-htmltools >=0.3.6
+    - r-magrittr >=1.5
+    - r-matrixstats >=0.54.0
+    - r-pcapp >=1.9-73
+    - r-purrr >=0.2.5
+    - r-readxl >=1.1.0
+    - r-reshape2 >=1.4.3
+    - r-rlang >=0.3.0.1
+    - r-rmarkdown >=1.10
+    - r-scales >=1.2.0
+    - r-signal >=0.7-6
+    - r-speaq >=2.4.0
+    - r-stringr >=1.3.1
+    - r-tibble >=1.3.4
+    - r-tidyr >=1.0.0
+    - r-tidyselect
+    - r-vctrs >=0.3.0
+
+source:
+  md5: cbc977c0ded1aff49e34e463eecc0730
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Automated spectraL Processing System for NMR'
-  description: 'Reads Bruker NMR data directories both zipped and unzipped. It provides automated and efficient signal processing for untargeted NMR metabolomics. It is able to interpolate the samples, detect outliers, exclude regions, normalize, detect peaks, align the spectra, integrate peaks, manage metadata and visualize the spectra. After spectra proccessing, it can apply multivariate analysis on extracted data. Efficient plotting with 1-D data is also available. Basic reading of 1D ACD/Labs exported JDX samples is also available.'
-  license_file: LICENSE
-extra:
-  container:
-    extended-base: true
+    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library('{{ name }}')"
 

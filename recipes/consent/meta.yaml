@@ -1,20 +1,25 @@
+{% set name = "consent" %}
 {% set version = "2.2.2" %}
-{% set sha256 = "3c236688c3ce83b039a547d10f05a3087717cab98bfb0fd57985de74af350833" %}
 
 package:
-  name: consent
-  version: '{{version}}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://github.com/morispi/CONSENT/archive/v{{version}}.tar.gz"
-  sha256: '{{sha256}}'
+  git_url: https://github.com/morispi/CONSENT.git
+  git_commit: fad9e342a3f8dbc33644f47e21146e7713c11167
+  sha256: ignored
   patches:
     - CONSENT-correct.patch
     - CONSENT-polish.patch
+    - 0001-waterman-lib-Makefile.patch
+    - 0002-makefile.patch
+    - 0003-Makefile.patch
 
 build:
-  skip: True  # [osx]
-  number: 2
+  number: 6
+  run_exports:
+    - {{ pin_subpackage('consent', max_pin="x") }}
 
 requirements:
   build:
@@ -22,11 +27,11 @@ requirements:
     - {{ compiler('c')}}
     - {{ compiler('cxx')}}
     - cmake
-    - wget
   host:
     - zlib
   run:
     - minimap2
+    - coreutils  # [osx]
 
 test:
   commands:
@@ -34,14 +39,22 @@ test:
     - CONSENT-polish -h | grep "CONSENT-polish"
 
 about:
-  home: https://github.com/morispi/CONSENT
-  license: AGPL-3.0
+  home: "https://github.com/morispi/CONSENT"
+  license: "AGPL-3.0-or-later"
   license_family: AGPL
-  summary: Scalable long read self-correction and assembly polishing with multiple sequence alignment
+  license_file: LICENSE
+  summary: "Scalable long read self-correction and assembly polishing with multiple sequence alignment."
+  dev_url: "https://github.com/morispi/CONSENT"
+  doc_url: "https://github.com/morispi/CONSENT/blob/v{{ version }}/README.md"
 
 extra:
   recipe-maintainers:
     - natir
-  container:
-    # Click needs the extended container
-    extended-base: True
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1038/s41598-020-80757-5
+    - biotools:consent-correct
+  skip-lints:
+    - uses_vcs_url

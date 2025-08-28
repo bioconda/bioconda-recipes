@@ -1,31 +1,40 @@
-{% set version = "3.6.0" %}
+{% set version = "3.14.0" %}
 {% set name = "curatedMetagenomicData" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 02a7793d82cb65070e5b584a5dd03ff5
+about:
+  description: The curatedMetagenomicData package provides standardized, curated human microbiome data for novel analyses. It includes gene families, marker abundance, marker presence, pathway abundance, pathway coverage, and relative abundance for samples collected from different body sites. The bacterial, fungal, and archaeal taxonomic abundances for each sample were calculated with MetaPhlAn3, and metabolic functional potential was calculated with HUMAnN3. The manually curated sample metadata and standardized metagenomic data are available as (Tree)SummarizedExperiment objects.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Curated Metagenomic Data of the Human Microbiome
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-curatedmetagenomicdata", max_pin="x.x") }}'
+
+extra:
+  parent_recipe:
+    name: bioconductor-curatedmetagenomicdata
+    path: recipes/bioconductor-curatedmetagenomicdata
+    version: 3.2.3
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, DT, knitr, readr, rmarkdown, scater, testthat, utils, uwot, vegan
 requirements:
   host:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
-    - 'bioconductor-mia >=1.6.0,<1.7.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-treesummarizedexperiment >=2.6.0,<2.7.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-mia >=1.14.0,<1.15.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-treesummarizedexperiment >=2.14.0,<2.15.0
     - r-base
     - r-dplyr
     - r-magrittr
@@ -36,12 +45,12 @@ requirements:
     - r-tidyr
     - r-tidyselect
   run:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
-    - 'bioconductor-mia >=1.6.0,<1.7.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-treesummarizedexperiment >=2.6.0,<2.7.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-mia >=1.14.0,<1.15.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-treesummarizedexperiment >=2.14.0,<2.15.0
     - r-base
     - r-dplyr
     - r-magrittr
@@ -52,18 +61,17 @@ requirements:
     - r-tidyr
     - r-tidyselect
     - curl
-    - bioconductor-data-packages>=20221108
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: efb481b40f689c417e9dbab4a98f71f1
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Curated Metagenomic Data of the Human Microbiome'
-  description: 'The curatedMetagenomicData package provides standardized, curated human microbiome data for novel analyses. It includes gene families, marker abundance, marker presence, pathway abundance, pathway coverage, and relative abundance for samples collected from different body sites. The bacterial, fungal, and archaeal taxonomic abundances for each sample were calculated with MetaPhlAn3, and metabolic functional potential was calculated with HUMAnN3. The manually curated sample metadata and standardized metagenomic data are available as (Tree)SummarizedExperiment objects.'
-extra:
-  parent_recipe:
-    name: bioconductor-curatedmetagenomicdata
-    path: recipes/bioconductor-curatedmetagenomicdata
-    version: 3.2.3
+    - $R -e "library('{{ name }}')"
 

@@ -1,54 +1,25 @@
-{% set version = "2.70.0" %}
+{% set version = "2.78.0" %}
 {% set name = "gcrma" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 4bc61327d51b514dc215c47806573b02
+about:
+  description: Background adjustment using sequence information
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: Background Adjustment Using Sequence Information
+
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: affydata, tools, splines, hgu95av2cdf, hgu95av2probe
-requirements:
-  host:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-affyio >=1.68.0,<1.69.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-xvector >=0.38.0,<0.39.0'
-    - r-base
-    - r-biocmanager
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-affyio >=1.68.0,<1.69.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-xvector >=0.38.0,<0.39.0'
-    - r-base
-    - r-biocmanager
-  build:
-    - {{ compiler('c') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: LGPL
-  summary: 'Background Adjustment Using Sequence Information'
-  description: 'Background adjustment using sequence information'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-gcrma", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   identifiers:
     - biotools:gcrma
     - doi:10.1186/1471-2105-9-452
@@ -56,4 +27,44 @@ extra:
     name: bioconductor-gcrma
     path: recipes/bioconductor-gcrma
     version: 2.52.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: affydata, tools, splines, hgu95av2cdf, hgu95av2probe
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-affyio >=1.76.0,<1.77.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-xvector >=0.46.0,<0.47.0
+    - r-base
+    - r-biocmanager
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-affyio >=1.76.0,<1.77.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-xvector >=0.46.0,<0.47.0
+    - r-base
+    - r-biocmanager
+
+source:
+  md5: aa2eac73f440177d1ad450a9faa09b27
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

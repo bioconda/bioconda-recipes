@@ -1,22 +1,35 @@
-{% set version = "1.56.0" %}
+{% set version = "1.64.0" %}
 {% set name = "iterativeBMAsurv" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 642bb275dd445cc856909ad88b9cc9bb
+about:
+  description: The iterative Bayesian Model Averaging (BMA) algorithm for survival analysis is a variable selection method for applying survival analysis to microarray data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: The Iterative Bayesian Model Averaging (BMA) Algorithm For Survival Analysis
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-iterativebmasurv", max_pin="x.x") }}'
+
+extra:
+  identifiers:
+    - biotools:iterativebmasurv
+    - doi:10.1186/1471-2105-10-72
+  parent_recipe:
+    name: bioconductor-iterativebmasurv
+    path: recipes/bioconductor-iterativebmasurv
+    version: 1.38.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 requirements:
   host:
     - r-base
@@ -28,21 +41,16 @@ requirements:
     - r-bma
     - r-leaps
     - r-survival
+
+source:
+  md5: 734ab3dcd679f88158ce0cbbfa247072
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'The Iterative Bayesian Model Averaging (BMA) Algorithm For Survival Analysis'
-  description: 'The iterative Bayesian Model Averaging (BMA) algorithm for survival analysis is a variable selection method for applying survival analysis to microarray data.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-extra:
-  identifiers:
-    - biotools:iterativebmasurv
-    - doi:10.1186/1471-2105-10-72
-  parent_recipe:
-    name: bioconductor-iterativebmasurv
-    path: recipes/bioconductor-iterativebmasurv
-    version: 1.38.0
+    - $R -e "library('{{ name }}')"
 

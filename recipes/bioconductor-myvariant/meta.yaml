@@ -1,52 +1,21 @@
-{% set version = "1.28.0" %}
+{% set version = "1.36.0" %}
 {% set name = "myvariant" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 14657acfd1876685469119cf20b73b3b
+about:
+  description: MyVariant.info is a comprehensive aggregation of variant annotation resources. myvariant is a wrapper for querying MyVariant.info services
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Accesses MyVariant.info variant query and annotation services
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle
-requirements:
-  host:
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-variantannotation >=1.44.0,<1.45.0'
-    - r-base
-    - r-hmisc
-    - r-httr
-    - r-jsonlite
-    - r-magrittr
-    - r-plyr
-  run:
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-variantannotation >=1.44.0,<1.45.0'
-    - r-base
-    - r-hmisc
-    - r-httr
-    - r-jsonlite
-    - r-magrittr
-    - r-plyr
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Accesses MyVariant.info variant query and annotation services'
-  description: 'MyVariant.info is a comprehensive aggregation of variant annotation resources. myvariant is a wrapper for querying MyVariant.info services'
+  run_exports: '{{ pin_subpackage("bioconductor-myvariant", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:myvariant
@@ -55,4 +24,43 @@ extra:
     name: bioconductor-myvariant
     path: recipes/bioconductor-myvariant
     version: 1.10.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle
+requirements:
+  host:
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
+    - r-base
+    - r-hmisc
+    - r-httr
+    - r-jsonlite
+    - r-magrittr
+    - r-plyr
+  run:
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
+    - r-base
+    - r-hmisc
+    - r-httr
+    - r-jsonlite
+    - r-magrittr
+    - r-plyr
+
+source:
+  md5: aa962af64065d70827f09a7388869286
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

@@ -1,48 +1,22 @@
-{% set version = "1.30.0" %}
+{% set version = "1.38.0" %}
 {% set name = "seq2pathway" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 4aa3b314396ba6711f18d933a55399ad
+about:
+  description: Seq2pathway is a novel tool for functional gene-set (or termed as pathway) analysis of next-generation sequencing data, consisting of "seq2gene" and "gene2path" components. The seq2gene links sequence-level measurements of genomic regions (including SNPs or point mutation coordinates) to gene-level scores, and the gene2pathway summarizes gene scores to pathway-scores for each sample. The seq2gene has the feasibility to assign both coding and non-exon regions to a broader range of neighboring genes than only the nearest one, thus facilitating the study of functional non-coding regions. The gene2pathway takes into account the quantity of significance for gene members within a pathway compared those outside a pathway. The output of seq2pathway is a general structure of quantitative pathway-level scores, thus allowing one to functional interpret such datasets as RNA-seq, ChIP-seq, GWAS, and derived from other next generational sequencing experiments.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: a novel tool for functional gene-set (or termed as pathway) analysis of next-generation sequencing data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-seq2pathway.data >=1.30.0,<1.31.0'
-    - r-base
-    - r-gsa
-    - r-nnet
-    - r-wgcna
-  run:
-    - 'bioconductor-biomart >=2.54.0,<2.55.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-seq2pathway.data >=1.30.0,<1.31.0'
-    - r-base
-    - r-gsa
-    - r-nnet
-    - r-wgcna
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'a novel tool for functional gene-set (or termed as pathway) analysis of next-generation sequencing data'
-  description: 'Seq2pathway is a novel tool for functional gene-set (or termed as pathway) analysis of next-generation sequencing data, consisting of "seq2gene" and "gene2path" components. The seq2gene links sequence-level measurements of genomic regions (including SNPs or point mutation coordinates) to gene-level scores, and the gene2pathway summarizes gene scores to pathway-scores for each sample. The seq2gene has the feasibility to assign both coding and non-exon regions to a broader range of neighboring genes than only the nearest one, thus facilitating the study of functional non-coding regions. The gene2pathway takes into account the quantity of significance for gene members within a pathway compared those outside a pathway. The output of seq2pathway is a general structure of quantitative pathway-level scores, thus allowing one to functional interpret such datasets as RNA-seq, ChIP-seq, GWAS, and derived from other next generational sequencing experiments.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-seq2pathway", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:seq2pathway
@@ -50,4 +24,38 @@ extra:
     name: bioconductor-seq2pathway
     path: recipes/bioconductor-seq2pathway
     version: 1.12.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  host:
+    - bioconductor-biomart >=2.62.0,<2.63.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-seq2pathway.data >=1.38.0,<1.39.0
+    - r-base
+    - r-gsa
+    - r-nnet
+    - r-wgcna
+  run:
+    - bioconductor-biomart >=2.62.0,<2.63.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-seq2pathway.data >=1.38.0,<1.39.0
+    - r-base
+    - r-gsa
+    - r-nnet
+    - r-wgcna
+
+source:
+  md5: 250480b364466bf484e3a5a63e4dd65d
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

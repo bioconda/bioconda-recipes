@@ -1,44 +1,51 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "GSE13015" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 5e2ac694eb8b344f8dbdc97813634da9
+about:
+  description: Microarray expression matrix platform GPL6106 and clinical data for 67 septicemic patients and made them available as GEO accession [GSE13015](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE13015). GSE13015 data have been parsed into a SummarizedExperiment object available in ExperimentHub. This data data could be used as an example supporting BloodGen3Module R package.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: MIT License
+  summary: GEO accession data GSE13015_GPL6106 as a SummarizedExperiment
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-gse13015", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: ExperimentHub (>= 0.99.6), knitr, BiocStyle, rmarkdown
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-geoquery >=2.66.0,<2.67.0'
-    - 'bioconductor-preprocesscore >=1.60.0,<1.61.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-geoquery >=2.74.0,<2.75.0
+    - bioconductor-preprocesscore >=1.68.0,<1.69.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-geoquery >=2.66.0,<2.67.0'
-    - 'bioconductor-preprocesscore >=1.60.0,<1.61.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-geoquery >=2.74.0,<2.75.0
+    - bioconductor-preprocesscore >=1.68.0,<1.69.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221106
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: 016137663819811515c8a31ad8970e36
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: 'MIT License'
-  summary: 'GEO accession data GSE13015_GPL6106 as a SummarizedExperiment'
-  description: 'Microarray expression matrix platform GPL6106 and clinical data for 67 septicemic patients and made them available as GEO accession [GSE13015](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE13015). GSE13015 data have been parsed into a SummarizedExperiment object available in ExperimentHub. This data data could be used as an example supporting BloodGen3Module R package.'
+    - $R -e "library('{{ name }}')"
 

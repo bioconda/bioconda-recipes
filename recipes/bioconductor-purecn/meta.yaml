@@ -1,80 +1,21 @@
-{% set version = "2.4.0" %}
+{% set version = "2.12.0" %}
 {% set name = "PureCN" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: e27dab92290f8bc87a24f45d433893e3
+about:
+  description: This package estimates tumor purity, copy number, and loss of heterozygosity (LOH), and classifies single nucleotide variants (SNVs) by somatic status and clonality. PureCN is designed for targeted short read sequencing data, integrates well with standard somatic variant detection and copy number pipelines, and has support for tumor samples without matching normal samples.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Copy number calling and SNV classification using targeted short read sequencing
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocParallel, BiocStyle, PSCBS, R.utils, TxDb.Hsapiens.UCSC.hg19.knownGene, copynumber, covr, knitr, optparse, org.Hs.eg.db, jsonlite, markdown, rmarkdown, testthat
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-dnacopy >=1.72.0,<1.73.0'
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rhdf5 >=2.42.0,<2.43.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-variantannotation >=1.44.0,<1.45.0'
-    - r-base
-    - r-data.table
-    - r-futile.logger
-    - r-ggplot2
-    - r-gridextra
-    - r-matrix
-    - r-mclust
-    - r-rcolorbrewer
-    - r-vgam
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-dnacopy >=1.72.0,<1.73.0'
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rhdf5 >=2.42.0,<2.43.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-variantannotation >=1.44.0,<1.45.0'
-    - r-base
-    - r-data.table
-    - r-futile.logger
-    - r-ggplot2
-    - r-gridextra
-    - r-matrix
-    - r-mclust
-    - r-rcolorbrewer
-    - r-vgam
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Copy number calling and SNV classification using targeted short read sequencing'
-  description: 'This package estimates tumor purity, copy number, and loss of heterozygosity (LOH), and classifies single nucleotide variants (SNVs) by somatic status and clonality. PureCN is designed for targeted short read sequencing data, integrates well with standard somatic variant detection and copy number pipelines, and has support for tumor samples without matching normal samples.'
+  run_exports: '{{ pin_subpackage("bioconductor-purecn", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:purecn
@@ -84,4 +25,73 @@ extra:
     version: 1.13.1
   recipe_maintainers:
     - roryk
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocParallel, BiocStyle, PSCBS, R.utils, TxDb.Hsapiens.UCSC.hg19.knownGene, covr, knitr, optparse, org.Hs.eg.db, jsonlite, markdown, rmarkdown, testthat
+requirements:
+
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-dnacopy >=1.80.0,<1.81.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rhdf5 >=2.50.0,<2.51.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
+    - r-base
+    - r-data.table
+    - r-futile.logger
+    - r-ggplot2
+    - r-gridextra
+    - r-matrix
+    - r-mclust
+    - r-rcolorbrewer
+    - r-vgam
+
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-dnacopy >=1.80.0,<1.81.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rhdf5 >=2.50.0,<2.51.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-variantannotation >=1.52.0,<1.53.0
+    - r-base
+    - r-data.table
+    - r-futile.logger
+    - r-ggplot2
+    - r-gridextra
+    - r-matrix
+    - r-mclust
+    - r-rcolorbrewer
+    - r-vgam
+
+source:
+  md5: e00cd4d68b2c9e0d03750f4d75e11991
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

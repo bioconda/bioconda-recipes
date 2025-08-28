@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "hivcdnavantwout03-1.37.0"
+installBiocDataPackage.sh "hivcdnavantwout03-1.46.0"

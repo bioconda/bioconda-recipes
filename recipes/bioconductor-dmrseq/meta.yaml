@@ -1,36 +1,40 @@
-{% set version = "1.18.0" %}
+{% set version = "1.26.0" %}
 {% set name = "dmrseq" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: ace7bce164dca5b69f54bb87293fcd11
+about:
+  description: This package implements an approach for scanning the genome to detect and perform accurate inference on differentially methylated regions from Whole Genome Bisulfite Sequencing data. The method is based on comparing detected regions to a pooled null distribution, that can be implemented even when as few as two samples per population are available. Region-level statistics are obtained by fitting a generalized least squares (GLS) regression model with a nested autoregressive correlated error structure for the effect of interest on transformed methylation proportions.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Detection and inference of differentially methylated regions from Whole Genome Bisulfite Sequencing
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, rmarkdown, BiocStyle
+  run_exports: '{{ pin_subpackage("bioconductor-dmrseq", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, BiocStyle, TxDb.Hsapiens.UCSC.hg19.knownGene, org.Hs.eg.db
 requirements:
   host:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-annotatr >=1.24.0,<1.25.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-bsseq >=1.34.0,<1.35.0'
-    - 'bioconductor-bumphunter >=1.40.0,<1.41.0'
-    - 'bioconductor-delayedmatrixstats >=1.20.0,<1.21.0'
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-annotatr >=1.32.0,<1.33.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-bsseq >=1.42.0,<1.43.0
+    - bioconductor-bumphunter >=1.48.0,<1.49.0
+    - bioconductor-delayedmatrixstats >=1.28.0,<1.29.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-ggplot2
     - r-locfit
@@ -39,17 +43,17 @@ requirements:
     - r-outliers
     - r-rcolorbrewer
   run:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-annotatr >=1.24.0,<1.25.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-bsseq >=1.34.0,<1.35.0'
-    - 'bioconductor-bumphunter >=1.40.0,<1.41.0'
-    - 'bioconductor-delayedmatrixstats >=1.20.0,<1.21.0'
-    - 'bioconductor-genomeinfodb >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-annotatr >=1.32.0,<1.33.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-bsseq >=1.42.0,<1.43.0
+    - bioconductor-bumphunter >=1.48.0,<1.49.0
+    - bioconductor-delayedmatrixstats >=1.28.0,<1.29.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-ggplot2
     - r-locfit
@@ -57,13 +61,16 @@ requirements:
     - r-nlme
     - r-outliers
     - r-rcolorbrewer
+
+source:
+  md5: 2d2587cf01f801f71925719e452948bd
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Detection and inference of differentially methylated regions from Whole Genome Bisulfite Sequencing'
-  description: 'This package implements an approach for scanning the genome to detect and perform accurate inference on differentially methylated regions from Whole Genome Bisulfite Sequencing data. The method is based on comparing detected regions to a pooled null distribution, that can be implemented even when as few as two samples per population are available. Region-level statistics are obtained by fitting a generalized least squares (GLS) regression model with a nested autoregressive correlated error structure for the effect of interest on transformed methylation proportions.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

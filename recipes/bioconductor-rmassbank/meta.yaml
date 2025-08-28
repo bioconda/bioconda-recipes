@@ -1,83 +1,103 @@
-{% set version = "3.8.0" %}
+{% set version = "3.16.0" %}
 {% set name = "RMassBank" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: fb5e0c2bc7113a7cf707e01cb72bf83a
+about:
+  description: Workflow to process tandem MS files and build MassBank records.  Functions include automated extraction of tandem MS spectra, formula assignment to tandem MS fragments, recalibration of tandem MS spectra with assigned fragments, spectrum cleanup, automated retrieval of compound information from Internet databases, and export to MassBank records.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Workflow to process tandem MS files and build MassBank records
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: BiocStyle,gplots,RMassBankData (>= 1.33.1), xcms (>= 1.37.1), CAMERA, RUnit, knitr, rmarkdown
+  run_exports: '{{ pin_subpackage("bioconductor-rmassbank", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, CAMERA, gplots, knitr, magick, rmarkdown, RMassBankData (>= 1.33.1), RUnit, xcms (>= 1.37.1)
 # SystemRequirements: OpenBabel
 requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-chemmineob >=1.36.0,<1.37.0'
-    - 'bioconductor-chemminer >=3.50.0,<3.51.0'
-    - 'bioconductor-msnbase >=2.24.0,<2.25.0'
-    - 'bioconductor-mzr >=2.32.0,<2.33.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-chemminer >=3.58.0,<3.59.0
+    - bioconductor-msnbase >=2.32.0,<2.33.0
+    - bioconductor-mzr >=2.40.0,<2.41.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-assertthat
     - r-base
     - r-data.table
     - r-digest
+    - r-dplyr
     - r-envipat
+    - r-glue
     - r-httr
+    - r-httr2
     - r-logger
+    - r-purrr
     - r-r.utils
     - r-rcdk
     - r-rcpp
-    - r-rcurl
     - r-readjdx
+    - r-readr
     - r-rjson
+    - r-tibble
+    - r-tidyselect
     - r-webchem
     - r-xml
     - r-yaml
     - libblas
     - liblapack
     - openbabel
+
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-chemmineob >=1.36.0,<1.37.0'
-    - 'bioconductor-chemminer >=3.50.0,<3.51.0'
-    - 'bioconductor-msnbase >=2.24.0,<2.25.0'
-    - 'bioconductor-mzr >=2.32.0,<2.33.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-chemminer >=3.58.0,<3.59.0
+    - bioconductor-msnbase >=2.32.0,<2.33.0
+    - bioconductor-mzr >=2.40.0,<2.41.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-assertthat
     - r-base
     - r-data.table
     - r-digest
+    - r-dplyr
     - r-envipat
+    - r-glue
     - r-httr
+    - r-httr2
     - r-logger
+    - r-purrr
     - r-r.utils
     - r-rcdk
     - r-rcpp
-    - r-rcurl
     - r-readjdx
+    - r-readr
     - r-rjson
+    - r-tibble
+    - r-tidyselect
     - r-webchem
     - r-xml
     - r-yaml
     - openbabel
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
+
+source:
+  md5: 63db3f188ead6224735d06f429e1ea43
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Workflow to process tandem MS files and build MassBank records'
-  description: 'Workflow to process tandem MS files and build MassBank records. Functions include automated extraction of tandem MS spectra, formula assignment to tandem MS fragments, recalibration of tandem MS spectra with assigned fragments, spectrum cleanup, automated retrieval of compound information from Internet databases, and export to MassBank records.'
+    - $R -e "library('{{ name }}')"
 

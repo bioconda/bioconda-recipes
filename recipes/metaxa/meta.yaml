@@ -1,31 +1,35 @@
+{% set name = "Metaxa" %}
 {% set version = "2.2.3" %}
+{% set sha256 = "f8f01b6f1a3f9e9968dc9438c84ce8d5a4e189e535dfbf529cbeec2897364c20" %}
 
 package:
-  name: metaxa
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
   url: http://microbiology.se/sw/Metaxa2_{{ version }}.tar.gz
-  sha256: f8f01b6f1a3f9e9968dc9438c84ce8d5a4e189e535dfbf529cbeec2897364c20
+  sha256: {{ sha256 }}
   patches:
-    - "perl-shebang.patch"
+    - perl-shebang.patch
 
 build:
   noarch: generic
-  number: 1
+  number: 2
 
 requirements:
-  run:
-    # version according to manual / latest 
+  host:
     - perl
-    - hmmer=3.1
-    - blast=2.2
-    - mafft=7
+  run:
+    # versions according to manual / latest 
+    - perl
+    - hmmer =3.1
+    # blastall is required from blast-legacy
+    - blast-legacy =2.2
+    - mafft =7
     # metaxa prefers userach, but this is not available yet, according to the manual 
     # vsearch is OK, but no version info is given
     - vsearch >=2.7.0
-  build:
-    - perl
+
 test:
   commands:
     - metaxa2 --help
@@ -41,7 +45,9 @@ test:
 
 about:
   home: http://microbiology.se/software/metaxa2/
-  license: GPL3
+  license: GPL-3.0
+  license_file: license.txt
+  license_family: GPL
   summary: Improved Identification and Taxonomic Classification of Small and Large Subunit rRNA in Metagenomic Data.
 
 extra:

@@ -1,38 +1,22 @@
-{% set version = "1.68.0" %}
+{% set version = "1.76.0" %}
 {% set name = "sagenhaft" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: ea8d4058b38bc8388a60bd17dfbb9cb8
+about:
+  description: This package implements several functions useful for analysis of gene expression data by sequencing tags as done in SAGE (Serial Analysis of Gene Expressen) data, i.e. extraction of a SAGE library from sequence files, sequence error correction, library comparison. Sequencing error correction is implementing using an Expectation Maximization Algorithm based on a Mixture Model of tag counts.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Collection of functions for reading and comparing SAGE libraries
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - r-base
-    - 'r-sparsem >=0.73'
-  run:
-    - r-base
-    - 'r-sparsem >=0.73'
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Collection of functions for reading and comparing SAGE libraries'
-  description: 'This package implements several functions useful for analysis of gene expression data by sequencing tags as done in SAGE (Serial Analysis of Gene Expressen) data, i.e. extraction of a SAGE library from sequence files, sequence error correction, library comparison. Sequencing error correction is implementing using an Expectation Maximization Algorithm based on a Mixture Model of tag counts.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-sagenhaft", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:sagenhaft
@@ -41,4 +25,28 @@ extra:
     name: bioconductor-sagenhaft
     path: recipes/bioconductor-sagenhaft
     version: 1.50.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  host:
+    - r-base
+    - r-sparsem >=0.73
+  run:
+    - r-base
+    - r-sparsem >=0.73
+
+source:
+  md5: 9546300f36a4c600915b430f7a982ce1
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

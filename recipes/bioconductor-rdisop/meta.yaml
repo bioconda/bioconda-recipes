@@ -1,24 +1,39 @@
-{% set version = "1.58.0" %}
+{% set version = "1.66.0" %}
 {% set name = "Rdisop" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 1e641147bc1679a9bcb467e0344675fa
+about:
+  description: In high resolution mass spectrometry (HR-MS), the measured masses can be decomposed into potential element combinations (chemical sum formulas). Where additional mass/intensity information of respective isotopic peaks is available, decomposition can take this information into account to better rank the potential candidate sum formulas. To compare measured mass/intensity information with the theoretical distribution of candidate sum formulas, the latter needs to be calculated. This package implements fast algorithms to address both tasks, the calculation of isotopic distributions for arbitrary sum formulas (assuming a HR-MS resolution of roughly 30,000), and the ranked list of sum formulas fitting an observed peak or isotopic peak set.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Decomposition of Isotopic Patterns
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: RUnit
+  run_exports: '{{ pin_subpackage("bioconductor-rdisop", max_pin="x.x") }}'
+
+extra:
+  parent_recipe:
+    name: bioconductor-rdisop
+    path: recipes/bioconductor-rdisop
+    version: 1.42.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, RUnit, testthat (>= 3.0.0)
 # SystemRequirements: None
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
   host:
     - r-base
     - r-rcpp
@@ -27,23 +42,16 @@ requirements:
   run:
     - r-base
     - r-rcpp
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - automake
-    - make
+
+source:
+  md5: 2c028e825b2eb802759a8005d318c009
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Decomposition of Isotopic Patterns'
-  description: 'Identification of metabolites using high precision mass spectrometry. MS Peaks are used to derive a ranked list of sum formulae, alternatively for a given sum formula the theoretical isotope distribution can be calculated to search in MS peak lists.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
-extra:
-  parent_recipe:
-    name: bioconductor-rdisop
-    path: recipes/bioconductor-rdisop
-    version: 1.42.0
+    - $R -e "library('{{ name }}')"
 

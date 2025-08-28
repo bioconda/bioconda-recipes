@@ -1,49 +1,58 @@
-{% set version = "1.34.0" %}
+{% set version = "1.42.0" %}
 {% set name = "Rcpi" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 9c328a53b58b69841594625def584f9f
+about:
+  description: A molecular informatics toolkit with an integration of bioinformatics and chemoinformatics tools for drug discovery.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0 | file LICENSE
+  license_file: LICENSE
+  summary: Molecular Informatics Toolkit for Compound-Protein Interaction in Drug Discovery
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, rmarkdown, RUnit, BiocGenerics
+  run_exports: '{{ pin_subpackage("bioconductor-rcpi", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
 requirements:
   host:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-gosemsim >=2.24.0,<2.25.0'
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-gosemsim >=2.32.0,<2.33.0
     - r-base
+    - r-curl
     - r-doparallel
     - r-foreach
-    - 'r-rcdk >=3.3.8'
-    - r-rcurl
-    - r-rjson
+    - r-httr2
+    - r-jsonlite
+    - r-rlang
   run:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-gosemsim >=2.24.0,<2.25.0'
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-gosemsim >=2.32.0,<2.33.0
     - r-base
+    - r-curl
     - r-doparallel
     - r-foreach
-    - 'r-rcdk >=3.3.8'
-    - r-rcurl
-    - r-rjson
+    - r-httr2
+    - r-jsonlite
+    - r-rlang
+
+source:
+  md5: 83acc5f4a67a80de2d3ff48c06ff7cb1
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'Artistic-2.0 | file LICENSE'
-  summary: 'Molecular Informatics Toolkit for Compound-Protein Interaction in Drug Discovery'
-  description: 'A molecular informatics toolkit with an integration of bioinformatics and chemoinformatics tools for drug discovery.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

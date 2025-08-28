@@ -1,36 +1,21 @@
-{% set version = "1.40.0" %}
+{% set version = "1.48.0" %}
 {% set name = "hpar" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 647bbfaf65eb2c67f1d185ef542f716c
+about:
+  description: The hpar package provides a simple R interface to and data from the Human Protein Atlas project.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Human Protein Atlas in R
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: org.Hs.eg.db, GO.db, knitr, BiocStyle, testthat, rmarkdown
-requirements:
-  host:
-    - r-base
-  run:
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Human Protein Atlas in R'
-  description: 'The hpar package provides a simple R interface to and data from the Human Protein Atlas project.'
+  run_exports: '{{ pin_subpackage("bioconductor-hpar", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:hpar
@@ -39,4 +24,29 @@ extra:
     name: bioconductor-hpar
     path: recipes/bioconductor-hpar
     version: 1.22.2
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: org.Hs.eg.db, GO.db, AnnotationDbi, knitr, BiocStyle, testthat, rmarkdown, dplyr, DT
+requirements:
+  host:
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - r-base
+  run:
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - r-base
+
+source:
+  md5: 6677e6756e4f9ba4131f8bf1e7dfbf73
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

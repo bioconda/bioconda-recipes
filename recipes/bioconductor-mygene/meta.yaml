@@ -1,50 +1,21 @@
-{% set version = "1.34.0" %}
+{% set version = "1.42.0" %}
 {% set name = "mygene" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: d6b637ff838fa5d7e12912878e8d380e
+about:
+  description: MyGene.Info_ provides simple-to-use REST web services to query/retrieve gene annotation data. It's designed with simplicity and performance emphasized. *mygene*, is an easy-to-use R wrapper to access MyGene.Info_ services.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Access MyGene.Info_ services
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle
-requirements:
-  host:
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - r-hmisc
-    - 'r-httr >=0.3'
-    - 'r-jsonlite >=0.9.7'
-    - r-plyr
-    - r-sqldf
-  run:
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - r-base
-    - r-hmisc
-    - 'r-httr >=0.3'
-    - 'r-jsonlite >=0.9.7'
-    - r-plyr
-    - r-sqldf
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Access MyGene.Info_ services'
-  description: 'MyGene.Info_ provides simple-to-use REST web services to query/retrieve gene annotation data. It''s designed with simplicity and performance emphasized. *mygene*, is an easy-to-use R wrapper to access MyGene.Info_ services.'
+  run_exports: '{{ pin_subpackage("bioconductor-mygene", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:mygene
@@ -53,4 +24,43 @@ extra:
     name: bioconductor-mygene
     path: recipes/bioconductor-mygene
     version: 1.16.2
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle
+requirements:
+  host:
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-txdbmaker >=1.2.0,<1.3.0
+    - r-base
+    - r-hmisc
+    - r-httr >=0.3
+    - r-jsonlite >=0.9.7
+    - r-plyr
+    - r-sqldf
+  run:
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-txdbmaker >=1.2.0,<1.3.0
+    - r-base
+    - r-hmisc
+    - r-httr >=0.3
+    - r-jsonlite >=0.9.7
+    - r-plyr
+    - r-sqldf
+
+source:
+  md5: f53f04381d0b954109c518d4d4876f96
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

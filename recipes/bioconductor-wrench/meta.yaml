@@ -1,40 +1,42 @@
-{% set version = "1.16.0" %}
+{% set version = "1.24.0" %}
 {% set name = "Wrench" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: fd3764fc865672c03c838108d6f5f263
+about:
+  description: Wrench is a package for normalization sparse genomic count data, like that arising from 16s metagenomic surveys.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Wrench normalization for sparse count data
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-wrench", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: knitr, rmarkdown, metagenomeSeq, DESeq2, edgeR
 requirements:
   host:
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
+    - bioconductor-limma >=3.62.0,<3.63.0
     - r-base
     - r-locfit
     - r-matrixstats
   run:
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
+    - bioconductor-limma >=3.62.0,<3.63.0
     - r-base
     - r-locfit
     - r-matrixstats
+source:
+  md5: a766c7f09aefdfa4c5178fc67e85d975
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Wrench normalization for sparse count data'
-  description: 'Wrench is a package for normalization sparse genomic count data, like that arising from 16s metagenomic surveys.'
+    - $R -e "library('{{ name }}')"
 

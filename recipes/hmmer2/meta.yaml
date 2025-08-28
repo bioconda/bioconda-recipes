@@ -1,5 +1,6 @@
+{% set name = "hmmer2" %}
 package:
-  name: hmmer2
+  name: {{name}}
   version: "2.3.2"
 
 source:
@@ -9,12 +10,16 @@ source:
     - Makefile.in.patch
 
 build:
-  number: 7
+  number: 11
+  run_exports:
+    - {{ pin_subpackage(name, max_pin = "x") }}
+
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - gnuconfig
   run:
 
 test:
@@ -39,3 +44,6 @@ about:
   notes: |
     This package appends "2" to the all HMMER tool binary names,
     allowing use in parallel with HMMER version 3 onwards.
+extra:
+  additional-platforms:
+    - linux-aarch64

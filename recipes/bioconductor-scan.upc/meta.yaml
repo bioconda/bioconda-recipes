@@ -1,56 +1,21 @@
-{% set version = "2.40.0" %}
+{% set version = "2.48.0" %}
 {% set name = "SCAN.UPC" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 11dce837faafc3d6488941f01647b95f
+about:
+  description: SCAN is a microarray normalization method to facilitate personalized-medicine workflows. Rather than processing microarray samples as groups, which can introduce biases and present logistical challenges, SCAN normalizes each sample individually by modeling and removing probe- and array-specific background noise using only data from within each array. SCAN can be applied to one-channel (e.g., Affymetrix) or two-channel (e.g., Agilent) microarrays. The Universal exPression Codes (UPC) method is an extension of SCAN that estimates whether a given gene/transcript is active above background levels in a given sample. The UPC method can be applied to one-channel or two-channel microarrays as well as to RNA-Seq read counts. Because UPC values are represented on the same scale and have an identical interpretation for each platform, they can be used for cross-platform data integration.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT
+  summary: Single-channel array normalization (SCAN) and Universal exPression Codes (UPC)
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: pd.hg.u95a
-requirements:
-  host:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-affyio >=1.68.0,<1.69.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-geoquery >=2.66.0,<2.67.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-oligo >=1.62.0,<1.63.0'
-    - 'bioconductor-sva >=3.46.0,<3.47.0'
-    - r-base
-    - r-foreach
-    - r-mass
-  run:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-affyio >=1.68.0,<1.69.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-geoquery >=2.66.0,<2.67.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-oligo >=1.62.0,<1.63.0'
-    - 'bioconductor-sva >=3.46.0,<3.47.0'
-    - r-base
-    - r-foreach
-    - r-mass
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: MIT
-  summary: 'Single-channel array normalization (SCAN) and Universal exPression Codes (UPC)'
-  description: 'SCAN is a microarray normalization method to facilitate personalized-medicine workflows. Rather than processing microarray samples as groups, which can introduce biases and present logistical challenges, SCAN normalizes each sample individually by modeling and removing probe- and array-specific background noise using only data from within each array. SCAN can be applied to one-channel (e.g., Affymetrix) or two-channel (e.g., Agilent) microarrays. The Universal exPression Codes (UPC) method is an extension of SCAN that estimates whether a given gene/transcript is active above background levels in a given sample. The UPC method can be applied to one-channel or two-channel microarrays as well as to RNA-Seq read counts. Because UPC values are represented on the same scale and have an identical interpretation for each platform, they can be used for cross-platform data integration.'
+  run_exports: '{{ pin_subpackage("bioconductor-scan.upc", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:scan.upc
@@ -58,4 +23,47 @@ extra:
     name: bioconductor-scan.upc
     path: recipes/bioconductor-scan.upc
     version: 2.24.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: pd.hg.u95a
+requirements:
+  host:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-affyio >=1.76.0,<1.77.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-geoquery >=2.74.0,<2.75.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-oligo >=1.70.0,<1.71.0
+    - bioconductor-sva >=3.54.0,<3.55.0
+    - r-base
+    - r-foreach
+    - r-mass
+  run:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-affyio >=1.76.0,<1.77.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-geoquery >=2.74.0,<2.75.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-oligo >=1.70.0,<1.71.0
+    - bioconductor-sva >=3.54.0,<3.55.0
+    - r-base
+    - r-foreach
+    - r-mass
+
+source:
+  md5: 403a8b5b1d552f3d65597f0cd10975c4
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

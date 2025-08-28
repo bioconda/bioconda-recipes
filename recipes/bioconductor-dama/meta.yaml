@@ -1,38 +1,22 @@
-{% set version = "1.70.0" %}
+{% set version = "1.78.0" %}
 {% set name = "daMA" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 0b4f775a14999125edd0cc4fe48893d2
+about:
+  description: This package contains functions for the efficient design of factorial two-colour microarray experiments and for the statistical analysis of factorial microarray data. Statistical details are described in Bretz et al. (2003, submitted)
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Efficient design and analysis of factorial two-colour microarray data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - r-base
-    - r-mass
-  run:
-    - r-base
-    - r-mass
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Efficient design and analysis of factorial two-colour microarray data'
-  description: 'This package contains functions for the efficient design of factorial two-colour microarray experiments and for the statistical analysis of factorial microarray data. Statistical details are described in Bretz et al. (2003, submitted)'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  run_exports: '{{ pin_subpackage("bioconductor-dama", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:dama
@@ -41,4 +25,28 @@ extra:
     name: bioconductor-dama
     path: recipes/bioconductor-dama
     version: 1.52.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  host:
+    - r-base
+    - r-mass
+  run:
+    - r-base
+    - r-mass
+
+source:
+  md5: 604d8b327a5ff84e4dfb0a73f18d7abb
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

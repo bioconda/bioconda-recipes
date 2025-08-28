@@ -1,42 +1,21 @@
-{% set version = "1.56.0" %}
+{% set version = "1.64.0" %}
 {% set name = "affyContam" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 6ac646aaf6051f868159a44820bdb5a9
+about:
+  description: structured corruption of cel file data to demonstrate QA effectiveness
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: structured corruption of affymetrix cel file data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: hgu95av2cdf
-requirements:
-  host:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-affydata >=1.46.0,<1.47.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - r-base
-  run:
-    - 'bioconductor-affy >=1.76.0,<1.77.0'
-    - 'bioconductor-affydata >=1.46.0,<1.47.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'structured corruption of affymetrix cel file data'
-  description: 'structured corruption of cel file data to demonstrate QA effectiveness'
+  run_exports: '{{ pin_subpackage("bioconductor-affycontam", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:affycontam
@@ -45,4 +24,33 @@ extra:
     name: bioconductor-affycontam
     path: recipes/bioconductor-affycontam
     version: 1.38.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: hgu95av2cdf
+requirements:
+  host:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-affydata >=1.54.0,<1.55.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+  run:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-affydata >=1.54.0,<1.55.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+
+source:
+  md5: 54580b1d9c057863579b3cb9582366ba
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

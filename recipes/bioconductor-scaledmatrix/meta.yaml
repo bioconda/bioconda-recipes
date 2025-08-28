@@ -1,41 +1,43 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "ScaledMatrix" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 9c1086352d5749b4c27da04ca7530c08
+about:
+  description: Provides delayed computation of a matrix of scaled and centered values. The result is equivalent to using the scale() function but avoids explicit realization of a dense matrix during block processing. This permits greater efficiency in common operations, most notably matrix multiplication.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Creating a DelayedMatrix of Scaled and Centered Values
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: testthat, BiocStyle, knitr, rmarkdown, BiocSingular
+  run_exports: '{{ pin_subpackage("bioconductor-scaledmatrix", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: testthat, BiocStyle, knitr, rmarkdown, BiocSingular, DelayedMatrixStats
 requirements:
   host:
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-matrix
   run:
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-matrix
+source:
+  md5: 763b5e7b3c5a90238ee676a2d1f9c7e0
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Creating a DelayedMatrix of Scaled and Centered Values'
-  description: 'Provides delayed computation of a matrix of scaled and centered values. The result is equivalent to using the scale() function but avoids explicit realization of a dense matrix during block processing. This permits greater efficiency in common operations, most notably matrix multiplication.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

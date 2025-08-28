@@ -1,41 +1,43 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "pageRank" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 4a9dc633ec19c8f896b45e589bbbca70
+about:
+  description: Implemented temporal PageRank analysis as defined by Rozenshtein and Gionis. Implemented multiplex PageRank as defined by Halu et al. Applied temporal and multiplex PageRank in gene regulatory network analysis.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Temporal and Multiplex PageRank for Gene Regulatory Network Analysis
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-pagerank", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: bcellViper, BSgenome.Hsapiens.UCSC.hg19, JASPAR2018, TxDb.Hsapiens.UCSC.hg19.knownGene, org.Hs.eg.db, TFBSTools, GenomicFeatures, annotate
 requirements:
   host:
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-motifmatchr >=1.20.0,<1.21.0'
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-motifmatchr >=1.28.0,<1.29.0
     - r-base
     - r-igraph
   run:
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-motifmatchr >=1.20.0,<1.21.0'
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-motifmatchr >=1.28.0,<1.29.0
     - r-base
     - r-igraph
+source:
+  md5: fc6281ec2506531166320bac8deaf9f4
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Temporal and Multiplex PageRank for Gene Regulatory Network Analysis'
-  description: 'Implemented temporal PageRank analysis as defined by Rozenshtein and Gionis. Implemented multiplex PageRank as defined by Halu et al. Applied temporal and multiplex PageRank in gene regulatory network analysis.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+    - $R -e "library('{{ name }}')"
 

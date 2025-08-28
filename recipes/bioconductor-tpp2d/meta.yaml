@@ -1,27 +1,31 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "TPP2D" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: fbb04dc6285a3032070945a15b08ddb8
+about:
+  description: Detection of ligand-protein interactions from 2D thermal profiles (DLPTP), Performs an FDR-controlled analysis of 2D-TPP experiments by functional analysis of dose-response curves across temperatures.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Detection of ligand-protein interactions from 2D thermal profiles (DLPTP)
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, testthat, rmarkdown
+  run_exports: '{{ pin_subpackage("bioconductor-tpp2d", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, testthat, rmarkdown, BiocStyle
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-limma >=3.62.0,<3.63.0
     - r-base
     - r-doparallel
     - r-dplyr
@@ -33,8 +37,8 @@ requirements:
     - r-stringr
     - r-tidyr
   run:
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-limma >=3.62.0,<3.63.0
     - r-base
     - r-doparallel
     - r-dplyr
@@ -45,13 +49,16 @@ requirements:
     - r-rcurl
     - r-stringr
     - r-tidyr
+
+source:
+  md5: dcb01b04448cdf8ad8f2444a7d961716
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Detection of ligand-protein interactions from 2D thermal profiles (DLPTP)'
-  description: 'Detection of ligand-protein interactions from 2D thermal profiles (DLPTP), Performs an FDR-controlled analysis of 2D-TPP experiments by functional analysis of dose-response curves across temperatures.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

@@ -1,50 +1,21 @@
-{% set version = "1.52.0" %}
+{% set version = "1.60.0" %}
 {% set name = "ChromHeatMap" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 9eee313b94d630cbbf3180996dd6927b
+about:
+  description: The ChromHeatMap package can be used to plot genome-wide data (e.g. expression, CGH, SNP) along each strand of a given chromosome as a heat map. The generated heat map can be used to interactively identify probes and genes of interest.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Heat map plotting by genome coordinate
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: ALL, hgu95av2.db
-requirements:
-  host:
-    - 'bioconductor-annotate >=1.76.0,<1.77.0'
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - r-base
-  run:
-    - 'bioconductor-annotate >=1.76.0,<1.77.0'
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
-    - r-base
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Heat map plotting by genome coordinate'
-  description: 'The ChromHeatMap package can be used to plot genome-wide data (e.g. expression, CGH, SNP) along each strand of a given chromosome as a heat map. The generated heat map can be used to interactively identify probes and genes of interest.'
+  run_exports: '{{ pin_subpackage("bioconductor-chromheatmap", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:chromheatmap
@@ -53,4 +24,41 @@ extra:
     name: bioconductor-chromheatmap
     path: recipes/bioconductor-chromheatmap
     version: 1.34.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: ALL, hgu95av2.db
+requirements:
+  host:
+    - bioconductor-annotate >=1.84.0,<1.85.0
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - r-base
+  run:
+    - bioconductor-annotate >=1.84.0,<1.85.0
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - r-base
+
+source:
+  md5: 37ff6e2451cb656481aa2f6fe75e5d98
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

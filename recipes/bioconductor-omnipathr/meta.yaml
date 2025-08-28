@@ -1,87 +1,110 @@
-{% set version = "3.5.25" %}
+{% set version = "3.14.0" %}
 {% set name = "OmnipathR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 97f1a0eba3aaf914892cd974c6175f0c
+about:
+  description: A client for the OmniPath web service (https://www.omnipathdb.org) and many other resources. It also includes functions to transform and pretty print some of the downloaded data, functions to access a number of other resources such as BioPlex, ConsensusPathDB, EVEX, Gene Ontology, Guide to Pharmacology (IUPHAR/BPS), Harmonizome, HTRIdb, Human Phenotype Ontology, InWeb InBioMap, KEGG Pathway, Pathway Commons, Ramilowski et al. 2015, RegNetwork, ReMap, TF census, TRRUST and Vinayagam et al. 2011. Furthermore, OmnipathR features a close integration with the NicheNet method for ligand activity prediction from transcriptomics data, and its R implementation `nichenetr` (available only on github).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: OmniPath web service client and more
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, biomaRt, bookdown, dnet, ggplot2, ggraph, gprofiler2, knitr, mlrMBO, parallelMap, ParamHelpers, Rgraphviz, smoof, supraHex, testthat
+  run_exports: '{{ pin_subpackage("bioconductor-omnipathr", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, bookdown, ggplot2, ggraph, gprofiler2, knitr, mlrMBO, parallelMap, ParamHelpers, Rgraphviz, R.matlab, sigmajs, smoof, supraHex, testthat
 requirements:
+
   host:
     - r-base
     - r-checkmate
     - r-crayon
     - r-curl
     - r-digest
-    - r-dplyr
+    - r-dplyr >=1.1.0
     - r-httr
     - r-igraph
     - r-jsonlite
     - r-later
     - r-logger
+    - r-lubridate
     - r-magrittr
     - r-progress
     - r-purrr
+    - r-r.utils
     - r-rappdirs
-    - 'r-readr >=2.0.0'
+    - r-readr >=2.0.0
     - r-readxl
     - r-rlang
     - r-rmarkdown
+    - r-rsqlite
     - r-rvest
+    - r-stringi
     - r-stringr
     - r-tibble
     - r-tidyr
     - r-tidyselect
+    - r-vctrs
     - r-withr
+    - r-xml
     - r-xml2
     - r-yaml
+    - r-zip
+
   run:
     - r-base
     - r-checkmate
     - r-crayon
     - r-curl
     - r-digest
-    - r-dplyr
+    - r-dplyr >=1.1.0
     - r-httr
     - r-igraph
     - r-jsonlite
     - r-later
     - r-logger
+    - r-lubridate
     - r-magrittr
     - r-progress
     - r-purrr
+    - r-r.utils
     - r-rappdirs
-    - 'r-readr >=2.0.0'
+    - r-readr >=2.0.0
     - r-readxl
     - r-rlang
     - r-rmarkdown
+    - r-rsqlite
     - r-rvest
+    - r-stringi
     - r-stringr
     - r-tibble
     - r-tidyr
     - r-tidyselect
+    - r-vctrs
     - r-withr
+    - r-xml
     - r-xml2
     - r-yaml
+    - r-zip
+
+source:
+  md5: d2e2da1697eb72a8c6313883043682ca
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "options(omnipath.logfile=''none''); library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'OmniPath web service client and more'
-  description: 'A client for the OmniPath web service (https://www.omnipathdb.org) and many other resources. It also includes functions to transform and pretty print some of the downloaded data, functions to access a number of other resources such as BioPlex, ConsensusPathDB, EVEX, Gene Ontology, Guide to Pharmacology (IUPHAR/BPS), Harmonizome, HTRIdb, Human Phenotype Ontology, InWeb InBioMap, KEGG Pathway, Pathway Commons, Ramilowski et al. 2015, RegNetwork, ReMap, TF census, TRRUST and Vinayagam et al. 2011. Furthermore, OmnipathR features a close integration with the NicheNet method for ligand activity prediction from transcriptomics data, and its R implementation `nichenetr` (available only on github).'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

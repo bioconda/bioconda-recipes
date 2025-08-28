@@ -1,33 +1,37 @@
-{% set version = "1.10.0" %}
+{% set version = "1.18.0" %}
 {% set name = "weitrix" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: ab7da6c21916674514d701df1b6e4cb2
+about:
+  description: Data type and tools for working with matrices having precision weights and missing data. This package provides a common representation and tools that can be used with many types of high-throughput data. The meaning of the weights is compatible with usage in the base R function "lm" and the package "limma". Calibrate weights to account for known predictors of precision. Find rows with excess variability. Perform differential testing and find rows with the largest confident differences. Find PCA-like components of variation even with many missing values, rotated so that individual components may be meaningfully interpreted. DelayedArray matrices and BiocParallel are supported.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL-2.1 | file LICENSE
+  license_file: LICENSE
+  summary: Tools for matrices with precision weights, test and explore weighted or sparse data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-weitrix", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, BiocStyle, tidyverse, airway, edgeR, EnsDb.Hsapiens.v86, org.Sc.sgd.db, AnnotationDbi, ComplexHeatmap, patchwork, testthat (>= 2.1.0)
 requirements:
   host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-delayedmatrixstats >=1.20.0,<1.21.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-topconfects >=1.14.0,<1.15.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-delayedmatrixstats >=1.28.0,<1.29.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-topconfects >=1.22.0,<1.23.0
     - r-assertthat
     - r-base
     - r-ckmeans.1d.dp
@@ -40,14 +44,14 @@ requirements:
     - r-rlang
     - r-scales
   run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-delayedmatrixstats >=1.20.0,<1.21.0'
-    - 'bioconductor-limma >=3.54.0,<3.55.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-topconfects >=1.14.0,<1.15.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-delayedmatrixstats >=1.28.0,<1.29.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-topconfects >=1.22.0,<1.23.0
     - r-assertthat
     - r-base
     - r-ckmeans.1d.dp
@@ -59,13 +63,16 @@ requirements:
     - r-rhpcblasctl
     - r-rlang
     - r-scales
+
+source:
+  md5: 13edf3fff909f635ca5c7f9ce03f2cce
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'LGPL-2.1 | file LICENSE'
-  summary: 'Tools for matrices with precision weights, test and explore weighted or sparse data'
-  description: 'Data type and tools for working with matrices having precision weights and missing data. This package provides a common representation and tools that can be used with many types of high-throughput data. The meaning of the weights is compatible with usage in the base R function "lm" and the package "limma". Calibrate weights to account for known predictors of precision. Find rows with excess variability. Perform differential testing and find rows with the largest confident differences. Find PCA-like components of variation even with many missing values, rotated so that individual components may be meaningfully interpreted. DelayedArray matrices and BiocParallel are supported.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

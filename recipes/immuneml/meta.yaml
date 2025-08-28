@@ -1,56 +1,61 @@
 {% set name = "immuneML" %}
-{% set version = "2.2.2" %}
+{% set version = "3.0.15" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: df56569f4c2a38204ed6f972466269449007ce2bed6307bbd33014c5040d564a
+  url: "https://pypi.io/packages/source/i/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz"
+  sha256: 74598c01c983f65253341a252846d165913164b2ea9b5154ebe0fb6f20b9242c
 
 build:
   number: 0
-  # gensim pinning doesn't work for python >=3.10
-  skip: true [py2k or py <= 36 or py > 39]
+  noarch: python
+  #skip: True  # [py < 37 or py > 311 or target_platform == "osx-64"]
+  run_exports:
+    - {{ pin_subpackage('immuneml', max_pin="x") }}
   entry_points:
     - immune-ml = immuneML.app.ImmuneMLApp:main
     - immune-ml-quickstart = immuneML.workflows.instructions.quickstart:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+    - ligo = immuneML.app.LigoApp:main
+  script: |
+    echo 'Installing immuneML...'
+    $PYTHON -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv || exit 1
+    echo 'Done installing immuneML'
 
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
+    - python >=3.7,<3.12
     - pip
-    - python
-    - cython
   run:
-    - airr >=1
-    - dill >=0.3
-    - editdistance ==0.5.3
-    - fishersapi
-    - gensim >=3.8,<4
-    - h5py >=2.9.0
-    - logomaker >=0.8
-    - matplotlib-base >=3.1
-    - matplotlib-venn >=0.11
-    - numpy >=1.18
-    - pandas >=1
-    - plotly >=4
-    - pystache ==0.5.4
+    - python >=3.7,<3.12
+    - numpy <=1.26.4
     - pytest >=4
-    - pytorch >=1.5.1
-    - python
-    - pyyaml >=5.3
-    - regex
-    - requests >=2.21
+    - pandas >=2.1.0
+    - PyYAML >=5.3
     - scikit-learn >=0.23
-    - scipy
-    - tensorboard >=1.14.0
-    - tqdm >=0.24
+    - gensim >=4
+    - matplotlib-base >=3.1
+    - editdistance
+    - regex
     - tzlocal
-    - cython
+    - airr >=1,<1.4
+    - pystache
+    - dill >=0.3
+    - plotly >=4
+    - logomaker >=0.8
+    - matplotlib-venn >=0.11
+    - scipy <1.13
+    - umap-learn
+    - bionumpy ==1.0.12
+    - npstructures
+    - olga >=1.2.4
+    - tensorflow >=2.12.0
+    - keras >=2.12.0
+    - pytorch >=2.* cpu_*
+    - psutil
+    - python-kaleido
 
 test:
   imports:
@@ -60,17 +65,20 @@ test:
 
 about:
   home: "https://github.com/uio-bmi/immuneML"
-  license: APGL-3.0-only
+  license: "APGL-3.0-only"
   license_family: AGPL
-  license_file: LICENSE.md
+  license_file: "LICENSE.md"
   summary: "immuneML is a software platform for machine learning analysis of immune receptor repertoires."
-  doc_url: "https://docs.immuneml.uio.no/"
+  doc_url: "https://docs.immuneml.uio.no"
   dev_url: "https://github.com/uio-bmi/immuneML"
 
 extra:
-  skip-lints:
-    - cython_must_be_in_host
   recipe-maintainers:
-    - knutwa-ext 
-    - BlueBasilisk
+    - knutwa-ext
     - pavlovicmilena
+    - pavelvazquez
+  identifiers:
+    - biotools:immuneml
+    - doi:10.1038/s42256-021-00413-z
+  #skip-lints:
+    #- cython_must_be_in_host

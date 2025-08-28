@@ -1,33 +1,39 @@
-{% set version = "1.20.0" %}
+{% set version = "1.28.0" %}
 {% set name = "rexposome" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 3a609dbdd2f5a6d5d00603c206889e50
+about:
+  description: Package that allows to explore the exposome and to perform association analyses between exposures and health outcomes.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Exposome exploration and outcome data analysis
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: mclust, flexmix, testthat, BiocStyle, knitr, rmarkdown
+  run_exports: '{{ pin_subpackage("bioconductor-rexposome", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: mclust, flexmix, testthat, BiocStyle, knitr, formatR, rmarkdown
 requirements:
+
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-circlize
     - r-corrplot
     - r-factominer
     - r-ggplot2
     - r-ggrepel
+    - r-ggridges
     - r-glmnet
     - r-gplots
     - r-gridextra
@@ -42,15 +48,17 @@ requirements:
     - r-scales
     - r-scatterplot3d
     - r-stringr
+
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-circlize
     - r-corrplot
     - r-factominer
     - r-ggplot2
     - r-ggrepel
+    - r-ggridges
     - r-glmnet
     - r-gplots
     - r-gridextra
@@ -65,13 +73,16 @@ requirements:
     - r-scales
     - r-scatterplot3d
     - r-stringr
+
+source:
+  md5: 2da6c4f78af706bbf12f8a47d0a03378
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Exposome exploration and outcome data analysis'
-  description: 'Package that allows to explore the exposome and to perform association analyses between exposures and health outcomes.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

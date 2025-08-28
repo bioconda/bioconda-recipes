@@ -1,59 +1,22 @@
-{% set version = "1.26.0" %}
+{% set version = "1.34.0" %}
 {% set name = "ggcyto" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 68674e1707f73017b6313a513b7595ab
+about:
+  description: With the dedicated fortify method implemented for flowSet, ncdfFlowSet and GatingSet classes, both raw and gated flow cytometry data can be plotted directly with ggplot. ggcyto wrapper and some customed layers also make it easy to add gates and population statistics to the plot.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: file LICENSE
+  license_file: LICENSE
+  summary: Visualize Cytometry data with ggplot
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: testthat, flowWorkspaceData, knitr, rmarkdown, flowStats, openCyto, flowViz, ggridges, vdiffr
-requirements:
-  host:
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-flowworkspace >=4.10.0,<4.11.0'
-    - 'bioconductor-ncdfflow >=2.44.0,<2.45.0'
-    - r-base
-    - r-data.table
-    - 'r-ggplot2 >=3.3.0'
-    - r-gridextra
-    - r-hexbin
-    - r-plyr
-    - r-rcolorbrewer
-    - r-rlang
-    - r-scales
-  run:
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-flowworkspace >=4.10.0,<4.11.0'
-    - 'bioconductor-ncdfflow >=2.44.0,<2.45.0'
-    - r-base
-    - r-data.table
-    - 'r-ggplot2 >=3.3.0'
-    - r-gridextra
-    - r-hexbin
-    - r-plyr
-    - r-rcolorbrewer
-    - r-rlang
-    - r-scales
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'file LICENSE'
-  summary: 'Visualize Cytometry data with ggplot'
-  description: 'With the dedicated fortify method implemented for flowSet, ncdfFlowSet and GatingSet classes, both raw and gated flow cytometry data can be plotted directly with ggplot. ggcyto wrapper and some customed layers also make it easy to add gates and population statistics to the plot.'
-  license_file: LICENSE
+  run_exports: '{{ pin_subpackage("bioconductor-ggcyto", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:ggcyto
@@ -62,4 +25,49 @@ extra:
     name: bioconductor-ggcyto
     path: recipes/bioconductor-ggcyto
     version: 1.8.2
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, flowWorkspaceData, knitr, rmarkdown, flowStats, openCyto, flowViz, ggridges, vdiffr
+requirements:
+  host:
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-flowworkspace >=4.18.0,<4.19.0
+    - bioconductor-ncdfflow >=2.52.0,<2.53.0
+    - r-base
+    - r-data.table
+    - r-ggplot2 >=3.5.0
+    - r-gridextra
+    - r-hexbin
+    - r-plyr
+    - r-rcolorbrewer
+    - r-rlang
+    - r-scales
+  run:
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-flowworkspace >=4.18.0,<4.19.0
+    - bioconductor-ncdfflow >=2.52.0,<2.53.0
+    - r-base
+    - r-data.table
+    - r-ggplot2 >=3.5.0
+    - r-gridextra
+    - r-hexbin
+    - r-plyr
+    - r-rcolorbrewer
+    - r-rlang
+    - r-scales
+
+source:
+  md5: 21deb9ad12806e54f05b1e58aa75f99f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

@@ -1,27 +1,32 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "tidySummarizedExperiment" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 931b25b90a30c8eb512037c7e59aeba1
+about:
+  description: The tidySummarizedExperiment package provides a set of tools for creating and manipulating tidy data representations of SummarizedExperiment objects. SummarizedExperiment is a widely used data structure in bioinformatics for storing high-throughput genomic data, such as gene expression or DNA sequencing data. The tidySummarizedExperiment package introduces a tidy framework for working with SummarizedExperiment objects. It allows users to convert their data into a tidy format, where each observation is a row and each variable is a column. This tidy representation simplifies data manipulation, integration with other tidyverse packages, and enables seamless integration with the broader ecosystem of tidy tools for data analysis.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Brings SummarizedExperiment to the Tidyverse
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: BiocStyle, testthat, knitr, markdown
+  run_exports: '{{ pin_subpackage("bioconductor-tidysummarizedexperiment", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, testthat, knitr, markdown, rmarkdown, plotly
 requirements:
+
   host:
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-cli
     - r-dplyr
@@ -31,17 +36,19 @@ requirements:
     - r-lifecycle
     - r-magrittr
     - r-pillar
-    - r-plotly
+    - r-pkgconfig
     - r-purrr
     - r-rlang
     - r-stringr
-    - 'r-tibble >=3.0.4'
+    - r-tibble >=3.0.4
     - r-tidyr
     - r-tidyselect
+    - r-ttservice >=0.4.0
     - r-vctrs
+
   run:
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-cli
     - r-dplyr
@@ -51,21 +58,25 @@ requirements:
     - r-lifecycle
     - r-magrittr
     - r-pillar
-    - r-plotly
+    - r-pkgconfig
     - r-purrr
     - r-rlang
     - r-stringr
-    - 'r-tibble >=3.0.4'
+    - r-tibble >=3.0.4
     - r-tidyr
     - r-tidyselect
+    - r-ttservice >=0.4.0
     - r-vctrs
+
+source:
+  md5: 5c41c06e535eaf3c387dccd53e64e008
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Brings SummarizedExperiment to the Tidyverse'
-  description: 'tidySummarizedExperiment is an adapter that abstracts the ''SummarizedExperiment'' container in the form of tibble and allows the data manipulation, plotting and nesting using ''tidyverse'''
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

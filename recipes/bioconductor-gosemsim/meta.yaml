@@ -1,52 +1,73 @@
-{% set version = "2.24.0" %}
+{% set version = "2.32.0" %}
 {% set name = "GOSemSim" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 3c42cebf69b137c02f1e8044ba2d51d3
+about:
+  description: The semantic comparisons of Gene Ontology (GO) annotations provide quantitative ways to compute similarities between genes and gene groups, and have became important basis for many bioinformatics analysis approaches. GOSemSim is an R package for semantic similarity computation among GO terms, sets of GO terms, gene products and gene clusters. GOSemSim implemented five methods proposed by Resnik, Schlicker, Jiang, Lin and Wang respectively.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: GO-terms Semantic Similarity Measures
+
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: AnnotationHub, BiocManager, clusterProfiler, DOSE, knitr, rmarkdown, org.Hs.eg.db, prettydoc, testthat, ROCR
-requirements:
-  host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-go.db >=3.16.0,<3.17.0'
-    - r-base
-    - r-rcpp
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - 'bioconductor-go.db >=3.16.0,<3.17.0'
-    - r-base
-    - r-rcpp
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'GO-terms Semantic Similarity Measures'
-  description: 'The semantic comparisons of Gene Ontology (GO) annotations provide quantitative ways to compute similarities between genes and gene groups, and have became important basis for many bioinformatics analysis approaches. GOSemSim is an R package for semantic similarity computation among GO terms, sets of GO terms, gene products and gene clusters. GOSemSim implemented five methods proposed by Resnik, Schlicker, Jiang, Lin and Wang respectively.'
+  run_exports: '{{ pin_subpackage("bioconductor-gosemsim", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:gosemsim
   parent_recipe:
     name: bioconductor-gosemsim
     path: recipes/bioconductor-gosemsim
     version: 2.6.2
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: AnnotationHub, BiocManager, clusterProfiler, DOSE, knitr, org.Hs.eg.db, prettydoc, rappdirs, readr, rmarkdown, testthat, tidyr, tidyselect, ROCR
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-go.db >=3.20.0,<3.21.0
+    - r-base
+    - r-dbi
+    - r-digest
+    - r-r.utils
+    - r-rcpp
+    - r-rlang
+    - r-yulab.utils >=0.1.6
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-go.db >=3.20.0,<3.21.0
+    - r-base
+    - r-dbi
+    - r-digest
+    - r-r.utils
+    - r-rcpp
+    - r-rlang
+    - r-yulab.utils >=0.1.6
+
+source:
+  md5: 91ac358b6d115c6f33062c7e57ca4484
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

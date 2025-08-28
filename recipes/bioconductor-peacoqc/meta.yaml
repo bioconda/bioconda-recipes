@@ -1,49 +1,56 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "PeacoQC" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 6c5052ec6bf9ae07b5163f282eb04d41
+about:
+  description: This is a package that includes pre-processing and quality control functions that can remove margin events, compensate and transform the data and that will use PeacoQCSignalStability for quality control. This last function will first detect peaks in each channel of the flowframe. It will remove anomalies based on the IsolationTree function and the MAD outlier detection method. This package can be used for both flow- and mass cytometry data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=3)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Peak-based selection of high quality cytometry data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-peacoqc", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, rmarkdown, BiocStyle
 requirements:
   host:
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-flowworkspace >=4.10.0,<4.11.0'
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-flowworkspace >=4.18.0,<4.19.0
     - r-base
     - r-circlize
     - r-ggplot2
     - r-gridextra
     - r-plyr
   run:
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
-    - 'bioconductor-flowcore >=2.10.0,<2.11.0'
-    - 'bioconductor-flowworkspace >=4.10.0,<4.11.0'
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-flowworkspace >=4.18.0,<4.19.0
     - r-base
     - r-circlize
     - r-ggplot2
     - r-gridextra
     - r-plyr
+
+source:
+  md5: decb90e9768d8e8f8a422a2b7cee0196
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>=3)'
-  summary: 'Peak-based selection of high quality cytometry data'
-  description: 'This is a package that includes pre-processing and quality control functions that can remove margin events, compensate and transform the data and that will use PeacoQCSignalStability for quality control. This last function will first detect peaks in each channel of the flowframe. It will remove anomalies based on the IsolationTree function and the MAD outlier detection method. This package can be used for both flow- and mass cytometry data.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

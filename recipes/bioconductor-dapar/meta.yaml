@@ -1,49 +1,57 @@
-{% set version = "1.30.0" %}
+{% set version = "1.38.0" %}
 {% set name = "DAPAR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: cc9d2a8f7dd3257ef1b2d0e224b0fa0e
+about:
+  description: The package DAPAR is a Bioconductor distributed R package which provides all the necessary functions to analyze quantitative data from label-free proteomics experiments. Contrarily to most other similar R packages, it is endowed with rich and user-friendly graphical interfaces, so that no programming skill is required (see `Prostar` package).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Tools for the Differential Analysis of Proteins Abundance with R
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: testthat, BiocStyle, AnnotationDbi, clusterProfiler, graph, diptest, cluster, vioplot, visNetwork, vsn, igraph, FactoMineR, factoextra, dendextend, parallel, doParallel, Mfuzz, apcluster, forcats, readxl, openxlsx, multcomp, purrr, tibble, knitr, norm, scales, tidyverse, cp4p, imp4p (>= 1.1),lme4, dplyr, limma, preprocessCore, stringr, tidyr, impute, gplots, grDevices, reshape2, graphics, stats, methods, ggplot2, RColorBrewer, Matrix, org.Sc.sgd.db
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-dapardata >=1.28.0,<1.29.0'
-    - 'bioconductor-msnbase >=2.24.0,<2.25.0'
-    - r-base
-    - r-foreach
-    - r-highcharter
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-dapardata >=1.28.0,<1.29.0'
-    - 'bioconductor-msnbase >=2.24.0,<2.25.0'
-    - r-base
-    - r-foreach
-    - r-highcharter
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Tools for the Differential Analysis of Proteins Abundance with R'
-  description: 'The package DAPAR is a Bioconductor distributed R package which provides all the necessary functions to analyze quantitative data from label-free proteomics experiments. Contrarily to most other similar R packages, it is endowed with rich and user-friendly graphical interfaces, so that no programming skill is required (see `Prostar` package).'
+  run_exports: '{{ pin_subpackage("bioconductor-dapar", max_pin="x.x") }}'
+
 extra:
   parent_recipe:
     name: bioconductor-dapar
     path: recipes/bioconductor-dapar
     version: 1.14.2
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, BiocStyle, AnnotationDbi, clusterProfiler, graph, diptest, cluster, vioplot, visNetwork, vsn, igraph, FactoMineR, factoextra, dendextend, parallel, doParallel, Mfuzz, apcluster, forcats, readxl, openxlsx, multcomp, purrr, tibble, knitr, norm, scales, tidyverse, cp4p, imp4p (>= 1.1),lme4, dplyr, limma, preprocessCore, stringr, tidyr, impute, gplots, grDevices, reshape2, graphics, stats, methods, ggplot2, RColorBrewer, Matrix, org.Sc.sgd.db
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-dapardata >=1.36.0,<1.37.0
+    - bioconductor-msnbase >=2.32.0,<2.33.0
+    - r-base
+    - r-foreach
+    - r-highcharter
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-dapardata >=1.36.0,<1.37.0
+    - bioconductor-msnbase >=2.32.0,<2.33.0
+    - r-base
+    - r-foreach
+    - r-highcharter
+
+source:
+  md5: dd51e0de294beab7baec943e13109940
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

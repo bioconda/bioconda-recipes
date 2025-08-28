@@ -24,5 +24,7 @@ chmod u+x nma/nmanu.pl
 cp nma/nmanu.pl $PREFIX/bin/
 chmod u+x nma/mc-eigen.pl
 cp nma/mc-eigen.pl $PREFIX/bin/
+chmod u+x nma/mc-eigen-mdweb.pl
+cp nma/mc-eigen-mdweb.pl $PREFIX/bin/
 chmod u+x nma/pca_anim_mc.pl
 cp nma/pca_anim_mc.pl $PREFIX/bin/

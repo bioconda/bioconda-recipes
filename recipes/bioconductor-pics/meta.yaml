@@ -1,54 +1,65 @@
-{% set version = "2.42.0" %}
+{% set version = "2.50.0" %}
 {% set name = "PICS" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 7430d3f4c1ba2ed9e655f8fc3caa0fdf
+about:
+  description: Probabilistic inference of ChIP-Seq using an empirical Bayes mixture model approach.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Probabilistic inference of ChIP-seq
+
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: rtracklayer, parallel, knitr
-requirements:
-  host:
-    - 'bioconductor-genomicalignments >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - r-base
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-genomicalignments >=1.34.0,<1.35.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-rsamtools >=2.14.0,<2.15.0'
-    - r-base
-  build:
-    - {{ compiler('c') }}
-    - automake
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Probabilistic inference of ChIP-seq'
-  description: 'Probabilistic inference of ChIP-Seq using an empirical Bayes mixture model approach.'
+  run_exports: '{{ pin_subpackage("bioconductor-pics", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   identifiers:
     - biotools:pics
   parent_recipe:
     name: bioconductor-pics
     path: recipes/bioconductor-pics
     version: 2.24.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: rtracklayer, parallel, knitr
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - automake
+    - make
+  host:
+    - bioconductor-genomicalignments >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - r-base
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-genomicalignments >=1.42.0,<1.43.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - r-base
+
+source:
+  md5: f7ebf4a39521560959720e07325dc592
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

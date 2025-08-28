@@ -1,38 +1,56 @@
-{% set version = "1.16.0" %}
+{% set version = "1.24.0" %}
 {% set name = "OUTRIDER" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 43fdc91d61ccaf498469b8b5e498ce1a
+about:
+  description: Identification of aberrant gene expression in RNA-seq data. Read count expectations are modeled by an autoencoder to control for confounders in the data. Given these expectations, the RNA-seq read counts are assumed to follow a negative binomial distribution with a gene-specific dispersion. Outliers are then identified as read counts that significantly deviate from this distribution. Furthermore, OUTRIDER provides useful plotting functions to analyze and visualize the results.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: OUTRIDER - OUTlier in RNA-Seq fInDER
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: testthat, knitr, rmarkdown, BiocStyle, TxDb.Hsapiens.UCSC.hg19.knownGene, org.Hs.eg.db, RMariaDB, AnnotationDbi, beeswarm, covr
+  run_exports: '{{ pin_subpackage("bioconductor-outrider", max_pin="x.x") }}'
+
+extra:
+  parent_recipe:
+    name: bioconductor-outrider
+    path: recipes/bioconductor-outrider
+    version: 1.1.1
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, knitr, rmarkdown, BiocStyle, TxDb.Hsapiens.UCSC.hg19.knownGene, org.Hs.eg.db, RMariaDB, AnnotationDbi, beeswarm, covr, GenomeInfoDb, ggbio, biovizBase
 requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
   host:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-pcamethods >=1.90.0,<1.91.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-pcamethods >=1.98.0,<1.99.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-txdbmaker >=1.2.0,<1.3.0
     - r-base
     - r-bbmisc
     - r-data.table
     - r-generics
     - r-ggplot2
+    - r-ggrepel
     - r-heatmaply
     - r-matrixstats
     - r-pheatmap
@@ -46,21 +64,24 @@ requirements:
     - r-scales
     - libblas
     - liblapack
+
   run:
-    - 'bioconductor-biocgenerics >=0.44.0,<0.45.0'
-    - 'bioconductor-biocparallel >=1.32.0,<1.33.0'
-    - 'bioconductor-deseq2 >=1.38.0,<1.39.0'
-    - 'bioconductor-genomicfeatures >=1.50.0,<1.51.0'
-    - 'bioconductor-genomicranges >=1.50.0,<1.51.0'
-    - 'bioconductor-iranges >=2.32.0,<2.33.0'
-    - 'bioconductor-pcamethods >=1.90.0,<1.91.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-pcamethods >=1.98.0,<1.99.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-txdbmaker >=1.2.0,<1.3.0
     - r-base
     - r-bbmisc
     - r-data.table
     - r-generics
     - r-ggplot2
+    - r-ggrepel
     - r-heatmaply
     - r-matrixstats
     - r-pheatmap
@@ -72,22 +93,16 @@ requirements:
     - r-rcpparmadillo
     - r-reshape2
     - r-scales
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: ecb42761f893c9a73a6a0195fa4ff84f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'OUTRIDER - OUTlier in RNA-Seq fInDER'
-  description: 'Identification of aberrant gene expression in RNA-seq data. Read count expectations are modeled by an autoencoder to control for confounders in the data. Given these expectations, the RNA-seq read counts are assumed to follow a negative binomial distribution with a gene-specific dispersion. Outliers are then identified as read counts that significantly deviate from this distribution. Furthermore, OUTRIDER provides useful plotting functions to analyze and visualize the results.'
-  license_file: LICENSE
-extra:
-  parent_recipe:
-    name: bioconductor-outrider
-    path: recipes/bioconductor-outrider
-    version: 1.1.1
+    - $R -e "library('{{ name }}')"
 

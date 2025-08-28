@@ -1,8 +1,9 @@
-{% set version = "1.2.2" %}
-{% set sha256 = "65ea054b0ebf6e22b5b94ec940b7cd3ba800535009870439bc51fcc7d28a3359" %}
+{% set name = "cellsnp-lite" %}
+{% set version = "1.2.3" %}
+{% set sha256 = "baf84ee8fc80e5a11d31e266ed6087e7dcba65be6b8583b025c628a9ff9d9dd7" %}
 
 package:
-  name: cellsnp-lite
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -10,27 +11,42 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 3
-  #skip: True # [osx]
+  number: 5
+  run_exports:
+    - {{ pin_subpackage('cellsnp-lite', max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - autoconf
+    - automake
+    - libtool
   host:
     - htslib
+    - libcurl
+    - bzip2
     - zlib
   run:
     - htslib
-    - zlib
 
 test:
   commands:
     - cellsnp-lite 2>&1 | grep -i 'options'
 
 about:
-  home: https://github.com/single-cell-genetics/cellsnp-lite
-  license: Apache-2.0
+  home: "https://github.com/single-cell-genetics/cellsnp-lite"
+  license: "Apache-2.0"
+  license_family: APACHE
   license_file: LICENSE
-  summary: Efficient genotyping bi-allelic SNPs on single cells
+  summary: "Efficient genotyping bi-allelic SNPs on single cells."
+  dev_url: "https://github.com/single-cell-genetics/cellsnp-lite"
+  doc_url: "https://cellsnp-lite.readthedocs.io/en/latest"
 
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btab358
+    - biotools:cellsnp-lite
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

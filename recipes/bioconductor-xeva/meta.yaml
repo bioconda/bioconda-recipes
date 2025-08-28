@@ -1,28 +1,32 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "Xeva" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f7d2cb1d722ce8e8d5362f6cb028c4b1
+about:
+  description: The Xeva package provides efficient and powerful functions for patient-drived xenograft (PDX) based pharmacogenomic data analysis. This package contains a set of functions to perform analysis of patient-derived xenograft data. This package was developed by the BHKLab, for further information please see our documentation.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Analysis of patient-derived xenograft (PDX) data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-xeva", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: BiocStyle, knitr, rmarkdown
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
-    - 'bioconductor-pharmacogx >=3.2.0,<3.3.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-pharmacogx >=3.10.0,<3.11.0
     - r-base
     - r-bbmisc
     - r-doparallel
@@ -32,9 +36,9 @@ requirements:
     - r-rmisc
     - r-scales
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-complexheatmap >=2.14.0,<2.15.0'
-    - 'bioconductor-pharmacogx >=3.2.0,<3.3.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-pharmacogx >=3.10.0,<3.11.0
     - r-base
     - r-bbmisc
     - r-doparallel
@@ -43,13 +47,16 @@ requirements:
     - r-nlme
     - r-rmisc
     - r-scales
+
+source:
+  md5: 190d7a6b0353ecc5d58ca13191f7e8f3
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Analysis of patient-derived xenograft (PDX) data'
-  description: 'Contains set of functions to perform analysis of patient-derived xenograft (PDX) data.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

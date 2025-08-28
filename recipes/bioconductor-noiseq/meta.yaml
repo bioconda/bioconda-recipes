@@ -1,39 +1,21 @@
-{% set version = "2.42.0" %}
+{% set version = "2.50.0" %}
 {% set name = "NOISeq" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 433f6d077210efad072673e9abda93fa
+about:
+  description: Analysis of RNA-seq expression data or other similar kind of data. Exploratory plots to evualuate saturation, count distribution, expression per chromosome, type of detected features, features length, etc. Differential expression between two experimental conditions with no parametric assumptions.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Exploratory analysis and differential expression for RNA-seq data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - r-base
-    - 'r-matrix >=1.2'
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - r-base
-    - 'r-matrix >=1.2'
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Exploratory analysis and differential expression for RNA-seq data'
-  description: 'Analysis of RNA-seq expression data or other similar kind of data. Exploratory plots to evualuate saturation, count distribution, expression per chromosome, type of detected features, features length, etc. Differential expression between two experimental conditions with no parametric assumptions.'
+  run_exports: '{{ pin_subpackage("bioconductor-noiseq", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:noiseq
@@ -41,4 +23,30 @@ extra:
     name: bioconductor-noiseq
     path: recipes/bioconductor-noiseq
     version: 2.24.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+    - r-matrix >=1.2
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+    - r-matrix >=1.2
+
+source:
+  md5: 58a62af2eac8bcc4c9e76238fd2d94a2
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

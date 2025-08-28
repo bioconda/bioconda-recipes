@@ -1,57 +1,64 @@
-{% set version = "1.6.0" %}
+{% set version = "1.14.0" %}
 {% set name = "ORFhunteR" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: c5466308777bb491eed8747f444a523f
+about:
+  description: The ORFhunteR package is a R and C++ library for an automatic determination and annotation of open reading frames (ORF) in a large set of RNA molecules. It efficiently implements the machine learning model based on vectorization of nucleotide sequences and the random forest classification algorithm. The ORFhunteR package consists of a set of functions written in the R language in conjunction with C++. The efficiency of the package was confirmed by the examples of the analysis of RNA molecules from the NCBI RefSeq and Ensembl databases. The package can be used in basic and applied biomedical research related to the study of the transcriptome of normal as well as altered (for example, cancer) human cells.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT License
+  summary: Predict open reading frames in nucleotide sequences
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-orfhunter", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, BiocStyle, rmarkdown
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-bsgenome.hsapiens.ucsc.hg38 >=1.4.0,<1.5.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-bsgenome.hsapiens.ucsc.hg38 >=1.4.0,<1.5.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
     - r-base
     - r-data.table
     - r-peptides
     - r-randomforest
-    - 'r-rcpp >=1.0.3'
+    - r-rcpp >=1.0.3
     - r-stringr
     - r-xfun
     - libblas
     - liblapack
   run:
-    - 'bioconductor-biostrings >=2.66.0,<2.67.0'
-    - 'bioconductor-bsgenome.hsapiens.ucsc.hg38 >=1.4.0,<1.5.0'
-    - 'bioconductor-rtracklayer >=1.58.0,<1.59.0'
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-bsgenome.hsapiens.ucsc.hg38 >=1.4.0,<1.5.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
     - r-base
     - r-data.table
     - r-peptides
     - r-randomforest
-    - 'r-rcpp >=1.0.3'
+    - r-rcpp >=1.0.3
     - r-stringr
     - r-xfun
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: df49de36ebe05483dddc8d59f998f190
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Predict open reading frames in nucleotide sequences'
-  description: 'The ORFhunteR package is a R and C++ library for an automatic determination and annotation of open reading frames (ORF) in a large set of RNA molecules. It efficiently implements the machine learning model based on vectorization of nucleotide sequences and the random forest classification algorithm. The ORFhunteR package consists of a set of functions written in the R language in conjunction with C++. The efficiency of the package was confirmed by the examples of the analysis of RNA molecules from the NCBI RefSeq and Ensembl databases. The package can be used in basic and applied biomedical research related to the study of the transcriptome of normal as well as altered (for example, cancer) human cells.'
+    - $R -e "library('{{ name }}')"
 

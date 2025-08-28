@@ -1,30 +1,44 @@
-{% set version = "1.36.0" %}
+{% set version = "1.44.0" %}
 {% set name = "TSCAN" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: b40f5a58e7db2ee644afe1b9583d4e95
+about:
+  description: Provides methods to perform trajectory analysis based on a minimum spanning tree constructed from cluster centroids. Computes pseudotemporal cell orderings by mapping cells in each cluster (or new cells) to the closest edge in the tree. Uses linear modelling to identify differentially expressed genes along each path through the tree. Several plotting and interactive visualization functions are also implemented.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL(>=2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Tools for Single-Cell Analysis
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-tscan", max_pin="x.x") }}'
+
+extra:
+  identifiers:
+    - biotools:tscan
+    - doi:10.1093/nar/gkw430
+  parent_recipe:
+    name: bioconductor-tscan
+    path: recipes/bioconductor-tscan
+    version: 1.18.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr, testthat, scuttle, scran, metapod, BiocParallel, BiocNeighbors, batchelor
 requirements:
   host:
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-trajectoryutils >=1.6.0,<1.7.0'
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-sparsearray >=1.6.0,<1.7.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-trajectoryutils >=1.14.0,<1.15.0
     - r-base
     - r-combinat
     - r-fastica
@@ -37,11 +51,12 @@ requirements:
     - r-plyr
     - r-shiny
   run:
-    - 'bioconductor-delayedarray >=0.24.0,<0.25.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-singlecellexperiment >=1.20.0,<1.21.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-trajectoryutils >=1.6.0,<1.7.0'
+    - bioconductor-delayedarray >=0.32.0,<0.33.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-sparsearray >=1.6.0,<1.7.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-trajectoryutils >=1.14.0,<1.15.0
     - r-base
     - r-combinat
     - r-fastica
@@ -53,21 +68,16 @@ requirements:
     - r-mgcv
     - r-plyr
     - r-shiny
+
+source:
+  md5: 83c3b6fdbf6d1bb0c5d656fe23e6a049
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL(>=2)
-  summary: 'Tools for Single-Cell Analysis'
-  description: 'Provides methods to perform trajectory analysis based on a minimum spanning tree constructed from cluster centroids. Computes pseudotemporal cell orderings by mapping cells in each cluster (or new cells) to the closest edge in the tree. Uses linear modelling to identify differentially expressed genes along each path through the tree. Several plotting and interactive visualization functions are also implemented.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-extra:
-  identifiers:
-    - biotools:tscan
-    - doi:10.1093/nar/gkw430
-  parent_recipe:
-    name: bioconductor-tscan
-    path: recipes/bioconductor-tscan
-    version: 1.18.0
+    - $R -e "library('{{ name }}')"
 

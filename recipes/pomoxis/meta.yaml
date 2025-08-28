@@ -1,5 +1,5 @@
 {% set name = "pomoxis" %}
-{% set version = "0.3.11" %}
+{% set version = "0.3.16" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 88f9882f3f9047c673636f783606eef58b8b64ebce859b84684aff8b87e4d28a
+  sha256: 461f201edfe5664bf3434755691c7e144d7f2861970c330e91f0c31ad93e4cdd
 
 build:
   number: 0
@@ -22,19 +22,25 @@ build:
     - long_fastx = pomoxis.util:extract_long_reads
     - pomoxis_path = pomoxis:show_prog_path
     - qscores_from_summary = pomoxis.qscores_from_summary:main
+    - reverse_bed = pomoxis.util:reverse_bed
     - split_fastx = pomoxis.util:split_fastx_cmdline
     - stats_from_bam = pomoxis.stats_from_bam:main
     - subsample_bam = pomoxis.subsample_bam:main
+    - filter_bam = pomoxis.filter_bam:main
     - summary_from_stats = pomoxis.summary_from_stats:main
+    - tag_bam = pomoxis.util:tag_bam
     - trim_alignments = pomoxis.trim_alignments:main
     - ref_seqs_from_bam = pomoxis.ref_seqs_from_bam:main
     - find_indels = pomoxis.find_indels:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('pomoxis', max_pin="x.x") }}
 
 requirements:
   host:
     - pip
     - python >=3.6
+    - setuptools
   run:
     - python >=3.6
     - biopython >=1.63
@@ -79,13 +85,12 @@ test:
 
 about:
   home: https://github.com/nanoporetech/pomoxis
-  license: Mozilla Public License 2.0
+  license: MPL-2.0
   license_family: OTHER
   license_file: LICENSE.md
   summary: Assembly, consensensus, and analysis tools by ONT research
   doc_url: https://nanoporetech.github.io/pomoxis/index.html
-  dev_url: https://github.com/nanoporetech/pomoxis 
-
+  dev_url: https://github.com/nanoporetech/pomoxis
 extra:
   recipe-maintainers:
     - cjw85

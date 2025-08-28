@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "rtcga.rnaseq-20151101.27.0"
+installBiocDataPackage.sh "rtcga.rnaseq-20151101.36.0"

@@ -1,43 +1,45 @@
-{% set version = "1.2.0" %}
+{% set version = "1.10.0" %}
 {% set name = "biodbNcbi" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 5bb846259fad18642609b9b73dd79bc0
+about:
+  description: The biodbNcbi library provides access to the NCBI databases CCDS, Gene, Pubchem Comp and Pubchem Subst, using biodb package framework. It allows to retrieve entries by their accession number. Web services can be accessed for searching the database by name or mass.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: AGPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+  summary: biodbNcbi, a library for connecting to NCBI Databases.
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-biodbncbi", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: roxygen2, BiocStyle, testthat (>= 2.0.0), devtools, knitr, rmarkdown, covr, lgr
 requirements:
   host:
-    - 'bioconductor-biodb >=1.6.0,<1.7.0'
+    - bioconductor-biodb >=1.14.0,<1.15.0
     - r-base
     - r-chk
     - r-r6
     - r-xml
   run:
-    - 'bioconductor-biodb >=1.6.0,<1.7.0'
+    - bioconductor-biodb >=1.14.0,<1.15.0
     - r-base
     - r-chk
     - r-r6
     - r-xml
+source:
+  md5: c17c1f48c74070ec3e73b877f580c4c9
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: AGPL-3
-  summary: 'biodbNcbi, a library for connecting to NCBI Databases.'
-  description: 'The biodbNcbi library provides access to the NCBI databases CCDS, Gene, Pubchem Comp and Pubchem Subst, using biodb package framework. It allows to retrieve entries by their accession number. Web services can be accessed for searching the database by name or mass.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+    - $R -e "library('{{ name }}')"
 

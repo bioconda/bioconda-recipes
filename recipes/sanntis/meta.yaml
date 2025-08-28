@@ -1,6 +1,6 @@
 {% set name = "sanntis" %}
-{% set version = "0.9.1" %}
-{% set sha256 = "120d80e3276d495f967e0f02b57feef82fb955d8f180a125685fb945a9da30d7" %}
+{% set version = "0.9.4.1" %}
+{% set sha256 = "b7abdbd35d480b2c217ec8074e7af86f1dc1a07e963e35c57c8b765f06d10dd9" %}
 
 package:
   name: {{ name }}
@@ -15,14 +15,18 @@ build:
   noarch: python
   entry_points:
     - sanntis = sanntis._cli:main
-  script: "{{ PYTHON }} -m pip install . -vv --no-deps"
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir"
+  run_exports:
+    - {{ pin_subpackage('sanntis', max_pin='x.x') }}
 
 requirements:
   host:
     - python >=3.9
     - pip
+    - setuptools
   run:
     - python >=3.9
+    - scipy >=1.7.3,<1.8.0 
     - perl >=5
     - biopython
     - numpy >=1.16,<1.20
@@ -41,7 +45,8 @@ test:
 
 about:
   home: "https://github.com/Finn-Lab/SanntiS"
-  summary: "SMBGC Annotation using Neural Networks Trained on Interpro Signatures"
+  summary: "SMBGC Annotation using Neural Networks Trained on Interpro Signatures."
   license: Apache-2.0
   license_family: Apache
   license_file: LICENSE
+  dev_url: "https://github.com/Finn-Lab/SanntiS"

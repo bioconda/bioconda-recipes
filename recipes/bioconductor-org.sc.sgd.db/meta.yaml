@@ -1,43 +1,45 @@
-{% set version = "3.16.0" %}
+{% set version = "3.20.0" %}
 {% set name = "org.Sc.sgd.db" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 207e829a62e588b5f8a3149accefabdc
+about:
+  description: Genome wide annotation for Yeast, primarily based on mapping using ORF identifiers from SGD.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Genome wide annotation for Yeast
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: DBI, annotate, RUnit
-requirements:
-  host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - r-base
-  run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - r-base
-    - curl
-    - bioconductor-data-packages>=20221103
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Genome wide annotation for Yeast'
-  description: 'Genome wide annotation for Yeast, primarily based on mapping using ORF identifiers from SGD.'
+  run_exports: '{{ pin_subpackage("bioconductor-org.sc.sgd.db", max_pin="x.x") }}'
 extra:
   parent_recipe:
     name: bioconductor-org.sc.sgd.db
     path: recipes/bioconductor-org.sc.sgd.db
     version: 3.6.0
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: DBI, annotate, RUnit
+requirements:
+  host:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - r-base
+  run:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20241103
+source:
+  md5: bbd0c3aa1aa0277c0a72d504042f9eea
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

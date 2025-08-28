@@ -1,40 +1,22 @@
-{% set version = "1.38.0" %}
+{% set version = "1.46.0" %}
 {% set name = "SPEM" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 1018dfbcf32a28dd000ba36eb4a7d86d
+about:
+  description: This package can optimize the parameter in S-system models given time series data
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: S-system parameter estimation method
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - r-base
-    - r-rsolnp
-  run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - r-base
-    - r-rsolnp
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'S-system parameter estimation method'
-  description: 'This package can optimize the parameter in S-system models given time series data'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  run_exports: '{{ pin_subpackage("bioconductor-spem", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:spem
@@ -43,4 +25,30 @@ extra:
     name: bioconductor-spem
     path: recipes/bioconductor-spem
     version: 1.20.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+    - r-rsolnp
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - r-base
+    - r-rsolnp
+
+source:
+  md5: 9a07117ec17b2565c419c992935962c2
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 
