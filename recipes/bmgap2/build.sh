@@ -12,6 +12,15 @@ chmod +x $PREFIX/bin/*.py $PREFIX/bin/*.sh
 # scripts in bmgap2 look for scripts in analysis_scripts and so make a simple symlink
 ln -sv $PREFIX/bin $PREFIX/analysis_scripts
 cp -vf BMGAP-RUNNER.sh $PREFIX/bin/
+find $PREFIX/analysis_scripts -maxdepth 2 -type f -executable | while read exe; do
+  name=$(basename $exe)
+  ln -sv $exe $PREFIX/bin/$name
+done
+
+ls -CF $PREFIX/bin
+find $PREFIX/bin/ -iname '*sql*' | xargs ls -lhSR
+
+exit 0
 
 # Will need to install databases, etc. later
 sharedb=$PREFIX/share/${PKG_NAME}-${PKG_VERSION}
@@ -61,3 +70,4 @@ done
 
 echo "===== Contents of $PREFIX/bin/:"
 ls -CF $PREFIX/bin/
+ls -lhS $PREFIX/bin/sqlite3_db/
