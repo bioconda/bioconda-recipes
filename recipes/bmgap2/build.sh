@@ -33,4 +33,5 @@ find $sharedb -type f -name 'species_db_*' -exec cp -vf {} $PREFIX/bin/ \;
 find $sharedb -type f -name 'RefSeqSketchesDefaults.msh*' -exec cp -vf {} $PREFIX/bin/ \;
 find $sharedb -type f -name 'blast_db*' -exec cp -vf {} $PREFIX/bin/ \;
 find $sharedb -type f -name 'sqlite3_db*' -exec cp -vf {} $PREFIX/bin/ \;
-
+echo "===== Contents of $PREFIX/bin/:"
+ls -CF $PREFIX/bin/
