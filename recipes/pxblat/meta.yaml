@@ -13,7 +13,19 @@ source:
 build:
   number: 1
   skip: True  # [py < 39]
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  script:
+    # 设置编译环境变量（关键修复）
+    - export CC=aarch64-conda-linux-gnu-cc
+    - export CXX=aarch64-conda-linux-gnu-c++
+    - export AR=aarch64-conda-linux-gnu-ar
+    - export LD=aarch64-conda-linux-gnu-ld
+    # 1. 修改common.c文件中的三个错误位置
+    - sed -i 's/freeFunc(&el);/freeFunc();/g' src/pxblat/extc/src/core/common.c
+    - sed -i 's/free(el);/free();/g' src/pxblat/extc/src/core/common.c
+    - sed -i 's/freeFunc(el->val);/freeFunc();/g' src/pxblat/extc/src/core/common.c
+    - sed -i 's/if (format != NULL && args != NULL)/if (format != NULL)/g' ./src/pxblat/extc/src/aux/htmshell.c
+    - sed -i 's/freeFunc(&hel->val);/freeFunc();/g' src/pxblat/extc/src/core/hash.c
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
   entry_points:
     - pxblat = pxblat.cli.cli:app
   run_exports:
@@ -22,14 +34,21 @@ build:
 requirements:
   build:
     - {{ compiler('cxx') }}
-  host:
     - python
+    - pip
+    - setuptools
+    - wheel
+    - make  # 如果使用Makefile
+    - gcc_linux-aarch64  # ARM架构专用编译器
+    - gxx_linux-aarch64  # C++编译器
+  host:
+    - python <3.12,>=3.9
     - pip
     - poetry-core >=1.2.0
     - pybind11 >2.9.1
     - setuptools >=46.4
   run:
-    - python
+    - python <3.12,>=3.9
     - loguru
     - pybind11 >=2.10.4
     - rich
@@ -59,3 +78,5 @@ extra:
     - yangyangli
   identifiers:
     - doi:10.1101/2023.08.02.551686
+  additional-platforms:
+    - linux-aarch64
