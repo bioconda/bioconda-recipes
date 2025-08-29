@@ -29,7 +29,8 @@ mkdir -pv $sharedb
 )
 
 # some scripts require local database files and so I unfortunately have to put that into bin
-find $sharedb -type f -name 'species_db_v1_2.msh*' -exec cp -vf {} $PREFIX/bin/ \;
-find $sharedb -type f -name RefSeqSketchesDefaults.msh -exec cp -vf {} $PREFIX/bin/ \;
+find $sharedb -type f -name 'species_db_*' -exec cp -vf {} $PREFIX/bin/ \;
+find $sharedb -type f -name 'RefSeqSketchesDefaults.msh*' -exec cp -vf {} $PREFIX/bin/ \;
 find $sharedb -type f -name 'blast_db*' -exec cp -vf {} $PREFIX/bin/ \;
 find $sharedb -type f -name 'sqlite3_db*' -exec cp -vf {} $PREFIX/bin/ \;
+
