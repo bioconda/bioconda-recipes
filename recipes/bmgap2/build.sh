@@ -18,7 +18,7 @@ find $PREFIX/analysis_scripts -maxdepth 2 -type f -executable | while read exe; 
 done
 
 ls -CF $PREFIX/bin
-find $PREFIX/bin/ -iname '*sql*' | xargs ls -lhSR
+find -L $PREFIX/bin/ -iname '*sql*' | xargs ls -lhSRF
 
 exit 0
 
