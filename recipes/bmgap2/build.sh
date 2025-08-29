@@ -12,9 +12,11 @@ chmod +x $PREFIX/bin/*.py $PREFIX/bin/*.sh
 # scripts in bmgap2 look for scripts in analysis_scripts and so make a simple symlink
 ln -sv $PREFIX/bin $PREFIX/analysis_scripts
 cp -vf BMGAP-RUNNER.sh $PREFIX/bin/
-find $PREFIX/analysis_scripts -maxdepth 2 -type f -executable | while read exe; do
+find $PREFIX/analysis_scripts -mindepth 1 -maxdepth 2 | while read exe; do
   name=$(basename $exe)
-  ln -sv $exe $PREFIX/bin/$name
+  if [[ -l $exe ]] || [[ -f $exe || [[ -d $exe ]]; then
+    ln -sv $exe $PREFIX/bin/$name
+  fi
 done
 
 ls -CF $PREFIX/bin
