@@ -13,18 +13,25 @@ source:
 
 build:
   number: 0
+  skip: true  # [win]   # DecentTree not supported on Windows
+  run_exports:
+    - {{ pin_subpackage("decenttree", max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}    # [linux]
-    - {{ compiler('cxx') }}  # [linux]
-    - cmake                  # [linux]
-    - make                   # [linux]
+    - {{ compiler('c') }}      # needed for zlib/*.c
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - llvm-openmp  # [osx]
+  host:
+    - llvm-openmp  # [osx]
+  run:
+    - llvm-openmp  # [osx]
 
 test:
   commands:
-    - test -x $PREFIX/bin/decenttree
-    - decenttree || true  # [linux]
+    - decenttree 
 
 about:
   home: https://github.com/iqtree/decenttree
