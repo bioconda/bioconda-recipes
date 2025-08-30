@@ -1,27 +1,32 @@
-{% set version = "1.28.0" %}
+{% set version = "1.30.1" %}
 {% set name = "chromVAR" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.21" %}
 
 about:
   description: Determine variation in chromatin accessibility across sets of annotations or peaks. Designed primarily for single-cell or sparse chromatin accessibility data, e.g. from scATAC-seq or sparse bulk ATAC or DNAse-seq experiments.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: MIT + file LICENSE
+  home: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
+  license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: Chromatin Variation Across Regions
+  summary: "Chromatin Variation Across Regions."
+  doc_url: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
+  dev_url: "https://bioconductor.org/packages/devel/bioc/html/{{ name }}.html"
 
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  run_exports: '{{ pin_subpackage("bioconductor-chromvar", max_pin="x.x") }}'
+  run_exports:
+    - {{ pin_subpackage('bioconductor-chromvar', max_pin="x") }}
 
 extra:
   additional-platforms:
     - linux-aarch64
-
+    - osx-arm64
   identifiers:
     - biotools:chromvar
+    - doi:10.1038/nmeth.4401
   parent_recipe:
     name: bioconductor-chromvar
     path: recipes/bioconductor-chromvar
@@ -29,17 +34,19 @@ extra:
 
 package:
   name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
+  version: {{ version }}
 
 # Suggests: JASPAR2016, BSgenome.Hsapiens.UCSC.hg19, readr, testthat, knitr, rmarkdown, pheatmap, motifmatchr
 # SystemRequirements: C++11
 requirements:
-
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
     - make
-
+    - pkg-config
+    - clangdev  # [osx]
+    - llvmlite  # [osx]
   host:
     - bioconductor-biocgenerics >=0.52.0,<0.53.0
     - bioconductor-biocparallel >=1.40.0,<1.41.0
@@ -66,7 +73,6 @@ requirements:
     - r-shiny
     - libblas
     - liblapack
-
   run:
     - bioconductor-biocgenerics >=0.52.0,<0.53.0
     - bioconductor-biocparallel >=1.40.0,<1.41.0
@@ -93,7 +99,7 @@ requirements:
     - r-shiny
 
 source:
-  md5: aee29f3a8176335fd69099d868a7e461
+  sha256: 576372e0cd42647e77083b7f8e414a4a560feae075283ca73062f8d199c1baf1
   url:
     - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
     - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
@@ -103,4 +109,3 @@ source:
 test:
   commands:
     - $R -e "library('{{ name }}')"
-
