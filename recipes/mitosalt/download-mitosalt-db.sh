@@ -57,14 +57,16 @@ if ! $download_human && ! $download_mouse; then
 fi
 
 # MITOSALT_DATA is defined in build.sh, store the db there
-if [[ ! -d "${MITOSALT_DATA}" ]]; then
+if [[ -z "${MITOSALT_DATA:-}" ]]; then
   printf "\nDownloading MITOSALT database in the current directory\n\n"
 else
-  printf "\nDownloading MITOSALT database in ${MITOSALT_DATA}\n\n"
-  mkdir -p "${MITOSALT_DATA}"
-  cd "${MITOSALT_DATA}"
+  printf "\nDownloading MITOSALT database in %s\n\n" "$MITOSALT_DATA"
+  mkdir -p "$MITOSALT_DATA"
+  cd "$MITOSALT_DATA" || { echo "Failed to cd into $MITOSALT_DATA"; exit 1; }
 fi
 
+# Create genome directory if it doesn't exist
+mkdir -p genome
 
 # Function to download and process genome
 download_and_process_human_genome() {
