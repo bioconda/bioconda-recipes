@@ -6,32 +6,25 @@ package:
   version: "{{ version }}"
 
 source:
-  - url: https://github.com/iqtree/decenttree/archive/refs/tags/v{{ version }}.tar.gz  # [linux]
-    sha256: d7d592e424b7969a8a361f2de74233659f52d76ad21b9aa2910bd312887addbb           # [linux]
-  - url: https://github.com/iqtree/decenttree/releases/download/v{{ version }}/decenttree-{{ version }}-MacOSX.zip  # [osx]
-    sha256: 3921d8185a63d876af8091799c7a082b9c80d6d6fed917c30ddef9191af39fe8                                      # [osx]
+  url: https://github.com/iqtree/decenttree/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: d7d592e424b7969a8a361f2de74233659f52d76ad21b9aa2910bd312887addbb
 
 build:
   number: 0
-  skip: true  # [win]   # DecentTree not supported on Windows
+  skip: true  # [win or osx]
   run_exports:
     - {{ pin_subpackage("decenttree", max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}      # needed for zlib/*.c
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
     - make
-    - llvm-openmp  # [osx]
-  host:
-    - llvm-openmp  # [osx]
-  run:
-    - llvm-openmp  # [osx]
 
 test:
   commands:
-    - decenttree 
+    - decenttree
 
 about:
   home: https://github.com/iqtree/decenttree
@@ -46,4 +39,3 @@ about:
 
 extra:
   recipe-maintainers:
-    - pentamorfico
