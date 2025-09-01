@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "arabidopsis.db0-3.18.0"
+installBiocDataPackage.sh "arabidopsis.db0-3.20.0"
