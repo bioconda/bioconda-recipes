@@ -36,7 +36,7 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="$(pwd)" \
 	-DPython_EXECUTABLE="${PYTHON}" -Wno-dev -Wno-deprecated \
 	--no-warn-unused-cli "${CONFIG_ARGS}"
 
-cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+cmake --build build --target install -j "${CPU_COUNT}"
 
 if [[ "${OS}" == "Darwin" ]]; then
 	${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
