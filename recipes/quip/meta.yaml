@@ -2,15 +2,17 @@
 {% set version = "1.1.8" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 2
 
 source:
   url: https://github.com/dcjones/quip/archive/refs/tags/v{{ version }}.tar.gz
   sha256: 9d2ca1bbc9365375b5527b069c2f28058b94807ec352911c10f58dfd3afb5262
+
+build:
+  number: 3
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -19,7 +21,9 @@ requirements:
     - autoconf
     - automake
     - libtool
+    - pkg-config
   host:
+    - bzip2
     - zlib
 
 test:
@@ -27,13 +31,15 @@ test:
     - quip -h
 
 about:
-  home: http://homes.cs.washington.edu/%7Edcjones/quip/
+  home: "http://homes.cs.washington.edu/%7Edcjones/quip"
   license: Custom
   license_file: COPYING
-  summary: Aggressive compression of FASTQ and SAM/BAM files.
+  summary: "Aggressive compression of FASTQ and SAM/BAM files."
+
 extra:
   identifiers:
     - biotools:quip
     - doi:10.1093/nar/gks754
-
-
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
