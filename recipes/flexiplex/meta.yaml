@@ -1,49 +1,66 @@
-{% set version = "1.02.3" %}
+{% set name = "flexiplex" %}
+{% set version = "1.02.5" %}
 
 package:
-  name: flexiplex
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/DavidsonGroup/flexiplex/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: f1813e564591b02c6805f78846f9d71176c324cb9cf33ee81cf44ea2b4814f2a
+  sha256: 6a14395cdefa91a1ad631a3ae839198715f22279c70cbcd51e660f15cee9228e
 
 build:
   number: 0
+  script:
+    - export DIR="${PREFIX}/bin"
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include -L${PREFIX}/lib"
+    - mkdir -p "${DIR}"
+    - make -j"${CPU_COUNT}"
+    - make install DIR="${DIR}"
   entry_points:
     - flexiplex-filter = flexiplex_filter.main:cli
   run_exports:
-    - {{ pin_subpackage("flexiplex", max_pin=None) }}
+    - {{ pin_subpackage('flexiplex', max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - pkg-config
   host:
     - python
     - pip
     - setuptools  # to install flexiplex-filter
   run:
     - python
+    - cachetools
+    - requests
+    - matplotlib-base
     - numpy
     - pandas
-    - matplotlib-base
-    
+
 test:
   commands:
     - flexiplex -h
     - flexiplex-filter -h
 
 about:
-  home: https://github.com/DavidsonGroup/flexiplex/
-  license: MIT License
-  summary: 'flexiplex: the flexible demultiplexer'
+  home: "https://github.com/DavidsonGroup/flexiplex"
+  license: MIT
+  license_file: LICENSE
+  summary: "flexiplex: the flexible demultiplexer (filter barcodes by whitelist and inflection point)"
   description: |
     Flexiplex is a fast and versatile sequence searching and demultiplexing tool 
     for omics data. For more information, see the accompanying bioRxiv preprint
     "Davidson et al. Flexiplex: A versatile demultiplexer and search tool for omics data."
   license_family: MIT
+  dev_url: "https://github.com/DavidsonGroup/flexiplex"
+  doc_url: "https://davidsongroup.github.io/flexiplex"
 
 extra:
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64
   identifiers:
-    - doi:10.1101/2023.08.21.554084 # bioRxiv preprint
+    - doi:10.1101/2023.08.21.554084  # bioRxiv preprint
