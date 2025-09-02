@@ -2,7 +2,7 @@
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CFLAGS="${CXXFLAGS} -O3 -std=c++0x -I${PREFIX}/include -fopenmp -funroll-loops -g -Wall"
+export CFLAGS="-g -Wall -O3 -std=c++0x -I${PREFIX}/include -L${PREFIX}/lib -fopenmp -funroll-loops"
 
 mkdir -p "$PREFIX/bin"
 
