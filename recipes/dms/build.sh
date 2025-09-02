@@ -6,7 +6,7 @@ if [[ $target_platform == 'linux-aarch64' ]]; then
 fi
 
 make CXX="${CXX} ${CPPFLAGS} ${CXXFLAGS} -fopenmp -DOMP ${LDFLAGS}"
-export DynamicMetaStorms=${PREFIX}/bin
+#export DynamicMetaStorms=${PREFIX}/bin
 cp bin/* ${PREFIX}/bin/
 chmod +x ${PREFIX}/bin/*
 cp -r databases ${PREFIX}
