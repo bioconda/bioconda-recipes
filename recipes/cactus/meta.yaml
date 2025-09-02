@@ -1,64 +1,111 @@
+{% set name = "cactus" %}
+{% set version = "2.9.9" %}
+
 package:
-  name: cactus
-  # Version prefixed with 0.0. since there is now an official
-  # https://github.com/ComparativeGenomicsToolkit/cactus/releases/tag/v1.0.0
-  # TODO: Old builds with 2019.03.01 may be moved off the main label.
-  version: "0.0.2019.03.01"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  # This uses non-upstream sources!
-  # When updating the recipe, please use https://github.com/ComparativeGenomicsToolkit/cactus .
-  url: https://github.com/pbasting/cactus/archive/833d8ca015deecdfa5d0aca01211632cdaca9e58.zip
-  md5: 61ba6e8093a6649c43da1950074d9d5f
+  url: https://github.com/ComparativeGenomicsToolkit/cactus/releases/download/v{{ version }}/cactus-v{{ version }}.tar.gz
+  sha256: 946542c62b3ea46d1fe05b60f8cec324af9a10451fbb2ae81f2b703e07645a7e
   patches:
-    - 0001-Unvendor-HDF5-and-do-not-copy-hal-bin.patch
-    - 0002-Do-not-make-redundant-copies-of-hal-bin.patch
-    - 0003-Remove-unused-Cython-import.patch
-    # changes setup.py so it doesn't call git and doesn't try and install dependencies
-    - setup.patch
+    - include.mk.patch
+    - makefile.patch
 
 build:
-  number: 5
-  skip: true # [osx or py>27]
+  number: 2
+  skip: True  # [aarch64 and py < 310]
+  entry_points:
+    - cactus = cactus.progressive.cactus_progressive:main
+    - cactus-preprocess = cactus.preprocessor.cactus_preprocessor:main
+    - cactus-prepare = cactus.progressive.cactus_prepare:main
+    - cactus-prepare-toil = cactus.progressive.cactus_prepare:main_toil
+    - cactus-blast = cactus.blast.cactus_blast:main
+    - cactus-refmap = cactus.refmap.cactus_refmap:main
+    - cactus-minigraph = cactus.refmap.cactus_minigraph:main
+    - cactus-graphmap = cactus.refmap.cactus_graphmap:main
+    - cactus-graphmap-split = cactus.refmap.cactus_graphmap_split:main
+    - cactus-graphmap-join = cactus.refmap.cactus_graphmap_join:main
+    - cactus-align = cactus.setup.cactus_align:main
+    - cactus-align-batch = cactus.setup.cactus_align:main_batch
+    - cactus-update-prepare = cactus.update.cactus_update_prepare:main
+    - cactus-terra-helper = cactus.progressive.cactus_terra_helper:main
+    - cactus-hal2maf = cactus.maf.cactus_hal2maf:main
+    - cactus-hal2chains = cactus.maf.cactus_hal2chains:main
+    - cactus-maf2bigmaf = cactus.maf.cactus_maf2bigmaf:main
+    - cactus-pangenome = cactus.refmap.cactus_pangenome:main
+  run_exports:
+    - {{ pin_subpackage('cactus', max_pin="x.x") }}
 
 requirements:
   build:
-    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-
+    - make
+    - pkg-config
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
   host:
+    - python
     - pip
-    - python
+    - libxml2
     - hdf5
+    - libdeflate
     - zlib
-    - kyototycoon
-    - cython
-  run:
+    - bzip2
     - decorator
-    - subprocess32
-    - psutil
-    - networkx >=2,<3
-    - python
-    - hdf5
-    - zlib
-    - kyototycoon
+    - networkx >=2,<2.8.1
+    - cigar
     - biopython
-    - toil 3.14.0
-    - ucsc-fatotwobit
-    - ucsc-bedsort
-    - ucsc-bedtobigbed
-    - ucsc-bigbedtobed
-    - openssl
-    - sonlib
-    - jobtree
+    - pysam
+    - toil  # [x86_64]
+    - backports.zoneinfo  # [py39]
+  run:
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - python
+    - libxml2
+    - decorator
+    - networkx >=2,<2.8.1
+    - cigar
+    - biopython
+    - pysam
+    - toil  # [x86_64]
+    - backports.zoneinfo  # [py39]
+    - samtools
+    - bcftools
+    - parallel
+    - lastz
+    - pytest
+    - rsync
+    # These are from downloadPangenomeTools
+    - minimap2
+    - minigraph
+    - gfatools
+    - dna-nn
+    - bedtools
 
 test:
   commands:
-    - cactus -h
-    - hal2assemblyHub.py -h
+    - cactus -h  # [x86_64]
+    - test -x ${PREFIX}/bin/cactus  # [aarch64 or arm64]
 
 about:
-  home: https://github.com/ComparativeGenomicsToolkit/cactus
-  license: https://github.com/ComparativeGenomicsToolkit/cactus/blob/master/LICENSE.txt
-  summary: 'Cactus is a reference-free whole-genome multiple alignment program based upon notion of Cactus graphs'
+  home: "https://github.com/ComparativeGenomicsToolkit/cactus"
+  license: MIT
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  summary: "Cactus is a reference-free whole-genome multiple alignment program based upon notion of Cactus graphs."
+  dev_url: "https://github.com/ComparativeGenomicsToolkit/cactus"
+  doc_url: "https://github.com/ComparativeGenomicsToolkit/cactus/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:cactus
+    - usegalaxy-eu:cactus_cactus
+    - usegalaxy-eu:cactus_export
+    - doi:10.1038/s41586-020-2871-y
+    - doi:10.1101/gr.123356.111
+    - doi:10.1089/cmb.2010.0252
