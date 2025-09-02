@@ -5,6 +5,8 @@ export LC_ALL="en_US.UTF-8"
 
 export SHARE_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
 
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.*
+
 mkdir -p $SHARE_DIR/
 cp -rf src/ $SHARE_DIR/
 
