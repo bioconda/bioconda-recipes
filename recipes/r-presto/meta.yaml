@@ -1,27 +1,29 @@
-{% set version = '1.0.0' %}
+{% set name = "r-presto" %}
+{% set version = "1.0.0" %}
 {% set github = 'https://github.com/immunogenomics/presto' %}
 
 package:
-  name: r-presto
-  version: {{ version|replace("-", "_") }}
-  
+  name: {{ name }}
+  version: {{ version }}
+
 source:
   url: {{ github }}/archive/refs/tags/{{ version }}.tar.gz
   sha256: 96e1b3a2fec84bbd0781d4d3235e33003cd4eb28944a433868ba446b956abcdb
 
 build:
-  number: 2
+  number: 4
   rpaths:
     - lib/R/lib/
     - lib/
+  script: $R CMD INSTALL --build . $R_ARGS
   run_exports:
-    - {{ pin_subpackage("r-presto", max_pin="x.x.x") }}
-  script: $R CMD INSTALL --build .
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
   host:
     - r-base
     - r-matrix
@@ -51,15 +53,16 @@ test:
 
 about:
   home: {{ github }}
-  doc_url: https://immunogenomics.github.io/presto/
-  license: GPL-3.0-only
+  doc_url: "https://immunogenomics.github.io/presto"
+  license: "GPL-3.0-only"
   license_family: GPL3
-  license_file:
-    - {{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3
-  summary: Scalable implementation of the Wilcoxon rank sum test and auROC statistic. Interfaces
-    to dense and sparse matrices, as well as genomics analysis frameworks Seurat and
-    SingleCellExperiment.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: "Scalable implementation of the Wilcoxon rank sum test and auROC statistic. Interfaces to dense and sparse matrices, as well as genomics analysis frameworks Seurat and SingleCellExperiment."
+  dev_url: {{ github }}
 
 extra:
   recipe-maintainers:
     - mfansler
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
