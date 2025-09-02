@@ -1,42 +1,51 @@
---- Makefile	2020-02-28 15:33:54.000000000 +0100
-+++ Makefile	2020-09-05 18:37:47.000000000 +0200
-@@ -3,47 +3,22 @@
+diff --git a/Makefile b/Makefile
+index 4164cb5..562ebcb 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,49 +1,26 @@
+ SHELL := /bin/bash
  
+-
  OS := $(shell uname)
  
 -all: 	src/fragSim src/deamSim src/adptSim src/fasta2fastas art_src_MountRainier/art_illumina_src/art_illumina.o
+-
+-src/fragSim: libgab/libgab.a bamtools/lib/libbamtools.so
+-	make -C src
+-
+-src/fasta2fastas: libgab/libgab.a bamtools/lib/libbamtools.so
+-	make -C src
++export BAMTOOLSLIB = $(realpath ./bamtools/build/src)
+ 
+-src/deamSim: libgab/libgab.a bamtools/lib/libbamtools.so
+-	make -C src
+ 
+-src/adptSim: libgab/libgab.a bamtools/lib/libbamtools.so
+-	make -C src
 +all: 	src/fragSim src/deamSim src/adptSim src/fasta2fastas
  
--src/fragSim: libgab/utils.o bamtools/lib/libbamtools.so
--	make -C src
-+src/fragSim: libgab/utils.o 
-+	make -C src CXX=$(CC)
- 
--src/fasta2fastas: libgab/utils.o bamtools/lib/libbamtools.so
--	make -C src
-+src/fasta2fastas: libgab/utils.o
-+	make -C src CXX=$(CC
- 
--src/deamSim: libgab/utils.o bamtools/lib/libbamtools.so
--	make -C src
--
--src/adptSim: libgab/utils.o bamtools/lib/libbamtools.so
--	make -C src
--
--libgab/utils.h:
+-libgab/libgab.h:
 -	rm -rf libgab/
 -	git clone --depth 1 --recursive https://github.com/grenaud/libgab.git
--
--libgab/utils.o: bamtools/lib/libbamtools.so  libgab/utils.h
++src/fragSim: libgab/libgab.a
++	make -C src CXX=$(CC)
+ 
+-libgab/libgab.a: bamtools/lib/libbamtools.so  libgab/libgab.h
 -	make -C libgab
--
++src/fasta2fastas: libgab/libgab.a
++	make -C src CXX=$(CC)
+ 
 -bamtools/src/api/BamAlignment.h:
 -	rm -rf bamtools/
 -	git clone  --recursive https://github.com/pezmaster31/bamtools.git && cd bamtools/ && git reset --hard d24d850de17134fe4e7984b26493c5c0a1844b35
--
++src/deamSim: libgab/libgab.a
++	make -C src CXX=$(CC)
+ 
 -bamtools/lib/libbamtools.so: bamtools/src/api/BamAlignment.h
--	cd bamtools/ && mkdir -p build/  && cd build/ && cmake .. && make && cd ../..
--
+-	cd bamtools/ && mkdir -p build/  && cd build/ && if cmake ..; then echo ""; else if cmake3 ..; then echo ""; else echo "cmake failed, please install cmake v3"; fi  fi  && make && cd ../..
++src/adptSim: libgab/libgab.a
++	make -C src CXX=$(CC)
+ 
 -art_src_MountRainier/art_illumina_src/art_illumina.o: #todo: add wget after rm 
 -	rm -rf art_src_MountRainier/ art_src_MountRainier_Linux/ art_src_MountRainier_MacOS/ artsrcmountrainier20160605linuxtgz.tgz artsrcmountrainier20160605macostgz.tgz
 -ifeq ($(OS),Darwin)
@@ -50,14 +59,1240 @@
 -	cd art_src_MountRainier_Linux/ && ./configure && make && cd ..
 -	ln -s art_src_MountRainier_Linux  art_src_MountRainier
 -endif
-+src/deamSim: libgab/utils.o
-+	make -C src CXX=$(CC)
-+
-+src/adptSim: libgab/utils.o
-+	make -C src CXX=$(CC)
-+
-+libgab/utils.o: libgab/utils.h
++libgab/libgab.a: libgab/libgab.h
 +	make -C libgab CXX=$(CC)
  
  bacterialex:
  	mkdir -p bactDBexample
+diff --git a/gargammel.pl b/gargammel.pl
+index 9d4f1f8..71c305c 100755
+--- a/gargammel.pl
++++ b/gargammel.pl
+@@ -578,19 +578,19 @@ if ($ss eq "GA2") {		#- GenomeAnalyzer II (50bp, 75bp)
+ 
+ if( (defined $misince) ){
+   if( !(-e $misince)){
+-    die "Endogenous misincorporation file does not exists\n";
++    die "Endogenous misincorporation file does not exist\n";
+   }
+ }
+ 
+ if( (defined $misincc) ){
+   if( !(-e $misincc)){
+-    die "Contaminant misincorporation file does not exists\n";
++    die "Contaminant misincorporation file does not exist\n";
+   }
+ }
+ 
+ if( (defined $misincb) ){
+   if( !(-e $misincb)){
+-    die "Bacterial misincorporation file does not exists\n";
++    die "Bacterial misincorporation file does not exist\n";
+   }
+ }
+ 
+@@ -789,6 +789,7 @@ if( !(defined $outputprefix) ){
+ }else{
+ }
+ 
++=comment
+ 
+ my @arrayofdirs=listdir($dirWithChr);
+ 
+@@ -811,10 +812,26 @@ if($arrayofdirs[0] ne $dirWithChr."bact/" ||
+ ";
+ }
+ 
+-my @arrayofFilesbact = listdirFa(   $arrayofdirs[0] );
+-my @arrayofFilescont = listdirFa(   $arrayofdirs[1] );
+-my @arrayofFilesendo = listdirFa(   $arrayofdirs[2] );
+-my @arrayofCdirsendo = listdirCdir( $arrayofdirs[2] );
++=cut
++
++my $bactdir = $dirWithChr."bact/";
++my $contdir = $dirWithChr."cont/";
++my $endodir = $dirWithChr."endo/";
++
++if( !(-d $bactdir) || !(-d $contdir) || !(-d $endodir)) {
++  die "The input directory must contain 3 directories named:
++ bact/
++ endo/
++ cont/
++";
++}
++
++
++my @arrayofFilesbact = listdirFa(   $bactdir );
++my @arrayofFilescont = listdirFa(   $contdir );
++my @arrayofFilesendo = listdirFa(   $endodir );
++my @arrayofCdirsendo = listdirCdir( $endodir );
++
+ 
+ my $sumB=0;
+ my $sumC=0;
+@@ -836,8 +853,8 @@ if($compB>0){
+     die "If you want bacterial contamination, please have at least one file in the bact/ directory\n";
+   }
+ 
+-  if( !( -e $arrayofdirs[0]."/list" ) ){
+-    die "List file ".$arrayofdirs[0]."/list does not exist, this file must contain the list of files and their weight ex:
++  if( !( -e $bactdir."/list" ) ){
++    die "List file ".$bactdir."/list does not exist, this file must contain the list of files and their weight ex:
+ file1.fa\t0.3
+ file2.fa\t0.2
+ file3.fa\t0.15
+@@ -848,25 +865,25 @@ file7.fa\t0.5
+ \n";
+   }else{
+     my $sumWeight=0;
+-    open(FILE,$arrayofdirs[0]."/list");
++    open(FILE,$bactdir."/list");
+     while(my $line = <FILE>){
+       if($line =~ /^(\S+)\s+(\S+)$/){
+ 
+ 	if(!looks_like_number($2)){
+-	  die "Cannot parse line from bacterial list: ".$arrayofdirs[0]."/list must be:\nfile\tweight(between 0 and 1)\nfound line:".$line;
++	  die "Cannot parse line from bacterial list: ".$bactdir."/list must be:\nfile\tweight(between 0 and 1)\nfound line:".$line;
+ 	}
+ 	push(@arrayofFilesbactLFromList, $1);
+ 	push(@arrayofFilesbactLFromListB, 0);
+ 	push(@arrayofFilesbactLFromListW,$2);
+ 	$sumWeight+=$2;
+       }else{
+-	die "Cannot parse line from bacterial list: ".$arrayofdirs[0]."/list line:".$line;
++	die "Cannot parse line from bacterial list: ".$bactdir."/list line:".$line;
+       }
+     }
+     close(FILE);
+ 
+     if($sumWeight<0.99 || $sumWeight>1.01 ){
+-      die "Problem from bacterial list: ".$arrayofdirs[0]."/list sum is not 1, found: ".$sumWeight;
++      die "Problem from bacterial list: ".$bactdir."/list sum is not 1, found: ".$sumWeight;
+     }
+ 
+   }
+@@ -899,9 +916,9 @@ foreach my $fafile (@arrayofFilesbact){
+   close(FILE);
+ 
+   for(my $i=0;$i<=$#arrayofFilesbactLFromList;$i++){
+-    print $arrayofdirs[0].$arrayofFilesbactLFromList[$i]."\n";
++    print $bactdir.$arrayofFilesbactLFromList[$i]."\n";
+     print $fafile."\n";
+-    if($arrayofdirs[0].$arrayofFilesbactLFromList[$i] eq $fafile){
++    if($bactdir.$arrayofFilesbactLFromList[$i] eq $fafile){
+       if($arrayofFilesbactLFromListB[$i] == 1){
+ 	die "Fasta  ".$fafile." was found twice in the list";
+       }
+@@ -990,8 +1007,8 @@ my @arrayOfEndoCellFasta;
+ 
+ if ($compE>0) {			#if we have endogenous material
+ 
+-  #my @arrayofFilesendo = listdirFa(   $arrayofdirs[2] );
+-  #my @arrayofCdirsendo = listdirCdir( $arrayofdirs[2] );
++  #my @arrayofFilesendo = listdirFa(   $endodir );
++  #my @arrayofCdirsendo = listdirCdir( $endodir );
+   my $cell0Dir;
+ 
+   #
+@@ -1000,7 +1017,7 @@ if ($compE>0) {			#if we have endogenous material
+   if ( ($#arrayofCdirsendo) >= 0 ) {
+     $multiCellMode = 1;
+     if ( $#arrayofFilesendo != -1) {
+-      die "The endogenous directory ".$arrayofdirs[2]." must directories called CX where X is 0...N without any other fasta files, found: ".($#arrayofFilesendo+1)." fasta files\n";
++      die "The endogenous directory ".$endodir." must directories called CX where X is 0...N without any other fasta files, found: ".($#arrayofFilesendo+1)." fasta files\n";
+     }
+ 
+ 
+@@ -1014,7 +1031,7 @@ if ($compE>0) {			#if we have endogenous material
+ 	  $foundCMAX = $1;
+ 	}
+       }else{
+-	die "Directories ".$arrayofdirs[2]." does not correspond to the pattern CX where X is 0...N, found: $dirCendo\n";
++	die "Directories ".$endodir." does not correspond to the pattern CX where X is 0...N, found: $dirCendo\n";
+       }
+ 
+       if($dirCendo =~ /C0$/){
+@@ -1024,42 +1041,42 @@ if ($compE>0) {			#if we have endogenous material
+     }
+ 
+     if(!$foundC0){
+-      die "Directories ".$arrayofdirs[2]." does not correspond to the pattern CX where X is 0...N, must start with C0\n";
++      die "Directories ".$endodir." does not correspond to the pattern CX where X is 0...N, must start with C0\n";
+     }
+     $multiCellModeMAX=$foundCMAX;
+ 
+     for(my $cendoI=0;$cendoI<=$foundCMAX;$cendoI++){
+-      if( grep { $_ eq $arrayofdirs[2]."C".$cendoI."" } @arrayofCdirsendo ){
++      if( grep { $_ eq $endodir."C".$cendoI."" } @arrayofCdirsendo ){
+ 	#fine
+       }else{
+-	die "Missing directory ".$arrayofdirs[2]."C".$cendoI."\n";
++	die "Missing directory ".$endodir."C".$cendoI."\n";
+       }
+ 
+-      my @arrayofFilesendoCell = listdirFa(  $arrayofdirs[2]."C".$cendoI."/");
++      my @arrayofFilesendoCell = listdirFa(  $endodir."C".$cendoI."/");
+       $arrayOfEndoCellFasta[ $cendoI ] = \@arrayofFilesendoCell;
+ 
+       if ($cendoI == 0 ) {
+ 	@arrayofFilesendo = @arrayofFilesendoCell;
+-	$cell0Dir = $arrayofdirs[2]."C".$cendoI."/";
++	$cell0Dir = $endodir."C".$cendoI."/";
+ 	if ( ($#arrayofFilesendoCell+1) == 1) {
+ 	  $diploidMode=0;
+ 	} else {
+ 	  if ( ($#arrayofFilesendoCell+1) == 2) {
+ 	    $diploidMode=1;
+ 	  } else {
+-	    die "The endogenous directory must have 1 (haploid) or 2 (diploid) files, directory in question: ".($arrayofdirs[2]."C".$cendoI).", found ".($#arrayofFilesendoCell+1)."\n";
++	    die "The endogenous directory must have 1 (haploid) or 2 (diploid) files, directory in question: ".($endodir."C".$cendoI).", found ".($#arrayofFilesendoCell+1)."\n";
+ 	  }
+ 	}
+       }else{
+ 	if($diploidMode == 0 ){
+ 	  if ( ($#arrayofFilesendoCell+1) != 1) {
+-	    die "The endogenous directory must have all have 1 (haploid) or 2 (diploid) files, directory in question: ".($arrayofdirs[2]."C".$cendoI).", found: ".($#arrayofFilesendoCell+1)."\n";
++	    die "The endogenous directory must have all have 1 (haploid) or 2 (diploid) files, directory in question: ".($endodir."C".$cendoI).", found: ".($#arrayofFilesendoCell+1)."\n";
+ 	  }
+ 	}
+ 
+ 	if($diploidMode == 1 ){
+ 	  if ( ($#arrayofFilesendoCell+1) != 2) {
+-	    die "The endogenous directory must have all have 1 (haploid) or 2 (diploid) files, directory in question: ".($arrayofdirs[2]."C".$cendoI).", found: ".($#arrayofFilesendoCell+1)."\n";
++	    die "The endogenous directory must have all have 1 (haploid) or 2 (diploid) files, directory in question: ".($endodir."C".$cendoI).", found: ".($#arrayofFilesendoCell+1)."\n";
+ 	  }
+ 	}
+ 
+@@ -1114,7 +1131,7 @@ if ($compE>0) {			#if we have endogenous material
+   if($multiCellMode){
+     @arrayofFilesendofai = listdirFai( $cell0Dir );
+   }else{
+-    @arrayofFilesendofai = listdirFai( $arrayofdirs[2] );
++    @arrayofFilesendofai = listdirFai( $endodir );
+   }
+ 
+   if ($diploidMode) {
+@@ -1382,7 +1399,7 @@ if($multiCellMode){
+     }
+ 
+ 
+-    print STDERR "Will extract ".sprintf("%".$digE."d",$arrayFragForEachCell[$i])." from cell: ".$arrayofdirs[2]."C".$i."/\t(".sprintf("% .2f",100*$arrayFragForEachCell[$i]/$numberOfFragmentsE)."%) "."\tendogenous fragments\n";
++    print STDERR "Will extract ".sprintf("%".$digE."d",$arrayFragForEachCell[$i])." from cell: ".$endodir."C".$i."/\t(".sprintf("% .2f",100*$arrayFragForEachCell[$i]/$numberOfFragmentsE)."%) "."\tendogenous fragments\n";
+   }
+   #die;
+ } else {
+diff --git a/ms2chromosomes.py b/ms2chromosomes.py
+index 3b8cf12..a252596 100644
+--- a/ms2chromosomes.py
++++ b/ms2chromosomes.py
+@@ -38,7 +38,7 @@ def which(program):
+     sys.stderr.write("Detecting program: "+str(program)+"\n");
+     cjob = "type "+str(program);
+ 
+-    sp = subprocess.Popen(["/bin/bash", "-i", "-c", cjob],
++    sp = subprocess.Popen(["/bin/bash", "-i", "-c", cjob], text=True,
+                                 stdout=subprocess.PIPE, 
+                                 stderr=subprocess.PIPE)
+     
+@@ -68,7 +68,7 @@ def which(program):
+ 
+ def handle_job(cjob):
+ 
+-    print str(cjob);
++    print(str(cjob));
+     jobcreated=subprocess.Popen(cjob,shell=True,
+                                 executable="/bin/bash",
+                                 stdout=subprocess.PIPE, 
+@@ -77,9 +77,9 @@ def handle_job(cjob):
+ 
+     out, err = jobcreated.communicate()
+     errcode  = jobcreated.returncode;
+-	
++    
+     if(errcode != 0): #has finished but wrong code
+-        print "Job failed "+cjob+" failed";
++        print("Job failed "+cjob+" failed");
+         sys.exit(1);
+ 
+     return out;
+@@ -100,7 +100,7 @@ parser.add_option("-e", "--numendo",     dest="numendo",      help="Number of an
+ 
+ 
+ 
+-#print handle_job("which ls");
++#print(handle_job("which ls"));
+ 
+ (options,args) = parser.parse_args()
+ 
+@@ -116,7 +116,7 @@ destfolder   = options.destfolder
+ numsim       = options.numsim
+ 
+ if(destfolder ==  None):
+-    print "Please specify the output folder";
++    print("Please specify the output folder");
+     sys.exit(1);
+ 
+ if(not destfolder.endswith("/")):
+@@ -137,14 +137,14 @@ numcont = options.numcont;
+ numarch = options.numendo;
+ 
+ if(numcont < 0 ):
+-    print "Please specify a positive number of present-day human contaminant";
++    print("Please specify a positive number of present-day human contaminant");
+     sys.exit(1);
+ if(numarch < 0 ):
+-    print "Please specify a positive number of ancient endogenous humans";
++    print("Please specify a positive number of ancient endogenous humans");
+     sys.exit(1);
+ 
+ if(numarch > 2 ):
+-    print "Please specify a number of ancient endogenous humans lesser than 2";
++    print("Please specify a number of ancient endogenous humans lesser than 2");
+     sys.exit(1);
+ 
+ 
+@@ -157,6 +157,7 @@ branchlscale = options.branchlscale;
+ 
+ puredict    = defaultdict(int)
+ i=1
++
+ #try:
+ if not os.path.exists(destfolder):
+     os.mkdir(destfolder);
+@@ -197,45 +198,44 @@ originali=0;
+ 
+ while i < (numsim+1):
+     
+-	# Create simulation file
+-	originali += 1;    
+-	infile_name = ""+destfolder+"/simul_"+str(i)+".txt"
++    # Create simulation file
++    originali += 1;    
++    infile_name = ""+destfolder+"/simul_"+str(i)+".txt"
+ 
+-        commname = ""+mscmd+" "+str(numcont+numarch+1)+" 1 -T -t "+str(theta)+" -I 2 "+str(numcont+1)+" "+str(numarch)+" -ej "+str(timesplitms)+" 1 2 "
+-        print commname
++    commname = ""+mscmd+" "+str(numcont+numarch+1)+" 1 -T -t "+str(theta)+" -I 2 "+str(numcont+1)+" "+str(numarch)+" -ej "+str(timesplitms)+" 1 2 "
++    print(commname)
+ 
+-	commname = commname + " > "+infile_name+"_tmp";
+-	handle_job(commname);
++    commname = commname + " > "+infile_name+"_tmp";
++    handle_job(commname);
+ 
+-        commname3 = "cat "+infile_name+"_tmp | grep '('   > "+infile_name+"_tree";
+-	handle_job(commname3);
++    commname3 = "cat "+infile_name+"_tmp | grep '('   > "+infile_name+"_tree";
++    handle_job(commname3);
+ 
+-        commname4 = ""+seqgencmd+"  -z `date +%H%M%S%N`   -mHKY -l "+str(lengthchr)+" -s "+str(branchlscale)+"   "+infile_name+"_tree |tail -n+2  |awk '{print \">\"$1\"\\n\"$2}'  > "+infile_name+".fa";
+-	handle_job(commname4);
++    commname4 = ""+seqgencmd+"  -z `date +%H%M%S%N`   -mHKY -l "+str(lengthchr)+" -s "+str(branchlscale)+"   "+infile_name+"_tree |tail -n+2  |awk '{print \">\"$1\"\\n\"$2}'  > "+infile_name+".fa";
++    handle_job(commname4);
+ 
+-	#try:
+-	if True:	
+-		print "simul number "+str(originali)
++    #try:
++    if True:    
++        print("simul number "+str(originali))
+ 
+-		myid2seq = {};
++        myid2seq = {};
+ 
+-		handle = open(infile_name+".fa", "rU")
++        handle = open(infile_name+".fa", "rU")
+ 
+-		for record in SeqIO.parse(handle, "fasta") :
+-			#print str(record.id);
+-			myid2seq[ record.id  ] = str(record.seq);
+-		handle.close();
++        for record in SeqIO.parse(handle, "fasta") :
++            #print(str(record.id));
++            myid2seq[ record.id  ] = str(record.seq);
++        handle.close();
+                 
+-                commname4 = "gzip -f "+infile_name+".fa";
+-                handle_job(commname4);
++        commname4 = "gzip -f "+infile_name+".fa";
++        handle_job(commname4);            
+ 
+-                
+ 
+-		arrayHumans  = [];
+-		arrayNeander = [];
+-		ancSeq = "";
++        arrayHumans  = [];
++        arrayNeander = [];
++        ancSeq = "";
+ 
+-		#print record.id+"\t"+str(len(record.seq));
++        #print(record.id+"\t"+str(len(record.seq)));
+                 #seq1:first chr endo
+                 #seq2:second chr endo
+                 #seq3:reference
+@@ -244,66 +244,66 @@ while i < (numsim+1):
+ 
+ 
+                 #will be endogenous
+-		for idseq in range(1,numarch+1):
+-                    print "endo seq#"+str(idseq);
+-                    arrayNeander.append( myid2seq[ str(idseq)  ] ); #ancSeq= myid2seq[ str(numcont+1+numarch)  ];#anc
++        for idseq in range(1,numarch+1):
++            print("endo seq#"+str(idseq));
++            arrayNeander.append( myid2seq[ str(idseq)  ] ); #ancSeq= myid2seq[ str(numcont+1+numarch)  ];#anc
+ 
+-                print "ref. seq#"+str(numarch+1);
++        print("ref. seq#"+str(numarch+1));
+ 
+                 #will be contaminant
+-		for idseq in range((numarch+1+1),(numcont+1+numarch+1)):
+-                    print "cont seq#"+str(idseq);
+-                    arrayHumans.append( myid2seq[ str(idseq)  ] ); 			#print str(idseq);
++        for idseq in range((numarch+1+1),(numcont+1+numarch+1)):
++                print("cont seq#"+str(idseq));
++                arrayHumans.append( myid2seq[ str(idseq)  ] );          #print(str(idseq);
+ 
+-		#print str(len(arrayHumans));
+-		#print str(len(arrayNeander));
++        #print(str(len(arrayHumans)));
++        #print(str(len(arrayNeander)));
+ 
+ 
+ 
+-		#take #(numarch+1) as the reference
+-		fileHandleWriteREF = open (""+destfolder+"/ref.fa", 'a' ) ;
+-		fileHandleWriteREF.write(">ref_"+str(originali)+ "\n"+myid2seq[ str(numarch+1)  ]+"\n");
+-		fileHandleWriteREF.close();
++        #take #(numarch+1) as the reference
++        fileHandleWriteREF = open (""+destfolder+"/ref.fa", 'a' ) ;
++        fileHandleWriteREF.write(">ref_"+str(originali)+ "\n"+myid2seq[ str(numarch+1)  ]+"\n");
++        fileHandleWriteREF.close();
+ 
+-                for idseq in range(1,numarch+1):
+-                    fileHandleEndoSeq1 = open (""+destfolder+"endo/endo."+str(idseq)+".fa", 'a' );
+-                    fileHandleEndoSeq1.write(">endo_"+str(originali)+ "\n"+myid2seq[ str(idseq)  ]+"\n");
+-                    fileHandleEndoSeq1.close();
++        for idseq in range(1,numarch+1):
++            fileHandleEndoSeq1 = open (""+destfolder+"endo/endo."+str(idseq)+".fa", 'a' );
++            fileHandleEndoSeq1.write(">endo_"+str(originali)+ "\n"+myid2seq[ str(idseq)  ]+"\n");
++            fileHandleEndoSeq1.close();
+                     
+-                #fileHandleEndoSeq1 = open (""+destfolder+"endo/endo.1.fa", 'a' );
+-                #fileHandleEndoSeq1.write(">endo_"+str(originali)+ "\n"+myid2seq[ str(1)  ]+"\n");
+-                #fileHandleEndoSeq1.close();
++        #fileHandleEndoSeq1 = open (""+destfolder+"endo/endo.1.fa", 'a' );
++        #fileHandleEndoSeq1.write(">endo_"+str(originali)+ "\n"+myid2seq[ str(1)  ]+"\n");
++        #fileHandleEndoSeq1.close();
+ 
+-                #fileHandleEndoSeq2 = open (""+destfolder+"endo/endo.2.fa", 'a' );
+-                #fileHandleEndoSeq2.write(">endo_"+str(originali)+ "\n"+myid2seq[ str(2)  ]+"\n");
+-                #fileHandleEndoSeq2.close();
++        #fileHandleEndoSeq2 = open (""+destfolder+"endo/endo.2.fa", 'a' );
++        #fileHandleEndoSeq2.write(">endo_"+str(originali)+ "\n"+myid2seq[ str(2)  ]+"\n");
++        #fileHandleEndoSeq2.close();
+ 
+ 
+-                segsites=0;
+-                #segsiteslist=[];
+-		#destfolder+"/all.sam.gz";
++        segsites=0;
++        #segsiteslist=[];
++        #destfolder+"/all.sam.gz";
+ 
+-                if(originali == 1):
+-                    fileHandleSS = open ( ""+destfolder+"/endo/segsites", 'w' ) ;
+-                else:
+-                    fileHandleSS = open ( ""+destfolder+"/endo/segsites", 'a' ) ;
++        if(originali == 1):
++            fileHandleSS = open ( ""+destfolder+"/endo/segsites", 'w' ) ;
++        else:
++            fileHandleSS = open ( ""+destfolder+"/endo/segsites", 'a' ) ;
+ 
+-                for seqindex in range(0,lengthchr):
+-                    if( myid2seq[ str(1) ][seqindex] != myid2seq[ str(2) ][seqindex]):
+-                        segsites+=1;
+-                        fileHandleSS.write(">ref_"+str(originali)+ "\t"+str(seqindex+1)+"\t"+myid2seq[ str(1) ][seqindex]+"\t"+myid2seq[ str(2) ][seqindex]+"\n");
++        for seqindex in range(0,lengthchr):
++            if( myid2seq[ str(1) ][seqindex] != myid2seq[ str(2) ][seqindex]):
++                segsites+=1;
++                fileHandleSS.write(">ref_"+str(originali)+ "\t"+str(seqindex+1)+"\t"+myid2seq[ str(1) ][seqindex]+"\t"+myid2seq[ str(2) ][seqindex]+"\n");
+ 
+-                print "het. rate: "+str(float(segsites)/float(lengthchr));                
+-		fileHandleSS.close();
+-                print "Wrote segregating sites to "+str(destfolder)+"/endo/segsites";
++        print("het. rate: "+str(float(segsites)/float(lengthchr)));                
++        fileHandleSS.close();
++        print("Wrote segregating sites to "+str(destfolder)+"/endo/segsites");
+ 
+ 
+-                for idseq in range((numarch+1+1),(numcont+1+numarch+1)):
+-                    fileHandleContSeq = open (""+destfolder+"cont/cont."+str(idseq-(numcont+1))+".fa", 'a' ) ;
+-                    fileHandleContSeq.write(">cont_"+str(originali)+ "\n"+myid2seq[ str(idseq)  ]+"\n");
+-                fileHandleContSeq.close();
++        for idseq in range((numarch+1+1),(numcont+1+numarch+1)):
++            fileHandleContSeq = open (""+destfolder+"cont/cont."+str(idseq-(numcont+1))+".fa", 'a' ) ;
++            fileHandleContSeq.write(">cont_"+str(originali)+ "\n"+myid2seq[ str(idseq)  ]+"\n");
++        fileHandleContSeq.close();
+ 
+-	#os.remove(infile_name)
++        #os.remove(infile_name)
+         i += 1;
+ 
+ 
+diff --git a/msprime_chromosomes.py b/msprime_chromosomes.py
+index 6c3f7a4..cecc4cb 100644
+--- a/msprime_chromosomes.py
++++ b/msprime_chromosomes.py
+@@ -37,83 +37,45 @@ split = int(args.split[0])
+ #####################################
+ 
+ # Simulate mass migration with the given split argument
+-pop_configs = [
+-	msprime.PopulationConfiguration(initial_size=1e4),
+-	msprime.PopulationConfiguration(initial_size=1e4)
+-]
++demo = msprime.Demography()
++demo.add_population(initial_size=1e4, name="ancient")
++demo.add_population(initial_size=1e4, name="modern")
+ 
+-dem_events = [
+-	msprime.MassMigration(time=split, source=0, destination=1, proportion=1.0)
+-]
++demo.add_mass_migration(time=split, source="modern", dest="ancient", proportion=1.0)
+ 
+ # Create sample list
+ samples = []
+ 
+-for _ in range(contamination_individuals + present_individuals):
+-        samples.append(msprime.Sample(0, 0))
+-        samples.append(msprime.Sample(0, 0))
+-
+-# If there was a population split, we'll use 2 different populations
+-if(split > 0):
+-	ancient_pop = 1
++if split > 0:
++    samples.append(msprime.SampleSet(contamination_individuals + present_individuals, "modern", time=0))
+ else:
+-	ancient_pop = 0
+-
+-for _ in range(ancient_individuals):
+-	samples.append(msprime.Sample(ancient_pop, gens))
+-	samples.append(msprime.Sample(ancient_pop, gens))
++    samples.append(msprime.SampleSet(contamination_individuals + present_individuals, "ancient", time=0))
++    
++samples.append(msprime.SampleSet(ancient_individuals, "ancient", time=gens))
+ 
+ # Run simulation and extract results
+-if(split > 1):
+-	tree_seq = msprime.simulate(
+-		samples=samples, recombination_rate=2e-8,
+-        	mutation_rate=2e-8, length=num_bases,
+-		population_configurations=pop_configs,
+-		demographic_events=dem_events)
+-else:
+-	tree_seq = msprime.simulate(
+-		samples=samples, recombination_rate=2e-8,
+-        	mutation_rate=2e-8, length=num_bases, Ne=1e4)
++
++tree_seq = msprime.sim_ancestry(samples=samples, demography=demo,
++    	                        sequence_length=num_bases, recombination_rate=2e-8)
+ 
+ ############################################
+ # Transform data for seq-gen compatibility #
+ ############################################
+ 
+-tree_filepath = 'tree_data'
+-tree_seq.dump(tree_filepath)
+-
+ # Get Newick format tree and partitions
+ newick_filepath = 'newick_tree'
+-newick_file = open(newick_filepath, 'w')
+-subprocess.run(['msp', 'newick', '--precision', '14', tree_filepath], stdout=newick_file)
+-newick_file.close()
+ 
+ # Get each tree's interval, this needs to be appended to the beginning
+ # of each Newick tree described in the file. Intervals are used by seq-gen
+ # to merge the multiple trees that result from recombination
+-intervals = []
+-for tree in tree_seq.trees():
+-    length = tree.get_length()
+-    intervals.append(int(length))
+-
+-# Fix rounding error
+-diff = num_bases - sum(intervals)
+-
+-if diff != 0:
+-    intervals[len(intervals) - 1] += diff
+ 
+ # Get number of partitions and add intervals
+-partitions = 0
+-added_intervals = []
+-with open(newick_filepath, 'r') as newick_file:
+-    
+-    for line, interval in zip(newick_file, intervals):
+-        added_intervals.append('[' + str(interval) + '] ' + line)
+-        partitions += 1
++partitions = tree_seq.num_trees
+ 
+-# Overwrite Newick file with added intervals
+ with open(newick_filepath, 'w') as newick_file:
+-    newick_file.writelines(added_intervals)
++    for tree in tree_seq.trees():
++        length = str(int(tree.get_length()))
++        newick_file.write('[' + length + '] ' + tree.newick() + "\n")
+ 
+ ##############################
+ # Run seq-gen on Newick tree #
+@@ -129,31 +91,20 @@ else:
+ 
+ seqgen_filepath = 'sequence_data'
+ 
++# Simulate sequences given ancestry trees
++
+ with open(seqgen_filepath, 'w') as seqgen_file:
+     subprocess.run(['seq-gen', '-mHKY', '-l' + str(num_bases),
+         '-s' + str(branch_scale), '-p', str(partitions),
+         newick_filepath], stdout=seqgen_file)
+ 
+-# Sort sequences, msprime does not output chromosomes in order.
+-# We will also remove the header, since this sequence file will be split
+-# into several files representing our individuals
+-
+-# Small auxiliary function for sorting with key
+-def get_key(s):
+-    return int(s.split()[0])
+-
+-chr_sequences = []
+ with open(seqgen_filepath, 'r') as seqgen_file:
+     chr_sequences = seqgen_file.readlines()
+ 
+-# Remove header and sort
+-chr_sequences.pop(0)
+-chr_sequences.sort(key=get_key)
++# Remove header and create {id => sequence} dictionary
+ 
+-# Write only sequence to file
+-with open(seqgen_filepath, 'w') as seqgen_file:
+-    for line in chr_sequences:
+-        seqgen_file.write(line.split()[1] + '\n')
++chr_sequences.pop(0)
++chr_dict = dict((int(chr_seq.split()[0]), chr_seq.split()[1]) for chr_seq in chr_sequences)
+ 
+ ##############################################
+ # Split seq-gen output into individual files #
+@@ -173,11 +124,7 @@ if os.path.exists(anc_dir):
+ os.makedirs(con_dir)
+ os.makedirs(anc_dir)
+ 
+-# Split individuals
+-with open(seqgen_filepath, 'r') as seqgen_file:
+-    chr_sequences = seqgen_file.readlines()
+-
+-chr_index = 0
++chr_index = 1
+     
+ #####################
+ # Split contaminant #
+@@ -196,7 +143,7 @@ for _ in range(contamination_individuals):
+             # Write header
+             f.write('>cont_1\n')
+             # Write sequence
+-            f.write(chr_sequences[chr_index])
++            f.write(chr_dict[chr_index])
+ 
+         chr_index += 1
+ 
+@@ -217,7 +164,7 @@ for _ in range(present_individuals):
+             # Write header
+             f.write('>reference_1\n')
+             # Write sequence
+-            f.write(chr_sequences[chr_index])
++            f.write(chr_dict[chr_index])
+ 
+         chr_index += 1
+ 
+@@ -238,7 +185,7 @@ for _ in range(ancient_individuals):
+             # Write header
+             f.write('>ancient_1\n')
+             # Write sequence
+-            f.write(chr_sequences[chr_index])
++            f.write(chr_dict[chr_index])
+ 
+         chr_index += 1
+ 
+@@ -322,8 +269,6 @@ with open(seg_path, 'w') as f:
+ # Remove Newick, HDF5, and Seq-Gen files
+ if os.path.exists(newick_filepath):
+     os.remove(newick_filepath)
+-if os.path.exists(tree_filepath):
+-    os.remove(tree_filepath)
+ if os.path.exists(seqgen_filepath):
+     os.remove(seqgen_filepath)
+ 
+diff --git a/src/Makefile b/src/Makefile
+index b665eb7..1a8eb23 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -1,11 +1,10 @@
+ 
+-CXX      = g++ #-g
+-BAMTOOLS= $(realpath ../bamtools/)
+-LIBGAB= $(realpath ../libgab/)
++BAMTOOLS ?= $(PREFIX)
++LIBGAB ?= $(realpath ../libgab/)
+ 
+-CXXFLAGS +=  -std=c++0x -Wall -lm -O3 -lz -I${LIBGAB} -I${LIBGAB}/gzstream/ -I${BAMTOOLS}/src/  -c
+-#CXXFLAGS +=  -static -std=c++0x -Wall -lm -O3 -lz -I${LIBGAB} -I${LIBGAB}/gzstream/ -I${BAMTOOLS}/src/  -c
+-LDFLAGS  += ${LIBGAB}/FastQObj.o  ${LIBGAB}/FastQParser.o ${LIBGAB}/PutProgramInHeader.o ${BAMTOOLS}/build/src/api/libbamtools.a  ${LIBGAB}/libgab.a ${LIBGAB}/gzstream/libgzstream.a -lm -lz
++CXX      ?= $(CXX)
++CXXFLAGS +=  -std=c++0x -Wall -lm -O3 -lz -I$(PREFIX)/include -I${LIBGAB} -I${LIBGAB}/gzstream/ -I$(PREFIX)/include/bamtools -c
++LDFLAGS  += ${LIBGAB}/FastQObj.o ${LIBGAB}/FastQParser.o ${LIBGAB}/PutProgramInHeader.o ${BAMTOOLS}/lib/libbamtools.a ${LIBGAB}/libgab.a ${LIBGAB}/gzstream/libgzstream.a -L$(PREFIX)/lib -lm -lz
+ 
+ 
+ all: fragSim deamSim adptSim fasta2fastas damage_patterns2prof mapDamage2prof
+@@ -13,39 +12,38 @@ all: fragSim deamSim adptSim fasta2fastas damage_patterns2prof mapDamage2prof
+ adptSim.o:	adptSim.cpp
+ 	${CXX} ${CXXFLAGS} adptSim.cpp
+ 
+-adptSim:	adptSim.o 
++adptSim:	adptSim.o
+ 	${CXX} -o $@ $^ $(LDLIBS) $(LDFLAGS)
+ 
+ fragSim.o:	fragSim.cpp
+ 	${CXX} ${CXXFLAGS} fragSim.cpp
+ 
+-fragSim:	fragSim.o 
++fragSim:	fragSim.o
+ 	${CXX} -o $@ $^ $(LDLIBS) $(LDFLAGS)
+ 
+ deamSim.o:	deamSim.cpp
+ 	${CXX} ${CXXFLAGS} deamSim.cpp
+ 
+-deamSim:	deamSim.o 
++deamSim:	deamSim.o
+ 	${CXX} -o $@ $^ $(LDLIBS) $(LDFLAGS)
+ 
+ damage_patterns2prof.o:	damage_patterns2prof.cpp
+ 	${CXX} ${CXXFLAGS} damage_patterns2prof.cpp
+ 
+-damage_patterns2prof:	damage_patterns2prof.o 
++damage_patterns2prof:	damage_patterns2prof.o
+ 	${CXX} -o $@ $^ $(LDLIBS) $(LDFLAGS)
+ 
+ mapDamage2prof.o:	mapDamage2prof.cpp
+ 	${CXX} ${CXXFLAGS} mapDamage2prof.cpp
+ 
+-mapDamage2prof:	mapDamage2prof.o 
++mapDamage2prof:	mapDamage2prof.o
+ 	${CXX} -o $@ $^ $(LDLIBS) $(LDFLAGS)
+ 
+ fasta2fastas.o:	fasta2fastas.cpp
+ 	${CXX} ${CXXFLAGS} fasta2fastas.cpp
+ 
+-fasta2fastas:	fasta2fastas.o 
++fasta2fastas:	fasta2fastas.o
+ 	${CXX} -o $@ $^ $(LDLIBS) $(LDFLAGS)
+ 
+ clean :
+ 	rm -f fragSim.o fragSim deamSim.o deamSim damage_patterns2prof.o damage_patterns2prof mapDamage2prof.o mapDamage2prof adptSim.o adptSim fasta2fastas.o fasta2fastas
+-
+diff --git a/src/deamSim.cpp b/src/deamSim.cpp
+index f0fba40..7432ff5 100644
+--- a/src/deamSim.cpp
++++ b/src/deamSim.cpp
+@@ -88,6 +88,9 @@ int main (int argc, char *argv[]) {
+     vector<substitutionRates> sub5pNoMeth;
+     vector<substitutionRates> sub3pNoMeth;
+ 
++    string profFile;
++    bool   profFileSpecified=false;
++
+     string matrixFile;
+     bool   matrixFileSpecified=false;
+ 
+@@ -140,6 +143,11 @@ int main (int argc, char *argv[]) {
+                               "\t\t"+"                               " +"\t\t"+"Double strand will have and C->T at the 5' end and G->A damage at the 3' end"+"\n"+
+ 			      "\n"+
+ 
++                              "\t\t"+"-profile  [prof file prefix]" +"\t\t"+"Read the profile of substitutions instead of the default"+"\n"+
++                              "\t\t"+"                               " +"\t\t"+"Provide the prefix only, both files must end with"+"\n"+
++                              "\t\t"+"                               " +"\t\t"+"5p.prof and 3p.prof"+"\n"+
++			      "\n"+
++
+                               "\t\t"+"-matfile  [matrix file prefix]" +"\t\t"+"Read the matrix file of substitutions instead of the default"+"\n"+
+                               "\t\t"+"                               " +"\t\t"+"Provide the prefix only, both files must end with"+"\n"+
+                               "\t\t"+"                               " +"\t\t"+"5.dat and 3.dat"+"\n"+
+@@ -231,6 +239,13 @@ int main (int argc, char *argv[]) {
+ 	    continue;
+ 	}
+ 	
++	if(string(argv[i]) == "-profile" ){
++	    profFile          = string(argv[i+1]);
++	    profFileSpecified = true;
++	    i++;
++	    continue;
++	}
++
+ 	if(string(argv[i]) == "-matfile" ){
+ 	    matrixFile          = string(argv[i+1]);
+ 	    matrixFileSpecified = true;
+@@ -383,11 +398,19 @@ int main (int argc, char *argv[]) {
+        !matrixFileSpecifiedWithMeth  &&
+        !matrixFileSpecifiedNoMeth     &&
+        !matrixFileSpecified           &&
+-       !mapdamageFileSpecified){
++       !mapdamageFileSpecified &&
++       !profFileSpecified){
+     	cerr << "Please specify the matrix to use or use the Briggs parameter model"<<endl;
+     	return 1;
+     }
+ 
++    if(profFileSpecified && (matrixFileSpecified          |
++			     matrixFileSpecifiedWithMeth  ||
++			     matrixFileSpecifiedNoMeth  )  ){
++    	cerr << "Please specify damage profile or substitution matrix"<<endl;
++    	return 1;	
++    }
++    
+     if(matrixFileSpecified          &&
+        matrixFileSpecifiedWithMeth  &&
+        matrixFileSpecifiedNoMeth    ){
+@@ -930,150 +953,292 @@ int main (int argc, char *argv[]) {
+ 		//end 	    if(matrixFileSpecifiedWithMeth || matrixFileSpecifiedNoMeth){
+ 	    }//specified methylation
+ 	    else{
+-		string deam5File;
+-		string deam3File;
++		if(profFileSpecified){
++		    string deam5File;
++		    string deam3File;
+ 	
+-		if(matrixFileSpecified){
+-		    deam5File = matrixFile+"5.dat";
+-		    deam3File = matrixFile+"3.dat";	
+-		}else{   
+-		    deam5File = getCWD(argv[0])+ "matrices/"+matrix+"-5.dat";
+-		    deam3File = getCWD(argv[0])+ "matrices/"+matrix+"-3.dat";	
+-		}
++		    deam5File = profFile+"5p.prof";
++		    deam3File = profFile+"3p.prof";	
+ 		
+-		string line;
++		    string line;
+ 
+-		///////////////////////////////////////
+-		//READ file with 5p deamination rates /
+-		///////////////////////////////////////
+-		igzstream deam5pFileSt;
++		    ///////////////////////////////////////
++		    //READ file with 5p deamination rates /
++		    ///////////////////////////////////////
++		    igzstream deam5pFileSt;
+ 
+-		deam5pFileSt.open(deam5File.c_str(), ios::in);
++		    deam5pFileSt.open(deam5File.c_str(), ios::in);
+ 
+ 
+-		if (deam5pFileSt.good()){
+-		    //header
+-		    if ( !getline (deam5pFileSt,line)){
+-			cerr << "Parsing error for 5p deamination file "<<deam5File<<endl;
++		    if (deam5pFileSt.good()){
++			//header
++			if ( !getline (deam5pFileSt,line)){
++			    cerr << "Parsing error for 5p deamination file "<<deam5File<<endl;
++			    return 1;
++			}
++
++			while ( getline (deam5pFileSt,line)){
++			    vector<string> fields = allTokens(line,'\t');
++			    vector<string> firstFields;
++			    for(unsigned int i=0;i<fields.size();i++){
++				vector<string> fields2 = allTokens(fields[i],' ');
++				firstFields.push_back(fields2[0]);
++			    }
++	    
++			    if(firstFields.size()!=12){
++				cerr << "line from deamination does not have 12 fields "<<line<<" "<<firstFields.size()<<endl;
++				return 1;
++			    }
++	    
++			    substitutionRates toadd;
++			    for(unsigned int i=0;i<firstFields.size();i++){		
++				toadd.s[i]=destringify<double>(firstFields[i]);
++#ifdef DEBUG
++				cerr<<sub5p.size()<<"\t"<<substiString[i]<<"\t"<<toadd.s[i]<<"\t"<<firstFields[i]<<endl;
++#endif
++			    }	
++
++
++			    for(int b=0;b<4;b++){		
++				double sum =0.0;
++				for(int a=0;a<3;a++){		
++				    int idx = b*3+a;
++				    sum+=toadd.s[idx];
++				}
++				if(sum>1.0){
++				    cerr<<"Problem with line "<<line<<" in file "<<deam5File<<" the sum of the substitution probabilities exceeds 1"<<endl;
++				    return 1;
++				}
++			    }
++
++			    sub5p.push_back(toadd);
++			    //return 1;
++			}
++	
++			deam5pFileSt.close();
++		    }else{
++			cerr << "Unable to open 5p deamination file "<<deam5File<<endl;
+ 			return 1;
+ 		    }
+ 
+-		    while ( getline (deam5pFileSt,line)){
+-			vector<string> fields = allTokens(line,'\t');
+-			vector<string> firstFields;
+-			for(unsigned int i=1;i<fields.size();i++){
+-			    vector<string> fields2 = allTokens(fields[i],' ');
+-			    firstFields.push_back(fields2[0]);
+-			}
+-	    
+-			if(firstFields.size()!=12){
+-			    cerr << "line from deamination does not have 12 fields "<<line<<" "<<firstFields.size()<<endl;
++
++		    ///////////////////////////////////////
++		    //READ file with 3p deamination rates /
++		    ///////////////////////////////////////
++		    igzstream deam3pFileSt;
++
++		    deam3pFileSt.open(deam3File.c_str(), ios::in);
++
++
++		    if (deam3pFileSt.good()){
++			//header
++			if ( !getline (deam3pFileSt,line)){
++			    cerr << "Parsing error for 3p deamination file "<<deam3File<<endl;
+ 			    return 1;
+ 			}
++
++			while ( getline (deam3pFileSt,line)){
++			    vector<string> fields = allTokens(line,'\t');
++			    vector<string> firstFields;
++			    for(unsigned int i=0;i<fields.size();i++){
++				vector<string> fields2 = allTokens(fields[i],' ');
++				firstFields.push_back(fields2[0]);
++			    }
+ 	    
+-			substitutionRates toadd;
+-			for(unsigned int i=0;i<firstFields.size();i++){		
+-			    toadd.s[i]=destringify<double>(firstFields[i]);
++			    if(firstFields.size()!=12){
++				cerr << "line from deamination does not have 12 fields "<<line<<" "<<firstFields.size()<<endl;
++				return 1;
++			    }
++	    
++			    substitutionRates toadd;
++			    for(unsigned int i=0;i<firstFields.size();i++){		
++				toadd.s[i]=destringify<double>(firstFields[i]);
++
+ #ifdef DEBUG
+-			    cerr<<sub5p.size()<<"\t"<<substiString[i]<<"\t"<<toadd.s[i]<<"\t"<<firstFields[i]<<endl;
++				cerr<<sub3p.size()<<"\t"<<substiString[i]<<"\t"<<toadd.s[i]<<"\t"<<firstFields[i]<<endl;
+ #endif
+-			}	
+ 
++				//cerr<<toadd.s[i]<<"\t"<<firstFields[i]<<endl;
++			    }	
+ 
+-			for(int b=0;b<4;b++){		
+-			    double sum =0.0;
+-			    for(int a=0;a<3;a++){		
+-				int idx = b*3+a;
+-				sum+=toadd.s[idx];
+-			    }
+-			    if(sum>1.0){
+-				cerr<<"Problem with line "<<line<<" in file "<<deam5File<<" the sum of the substitution probabilities exceeds 1"<<endl;
+-				return 1;
++			    for(int b=0;b<4;b++){		
++				double sum =0.0;
++				for(int a=0;a<3;a++){		
++				    int idx = b*3+a;
++				    sum+=toadd.s[idx];
++				}
++				if(sum>1.0){
++				    cerr<<"Problem with line "<<line<<" in file "<<deam3File<<" the sum of the substitution probabilities exceeds 1"<<endl;
++				    return 1;
++				}
+ 			    }
+-			}
++		
+ 
+-			sub5p.push_back(toadd);
+-			//return 1;
++			    sub3p.push_back(toadd);
++			    //return 1;
++			}
++	
++			deam3pFileSt.close();
++		    }else{
++			cerr << "Unable to open 3p deamination file "<<deam3File<<endl;
++			return 1;
+ 		    }
++		    // //cerr<<"test2"<<endl;
++		    // for(unsigned int i=0;i<sub3p.size();i++){		
++		    //     cerr<<i<<"\t"<<arrayToString(sub3p[i].s,12,"\t")<<endl;
++		    // }
++		    //reverse(sub3p.begin(),sub3p.end());
+ 	
+-		    deam5pFileSt.close();
++		    // for(unsigned int i=0;i<sub3p.size();i++){		
++		    //     cerr<<i<<"\t"<<arrayToString(sub3p[i].s,12,"\t")<<endl;
++		    // }
+ 		}else{
+-		    cerr << "Unable to open 5p deamination file "<<deam5File<<endl;
+-		    return 1;
+-		}
+ 
++		    
++		    string deam5File;
++		    string deam3File;
++	
++		    if(matrixFileSpecified){
++			deam5File = matrixFile+"5.dat";
++			deam3File = matrixFile+"3.dat";	
++		    }else{   
++			deam5File = getCWD(argv[0])+ "matrices/"+matrix+"-5.dat";
++			deam3File = getCWD(argv[0])+ "matrices/"+matrix+"-3.dat";	
++		    }
++		
++		    string line;
+ 
+-		///////////////////////////////////////
+-		//READ file with 3p deamination rates /
+-		///////////////////////////////////////
+-		igzstream deam3pFileSt;
++		    ///////////////////////////////////////
++		    //READ file with 5p deamination rates /
++		    ///////////////////////////////////////
++		    igzstream deam5pFileSt;
+ 
+-		deam3pFileSt.open(deam3File.c_str(), ios::in);
++		    deam5pFileSt.open(deam5File.c_str(), ios::in);
+ 
+ 
+-		if (deam3pFileSt.good()){
+-		    //header
+-		    if ( !getline (deam3pFileSt,line)){
+-			cerr << "Parsing error for 3p deamination file "<<deam3File<<endl;
++		    if (deam5pFileSt.good()){
++			//header
++			if ( !getline (deam5pFileSt,line)){
++			    cerr << "Parsing error for 5p deamination file "<<deam5File<<endl;
++			    return 1;
++			}
++
++			while ( getline (deam5pFileSt,line)){
++			    vector<string> fields = allTokens(line,'\t');
++			    vector<string> firstFields;
++			    for(unsigned int i=1;i<fields.size();i++){
++				vector<string> fields2 = allTokens(fields[i],' ');
++				firstFields.push_back(fields2[0]);
++			    }
++	    
++			    if(firstFields.size()!=12){
++				cerr << "line from deamination does not have 12 fields "<<line<<" "<<firstFields.size()<<endl;
++				return 1;
++			    }
++	    
++			    substitutionRates toadd;
++			    for(unsigned int i=0;i<firstFields.size();i++){		
++				toadd.s[i]=destringify<double>(firstFields[i]);
++#ifdef DEBUG
++				cerr<<sub5p.size()<<"\t"<<substiString[i]<<"\t"<<toadd.s[i]<<"\t"<<firstFields[i]<<endl;
++#endif
++			    }	
++
++
++			    for(int b=0;b<4;b++){		
++				double sum =0.0;
++				for(int a=0;a<3;a++){		
++				    int idx = b*3+a;
++				    sum+=toadd.s[idx];
++				}
++				if(sum>1.0){
++				    cerr<<"Problem with line "<<line<<" in file "<<deam5File<<" the sum of the substitution probabilities exceeds 1"<<endl;
++				    return 1;
++				}
++			    }
++
++			    sub5p.push_back(toadd);
++			    //return 1;
++			}
++	
++			deam5pFileSt.close();
++		    }else{
++			cerr << "Unable to open 5p deamination file "<<deam5File<<endl;
+ 			return 1;
+ 		    }
+ 
+-		    while ( getline (deam3pFileSt,line)){
+-			vector<string> fields = allTokens(line,'\t');
+-			vector<string> firstFields;
+-			for(unsigned int i=1;i<fields.size();i++){
+-			    vector<string> fields2 = allTokens(fields[i],' ');
+-			    firstFields.push_back(fields2[0]);
+-			}
+-	    
+-			if(firstFields.size()!=12){
+-			    cerr << "line from deamination does not have 12 fields "<<line<<" "<<firstFields.size()<<endl;
++
++		    ///////////////////////////////////////
++		    //READ file with 3p deamination rates /
++		    ///////////////////////////////////////
++		    igzstream deam3pFileSt;
++
++		    deam3pFileSt.open(deam3File.c_str(), ios::in);
++
++
++		    if (deam3pFileSt.good()){
++			//header
++			if ( !getline (deam3pFileSt,line)){
++			    cerr << "Parsing error for 3p deamination file "<<deam3File<<endl;
+ 			    return 1;
+ 			}
++
++			while ( getline (deam3pFileSt,line)){
++			    vector<string> fields = allTokens(line,'\t');
++			    vector<string> firstFields;
++			    for(unsigned int i=1;i<fields.size();i++){
++				vector<string> fields2 = allTokens(fields[i],' ');
++				firstFields.push_back(fields2[0]);
++			    }
+ 	    
+-			substitutionRates toadd;
+-			for(unsigned int i=0;i<firstFields.size();i++){		
+-			    toadd.s[i]=destringify<double>(firstFields[i]);
++			    if(firstFields.size()!=12){
++				cerr << "line from deamination does not have 12 fields "<<line<<" "<<firstFields.size()<<endl;
++				return 1;
++			    }
++	    
++			    substitutionRates toadd;
++			    for(unsigned int i=0;i<firstFields.size();i++){		
++				toadd.s[i]=destringify<double>(firstFields[i]);
+ 
+ #ifdef DEBUG
+-			    cerr<<sub3p.size()<<"\t"<<substiString[i]<<"\t"<<toadd.s[i]<<"\t"<<firstFields[i]<<endl;
++				cerr<<sub3p.size()<<"\t"<<substiString[i]<<"\t"<<toadd.s[i]<<"\t"<<firstFields[i]<<endl;
+ #endif
+ 
+-			    //cerr<<toadd.s[i]<<"\t"<<firstFields[i]<<endl;
+-			}	
++				//cerr<<toadd.s[i]<<"\t"<<firstFields[i]<<endl;
++			    }	
+ 
+-			for(int b=0;b<4;b++){		
+-			    double sum =0.0;
+-			    for(int a=0;a<3;a++){		
+-				int idx = b*3+a;
+-				sum+=toadd.s[idx];
+-			    }
+-			    if(sum>1.0){
+-				cerr<<"Problem with line "<<line<<" in file "<<deam3File<<" the sum of the substitution probabilities exceeds 1"<<endl;
+-				return 1;
++			    for(int b=0;b<4;b++){		
++				double sum =0.0;
++				for(int a=0;a<3;a++){		
++				    int idx = b*3+a;
++				    sum+=toadd.s[idx];
++				}
++				if(sum>1.0){
++				    cerr<<"Problem with line "<<line<<" in file "<<deam3File<<" the sum of the substitution probabilities exceeds 1"<<endl;
++				    return 1;
++				}
+ 			    }
+-			}
+ 		
+ 
+-			sub3p.push_back(toadd);
+-			//return 1;
++			    sub3p.push_back(toadd);
++			    //return 1;
++			}
++	
++			deam3pFileSt.close();
++		    }else{
++			cerr << "Unable to open 3p deamination file "<<deam3File<<endl;
++			return 1;
+ 		    }
++		    // //cerr<<"test2"<<endl;
++		    // for(unsigned int i=0;i<sub3p.size();i++){		
++		    //     cerr<<i<<"\t"<<arrayToString(sub3p[i].s,12,"\t")<<endl;
++		    // }
++		    reverse(sub3p.begin(),sub3p.end());
+ 	
+-		    deam3pFileSt.close();
+-		}else{
+-		    cerr << "Unable to open 3p deamination file "<<deam3File<<endl;
+-		    return 1;
++		    // for(unsigned int i=0;i<sub3p.size();i++){		
++		    //     cerr<<i<<"\t"<<arrayToString(sub3p[i].s,12,"\t")<<endl;
++		    // }
+ 		}
+-		// //cerr<<"test2"<<endl;
+-		// for(unsigned int i=0;i<sub3p.size();i++){		
+-		//     cerr<<i<<"\t"<<arrayToString(sub3p[i].s,12,"\t")<<endl;
+-		// }
+-		reverse(sub3p.begin(),sub3p.end());
+-	
+-		// for(unsigned int i=0;i<sub3p.size();i++){		
+-		//     cerr<<i<<"\t"<<arrayToString(sub3p[i].s,12,"\t")<<endl;
+-		// }
+-
+ 	    }
+ 	}
+ 
+@@ -1450,17 +1615,19 @@ int main (int argc, char *argv[]) {
+ 	    }else{//no briggs
+ 
+ #ifdef DEBUG
++		cerr<<"profFileSpecified         "<<profFileSpecified<<endl;
+ 		cerr<<"matrixFileSpecified         "<<matrixFileSpecified<<endl;
+ 		cerr<<"matrixFileSpecifiedNoMeth   "<<matrixFileSpecifiedNoMeth<<endl;
+ 		cerr<<"matrixFileSpecifiedWithMeth "<<matrixFileSpecifiedWithMeth<<endl;
+ 
+ #endif
+ 
+-		if(matrixFileSpecified         ||
++		if(profFileSpecified           ||
++		   matrixFileSpecified         ||
+ 		   matrixFileSpecifiedNoMeth   ||
+ 		   matrixFileSpecifiedWithMeth ){
+ 		
+-		    if(!matrixFileSpecified  ){
++		    if(matrixFileSpecifiedNoMeth || matrixFileSpecifiedWithMeth ){
+ 			//Methylation is taken into account
+ 
+ #ifdef DEBUG
+@@ -1621,6 +1788,9 @@ int main (int argc, char *argv[]) {
+ 
+ 		    //else, we have a simple matrix no methylation
+ 		    else{
++#ifdef DEBUG
++ 			cerr<<"unmethylated"<<endl;
++#endif
+ 			for(int i=0;i<int(seq.size());i++){
+ 			    if(!isResolvedDNA(seq[i]))
+ 				continue;
+diff --git a/src/fragSim.cpp b/src/fragSim.cpp
+index 5f4c740..fcf5381 100644
+--- a/src/fragSim.cpp
++++ b/src/fragSim.cpp
+@@ -480,7 +480,6 @@ int main (int argc, char *argv[]) {
+ 
+ 	if(string(argv[i]) == "-uniq" ){
+ 	    uniqTags = true;
+-	    i++; 
+ 	    continue;
+ 	}
+ 
