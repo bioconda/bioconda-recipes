@@ -2,12 +2,11 @@
 set -euo pipefail
 TMPDIR="$(mktemp -d)"
 mkdir -p "${TMPDIR}"
-which env >&2
 env -C "${TMPDIR}" cmake \
     -Wdev -Wdeprecated --warn-uninitialized \
     -DCEU_CM_SHOULD_USE_NATIVE=OFF \
     -DCEU_CM_SHOULD_ENABLE_TEST=OFF \
-		-DUSE_MALLOC=NOP \
+    -DUSE_MALLOC=NOP \
     ${CMAKE_ARGS} \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DCMAKE_INSTALL_LIBDIR=lib/art_modern/lib \
@@ -15,6 +14,6 @@ env -C "${TMPDIR}" cmake \
     -DCMAKE_INSTALL_PREFIX=${PREFIX} \
     "${SRC_DIR}"
 # The last 4 variables override conda's default settings
-cmake --build "${TMPDIR}" --parallel ${CPU_COUNT}
+cmake --build "${TMPDIR}" --parallel "${CPU_COUNT}"
 cmake --install "${TMPDIR}"
 rm -fr "${TMPDIR}"
