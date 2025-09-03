@@ -1,8 +1,8 @@
 #!/bin/bash
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-deprecated-declarations -Wno-implicit-function-declaration"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-deprecated-declarations -Wno-implicit-function-declaration"
 
 mkdir -p ${PREFIX}/include
 mkdir -p ${PREFIX}/lib
