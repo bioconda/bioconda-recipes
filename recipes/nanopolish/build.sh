@@ -9,6 +9,18 @@ export HTS_LIB="${PREFIX}/lib/libhts.a"
 export HTS_INCLUDE="-I${PREFIX}/include"
 export FAST5_INCLUDE="-I${PREFIX}/include/fast5"
 
+case $(uname -m) in
+    aarch64)
+    ARCH_OPTS="aarch64=1"
+        ;;
+    arm64)
+	ARCH_OPTS="aarch64=1"
+        ;;
+    *)
+    ARCH_OPTS=""
+        ;;
+esac
+
 mkdir -p $PREFIX/bin
 
 # Linker options aren't passed to minimap2
@@ -37,14 +49,14 @@ if [[ "${target_platform}" == "linux-aarch64" ]]; then
 	sed -i '334s/^/\/\//'   align.c
 fi
 
-make CFLAGS="$CFLAGS -Wno-implicit-function-declaration" CXXFLAGS="$CXXFLAGS" LIBS="-L$PREFIX/lib -lm -lz -pthread" libminimap2.a -j"${CPU_COUNT}"
+make "${ARCH_OPTS}" CFLAGS="$CFLAGS -Wno-implicit-function-declaration" CXXFLAGS="$CXXFLAGS" LIBS="-L$PREFIX/lib -lm -lz -pthread" libminimap2.a -j"${CPU_COUNT}"
 popd
 
 pushd slow5lib
 make CC="${CC}" lib/libslow5.a -j"${CPU_COUNT}"
 popd
 
-make HDF5=noinstall EIGEN=noinstall HTS=noinstall MINIMAP=noinstall CXXFLAGS="$CXXFLAGS -Iminimap2 -Islow5lib -fopenmp -g -O3 "
+make HDF5=noinstall EIGEN=noinstall HTS=noinstall MINIMAP=noinstall CXXFLAGS="$CXXFLAGS -Iminimap2 -Islow5lib -fopenmp -g -O3"
 install -v -m 0755 nanopolish $PREFIX/bin
 cp -f scripts/nanopolish_makerange.py $PREFIX/bin
 cp -f scripts/nanopolish_merge.py $PREFIX/bin
