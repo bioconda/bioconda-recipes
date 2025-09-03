@@ -1,16 +1,19 @@
 #!/bin/bash
-export CFLAGS="-Iminimap2 -I$PREFIX/include -std=c99"
-export CPATH=${PREFIX}/include
 
-export HTS_LIB=${PREFIX}/lib/libhts.a
-export HTS_INCLUDE=-I${PREFIX}/include
-export FAST5_INCLUDE=-I${PREFIX}/include/fast5
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -Iminimap2 -I$PREFIX/include -std=c99"
+export CPATH="${PREFIX}/include"
+
+export HTS_LIB="${PREFIX}/lib/libhts.a"
+export HTS_INCLUDE="-I${PREFIX}/include"
+export FAST5_INCLUDE="-I${PREFIX}/include/fast5"
 
 mkdir -p $PREFIX/bin
 
 # Linker options aren't passed to minimap2
 pushd minimap2
-if [[ ${target_platform}  == "linux-aarch64" ]]; then
+if [[ "${target_platform}" == "linux-aarch64" ]]; then
 	wget https://github.com/jratcliff63367/sse2neon/archive/master.zip -O sse2neon-master.zip
 	unzip sse2neon-master.zip
 	mv ./sse2neon-master/SSE2NEON.h $PREFIX/include/sse2neon.h
@@ -34,15 +37,15 @@ if [[ ${target_platform}  == "linux-aarch64" ]]; then
 	sed -i '334s/^/\/\//'   align.c
 fi
 
-make CFLAGS="$CFLAGS -Wno-implicit-function-declaration " CXXFLAGS="$CXXFLAGS" LIBS="-L$PREFIX/lib -lm -lz -pthread" libminimap2.a
+make CFLAGS="$CFLAGS -Wno-implicit-function-declaration" CXXFLAGS="$CXXFLAGS" LIBS="-L$PREFIX/lib -lm -lz -pthread" libminimap2.a -j"${CPU_COUNT}"
 popd
 
 pushd slow5lib
-make CC=$CC lib/libslow5.a
+make CC="${CC}" lib/libslow5.a -j"${CPU_COUNT}"
 popd
 
 make HDF5=noinstall EIGEN=noinstall HTS=noinstall MINIMAP=noinstall CXXFLAGS="$CXXFLAGS -Iminimap2 -Islow5lib -fopenmp -g -O3 "
-cp nanopolish $PREFIX/bin
-cp scripts/nanopolish_makerange.py $PREFIX/bin
-cp scripts/nanopolish_merge.py $PREFIX/bin
+install -v -m 0755 nanopolish $PREFIX/bin
+cp -f scripts/nanopolish_makerange.py $PREFIX/bin
+cp -f scripts/nanopolish_merge.py $PREFIX/bin
 # cp scripts/consensus-preprocess.pl $PREFIX/bin # Skipping this pre-processing step at the moment.
