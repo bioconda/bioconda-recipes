@@ -54,28 +54,32 @@ source:
 
 build:
   number: 0
-  noarch: generic
-  skip: True
   run_exports:
-    - {{ pin_subpackage("sierra-local", max_pin="x") }}  
-  script: |
-    $PYTHON -m pip install git+https://github.com/hivdb/post-align
-    $PYTHON -m pip install .
+    - {{ pin_subpackage("sierra-local", max_pin="x") }}
+  script: 
+    - $PYTHON -m pip install git+https://github.com/hivdb/post-align -vvv --no-deps --no-build-isolation --no-cache-dir
+    - $PYTHON -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
 
 requirements:
   build:
-     - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
     - pip
-    - python >=3.6,<3.11
+    - python >=3.9,<=3.10
     - setuptools
     - wheel
     - cython ==0.29.35
   run:
-    - python >=3.6,<3.11
+    - python >=3.9,<=3.10
     - requests
     - pandas
     - click
+    - biopython
+    - lxml
+    - pyfasta
+    - pysam
+    - cython ==0.29.35
 
 test:
   commands:
@@ -88,8 +92,3 @@ about:
   license_file: LICENSE
   summary: "sierra-local is a Python3 implementation of the Stanford HIVdb Sierra service for generating drug resistance predictions from HIV-1 sequences."
   doc_url: https://github.com/PoonLab/sierra-local
-
-extra:
-  additional-platforms:
-    - osx-arm64
-    - linux-aarch64
