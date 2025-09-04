@@ -1,6 +1,6 @@
 {% set name = "stripepy-hic" %}
-{% set version = "0.0.2" %}
-{% set sha256 = "4e0e14f365334095b9af04874b01bae25fb385560add5f6f0bc91b35f757e556" %}
+{% set version = "1.1.1" %}
+{% set sha256 = "bb4500d21418694931f8d4d9e844d9a07c362786ab193674d6d5988a73cb1609" %}
 
 package:
   name: {{ name|lower }}
@@ -14,10 +14,10 @@ build:
   number: 0
   noarch: python
   entry_points:
-    - stripepy = stripepy:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -v"
+    - stripepy = stripepy.main:main
+  script: "{{ PYTHON }} -m pip install '.[all]' --no-deps --no-build-isolation --no-cache-dir -v"
   run_exports:
-    - {{ pin_subpackage('stripepy-hic', max_pin="x.x") }}
+    - {{ pin_subpackage('stripepy-hic', max_pin="x") }}
 
 requirements:
   host:
@@ -27,13 +27,18 @@ requirements:
     - hatch-vcs
   run:
     - h5py >=3
-    - hictkpy >=1
+    - hictkpy >=1.2
     - matplotlib-base >=3.8
-    - numpy
+    - numpy >=2  # This is required to use np.argsort(..., stable=True)
+    - opentelemetry-api >=1
+    - opentelemetry-sdk >=1
+    - opentelemetry-exporter-otlp-proto-http >=1
+    - packaging
     - pandas >=2
-    - scikit-learn
     - scipy
-    - seaborn-base >=0.13
+    - structlog >=24
+    - colorama
+    - rich >=13.9
 
 about:
   home: https://github.com/paulsengroup/StripePy
@@ -41,12 +46,13 @@ about:
   license_file: LICENCE
   summary: "StripePy recognizes architectural stripes in 3C and Hi-C contact maps using geometric reasoning"
   dev_url: https://github.com/paulsengroup/StripePy
-  doc_url: https://github.com/paulsengroup/StripePy/blob/main/README.md
+  doc_url: https://stripepy.readthedocs.io/
 
 test:
   requires:
     - curl
     - perl-digest-md5
+    - pyarrow
     - pytest>=8
   source_files:
     - test/*

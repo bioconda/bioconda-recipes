@@ -2,10 +2,6 @@
 
 set -xeuo
 
-if [ "$(uname)" == "Darwin" ]; then
-    export HOME=`pwd`
-fi
-
 pushd gtars
 
 cargo-bundle-licenses --format yaml --output ../THIRDPARTY.yml

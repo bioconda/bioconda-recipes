@@ -1,0 +1,51 @@
+{% set name = "conservation" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "fffe0f487c0343853783c67b79e3e9dba30247d4f5d4645698a82567b0f3d9b9"
+
+build:
+  noarch: python
+  number: 0
+  script: |
+    set -ex
+    {{ PYTHON }} -m pip install . --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage('conservation', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - setuptools >=42
+    - wheel
+  run:
+    - python >=3.6
+    - numpy
+    - pandas
+    - biopython
+    - scipy
+    - matplotlib-base
+    - tqdm
+    - importlib-resources
+
+test:
+  imports:
+    - conservation
+  commands:
+    - conservation --help
+
+about:
+  home: https://github.com/hanjunlee21/conservation
+  summary: Evolutionary Conservation of Amino Acids and Codons
+  license: MIT
+  license_family: MIT
+
+extra:
+  recipe-maintainers:
+    - hanjunlee21
