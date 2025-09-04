@@ -1,22 +1,30 @@
 {% set name = "genomethreader" %}
-{% set version = "1.7.1" %}
+{% set version = "1.7.3" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: http://genomethreader.org/distributions/gth-{{version}}-Linux_x86_64-64bit.tar.gz
-  sha256: 7c7b05d0a88a13a83918a7e209bf38195238b93b93684e0f4c2ed48ecbaf8718
-
+  - url: http://genomethreader.org/distributions/gth-{{version}}-Linux_x86_64-64bit.tar.gz # [linux64]
+    sha256: 7c7b05d0a88a13a83918a7e209bf38195238b93b93684e0f4c2ed48ecbaf8718
+  - url: https://github.com/genometools/genomethreader/archive/refs/tags/v1.7.3.tar.gz # [aarch64]
+    sha256: bfffeaa8baf2aa58171724ab4cda4cf3fe4fe8f1fd2799cf9c6a3ef054e15570
 build:
   skip: True  # [not linux]
-  number: 7
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name,max_pin="x.x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
+    - {{ compiler('c') }} =12.3.0
+    - {{ compiler('cxx') }}=12.3.0
+    - python =3.11.6
+    - pango
+    - cairo
+    - glib
+    - harfbuzz
     
 test:
   commands:
@@ -31,4 +39,6 @@ about:
 
 extra:
   recipe-maintainers:
-  - lucventurini
+    - lucventurini
+  additional-platforms:
+    - linux-aarch64
