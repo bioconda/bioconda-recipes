@@ -1,11 +1,12 @@
-NCBI_OUTDIR=$SRC_DIR/ncbi-outdir
+#!/bin/bash
+export NCBI_OUTDIR=$SRC_DIR/ncbi-outdir
 
 pushd ngs-sdk
 ./configure \
-    --prefix=$PREFIX \
-    --build-prefix=$NCBI_OUTDIR \
+    --prefix="${PREFIX}" \
+    --build-prefix="${NCBI_OUTDIR}" \
     --debug
-make
+make -j"${CPU_COUNT}"
 make install
 make test
 popd
