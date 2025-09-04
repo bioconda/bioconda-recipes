@@ -16,7 +16,7 @@ sed -i.bak 's|arm_neon=1|aarch64=1|' Makefile
 
 # Linker options aren't passed to minimap2
 pushd minimap2
-if [[ "${target_platform}" == "linux-aarch64" || "${target_platform}" == "osx-arm64" ]]; then
+if [[ "${target_platform}" == "linux-aarch64" ]]; then
 	wget https://github.com/jratcliff63367/sse2neon/archive/master.zip -O sse2neon-master.zip
 	unzip sse2neon-master.zip
 	mv ./sse2neon-master/SSE2NEON.h $PREFIX/include/sse2neon.h
@@ -38,6 +38,10 @@ if [[ "${target_platform}" == "linux-aarch64" || "${target_platform}" == "osx-ar
 	sed -i'' -e '332s/^/\/\//'   align.c
 	sed -i'' -e '333s/^/\/\//'   align.c
 	sed -i'' -e '334s/^/\/\//'   align.c
+elif [[ "${target_platform}" == "osx-arm64" ]]; then
+	sed -i.bak 's|-msse2||'  Makefile
+	sed -i.bak 's|-msse4.1||'  Makefile
+	sed -i.bak 's|-mno-sse4.1||'  Makefile
 fi
 
 make libminimap2.a CFLAGS="$CFLAGS -Wno-implicit-function-declaration" CXXFLAGS="$CXXFLAGS" LIBS="-L$PREFIX/lib -lm -lz -pthread" -j"${CPU_COUNT}"
