@@ -12,6 +12,11 @@ export FAST5_INCLUDE="-I${PREFIX}/include/fast5"
 
 mkdir -p "$PREFIX/bin"
 
+sed -i.bak 's|-O2|-O3|'  Makefile
+rm -rf *.bak
+sed -i.bak 's|CC     = gcc|CC     ?= $(CC)|'  htslib/Makefile
+rm -rf htslib/*.bak
+
 # Linker options aren't passed to minimap2
 pushd minimap2
 if [[ "${target_platform}" == "linux-aarch64" ]]; then
@@ -42,17 +47,24 @@ elif [[ "${target_platform}" == "osx-arm64" ]]; then
 	sed -i.bak 's|-mno-sse4.1||'  Makefile
 fi
 
-make libminimap2.a arm_neon=1 CFLAGS="$CFLAGS -Wno-implicit-function-declaration" CXXFLAGS="$CXXFLAGS" LIBS="-L$PREFIX/lib -lm -lz -pthread" -j"${CPU_COUNT}"
+if [[ "${target_platform}" == "linux-aarch64" || "${target_platform}" == "osx-arm64" ]]; then
+	make libminimap2.a arm_neon=1 CFLAGS="$CFLAGS -Wno-implicit-function-declaration" CXXFLAGS="$CXXFLAGS" LIBS="-L$PREFIX/lib -lm -lz -pthread" -j"${CPU_COUNT}"
+else
+	make libminimap2.a CFLAGS="$CFLAGS -Wno-implicit-function-declaration" CXXFLAGS="$CXXFLAGS" LIBS="-L$PREFIX/lib -lm -lz -pthread" -j"${CPU_COUNT}"
+fi
+
 popd
 
 pushd slow5lib
-sed -i.bak 's|gcc|$(CC)|' Makefile
+sed -i.bak 's|CC			= cc|CC			?= $(CC)|' Makefile
+sed -i.bak "s|gcc|${CC}|" Makefile
 sed -i.bak 's|AR			= ar|#AR			= ar|' Makefile
 rm -rf *.bak
+
 make lib/libslow5.a CC="${CC}" -j"${CPU_COUNT}"
 popd
 
-make HDF5=noinstall EIGEN=noinstall HTS=noinstall MINIMAP=noinstall CXXFLAGS="$CXXFLAGS -Iminimap2 -Islow5lib -fopenmp -g -O3"
+make HDF5=noinstall EIGEN=noinstall HTS=noinstall MINIMAP=noinstall CXXFLAGS="${CXXFLAGS} -Iminimap2 -Islow5lib -fopenmp -g -O3"
 install -v -m 0755 nanopolish $PREFIX/bin
 cp -f scripts/nanopolish_makerange.py $PREFIX/bin
 cp -f scripts/nanopolish_merge.py $PREFIX/bin
