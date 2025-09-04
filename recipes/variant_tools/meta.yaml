@@ -15,7 +15,11 @@ build:
     - vtools = variant_tools.vtools:main
     - vtools_report = variant_tools.vtools_report:main
     - worker_run = variant_tools.worker_zmq:main
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --use-pep517 --no-cache-dir -vvv
+  script:
+    - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-implicit-function-declaration -Wno-int-conversion"
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - export CXXFLAGS="${CXXFLAGS} -O3 -Wno-implicit-function-declaration -Wno-int-conversion"
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --use-pep517 --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage('variant_tools', max_pin="x") }}
 
@@ -56,6 +60,7 @@ about:
   license_family: GPL3
   summary: "Integrated annotation and analysis of next gen sequencing data."
   dev_url: "https://github.com/vatlab/varianttools"
+  doc_url: "https://vatlab.github.io/vat-docs"
 
 extra:
   additional-platforms:
