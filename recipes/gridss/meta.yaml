@@ -3,11 +3,11 @@
 
 package:
   name: gridss
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   url: https://github.com/PapenfussLab/gridss/releases/download/v{{ version }}/gridss-{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  sha256: {{ sha256 }}
   patches:
     - 0001-fix-samtools-version-check.patch
     - 0002-set-gridssargs-for-virusbreakend-annotation.patch
@@ -15,13 +15,14 @@ source:
 build:
   number: 5
   run_exports:
-    - {{ pin_subpackage('gridss', max_pin="x.x.x") }}
-  skip: True # [osx]
+    - {{ pin_subpackage('gridss', max_pin="x") }}
 
 requirements:
   build:
     - autoconf
     - automake
+    - libtool
+    - pkg-config
     - make
     - {{ compiler('c') }}
   host:
@@ -32,7 +33,6 @@ requirements:
   run:
     - bc
     - ncurses
-    - zlib
     - openjdk >=8
     - bwa >=0.7
     - samtools >=1.14
@@ -64,14 +64,16 @@ test:
     - "AnnotateVariantsRepeatMasker --help 2>&1 | grep 'USAGE:'"
 
 about:
-  home: https://github.com/PapenfussLab/gridss
-  license: GPL-3.0-only
-  license_family: GPL
-  summary: 'GRIDSS: the Genomic Rearrangement IDentification Software Suite'
+  home: "https://github.com/PapenfussLab/gridss"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  summary: "GRIDSS: The Genomic Rearrangement IDentification Software Suite."
+  dev_url: "https://github.com/PapenfussLab/gridss"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:gridss
     - doi:10.1101/gr.222109.117
