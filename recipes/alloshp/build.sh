@@ -7,25 +7,20 @@ mv  lib \
     WGA \
     vcf2alignment \
     vcf2synteny \
-    cpanfile \
-    Makefile \
     version.txt \
-    README.md \
     ${PREFIX}/bin
 
 cd ${PREFIX}/bin
 
-# force system GSAlign
-perl -pi.bak -e 's/\$Bin\/lib\/GSAlign\/bin\///' WGA
+# WGA must use Bioconda's GSAlign and Red
+perl -pi.bak -e 's/\$Bin\/lib\/GSAlign\/bin\///; s/\$Bin\/lib\/Red\/bin\///; s/\-\-cor/--exe Red --cor/g' WGA
 
-# Red
-cd lib && git clone https://github.com/EnsemblGenomes/Red.git && cd Red/src_2.0 && \
-    perl -pi.bak -e 's/CXX = g\+\+//' Makefile && \
-    make bin && make && cd .. && rm -f bin/*.o && rm -f bin/*/*.o && cd ../..
+# fix shebangs of Perl utils
+perl -pi.bak -e 's/\/usr\/bin\/perl -w/\/usr\/bin\/env perl/' utils/*.pl
 
-## Red2Ensembl
+## get Red2Ensembl, adapt it to bioconda's Red 
 cd utils && wget https://raw.githubusercontent.com/Ensembl/plant-scripts/refs/heads/master/repeats/Red2Ensembl.py && \
-    chmod +x Red2Ensembl.py && cd ..
+    chmod +x Red2Ensembl.py && perl -pi.bak -e 's/frm 3/frm 2/' Red2Ensembl.py && cd ..
 
 # CGaln
 cd lib && git clone https://github.com/rnakato/Cgaln.git && cd Cgaln && \
