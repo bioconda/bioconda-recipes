@@ -1,0 +1,69 @@
+{% set name = "bifrost-httr" %}
+{% set version = "0.4.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name|replace("-", "_") }}-{{ version }}.tar.gz
+  sha256: f90d1ff6d8f9af4a661d4495b53d1fbbb7d5c1937a92287487e2897c78051b67
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  entry_points:
+    - bifrost-httr = bifrost_httr.cli:cli
+  run_exports:
+    - {{ pin_subpackage('bifrost-httr', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - hatchling
+  run:
+    - python >=3.10
+    - numpy >=2.0.0,<3.0
+    - pandas >=2.0.0,<3.0  
+    - cmdstanpy >=1.2.0,<2.0
+    - scipy >=1.10.0,<2.0
+    - pyyaml >=6.0
+    - multiqc ==1.28
+    - plotly >=6.0.0,<7.0
+    - click
+
+test:
+  imports:
+    - bifrost_httr
+    - bifrost_httr.core
+    - bifrost_httr.models
+    - bifrost_httr.utils
+    - bifrost_httr.visualization
+    - bifrost_httr.data
+  commands:
+    - bifrost-httr --help
+    - bifrost-httr run-analysis --help
+    - bifrost-httr create-report --help
+    - bifrost-httr compress-output --help
+    - bifrost-httr prepare-inputs --help
+    - bifrost-httr split-data --help
+    - bifrost-httr compile-model --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/seqera-services/bifrost-httr
+  license: LGPL-3.0
+  license_family: LGPL
+  license_file: LICENSE
+  summary: Pre-release version for testing purposes only
+  description: Pre-release version for testing purposes only
+  dev_url: https://github.com/seqera-services/bifrost-httr
+
+extra:
+  recipe-maintainers:
+    - pinin4fjords
+    - JoeReynolds257
+    - mark-liddell 
