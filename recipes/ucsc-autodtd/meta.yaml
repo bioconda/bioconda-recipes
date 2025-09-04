@@ -1,21 +1,23 @@
 {% set package = "ucsc-autodtd" %}
 {% set program = "autoDtd" %}
-{% set version = "469" %}
-{% set sha256 = "3f95b26ccca854c965c05773481c269f2a0e6fb1906ae8a7fe2437c6ad543963" %}
+{% set version = "482" %}
+{% set sha256 = "745d0f0a980e9f863373b0b0a6ad7961a1d0f53a9d7c446e92fc28fc4909431a" %}
 
 package:
   name: "{{ package }}"
   version: "{{ version }}"
 
 source:
-  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
+  url: "https://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
   sha256: "{{ sha256 }}"
   patches:
-    - "include.patch"
+    - 0001-include.patch
+    - 0002-include.linux.patch  # [linux]
+    - 0003-common.mk.patch
+    - 0004-straw.patch
 
 build:
-  skip: True  # [osx]
-  number: 1
+  number: 0
   run_exports:
     - {{ pin_subpackage(package, max_pin=None) }}
 
@@ -23,19 +25,23 @@ requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
     - libpng
     - libuuid
-    - mysql-connector-c
+    - mysql-connector-c # [not arm64]
     - libopenssl-static
+    - clangdev  # [osx]
+    - rsync  # [osx]
+    - libiconv
+    - bzip2
+    - liblzma-devel
     - zlib
-
   run:
     - libpng
     - libuuid
-    - mysql-connector-c
+    - mysql-connector-c # [not arm64]
     - libopenssl-static
-    - zlib
 
 test:
   commands:
@@ -43,11 +49,11 @@ test:
     - test -x ${PREFIX}/bin/{{ program }}
 
 about:
-  home: "https://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "Varies; see http://genome.ucsc.edu/license"
-  summary: "Give this a XML document to look at and it will come up with a DTD"
+  home: "https://hgdownload.cse.ucsc.edu/admin/exe"
+  license: "Varies; see https://genome.ucsc.edu/license"
+  summary: "Give this a XML document to look at and it will come up with a DTD."
   dev_url: "https://github.com/ucscGenomeBrowser/kent"
-  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/master/README"
+  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/v{{ version }}_base/README"
 
 extra:
   identifiers:
@@ -55,3 +61,4 @@ extra:
     - doi:10.1093/bib/bbs038
   additional-platforms:
     - linux-aarch64
+    - osx-arm64

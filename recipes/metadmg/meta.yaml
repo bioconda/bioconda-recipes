@@ -1,40 +1,40 @@
 {% set name = "metadmg" %}
-{% set version = "0.4" %}
-{% set sha256 = "072486bf4103c256bbc907d265d24993b3f5a90eca7dd3fced63f5a8f5840b64" %}
+{% set version = "0.4.2" %}
+{% set sha256 = "e86b715323dd59c5087fb837306db324be19aaf7b4a1d4d8eb0b2894600da87b" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/metaDMG-dev/metaDMG-cpp/archive/refs/tags/v{{ version }}.tar.gz
+  git_url: https://github.com/metaDMG-dev/metaDMG-cpp.git
+  git_rev: v{{ version }}
   sha256: {{ sha256 }}
+  patches:
+    - 0001-Makefile.patch
 
 build:
-  number: 1
-  skip: false
+  number: 0
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-    - {{ compiler('c') }}
+    - pkg-config
   host:
     - openssl
     - htslib
+    - gsl
+    - eigen
+    - curl
     - zlib
     - bzip2
     - xz
-    - gsl
-    - eigen
   run:
     - openssl
     - htslib
-    - zlib
-    - bzip2
-    - xz
     - gsl
     - eigen
 
@@ -44,16 +44,24 @@ test:
     - metaDMG-cpp getdamage 2>&1 | grep 'getdamage'
     - metaDMG-cpp lca 2>&1 | grep 'lca'
     - compressbam 2>&1 | grep 'compressbam'
+    - extract_reads 2>&1 | grep 'extract_reads'
 
 about:
-  home: https://github.com/metaDMG-dev/metaDMG-cpp
-  license: GPLv3, MIT
-  #license_file: LICENSE
-  summary: "metaDMG-cpp: fast and efficient method for estimating mutation and damage rates in ancient DNA data"
+  home: "https://github.com/metaDMG-dev/metaDMG-cpp"
+  license: "GPL-3.0-or-later, MIT"
+  license_family: "GPL3"
+  summary: "metaDMG-cpp: fast and efficient method for estimating mutation and damage rates in ancient DNA data."
+  dev_url: "https://github.com/metaDMG-dev/metaDMG-cpp"
+  doc_url: "https://github.com/metaDMG-dev/metaDMG-cpp/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - ANGSD
     - rahenriksen
   identifiers:
     - doi:10.1101/2022.12.06.519264
+  skip-lints:
+    - uses_vcs_url

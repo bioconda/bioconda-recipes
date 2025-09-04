@@ -1,0 +1,44 @@
+{% set name = "snakemake-interface-scheduler-plugins" %}
+{% set version = "2.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/snakemake_interface_scheduler_plugins-{{ version }}.tar.gz
+  sha256: 98e3983c7baebb2122ce6e1a95dffe3fe74c8a8c9528e20c99d8e5c3645d83ca
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("snakemake-interface-scheduler-plugins", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11,<4.0
+    - pip
+    - hatchling
+  run:
+    - python >=3.11.0,<4.0.0
+    - snakemake-interface-common >=1.20.1,<2.0.0
+
+test:
+  imports:
+    - snakemake_interface_scheduler_plugins
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  summary: This package provides a stable interface for interactions between Snakemake and its scheduler plugins.
+  home: https://github.com/snakemake/snakemake-interface-scheduler-plugins
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - koesterlab
