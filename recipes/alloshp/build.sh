@@ -13,7 +13,7 @@ mv  lib \
 cd ${PREFIX}/bin
 
 # WGA must use Bioconda's GSAlign and Red
-perl -pi.bak -e 's/\$Bin\/lib\/GSAlign\/bin\///; s/\$Bin\/lib\/Red\/bin\///; s/\-\-cor/--exe Red --cor/g' WGA
+perl -pi.bak -e 's/\$Bin\/lib\/GSAlign\/bin\///; s/my \$REDEXE.*/my \$REDEXE=`which Red`;chomp(\$REDEXE);/; s/\-\-cor/--exe \$REDEXE --cor/g' WGA
 
 # fix shebangs of Perl utils
 perl -pi.bak -e 's/\/usr\/bin\/perl -w/\/usr\/bin\/env perl/' utils/*.pl
