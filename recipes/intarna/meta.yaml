@@ -4,47 +4,53 @@
 
 package:
   name: intarna
-  version: {{INTARNA_VERSION}}
-
-about:
-  home: https://github.com/BackofenLab/IntaRNA
-  license: MIT
-  summary: Efficient RNA-RNA interaction prediction incorporating seeding and accessibility of interacting sites
-
-build:
-  number: 2
-  run_exports:
-    - {{ pin_subpackage('intarna', max_pin="x.x") }}
+  version: {{ INTARNA_VERSION }}
 
 source:
-  url: "https://github.com/BackofenLab/IntaRNA/releases/download/v{{INTARNA_VERSION}}/intaRNA-{{INTARNA_VERSION}}.tar.gz"
-  sha256: {{INTARNA_SHA256}}
+  url: "https://github.com/BackofenLab/IntaRNA/releases/download/v{{ INTARNA_VERSION }}/intaRNA-{{ INTARNA_VERSION }}.tar.gz"
+  sha256: {{ INTARNA_SHA256 }}
+
+build:
+  number: 3
+  run_exports:
+    - {{ pin_subpackage('intarna', max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - pkg-config
+    - gnuconfig
   host:
     - boost-cpp
     - zlib
-    - viennarna >={{VRNA_VERSION}}*,<3
-    - pkgconfig
+    - viennarna >={{ VRNA_VERSION }}*,<3
     - doxygen
     - perl
-    - llvm-openmp # [osx]
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
   run:
     - boost-cpp
-    - llvm-openmp # [osx]
-    - zlib
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
 
 test:
   commands:
     - IntaRNA -h
     - IntaRNA -t CCCCCCCCGGGGGGGGGGGGGG -q CCCCCCC
 
+about:
+  home: "https://github.com/BackofenLab/IntaRNA"
+  summary: "Efficient RNA-RNA interaction prediction incorporating seeding and accessibility of interacting sites."
+  license: MIT
+  license_family: MIT
+  dev_url: "https://github.com/BackofenLab/IntaRNA"
+  doc_url: "https://backofenlab.github.io/IntaRNA"
+
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:intarna
     - doi:10.1093/nar/gkx279
@@ -53,4 +59,3 @@ extra:
   recipe-maintainers:
     - martin-raden
     - BackofenLab
-

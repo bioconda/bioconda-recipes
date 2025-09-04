@@ -1,12 +1,6 @@
 {% set name = "OpenMS" %}
 {% set version = "3.4.1" %}  # if ends with 'dev' it is considered a development release and pulled from GitHub
 
-# Note: to create a new release: 
-# - version number
-# - reset build number to 0
-# - md5 
-# need to be updated.
-
 package:
   name: {{ name|lower  }}-meta
   version: {{ version  }}
@@ -14,23 +8,22 @@ package:
 {% if 'dev' in version %}
 source:
   git_url: https://github.com/OpenMS/OpenMS.git
-  git_rev: release/{{ version }}
+  # We do not release dev versions, so build from develop
+  # Note: This will only work correctly as long as the current X.Y.Zdev version is actually the latest
+  # Retrospective builds not supported.
+  git_rev: develop
   md5: unused
 {% else %}
 source:
-  # Remove trailing zeros for major releases
-  {% set version_parts = version.split('.') %}
-  {% if version_parts|length == 3 and version_parts[2] == '0' %}
-    {% set short_version = version_parts[0] ~ '.' ~ version_parts[1] %}
-  {% else %}
-    {% set short_version = version %}
-  {% endif %}
-  url: https://github.com/OpenMS/OpenMS/releases/download/release%2F{{ version }}/OpenMS-{{ short_version }}.tar.gz  # since we discarded the trailing 0 during the GHA we have to hard code this, fix it next release
+  # PLEASE never use abbreviated versions anymore!
+  url: https://github.com/OpenMS/OpenMS/releases/download/release%2F{{ version }}/OpenMS-{{ version }}.tar.gz
   md5: 8d0b4d1d333f069959f7d5ff1c77a90f
 {% endif %}
 
 build:
-  number: 0
+  number: 1
+  overlinking_ignore_patterns: "*"
+  # Linking is checked in the outputs not meta recipe
 
 # Try this when building with GUI
 #extra:
@@ -38,137 +31,136 @@ build:
 #    extended-base: True
 
 requirements:
-    # Note: pinning of sysroot_linux-64 =2.17 enforces cos7 and is currently needed to prevent an memcpy@GLIBC2.14 error
+    
     build:
       - {{ compiler('cxx') }}
       - cmake
       - ninja
-      - autoconf
-      - automake
-      - libtool
-      - pkg-config
-      - qt6-main
-      - sysroot_linux-64 =2.17  # [linux]
+
+    # Note: pinning of sysroot_linux-64 =2.17 enforces cos7 and is currently needed to prevent an memcpy@GLIBC2.14 error
     host:
-      - libgomp  # [linux]
-      - llvm-openmp  # [osx]
-      - xerces-c
-      - boost-cpp
-      - eigen >=3.4.0
-      - hdf5
-      - libsvm
-      - coinmp
-      - yaml-cpp
-      - doxygen >=1.8.13
-      - sysroot_linux-64 =2.17  # [linux]
-      - zlib
       - bzip2
-    run:
+      - coin-or-utils
+      - coin-or-clp
+      - coin-or-cgl
+      - coin-or-cbc
+      - eigen >=3.4.0
+      - libboost-devel
+      - libsvm
+      - qt6-main
+      - xerces-c
+      - yaml-cpp
+      - zlib
       - libgomp  # [linux]
+      - sysroot_linux-64 =2.17  # [linux]
       - llvm-openmp  # [osx]
 
 test:
   commands:
-    - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
-    - conda inspect objects -p $PREFIX $PKG_NAME  # [osx]
+    - echo "Tests are in subpackages"
 
 outputs:
   - name: libopenms
     version: {{ version }}
     script: package_libopenms.sh
     requirements:
-        # no actual build is done. CMake is used to install different parts of the existing build
-        # But since the other packages depend on its run_exports
-        # We want to make sure that the versions of the dependencies used are the same as above
-        # Note: pinning of sysroot_linux-64 =2.17 enforces cos7 and is currently needed to prevent an memcpy@GLIBC2.14 error
+        # No actual build is done. CMake is used to install different parts of the existing build
+        #  from the main "package"
+        # But since the other packages depend on its run_exports we want to make
+        #  sure that the versions of the dependencies used are the same as above. So list them
+        #  again. Also we want the compiler jinja func to have the run dependencies such that
+        #  dso linker checks dont complain
         build:
+          - {{ compiler('cxx') }}
           - cmake
-          - sysroot_linux-64 =2.17  # [linux]
-          - libtool
-          - pkg-config
-          - qt6-main
         host:
-          - libgomp  # [linux]
-          - llvm-openmp  # [osx]
-          - xerces-c
-          - boost-cpp
-          - eigen >=3.4.0
-          - hdf5
-          - libsvm
-          - coinmp
-          - yaml-cpp
-          - doxygen >=1.8.13
-          - sysroot_linux-64 =2.17  # [linux]
-          - zlib
           - bzip2
-        run:
+          - coin-or-utils
+          - coin-or-clp
+          - coin-or-cgl
+          - coin-or-cbc
+          - eigen >=3.4.0
+          - libboost-devel
+          - libsvm
+          - qt6-main
+          - xerces-c
+          - yaml-cpp
+          - zlib
           - libgomp  # [linux]
+          - sysroot_linux-64 =2.17  # [linux]
           - llvm-openmp  # [osx]
+        # Run dependencies are fully managed by run_exports of our host deps
 
     build:
       run_exports:
-          - {{ pin_compatible('llvm-openmp', max_pin='x.x') }}  # [osx]
-          - {{ pin_compatible('zlib', max_pin='x.x') }}
+          # We only need to export things that we expose in our library!
           - {{ pin_compatible('xerces-c', max_pin='x.x') }}
-          - {{ pin_compatible('boost-cpp', max_pin='x.x') }}
           - {{ pin_compatible('eigen', max_pin='x.x') }}
-          - {{ pin_compatible('hdf5', max_pin='x.x') }}
-          - {{ pin_compatible('bzip2', max_pin='x.x') }}
           - {{ pin_compatible('qt6-main', max_pin='x.x') }}
-          - {{ pin_compatible('libsvm', max_pin='x.x') }}
-          - {{ pin_compatible('coinmp', max_pin='x.x') }}
+          - {{ pin_compatible('libsvm', upper_bound='400') }} # libsvm is usually more compatible than it says
           - libopenms {{ version }}
+      # Looks like we are only using header-only part of boost in libOpenMS
+      ignore_run_exports_from:
+          - libboost-devel
+
+    test:
+      commands:
+        - command -v readelf >/dev/null 2>&1 && readelf -d ${PREFIX}/lib/libOpenMS.so | grep 'R.*PATH' || echo "Mulled container.. skip tests" # [linux]
+        - command -v otool >/dev/null 2>&1 && otool -L ${PREFIX}/lib/libOpenMS.dylib || echo "Mulled container.. skip tests"  # [osx]
+    
+    about:
+      home: "https://github.com/OpenMS/OpenMS"
+      license: "BSD-3-Clause"
+      license_family: BSD
+      license_file: LICENSE
+      summary: "Libraries and headers for developing with OpenMS. They are also a dependency of pyopenms and openms (tools)."
+      dev_url: "https://github.com/OpenMS/OpenMS"
+      doc_url: "https://openms.readthedocs.io/en/latest/index.html"
 
   - name: openms
     version: {{ version }}
     script: package_openms-tools.sh
     requirements:
       # no actual build is done. CMake is used to install different parts of the existing build
-      # Note: pinning of sysroot_linux-64 =2.17 enforces cos7 and is currently needed to prevent an memcpy@GLIBC2.14 error
       build:
+        - {{ compiler('cxx') }}
         - cmake
-        - sysroot_linux-64 =2.17  # [linux]
-        - libtool
-        - pkg-config
-        - qt6-main
       host:
         - {{ pin_subpackage('libopenms', exact=True) }}
-      # conda apparently does not support run_exports in subpackages yet, otherwise having libopenms in host would be enough.
-      # see https://github.com/conda/conda-build/issues/3478
-      # so specify everything again, such that EXACTLY the same versions are used!
-      # I could not get the "resolved_packages" jinja function to gather dependencies from other subpackages.
-        - libgomp  # [linux]
-        - llvm-openmp  # [osx]
         - xerces-c
-        - boost-cpp
-        - eigen >=3.4.0
-        - hdf5
+        - eigen
+        - qt6-main
         - libsvm
-        - coinmp
-        - yaml-cpp
-        - doxygen >=1.8.13
-        - sysroot_linux-64 =2.17  # [linux]
-        - zlib
-        - bzip2
+      ignore_run_exports:
+        - libsvm
       run:
-        - libgomp  # [linux]
-        - llvm-openmp  # [osx]
+        # conda does not support run_exports from outputs in other outputs of the same package yet,
+        # otherwise having libopenms in host would be enough.
+        # see https://github.com/conda/conda-build/issues/3478
+        # so specify everything again, such that EXACTLY the same versions are used!
+        # Note that for this to work, 
+        # I could not get the "resolved_packages" jinja function to gather dependencies from other subpackages.
         - {{ pin_subpackage('libopenms', exact=True) }}
-        - {{ pin_compatible('llvm-openmp', max_pin='x.x') }}  # [osx]
-        - {{ pin_compatible('zlib', max_pin='x.x') }}
         - {{ pin_compatible('xerces-c', max_pin='x.x') }}
-        - {{ pin_compatible('boost-cpp', max_pin='x.x') }}
         - {{ pin_compatible('eigen', max_pin='x.x') }}
-        - {{ pin_compatible('hdf5', max_pin='x.x') }}
-        - {{ pin_compatible('bzip2', max_pin='x.x') }}
         - {{ pin_compatible('qt6-main', max_pin='x.x') }}
-        - {{ pin_compatible('libsvm', max_pin='x.x') }}
-        - {{ pin_compatible('coinmp', max_pin='x.x') }}
+        - {{ pin_compatible('libsvm', upper_bound='400') }}
 
     test:
       commands:
+        - command -v readelf >/dev/null 2>&1 && readelf -d ${PREFIX}/bin/OpenMSInfo | grep 'R.*PATH' || echo "Mulled container.. skip tests" # [linux]
+        - command -v otool >/dev/null 2>&1 && otool -L ${PREFIX}/bin/OpenMSInfo || echo "Mulled container.. skip tests"  # [osx]
         - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/OpenMSInfo
         - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/FileMerger --help
+
+    about:
+      home: "https://github.com/OpenMS/OpenMS"
+      license: "BSD-3-Clause"
+      license_family: BSD
+      license_file: LICENSE
+      summary: "The OpenMS TOPP tools (without GUI components and adapted thirdparty tools)."
+      dev_url: "https://github.com/OpenMS/OpenMS"
+      doc_url: "https://openms.readthedocs.io/en/latest/index.html"
 
   - name: openms-thirdparty
     version: {{ version }}
@@ -190,22 +182,32 @@ outputs:
        - r-gplots
 
     test:
-     # Test copied from openms output to make sure a test environment for this output is created.
-     commands:
-       - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/OpenMSInfo
+      # Test copied from openms output to make sure a test environment for this output is created.
+      commands:
+        - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/OpenMSInfo
+    
+    about:
+      home: "https://github.com/OpenMS/OpenMS"
+      license: "BSD-3-Clause"
+      license_family: BSD
+      license_file: LICENSE
+      summary: "A helper package to install OpenMS TOPP tools with all their compatible and conda-available versions of adapted thirdparty tools."
+      dev_url: "https://github.com/OpenMS/OpenMS"
+      doc_url: "https://openms.readthedocs.io/en/latest/index.html"
 
 about:
   home: "https://github.com/OpenMS/OpenMS"
   license: "BSD-3-Clause"
   license_family: BSD
   license_file: LICENSE
-  summary: "OpenMS is an open-source software C++ library for LC-MS data management and analyses."
+  summary: "OpenMS is an open-source software C++ library for LC-MS data management and analyses. The openms-meta package should not be installed. Please use one of its outputs libopenms, openms (=tools) or openms-thirdparty."
   dev_url: "https://github.com/OpenMS/OpenMS"
   doc_url: "https://openms.readthedocs.io/en/latest/index.html"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   skip-lints:
     - build_number_needs_reset  # our linter has some issues with multi-package recipes as it seems
     - missing_run_exports  # linter seems expect run_export keyword for meta-package in multi-package
@@ -215,4 +217,4 @@ extra:
   identifiers:
     - biotools:openms
     - usegalaxy-eu:openms_fileconverter
-    - doi:10.1038/nmeth.3959
+    - doi:10.1038/s41592-024-02197-7

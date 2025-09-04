@@ -1,0 +1,47 @@
+{% set name = "fastmd5" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/moold/fastMD5/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: fcaf6fbeea2d12d3652eed176c7ad660ee82bfeaf77e406c34b0d13e2d7e59c2
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('fastmd5', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - pkg-config        # rust crates often need this
+    - make
+    - cmake
+    - pkg-config
+    - clangdev
+    - llvmlite
+
+test:
+  commands:
+    - fastmd5 --help
+
+about:
+  home: "https://github.com/moold/fastMD5"
+  license: MIT
+  license_file: LICENSE
+  summary: "Fast command-line tool to compute and verify MD5 checksums"
+  dev_url: "https://github.com/moold/fastMD5"
+  doc_url: "https://github.com/moold/fastMD5/blob/main/README.md"
+
+extra:
+  recipe-maintainers:
+    - moold
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

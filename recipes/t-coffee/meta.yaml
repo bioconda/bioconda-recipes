@@ -1,36 +1,39 @@
-{% set version = "13.46.1.b8b01e06" %}
 {% set name = "t-coffee" %}
+{% set version = "13.46.1.b8b01e06" %}
+
 package:
   name: {{ name }}
   version: {{ version }}
 
 build:
-  number: 0
+  number: 2
   run_exports:
     - {{ pin_subpackage('t-coffee', max_pin="x") }}
-  skip: True    # [osx]
 
 source:
-  # The latest stable release is at http://www.tcoffee.org/Packages/Stable/Latest/ ,
+  # The latest stable release is at http://www.tcoffee.org/Packages/Stable/Latest/,
   # but is then archived at http://www.tcoffee.org/Packages/Archives/
   url: https://s3.eu-central-1.amazonaws.com/tcoffee-packages/Archives/T-COFFEE_distribution_Version_{{ version }}.tar.gz
   sha256: 54d2b00956af79a884fe7174522522c77e65796d5aa08974dad86e061e6d12d1
   patches:
     - expose-os-detection.patch
     - coredump.patch
+
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
+    - pkg-config
+  host:
+    - perl            ==5.32.*
     - perl-xml-simple
-    - perl            ==5.32.1
   run:
-    - perl            ==5.32.1
-    - clustalo        ==1.2.4
+    - perl            ==5.32.*
+    - clustalo        ==1.2.4  # [not arm64]
     - clustalw        ==2.1
-    - consan          ==1.2 # [not osx]
+    - consan          ==1.2
     - dialign-tx      >=1.0.2
     - famsa           ==2.2.3
     - kalign2         ==2.04
@@ -39,34 +42,42 @@ requirements:
     - mustang         >=3.2.3
     - pasta           ==1.9.2
     - phylip          ==3.697
-    - poa             >=2.0 # [not osx]
+    - poa             >=2.0
     - prank           ==170427
     - probcons        ==1.12
     - probconsrna     ==1.10
+    - proda           ==1.0
     - sap             ==1.1.3
-    - tmalign         ==20170708
+    - tmalign         ==20220227
     - viennarna       ==2.7.0
-    
+
 test:
   commands:
-    - HOME=/tmp t_coffee -version
+    - test -x ${PREFIX}/bin/t_coffee  # [osx]
+    - HOME="/tmp" t_coffee -version  # [not osx]
     # what does the package think it has installed:
-    - HOME=/tmp t_coffee 
+    - HOME="/tmp" t_coffee  # [not osx]
     # These messages don't end up getting compiled in correctly under OSX
-    - HOME=/tmp t_coffee 2>&1 | grep "kalign is  Installed"  # [not osx]
-    - HOME=/tmp t_coffee 2>&1 | grep "mafft is  Installed"  # [not osx]
-    - HOME=/tmp t_coffee 2>&1 | grep "probcons is  Installed"  # [not osx]
-    - HOME=/tmp t_coffee 2>&1 | grep "probconsRNA is  Installed"  # [not osx]
-    - HOME=/tmp t_coffee 2>&1 | grep "sap is  Installed"  # [not osx]
+    - HOME="/tmp" t_coffee 2>&1 | grep "kalign is  Installed"  # [not osx]
+    - HOME="/tmp" t_coffee 2>&1 | grep "mafft is  Installed"  # [not osx]
+    - HOME="/tmp" t_coffee 2>&1 | grep "probcons is  Installed"  # [not osx]
+    - HOME="/tmp" t_coffee 2>&1 | grep "probconsRNA is  Installed"  # [not osx]
+    - HOME="/tmp" t_coffee 2>&1 | grep "sap is  Installed"  # [not osx]
 
 about:
-  home: http://www.tcoffee.org/Projects/tcoffee/
-  license: GPL-2.0-only
-  license_file: license.txt
-  summary: "A collection of tools for Multiple Alignments of DNA, RNA, Protein Sequence"
+  home: "https://github.com/cbcrg/tcoffee"
+  license: "GPL-2.0-only"
+  license_family: GPL
+  license_file: "license.txt"
+  summary: "A collection of tools for Multiple Alignments of DNA, RNA, Protein Sequence."
+  dev_url: "https://github.com/cbcrg/tcoffee"
+  doc_url: "https://tcoffee.org/Projects/tcoffee/documentation/index.html"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.1006/jmbi.2000.4042
+    - usegalaxy-eu:t_coffee
+    - biotools:tcoffee

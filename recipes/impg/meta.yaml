@@ -1,5 +1,5 @@
 {% set name = "impg" %}
-{% set version = "0.2.4" %}
+{% set version = "0.3.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,17 +7,27 @@ package:
 
 source:
   url: https://github.com/pangenome/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 341479112fc4158d121e245accb5302546b3fedbbd321e7e361bd4b8008b8c55 
+  sha256: be31e42a4767136549ef3ff00c90ccba859b9a99c675aa3693431d1c68f97d39 
 
 build:
   number: 0
   run_exports:
-      - {{ pin_subpackage(name, max_pin='x.x') }}
+      - {{ pin_subpackage(name, max_pin="x.x") }}
+  skip: true  # [win]
 
 requirements:
   build:
     - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - gfortran_osx-arm64  # [osx and arm64]
+    - gfortran_osx-64     # [osx and x86_64]
+    - make
+    - cmake
     - cargo-bundle-licenses
+    - pkg-config
+  host:
+    - zlib
 
 test:
   commands:

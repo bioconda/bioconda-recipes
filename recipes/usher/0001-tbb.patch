@@ -1,0 +1,3776 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 10a2a28..29147fe 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,5 +1,5 @@
+ 
+-cmake_minimum_required (VERSION 3.8) 
++cmake_minimum_required (VERSION 3.14)
+ cmake_policy(SET CMP0069 NEW)
+ project(usher)
+ if(NOT CMAKE_BUILD_TYPE)
+@@ -16,19 +16,32 @@ if ("${VERSION_PATCH}" MATCHES "[0-9]+")
+ endif()
+ message(STATUS "${usher_VERSION}")
+ 
++include(FetchContent)
++set(TBB_VERSION "v2022.2.0")
++FetchContent_Declare(oneTBB
++  GIT_REPOSITORY https://github.com/oneapi-src/oneTBB
++  GIT_TAG ${TBB_VERSION}
++  GIT_SHALLOW true
++  GIT_PROGRESS true
++  UPDATE_DISCONNECTED true
++  CMAKE_ARGS -DTBB_TEST:BOOL=OFF
++)
++set(TBB_TEST OFF CACHE INTERNAL "" FORCE)
++FetchContent_MakeAvailable(oneTBB)
++
+ configure_file(src/version.hpp.in version.hpp)
+ 
+-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -pipe -g -ggdb3 -Wno-unused-function  -Wno-deprecated-declarations") 
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -pipe -g -ggdb3 -Wno-unused-function -Wno-deprecated-declarations -Wno-maybe-uninitialized -Wno-sign-compare -Wno-unused-variable") 
+ #-DDEBUG_PARSIMONY_SCORE_CHANGE_CORRECT -fsanitize=address -DCHECK_PAR_MAIN  -DEASY_DEBUG -DSTOP_ON_ERROR  -DDETAILED_MERGER_CHECK -O0
+-set(CMAKE_CXX_FLAGS_DEBUG "  -fno-eliminate-unused-debug-symbols -O0")
++set(CMAKE_CXX_FLAGS_DEBUG " -fno-eliminate-unused-debug-symbols -O0")
+ set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-DNDEBUG -O3")
+ set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 ")
+-set(CMAKE_INCLUDE_CURRENT_DIR ON) 
++set(CMAKE_INCLUDE_CURRENT_DIR ON)
+ 
+-if(DEFINED Protobuf_PATH) 
+-    find_package(Protobuf REQUIRED HINTS ${Protobuf_PATH}) 
++if(DEFINED Protobuf_PATH)
++    find_package(Protobuf REQUIRED HINTS ${Protobuf_PATH})
+ else()
+-    find_package(Protobuf REQUIRED) 
++    find_package(Protobuf REQUIRED)
+ endif()
+ 
+ # Print version messages
+@@ -39,18 +52,14 @@ find_package(MPI REQUIRED)
+ include_directories(SYSTEM ${MPI_INCLUDE_PATH})
+ include_directories(${Protobuf_INCLUDE_DIRS})
+ 
+-include(${TBB_DIR}/cmake/TBBBuild.cmake)
+-tbb_build(TBB_ROOT ${TBB_DIR} CONFIG_DIR TBB_DIR MAKE_ARGS tbb_cpf=1)
+-find_package(TBB REQUIRED tbbmalloc tbbmalloc_proxy tbb_preview)
+-
+-FIND_PACKAGE(Boost COMPONENTS program_options iostreams filesystem date_time REQUIRED)
++find_package(Boost COMPONENTS program_options iostreams filesystem date_time REQUIRED CONFIG)
+ 
+ #find_package(OpenMP REQUIRED)
+ 
+ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
+-AUX_SOURCE_DIRECTORY(src/matOptimize/Profitable_Moves_Enumerators New_Profitable_Moves_Enumerators) 
+-AUX_SOURCE_DIRECTORY(src/matOptimize/apply_move patch_tree) 
+-AUX_SOURCE_DIRECTORY(src/check_samples_place check_samples_place) 
++AUX_SOURCE_DIRECTORY(src/matOptimize/Profitable_Moves_Enumerators New_Profitable_Moves_Enumerators)
++AUX_SOURCE_DIRECTORY(src/matOptimize/apply_move patch_tree)
++AUX_SOURCE_DIRECTORY(src/check_samples_place check_samples_place)
+ file(GLOB MATUTIL_SRCS "src/matUtils/*.cpp" "src/matUtils/*.hpp")
+ file(GLOB RIPPLES_SRCS "src/ripples/*.cpp" "src/ripples/*.hpp")
+ file(GLOB USHER_SAMPLED_SRCS "src/usher-sampled/static_tree_mapper/*" "src/usher-sampled/*.cpp" "src/usher-sampled/*.hpp")
+@@ -58,7 +67,7 @@ file(GLOB RIPPLES_FAST_SRCS "src/ripples/ripples_fast/*.cpp" "src/ripples/ripple
+ file(GLOB RIPPLES_UTILS_SRCS "src/ripples/util/*.cpp" "src/ripples/util/*.hpp")
+ 
+ set_source_files_properties(src/mutation_annotated_tree.cpp PROPERTIES COMPILE_FLAGS -O3)
+-set_source_files_properties(src/usher-sampled/wait_debug.cpp PROPERTIES COMPILE_FLAGS -O0)
++set_source_files_properties(src/usher-sampled/wait_debug.cpp PROPERTIES COMPILE_FLAGS -O3)
+ #set_source_files_properties(src/matOptimize/Profitable_Moves_Enumerators/range_tree.cpp PROPERTIES COMPILE_FLAGS -O0)
+ 
+ #set_source_files_properties(src/matOptimize/detailed_mutations_store.cpp PROPERTIES COMPILE_FLAGS -O0)
+@@ -475,47 +484,47 @@ endif()
+ 
+ if(SAVE_PROFILE)
+     if(DEBUG)
+-        TARGET_COMPILE_OPTIONS(usher PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES -DSAVE_PROFILE=1 -DDEBUG=1)
++        TARGET_COMPILE_OPTIONS(usher PRIVATE  -O3 -DSAVE_PROFILE=1 -DDEBUG=1)
+     else(DEBUG)
+-        TARGET_COMPILE_OPTIONS(usher PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES -DSAVE_PROFILE=1)
++        TARGET_COMPILE_OPTIONS(usher PRIVATE  -O3 -DSAVE_PROFILE=1)
+     endif(DEBUG)
+ else(SAVE_PROFILE)
+     if(DEBUG)
+-        TARGET_COMPILE_OPTIONS(usher PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES -DDEBUG=1)
++        TARGET_COMPILE_OPTIONS(usher PRIVATE  -O3 -DDEBUG=1)
+     else(DEBUG)
+-        TARGET_COMPILE_OPTIONS(usher PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES)
++        TARGET_COMPILE_OPTIONS(usher PRIVATE  -O3)
+     endif(DEBUG)
+ endif(SAVE_PROFILE)
+ #set_property(TARGET matOptimize PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+-TARGET_LINK_LIBRARIES(compareVCF PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++target_link_libraries(compareVCF PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
+ 
+ 
+-TARGET_LINK_LIBRARIES(check_samples_place PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
+-TARGET_LINK_LIBRARIES(matOptimize PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
+-TARGET_LINK_LIBRARIES(usher-sampled PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
+-#TARGET_LINK_LIBRARIES(output_final_protobuf PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ) # OpenMP::OpenMP_CXX)
+-TARGET_LINK_LIBRARIES(transpose_vcf PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
+-TARGET_LINK_LIBRARIES(transposed_vcf_to_vcf PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
+-TARGET_LINK_LIBRARIES(transposed_vcf_to_fa PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
+-TARGET_LINK_LIBRARIES(transposed_vcf_print_name PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++target_link_libraries(check_samples_place PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
++target_link_libraries(matOptimize PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
++target_link_libraries(usher-sampled PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
++#target_link_libraries(output_final_protobuf PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ) # OpenMP::OpenMP_CXX)
++target_link_libraries(transpose_vcf PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++target_link_libraries(transposed_vcf_to_vcf PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++target_link_libraries(transposed_vcf_to_fa PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++target_link_libraries(transposed_vcf_print_name PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
+ 
+-TARGET_LINK_LIBRARIES(usher PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++target_link_libraries(usher PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
+ target_include_directories(usher PUBLIC "${PROJECT_BINARY_DIR}")
+ 
+-TARGET_COMPILE_OPTIONS(matUtils PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES)
+-TARGET_LINK_LIBRARIES(matUtils PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
++target_compile_options(matUtils PRIVATE -O3)
++target_link_libraries(matUtils PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
+ 
+-TARGET_LINK_LIBRARIES(ripplesUtils PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
+-TARGET_LINK_LIBRARIES(ripplesInit PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
++target_link_libraries(ripplesUtils PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
++target_link_libraries(ripplesInit PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
+ 
+-TARGET_COMPILE_OPTIONS(ripples PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES)
+-TARGET_LINK_LIBRARIES(ripples PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
+-TARGET_LINK_LIBRARIES(ripples-fast PRIVATE stdc++  ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
++target_compile_options(ripples PRIVATE -O3)
++target_link_libraries(ripples PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
++target_link_libraries(ripples-fast PRIVATE stdc++  ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES}) # OpenMP::OpenMP_CXX)
+ 
+ if(USHER_SERVER)
+-    TARGET_COMPILE_OPTIONS(usher_server PRIVATE -DTBB_SUPPRESS_DEPRECATED_MESSAGES)
+-    TARGET_LINK_LIBRARIES(usher_server PRIVATE stdc++ ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
+-    TARGET_LINK_LIBRARIES(usher-sampled-server PRIVATE stdc++ ${CMAKE_DL_LIBS} ${Boost_LIBRARIES} ${TBB_IMPORTED_TARGETS} ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
++    target_compile_options(usher_server PRIVATE -O3)
++    target_link_libraries(usher_server PRIVATE stdc++ ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB) # OpenMP::OpenMP_CXX)
++    target_link_libraries(usher-sampled-server PRIVATE stdc++ ${CMAKE_DL_LIBS} ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES} ZLIB::ZLIB  ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${ISAL_LIB} ) # OpenMP::OpenMP_CXX)
+     install(TARGETS usher matUtils matOptimize ripples usher_server DESTINATION bin)
+ else()
+     install(TARGETS usher matUtils matOptimize ripples DESTINATION bin)
+diff --git a/src/check_samples_place/check_samples.cpp b/src/check_samples_place/check_samples.cpp
+index a3e3b17..e08d627 100644
+--- a/src/check_samples_place/check_samples.cpp
++++ b/src/check_samples_place/check_samples.cpp
+@@ -5,7 +5,7 @@
+ #include <cstdio>
+ #include <string>
+ #include <tbb/concurrent_unordered_set.h>
+-#include <tbb/task.h>
++#include <tbb/task_group.h>
+ #include <unordered_map>
+ #include <unordered_set>
+ #include <utility>
+@@ -37,123 +37,109 @@ void ins_mut(Mutation_Set &parent_mutations,const Mutation_Annotated_Tree::Mutat
+     }
+ }
+ //functor for getting state of all leaves
+-struct insert_samples_worker:public tbb::task {
+-    const Mutation_Annotated_Tree::Node *root; //starting node whose subtree need to be processed
+-    Mutation_Set parent_mutations; //mutation of parent of "root" relative to the root of the entire tree
+-    Original_State_t &samples; //output
+-    insert_samples_worker(const Mutation_Annotated_Tree::Node *root,
++void insert_samples_worker(const Mutation_Annotated_Tree::Node *root,
+                           const Mutation_Set &parent_mutations,
+-                          Original_State_t &samples)
+-        : root(root), parent_mutations(parent_mutations),
+-          samples(samples) {}
+-    tbb::task* execute() override {
+-        //add mutation of "root"
+-        for (const Mutation_Annotated_Tree::Mutation &m : root->mutations) {
+-            if(m.is_valid()||root->is_leaf()) {
+-                ins_mut(parent_mutations, m,root->is_leaf());
+-            }
+-        }
+-        //output
+-        if (root->is_leaf()) {
+-            samples.insert(std::make_pair(root->node_id, parent_mutations));
+-        }
+-        //continuation
+-        tbb::empty_task* empty=new(allocate_continuation()) tbb::empty_task();
+-        //spawn a task for each children
+-        empty->set_ref_count(root->children.size());
+-        for (auto child : root->children) {
+-            assert(child->parent==root);
+-            empty->spawn(*new (empty->allocate_child())insert_samples_worker(child, parent_mutations, samples));
++                          Original_State_t &samples,
++                          tbb::task_group &tg) {
++    //add mutation of "root"
++    Mutation_Set local_parent_mutations = parent_mutations;
++    for (const Mutation_Annotated_Tree::Mutation &m : root->mutations) {
++        if(m.is_valid()||root->is_leaf()) {
++            ins_mut(local_parent_mutations, m,root->is_leaf());
+         }
+-        //bypass the scheduler to execute continuation task directly to fix ref count
+-        // if no child spawned (otherwise it will hang)
+-        return root->children.empty()?empty:nullptr;
+     }
+-};
++    //output
++    if (root->is_leaf()) {
++        samples.insert(std::make_pair(root->node_id, local_parent_mutations));
++    }
++    //spawn a task for each children
++    for (auto child : root->children) {
++        assert(child->parent==root);
++        tg.run([=, &samples, &tg]() {
++            insert_samples_worker(child, local_parent_mutations, samples, tg);
++        });
++    }
++}
+ 
+ //functor for checking state of all leaves
+-struct check_samples_worker:public tbb::task {
+-    const Mutation_Annotated_Tree::Node *root;
+-    Mutation_Set parent_mutations;
+-    const Original_State_t &samples;
+-    tbb::concurrent_unordered_set<size_t>& visited_samples;
+-    const MAT::Tree* tree;
+-    check_samples_worker(const Mutation_Annotated_Tree::Node *root,
++void check_samples_worker(const Mutation_Annotated_Tree::Node *root,
+                          const Mutation_Set& parent_mutations,
+                          const Original_State_t &samples,
+-                         tbb::concurrent_unordered_set<size_t>& visited_samples
+-    ,const MAT::Tree* tree):root(root),parent_mutations(parent_mutations),samples(samples),visited_samples(visited_samples),tree(tree) {}
+-    tbb::task* execute() override {
+-        tbb::empty_task* empty=new(allocate_continuation()) tbb::empty_task();
+-        empty->set_ref_count(root->children.size());
+-        for (const Mutation_Annotated_Tree::Mutation &m : root->mutations) {
+-            if(m.is_valid()||root->is_leaf()) {
+-                ins_mut(parent_mutations, m,root->is_leaf());
+-            };
+-        }
++                         tbb::concurrent_unordered_set<size_t>& visited_samples,
++                         const MAT::Tree* tree,
++                         tbb::task_group &tg) {
++    Mutation_Set local_parent_mutations = parent_mutations;
++    for (const Mutation_Annotated_Tree::Mutation &m : root->mutations) {
++        if(m.is_valid()||root->is_leaf()) {
++            ins_mut(local_parent_mutations, m,root->is_leaf());
++        };
++    }
+ 
+-        if (root->is_leaf()) {
+-            auto iter = samples.find(root->node_id);
+-            if (iter == samples.end()) {
+-                fprintf(stderr, "[ERROR] Extra Sample %s \n",
+-                        tree->get_node_name(root->node_id).c_str());
+-                //raise(SIGTRAP);
+-            } else {
+-                Mutation_Set to_check(iter->second);
+-                for (auto m : parent_mutations) {
+-                    auto m_iter = to_check.find(m);
+-                    if (m_iter == to_check.end()) {
+-                        fprintf(
+-                            stderr,
+-                            "[ERROR] Extra mutation to\t%c\%d\t of Sample\t%s at bfs_index %zu \n",
+-                            Mutation_Annotated_Tree::get_nuc(m.get_all_major_allele()), m.get_position(),
+-                            tree->get_node_name(root->node_id).c_str(),root->bfs_index);
+-                        //raise(SIGTRAP);
++    if (root->is_leaf()) {
++        auto iter = samples.find(root->node_id);
++        if (iter == samples.end()) {
++            fprintf(stderr, "[ERROR] Extra Sample %s \n",
++                    tree->get_node_name(root->node_id).c_str());
++            //raise(SIGTRAP);
++        } else {
++            Mutation_Set to_check(iter->second);
++            for (auto m : local_parent_mutations) {
++                auto m_iter = to_check.find(m);
++                if (m_iter == to_check.end()) {
++                    fprintf(
++                        stderr,
++                        "[ERROR] Extra mutation to\t%c\%d\t of Sample\t%s at bfs_index %zu \n",
++                        Mutation_Annotated_Tree::get_nuc(m.get_all_major_allele()), m.get_position(),
++                        tree->get_node_name(root->node_id).c_str(),root->bfs_index);
++                    //raise(SIGTRAP);
+ 
+-                    } else {
+-                        if (!(m.get_all_major_allele()&m_iter->get_all_major_allele())) {
+-                            fprintf(stderr, "Mut Nuc Mismatch at \t %d of sample \t %s at bfs_index \t %zu: original \t %d , altered :\t %d \n",m.get_position(),tree->get_node_name(root->node_id).c_str(),root->bfs_index,(int)m_iter->get_all_major_allele(),(int)m.get_all_major_allele());
+-                            //raise(SIGTRAP);
+-                        }
+-                        to_check.erase(m_iter);
++                } else {
++                    if (!(m.get_all_major_allele()&m_iter->get_all_major_allele())) {
++                        fprintf(stderr, "Mut Nuc Mismatch at \t %d of sample \t %s at bfs_index \t %zu: original \t %d , altered :\t %d \n",m.get_position(),tree->get_node_name(root->node_id).c_str(),root->bfs_index,(int)m_iter->get_all_major_allele(),(int)m.get_all_major_allele());
++                        //raise(SIGTRAP);
+                     }
++                    to_check.erase(m_iter);
+                 }
++            }
+ 
+-                for (auto m_left : to_check) {
+-                    if (m_left.get_all_major_allele()&m_left.get_par_one_hot()) {
+-                        continue;
+-                    }
+-                    fprintf(stderr,
+-                            "[ERROR] Lost mutation to\t%c\t%d\t of Sample\t%s at bfs_index %zu \n",
+-                            Mutation_Annotated_Tree::get_nuc(m_left.get_all_major_allele()),
+-                            m_left.get_position(), tree->get_node_name(root->node_id).c_str(),root->bfs_index);
+-                    //raise(SIGTRAP);
++            for (auto m_left : to_check) {
++                if (m_left.get_all_major_allele()&m_left.get_par_one_hot()) {
++                    continue;
+                 }
+-
+-                visited_samples.insert(iter->first);
++                fprintf(stderr,
++                        "[ERROR] Lost mutation to\t%c\t%d\t of Sample\t%s at bfs_index %zu \n",
++                        Mutation_Annotated_Tree::get_nuc(m_left.get_all_major_allele()),
++                        m_left.get_position(), tree->get_node_name(root->node_id).c_str(),root->bfs_index);
++                //raise(SIGTRAP);
+             }
+-            return empty;
++
++            visited_samples.insert(iter->first);
+         }
+-        for (auto child : root->children) {
+-            if (child->parent!=root) {
+-                fprintf(stderr, "%lx\n", (long)child);
+-                //std::raise(SIGTRAP);
+-            }
+-            empty->spawn(*new (empty->allocate_child())check_samples_worker(child, parent_mutations, samples,visited_samples,tree));
++        return;
++    }
++    for (auto child : root->children) {
++        if (child->parent!=root) {
++            fprintf(stderr, "%lx\n", (long)child);
++            //std::raise(SIGTRAP);
+         }
+-        return nullptr;
++        tg.run([=, &samples, &visited_samples, &tg]() {
++            check_samples_worker(child, local_parent_mutations, samples, visited_samples, tree, tg);
++        });
+     }
+-};
++}
+ //top level
+ void check_samples(const Mutation_Annotated_Tree::Node *root,
+                    Original_State_t &samples,const MAT::Tree* tree,bool ignore_missed_samples) {
+     Mutation_Set mutations;
+     if (samples.empty()) {
+-        tbb::task::spawn_root_and_wait(*new(tbb::task::allocate_root())
+-                                       insert_samples_worker(root, mutations, samples));
++        tbb::task_group tg;
++        insert_samples_worker(root, mutations, samples, tg);
++        tg.wait();
+     } else {
+         tbb::concurrent_unordered_set<size_t> visited_sample;
+-        tbb::task::spawn_root_and_wait(*new(tbb::task::allocate_root())check_samples_worker(root, mutations, samples,visited_sample,tree));
++        tbb::task_group tg;
++        check_samples_worker(root, mutations, samples, visited_sample, tree, tg);
++        tg.wait();
+         if (!ignore_missed_samples) {
+             bool have_missed=false;
+             for (auto s : samples) {
+diff --git a/src/check_samples_place/import_vcf.cpp b/src/check_samples_place/import_vcf.cpp
+index 371ce70..7c2255f 100644
+--- a/src/check_samples_place/import_vcf.cpp
++++ b/src/check_samples_place/import_vcf.cpp
+@@ -38,7 +38,7 @@ size_t alloc_size;
+ std::mutex ref_lock;
+ // Decouple parsing (slow) and decompression, segment file into blocks for
+ // parallelized parsing
+-typedef tbb::flow::source_node<char *> decompressor_node_t;
++typedef tbb::flow::input_node<char *> decompressor_node_t;
+ std::condition_variable progress_bar_cv;
+ struct raw_input_source {
+     FILE *fh;
+@@ -78,7 +78,8 @@ struct line_align {
+         : in(out) {
+         prev.start = nullptr;
+     }
+-    bool operator()(line_start_later &out) const {
++    line_start_later operator()(tbb::flow_control& fc) const {
++        line_start_later out;
+         std::pair<char *, unsigned char *> line;
+         in.pop(line);
+         if (line.first == nullptr) {
+@@ -86,9 +87,10 @@ struct line_align {
+                 out = prev;
+                 prev.start = nullptr;
+                 prev_end[0] = 0;
+-                return true;
++                return out;
+             } else {
+-                return false;
++                fc.stop();
++                return out;
+             }
+         }
+         if (!prev.start) {
+@@ -100,7 +102,7 @@ struct line_align {
+                 out=prev;
+                 prev.start=nullptr;
+                 *prev_end=0;
+-                return true;
++                return out;
+             }
+         }
+         auto start_ptr = strchr(line.first, '\n');
+@@ -115,7 +117,7 @@ struct line_align {
+         prev.start = start_ptr;
+         prev.alloc_start = line.first;
+         prev_end = line.second;
+-        return true;
++        return out;
+     }
+ };
+ struct gzip_input_source {
+@@ -419,10 +421,11 @@ static void process(infile_t &fd, Original_State_t& ori_state,
+     read_size = first_approx_size * single_line_size;
+     alloc_size = (first_approx_size + 2) * single_line_size;
+     tbb::concurrent_bounded_queue<std::pair<char *, uint8_t *>> queue;
+-    tbb::flow::source_node<line_start_later> line(input_graph,
++    tbb::flow::input_node<line_start_later> line(input_graph,
+             line_align(queue));
+     tbb::flow::make_edge(line, parser);
+     fd(queue);
++    line.activate();
+     input_graph.wait_for_all();
+     fd.unalloc();
+     auto start_idx=tree.map_samp_name_only(sample_names[0]);
+diff --git a/src/compareVCF.cpp b/src/compareVCF.cpp
+index d29e9cb..3949025 100644
+--- a/src/compareVCF.cpp
++++ b/src/compareVCF.cpp
+@@ -45,26 +45,28 @@ static int read_header(gzFile *fd, std::vector<std::string> &out) {
+     return header_len;
+ }
+ #define ZLIB_BUFSIZ 0x40000
+-typedef tbb::flow::source_node<char *>
++typedef tbb::flow::input_node<char *>
+ decompressor_node_t;
+ struct Decompressor {
+     gzFile *fd;
+     size_t cont_read_size;
+     size_t init_read_size;
+-    bool operator()(char *&buf) const {
++    char* operator()(tbb::flow_control& fc) const {
+         if (gzeof(*fd)) {
+-            return false;
++            fc.stop();
++            return nullptr;
+         }
+-        buf=new char[init_read_size+cont_read_size];
++        char* buf=new char[init_read_size+cont_read_size];
+         int read_size = gzread(*fd, buf, init_read_size);
+         if (!read_size) {
+-            free(buf);
+-            return false;
++            delete[] buf;
++            fc.stop();
++            return nullptr;
+         }
+         if (!gzgets(*fd, buf + read_size, cont_read_size)) {
+             *(buf + read_size) = 0;
+         }
+-        return true;
++        return buf;
+     }
+ };
+ static std::array<std::string, 2> filenames;
+@@ -274,6 +276,8 @@ int main(int argc, char**argv) {
+     tbb::flow::make_edge(decompressor1,parser1);
+ 
+     tbb::flow::make_edge(decompressor2,parser2);
++    decompressor1.activate();
++    decompressor2.activate();
+     input_graph.wait_for_all();
+     fprintf(stderr, "finished.\n");
+ }
+diff --git a/src/matOptimize/Fitch_Sankoff.cpp b/src/matOptimize/Fitch_Sankoff.cpp
+index bd591bb..3a821ac 100644
+--- a/src/matOptimize/Fitch_Sankoff.cpp
++++ b/src/matOptimize/Fitch_Sankoff.cpp
+@@ -44,7 +44,7 @@ static void set_state_2(uint8_t child1,uint8_t child2,uint8_t& boundary1_major_a
+         //Not seting minor allele if nuc_present is ambiguous, because it cannot be boundary
+     } else {
+         //This is a tie, Forward pass will break tie with parent, (or arbitrarily if parent agree with neither), taking it as tie case, and boundary case, as alleles not present have a difference of 1 with present allele (can become a 3-allele tie and then follow parent when moving nodes around)
+-        boundary1_major_allele=((~nuc_present)<<4)|nuc_present;
++        boundary1_major_allele=(static_cast<uint8_t>(~nuc_present)<<4)|nuc_present;
+     }
+ }
+ //move the least significant bit of each nibble to the first 4 bits to form one hot state encoding
+diff --git a/src/matOptimize/Profitable_Moves_Enumerators/Bounded_Search.hpp b/src/matOptimize/Profitable_Moves_Enumerators/Bounded_Search.hpp
+index 39e1925..50667c8 100644
+--- a/src/matOptimize/Profitable_Moves_Enumerators/Bounded_Search.hpp
++++ b/src/matOptimize/Profitable_Moves_Enumerators/Bounded_Search.hpp
+@@ -20,6 +20,7 @@ struct src_side_info {
+     MAT::Node *LCA;
+     MAT::Node *src;
+     Mutation_Count_Change_Collection allele_count_change_from_src;
++    std::vector<Node_With_Major_Allele_Set_Change> node_with_major_allele_set_change;
+ };
+ struct ignore_ranger_nop {
+     ignore_ranger_nop(const Mutation_Annotated_Tree::ignored_t& in) {}
+@@ -384,6 +385,7 @@ void search_subtree_bounded(MAT::Node *node, const src_side_info &src_side,
+ #ifdef CHECK_BOUND
+                             ,bool do_continue
+ #endif
++                            ,Move_Found_Callback& callback
+                            );
+ void search_subtree_bounded(MAT::Node *node, const src_side_info &src_side,
+                             int radius_left,
+@@ -392,4 +394,5 @@ void search_subtree_bounded(MAT::Node *node, const src_side_info &src_side,
+ #ifdef CHECK_BOUND
+                             ,bool do_continue
+ #endif
++                            ,Move_Found_Callback& callback
+                            );
+\ No newline at end of file
+diff --git a/src/matOptimize/Profitable_Moves_Enumerators/Profitable_Moves_Enumerator.cpp b/src/matOptimize/Profitable_Moves_Enumerators/Profitable_Moves_Enumerator.cpp
+index dfcbefa..946ad47 100644
+--- a/src/matOptimize/Profitable_Moves_Enumerators/Profitable_Moves_Enumerator.cpp
++++ b/src/matOptimize/Profitable_Moves_Enumerators/Profitable_Moves_Enumerator.cpp
+@@ -110,7 +110,7 @@ int individual_move(MAT::Node* src,MAT::Node* dst,MAT::Node* LCA,output_t& out,b
+ #ifdef DEBUG_PARSIMONY_SCORE_CHANGE_CORRECT
+                     ,MAT::Tree* tree
+ #endif
+-                   ) {
++                    , Move_Found_Callback& callback) {
+     MAT::Node *root = src->parent;
+     Mutation_Count_Change_Collection mutations;
+     init_mutation_change(src, mutations);
+@@ -163,12 +163,14 @@ int individual_move(MAT::Node* src,MAT::Node* dst,MAT::Node* LCA,output_t& out,b
+ #ifdef DEBUG_PARSIMONY_SCORE_CHANGE_CORRECT
+                                          ,debug,tree
+ #endif
+-                                        );;
++                                         ,callback
++                                        );
+     } else {
+         return check_move_profitable_dst_not_LCA(src, dst, LCA, mutations, root_mutations_altered, parsimony_score_change,out,1
+ #ifdef DEBUG_PARSIMONY_SCORE_CHANGE_CORRECT
+                 , debug,tree
+ #endif
++                ,callback
+                                                 );
+     }
+ }
+\ No newline at end of file
+diff --git a/src/matOptimize/Profitable_Moves_Enumerators/Profitable_Moves_Enumerators.hpp b/src/matOptimize/Profitable_Moves_Enumerators/Profitable_Moves_Enumerators.hpp
+index a21c2ea..702c644 100644
+--- a/src/matOptimize/Profitable_Moves_Enumerators/Profitable_Moves_Enumerators.hpp
++++ b/src/matOptimize/Profitable_Moves_Enumerators/Profitable_Moves_Enumerators.hpp
+@@ -2,7 +2,9 @@
+ #define PROFITABLE_MOVES_ENUMERATOR
+ #include "../tree_rearrangement_internal.hpp"
+ #include "src/matOptimize/mutation_annotated_tree.hpp"
++#include <csignal>
+ #include <cstdint>
++#include <cstdio>
+ #include <vector>
+ #include <array>
+ #include "../stack_allocator.hpp"
+@@ -147,11 +149,25 @@ struct Reachable {
+     bool reachable_change;
+     bool always_search;
+ };
++struct Node_With_Major_Allele_Set_Change{
++    MAT::Node* node;
++    Mutation_Count_Change_Collection major_allele_set_change;
++};
++struct Move_Found_Callback{
++    virtual bool operator()(Profitable_Moves& move,int best_score_change,std::vector<Node_With_Major_Allele_Set_Change>& node_with_major_allele_set_change){
++        return move.score_change <= best_score_change;
++    }
++    
++    static Move_Found_Callback& default_instance() {
++        static Move_Found_Callback instance;
++        return instance;
++    }
++};
+ void find_moves_bounded(MAT::Node* src,output_t& out,int search_radius,bool do_drift,Reachable
+ #ifdef CHECK_BOUND
+                         ,counters& count
+ #endif
+-                       );
++                        ,Move_Found_Callback& callback);
+ struct node_info {
+     size_t dfs_idx;
+     size_t level;
+@@ -180,11 +196,12 @@ struct range_tree {
+     }
+ };
+ bool output_result(MAT::Node *src, MAT::Node *dst, MAT::Node *LCA,
+-                   int parsimony_score_change, output_t &output,int radius_left);
++                   int parsimony_score_change, output_t &output,int radius_left,std::vector<Node_With_Major_Allele_Set_Change>& major_alllele_count_changes_hist,Move_Found_Callback& callback);
+ extern std::vector<range_tree> addable_idxes;
+ void check_parsimony_score_change_above_LCA(MAT::Node *start_node, int &parsimony_score_change,
+         Mutation_Count_Change_Collection &parent_added,
+-        Mutation_Count_Change_Collection &parent_of_parent_added);
++        Mutation_Count_Change_Collection &parent_of_parent_added,
++        std::vector<Node_With_Major_Allele_Set_Change>& major_alllele_count_changes_hist);
+ bool dst_branch(const MAT::Node *LCA,
+                 const range<Mutation_Count_Change> &mutations,
+                 int &parsimony_score_change, MAT::Node *this_node,
+@@ -205,6 +222,7 @@ int check_move_profitable_LCA(
+     const std::vector<Mutation_Count_Change_Collection> &debug_above_LCA,
+     const MAT::Tree* tree
+ #endif
++    ,Move_Found_Callback& callback
+ );
+ int check_move_profitable_dst_not_LCA(
+     MAT::Node *src, MAT::Node *dst, MAT::Node *LCA,
+@@ -216,5 +234,7 @@ int check_move_profitable_dst_not_LCA(
+     const std::vector<Mutation_Count_Change_Collection> debug_from_src,
+     const MAT::Tree* tree
+ #endif
++    ,Move_Found_Callback& callback
+ );
++
+ #endif
+diff --git a/src/matOptimize/Profitable_Moves_Enumerators/check_move_profitable.cpp b/src/matOptimize/Profitable_Moves_Enumerators/check_move_profitable.cpp
+index 0685cdc..8c1c155 100644
+--- a/src/matOptimize/Profitable_Moves_Enumerators/check_move_profitable.cpp
++++ b/src/matOptimize/Profitable_Moves_Enumerators/check_move_profitable.cpp
+@@ -19,20 +19,19 @@ static void check_LCA(MAT::Node* src, MAT::Node* dst,MAT::Node* LCA_to_check) {
+ #endif
+ 
+ bool output_result(MAT::Node *src, MAT::Node *dst, MAT::Node *LCA,
+-                   int parsimony_score_change, output_t &output,int radius_left) {
+-    if (parsimony_score_change <= output.score_change) {
++                   int parsimony_score_change, output_t &output,int radius_left,
++                    std::vector<Node_With_Major_Allele_Set_Change>& major_alllele_count_changes_hist,Move_Found_Callback& callback) {
++    Profitable_Moves new_move;
++    new_move.score_change = parsimony_score_change;
++    new_move.src = src;
++    new_move.dst=dst;
++    new_move.LCA = LCA;
++    new_move.radius_left=radius_left;
++    if (callback(new_move,output.score_change,major_alllele_count_changes_hist)) {
+         if (parsimony_score_change < output.score_change) {
+             output.score_change = parsimony_score_change;
+             output.moves->clear();
+         }
+-        Profitable_Moves_ptr_t new_move = Profitable_Moves_ptr_t(new Profitable_Moves);
+-        new_move->score_change = parsimony_score_change;
+-        new_move->src = src;
+-        new_move->dst=dst;
+-        new_move->LCA = LCA;
+-        new_move->radius_left=radius_left;
+-        //assert(dst == LCA || new_move->dst_to_LCA.back()->parent == LCA);
+-        //assert(src->parent == LCA ||new_move->src_to_LCA.back()->parent == LCA);
+ #ifdef DEBUG_PARSIMONY_SCORE_CHANGE_CORRECT
+         std::unordered_set<int> node_idx_set;
+         node_idx_set.insert(src->bfs_index);
+@@ -43,7 +42,7 @@ bool output_result(MAT::Node *src, MAT::Node *dst, MAT::Node *LCA,
+             assert(node_idx_set.insert(node->bfs_index).second);
+         }
+ #endif
+-        output.moves->push_back(new_move);
++        output.moves->push_back(Profitable_Moves_ptr_t(new Profitable_Moves(new_move)));
+         return true;
+     }
+     return false;
+@@ -78,6 +77,7 @@ int check_move_profitable_dst_not_LCA(
+     const std::vector<Mutation_Count_Change_Collection> debug_from_src,
+     const MAT::Tree* tree
+ #endif
++    ,Move_Found_Callback& callback
+ ) {
+ #ifdef DEBUG_PARSIMONY_SCORE_CHANGE_CORRECT
+     check_LCA(src, dst, LCA);
+@@ -108,13 +108,14 @@ int check_move_profitable_dst_not_LCA(
+         get_LCA_mutation(LCA,src, root_mutations_altered, dst_added, parent_of_parent_added, parsimony_score_change);
+     }
+     dst_added.swap(parent_of_parent_added);
+-    check_parsimony_score_change_above_LCA(LCA->parent, parsimony_score_change, dst_added, parent_of_parent_added);
++    std::vector<Node_With_Major_Allele_Set_Change> major_alllele_count_changes_hist;
++    check_parsimony_score_change_above_LCA(LCA->parent, parsimony_score_change, dst_added, parent_of_parent_added,major_alllele_count_changes_hist);
+ #ifdef DEBUG_PARSIMONY_SCORE_CHANGE_CORRECT
+     //fprintf(stderr, "LCA idx: %zu",LCA_a->bfs_index);
+     auto ref_score=get_parsimmony_score_only(src,dst,LCA,tree);
+     assert(parsimony_score_change == ref_score);
+ #endif
+-    output_result(src, dst, LCA, parsimony_score_change, output,radius);
++    output_result(src, dst, LCA, parsimony_score_change, output,radius,major_alllele_count_changes_hist,callback);
+     return parsimony_score_change;
+ }
+ 
+@@ -130,6 +131,7 @@ int check_move_profitable_LCA(
+     const std::vector<Mutation_Count_Change_Collection> &debug_above_LCA,
+     const MAT::Tree* tree
+ #endif
++    ,Move_Found_Callback& callback
+ ) {
+     Mutation_Count_Change_Collection parent_of_parent_added;
+     parent_of_parent_added.reserve(mutations.size()+root_mutations_altered.size());
+@@ -139,7 +141,8 @@ int check_move_profitable_LCA(
+     parent_added.reserve(parent_of_parent_added.size());
+     parent_added .swap(parent_of_parent_added);
+     //Go up the tree until there is no change to fitch set
+-    check_parsimony_score_change_above_LCA(LCA, parsimony_score_change, parent_added, parent_of_parent_added);
++    std::vector<Node_With_Major_Allele_Set_Change> major_alllele_count_changes_hist;
++    check_parsimony_score_change_above_LCA(LCA, parsimony_score_change, parent_added, parent_of_parent_added,major_alllele_count_changes_hist);
+ 
+ #ifdef DEBUG_PARSIMONY_SCORE_CHANGE_CORRECT
+     //fprintf(stderr, "LCA idx: %zu",LCA_a->bfs_index);
+@@ -148,6 +151,6 @@ int check_move_profitable_LCA(
+ #endif
+     std::vector<MAT::Node*> ignored;
+     output_result(src, LCA, LCA, parsimony_score_change, output,
+-                  radius);
++                  radius,major_alllele_count_changes_hist,callback);
+     return parsimony_score_change;
+ }
+\ No newline at end of file
+diff --git a/src/matOptimize/Profitable_Moves_Enumerators/check_move_profitable_LCA.cpp b/src/matOptimize/Profitable_Moves_Enumerators/check_move_profitable_LCA.cpp
+index c72c2ae..7f429b5 100644
+--- a/src/matOptimize/Profitable_Moves_Enumerators/check_move_profitable_LCA.cpp
++++ b/src/matOptimize/Profitable_Moves_Enumerators/check_move_profitable_LCA.cpp
+@@ -99,12 +99,15 @@ bool LCA_place_mezzanine(
+ }
+ void check_parsimony_score_change_above_LCA(MAT::Node *curr_node, int &parsimony_score_change,
+         Mutation_Count_Change_Collection &parent_added,
+-        Mutation_Count_Change_Collection &parent_of_parent_added) {
++        Mutation_Count_Change_Collection &parent_of_parent_added,std::vector<Node_With_Major_Allele_Set_Change>& major_alllele_count_changes_hist) {
+     while (curr_node && (!parent_added.empty())) {
+         parent_of_parent_added.clear();
+         get_intermediate_nodes_mutations(
+             curr_node,
+             parent_added, parent_of_parent_added, parsimony_score_change);
++        if (!parent_of_parent_added.empty()) {
++            major_alllele_count_changes_hist.push_back(Node_With_Major_Allele_Set_Change{curr_node,parent_of_parent_added});    
++        }
+         parent_added.swap(parent_of_parent_added);
+         curr_node = curr_node->parent;
+     }
+diff --git a/src/matOptimize/Profitable_Moves_Enumerators/downward_integrated.cpp b/src/matOptimize/Profitable_Moves_Enumerators/downward_integrated.cpp
+index dda0dad..c289c53 100644
+--- a/src/matOptimize/Profitable_Moves_Enumerators/downward_integrated.cpp
++++ b/src/matOptimize/Profitable_Moves_Enumerators/downward_integrated.cpp
+@@ -21,11 +21,13 @@ void dump(const Mutation_Count_Change_Collection& in) {
+ static bool output_not_LCA(Mutation_Count_Change_Collection &parent_added,
+                            MAT::Node *dst_node, int parsimony_score_change,
+                            int lower_bound, const src_side_info &src_side,
+-                           int radius
++                           int radius,Move_Found_Callback& callback
+ #ifdef CHECK_BOUND
+                            ,bool do_continue
+ #endif
+                           ) {
++    std::vector<Node_With_Major_Allele_Set_Change> major_alllele_count_changes_hist(src_side.node_with_major_allele_set_change);
++    major_alllele_count_changes_hist.push_back(Node_With_Major_Allele_Set_Change{dst_node,parent_added});
+     if (use_bound&&lower_bound > src_side.out.score_change) {
+ #ifndef CHECK_BOUND
+         return false;
+@@ -44,6 +46,9 @@ static bool output_not_LCA(Mutation_Count_Change_Collection &parent_added,
+         get_intermediate_nodes_mutations(this_node,
+                                          parent_added, parent_of_parent_added,
+                                          parsimony_score_change);
++        if (!parent_of_parent_added.empty()) {
++            major_alllele_count_changes_hist.push_back(Node_With_Major_Allele_Set_Change{this_node, parent_of_parent_added});        
++        }
+         parent_added.swap(parent_of_parent_added);
+         if (parent_added.empty()) {
+             break;
+@@ -62,12 +67,15 @@ static bool output_not_LCA(Mutation_Count_Change_Collection &parent_added,
+                          src_side.allele_count_change_from_src,
+                          parent_added, parent_of_parent_added,
+                          parsimony_score_change);
++        if (!parent_of_parent_added.empty()) {
++            major_alllele_count_changes_hist.push_back(Node_With_Major_Allele_Set_Change{src_side.LCA, parent_of_parent_added});
++        }
+     }
+     parent_added.swap(parent_of_parent_added);
+     parent_of_parent_added.clear();
+     check_parsimony_score_change_above_LCA(
+         src_side.LCA->parent, parsimony_score_change, parent_added,
+-        parent_of_parent_added);
++        parent_of_parent_added,major_alllele_count_changes_hist);
+ #ifdef CHECK_PAR_MAIN
+     output_t temp;
+     auto refout=individual_move(src_side.src, dst_node, src_side.LCA, temp);
+@@ -102,7 +110,7 @@ static bool output_not_LCA(Mutation_Count_Change_Collection &parent_added,
+     src_side.savings.total++;
+ #endif
+     return output_result(src_side.src, dst_node, src_side.LCA, parsimony_score_change,
+-                         src_side.out,radius);
++                         src_side.out,radius,major_alllele_count_changes_hist,callback);
+ }
+ struct go_descendant {};
+ struct no_descendant {};
+@@ -194,7 +202,7 @@ template<typename go_descendant, typename S>
+ int downward_integrated(MAT::Node *node, int radius_left,
+                         Bounded_Mut_Change_Collection &from_parent,
+                         Bounded_Mut_Change_Collection &mut_out,
+-                        const src_side_info &src_side,std::vector<int>& start_useful_idx,std::vector<int>& end_useful_idx,go_descendant go_des_tag,S ignore_iter
++                        const src_side_info &src_side,std::vector<int>& start_useful_idx,std::vector<int>& end_useful_idx,go_descendant go_des_tag,S ignore_iter,Move_Found_Callback& callback
+ #ifdef CHECK_BOUND
+                         ,
+                         int prev_lower_bound,bool do_continue
+@@ -317,7 +325,7 @@ int downward_integrated(MAT::Node *node, int radius_left,
+ #endif
+ 
+     output_not_LCA(split_allele_cnt_change, node, par_score_from_split,
+-                   par_score_from_split_lower_bound, src_side, radius_left
++                   par_score_from_split_lower_bound, src_side, radius_left,callback
+ #ifdef CHECK_BOUND
+                    ,do_continue
+ #endif
+@@ -328,7 +336,7 @@ template<typename T>
+ static void search_subtree_bounded_internal(MAT::Node *node, const src_side_info &src_side,
+         int radius_left,
+         Bounded_Mut_Change_Collection &par_muts,
+-        int lower_bound,T tag,Reachable reachable
++        int lower_bound,T tag,Reachable reachable,Move_Found_Callback& callback
+ #ifdef CHECK_BOUND
+         ,bool do_continue
+ #endif
+@@ -338,14 +346,14 @@ static void search_subtree_bounded_internal(MAT::Node *node, const src_side_info
+     std::vector<int> end_useful_idx;
+     if (radius_left&&node->children.size()) {
+         lower_bound = downward_integrated(node, radius_left, par_muts, muts,
+-                                          src_side,start_useful_idx,end_useful_idx,go_descendant(), T(src_side.src->ignore)
++                                          src_side,start_useful_idx,end_useful_idx,go_descendant(), T(src_side.src->ignore),callback
+ #ifdef CHECK_BOUND
+                                           ,lower_bound,do_continue
+ #endif
+                                          );
+     } else {
+         lower_bound = downward_integrated(node, radius_left, par_muts, muts,
+-                                          src_side,start_useful_idx,end_useful_idx,no_descendant(), T(src_side.src->ignore)
++                                          src_side,start_useful_idx,end_useful_idx,no_descendant(), T(src_side.src->ignore),callback
+ #ifdef CHECK_BOUND
+                                           ,lower_bound,do_continue
+ #endif
+@@ -394,6 +402,7 @@ static void search_subtree_bounded_internal(MAT::Node *node, const src_side_info
+ #ifdef CHECK_BOUND
+                                ,do_continue
+ #endif
++                               ,callback
+                               );
+     }
+ }
+@@ -404,8 +413,9 @@ void search_subtree_bounded(MAT::Node *node, const src_side_info &src_side,
+ #ifdef CHECK_BOUND
+                             ,bool do_continue
+ #endif
++                            ,Move_Found_Callback& callback
+                            ) {
+-    search_subtree_bounded_internal(node, src_side,radius_left,par_muts,lower_bound,tag,reachable
++    search_subtree_bounded_internal(node, src_side,radius_left,par_muts,lower_bound,tag,reachable,callback
+ #ifdef CHECK_BOUND
+                                     ,do_continue
+ #endif
+@@ -418,8 +428,9 @@ void search_subtree_bounded(MAT::Node *node, const src_side_info &src_side,
+ #ifdef CHECK_BOUND
+                             ,bool do_continue
+ #endif
++                            ,Move_Found_Callback& callback
+                            ) {
+-    search_subtree_bounded_internal(node, src_side,radius_left,par_muts,lower_bound,tag,reachable
++    search_subtree_bounded_internal(node, src_side,radius_left,par_muts,lower_bound,tag,reachable,callback
+ #ifdef CHECK_BOUND
+                                     ,do_continue
+ #endif
+diff --git a/src/matOptimize/Profitable_Moves_Enumerators/possible_change.cpp b/src/matOptimize/Profitable_Moves_Enumerators/possible_change.cpp
+index 34340c6..1592099 100644
+--- a/src/matOptimize/Profitable_Moves_Enumerators/possible_change.cpp
++++ b/src/matOptimize/Profitable_Moves_Enumerators/possible_change.cpp
+@@ -10,7 +10,7 @@
+ #include <tbb/blocked_range.h>
+ #include <tbb/concurrent_vector.h>
+ #include <tbb/parallel_for.h>
+-#include <tbb/task.h>
++#include <tbb/task_group.h>
+ #include <utility>
+ #include <vector>
+ 
+@@ -136,7 +136,7 @@ static void filter_output(const MAT::Mutation &mut,
+ }
+ 
+ typedef std::vector<tbb::concurrent_vector<node_info>> pos_tree_t;
+-struct Walker : public tbb::task {
++struct Walker {
+     std::vector<Sensitive_Alleles> sensitive_locus;
+     MAT::Node *root;
+     pos_tree_t& pos_tree;
+@@ -192,26 +192,23 @@ struct Walker : public tbb::task {
+             output->push_back(Sensitive_Alleles{INT_MAX});
+         }
+     }
+-    tbb::task *execute() override {
+-        auto continuation = new (allocate_continuation()) tbb::empty_task;
+-        std::vector<tbb::task *> tasks;
++    void execute(tbb::task_group &tg) {
++        std::vector<tbb::task_handle> tasks;
+         tasks.reserve(root->children.size());
+         for (auto child : root->children) {
+             if (child->is_leaf()) {
+                 merge(child, nullptr);
+             } else {
+-
+-                auto child_task =
+-                    new (continuation->allocate_child()) Walker(child,pos_tree);
++                std::shared_ptr<Walker> child_task = std::make_shared<Walker>(child, pos_tree);
+                 merge(child, &child_task->sensitive_locus);
+-                tasks.push_back(child_task);
++                tasks.push_back(tg.defer([&tg, child_task = child_task]{
++                    child_task->execute(tg);
++                }));
+             }
+         }
+-        continuation->set_ref_count(tasks.size());
+-        for (auto task : tasks) {
+-            continuation->spawn(*task);
++        for (auto& task : tasks) {
++            tg.run(std::move(task));
+         }
+-        return tasks.empty() ? continuation : nullptr;
+     }
+ };
+ void output_addable_idxes(pos_tree_t& in,const std::vector<MAT::Node*>& dfs_ordered_nodes) {
+@@ -232,14 +229,16 @@ void adjust_all(MAT::Tree &tree) {
+     fprintf(stderr, "start\n");
+     auto start = std::chrono::steady_clock::now();
+     pos_tree_t pos_tree(MAT::Mutation::refs.size());
+-    auto task_root = new (tbb::task::allocate_root()) Walker(tree.root,pos_tree);
++    Walker walker(tree.root, pos_tree);
+     for (auto &mut : tree.root->mutations) {
+         auto effect = update_sensitve_allele(mut);
+         std::array<node_info*, 4> last_addable_idx{nullptr,nullptr,nullptr,nullptr};
+-        filter_output(mut, effect, task_root->sensitive_locus,last_addable_idx);
++        filter_output(mut, effect, walker.sensitive_locus, last_addable_idx);
+     }
+-    task_root->sensitive_locus.push_back(Sensitive_Alleles{INT_MAX});
+-    tbb::task::spawn_root_and_wait(*task_root);
++    walker.sensitive_locus.push_back(Sensitive_Alleles{INT_MAX});
++    tbb::task_group tg;
++    walker.execute(tg);
++    tg.wait();
+     auto dfs_ordered_nodes=tree.depth_first_expansion();
+     output_addable_idxes(pos_tree,dfs_ordered_nodes);
+     size_t max_change=0;
+diff --git a/src/matOptimize/Profitable_Moves_Enumerators/upward_integrated.cpp b/src/matOptimize/Profitable_Moves_Enumerators/upward_integrated.cpp
+index 63e1a76..a98b9b2 100644
+--- a/src/matOptimize/Profitable_Moves_Enumerators/upward_integrated.cpp
++++ b/src/matOptimize/Profitable_Moves_Enumerators/upward_integrated.cpp
+@@ -15,8 +15,12 @@ typedef Bounded_Mut_Change_Collection::iterator Bounded_Mut_Iter;
+ 
+ void output_LCA(
+     Mutation_Count_Change_Collection &allele_count_change_from_splitting_LCA,
+-    int par_score_change, const src_side_info &src_side, int radius_left) {
++    int par_score_change, const src_side_info &src_side, int radius_left,Move_Found_Callback& callback) {
+     Mutation_Count_Change_Collection parent_of_parent_added;
++    std::vector<Node_With_Major_Allele_Set_Change> major_alllele_count_changes_hist(src_side.node_with_major_allele_set_change);
++    if (!allele_count_change_from_splitting_LCA.empty()) {
++        major_alllele_count_changes_hist.push_back(Node_With_Major_Allele_Set_Change{src_side.LCA,allele_count_change_from_splitting_LCA});
++    }
+     parent_of_parent_added.reserve(
+         allele_count_change_from_splitting_LCA.size());
+     auto actual_LCA=src_side.LCA->parent;
+@@ -25,7 +29,7 @@ void output_LCA(
+     }
+     check_parsimony_score_change_above_LCA(
+         actual_LCA, par_score_change, allele_count_change_from_splitting_LCA,
+-        parent_of_parent_added);
++        parent_of_parent_added,major_alllele_count_changes_hist);
+     std::vector<MAT::Node *> ignored;
+ #ifdef CHECK_PAR_MAIN
+     output_t temp;
+@@ -49,12 +53,12 @@ void output_LCA(
+     }
+ #endif
+     output_result(src_side.src, actual_LCA, actual_LCA, par_score_change,
+-                  src_side.out, radius_left);
++                  src_side.out, radius_left,major_alllele_count_changes_hist,callback);
+ }
+ template<typename T>
+ static void search_subtree_first_level(MAT::Node *node, MAT::Node *to_exclude,
+                                        const src_side_info &src_side, int radius_left,
+-                                       Bounded_Mut_Change_Collection &either, T& ignored_range,Reachable reachable) {
++                                       Bounded_Mut_Change_Collection &either, T& ignored_range,Reachable reachable,Move_Found_Callback& callback) {
+     for (auto child : node->children) {
+         if (child == to_exclude) {
+             continue;
+@@ -73,6 +77,7 @@ static void search_subtree_first_level(MAT::Node *node, MAT::Node *to_exclude,
+ #ifdef CHECK_BOUND
+                                ,true
+ #endif
++                               ,callback
+                               );
+     }
+ }
+@@ -138,7 +143,7 @@ static nuc_one_hot allele_cnt_change_middle(
+         src_allele_cnt_change_iter++;
+     }
+     if (src_allele_cnt_change_iter!=src_allele_cnt_change_end&&src_allele_cnt_change_iter->get_position() == mut.get_position()) {
+-        assert(src_allele_cnt_change_iter->get_all_major_allele()!=0xf);
++        // assert(src_allele_cnt_change_iter->get_all_major_allele()!=0xf);
+         int score_change = -1;
+         major_allele = decrement_mutation_count(
+                            allele_change_out, mut,
+@@ -228,7 +233,7 @@ template <typename T,typename S>
+ static bool
+ upward_integrated(src_side_info &src_side,
+                   std::vector<Mutation_Count_Change_W_Lower_Bound_to_ancestor> &src_mut_in, int radius_left,
+-                  std::vector<Mutation_Count_Change_W_Lower_Bound_to_ancestor> &mut_out, const T &src_branch, S ignore_iter,Reachable reachable) {
++                  std::vector<Mutation_Count_Change_W_Lower_Bound_to_ancestor> &mut_out, const T &src_branch, S ignore_iter,Reachable reachable,Move_Found_Callback& callback) {
+     auto old_LCA=src_side.LCA;
+     MAT::Node *node = old_LCA->parent;
+     if (!node) {
+@@ -314,7 +319,7 @@ upward_integrated(src_side_info &src_side,
+     src_side.LCA = node;
+     sibling_muts.emplace_back();
+     search_subtree_first_level(node, old_LCA, src_side, radius_left,
+-                               sibling_muts,ignore_iter,reachable);
++                               sibling_muts,ignore_iter,reachable,callback);
+ 
+ 
+ 
+@@ -322,16 +327,19 @@ upward_integrated(src_side_info &src_side,
+     src_side.allele_count_change_from_src = std::move(allele_change_out);
+ 
+     output_LCA(split_allele_count_change_out, par_score_change_split_LCA+next_src_par_score,
+-               src_side, radius_left);
++               src_side, radius_left,callback);
++    if(!mut_out.empty()){
++        src_side.node_with_major_allele_set_change.emplace_back(Node_With_Major_Allele_Set_Change{node, Mutation_Count_Change_Collection{mut_out.begin(),mut_out.end()}});
++    }
+     return true;
+ }
+ template<typename T>
+ void __find_moves_bounded(MAT::Node *&src, int &search_radius,
+                           std::vector<Mutation_Count_Change_W_Lower_Bound_to_ancestor> &src_mut,
+                           std::vector<Mutation_Count_Change_W_Lower_Bound_to_ancestor> &src_mut_next,
+-                          src_side_info &src_side, T ignored_pos,Reachable reachable) {
++                          src_side_info &src_side, T ignored_pos,Reachable reachable,Move_Found_Callback& callback) {
+     upward_integrated(src_side, src_mut, search_radius, src_mut_next,
+-                      src->mutations,ignored_pos,reachable);
++                      src->mutations,ignored_pos,reachable,callback);
+     for (int radius_left = search_radius - 1; radius_left > 0; radius_left--) {
+         src_mut.swap(src_mut_next);
+         src_mut_next.clear();
+@@ -347,7 +355,7 @@ void __find_moves_bounded(MAT::Node *&src, int &search_radius,
+             }
+         }
+         upward_integrated(src_side, src_mut, radius_left, src_mut_next,
+-                          src_side.allele_count_change_from_src,ignored_pos,reachable);
++                          src_side.allele_count_change_from_src,ignored_pos,reachable,callback);
+     }
+ }
+ void find_moves_bounded(MAT::Node *src, output_t &out, int search_radius,bool do_drift,Reachable reachable
+@@ -355,7 +363,7 @@ void find_moves_bounded(MAT::Node *src, output_t &out, int search_radius,bool do
+                         ,
+                         counters &count
+ #endif
+-                       ) {
++                        ,Move_Found_Callback& callback) {
+     int par_score_change_base=do_drift?-1:0;
+     std::vector<Mutation_Count_Change_W_Lower_Bound_to_ancestor> src_mut;
+     std::vector<Mutation_Count_Change_W_Lower_Bound_to_ancestor> src_mut_next;
+@@ -377,8 +385,8 @@ void find_moves_bounded(MAT::Node *src, output_t &out, int search_radius,bool do
+     //sentinel
+     src_mut.emplace_back();
+     if (src->ignore.empty()) {
+-        __find_moves_bounded(src, search_radius, src_mut, src_mut_next, src_side,ignore_ranger_nop{},reachable);
++        __find_moves_bounded(src, search_radius, src_mut, src_mut_next, src_side,ignore_ranger_nop{},reachable,callback);
+     } else {
+-        __find_moves_bounded(src, search_radius, src_mut, src_mut_next, src_side,ignore_ranger{src->ignore},reachable);
++        __find_moves_bounded(src, search_radius, src_mut, src_mut_next, src_side,ignore_ranger{src->ignore},reachable,callback);
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/src/matOptimize/VCF_load_tree.cpp b/src/matOptimize/VCF_load_tree.cpp
+index 9b3d8a9..45c1a0b 100644
+--- a/src/matOptimize/VCF_load_tree.cpp
++++ b/src/matOptimize/VCF_load_tree.cpp
+@@ -4,88 +4,82 @@
+ #include <cstdio>
+ #include <string>
+ #include "apply_move/apply_move.hpp"
+-#include <tbb/task.h>
++#include <tbb/task_group.h>
++#include <functional>
+ //A variant of clean tree that can also clean nodes have only 1 children, but have valid mutation
+-struct clean_up_internal_nodes_single_child_or_no_mutation:public tbb::task {
+-    MAT::Node* this_node;
+-    tbb::concurrent_vector<size_t>& changed_nodes;
+-    tbb::concurrent_vector<size_t>& node_with_inconsistent_state;
+-    tbb::concurrent_vector<size_t>& removed_nodes;
+-    std::vector<std::mutex>& node_mutexes;
+-    clean_up_internal_nodes_single_child_or_no_mutation(
+-        MAT::Node* this_node,
+-        tbb::concurrent_vector<size_t>& changed_nodes,
+-        tbb::concurrent_vector<size_t>& node_with_inconsistent_state,
+-        tbb::concurrent_vector<size_t>& removed_nodes,
+-        std::vector<std::mutex>& node_mutexes
+-    ):this_node(this_node),changed_nodes(changed_nodes),node_with_inconsistent_state(node_with_inconsistent_state),removed_nodes(removed_nodes),node_mutexes(node_mutexes) {}
+-    tbb::task* execute() override {
++static void clean_up_internal_nodes_single_child_or_no_mutation_recursive(
++    MAT::Node* this_node,
++    tbb::concurrent_vector<size_t>& changed_nodes,
++    tbb::concurrent_vector<size_t>& node_with_inconsistent_state,
++    tbb::concurrent_vector<size_t>& removed_nodes,
++    std::vector<std::mutex>& node_mutexes,
++    tbb::task_group& tg) {
+ 
+-        std::vector<MAT::Node *> this_node_ori_children = this_node->children;
+-        if (this_node->parent) {
++    std::vector<MAT::Node *> this_node_ori_children = this_node->children;
++    if (this_node->parent) {
+ 
+ 
+-            std::vector<MAT::Node *> &parent_children = this_node->parent->children;
+-            //mutex to hold when modifying parent_children
+-            std::mutex& parent_mutex=node_mutexes[this_node->parent->dfs_index];
++        std::vector<MAT::Node *> &parent_children = this_node->parent->children;
++        //mutex to hold when modifying parent_children
++        std::mutex& parent_mutex=node_mutexes[this_node->parent->dfs_index];
+ 
+-            if ((this_node->children.size()==1||((!this_node->is_leaf())&&this_node->no_valid_mutation()))) {
+-                //detach this node
+-                parent_mutex.lock();
+-                auto iter = std::find(parent_children.begin(), parent_children.end(),
+-                                      this_node);
+-                assert(iter != parent_children.end());
+-                parent_children.erase(iter);
+-                parent_mutex.unlock();
+-                //prent have changed children
+-                changed_nodes.push_back(this_node->parent->node_id);
+-                for (MAT::Node *child : this_node_ori_children) {
+-                    child->parent = this_node->parent;
+-                    if (this_node_ori_children.size() == 1) {
+-                        //collapsing because it only have single children, need to merge mutations
+-                        if (merge_mutation_single_child(child, this_node->mutations)) {
+-                            node_with_inconsistent_state.push_back(child->node_id);
+-                        }
+-                        if (child->children.size() <= 1) {
+-                            //fix boundary1_alleles of children with only one children
+-                            auto &child_mut = child->mutations;
+-                            for (auto &mut : child_mut) {
+-                                mut.set_boundary_one_hot(0xf &
+-                                                         (~mut.get_all_major_allele()));
+-                            }
+-                            child_mut.mutations.erase(
+-                                std::remove_if(child_mut.begin(), child_mut.end(),
+-                            [](const MAT::Mutation &mut) {
+-                                return mut.get_all_major_allele() ==
+-                                       mut.get_par_one_hot();
+-                            }),
+-                            child_mut.end());
++        if ((this_node->children.size()==1||((!this_node->is_leaf())&&this_node->no_valid_mutation()))) {
++            //detach this node
++            parent_mutex.lock();
++            auto iter = std::find(parent_children.begin(), parent_children.end(),
++                                  this_node);
++            assert(iter != parent_children.end());
++            parent_children.erase(iter);
++            parent_mutex.unlock();
++            //prent have changed children
++            changed_nodes.push_back(this_node->parent->node_id);
++            for (MAT::Node *child : this_node_ori_children) {
++                child->parent = this_node->parent;
++                if (this_node_ori_children.size() == 1) {
++                    //collapsing because it only have single children, need to merge mutations
++                    if (merge_mutation_single_child(child, this_node->mutations)) {
++                        node_with_inconsistent_state.push_back(child->node_id);
++                    }
++                    if (child->children.size() <= 1) {
++                        //fix boundary1_alleles of children with only one children
++                        auto &child_mut = child->mutations;
++                        for (auto &mut : child_mut) {
++                            mut.set_boundary_one_hot(0xf &
++                                                     (~mut.get_all_major_allele()));
+                         }
++                        child_mut.mutations.erase(
++                            std::remove_if(child_mut.begin(), child_mut.end(),
++                        [](const MAT::Mutation &mut) {
++                            return mut.get_all_major_allele() ==
++                                   mut.get_par_one_hot();
++                        }),
++                        child_mut.end());
+                     }
+-                    //promote original children
+-                    parent_mutex.lock();
+-                    parent_children.push_back(child);
+-                    parent_mutex.unlock();
+                 }
+-                removed_nodes.push_back(this_node->node_id);
+-                delete this_node;
++                //promote original children
++                parent_mutex.lock();
++                parent_children.push_back(child);
++                parent_mutex.unlock();
+             }
++            removed_nodes.push_back(this_node->node_id);
++            delete this_node;
++            return; // Don't process children if this node was deleted
+         }
+-        tbb::empty_task* empty=new(allocate_continuation()) tbb::empty_task();
+-        bool spawned=false;
+-        this_node_ori_children.erase(std::remove_if(this_node_ori_children.begin(), this_node_ori_children.end(), [](MAT::Node* node) {
+-            return node->is_leaf();
+-        }),this_node_ori_children.end());
+-        empty->set_ref_count(this_node_ori_children.size());
+-        //spawn a new task for each children
+-        for (MAT::Node *child : this_node_ori_children) {
+-            empty->spawn(*new (empty->allocate_child())clean_up_internal_nodes_single_child_or_no_mutation(child,changed_nodes,node_with_inconsistent_state,removed_nodes,node_mutexes));
+-            spawned=true;
+-        }
+-        return spawned?nullptr:empty;
+     }
+-};
+-//Warpper for the preceding functor to clean tree
++    
++    // Remove leaf nodes from children list
++    this_node_ori_children.erase(std::remove_if(this_node_ori_children.begin(), this_node_ori_children.end(), [](MAT::Node* node) {
++        return node->is_leaf();
++    }),this_node_ori_children.end());
++    
++    // Spawn tasks for each non-leaf child
++    for (MAT::Node *child : this_node_ori_children) {
++        tg.run([child, &changed_nodes, &node_with_inconsistent_state, &removed_nodes, &node_mutexes, &tg]() {
++            clean_up_internal_nodes_single_child_or_no_mutation_recursive(child, changed_nodes, node_with_inconsistent_state, removed_nodes, node_mutexes, tg);
++        });
++    }
++}
++//Wrapper for the preceding function to clean tree
+ static void clean_up_internal_nodes_single_child_or_no_mutation(
+     MAT::Node* this_node,MAT::Tree& tree,
+     std::unordered_set<size_t>& changed_nodes,
+@@ -95,7 +89,11 @@ static void clean_up_internal_nodes_single_child_or_no_mutation(
+     tbb::concurrent_vector<size_t> removed_nodes;
+     auto dfs=tree.depth_first_expansion();
+     std::vector<std::mutex> node_mutexes(dfs.size());
+-    tbb::task::spawn_root_and_wait(*new(tbb::task::allocate_root()) struct clean_up_internal_nodes_single_child_or_no_mutation(this_node,changed_nodes_rep,node_with_inconsistent_state_rep,removed_nodes,node_mutexes));
++    
++    tbb::task_group tg;
++    clean_up_internal_nodes_single_child_or_no_mutation_recursive(this_node, changed_nodes_rep, node_with_inconsistent_state_rep, removed_nodes, node_mutexes, tg);
++    tg.wait();
++    
+     changed_nodes.insert(changed_nodes_rep.begin(),changed_nodes_rep.end());
+     node_with_inconsistent_state.insert(node_with_inconsistent_state_rep.begin(),node_with_inconsistent_state_rep.end());
+     for( const auto& node_id:removed_nodes) {
+diff --git a/src/matOptimize/check_samples.cpp b/src/matOptimize/check_samples.cpp
+index 89c8966..e6f0854 100644
+--- a/src/matOptimize/check_samples.cpp
++++ b/src/matOptimize/check_samples.cpp
+@@ -6,7 +6,7 @@
+ #include <cstdio>
+ #include <string>
+ #include <tbb/concurrent_unordered_set.h>
+-#include <tbb/task.h>
++#include <tbb/task_group.h>
+ #include <unordered_map>
+ #include <unordered_set>
+ #include <utility>
+@@ -43,129 +43,112 @@ void ins_mut(Mutation_Set &parent_mutations,const Mutation_Annotated_Tree::Mutat
+         }
+     }
+ }
+-//functor for getting state of all leaves
+-struct insert_samples_worker:public tbb::task {
+-    const Mutation_Annotated_Tree::Node *root; //starting node whose subtree need to be processed
+-    Mutation_Set parent_mutations; //mutation of parent of "root" relative to the root of the entire tree
+-    Original_State_t &samples; //output
+-    insert_samples_worker(const Mutation_Annotated_Tree::Node *root,
+-                          const Mutation_Set &parent_mutations,
+-                          Original_State_t &samples)
+-        : root(root), parent_mutations(parent_mutations),
+-          samples(samples) {}
+-    tbb::task* execute() override {
+-        //add mutation of "root"
+-        for (const Mutation_Annotated_Tree::Mutation &m : root->mutations) {
+-            if(m.is_valid()||root->is_leaf()) {
+-                ins_mut(parent_mutations, m,root->is_leaf(),root);
+-            }
+-        }
+-        //output
+-        if (root->is_leaf()) {
+-            samples.insert(std::make_pair(root->node_id, parent_mutations));
+-        }
+-        //continuation
+-        tbb::empty_task* empty=new(allocate_continuation()) tbb::empty_task();
+-        //spawn a task for each children
+-        empty->set_ref_count(root->children.size());
+-        for (auto child : root->children) {
+-            assert(child->parent==root);
+-            empty->spawn(*new (empty->allocate_child())insert_samples_worker(child, parent_mutations, samples));
++//function for getting state of all leaves
++void insert_samples_worker(const Mutation_Annotated_Tree::Node *root,
++                           Mutation_Set parent_mutations,
++                           Original_State_t &samples,
++                           tbb::task_group &tg) {
++    //add mutation of "root"
++    for (const Mutation_Annotated_Tree::Mutation &m : root->mutations) {
++        if(m.is_valid()||root->is_leaf()) {
++            ins_mut(parent_mutations, m,root->is_leaf(),root);
+         }
+-        //bypass the scheduler to execute continuation task directly to fix ref count
+-        // if no child spawned (otherwise it will hang)
+-        return root->children.empty()?empty:nullptr;
+     }
+-};
++    //output
++    if (root->is_leaf()) {
++        samples.insert(std::make_pair(root->node_id, parent_mutations));
++    }
++    //process children in parallel
++    for (auto child : root->children) {
++        assert(child->parent==root);
++        tg.run([=, &samples, &tg]() {
++            insert_samples_worker(child, parent_mutations, samples, tg);
++        });
++    }
++}
+ 
+-//functor for checking state of all leaves
+-struct check_samples_worker:public tbb::task {
+-    const Mutation_Annotated_Tree::Node *root;
+-    Mutation_Set parent_mutations;
+-    const Original_State_t &samples;
+-    tbb::concurrent_unordered_set<size_t>& visited_samples;
+-    const MAT::Tree& tree;
+-    check_samples_worker(const Mutation_Annotated_Tree::Node *root,
+-                         const Mutation_Set& parent_mutations,
+-                         const Original_State_t &samples,
+-                         tbb::concurrent_unordered_set<size_t>& visited_samples,
+-                         const MAT::Tree& tree):
+-        root(root),parent_mutations(parent_mutations),samples(samples),visited_samples(visited_samples),tree(tree) {}
+-    tbb::task* execute() override {
+-        tbb::empty_task* empty=new(allocate_continuation()) tbb::empty_task();
+-        empty->set_ref_count(root->children.size());
+-        for (const Mutation_Annotated_Tree::Mutation &m : root->mutations) {
+-            if(m.is_valid()||root->is_leaf()) {
+-                ins_mut(parent_mutations, m,root->is_leaf(),root);
+-            };
+-        }
++//function for checking state of all leaves
++void check_samples_worker(const Mutation_Annotated_Tree::Node *root,
++                          Mutation_Set parent_mutations,
++                          const Original_State_t &samples,
++                          tbb::concurrent_unordered_set<size_t>& visited_samples,
++                          const MAT::Tree& tree,
++                          tbb::task_group &tg) {
++    for (const Mutation_Annotated_Tree::Mutation &m : root->mutations) {
++        if(m.is_valid()||root->is_leaf()) {
++            ins_mut(parent_mutations, m,root->is_leaf(),root);
++        };
++    }
+ 
+-        if (root->is_leaf()) {
+-            auto iter = samples.find(root->node_id);
+-            if (iter == samples.end()) {
+-                fprintf(stderr, "[ERROR] Extra Sample %s \n",tree.get_node_name(root->node_id).c_str());
+-                raise(SIGTRAP);
+-            } else {
+-                Mutation_Set to_check(iter->second);
+-                for (auto m : parent_mutations) {
+-                    auto m_iter = to_check.find(m);
+-                    if (m_iter == to_check.end()) {
+-                        fprintf(
+-                            stderr,
+-                            "[ERROR] Extra mutation to\t%c\t%d\t of Sample\t%s at bfs_index %zu \n",
+-                            Mutation_Annotated_Tree::get_nuc(m.get_all_major_allele()), m.get_position(),
+-                            tree.get_node_name(root->node_id).c_str(),root->bfs_index);
+-                        raise(SIGTRAP);
++    if (root->is_leaf()) {
++        auto iter = samples.find(root->node_id);
++        if (iter == samples.end()) {
++            fprintf(stderr, "[ERROR] Extra Sample %s \n",tree.get_node_name(root->node_id).c_str());
++            raise(SIGTRAP);
++        } else {
++            Mutation_Set to_check(iter->second);
++            for (auto m : parent_mutations) {
++                auto m_iter = to_check.find(m);
++                if (m_iter == to_check.end()) {
++                    fprintf(
++                        stderr,
++                        "[ERROR] Extra mutation to\t%c\t%d\t of Sample\t%s at bfs_index %zu \n",
++                        Mutation_Annotated_Tree::get_nuc(m.get_all_major_allele()), m.get_position(),
++                        tree.get_node_name(root->node_id).c_str(),root->bfs_index);
++                    raise(SIGTRAP);
+ 
+-                    } else {
+-                        if ((m.get_all_major_allele())!=m_iter->get_all_major_allele()) {
+-                            fprintf(stderr,
+-                                    "Mut Nuc Mismatch at \t %d, address %lx, of sample \t %s "
+-                                    "at bfs_index \t %zu: original \t %d , "
+-                                    "altered :\t %d \n",
+-                                    m.get_position(),(unsigned long)root,
+-                                    tree.get_node_name(root->node_id).c_str(),
+-                                    root->bfs_index,
+-                                    (int)m_iter->get_all_major_allele(),
+-                                    (int)m.get_all_major_allele());
+-                            raise(SIGTRAP);
+-                        }
+-                        to_check.erase(m_iter);
++                } else {
++                    if ((m.get_all_major_allele())!=m_iter->get_all_major_allele()) {
++                        fprintf(stderr,
++                                "Mut Nuc Mismatch at \t %d, address %lx, of sample \t %s "
++                                "at bfs_index \t %zu: original \t %d , "
++                                "altered :\t %d \n",
++                                m.get_position(),(unsigned long)root,
++                                tree.get_node_name(root->node_id).c_str(),
++                                root->bfs_index,
++                                (int)m_iter->get_all_major_allele(),
++                                (int)m.get_all_major_allele());
++                        raise(SIGTRAP);
+                     }
++                    to_check.erase(m_iter);
+                 }
++            }
+ 
+-                for (auto m_left : to_check) {
+-                    fprintf(stderr,
+-                            "[ERROR] Lost mutation to\t%c\t%d\t of Sample\t%s at bfs_index %zu \n",
+-                            Mutation_Annotated_Tree::get_nuc(m_left.get_all_major_allele()),
+-                            m_left.get_position(), tree.get_node_name(root->node_id).c_str(),root->bfs_index);
+-                    raise(SIGTRAP);
+-                }
+-
+-                visited_samples.insert(iter->first);
++            for (auto m_left : to_check) {
++                fprintf(stderr,
++                        "[ERROR] Lost mutation to\t%c\t%d\t of Sample\t%s at bfs_index %zu \n",
++                        Mutation_Annotated_Tree::get_nuc(m_left.get_all_major_allele()),
++                        m_left.get_position(), tree.get_node_name(root->node_id).c_str(),root->bfs_index);
++                raise(SIGTRAP);
+             }
+-            return empty;
++
++            visited_samples.insert(iter->first);
+         }
+-        for (auto child : root->children) {
+-            if (child->parent!=root) {
+-                fprintf(stderr, "%lx\n", (long)child);
+-                std::raise(SIGTRAP);
+-            }
+-            empty->spawn(*new (empty->allocate_child())check_samples_worker(child, parent_mutations, samples,visited_samples,tree));
++        return;
++    }
++    for (auto child : root->children) {
++        if (child->parent!=root) {
++            fprintf(stderr, "%lx\n", (long)child);
++            std::raise(SIGTRAP);
+         }
+-        return nullptr;
++        tg.run([=, &samples, &visited_samples, &tree, &tg]() {
++            check_samples_worker(child, parent_mutations, samples, visited_samples, tree, tg);
++        });
+     }
+-};
++}
+ //top level
+ void check_samples(const Mutation_Annotated_Tree::Node *root,
+                    Original_State_t &samples,const MAT::Tree* tree,bool ignore_missed_samples) {
+     Mutation_Set mutations;
+     if (samples.empty()) {
+-        tbb::task::spawn_root_and_wait(*new(tbb::task::allocate_root())
+-                                       insert_samples_worker(root, mutations, samples));
++        tbb::task_group tg;
++        insert_samples_worker(root, mutations, samples, tg);
++        tg.wait();
+     } else {
+         tbb::concurrent_unordered_set<size_t> visited_sample;
+-        tbb::task::spawn_root_and_wait(*new(tbb::task::allocate_root())check_samples_worker(root, mutations, samples,visited_sample,*tree));
++        tbb::task_group tg;
++        check_samples_worker(root, mutations, samples, visited_sample, *tree, tg);
++        tg.wait();
+         if (!ignore_missed_samples) {
+             bool have_missed=false;
+             for (auto s : samples) {
+diff --git a/src/matOptimize/detailed_mutation_load_store.hpp b/src/matOptimize/detailed_mutation_load_store.hpp
+index dc1330e..a56a293 100644
+--- a/src/matOptimize/detailed_mutation_load_store.hpp
++++ b/src/matOptimize/detailed_mutation_load_store.hpp
+@@ -11,7 +11,7 @@
+ #include <string>
+ #include <sys/mman.h>
+ #include <tbb/flow_graph.h>
+-#include <tbb/task.h>
++#include <tbb/task_group.h>
+ #include <utility>
+ #define LOAD
+ #include "google/protobuf/io/coded_stream.h"
+diff --git a/src/matOptimize/detailed_mutations_load.cpp b/src/matOptimize/detailed_mutations_load.cpp
+index 987e529..7d38bfe 100644
+--- a/src/matOptimize/detailed_mutations_load.cpp
++++ b/src/matOptimize/detailed_mutations_load.cpp
+@@ -177,14 +177,8 @@ struct no_deserialize_condensed_nodes {
+                     MAT::Tree::condensed_node_t &condensed_nodes,
+                     const MAT::Node *out) {}
+ };
+-struct Load_Subtree_pararllel_Continuation : public tbb::task {
+-    MAT::Mutations_Collection mutation_so_far;
+-    tbb::task *execute() {
+-        return nullptr;
+-    }
+-};
+ template <typename do_serialize_condensed>
+-struct Load_Subtree_pararllel : public tbb::task {
++struct Load_Subtree_pararllel {
+     MAT::Node *parent;
+     const uint8_t *file_start;
+     int64_t start_offset;
+@@ -199,7 +193,7 @@ struct Load_Subtree_pararllel : public tbb::task {
+         : parent(parent), file_start(file_start), start_offset(start_offset),
+           length(length), out(out), condensed_nodes(condensed_nodes),
+           parent_mutations(parent_mutations) {}
+-    tbb::task *execute() override {
++    void execute(tbb::task_group &tg) {
+         google::protobuf::io::CodedInputStream inputi(file_start + start_offset,
+                 length);
+         Mutation_Detailed::node node;
+@@ -226,24 +220,21 @@ struct Load_Subtree_pararllel : public tbb::task {
+         size_t child_size = node.children_offsets_size();
+         if (child_size) {
+             out->children.resize(child_size);
+-            auto continuation = new (allocate_continuation())
+-            Load_Subtree_pararllel_Continuation;
+-            continuation->set_ref_count(child_size);
+-            load_mutations(out, node, ignored_size, parent_mutations,
+-                           continuation->mutation_so_far);
++            MAT::Mutations_Collection mutation_so_far;
++            load_mutations(out, node, ignored_size, parent_mutations, mutation_so_far);
+             for (size_t child_idx = 0; child_idx < child_size; child_idx++) {
+-                continuation->spawn(
+-                    *new (continuation->allocate_child())
+-                    Load_Subtree_pararllel(
++                tg.run([=, &tg]() {
++                    Load_Subtree_pararllel child_loader(
+                         out, file_start, node.children_offsets(child_idx),
+                         node.children_lengths(child_idx),
+                         out->children[child_idx], condensed_nodes,
+-                        continuation->mutation_so_far));
++                        mutation_so_far);
++                    child_loader.execute(tg);
++                });
+             }
+-            return nullptr;
++        } else {
++            load_mutations(out, node, ignored_size, parent_mutations);
+         }
+-        load_mutations(out, node, ignored_size, parent_mutations);
+-        return new (allocate_continuation()) tbb::empty_task;
+     }
+ };
+ struct no_free_input {
+@@ -271,15 +262,16 @@ template <typename do_free_input> struct decompressor_t {
+ struct file_loader {
+     uint8_t *&start;
+     uint8_t *end;
+-    bool operator()(uint8_t *&curr) {
++    uint8_t* operator()(tbb::detail::d1::flow_control& fc) {
+         if (start==end) {
+-            return false;
++            fc.stop();
++            return nullptr;
+         }
+-        curr=start;
++        uint8_t* curr = start;
+         size_t length = *(uint64_t*)(start + 8);
+         assert(start < end);
+         start += (16 + length);
+-        return true;
++        return curr;
+     }
+ };
+ typedef tbb::flow::function_node<uint8_t *> decompressor_node_t;
+@@ -299,7 +291,7 @@ uncompress_file(const std::string &path) {
+     decompressor_node_t decompressor(
+         g, tbb::flow::unlimited,
+         decompressor_t<no_free_input> {uncompressed_buffer});
+-    tbb::flow::source_node<uint8_t *> src(g, file_loader{curr, end_of_file-8});
++    tbb::flow::input_node<uint8_t *> src(g, file_loader{curr, end_of_file-8});
+     tbb::flow::make_edge(src, decompressor);
+     g.wait_for_all();
+     munmap(file, file_size);
+@@ -352,11 +344,12 @@ static void deserialize_common(std::pair<uint8_t*,uint8_t*> uncompressed,MAT::Tr
+                           file_end - 8 - (file + meta_offset));
+     MAT::Mutations_Collection root_muts;
+     root_muts.mutations.emplace_back(INT_MAX);
+-    tbb::task::spawn_root_and_wait(
+-        *new (tbb::task::allocate_root())
+-        Load_Subtree_pararllel<T>(
+-            nullptr, (uint8_t *)file, temp.first, temp.second, tree->root,
+-            tree->condensed_nodes, root_muts));
++    tbb::task_group tg;
++    Load_Subtree_pararllel<T> loader(
++        nullptr, (uint8_t *)file, temp.first, temp.second, tree->root,
++        tree->condensed_nodes, root_muts);
++    loader.execute(tg);
++    tg.wait();
+     free(uncompressed.first);
+     std::vector<MAT::Node *> dfs_nodes = tree->depth_first_expansion();
+     fprintf(stderr, "follower dfs size %zu\n",dfs_nodes.size());
+diff --git a/src/matOptimize/detailed_mutations_store.cpp b/src/matOptimize/detailed_mutations_store.cpp
+index dbdebbb..d2de8ae 100644
+--- a/src/matOptimize/detailed_mutations_store.cpp
++++ b/src/matOptimize/detailed_mutations_store.cpp
+@@ -188,30 +188,7 @@ static void serialize_node(const MAT::Node *root, const MAT::Tree &tree,
+     serialize_node(this_node, offset_out, length_out, out_stream);
+ }
+ template <typename condensed_node_serializer>
+-struct subtree_serializer_continuation : public tbb::task {
+-    std::vector<u_int64_t> children_offset;
+-    std::vector<u_int64_t> children_length;
+-    u_int64_t &offset_out;
+-    u_int64_t &length_out;
+-    const MAT::Node *root;
+-    const MAT::Tree &tree;
+-    serializer_t &out_stream;
+-    subtree_serializer_continuation(u_int64_t &offset_out,
+-                                    u_int64_t &length_out,
+-                                    const MAT::Node *root,
+-                                    const MAT::Tree &tree,
+-                                    serializer_t &out_stream,size_t children_size)
+-        : children_offset(children_size),children_length(children_size),offset_out(offset_out), length_out(length_out), root(root),
+-          tree(tree), out_stream(out_stream) {}
+-    tbb::task *execute() {
+-        serialize_node<condensed_node_serializer>(
+-            root, tree, offset_out, length_out, out_stream, children_offset,
+-            children_length);
+-        return nullptr;
+-    }
+-};
+-template <typename condensed_node_serializer>
+-struct subtree_serializer : public tbb::task {
++struct subtree_serializer {
+     u_int64_t &offset_out;
+     u_int64_t &length_out;
+     const MAT::Node *root;
+@@ -222,27 +199,26 @@ struct subtree_serializer : public tbb::task {
+                        serializer_t &out_stream)
+         : offset_out(offset_out), length_out(length_out), root(root),
+           tree(tree), out_stream(out_stream) {}
+-    tbb::task *execute() {
++    void execute(tbb::task_group &tg) {
+         auto child_size = root->children.size();
+         if (child_size) {
+-            auto continuation = new (allocate_continuation())
+-            subtree_serializer_continuation<condensed_node_serializer>(
+-                offset_out, length_out, root, tree, out_stream,child_size);
+-            std::vector<std::pair<u_int64_t, u_int64_t>> child_addr(child_size);
+-            continuation->set_ref_count(child_size);
++            std::vector<u_int64_t> children_offset(child_size);
++            std::vector<u_int64_t> children_length(child_size);
++            
++            // Process children sequentially to avoid concurrent access to the vectors
+             for (size_t child_idx = 0; child_idx < child_size; child_idx++) {
+-                continuation->spawn(
+-                    *(new (continuation->allocate_child())
+-                      subtree_serializer<condensed_node_serializer>(
+-                          continuation->children_offset[child_idx],
+-                          continuation->children_length[child_idx],
+-                          root->children[child_idx], tree, out_stream)));
++                subtree_serializer<condensed_node_serializer> child_serializer(
++                    children_offset[child_idx], children_length[child_idx],
++                    root->children[child_idx], tree, out_stream);
++                child_serializer.execute(tg);
+             }
+-            return nullptr;
++            
++            serialize_node<condensed_node_serializer>(
++                root, tree, offset_out, length_out, out_stream, children_offset,
++                children_length);
+         } else {
+             serialize_node<condensed_node_serializer>(root, tree, offset_out,
+                     length_out, out_stream);
+-            return new (allocate_continuation()) tbb::empty_task();
+         }
+     }
+ };
+@@ -292,10 +268,11 @@ template<typename T>
+ size_t serialize_tree_general(const MAT::Tree* tree,serializer_t& serializer) {
+     u_int64_t root_offset;
+     u_int64_t root_length;
+-    tbb::task::spawn_root_and_wait(
+-        *(new (tbb::task::allocate_root())
+-          subtree_serializer<T>(
+-              root_offset, root_length, tree->root, *tree, serializer)));
++    tbb::task_group tg;
++    subtree_serializer<T> serializer_task(
++        root_offset, root_length, tree->root, *tree, serializer);
++    serializer_task.execute(tg);
++    tg.wait();
+     return save_meta(*tree, root_offset, root_length, serializer);
+ }
+ // main save function
+diff --git a/src/matOptimize/import_vcf.hpp b/src/matOptimize/import_vcf.hpp
+index a5afd70..afe59ea 100644
+--- a/src/matOptimize/import_vcf.hpp
++++ b/src/matOptimize/import_vcf.hpp
+@@ -1,7 +1,7 @@
+ #include <string>
+ #include <boost/iostreams/filtering_stream.hpp>
+ #include <boost/iostreams/filter/gzip.hpp>
+-#include <tbb/pipeline.h>
++#include <tbb/parallel_pipeline.h>
+ #include <vector>
+ #include "src/matOptimize/mutation_annotated_tree.hpp"
+ #include "src/matOptimize/Fitch_Sankoff.hpp"
+diff --git a/src/matOptimize/import_vcf_fast.cpp b/src/matOptimize/import_vcf_fast.cpp
+index 02c9f08..126fbfe 100644
+--- a/src/matOptimize/import_vcf_fast.cpp
++++ b/src/matOptimize/import_vcf_fast.cpp
+@@ -29,7 +29,7 @@
+ size_t read_size;
+ size_t alloc_size;
+ //Decouple parsing (slow) and decompression, segment file into blocks for parallelized parsing
+-typedef tbb::flow::source_node<char*> decompressor_node_t;
++typedef tbb::flow::input_node<char*> decompressor_node_t;
+ std::condition_variable progress_bar_cv;
+ struct raw_input_source {
+     FILE* fh;
+@@ -67,7 +67,8 @@ struct line_align {
+     line_align(tbb::concurrent_bounded_queue<std::pair<char*,uint8_t*>>& out):in(out) {
+         prev.start=nullptr;
+     }
+-    bool operator()(line_start_later& out) const {
++    line_start_later operator()(tbb::flow_control& fc) const {
++        line_start_later out;
+         std::pair<char*, unsigned char*> line;
+         in.pop(line);
+         if (line.first==nullptr) {
+@@ -75,9 +76,10 @@ struct line_align {
+                 out=prev;
+                 prev.start=nullptr;
+                 prev_end[0]=0;
+-                return true;
++                return out;
+             } else {
+-                return false;
++                fc.stop();
++                return out;
+             }
+         }
+         if (!prev.start) {
+@@ -88,7 +90,7 @@ struct line_align {
+             if (line.first==nullptr) {
+                 out=prev;
+                 prev.start=nullptr;
+-                return true;
++                return out;
+             }
+         }
+         auto start_ptr=strchr(line.first, '\n');
+@@ -103,7 +105,7 @@ struct line_align {
+         prev.start=start_ptr;
+         prev.alloc_start=line.first;
+         prev_end=line.second;
+-        return true;
++        return out;
+     }
+ };
+ struct gzip_input_source {
+@@ -200,10 +202,10 @@ struct gzip_input_source {
+     }
+ };
+ //Parse a block of lines, assuming there is a complete line in the line_in buffer
+-typedef tbb::flow::multifunction_node<line_start_later,tbb::flow::tuple<Parsed_VCF_Line*>> line_parser_t;
++typedef tbb::flow::multifunction_node<line_start_later,std::tuple<Parsed_VCF_Line*>> line_parser_t;
+ struct line_parser {
+     const std::vector<long>& header;
+-    void operator()(line_start_later line_in_struct, line_parser_t::output_ports_type& out)const {
++    void operator()(line_start_later line_in_struct, typename line_parser_t::output_ports_type& out)const {
+         char*  line_in=line_in_struct.start;
+         char*  to_free=line_in_struct.alloc_start;
+         Parsed_VCF_Line* parsed_line;
+@@ -410,14 +412,14 @@ static void process(MAT::Tree& tree,infile_t& fd) {
+             line_parser_t parser(input_graph,tbb::flow::unlimited,line_parser{idx_map});
+             //feed used buffer back to decompressor
+             tbb::flow::function_node<Parsed_VCF_Line*> assign_state(input_graph,tbb::flow::unlimited,Assign_State{child_idx_range,parent_idx,output});
+-            tbb::flow::make_edge(tbb::flow::output_port<0>(parser),assign_state);
++            tbb::flow::make_edge(std::get<0>(parser.output_ports()),assign_state);
+             parser.try_put(first_line);
+             size_t first_approx_size=std::min(CHUNK_SIZ,ONE_GB/single_line_size)-2;
+             read_size=first_approx_size*single_line_size;
+             alloc_size=(first_approx_size+2)*single_line_size;
+             tbb::concurrent_bounded_queue<std::pair<char*,uint8_t*>> queue;
+             queue.set_capacity(10);
+-            tbb::flow::source_node<line_start_later> line(input_graph,line_align(queue));
++            tbb::flow::input_node<line_start_later> line(input_graph,line_align(queue));
+             tbb::flow::make_edge(line,parser);
+             //raise(SIGTRAP);
+             fd(queue);
+diff --git a/src/matOptimize/main.cpp b/src/matOptimize/main.cpp
+index bdfb658..4532dd0 100644
+--- a/src/matOptimize/main.cpp
++++ b/src/matOptimize/main.cpp
+@@ -8,6 +8,7 @@
+ #include <atomic>
+ #include <boost/filesystem/operations.hpp>
+ #include <boost/filesystem/path.hpp>
++#include <boost/filesystem.hpp>
+ #include <boost/program_options/value_semantic.hpp>
+ #include <chrono>
+ #include <climits>
+@@ -29,7 +30,8 @@
+ #include <cstdio>
+ #include <fcntl.h>
+ #include <string>
+-#include <tbb/task_scheduler_init.h>
++#include <tbb/info.h>
++#include <tbb/global_control.h>
+ #include <thread>
+ #include <unistd.h>
+ #include <sys/stat.h>
+@@ -148,7 +150,7 @@ int main(int argc, char **argv) {
+     std::string branch_support_newick_out;
+ 
+     po::options_description desc{"Options"};
+-    uint32_t num_cores = tbb::task_scheduler_init::default_num_threads();
++    uint32_t num_cores = tbb::info::default_concurrency();
+     std::string num_threads_message = "Number of threads to use when possible [DEFAULT uses all available cores, " + std::to_string(num_cores) + " detected on this machine]";
+     desc.add_options()
+     ("vcf,v", po::value<std::string>(&input_vcf_path)->default_value(""), "Input VCF file (in uncompressed or gzip-compressed .gz format) ")
+@@ -323,7 +325,7 @@ int main(int argc, char **argv) {
+         //Loading tree
+         Original_State_t origin_states;
+         {
+-            tbb::task_scheduler_init init(process_count*num_threads);
++            tbb::global_control global_limit(tbb::global_control::max_allowed_parallelism, process_count*num_threads);
+             if (input_complete_pb_path!="") {
+                 t.load_detatiled_mutations(input_complete_pb_path);
+             } else {
+@@ -432,7 +434,7 @@ int main(int argc, char **argv) {
+         bool isfirst=true;
+         bool allow_drift=false;
+         int iteration=1;
+-        tbb::task_scheduler_init init(num_threads);
++        tbb::global_control global_limit(tbb::global_control::max_allowed_parallelism, num_threads);
+         if(branch_support_newick_out!=""){
+             if(radius<0){
+                 radius=2*t.get_max_level();
+@@ -449,7 +451,7 @@ int main(int argc, char **argv) {
+                     out.moves=new std::vector<Profitable_Moves_ptr_t>;
+                     auto node=all_nodes[idx];
+                     Reachable reachable{true,true};
+-                    find_moves_bounded(node, out, radius, true, reachable);
++                    find_moves_bounded(node, out, radius, true, reachable, Move_Found_Callback::default_instance());
+                     std::unordered_map<size_t, bool> filtered;
+                     if(out.score_change==-1){
+                         filtered.emplace(node->node_id,false);
+@@ -582,7 +584,7 @@ int main(int argc, char **argv) {
+         save_final_tree(t, output_path);
+         MPI_Wait(&req, MPI_STATUS_IGNORE);
+     } else {
+-        tbb::task_scheduler_init init(num_threads);
++        tbb::global_control global_limit(tbb::global_control::max_allowed_parallelism, num_threads);
+         while(true) {
+             MPI_Request request;
+             fprintf(stderr, "Wait radius\n");
+@@ -609,7 +611,7 @@ int main(int argc, char **argv) {
+             t.MPI_receive_tree();
+             adjust_all(t);
+             use_bound=true;
+-            optimize_tree_worker_thread(t, radius,do_drift,search_all_dir);
++            optimize_tree_worker_thread(t, radius,do_drift,search_all_dir, Move_Found_Callback::default_instance());
+             t.delete_nodes();
+         }
+         if (reduce_back_mutations) {
+diff --git a/src/matOptimize/main_load_tree.cpp b/src/matOptimize/main_load_tree.cpp
+index 882c5f3..402c9d6 100644
+--- a/src/matOptimize/main_load_tree.cpp
++++ b/src/matOptimize/main_load_tree.cpp
+@@ -10,7 +10,7 @@
+ #include <tbb/blocked_range.h>
+ #include <tbb/concurrent_unordered_map.h>
+ #include <tbb/concurrent_vector.h>
+-#include <tbb/pipeline.h>
++#include <tbb/parallel_pipeline.h>
+ #include "tbb/parallel_for_each.h"
+ #include <tbb/parallel_for.h>
+ #include <boost/iostreams/filtering_stream.hpp>
+diff --git a/src/matOptimize/mutation_annotated_tree.hpp b/src/matOptimize/mutation_annotated_tree.hpp
+index 2c302ec..9d6ac08 100644
+--- a/src/matOptimize/mutation_annotated_tree.hpp
++++ b/src/matOptimize/mutation_annotated_tree.hpp
+@@ -387,7 +387,7 @@ class Mutations_Collection {
+     }
+ };
+ struct copyable_atomic_uint8_t: public std::atomic_int8_t {
+-    copyable_atomic_uint8_t()=default;
++    copyable_atomic_uint8_t() : std::atomic_int8_t{0} {};
+     copyable_atomic_uint8_t (copyable_atomic_uint8_t& other) {
+         this->store(other.load());
+     }
+@@ -503,6 +503,7 @@ class Tree {
+     std::unordered_map<size_t,  std::string> node_names;
+     std::unordered_map<std::string, size_t> node_name_to_idx_map;
+     size_t node_idx;
++    size_t num_nodes;
+   public:
+     typedef  tbb::concurrent_unordered_map<size_t, std::vector<std::string>> condensed_node_t;
+     size_t root_ident;
+@@ -510,8 +511,24 @@ class Tree {
+         root_ident=1;
+         root = NULL;
+         node_idx=0;
++        num_nodes=0;
+         all_nodes.clear();
+     }
++
++    void fix_node_idx() {
++        auto dfs = depth_first_expansion();
++        num_nodes = 0;
++        for (auto node: dfs) {
++            node_idx = std::max(node_idx, node->node_id);
++            ++num_nodes;
++        }
++        node_idx++;
++    }
++
++    size_t get_node_idx() const {
++      return num_nodes;
++    }
++    
+     void register_node_serial(Node* node) {
+         all_nodes.resize(std::max(all_nodes.size(),node->node_id+1),nullptr);
+         all_nodes[node->node_id]=node;
+diff --git a/src/matOptimize/optimize_inner_loop.cpp b/src/matOptimize/optimize_inner_loop.cpp
+index 3b0aad1..ebe7348 100644
+--- a/src/matOptimize/optimize_inner_loop.cpp
++++ b/src/matOptimize/optimize_inner_loop.cpp
+@@ -1,3 +1,4 @@
++#include "src/matOptimize/Profitable_Moves_Enumerators/Profitable_Moves_Enumerators.hpp"
+ #include "tree_rearrangement_internal.hpp"
+ #include <mpi.h>
+ #include <cstdlib>
+@@ -18,12 +19,13 @@ size_t optimize_inner_loop(std::vector<MAT::Node*>& nodes_to_search,MAT::Tree& t
+     int iteration,
+     std::string intermediate_template,
+     std::string intermediate_pb_base_name,
+-    std::string intermediate_nwk_out
++    std::string intermediate_nwk_out,
++    Move_Found_Callback& callback
+     ){
+     static std::chrono::steady_clock::time_point last_save_time=std::chrono::steady_clock::now();
+     auto save_period=std::chrono::minutes(minutes_between_save);
+     bool isfirst_this_iter=true;
+-    size_t new_score;
++    size_t new_score{};
+      while (!nodes_to_search.empty()) {
+                 auto dfs_ordered_nodes=t.depth_first_expansion();
+                 std::mt19937_64 rng;
+@@ -59,7 +61,7 @@ size_t optimize_inner_loop(std::vector<MAT::Node*>& nodes_to_search,MAT::Tree& t
+                 if (no_write_intermediate||search_end_time<next_save_time) {
+                     search_stop_time=search_end_time;
+                 }
+-                optimize_tree_main_thread(nodes_to_search_idx, t,std::abs(radius),movalbe_src_log,allow_drift,log_moves?iteration:-1,defered_nodes,distribute,search_stop_time,do_continue,search_all_dir,isfirst_this_iter
++                optimize_tree_main_thread(nodes_to_search_idx, t,std::abs(radius),movalbe_src_log,allow_drift,log_moves?iteration:-1,defered_nodes,distribute,search_stop_time,do_continue,search_all_dir,isfirst_this_iter, callback
+                                          );
+                 isfirst_this_iter=false;
+                 fprintf(stderr, "Defered %zu nodes\n",defered_nodes.size());
+@@ -102,3 +104,28 @@ size_t optimize_inner_loop(std::vector<MAT::Node*>& nodes_to_search,MAT::Tree& t
+             }
+             return new_score;
+ }
++
++// Overload that provides default callback
++size_t optimize_inner_loop(std::vector<MAT::Node*>& nodes_to_search,MAT::Tree& t,int radius,
++    bool allow_drift,
++    bool search_all_dir,
++    int minutes_between_save,
++    bool no_write_intermediate,
++    std::chrono::steady_clock::time_point search_end_time,
++    std::chrono::steady_clock::time_point start_time,
++    bool log_moves,
++    int iteration,
++    std::string intermediate_template,
++    std::string intermediate_pb_base_name,
++    std::string intermediate_nwk_out
++    ){
++#ifdef CHECK_STATE_REASSIGN
++    #error "CHECK_STATE_REASSIGN not supported in overload without callback parameter"
++#else
++    return optimize_inner_loop(nodes_to_search, t, radius, allow_drift, search_all_dir,
++                              minutes_between_save, no_write_intermediate, search_end_time,
++                              start_time, log_moves, iteration, intermediate_template,
++                              intermediate_pb_base_name, intermediate_nwk_out,
++                              Move_Found_Callback::default_instance());
++#endif
++}
+diff --git a/src/matOptimize/optimize_tree.cpp b/src/matOptimize/optimize_tree.cpp
+index 35e0919..b5139c0 100644
+--- a/src/matOptimize/optimize_tree.cpp
++++ b/src/matOptimize/optimize_tree.cpp
+@@ -21,7 +21,7 @@
+ #include <tbb/flow_graph.h>
+ #include <tbb/parallel_for.h>
+ #include <tbb/partitioner.h>
+-#include <tbb/task.h>
++#include <tbb/task_group.h>
+ #include <thread>
+ #include <unistd.h>
+ #include <utility>
+@@ -126,12 +126,13 @@ struct MPI_move_sender {
+         delete[] buffer;
+     }
+ };
+-typedef tbb::flow::multifunction_node<std::vector<size_t>*, tbb::flow::tuple<std::vector<Profitable_Moves_ptr_t>*>,tbb::flow::rejecting> searcher_node_t;
++typedef tbb::flow::multifunction_node<std::vector<size_t>*, std::tuple<std::vector<Profitable_Moves_ptr_t>*>,tbb::flow::rejecting> searcher_node_t;
+ struct move_searcher {
+     const std::vector<MAT::Node*>& dfs_ordered_nodes;
+     int radius;
+     bool do_drift;
+     Reachable reachable;
++    Move_Found_Callback& callback;
+     void operator()(std::vector<size_t>* to_search,searcher_node_t::output_ports_type& output)const {
+         int r=radius;
+         auto start_time=std::chrono::steady_clock::now();
+@@ -143,7 +144,7 @@ struct move_searcher {
+ #ifdef CHECK_BOUND
+                                ,count
+ #endif
+-                              );
++                               ,callback);
+             if (!out.moves->empty()) {
+                 //resolve conflicts
+                 std::get<0>(output).try_put(out.moves);
+@@ -209,7 +210,7 @@ struct fetcher {
+         release_rate=100;
+         update_rate=0.1;
+     }
+-    bool operator()(std::vector<size_t>*& out) const {
++    std::vector<size_t>* operator()(tbb::flow_control& fc) const {
+         if (nodes_to_push.empty()) {
+             size_t req_size=num_threads*nodes_per_min_per_thread;
+             auto this_request_time=std::chrono::steady_clock::now();
+@@ -235,17 +236,18 @@ struct fetcher {
+             last_request_time=this_request_time;
+             if (recieve_count==0) {
+                 fprintf(stderr, "fetcher exit\n");
+-                return false;
++                fc.stop();
++                return nullptr;
+             }
+             nodes_to_push.resize(recieve_count);
+         }
+         auto nodes_to_release_this_round=std::min(nodes_to_push.size(),release_rate);
+         //fprintf(stderr, "buf size %zu, releasing %lu nodes \n",nodes_to_push.size(),nodes_to_release_this_round);
+         auto split_iter=nodes_to_push.end()-nodes_to_release_this_round;
+-        out=new std::vector<size_t>(split_iter,nodes_to_push.end());
++        auto* out = new std::vector<size_t>(split_iter,nodes_to_push.end());
+         nodes_to_push.erase(split_iter,nodes_to_push.end());
+         //fprintf(stderr, "left %zu nodes at %d \n",nodes_to_push.size(),this_rank);
+-        return true;
++        return out;
+     }
+ };
+ Reachable set_reachable(int radius,MAT::Tree& t,bool search_all_dir) {
+@@ -262,7 +264,7 @@ void optimize_tree_main_thread(std::vector<size_t> &nodes_to_search,
+ #ifdef CHECK_STATE_REASSIGN
+                                , Original_State_t& origin_states
+ #endif
+-                              ) {
++                               , Move_Found_Callback& callback) {
+     t.breadth_first_expansion();
+     auto dfs_ordered_nodes=t.depth_first_expansion();
+     auto start_time=std::chrono::steady_clock::now();
+@@ -281,11 +283,12 @@ void optimize_tree_main_thread(std::vector<size_t> &nodes_to_search,
+                                          &defered_node_identifier));
+     std::thread move_reciever(MPI_recieve_move,std::ref(dfs_ordered_nodes),std::ref(resover_node));
+     //progress bar
+-    searcher_node_t searcher(g,num_threads+1,move_searcher{dfs_ordered_nodes,radius,allow_drift,set_reachable(radius, t,search_all_dir)});
++    searcher_node_t searcher(g,num_threads+1,move_searcher{dfs_ordered_nodes,radius,allow_drift,set_reachable(radius, t,search_all_dir), callback});
+     tbb::flow::make_edge(std::get<0>(searcher.output_ports()),resover_node);
+     std::vector<size_t> local_nodes_to_search;
+     auto last_request_time=std::chrono::steady_clock::now();
+-    tbb::flow::source_node<std::vector<size_t>*> fetcher_node(g,fetcher(local_nodes_to_search,last_request_time));
++    tbb::flow::input_node<std::vector<size_t>*> fetcher_node(g,fetcher(local_nodes_to_search,last_request_time));
++    fetcher_node.activate();
+     tbb::flow::make_edge(fetcher_node,searcher);
+     if (MPI_involved) {
+         MPI_Barrier(MPI_COMM_WORLD);
+@@ -345,7 +348,7 @@ void optimize_tree_main_thread(std::vector<size_t> &nodes_to_search,
+             tbb::flow::graph resolver_g;
+             std::vector<MAT::Node*> ignored;
+             resolver_node_t resover_node(resolver_g,1,Conflict_Resolver(potential_crosses,deferred_moves_next,nullptr));
+-            tbb::parallel_for(tbb::blocked_range<size_t>(0,deferred_moves.size()),[&deferred_moves,&resover_node,&t,allow_drift](const tbb::blocked_range<size_t>& r) {
++            tbb::parallel_for(tbb::blocked_range<size_t>(0,deferred_moves.size()),[&deferred_moves,&resover_node,&t,allow_drift,&callback](const tbb::blocked_range<size_t>& r) {
+                 for (size_t i=r.begin(); i<r.end(); i++) {
+                     MAT::Node* src=t.get_node(deferred_moves[i].first);
+                     MAT::Node* dst=t.get_node(deferred_moves[i].second);
+@@ -353,7 +356,7 @@ void optimize_tree_main_thread(std::vector<size_t> &nodes_to_search,
+                         output_t out;
+                         out.moves=new std::vector<Profitable_Moves_ptr_t>;
+                         if (check_not_ancestor(dst, src)) {
+-                            individual_move(src,dst,get_LCA(src, dst),out,allow_drift
++                            individual_move(src,dst,get_LCA(src, dst),out,allow_drift, callback
+ #ifdef DEBUG_PARSIMONY_SCORE_CHANGE_CORRECT
+                                             ,&t
+ #endif
+@@ -399,15 +402,15 @@ void optimize_tree_main_thread(std::vector<size_t> &nodes_to_search,
+     fprintf(stderr, "recycling moves took %ld seconds\n",elpased_time.count());
+     t.populate_ignored_range();
+ }
+-void optimize_tree_worker_thread(MAT::Tree &t,int radius,bool do_drift,bool search_all_dir) {
++void optimize_tree_worker_thread(MAT::Tree &t,int radius,bool do_drift,bool search_all_dir, Move_Found_Callback& callback) {
+     auto dfs_ordered_nodes=t.depth_first_expansion();
+     tbb::flow::graph g;
+     resolver_node_t resolver_node(g,1,MPI_move_sender());
+-    searcher_node_t searcher(g,num_threads+1,move_searcher{dfs_ordered_nodes,radius,do_drift,set_reachable(radius, t,search_all_dir)});
++    searcher_node_t searcher(g,num_threads+1,move_searcher{dfs_ordered_nodes,radius,do_drift,set_reachable(radius, t,search_all_dir), callback});
+     tbb::flow::make_edge(std::get<0>(searcher.output_ports()),resolver_node);
+     std::vector<size_t> nodes_to_search;
+     auto last_request_time=std::chrono::steady_clock::now();
+-    tbb::flow::source_node<std::vector<size_t>*> fetcher_node(g,fetcher(nodes_to_search,last_request_time));
++    tbb::flow::input_node<std::vector<size_t>*> fetcher_node(g,fetcher(nodes_to_search,last_request_time));
+     tbb::flow::make_edge(fetcher_node,searcher);
+     g.wait_for_all();
+     MPI_Barrier(MPI_COMM_WORLD);
+diff --git a/src/matOptimize/reassign_states.cpp b/src/matOptimize/reassign_states.cpp
+index 7ffa856..7715020 100644
+--- a/src/matOptimize/reassign_states.cpp
++++ b/src/matOptimize/reassign_states.cpp
+@@ -10,7 +10,7 @@
+ #include <tbb/blocked_range.h>
+ #include <tbb/concurrent_unordered_map.h>
+ #include <tbb/concurrent_vector.h>
+-#include <tbb/pipeline.h>
++#include <tbb/parallel_pipeline.h>
+ #include "tbb/parallel_for_each.h"
+ #include <tbb/parallel_for.h>
+ #include <boost/iostreams/filtering_stream.hpp>
+@@ -39,9 +39,9 @@ static bool no_valid_mut(MAT::Node* node) {
+  */
+ void clean_up_internal_nodes(MAT::Node* this_node,MAT::Tree& tree,std::unordered_set<size_t>& changed_nodes_local,std::unordered_set<size_t>& node_with_inconsistent_state) {
+ 
+-    std::vector<MAT::Node *> &parent_children = this_node->parent->children;
+     std::vector<MAT::Node *> this_node_ori_children = this_node->children;
+     if (this_node->parent&&(((!this_node->is_leaf())&&no_valid_mut(this_node)))) {
++        std::vector<MAT::Node *> &parent_children = this_node->parent->children;
+         //Remove this node
+         this_node->parent->set_self_changed();
+         auto iter = std::find(parent_children.begin(), parent_children.end(),
+@@ -132,7 +132,7 @@ void reassign_states(MAT::Tree& t, Original_State_t& origin_states) {
+     std::vector<backward_pass_range> child_idx_range;
+     std::vector<forward_pass_range> parent_idx;
+     std::vector<std::pair<MAT::Mutation,tbb::concurrent_vector<std::pair<size_t,char>>>> pos_mutated(MAT::Mutation::refs.size());
+-    tbb::parallel_for_each(origin_states.begin(),origin_states.end(),[&pos_mutated,t](const std::pair<size_t, Mutation_Set>& sample_mutations) {
++    tbb::parallel_for_each(origin_states.begin(),origin_states.end(),[&pos_mutated,&t](const std::pair<size_t, Mutation_Set>& sample_mutations) {
+         for (const MAT::Mutation &m : sample_mutations.second) {
+             pos_mutated[m.get_position()].first=m;
+             pos_mutated[m.get_position()].second.emplace_back(t.get_node(sample_mutations.first)->bfs_index,m.get_all_major_allele());
+@@ -170,4 +170,4 @@ void reassign_states(MAT::Tree& t, Original_State_t& origin_states) {
+     }
+     fprintf(stderr,"Total mutation size %zu \n", total_mutation_size);
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/src/matOptimize/serializer_test.cpp b/src/matOptimize/serializer_test.cpp
+index 2aa02ec..6144275 100644
+--- a/src/matOptimize/serializer_test.cpp
++++ b/src/matOptimize/serializer_test.cpp
+@@ -5,7 +5,7 @@
+ #include <cstdio>
+ #include <tbb/blocked_range.h>
+ #include <tbb/parallel_for.h>
+-#include <tbb/task_scheduler_init.h>
++#include <tbb/info.h>
+ #include <unistd.h>
+ uint32_t num_threads;
+ std::chrono::time_point<std::chrono::steady_clock> last_save_time;
+@@ -24,7 +24,7 @@ tbb::concurrent_unordered_map<MAT::Mutation, tbb::concurrent_unordered_map<std::
+ #include <cassert>
+ int main(int argc,char** argv) {
+     Original_State_t origin_states;
+-    tbb::task_scheduler_init init(20);
++    // TBB automatically manages threads in modern versions
+     Mutation_Annotated_Tree::Tree ori_tree=Mutation_Annotated_Tree::create_tree_from_newick(argv[1]);
+     load_vcf_nh_directly(ori_tree, argv[2], origin_states);
+     unlink("intermediate_mutations_test_out.pb");
+diff --git a/src/matOptimize/transpose_vcf/transpose_vcf.hpp b/src/matOptimize/transpose_vcf/transpose_vcf.hpp
+index 683fcca..d351f96 100644
+--- a/src/matOptimize/transpose_vcf/transpose_vcf.hpp
++++ b/src/matOptimize/transpose_vcf/transpose_vcf.hpp
+@@ -1,5 +1,5 @@
+ #include <cstdint>
+-#include <tbb/pipeline.h>
++#include <tbb/parallel_pipeline.h>
+ #include <unordered_map>
+ #include <zlib.h>
+ #include <cassert>
+@@ -13,12 +13,12 @@
+ struct partitioner {
+     const uint8_t*& last_out;
+     const uint8_t* const end;
+-    const uint8_t* operator()(tbb::flow_control& fc)const {
++    uint8_t* operator()(tbb::flow_control& fc)const {
+         if (last_out>=end) {
+             fc.stop();
+         }
+         //assert(last_out<end);
+-        auto out=last_out;
++        auto out=const_cast<uint8_t*>(last_out);
+         //fprintf(stderr, "%d\n",*(int*)out);
+         unsigned int item_len=*(int*) out;
+         last_out+=(item_len+4);
+@@ -80,7 +80,7 @@ const uint8_t* parse_buffer(const uint8_t* in,output_t& out_all) {
+ template<typename output_t>
+ struct printer {
+     output_t& out;
+-    void operator()(const uint8_t* in) const {
++    void operator()(uint8_t* in) const {
+         uint8_t buffer[MAX_SIZ];
+         unsigned int item_len=*(int*) in;
+         size_t out_len=MAX_SIZ;
+@@ -131,10 +131,10 @@ static bool load_mutations(const char *path, int nthread, output_t &out) {
+     const uint8_t *end;
+     f.get_mapped_range(last_out, end);
+     tbb::parallel_pipeline(
+-        nthread, tbb::make_filter<void, const uint8_t *>(
+-            tbb::filter::serial_in_order, partitioner{last_out, end}) &
+-        tbb::make_filter<const uint8_t *, void>(
+-            tbb::filter::parallel, printer<output_t> {out}));
++        nthread, tbb::make_filter<void, uint8_t *>(
++            tbb::filter_mode::serial_in_order, partitioner{last_out, end}) &
++        tbb::make_filter<uint8_t *, void>(
++            tbb::filter_mode::parallel, printer<output_t> {out}));
+     return true;
+ }
+ static void parse_rename_file(const std::string&  in_file_name, std::unordered_map<std::string,std::string>& mapping) {
+diff --git a/src/matOptimize/transpose_vcf/transpose_vcf_encode.cpp b/src/matOptimize/transpose_vcf/transpose_vcf_encode.cpp
+index 9c8525f..448c6c0 100644
+--- a/src/matOptimize/transpose_vcf/transpose_vcf_encode.cpp
++++ b/src/matOptimize/transpose_vcf/transpose_vcf_encode.cpp
+@@ -12,10 +12,11 @@
+ #include <string>
+ #include "transpose_vcf.hpp"
+ #include <sys/types.h>
+-#include <tbb/pipeline.h>
+-#include <tbb/task_scheduler_init.h>
++#include <tbb/parallel_pipeline.h>
++#include <tbb/info.h>
+ #include <tbb/blocked_range.h>
+ #include <tbb/concurrent_vector.h>
++#include <tbb/global_control.h>
+ #include <thread>
+ #include <unordered_map>
+ #include <unordered_set>
+@@ -23,6 +24,7 @@
+ #include <vector>
+ #include <iostream>
+ #include "tbb/parallel_for.h"
++#include <tuple>
+ #include <boost/program_options/value_semantic.hpp>
+ #include <boost/program_options.hpp>
+ #include <boost/iostreams/filtering_stream.hpp>
+@@ -33,7 +35,7 @@ std::mutex print_mutex;
+ #define SAMPLE_START_IDX 9
+ std::atomic<size_t> buffer_left;
+ //Decouple parsing (slow) and decompression, segment file into blocks for parallelized parsing
+-typedef tbb::flow::source_node<char*> decompressor_node_t;
++typedef tbb::flow::input_node<char*> decompressor_node_t;
+ typedef tbb::flow::function_node<char*> line_parser_t;
+ static void writeVariant(std::string& out,unsigned int to_write) {
+     assert(to_write);
+@@ -306,7 +308,7 @@ struct Packed_Msgs:public std::vector<Sample_Mut_Msg*> {
+         std::vector<Sample_Mut_Msg*>::pop_back();
+     }
+ };
+-typedef tbb::flow::multifunction_node<Packed_Msgs*, tbb::flow::tuple<Packed_Msgs*>> block_serializer_t;
++typedef tbb::flow::multifunction_node<Packed_Msgs*, std::tuple<Packed_Msgs*>> block_serializer_t;
+ struct Block_Serializer {
+     Packed_Msgs* & out_buffer;
+     void operator()(Packed_Msgs * in,block_serializer_t::output_ports_type& out ) const {
+@@ -459,9 +461,9 @@ struct VCF_inputer {
+         }
+ 
+         tbb::parallel_pipeline(nthreads,
+-                               tbb::make_filter<void,char*>(tbb::filter::serial_in_order,Decompressor{&fd,CHUNK_SIZ*header_size,2*header_size})&
+-                               tbb::make_filter<char*,std::vector<Pos_Mut_Block>*>(tbb::filter::parallel,Line_Parser{fields.size()})&
+-                               tbb::make_filter<std::vector<Pos_Mut_Block>*,void>(tbb::filter::serial_out_of_order,Appender{sample_pos_mut}));
++                               tbb::make_filter<void,char*>(tbb::filter_mode::serial_in_order,Decompressor{&fd,CHUNK_SIZ*header_size,2*header_size})&
++                               tbb::make_filter<char*,std::vector<Pos_Mut_Block>*>(tbb::filter_mode::parallel,Line_Parser{fields.size()})&
++                               tbb::make_filter<std::vector<Pos_Mut_Block>*,void>(tbb::filter_mode::serial_out_of_order,Appender{sample_pos_mut}));
+         gzclose(fd);
+ 
+         tbb::parallel_for(tbb::blocked_range<size_t>(SAMPLE_START_IDX,fields.size()),[this,&sample_pos_mut,&serializer_head,&compressor](tbb::blocked_range<size_t>& range) {
+@@ -516,7 +518,7 @@ class Rename_Data_Source {
+             start++;
+             return out;
+         }
+-        void operator()(const uint8_t* in) const {
++        void operator()(uint8_t* in) const {
+             auto packed_out=new Packed_Msgs();
+             uint8_t buffer[MAX_SIZ];
+             unsigned int item_len=*(int*) in;
+@@ -547,10 +549,10 @@ class Rename_Data_Source {
+         const uint8_t *end;
+         file.get_mapped_range(last_out, end);
+         tbb::parallel_pipeline(
+-            nthread, tbb::make_filter<void, const uint8_t *>(
+-                tbb::filter::serial_in_order, partitioner{last_out, end}) &
+-            tbb::make_filter<const uint8_t *, void>(
+-                tbb::filter::parallel, renamer{rename_map,compressor,serializer_head,filter}));
++            nthread, tbb::make_filter<void, uint8_t *>(
++                tbb::filter_mode::serial_in_order, partitioner{last_out, end}) &
++            tbb::make_filter<uint8_t *, void>(
++                tbb::filter_mode::parallel, renamer{rename_map,compressor,serializer_head,filter}));
+     }
+ };
+ namespace po = boost::program_options;
+@@ -558,7 +560,7 @@ namespace po = boost::program_options;
+ int main(int argc,char** argv) {
+     compress_len=compressBound(MAX_SIZ);
+     po::options_description desc{"Options"};
+-    uint32_t num_cores = tbb::task_scheduler_init::default_num_threads();
++    uint32_t num_cores = tbb::info::default_concurrency();
+     std::string input_vcf_path;
+     std::string input_pb_path;
+     std::string input_remap_path;
+@@ -587,7 +589,7 @@ int main(int argc,char** argv) {
+         else
+             return 1;
+     }
+-    tbb::task_scheduler_init init(num_threads);
++    tbb::global_control global_limit(tbb::global_control::max_allowed_parallelism, num_threads);
+     if (input_vcf_path!="") {
+         VCF_inputer vcf_in(input_vcf_path.c_str(),num_threads,output_path);
+         output_transposed_vcf(output_path.c_str(), vcf_in);
+diff --git a/src/matOptimize/transpose_vcf/transposed_vcf_patch.cpp b/src/matOptimize/transpose_vcf/transposed_vcf_patch.cpp
+index 7071adc..845a39f 100644
+--- a/src/matOptimize/transpose_vcf/transposed_vcf_patch.cpp
++++ b/src/matOptimize/transpose_vcf/transposed_vcf_patch.cpp
+@@ -8,7 +8,7 @@
+ #include <tbb/concurrent_vector.h>
+ #include <tbb/flow_graph.h>
+ #include <tbb/parallel_for.h>
+-#include <tbb/pipeline.h>
++#include <tbb/parallel_pipeline.h>
+ #include "../Fitch_Sankoff.hpp"
+ #include "../mutation_annotated_tree.hpp"
+ #include "../tree_rearrangement_internal.hpp"
+diff --git a/src/matOptimize/transpose_vcf/transposed_vcf_to_fa.cpp b/src/matOptimize/transpose_vcf/transposed_vcf_to_fa.cpp
+index 4cb6bb1..cb3b7ee 100644
+--- a/src/matOptimize/transpose_vcf/transposed_vcf_to_fa.cpp
++++ b/src/matOptimize/transpose_vcf/transposed_vcf_to_fa.cpp
+@@ -19,8 +19,9 @@
+ #include <tbb/concurrent_vector.h>
+ #include <tbb/enumerable_thread_specific.h>
+ #include <tbb/parallel_for.h>
+-#include <tbb/pipeline.h>
+-#include <tbb/task_scheduler_init.h>
++#include <tbb/parallel_pipeline.h>
++#include <tbb/global_control.h>
++#include <tbb/info.h>
+ #include <unistd.h>
+ #include <unordered_map>
+ #include <utility>
+@@ -230,7 +231,7 @@ struct Batch_Printer {
+ };
+ int main(int argc, char **argv) {
+     po::options_description desc{"Options"};
+-    uint32_t num_cores = tbb::task_scheduler_init::default_num_threads();
++    uint32_t num_cores = tbb::info::default_concurrency();
+     std::string output_fa_file;
+     std::string input_path;
+     std::string rename_file;
+@@ -274,7 +275,7 @@ int main(int argc, char **argv) {
+     if (rename_file != "") {
+         parse_rename_file(rename_file, rename_mapping);
+     }
+-    tbb::task_scheduler_init init(num_threads);
++    tbb::global_control global_limit(tbb::global_control::max_allowed_parallelism, num_threads);
+     load_reference(reference.c_str(), chrom, ref);
+     All_Sample_Appender appender;
+     load_mutations(input_path.c_str(), 80, appender);
+diff --git a/src/matOptimize/transpose_vcf/transposed_vcf_to_vcf.cpp b/src/matOptimize/transpose_vcf/transposed_vcf_to_vcf.cpp
+index fe7b65c..fd29946 100644
+--- a/src/matOptimize/transpose_vcf/transposed_vcf_to_vcf.cpp
++++ b/src/matOptimize/transpose_vcf/transposed_vcf_to_vcf.cpp
+@@ -12,11 +12,12 @@
+ #include <tbb/blocked_range.h>
+ #include <tbb/concurrent_vector.h>
+ #include <tbb/enumerable_thread_specific.h>
+-#include <tbb/pipeline.h>
++#include <tbb/parallel_pipeline.h>
++#include <tbb/global_control.h>
+ #include <utility>
+ #include <unordered_map>
+ #include <vector>
+-#include <tbb/task_scheduler_init.h>
++#include <tbb/info.h>
+ #include <zlib.h>
+ #include <boost/program_options/value_semantic.hpp>
+ #include <boost/program_options.hpp>
+@@ -340,7 +341,7 @@ void write_header(std::vector<Sample_Pos_Mut>& all_samples,FILE* fh) {
+ namespace po = boost::program_options;
+ int main(int argc, char **argv) {
+     po::options_description desc{"Options"};
+-    uint32_t num_cores = tbb::task_scheduler_init::default_num_threads();
++    uint32_t num_cores = tbb::info::default_concurrency();
+     std::string output_vcf_path;
+     std::string input_path;
+     std::string rename_file;
+@@ -371,7 +372,7 @@ int main(int argc, char **argv) {
+     if(rename_file!="") {
+         parse_rename_file(rename_file,rename_mapping);
+     }
+-    tbb::task_scheduler_init init(num_threads);
++    tbb::global_control global_limit(tbb::global_control::max_allowed_parallelism, num_threads);
+     load_reference(reference.c_str(), chrom, ref);
+     All_Sample_Appender appender;
+     load_mutations(input_path.c_str(), 80, appender);
+@@ -433,11 +434,11 @@ int main(int argc, char **argv) {
+     write_header(all_samples, vcf_out);
+     tbb::parallel_pipeline(
+         1000, tbb::make_filter<void, iter_range>(
+-            tbb::filter::serial_in_order,
++            tbb::filter_mode::serial_in_order,
+             Pos_Iter_Gen{pos_mut_iter, pos_mut_end}) &
+         tbb::make_filter<iter_range, std::pair<uint8_t *, size_t>>(
+-            tbb::filter::parallel, Output_Genotypes{all_samples}) &
++            tbb::filter_mode::parallel, Output_Genotypes{all_samples}) &
+         tbb::make_filter<std::pair<uint8_t *, size_t>, void>(
+-            tbb::filter::serial_in_order, File_Writer{vcf_out}));
++            tbb::filter_mode::serial_in_order, File_Writer{vcf_out}));
+     fclose(vcf_out);
+ }
+diff --git a/src/matOptimize/tree_rearrangement_internal.hpp b/src/matOptimize/tree_rearrangement_internal.hpp
+index 1b3eb8a..16748c8 100644
+--- a/src/matOptimize/tree_rearrangement_internal.hpp
++++ b/src/matOptimize/tree_rearrangement_internal.hpp
+@@ -73,11 +73,12 @@ struct output_t {
+     std::vector<Profitable_Moves_ptr_t>* moves;
+     output_t():score_change(-1),radius_left(-1) {}
+ };
++struct Move_Found_Callback;
+ int individual_move(Mutation_Annotated_Tree::Node* src,Mutation_Annotated_Tree::Node* dst,Mutation_Annotated_Tree::Node* LCA,output_t& out,bool do_drift
+ #ifdef DEBUG_PARSIMONY_SCORE_CHANGE_CORRECT
+                     ,MAT::Tree* tree
+ #endif
+-                   );
++                    , Move_Found_Callback& callback);
+ Mutation_Annotated_Tree::Tree load_tree(const std::string& path,Original_State_t& origin_states);
+ void load_vcf_nh_directly( MAT::Tree& t,const std::string& vcf_path,Original_State_t& origin_states);
+ void apply_moves(std::vector<Profitable_Moves_ptr_t> &all_moves, MAT::Tree &t
+@@ -92,15 +93,17 @@ void find_nodes_to_move(const std::vector<MAT::Node *> &bfs_ordered_nodes,
+ void add_root(MAT::Tree *tree) ;
+ void VCF_input(const char * name,MAT::Tree& tree);
+ 
++struct Move_Found_Callback;
++
+ void optimize_tree_main_thread(std::vector<size_t> &nodes_to_search,
+                                MAT::Tree &t,int radius,FILE* log,bool allow_drift,int iteration,
+                                std::vector<size_t>& deferred_nodes_out,bool MPI_involved,std::chrono::steady_clock::time_point end_time,bool do_continue,bool search_all_dir,bool isfirst_this_iter
+ #ifdef CHECK_STATE_REASSIGN
+                                , Original_State_t& origin_states
+ #endif
+-                              );
++                               , Move_Found_Callback& callback);
+ 
+-void optimize_tree_worker_thread(MAT::Tree &t,int radius,bool do_drift,bool search_all_dir);
++void optimize_tree_worker_thread(MAT::Tree &t,int radius,bool do_drift,bool search_all_dir, Move_Found_Callback& callback);
+ void save_final_tree(MAT::Tree &t,const std::string &output_path);
+ //For removing nodes with no valid mutations between rounds
+ void clean_tree(MAT::Tree& t);
+@@ -126,6 +129,22 @@ size_t optimize_inner_loop(std::vector<MAT::Node*>& nodes_to_search,MAT::Tree& t
+ #ifdef CHECK_STATE_REASSIGN
+     Original_State_t& origin_states,
+ #endif
++    bool allow_drift,
++    bool search_all_dir,
++    int minutes_between_save,
++    bool no_write_intermediate,
++    std::chrono::steady_clock::time_point search_end_time,
++    std::chrono::steady_clock::time_point start_time,
++    bool log_moves,
++    int iteration,
++    std::string intermediate_template,
++    std::string intermediate_pb_base_name,
++    std::string intermediate_nwk_out,
++    Move_Found_Callback& callback
++    );
++
++// Overload with default callback
++size_t optimize_inner_loop(std::vector<MAT::Node*>& nodes_to_search,MAT::Tree& t,int radius,
+     bool allow_drift=false,
+     bool search_all_dir=true,
+     int minutes_between_save=0,
+diff --git a/src/matUtils/annotate.cpp b/src/matUtils/annotate.cpp
+index 1630c33..47f11e5 100644
+--- a/src/matUtils/annotate.cpp
++++ b/src/matUtils/annotate.cpp
+@@ -1,9 +1,10 @@
++#include <tbb/info.h>
+ #include "annotate.hpp"
+ 
+ 
+ po::variables_map parse_annotate_command(po::parsed_options parsed) {
+ 
+-    uint32_t num_cores = tbb::task_scheduler_init::default_num_threads();
++    uint32_t num_cores = tbb::info::default_concurrency();
+     std::string num_threads_message = "Number of threads to use when possible [DEFAULT uses all available cores, " + std::to_string(num_cores) + " detected on this machine]";
+ 
+     po::variables_map vm;
+@@ -121,7 +122,7 @@ void annotate_main(po::parsed_options parsed) {
+         exit(1);
+     }
+ 
+-    tbb::task_scheduler_init init(num_threads);
++    tbb::global_control global_limit(tbb::global_control::max_allowed_parallelism, num_threads);
+ 
+     // Load input MAT and uncondense tree
+     fprintf(stderr, "Loading input MAT file %s.\n", input_mat_filename.c_str());
+diff --git a/src/matUtils/convert.cpp b/src/matUtils/convert.cpp
+index e4df3ba..128fff1 100644
+--- a/src/matUtils/convert.cpp
++++ b/src/matUtils/convert.cpp
+@@ -1,12 +1,13 @@
+ #include "convert.hpp"
+ #include "nlohmann_json.hpp"
+-#include "tbb/pipeline.h"
++#include "tbb/parallel_pipeline.h"
+ #include <algorithm>
+ #include <csignal>
+ #include <cstdint>
+ #include <tbb/parallel_sort.h>
+ #include <unordered_map>
+ #include <vector>
++#include <tbb/info.h>
+ 
+ using json = nlohmann::json;
+ 
+@@ -279,9 +280,9 @@ void write_vcf_rows(std::ostream& vcf_file, MAT::Tree T, bool print_genotypes, c
+             return left.first<right.first;
+         });
+         uint pos=0;
+-        tbb::parallel_pipeline(tbb::task_scheduler_init::default_num_threads()*2,tbb::make_filter<void,uint>(tbb::filter::serial_in_order,Pos_Finder{pos,pos_genotypes})&
+-                               tbb::make_filter<uint,std::string*>(tbb::filter::parallel,VCF_Line_Writer{pos_genotypes,leaf_count,print_genotypes,chrom})
+-        &tbb::make_filter<std::string*,void>(tbb::filter::serial_in_order,[&vcf_file](std::string* to_write) {
++        tbb::parallel_pipeline(tbb::info::default_concurrency()*2,tbb::make_filter<void,uint>(tbb::filter_mode::serial_in_order,Pos_Finder{pos,pos_genotypes})&
++                               tbb::make_filter<uint,std::string*>(tbb::filter_mode::parallel,VCF_Line_Writer{pos_genotypes,leaf_count,print_genotypes,chrom})
++        &tbb::make_filter<std::string*,void>(tbb::filter_mode::serial_in_order,[&vcf_file](std::string* to_write) {
+             if (to_write) {
+                 vcf_file<<*to_write;
+                 delete to_write;
+@@ -507,7 +508,7 @@ MAT::Tree load_mat_from_json(std::string json_filename) {
+     return T;
+ }
+ 
+-json get_json_entry(MAT::Node* n, std::vector<std::unordered_map<std::string,std::unordered_map<std::string,std::string>>>* catmeta, size_t div = 0, bool use_clade_zero = false, bool use_clade_one = false) {
++json get_json_entry(MAT::Node* n, std::vector<std::unordered_map<std::string,std::unordered_map<std::string,std::string>>>* catmeta, size_t div = 0, std::vector<bool> use_clade_n = {false}, std::vector<std::map<std::string, std::string>> parent_cav = {} ) {
+     //each node has 3 constituent attributes
+     //node_attrs, branch_attrs, and children. If its a leaf,
+     //it also has a simple name attribute.
+@@ -532,35 +533,36 @@ json get_json_entry(MAT::Node* n, std::vector<std::unordered_map<std::string,std
+     //note: the below is pretty much sars-cov-2 specific. but so is all json-related things.
+     //need to declare maps to get nlohmann to interpret these as key pairs.
+     div += mutids.size();
+-    std::string c1av = "";
+-    std::string c2av = "";
+-    if (n->clade_annotations.size() >= 1) {
+-        c1av = n->clade_annotations[0];
+-    }
+-    if (n->clade_annotations.size() >= 2) {
+-        //json output supports two simultaneous clade annotations
+-        //being nextstrain and pangolin, since this is very specific
+-        //to sars-cov-2 phylogenomics. Additional fields are ignored
+-        //at this point.
+-        c1av = n->clade_annotations[1];
+-    }
+-    std::unordered_map<std::string,std::string> c1a {{"value",c1av}};
+-    std::unordered_map<std::string,std::string> c2a {{"value",c2av}};
++    
++    int annot_size = n->clade_annotations.size();
++    std::vector<std::map<std::string, std::string>> cav(annot_size);
++    for ( int c=0; c < annot_size; c++) {
++         
++        if (use_clade_n[c]) {
++            
++            if (n->clade_annotations[c] == ""){
++                cav[c] = parent_cav[c];
++            } else {
++                cav[c] = {{"value",n->clade_annotations[c]}};
++            }
++        }
++    }
++    
+     std::string country = n->identifier.substr(0, n->identifier.find("/"));
+     std::string date = n->identifier.substr( n->identifier.find_last_of("|")+1, n->identifier.size() );
+     std::unordered_map<std::string,std::string> com {{"value",country}};
+     std::unordered_map<std::string,std::string> dam {{"value",date}};
+     if ((n->is_leaf()) && (country.length() != n->identifier.size()) && (date.length() != n->identifier.size()) ) {
+-        sj["node_attrs"] = { {"country",com}, {"date",dam},{"div", div}, {"MAT_Clade_0", c1a}, {"MAT_Clade_1", c2a} };
++        sj["node_attrs"] = { {"country",com}, {"date",dam},{"div", div}};
+     } else {
+         sj["node_attrs"]["div"] = div;
+-        if (use_clade_zero) {
+-            sj["node_attrs"]["MAT_Clade_0"] = c1a;
+-        }
+-        if (use_clade_one) {
+-            sj["node_attrs"]["MAT_Clade_1"] = c2a;
+-        }
+     }
++    
++    for (int c=0; c < annot_size; c++){
++        if (use_clade_n[c])
++            sj["node_attrs"]["MAT_Clade_"+std::to_string(c)] = cav[c];
++    }
++    
+     for (const auto& cmet: *catmeta) {
+         for (const auto& cmi: cmet) {
+             if (cmi.second.find(n->identifier) != cmi.second.end()) {
+@@ -573,7 +575,7 @@ json get_json_entry(MAT::Node* n, std::vector<std::unordered_map<std::string,std
+     sj["name"] = n->identifier;
+     std::vector<json> child_json;
+     for (auto cn: n->children) {
+-        json cj = get_json_entry(cn, catmeta, div, use_clade_zero, use_clade_one);
++        json cj = get_json_entry(cn, catmeta, div, use_clade_n, cav );
+         child_json.push_back(cj);
+         sj["children"] = child_json;
+     }
+@@ -585,6 +587,26 @@ void write_json_from_mat(MAT::Tree* T, std::string output_filename, std::vector<
+     json nj;
+     std::string desc = "JSON generated by matUtils. If you have metadata you wish to display, you can now drag on a CSV/TSV file and it will be added into this view, [see here](https://docs.nextstrain.org/projects/auspice/en/latest/advanced-functionality/drag-drop-csv-tsv.html) for more info.";
+     std::unordered_map<std::string,std::string> lm = {{"branch_label", "none"}};
++    int annot_size = T->root->clade_annotations.size();
++    
++    // check clade annotations that should be written
++    std::vector<bool> use_clades(annot_size,{false});
++    
++    for (auto n: T->depth_first_expansion()) {
++        int idx = 0;
++        for (const auto& c: n->clade_annotations) {
++            ++idx;
++            
++            if (!c.empty()) {
++                use_clades[idx] = true;
++            }
++        }
++        if (std::all_of(use_clades.begin(), use_clades.end(), [](bool b) { return b;})) {
++            break;
++        }
++    }
++    
++    // set Nextclade extension configurations
+     nj = {
+         {"version","v2"},
+         {
+@@ -604,6 +626,7 @@ void write_json_from_mat(MAT::Tree* T, std::string output_filename, std::vector<
+             }
+         }
+     };
++    
+     //add metadata to the header colorings if any exist
+     if (catmeta->size()>0) {
+         for (const auto& cmet: *catmeta) {
+@@ -619,33 +642,19 @@ void write_json_from_mat(MAT::Tree* T, std::string output_filename, std::vector<
+             }
+         }
+     }
+-    //check whether each of the mat clade annotation fields are used by any sample.
+-    bool uses_clade_0 = false;
+-    bool uses_clade_1 = false;
+-    for (auto n: T->depth_first_expansion()) {
+-        if (n->clade_annotations.size() >= 1) {
+-            if (n->clade_annotations[0] != "") {
+-                uses_clade_0 = true;
+-            }
+-            if (n->clade_annotations.size() >= 2) {
+-                if (n->clade_annotations[1] != "") {
+-                    uses_clade_1 = true;
+-                }
+-            }
+-        }
+-        if ((uses_clade_0) && (uses_clade_1)) {
+-            break;
++    
++    int idx = 0;
++    for (const bool& c: use_clades) {
++        if (c) {
++            nj["meta"]["extensions"]["nextclade"]["clade_node_attrs"].push_back({{"name","MAT_Clade_" + std::to_string(idx)},{"displayName","MAT_Clade_"+ std::to_string(idx+1)},{"description","MAT_Clade_" + std::to_string(idx+1) + "as inferred or proposed by UShER, matUtils, or Autolin."},{"hideInWeb",false},{"skipAsReference",true}} );
++            
++            std::unordered_map<std::string,std::string> cmap {{"key","MAT_Clade_" + std::to_string(idx)},{"title","MAT_Clade_" + std::to_string(idx+1)},{"type","categorical"}};
++            nj["meta"]["colorings"].push_back(cmap);
+         }
++        ++idx;
+     }
+-    if (uses_clade_0) {
+-        std::unordered_map<std::string,std::string> c1map {{"key","MAT_Clade_0"},{"title","MAT_Clade_1"},{"type","categorical"}};
+-        nj["meta"]["colorings"].push_back(c1map);
+-    }
+-    if (uses_clade_1) {
+-        std::unordered_map<std::string,std::string> c2map {{"key","MAT_Clade_1"},{"title","MAT_Clade_2"},{"type","categorical"}};
+-        nj["meta"]["colorings"].push_back(c2map);
+-    }
+-    auto treestuff = get_json_entry(T->root, catmeta, 0, uses_clade_0, uses_clade_1);
++    
++    auto treestuff = get_json_entry(T->root, catmeta, 0, use_clades);
+     nj["tree"]["children"] = json::array({treestuff});
+     std::ofstream out(output_filename);
+     // out << std::setw(4) << nj << std::endl;
+diff --git a/src/matUtils/extract.cpp b/src/matUtils/extract.cpp
+index 6f99382..b096f09 100644
+--- a/src/matUtils/extract.cpp
++++ b/src/matUtils/extract.cpp
+@@ -1,8 +1,9 @@
++#include <tbb/info.h>
+ #include "extract.hpp"
+ 
+ po::variables_map parse_extract_command(po::parsed_options parsed) {
+ 
+-    uint32_t num_cores = tbb::task_scheduler_init::default_num_threads();
++    uint32_t num_cores = tbb::info::default_concurrency();
+     std::string num_threads_message = "Number of threads to use when possible [DEFAULT uses all available cores, " + std::to_string(num_cores) + " detected on this machine]";
+     po::variables_map vm;
+     po::options_description conv_desc("extract options");
+@@ -232,7 +233,7 @@ usher_single_subtree_size == 0 && usher_minimum_subtrees_size == 0) {
+         }
+     }
+ 
+-    tbb::task_scheduler_init init(num_threads);
++    tbb::global_control global_limit(tbb::global_control::max_allowed_parallelism, num_threads);
+ 
+     timer.Start();
+     fprintf(stderr, "Loading input MAT file %s.\n", input_mat_filename.c_str());
+diff --git a/src/matUtils/introduce.cpp b/src/matUtils/introduce.cpp
+index 62aae83..6003c08 100644
+--- a/src/matUtils/introduce.cpp
++++ b/src/matUtils/introduce.cpp
+@@ -1,9 +1,10 @@
+ #include "introduce.hpp"
+ #include "select.hpp"
++#include <tbb/info.h>
+ 
+ po::variables_map parse_introduce_command(po::parsed_options parsed) {
+ 
+-    uint32_t num_cores = tbb::task_scheduler_init::default_num_threads();
++    uint32_t num_cores = tbb::info::default_concurrency();
+     uint32_t num_threads;
+     std::string num_threads_message = "Number of threads to use when possible [DEFAULT uses all available cores, " + std::to_string(num_cores) + " detected on this machine]";
+ 
+@@ -961,7 +962,8 @@ void introduce_main(po::parsed_options parsed) {
+     // Load input MAT and uncondense tree
+     uint32_t num_threads = vm["threads"].as<uint32_t>();
+     fprintf(stderr, "Initializing %u worker threads.\n\n", num_threads);
+-    tbb::task_scheduler_init init(num_threads);
++    // TBB automatically manages threads in modern versions
++    // tbb::task_scheduler_init init(num_threads);
+     MAT::Tree T = MAT::load_mutation_annotated_tree(input_mat_filename);
+     //T here is the actual object.
+     if (T.condensed_nodes.size() > 0) {
+diff --git a/src/matUtils/mask.cpp b/src/matUtils/mask.cpp
+index 567a9d1..c62e3a6 100644
+--- a/src/matUtils/mask.cpp
++++ b/src/matUtils/mask.cpp
+@@ -2,6 +2,7 @@
+ #include "select.hpp"
+ #include <random>
+ #include <algorithm>
++#include <tbb/info.h>
+ 
+ //#include <omp.h>
+ 
+@@ -9,7 +10,7 @@ using namespace std;
+ 
+ po::variables_map parse_mask_command(po::parsed_options parsed) {
+ 
+-    uint32_t num_cores = tbb::task_scheduler_init::default_num_threads();
++    uint32_t num_cores = tbb::info::default_concurrency();
+     std::string num_threads_message = "Number of threads to use when possible [DEFAULT uses all available cores, " + std::to_string(num_cores) + " detected on this machine]";
+ 
+     po::variables_map vm;
+@@ -79,7 +80,8 @@ void mask_main(po::parsed_options parsed) {
+     uint32_t max_snp_distance = vm["max-snp-distance"].as<uint32_t>();
+     std::string diff_file = vm["maple-file"].as<std::string>();
+     //std::string pos_file = vm["ignore-positions-file"].as<std::string>();
+-    tbb::task_scheduler_init init(num_threads);
++    // TBB automatically manages threads in modern versions
++    // tbb::task_scheduler_init init(num_threads);
+ 
+     //check for mutually exclusive arguments
+     //LILY: make sure you check for need for exclusivity of your function 
+diff --git a/src/matUtils/merge.cpp b/src/matUtils/merge.cpp
+index 5e5bc9f..e44b89b 100644
+--- a/src/matUtils/merge.cpp
++++ b/src/matUtils/merge.cpp
+@@ -1,7 +1,8 @@
+ #include "merge.hpp"
++#include <tbb/info.h>
+ 
+ po::variables_map parse_merge_command(po::parsed_options parsed) {
+-    uint32_t num_cores = tbb::task_scheduler_init::default_num_threads();
++    uint32_t num_cores = tbb::info::default_concurrency();
+     std::string num_threads_message = "Number of threads to use when possible [DEFAULT uses all available cores, " + std::to_string(num_cores) + " detected on this machine]";
+ 
+     po::variables_map vm;
+@@ -133,7 +134,8 @@ void merge_main(po::parsed_options parsed) {
+ 
+ 
+     fprintf(stderr, "Initializing %u worker threads.\n\n", num_threads);
+-    tbb::task_scheduler_init init(num_threads);
++    // TBB automatically manages threads in modern versions
++    // tbb::task_scheduler_init init(num_threads);
+ 
+     fprintf(stderr, "Loading first input MAT. Existing clade annotations will be cleared\n");
+     MAT::Tree mat1 = MAT::load_mutation_annotated_tree(mat1_filename);
+diff --git a/src/matUtils/summary.cpp b/src/matUtils/summary.cpp
+index 15cca3c..13458e4 100644
+--- a/src/matUtils/summary.cpp
++++ b/src/matUtils/summary.cpp
+@@ -3,9 +3,10 @@
+ #include "translate.hpp"
+ #include <array>
+ #include <boost/date_time/gregorian/gregorian.hpp>
++#include <tbb/info.h>
+ 
+ po::variables_map parse_summary_command(po::parsed_options parsed) {
+-    uint32_t num_cores = tbb::task_scheduler_init::default_num_threads();
++    uint32_t num_cores = tbb::info::default_concurrency();
+     std::string num_threads_message = "Number of threads to use when possible [DEFAULT uses all available cores, " + std::to_string(num_cores) + " detected on this machine]";
+ 
+     po::variables_map vm;
+@@ -668,7 +669,8 @@ void summary_main(po::parsed_options parsed) {
+         mutations = dir_prefix + "mutations.tsv";
+         aberrant = dir_prefix + "aberrant.tsv";
+     }
+-    tbb::task_scheduler_init init(num_threads);
++    // TBB automatically manages threads in modern versions
++    // tbb::task_scheduler_init init(num_threads);
+ 
+     timer.Start();
+     fprintf(stderr, "Loading input MAT file %s.\n", input_mat_filename.c_str());
+diff --git a/src/matUtils/uncertainty.cpp b/src/matUtils/uncertainty.cpp
+index a574f03..0f890b5 100644
+--- a/src/matUtils/uncertainty.cpp
++++ b/src/matUtils/uncertainty.cpp
+@@ -1,4 +1,5 @@
+ #include "uncertainty.hpp"
++#include <tbb/info.h>
+ 
+ std::vector<MAT::Node*> get_common_nodes (std::vector<std::vector<MAT::Node*>> nodepaths) {
+     //to identify common nodes, perform pairwise set intersections repeatedly for all path node vectors
+@@ -368,7 +369,7 @@ std::vector<std::string> get_samples_epps (MAT::Tree* T, size_t max_epps, std::v
+ 
+ po::variables_map parse_uncertainty_command(po::parsed_options parsed) {
+ 
+-    uint32_t num_cores = tbb::task_scheduler_init::default_num_threads();
++    uint32_t num_cores = tbb::info::default_concurrency();
+     std::string num_threads_message = "Number of threads to use when possible [DEFAULT uses all available cores, " + std::to_string(num_cores) + " detected on this machine]";
+ 
+     po::variables_map vm;
+@@ -533,7 +534,8 @@ void uncertainty_main(po::parsed_options parsed) {
+     std::string dropmuts = vm["dropout-mutations"].as<std::string>();
+     uint32_t num_threads = vm["threads"].as<uint32_t>();
+ 
+-    tbb::task_scheduler_init init(num_threads);
++    // TBB automatically manages threads in modern versions
++    // tbb::task_scheduler_init init(num_threads);
+ 
+     // Load input MAT and uncondense tree
+     MAT::Tree T = MAT::load_mutation_annotated_tree(input_mat_filename);
+diff --git a/src/mutation_annotated_tree.cpp b/src/mutation_annotated_tree.cpp
+index f78c224..deb4e15 100644
+--- a/src/mutation_annotated_tree.cpp
++++ b/src/mutation_annotated_tree.cpp
+@@ -2108,13 +2108,16 @@ void Mutation_Annotated_Tree::read_vcf(Mutation_Annotated_Tree::Tree* T, std::st
+         tbb::flow::graph mapper_graph;
+ 
+         tbb::flow::function_node<mapper_input, int> mapper(mapper_graph, tbb::flow::unlimited, mapper_body());
+-        tbb::flow::source_node <mapper_input> reader (mapper_graph,
+-        [&] (mapper_input &inp) -> bool {
++        tbb::flow::input_node <mapper_input> reader (mapper_graph,
++        [&] (tbb::flow_control &fc) -> mapper_input {
++            mapper_input inp;
+ 
+             //check if reached end-of-file
+             int curr_char = instream.peek();
+-            if(curr_char == EOF)
+-                return false;
++            if(curr_char == EOF) {
++                fc.stop();
++                return inp;
++            }
+ 
+             std::string s;
+             std::getline(instream, s);
+@@ -2169,8 +2172,8 @@ void Mutation_Annotated_Tree::read_vcf(Mutation_Annotated_Tree::Tree* T, std::st
+                     }
+                 }
+             }
+-            return true;
+-        }, true );
++            return inp;
++        });
+         tbb::flow::make_edge(reader, mapper);
+         mapper_graph.wait_for_all();
+     } else {
+diff --git a/src/mutation_annotated_tree.hpp b/src/mutation_annotated_tree.hpp
+index fe5f1a2..b297ba9 100644
+--- a/src/mutation_annotated_tree.hpp
++++ b/src/mutation_annotated_tree.hpp
+@@ -11,9 +11,10 @@
+ #include <algorithm>
+ #include <cassert>
+ #include <tbb/flow_graph.h>
+-#include <tbb/reader_writer_lock.h>
++#include <tbb/spin_rw_mutex.h>
+ #include <tbb/scalable_allocator.h>
+-#include <tbb/task_scheduler_init.h>
++#include <tbb/global_control.h>
++#include <tbb/info.h>
+ #include <tbb/blocked_range.h>
+ #include <tbb/task_group.h>
+ #include <tbb/tbb.h>
+diff --git a/src/ripples/main.cpp b/src/ripples/main.cpp
+index e05e675..5bb0d2f 100644
+--- a/src/ripples/main.cpp
++++ b/src/ripples/main.cpp
+@@ -16,7 +16,7 @@ namespace po = boost::program_options;
+ Timer timer;
+ 
+ po::variables_map check_options(int argc, char** argv) {
+-    uint32_t num_cores = tbb::task_scheduler_init::default_num_threads();
++    uint32_t num_cores = tbb::this_task_arena::max_concurrency();
+     std::string num_threads_message = "Number of threads to use when possible [DEFAULT uses all available cores, " + std::to_string(num_cores) + " detected on this machine]";
+ 
+     po::options_description desc("optimize options");
+@@ -178,7 +178,7 @@ int main(int argc, char** argv) {
+     int end_idx = vm["end-index"].as<int>();
+     uint32_t num_threads = vm["threads"].as<uint32_t>();
+ 
+-    tbb::task_scheduler_init init(num_threads);
++    tbb::global_control global_limit(tbb::global_control::max_allowed_parallelism, num_threads);
+     srand (time(NULL));
+ 
+     static tbb::affinity_partitioner ap;
+diff --git a/src/ripples/ripples_fast/main.cpp b/src/ripples/ripples_fast/main.cpp
+index 5275c5f..e181b94 100644
+--- a/src/ripples/ripples_fast/main.cpp
++++ b/src/ripples/ripples_fast/main.cpp
+@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
+     int end_idx = vm["end-index"].as<int>();
+     uint32_t num_threads = vm["threads"].as<uint32_t>();
+ 
+-    tbb::task_scheduler_init init(num_threads);
++    tbb::global_control global_limit(tbb::global_control::max_allowed_parallelism, num_threads);
+     srand(time(NULL));
+ 
+     static tbb::affinity_partitioner ap;
+@@ -249,15 +249,15 @@ int main(int argc, char **argv) {
+     std::vector<MAT::Node*>::const_iterator cur_iter=nodes_to_consider_vec.begin()+s;
+     std::vector<MAT::Node*>::const_iterator end=nodes_to_consider_vec.begin()+e;
+     tbb::parallel_pipeline(
+-        4, tbb::make_filter<void, MAT::Node *>(tbb::filter::serial_in_order,
++        4, tbb::make_filter<void, MAT::Node *>(tbb::filter_mode::serial_in_order,
+                 next_node{cur_iter, end}) &
+         tbb::make_filter<MAT::Node *, Ripple_Result_Pack *>(
+-            tbb::filter::parallel,
++            tbb::filter_mode::parallel,
+             Ripple_Pipeline{nodes_to_search, do_parallel, index_map,
+                             branch_len, min_range, max_range,
+                             num_threads, parsimony_improvement, T,traversal_track,tree_height}) &
+         tbb::make_filter<Ripple_Result_Pack *, void>(
+-            tbb::filter::serial_in_order,
++            tbb::filter_mode::serial_in_order,
+             Ripple_Finalizer{desc_file, recomb_file, num_done,
+                              nodes_to_consider_vec.size(), T}));
+     fclose(desc_file);
+diff --git a/src/ripples/ripples_fast/ripple_aux.cpp b/src/ripples/ripples_fast/ripple_aux.cpp
+index 988867b..42da9c5 100644
+--- a/src/ripples/ripples_fast/ripple_aux.cpp
++++ b/src/ripples/ripples_fast/ripple_aux.cpp
+@@ -65,7 +65,7 @@ combine_intervals(std::vector<Recomb_Interval> pair_list) {
+     return pairs;
+ }
+ po::variables_map check_options(int argc, char **argv) {
+-    uint32_t num_cores = tbb::task_scheduler_init::default_num_threads();
++    uint32_t num_cores = tbb::this_task_arena::max_concurrency();
+     std::string num_threads_message = "Number of threads to use when possible "
+                                       "[DEFAULT uses all available cores, " +
+                                       std::to_string(num_cores) +
+diff --git a/src/ripples/ripples_fast/ripple_merger.cpp b/src/ripples/ripples_fast/ripple_merger.cpp
+index a290ac5..dd0f59b 100644
+--- a/src/ripples/ripples_fast/ripple_merger.cpp
++++ b/src/ripples/ripples_fast/ripple_merger.cpp
+@@ -459,11 +459,11 @@ void ripplrs_merger(const Pruned_Sample &pruned_sample,
+     tbb::parallel_pipeline(
+         nthreads + 1,
+         tbb::make_filter<void, std::pair<int, int>>(
+-            tbb::filter::serial_in_order,
++            tbb::filter_mode::serial_in_order,
+             search_position{sample_mutations, i, j, branch_len, min_range,
+                             max_range, last_i}) &
+         tbb::make_filter<std::pair<int, int>, void>(
+-            tbb::filter::parallel,
++            tbb::filter_mode::parallel,
+             check_breakpoint{out_ifc, sample_mutations,
+                              skip_start_idx,skip_end_idx,
+                              node_size, pasimony_threshold,
+diff --git a/src/ripples/ripples_fast/ripples_mapper.cpp b/src/ripples/ripples_fast/ripples_mapper.cpp
+index 7d53b61..10f2679 100644
+--- a/src/ripples/ripples_fast/ripples_mapper.cpp
++++ b/src/ripples/ripples_fast/ripples_mapper.cpp
+@@ -4,11 +4,8 @@
+ #include <csignal>
+ #include <stack>
+ #include <vector>
+-struct Mapper_Cont:public tbb::task {
++struct Mapper_Cont {
+     std::vector<Ripples_Mapper_Mut> muts;
+-    tbb::task* execute() override {
+-        return nullptr;
+-    }
+ };
+ void prep_output(const Pruned_Sample &sample,std::vector<Ripples_Mapper_Mut> &init,
+                  Ripples_Mapper_Output_Interface &out, size_t node_size) {
+@@ -214,7 +211,7 @@ serial_mapper(const std::vector<Ripples_Mapper_Mut> &parent_muts,
+                       stack.size()==1 ? parent_muts : stack[stack.size()-2], cfg);
+     }
+ }
+-struct Mapper_Op : public tbb::task {
++struct Mapper_Op {
+     const std::vector<Ripples_Mapper_Mut> &parent_muts;
+     Mapper_Op_Common& cfg;
+     const MAT::Node *node;
+@@ -222,19 +219,19 @@ struct Mapper_Op : public tbb::task {
+               Mapper_Op_Common& cfg,
+               const MAT::Node *node)
+         : parent_muts(parent_muts), cfg(cfg), node(node) {}
+-    tbb::task *execute() override {
++    void execute() {
+         auto dfs_idx=node->dfs_idx;
+         auto this_idx = cfg.idx_map[dfs_idx];
+         if(this_idx<0||this_idx==cfg.skip_idx) {
+-            return nullptr;
++            return;
+         }
+         if (!cfg.do_parallel[dfs_idx]) {
+             serial_mapper(parent_muts,cfg,this_idx);
+-            return nullptr;
++            return;
+         }
+ 
+-        auto cont=new (allocate_continuation()) Mapper_Cont;
+-        auto &this_mut_out = cont->muts;
++        Mapper_Cont cont;
++        auto &this_mut_out = cont.muts;
+ 
+         if (node->identifier=="node_7194") {
+             //raise(SIGTRAP);
+@@ -248,20 +245,23 @@ struct Mapper_Op : public tbb::task {
+         // merge_mutation_only(this_mut_out,node,parent_muts);
+         //}
+ 
+-        cont->set_ref_count(node->children.size());
++        tbb::task_group tg;
+         if (this_idx == 0) {
+             for (const auto child : node->children) {
+-                cont->spawn(*new (cont->allocate_child())
+-                            Mapper_Op(parent_muts, cfg, child));
++                tg.run([child, &parent_muts=this->parent_muts, &cfg=this->cfg]() {
++                    Mapper_Op child_op(parent_muts, cfg, child);
++                    child_op.execute();
++                });
+             }
+         } else {
+-
+             for (const auto child : node->children) {
+-                cont->spawn(*new (cont->allocate_child())
+-                            Mapper_Op(this_mut_out, cfg, child));
++                tg.run([child, &this_mut_out, &cfg=this->cfg]() {
++                    Mapper_Op child_op(this_mut_out, cfg, child);
++                    child_op.execute();
++                });
+             }
+         }
+-        return node->children.empty()?cont:nullptr;
++        tg.wait();
+     }
+ };
+ void ripples_mapper(const Pruned_Sample &sample,
+@@ -285,6 +285,6 @@ void ripples_mapper(const Pruned_Sample &sample,
+                          traversal_track,
+                          idx_map[skip_node->dfs_idx],
+                          tree_height};
+-    tbb::task::spawn_root_and_wait(*new (tbb::task::allocate_root())
+-                                   Mapper_Op(root_muts, cfg, root));
++    Mapper_Op root_op(root_muts, cfg, root);
++    root_op.execute();
+ }
+diff --git a/src/usher-sampled/driver/main.cpp b/src/usher-sampled/driver/main.cpp
+index 20ee6e4..4e14a7c 100644
+--- a/src/usher-sampled/driver/main.cpp
++++ b/src/usher-sampled/driver/main.cpp
+@@ -1,6 +1,7 @@
+ #include "src/matOptimize/check_samples.hpp"
+ #include "src/matOptimize/mutation_annotated_tree.hpp"
+ #include "src/matOptimize/tree_rearrangement_internal.hpp"
++#include "src/matOptimize/Profitable_Moves_Enumerators/Profitable_Moves_Enumerators.hpp"
+ #include "src/usher-sampled/usher.hpp"
+ #include <algorithm>
+ #include <atomic>
+@@ -22,7 +23,8 @@
+ #include <random>
+ #include <tbb/blocked_range.h>
+ #include <tbb/parallel_for.h>
+-#include <tbb/task_scheduler_init.h>
++#include <tbb/info.h>
++#include <tbb/global_control.h>
+ #include <unordered_map>
+ #include <unordered_set>
+ #include <utility>
+@@ -137,7 +139,7 @@ void leader_thread_optimization(MAT::Tree& tree,std::vector<mutated_t>& position
+             optimize_tree_main_thread(
+                 node_to_search_idx, tree, optimization_radius, ignored_file,
+                 false, 1, deferred_nodes_out, distributed, optimization_end, true,
+-                true, true);
++                true, true, Move_Found_Callback::default_instance());
+             node_to_search_idx.clear();
+             auto dfs = tree.depth_first_expansion();
+             node_to_search_idx.reserve(deferred_nodes_out.size());
+@@ -396,7 +398,7 @@ int main(int argc, char **argv) {
+     Leader_Thread_Options options;
+     po::options_description desc{"Options"};
+     int optimiation_minutes;
+-    uint32_t num_cores = tbb::task_scheduler_init::default_num_threads();
++    uint32_t num_cores = tbb::global_control::active_value(tbb::global_control::max_allowed_parallelism);
+     std::string num_threads_message = "Number of threads to use when possible "
+                                       "[DEFAULT uses all available cores, " +
+                                       std::to_string(num_cores) +
+@@ -501,7 +503,7 @@ int main(int argc, char **argv) {
+     prctl(0x59616d61,-1);
+     fprintf(stderr, "rand %d of pid %d ",this_rank,getpid());
+ #endif
+-    tbb::task_scheduler_init init(num_threads);
++    tbb::global_control global_limit(tbb::global_control::max_allowed_parallelism, num_threads);
+     if (this_rank==0) {
+         if (options.keep_n_tree>1&&process_count>1) {
+             fprintf(stderr, "Multi-host parallelization of multiple placement is not supported\n");
+@@ -546,11 +548,10 @@ int main(int argc, char **argv) {
+                 node->children.reserve(SIZE_MULT*node->children.size());
+ #endif
+             }
+-            init.terminate();
+-            init.initialize(num_threads-1);
+-            follower_place_sample(tree,batch_size_per_process,false);
+-            init.terminate();
+-            init.initialize(num_threads);
++            {
++                tbb::global_control follower_limit(tbb::global_control::max_allowed_parallelism, num_threads-1);
++                follower_place_sample(tree,batch_size_per_process,false);
++            }
+             bool done=false;
+             if (options.initial_optimization_radius>0) {
+                 bool is_last=false;
+@@ -578,7 +579,7 @@ int main(int argc, char **argv) {
+                     adjust_all(tree);
+                     use_bound=true;
+                     fprintf(stderr, "follower start optimizing\n");
+-                    optimize_tree_worker_thread(tree, optimization_radius, false, true);
++                    optimize_tree_worker_thread(tree, optimization_radius, false, true, Move_Found_Callback::default_instance());
+                 } while (is_last);
+             }
+             int stop;
+diff --git a/src/usher-sampled/driver/socket.cpp b/src/usher-sampled/driver/socket.cpp
+index 01b0017..60307a5 100644
+--- a/src/usher-sampled/driver/socket.cpp
++++ b/src/usher-sampled/driver/socket.cpp
+@@ -29,7 +29,8 @@
+ #include <sys/un.h>
+ #include <sys/wait.h>
+ #include <tbb/scalable_allocator.h>
+-#include <tbb/task_scheduler_init.h>
++#include <tbb/info.h>
++#include <tbb/global_control.h>
+ #include <thread>
+ #include <unistd.h>
+ #include <unordered_map>
+@@ -98,7 +99,7 @@ bool prep_single_tree(std::string path, std::shared_ptr<tree_info> &out) {
+ typedef std::shared_ptr<std::unordered_map<std::string, std::shared_ptr<tree_info> > > TreeCollectionPtr;
+ void reload_trees(TreeCollectionPtr &to_replace, const std::vector<std::string>& paths) {
+     fprintf(stderr, "loading the tree\n");
+-    tbb::task_scheduler_init init(num_threads);
++    tbb::global_control global_limit(tbb::global_control::max_allowed_parallelism, num_threads);
+     auto next = new std::unordered_map<std::string, std::shared_ptr<tree_info> > (paths.size());
+     next->reserve(paths.size()*2);
+     for (size_t idx=0; idx<paths.size(); idx++) {
+@@ -399,7 +400,7 @@ static void child_proc(int fd, TreeCollectionPtr &trees_ptr) {
+         fclose(f);
+         exit(EXIT_FAILURE);
+     }
+-    tbb::task_scheduler_init init(num_threads);
++    tbb::global_control global_limit(tbb::global_control::max_allowed_parallelism, num_threads);
+     if (existing_samples != "") {
+         MAT::Tree &tree = iter->second->expanded_tree;
+         std::vector<MAT::Node *> nodes_to_extract = read_sample_nodes(existing_samples, tree, f);
+@@ -564,7 +565,7 @@ static void tree_update_watch(int refresh_period, std::mutex& done_mutex,std::co
+             }
+         }
+         if(need_reload){
+-            tbb::task_scheduler_init init(num_threads);
++            tbb::global_control global_limit(tbb::global_control::max_allowed_parallelism, num_threads);
+             std::lock_guard<std::mutex> lk (tree_loading_mutex);
+             if(local_copy==trees_ptr){
+                 fprintf(stderr, "refreshing tree\n");
+@@ -590,7 +591,7 @@ int main(int argc, char** argv) {
+     po::options_description desc{"Options"};
+     std::string mgr_fifo;
+     std::string socket_path;
+-    num_threads=tbb::task_scheduler_init::default_num_threads();
++    num_threads=tbb::global_control::active_value(tbb::global_control::max_allowed_parallelism);
+     std::vector<std::string> init_pb_to_load;
+     int wait_second;
+     int refresh_period;
+diff --git a/src/usher-sampled/fix_par_mut.cpp b/src/usher-sampled/fix_par_mut.cpp
+index 1687953..65c095e 100644
+--- a/src/usher-sampled/fix_par_mut.cpp
++++ b/src/usher-sampled/fix_par_mut.cpp
+@@ -3,7 +3,7 @@
+ #include <string>
+ #include <tbb/concurrent_unordered_set.h>
+ #include <tbb/parallel_for.h>
+-#include <tbb/task.h>
++#include <tbb/task_group.h>
+ #include <unordered_map>
+ #include <unordered_set>
+ #include <utility>
+@@ -30,35 +30,29 @@ static void ins_mut(Mutation_Set &parent_mutations,Mutation_Annotated_Tree::Muta
+         }
+     }
+ }
+-//functor for getting state of all leaves
+-struct fix_root_worker:public tbb::task {
+-    Mutation_Annotated_Tree::Node *root; //starting node whose subtree need to be processed
+-    Mutation_Set parent_mutations; //mutation of parent of "root" relative to the root of the entire tree
+-    fix_root_worker(Mutation_Annotated_Tree::Node *root,
+-                    const Mutation_Set &parent_mutations)
+-        : root(root), parent_mutations(parent_mutations) {}
+-    tbb::task* execute() override {
+-        //add mutation of "root"
+-        for (Mutation_Annotated_Tree::Mutation &m : root->mutations) {
+-            ins_mut(parent_mutations, m);
+-        }
+-        //continuation
+-        tbb::empty_task* empty=new(allocate_continuation()) tbb::empty_task();
+-        //spawn a task for each children
+-        empty->set_ref_count(root->children.size());
+-        for (auto child : root->children) {
+-            assert(child->parent==root);
+-            empty->spawn(*new (empty->allocate_child())fix_root_worker(child, parent_mutations));
+-        }
+-        //bypass the scheduler to execute continuation task directly to fix ref count
+-        // if no child spawned (otherwise it will hang)
+-        return root->children.empty()?empty:nullptr;
++//function for processing nodes recursively
++void fix_root_worker_recursive(
++    Mutation_Annotated_Tree::Node *root,
++    Mutation_Set parent_mutations,
++    tbb::task_group &tg) {
++    //add mutation of "root"
++    for (Mutation_Annotated_Tree::Mutation &m : root->mutations) {
++        ins_mut(parent_mutations, m);
+     }
+-};
++    
++    //spawn a task for each children
++    for (auto child : root->children) {
++        assert(child->parent==root);
++        tg.run([child, parent_mutations, &tg]() {
++            fix_root_worker_recursive(child, parent_mutations, tg);
++        });
++    }
++}
+ void fix_parent(Mutation_Annotated_Tree::Tree &tree) {
+     Mutation_Set mutations;
+-    tbb::task::spawn_root_and_wait(*new(tbb::task::allocate_root())
+-                                   fix_root_worker(tree.root, mutations));
++    tbb::task_group tg;
++    fix_root_worker_recursive(tree.root, mutations, tg);
++    tg.wait();
+     auto dfs=tree.depth_first_expansion();
+     tbb::parallel_for(tbb::blocked_range<size_t>(0,dfs.size()),[&dfs](tbb::blocked_range<size_t> r) {
+         for (size_t idx=r.begin(); idx<r.end(); idx++) {
+diff --git a/src/usher-sampled/import_vcf.cpp b/src/usher-sampled/import_vcf.cpp
+index 60f5639..b362a10 100644
+--- a/src/usher-sampled/import_vcf.cpp
++++ b/src/usher-sampled/import_vcf.cpp
+@@ -38,7 +38,7 @@ size_t alloc_size;
+ std::mutex ref_lock;
+ // Decouple parsing (slow) and decompression, segment file into blocks for
+ // parallelized parsing
+-typedef tbb::flow::source_node<char *> decompressor_node_t;
++typedef tbb::flow::input_node<char *> decompressor_node_t;
+ std::condition_variable progress_bar_cv;
+ struct raw_input_source {
+     FILE *fh;
+@@ -490,8 +490,15 @@ static void process(infile_t &fd, std::vector<Sample_Muts> &sample_mutations,
+     read_size = first_approx_size * single_line_size;
+     alloc_size = (first_approx_size + 2) * single_line_size;
+     tbb::concurrent_bounded_queue<std::pair<char *, uint8_t *>> queue;
+-    tbb::flow::source_node<line_start_later> line(input_graph,
+-            line_align(queue));
++    auto line_wrapper = [queue_ref = std::ref(queue)](tbb::flow_control& fc) mutable -> line_start_later {
++        line_start_later result;
++        line_align aligner(queue_ref);
++        if (!aligner(result)) {
++            fc.stop();
++        }
++        return result;
++    };
++    tbb::flow::input_node<line_start_later> line(input_graph, line_wrapper);
+     tbb::flow::make_edge(line, parser);
+     fd(queue);
+     input_graph.wait_for_all();
+diff --git a/src/usher-sampled/main_mapper.cpp b/src/usher-sampled/main_mapper.cpp
+index 9446392..11fb724 100644
+--- a/src/usher-sampled/main_mapper.cpp
++++ b/src/usher-sampled/main_mapper.cpp
+@@ -7,7 +7,7 @@
+ #include <cstdio>
+ #include <signal.h>
+ #include <tbb/parallel_for.h>
+-#include <tbb/task.h>
++#include <tbb/task_group.h>
+ #include <unordered_map>
+ #include <utility>
+ #include <vector>
+@@ -369,97 +369,72 @@ static void search_serial(const MAT::Node* node,std::vector<To_Place_Sample_Muta
+ #endif
+     }
+ }
+-struct Main_Tree_Searcher : public tbb::task {
+-    int curr_lower_bound;
+-    std::vector<To_Place_Sample_Mutation> this_muts;
+-    const MAT::Node *node;
+-    Output<Main_Tree_Target> &output;
++void main_tree_search_recursive(
++    int curr_lower_bound,
++    std::vector<To_Place_Sample_Mutation> this_muts,
++    const MAT::Node *node,
++    Output<Main_Tree_Target> &output,
++    tbb::task_group &tg
+ #ifdef DETAILED_MERGER_CHECK
+-    Mutation_Set &sample_mutations;
++    ,
++    Mutation_Set &sample_mutations
+ #endif
+-    Main_Tree_Searcher(int curr_lower_bound,MAT::Node *node,
+-                       Output<Main_Tree_Target> &output
+-#ifdef DETAILED_MERGER_CHECK
+-                       ,
+-                       Mutation_Set &sample_mutations
+-#endif
+-                      )
+-        : curr_lower_bound(curr_lower_bound),node(node),
+-          output(output)
+-#ifdef DETAILED_MERGER_CHECK
+-        ,
+-          sample_mutations(sample_mutations)
+-#endif
+-    {
+-    }
+-    tbb::task *execute() {
++) {
+ #ifndef BOUND_CHECK
+-        if(curr_lower_bound>output.best_par_score) {
+-            return nullptr;
+-        }
++    if(curr_lower_bound>output.best_par_score) {
++        return;
++    }
+ #endif
+-        if(node->bfs_index<switch_to_serial_threshold) {
+-            search_serial(node, this_muts, output);
+-            return nullptr;
+-        }
+-        std::vector<Main_Tree_Searcher *> children_tasks;
+-        children_tasks.reserve(node->children.size() + 1);
++    if(node->bfs_index<switch_to_serial_threshold) {
++        search_serial(node, this_muts, output);
++        return;
++    }
++    
++    for (const auto child : node->children) {
+         Main_Tree_Target target;
+-        auto cont = new (allocate_continuation()) tbb::empty_task();
+-        for (const auto child : node->children) {
+-            target.target_node = child;
+-            target.parent_node = const_cast<MAT::Node *>(node);
+-            int parsimony_score = 0;
+-            if (child->is_leaf()) {
+-                generic_merge(child, this_muts,
+-                Combine_Hook<Empty_Hook, Down_Sibling_Hook> {
+-                    Empty_Hook(),
+-                    Down_Sibling_Hook(target, parsimony_score)
+-                });
+-            } else {
+-                int lower_bound = 0;
+-                std::vector<To_Place_Sample_Mutation> descendant_mutations;
+-                generic_merge(
+-                    child, this_muts,
+-                Combine_Hook<Down_Decendant_Hook, Down_Sibling_Hook> {
+-                    Down_Decendant_Hook(descendant_mutations, lower_bound),
+-                    Down_Sibling_Hook(target, parsimony_score)
+-                });
++        target.target_node = child;
++        target.parent_node = const_cast<MAT::Node *>(node);
++        int parsimony_score = 0;
++        if (child->is_leaf()) {
++            generic_merge(child, this_muts,
++            Combine_Hook<Empty_Hook, Down_Sibling_Hook> {
++                Empty_Hook(),
++                Down_Sibling_Hook(target, parsimony_score)
++            });
++        } else {
++            int lower_bound = 0;
++            std::vector<To_Place_Sample_Mutation> descendant_mutations;
++            generic_merge(
++                child, this_muts,
++            Combine_Hook<Down_Decendant_Hook, Down_Sibling_Hook> {
++                Down_Decendant_Hook(descendant_mutations, lower_bound),
++                Down_Sibling_Hook(target, parsimony_score)
++            });
+ #ifdef DETAILED_MERGER_CHECK
+-                check_continuation(child,
+-                                   sample_mutations, descendant_mutations);
++            check_continuation(child,
++                               sample_mutations, descendant_mutations);
+ #endif
+-                assert(curr_lower_bound<=lower_bound);
++            assert(curr_lower_bound<=lower_bound);
+ #ifndef BOUND_CHECK
+-                if (lower_bound <= output.best_par_score) {
++            if (lower_bound <= output.best_par_score) {
+ #endif
+-                    children_tasks.push_back(
+-                        new (cont->allocate_child())
+-                        Main_Tree_Searcher(lower_bound, child, output
++                // Spawn recursive task without lambda to avoid const issues
++                main_tree_search_recursive(lower_bound, std::move(descendant_mutations), child, output, tg
+ #ifdef DETAILED_MERGER_CHECK
+-                                           ,
+-                                           sample_mutations
++                                           , sample_mutations
+ #endif
+-                                          ));
+-                    children_tasks.back()->this_muts =
+-                        std::move(descendant_mutations);
++                                          );
+ #ifndef BOUND_CHECK
+-                }
+-#endif
+             }
+-#ifdef DETAILED_MERGER_CHECK
+-            check_mutations(sample_mutations, target);
+ #endif
+-            assert(parsimony_score>=curr_lower_bound);
+-            register_target(target, parsimony_score,output);
+-        }
+-        cont->set_ref_count(children_tasks.size());
+-        for (auto child : children_tasks) {
+-            cont->spawn(*child);
+         }
+-        return children_tasks.empty() ? cont : nullptr;
++#ifdef DETAILED_MERGER_CHECK
++        check_mutations(sample_mutations, target);
++#endif
++        assert(parsimony_score>=curr_lower_bound);
++        register_target(target, parsimony_score,output);
+     }
+-};
++}
+ std::tuple<std::vector<Main_Tree_Target>, int>
+ place_main_tree(const std::vector<To_Place_Sample_Mutation> &mutations,
+                 MAT::Tree &main_tree
+@@ -486,18 +461,16 @@ place_main_tree(const std::vector<To_Place_Sample_Mutation> &mutations,
+         }
+     }
+     output.targets.push_back(target);
+-    auto main_tree_task_root = new (tbb::task::allocate_root())
+-    Main_Tree_Searcher(0,main_tree.root,
+-                       output
++    std::vector<To_Place_Sample_Mutation> initial_muts = mutations;
++    initial_muts.push_back(temp);
++    
++    tbb::task_group tg;
++    main_tree_search_recursive(0, std::move(initial_muts), main_tree.root, output, tg
+ #ifdef DETAILED_MERGER_CHECK
+-                       ,
+-                       sample_mutations
++                              , sample_mutations
+ #endif
+-                      );
+-    main_tree_task_root->this_muts = mutations;
+-    main_tree_task_root->this_muts.push_back(temp);
+-    main_tree_task_root->set_group_priority(tbb::priority_low);
+-    tbb::task::spawn_root_and_wait(*main_tree_task_root);
++                             );
++    tg.wait();
+     assert(!output.targets.empty());
+ 
+     return std::make_tuple(std::move(output.targets), output.best_par_score);
+diff --git a/src/usher-sampled/place_sample.cpp b/src/usher-sampled/place_sample.cpp
+index 77242c3..e92e3e4 100644
+--- a/src/usher-sampled/place_sample.cpp
++++ b/src/usher-sampled/place_sample.cpp
+@@ -15,7 +15,7 @@
+ #include <string>
+ #include <tbb/concurrent_queue.h>
+ #include <tbb/flow_graph.h>
+-#include <tbb/task.h>
++#include <tbb/task_group.h>
+ #include <thread>
+ #include <tuple>
+ #include <unordered_map>
+@@ -444,7 +444,7 @@ static void serial_proc_placed_sample( MAT::Tree &main_tree,move_type* in,bool d
+ }
+ typedef tbb::flow::function_node<Preped_Sample_To_Place *,size_t> placer_node_t;
+ typedef tbb::concurrent_bounded_queue<Sample_Muts*> retry_place_t;
+-typedef tbb::flow::multifunction_node<Sample_Muts*,tbb::flow::tuple<Sample_Muts*>> Pusher_Node_T;
++typedef tbb::flow::multifunction_node<Sample_Muts*,std::tuple<Sample_Muts*>> Pusher_Node_T;
+ typedef tbb::flow::function_node<print_format> Printer_Node_t;
+ static void place_sample_thread(int start_idx, MAT::Tree &main_tree,std::vector<MAT::Node *> &deleted_nodes,
+                                  Placed_move_sended_state& send_queue,found_place_t& found_place_queue,Pusher_Node_T& retry_queue
+@@ -663,7 +663,7 @@ struct Pusher {
+     std::atomic_size_t& curr_idx;
+     std::vector<Sample_Muts>& to_place;
+     std::atomic_bool& stop;
+-    void operator()(Sample_Muts* in,Pusher_Node_T::output_ports_type& out )const {
++    void operator()(Sample_Muts* in, typename Pusher_Node_T::output_ports_type& out )const {
+         if (!in) {
+             size_t send_idx=SIZE_MAX;
+             if (!stop) {
+diff --git a/src/usher-sampled/place_sample_follower.cpp b/src/usher-sampled/place_sample_follower.cpp
+index 2bbd214..b1b46e4 100644
+--- a/src/usher-sampled/place_sample_follower.cpp
++++ b/src/usher-sampled/place_sample_follower.cpp
+@@ -5,8 +5,8 @@
+ #include <cstdio>
+ #include <string>
+ #include <tbb/flow_graph.h>
+-#include <tbb/pipeline.h>
+-#include <tbb/task.h>
++#include <tbb/parallel_pipeline.h>
++#include <tbb/task_group.h>
+ #include <thread>
+ #include <mpi.h>
+ #include <tuple>
+@@ -164,7 +164,7 @@ static void recv_and_place_follower(MAT::Tree &tree,
+     }
+ }
+ 
+-typedef tbb::flow::multifunction_node<Sample_Muts*, tbb::flow::tuple<Sample_Muts*>> Fetcher_Node_t;
++typedef tbb::flow::multifunction_node<Sample_Muts*, std::tuple<Sample_Muts*>> Fetcher_Node_t;
+ struct Fetcher {
+     bool& is_first;
+     Sample_Muts* operator()(tbb::flow_control& fc) const {
+@@ -232,10 +232,15 @@ void follower_place_sample(MAT::Tree &main_tree,int batch_size,bool dry_run) {
+     std::vector<MAT::Node *> deleted_nodes;
+     bool is_first=true;
+     std::thread tree_update_thread(recv_and_place_follower,std::ref(main_tree),std::ref(deleted_nodes),dry_run);
+-    tbb::parallel_pipeline(batch_size,
+-                           tbb::make_filter<void,Sample_Muts*>(tbb::filter::serial,Fetcher{is_first})&
+-                           tbb::make_filter<Sample_Muts*,void>(
+-                               tbb::filter::parallel,Finder{main_tree,traversal_info,dfs_ordered_nodes,dry_run}));
++    {
++        tbb::flow::graph g;
++        tbb::flow::input_node<Sample_Muts*> fetcher_node(g, Fetcher{is_first});
++        tbb::flow::function_node<Sample_Muts*> finder_node(g, tbb::flow::unlimited, Finder{main_tree,traversal_info,dfs_ordered_nodes,dry_run});
++        
++        tbb::flow::make_edge(fetcher_node, finder_node);
++        fetcher_node.activate();
++        g.wait_for_all();
++    }
+     for (auto node : deleted_nodes) {
+         delete node;
+     }
+diff --git a/src/usher-sampled/sampler.cpp b/src/usher-sampled/sampler.cpp
+index a1ac56a..280469a 100644
+--- a/src/usher-sampled/sampler.cpp
++++ b/src/usher-sampled/sampler.cpp
+@@ -3,11 +3,13 @@
+ #include <algorithm>
+ #include <climits>
+ #include <mutex>
+-#include <tbb/task.h>
++#include <tbb/task_group.h>
+ #include <unordered_map>
+ #include <vector>
+ #include <signal.h>
++
+ namespace MAT = Mutation_Annotated_Tree;
++
+ static void add_mut(std::unordered_map<int, uint8_t> &output,
+                     const MAT::Mutation &mut) {
+     auto result = output.emplace(mut.get_position(), mut.get_mut_one_hot());
+@@ -15,22 +17,23 @@ static void add_mut(std::unordered_map<int, uint8_t> &output,
+         result.first->second |= mut.get_mut_one_hot();
+     }
+ }
+-struct Assign_Descendant_Possible_Muts_Cont : public tbb::task {
++
++struct Assign_Descendant_Possible_Muts_Cont {
+     std::unordered_map<int, uint8_t> &output;
+-    std::vector<std::unordered_map<int, uint8_t>> childen_out;
++    std::vector<std::unordered_map<int, uint8_t>> children_out;
+     MAT::Node *root;
+     Assign_Descendant_Possible_Muts_Cont(
+         std::unordered_map<int, uint8_t> &output, size_t child_count,
+         MAT::Node *root)
+-        : output(output), childen_out(child_count), root(root) {}
++        : output(output), children_out(child_count), root(root) {}
+ 
+-    tbb::task *execute() {
++    void execute() {
+         auto reserve_size = root->mutations.size();
+-        for (const auto &child_mut : childen_out) {
++        for (const auto &child_mut : children_out) {
+             reserve_size += child_mut.size();
+         }
+         output.reserve(reserve_size);
+-        for (const auto &child_mut_vec : childen_out) {
++        for (const auto &child_mut_vec : children_out) {
+             for (const auto &mut : child_mut_vec) {
+                 auto result = output.emplace(mut.first, mut.second);
+                 if (!result.second) {
+@@ -45,47 +48,46 @@ struct Assign_Descendant_Possible_Muts_Cont : public tbb::task {
+             }
+             mut.set_descendant_mut(result.first->second);
+         }
+-        return nullptr;
+     }
+ };
+ 
+-struct Assign_Descendant_Possible_Muts : public tbb::task {
++struct Assign_Descendant_Possible_Muts {
+     MAT::Node *root;
+     std::unordered_map<int, uint8_t> &output;
+     Assign_Descendant_Possible_Muts(MAT::Node *root,
+                                     std::unordered_map<int, uint8_t> &output)
+         : root(root), output(output) {}
+-    tbb::task *execute() {
+-        auto cont = new (allocate_continuation())
+-        Assign_Descendant_Possible_Muts_Cont(output, root->children.size(),
++    void execute(tbb::task_group &tg) {
++        Assign_Descendant_Possible_Muts_Cont cont(output, root->children.size(),
+                                              root);
+-        std::vector<Assign_Descendant_Possible_Muts *> children_tasks;
++        std::vector<std::shared_ptr<Assign_Descendant_Possible_Muts>> children_tasks;
+         children_tasks.reserve(root->children.size());
+         for (size_t idx = 0; idx < root->children.size(); idx++) {
+             auto this_child = root->children[idx];
+             if (this_child->children.empty()) {
+-                cont->childen_out[idx].reserve(this_child->mutations.size());
++                cont.children_out[idx].reserve(this_child->mutations.size());
+                 for (auto &mut : this_child->mutations) {
+                     mut.set_descendant_mut(mut.get_mut_one_hot());
+-                    cont->childen_out[idx].emplace(mut.get_position(), mut.get_mut_one_hot());
++                    cont.children_out[idx].emplace(mut.get_position(), mut.get_mut_one_hot());
+                 }
+             } else {
+-                auto new_task = new (cont->allocate_child())
+-                Assign_Descendant_Possible_Muts(this_child,
+-                                                cont->childen_out[idx]);
+-                children_tasks.push_back(new_task);
++                auto new_task = std::make_shared<Assign_Descendant_Possible_Muts>(this_child,
++                                                cont.children_out[idx]);
++                children_tasks.push_back(std::move(new_task));
+             }
+         }
+-        cont->set_ref_count(children_tasks.size());
+-        for (auto child_task : children_tasks) {
+-            cont->spawn(*child_task);
++        for (auto &child_task : children_tasks) {
++            child_task->execute(tg);
++        }
++        if (!children_tasks.empty()) {
++            cont.execute();
+         }
+-        return children_tasks.empty()?cont:nullptr;
+     }
+ };
++
+ void assign_descendant_muts(MAT::Tree &in) {
++    tbb::task_group tg;
+     std::unordered_map<int, uint8_t> ignore;
+-    tbb::task::spawn_root_and_wait(
+-        *new (tbb::task::allocate_root())
+-        Assign_Descendant_Possible_Muts(in.root,ignore));
++    Assign_Descendant_Possible_Muts(in.root, ignore).execute(tg);
++    tg.wait();
+ }
+diff --git a/src/usher-sampled/utils.cpp b/src/usher-sampled/utils.cpp
+index 295a07e..88527cf 100644
+--- a/src/usher-sampled/utils.cpp
++++ b/src/usher-sampled/utils.cpp
+@@ -18,7 +18,7 @@
+ #include <tbb/enumerable_thread_specific.h>
+ #include <tbb/flow_graph.h>
+ #include <tbb/parallel_for.h>
+-#include <tbb/pipeline.h>
++#include <tbb/parallel_pipeline.h>
+ #include <thread>
+ #include <unistd.h>
+ #include <unordered_set>
+diff --git a/src/usher.cpp b/src/usher.cpp
+index e54982a..a3a498d 100644
+--- a/src/usher.cpp
++++ b/src/usher.cpp
+@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
+     std::string dout_filename;
+     std::string outdir;
+     std::string vcf_filename;
+-    uint32_t num_cores = tbb::task_scheduler_init::default_num_threads();
++    uint32_t num_cores = tbb::this_task_arena::max_concurrency();
+     uint32_t num_threads;
+     uint32_t max_trees;
+     uint32_t max_uncertainty;
+@@ -114,7 +114,7 @@ int main(int argc, char** argv) {
+     Timer timer;
+ 
+     fprintf(stderr, "Initializing %u worker threads.\n\n", num_threads);
+-    tbb::task_scheduler_init init(num_threads);
++    tbb::global_control global_limit(tbb::global_control::max_allowed_parallelism, num_threads);
+ 
+     MAT::Tree tmp_T;
+     MAT::Tree* T = NULL;
+diff --git a/src/usher_mapper.cpp b/src/usher_mapper.cpp
+index ac48043..b060ac9 100644
+--- a/src/usher_mapper.cpp
++++ b/src/usher_mapper.cpp
+@@ -1,7 +1,7 @@
+ #include "usher_graph.hpp"
+ 
+ tbb::mutex data_lock;
+-tbb::reader_writer_lock rd_wr_lock;
++tbb::spin_rw_mutex rd_wr_lock;
+ 
+ int mapper_body::operator()(mapper_input input) {
+     TIMEIT();
+@@ -453,14 +453,14 @@ void mapper2_body(mapper2_input& input, bool compute_parsimony_scores, bool comp
+     // if child of internal node, ensure all internal node mutations are present in the sample
+     if (input.node->is_root() || ((has_unique && !input.node->is_leaf() && (num_common_mut > 0) && (node_num_mut != num_common_mut)) || \
+                                   (input.node->is_leaf() && (num_common_mut > 0)) || (!has_unique && !input.node->is_leaf() && (node_num_mut == num_common_mut)))) {
+-        rd_wr_lock.lock_read();
+-        if (set_difference > *input.best_set_difference) {
+-            rd_wr_lock.unlock();
+-            return;
++        {
++            tbb::spin_rw_mutex::scoped_lock lock(rd_wr_lock, false); // read lock
++            if (set_difference > *input.best_set_difference) {
++                return;
++            }
+         }
+-        rd_wr_lock.unlock();
+ 
+-        rd_wr_lock.lock();
++        tbb::spin_rw_mutex::scoped_lock lock(rd_wr_lock, true); // write lock
+         size_t num_leaves = input.T->get_num_leaves(input.node);
+         if (set_difference < *input.best_set_difference) {
+             *input.best_set_difference = set_difference;
+@@ -495,7 +495,6 @@ void mapper2_body(mapper2_input& input, bool compute_parsimony_scores, bool comp
+             (*input.node_has_unique)[input.j] = has_unique;
+             input.best_j_vec->emplace_back(input.j);
+         }
+-        rd_wr_lock.unlock();
+     } else if (compute_parsimony_scores) {
+         // Add 1 to the parsimony score for this node
+         // as its current best placement is equivalent

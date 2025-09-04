@@ -1,13 +1,33 @@
 #!/bin/bash
 set -e
 
-mkdir -p ${PREFIX}/bin
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+
+mkdir -p "${PREFIX}/bin"
+
 cd src || exit 1
 echo "0" > gitver.txt
 
-cp ${RECIPE_DIR}/vcxproj_make.py .
-chmod +x vcxproj_make.py
-./vcxproj_make.py --openmp --cppcompiler ${CXX}
+cp -f "${RECIPE_DIR}/vcxproj_make.py" .
+chmod +rx vcxproj_make.py
+
+OS=$(uname -s)
+ARCH=$(uname -m)
+
+if [[ "${ARCH}" == "arm64" ]]; then
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a|' vcxproj_make.py
+	rm -rf *.bak
+elif [[ "${ARCH}" == "aarch64" ]]; then
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a|' vcxproj_make.py
+	rm -rf *.bak
+fi
+
+if [[ "${OS}" == "Darwin" ]]; then
+	python ./vcxproj_make.py --openmp --pthread --cppcompiler "${CXX}" --ccompiler "${CC}" --nonative
+elif [[ "${OS}" == "Linux" ]]; then
+	python ./vcxproj_make.py --openmp --pthread --lrt --cppcompiler "${CXX}" --ccompiler "${CC}" --nonative
+fi
 
 # Verify binary exists and is executable
 if [ ! -x ../bin/muscle ]; then
@@ -15,4 +35,4 @@ if [ ! -x ../bin/muscle ]; then
     exit 1
 fi
 
-cp ../bin/muscle ${PREFIX}/bin/muscle
+install -v -m 0755 ../bin/muscle "${PREFIX}/bin"

@@ -1,20 +1,20 @@
 {% set name = "pgscatalog.calc" %}
-{% set version = "0.3.0" %}
+{% set version = "0.3.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pgscatalog_calc-{{ version }}.tar.gz
-  sha256: d5821cabb42558698ff862ec9edc5dad79863d5321db95580459f8a08c2c2c92
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pgscatalog_calc-{{ version }}.tar.gz
+  sha256: 2dea2426c0bdf579662bf5b42fd2b047e662d5bc612bf2a39cb433142ffe5206
 
 build:
   entry_points:
     - pgscatalog-aggregate = pgscatalog.calc.cli.aggregate_cli:run_aggregate
     - pgscatalog-ancestry-adjust = pgscatalog.calc.cli.ancestry_cli:run_ancestry
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation --no-cache-dir
   number: 0
   run_exports:
     - {{ pin_subpackage('pgscatalog.calc', max_pin="x.x") }}
@@ -22,8 +22,8 @@ build:
 requirements:
   host:
     - python >=3.10
-    - poetry-core
     - pip
+    - setuptools
   run:
     - python >=3.10
     - pgscatalog.core >=0.3.0,<0.4.0
@@ -37,16 +37,15 @@ test:
   imports:
     - pgscatalog.calc
   commands:
-    - pip check
     - pgscatalog-aggregate --help
     - pgscatalog-ancestry-adjust --help
-  requires:
-    - pip
 
 about:
-  home: https://github.com/PGScatalog/pygscatalog/
-  summary: Libraries and applications for working with calculated polygenic scores
-  license: Apache-2.0
+  home: "https://github.com/PGScatalog/pygscatalog"
+  summary: "Libraries and applications for working with calculated polygenic scores."
+  license: "Apache-2.0"
+  license_family: APACHE
+  dev_url: "https://github.com/PGScatalog/pygscatalog"
 
 extra:
   recipe-maintainers:

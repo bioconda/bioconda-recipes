@@ -1,0 +1,41 @@
+{% set name = "usearch" %}
+{% set version = "6.1.544" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: {{ version |replace("-", "_") }}
+
+source:
+  - url: https://github.com/rcedgar/usearch_old_binaries/raw/refs/heads/main/bin/{{ name }}{{ version }}_i86linux64 # [linux and x86_64]
+    md5: d248e220dd179e7248214a708d124a58 # [linux and x86_64]
+  - url: https://github.com/rcedgar/usearch_old_binaries/raw/refs/heads/main/bin/{{ name }}{{ version }}_i86osx64 # [osx and x86_64]
+    md5: 6bd41183b03d0d0c711282bfb91146a7 # [osx and x86_64]
+
+build:
+  number: 0
+  script:
+    - mkdir -p ${PREFIX}/bin
+    - cp usearch* ${PREFIX}/bin/usearch
+    - chmod +x ${PREFIX}/bin/usearch
+  run_exports:
+    - {{ pin_subpackage('usearch', max_pin="x") }}
+  skip: True # [win]
+
+test:
+  commands:
+    - usearch | grep 'usearch'
+
+about:
+  home: "https://github.com/rcedgar/usearch_old_binaries"
+  doc_url: "https://drive5.com/usearch/"
+  license: CC0
+  license_family: CC
+  summary: USEARCH is a unique sequence analysis tool which offers search and clustering algorithms that are often orders of magnitude faster than BLAST.
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic
+    - long_summary
+  recipe-maintainers:
+    - thanhleviet
+    - kasperskytte

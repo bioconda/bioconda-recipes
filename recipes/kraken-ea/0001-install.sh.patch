@@ -1,0 +1,27 @@
+diff --git a/install_kraken_conda.sh b/install_kraken_conda.sh
+index 48bef23..5315381 100644
+--- a/install_kraken_conda.sh
++++ b/install_kraken_conda.sh
+@@ -22,6 +22,9 @@
+ 
+ set -e
+ 
++export CXXFLAGS="$CXXFLAGS -O3 -std=c++0x -Wall -fopenmp  -DGZSTREAM_NAMESPACE=gz -g -I."
++export LDFLAGS="$LDFLAGS -L$PREFIX/lib -L. -lkraken -lz"
++export CXX="$CXX"
+ 
+ VERSION="0.10.6-unreleased"
+ 
+@@ -40,10 +43,10 @@ fi
+ 
+ # Perl cmd used to canonicalize dirname - "readlink -f" doesn't work
+ # on OS X.
+-export KRAKEN_DIR=$(perl -MCwd=abs_path -le 'print abs_path(shift)' "$1")
++export KRAKEN_DIR="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
+ 
+ mkdir -p "$KRAKEN_DIR"
+-make -C src install
++make -C src install CXX="$CXX" -j"$CPU_COUNT"
+ for file in scripts/*
+ do
+   perl -pl -e 'BEGIN { while (@ARGV) { $_ = shift; ($k,$v) = split /=/, $_, 2; $H{$k} = $v } }'\

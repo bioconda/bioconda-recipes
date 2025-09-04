@@ -1,0 +1,48 @@
+{% set name = "padloc" %}
+{% set version = "2.0.0" %}
+{% set sha256 = "d3d90b76c041e1f2292846f664798fb83da0487f61d2f40917153cae439bd683" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/padlocbio/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+  - {{ pin_subpackage("padloc", max_pin="x") }}
+
+requirements:
+  run:
+    - hmmer ==3.3.2
+    - prodigal ==2.6.3
+    - r-base ==4.3.1
+    - r-tidyverse ==2.0.0
+    - r-getopt ==1.20.3
+    - r-yaml ==2.3.7
+    - grep
+    - curl
+
+test:
+  commands:
+    - padloc --help
+    - padloc --db-update
+    - padloc --fna ${PREFIX}/test/GCF_004358345.1.fna
+    - padloc --faa ${PREFIX}/test/GCF_001688665.2.faa --gff ${PREFIX}/test/GCF_001688665.2.gff
+
+about:
+  home: https://github.com/padlocbio/{{ name }}
+  license: MIT
+  license_file: 'LICENSE'
+  summary: Locate antiviral defence systems in prokaryotic genomes
+
+extra:
+  identifiers:
+    - biotools:{{ name }}
+  recipe-maintainers:
+    - leightonpayne
+    - pentamorfico

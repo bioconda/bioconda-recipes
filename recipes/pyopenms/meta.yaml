@@ -2,80 +2,52 @@
 {% set version = "3.4.1" %}  # if ends with 'dev' it is considered a development release and pulled from GitHub
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
-{% if 'dev' in version %}
+{% if "dev" in version %}
 
 source:
   git_url: https://github.com/OpenMS/OpenMS.git
-  git_rev: release/{{ version }}
+  git_rev: develop
   md5: unused
 {% else %}
 
 source:
-  # Remove trailing zeros for major releases
-  {% set version_parts = version.split('.') %}
-  {% if version_parts|length == 3 and version_parts[2] == '0' %}
-    {% set short_version = version_parts[0] ~ '.' ~ version_parts[1] %}
-  {% else %}
-    {% set short_version = version %}
-  {% endif %}
-  url: https://github.com/OpenMS/OpenMS/releases/download/release%2F{{ version }}/OpenMS-{{ short_version }}.tar.gz
+  url: https://github.com/OpenMS/OpenMS/releases/download/release%2F{{ version }}/OpenMS-{{ version }}.tar.gz
   md5: 8d0b4d1d333f069959f7d5ff1c77a90f
 {% endif %}
 
 build:
-  number: 0
-  skip: True  # [py < 39]
+  number: 2
+  skip: True  # [py < 310]
   run_exports:
-    - {{ pin_subpackage("pyopenms", max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - ninja
     - cmake
-    - autoconf
-    - automake
-    - libtool
-    - pkg-config
-    - qt6-main
-    - sysroot_linux-64 =2.17  # [linux]
   host:
     - python
     - pip
     - cython <3.1
-    - eigen >=3.4.0
-    - libopenms >={{ version }}
-    - libgomp  # [linux]
-    - llvm-openmp  # [osx]
-    - libsvm
-    - coinmp
-    - yaml-cpp
-    - doxygen >=1.8.13
-    - xerces-c
-    - boost-cpp
-    - autowrap >=0.22.11
+    - libopenms =={{ version }}
+    - autowrap >=0.22.11,<0.23
+    - libboost-headers  # autowrap depends on boost for shared_ptr (if not explicitly disabled by our build scripts, or if we allow it to use autowraps own copy of boost headers) see https://github.com/OpenMS/OpenMS/issues/8184
     - numpy >=2.0
     - pandas
     - matplotlib-base
-    - sysroot_linux-64 =2.17  # [linux]
-    - icu >=75.1,<76.0a0
     - pytest
-    - zlib
-  run:  # run_exports in libopenms should take care of the libraries. But it does not because of bugs. So copy everthing again and again
+    - eigen >=3.4.0  # from libopenms. since eigen is header-only, it does not have a run-export. but libopenms exposes it broadly in the public interface.
+    # We should probably make it a mandatory run dependency of libopenms then. Conda does not complain about "underspecifying dependencies" because it is header-only.
+    # If we add it there, we probably should ignore the resulting overlinking warnings.
+  run:
     - python
-    - libopenms >={{ version }}
-    - libgomp  # [linux]
-    - llvm-openmp  # [osx]
-    - libsvm
-    - xerces-c
-    - boost-cpp
-    - eigen >=3.4.0
+    - libopenms =={{ version }}
     - numpy >=2.0
     - pandas
     - matplotlib-base
-    - sysroot_linux-64 =2.17  # [linux]
 
 test:
   commands:
@@ -95,7 +67,8 @@ about:
 extra:
   additional-platforms:
     - linux-aarch64
-{% if 'dev' in version %}
+    - osx-arm64
+{% if "dev" in version %}
   skip-lints:
     - uses_vcs_url
 {% endif %}

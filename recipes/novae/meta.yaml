@@ -1,5 +1,5 @@
 {% set name = "novae" %}
-{% set version = "0.2.4" %}
+{% set version = "1.0.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,19 +7,19 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/novae-{{ version }}.tar.gz
-  sha256: 4aef7fb0c90b870869ce38bcac8e4b4f33f5a42fa582357c9b5fbe8d5fc15d46
+  sha256: ea31b2f7c3929659d0a45d59cab3d5c62a9ae5e9b15b4ca9fe90e24a28174d73
 
 build:
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   number: 0
   run_exports:
-    - {{ pin_subpackage('novae', max_pin="x.x") }}
+    - {{ pin_subpackage('novae', max_pin="x") }}
 
 requirements:
   host:
     - python >=3.10,<3.13
-    - poetry-core >=1.0.0
+    - hatchling
     - pip
   run:
     - python >=3.10,<3.13
@@ -30,6 +30,7 @@ requirements:
     - huggingface_hub >=0.24.0
     - safetensors >=0.4.3
     - pandas >=2.0.0
+    - python-igraph >=0.11.8
   run_constrained:
     - wandb >=0.17.2
     - black >=22.8.0
@@ -50,16 +51,15 @@ requirements:
 test:
   imports:
     - novae
-  commands:
-    - pip check
-  requires:
-    - pip
 
 about:
-  home: https://mics-lab.github.io/novae/
-  summary: Graph-based foundation model for spatial transcriptomics data
-  license: BSD-3-Clause
+  home: "https://mics-lab.github.io/novae"
+  summary: "Graph-based foundation model for spatial transcriptomics data."
+  license: "BSD-3-Clause"
+  license_family: BSD
   license_file: LICENSE
+  dev_url: "https://github.com/MICS-Lab/novae"
+  doc_url: "https://mics-lab.github.io/novae"
 
 extra:
   recipe-maintainers:

@@ -1,0 +1,51 @@
+{% set name = "art_modern" %}
+{% set version = "1.1.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/YU-Zhejian/art_modern/archive/refs/tags/{{ version }}.zip
+  sha256: 66ecbd1c5f0fd4cb7ba501303f6ee58a6128a3aff3fb81b2dbabd31aae3b34be
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('art_modern', max_pin="x.x") }}
+
+requirements:
+  build:
+    - cmake >=3.17
+    - make
+    - pkg-config
+    # This is essential as coreutils >=8.28 provides `env -C` command.
+    - coreutils >=8.28
+    - bash
+    - {{ compiler('cxx') }}
+  host:
+    - python {{ python }}
+    # Boost version copied from package ProMod3 at bioconda recepies ver. 0ff2abb3f8
+    - libboost-devel >=1.86,<1.87
+    - zlib
+  run:
+    - python {{ python }}
+    - libboost >=1.86,<1.87
+
+test:
+  commands:
+    - ART_NO_LOG_DIR=1 art_modern --version 2>&1 | grep -q "{{ version }}"
+
+about:
+  home: "https://github.com/YU-Zhejian/art_modern"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: "License.md"
+  summary: "Simulator of Diverse Next-Generation Sequencing Reads"
+  dev_url: "https://github.com/YU-Zhejian/art_modern"
+  doc_url: "https://github.com/YU-Zhejian/art_modern/releases/download/{{ version }}/art_modern.pdf"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

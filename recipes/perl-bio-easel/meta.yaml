@@ -1,5 +1,5 @@
 {% set name = "perl-bio-easel" %}
-{% set version = "0.16" %}
+{% set version = "0.17" %}
 
 package:
   name: {{ name }}
@@ -7,18 +7,19 @@ package:
 
 source:
   - url: https://github.com/nawrockie/Bio-Easel/archive/refs/tags/Bio-Easel-{{ version }}.tar.gz
-    sha256: 1066e58010cb1afb994ffa5dd1330109a2239c5aa819166756338c491c7a7dfa
+    sha256: efcffb7599dd57dbd115e5a4c8fff1c14c4c6fe2e79d9a35d3574804a78f7bb5
     patches:
       - fix_easel_path_msa.patch
       - fix_easel_path_random.patch
       - fix_easel_path_sqfile.patch
-
   - url: https://github.com/EddyRivasLab/easel/archive/refs/tags/Bio-Easel-{{ version }}.tar.gz
-    sha256: 15c5482402480924856305330f4eb7fd2b30c648067d6196e4f88c1ffa8086fa
+    sha256: 6ea2edbc31f86484e7cdb2ed775db68cfcf9300984a60e9f859253ccd5a7cb48
     folder: src/easel
 
 build:
-  number: 2
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
@@ -26,6 +27,9 @@ requirements:
     - {{ compiler('c') }}
     - autoconf
     - automake
+    - libtool
+    - pkg-config
+    - gnuconfig
   host:
     - perl
     - perl-inline
@@ -41,11 +45,16 @@ test:
     - esl-ssplit.pl 2>&1 | grep "Bio-Easel"
 
 about:
-  home: https://github.com/nawrockie/Bio-Easel
-  license: BSD
+  home: "https://github.com/nawrockie/Bio-Easel"
+  license: "BSD-3-Clause"
+  license_family: BSD
   license_file: LICENSE
-  summary: Perl modules and scripts for interfacing with Sean Eddy's C easel sequence analysis library using Perl's Inline.
+  summary: "Perl modules and scripts for interfacing with Sean Eddy's C easel sequence analysis library using Perl's Inline."
+  dev_url: "https://github.com/nawrockie/Bio-Easel"
 
 extra:
   recipe-maintainers:
     - rpetit3
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

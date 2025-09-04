@@ -1,0 +1,52 @@
+{% set name = "novoloci" %}
+{% set version = "0.3" %}
+{% set tag = "NOVOLoci0.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ndierckx/NOVOLoci/archive/refs/tags/{{ tag }}.tar.gz
+  sha256: 33f5c39a9258cad2c0c7b60c4c4ea51da754ab78f3c39258c2ae4e63e41fcf53
+
+build:
+  number: 0               
+  noarch: generic
+  run_exports:             
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+  script:
+    - sed -i.bak '1s|^#!.*perl|#!/usr/bin/env perl|' NOVOLoci0.3.pl
+    - install -d "$PREFIX/bin" "$PREFIX/share/{{ name }}"
+    - install -m 0755 NOVOLoci0.3.pl "$PREFIX/bin/novoloci"
+    - install -m 0644 config.txt "$PREFIX/share/{{ name }}/config.txt"
+
+requirements:
+  run:
+    - perl
+    - blast
+    - mafft
+    - perl-mce
+    - perl-parallel-forkmanager
+
+test:
+  commands:
+    - novoloci 2>&1 | head -n 5
+    - perl -MMCE::Channel -e1
+    - perl -MMCE::Child -e1
+    - perl -MParallel::ForkManager -e1
+
+about:
+  home: https://github.com/ndierckx/NOVOLoci
+  summary: "Haplotype-aware assembler for complex regions and small genomes (ONT/HiFi)."
+  license: Other
+  license_file: LICENSE
+  dev_url: https://github.com/ndierckx/NOVOLoci
+
+extra:
+  recipe-maintainers:
+    - ndierckx
+  identifiers:
+    - doi:10.1101/2025.08.08.669243 
+

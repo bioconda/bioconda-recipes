@@ -1,24 +1,24 @@
+{% set name = "goleft" %}
 {% set version = "0.2.6" %}
 
 package:
-  name: goleft
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  - url: https://github.com/brentp/goleft/releases/download/v{{ version }}/goleft_linux64  # [linux and x86_64]
-    sha256: 3fbb8076c1b2da4a1d7bcb5edd0cc879fe608066c0ca58221db155e7edd5bcb3  # [linux and x86_64]
-  - url: https://github.com/brentp/goleft/releases/download/v{{ version }}/goleft_linux_aarch64  # [linux and aarch64]
-    sha256: bf3179de66297b916e720f72a4afd57fef937b098d869926d5ac967f9634b8b8  # [linux and aarch64]
-  - url: https://github.com/brentp/goleft/releases/download/v{{ version }}/goleft_osx  # [osx]
-    sha256: 1aebf606658b1007669d96a76de9a1a3106b5caa4c4d5b786a75339d35d0e54e  # [osx]
+  url: https://github.com/brentp/goleft/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 0c563edea898059a75adf6250149643bdc61e4660544fabafbaefc09b4c9d1b3
 
 build:
-  number: 0
-  binary_relocation: false
+  number: 1
+  binary_relocation: False
   run_exports:
-    - {{ pin_subpackage('goleft', max_pin='x.x') }}
+    - {{ pin_subpackage('goleft', max_pin="x.x") }}
 
 requirements:
+  build:
+    - {{ compiler('go') }}
+    - go-licenses
   run:
     - samtools
 
@@ -28,13 +28,15 @@ test:
     - goleft indexcov -h
 
 about:
-  home: https://github.com/brentp/goleft
+  home: "https://github.com/brentp/goleft"
   license: MIT
-  summary: goleft is a collection of bioinformatics tools distributed under MIT license in a single static binary
+  license_family: MIT
+  license_file: LICENSE
+  summary: "goleft is a collection of bioinformatics tools distributed under MIT license in a single static binary."
+  dev_url: "https://github.com/brentp/goleft"
+  doc_url: "https://github.com/brentp/goleft/blob/v{{ version }}/README.md"
 
 extra:
   additional-platforms:
     - linux-aarch64
-  skip-lints:
-    - should_be_noarch_generic
-    - should_not_be_noarch_source
+    - osx-arm64

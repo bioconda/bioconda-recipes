@@ -1,24 +1,29 @@
 {% set version = "1.0.1" %}
 
-
 package:
   name: btrim
-  version: '{{version}}'
+  version: {{ version }}
 
 source:
-  url: "https://github.com/Malfoy/BTRIM/archive/1.0.1.tar.gz"
+  url: https://github.com/Malfoy/BTRIM/archive/{{ version }}.tar.gz
   sha256: 5e183a41dcbc52d6c3820dd521ce70d03bec7c6eb518feb7adf3dde04f1a1d41
   patches:
     - 0001-fix-push_back-initializer_list-and-abs-from-uint.patch
 
 build:
-  number: 7
-  skip: true # [osx]
+  number: 8
+  run_exports:
+    - {{ pin_subpackage('btrim', max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - pkg-config
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  run:
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
 
@@ -27,6 +32,13 @@ test:
     - btrim
 
 about:
-  home: https://github.com/Malfoy/BTRIM
-  license: AGPL-3.0
-  summary: This tool is made to remove "tips" (short dead ends) from a compacted de Bruijn graph and more generally to remove sequencing errors. Used in Bcool a short read corrector (https://arxiv.org/abs/1711.03336)
+  home: "https://github.com/Malfoy/BTRIM"
+  license: "AGPL-3.0-or-later"
+  license_family: AGPL
+  summary: 'This tool is made to remove "tips" (short dead ends) from a compacted de Bruijn graph and more generally to remove sequencing errors. Used in Bcool a short read corrector (https://arxiv.org/abs/1711.03336)'
+  dev_url: "https://github.com/Malfoy/BTRIM"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
