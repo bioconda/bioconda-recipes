@@ -6,7 +6,7 @@ mkdir -p "${PREFIX}"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++17"
 
 cp -rf ${BUILD_PREFIX}/share/gnuconfig/config.* .
 cp -rf ${BUILD_PREFIX}/share/gnuconfig/config.* m4/
