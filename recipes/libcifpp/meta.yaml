@@ -1,9 +1,9 @@
 {% set name = "libcifpp" %}
-{% set version = "8.0.1" %}
-{% set sha256 = "53f0ff205711428dcabf9451b23804091539303cea9d2f54554199144ca0fc4e" %}
+{% set version = "9.0.1" %}
+{% set sha256 = "094831ecf3a48d64706c41b9dd1145508fcd1f9b7b0993efee282c0492c4514f" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -11,9 +11,9 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   run_exports:
-    - {{ pin_subpackage(name|lower, max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -23,13 +23,15 @@ requirements:
     - pkg-config
   host:
     - eigen
-    # Use v1.86.0 to match the version pinned in conda-forge
-    - libboost-devel >=1.86.0,<1.87.0a0  # [linux]
+    # Use v1.88.0 to match the version pinned in conda-forge
+    - libboost-devel ==1.88.0  # [linux]
+    - pcre2
     - zlib
 
 test:
   commands:
-    - test -e ${PREFIX}/lib/libcifpp.a
+    - test -e ${PREFIX}/lib/libcifpp.so  # [linux]
+    - test -e ${PREFIX}/lib/libcifpp.dylib  # [osx]
 
 about:
   home: "https://github.com/PDB-REDO/libcifpp"

@@ -1,23 +1,28 @@
 {% set name = "antiSMASH" %}
-{% set version = "8.0.1" %}
-{% set sha256 = "e008eaeab13a92a657de82d077b2ffd782a97bc334c248ff22618c52f04fbc02" %}
+{% set version = "8.0.2" %}
+{% set sha256 = "4fd5abb391b1dcad951939e3ee139626ba7b2d4feb7314f5aea594786211dc1f" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
+source:
+  url: https://github.com/antismash/antismash/archive/refs/tags/{{ version | replace(".", "-") }}.tar.gz
+  sha256: {{ sha256 }}
+
 build:
   number: 0
   noarch: python
+  script:
+    - echo "include antismash/detection/genefinding/data/train_crypto" >> MANIFEST.in
+    - df -h
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py && rm -f *.bak
+    - {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir --use-pep517 -vvv
   entry_points:
     - download-antismash-databases = antismash.download_databases:_main
     - antismash = antismash.__main__:entrypoint
   run_exports:
     - {{ pin_subpackage('antismash', max_pin="x") }}
-
-source:
-  url: https://github.com/antismash/antismash/archive/{{ version | replace(".", "-") }}.tar.gz
-  sha256: {{ sha256 }}
 
 requirements:
   host:
