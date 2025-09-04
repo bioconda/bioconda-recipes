@@ -29,7 +29,7 @@ zstdcat hictk_test_dataset.tar.zst | tar -xf -
 if ! pip install test/integration --only-binary=hictkpy; then
   1>&2 echo "WARNING! Unable to install hictk's integration suite (see messages above for the reason)"
   1>&2 echo "WARNING! Only running a simple test for hictk convert!"
-  hictk convert test/data/integration_tests/4DNFIZ1ZVXC8.mcool out.hic
+  hictk convert test/data/cooler/4DNFIZ1ZVXC8.mcool out.hic
   1>&2 echo "WARNING! Unable to install hictk's integration suite (see messages above for the reason)"
   exit 0
 fi
