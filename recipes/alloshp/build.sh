@@ -25,7 +25,7 @@ cd utils && wget https://raw.githubusercontent.com/Ensembl/plant-scripts/refs/he
 
 # CGaln
 cd lib && git clone https://github.com/rnakato/Cgaln.git && cd Cgaln && \
-    perl -pi.bak -e 's/CC = gcc//' Makefile && make && rm -f *.fasta *.o && cd ../..
+    perl -pi.bak -e 's/CC = gcc//;s/gcc/\$(CC)/' Makefile && make && rm -f *.fasta *.o && cd ../..
 
 # GSAlign
 cd lib && git clone https://github.com/hsinnan75/GSAlign.git && cd GSAlign && rm -rf test && make
