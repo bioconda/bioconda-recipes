@@ -24,6 +24,9 @@ cmake -S . -B build -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
       -DCMAKE_CXX_COMPILER="${CXX}" \
       -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
       -DBOOST_ROOT="${PREFIX}" -DBoost_NO_SYSTEM_PATHS=ON "${USE_BOOST_REGEX}" \
+      -DCMAKE_SKIP_BUILD_RPATH=FALSE -DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE \
+      -DCMAKE_INSTALL_RPATH="${PREFIX}/lib64:${PREFIX}/lib:${PREFIX}/lib/bamtools" \
+      -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
       -Wno-dev -Wno-deprecated --no-warn-unused-cli \
       "${CONFIG_ARGS}"
 
