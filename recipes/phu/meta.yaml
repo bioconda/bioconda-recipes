@@ -1,0 +1,57 @@
+{% set name = "phu" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/camilogarciabotero/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: d349d482c9e8204a421d41bf7c5b48ddc0194af36ec1fc8a51fbd9be03945722
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - phu = phu.cli:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage("phu", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.10
+    - typer
+    - ruff
+    - pytest
+    - mypy
+    - vclust
+    - seqkit
+
+test:
+  commands:
+    - phu --help
+
+about:
+  home: https://github.com/camilogarciabotero/phu
+  license: MIT
+  license_file: LICENSE
+  summary: "Phage Utilities (phu): modular toolkit for clustering, classifying, and analyzing viral sequences."
+  description: |
+    **phu** (Phage Utilities) is a Python toolkit designed for viral bioinformatics workflows. 
+    It provides modular commands to handle tasks such as:
+      * `seqclust`: dereplication and clustering of viral contigs into vOTUs and putative species-level groups.
+      * `taxasimplify`: simplification and parsing of viral taxonomy assignments.
+    
+
+  dev_url: https://github.com/camilogarciabotero/phu
+  # doc_url: https://camilogarciabotero.github.io/phu
+
+extra:
+  maintainers:
+    - camilogarciabotero
