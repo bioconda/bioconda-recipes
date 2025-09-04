@@ -28,4 +28,6 @@ cd lib && git clone https://github.com/rnakato/Cgaln.git && cd Cgaln && \
     perl -pi.bak -e 's/CC = gcc//;s/gcc/\$(CC)/' Makefile && make && rm -f *.fasta *.o && cd ../..
 
 # GSAlign
-cd lib && git clone https://github.com/hsinnan75/GSAlign.git && cd GSAlign && rm -rf test && make
+cd lib && git clone https://github.com/hsinnan75/GSAlign.git && cd GSAlign && rm -rf test && \
+    perl -pi.bak -e 's/CXX\s+=\s+g\+\+//;' src/makefile && \
+    perl -pi.bak -e 's/CC=\s+gcc//;' src/BWT_Index/makefile && make
