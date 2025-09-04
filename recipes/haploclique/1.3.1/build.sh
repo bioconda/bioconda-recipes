@@ -1,32 +1,31 @@
-#!/use/bin/env sh
+#!/bin/bash
 
-# HACK GCC 4.8.5 ships with a broken std::regex (it's only fixed with GCC 4.9.0)
-export CXX=${BUILD_PREFIX}/bin/aarch64-conda-linux-gnu-c++
-export CC=${BUILD_PREFIX}/bin/aarch64-conda-linux-gnu-cc
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
 if [[ `c++ -dumpversion` == 4.8.* ]]; then
     echo 'GCC version 4.8.x detected, forcing switch of regex engine from C++11 to Boost'
-    USE_BOOST_REGEX='-DUSE_BOOST_REGEX=1'
+    export USE_BOOST_REGEX='-DUSE_BOOST_REGEX=1'
 fi
 
 sed -i '1i#include <stdexcept>' external/docopt.cpp/docopt_value.h
 sed -i '1i#include <stdexcept>' external/docopt.cpp/docopt.h
-mkdir -p build && cd build
 
-export C_INCLUDE_PATH=${PREFIX}/include
-export CXX_INCLUDE_PATH=${PREFIX}/include
-export CPP_INCLUDE_PATH=${PREFIX}/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
+if [[ `uname -s` == "Darwin" ]]; then
+    export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+else
+    export CONFIG_ARGS=""
+fi
 
-cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
-      -DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}"   \
-      -DBOOST_ROOT="${PREFIX}" -DBoost_NO_SYSTEM_PATHS=ON "${USE_BOOST_REGEX}"    \
-      -DCMAKE_SKIP_BUILD_RPATH=FALSE -DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE -DCMAKE_INSTALL_RPATH="${PREFIX}/lib64:${PREFIX}/lib:${PREFIX}/lib/bamtools" -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE    \
-      ..   \
-    && make \
-    && make install
+cmake -S . -B build -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+      -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_CXX_COMPILER="${CXX}" \
+      -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+      -DBOOST_ROOT="${PREFIX}" -DBoost_NO_SYSTEM_PATHS=ON "${USE_BOOST_REGEX}" \
+      -Wno-dev -Wno-deprecated --no-warn-unused-cli \
+      "${CONFIG_ARGS}"
 
-## unit tests
-# NOTE disabling unit tests to shave off a few seconds of Travis' runtime
-#export LIBRARY_PATH="${PREFIX}/lib64:${PREFIX}/lib:${PREFIX}/lib/bamtools:${LIBRARY_PATH:+:${LIBRARY_PATH}}" 
-#make check 
+make -C build -j"${CPU_COUNT}"
+make -C build install
