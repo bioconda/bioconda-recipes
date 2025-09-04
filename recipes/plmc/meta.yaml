@@ -3,18 +3,17 @@
 {% set sha256 = "3141129e9c9e9185ffb5abd728e8f9de789e8056e96a92ba6cce38b5d16b67e4" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
+
+source:
+  url: https://github.com/debbiemarkslab/{{ name }}/archive/refs/heads/master.zip
+  sha256: {{ sha256 }}
 
 build:
   number: 2
-  skip: True  # [osx] 
   run_exports:
-    - {{ pin_subpackage('plmc', max_pin='x.x') }}  
-
-source:
-  url: https://github.com/debbiemarkslab/{{ name|lower }}/archive/refs/heads/master.zip
-  sha256: {{ sha256 }}
+    - {{ pin_subpackage(name, max_pin=None) }}
 
 requirements:
   build:
@@ -22,22 +21,26 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - clangdev
-    - llvm-openmp
   host:
-    - llvm-openmp
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
   run:
-    - llvm-openmp
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
 
 test:
   commands:
     - which {{ name }}
 
 about:
-  home: https://github.com/debbiemarkslab/plmc
+  home: "https://github.com/debbiemarkslab/plmc"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: 'Inference of couplings in proteins and RNAs from sequence variation.'
+  summary: "Inference of couplings in proteins and RNAs from sequence variation."
+  dev_url: "https://github.com/debbiemarkslab/plmc"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
