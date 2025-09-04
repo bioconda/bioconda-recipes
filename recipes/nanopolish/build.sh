@@ -10,25 +10,13 @@ export HTS_LIB="${PREFIX}/lib/libhts.a"
 export HTS_INCLUDE="-I${PREFIX}/include"
 export FAST5_INCLUDE="-I${PREFIX}/include/fast5"
 
-case $(uname -m) in
-    aarch64)
-    ARCH_OPTS="aarch64=1"
-        ;;
-    arm64)
-	ARCH_OPTS="aarch64=1"
-        ;;
-    *)
-    ARCH_OPTS=""
-        ;;
-esac
-
 mkdir -p "$PREFIX/bin"
+
+sed -i.bak 's|arm_neon=1|aarch64=1|' Makefile
 
 # Linker options aren't passed to minimap2
 pushd minimap2
-sed -i.bak 's|-msse2||' Makefile
-rm -rf *.bak
-if [[ "${target_platform}" == "linux-aarch64" ]]; then
+if [[ "${target_platform}" == "linux-aarch64" || "${target_platform}" == "osx-arm64" ]]; then
 	wget https://github.com/jratcliff63367/sse2neon/archive/master.zip -O sse2neon-master.zip
 	unzip sse2neon-master.zip
 	mv ./sse2neon-master/SSE2NEON.h $PREFIX/include/sse2neon.h
@@ -36,23 +24,23 @@ if [[ "${target_platform}" == "linux-aarch64" ]]; then
 	sed -i.bak 's|$(CFLAGS) -msse4.1|$(CFLAGS)|'  Makefile
 	sed -i.bak 's|$(CFLAGS) -mno-sse4.1|$(CFLAGS)|'  Makefile
 	rm -rf *.bak
-	sed -i "9c #include <sse2neon.h>" ksw2_ll_sse.c
-	sed -i "23c #elif defined(__i386__)// on 32bit, ebx can NOT be used as PIC code" ksw2_dispatch.c
-	sed -i "26a #else " ksw2_dispatch.c
-	sed -i "27a\\\        cpuid[0] = cpuid[1] = cpuid[2] = cpuid[3] = 0;" ksw2_dispatch.c
- 	sed -i "55a #if defined(__x86_64__) || defined(__i386__)	" ksw2_dispatch.c
-	sed -i "99a #endif" ksw2_dispatch.c
+	sed -i'' -e "9c #include <sse2neon.h>" ksw2_ll_sse.c
+	sed -i'' -e "23c #elif defined(__i386__)// on 32bit, ebx can NOT be used as PIC code" ksw2_dispatch.c
+	sed -i'' -e "26a #else " ksw2_dispatch.c
+	sed -i'' -e "27a\\\        cpuid[0] = cpuid[1] = cpuid[2] = cpuid[3] = 0;" ksw2_dispatch.c
+ 	sed -i'' -e "55a #if defined(__x86_64__) || defined(__i386__)	" ksw2_dispatch.c
+	sed -i'' -e "99a #endif" ksw2_dispatch.c
 
-	sed -i '326s/^/\/\//'   align.c
-	sed -i '329s/^/\/\//'   align.c
-	sed -i '330s/^/\/\//'   align.c
-	sed -i '331s/^/\/\//'   align.c
-	sed -i '332s/^/\/\//'   align.c
-	sed -i '333s/^/\/\//'   align.c
-	sed -i '334s/^/\/\//'   align.c
+	sed -i'' -e '326s/^/\/\//'   align.c
+	sed -i'' -e '329s/^/\/\//'   align.c
+	sed -i'' -e '330s/^/\/\//'   align.c
+	sed -i'' -e '331s/^/\/\//'   align.c
+	sed -i'' -e '332s/^/\/\//'   align.c
+	sed -i'' -e '333s/^/\/\//'   align.c
+	sed -i'' -e '334s/^/\/\//'   align.c
 fi
 
-make libminimap2.a "${ARCH_OPTS}" CFLAGS="$CFLAGS -Wno-implicit-function-declaration" CXXFLAGS="$CXXFLAGS" LIBS="-L$PREFIX/lib -lm -lz -pthread" -j"${CPU_COUNT}"
+make libminimap2.a CFLAGS="$CFLAGS -Wno-implicit-function-declaration" CXXFLAGS="$CXXFLAGS" LIBS="-L$PREFIX/lib -lm -lz -pthread" -j"${CPU_COUNT}"
 popd
 
 pushd slow5lib
