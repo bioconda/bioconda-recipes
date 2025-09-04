@@ -14,6 +14,9 @@ cp -ar lib \
     LICENSE \
     ${PREFIX}/bin
 
+# force system GSAlign
+perl -pi.bak -e 's/\$Bin\/lib\/GSAlign\/bin\///' WGA
+
 # Red
 cd lib && git clone https://github.com/EnsemblGenomes/Red.git && cd Red/src_2.0 && \
     perl -pi.bak -e 's/CXX = g\+\+//' Makefile && \
@@ -28,6 +31,6 @@ cd lib && git clone https://github.com/rnakato/Cgaln.git && cd Cgaln && \
     perl -pi.bak -e 's/CC = gcc//;s/gcc/\$(CC)/' Makefile && make && rm -f *.fasta *.o && cd ../..
 
 # GSAlign
-cd lib && git clone https://github.com/hsinnan75/GSAlign.git && cd GSAlign && rm -rf test && \
-    perl -pi.bak -e 's/CXX\s+=\s+g\+\+//;' src/makefile && \
-    perl -pi.bak -e 's/CC=\s+gcc//;' src/BWT_Index/makefile && make
+#cd lib && git clone https://github.com/hsinnan75/GSAlign.git && cd GSAlign && rm -rf test && \
+#    perl -pi.bak -e 's/CXX\s+=\s+g\+\+//;' src/makefile && \
+#    perl -pi.bak -e 's/CC=\s+gcc//;' src/BWT_Index/makefile && make
