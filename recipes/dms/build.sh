@@ -2,12 +2,13 @@
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
 mkdir -p ${PREFIX}/bin
 
-if [[ "$target_platform" == "linux-aarch64" ]]; then
-	sed -i.bak '3s/-msse//g' Makefile	
+if [[ "$target_platform" == "linux-aarch64" || "$target_platform" == "osx-arm64" ]]; then
+	sed -i.bak 's|-msse||' Makefile
+	rm -rf *.bak
 fi
 
 make CXX="${CXX} ${CPPFLAGS} ${CXXFLAGS} -fopenmp -DOMP ${LDFLAGS}" -j"${CPU_COUNT}"
