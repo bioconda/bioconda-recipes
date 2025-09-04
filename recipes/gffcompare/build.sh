@@ -1,11 +1,12 @@
 #!/bin/bash
-
 set -xe
 
-export CXX="$CXX"
-export LINKER="$CXX"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
-mkdir -p "$PREFIX"/bin/
-make release
-cp gffcompare "$PREFIX"/bin/
-cp trmap "$PREFIX"/bin/
+mkdir -p "$PREFIX/bin"
+
+make release CXX="${CXX}" LINKER="${CXX}" -j"${CPU_COUNT}"
+
+install -v -m 0755 gffcompare trmap "${PREFIX}/bin"

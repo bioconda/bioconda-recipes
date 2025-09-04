@@ -1,0 +1,55 @@
+{% set name = "scispacy" %}
+{% set version = "0.5.5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/scispacy-{{ version }}.tar.gz
+  sha256: a56607572d31b7ab0b1e5d4b7836ca1f319bb402203eef52c50dfe9ed35de60e
+
+build:
+  number: 1
+  noarch: python
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -rf *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  run_exports:
+    - {{ pin_subpackage('scispacy', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - setuptools
+  run:
+    - python >=3.6
+    - spacy >=3.7.0,<3.8.0
+    - scipy
+    - requests >=2.0.0,<3.0.0
+    - conllu
+    - numpy
+    - joblib
+    - nmslib >=1.7.3.6  # [py < 311]
+    - nmslib-metabrainz ==2.1.3  # [py >= 311]
+    - scikit-learn >=0.20.3
+    - pysbd
+
+test:
+  imports:
+    - scispacy
+
+about:
+  home: "https://allenai.github.io/scispacy"
+  summary: "A full SpaCy pipeline and models for scientific/biomedical documents."
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: LICENSE
+  dev_url: "https://github.com/allenai/scispacy"
+  doc_url: "https://allenai.github.io/scispacy"
+  
+extra:
+  recipe-maintainers:
+    - hechth

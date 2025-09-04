@@ -29,7 +29,7 @@ elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
 	sed -i.bak 's|"-msse4.2"|""|' src/build-system/cmake/toolchains/*.in
 	rm -rf src/build-system/cmake/toolchains/*.bak
 else
-	export CONFIG_ARGS="-DX86=ON -DBUILD_STATIC=ON -DWITH_AVX512=ON"
+	export CONFIG_ARGS="-DX86=ON -DBUILD_STATIC=ON"
 	sed -i.bak 's|"-msse4.2"|""|' src/build-system/cmake/toolchains/*.cmake
 	sed -i.bak 's|"-msse4.2"|""|' src/build-system/cmake/toolchains/*.in
 	rm -rf src/build-system/cmake/toolchains/*.bak
