@@ -1,21 +1,25 @@
 #!/bin/bash
-
 set -eu -o pipefail
 
-mkdir -p ${PREFIX}/bin
+mkdir -p "${PREFIX}/bin"
 
-cd src
-make -j 4 CC=$CC CFLAGS="${CFLAGS} -fcommon"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3"
 
-cp baseml ${PREFIX}/bin/
-cp basemlg ${PREFIX}/bin/
-cp chi2 ${PREFIX}/bin/
-cp codeml ${PREFIX}/bin/
-cp evolver ${PREFIX}/bin/
-cp infinitesites ${PREFIX}/bin/
-cp mcmctree ${PREFIX}/bin/
-cp pamp ${PREFIX}/bin/
-cp yn00 ${PREFIX}/bin/
+if [[ "$(uname -s)" == "Darwin" && "$(uname -m)" == "arm64" ]]; then
+	wget "https://github.com/abacus-gene/paml/releases/download/v${PKG_VERSION}/paml-${PKG_VERSION}-mac-arm64.tar.gz"
+	tar -xvzf paml-${PKG_VERSION}-mac-arm64.tar.gz
+	cd paml-${PKG_VERSION}-mac-arm64/bin
+else
+	cd src
+	make CC="${CC}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
+	"${CC}" -o ds -O3 ds.c tools.c -lm
+fi
 
-cd ..
-cp -r dat ${PREFIX}/
+install -v -m 0755 baseml basemlg \
+	chi2 codeml ds evolver infinitesites \
+	mcmctree pamp yn00 \
+	"${PREFIX}/bin"
+
+cp -rf "${SRC_DIR}/dat" ${PREFIX}/
