@@ -12,8 +12,6 @@ export FAST5_INCLUDE="-I${PREFIX}/include/fast5"
 
 mkdir -p "$PREFIX/bin"
 
-sed -i.bak 's|arm_neon=1|aarch64=1|' Makefile
-
 # Linker options aren't passed to minimap2
 pushd minimap2
 if [[ "${target_platform}" == "linux-aarch64" ]]; then
@@ -44,7 +42,7 @@ elif [[ "${target_platform}" == "osx-arm64" ]]; then
 	sed -i.bak 's|-mno-sse4.1||'  Makefile
 fi
 
-make libminimap2.a CFLAGS="$CFLAGS -Wno-implicit-function-declaration" CXXFLAGS="$CXXFLAGS" LIBS="-L$PREFIX/lib -lm -lz -pthread" -j"${CPU_COUNT}"
+make libminimap2.a arm_neon=1 CFLAGS="$CFLAGS -Wno-implicit-function-declaration" CXXFLAGS="$CXXFLAGS" LIBS="-L$PREFIX/lib -lm -lz -pthread" -j"${CPU_COUNT}"
 popd
 
 pushd slow5lib
