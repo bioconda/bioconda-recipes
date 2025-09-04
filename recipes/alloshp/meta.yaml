@@ -8,8 +8,6 @@ package:
 build:
   number: 0
   noarch: generic
-  script_env:
-   - LC_ALL=POSIX
   run_exports:
     - {{ pin_subpackage('alloshp', max_pin="x") }}
 
@@ -18,23 +16,27 @@ source:
   sha256: {{ sha256 }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}  
+    - zlib
+    - make  
+    - git
+    - wget
   run:
-    - make
     - grep
     - coreutils
     - gzip
     - bzip2  
     - perl
-    - perl-db_file
-    - cxx-compiler 
-    - zlib 
-    - git 
+    - perl-db_file 
     - gnuplot
-    - make  
 
 test:
   commands:
     - WGA -c # checks binaries are in place
+    - vcf2alignment
+    - vcf2synteny  
 
 about:
   home: https://github.com/eead-csic-compbio/AlloSHP
