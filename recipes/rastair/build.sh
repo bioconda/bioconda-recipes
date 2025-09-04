@@ -2,10 +2,8 @@
 set -ex
 
 # Build rastair using cargo
-cargo build --release
+cargo install -v --locked --no-track --root $PREFIX --path .
 
-# Install the binary to $PREFIX/bin
-install -Dm755 target/release/rastair "$PREFIX/bin/rastair"
-
+# Copy R scripts
 mkdir -p $PREFIX/share/rastair/scripts
 cp -R scripts/* $PREFIX/share/rastair/scripts/
