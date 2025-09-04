@@ -2,7 +2,7 @@
 
 # copy scripts and its dependencies to $PREFIX/bin folder
 mkdir -p ${PREFIX}/bin
-cp -ar lib \
+mv  lib \
     utils \
     WGA \
     vcf2alignment \
@@ -11,8 +11,9 @@ cp -ar lib \
     Makefile \
     version.txt \
     README.md \
-    LICENSE \
     ${PREFIX}/bin
+
+cd ${PREFIX}/bin
 
 # force system GSAlign
 perl -pi.bak -e 's/\$Bin\/lib\/GSAlign\/bin\///' WGA
@@ -29,8 +30,3 @@ cd utils && wget https://raw.githubusercontent.com/Ensembl/plant-scripts/refs/he
 # CGaln
 cd lib && git clone https://github.com/rnakato/Cgaln.git && cd Cgaln && \
     perl -pi.bak -e 's/CC = gcc//;s/gcc/\$(CC)/' Makefile && make && rm -f *.fasta *.o && cd ../..
-
-# GSAlign
-#cd lib && git clone https://github.com/hsinnan75/GSAlign.git && cd GSAlign && rm -rf test && \
-#    perl -pi.bak -e 's/CXX\s+=\s+g\+\+//;' src/makefile && \
-#    perl -pi.bak -e 's/CC=\s+gcc//;' src/BWT_Index/makefile && make
