@@ -1,21 +1,40 @@
-#!/bin/sh
+#!/bin/bash
 
 set -o errexit -o nounset
 
-export INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
+export CFLAGS="${CFLAGS} -O3"
 
-export LDFLAGS="-L${PREFIX}/lib"
-export CPPFLAGS="-I${PREFIX}/include -I${BUILD_PREFIX}/include ${LDFLAGS}"
-export CXXFLAGS="-I${PREFIX}/include -I${BUILD_PREFIX}/include ${LDFLAGS}"
-export CFLAGS="-I${PREFIX}/include -I${BUILD_PREFIX}/include ${LDFLAGS}"
+BINARY_HOME="${PREFIX}/bin"
+export EVM_HOME="${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}"
+export LC_ALL="en_US.UTF-8"
 
-BINARY_HOME=${PREFIX}/bin
-EVM_HOME=${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}
+sed -i.bak 's|v2.0.0|v2.1.0|' EVidenceModeler
+rm -rf *.bak
+sed -i.bak 's|-m64||' plugins/ParaFly/configure.ac
+rm -rf plugins/ParaFly/*.bak
+
+OS=$(uname -s)
+ARCH=$(uname -m)
 
 cd plugins/ParaFly
-./configure --prefix=${PREFIX} CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS} -fopenmp" CXXFLAGS="${CXXFLAGS} -fopenmp"
-make install && cd ${SRC_DIR}
+autoreconf -if
+./configure --prefix="${PREFIX}" \
+	CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -fopenmp" \
+	LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}" \
+	--disable-option-checking --enable-silent-rules \
+	--disable-dependency-tracking
+
+if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
+	sed -i.bak 's|-m64||' Makefile
+fi
+
+sed -i.bak 's|-O2|-O3|' Makefile
+rm -rf *.bak
+
+make install -j"${CPU_COUNT}" && cd "${SRC_DIR}"
 
 mkdir -p ${EVM_HOME}
 mkdir -p ${PREFIX}/bin

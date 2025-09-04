@@ -56,8 +56,8 @@ sys.stderr.write("binary=" + binary + "\n")
 # compiler_opts = " -ffast-math -march=native"
 # linker_opts = " -ffast-math -march=native"
 
-compiler_opts = " -O3 -ffast-math -Wno-deprecated-non-prototype -fno-define-target-os-macros -Wno-implicit-function-declaration -I${PREFIX}/include"
-linker_opts = " -ffast-math -Wno-deprecated-non-prototype -fno-define-target-os-macros -Wno-implicit-function-declaration -Wl,-rpath,${PREFIX}/lib -L${PREFIX}/lib"
+compiler_opts = " -I${PREFIX}/include -ffast-math -march=x86-64-v3 -O3 -Wno-implicit-function-declaration"
+linker_opts = " -L${PREFIX}/lib -ffast-math -march=x86-64-v3 -O3 -Wno-implicit-function-declaration"
 if not Args.nonative:
     compiler_opts += " -march=native"
     linker_opts += " -march=native"
@@ -82,7 +82,7 @@ if Args.openmp:
 
 if Args.pthread:
     compiler_opts += " -pthread"
-    linker_opts += " -lpthread"
+    linker_opts += " -pthread"
 
 rc = os.system('test -z $(git status --porcelain) 2> /dev/null')
 if rc != 0:

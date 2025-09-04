@@ -1,5 +1,5 @@
 {% set name = "reduce" %}
-{% set version = "4.14" %}
+{% set version = "4.15" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/rlabduke/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 62e61cce221fff76b5834031302d91fe703a19945a42e16620d4fb860604daf4
+  sha256: f2f993e3f86ded38135d6433e0a7c2ed10fbe5da37f232c04d7316702582ed06
 
 build:
   number: 3
@@ -16,35 +16,44 @@ build:
 
 requirements:
   build:
-    - make
+    - {{ compiler("cxx") }}
     - cmake
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}  # [linux]
+    - ninja
   host:
-    - python
+    - libboost-python-devel >=1.86.0,<1.87.0a0
+    - python {{ python }}
   run:
-    - python
+    - python {{ python }}
 
 test:
   commands:
+    - pip check
     - reduce -version || if [ $? -eq 2 ]; then exit 0; else exit 1; fi
+  imports:
+    - reduce
+  requires:
+    - pip
+  files:
+    - 3QUG.pdb
 
 about:
   home: https://github.com/rlabduke/reduce
-  summary: Reduce - tool for adding and correcting hydrogens in PDB files
-  license: BSD-4-Clause-UC
+  dev_url: https://github.com/rlabduke/reduce
+  doc_url: "https://github.com/rlabduke/reduce/blob/v{{ version }}/README.md"
+  license: "BSD-4-Clause-UC"
   license_family: BSD
-  license_file: LICENSE.txt
+  license_file: "LICENSE.txt"
+  summary: "Reduce - tool for adding and correcting hydrogens in PDB files."
   description: |
     Reduce is a tool for adding and correcting hydrogens in PDB files.
     It is often used in computational biology and molecular modeling to
     prepare protein structures for further analysis or simulations.
-  doc_url: https://github.com/rlabduke/reduce#readme
-  dev_url: https://github.com/rlabduke/reduce
 
 extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
+  identifiers:
+    - doi:10.1006/jmbi.1998.2401
   recipe-maintainers:
     - eunos-1128

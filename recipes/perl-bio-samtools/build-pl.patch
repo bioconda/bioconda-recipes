@@ -1,6 +1,37 @@
---- Build.PL
-+++ Build.PL
-@@ -76,6 +76,10 @@
+diff --git a/Build.PL b/Build.PL
+old mode 100644
+new mode 100755
+index 685815f..0c4fb15
+--- a/Build.PL
++++ b/Build.PL
+@@ -16,7 +16,7 @@ my $class = Module::Build->subclass(code=><<EOF);
+ 	chomp(my \$make  = `which make`);
+ 	chomp(my \$nmake = `which nmake`);
+ 	\$make ||= \$nmake;
+-	system "cd c_bin; \$make INCLUDES=-I$sam_include LIBPATH=-L$sam_lib";
++	system "cd c_bin; \$make CC=$ENV{CC} INCLUDES=-I$sam_include LIBPATH=-L$sam_lib";
+ 	mkdir "blib/bin" unless -e "blib/bin";
+         my \@exec = grep {-x \$_} <c_bin/*>;
+ 	\$self->copy_if_modified(from   =>\$_,
+@@ -39,11 +39,15 @@ my $build = $class->new(
+     dist_abstract      => 'Perl interface to SamTools library for DNA sequencing',
+     license            => 'perl',
+     include_dirs       => [$sam_include],
+-    extra_linker_flags => ["-L$sam_lib",'-lbam','-lpthread','-lz'],
++    extra_linker_flags => ["-L$sam_lib",'-lbam','-pthread','-lz'],
+ 
+     extra_compiler_flags=>[
++	'-O3',
+ 
+-        # must match DFLAGS in Samtools Makefile
++	# fixes compilation on Darwin
++	'-Wno-implicit-function-declaration',
++
++	# must match DFLAGS in Samtools Makefile
+ 	'-D_IOLIB=2','-D_FILE_OFFSET_BITS=64', 
+ 
+ 	# turn off warnings originating in Perl's Newx* calls
+@@ -76,6 +80,10 @@ sub find_sam {
  	    if -e "$samtools/$HeaderFile";
  	$sam_include = "$samtools/include"
  	    if -e "$samtools/include/$HeaderFile";
