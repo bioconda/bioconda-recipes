@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-# Build rastair using cargo
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 cargo install -v --locked --no-track --root $PREFIX --path .
 
 # Copy R scripts
