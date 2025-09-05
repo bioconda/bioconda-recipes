@@ -1,0 +1,50 @@
+{% set name = "rastair" %}
+{% set version = "0.8.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://bitbucket.org/bsblabludwig/rastair/get/v{{ version }}.tar.gz
+  sha256: 3f7ddc246168ed5901724a5ee0e45ea73eb9b81bf6d93caa4a07c6b41c04e0b8
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  host:
+    - r-base >=4.3.2,<5.0.0
+    - r-ggplot2 >=3.5.1,<4.0.0
+    - r-gtable >=0.3.6,<0.4.0
+    - bioconductor-rsamtools
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+  run:
+    - r-base >=4.3.2,<5.0.0
+    - r-ggplot2 >=3.5.1,<4.0.0
+    - r-gtable >=0.3.6,<0.4.0
+    - bioconductor-rsamtools
+
+about:
+  home: https://bitbucket.org/bsblabludwig/rastair/src/v0.8.2/
+  license: GPL-3.0
+  summary: "Rust tool for TAPS-based methylation calling."
+  description: "rastair is a fast and accurate tool for methylation calling from TAPS sequencing data, written in Rust."
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+
+extra:
+  recipe-maintainers:
+    - andrew-watchmaker
+
+test:
+  commands:
+    - rastair --help
