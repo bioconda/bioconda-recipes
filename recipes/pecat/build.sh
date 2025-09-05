@@ -37,13 +37,13 @@ CFLAGS += -Wall -O2
 OBJS = ksw2_gg.o ksw2_extz.o ksw2_extd.o
 
 libksw2.a: $(OBJS)
-        $(AR) -rc $@ $^
+	$(AR) -rc $@ $^
 
 %.o: %.c
-        $(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-        rm -f *.o *.a
+	rm -f *.o *.a
 EOF
 
 # 3. 架构特定优化
@@ -100,4 +100,3 @@ ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/bin/pecat.pl "\$@"
 EOF
 chmod +x "${PREFIX}/bin/pecat.pl"
 
-echo "PECAT安装成功"
