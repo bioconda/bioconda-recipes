@@ -55,5 +55,8 @@ make CFLAGS="${CFLAGS}" || exit 1
 install -d "${PREFIX}/bin" "${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/bin"
 cp -r build/bin/* "${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/bin/"
 
-cat > "${PREFIX}/bin/pecat.pl"
-
+cat > "${PREFIX}/bin/pecat.pl" <<EOF
+#!/bin/bash
+${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/bin/pecat.pl "\$@"
+EOF
+chmod +x "${PREFIX}/bin/pecat.pl"
