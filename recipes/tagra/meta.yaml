@@ -1,0 +1,51 @@
+{% set name = "tagra" %}
+{% set version = "0.2.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/tagra-{{ version }}.tar.gz
+  sha256: cf8a06e1956922da862c73c6b17ecb829936ea7418f38635642d8d0dd4d17304
+
+build:
+  entry_points:
+    - tagra=ta_gra:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install tagra==0.2.5 -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_compatible('numpy') }}
+  number: 0
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+  run:
+    - python >=3.10
+    - numpy
+    - pandas
+    - scikit-learn
+    - matplotlib-base
+    - networkx
+    - plotly
+
+test:
+  imports:
+    - tagra
+  commands:
+    - pip check
+    - tagra --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/davidetorre92/TaGra
+  summary: 'TaGra: TAbular data preprocessing to GRAph representation.'
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - davidetorre92
