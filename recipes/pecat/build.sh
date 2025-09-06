@@ -1,37 +1,62 @@
 #!/bin/bash
+set -ex
 
-export LIBRARY_PATH=${PREFIX}/lib
-export LD_LIBRARY_PATH=${PREFIX}/lib
-export CPATH=${PREFIX}/include
-export C_INCLUDE_PATH=${PREFIX}/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export CPP_INCLUDE_PATH=${PREFIX}/include
-export CXX_INCLUDE_PATH=${PREFIX}/include
-export PATH=$PATH:${PREFIX}/bin
+# 设置环境变量
+export LIBRARY_PATH="${PREFIX}/lib"
+export LD_LIBRARY_PATH="${PREFIX}/lib"
+export CPATH="${PREFIX}/include"
+export C_INCLUDE_PATH="${PREFIX}/include"
+export CPLUS_INCLUDE_PATH="${PREFIX}/include"
+export PATH="${PATH}:${PREFIX}/bin"
 
+# 架构优化
+case $(uname -m) in
+    aarch64|arm*)
+        CFLAGS="${CFLAGS} -march=armv8-a+simd -DKSW_CPU_DISPATCH=0"
+        ;;
+    *)
+        CFLAGS="${CFLAGS} -march=native"
+        ;;
+esac
 
-CC=${CC}
-CXX=${CXX}
+# 标准化ksw2库编译
+KSW2_DIR="${SRC_DIR}/thirdparty/ksw2"
+[ -d "${KSW2_DIR}" ] || { echo "错误：找不到ksw2目录"; exit 1; }
 
-mkdir -p ${PREFIX}/bin
-ln -fs $CC ${PREFIX}/bin/gcc
-ln -fs $CXX ${PREFIX}/bin/g++
+cat > "${KSW2_DIR}/Makefile" <<'EOF'
+CC ?= gcc
+AR ?= ar
+CFLAGS += -Wall -O2
 
-make -j
+OBJS = ksw2_gg.o ksw2_extz.o ksw2_extd.o
 
-# create and populate binary file
-mkdir -p $PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin/
-cp -r build/bin/* $PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin/
+libksw2.a: $(OBJS)
+	$(AR) -rc $@ $^
 
-# create calling script
-mkdir -p $PREFIX/bin/
-cat <<EOF > $PREFIX/bin/pecat.pl
-#!/bin/bash
+%.o: %.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin/pecat.pl "\$@"
+clean:
+	rm -f *.o *.a
 EOF
 
-chmod +x $PREFIX/bin/pecat.pl
+# 编译ksw2库
+cd "${KSW2_DIR}" || exit 1
+make clean || true
+make CC="${CC}" AR="${AR}" CFLAGS="${CFLAGS}" libksw2.a || exit 1
 
-unlink ${PREFIX}/bin/gcc
-unlink ${PREFIX}/bin/g++
+# 主项目编译
+cd "${SRC_DIR}" || exit 1
+make -j$(nproc) CFLAGS="${CFLAGS}" || \
+make CFLAGS="${CFLAGS}" || exit 1
+
+# 安装
+install -d "${PREFIX}/bin" "${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/bin"
+cp -r build/bin/* "${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/bin/"
+
+cat > "${PREFIX}/bin/pecat.pl" <<EOF
+#!/bin/bash
+${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/bin/pecat.pl "\$@"
+EOF
+chmod +x "${PREFIX}/bin/pecat.pl"
