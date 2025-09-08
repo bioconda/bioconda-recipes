@@ -16,6 +16,13 @@ cp libmstoolkitlite.s* ${PREFIX}/lib
 cd $SRC_DIR
 
 sed -i.bak 's/-static//' Makefile
+if [[ $target_platform == 'linux-aarch64' ]]; then
+    sed -i.bak 's/complex/my_complex/g' FFT.h
+    sed -i.bak 's/complex/my_complex/g' CMercury8.cpp
+    sed -i.bak 's/complex/my_complex/g' CMercury8.h
+    sed -i.bak 's/complex/my_complex/g' FFT-HK.cpp
+    sed -i.bak 's/complex/my_complex/g' FFT.cpp
 
+fi
 make CC=${CXX}
 cp hardklor $PREFIX/bin
