@@ -23,10 +23,9 @@ requirements:
     - pip
   run:
     - python >=3.8,<3.9
-    # Protect Flye from being downgraded by other deps (e.g., Masurca)
-    - flye >=2.9.5,<3.0a0
+    # Keep Masurca; avoid packages that collide with its bundled MUMmer3
     - masurca >=4.1.2
-    - quast >=5.2.0
+    - flye >=2.9.5,<3.0a0
     - compleasm >=0.2.6
     - busco >=5.8.2
     - biopython >=1.81
@@ -57,7 +56,6 @@ requirements:
     - gfatools >=0.5
     - bifrost >=1.3.5
     - ratatosk >=0.9.0
-    - sra-tools >=3.2.0
     - filtlong >=0.2.1
     - pyinaturalist >=0.20
     - jinja2 >=3.1.4
@@ -65,10 +63,9 @@ requirements:
     - tabulate >=0.9.0
     - openpyxl >=3.1.5
 
-# Soft constraint to forbid too-old Flye in the solve.
-# This doesn't force install anything; it blocks solutions picking flye<2.9.5.
+# Prevent separate mummer from being solved alongside masurca (file clobbers)
 run_constrained:
-  - flye <2.9.5
+  - mummer <0a0
 
 test:
   requires:
@@ -77,14 +74,7 @@ test:
   commands:
     - EGAP --help
     - flye --version
-    - |
-      python - <<'PY'
-      from subprocess import check_output
-      from packaging.version import Version
-      ver = check_output(["flye", "--version"], text=True).strip()
-      assert Version(ver) >= Version("2.9.5") and Version(ver) < Version("3.0.0"), f"Unexpected Flye version: {ver}"
-      print("Flye version OK:", ver)
-      PY
+    - python -c "from subprocess import check_output; from packaging.version import Version; ver=check_output(['flye','--version'], text=True).strip(); assert Version(ver)>=Version('2.9.5') and Version(ver)<Version('3.0.0'), 'Unexpected Flye version: '+ver; print('Flye version OK:', ver)"
 
 about:
   home: https://github.com/iPsychonaut/EGAP
@@ -104,4 +94,3 @@ extra:
     Please refer to the upstream GitHub page for usage instructions.
   recipe-maintainers:
     - iPsychonaut
-
