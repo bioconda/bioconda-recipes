@@ -15,9 +15,6 @@ cd ${PREFIX}/bin
 # WGA must use Bioconda's GSAlign and Red
 perl -pi.bak -e 's/\$Bin\/lib\/GSAlign\/bin\///; s/my \$REDEXE.*/my \$REDEXE=`which Red`;chomp(\$REDEXE);/; s/\-\-cor/--exe \$REDEXE --cor/g' WGA
 
-# fix shebangs of Perl utils
-perl -pi.bak -e 's/\/usr\/bin\/perl -w/\/usr\/bin\/env perl/' utils/*.pl
-
 ## get Red2Ensembl, adapt it to bioconda's Red 
 cd utils && wget https://raw.githubusercontent.com/Ensembl/plant-scripts/refs/heads/master/repeats/Red2Ensembl.py && \
     chmod +x Red2Ensembl.py && perl -pi.bak -e 's/frm 3/frm 2/' Red2Ensembl.py && cd ..
