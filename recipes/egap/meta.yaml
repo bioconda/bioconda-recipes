@@ -15,7 +15,7 @@ build:
   noarch: python
   number: 0
   run_exports:
-    - {{ pin_subpackage('egap', max_pin="x") }}
+    - {{ pin_subpackage('egap', max_pin='x') }}
 
 requirements:
   host:
@@ -23,8 +23,7 @@ requirements:
     - pip
   run:
     - python >=3.8,<3.9
-    # Keep Masurca; avoid packages that collide with its bundled MUMmer3
-    - masurca >=4.1.2
+    - masurca >=4.1.2          # keep; bundles MUMmer3
     - flye >=2.9.5,<3.0a0
     - quast >=5.2.0
     - compleasm >=0.2.6
@@ -64,7 +63,7 @@ requirements:
     - tabulate >=0.9.0
     - openpyxl >=3.1.5
 
-# Prevent separate mummer from being solved alongside masurca (file clobbers)
+# Avoid separate mummer package (clobbers with masurca's bundled tools)
 run_constrained:
   - mummer <0a0
 
@@ -75,7 +74,18 @@ test:
   commands:
     - EGAP --help
     - flye --version
-    - "python -c \"from subprocess import check_output; from packaging.version import Version as V; ver=check_output(['flye','--version'], text=True).strip(); assert V(ver)>=V('2.9.5') and V(ver)<V('3.0.0'), 'Unexpected Flye version: '+ver; print('Flye version OK:', ver)\""
+    - |
+      python - <<'PY'
+      import re, subprocess, sys
+      from packaging.version import Version
+      v = subprocess.check_output(["flye", "--version"], text=True).strip()
+      m = re.search(r"(\d+\.\d+\.\d+)", v)
+      if not m:
+          sys.exit(f"Could not parse Flye version: {v}")
+      ver = Version(m.group(1))
+      assert Version("2.9.5") <= ver < Version("3.0.0"), f"Unexpected Flye version: {v}"
+      print("Flye version OK:", v)
+      PY
 
 about:
   home: https://github.com/iPsychonaut/EGAP
