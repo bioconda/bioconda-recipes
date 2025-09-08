@@ -1,6 +1,5 @@
 {% set name = "egap" %}
-{% set version = "3.2c" %}
-
+{% set version = "3.3c" %}
 
 package:
   name: {{ name|lower }}
@@ -8,7 +7,7 @@ package:
 
 source:
   - url: https://github.com/iPsychonaut/EGAP/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: 62708e24ca77e62482526a813e2473b02117b76164ca78711037e2fe105d81ad
+    sha256: 79ac7228d74fd0b4e8b5f6db09f1c657558b7c0a7ce3fd41ac0b92e97dc9e2b2
   - url: https://github.com/iPsychonaut/runner/archive/refs/tags/v0.0.0.tar.gz
     sha256: 4e67bb1e970dadb86425cb2698e0e2e34f70d78cbf77a32f73c13f66dffb55fc
 
@@ -24,6 +23,8 @@ requirements:
     - pip
   run:
     - python >=3.8,<3.9
+    # Protect Flye from being downgraded by other deps (e.g., Masurca)
+    - flye >=2.9.5,<3.0a0
     - masurca >=4.1.2
     - quast >=5.2.0
     - compleasm >=0.2.6
@@ -51,7 +52,6 @@ requirements:
     - kmc >=3.2.4
     - spades >=4.0.0
     - purge_dups >=1.2.6
-    - flye >=2.9.5
     - pbccs >=6.4.0
     - hifiasm >=0.21.0
     - gfatools >=0.5
@@ -65,20 +65,36 @@ requirements:
     - tabulate >=0.9.0
     - openpyxl >=3.1.5
 
+# Soft constraint to forbid too-old Flye in the solve.
+# This doesn't force install anything; it blocks solutions picking flye<2.9.5.
+run_constrained:
+  - flye <2.9.5
+
 test:
+  requires:
+    - python
+    - packaging
   commands:
     - EGAP --help
+    - flye --version
+    - python - <<'PY'
+from subprocess import check_output
+from packaging.version import Version
+ver = check_output(["flye", "--version"], text=True).strip()
+assert Version(ver) >= Version("2.9.5") and Version(ver) < Version("3.0.0"), f"Unexpected Flye version: {ver}"
+print("Flye version OK:", ver)
+PY
 
 about:
   home: https://github.com/iPsychonaut/EGAP
-  license: "BSD 3-Clause License"
+  license: BSD-3-Clause
   license_file: LICENSE
-  summary: "EGAP pipeline for genome assembly and QC analysis"
+  summary: EGAP pipeline for genome assembly and QC analysis
   description: |
     EGAP (Entheome Genome Assembly Pipeline) is a versatile bioinformatics pipeline
     for hybrid genome assembly from Oxford Nanopore, Illumina, and PacBio data.
-    It supports multiple input modes and assembly methods and determines the best 
-    based on multiple metrics: BUSCO Completeness (Single + Duplicated), Assembly 
+    It supports multiple input modes and assembly methods and determines the best
+    based on multiple metrics: BUSCO Completeness (Single + Duplicated), Assembly
     Contig Count, Assembly N50, Assembly L50, and Assembly GC-content.
 
 extra:
@@ -87,8 +103,3 @@ extra:
     Please refer to the upstream GitHub page for usage instructions.
   recipe-maintainers:
     - iPsychonaut
-
-
-
-
-
