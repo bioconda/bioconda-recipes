@@ -10,6 +10,8 @@ mv  lib \
     version.txt \
     ${PREFIX}/bin
 
+mv sample_data ${PREFIX}
+
 cd ${PREFIX}/bin
 
 # WGA must use Bioconda's GSAlign and Red
