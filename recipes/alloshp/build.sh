@@ -10,7 +10,8 @@ mv  lib \
     version.txt \
     ${PREFIX}/bin
 
-mv sample_data ${PREFIX}
+# copy sample_data
+mv sample_data Makefile ${PREFIX}
 
 cd ${PREFIX}/bin
 
