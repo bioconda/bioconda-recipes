@@ -3,7 +3,8 @@ set -xe
 
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
-
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 -fomit-frame-pointer -funroll-loops"
 
 # needed to fix version
@@ -35,8 +36,8 @@ for binary in phyml-mpi phyml phytime; do
 		--disable-dependency-tracking \
 		--prefix="${PREFIX}" \
 		--enable-${binary} \
-		LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-	make -j"${CPU_COUNT}" CFLAGS="${CFLAGS} ${ARCH_OPTS}"
+		LDFLAGS="${LDFLAGS}"
+	make CFLAGS="${CFLAGS} ${ARCH_OPTS}" -j"${CPU_COUNT}"
 	make install
 	make clean
 done
