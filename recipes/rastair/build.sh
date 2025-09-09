@@ -10,4 +10,6 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 RUST_BACKTRACE=1
 cargo install -v --no-track --root "${PREFIX}" --path .
 
-"${STRIP}" "$PREFIX/bin/tgv"
+# Copy R scripts
+mkdir -p $PREFIX/share/rastair/scripts
+cp -R scripts/* $PREFIX/share/rastair/scripts/
