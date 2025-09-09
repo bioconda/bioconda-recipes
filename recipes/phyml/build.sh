@@ -5,7 +5,7 @@ export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CFLAGS="${CFLAGS} -O3 -fomit-frame-pointer -funroll-loops"
+export CFLAGS="${CFLAGS} -O3 -fopenmp -fomit-frame-pointer -funroll-loops"
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 
