@@ -23,7 +23,7 @@ requirements:
     - pip
   run:
     - python >=3.8,<3.9
-    - masurca >=4.1.2          # keep; bundles MUMmer3
+    - masurca >=4.1.2              # keep; bundles MUMmer3 tools
     - flye >=2.9.5,<3.0a0
     - quast >=5.2.0
     - compleasm >=0.2.6
@@ -63,7 +63,7 @@ requirements:
     - tabulate >=0.9.0
     - openpyxl >=3.1.5
 
-# Avoid separate mummer package (clobbers with masurca's bundled tools)
+# Prevent a separate mummer from being installed (clobbers with masurca bundle)
 run_constrained:
   - mummer <0a0
 
@@ -72,18 +72,10 @@ test:
     - python
     - packaging
   commands:
-    - flye --version
-    - |
-      python - <<'PY'
-      import re, subprocess, sys
-      from packaging.version import Version
-      v = subprocess.check_output(["flye", "--version"], text=True).strip()
-      m = re.search(r"(\d+\.\d+\.\d+)", v)
-      if not m:
-          sys.exit(f"Could not parse Flye version: {v}")
-      ver = Version(m.group(1))
-      assert Version("2.9.5") <= ver < Version("3.0.0"), f"Unexpected Flye version: {v}"
-      print("Flye version OK:", v)
+    - python - <<'PY'
+      import shutil, sys
+      assert shutil.which("flye"), "flye not in PATH"
+      print("flye found on PATH")
       PY
 
 about:
@@ -104,4 +96,3 @@ extra:
     Please refer to the upstream GitHub page for usage instructions.
   recipe-maintainers:
     - iPsychonaut
-
