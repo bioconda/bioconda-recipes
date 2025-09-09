@@ -10,14 +10,16 @@ export CPLUS_INCLUDE_PATH="${PREFIX}/include"
 export PATH="${PATH}:${PREFIX}/bin"
 
 # 架构优化
-case $(uname -m) in
-    aarch64|arm*)
-        CFLAGS="${CFLAGS} -march=armv8-a+simd -DKSW_CPU_DISPATCH=0"
-        ;;
-    *)
-        CFLAGS="${CFLAGS} -march=native"
-        ;;
-esac
+case $(uname -m) in    
+    aarch64|arm*)         
+	CFLAGS="${CFLAGS} -march=armv8-a+simd -DKSW_CPU_DISPATCH=0"         
+	CFLAGS="${CFLAGS} -mtune=cortex-a72"  # 添加ARM调优参数         
+	;;     
+    *)         
+	CFLAGS="${CFLAGS} -march=native"         
+	;; 
+esac 
+
 
 # 标准化ksw2库编译
 KSW2_DIR="${SRC_DIR}/thirdparty/ksw2"
@@ -40,6 +42,7 @@ libksw2.a: $(OBJS)
 clean:
 	rm -f *.o *.a
 EOF
+
 
 # 编译ksw2库
 cd "${KSW2_DIR}" || exit 1
