@@ -5,7 +5,10 @@ export CFLAGS="$CFLAGS -O3"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export CXXFLAGS="$CXXFLAGS -O3"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-export LIBS="${LIBS} -lm ${PREFIX}/lib/libz.a"
+
+mkdir -p build-aux
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 
 case $(uname -m) in
     aarch64)
