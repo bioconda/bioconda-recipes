@@ -8,6 +8,8 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 mkdir -p "$PREFIX/bin"
 
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* lib/htslib
+
 #Inject compilers
 sed -i.bak "s#gcc#${CC}#g" lib/pcre2/Makefile
 rm -f lib/pcre2/*.bak
