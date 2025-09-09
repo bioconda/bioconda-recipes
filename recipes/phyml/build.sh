@@ -7,9 +7,10 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 -fomit-frame-pointer -funroll-loops"
 
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
+
 # needed to fix version
-sh ./autogen.sh
-autoupdate
+autoreconf -if
 
 # PhyML builds different binaries depending on configure flags.
 # We build
@@ -37,7 +38,7 @@ for binary in phyml-mpi phyml phytime; do
 		--prefix="${PREFIX}" \
 		--enable-${binary} \
 		LDFLAGS="${LDFLAGS}"
-	make CFLAGS="${CFLAGS} ${ARCH_OPTS}" -j"${CPU_COUNT}"
+	make CC="${CC}" CFLAGS="${CFLAGS} ${ARCH_OPTS}" -j"${CPU_COUNT}"
 	make install
 	make clean
 done
