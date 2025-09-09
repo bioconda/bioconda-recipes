@@ -12,7 +12,7 @@ mkdir -p "$PREFIX/bin"
 sed -i.bak "s#gcc#${CC}#g" lib/pcre2/Makefile
 rm -f lib/pcre2/*.bak
 
-make CXX="${CXX}" CC="${CC}" OPTFLAG="-O3 -L${PREFIX}/lib" -j"${CPU_COUNT}"
+make CXX="${CXX}" CC="${CC}" OPTFLAG="-O3 -I${PREFIX}/include -L${PREFIX}/lib" -j"${CPU_COUNT}"
 make test
 
 install -v -m 0755 vt "$PREFIX/bin"
