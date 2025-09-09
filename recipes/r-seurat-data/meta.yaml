@@ -1,37 +1,50 @@
-{% set version = '0.2.1' %}
+{% set name = "r-seurat-data" %}
+{% set version = "0.2.2.9002" %}
+
 package:
-  name: r-seurat-data
-  version: {{ version|replace("-", "_") }}
+  name: {{ name }}
+  version: {{ version }}
+
 source:
-  url: https://github.com/satijalab/seurat-data/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 134b0dbc113e3533494461646c8362189b2bdf8940050de3561bcd488d905438
+  url: https://github.com/satijalab/seurat-data/archive/3e51f44303069b64f5dc4d68e6a3d4a343f55c39.tar.gz
+  sha256: 881ebe70a2a6c6574916925d9e3a70b66c32806ddc38a472d03f90e0a146fc00
+
 build:
-  script: $R CMD INSTALL --build .
+  number: 0
+  noarch: generic
+  script:
+    - export DISABLE_AUTOBREW=1
+    - $R CMD INSTALL --build . $R_ARGS
   run_exports:
-    - {{ pin_subpackage("r-seurat-data", max_pin="x.x.x") }}
-  number: 1
+    - {{ pin_subpackage(name, max_pin="x.x") }}
   rpaths:
     - lib/R/lib/
     - lib/
+
 requirements:
-  build:
   host:
     - r-base
     - r-cli
     - r-crayon
     - r-rappdirs
+    - r-seurat >=5
+    - r-seuratobject >=5
   run:
     - r-base
     - r-cli
     - r-crayon
     - r-rappdirs
+    - r-seurat >=5
+    - r-seuratobject >=5
+
 test:
   commands:
     - $R -e "library('SeuratData')"
+
 about:
-  home: http://www.satijalab.org/seurat
-  dev_url: https://github.com/satijalab/seurat-data
-  license: GPL-3.0-only
+  home: "https://www.satijalab.org/seurat"
+  dev_url: "https://github.com/satijalab/seurat-data"
+  license: "GPL-3.0-only"
   summary: Single cell RNA sequencing datasets can be large, consisting of matrices that contain
     expression data for several thousand features across several thousand cells. This
     package is designed to easily install, manage, and learn about various single-cell
@@ -40,3 +53,4 @@ about:
   license_file:
     - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
     - LICENSE
+  doc_url: "https://github.com/satijalab/seurat-data/blob/main/README.md"
