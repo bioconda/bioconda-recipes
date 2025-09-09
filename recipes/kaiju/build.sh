@@ -11,7 +11,7 @@ mkdir -p "$PREFIX/bin"
 
 cd src
 
-make CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}"
+make CC="${CC}" CXX="${CXX}" INCLUDES="-I${PREFIX}/include -I./include -I./include/ncbi-blast+" -j"${CPU_COUNT}"
 
 cd $SRC_DIR/bin
 
