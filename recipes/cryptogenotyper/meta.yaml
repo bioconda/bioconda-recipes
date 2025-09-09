@@ -1,35 +1,44 @@
-{% set version = "1.0" %}
+{% set name = "cryptogenotyper" %}
+{% set version = "1.5.0" %}
 
 package:
-    name: cryptogenotyper
-    version: {{ version }}
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/phac-nml/CryptoGenotyper/archive/{{ version }}.tar.gz
-  sha256: aae472b673073ba67f4424b615d317fd460c51ddc6965cc4fbc2ebbfb99d3b2a
+  sha256: b565f85eaeae3fac8bdff8e599f620a2c0b7ec29e314024ee109a7f0174a086f
 
 build:
-    number: 3 
-    noarch: python
-    script: python -m pip install --no-deps --ignore-installed . -vv
+  number: 1 
+  noarch: python
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  entry_points:
+    - cryptogenotyper = CryptoGenotyper.typer:main
+    - cryptogenotyper_init = CryptoGenotyper.utilities:init_blast_databases
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
-    host:
-        - python >=3.4
-        - pip
-    run:
-        - python >=3.4
-        - numpy >=1.15.4
-        - biopython >=1.70,<1.78
-        - blast ==2.9.0
-        - clustalw >=2.1
+  host:
+    - python >=3.6
+    - pip
+    - setuptools
+    - pytest-runner
+  run:
+    - python >=3.6
+    - numpy >=1.15.4
+    - biopython >=1.70,<1.78
+    - blast >=2.9.0
+    - clustalw >=2.1
 
 test:
   commands:
-    - "cryptogenotyper -h"
-    - "blastn -h"
+    - cryptogenotyper -h
 
 about:
-    home: https://github.com/phac-nml/CryptoGenotyper
-    license: Apache License, Version 2.0
-    summary: 'This package crypto_typer: tool to subtype the parasite, Cryptosporidium, based on the 18S and gp60 markers.'
+  home: "https://github.com/phac-nml/CryptoGenotyper"
+  license: "Apache-2.0"
+  license_family: APACHE
+  summary: "This package crypto_typer: tool to subtype the parasite, Cryptosporidium, based on the 18S and gp60 markers."
+  dev_url: "https://github.com/phac-nml/CryptoGenotyper"
