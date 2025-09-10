@@ -2,59 +2,64 @@
 {% set version = "1.4.1" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/XiaohuaZhangLLNL/VinaLC/archive/refs/tags/v{{ version }}.tar.gz
   sha256: ab73e3cced10adb76ec720cd05585d961b769eaf2610046420366f9c47d792cd
+
 build:
   number: 0
-  skip: True  # [not py3k]
   script: |
-    cmake -DCMAKE_INSTALL_PREFIX=$PREFIX \
-        -DCMAKE_C_COMPILER=$CC \
-        -DCMAKE_CXX_COMPILER=$CXX \
+    cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+        -DCMAKE_C_COMPILER=${CC} \
+        -DCMAKE_CXX_COMPILER=${CXX} \
         -DCMAKE_BUILD_TYPE=Release \
+        -DBOOST_ROOT=${PREFIX} \
+        -DMPI_CXX_COMPILER=${PREFIX}/bin/mpicxx \
         -DWITH_MPI=ON \
         -DWITH_OPENMP=ON \
-        -DCMAKE_INSTALL_RPATH=$PREFIX/lib \
+        -DCMAKE_INSTALL_RPATH=${PREFIX}/lib \
         -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE \
         -DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE \
         -DCMAKE_SKIP_BUILD_RPATH=FALSE
-    make -j{{ CPU_COUNT }}
+    make -j{{ CPU_COUNT }
     make install
   run_exports:
-    - {{ pin_subpackage('vinalc', max_pin="1.4.1") }}
-
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - pkg-config
-    - openmpi >=4.0
     - autoconf
     - automake
     - libtool
-    - openmpi >=4.0
     - cmake >=3.29
     - make
-    - boost-cpp >=1.85
-    - libboost-mpi >=1.85
-    - zlib >=1.3.1
+  host:
+    - mpich-mpicxx
+    - boost-cpp
+    - zlib
   run:
-    - openmpi >=4.0
-    - boost-cpp >=1.85
-    - libboost-mpi >=1.85
-    - zlib >=1.3.1
+    - mpich-mpicxx
+    - boost-cpp
 
 test:
   commands:
     - mpirun --allow-run-as-root -n 2 vinalc --help
 
 about:
-  home: https://github.com/XiaohuaZhangLLNL/VinaLC
+  home: "https://github.com/XiaohuaZhangLLNL/VinaLC"
   summary: "VinaLC: MPI-accelerated molecular docking program for virtual screening."
-  license: Apache
+  license: "Apache-2.0"
+  license_family: APACHE
   license_file: License
+  dev_url: "https://github.com/XiaohuaZhangLLNL/VinaLC"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
