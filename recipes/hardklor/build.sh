@@ -1,7 +1,8 @@
 #!/bin/bash
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-register"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-register"
 
 VER=$PKG_VERSION
 mkdir -p "$PREFIX/bin"
