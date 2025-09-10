@@ -1,5 +1,7 @@
 #!/bin/bash
-set -ex
+set -x  # 启用调试模式
+set -e  # 遇到错误立即退出
+
 
 # 设置环境变量
 export LIBRARY_PATH="${PREFIX}/lib"
