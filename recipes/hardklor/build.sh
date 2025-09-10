@@ -17,7 +17,7 @@ cd ../MSToolkit
 sed -i.bak 's/-static//' Makefile
 rm -f *.bak
 
-make CC="${CXX}" GCC="${CC}" -j"${CPU_COUNT}"
+make CC="${CXX}" GCC="${CC}"
 
 cp -f libmstoolkitlite.s* ${PREFIX}/lib
 cd $SRC_DIR
@@ -31,6 +31,6 @@ if [[ "$target_platform" == "linux-aarch64" ]]; then
     sed -i.bak 's/complex/my_complex/g' FFT-HK.cpp
     sed -i.bak 's/complex/my_complex/g' FFT.cpp
 fi
-make CC="${CXX}" -j"${CPU_COUNT}"
+make CC="${CXX}"
 
 install -v -m 0755 hardklor "$PREFIX/bin"
