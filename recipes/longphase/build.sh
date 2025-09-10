@@ -16,6 +16,7 @@ autoreconf -if
 ./configure --prefix="${PREFIX}" \
   CC="${CC}" \
   CFLAGS="${CFLAGS}" \
+  CXXFLAGS="${CXXFLAGS}" \
   CPPFLAGS="${CPPFLAGS}" \
   LDFLAGS="${LDFLAGS}"
 
