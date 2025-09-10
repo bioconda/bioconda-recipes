@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex 
+set -ex
 
 case $(uname -m) in
 	aarch64|arm64) sed -i.bak 's|-mavx2||' include.mk && sed -i.bak 's|-D__AVX2__||' include.mk && rm -rf *.bak
@@ -22,17 +22,8 @@ make CC="${CC}" -j"${CPU_COUNT}"
 cd ../../../../../
 
 sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
-rm -rf *.bak
+rm -f *.bak
 ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
 
 make
-mv bin/* ${PREFIX}/bin
-
-# cactus-gfa-tools is required but doesn't have tags. They just use exact commits in their scripts
-git clone https://github.com/ComparativeGenomicsToolkit/cactus-gfa-tools.git
-cd cactus-gfa-tools
-git checkout 1121e370880ee187ba2963f0e46e632e0e762cc5
-
-make -j"${CPU_COUNT}"
-
-install -v -m 755 mzgaf2paf pafcoverage rgfa-split paf2lastz pafmask gaf2paf gaf2unstable gaffilter rgfa2paf paf2stable "${PREFIX}/bin"
+install -v -m 0755 bin/* "${PREFIX}/bin"
