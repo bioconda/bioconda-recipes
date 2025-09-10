@@ -2,6 +2,11 @@
 set -ex
 
 case $(uname -m) in
+    x86_64) export ARCH_BUILD="avx2=1" ;;
+    arm64|aarch64) export ARCH_BUILD="" ;;
+esac
+
+case $(uname -m) in
 	aarch64|arm64) sed -i.bak 's|-mavx2||' include.mk && sed -i.bak 's|-D__AVX2__||' include.mk && rm -rf *.bak
   ;;
 esac
@@ -9,7 +14,7 @@ esac
 cd submodules/abPOA
 make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" -j"${CPU_COUNT}"
 make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" src/abpoa_align_simd.o -j"${CPU_COUNT}"
-make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" avx2=1 -j"${CPU_COUNT}"
+make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" "${ARCH_BUILD}" -j"${CPU_COUNT}"
 cd ../../
 
 cd submodules/FASTGA
