@@ -9,6 +9,8 @@ export CPATH="${PREFIX}/include"
 
 mkdir -p "$PREFIX/bin"
 
+echo -e "5.3.0" > jemalloc/version.txt
+
 autoreconf -if
 ./configure --prefix="${PREFIX}" \
   CC="${CC}" \
