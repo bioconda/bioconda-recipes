@@ -14,8 +14,7 @@ source:
 build:
   noarch: python
   number: 0
-  run_exports:
-    - {{ pin_subpackage('egap', max_pin='x') }}
+  script: python -m pip install --no-deps --no-build-isolation -v .
 
 requirements:
   host:
@@ -23,22 +22,20 @@ requirements:
     - pip
   run:
     - python >=3.8,<3.9
-    - masurca >=4.1.2              # keep; bundles MUMmer3 tools
-    - flye >=2.9.5,<3.0a0
-    - quast >=5.2.0
-    - compleasm >=0.2.6
-    - busco >=5.8.2
-    - biopython >=1.81
-    - ragtag >=2.1.0
-    - nanoplot >=1.43.0
-    - termcolor >=2.3.0
+    - masurca >=4.1.4                  # bundles mummer3, flye, samtools
     - minimap2 >=2.28
     - bwa-mem2 >=2.2.1
-    - samtools >=1.21
-    - bamtools >=2.5.2
-    - tgsgapcloser >=1.2.1
-    - abyss >=2.0.2
-    - sepp >=4.5.1
+    - bbmap >=39.15
+    - racon >=1.5.0
+    - hifiasm >=0.21.0
+    - gfatools >=0.5
+    - bifrost >=1.3.5
+    - ratatosk >=0.9.0
+    - kmc >=3.2.4
+    - filtlong >=0.2.1
+    - spades >=4.0.0
+    - pbccs >=6.4.0
+    - biopython >=1.81
     - psutil >=6.0.0
     - beautifulsoup4 >=4.12.3
     - ncbi-datasets-cli >=16.39.0
@@ -46,37 +43,25 @@ requirements:
     - trimmomatic >=0.39
     - pilon >=1.22
     - fastqc >=0.12.1
-    - bbmap >=39.15
-    - racon >=1.5.0
-    - kmc >=3.2.4
-    - spades >=4.0.0
-    - purge_dups >=1.2.6
-    - pbccs >=6.4.0
-    - hifiasm >=0.21.0
-    - gfatools >=0.5
-    - bifrost >=1.3.5
-    - ratatosk >=0.9.0
-    - filtlong >=0.2.1
     - pyinaturalist >=0.20
     - jinja2 >=3.1.4
     - geopy >=2.4.1
     - tabulate >=0.9.0
     - openpyxl >=3.1.5
-
-# Prevent a separate mummer from being installed (clobbers with masurca bundle)
-run_constrained:
-  - mummer <0a0
+  run_constrained:
+    # Prevent separate installs that collide with masurca's bundled binaries
+    - mummer <0a0
+    - flye <0a0
+    - samtools <0a0
+    - libgd <0a0
 
 test:
   requires:
     - python
     - packaging
   commands:
-    - python - <<'PY'
-      import shutil, sys
-      assert shutil.which("flye"), "flye not in PATH"
-      print("flye found on PATH")
-      PY
+    - EGAP --help
+    - python -c "import shutil,sys; assert shutil.which('flye'), 'flye not in PATH (provided by masurca)'; print('flye found')"
 
 about:
   home: https://github.com/iPsychonaut/EGAP
@@ -84,15 +69,19 @@ about:
   license_file: LICENSE
   summary: EGAP pipeline for genome assembly and QC analysis
   description: |
-    EGAP (Entheome Genome Assembly Pipeline) is a versatile bioinformatics pipeline
-    for hybrid genome assembly from Oxford Nanopore, Illumina, and PacBio data.
-    It supports multiple input modes and assembly methods and determines the best
-    based on multiple metrics: BUSCO Completeness (Single + Duplicated), Assembly
-    Contig Count, Assembly N50, Assembly L50, and Assembly GC-content.
+    EGAP (Entheome Genome Assembly Pipeline) is a bioinformatics pipeline for
+    hybrid genome assembly from ONT, Illumina, and PacBio data. It supports
+    multiple assembly methods and ranks results with metrics including BUSCO,
+    contig count, N50/L50, and GC-content.
+  doc_url: https://github.com/iPsychonaut/EGAP
+  dev_url: https://github.com/iPsychonaut/EGAP
 
 extra:
   notes: |
-    This package installs a custom executable named "EGAP" in $PREFIX/bin.
-    Please refer to the upstream GitHub page for usage instructions.
+    - This recipe keeps MaSuRCA and relies on the mummer3/flye/samtools binaries
+      bundled inside it. To avoid file clobbers, standalone packages for those
+      tools are intentionally *not* installed.
+    - If you need QUAST-based reports, install it in a separate environment
+      (it requires mummer3/circos/libgd which conflict with MaSuRCA).
   recipe-maintainers:
     - iPsychonaut
