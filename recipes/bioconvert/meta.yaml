@@ -11,21 +11,21 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 2
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps --use-pep517 -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   entry_points:
-    - bioconvert=bioconvert.scripts.converter:main
-    - bioconvert_init=bioconvert.scripts.init_convert:main
-    - bioconvert_stats=bioconvert.scripts.stats:main
+    - bioconvert = bioconvert.scripts.converter:main
+    - bioconvert_init = bioconvert.scripts.init_convert:main
+    - bioconvert_stats = bioconvert.scripts.stats:main
   run_exports:
-    - {{ pin_subpackage("bioconvert", max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
     - python >=3.8
     - pip
-    - cython
+    - setuptools
   run:
     - python >=3.8
     - easydev
@@ -54,17 +54,18 @@ requirements:
     - statsmodels
     - tqdm
     - bamtools
-    - bcftools
+    - bcftools >=1.19,<1.20
+    - htslib >=1.19.1,<1.20.0a0
     - bedtools
     - bedops
     - dsrc
-    - go 1.10.*
+    - go 1.24*
     - mosdepth
     - pbzip2
     - pigz
     - plink
     - sambamba
-    - samtools >=1.17
+    - samtools
     - seqtk
     - seqkit
     - squizz
@@ -74,7 +75,7 @@ requirements:
     - ucsc-wigtobigwig
     - ucsc-fatotwobit
     - ucsc-twobittofa
-    - wiggletools 1.2.*
+    - wiggletools >=1.2.11,<1.3
     - sed
     - mawk
     - graphviz
@@ -93,16 +94,17 @@ test:
     - MPLBACKEND=agg bioconvert_stats --help
 
 about:
-  home: https://pypi.org/project/bioconvert/
-  summary: Convert between bioinformatics formats
-  license: GPL-3.0
+  home: "https://github.com/bioconvert/bioconvert"
+  summary: "Convert between bioinformatics formats."
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: COPYING
-  dev_url: https://github.com/bioconvert/bioconvert
-  doc_url: https://bioconvert.readthedocs.io/en/dev/
+  dev_url: "https://github.com/bioconvert/bioconvert"
+  doc_url: "https://bioconvert.readthedocs.io/en/dev"
 
 extra:
   container:
     # needs libGL.so.1
-    extended-base: true
+    extended-base: True
   skip-lints:
     - should_use_compilers
