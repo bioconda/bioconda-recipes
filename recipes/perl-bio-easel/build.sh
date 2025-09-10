@@ -1,21 +1,15 @@
 #!/bin/bash
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export LC_ALL="en_US.UTF-8"
-
-export SHARE_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
-
-cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* src/easel
+SHARE_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
 
 mkdir -p $SHARE_DIR/
-cp -rf src/ $SHARE_DIR/
+cp -r src/ $SHARE_DIR/
 
 # Build and install Bio-Easel
-export BIO_EASEL_SHARE_DIR="$(pwd)"
-export PATH="$PREFIX/bin:$PATH"
-
-perl Makefile.PL INSTALLDIRS=site NO_PACKLIST=1 NO_PERLLOCAL=1
-make -j"${CPU_COUNT}"
+export BIO_EASEL_SHARE_DIR=$(pwd)
+PATH=$PREFIX/bin:$PATH
+perl Makefile.PL INSTALLDIRS=site
+make
 make test
 make install
 unset BIO_EASEL_SHARE_DIR

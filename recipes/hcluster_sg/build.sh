@@ -1,12 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3"
-
+make CXX="${CXX}" CFLAGS="${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 mkdir -p "$PREFIX/bin"
-
-make CXX="${CXX}" CFLAGS="${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}" -j"${CPU_COUNT}"
-
-install -v -m 0755 hcluster_sg "$PREFIX/bin"
+cp hcluster_sg "$PREFIX/bin/"

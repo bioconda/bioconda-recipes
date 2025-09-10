@@ -2,43 +2,36 @@
 {% set version = "0.14.0" %}
 
 package:
-  name: {{ name }}
+  name: {{ name|lower }}
   version: {{ version }}
 
+build:
+  number: 5
+
 source:
-  git_url: https://github.com/jts/nanopolish.git
-  git_rev: v{{ version }}
-  sha256: unused
+  git_url: https://github.com/jts/nanopolish
+  git_rev: 'v{{ version }}'
+  sha256: bcc1a7e2d23941592d817da3af9165b3843ae52b11a3ca5983d6417f1614ef78
   patches:
     - nanopolish.patch
-
-build:
-  number: 6
-  run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - pkg-config
-  host:
     - libgomp  # [linux]
     - llvm-openmp  # [osx]
-    - htslib
-    - hdf5 =1.14.3
     - eigen
-    - tar
-    - unzip
-    - wget
+  host:
+    - htslib
+    - hdf5
     - zlib
+    - eigen
   run:
-    - libgomp  # [linux]
-    - llvm-openmp  # [osx]
     - biopython
     - python
-    - ont_vbz_hdf_plugin =1.0.12
+    - ont_vbz_hdf_plugin
 
 test:
   commands:
@@ -46,17 +39,12 @@ test:
     - nanopolish --version
 
 about:
-  home: "https://github.com/jts/nanopolish"
+  home: https://github.com/jts/nanopolish
   license: MIT
-  license_family: MIT
   license_file: LICENSE
-  summary: "Signal-level algorithms for MinION data."
-  dev_url: "https://github.com/jts/nanopolish"
+  summary: 'Signal-level algorithms for MinION data.'
 
 extra:
-  additional-platforms:
-    - linux-aarch64
-    - osx-arm64
   skip-lints:
     - uses_vcs_url
   identifiers:

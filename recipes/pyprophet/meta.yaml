@@ -1,22 +1,23 @@
 {% set name = "pyprophet" %}
-{% set version = "3.0.1" %}
-{% set sha256 = "21dad53852fa969fa028d520f24786f53d32e66613d58b65d14d19149dbaf921" %}
+{% set version = "2.2.5" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "f1d42ba53ecc0c0cac21e6938ad830f1260acb65ac69b3012a697f56e4badab3" %}
 
 package:
-  name: {{ name }}
-  version: {{ version }}
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
 
 source:
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pyprophet-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  '{{ hash_type }}': '{{ hash_value }}'
 
 build:
-  number: 0
-  entry_points:
-    - pyprophet = pyprophet.main:cli
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  number: 4
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
+  entry_points:
+    - pyprophet=pyprophet.main:cli
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
   build:
@@ -24,36 +25,26 @@ requirements:
   host:
     - python
     - pip
-    - cython
-    - numpy ==2.0.2
-    - pypdf
-    - libgomp  # [linux]  
-    - llvm-openmp  # [osx]
+    - cython <1
+    - numpy >=1.9
+    - pypdf2
   run:
     - python
-    - libgomp  # [linux]  
-    - llvm-openmp  # [osx]
-    - click
-    #- duckdb-extensions
-    #- duckdb-extension-sqlite-scanner
-    - hyperopt
-    - loguru
-    - numpy ==2.0.2
-    - numexpr ==2.10.2
-    - pandas >=2.0
-    - polars
-    - psutil
-    - pyarrow
-    - pyopenms
-    - pypdf
-    - python-duckdb
-    - scikit-learn >=1.5
+    - {{ pin_compatible("numpy") }}
     - scipy
-    - seaborn-base
-    - statsmodels >=0.8.0
+    - pandas >=0.17
+    - numexpr >=2.1
+    - scikit-learn >=0.17
+    - matplotlib-base
+    - seaborn
     - tabulate
-    - typing-extensions
     - xgboost
+    - hyperopt
+    - statsmodels >=0.8.0
+    - click
+    - dataclasses
+    - pypdf2
+    - typing-extensions
 
 test:
   imports:
@@ -62,16 +53,13 @@ test:
     - pyprophet --help
 
 about:
-  home: "https://github.com/PyProphet/pyprophet"
-  license: "BSD-3-Clause"
+  home: https://github.com/PyProphet/pyprophet
+  license: BSD License
   license_family: BSD
-  license_file: LICENSE
-  summary: "PyProphet: Semi-supervised learning and scoring of OpenSWATH results."
-  dev_url: "https://github.com/PyProphet/pyprophet"
-  doc_url: "https://openswath.org/en/latest"
-
+  summary: Python reimplementation of mProphet peak scoring
 extra:
   additional-platforms:
     - linux-aarch64
-  identifiers:
-    - doi:10.1038/nmeth.1584
+  container:
+    # Click requires the extended container
+    extended-base: true
