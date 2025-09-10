@@ -1,38 +1,49 @@
-{% set version = "2.2.4" %}
+{% set name = "PPanGGOLiN" %}
+{% set version = "2.2.5" %}
 
 package:
-  name: ppanggolin
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
   url: https://github.com/labgem/PPanGGOLiN/archive/{{ version }}.tar.gz
-  sha256: 11cc8066a3bf611ef31e6aa9b00272d7f0b0c9b62c1b845a04d6863367486258
+  sha256: 90012a45c36ceedf8d57535abfb8599ffec92903a47559daab856f427441d8ef
 
 build:
   number: 0
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  entry_points:
+    - ppanggolin = ppanggolin.main:main
+  script:
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+    - export CFLAGS="${CFLAGS} -O3 -fcommon -Wno-implicit-function-declaration"
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
-    - {{ pin_subpackage("ppanggolin", max_pin="x") }}
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-
   host:
     - python
     - pip
     - cython <3
+    - setuptools-scm
   run:
-    - tqdm >=4.0.0, <5.0.0
-    - pytables >=3.0.0, <4.0.0
-    - pyrodigal >=3.0.0, <4.0.0
-    - networkx >=3.0.0, <4.0.0
+    - python
+    - tqdm >=4.0.0,<5.0.0
+    - pytables >=3.0.0,<4.0.0
+    - pyrodigal >=3.0.0,<4.0.0
+    - networkx >=3.0.0,<4.0.0
     - dataclasses =0.8
-    - scipy >=1.0.0, <2.0.0
-    - plotly >=5.0.0, <6.0.0
-    - gmpy2 >=2.0.0, <3.0.0
-    - pandas >=2.0.0, <3.0.0
-    - numpy >1.24.0, <2.0.0
-    - bokeh >=3.0.0, <4.0.0
+    - scipy >=1.0.0,<2.0.0
+    - plotly >=5.0.0,<6.0.0
+    - gmpy2 >=2.0.0,<3.0.0
+    - pandas >=2.0.0,<3.0.0
+    - numpy >1.24.0,<2.0.0
+    - bokeh >=3.0.0,<4.0.0
     # Tools that are not in Python 
     - infernal =1
     - aragorn =1
@@ -48,15 +59,23 @@ test:
     - ppanggolin
 
 about:
-  license: CeCiLL 2.1
-  home: https://github.com/labgem/PPanGGOLiN
-  doc_url: https://ppanggolin.readthedocs.io
-  summary: "PPanGGOLiN: Depicting microbial species diversity via a Partitioned PanGenome Graph"
+  home: "https://github.com/labgem/PPanGGOLiN"
+  summary: "PPanGGOLiN: Depicting microbial species diversity via a Partitioned PanGenome Graph."
+  license: "CeCiLL-2.1"
+  license_family: OTHER
+  license_file: "LICENSE.txt"
+  doc_url: "https://ppanggolin.readthedocs.io"
+  dev_url: "https://github.com/labgem/PPanGGOLiN"
 
 extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
+  identifiers:
+    - biotools:PPanGGOLiN
+    - usegalaxy-eu:ppanggolin_all
+    - usegalaxy-eu:ppanggolin_msa
+    - doi:10.1101/836239
   recipe-maintainers:
     - axbazin
     - jpjarnoux
