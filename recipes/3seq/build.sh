@@ -31,7 +31,7 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
-cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+cmake --build build --clean-first -j "${CPU_COUNT}"
 
 install -v -m 0755 build/3seq "$PREFIX/bin"
 
