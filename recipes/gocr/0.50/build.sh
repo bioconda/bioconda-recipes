@@ -1,5 +1,5 @@
-#!/bin/env bash
+#!/bin/bash
 
-./configure --prefix=$PREFIX
-make libs 
+./configure --prefix="${PREFIX}" CC="${CC}"
+make libs -j"${CPU_COUNT}"
 make all install
