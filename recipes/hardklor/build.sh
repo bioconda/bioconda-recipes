@@ -16,6 +16,7 @@ mv mstoolkit-7* ../MSToolkit
 cd ../MSToolkit
 
 sed -i.bak 's/-static//' Makefile
+sed -i.bak 's/-O3/-O3 -Wno-register/' Makefile
 rm -f *.bak
 
 make CC="${CXX}" GCC="${CC}"
