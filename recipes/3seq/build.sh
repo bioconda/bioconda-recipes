@@ -25,15 +25,15 @@ else
 	export CONFIG_ARGS=""
 fi
 
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
-cmake --build build --clean-first -j "${CPU_COUNT}"
+ninja -C build -j"${CPU_COUNT}"
 
-install -v -m 0755 build/3seq "$PREFIX/bin"
+install -v -m 0755 build/3seq "${PREFIX}/bin"
 
 wget -P $PREFIX/share/3seq/ https://www.dropbox.com/s/zac4wotgdmm3mvb/pvaluetable.2017.700.tgz
 tar xfz $PREFIX/share/3seq/pvaluetable.2017.700.tgz -C $PREFIX/share/3seq/
