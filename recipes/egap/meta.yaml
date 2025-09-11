@@ -1,5 +1,5 @@
 {% set name = "egap" %}
-{% set version = "3.1b" %}
+{% set version = "3.3c" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   - url: https://github.com/iPsychonaut/EGAP/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: 5c845feb05da9cd9cec34cc3165c31354679d30448da3c53a674d5c4a23baacd
+    sha256: 79ac7228d74fd0b4e8b5f6db09f1c657558b7c0a7ce3fd41ac0b92e97dc9e2b2
   - url: https://github.com/iPsychonaut/runner/archive/refs/tags/v0.0.0.tar.gz
     sha256: 4e67bb1e970dadb86425cb2698e0e2e34f70d78cbf77a32f73c13f66dffb55fc
 
@@ -15,29 +15,33 @@ build:
   noarch: python
   number: 0
   run_exports:
-    - {{ pin_subpackage('egap', max_pin="x") }}
+    # Non-semver version ("3.3c"): export only a minimum pin, no upper bound
+    - {{ pin_subpackage(name, max_pin=None) }}
+  # NOTE: do NOT set build:script; conda will auto-run build.sh on Unix.
 
 requirements:
   host:
-    - python >=3.8,<3.9
-    - pip
+    - python >=3.9
   run:
-    - python >=3.8,<3.9
-    - masurca >=4.1.2
-    - quast >=5.2.0
-    - compleasm >=0.2.6
-    - busco >=5.8.2
-    - biopython >=1.81
-    - ragtag >=2.1.0
-    - nanoplot >=1.43.0
-    - termcolor >=2.3.0
+    - python >=3.9
+    - pandas >=2.1
+    - flye >=2.9
+    - samtools >=1.16
+    - mummer >=3        # [linux]
+    - mummer4           # [osx]
     - minimap2 >=2.28
     - bwa-mem2 >=2.2.1
-    - samtools >=1.21
-    - bamtools >=2.5.2
-    - tgsgapcloser >=1.2.1
-    - abyss >=2.0.2
-    - sepp >=4.5.1
+    - bbmap >=39.15
+    - racon >=1.5.0
+    - hifiasm >=0.21.0
+    - gfatools >=0.5
+    - bifrost >=1.3.5
+    - ratatosk >=0.9.0
+    - kmc >=3.2.4
+    - filtlong >=0.2.1
+    - spades >=4.0.0
+    - pbccs >=6.4.0
+    - biopython >=1.81
     - psutil >=6.0.0
     - beautifulsoup4 >=4.12.3
     - ncbi-datasets-cli >=16.39.0
@@ -45,19 +49,6 @@ requirements:
     - trimmomatic >=0.39
     - pilon >=1.22
     - fastqc >=0.12.1
-    - bbmap >=39.15
-    - racon >=1.5.0
-    - kmc >=3.2.4
-    - spades >=4.0.0
-    - purge_dups >=1.2.6
-    - flye >=2.9.5
-    - pbccs >=6.4.0
-    - hifiasm >=0.21.0
-    - gfatools >=0.5
-    - bifrost >=1.3.5
-    - ratatosk >=0.9.0
-    - sra-tools >=3.2.0
-    - filtlong >=0.2.1
     - pyinaturalist >=0.20
     - jinja2 >=3.1.4
     - geopy >=2.4.1
@@ -65,27 +56,32 @@ requirements:
     - openpyxl >=3.1.5
 
 test:
+  requires:
+    - python
+    - packaging
   commands:
     - EGAP --help
+    - python -c "import shutil,sys; assert shutil.which('flye'), 'flye not in PATH'; print('flye found')"
 
 about:
   home: https://github.com/iPsychonaut/EGAP
-  license: "BSD 3-Clause License"
+  license: BSD-3-Clause
   license_file: LICENSE
-  summary: "EGAP pipeline for genome assembly and QC analysis"
+  summary: EGAP pipeline for genome assembly and QC analysis
   description: |
-    EGAP (Entheome Genome Assembly Pipeline) is a versatile bioinformatics pipeline
-    for hybrid genome assembly from Oxford Nanopore, Illumina, and PacBio data.
-    It supports multiple input modes and assembly methods and determines the best 
-    based on multiple metrics: BUSCO Completeness (Single + Duplicated), Assembly 
-    Contig Count, Assembly N50, Assembly L50, and Assembly GC-content.
+    EGAP (Entheome Genome Assembly Pipeline) is a bioinformatics pipeline for
+    hybrid genome assembly from ONT, Illumina, and PacBio data. It supports
+    multiple assembly methods and ranks results with metrics including BUSCO,
+    contig count, N50/L50, and GC-content.
+  doc_url: https://github.com/iPsychonaut/EGAP
+  dev_url: https://github.com/iPsychonaut/EGAP
 
 extra:
   notes: |
-    This package installs a custom executable named "EGAP" in $PREFIX/bin.
-    Please refer to the upstream GitHub page for usage instructions.
+    - EGAP depends on standalone Flye/MUMmer/SAMtools rather than MaSuRCA to avoid
+      file clobbers from MaSuRCA’s bundled copies.
+    - If you specifically need MaSuRCA, install it in a *separate* environment to
+      avoid binary name collisions (flye/mummer/samtools).
   recipe-maintainers:
     - iPsychonaut
-
-
 
