@@ -33,14 +33,14 @@ CFLAGS += -Wall -O2
 OBJS = ksw2_gg.o ksw2_extz.o ksw2_extd.o
 
 libksw2.a: $(OBJS)
-        $(AR) -rc $@ $^
+    $(AR) -rc $@ $^
 
 %.o: %.c
-        @mkdir -p $(@D)
-        $(CC) $(CFLAGS) -c $< -o $@
+    @mkdir -p $(@D)
+    $(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-        rm -f *.o *.a
+    rm -f *.o *.a
 EOF
 
 
