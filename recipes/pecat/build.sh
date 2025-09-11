@@ -1,6 +1,6 @@
 #!/bin/bash
-set -x  
-set -e  
+set -x
+set -e
 
 
 export LIBRARY_PATH="${PREFIX}/lib"
@@ -14,7 +14,7 @@ export PATH="${PATH}:${PREFIX}/bin"
 case $(uname -m) in
     aarch64|arm*)
         CFLAGS="${CFLAGS} -march=armv8-a+simd -DKSW_CPU_DISPATCH=0"
-        CFLAGS="${CFLAGS} -mtune=cortex-a72"  
+        CFLAGS="${CFLAGS} -mtune=cortex-a72"
         ;;
     *)
         CFLAGS="${CFLAGS} -march=native"
@@ -33,11 +33,11 @@ CFLAGS += -Wall -O2
 OBJS = ksw2_gg.o ksw2_extz.o ksw2_extd.o
 
 libksw2.a: $(OBJS)
-	$(AR) -rc $@ $^
+        $(AR) -rc $@ $^
 
 %.o: %.c
-	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) -c $< -o $@
+        @mkdir -p $(@D)
+        $(CC) $(CFLAGS) -c $< -o $@
 
 clean:
         rm -f *.o *.a
