@@ -1,0 +1,76 @@
+{% set name = "FLORAL" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: r-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url: https://cran.r-project.org/src/contrib/FLORAL_{{ version }}.tar.gz
+  sha256: effcd9fe3d21c2de797d58440f54a2f7d4d5029936dd54cf6891e12bdd9418c3
+
+build:
+  noarch: generic
+  number: 0
+  merge_build_host: true
+  script: R CMD INSTALL --build .
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage('r-floral', max_pin="x.x") }}
+
+requirements:
+  host:
+    - r-ast2ast
+    - r-base
+    - r-rcpp >=1.0.9
+    - r-rcpparmadillo
+    - r-rcppprogress
+    - r-caret
+    - r-doparallel
+    - r-dorng
+    - r-dplyr
+    - r-foreach
+    - r-ggplot2
+    - r-glmnet
+    - r-msm
+    - r-mvtnorm
+    - bioconductor-phyloseq
+    - r-reshape
+    - bioconductor-survcomp
+    - r-survival
+  run:
+    - r-ast2ast
+    - r-base
+    - r-rcpp >=1.0.9
+    - r-rcpparmadillo
+    - r-rcppprogress
+    - r-caret
+    - r-doparallel
+    - r-dorng
+    - r-dplyr
+    - r-foreach
+    - r-ggplot2
+    - r-glmnet
+    - r-msm
+    - r-mvtnorm
+    - bioconductor-phyloseq
+    - r-reshape
+    - bioconductor-survcomp
+    - r-survival
+
+test:
+  commands:
+    - $R -e "library('FLORAL')"
+
+about:
+  home: https://vdblab.github.io/FLORAL/
+  summary: Log-ratio Lasso regression for continuous, binary, and survival outcomes with (longitudinal) compositional features. See Fei and others (2024) <doi:10.1016/j.crmeth.2024.100899>.
+  license: GPL-3.0-or-later
+  license_file:
+    - {{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3
+
+extra:
+  recipe-maintainers:
+    - funnell

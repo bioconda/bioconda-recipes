@@ -1,16 +1,37 @@
---- src/Makefile	2014-04-15 04:37:16.000000000 +0000
-+++ src/Makefile.new	2017-03-02 22:43:31.155687817 +0000
+diff --git a/src/Makefile b/src/Makefile
+index aed70a3..efe7547 100644
+--- a/src/Makefile
++++ b/src/Makefile
 @@ -1,5 +1,5 @@
- CC=             gcc
+-CC=             gcc
 -CFLAGS=         -O3 -fomit-frame-pointer -static
-+CFLAGS+=         -O3 -fomit-frame-pointer
++CC=             $(CC)
++CFLAGS=         -O3 -fomit-frame-pointer -static -Wno-implicit-function-declaration
  #CFLAGS=         -O3 -g -D_DEBUG
  DFLAGS= 
  
-@@ -33,5 +33,5 @@
+@@ -31,12 +31,12 @@ CFLAGS += -DDEBUG
+ endif
+ INCLUDES=	-Iinc
  SUBDIRS=        . 
- LIBPATH=	
+-LIBPATH=	
 -LIBS=      	-pthread -lm -lrt -lbam -lz -L./inc
-+LIBS=      	-pthread -lm -lrt -lbam -lz
++LIBPATH=	-L$(PREFIX)/lib
++LIBS=      	-pthread -lm -lrt -lbam -lz -Linc
  EXTRA_FLAGS=
  
+ BIT_ERR = 0
+-ifeq (,$(findstring $(shell uname -m), x86_64 ppc64 ia64))
++ifeq (,$(findstring $(shell uname -m), x86_64 ppc64 ia64 aarch64 arm64))
+ BIT_ERR = 1
+ endif
+ 
+@@ -48,7 +48,7 @@ EXTRA_FLAGS += -Wl,--hash-style=both
+ endif
+ 
+ ifneq (,$(findstring $(shell uname -m), x86_64))
+-CFLAGS += -m64
++CFLAGS += 
+ endif
+ 
+ ifneq (,$(findstring $(shell uname -m), ia64))

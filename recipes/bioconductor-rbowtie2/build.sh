@@ -4,7 +4,7 @@ grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 mkdir -p ~/.R
 echo -e "CC=$CC
 FC=$FC
-CXX=$CXX
+CXX=$CXX -I${PREFIX}/include -L${PREFIX}/lib
 CXX98=$CXX
 CXX11=$CXX
 CXX14=$CXX" > ~/.R/Makevars
