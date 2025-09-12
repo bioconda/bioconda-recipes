@@ -1,0 +1,42 @@
+{% set name = "ruranges" %}
+{% set version = "0.0.12" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: ddad513c4772e339a76e04bb8f194c76dede357648478ca916c4c9353674c627
+
+build:
+  number: 0
+  # native extension → not noarch
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+  skip: true  # [win]
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - maturin
+    - rust
+    - numpy
+  run:
+    - python >=3.12
+    - numpy
+
+test:
+  imports:
+    - ruranges
+  commands:
+    - python -c "import ruranges; print(getattr(ruranges, '__version__', ''))"
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/pyranges/ruranges
+  license: MIT
+  license_file: LICENSE
+  summary: "Rust-backed interval kernels exposed to Python/NumPy."
