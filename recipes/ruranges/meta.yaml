@@ -11,17 +11,20 @@ source:
 
 build:
   number: 0
-  # native extension → not noarch
+  # compiled extension → not noarch
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
   script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
   skip: true  # [win]
 
 requirements:
+  build:
+    - {{ compiler('rust') }}
   host:
     - python >=3.12
     - pip
     - maturin
-    - rust
-    - numpy
+    - numpy    # headers at build time if needed
   run:
     - python >=3.12
     - numpy
