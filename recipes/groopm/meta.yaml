@@ -7,25 +7,37 @@ package:
 source:
   url: https://pypi.io/packages/source/G/GroopM/GroopM-{{ version }}.tar.gz
   sha256: 48bdaeb9010e7d81785697a55edc394ef36c2646b310d625a24bec740f1b6080
+  patches:
+    - fix_maketrans.patch
+    - fix_imsave.patch
+    - fix_indent.patch
 
 build:
   noarch: python
-  number: 1
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('groopm',max_pin="x.x") }}
+  script: |
+    find . -name "*.py" -exec 2to3 -w -n {} \;
+    2to3 -w -n bin/groopm || true
+    sed -i 's/from string import maketrans as s_maketrans/s_maketrans = str.maketrans/' groopm/mstore.py
+    {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
   host:
     - pip
-    - python <3
+    - python
   run:
-    - matplotlib >=1.1.0
-    - numpy >=1.6.1
-    - python <3
-    - scipy >=0.10.1
-    - pytables >=2.3
+    - matplotlib
+    - numpy
+    - python
+    - scipy
+    - pytables
     - pillow
     - bamm
 test:
+  requires:
+    - imageio
   imports:
     - groopm
   commands:
