@@ -2,14 +2,12 @@
 set -x
 set -e
 
-
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 export CPATH="${PREFIX}/include"
 export C_INCLUDE_PATH="${PREFIX}/include"
 export CPLUS_INCLUDE_PATH="${PREFIX}/include"
 export PATH="${PATH}:${PREFIX}/bin"
-
 
 case $(uname -m) in
     aarch64|arm*)
@@ -25,6 +23,7 @@ esac
 KSW2_DIR="${SRC_DIR}/thirdparty/ksw2"
 [ -d "${KSW2_DIR}" ] || { echo "err：ksw2"; exit 1; }
 
+
 cat > "${KSW2_DIR}/Makefile" <<'EOF'
 CC ?= gcc
 AR ?= ar
@@ -33,15 +32,18 @@ CFLAGS += -Wall -O2
 OBJS = ksw2_gg.o ksw2_extz.o ksw2_extd.o
 
 libksw2.a: $(OBJS)
-    $(AR) -rc $@ $^
+<TAB>$(AR) -rc $@ $^
 
 %.o: %.c
-    @mkdir -p $(@D)
-    $(CC) $(CFLAGS) -c $< -o $@
+<TAB>@mkdir -p $(@D)
+<TAB>$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-    rm -f *.o *.a
+<TAB>rm -f *.o *.a
 EOF
+
+sed -i 's/<TAB>/\t/g' ${KSW2_DIR}/Makefile
+
 
 
 cd "${KSW2_DIR}" || exit 1
