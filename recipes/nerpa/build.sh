@@ -7,8 +7,17 @@ PREFIX="${PREFIX:-$(pwd)/install}"
 BUILD_DIR="${BUILD_DIR:-build}"
 SRC_DIR="$(dirname "$0")"
 
-export CC="${CC:-$(command -v gcc || command -v clang)}"
-export CXX="${CXX:-$(command -v g++ || command -v clang++)}"
+# 架构参数修正
+case "$ARCH" in
+  aarch64) 
+    export CFLAGS="${CFLAGS//-march=nocona/-march=armv8-a}"
+    export CFLAGS="${CFLAGS//-mtune=haswell/-mtune=cortex-a53}"
+    export CXXFLAGS="$CFLAGS"
+    ;;
+esac
+
+export CC="${CC:-$(command -v aarch64-conda-linux-gnu-cc || command -v gcc || command -v clang)}"
+export CXX="${CXX:-$(command -v aarch64-conda-linux-gnu-c++ || command -v g++ || command -v clang++)}"
 [ -z "$CC" ] && { echo "C compiler not found"; exit 1; }
 
 fix_cxxopts() {
