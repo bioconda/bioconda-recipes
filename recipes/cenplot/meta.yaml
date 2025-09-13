@@ -1,0 +1,52 @@
+{% set name = "cenplot" %}
+{% set version = "0.1.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/cenplot-{{ version }}.tar.gz
+  sha256: c843661c8b612ed1065b9c7ba6c63682f7d477bc147d2b4edcbcc7b16973448b
+
+build:
+  entry_points:
+    - cenplot = cenplot.main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.12
+    - setuptools
+    - pip
+  run:
+    - python >=3.12
+    - matplotlib-base >=3.10.0
+    - polars >=1.19.0
+    - numpy >=2.2.1
+    - intervaltree >=3.1.0
+    - censtats >=0.0.13
+    - pyyaml >=6.0.2
+
+test:
+  imports:
+    - cenplot
+  commands:
+    - pip check
+    - cenplot --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/logsdon-lab/CenPlot
+  summary: Centromere plotting library.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - koisland
