@@ -11,7 +11,7 @@ env -C "${TMPDIR}" cmake \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DCMAKE_INSTALL_LIBDIR=lib/art_modern/lib \
     -DCMAKE_INSTALL_INCLUDEDIR=include/art_modern/include \
-    -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+    -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     "${SRC_DIR}"
 # The last 4 variables override conda's default settings
 cmake --build "${TMPDIR}" --parallel "${CPU_COUNT}"
