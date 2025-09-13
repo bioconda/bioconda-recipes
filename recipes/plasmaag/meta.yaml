@@ -1,0 +1,68 @@
+{% set name = "plasmaag" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/p/plasmaag-core/plasmaag_core-{{ version }}.tar.gz
+  sha256: 040ccfc56ac6592acd8698b94cd1e7fca214699f902ef4a5e841174787b71eab
+
+build:
+  skip: true  # [py>=314 or py2k]
+  run_exports:
+    - {{ pin_subpackage('myrecipe', max_pin="x") }}
+  entry_points:
+    - PlasMAAG = PlasMAAG.__main__:main
+    - vamb = vamb.__main__:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python ==3.11.0
+    - setuptools >=70.1,<71.dev0
+    - setuptools-scm >=8.0
+    - cython >=3.0.1,<3.1.dev0
+    - pip
+  run:
+    - python ==3.11.2
+    - numpy ==2.2.1
+    - pytorch ==2.5.1
+    - networkx ==3.4.2
+    - scikit-learn ==1.6.0
+    - dadaptation ==3.2
+    - loguru ==0.7.3
+    - pandas ==2.2.3
+    - rich-click ==1.8.3
+    - click <8.2.0
+    - tabulate ==0.9.0
+    - pycoverm ==0.6.2
+    - pyhmmer ==0.10.15
+    - pyrodigal ==3.6.3
+    - psutil ~=5.8
+    - snakemake ==8.27.1
+    - pysam ==0.22.1
+    - biopython ==1.85
+    - blast ==2.16.0
+    - samtools ==1.22.1
+
+test:
+  commands:
+    - PlasMAAG --help
+    - vamb --help
+  requires:
+    - pip
+
+about:
+  home: "https://github.com/RasmussenLab/PlasMAAG"
+  license: MIT
+  license_file: LICENSE
+  summary: "PlasMAAG is a tool to recover plasmids and organisms from metagenomic samples"
+
+extra:
+  recipe-maintainers:
+    - las02
