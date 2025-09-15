@@ -35,7 +35,7 @@ main() {
 
   mkdir -p "$BUILD_DIR" && cd "$BUILD_DIR" || exit 1
 
-  cmake -G "$(detect_generator)" \
+  cmake -G Ninja \
     -DCMAKE_INSTALL_PREFIX="$PREFIX" \
     -DCMAKE_C_COMPILER="$CC" \
     -DCMAKE_CXX_COMPILER="$CXX" \
@@ -43,13 +43,7 @@ main() {
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
     .. || { echo "CMake configuration failed"; exit 1; }
 
-  if [ "$(detect_generator)" = "Ninja" ]; then
-    ninja -j$(nproc) || ninja -j1
-  else
-    make -j$(nproc) || make -j1
-  fi
-
-  cmake --install . --prefix "$PREFIX"
+  ninja install -j "${CPU_COUNT}"
 }
 
 main 2>&1 | tee build.log
