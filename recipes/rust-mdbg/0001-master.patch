@@ -1,0 +1,1187 @@
+diff --git a/Cargo.toml b/Cargo.toml
+index f8835ba..13437f2 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -1,22 +1,17 @@
+ [package]
+ name = "rust-mdbg"
+-version = "0.1.0"
++version = "1.0.1"
+ authors = ["ekimb, rayan"]
+ edition = "2018"
+ default-run = "rust-mdbg"
+ 
+-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+-
+ [dependencies]
+ bio = "*"
+-fasthash = "0.4.0"
+ petgraph = "0.4.13"
+ petgraph-graphml = "1.0.2"
+ adler32 = "1.0.3"
+ pbr = "1.0.1" #progressbar
+ arrayvec = "0.4.10"
+-#generic-array = "0.13.2" #activate if using kmer_array
+-#typenum = "1.11.2"
+ structopt = "0.3.1"
+ itertools = "0.8.0"
+ strsim = "0.9.2"
+@@ -30,10 +25,9 @@ rand_core = "0.5.1"
+ closure = "0.3.0"
+ editdistancewf = "0.1.0"
+ libc = "0.2.77"
+-bio-types = "0.7.0" # for my reimplementation of needleman-wunsch, bio_types is called by bio too
+-#seq_io= { path = "./seq_io" }
+-seq_io= { git = "https://github.com/markschl/seq_io" }
+-#seq_io = "0.3.1"
++bio-types = "0.7.0"  # for my reimplementation of needleman-wunsch, bio_types is called by bio too
++fasthash-fork = "0.4.1"
++seq_io = "0.3.4"
+ lzzzz = "0.7"
+ xx-bloomfilter = "0.10.0"
+ flate2 = "1.0.6"
+@@ -44,7 +38,6 @@ thread-id = "3.3.0"
+ [profile.dev]
+ opt-level = 3
+ 
+-
+ [[bin]]
+ name = "to_basespace"
+ path = "src/to_basespace.rs"
+diff --git a/README.md b/README.md
+index 1626797..d709787 100644
+--- a/README.md
++++ b/README.md
+@@ -1,9 +1,9 @@
+-`rust-mdbg`: Minimizer-space de Bruijn graphs (mdBG) for whole-genome assembly <br>
++# `rust-mdbg`: Minimizer-space de Bruijn graphs (mdBG) for whole-genome assembly <br>
+ [![DOI](https://zenodo.org/badge/310619686.svg)](https://zenodo.org/badge/latestdoi/310619686)
+ ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/ekimb/rust-mdbg)
+ ![GitHub last commit](https://img.shields.io/github/last-commit/ekimb/rust-mdbg)
+ ![GitHub](https://img.shields.io/github/license/ekimb/rust-mdbg)
+-=========
++[![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/rust-mdbg/README.html)
+ 
+ `rust-mdbg` is an ultra-fast minimizer-space de Bruijn graph (mdBG) implementation, geared towards the assembly of long and accurate reads such as [PacBio HiFi](https://www.pacb.com/smrt-science/smrt-sequencing/hifi-reads-for-highly-accurate-long-read-sequencing/).
+ 
+@@ -16,7 +16,7 @@
+ ## Limitations
+ 
+ However, this high speed comes at a cost! :) 
+-* `rust-mdbg` gives good-quality results but still of lower contiguity and completeness than state-of-the-art assemblers such as [HiCanu](https://github.com/marbl/canu) and [hifiasm](https://github.com/chhylp123/hifiasm). 
++* `rust-mdbg` gives good-quality results but still of lower contiguity and completeness than state-of-the-art assemblers such as [`HiCanu`](https://github.com/marbl/canu) and [`hifiasm`](https://github.com/chhylp123/hifiasm). 
+ * `rust-mdbg` performs best with at least 40x to 50x of coverage.
+ * No polishing step is implemented; so, assemblies will have around the same accuracy as the reads.
+ * Cannot assemble Nanopore data due to its higher error rate (see [this comment](https://github.com/ekimb/rust-mdbg/issues/4#issuecomment-860817828))
+@@ -27,13 +27,17 @@ Clone the repository (make sure you have a working Rust environment), and run
+ 
+ `cargo build --release`
+ 
+-For performing graph simplifications, [gfatools](https://github.com/lh3/gfatools/) is required.
++Alternatively, you can install from [`bioconda`](https://bioconda.github.io/index.html):
++
++`conda install -c bioconda rust-mdbg`
++
++which has the Rust binaries, but not the additional scripts. For performing graph simplifications, [`gfatools`](https://github.com/lh3/gfatools/) is required.
+ 
+ ## Quick start
+ 
+ ```
+ cargo build --release
+-target/release/rust-mdbg reads-0.00.fa.gz -k 7 --density 0.0008 -l 10 --minabund 2 --prefix example
++target/release/rust-mdbg example/reads-0.00.fa.gz -k 7 --density 0.0008 -l 10 --minabund 2 --prefix example
+ utils/magic_simplify example
+ ```
+ 
+@@ -59,7 +63,7 @@ For convenience, components 2 and 3 are wrapped into a script called `magic_simp
+ 
+ `rust-mdbg` takes a single FASTA/FASTQ input (gzip-compressed or not). Multi-line sequences, and sequences with lowercase characters, are not supported. 
+ 
+-If you have [seqtk](https://github.com/lh3/seqtk) installed, you can use
++If you have [`seqtk`](https://github.com/lh3/seqtk) installed, you can use
+ 
+ `seqtk seq -AU reads.unformatted.fq > reads.fa`
+ 
+@@ -138,17 +142,21 @@ To convert an assembly to base-space without performing any graph simplification
+ 
+ ```
+ gfatools asm -u  example.gfa > example.unitigs.gfa
+-target/release/to_basespace --gfa example.unitigs.gfa --sequences example.sequences
++target/release/to_basespace --gfa example.unitigs.gfa --sequences example
+ ```
+ 
+ * without `gfatools` (slower, but the code is more straightforward to understand)
+ 
+-`utils/complete_gfa.py example.sequences example.gfa`
++`utils/complete_gfa.py example example.gfa`
+ 
+ In both cases, this will create an `example.complete.gfa` file that you can convert to FASTA with
+ 
+ `bash utils/gfa2fasta.sh example.complete`
+ 
++## Metagenome assembly
++
++Please refer to issue https://github.com/ekimb/rust-mdbg/issues/30. In a nutshell, you may try parameters `-k 21 -l 14 --density 0.003` as in the paper, and make sure to use the `magic_simplify_meta` script.
++
+ ## License
+ 
+ `rust-mdbg` is freely available under the [MIT License](https://opensource.org/licenses/MIT).
+diff --git a/experiments/run_dmel b/experiments/run_dmel
+index 7fbecf4..9d09787 100644
+--- a/experiments/run_dmel
++++ b/experiments/run_dmel
+@@ -10,6 +10,7 @@ cd /pasteur/sonic/scratch/public/rchikhi/dmel-mdbg
+ reads=$dir/dmel_hifi_100x.hpc.fasta
+ 
+ echo "Running reads..."
++start=`date +%s`
+ command time -v cargo run --manifest-path $HOME/rust-mdbg/Cargo.toml --release -- $reads --threads $TH --minabund $abund --no-error-correct --prefix $prefix \
+ 	-k 35 -l 12 --density 0.002 # good one
+ #	-k 48 -l 12 --density 0.003
+diff --git a/experiments/run_dmel_chr4 b/experiments/run_dmel_chr4
+index aae7fa0..b6dd1d3 100755
+--- a/experiments/run_dmel_chr4
++++ b/experiments/run_dmel_chr4
+@@ -11,6 +11,7 @@ C=$8
+ TH=$9
+ start=`date +%s`
+ echo "Running reads..."
++start=`date +%s`
+ cargo run --manifest-path ../rust-mdbg/Cargo.toml --release -- reads-0.05.fa -k $K -l $L -n $N -t $T --threads $TH --density $DENSITY --minabund $abund --correction-threshold $threshold --distance $distance --levenshtein-minimizers 0 --prefix dmel_chr4_reads-0.05  #--counts reads-0.05.ascii.txt
+ end=`date +%s`
+ echo "Completing GFA"
+diff --git a/experiments/run_hg002 b/experiments/run_hg002
+index 0a8e4db..4c47126 100644
+--- a/experiments/run_hg002
++++ b/experiments/run_hg002
+@@ -10,6 +10,7 @@ cd $dir
+ reads=$dir/all.hpc.fasta.gz
+ 
+ echo "Running reads..."
++start=`date +%s`
+ command time -v cargo run --manifest-path $HOME/rust-mdbg/Cargo.toml --release -- $reads --threads $TH --minabund $abund --prefix $prefix --bf \
+ 	-k 21 -l 14 --density 0.003 # good one
+ #	-k 48 -l 12 --density 0.003
+diff --git a/experiments/run_hg002_counts b/experiments/run_hg002_counts
+index e38b6d5..df29755 100644
+--- a/experiments/run_hg002_counts
++++ b/experiments/run_hg002_counts
+@@ -9,6 +9,7 @@ threshold=$7
+ distance=$8
+ TH=$9
+ echo "Running reads..."
++start=`date +%s`
+ command time -v cargo run --manifest-path ../rust-mdbg/Cargo.toml --release -- /scratch1/ekim/HG002_hifi/HG002_hifi_hpc.fa -k $K -l $L --presimp $P --density $DENSITY --threads $TH --minabund $abund --correction-threshold $threshold --distance $distance --no-error-correct --prefix hg002_hifi
+ end=`date +%s`
+ echo "Completing GFA..."
+diff --git a/experiments/run_perfect b/experiments/run_perfect
+index 6aa7dc5..b1fc89a 100644
+--- a/experiments/run_perfect
++++ b/experiments/run_perfect
+@@ -9,6 +9,7 @@ threshold=$7
+ distance=$8
+ TH=$9
+ echo "Running reads..."
++start=`date +%s`
+ command time -v cargo run --manifest-path ../rust-mdbg/Cargo.toml --release -- /scratch2/ekim/dmel-100kb-100x.fa -k $K -l $L -n $N -t $T --threads $TH --density $DENSITY --minabund 2 --correction-threshold $threshold --distance $distance --no-error-correct --prefix perfect
+ end=`date +%s`
+ echo "Completing GFA..."
+diff --git a/experiments/run_strawberry b/experiments/run_strawberry
+index 2b5ea35..af62e15 100644
+--- a/experiments/run_strawberry
++++ b/experiments/run_strawberry
+@@ -14,6 +14,7 @@ cd /pasteur/sonic/scratch/public/rchikhi/strawberry-mdbg
+ reads=/pasteur/sonic/scratch/public/rchikhi/strawberry-mdbg/SRR11606867.hpc.fasta
+ 
+ echo "Running reads..."
++start=`date +%s`
+ command time -v cargo run --manifest-path $HOME/rust-mdbg/Cargo.toml --release -- $reads --threads $TH --minabund $abund --no-error-correct --prefix $prefix \
+ #	-k 35 -l 12 --density 0.003
+ #	-k $K -l $L --density $DENSITY 
+diff --git a/src/gfa_output.rs b/src/gfa_output.rs
+index a725e2d..15ad7d0 100644
+--- a/src/gfa_output.rs
++++ b/src/gfa_output.rs
+@@ -103,7 +103,7 @@ use crate::utils::revcomp;*/
+         Err(why) => panic!("Couldn't create {}: {}", path, why.description()),
+         Ok(file) => file,
+     };
+-    write!(file, "H\tVN:Z:1\n").expect("Error writing GFA header.");
++    write!(file, "H\tVN:Z:1.0\n").expect("Error writing GFA header.");
+     for index in gr.node_indices() {
+         let idx = index.index();
+         node_indices.insert(nodes_vect[idx].clone(), idx);
+diff --git a/src/main.rs b/src/main.rs
+index a455012..12f61a2 100644
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -45,6 +45,7 @@ mod kmer_vec;
+ mod poa;
+ mod read;
+ mod pairwise;
++mod read_stats;
+ 
+ const REVCOMP_AWARE: bool = true; // shouldn't be set to false except for strand-directed data or for debugging
+ type Kmer = kmer_vec::KmerVec;
+@@ -105,10 +106,14 @@ pub struct Params {
+     error_correct: bool,
+     has_lmer_counts: bool,
+     use_bf: bool,
+-    use_hpc: bool,
++    reads_already_hpc: bool,
++    use_syncmers: bool,
++    s: usize,
++    no_basespace: bool,
+     debug: bool,
+ }
+ 
++
+ /*fn debug_output_read_minimizers(seq_str: &String, read_minimizers: &Vec<String>, read_minimizers_pos: &Vec<u32>) {
+     println!("\nseq: {}", seq_str);
+     print!("min: ");
+@@ -332,11 +337,13 @@ struct Opt {
+     /// can be used as input.
+     #[structopt(long)]
+     restart_from_postcor: bool,
+-    /// Reference genome input
++    /// Input is reference genome(s)
+     ///
+     /// Indicates that the input is a (single or a set of) 
+-    /// genome(s), not reads. Allows multi-line FASTA and
+-    /// doesn't filter any kminmers
++    /// genome(s), not reads. Allows multi-line FASTA,
++    /// doesn't filter any kminmers, and saves all
++    /// kminmer sequences in .sequences file (including
++    /// those seen only once)
+     #[structopt(long)]
+     reference: bool,
+     /// Enable Bloom filters
+@@ -345,19 +352,47 @@ struct Opt {
+     /// but results in slightly less contiguous assemblies.
+     #[structopt(long)]
+     bf: bool,
+-    /// Homopolymer-compressed (HPC) input
++    /// Input is already Homopolymer-compressed (HPC'd)
+     ///
+-    /// Both raw and homopolymer-compressed (HPC) reads can
+-    /// be provided as input. If the reads are not compressed,
+-    /// rust-mdbg manually performs HPC, but uses the raw sequences
++    /// Either raw and homopolymer-compressed (HPC) reads can
++    /// be provided as input. If the reads are not HPC,
++    /// rust-mdbg performs HPC automatically, but uses the raw sequences
+     /// for transformation into base-space.
++    ///
++    /// This flag signals that rust-mdbg should skip performing HPC, 
++    /// probably because the input reads are already HPC.
++    #[structopt(long)]
++    skiphpc: bool,
++    /// to save disk space, don't write the sequences in base-space
++    /// corresponding to each k-min-mer
++    #[structopt(long)]
++    no_basespace: bool,
++    /// Write the [abundance in FILE1] of each [k-minmer from FILE2] 
++    /// to FILE2.read_stats file
++    ///
++    /// How to run: give FILE1 as a normal input to rust-mdbg and then
++    /// pass parameter --read_stats FILE2
++    /// (It is also fine to have FILE1==FILE2)
++    #[structopt(long)]
++    read_stats: Option<PathBuf>,
++    /// Use syncmers instead of universe minimizers
+     #[structopt(long)]
+-    hpc: bool,
++    syncmers: bool,
++    /// Syncmer substring length
++    #[structopt(short, long)]
++    s: Option<usize>,
+     /// l-mer counts (enables downweighting of frequent l-mers)
+     ///
+     /// Frequencies of l-mers in the reads (obtained using k-mer counters)
+-    /// can be provided in order to downweight frequently-occurring l-mers 
++    /// can be provided in order to downweight frequently-occurring l-mers
+     /// and increase contiguity.
++    ///
++    /// To generate lmer counts, you can do this:
++    /// k=16
++    /// kmc  -k$k -ci1 -cs100000 reads.fastq reads.kmc.k$k .
++    /// kmc_dump reads.kmc.k$k reads.kmc.k$k.txt
++    ///
++    /// If you k-mer count non-HPC reads, make sure you pass --skiphpc to rust-mdbg
+     #[structopt(parse(from_os_str), long)]
+     lmer_counts: Option<PathBuf>,
+     /// Minimum l-mer count threshold
+@@ -400,6 +435,7 @@ fn main() {
+     let mut l : usize = 12;
+     let mut n : usize = 2;
+     let mut t : usize = 0;
++    let mut s : usize = 4; // syncmer mini-kmer size
+     let mut density : f64 = 0.10;
+     let mut min_kmer_abundance : DbgAbundance = 2;
+     let mut distance : usize = 0;
+@@ -412,7 +448,10 @@ fn main() {
+     let mut lmer_counts_max : u32 = 100000;
+     let mut presimp : f32 = 0.01;
+     let mut use_bf : bool = false;
+-    let mut use_hpc : bool = false;
++    let mut reads_already_hpc : bool = false;
++    let mut use_syncmers : bool = false;
++    let mut no_basespace : bool = false;
++    let mut read_stats = PathBuf::new();
+     let mut threads : usize = 8;
+     if opt.error_correct {error_correct = true;}
+     if opt.reference {reference = true; error_correct = false;}
+@@ -448,7 +487,14 @@ fn main() {
+     if opt.distance.is_none() && error_correct {println!("Warning: Using default distance metric ({}).", distance_type);}
+     if opt.restart_from_postcor {restart_from_postcor = true;}
+     if opt.bf {use_bf = true;}
+-    if opt.hpc {use_hpc = true;}
++    if opt.skiphpc {reads_already_hpc = true;}
++    if opt.syncmers {use_syncmers = true;}
++    if use_syncmers
++    {
++        if opt.s.is_some() {s = opt.s.unwrap()} else {println!("Warning: Using default s value ({}).", s);}
++    }
++    if opt.read_stats.is_some() { read_stats = opt.read_stats.unwrap(); }
++    if opt.no_basespace {no_basespace = true;}
+     output_prefix = PathBuf::from(format!("graph-k{}-d{}-l{}", k, density, l));
+     if opt.lmer_counts.is_some() { 
+         has_lmer_counts = true;
+@@ -483,7 +529,10 @@ fn main() {
+         error_correct,
+         has_lmer_counts,
+         use_bf,
+-        use_hpc,
++        reads_already_hpc,
++        use_syncmers,
++        s,
++        no_basespace,
+         debug,
+     };
+     // init some useful objects
+@@ -503,16 +552,16 @@ fn main() {
+         loop {
+             let mut line = String::new();
+             let new_line = |line: &mut String, br: &mut BufReader<File>| {line.clear(); br.read_line(line).ok();};
+-            if let Err(_e) = br.read_line(&mut line) {break;}
++            new_line(&mut line, &mut br);
+             if line.is_empty()                    {break;}
+             let trimmed = line.trim().to_string();   
+-            let vec : Vec<String> = trimmed.split(' ').map(String::from).collect();
++            let vec : Vec<String> = trimmed.split_whitespace().map(String::from).collect();
+             let lmer = vec[0].to_string();
+             let lmer_rev = utils::revcomp(&lmer);
+-            let lmer = if lmer > lmer_rev {lmer} else {lmer_rev}; //don't trust the kmer counter to normalize like we do
++            let lmer = if lmer < lmer_rev {lmer} else {lmer_rev}; //don't trust the kmer counter to normalize like we do
+             let count = vec[1].parse::<u32>().unwrap();
+-            lmer_counts.insert(lmer, count);               
+-            new_line(&mut line, &mut br);
++            //println!("inserting lmer {} count {}",lmer,count);
++            lmer_counts.insert(lmer, count); 
+         }
+     }
+     let mut minimizer_to_int : HashMap<String,u64> = HashMap::new();
+@@ -525,9 +574,15 @@ fn main() {
+         int_to_minimizer = res.1;
+     }
+     let (_mean_length, _max_length) = read_first_n_reads(&filename, fasta_reads, 10);
+-    let queue_len = 200; // https://doc.rust-lang.org/std/sync/mpsc/fn.sync_channel.html
+-                             // also: controls how many reads objects are buffered during fasta/fastq
+-                             // parsing
++
++    // queue_len:
++    // https://doc.rust-lang.org/std/sync/mpsc/fn.sync_channel.html
++    // also: controls how many reads objects are buffered during fasta/fastq
++    // parsing
++    let queue_len = if _mean_length >= 1000000
++                    {32} else {200}; // not too many seqs in cache if we're parsing reference genomes
++                                     // note: this effectively limits fasta parsing of long
++                                     // sequences to 32 threads, which should be fine for human
+ 
+     let mut uhs_bloom : RacyBloom = RacyBloom::new(Bloom::new(if use_bf {500_000_000} else {1}, 1_000_000_000_000_000));
+     let mut lcp_bloom : RacyBloom = RacyBloom::new(Bloom::new(if use_bf {500_000_000} else {1}, 1_000_000_000_000_000));
+@@ -577,7 +632,7 @@ fn main() {
+     let add_kminmer =|node: &Kmer, seq: Option<&str>, seq_reversed: &bool, origin: &str, shift: &(usize, usize), sequences_file: &mut SeqFileType, thread_id: usize, read_seq: Option<&str>, read_offsets: Option<(usize, usize, usize)>|
+     {
+         let mut previous_abundance; // for convenience, is the abundance of the kmer _before_ it was seen now
+-        let mut cur_node_index: DbgIndex = 0 as DbgIndex;
++        let mut cur_node_index;
+         let mut contains_key;
+ 
+         // this code takes care of kminmers having abundances 1 and 2
+@@ -615,26 +670,24 @@ fn main() {
+             }
+         }
+         //println!("abundance: {}",abundance);
+-        if params.reference || previous_abundance >= 1 {
+-            // now record what we will save
+-            // or, record in the hash table anyway to save later
+-            let lowprec_shift = (shift.0 as u16, shift.1 as u16);
+-            if contains_key {
+-                let mut entry_mut = dbg_nodes.get_mut(node).unwrap();
+-                cur_node_index = entry_mut.index;
+-                previous_abundance = entry_mut.abundance;
+-                if previous_abundance == min_kmer_abundance - 1 {
+-                    let seqlen = match seq {Some(read) => read.len() as u32, None => read_offsets.unwrap().2 as u32};
+-                    entry_mut.seqlen = seqlen;
+-                    entry_mut.shift = lowprec_shift;
+-                }
+-                entry_mut.abundance += 1;
+-            }
+-            else { 
+-                cur_node_index = NODE_INDEX.fetch_add(1, Ordering::Relaxed) as DbgIndex;
+-                let seqlen = match seq {Some(read) => read.len() as u32, None => read_offsets.unwrap().2 as u32 };
+-                dbg_nodes.insert(node.clone(), DbgEntry{index: cur_node_index, abundance: previous_abundance+1, seqlen, shift: lowprec_shift}); 
++        // now record what we will save
++        // or, record in the hash table anyway to save later
++        let lowprec_shift = (shift.0 as u16, shift.1 as u16);
++        if contains_key {
++            let mut entry_mut = dbg_nodes.get_mut(node).unwrap();
++            cur_node_index = entry_mut.index;
++            previous_abundance = entry_mut.abundance;
++            if previous_abundance == min_kmer_abundance - 1 {
++                let seqlen = match seq {Some(read) => read.len() as u32, None => read_offsets.unwrap().2 as u32};
++                entry_mut.seqlen = seqlen;
++                entry_mut.shift = lowprec_shift;
+             }
++            entry_mut.abundance += 1;
++        }
++        else { 
++            cur_node_index = NODE_INDEX.fetch_add(1, Ordering::Relaxed) as DbgIndex;
++            let seqlen = match seq {Some(read) => read.len() as u32, None => read_offsets.unwrap().2 as u32 };
++            dbg_nodes.insert(node.clone(), DbgEntry{index: cur_node_index, abundance: previous_abundance+1, seqlen, shift: lowprec_shift}); 
+         }
+ 
+         if params.reference || previous_abundance >= 1 || min_kmer_abundance == 1 {
+@@ -647,7 +700,10 @@ fn main() {
+                 let seq = match seq {Some(read) => read, None => &read_seq.unwrap()[read_offsets.unwrap().0..read_offsets.unwrap().1]};
+                 let seq = if *seq_reversed {utils::revcomp(&seq)} else {seq.to_string()};
+                 let seq_line = format!("{}\t{}\t{}\t{}\t{}\t{:?}",cur_node_index, node.print_as_string(), seq, "*", origin, shift);
+-                seq_write(sequences_file, format!("{}\n", seq_line));
++                if !params.no_basespace
++                {
++                    seq_write(sequences_file, format!("{}\n", seq_line));
++                }
+             }
+         }
+     };
+@@ -751,13 +807,17 @@ fn main() {
+             }
+             else if error_correct || reference {
+                 let (_vec, read_obj) = found.as_ref().unwrap();
+-                reads_by_id.insert(read_obj.id.to_string(), read_obj.clone());
++                if error_correct {
++                    reads_by_id.insert(read_obj.id.to_string(), read_obj.clone());
++                }
+                 if read_obj.transformed.len() >= n {
+                     ec_reads::record(&mut ec_file, &read_obj.id.to_string(), &read_obj.seq, &read_obj.transformed.to_vec(), &read_obj.minimizers, &read_obj.minimizers_pos);
+-                    for i in 0..read_obj.transformed.len()-n+1 {
+-                        let n_mer = utils::normalize_vec(&read_obj.transformed[i..i+n].to_vec());
+-                        let _entry = buckets.entry(n_mer).or_insert_with(Vec::<String>::new);
+-                        //entry.push(read_obj.id.to_string());
++                    if error_correct {
++                        for i in 0..read_obj.transformed.len()-n+1 {
++                            let n_mer = utils::normalize_vec(&read_obj.transformed[i..i+n].to_vec());
++                            let _entry = buckets.entry(n_mer).or_insert_with(Vec::<String>::new);
++                            //entry.push(read_obj.id.to_string());
++                        }
+                     }
+                 }
+             }
+@@ -853,19 +913,104 @@ fn main() {
+         }
+     }
+ 
+-    for mut sequences_file in sequences_files.iter_mut() {sequences_file.flush().unwrap();}
++    // so, I dunno if this line is useful. But when I commented it, suddently my issue with having
++    // corrupt last line in the last sequences file disappeared. So i'm going to leave it commented
++    // for now until more investigation
++    //for mut sequences_file in sequences_files.iter_mut() {sequences_file.flush().unwrap();}
+ 
+     // now DBG creation can start
+-    println!("Number of nodes before abundance filter: {}", dbg_nodes.len());
+-    dbg_nodes.retain(|_x, c| c.abundance >= (min_kmer_abundance as DbgAbundance));
+-    println!("Number of nodes after abundance filter: {}", dbg_nodes.len());
++    if min_kmer_abundance > 1 { // why we need this conditional: 
++                                  //some kminmers seen once have abundance=0 due to technicality, 
++                                  //we want to keep them in the special case of min_kmer_abundance=1
++
++            println!("Number of nodes before abundance filter: {}", dbg_nodes.len());
++            dbg_nodes.retain(|_x, c| c.abundance >= (min_kmer_abundance as DbgAbundance));
++            println!("Number of nodes after abundance filter: {}", dbg_nodes.len());
++    }
++    else
++    {
++            println!("Number of mdBG nodes: {}", dbg_nodes.len());
++    }
++
++    // at this point the nodes of the mdbg are constructed in-memory (but not yet written to gfa)
++
++
++    // optionally output read statistics (abundance of each kminmer in each read)
++    if !read_stats.as_os_str().is_empty()
++    {
++        // worker thread
++        let read_stats_process_read_aux = |seq_str: &[u8], seq_id: &str| {
++            let seq = std::str::from_utf8(seq_str).unwrap();
++            let seq_for_ref = if reference  {seq.replace("\n", "").replace("\r", "")
++            } else {String::new()};
++            let seq = if reference {seq_for_ref} else {seq.to_string()};
++            let read_obj = Read::extract(&seq_id, seq, &params, &minimizer_to_int, &uhs_bloom, &lcp_bloom);
++            let mut read_stats = crate::read_stats::ReadStats::new(&seq_id);
++            if read_obj.transformed.len() > k {
++                for i in 0..(read_obj.transformed.len() - k + 1) {
++                    let mut node : Kmer = Kmer::make_from(&read_obj.transformed[i..i+k]);
++                    if REVCOMP_AWARE {
++                        let (node_norm, _reversed) = node.normalize();
++                        node = node_norm;
++                    }
++                    if let Some(entry) = dbg_nodes.get(&node)  {
++                        read_stats.add(entry.abundance as u32);
++                    }
++                    else {
++                        read_stats.add(0u32);
++                    }
++                }
++            }
++            read_stats.finalize();
++        };
++        let read_stats_process_read_fasta = |record: seq_io::fasta::RefRecord, _found: &mut Found| {
++            let seq_str = record.seq();
++            let seq_id = record.id().unwrap().to_string();
++            read_stats_process_read_aux(&seq_str, &seq_id);
++        };
++        let read_stats_process_read_fastq = |record: seq_io::fastq::RefRecord, _found: &mut Found| {
++            let seq_str = record.seq();
++            let seq_id = record.id().unwrap().to_string();
++            read_stats_process_read_aux(&seq_str, &seq_id);
++        };
++
++        // parallel fasta parsing, with a main thread that writes to disk and populates hash tables
++        let mut read_stats_main_thread = || { // runs in main thread
++            nb_reads += 1;
++            None::<()>
++        };
++
++
++        crate::read_stats::ReadStats::init(&read_stats.clone().into_os_string().into_string().unwrap());
++        let buf = get_reader(&read_stats);
++        println!("Parsing sequences from {:?}...",&read_stats);
++        let mut read_stats_fasta_reads : bool = false;
++        let read_stats_filename_str = read_stats.to_str().unwrap();
++            if read_stats_filename_str.contains(".fasta.") || read_stats_filename_str.contains(".fa.") || read_stats_filename_str.ends_with(".fa") || read_stats_filename_str.ends_with(".fasta") { // not so robust but will have to do for now
++                read_stats_fasta_reads = true;
++                println!("Format: FASTA");
++        }
++        else { println!("Format: FASTQ"); }
++        if read_stats_fasta_reads {
++            let reader = seq_io::fasta::Reader::new(buf);
++            let _res = read_process_fasta_records(reader, threads as u32, queue_len, read_stats_process_read_fasta, |_record, _found| {read_stats_main_thread()});
++        }
++        else {
++            let reader = seq_io::fastq::Reader::new(buf);
++            let _res = read_process_fastq_records(reader, threads as u32, queue_len, read_stats_process_read_fastq, |_record, _found| {read_stats_main_thread()});
++        }
++        println!("Read stats written, exiting.");
++        return;
++    }
++
+     let path = format!("{}{}", output_prefix.to_str().unwrap(),".gfa");
+     let mut gfa_file = match File::create(&path) {
+         Err(why) => panic!("Couldn't create {}: {}.", path, why.to_string()),
+         Ok(file) => file,
+     };
+-    writeln!(gfa_file, "H\tVN:Z:1").expect("Error writing GFA header.");
++    writeln!(gfa_file, "H\tVN:Z:1.0").expect("Error writing GFA header.");
+     // index k-1-mers
++    // and simultaneously write the mdbg nodes to gfa
+     let dbg_nodes_view = Arc::try_unwrap(dbg_nodes).unwrap().into_read_only();
+     let mut km_index : HashMap<Overlap, Vec<&Kmer>> = HashMap::new(); 
+     for (node, entry) in dbg_nodes_view.iter() {
+@@ -970,7 +1115,7 @@ fn main() {
+             nb_edges += 1;
+         }
+     }
+-    println!("Number of edges: {}", nb_edges);
++    println!("Number of mdBG edges: {}", nb_edges);
+     if presimp > 0.0 {
+         println!("Pre-simp = {}: {} edges removed.",presimp,presimp_removed);
+     }
+diff --git a/src/minimizers.rs b/src/minimizers.rs
+index 246e395..8daf744 100644
+--- a/src/minimizers.rs
++++ b/src/minimizers.rs
+@@ -7,7 +7,6 @@ use std::collections::HashSet;
+ //use pbr::ProgressBar;
+ //use bio::io::fasta;
+ //use std::path::PathBuf;
+-//use fasthash::city;
+ use itertools::Itertools;
+ use std::fs::File;
+ use std::io::{BufRead, BufReader};
+@@ -59,42 +58,55 @@ pub fn minimizers_preparation(params: &mut Params, lmer_counts: &HashMap<String,
+     let max_threshold = params.lmer_counts_max;
+     let min_threshold = params.lmer_counts_min;
+     let mut skip : HashSet<String> = HashSet::new();
+-    // the following code replaces what i had before:
+-    // https://stackoverflow.com/questions/44139493/in-rust-what-is-the-proper-way-to-replicate-pythons-repeat-parameter-in-iter
+-    let multi_prod = (0..l).map(|_i| vec!('A', 'C', 'T', 'G')).multi_cartesian_product();
+-    for lmer_vec in multi_prod {
+-        let lmer : String = lmer_vec.into_iter().collect();
+-        if REVCOMP_AWARE {
+-            let lmer_rev = utils::revcomp(&lmer);
+-            if lmer > lmer_rev {continue;} // skip if not canonical
++    // large l-mer fix: use lmer counts to enumerate them, instead of cartesian product
++    if lmer_counts.len() > 0 {
++        count_vec.iter().map(|tup| tup.0).collect::<Vec<&String>>().iter().for_each(|x| {
++            list_minimizers.push(std::cmp::min(x.to_string(),utils::revcomp(x)))});
++    }
++    else
++    {
++        // the following code replaces what i had before:
++        // https://stackoverflow.com/questions/44139493/in-rust-what-is-the-proper-way-to-replicate-pythons-repeat-parameter-in-iter
++        let multi_prod = (0..l).map(|_i| vec!('A', 'C', 'T', 'G')).multi_cartesian_product();
++        for lmer_vec in multi_prod {
++            let lmer : String = lmer_vec.into_iter().collect();
++            if REVCOMP_AWARE {
++                let lmer_rev = utils::revcomp(&lmer);
++                if lmer > lmer_rev {continue;} // skip if not canonical
++            }
++            list_minimizers.push(lmer.to_string());
+         }
+-        list_minimizers.push(lmer.to_string());
+     }
+-    count_vec.iter().filter(|tup| tup.1 >= &max_threshold || tup.1 <= &min_threshold).map(|tup| tup.0.to_string()).collect::<Vec<String>>().iter().for_each(|x| {skip.insert(x.to_string());});
++    count_vec.iter().filter(|tup| tup.1 >= &max_threshold || tup.1 <= &min_threshold).map(|tup| tup.0.to_string()).collect::<Vec<String>>().iter().for_each(|x| {
++        skip.insert(x.to_string());
++        skip.insert(utils::revcomp(x));
++    });
+     
+     let mut minimizer_to_int : HashMap<String, u64> = HashMap::new();
+     let mut int_to_minimizer : HashMap<u64, String> = HashMap::new();
+     let mut skips = 0;
+-        // assign numbers to minimizers, the regular way
+-        for lmer in list_minimizers {
+-            let hash = (ntc64(lmer.as_bytes(), 0, l)) as u64;
+-            let mut hash_new = hash as f64;
+-            hash_new /= u64::max_value() as f64;
+-            if skip.contains(&lmer) { 
+-                hash_new = hash_new.sqrt().sqrt().sqrt();
+-                skips += 1;
+-            }
+-            if (hash_new as f64) <= (density as f64) {
+-                minimizer_to_int.insert(lmer.to_string(), hash);
+-                int_to_minimizer.insert(hash, lmer.to_string());
+-                // also insert the info for the revcomp minimizer, will allow to avoid normalizing
+-                // later 
+-                let lmer_rev = utils::revcomp(&lmer);
+-                minimizer_to_int.insert(lmer_rev.to_string(), hash);
+-                int_to_minimizer.insert(hash, lmer_rev.to_string());
+-            }
++    // assign numbers to minimizers, the regular way
++    for lmer in list_minimizers {
++        let hash = (ntc64(lmer.as_bytes(), 0, l)) as u64;
++        let mut hash_new = hash as f64;
++        hash_new /= u64::max_value() as f64;
++        if skip.contains(&lmer) { 
++            hash_new = 1.0;
++            //println!("{} skipping lmer", lmer);
++            skips += 1;
+         }
+-    
++        if (hash_new as f64) <= (density as f64) {
++            //println!("{} lmer {} hash {} density", lmer,hash_new,density);
++            minimizer_to_int.insert(lmer.to_string(), hash);
++            int_to_minimizer.insert(hash, lmer.to_string());
++            // also insert the info for the revcomp minimizer, will allow to avoid normalizing
++            // later 
++            let lmer_rev = utils::revcomp(&lmer);
++            minimizer_to_int.insert(lmer_rev.to_string(), hash);
++            int_to_minimizer.insert(hash, lmer_rev.to_string());
++        }
++    }
++
+     println!("Selected {} minimizer ID's and {} sequences.",int_to_minimizer.len(), minimizer_to_int.len());
+     println!("{} frequent l-mers skipped.", skips);
+     (minimizer_to_int, int_to_minimizer)
+diff --git a/src/pairwise.rs b/src/pairwise.rs
+index c391910..86b8f7d 100644
+--- a/src/pairwise.rs
++++ b/src/pairwise.rs
+@@ -277,6 +277,7 @@ pub struct Scoring<F: MatchFunc> {
+     pub gap_open: i32,
+     pub gap_extend: i32,
+     pub match_fn: F,
++#[allow(dead_code)]
+     pub match_scores: Option<(i32, i32)>,
+     pub xclip_prefix: i32,
+     pub xclip_suffix: i32,
+diff --git a/src/poa.rs b/src/poa.rs
+index 8cbd93d..66b2eab 100644
+--- a/src/poa.rs
++++ b/src/poa.rs
+@@ -93,6 +93,7 @@ where
+ /// Details of scoring are encapsulated in this structure.
+ /// An affine gap score model is used so that the gap score for a length 'k' is:
+ /// GapScore(k) = gap_open + gap_extend * k
++#[allow(dead_code)]
+ #[derive(Debug, Clone)]
+ pub struct Scoring<F: MatchFunc> {
+     pub gap_open: i32,
+diff --git a/src/read.rs b/src/read.rs
+index 4301555..3c01488 100644
+--- a/src/read.rs
++++ b/src/read.rs
+@@ -4,7 +4,10 @@ use std::collections::{HashMap,HashSet};
+ //use std::collections::hash_map::Entry::{Occupied, Vacant};
+ //use std::collections::VecDeque;
+ use super::utils::pretty_minvec;
++use std::collections::VecDeque;
++
+ type Buckets<'a> = HashMap<Vec<u64>, Vec<String>>;
++
+ #[derive(Clone, Default)]
+ pub struct Read {
+     pub id: String,
+@@ -15,17 +18,75 @@ pub struct Read {
+     //pub seq_str: &'a str, // an attempt to avoid copying the string sequence returned by the fasta parser (seems too much effort to implement for now)
+     pub corrected: bool
+ }
+-#[derive(Clone)]
+-pub struct Lmer {
+-    pub pos: usize,
+-    pub hash: u64
++
++
++const SEQ_NT4_TABLE: [u8; 256] =
++   [0, 1, 2, 3,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,
++        4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,
++        4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,
++        4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,
++        4, 0, 4, 1,  4, 4, 4, 2,  4, 4, 4, 4,  4, 4, 4, 4,
++        4, 4, 4, 4,  3, 3, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,
++        4, 0, 4, 1,  4, 4, 4, 2,  4, 4, 4, 4,  4, 4, 4, 4,
++        4, 4, 4, 4,  3, 3, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,
++        4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,
++        4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,
++        4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,
++        4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,
++        4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,
++        4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,
++        4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,
++        4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4];
++
++// copy from http://www.cse.yorku.ca/~oz/hash.html:
++
++pub fn hash(mut key: u64, mask: u64) -> u64 {
++        key = (!key + (key << 21)) & mask;
++        key = key ^ key >> 24;
++        key = ((key + (key << 3)) + (key << 8)) & mask;
++        key = key ^ key >> 14;
++        key = ((key + (key << 2)) + (key << 4)) & mask;
++        key = key ^ key >> 28;
++        key = (key + (key << 31)) & mask;
++        return key;
++}
++
++
++pub fn update_window(q: &mut VecDeque<u64>, q_pos: &mut VecDeque<usize>, q_min_val: u64, q_min_pos: i32, new_strobe_hashval: u64, i: usize, new_minimizer: bool) -> (u64, i32, bool) {
++    q.pop_front();
++    let popped_index = q_pos.pop_front();
++    q.push_back(new_strobe_hashval);
++    q_pos.push_back(i);
++    let mut min_val = q_min_val;
++    let mut min_pos = q_min_pos;
++    let mut new_minim = new_minimizer;
++    if min_pos == popped_index.unwrap() as i32 {
++        min_val = u64::max_value();
++        min_pos = i as i32;
++        for j in (0..q.len()).rev() {
++            if q[j] < min_val {
++                min_val = q[j];
++                min_pos = q_pos[j] as i32;
++                new_minim = true;
++            }
++        }
++    }
++    else if new_strobe_hashval < min_val { // the new value added to queue is the new minimum
++        min_val = new_strobe_hashval;
++        min_pos = i as i32;
++        new_minim = true;
++    }
++    (min_val, min_pos, new_minim)
+ }
+ 
++
++
+ impl Read {
+     pub fn extract(inp_id: &str, inp_seq: String, params: &Params, minimizer_to_int: &HashMap<String, u64>, uhs_bloom: &RacyBloom, lcp_bloom: &RacyBloom) -> Self {
+         if params.uhs {Read::extract_uhs(inp_id, inp_seq, params, minimizer_to_int, uhs_bloom)}
+         else if params.lcp {Read::extract_lcp(inp_id, inp_seq, params, minimizer_to_int, lcp_bloom)}
+-        else {Read::extract_density(inp_id, inp_seq, params, minimizer_to_int)}
++        else if params.use_syncmers { Read::extract_syncmers(inp_id, inp_seq, params) }
++	else {Read::extract_density(inp_id, inp_seq, params, minimizer_to_int)}
+     }
+ 
+     //delete
+@@ -38,7 +99,7 @@ impl Read {
+         let hash_bound = ((density as f64) * (u64::max_value() as f64)) as u64;
+         let tup;
+         let inp_seq;
+-        if !params.use_hpc {
++        if !params.reads_already_hpc {
+             tup = Read::encode_rle(&inp_seq_raw); //get HPC sequence and positions in the raw nonHPCd sequence
+             inp_seq = tup.0; //assign new HPCd sequence as input
+         }
+@@ -70,7 +131,7 @@ impl Read {
+         let hash_bound = ((density as f64) * (u64::max_value() as f64)) as u64;
+         let tup;
+         let inp_seq;
+-        if !params.use_hpc {
++        if !params.reads_already_hpc {
+             tup = Read::encode_rle(&inp_seq_raw); //get HPC sequence and positions in the raw nonHPCd sequence
+             inp_seq = tup.0; //assign new HPCd sequence as input
+         }
+@@ -122,7 +183,7 @@ impl Read {
+         let hash_bound = ((density as f64) * (u64::max_value() as f64)) as u64;
+         let mut tup = (String::new(), Vec::<usize>::new());
+         let inp_seq;
+-        if !params.use_hpc {
++        if !params.reads_already_hpc {
+             tup = Read::encode_rle(&inp_seq_raw); //get HPC sequence and positions in the raw nonHPCd sequence
+             inp_seq = tup.0; //assign new HPCd sequence as input
+         }
+@@ -138,16 +199,158 @@ impl Read {
+             let mut hash :u64 = hash;
+             if params.error_correct || params.has_lmer_counts {
+                 let res = minimizer_to_int.get(lmer); // allows to take the 'skip' array into account
++                //println!("lmer {} hash {} res {:?}",lmer,hash,res);
+                 if res.is_none() {continue;} // possible discrepancy between what's calculated in minimizers_preparation() and here
+                 hash = *res.unwrap();
+             }
+-            if !params.use_hpc {read_minimizers_pos.push(tup.1[i]);} //if not HPCd need raw sequence positions
++            if !params.reads_already_hpc {read_minimizers_pos.push(tup.1[i]);} //if not HPCd need raw sequence positions
+             else {read_minimizers_pos.push(i);} //already HPCd so positions are the same
+             read_transformed.push(hash);
+         }
+         Read {id: inp_id.to_string(), minimizers: read_minimizers, minimizers_pos: read_minimizers_pos, transformed: read_transformed, seq: inp_seq_raw, corrected: false}
+     }
+ 
++    // copied from hifimap's code
++    // except that we use down-sampled syncmers here, otherwise we'd get too many minimizers
++    pub fn extract_syncmers(inp_id: &str, inp_seq_raw: String, params: &Params) -> Self {
++        let l = params.l;
++        let hash_bound = ((params.density as f64) * 4_usize.pow(l as u32) as f64) as u64;
++
++
++        // boilerplate code for all minimizer schemes
++        let mut tup = (String::new(), Vec::<usize>::new());
++        let seq;
++        if !params.reads_already_hpc {
++            tup = Read::encode_rle(&inp_seq_raw); //get HPC sequence and positions in the raw nonHPCd sequence
++            seq = tup.0.as_bytes(); //assign new HPCd sequence as input
++        }
++        else {
++            seq = inp_seq_raw.as_bytes(); //already HPCd before so get the raw sequence
++        }
++        if seq.len() < l {
++            let read_minimizers = Vec::<String>::new();
++            let read_minimizers_pos = Vec::<usize>::new();
++            let read_transformed = Vec::<u64>::new();
++            return Read {id: inp_id.to_string(), minimizers: read_minimizers, minimizers_pos: read_minimizers_pos, transformed: read_transformed, seq: inp_seq_raw, corrected: false};
++        }
++
++	let s = params.s;
++	//let wmin = params.wmin;
++	//let wmax = params.wmax;
++	// using hifimap defaults
++	//let wmin = l/(l-s+1)+2; // actually unused here
++	//let wmax = l/(l-s+1)+10;
++	let smask : u64 = ((1 as u64) << 2*s) - 1;
++	let lmask : u64 = ((1 as u64) << 2*l) - 1;
++	let t = f64::ceil((l - s + 1) as f64 / 2.0) as usize;
++        let mut seq_hashes = Vec::new();
++        let mut pos_to_seq_coord = Vec::new();
++        let mut qs = VecDeque::<u64>::new();
++        let mut qs_pos = VecDeque::<usize>::new();
++        let seq_len = seq.len();
++        let mut qs_size = 0;
++        let mut qs_min_val = u64::max_value();
++        let mut qs_min_pos : i32 = -1;
++        let mut xl : [u64; 2] = [0; 2];
++        let mut xs : [u64; 2] = [0; 2];
++        let mut lp = 0;
++        let lshift : u64 = (l as u64 - 1) * 2;
++        let sshift : u64 = (s as u64 - 1) * 2;
++        for i in 0..seq_len {
++            let c = SEQ_NT4_TABLE[seq[i] as usize];
++            if c < 4 {
++                xl[0] = (xl[0] << 2 | c as u64) & lmask;
++                xl[1] = xl[1] >> 2 | ((3 - c) as u64) << lshift;
++                xs[0] = (xs[0] << 2 | c as u64) & smask;
++                xs[1] = xs[1] >> 2 | ((3 - c) as u64) << sshift;
++                lp += 1;
++                if s != 0 { //ksyncmer or kstrobemer
++                    if lp >= s {
++                        let ys : u64 = match xs[0] < xs[1]{
++                            true => xs[0],
++                            false => xs[1]
++                        };
++                        let hash_s = hash(ys, smask);
++                        if qs_size < l - s {
++                            qs.push_back(hash_s);
++                            qs_pos.push_back(i - s + 1);
++                            qs_size += 1;
++                        }
++                        else if qs_size == l - s {
++                            qs.push_back(hash_s);
++                            qs_pos.push_back(i - s + 1);
++                            qs_size += 1;
++                            for j in 0..qs_size {
++                                if qs[j] < qs_min_val {
++                                    qs_min_val = qs[j];
++                                    qs_min_pos = qs_pos[j] as i32;
++                                }
++                            }
++                            if qs_min_pos == qs_pos[t-1] as i32 {
++                                let yl : u64 = match xl[0] < xl[1]{
++                                    true => xl[0],
++                                    false => xl[1]
++                                };
++                                let hash_l = hash(yl, lmask);
++                                if hash_l <= hash_bound {
++                                    seq_hashes.push(hash_l);
++                                    //pos_to_seq_coord.push(i - l + 1);
++                                    if !params.reads_already_hpc {pos_to_seq_coord.push(tup.1[i-l+1]);} //if not HPCd need raw sequence positions
++                                    else {pos_to_seq_coord.push(i-l+1);} //already HPCd so positions are the same
++                                }
++                            }
++                        }
++                        else {
++                            //let mut new_minimizer = false; // is never used
++                            let tuple = update_window(&mut qs, &mut qs_pos, qs_min_val, qs_min_pos, hash_s, i - s + 1, /*new_minimizer*/ false);
++                            qs_min_val = tuple.0; qs_min_pos = tuple.1; 
++                            // new_minimizer = tuple.2;// is never used
++                            if qs_min_pos == qs_pos[t-1] as i32 {
++                                let yl : u64 = match xl[0] < xl[1] {
++                                    true => xl[0],
++                                    false => xl[1]
++                                };
++                                let hash_l = hash(yl, lmask);
++                                if hash_l <= hash_bound {
++                                    seq_hashes.push(hash_l);
++                                    //pos_to_seq_coord.push(i - l + 1);
++                                    if !params.reads_already_hpc {pos_to_seq_coord.push(tup.1[i-l+1]);} //if not HPCd need raw sequence positions
++                                    else {pos_to_seq_coord.push(i-l+1);} //already HPCd so positions are the same
++                                }
++                            }
++                        }
++                    }
++                }
++                else { //kminmer
++                    if lp >= l
++                    {
++                        let yl : u64 = match xl[0] < xl[1] {
++                            true => xl[0],
++                            false => xl[1]
++                        };
++                        let hash_l = hash(yl, lmask);
++                        if hash_l <= hash_bound {
++                            seq_hashes.push(hash_l);
++
++                            if !params.reads_already_hpc {pos_to_seq_coord.push(tup.1[i-l+1]);} //if not HPCd need raw sequence positions
++                            else {pos_to_seq_coord.push(i-l+1);} //already HPCd so positions are the same
++                            //pos_to_seq_coord.push(i - l + 1);
++                        }
++                    }
++                }
++            } else {
++                qs_min_val = u64::max_value();
++                qs_min_pos = -1;
++                lp = 0; xs = [0; 2]; xl = [0; 2];
++                qs_size = 0;
++                qs.clear();
++                qs_pos.clear();
++            }
++        }
++        let read_minimizers = Vec::<String>::new(); // unused everywhere it seems
++        Read {id: inp_id.to_string(), minimizers: read_minimizers, minimizers_pos: pos_to_seq_coord, transformed: seq_hashes, seq: inp_seq_raw, corrected: false}
++    } 
++
+     pub fn label(&self, read_seq: String, read_minimizers: Vec<String>, read_minimizers_pos: Vec<usize>, read_transformed: Vec<u64>, corrected_map: &mut CorrMap) {
+         corrected_map.insert(self.id.to_string(), (read_seq, read_minimizers, read_minimizers_pos, read_transformed));
+     }
+diff --git a/src/to_basespace.rs b/src/to_basespace.rs
+index 59a02ed..fcb85c0 100644
+--- a/src/to_basespace.rs
++++ b/src/to_basespace.rs
+@@ -70,14 +70,14 @@ fn main() {
+     let opt = Opt::from_args();      
+     let mut gfa_file;
+     let mut sequences_file;
+-    if !opt.gfa.is_none()       {gfa_file       = opt.gfa.unwrap();} 	   else {panic!("please specify an input GFA file (output of `gfatools asm [..] -u`).");} 
+-    if !opt.sequences.is_none() {sequences_file = opt.sequences.unwrap();} else {panic!("Please specify the prefix of [prefix].*.sequences files.");} 
++    if !opt.gfa.is_none()       {gfa_file       = opt.gfa.unwrap();} 	   else {panic!("please specify an input unitig GFA file (output of `gfatools asm [..] -u`).");} 
++    if !opt.sequences.is_none() {sequences_file = opt.sequences.unwrap();} else {panic!("Please specify the prefix of rust-mdbg, i.e. with [prefix].*.sequences files and the original GFA [prefix].gfa");} 
+ 
+     let debug = opt.debug;
+     //let mut pb = ProgressBar::on(stderr(),file_size);
+     // Step 1 : read the simplified GFA file
+     //
+-    // we record which sequence we will need lin full and which we only need some extremity of
++    // we record which sequence we will need in full and which we only need some extremity of
+     let mut unitigs : HashMap<String, Vec<(u64, bool)>> = HashMap::new();
+     let mut node2unitig : HashMap<u64, String> = HashMap::new();
+     let mut unitig_name = String::new();
+@@ -86,7 +86,7 @@ fn main() {
+         let is_S = line.starts_with('S');
+         let is_L = line.starts_with('L');
+         if is_S || is_L {
+-            //S       49194   *       LN:i:1  KC:i:157
++            //S       utg0000001l     *       LN:i:7291       RC:i:7  lc:i:7291
+             let mut v : Vec<String> = line.split('\t').map(|s| s.to_string()).collect();
+             unitig_name = v[1].clone();
+             if current_unitig.1.len() > 0 {
+@@ -124,7 +124,7 @@ fn main() {
+             unitigs.insert(current_unitig.0.clone(), current_unitig.1.to_vec());
+         }
+     }
+-    println!("Done parsing GFA, got {} unitigs.", unitigs.len());
++    println!("Done parsing unitigs GFA, got {} unitigs.", unitigs.len());
+ 
+     // Step 1.5:
+     // determine, for each node, whether to load its whole sequence or just the end
+@@ -152,6 +152,48 @@ fn main() {
+         }
+     }
+     //println!("Marked {} mDBG nodes to load sequences", load_node.len());
++    
++    // Step 1.75 : read the original uncompressed GFA file and record node abundances
++    let mut unitig_abundance : HashMap<String, u64> = HashMap::new();
++    let mut nb_kminmers = 0;
++    let mut process_orig_gfa_line = | line :&str | -> bool {
++        //println!("line: {}", line);
++        let is_S = line.starts_with('S');
++        if is_S {
++            //S       5346069 *       LN:i:6104       KC:i:17
++            let mut v : Vec<String> = line.split('\t').map(|s| s.to_string()).collect();
++            let kminmer_id = v[1].clone().parse::<u64>().unwrap();
++            let mut abundance = 0;
++            for elt in v.iter()
++            {   
++                if elt.starts_with("KC:")
++                {
++                    abundance = elt.split(':').collect::<Vec<&str>>()[2].parse::<u64>().unwrap();
++                }
++            }
++            let unitig_name = node2unitig.get(&kminmer_id);
++            if !unitig_name.is_some() {return true ;}  // that node isn't used in a unitig.. weird.
++            let unitig_name = unitig_name.unwrap().clone();
++            let prev_abundance = unitig_abundance.get(&unitig_name).unwrap_or(&0);
++            unitig_abundance.insert(unitig_name, prev_abundance + abundance);
++            nb_kminmers += 1
++        }
++        return true;
++    };
++ 
++    if let Ok(lines) = read_lines(&format!("{}.gfa", &sequences_file.to_str().unwrap())) {
++	// Consumes the iterator, returns an (Optional) String
++        let mut current_unitig : (String, Vec<(u64, bool)>) = ("".to_string(), Vec::new());
++	    for line in lines {
++	        if let Ok(line_contents) = line {
++		        if !process_orig_gfa_line(&line_contents) {break;}
++	        }
++	    }
++    }
++    println!("Done parsing original GFA, with {} k-min-mers.", nb_kminmers);
++
++
++
+     // Step 2 : read the sequences file
+     // we record in memory only the parts of the sequences we will need to fill in the complete GFA
+ 
+@@ -207,7 +249,7 @@ fn main() {
+         Err(why) => panic!("Couldn't create {}: {}.", path, why.description()),
+         Ok(file) => file,
+     };
+-    write!(complete_gfa_file, "H\tVN:Z:1\n").expect("Error writing GFA header.");
++    write!(complete_gfa_file, "H\tVN:Z:1.0\n").expect("Error writing GFA header.");
+     let reconstruct_seq = |unitig_name: &String| -> String {
+         let mut res = String::new();
+         //println!("reconstructing unitig {}",unitig_name);
+@@ -220,6 +262,12 @@ fn main() {
+     };
+     let mut seq_lens : HashMap<String, usize> = HashMap::new();
+ 
++    let get_mean_abundance =  |unitig_name: &String| -> f64 {
++        let total_abundance = unitig_abundance.get(unitig_name).unwrap().clone() as f64;
++        let unitig = unitigs.get(unitig_name).unwrap();
++        total_abundance / unitig.len() as f64
++    };
++
+     let mut process_gfa_line2 = |line: &str| {
+         //println!("line: {}", line);
+         let is_S = line.starts_with('S');
+@@ -232,13 +280,14 @@ fn main() {
+             let unitig_name = v[1].clone();
+             let seq = reconstruct_seq(&unitig_name);
+             v[2]= seq.clone();
+-            //v[3] = String::from(format!("LN:i:{}",seq.len())); // should already be there
++            //v[3] = String::from(format!("LN:i:{}",seq.len())); // field should already be there
+             v[3] = String::from(format!("LN:i:{}", seq.len())); // but actually we want to fix it given that overlaps 
+                                                                // were very approximately calculated. then gfatools complains
+                                                                // and might even crash
++            v.resize(5,"".to_string()); // deletes the RC/lc fields but add mean k-min-mer count as field "mc" (lowercase because not standard)
++            v[4] = String::from(format!("mc:f:{:.1}", get_mean_abundance(&unitig_name)));
+             seq_lens.insert(unitig_name, seq.len());
+             let s_line = v.join("\t");
+-            let s_line = v[..4].join("\t"); // deletes the RC/lc fields
+             write!(complete_gfa_file, "{}\n", s_line).expect("Error writing S line.");
+         }
+         if is_L {
+diff --git a/utils/complete_gfa.py b/utils/complete_gfa.py
+index e88eaf4..6f6af69 100644
+--- a/utils/complete_gfa.py
++++ b/utils/complete_gfa.py
+@@ -11,9 +11,9 @@ def find_overlap(source, sink):
+     return shift
+ 
+ 
+-output_filename = '.'.join(sys.argv[1].split('.')[:-1])+".complete.gfa"
++output_filename = sys.argv[1]+".complete.gfa"
+ output = open(output_filename,'w')
+-output.write("H\tVN:Z:1\n")
++output.write("H\tVN:Z:1.0\n")
+ for line in open(sys.argv[2]):
+     if line.startswith('S'):
+         #S       217     *       LN:i:1  KC:i:137
+@@ -39,3 +39,4 @@ for line in open(sys.argv[2]):
+     output.write("S\t%s\t%s\tLN:i:%d\tKC:i:%d\n" % (source[0], source[2], len(source[2]), int(kmer_abundance[source[0]])))
+     output.write("S\t%s\t%s\tLN:i:%d\tKC:i:%d\n" % (sink[0], sink[2], len(sink[2]), int(kmer_abundance[sink[0]])))
+     output.write("L\t%s\t%s\t%s\t%s\t%dM\n"% (source[0], source[1], sink[0], sink[1], int(overlap_length)))
++output.close()
+diff --git a/utils/multik b/utils/multik
+index 61bddf7..0d0102c 100755
+--- a/utils/multik
++++ b/utils/multik
+@@ -36,6 +36,7 @@ then
+     max_k=$(LC_NUMERIC="en_US.UTF-8" printf "%.0f" $(echo 0.95*$avg_readlen*$density | bc))
+ fi
+ 
++set -e # abort if any program fails
+ echo "avg readlen: $avg_readlen, max k: $max_k"
+ 
+ function assemble {
+@@ -68,10 +69,10 @@ fi
+ last_k=5
+ for k in $(seq $start_k 5 $max_k)
+ do
+-    zcat -f $tprefix.msimpl.fa $tprefix.msimpl.fa |seqtk seq -A -L 100000 > multik_reads.fa
+-    zcat -f $reads  |seqtk seq -A >> multik_reads.fa
++    zcat -f $tprefix.msimpl.fa $tprefix.msimpl.fa |seqtk seq -A -L 100000 > $prefix.multik_reads.fa
++    zcat -f $reads  |seqtk seq -A >> $prefix.multik_reads.fa
+     tprefix=$prefix-k$k
+-    assemble $PWD/multik_reads.fa $k $l $density $tprefix $threads $DIR
++    assemble $prefix.multik_reads.fa $k $l $density $tprefix $threads $DIR
+     last_k=$k
+     rm -f *.sequences
+ done
