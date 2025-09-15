@@ -1,10 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CARGO_TERM_COLOR=never
 export RUSTFLAGS="-C target-cpu=generic"
 
-export CARGO_HOME="$SRC_DIR/.cargo"
-mkdir -p "$CARGO_HOME"
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
-cargo install --locked --path . --root "${PREFIX}"
+RUST_BACKTRACE=1
+cargo install --locked --no-track --path . --root "${PREFIX}"
+
+"${STRIP}" "$PREFIX/bin/bamrescue"
