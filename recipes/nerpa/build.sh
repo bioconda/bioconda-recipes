@@ -1,19 +1,10 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -eo pipefail
 
 ARCH=$(uname -m)
 PREFIX="${PREFIX:-$(pwd)/install}"
 BUILD_DIR="${BUILD_DIR:-build}"
 SRC_DIR="$(dirname "$0")"
-
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-
-if [[ `uname -s` == "Darwin" ]]; then
-  export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
-else
-  export CONFIG_ARGS=""
-fi
 
 # 架构参数修正
 case "$ARCH" in
@@ -27,7 +18,7 @@ case "$ARCH" in
 esac
 
 case "$ARCH" in
-  aarch64)
+  aarch64|arm64)
   fix_cxxopts() {
     local header_path="$1"
     if [ -f "$header_path" ] && ! grep -q "#include <cstring>" "$header_path"; then
@@ -35,27 +26,24 @@ case "$ARCH" in
       echo "$header_path"
     fi
   }
+esac
 
 main() {
   find "$SRC_DIR" -name 'cxxopts.hpp' | while read -r file; do
     fix_cxxopts "$file"
   done
+
+  mkdir -p "$BUILD_DIR" && cd "$BUILD_DIR" || exit 1
+
+  cmake -G Ninja \
+    -DCMAKE_INSTALL_PREFIX="$PREFIX" \
+    -DCMAKE_C_COMPILER="$CC" \
+    -DCMAKE_CXX_COMPILER="$CXX" \
+    -DCMAKE_CXX_STANDARD=14 \
+    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+    .. || { echo "CMake configuration failed"; exit 1; }
+
+  ninja install -j "${CPU_COUNT}"
 }
-esac
-
-mkdir -p "$BUILD_DIR" && cd "$BUILD_DIR" || exit 1
-
-cmake -G Ninja \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_INSTALL_PREFIX="$PREFIX" \
-  -DCMAKE_C_COMPILER="$CC" \
-  -DCMAKE_CXX_COMPILER="$CXX" \
-  -DCMAKE_CXX_STANDARD=14 \
-  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-  -Wno-dev -Wno-deprecated --no-warn-unused-cli \
-  "${CONFIG_ARGS}" \
-  .. || { echo "CMake configuration failed"; exit 1; }
-
-ninja install -j "${CPU_COUNT}"
 
 main 2>&1 | tee build.log
