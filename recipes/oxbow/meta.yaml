@@ -1,0 +1,55 @@
+{% set name = "oxbow" %}
+{% set version = "0.4.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/oxbow-{{ version }}.tar.gz
+  sha256: 2c79b176a431d22e0913a6c175bf7bd3bf27468366c088da30be14e1cc8a5ef6
+
+build:
+  run_exports:
+    - {{ pin_subpackage('oxbow', max_pin="x") }}
+  script:
+    - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+  host:
+    - python >=3.9
+    - maturin >=1.0,<2.0
+    - pip
+  run:
+    - python >=3.9
+    - arro3-core >=0.4.6
+    - polars >=1.26.0
+    - pandas >=2.2.3
+    - pyarrow >=19.0.1
+    - fsspec >=2025.5.1
+    - typing_extensions  # [py<310]
+
+test:
+  imports:
+    - oxbow
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/abdenlab/oxbow
+  summary: Read genomic file formats into data frames and more.
+  license: MIT AND Apache-2.0
+  license_file:
+    - oxbow/LICENSE-APACHE
+    - oxbow/LICENSE-MIT
+    - THIRDPARTY.yml
+
+extra:
+  recipe-maintainers:
+    - Matt-BF
