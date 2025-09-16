@@ -15,7 +15,7 @@ case $(uname -m) in
 esac
 
 # inject compilers
-sed -i.bak "s|g++|${CXX}|" src/Makefile
+sed -i.bak "s|g++|${CXX} -I${PREFIX}/include|" src/Makefile
 rm -f src/*.bak
 
 chmod +rx ./install_bracken.sh
