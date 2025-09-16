@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 if [ "$(uname)" == "Darwin" ]; then
     # building the library requires an implementation of basic_stringbuf
     # from the c++ standard library
@@ -7,6 +9,9 @@ if [ "$(uname)" == "Darwin" ]; then
     MACOSX_DEPLOYMENT_TARGET=10.9
 fi
 
+# use newer config.guess and config.sub that support linux-aarch64
+cp ${RECIPE_DIR}/config.* ./config/
+
 ./configure --prefix=$PREFIX
-make
+make -j ${CPU_COUNT}
 make install

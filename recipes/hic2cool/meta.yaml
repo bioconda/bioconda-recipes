@@ -1,6 +1,6 @@
 {% set name = "hic2cool" %}
-{% set version = "0.8.3" %}
-{% set sha256 = "2fa1557df8b1b3eddc06df394649e69c0f1f40f1a0c951b26c16c0d3ff81a41e" %}
+{% set version = "1.0.1" %}
+{% set sha256 = "f1f1ffeeec8788819e6ae4b4d1236ba4349dceb98aa4a0b0b3068af30c2a6434" %}
 
 package:
   name: {{ name|lower }}
@@ -12,24 +12,26 @@ source:
 
 build:
   noarch: python
-  number: 2
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('hic2cool', max_pin="x") }}
 
 requirements:
   host:
-    - python
-    - setuptools
+    - python >=3.8,<3.10
+    - poetry-core >=1.0.0
     - numpy >=1.10.1
     - scipy
     - pandas
-    - cooler>=0.8.5
+    - cooler >=0.8.5
     - h5py >=2.8.0
   run:
     - python
     - numpy >=1.10.1
     - scipy
     - pandas
-    - cooler>=0.8.5
+    - cooler >=0.8.5
     - h5py >=2.8.0
 
 test:
@@ -43,4 +45,4 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE.txt
-  summary: "A converter between .hic files (from juicer) and .cool files (for cooler)."
+  summary: "A converter between .hic files (from juicer) and single-resolution or multi-resolution .cool files (for cooler)."

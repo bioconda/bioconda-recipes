@@ -1,23 +1,29 @@
+{% set name = "perl-libwww-perl" %}
+{% set version = "6.80" %}
+
 package:
-  name: perl-libwww-perl
-  version: "6.39"
+  name: {{ name }} 
+  version: {{ version }}
 
 source:
-  url: https://cpan.metacpan.org/authors/id/O/OA/OALDERS/libwww-perl-6.39.tar.gz
-  sha256: 9a8d7747938aa75d7d524c71574ae7f99ca66a5dac8255a7f7759f373e7774d5
+  url: https://cpan.metacpan.org/authors/id/O/OA/OALDERS/libwww-perl-{{ version }}.tar.gz
+  sha256: 5ba3fc5a00836e61cb428bcd91bf69d8d74eaee6d78e44c3a414f78076af0a98
 
 build:
   number: 0
   noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
   
 requirements:
+  build:
+    - make
   host:
     - perl
     - perl-file-listing
     - perl-digest-md5
     - perl-test-fatal
     - perl-uri
-    - perl-module-metadata
     - perl-mime-base64
     - perl-encode-locale
     - perl-encode
@@ -25,22 +31,23 @@ requirements:
     - perl-www-robotrules
     - perl-getopt-long
     - perl-http-cookies
+    - perl-http-cookiejar-lwp
     - perl-try-tiny
     - perl-http-date
     - perl-test-needs
     - perl-base
     - perl-net-http >=6.18
     - perl-test-requiresinternet
-    - perl-cpan-meta-requirements
     - perl-http-negotiate
     - perl-lwp-mediatypes
     - perl-extutils-makemaker
     - perl-html-parser
     - perl-ntlm
-
+    - perl-test-leaktrace
   run:
     - perl
     - perl-http-cookies
+    - perl-http-cookiejar-lwp
     - perl-try-tiny
     - perl-http-date
     - perl-file-listing
@@ -54,12 +61,14 @@ requirements:
     - perl-http-negotiate
     - perl-http-daemon
     - perl-lwp-mediatypes
+    - perl-lwp-protocol-https
     - perl-www-robotrules
     - perl-html-parser
     - perl-ntlm
+    - perl-module-load
+    - perl-data-dump
 
 test:
-  # Perl 'use' tests
   imports:
     - LWP
     - LWP::Authen::Basic
@@ -86,6 +95,8 @@ test:
     - LWP::UserAgent
 
 about:
-  home: http://metacpan.org/pod/libwww-perl
-  license: perl_5
-  summary: 'The World-Wide Web library for Perl'
+  home: "https://metacpan.org/pod/HTTP::CookieJar"
+  license: "Perl_5"
+  summary: "The World-Wide Web library for Perl."
+  dev_url: "https://github.com/libwww-perl/libwww-perl"
+  doc_url: "https://metacpan.org/pod/HTTP::CookieJar"

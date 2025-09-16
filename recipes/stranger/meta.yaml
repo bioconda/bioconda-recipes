@@ -1,0 +1,50 @@
+{% set name = "stranger" %}
+{% set version = "0.9.5" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: ba23a6506d331fec131f568733283b254e5600668f1b8564d92f217c922bbfac
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - stranger = stranger.cli:cli
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+    - hatchling
+  run:
+    - click
+    - coloredlogs
+    - python >=3.7
+    - pyyaml
+    - importlib-resources >=5.12.0
+
+test:
+  imports:
+    - stranger
+    - stranger.resources
+  commands:
+    - stranger --help
+  requires:
+    - pytest
+    - pytest-cov
+
+about:
+  home: "https://github.com/Clinical-Genomics/stranger"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Annotate VCF files with STR variants with pathogenicity implications."
+  doc_url: "https://github.com/Clinical-Genomics/stranger/blob/v{{ version }}/README.md"
+  dev_url: "https://github.com/Clinical-Genomics/stranger"

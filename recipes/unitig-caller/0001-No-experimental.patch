@@ -1,0 +1,37 @@
+From 2a01ef2434329dfdadcb73f5d1a7fadc1a75a094 Mon Sep 17 00:00:00 2001
+From: John Lees <lees.john6@gmail.com>
+Date: Thu, 30 Mar 2023 14:57:43 +0100
+Subject: [PATCH] No experimental
+
+---
+ CMakeLists.txt | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 297f258..022af11 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -4,8 +4,11 @@ project("${TARGET_NAME}")
+ add_compile_definitions(PYTHON_EXT)
+ 
+ set(CMAKE_CXX_STANDARD 17)
++message("uc_install=$ENV{UC_INSTALL}")
+ # older compilers use experimental::filesystem
+-if(NOT $ENV{UC_INSTALL} STREQUAL "conda" AND CMAKE_COMPILER_IS_GNUCC)
++if("$ENV{UC_INSTALL}" STREQUAL "conda" AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
++    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_LIBCPP_DISABLE_AVAILABILITY")
++elseif(NOT "$ENV{UC_INSTALL}" STREQUAL "conda" AND CMAKE_CXX_COMPILER_ID MATCHES "GCC")
+     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFS_EXP -fconcepts")
+ endif()
+ 
+@@ -71,6 +74,6 @@ else()
+     endif()
+ endif()
+ # older compilers use experimental::filesystem
+-if(NOT $ENV{UC_INSTALL} STREQUAL "conda" AND CMAKE_COMPILER_IS_GNUCC)
++if(NOT "$ENV{UC_INSTALL}" STREQUAL "conda" AND CMAKE_CXX_COMPILER_ID MATCHES "GCC")
+     target_link_libraries("${TARGET_NAME}" PRIVATE stdc++fs)
+ endif()
+-- 
+2.37.1 (Apple Git-137.1)
+

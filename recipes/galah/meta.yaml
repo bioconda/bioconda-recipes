@@ -1,33 +1,46 @@
-{% set version = "0.3.0" %}
+{% set version = "0.4.2" %}
 {% set name = "galah" %}
-{% set sha256 = "19b478d1b723f2ca6b442a4c6bdb4801a6d7dfc7ee8279c56dd2b4af75a2bbeb" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 1
-  skip: True # [osx]
-
 source:
-  url: https://github.com/wwood/{{ name }}/archive/v{{version}}.tar.gz
-  sha256: {{ sha256 }}
+  git_url: https://github.com/wwood/{{ name }}.git
+  git_rev: 73d6c06
+  sha256: unused
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
-    - rust >=1.19
+    - {{ compiler('rust') }}
     - {{ compiler('c') }}
+    - cargo-bundle-licenses
+    - pkg-config
   run:
-    - dashing
-    - fastani
+    - skani >=0.2.2
+    - fastani >=1.34
 
 test:
   commands:
     - {{ name }} --version | grep '{{ version }}'
 
 about:
-  home: https://github.com/wwood/galah
-  license: GPL3
-  license_file: LICENCE.txt
-  summary: Galah aims to be a more scalable metagenome assembled genome (MAG) dereplication method.
+  home: "https://github.com/wwood/galah"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: "LICENCE.txt"
+  summary: "Galah aims to be a more scalable metagenome assembled genome (MAG) dereplication method."
+  dev_url: "https://github.com/wwood/galah"
+  doc_url: "https://github.com/wwood/galah/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - uses_vcs_url

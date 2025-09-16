@@ -1,4 +1,6 @@
-#!/bin/bash -euo
+#!/bin/bash 
+
+set -xeuo
 
 if [ "$(uname)" == "Darwin" ]; then
     # Apparently the Home variable isn't set correctly

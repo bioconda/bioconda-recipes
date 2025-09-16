@@ -1,0 +1,53 @@
+{% set name = "r-deconcell" %}
+{% set version = "0.1.0" %}
+{% set vcommit = "335bf320df9c7dd15f636cff2c089d89ba6b786e" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/molgenis/systemsgenetics/archive/{{ vcommit }}.tar.gz
+  sha256: 9dadbe65cdbe72ca6f7bb6869770f40dc4fcea45945fbfb76ace61e41feb5b14
+
+
+build:
+  number: 1
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage('r-deconcell', max_pin="x") }}
+
+requirements:
+  host:
+    - bioconductor-deconrnaseq
+    - bioconductor-edger
+    - r-base
+    - r-data.table
+    - r-devtools
+    - r-glmnet
+  run:
+    - bioconductor-deconrnaseq
+    - bioconductor-edger
+    - r-base
+    - r-data.table
+    - r-glmnet
+
+test:
+  commands:
+    - $R -e "library(\"DeconCell\")"
+
+about:
+  home: https://github.com/molgenis/systemsgenetics/tree/master/Decon2/DeconCell
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  summary: DeconCell is an statitsical framework for generating cell proportions predictive models using bulk expresion data. It currently has pre-calculated models
+  description: |
+    DeconCell is an statitsical framework for generating cell proportions predictive models using bulk expresion data. It currently has pre-calculated models
+  dev_url: https://github.com/molgenis/systemsgenetics/tree/master/Decon2/DeconCell
+
+extra:
+  recipe-maintainers:
+    - pettyalex

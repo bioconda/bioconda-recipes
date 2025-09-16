@@ -1,0 +1,51 @@
+{% set name = "tolkein" %}
+{% set version = "0.5.0" %}
+{% set sha256 = "2bba56ac0d49b8e0168992f4efa2eb7a6db39f88decd091af6f4a6d9b2f2aae5" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 2bba56ac0d49b8e0168992f4efa2eb7a6db39f88decd091af6f4a6d9b2f2aae5
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - tolkein = tolkein:cli
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - docopt >=0.6.2
+    - python
+    - pyyaml
+    - requests >=2.24.0
+    - tqdm >=4.48.1
+    - ujson >=3.0.0
+    - xmltodict >=0.12.0
+
+test:
+  imports:
+    - tolkein
+    - tolkein.lib
+  commands:
+    - tolkein --help 2>&1 | grep -i 'usage' > /dev/null
+
+about:
+  home: https://github.com/tolkit/tolkein
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Tree of Life Kit of Evolutionary Informatics Novelties"
+  doc_url: https://tolkein.readthedocs.io/
+  dev_url: https://github.com/tolkit/tolkein
+
+extra:
+  recipe-maintainers:
+    - npavlovikj

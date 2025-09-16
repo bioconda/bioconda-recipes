@@ -1,0 +1,42 @@
+# Based on the fq recipe,
+# https://github.com/bioconda/bioconda-recipes/tree/13d0416856edbac9f3b3cd5dbbfedf2404f080ba/recipes/fq
+
+{% set name = "sfs" %}
+{% set version = "0.1.0" %}
+{% set sha256 = "9e182c5b8f2016618bdab5c34a3137418d0c129cefc87d59495cce7cb5d56926" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/malthesr/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - git
+    - rust
+
+test:
+  commands:
+    - sfs -h
+
+about:
+  home: https://github.com/malthesr/sfs
+  license: MIT
+  summary: CLI tool for site frequency spectra. 
+  description: >
+    A Rust CLI tool for creating and working with the site frequency spectra. 
+
+extra:
+  recipe-maintainers:
+    - malthesr
+  skip-lints:
+    - should_be_noarch_generic  # Rust's `cargo build` command makes this not a noarch recipe.
+

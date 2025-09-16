@@ -1,0 +1,66 @@
+{% set version = "1.0.1" %}
+{% set sha256 = "90b4658c20f8420d3e158522d5e94ada026ff8bc9a71f644f6bd5c78c9539bfd" %}
+
+package:
+  name: r-mams
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/single-cell-mams/rmams/archive/refs/tags/{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 1
+  script: ${R} CMD INSTALL --build . ${R_ARGS}
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage("r-mams", max_pin="x") }}
+
+requirements:
+  host:
+    - r-base
+    - r-seurat
+    - r-jsonlite
+    - r-rmdformats
+    - r-r.methodss3
+    - r-anndata
+    - bioconductor-scran
+    - bioconductor-scater
+    - bioconductor-singlecellexperiment
+    - bioconductor-dropletutils
+    - bioconductor-annotationdbi
+    - bioconductor-org.hs.eg.db
+  run:
+    - r-base
+    - r-seurat
+    - r-jsonlite
+    - r-rmdformats
+    - r-r.methodss3
+    - r-anndata
+    - bioconductor-scran
+    - bioconductor-scater
+    - bioconductor-singlecellexperiment
+    - bioconductor-dropletutils
+    - bioconductor-annotationdbi
+    - bioconductor-org.hs.eg.db
+
+test:
+  commands:
+    - $R -e "library('rmams')"
+
+about:
+  home: "https://github.com/single-cell-mams/rmams"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "R package for Matrix and Analysis Metadata Standards."
+  dev_url: "https://github.com/single-cell-mams/rmams"
+  doc_url: "https://single-cell-mams.github.io/rmams"
+
+extra:
+  recipe-maintainers:
+    - pmb59
+    - irzamsarfraz

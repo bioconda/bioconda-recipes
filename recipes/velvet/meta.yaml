@@ -1,30 +1,50 @@
+{% set version = "1.2.10" %}
+
 package:
   name: velvet
-  version: "1.2.10"
-build:
-  number: 4
-  skip: True  # [osx]
+  version: {{ version }}
+
 source:
-  url: https://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz
-  sha256: 884dd488c2d12f1f89cdc530a266af5d3106965f21ab9149e8cb5c633c977640
+  url: https://github.com/dzerbino/velvet/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 4615e52dc2e8a05f1009daf2c0978c218860be364afa044f73677cd298f10c7b
+
+build:
+  number: 9
+  run_exports:
+    - {{ pin_subpackage('velvet', max_pin="x") }}
+
 requirements:
   build:
     - make
     - {{ compiler('c') }}
-  run:
-    - zlib
   host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - zlib
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+
 test:
   commands:
     - velvetg | grep velvetg > /dev/null
     - velveth | grep velveth > /dev/null
+
 about:
-  home: https://www.ebi.ac.uk/~zerbino/velvet/
-  license: GPL
-  license_file: LICENSE.txt
-  summary: Sequence Assembler for short reads
+  home: "https://github.com/dzerbino/velvet"
+  license: "GPL-2.0-only"
+  license_file: "LICENSE.txt"
+  license_family: GPL
+  summary: "Sequence Assembler for short reads."
+  dev_url: "https://github.com/dzerbino/velvet"
+  doc_url: "https://github.com/dzerbino/velvet/blob/master/Manual.pdf"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:velvet
+    - usegalaxy-eu:velvetg
+    - usegalaxy-eu:velveth
+    - doi:10.1101/gr.074492.107

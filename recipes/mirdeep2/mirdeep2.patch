@@ -169,7 +169,7 @@ index b53be55..6a5b419 100755
  # miRDeep2 mapper perl script
  # Copyright (C) 2008 - 2012  Marc Friedländer
 diff --git a/src/miRDeep2.pl b/src/miRDeep2.pl
-index af39ea9..5f1532c 100755
+index af39ea9..8f5f500 100755
 --- a/src/miRDeep2.pl
 +++ b/src/miRDeep2.pl
 @@ -1,4 +1,4 @@
@@ -178,6 +178,74 @@ index af39ea9..5f1532c 100755
  
  # miRDeep2 perl script
  # Copyright (C) 2008 - 2012  Marc Friedländer
+@@ -29,9 +29,6 @@ use Term::ANSIColor;
+ use Cwd qw(abs_path);
+ 
+ 
+-##
+-check_install();
+-##
+ ## generate log file for run, all output will be printed to it
+ 
+ my $version="2.0.1.3";
+@@ -910,15 +907,15 @@ sub output_results{
+     if($file_mature_ref_this_species !~ /none/i){
+ 
+         if($options{'q'}){
+-            $line="make_html.pl -f $dir/output.mrd -k $dir_tmp/$file_mature_ref_this_species -p $dir_tmp/precursors.coords -s $dir/survey.csv -c -e -q $options{'q'} -x $xopt -r ${scripts}/../Rfam_for_miRDeep.fa -v $sc -y $time $sort_by_sample $OE";
++            $line="make_html.pl -f $dir/output.mrd -k $dir_tmp/$file_mature_ref_this_species -p $dir_tmp/precursors.coords -s $dir/survey.csv -c -e -q $options{'q'} -x $xopt -r ${scripts}/Rfam_for_miRDeep.fa -v $sc -y $time $sort_by_sample $OE";
+         }else{
+-            $line="make_html.pl -f $dir/output.mrd -k $dir_tmp/$file_mature_ref_this_species -p $dir_tmp/precursors.coords -s $dir/survey.csv -c -e -r ${scripts}/../Rfam_for_miRDeep.fa -v $sc -y $time  $sort_by_sample $OE";
++            $line="make_html.pl -f $dir/output.mrd -k $dir_tmp/$file_mature_ref_this_species -p $dir_tmp/precursors.coords -s $dir/survey.csv -c -e -r ${scripts}/Rfam_for_miRDeep.fa -v $sc -y $time  $sort_by_sample $OE";
+         }
+     }else{
+         if($options{'q'}){
+-            $line="make_html.pl -f $dir/output.mrd -p $dir_tmp/precursors.coords -s $dir/survey.csv -c -e -q $options{'q'}  -x $xopt -r ${scripts}/../Rfam_for_miRDeep.fa -v $sc -y $time $sort_by_sample $OE";
++            $line="make_html.pl -f $dir/output.mrd -p $dir_tmp/precursors.coords -s $dir/survey.csv -c -e -q $options{'q'}  -x $xopt -r ${scripts}/Rfam_for_miRDeep.fa -v $sc -y $time $sort_by_sample $OE";
+         }else{
+-            $line="make_html.pl -f $dir/output.mrd -p $dir_tmp/precursors.coords -v $sc -s $dir/survey.csv -c -e -r ${scripts}/../Rfam_for_miRDeep.fa -y $time $sort_by_sample $OE";
++            $line="make_html.pl -f $dir/output.mrd -p $dir_tmp/precursors.coords -v $sc -s $dir/survey.csv -c -e -r ${scripts}/Rfam_for_miRDeep.fa -y $time $sort_by_sample $OE";
+         }
+     }
+ 
+@@ -958,7 +955,7 @@ sub test_first_argument{
+ 
+     if($ARGV[0] eq '-u'){system("make_html.pl -u -y 1"); exit;}
+ 
+-    if($ARGV[0] eq '-h' or $ARGV[0] eq '--help'){die $usage;}
++    if($ARGV[0] eq '-h' or $ARGV[0] eq '--help'){print $usage; exit;}
+ 
+     return;
+ }
+@@ -1046,7 +1043,7 @@ If this did not help please restart youer workstation.\n\n";
+ 	$ret = checkBIN("perl -e \'use PDF::API2; print \"installed\";\'","installed");
+ 	die "Error: \tPerl PDF::API2 package not found\nCheck if the perl PDF::API2 package is correctly installed and all Pathes were set correctly.\n$stdm" if($ret);
+ 
+-	if(not -f "$scripts/../Rfam_for_miRDeep.fa"){
++	if(not -f "$scripts/Rfam_for_miRDeep.fa"){
+ 		die "Error:\t Rfam_for_miRDeep.fa not found in your miRDeep2 scripts directory\nPlease copy this file from the miRDeep2 archive to your miRDeep2 directory\n\n";
+ 	}
+ 
+@@ -1118,19 +1115,3 @@ sub get_longest_id{
+ 	return $l;
+ }
+ 
+-
+-sub check_install{
+-	my $a=`which miRDeep2.pl`;
+-	chomp $a;
+-	$a=abs_path($a);
+-	my ( $name0, $bn, $extension0 ) = fileparse ( $a, '\..*' );
+-	if(not -f "$bn/../install_successful"){
+-		die "Please run the install.pl script first before using the miRDeep2 package
+-		The install script is located in ",substr($bn,0,length($bn)-4)," so just do
+-
+-		cd ",substr($bn,0,length($bn)-4),
+-		"\nperl install.pl
+-
+-		";
+-	}
+-}
 diff --git a/src/miRDeep2_core_algorithm.pl b/src/miRDeep2_core_algorithm.pl
 index ff0f3a6..b242b0f 100755
 --- a/src/miRDeep2_core_algorithm.pl
@@ -294,7 +362,7 @@ index da78321..02ba333 100755
 +++ b/src/sanity_check_genome.pl
 @@ -1,4 +1,4 @@
 -#!/usr/bin/perl -W
-+#!/usr/bin/env perl -W
++#!/usr/bin/env perl
  
  # miRDeep2 sanity-check-genome perl script
  # Copyright (C) 2008 - 2011  Marc Friedländer
@@ -304,7 +372,7 @@ index 4a8009e..f6996c3 100755
 +++ b/src/sanity_check_mapping_file.pl
 @@ -1,4 +1,4 @@
 -#!/usr/bin/perl -W
-+#!/usr/bin/env perl -W
++#!/usr/bin/env perl
  
  # miRDeep2 sanity-check-mapping-file perl script
  # Copyright (C) 2008 - 2011  Marc Friedländer
@@ -314,7 +382,7 @@ index dcea89f..d5c3f8b 100755
 +++ b/src/sanity_check_mature_ref.pl
 @@ -1,4 +1,4 @@
 -#!/usr/bin/perl -W
-+#!/usr/bin/env perl -W
++#!/usr/bin/env perl
  
  # miRDeep2 sanity-check-mature-ref perl script
  # Copyright (C) 2008 - 2011  Marc Friedländer
@@ -324,7 +392,7 @@ index 99d62c2..bb3598c 100755
 +++ b/src/sanity_check_reads_ready_file.pl
 @@ -1,4 +1,4 @@
 -#!/usr/bin/perl -W
-+#!/usr/bin/env perl -W
++#!/usr/bin/env perl
  
  # miRDeep2 sanity-check-reads-ready-file perl script
  # Copyright (C) 2008 - 2011  Marc Friedländer
@@ -348,3 +416,6 @@ index 0f7a8d8..33fd695 100755
  
  # miRDeep2 survey perl script
  # Copyright (C) 2008 - 2011  Marc Friedländer
+-- 
+2.17.1
+

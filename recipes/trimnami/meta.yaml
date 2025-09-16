@@ -1,0 +1,44 @@
+{% set name = "trimnami" %}
+{% set version = "0.1.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: b98b6011ec0c898942a2c11047ec81fbf3ee2dc2ada2c999fd741739374a498f
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+  number: 0
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+  run:
+    - python >=3.9
+    - snaketool-utils >=0.0.4
+    - snakemake >=7.14.0,<8
+    - pulp <2.8
+    - pyyaml >=6.0
+    - Click >=8.1.3
+    - metasnek >=0.0.8
+
+test:
+  commands:
+    - trimnami --help
+
+about:
+  home: https://github.com/beardymcjohnface/Trimnami
+  summary: Read-trimming pipelines for multiple samples
+  license: MIT
+  license_file: trimnami/trimnami.LICENSE
+
+extra:
+  recipe-maintainers:
+    - beardymcjohnface

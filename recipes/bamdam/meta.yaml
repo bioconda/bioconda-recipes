@@ -1,0 +1,49 @@
+{% set name = "bamdam" %}
+{% set version = "0.2.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/bamdam-{{ version }}.tar.gz
+  sha256: d721f2803c5d21889017c98a697dc03db0371df0c54ddf9154a84eead87bfa9c
+
+build:
+  entry_points:
+    - bamdam = bamdam.bamdam:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('bamdam', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - hatchling
+    - pip
+  run:
+    - python >=3.8
+    - pysam
+    - hyperloglog
+    - matplotlib-base
+    - tqdm
+
+test:
+  imports:
+    - bamdam
+  commands:
+    - bamdam --help
+
+about:
+  summary: "A post-mapping, post-least-common-ancestor toolkit for ancient DNA analysis."
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  home: https://github.com/bdesanctis/bamdam
+  dev_url: https://github.com/bdesanctis/bamdam
+
+extra:
+  recipe-maintainers:
+    - cademirch

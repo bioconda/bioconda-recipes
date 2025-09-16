@@ -1,0 +1,59 @@
+{% set name = "svsolver" %}
+{% set version = "2022.07.20" %}
+{% set sha256 = "450a935cb02de6123f702fda46ee126004aa392272b0e4a47057cc14ad92306e" %}
+{% set build = 0 %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/SimVascular/svSolver/archive/8736834.zip
+  sha256: {{ sha256 }}
+  patches:
+    - 001-build-fixes.patch
+    - 002-packaging-fixes.patch
+
+build:
+  number: {{ build }}
+  skip: True  # [osx]
+  string: "{{ mpi }}_h{{ PKG_HASH }}_{{ build }}"
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+    - make
+    - cmake
+  host:
+    - vtk
+    - {{ mpi }}
+    - tbb-devel
+    - zlib
+  run:
+    - vtk
+    - {{ mpi }}
+    - tbb
+    - zlib
+
+test:
+  commands:
+    - svpre | grep svpre > /dev/null
+    - svpost | grep step > /dev/null
+    - svsolver | grep Solver > /dev/null
+
+about:
+  home: "https://simtk.org/projects/simvascular/"
+  dev_url: "https://github.com/SimVascular/svSolver"
+  license: BSD
+  license_family: BSD
+  license_file: Distribution/license.txt
+  summary: "The svSolver includes three executable programs: Presolver(svpre), Flowsolver(svsolver), Postsolver(svpost)."
+
+extra:
+  container:
+    # openmpi needs ssh/rsh
+    extended-base: true
+  recipe-maintainers:
+    - acaprez

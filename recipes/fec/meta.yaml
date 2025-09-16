@@ -1,0 +1,37 @@
+{% set name = "fec" %}
+{% set version = "1.0.1" %}
+{% set sha256 = "7dd39c1562e9a5db3fb450992c0fce0303afa0448cd48b43b2a78514983d50cd" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/zhangjuncsu/Fec/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 2
+  skip: True # [osx]
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - libgomp     # [linux]
+    - llvm-openmp # [osx]
+  host:
+    - zlib
+  run:
+    - zlib
+    - minimap2 >=2.17
+    - python >=3.6
+
+test:
+  commands:
+    - Fec -h 2>&1 | grep 'USAGE'
+
+about:
+  home: https://github.com/zhangjuncsu/Fec
+  license: MIT
+  summary: An error correction tool

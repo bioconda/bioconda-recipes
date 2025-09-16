@@ -1,0 +1,49 @@
+{% set name = "pygenetic_code" %}
+{% set version = "0.20.0" %}
+{% set sha256 = "2d4773e4e8a8b994e604b986ce831b12bbf68b41780e24377bfc14639e017423" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: '{{ version }}'
+
+source:
+  url: "https://files.pythonhosted.org/packages/b6/6f/034dc48dd7768cb5aecabb4c2b68e5ff48d7fea6ee3fc51fed7a068e7c11/{{ name }}-{{ version }}.tar.gz"
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv "
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+    
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+    - cmake >=3.15
+  host:
+    - python >=3
+    - pip
+    - scikit-build-core
+    - zlib
+  run:
+    - python >=3
+
+test:
+  commands:
+    - pygenetic_code --help
+    - pygenetic_code --version
+
+about:
+  home: https://github.com/linsalrob/genetic_codes
+  license: MIT
+  license_family: MIT
+  summary: 'Python code for translating sequences using different NCBI translation tables and genetic codes'
+  dev_url: https://github.com/linsalrob/genetic_codes
+
+extra:
+  recipe-maintainers:
+    - linsalrob
+  identifiers:
+    - doi:10.5281/zenodo.10450718
+

@@ -1,0 +1,50 @@
+{% set name = "sharg" %}
+{% set version = "1.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/seqan/sharg-parser/releases/download/{{ version }}/sharg-{{ version }}-Source.tar.xz
+  sha256: 7330f06501718e7871e55e5fd70d0e41472cc8b34bd0e3519f8c5547510c671c
+  patches:
+    - patch
+
+# osx can be enabled once clangxx_osx-64 17* is available on main channels
+build:
+  number: 1
+  skip: True # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - cmake >=3.16
+  host:
+    - yaml-cpp
+  run:
+    - yaml-cpp
+
+test:
+  requires:
+    - make
+    - {{ compiler('cxx') }}
+    - cmake >=3.16
+
+about:
+  home: https://github.com/seqan/sharg-parser
+  summary: 'A modern argument parser for C++ tools.'
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE.md
+  doc_url: https://docs.seqan.de/sharg/{{ version }}/index.html
+  doc_source_url: https://raw.githubusercontent.com/seqan/sharg-parser/{{ version }}/README.md
+  dev_url: https://github.com/seqan/sharg-parser
+
+extra:
+  maintainers:
+    - eseiler
+    - notestaff

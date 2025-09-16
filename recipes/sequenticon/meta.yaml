@@ -1,0 +1,58 @@
+{% set name = "sequenticon" %}
+{% set version = "0.1.8" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Edinburgh-Genome-Foundry/sequenticon/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ef1821905f9dcc064d5806e4b664528967e1603e7f43de15ef0cc81c94325792
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports: 
+    - {{ pin_subpackage('sequenticon', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - setuptools
+    - pip
+  run:
+    - python >={{ python_min }}
+    - biopython
+    - pydenticon
+    - snapgene-reader
+    - flametree
+    - pdf-reports
+
+test:
+  source_files: 
+    - tests/
+  imports:
+    - {{ name|lower }}
+  requires:
+    - python {{ python_min }}
+    - matplotlib-base
+    - pytest
+    - pytest-cov
+    - pytest-mock
+  commands:
+    - if command -v pytest >/dev/null 2>&1; then pytest tests/; else echo "pytest not available, skipping tests."; fi
+
+about:
+  home: https://github.com/Edinburgh-Genome-Foundry/sequenticon
+  summary: "Generate human-friendly icons from DNA sequences."
+  license: MIT
+  license_family: MIT
+  dev_url: https://github.com/Edinburgh-Genome-Foundry/sequenticon
+  doc_url: "https://github.com/Edinburgh-Genome-Foundry/sequenticon/blob/v{{ version }}/README.rst"
+
+extra:
+  recipe-maintainers:
+    - ramez17khaled
+    - tduigou
+    - breakthewall

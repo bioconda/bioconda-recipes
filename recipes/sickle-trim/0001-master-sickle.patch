@@ -1,0 +1,144 @@
+diff --git a/Makefile b/Makefile
+index 36b072d..24ce4ac 100644
+--- a/Makefile
++++ b/Makefile
+@@ -35,7 +35,7 @@ distclean: clean
+ 	rm -rf *.tar.gz
+ 
+ dist:
+-	tar -zcf $(ARCHIVE).tar.gz src Makefile
++	tar -zcf $(ARCHIVE).tar.gz src Makefile README.md sickle.xml LICENSE
+ 
+ build: sliding.o trim_single.o trim_paired.o sickle.o print_record.o
+ 	$(CC) $(CFLAGS) $(LDFLAGS) $(OPT) $? -o sickle $(LIBS)
+diff --git a/src/kseq.h b/src/kseq.h
+index 73600c4..f295f24 100644
+--- a/src/kseq.h
++++ b/src/kseq.h
+@@ -191,7 +191,12 @@ typedef struct __kstring_t {
+    }                                                                    \
+    }                                                                    \
+      if (c == '>' || c == '@') seq->last_char = c; /* the first header char has been read */ \
+-     seq->seq.s[seq->seq.l] = 0;	/* null terminated string */    \
++     if (seq->seq.l + 1 >= seq->seq.m) { /* seq->seq.s[seq->seq.l] below may be out of boundary */ \
++     seq->seq.m = seq->seq.l + 2; \
++     kroundup32(seq->seq.m); /* rounded to the next closest 2^k */ \
++     seq->seq.s = (char*)realloc(seq->seq.s, seq->seq.m); \
++     } \
++     seq->seq.s[seq->seq.l] = 0;    /* null terminated string */    \
+      if (c != '+') return seq->seq.l; /* FASTA */                       \
+      if (seq->qual.m < seq->seq.m) {	/* allocate enough memory */	\
+      seq->qual.m = seq->seq.m;                                          \
+diff --git a/src/trim_paired.c b/src/trim_paired.c
+index d7b58f2..dcf2eb1 100644
+--- a/src/trim_paired.c
++++ b/src/trim_paired.c
+@@ -18,20 +18,20 @@ int paired_length_threshold = 20;
+ 
+ static struct option paired_long_options[] = {
+     {"qual-type", required_argument, 0, 't'},
+-    {"pe-file1", optional_argument, 0, 'f'},
+-    {"pe-file2", optional_argument, 0, 'r'},
+-    {"pe-combo", optional_argument, 0, 'c'},
+-    {"output-pe1", optional_argument, 0, 'o'},
+-    {"output-pe2", optional_argument, 0, 'p'},
+-    {"output-single", optional_argument, 0, 's'},
+-    {"output-combo", optional_argument, 0, 'm'},
+-    {"qual-threshold", optional_argument, 0, 'q'},
+-    {"length-threshold", optional_argument, 0, 'l'},
+-    {"no-fiveprime", optional_argument, 0, 'x'},
+-    {"truncate-n", optional_argument, 0, 'n'},
+-    {"gzip-output", optional_argument, 0, 'g'},
+-    {"output-combo-all", optional_argument, 0, 'M'},
+-    {"quiet", optional_argument, 0, 'z'},
++    {"pe-file1", required_argument, 0, 'f'},
++    {"pe-file2", required_argument, 0, 'r'},
++    {"pe-combo", required_argument, 0, 'c'},
++    {"output-pe1", required_argument, 0, 'o'},
++    {"output-pe2", required_argument, 0, 'p'},
++    {"output-single", required_argument, 0, 's'},
++    {"output-combo", required_argument, 0, 'm'},
++    {"qual-threshold", required_argument, 0, 'q'},
++    {"length-threshold", required_argument, 0, 'l'},
++    {"no-fiveprime", no_argument, 0, 'x'},
++    {"truncate-n", no_argument, 0, 'n'},
++    {"gzip-output", no_argument, 0, 'g'},
++    {"output-combo-all", required_argument, 0, 'M'},
++    {"quiet", no_argument, 0, 'z'},
+     {GETOPT_HELP_OPTION_DECL},
+     {GETOPT_VERSION_OPTION_DECL},
+     {NULL, 0, NULL, 0}
+@@ -117,6 +117,7 @@ int paired_main(int argc, char *argv[]) {
+     int gzip_output = 0;
+     int combo_all=0;
+     int combo_s=0;
++    int total=0;
+ 
+     while (1) {
+         int option_index = 0;
+@@ -375,6 +376,7 @@ int paired_main(int argc, char *argv[]) {
+ 
+         p1cut = sliding_window(fqrec1, qualtype, paired_length_threshold, paired_qual_threshold, no_fiveprime, trunc_n, debug);
+         p2cut = sliding_window(fqrec2, qualtype, paired_length_threshold, paired_qual_threshold, no_fiveprime, trunc_n, debug);
++        total += 2;
+ 
+         if (debug) printf("p1cut: %d,%d\n", p1cut->five_prime_cut, p1cut->three_prime_cut);
+         if (debug) printf("p2cut: %d,%d\n", p2cut->five_prime_cut, p2cut->three_prime_cut);
+@@ -478,6 +480,9 @@ int paired_main(int argc, char *argv[]) {
+     }
+ 
+     if (!quiet) {
++        if (infn1 && infn2) fprintf(stdout, "\nPE forward file: %s\nPE reverse file: %s\n", infn1, infn2);
++        if (infnc) fprintf(stdout, "\nPE interleaved file: %s\n", infnc);
++        fprintf(stdout, "\nTotal input FastQ records: %d (%d pairs)\n", total, (total / 2));
+         fprintf(stdout, "\nFastQ paired records kept: %d (%d pairs)\n", kept_p, (kept_p / 2));
+         if (pec) fprintf(stdout, "FastQ single records kept: %d\n", (kept_s1 + kept_s2));
+         else fprintf(stdout, "FastQ single records kept: %d (from PE1: %d, from PE2: %d)\n", (kept_s1 + kept_s2), kept_s1, kept_s2);
+diff --git a/src/trim_single.c b/src/trim_single.c
+index b9d9972..2f59921 100644
+--- a/src/trim_single.c
++++ b/src/trim_single.c
+@@ -19,12 +19,12 @@ static struct option single_long_options[] = {
+     {"fastq-file", required_argument, 0, 'f'},
+     {"output-file", required_argument, 0, 'o'},
+     {"qual-type", required_argument, 0, 't'},
+-    {"qual-threshold", optional_argument, 0, 'q'},
+-    {"length-threshold", optional_argument, 0, 'l'},
+-    {"no-fiveprime", optional_argument, 0, 'x'},
+-    {"discard-n", optional_argument, 0, 'n'},
+-    {"gzip-output", optional_argument, 0, 'g'},
+-    {"quiet", optional_argument, 0, 'z'},
++    {"qual-threshold", required_argument, 0, 'q'},
++    {"length-threshold", required_argument, 0, 'l'},
++    {"no-fiveprime", no_argument, 0, 'x'},
++    {"discard-n", no_argument, 0, 'n'},
++    {"gzip-output", no_argument, 0, 'g'},
++    {"quiet", no_argument, 0, 'z'},
+     {GETOPT_HELP_OPTION_DECL},
+     {GETOPT_VERSION_OPTION_DECL},
+     {NULL, 0, NULL, 0}
+@@ -72,6 +72,7 @@ int single_main(int argc, char *argv[]) {
+     int no_fiveprime = 0;
+     int trunc_n = 0;
+     int gzip_output = 0;
++    int total=0;
+ 
+     while (1) {
+         int option_index = 0;
+@@ -192,6 +193,7 @@ int single_main(int argc, char *argv[]) {
+     while ((l = kseq_read(fqrec)) >= 0) {
+ 
+         p1cut = sliding_window(fqrec, qualtype, single_length_threshold, single_qual_threshold, no_fiveprime, trunc_n, debug);
++        total++;
+ 
+         if (debug) printf("P1cut: %d,%d\n", p1cut->five_prime_cut, p1cut->three_prime_cut);
+ 
+@@ -215,7 +217,7 @@ int single_main(int argc, char *argv[]) {
+         free(p1cut);
+     }
+ 
+-    if (!quiet) fprintf(stdout, "\nFastQ records kept: %d\nFastQ records discarded: %d\n\n", kept, discard);
++    if (!quiet) fprintf(stdout, "\nSE input file: %s\n\nTotal FastQ records: %d\nFastQ records kept: %d\nFastQ records discarded: %d\n\n", infn, total, kept, discard);
+ 
+     kseq_destroy(fqrec);
+     gzclose(se);

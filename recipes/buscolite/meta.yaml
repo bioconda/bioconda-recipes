@@ -1,0 +1,51 @@
+{% set name = "buscolite" %}
+{% set version = "25.4.24" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/buscolite-{{ version }}.tar.gz
+  sha256: 6a834452eb0f172fa12bacd2e7a9f37956bbc51e5a2dd3ec309b6032ec878210
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - buscolite = buscolite.__main__:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('buscolite', max_pin=None) }}
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - hatchling
+  run:
+    - python >=3.6
+    - augustus >=3.5.0
+    - miniprot
+    - natsort
+    - pyhmmer
+    - pyfastx
+    - packaging
+
+test:
+  imports:
+    - buscolite
+  commands:
+    - buscolite --help
+
+about:
+  home: https://github.com/nextgenusfs/buscolite
+  summary: 'buscolite: busco analysis for gene predictions.'
+  license: "BSD-2-Clause"
+  license_family: BSD
+  license_file: "LICENSE.md"
+  dev_url: https://github.com/nextgenusfs/buscolite
+
+extra:
+  recipe-maintainers:
+    - nextgenusfs

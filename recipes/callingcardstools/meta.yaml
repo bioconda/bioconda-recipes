@@ -1,0 +1,64 @@
+{% set name = "callingcardstools" %}
+{% set version = "1.8.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: b66d6ec43175e1c9edd3f77b0db516d7ca4436285f4dfd4e6b4334d095b13591
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - callingcardstools = callingcardstools:__main__.main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('callingcardstools', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - poetry-core
+    - python >=3.8
+  run:
+    - biopython
+    - python-edlib >=1.3.9
+    - numpy
+    - pandas
+    - pysam
+    - python >=3.8
+    - scipy >=1.11.4
+    - pyranges >=0.0.129
+
+test:
+  imports:
+    - callingcardstools
+    - callingcardstools.Alignment
+    - callingcardstools.Alignment.mammals
+    - callingcardstools.Alignment.yeast
+    - callingcardstools.BarcodeParser
+    - callingcardstools.BarcodeParser.mammals
+    - callingcardstools.BarcodeParser.yeast
+    - callingcardstools.QC
+    - callingcardstools.Reads
+    - callingcardstools.Resources
+    - callingcardstools.Resources.mammals
+    - callingcardstools.Resources.yeast
+  commands:
+    - callingcardstools --help
+
+about:
+  home: "https://github.com/cmatKhan/callingCardsTools"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "An API and collection of cmd line tools to work with calling cards sequencing data"
+  doc_url: "https://cmatkhan.github.io/callingCardsTools/"
+  dev_url: "https://github.com/cmatKhan/callingCardsTools/tree/dev"
+
+extra:
+  recipe-maintainers:
+    - cmatkhan
