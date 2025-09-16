@@ -1,14 +1,28 @@
 #!/bin/bash
-
 set -xe
 
-export LDFLAGS="-L$PREFIX/lib"
-export CPATH=${PREFIX}/include
+export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
+export CPATH="${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
-mkdir -p $PREFIX/bin
+mkdir -p "$PREFIX/bin"
 
 case $(uname -m) in
     aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
+
+case $(uname -m) in
+    aarch64|arm64)
         CXXFLAGS="${CXXFLAGS} -fsigned-char"
         ARCH_OPTS="SSE_FLAG= POPCNT_CAPABILITY=0"
         ;;
@@ -17,7 +31,7 @@ case $(uname -m) in
         ;;
 esac
 
-make -j ${CPU_COUNT} CXX=$CXX RELEASE_FLAGS="$CXXFLAGS" ${ARCH_OPTS}
-make install prefix=$PREFIX
+make CXX="${CXX}" RELEASE_FLAGS="${CXXFLAGS}" "${ARCH_OPTS}" -j"${CPU_COUNT}"
+make install prefix="$PREFIX"
 
-cp evaluation/{centrifuge_evaluate.py,centrifuge_simulate_reads.py} $PREFIX/bin
+install -v -m 0755 evaluation/{centrifuge_evaluate.py,centrifuge_simulate_reads.py} "$PREFIX/bin"
