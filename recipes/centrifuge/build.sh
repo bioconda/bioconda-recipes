@@ -5,7 +5,7 @@ export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
 export CPATH="${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -fcommon"
 
 mkdir -p "$PREFIX/bin"
 
