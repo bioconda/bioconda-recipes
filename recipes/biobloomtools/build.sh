@@ -4,8 +4,8 @@ set -xe
 export CFLAGS="${CFLAGS} -O3"
 export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
 export CPATH="${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-unused-parameter"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-unused-parameter"
 
 case $(uname -m) in
     aarch64)
