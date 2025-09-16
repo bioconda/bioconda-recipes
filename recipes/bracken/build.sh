@@ -18,8 +18,12 @@ esac
 sed -i.bak "s|g++|${CXX} -I${PREFIX}/include|" src/Makefile
 rm -f src/*.bak
 
-chmod +rx ./install_bracken.sh
-bash ./install_bracken.sh
+#chmod +rx ./install_bracken.sh
+#bash ./install_bracken.sh
+
+cd src && make CXX="${CXX}" -j"${CPU_COUNT}"
+
+cd ..
 
 install -v -m 0755 bracken bracken-build src/kmer2read_distr analysis_scripts/combine_bracken_outputs.py "${PREFIX}/bin"
 install -v -m 0755 src/est_abundance.py src/generate_kmer_distribution.py "${PREFIX}/bin/src"
