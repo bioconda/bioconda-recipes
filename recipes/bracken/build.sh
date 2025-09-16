@@ -1,12 +1,12 @@
 #!/bin/bash
 
-mkdir -p "${PREFIX}"/bin/src
+mkdir -p "${PREFIX}/bin/src"
 
 # inject compilers
 sed -i.bak "s#g++#${CXX} -I${PREFIX}/include#" src/Makefile
 rm src/*.bak
 
-sh install_bracken.sh
+bash ./install_bracken.sh
 cp -rf bracken "${PREFIX}"/bin
 cp -rf bracken-build "${PREFIX}"/bin
 cp -rf src/est_abundance.py "${PREFIX}"/bin/src && chmod +x "${PREFIX}"/bin/src/est_abundance.py
