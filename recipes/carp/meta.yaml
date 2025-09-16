@@ -1,0 +1,43 @@
+{% set version = "0.1.0" %}
+{% set name = "carp" %}
+{% set sha256 = "e52e20abcc626009eab548c4624496a28ea8267643a277aab6b2ab6c928ccb6c" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/gi-bielefeld/scj-carp/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+
+
+build:
+  number: 0
+  script:
+    cargo install --locked --verbose --root $PREFIX --path . 
+
+test:
+  source_files:
+    - src/
+    - testfiles/
+    - Cargo.toml
+  commands:
+    - carp --help
+    - carp-scan --help
+    - carp-extract --help
+    - cargo test
+
+
+about:
+  home: https://github.com/gi-bielefeld/scj-carp
+  license: MIT
+  license_file: LICENSE
+  license_family: MIT
+  summary: carp - quantify the rearrangement complexity of pangenomes and their graphs.
+  description: |
+       Carp is a software based on the rearrangement problem of the same name. Version {{ version }} supports only the SCJ (Single-Cut or Join) model.
