@@ -11,8 +11,10 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  skip: True  # [osx or py < 310]
-  number: 0
+  number: 1
+  skip: True  # [py < 310]
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   entry_points:
     - genomedata-close-data = genomedata._close_data:main
     - genomedata-erase-data = genomedata._erase_data:main
@@ -51,12 +53,7 @@ requirements:
     - ucsc-bigwigtobedgraph >=377
 
 test:
-    # Copied to PATH in build.sh
-    # source_files:
-    # - test/*.py
-    # - test/data/*
-    commands:
-    # Smoke test commands
+  commands:
     - genomedata-info --help
     - genomedata-query --help
     - genomedata-histogram --help
@@ -84,6 +81,7 @@ about:
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:genomedata
     - doi:10.1093/bioinformatics/btq164
