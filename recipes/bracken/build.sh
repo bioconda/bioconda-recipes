@@ -2,16 +2,27 @@
 
 mkdir -p "${PREFIX}/bin/src"
 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+
+case $(uname -m) in
+    aarch64)
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a|' src/Makefile
+	;;
+    arm64)
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a|' src/Makefile
+	;;
+esac
+
 # inject compilers
-sed -i.bak "s#g++#${CXX} -I${PREFIX}/include#" src/Makefile
+sed -i.bak "s#g++#${CXX} -I${PREFIX}/include# -L${PREFIX}/lib" src/Makefile
 rm src/*.bak
 
+chmod +rx ./install_bracken.sh
 bash ./install_bracken.sh
-cp -rf bracken "${PREFIX}"/bin
-cp -rf bracken-build "${PREFIX}"/bin
-cp -rf src/est_abundance.py "${PREFIX}"/bin/src && chmod +x "${PREFIX}"/bin/src/est_abundance.py
+
+install -v -m 0755 bracken bracken-build src/kmer2read_distr analysis_scripts/combine_bracken_outputs.py "${PREFIX}/bin"
+install -v -m 0755 src/est_abundance.py src/generate_kmer_distribution.py "${PREFIX}/bin/src"
+
 ln -sf "${PREFIX}"/bin/src/est_abundance.py "${PREFIX}"/bin/est_abundance.py
-cp -rf src/generate_kmer_distribution.py "${PREFIX}"/bin/src && chmod +x "${PREFIX}"/bin/src/generate_kmer_distribution.py
 ln -sf "${PREFIX}"/bin/src/generate_kmer_distribution.py "${PREFIX}"/bin/generate_kmer_distribution.py
-cp -rf src/kmer2read_distr "${PREFIX}"/bin
-cp -rf analysis_scripts/combine_bracken_outputs.py "${PREFIX}"/bin && chmod +x "${PREFIX}"/bin/combine_bracken_outputs.py
