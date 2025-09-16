@@ -6,6 +6,7 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 
+autoreconf -if
 ./configure --prefix="${PREFIX}" \
 	--with-threads \
 	CC="${CC}" \
