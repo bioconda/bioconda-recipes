@@ -1,0 +1,65 @@
+{% set name = "r-traminer" %}
+{% set version = "2.2.11" %}
+{% set cran_version = "2.2-11" %}
+{% set r_version = "4.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }} 
+
+source:
+  url: https://cran.r-project.org/src/contrib/Archive/TraMineR/TraMineR_{{ cran_version }}.tar.gz
+  sha256: 3d8952e0e52521588a8d14cf4b41a8fdf2c51b417793fcec61588dcf032fcb15
+
+build:
+  number: 1
+  skip: true  # [not aarch64]
+  noarch: generic
+  #script: python -m pip install . --no-deps --ignore-installed -vv
+
+requirements:
+  build:
+    - {{ compiler('c') }}  # [aarch64]
+    - {{ compiler('cxx') }}  # [aarch64]
+    - make
+    - automake
+    - autoconf
+  host:
+    - r-base >={{ r_version }}
+    - r-cluster
+    - r-rcpp >=1.0.0
+    - r-rcpparmadillo
+    - libblas
+    - liblapack
+    - libgcc-ng  # [aarch64]
+    - libstdcxx-ng  # [aarch64]
+    - libgfortran-ng  # [aarch64]
+  run:
+    - r-base >={{ r_version }}
+    - r-cluster
+    - r-rcpp >=1.0.0
+    - r-rcpparmadillo
+    - libblas
+    - liblapack
+    - libgcc-ng  # [aarch64]
+    - libstdcxx-ng  # [aarch64]
+    - libgfortran-ng  # [aarch64]
+
+test:
+  commands:
+    - R -e "library(TraMineR)" 2>&1 | grep -v "Error" || true
+    - test -f ${PREFIX}/lib/R/library/TraMineR/libs/TraMineR.so
+  requires:
+    - r-base
+
+about:
+  home: https://traminer.unige.ch/
+  license: GPL-2.0-or-later
+  license_url: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+  # 移除 license_file 或者设置为空字符串
+  license_file: 
+  summary: 'TraMineR is a R package for mining sequence data'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
