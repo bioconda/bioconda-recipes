@@ -2,24 +2,26 @@
 {% set version = "2.1.0" %}
 
 package:
-  name: "{{ name }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/seqan/{{ name }}/archive/refs/tags/{{ name }}-v{{ version }}.zip
   sha256: 648af774cb279d194e1c0571d0ef677a2b169664cd949a04d28621b625ec847d
+  patches:
+    - 0001-main.patch
 
 build:
-  number: 0
-  skip: True # [osx]
+  number: 1
   run_exports:
-    - {{ pin_subpackage(name, max_pin='x') }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - make
+    - ninja
     - {{ compiler('cxx') }}
     - cmake >=3.25
+    - pkg-config
   host:
     - bzip2
     - zlib
@@ -33,18 +35,18 @@ test:
     - dream-stellar search --help 2>&1 > /dev/null
 
 about:
-  home: https://github.com/seqan/dream-stellar
+  home: "https://github.com/seqan/dream-stellar"
   summary: "DREAM-Stellar: a fast and accurate pairwise local aligner."
   description: "DREAM-Stellar can compare pairs of large sequences to find all conserved subsequences."
-  license: BSD-3-Clause License
+  license: "BSD-3-Clause"
   license_family: BSD
-  license_file: LICENSE.md
-  doc_source_url: https://github.com/seqan/dream-stellar/blob/main/README.md
-  dev_url: https://github.com/seqan/dream-stellar
+  license_file: "LICENSE.md"
+  doc_url: "https://github.com/seqan/dream-stellar/blob/main/README.md"
+  dev_url: "https://github.com/seqan/dream-stellar"
 
 extra:
   additional-platforms:
     - linux-aarch64
-
-  maintainers:
+    - osx-arm64
+  recipe-maintainers:
     - eaasna

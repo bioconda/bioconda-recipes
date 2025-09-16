@@ -1,0 +1,236 @@
+diff --git a/cmake/package-lock.cmake b/cmake/package-lock.cmake
+index ce556e9..03b508d 100644
+--- a/cmake/package-lock.cmake
++++ b/cmake/package-lock.cmake
+@@ -19,10 +19,11 @@ CPMDeclarePackage (seqan2
+ )
+ 
+ # seqan3
+-set (DREAM_STELLAR_SEQAN3_VERSION 6dfa1b442d1fabd07024edcc37a29b61d5beae8f CACHE STRING "")
++set (DREAM_STELLAR_SEQAN3_VERSION 3.4.0 CACHE STRING "")
+ CPMDeclarePackage (seqan3
+                    NAME seqan3
+-                   GIT_TAG ${DREAM_STELLAR_SEQAN3_VERSION} # main
++                   VERSION ${DREAM_STELLAR_SEQAN3_VERSION}
++                   GIT_TAG ${DREAM_STELLAR_SEQAN3_VERSION}
+                    GITHUB_REPOSITORY seqan/seqan3
+                    SYSTEM TRUE
+                    EXCLUDE_FROM_ALL TRUE
+@@ -30,7 +31,7 @@ CPMDeclarePackage (seqan3
+ )
+ 
+ # sharg
+-set (DREAM_STELLAR_SHARG_VERSION be113bcffe49c0d62cbd65a191820f05386aa8da CACHE STRING "")
++set (DREAM_STELLAR_SHARG_VERSION 1f6b9812cb8373b6aa423090aa923075a2a49d53 CACHE STRING "")
+ CPMDeclarePackage (sharg
+                    NAME sharg
+                    GIT_TAG ${DREAM_STELLAR_SHARG_VERSION} # main
+diff --git a/include/valik/search/compat.hpp b/include/valik/search/compat.hpp
+new file mode 100644
+index 0000000..af96741
+--- /dev/null
++++ b/include/valik/search/compat.hpp
+@@ -0,0 +1,73 @@
++#pragma once
++
++#include <seqan/basic.h>
++#include <seqan/modifier/modifier_functors.h>
++
++#include <seqan3/alphabet/concept.hpp>
++
++namespace seqan2
++{
++    void begin(seqan2::Dna) = delete;
++}
++ 
++template <>
++struct seqan3::custom::alphabet<seqan2::Dna>
++{
++    using alphabet_t = seqan2::Dna;
++ 
++    static constexpr size_t alphabet_size = 4;
++ 
++    #ifdef __clang__
++    #pragma clang diagnostic push
++    #pragma clang diagnostic ignored "-Winvalid-constexpr"
++    #endif
++    static constexpr uint8_t to_rank(alphabet_t const a) noexcept
++    {
++        return seqan2::ordValue(a);
++    }
++    #ifdef __clang__
++    #pragma clang diagnostic pop
++    #endif
++
++    static constexpr alphabet_t & assign_rank_to(uint8_t const r, alphabet_t & a) noexcept
++    {
++        seqan2::assign(a, r);
++        return a;
++    }
++ 
++    #ifdef __clang__
++    #pragma clang diagnostic push
++    #pragma clang diagnostic ignored "-Winvalid-constexpr"
++    #endif
++    static constexpr char to_char(alphabet_t const a) noexcept
++    {
++        char c;
++        seqan2::assign(c, a);
++        return c;
++    }
++    #ifdef __clang__
++    #pragma clang diagnostic pop
++    #endif
++    
++    static constexpr alphabet_t & assign_char_to(char const c, alphabet_t & a) noexcept
++    {
++        seqan2::assign(a, c);
++        return a;
++    }
++    
++
++    #ifdef __clang__
++    #pragma clang diagnostic push
++    #pragma clang diagnostic ignored "-Winvalid-constexpr"
++    #endif
++    static alphabet_t complement(alphabet_t const a) noexcept
++    {
++        static seqan2::FunctorComplement<alphabet_t> func;
++        return func(a);
++    }
++    #ifdef __clang__
++    #pragma clang diagnostic pop
++    #endif
++};
++ 
++static_assert(seqan3::nucleotide_alphabet<seqan2::Dna>);
+diff --git a/include/valik/search/local_prefilter.hpp b/include/valik/search/local_prefilter.hpp
+index b4599f5..afe4217 100644
+--- a/include/valik/search/local_prefilter.hpp
++++ b/include/valik/search/local_prefilter.hpp
+@@ -9,6 +9,7 @@
+ 
+ #include <valik/search/query_record.hpp>
+ #include <valik/shared.hpp> // search_arguments
++#include <valik/search/compat.hpp>
+ 
+ namespace valik
+ {
+@@ -159,15 +160,19 @@ void local_prefilter(
+ 
+     for (query_t const & record : records)
+     {
+-        std::vector<seqan3::dna4> const & seq = record.sequence;
+-
+         // sequence can't contain local match if it's shorter than pattern length
+-        if (seq.size() < arguments.pattern_size)
++        if (record.size() < arguments.pattern_size)
+             continue;
+ 
+         // basically: minimiser = seq | minimiser_hash_adaptor | seqan3::views::to<decltype(minimiser)>;
+         {
+-            auto const minimiser_hash = minimiser_hash_adaptor(seq);
++            auto const minimiser_hash = [&]()
++                                        {
++                                            if constexpr (std::same_as<query_t, valik::query_record>)
++                                                return minimiser_hash_adaptor(record.sequence); 
++                                            else
++                                                return minimiser_hash_adaptor(record.querySegment);
++                                        }();
+             auto it = minimiser_hash.begin();
+             auto const sentinel = minimiser_hash.end();
+             auto const hash_begin = it.base();
+@@ -199,7 +204,7 @@ void local_prefilter(
+         minimiser.clear();
+ 
+         std::unordered_set<size_t> sequence_hits{};
+-        pattern_begin_positions(seq.size(), arguments.pattern_size, arguments.query_every, [&](size_t const begin)
++        pattern_begin_positions(record.size(), arguments.pattern_size, arguments.query_every, [&](size_t const begin)
+         {
+             pattern_bounds const pattern = make_pattern_bounds(begin, arguments, window_span_begin, thresholder);
+             find_pattern_bins(pattern, bin_count, counting_table, sequence_hits);
+diff --git a/include/valik/search/query_record.hpp b/include/valik/search/query_record.hpp
+index db6dd6b..3fea5fb 100644
+--- a/include/valik/search/query_record.hpp
++++ b/include/valik/search/query_record.hpp
+@@ -20,6 +20,11 @@ struct query_record
+ {
+     std::string sequence_id;
+     std::vector<seqan3::dna4> sequence;
++
++    size_t size() const
++    {
++        return sequence.size();
++    }
+ };
+ 
+ /**
+@@ -30,7 +35,6 @@ template <typename TSequence>
+ struct shared_query_record
+ {
+     std::string sequence_id;
+-    std::vector<seqan3::dna4> sequence;
+     seqan2::Segment<TSequence const, seqan2::InfixSegment> querySegment;
+     std::shared_ptr<TSequence> underlyingData;
+ 
+@@ -38,33 +42,20 @@ struct shared_query_record
+     {
+         // make_shared returns a newly allocated object
+         underlyingData = std::make_shared<TSequence>(std::move(seq));
+-        std::vector<seqan3::dna4> seg_vec{};
+-        for (auto & c : *underlyingData)
+-        {
+-            seqan3::dna4 nuc;
+-            nuc.assign_char(c);
+-            seg_vec.push_back(nuc);
+-        }
+-
+-        sequence = std::move(seg_vec);
+         querySegment = seqan2::infix(*underlyingData, 0, seqan2::length(*underlyingData));
+     }
+ 
+     shared_query_record(std::string const & id, metadata::segment_stats const & seg, std::shared_ptr<TSequence> const & query_ptr) : sequence_id(id)
+     {
+         seqan2::Segment<TSequence const, seqan2::InfixSegment> inf = seqan2::infixWithLength(*query_ptr, seg.start, seg.len);
+-        std::vector<seqan3::dna4> seg_vec{};
+-        for (auto & c : inf)
+-        {
+-            seqan3::dna4 nuc;
+-            nuc.assign_char(c);
+-            seg_vec.push_back(nuc);
+-        }
+-
+-        sequence = std::move(seg_vec); 
+         querySegment = inf;
+         underlyingData = query_ptr;
+     }
++
++    size_t size() const
++    {
++        return seqan2::length(querySegment);
++    }
+ };
+ 
+ } // namespace valik
+diff --git a/include/valik/search/sync_out.hpp b/include/valik/search/sync_out.hpp
+index cef151f..50c4bf0 100644
+--- a/include/valik/search/sync_out.hpp
++++ b/include/valik/search/sync_out.hpp
+@@ -39,7 +39,7 @@ public:
+     void write_warning(t && query_record, size_t const & bin_count)
+     {
+         std::lock_guard<std::mutex> lock(write_mutex);
+-        warning_message(bin_count, query_record.sequence.size());
++        warning_message(bin_count, query_record.size());
+     }
+     // outfile gets unlocked as soon as the current thread exits the write function
+ 
+@@ -48,7 +48,7 @@ public:
+     { 
+         std::lock_guard<std::mutex> lock(write_mutex);
+         if (verbose)
+-            warning_message(bin_count, query_record.sequence.size());        
++            warning_message(bin_count, query_record.size());        
+         sequence_record_type output_record{query_record.sequence, query_record.sequence_id};
+         //!TODO: this causes memory error
+         // fout.push_back(output_record); 
