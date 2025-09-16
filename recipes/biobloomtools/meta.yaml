@@ -9,24 +9,25 @@ source:
   sha256: 03fbc0d0fc867f76d64f756d556598e5fe5f015363df8f97fbed4cfd541c6749
 
 build:
-  skip: true  # [osx or win]
-  number: 6
+  number: 8
   run_exports:
-    - {{ pin_subpackage("biobloomtools", max_pin="x") }}
+    - {{ pin_subpackage('biobloomtools', max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('cxx') }} 
-    - llvm-openmp  # [osx]
+    - {{ compiler('cxx') }}
     - make
+    - pkg-config
   host:
-    - boost
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - boost-cpp
     - sparsehash
     - sdsl-lite
     - zlib
   run:
+    - libgomp  # [linux]
     - llvm-openmp  # [osx]
-    - zlib
     - sparsehash
     - make
 
@@ -38,11 +39,14 @@ test:
     - biobloommicategorizer --help
 
 about:
-  home: https://github.com/bcgsc/biobloom 
-  license: GPL-3.0 
+  home: "https://github.com/bcgsc/biobloom"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: Building Bloom filters and using them for categorizing sequences 
+  summary: "Building Bloom filters and using them for categorizing sequences."
+  dev_url: "https://github.com/bcgsc/biobloom"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
