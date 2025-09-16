@@ -6,6 +6,7 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
+export LC_ALL="en_US.UTF-8"
 
 mkdir -p "${PREFIX}/bin"
 
@@ -44,3 +45,6 @@ make CXX="${CXX}" -j"${CPU_COUNT}"
 
 install -v -m 0755 bin/* "${PREFIX}/bin"
 install -v -m 0755 script/*py script/validate* "${PREFIX}/bin"
+
+rm -f ${PREFIX}/bin/Makefile*
+rm -f ${PREFIX}/bin/*.o
