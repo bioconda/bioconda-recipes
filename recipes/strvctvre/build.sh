@@ -1,5 +1,9 @@
 #!/bin/bash
 
+chmod a+x *.py
+mkdir -p $PREFIX/bin
+cp *.py $PREFIX/bin/
+
 # Add missing shebang lines
 sed -i.bak '1s/.*/#!\/usr\/bin\/env python3/' $PREFIX/bin/StrVCTVRE.py
 sed -i.bak '1s/.*/#!\/usr\/bin\/env python3/' $PREFIX/bin/annotationFinalForStrVCTVRE.py
