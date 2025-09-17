@@ -1,0 +1,48 @@
+{% set version = "1.0.0" %}
+{% set sha = "6e1a7c7343b6a99722449c99bf99c6eb5c82d51a582f25a7afcd7ea5e401d244" %}
+{% set name = "biosniff" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/b/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha }}
+
+build:
+  preserve_egg_dir: True
+  number: 0
+  noarch: python
+  entry_points:
+    - biosniff=biosniff.main:sniffer
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - click
+    - pysam
+    - pandas
+    - pyyaml
+    - colorlog
+
+test:
+  imports:
+    - biosniff
+  commands:
+    - {{ name }} --version > /dev/null
+    - {{ name }} --help
+
+about:
+  home: "http://github.com/cokelaer/biosniff/"
+  license: "BSD 3-clause"
+  summary: "A Sniffer for Biological formats"
+  license_family: BSD
+  doc_url: "https://github.com/cokelaer/biosniff"
+
+extra:
+  recipe-maintainers:
+    - cokelaer

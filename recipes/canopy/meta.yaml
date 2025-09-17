@@ -1,0 +1,36 @@
+{% set version="0.25" %}
+{% set name="canopy" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/hildebra/canopy2/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 6ea391021dc81ff1981bb69b0ec27a56a17bd23e01c25a27b86808366d62061f
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+    
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - llvm-openmp
+  host:
+    - zlib
+  run:
+    - zlib
+    - llvm-openmp
+
+test:
+  commands:
+    - cc.bin  --version | grep {{ version }}
+
+about:
+  home: https://github.com/hildebra/canopy2/
+  license: GPL-2.0-or-later
+  license_file: LICENSE
+  summary: 'Canopy - Metagenomics Canopy Clustering Implementation'

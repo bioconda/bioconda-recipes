@@ -1,0 +1,52 @@
+{% set version = "1.6.0" %}
+{% set name = "EDIRquery" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: EDIRquery provides a tool to search for genes of interest within the Exome Database of Interspersed Repeats (EDIR). A gene name is a required input, and users can additionally specify repeat sequence lengths, minimum and maximum distance between sequences, and whether to allow a 1-bp mismatch. Outputs include a summary of results by repeat length, as well as a dataframe of query results. Example data provided includes a subset of the data for the gene GAA (ENSG00000171298). To query the full database requires providing a path to the downloaded database files as a parameter.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Query the EDIR Database For Specific Gene
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-edirquery", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
+requirements:
+  host:
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-interactionset >=1.34.0,<1.35.0
+    - r-base
+    - r-readr >=2.1.2
+    - r-tibble >=3.1.6
+    - r-tictoc >=1.0.1
+  run:
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-interactionset >=1.34.0,<1.35.0
+    - r-base
+    - r-readr >=2.1.2
+    - r-tibble >=3.1.6
+    - r-tictoc >=1.0.1
+
+source:
+  md5: db302d2df4cfbadc64b20c9d9c800cbf
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

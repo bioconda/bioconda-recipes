@@ -1,0 +1,44 @@
+{% set name = "mfold" %}
+{% set version = "3.6" %}
+{% set sha256 = "04c317bca238062f9a1dcd76c2934403d0b6d91a95d0a234210b37070e94be3b" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: http://www.unafold.org/download/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 4
+  run_exports:
+    - {{ pin_subpackage('mfold', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+
+test:
+  commands:
+    - mfold 2>&1 | grep "mfold" > /dev/null         
+    - mfold_quik 2>&1 | grep "mfold" > /dev/null
+    - filter-sort 2>&1 | grep "filter-sort" > /dev/null
+    - h-num 2>&1 | grep "h-num" > /dev/null
+    - reformat-seq.sh 2>&1 | grep "reformat-seq.sh" > /dev/null
+    - sir_graph -h
+    - boxplot_ng 2>&1 | grep "boxplot_ng" > /dev/null
+    - auxgen 2>&1 | grep "auxgen" > /dev/null
+
+about:
+  home: http://www.unafold.org/mfold/software/download-mfold.php
+  license: Custom OSS
+  license_file: Academic_License.txt
+  summary: "Mfold web server for nucleic acid folding and hybridization prediction."
+
+extra:
+  identifiers:
+    - doi:10.1007/978-94-011-4485-8_2

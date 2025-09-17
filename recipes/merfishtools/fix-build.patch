@@ -1,0 +1,99 @@
+diff --git i/Cargo.toml w/Cargo.toml
+index 996c2d3..208c16f 100644
+--- i/Cargo.toml
++++ w/Cargo.toml
+@@ -8,10 +8,9 @@ bio = "0.14"
+ regex = "0.1"
+ bit-set = "0.4"
+ csv = "1.0"
+-nalgebra = "0.5.1"
++nalgebra = "0.32.6"
+ itertools = "0.5"
+ num = "0.1"
+-rustc-serialize = "0.3"
+ argparse = "0.2"
+ log = "0.3"
+ fern = "0.3"
+diff --git i/src/cli.rs w/src/cli.rs
+index 0faef3e..e7395e2 100644
+--- i/src/cli.rs
++++ w/src/cli.rs
+@@ -176,7 +176,7 @@ impl Expression {
+                 }
+                 if let Some(ref mut stats_writer) = stats_writer {
+                     stats_writer
+-                        .serialize([&cell, &format!("{:.4}", noise_rate)])
++                        .serialize([&cell, &&format!("{:.4}", noise_rate)])
+                         .unwrap();
+                 }
+             },
+diff --git i/src/codebook.rs w/src/codebook.rs
+index 77658fe..c3fec80 100644
+--- i/src/codebook.rs
++++ w/src/codebook.rs
+@@ -80,7 +80,7 @@ mod tests {
+             }
+ 
+             let d = hamming_dist(&a, &b);
+-            assert!(d >= dist, format!("{} < {}", d, dist));
++            assert!(d >= dist, "{} < {}", d, dist);
+             if d == dist {
+                 is_tight = true;
+             }
+diff --git i/src/io/cdf/expression.rs w/src/io/cdf/expression.rs
+index e29236c..3ba70e4 100644
+--- i/src/io/cdf/expression.rs
++++ w/src/io/cdf/expression.rs
+@@ -97,7 +97,7 @@ impl<R: io::Read> Reader<R> {
+                 value: NotNaN::new(rec.expression).unwrap(),
+                 prob: rec.prob,
+             }));
+-            let mut cdfs = features.entry(feature).or_insert_with(Vec::new);
++            let cdfs = features.entry(feature).or_insert_with(Vec::new);
+             cdfs.push(cdf);
+         }
+         CDFs { inner: features }
+diff --git i/src/io/mod.rs w/src/io/mod.rs
+index ab14d15..5c95071 100644
+--- i/src/io/mod.rs
++++ w/src/io/mod.rs
+@@ -7,8 +7,9 @@ pub mod cdf;
+ pub mod codebook;
+ pub mod estimation;
+ pub mod merfishdata;
++use serde::{Serialize, Deserialize};
+ 
+-#[derive(RustcEncodable, RustcDecodable, PartialEq, Eq, Clone, Copy, Hash)]
++#[derive(Serialize, Deserialize, PartialEq, Eq, Clone, Copy, Hash)]
+ pub struct Cell {
+     pub experiment: u32,
+     pub cell: u32,
+diff --git i/src/lib.rs w/src/lib.rs
+index d9b2a7b..14c3165 100644
+--- i/src/lib.rs
++++ w/src/lib.rs
+@@ -26,7 +26,6 @@ extern crate petgraph;
+ extern crate rand;
+ extern crate regex;
+ extern crate rgsl;
+-extern crate rustc_serialize;
+ extern crate serde;
+ #[macro_use]
+ extern crate serde_derive;
+diff --git i/src/model/readout/joint_model.rs w/src/model/readout/joint_model.rs
+index 4a995e6..b475ca5 100644
+--- i/src/model/readout/joint_model.rs
++++ w/src/model/readout/joint_model.rs
+@@ -99,10 +99,10 @@ impl JointModel {
+     ///
+     /// * ID of cell that is investigated (for debugging purposes).
+     pub fn expectation_maximization(&mut self, cell: &str) {
+-        let mut feature_models: Vec<Box<&AbstractFeatureModel>> = self
++        let mut feature_models: Vec<Box<&dyn AbstractFeatureModel>> = self
+             .feature_models
+             .values()
+-            .map(|m| Box::new(m as &AbstractFeatureModel))
++            .map(|m| Box::new(m as &dyn AbstractFeatureModel))
+             .collect_vec();
+         feature_models.push(Box::new(&self.noise_model));
+ 

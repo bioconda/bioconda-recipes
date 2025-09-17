@@ -1,50 +1,55 @@
-{% set version = "0.1.31" %}
-{% set sha256 = "728be1525f696317632282e289ef2f43f63802ab1fc9fae6da40c035577cb6d6" %}
+{% set name = "DeepLC" %}
+{% set version = "3.1.13" %}
+{% set sha256 = "582a221774a8470f59792f53d3495a21b368b982595ce26958686b836968da1a" %}
 
 package:
-  name: "deeplc"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/d/deeplc/deeplc-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/deeplc-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage("deeplc", max_pin="x") }}
   entry_points:
     - deeplc=deeplc.__main__:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
-  noarch: python
+    - deeplc-gui=deeplc.gui:start_gui
 
 requirements:
   host:
+    - python >=3.9
     - pip
-    - python >=3.6,<3.9
+    - setuptools
   run:
-    - matplotlib-base >=3,<4
-    - numpy >=1.16.1,<1.19.0
-    - pandas >=0.25,<2
-    - python >=3.6,<3.9
-    - setuptools >=42
-    - tensorflow-base >=2.3,<2.4
-    - tensorflow-estimator >=2.3,<2.4
-    - tensorboard >=2.3.0,<3
-    - scipy =1.4.1
-    - opt-einsum>=2.3.2,<3
+    - python >=3.9
+    - numpy >=1.17,<3
+    - pandas >=0.25,<3
+    - tensorflow >=2.15.0,<3
+    - deeplcretrainer >=1,<2
+    - psm-utils >=1,<2
+    - scikit-learn >=1.2.0,<2
 
 test:
   imports:
     - deeplc
 
 about:
-  home: http://compomics.github.io/projects/DeepLC
+  home: "https://compomics.github.io/projects/DeepLC"
+  summary: 'DeepLC: Retention time prediction for (modified) peptides using Deep Learning.'
+  dev_url: "https://github.com/compomics/DeepLC"
   license: Apache-2.0
-  license_file: LICENSE
   license_family: APACHE
-  summary: "DeepLC: Retention time prediction for (modified) peptides using Deep Learning."
-  doc_url: http://compomics.github.io/projects/DeepLC
-  dev_url: https://github.com/compomics/DeepLC
+  license_file: LICENSE
+  doc_url: "https://github.com/compomics/DeepLC/blob/v{{ version }}/README.md"
 
 extra:
+  identifiers:
+    - doi:10.1038/s41592-021-01301-5
+    - biotools:deeplc
   recipe-maintainers:
     - compomics

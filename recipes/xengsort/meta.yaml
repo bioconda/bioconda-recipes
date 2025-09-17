@@ -1,0 +1,56 @@
+{% set name = "xengsort" %}
+{% set version = "2.0.9" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/xengsort-{{ version }}.tar.gz
+  sha256: 5ed08159b0a7ee300e81e9e91e0a63e5021f1cbc0a363d0454ada5e2e27e198d
+
+build:
+  number: 0
+  entry_points:
+    - xengsort = xengsort.xengsort.xengsort_main:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+
+requirements:
+  host:
+    - pip
+    - python >=3.12
+    - setuptools
+  run:
+    - python >=3.12
+    - numpy
+    - numba
+    - zarr
+    - pytest
+    - pyyaml
+    - jsonargparse
+    - zstd
+
+test:
+  imports:
+    - xengsort
+  commands:
+    - xengsort --help
+    - xengsort index --help
+    - xengsort classify --help
+
+about:
+  home: "https://gitlab.com/genomeinformatics/xengsort"
+  license: MIT
+  license_file: LICENSE
+  license_family: MIT
+  summary: "A fast xenograft read sorter based on space-efficient k-mer hashing."
+  dev_url: "https://gitlab.com/genomeinformatics/xengsort"
+
+extra:
+  identifiers:
+    - doi:10.4230/LIPIcs.WABI.2020.4
+  recipe-maintainers:
+    - JZentgraf

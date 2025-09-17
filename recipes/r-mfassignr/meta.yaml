@@ -1,0 +1,58 @@
+{% set name = "mfassignr" %}
+{% set version = "1.1.2" %}
+{% set github = "https://github.com/RECETOX" %}
+
+package:
+  name: "r-{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "{{ github }}/MFAssignR/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: 99c15cbbb13609d8331e85cba5d3900f7d006dda9798aa778ea48a00436dd327
+
+build:
+  number: 0
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  script: R CMD INSTALL --build . 
+  run_exports:
+    - {{ pin_subpackage("r-mfassignr", max_pin="x.x") }}
+  
+requirements:
+  host:
+    - r-base >=3.4.1
+    - r-dplyr >=0.7.6
+    - r-tidyr >=0.8.1
+    - r-ggplot2 >=3.0.0
+    - r-colorRamps >=2.3
+    - r-gtools >=3.9.5
+  run:
+    - r-base >=3.4.1
+    - r-dplyr >=0.7.6
+    - r-tidyr >=0.8.1
+    - r-ggplot2 >=3.0.0
+    - r-colorRamps >=2.3
+    - r-gtools >=3.9.5
+
+test:
+  commands:
+    - $R -e "library('MFAssignR')"
+
+about:
+  home: "{{ github }}/MFAssignR"
+  license: GPL-3.0-or-later
+  license_file: LICENSE.md
+  summary: |
+    The MFAssignR package was designed for multi-element molecular formula (MF)
+    assignment of ultrahigh resolution mass spectrometry measurements.
+    A number of tools for internal mass recalibration, MF assignment, signal-to-noise evaluation,
+    and unambiguous formula selections are provided. 
+
+extra:
+  recipe-maintainers:
+    - hechth
+    - KristinaGomoryova
+  container:
+    extended-base: True

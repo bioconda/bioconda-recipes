@@ -1,30 +1,36 @@
+{% set name = "perl-io-compress" %}
+{% set version = "2.213" %}
+
 package:
-  name: perl-io-compress
-  version: 2.087
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://cpan.metacpan.org/authors/id/P/PM/PMQS/IO-Compress-2.087.tar.gz
-  sha256: 94f792775d0496fffe862363c76637e74ff5b46c40cf47042547686d164e23cb
+  url: https://cpan.metacpan.org/authors/id/P/PM/PMQS/IO-Compress-{{ version }}.tar.gz
+  sha256: ae4d01ae574e4568c5f2fb0573e74631e2720b71ad3bc5a3ffe9480f1cb9a851
 
 build:
   number: 0
-
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+    
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - pkg-config
   host:
     - perl
-    - perl-compress-raw-zlib >=2.087
-    - perl-compress-raw-bzip2 >=2.087
+    - perl-compress-raw-zlib >=2.213
+    - perl-compress-raw-bzip2 >=2.213
     - perl-scalar-list-utils
     - perl-extutils-makemaker
-
   run:
     - perl
-    - perl-compress-raw-zlib >=2.087
-    - perl-compress-raw-bzip2 >=2.087
+    - perl-compress-raw-zlib >=2.213
+    - perl-compress-raw-bzip2 >=2.213
+    - perl-encode
     - perl-scalar-list-utils
 
 test:
@@ -56,6 +62,12 @@ test:
     - IO::Uncompress::Unzip
 
 about:
-  home: http://metacpan.org/pod/IO-Compress
-  license: perl_5
-  summary: 'IO Interface to compressed data files/buffers'
+  home: "https://metacpan.org/pod/IO-Compress"
+  license: "Perl_5"
+  summary: "IO Interface to compressed data files/buffers."
+  doc_url: "https://metacpan.org/pod/IO-Compress"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

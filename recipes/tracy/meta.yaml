@@ -1,5 +1,5 @@
-{% set version = "0.6.1" %}
-{% set sha256 = "157199d16610999f3909e1638750cafaad66cb7f4a5b9e400e781872ae8d518d" %}
+{% set version = "0.8.1" %}
+{% set sha256 = "6282a9c16bc16ace788ef3d2846c0465c9b368a7c62b31d5d82dbc8f9fd0b2d3" %}
 
 package:
   name: tracy
@@ -14,32 +14,26 @@ source:
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage("tracy", max_pin="x.x") }}
 
-extra:
-  skip-lints:
-    - uses_vcs_url
-    - missing_hash
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-    - cmake >=3.10
+    - cmake <4
     - autoconf
     - automake
+    - libtool
     - pkg-config
-    - clangdev
-    - llvm-openmp
   host:
     - zlib
     - bzip2
+    - libdeflate
     - boost-cpp
     - htslib
-    - clangdev
-    - llvm-openmp
   run:
-    - zlib
-    - bzip2
     - boost-cpp
     - htslib
 
@@ -49,7 +43,20 @@ test:
 
 about:
   home: https://github.com/gear-genomics/tracy
-  license: BSD License
+  license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE
   summary: Basecalling, alignment, assembly and deconvolution of Sanger chromatogram trace files
+  dev_url: "https://github.com/gear-genomics/tracy"
+  doc_url: "https://github.com/gear-genomics/tracy/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash
+  identifiers:
+    - doi:10.1186/s12864-020-6635-8
+    - biotools:Gear-Genomics

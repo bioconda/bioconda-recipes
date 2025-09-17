@@ -1,19 +1,21 @@
-{% set version = "2.4.0" %}
-{% set sha256 = "66a6c19530e1deccad70ba5674732a36d6125e4388864324965e840a82ed6e8e" %}
+{% set version = "2.8.2" %}
+{% set sha256 = "99804da6e08c18bac8547bf64d78a3d3127f91a8179497a4e8cda4d3b89e6125" %}
 
 package:
   name: svdb
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   url: https://github.com/J35P312/SVDB/archive/{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  sha256: {{ sha256 }}
 
 build:
+  number: 5
   entry_points:
     - svdb = svdb.__main__:main
-  script: python -m pip install --no-deps --ignore-installed .
-  number: 4
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  run_exports:
+    - {{ pin_subpackage('svdb', max_pin="x") }}
 
 requirements:
   build:
@@ -32,7 +34,15 @@ test:
     - svdb --help
 
 about:
-  home: https://github.com/J35P312/SVDB
+  home: "https://github.com/J35P312/SVDB"
   license: MIT
   license_family: MIT
-  summary: structural variant database software
+  license_file: LICENSE
+  summary: "Structural variant database software."
+  dev_url: "https://github.com/J35P312/SVDB"
+  doc_url: "https://github.com/J35P312/SVDB/blob/{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
