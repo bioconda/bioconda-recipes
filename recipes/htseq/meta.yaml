@@ -1,55 +1,63 @@
+{% set name = "htseq" %}
+{% set version = "2.0.9" %}
+{% set sha256 = "3bbec23f033d35f40ab33a40c2b5c43f75e382c424b804c099dea635b52c2b12" %}
+
 package:
-  name: htseq
-  version: "0.13.5"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/7e/2e/60045d925c3b8da3f6a7869ce9ae77fd6360ea8749c3ab7f62198b3deed7/HTSeq-0.13.5.tar.gz
-  sha256: 2015aea9b682785e26bf8f2ec61be352843760b677c3f8c1c20022c58adac648
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
-  skip: True  # [py2k]
-  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('htseq', max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-
   host:
     - python
-    - setuptools
     - pip
     - cython
     - numpy
     - pysam >=0.15.1
     - swig >=3.0.8
-
   run:
     - python
     - {{ pin_compatible('numpy') }}
     - matplotlib-base >=1.4
     - pysam >=0.15.1
+    - scipy >=1.5.0
+    - pandas >=1.1.0
 
 test:
-  # Python imports
   imports:
     - HTSeq._HTSeq_internal
     - HTSeq.StepVector
     - HTSeq._version
     - HTSeq.scripts.count
     - HTSeq.scripts.qa
-
   commands:
     - htseq-count -h
     - htseq-qa -h
 
 about:
-  home: https://github.com/simon-anders/htseq
-  license: GPL-3.0
-  summary: 'HTSeq is a Python library to facilitate processing and analysis of data from high-throughput sequencing (HTS) experiments.'
+  home: "https://github.com/htseq/htseq"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "HTSeq is a Python library to facilitate processing and analysis of data from high-throughput sequencing (HTS) experiments."
+  dev_url: "https://github.com/htseq/htseq"
+  doc_url: "https://htseq.readthedocs.io/en/latest"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:htseq
     - usegalaxy-eu:htseq_count

@@ -1,0 +1,47 @@
+{% set version="1.99.4" %}
+{% set name="libshorah" %}
+
+package:
+  name: libshorah
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/LaraFuhrmann/VILOCA/archive/refs/tags/v.1.99.4-libshorah.tar.gz
+  sha256: 342f703019c1dae6997571b91135ad1a5ece5e8f600fcee86a9599ed9c06b4fa
+
+build:
+  skip: True  # [py27]
+  number: 2
+  script:
+    - mkdir -p build
+    - cd build
+    - cmake -D CMAKE_INSTALL_PREFIX=${PREFIX} -D CMAKE_INSTALL_RPATH:STRING=${PREFIX}/lib -D CMAKE_CXX_STANDARD=11 -D BUILD_SHARED_LIBS=ON -D CMAKE_BUILD_TYPE=Release ../
+    - make -j4
+    - make install
+
+requirements:
+  build:
+    - python
+    # NOTE the above makes no sense but prevents accidentally upgrading python to 3.11 while installing pkgconfig
+    - make
+    - cmake
+    - pkgconfig
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - htslib >=1.16
+    - boost
+    - pybind11
+  run:
+    - python
+
+test:
+  imports:
+    - libshorah
+
+about:
+  home: https://github.com/LaraFuhrmann/VILOCA
+  license: GPLv3
+  license_family: GPL3
+  license_file: LICENSE
+  summary: libshorah - Short Reads Assembly into Haplotypes

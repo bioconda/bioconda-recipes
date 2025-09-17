@@ -1,0 +1,47 @@
+{% set name = "emu-pca" %}
+{% set version = "1.3.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: {{ version }}
+
+source:
+  url: 'https://github.com/Rosemeis/emu/archive/refs/tags/v{{ version }}.tar.gz'
+  sha256: 5d1cae416232893edcdd8a92d89df8221fb74ad34f8da2009f1b107cf68bdcab
+
+build:
+  number: 0
+  skip: True  # [py < 310]
+  script: 
+    - "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir"
+  entry_points:
+    - emu=emu.main:main
+  run_exports:
+    {{ pin_subpackage('emu-pca', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - pip
+    - python
+    - cython
+    - numpy
+  run:
+    - python
+
+test:
+  commands:
+    - emu --help
+
+about:
+  home: https://github.com/Rosemeis/emu
+  license: GPL-3.0-only
+  license_file: LICENSE
+  summary: EM-PCA for Ultra-low Coverage Sequencing Data.
+  dev_url: https://github.com/Rosemeis/emu
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

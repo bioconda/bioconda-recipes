@@ -1,0 +1,54 @@
+{% set name = "psauron" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/salzberg-lab/PSAURON/archive/refs/tags/v1.1.0.tar.gz
+  sha256: 5854d47ee35363dc85af98acc0954eed29e4918f84a8564085163fcbccee4cb9
+
+build:
+  noarch: python
+  entry_points:
+    - psauron = psauron.psauron:eye_of_psauron
+  script: python -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_compatible('psauron', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9,<3.13
+    - pip
+  run:
+    - python >=3.9,<3.13
+    - pytorch >=2.1.2
+    - torchvision >=0.16.2
+    - torchaudio >=2.1.2
+    - typing_extensions >=4.9.0
+    - tqdm >=4.66.1
+    - scipy >=1.10.1
+    - numpy >=1.24.4,<2
+    - pandas
+    - setuptools
+
+test:
+  commands:
+    - pip check
+    - psauron --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/salzberg-lab/PSAURON
+  license: MIT License
+  summary: 'PSAURON: a machine learning model for rapid assessment of protein coding gene annotation'
+  license_family: MIT
+  license_file: LICENSE.txt
+  doc_url: https://github.com/salzberg-lab/PSAURON
+
+extra:
+  identifiers:
+    - doi:10.1093/nargab/lqae189

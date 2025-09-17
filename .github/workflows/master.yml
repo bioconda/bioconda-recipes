@@ -1,0 +1,172 @@
+name: Upload
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build-linux:
+    name: Linux Upload
+    if: github.repository == 'bioconda/bioconda-recipes'
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      max-parallel: 13
+    steps:
+      # Fetch the last two commits for the --git-range argument to bioconda-utils
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: set path
+        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
+
+      - name: Fetch conda install script
+        run: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
+
+      - name: Set up bioconda-utils
+        run: bash install-and-set-up-conda.sh
+
+      # This script can be used to reconfigure conda to use the right channel setup.
+      - name: Configure conda
+        run: bash configure-conda.sh
+
+      - name: Build and upload
+        env:
+          QUAY_LOGIN: ${{ secrets.QUAY_LOGIN }}
+          QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+          INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Mimic circleci
+          OSTYPE: "linux-gnu"
+          CI: "true"
+        run: |
+          set -ex
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+          bioconda-utils handle-merged-pr recipes config.yml \
+            --repo bioconda/bioconda-recipes \
+            --git-range ${GITHUB_SHA}~1 ${GITHUB_SHA} \
+            --quay-upload-target biocontainers \
+            --fallback build \
+            --artifact-source github-actions
+
+  build-osx-64:
+    name: OSX-64 Upload
+    if: github.repository == 'bioconda/bioconda-recipes'
+    runs-on: macos-13
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+    steps:
+      # Fetch the last two commits for the --git-range argument to bioconda-utils
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: set path
+        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
+
+      - name: Fetch conda install script
+        run: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
+
+      - name: Set up bioconda-utils
+        run: bash install-and-set-up-conda.sh
+
+      # This script can be used to reconfigure conda to use the right channel setup.
+      - name: Configure conda
+        run: bash configure-conda.sh
+
+      - name: Build and Test
+        env:
+          QUAY_LOGIN: ${{ secrets.QUAY_LOGIN }}
+          QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+          INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Mimic circleci
+          OSTYPE: "darwin"
+          CI: "true"
+        run: |
+          set -e
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+
+          # Sets up OSX SDK
+          run_conda_forge_build_setup
+
+          bioconda-utils handle-merged-pr recipes config.yml \
+          --repo bioconda/bioconda-recipes \
+          --git-range ${GITHUB_SHA}~1 ${GITHUB_SHA} \
+          --fallback build \
+          --artifact-source github-actions
+
+
+  # Disabled due to concurrency limits on GHA for OSX. osx-arm64 builds are on CircleCI.
+  # build_and_upload-osx-arm64:
+  #   name:  OSX-ARM64 Upload
+  #   if: github.repository == 'bioconda/bioconda-recipes'
+  #   runs-on: macOS-14 # M1
+  #   strategy:
+  #     fail-fast: false
+  #     max-parallel: 4
+  #   steps:
+  #     # Fetch the last two commits for the --git-range argument to bioconda-utils
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
+
+  #     # bail if there's no osx-arm64 recipes
+  #     - name: Check for Additional Platforms
+  #       id: additional_platforms
+  #       run: |
+  #         result=$(./scripts/check-for-additional-platforms.sh "${GITHUB_SHA}~1 ${GITHUB_SHA}" "build_and_upload" "${GITHUB_JOB}")
+  #         if [[ ${result} != "build" ]]
+  #         then
+  #             echo "No recipes using this platform, skipping rest of job."
+  #             echo "skip_build=true" >> $GITHUB_OUTPUT
+  #         fi
+
+  #     - name: set path
+  #       run: |
+  #         echo "/opt/mambaforge/bin" >> $GITHUB_PATH
+
+  #     - name: Fetch conda install script
+  #       if: steps.additional_platforms.outputs.skip_build != 'true'
+  #       run: |
+  #         wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
+
+  #     - name: Set up bioconda-utils
+  #       if: steps.additional_platforms.outputs.skip_build != 'true'
+  #       run: bash install-and-set-up-conda.sh
+
+  #     - name: Configure conda
+  #       if: steps.additional_platforms.outputs.skip_build != 'true'
+  #       run: bash configure-conda.sh
+
+  #     - name: Build and Upload
+  #       if: steps.additional_platforms.outputs.skip_build != 'true'
+  #       env:
+  #         QUAY_LOGIN: ${{ secrets.QUAY_LOGIN }}
+  #         QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+  #         ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+  #         INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         # Mimic circleci
+  #         OSTYPE: "darwin"
+  #         CI: "true"
+  #       run: |
+  #         set -xe
+  #         eval "$(conda shell.bash hook)"
+  #         conda activate bioconda
+  #         source common.sh
+  #         # Sets up OSX SDK
+  #         run_conda_forge_build_setup
+
+  #         bioconda-utils handle-merged-pr recipes config.yml \
+  #           --repo bioconda/bioconda-recipes \
+  #           --git-range ${GITHUB_SHA}~1 ${GITHUB_SHA} \
+  #           --fallback build \
+  #           --artifact-source github-actions

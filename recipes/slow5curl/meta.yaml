@@ -1,0 +1,40 @@
+{% set name = "slow5curl" %}
+{% set version = "0.2.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/BonsonW/slow5curl/releases/download/v{{ version }}/slow5curl-v{{ version }}-release.tar.gz
+  sha256: 6c062e59dc3e8bd65612613da7ac9a2518544061f1ef81d159e938e717393d3e
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('slow5curl', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - zlib
+    - wget
+    - curl
+  run:
+    - zlib
+    - curl
+
+test:
+  commands:
+    - slow5curl --help
+    - slow5curl --version
+
+about:
+  home: https://github.com/BonsonW/slow5curl
+  license: MIT
+  license_file: LICENSE
+  summary: Tool for accessing remote BLOW5 files.
+  description: 'slow5curl is a command line tool for fetching reads from remote BLOW5 files, which is built on top of slow5lib and libcurl.'
+

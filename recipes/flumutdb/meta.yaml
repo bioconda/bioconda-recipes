@@ -1,0 +1,45 @@
+{% set name = "flumutdb" %}
+{% set version = "6.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/flumutdb-{{ version }}.tar.gz
+
+  sha256: b52b36b3e84de45febf26ecf2a147abc3e3a0b975e3ea8e54f3508cfe2842bb2
+
+build:
+  run_exports: 
+    - {{ pin_subpackage(name, max_pin="x") }}
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+    - setuptools
+  run:
+    - python >=3.7
+
+test:
+  imports:
+    - flumutdb
+  commands:
+    - python -c "import flumutdb" 
+
+about:
+  home: https://github.com/izsvenezie-virology/FluMutDB
+  summary: "Utility module for FluMut database."
+  license: "AGPL-3.0-or-later"
+  license_family: AGPL
+  license_file: LICENSE
+  dev_url: https://github.com/izsvenezie-virology/FluMutDB
+
+extra:
+  recipe-maintainers:
+    - EdoardoGiussani
+    - AlexSartori

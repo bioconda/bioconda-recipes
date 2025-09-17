@@ -1,0 +1,54 @@
+{% set name = "libcifpp" %}
+{% set version = "9.0.2" %}
+{% set sha256 = "9ef786dde4a0d2e18a6782d85519e8e6243103b22f08ea339082945a2c944ecc" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PDB-REDO/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - ninja
+    - pkg-config
+  host:
+    - eigen
+    # Use v1.88.0 to match the version pinned in conda-forge
+    - libboost-devel ==1.88.0  # [linux]
+    - pcre2
+    - zlib
+
+test:
+  commands:
+    - test -e ${PREFIX}/lib/libcifpp.so  # [linux]
+    - test -e ${PREFIX}/lib/libcifpp.dylib  # [osx]
+
+about:
+  home: "https://github.com/PDB-REDO/libcifpp"
+  license: "BSD-2-Clause"
+  license_file: LICENSE
+  license_family: BSD
+  summary: "Library containing code to manipulate mmCIF and PDB files."
+  doc_url: "https://pdb-redo.github.io/libcifpp"
+  dev_url: "https://github.com/PDB-REDO/libcifpp"
+  description: |
+    This library, libcifpp, is a generic CIF library with some specific additions to work with mmCIF files.
+    The main focus of this library is to make sure that files read or written are valid.
+    That is, they are syntactically valid and their content is valid with respect to a CIF dictionary, if such a dictionary is available and specified.
+
+extra:
+  recipe-maintainers:
+    - multimeric
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

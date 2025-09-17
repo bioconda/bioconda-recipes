@@ -1,54 +1,82 @@
-{% set version = "1.2.0" %}
+{% set version = "2.2.0" %}
 {% set name = "escape" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: f8d7152ea491949ec42ea370ff7a5ac5
+about:
+  description: A bridging R package to facilitate gene set enrichment analysis (GSEA) in the context of single-cell RNA sequencing. Using raw count information, Seurat objects, or SingleCellExperiment format, users can perform and visualize ssGSEA, GSVA, AUCell, and UCell-based enrichment calculations across individual cells.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Easy single cell analysis platform for enrichment
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: Seurat, SeuratObject, knitr, rmarkdown, BiocStyle, testthat, dittoSeq (>= 1.1.2)
+  run_exports: '{{ pin_subpackage("bioconductor-escape", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: Seurat, hexbin, scran, knitr, rmarkdown, markdown, BiocStyle, RColorBrewer, rlang, spelling, testthat (>= 3.0.0), vdiffr
 requirements:
+
   host:
-    - 'bioconductor-biocparallel >=1.26.0,<1.27.0'
-    - 'bioconductor-gseabase >=1.54.0,<1.55.0'
-    - 'bioconductor-gsva >=1.40.0,<1.41.0'
-    - 'bioconductor-limma >=3.48.0,<3.49.0'
-    - 'bioconductor-singlecellexperiment >=1.14.0,<1.15.0'
+    - bioconductor-aucell >=1.28.0,<1.29.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-gseabase >=1.68.0,<1.69.0
+    - bioconductor-gsva >=2.0.0,<2.1.0
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-ucell >=2.10.0,<2.11.0
     - r-base
     - r-dplyr
+    - r-ggdist
     - r-ggplot2
+    - r-ggpointdensity
     - r-ggridges
     - r-matrix
     - r-msigdbr
+    - r-patchwork
+    - r-reshape2
+    - r-seuratobject
+    - r-stringr
+
   run:
-    - 'bioconductor-biocparallel >=1.26.0,<1.27.0'
-    - 'bioconductor-gseabase >=1.54.0,<1.55.0'
-    - 'bioconductor-gsva >=1.40.0,<1.41.0'
-    - 'bioconductor-limma >=3.48.0,<3.49.0'
-    - 'bioconductor-singlecellexperiment >=1.14.0,<1.15.0'
+    - bioconductor-aucell >=1.28.0,<1.29.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-gseabase >=1.68.0,<1.69.0
+    - bioconductor-gsva >=2.0.0,<2.1.0
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-ucell >=2.10.0,<2.11.0
     - r-base
     - r-dplyr
+    - r-ggdist
     - r-ggplot2
+    - r-ggpointdensity
     - r-ggridges
     - r-matrix
     - r-msigdbr
+    - r-patchwork
+    - r-reshape2
+    - r-seuratobject
+    - r-stringr
+
+source:
+  md5: a860f542eac2f9cf59ea1dbb0f84fa11
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'Apache License 2.0'
-  summary: 'Easy single cell analysis platform for enrichment'
-  description: 'A bridging R package to facilitate gene set enrichment analysis (GSEA) in the context of single-cell RNA sequencing. Using raw count information, Seurat objects, or SingleCellExperiment format, users can perform and visualize GSEA across individual cells.'
+    - $R -e "library('{{ name }}')"
 

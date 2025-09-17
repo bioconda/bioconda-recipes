@@ -1,42 +1,62 @@
-{% set version = "2.0.11" %}
-{% set sha256 = "41f3197aaafff9c42763fb7658b67f730ebc6dd3c0533c9c3d54bd3166e93f24" %}
+{% set name = "diamond" %}
+{% set version = "2.1.13" %}
+{% set sha256 = "d3d093b77d0ad8914f3e94dc53b9b2684cb77990765e1a2fe93ad022c28930f5" %}
 
 package:
-  name: diamond
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/bbuchfink/diamond/archive/v{{ version }}.tar.gz
+- url: https://github.com/bbuchfink/diamond/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+- url: https://github.com/ncbi/ncbi-cxx-toolkit-public/archive/refs/tags/release/29.3.0.tar.gz
+  sha256: 1c229854f974054e62c7ca6247ebf64c95aed65c31a03ff4c886328e2168376a
+  folder: ncbi-cxx-toolkit-public
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage('diamond', max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
     - make
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
   host:
-    - boost-cpp
     - zlib
+    - zstd-static
+    - sqlite
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
   run:
-    - boost-cpp
-    - zlib
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
 
 test:
   commands:
     - diamond --help 2>&1 > /dev/null
 
 about:
-  home: https://github.com/bbuchfink/diamond
-  license: AGPL-3.0
-  license_family: AGPL
+  home: "https://github.com/bbuchfink/diamond"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: Accelerated BLAST compatible local sequence aligner
+  summary: "Accelerated BLAST compatible local sequence aligner."
+  doc_url: "https://github.com/bbuchfink/diamond/wiki"
+  dev_url: "https://github.com/bbuchfink/diamond"
 
 extra:
   identifiers:
-    - biotools:Diamond
-    - doi:10.1038/nmeth.3176
+    - biotools:diamond
+    - usegalaxy-eu:bg_diamond
+    - usegalaxy-eu:bg_diamond_makedb
+    - usegalaxy-eu:bg_diamond_view
+    - doi:10.1038/s41592-021-01101-x
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64

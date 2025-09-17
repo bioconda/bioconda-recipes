@@ -1,0 +1,53 @@
+{% set version = "1.3.1" %}
+{% set sha256 = "eb4c7677d43d80d19ddbac11900ae3a14efd6f2a3c4cc8bbc08e063a81e0e1df" %}
+
+package:
+  name: longreadsum
+  version: {{ version }}
+
+source:
+  url: https://github.com/WGLab/LongReadSum/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 3
+  entry_points:
+    - longreadsum = entry_point:main
+  run_exports:
+    - {{ pin_subpackage('longreadsum', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - python
+    - swig
+    - hdf5
+    - htslib
+    - zlib
+    - setuptools
+  run:
+    - python
+    - numpy
+    - hdf5
+    - htslib
+    - plotly
+
+test:
+  commands:
+    - longreadsum --help
+
+about:
+  home: https://github.com/WGLab/LongReadSum
+  license: MIT
+  summary: 'Long read sequencing data quality control tool'
+  description: |
+    A fast and flexible QC tool for long read sequencing data.
+  dev_url: https://github.com/WGLab/LongReadSum
+  doc_url: https://github.com/WGLab/LongReadSum#readme
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

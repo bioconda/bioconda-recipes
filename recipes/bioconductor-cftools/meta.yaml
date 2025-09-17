@@ -1,0 +1,60 @@
+{% set version = "1.6.0" %}
+{% set name = "cfTools" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: 'The cfTools R package provides methods for cell-free DNA (cfDNA) methylation data analysis to facilitate cfDNA-based studies. Given the methylation sequencing data of a cfDNA sample, for each cancer marker or tissue marker, we deconvolve the tumor-derived or tissue-specific reads from all reads falling in the marker region. Our read-based deconvolution algorithm exploits the pervasiveness of DNA methylation for signal enhancement, therefore can sensitively identify a trace amount of tumor-specific or tissue-specific cfDNA in plasma. cfTools provides functions for (1) cancer detection: sensitively detect tumor-derived cfDNA and estimate the tumor-derived cfDNA fraction (tumor burden); (2) tissue deconvolution: infer the tissue type composition and the cfDNA fraction of multiple tissue types for a plasma cfDNA sample. These functions can serve as foundations for more advanced cfDNA-based studies, including cancer diagnosis and disease monitoring.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: file LICENSE
+  license_file: LICENSE
+  summary: Informatics Tools for Cell-Free DNA Study
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-cftools", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, rmarkdown, testthat (>= 3.0.0)
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
+  host:
+    - bioconductor-basilisk >=1.18.0,<1.19.0
+    - bioconductor-cftoolsdata >=1.4.0,<1.5.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - r-base
+    - r-bh
+    - r-r.utils
+    - r-rcpp
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-basilisk >=1.18.0,<1.19.0
+    - bioconductor-cftoolsdata >=1.4.0,<1.5.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - r-base
+    - r-bh
+    - r-r.utils
+    - r-rcpp
+
+source:
+  md5: 26e50f626b640e5ce6d2b46d7646a520
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

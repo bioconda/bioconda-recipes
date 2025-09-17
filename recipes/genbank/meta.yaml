@@ -1,0 +1,41 @@
+{% set name = "genbank" %}
+{% set version = "0.121" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/genbank-{{ version }}.tar.gz
+  sha256: 959df344018f8e104ef6d3c9d78f576228cb4997f4fa186050cfa69b231cb5af
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('genbank', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+  run:
+    - python
+
+test:
+  imports:
+    - genbank
+
+about:
+  home: https://github.com/deprekate/genbank
+  summary: Code to work with Genbank files
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

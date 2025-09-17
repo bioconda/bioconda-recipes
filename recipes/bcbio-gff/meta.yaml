@@ -1,35 +1,45 @@
 {% set name = "bcbio-gff" %}
-{% set version = "0.6.6" %}
-{% set sha256 = "74c6920c91ca18ed9cb872e9471c0be442dad143d8176345917eb1fefc86bc37" %}
+{% set version = "0.7.1" %}
 
 package:
     name: {{ name|lower }}
     version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/b/{{ name|lower }}/{{ name }}-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/bcbio-gff-{{ version }}.tar.gz
+  sha256: d1dc3294147b95baced6033f6386a0fed45c43767ef02d1223df5ef497e9cca6
+  patches:
+    - 0001-distutils.patch
 
 build:
-  number: 1
+  number: 3
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
-  
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -rf *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
 requirements:
   host:
-    - python
+    - python >=3
     - pip
+    - setuptools
   run:
-    - python
+    - python >=3
     - six
     - biopython
     - bx-python
 
 test:
-    imports:
-        - BCBio.GFF
+  imports:
+    - BCBio.GFF
+
 about:
-    home: https://github.com/chapmanb/bcbb/tree/master/gff
-    license: Biopython License Agreement
-    license_file: LICENSE
-    summary: A python library to read and write Generic Feature Format (GFF).
+  home: "https://github.com/chapmanb/bcbb/tree/master/gff"
+  license: "Biopython License Agreement"
+  license_file: LICENSE
+  summary: "A Python library to read and write Generic Feature Format (GFF)."
+  dev_url: "https://github.com/chapmanb/bcbb"
+  doc_url: "https://biopython.org/wiki/GFF_Parsing"

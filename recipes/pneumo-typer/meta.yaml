@@ -1,0 +1,51 @@
+{% set name = "pneumo-typer" %}
+{% set version = "2.0.1" %}
+{% set sha256 = "2f5a1a56e9069fb3a284a5116ce769e8da0c7a0f263c7ceb969c652e5540e898" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+    url: https://www.microbialgenomic.cn/gz/pneumo-typer-v{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+    
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('pneumo-typer', max_pin="x") }}
+requirements:
+
+  #channels:
+  
+  run:
+    - blast
+    - perl-gd >=2.74
+    - perl-gd-svg
+    - perl-svg >=2.87
+    - perl-bioperl-core
+    - prodigal
+    - blat
+
+    #- git
+    
+test:
+  commands:
+    - blastn -h
+    - makeblastdb -h
+    #- blat
+    - pneumo-typer -h
+    - update_mlstdb_cgmlstdb -h
+    - prodigal -h
+
+about:
+  home: 'https://www.microbialgenomic.cn/Pneumo-Typer.html'
+  summary: 'Pneumo-Typer is a high-throughput capsule genotype visualization tool with integrated serotype and sequence type prediction for Streptococcus pneumoniae'
+  description: 'Pneumo-Typer is a stand-alone perl application, which requires blat, prodigal, NCBI BLAST+, and several perl Modules (GD, GD::SVG) to be installed before use.'
+  doc_url: 'https://github.com/Xiangyang1984/Pneumo-Typer'
+  license: GNU General Public License v3.0 or any later version (GPL-3.0-or-later)
+
+extra:
+  author:
+    - Xiangyang Li <lixiangyang@fudan.edu.cn>

@@ -1,5 +1,5 @@
 {% set name = "firecloud" %}
-{% set version = "0.16.31" %}
+{% set version = "0.16.38" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,26 +7,30 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: d94a13028e9c82880716797c2094d1e53ee08c270a619e82075b42fc716083ea
+  sha256: 5c7c5d29f00464707e64be5f0e998cbd2f18a75217d82d2d1e04ad30b9bc25e3
 
 build:
   number: 0
   noarch: python
   entry_points:
     - fissfc = firecloud.fiss:main_as_cli
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
 
 requirements:
   host:
     - pip
-    - python
+    - python <3.12
   run:
     - google-auth >=1.6.3
-    - google-cloud-sdk
+    - google-cloud-storage
     - pydot
-    - python
+    - python <3.12
     - requests
     - six
+    - nose
+    - pylint >=1.9.5
 
 test:
   imports:
@@ -35,12 +39,13 @@ test:
     - fissfc --help
 
 about:
-  home: https://github.com/broadinstitute/fiss
+  home: "https://github.com/broadinstitute/fiss"
   license: BSD-3-Clause
   license_family: BSD
-  summary: API and CLI for Broad Institute's Firecloud workspace/workflow management service
-  doc_url: https://software.broadinstitute.org/firecloud/
-  dev_url: https://github.com/broadinstitute/fiss
+  license_file: LICENSE
+  summary: "API and CLI for Broad Institute's Firecloud workspace/workflow management service."
+  doc_url: "https://software.broadinstitute.org/firecloud"
+  dev_url: "https://github.com/broadinstitute/fiss"
 
 extra:
   recipe-maintainers:

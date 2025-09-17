@@ -1,0 +1,62 @@
+{% set version = "1.1.8" %}
+{% set sha256 = "428503e475ae421b6bf70bc2a6d78e1abd4a969f10ae02a2e4c3dd3a0de47a16" %}
+
+package:
+  name: asgal
+  version: {{ version }}
+
+source:
+  url: https://github.com/AlgoLab/galig/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - galig.Makefile.patch
+    - galig.asgal.patch
+    - galig.detectEvents.patch
+    - galig.formatSAM.patch
+
+build:
+  number: 2
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - cmake
+  host:
+    - python >=3
+    - zlib
+    - sdsl-lite
+    - lemon
+    - gffutils
+    - biopython
+    - pysam
+    - pandas
+    - samtools
+    - salmon >=1.9.0
+  run:
+    - salmon >=1.9.0
+    - gffutils
+    - biopython
+    - pysam
+    - pandas
+    - samtools
+
+test:
+  commands:
+    - SpliceAwareAligner -h
+    - asgal -h
+
+about:
+  home: https://asgal.algolab.eu/
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  summary: A graph aligner
+
+extra:
+  identifiers:
+    - biotools:asgal
+  recipe-maintainers:
+    - dlcgold
+    - ldenti

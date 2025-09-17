@@ -1,0 +1,260 @@
+diff --git a/configure.ac b/configure.ac
+index ec939f5..13494a5 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -146,11 +146,12 @@ AX_PTHREAD([
+         AC_MSG_ERROR([No pthread support on this machine]))
+ #AX_PTHREAD()
+ 
+-
+-# explicit libm check
++# if any of these sit in unusual places use
++# export LDFLAGS="-L$path" before calling configure
+ AC_CHECK_LIB(m, log,, AC_MSG_ERROR([Could not find libm]))
+ AC_CHECK_LIB(z, gzread,, AC_MSG_ERROR([Could not find libz]))
+-
++AC_CHECK_LIB([gslcblas],[cblas_dgemm])
++AC_CHECK_LIB(gsl, gsl_cdf_poisson_P,, AC_MSG_WARN([libgsl not found. Not using fast approximation]))
+ 
+ # http://www.gnu.org/software/automake/manual/html_node/Python.html
+ AM_PATH_PYTHON([2.7])
+diff --git a/src/lofreq/Makefile.am b/src/lofreq/Makefile.am
+index 102076b..b7c71cf 100644
+--- a/src/lofreq/Makefile.am
++++ b/src/lofreq/Makefile.am
+@@ -1,4 +1,4 @@
+-AM_CFLAGS = -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -Wall -I../cdflib90/ -I../uthash $(HTSLIB_CPPFLAGS) @AM_CFLAGS@
++AM_CFLAGS = -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -Wall -O3 -I../cdflib90/ -I../uthash $(HTSLIB_CPPFLAGS) @AM_CFLAGS@
+ AM_LDFLAGS = $(LDFLAGS_for_htslib) @AM_LDFLAGS@
+ bin_PROGRAMS = lofreq
+ lofreq_SOURCES = bam_md_ext.c bam_md_ext.h \
+@@ -42,3 +42,4 @@ endif
+ 
+ # note: order matters
+ lofreq_LDADD = $(LIBS_for_htslib) ../cdflib90/libcdf.a
++# -l:libgsl.a -lm
+diff --git a/src/lofreq/lofreq_call.c b/src/lofreq/lofreq_call.c
+index 6537a11..81c0c7b 100644
+--- a/src/lofreq/lofreq_call.c
++++ b/src/lofreq/lofreq_call.c
+@@ -315,7 +315,7 @@ call_alt_ins(const plp_col_t *p, double *bi_err_probs, int bi_num_err_probs,
+                bi_num_err_probs, ins_counts[0], ins_counts[1], ins_counts[2]);
+      // compute p-value for insertion
+      if (snpcaller(bi_pvalues, bi_err_probs, bi_num_err_probs, ins_counts,
+-                   conf->bonf_indel, conf->sig)) {
++                   conf->bonf_indel, conf->sig, conf->approx_threshold_n)) {
+           fprintf(stderr, "FATAL: snpcaller() failed at %s:%s():%d\n",
+                   __FILE__, __FUNCTION__, __LINE__);
+           return 1;
+@@ -380,7 +380,7 @@ int call_alt_del(const plp_col_t *p, double *bd_err_probs, int bd_num_err_probs,
+ 
+      /* snpcaller for deletion */
+      if (snpcaller(bd_pvalues, bd_err_probs, bd_num_err_probs, del_counts,
+-                   conf->bonf_indel, conf->sig)) {
++                   conf->bonf_indel, conf->sig, conf->approx_threshold_n)) {
+           fprintf(stderr, "FATAL: snpcaller() failed at %s:%s():%d\n",
+                   __FILE__, __FUNCTION__, __LINE__);
+           return 1;
+@@ -803,7 +803,7 @@ call_snvs(const plp_col_t *p, varcall_conf_t *conf)
+                 bc_num_err_probs, alt_counts[0], alt_counts[1], alt_counts[2], num_snv_tests, conf->bonf_subst, conf->sig);
+ 
+       if (snpcaller(pvalues, bc_err_probs, bc_num_err_probs,
+-                   alt_counts, conf->bonf_subst, conf->sig)) {
++                   alt_counts, conf->bonf_subst, conf->sig, conf->approx_threshold_n)) {
+            fprintf(stderr, "FATAL: snpcaller() failed at %s:%s():%d\n",
+                    __FILE__, __FUNCTION__, __LINE__);
+            free(bc_err_probs);
+@@ -986,6 +986,7 @@ usage(const mplp_conf_t *mplp_conf, const varcall_conf_t *varcall_conf)
+      fprintf(stderr, "       -C | --min-cov INT           Test only positions having at least this coverage [%d]\n", varcall_conf->min_cov);
+      fprintf(stderr, "                                    (note: without --no-default-filter default filters (incl. coverage) kick in after predictions are done)\n");
+      fprintf(stderr, "       -d | --max-depth INT         Cap coverage at this depth [%d]\n", mplp_conf->max_depth);
++     fprintf(stderr, "       -t | --approx-threshold INT  Use fast approximation at this depth (might decrease number of calls; off if <= 0) [%d]\n", varcall_conf->approx_threshold_n);
+      fprintf(stderr, "            --illumina-1.3          Assume the quality is Illumina-1.3-1.7/ASCII+64 encoded\n");
+      fprintf(stderr, "            --use-orphan            Count anomalous read pairs (i.e. where mate is not aligned properly)\n");
+      fprintf(stderr, "            --plp-summary-only      No variant calling. Just output pileup summary per column\n");
+@@ -1094,6 +1095,7 @@ for cov in coverage_range:
+ 
+               {"min-cov", required_argument, NULL, 'C'},
+               {"max-depth", required_argument, NULL, 'd'},
++              {"approx-threshold", required_argument, NULL, 't'},
+ 
+               {"illumina-1.3", no_argument, &illumina_1_3, 1},
+               {"use-orphan", no_argument, &use_orphan, 1},
+@@ -1272,6 +1274,10 @@ for cov in coverage_range:
+               mplp_conf.max_depth = atoi(optarg);
+               break;
+ 
++         case 't':
++              varcall_conf.approx_threshold_n = atoi(optarg);
++              break;
++
+          case 'h':
+               usage(& mplp_conf, & varcall_conf);
+               return 0; /* WARN: not printing defaults if some args where parsed */
+diff --git a/src/lofreq/lofreq_uniq.c b/src/lofreq/lofreq_uniq.c
+index 53ad137..af03fe4 100644
+--- a/src/lofreq/lofreq_uniq.c
++++ b/src/lofreq/lofreq_uniq.c
+@@ -309,7 +309,7 @@ uniq_snv(const plp_col_t *p, void *confp)
+           alt_counts[1] = alt_counts[2] = 0;
+ 
+           if (snpcaller(pvalues, err_probs, num_err_probs,
+-                        alt_counts, bonf, alpha)) {
++                        alt_counts, bonf, alpha, -1)) {
+                fprintf(stderr, "FATAL: snpcaller() failed at %s:%s():%d\n",
+                        __FILE__, __FUNCTION__, __LINE__);
+                free(err_probs);
+diff --git a/src/lofreq/plp.c b/src/lofreq/plp.c
+index 808d791..2336445 100644
+--- a/src/lofreq/plp.c
++++ b/src/lofreq/plp.c
+@@ -816,7 +816,11 @@ void compile_plp_col(plp_col_t *plp_col,
+       * n_plp[i] - m
+       */
+      ref_base = (ref && pos < ref_len)? ref[pos] : 'N';
+-
++     /* Added by Ryan Morin in an attempt to mitigate issues with non-ACTG characters in the reference
++     An example position (hg38) affected by this is chr17   83129591  (the reference base is W) */
++     if (! (ref_base == 'A' || ref_base == 'C' || ref_base == 'T' || ref_base == 'G' || ref_base == 'N')){
++          ref_base = 'N';
++     }
+      plp_col_init(plp_col);
+      plp_col->target = strdup(target_name);
+      plp_col->pos = pos;
+@@ -1276,8 +1280,8 @@ check_indel:
+ 
+      for (i = 0; i < NUM_NT4; ++i) {
+           assert(plp_col->fw_counts[i] + plp_col->rv_counts[i] == plp_col->base_quals[i].n);
+-          assert(plp_col->base_quals[i].n == plp_col->baq_quals[i].n);
+-          assert(plp_col->base_quals[i].n == plp_col->map_quals[i].n);
++          /* FIXME only makes sense if BAQ is on assert(plp_col->base_quals[i].n == plp_col->baq_quals[i].n); */
++          /* FIXME only makes sense if MQ is on assert(plp_col->base_quals[i].n == plp_col->map_quals[i].n); */
+           /* assert(plp_col->map_quals[i].n == plp_col->source_quals[i].n);*/
+      }
+ }
+diff --git a/src/lofreq/snpcaller.c b/src/lofreq/snpcaller.c
+index 253430c..f3a8e44 100644
+--- a/src/lofreq/snpcaller.c
++++ b/src/lofreq/snpcaller.c
+@@ -43,6 +43,8 @@
+ #include "fet.h"
+ #include "utils.h"
+ #include "log.h"
++#include "gsl/gsl_randist.h"
++#include "gsl/gsl_cdf.h"
+ 
+ #include "snpcaller.h"
+ #if TIMING
+@@ -635,6 +637,7 @@ init_varcall_conf(varcall_conf_t *c)
+      c->flag |= VARCALL_USE_IDAQ;
+      c->only_indels = 0;
+      c->no_indels = 0;
++     c->approx_threshold_n = -1;
+ }
+ 
+ 
+@@ -1062,7 +1065,8 @@ int
+ snpcaller(long double *snp_pvalues,
+           const double *err_probs, const int num_err_probs,
+           const int *noncons_counts,
+-          const long long int bonf_factor, const double sig_level)
++          const long long int bonf_factor, const double sig_level,
++          const int approx_threshold_n)
+ {
+     double *probvec = NULL;
+     int i;
+@@ -1100,6 +1104,33 @@ snpcaller(long double *snp_pvalues,
+         goto free_and_exit;
+     }
+ 
++/* how to combine ifndef? */
++#ifndef HAVE_LIBGSL
++#ifndef HAVE_LIBGSLCBLAS
++     if (approx_threshold_n>0) {
++          LOG_FATAL("%s\n", "Can't use approximation. It was disabled during compile time");
++          exit(1);
++     }
++#endif
++#endif
++
++/* how to combine ifdef? */
++#ifdef HAVE_LIBGSL
++     #ifdef HAVE_LIBGSLCBLAS
++     /* Only approximate if sufficient data available */
++     if (approx_threshold_n > 0 && num_err_probs > approx_threshold_n) {
++          long double mu = 0;
++          for (int i = 0; i < num_err_probs; ++i) {
++               mu += err_probs[i];
++          }
++          const long double poibin_approximation = 1 - gsl_cdf_poisson_P(max_noncons_count - 1, mu);
++          if (poibin_approximation * (double)bonf_factor > sig_level) {
++               goto free_and_exit;
++          }
++     }
++     #endif
++#endif
++
+     probvec = poissbin(&pvalue, err_probs, num_err_probs,
+                        max_noncons_count, bonf_factor, sig_level);
+ 
+@@ -1120,7 +1151,6 @@ snpcaller(long double *snp_pvalues,
+         goto free_and_exit;
+     }
+ 
+-
+     /* report p-value for each non-consensus base
+      */
+     for (i=0; i<NUM_NONCONS_BASES; i++) {
+diff --git a/src/lofreq/snpcaller.h b/src/lofreq/snpcaller.h
+index 117505c..6822044 100644
+--- a/src/lofreq/snpcaller.h
++++ b/src/lofreq/snpcaller.h
+@@ -59,6 +59,7 @@ typedef struct {
+      int only_indels; 
+      int no_indels; 
+ 
++     int approx_threshold_n; /* when to use fast poisson binomial approximation for early exit */
+ } varcall_conf_t;
+ 
+ 
+@@ -97,7 +98,8 @@ extern int
+ snpcaller(long double *snp_pvalues, const double *err_probs,
+           const int num_err_probs, const int *noncons_counts,
+           const long long int bonf_factor,
+-          const double sig_level);
++          const double sig_level,
++          const int approx_treshold_n);
+ 
+ 
+ #endif
+diff --git a/src/scripts/lofreq2_call_pparallel.py b/src/scripts/lofreq2_call_pparallel.py
+index fc3e82c..64dd3c1 100755
+--- a/src/scripts/lofreq2_call_pparallel.py
++++ b/src/scripts/lofreq2_call_pparallel.py
+@@ -166,16 +166,23 @@ def concat_vcf_files(vcf_files, vcf_out, source=None):
+     """
+ 
+     assert not os.path.exists(vcf_out)
+-
+-    cmd = ['lofreq', 'vcfset', '-a', 'concat', '-o', vcf_out, '-1']
++    #I didn't address the FIXME issue noted above but another bug was fixed here.
++    #This now uses bcftools to overcome systematic failures of merging with certain data sets due to multi-allelic variants
++    cmd = ['bcftools', 'concat', '-a', '-O', 'z', '-o', vcf_out]
+     cmd.extend(vcf_files)
++    idx = ['bcftools','index','-t', vcf_out]
+     try:
+         subprocess.check_call(cmd)
+     except subprocess.CalledProcessError as e:
+         LOG.fatal("The following command failed with return code %d: %s" % (
+             e.returncode, ' '.join(cmd)))
+         sys.exit(1)
+-
++    try:
++        subprocess.check_call(idx)
++    except subprocess.CalledProcessError as e:
++        LOG.fatal("The following command failed with return code %d: %s" % (
++            e.returncode, ' '.join(cmd)))
++        sys.exit(1)
+ 
+ def sq_list_from_bam_samtools(bam):
+     """Extract SQs listed in BAM head using samtools

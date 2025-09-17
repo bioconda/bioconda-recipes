@@ -1,0 +1,49 @@
+{% set name = "Hecatomb" %}
+{% set version = "1.3.3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/shandley/{{ name|lower }}/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: c1b40ca139d954d0d75a0df3ad217aee3ccbade029f8d91afbd2957bccf3ceac
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('hecatomb', max_pin='x.x') }}
+  script: "{{ PYTHON }} -m pip install . -vv "
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python >=3.9,<=3.12
+    - snakemake >=7.14.0,<8
+    - pulp <2.8
+    - pyyaml >=6.0
+    - click >=8.1.3
+    - metasnek >=0.0.7
+    - snaketool-utils >=0.0.4
+
+test:
+  commands:
+    - hecatomb --help
+
+about:
+  home: "https://github.com/shandley/hecatomb"
+  license: MIT
+  license_file: "hecatomb/hecatomb.LICENSE"
+  summary: "Hecatomb: and end-to-end platform for viral metagenomics"
+  description: |
+    Hecatomb accelerates viral metagenomics research by assembling contigs and accurately identifying viruses from a
+    range of sequencing data types.
+  dev_url: "https://github.com/shandley/hecatomb"
+  doc_url: "https://hecatomb.readthedocs.io/en/latest/"
+
+extra:
+  recipe-maintainers:
+    - beardymcjohnface

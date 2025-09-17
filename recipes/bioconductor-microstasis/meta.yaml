@@ -1,0 +1,54 @@
+{% set version = "1.6.0" %}
+{% set name = "microSTASIS" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: The toolkit 'µSTASIS', or microSTASIS, has been developed for the stability analysis of microbiota in a temporal framework by leveraging on iterative clustering. Concretely, the core function uses Hartigan-Wong k-means algorithm as many times as possible for stressing out paired samples from the same individuals to test if they remain together for multiple numbers of clusters over a whole data set of individuals. Moreover, the package includes multiple functions to subset samples from paired times, validate the results or visualize the output.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Microbiota STability ASsessment via Iterative cluStering
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-microstasis", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, gghighlight, knitr, rmarkdown, methods, RefManageR, sessioninfo, SingleCellExperiment, SummarizedExperiment, testthat (>= 3.0.0)
+requirements:
+  host:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-treesummarizedexperiment >=2.14.0,<2.15.0
+    - r-base
+    - r-ggplot2
+    - r-ggside
+    - r-rlang
+    - r-stringr
+  run:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-treesummarizedexperiment >=2.14.0,<2.15.0
+    - r-base
+    - r-ggplot2
+    - r-ggside
+    - r-rlang
+    - r-stringr
+
+source:
+  md5: aa143ed7e2e787173f15f326de7bdbb8
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

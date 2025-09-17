@@ -1,0 +1,47 @@
+{% set name = "snakemake-executor-plugin-drmaa" %}
+{% set version = "0.1.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/snakemake_executor_plugin_drmaa-{{ version }}.tar.gz
+  sha256: 24fe16fc1f1e7ef75bc213cdb960b674bb130ec918a9f6106511a667ffc661b2
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.11,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.11.0,<4.0.0
+    - snakemake-interface-common >=1.13.0,<2.0.0
+    - snakemake-interface-executor-plugins >=9.0.0,<10.0.0
+    - drmaa >=0.7.9,<0.8.0
+
+test:
+  imports:
+    - snakemake_executor_plugin_drmaa
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/snakemake/snakemake-executor-plugin-drmaa
+  summary: A snakemake executor plugin for submission of jobs via DRMAA.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - koesterlab

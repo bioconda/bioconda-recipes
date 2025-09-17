@@ -1,0 +1,54 @@
+{% set name = "ncbitax2lin" %}
+{% set version = "2.4.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: b1d03dcc9dc1440ab02816844fad6e8ad68d3e47fbc3cc1c589576730b7e0b1a
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - ncbitax2lin = ncbitax2lin.ncbitax2lin:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('ncbitax2lin', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.7,<3.10
+    - pip
+    - poetry
+  run:
+    - fire >=0.3.1,<0.4.0
+    - pandas >=1.0.3,<2.0.0
+    - python >=3.7,<3.10
+    - typing-extensions >=3.7.4,<4.0.0
+
+test:
+  imports:
+    - ncbitax2lin
+  commands:
+    - pip check
+    - which ncbitax2lin
+    - python -c "import ncbitax2lin"
+  requires:
+    - pip
+
+about:
+  home: https://github.com/zyxue/ncbitax2lin
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  summary: NCBItax2lin
+  dev_url: https://github.com/zyxue/ncbitax2lin
+  description: |
+    A tool that converts NCBI taxonomy dump into lineages
+
+extra:
+  recipe-maintainers:
+    - cumbof

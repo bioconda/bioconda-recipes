@@ -1,0 +1,45 @@
+{% set name = "cobra-meta" %}
+{% set version = "1.2.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/linxingchen/cobra/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 877813cd705cb5a8b3611f3fca705bb6576ba82a8283552bed73c34bec880375
+
+build:
+  entry_points:
+    - cobra-meta = cobra:main
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('cobra-meta', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+  run:
+    - python >=3.7
+    - biopython
+    - pysam
+    - numpy
+    - blast >=2.14.0,<3.0.0
+
+test:
+  commands:
+    - cobra-meta -v
+
+about:
+  home: https://github.com/linxingchen/cobra
+  license: MIT
+  summary: 'COBRA is a tool to get higher quality viral genomes assembled from metagenomes.'
+
+extra:
+  identifiers:
+    - doi:10.1101/2023.05.30.542503
+  recipe-maintainers:
+    - linxingchen

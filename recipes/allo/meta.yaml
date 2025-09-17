@@ -1,0 +1,44 @@
+{% set name = "allo" %}
+{% set version = "1.2.0" %} 
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+  
+source:
+  url: https://pypi.io/packages/source/b/bio-{{ name }}/bio_allo-{{ version }}.tar.gz
+  sha256: d5ec3b33975743022447ac4cefb9f2b75d188b6f8ece0e8073b636ce6c969f3d
+  
+build:
+  run_exports:
+    - {{ pin_subpackage('allo', max_pin="x") }}
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+
+requirements:
+  host:
+    - pip
+    - python >=3.10
+  run:
+    - python >=3.10
+    - numpy
+    - joblib
+    - tensorflow >=2.17
+    - pysam
+    
+test:
+  commands:
+    - allo --help
+    
+about:
+  home: "https://github.com/seqcode/allo"
+  license: MIT
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  summary: "Multi-mapped read rescue strategy for gene regulatory analyses"
+  dev_url: "https://github.com/seqcode/allo"
+
+extra:
+  recipe-maintainers:
+    - anmorrissey
