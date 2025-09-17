@@ -5,13 +5,24 @@ package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
+source:
+  url: "https://pypi.io/packages/source/h/haddock3/haddock3-{{ version }}.0.tar.gz"
+  sha256: 14f696e20a2ff5fcc2596abd57248100acd6ea695eeb1f03040de353b7ad2971
+  
 build:
-  number: 1
+  number: 2
   noarch: python
   run_exports:
     - {{ pin_subpackage(name, max_pin='x') }}
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  skip: True  # [win]
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - python >=3.9,<3.13
+    - setuptools
   host:
     - python >=3.9,<3.13
     - setuptools
@@ -33,7 +44,7 @@ requirements:
 
 test:
   commands:
-    - echo "DONE!"
+    - haddock3 -v
 
 about:
   home: https://github.com/haddocking/haddock3
@@ -46,6 +57,3 @@ extra:
   recipe-maintainers: 
     - gbayarri
     - RubenChM
-  notes: >
-    The Haddock3 package requires `gcc` hardcoded in the `setup.py`, which is unavailable in the Bioconda test environment.
-    Therefore, the post-link test is skipped.
