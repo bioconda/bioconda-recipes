@@ -8,11 +8,15 @@ package:
 source:
   url: https://pypi.io/packages/source/a/ariba/ariba-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - external_progs.patch
+    - mlst_profile.patch
+    - ref_genes_getter.patch
 
 build:
-  number: 1
-  # Skipping py>=38 on osx because the bowtie2 <2.4.0 recipes are currently skipped on osx.
-  skip: True  # [py<30 or (py>=38 and osx)]
+  number: 7
+  # Skipping py>=36 on osx because the bowtie2 <2.4.0 recipes are currently skipped on osx.
+  skip: True  # [py<30 or (py>=36 and osx) or py > 39]
   script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
@@ -22,6 +26,7 @@ requirements:
   host:
     - python
     - pip
+    - zlib
   run:
     - python
     - beautifulsoup4 >=4.1.0
@@ -30,12 +35,12 @@ requirements:
     - biopython
     - pyfastaq >=3.12.0
     # older pysam versions have wrong openssl pinning
-    - pysam >=0.15.3
-    - pymummer <=0.10.3
+    - pysam >=0.15.3,<=0.18.0
+    - pymummer >=0.11.0
     - bowtie2 <2.4.0 
     - cd-hit >=4.6.5
     - samtools >=1.2
-    - bcftools >=1.2
+    - bcftools >=1.2,<=1.14
     - mummer >=3.23
     - spades >=3.5.0
     - zlib

@@ -1,0 +1,80 @@
+{% set name = "hictkpy" %}
+{% set version = "1.3.0" %}
+{% set sha256 = "e2fc78285c833d8f6f96c06f5692748797c3e83b184b51387f03aedd058eeafb" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True  # [py < 39]
+  run_exports:
+    - {{ pin_subpackage('hictkpy', max_pin='x') }}
+
+source:
+  url: https://pypi.python.org/packages/source/h/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake >=3.25
+    - conan >=2
+    - make
+    - eigen >=3.4
+    - fast_float >=8
+    - fmt >=11
+    - highfive >=2.10
+    - spdlog >=1.15
+
+  host:
+    - python
+    - pip
+    - hdf5 >=1.12
+    - libarrow >=16
+    - libdeflate >=1
+    - lld  # [linux]
+    - nanobind >=2
+    - numpy >=2
+    - scikit-build-core >=0.10
+    - setuptools_scm
+    - zstd >=1.5
+
+  run:
+    - python
+    - {{ pin_compatible('hdf5', min_pin='1.12') }}
+    - {{ pin_compatible('libdeflate', min_pin='1') }}
+    - {{ pin_compatible('numpy', min_pin='2') }}
+    - {{ pin_compatible('pandas', min_pin='2.1') }}
+    - {{ pin_compatible('pyarrow', min_pin='16') }}
+    - {{ pin_compatible('scipy') }}
+    - {{ pin_compatible('zstd', min_pin='1.5') }}
+
+about:
+  home: https://github.com/paulsengroup/{{ name }}
+  license: MIT
+  license_file: LICENSE
+  summary: "Python bindings for hictk: read and write .cool and .hic files directly from Python"
+  dev_url: https://github.com/paulsengroup/{{ name }}
+  doc_url: https://{{ name }}.readthedocs.io/en/stable/
+
+test:
+   requires:
+     - pytest>=8
+   source_files:
+     - test/*
+   imports:
+     - hictkpy
+
+extra:
+  recipe-maintainers:
+    - robomics
+    - jonnings
+  identifiers:
+    - biotools:hictkpy
+    - doi:10.5281/zenodo.8220300
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

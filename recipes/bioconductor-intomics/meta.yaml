@@ -1,0 +1,63 @@
+{% set version = "1.2.0" %}
+{% set name = "IntOMICS" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 61628ea37535123f71455b77b194b08c
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-intomics", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocStyle, knitr, rmarkdown, curatedTCGAData, TCGAutils, testthat
+requirements:
+  host:
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - r-base
+    - r-bestnormalize
+    - r-bnlearn
+    - r-bnstruct
+    - r-cowplot
+    - r-ggplot2
+    - r-ggraph
+    - r-gplots
+    - r-igraph
+    - r-matrixstats
+    - r-numbers
+    - r-rcolorbrewer
+    - r-rlang
+  run:
+    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - r-base
+    - r-bestnormalize
+    - r-bnlearn
+    - r-bnstruct
+    - r-cowplot
+    - r-ggplot2
+    - r-ggraph
+    - r-gplots
+    - r-igraph
+    - r-matrixstats
+    - r-numbers
+    - r-rcolorbrewer
+    - r-rlang
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Integrative analysis of multi-omics data to infer regulatory networks'
+  description: 'IntOMICS is an efficient integrative framework based on Bayesian networks. IntOMICS systematically analyses gene expression (GE), DNA methylation (METH), copy number variation (CNV) and biological prior knowledge (B) to infer regulatory networks. IntOMICS complements the missing biological prior knowledge by so-called empirical biological knowledge (empB), estimated from the available experimental data. An automatically tuned MCMC algorithm (Yang and Rosenthal, 2017) estimates model parameters and the empirical biological knowledge. Conventional MCMC algorithm with additional Markov blanket resampling (MBR) step (Su and Borsuk, 2016) infers resulting regulatory network structure consisting of three types of nodes: GE nodes refer to gene expression levels, CNV nodes refer to associated copy number variations, and METH nodes refer to associated DNA methylation probe(s).'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

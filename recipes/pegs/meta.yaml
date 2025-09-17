@@ -1,0 +1,56 @@
+{% set name = "pegs" %}
+{% set version = "0.6.6" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: b19059cb2de25ec3c9cbeafb333ffbac417fcd28ccf64680e7bb42ecacb4d467
+
+build:
+  number: 0
+  entry_points:
+    - pegs = pegs.cli:pegs
+    - mk_pegs_intervals = pegs.cli:mk_pegs_intervals
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('pegs', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - matplotlib-base ==3.3.4
+    - numpy ==1.19.5
+    - pathlib2
+    - pillow ==8.1.1
+    - python >=3.6
+    - scipy ==1.5
+    - seaborn ==0.11.1
+    - xlsxwriter >=0.8.4
+
+test:
+  imports:
+    - pegs
+  commands:
+    - pegs --help
+    - mk_pegs_intervals --help
+  requires:
+    - nose
+
+about:
+  home: "https://github.com/fls-bioinformatics-core/pegs"
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: "Peak-set Enrichment of Gene-Sets (PEGS)"
+  doc_url: "https://pegs.readthedocs.io/en/latest/"
+  dev_url: "https://github.com/fls-bioinformatics-core/pegs"
+
+extra:
+  recipe-maintainers:
+    - pjbriggs

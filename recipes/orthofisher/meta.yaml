@@ -1,0 +1,47 @@
+{% set name = "orthofisher" %}
+{% set version = "1.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/orthofisher-{{ version }}.tar.gz
+  sha256: 0a71d21864db9e104eefd636e0185969fb5da25a01770b578966aca75517c046
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  entry_points:
+    - orthofisher = orthofisher.orthofisher:main
+  run_exports:
+    - {{ pin_subpackage('orthofisher', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+  run:
+    - python >=3.9
+    - biopython >=1.81
+    - numpy >=1.24.0
+    - tqdm >=4.66.1
+
+test:
+  imports:
+    - orthofisher
+  commands:
+    - orthofisher --help
+
+about:
+  home: https://github.com/JLSteenwyk/orthofisher.git
+  summary: Orthofisher is a broadly applicable tool for automated gene identification and retrieval.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.md
+  doc_url: https://jlsteenwyk.com/orthofisher/
+
+extra:
+  identifiers:
+    - doi:10.1093/g3journal/jkab250

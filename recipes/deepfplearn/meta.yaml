@@ -1,0 +1,61 @@
+{% set name = "deepFPlearn" %}
+{% set version = "2.1" %}
+
+package:
+  name: {{ name | lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/yigbt/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 9e30f6efd28de39f963021663beeb8c6821a78ec019909b912e2cfc508ff9de4
+
+build:
+  number: 1
+  noarch: python
+  entry_points:
+    - dfpl=dfpl.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  run_exports:
+    - {{ pin_subpackage('deepfplearn', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - setuptools
+  run:
+    # - cudatoolkit
+    - jsonpickle =2.1
+    - matplotlib-base =3.5.1
+    - numpy ==1.22
+    - pandas ==1.4
+    - rdkit =2022.03
+    - scikit-learn =1.0
+    - keras ==2.10
+    - tensorflow-base
+    # - tensorflow-gpu =2
+    - wandb =0.12.20
+    - chemprop =1.7.1
+    - protobuf >3.19  # seems indirectly required by chemprop
+    - seaborn =0.12.2
+    - umap-learn =0.5
+
+test:
+#   source_files:
+#     - example/
+  imports:
+    - tensorflow
+    - dfpl
+  commands:
+    - dfpl --help
+# commenting the actual tests due to https://github.com/bioconda/bioconda-utils/issues/897
+#     - dfpl train -f example/train.json
+#     - dfpl predict -f example/predict.json
+
+about:
+  home: https://github.com/yigbt/deepFPlearn
+  license: GPL-3.0-or-later
+  license_family: GPL
+  license_file: LICENSE.pdf
+  summary: 'Link molecular structures of chemicals (in form of topological fingerprints) with multiple targets.'
+

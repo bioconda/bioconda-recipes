@@ -1,0 +1,115 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 022aa4d90..a2da3de32 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -5,67 +5,12 @@ set(CMAKE_CXX_STANDARD 11)
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ 
+ # Check for required packages:
+-find_package(ZLIB REQUIRED)
+-find_package(BZip2 REQUIRED)
+-find_package(LibLZMA REQUIRED)
+ 
+ include(ExternalProject)
+ 
+ set(installDir ${CMAKE_CURRENT_BINARY_DIR}/install)
+ 
+ 
+-ExternalProject_Add(htslib
+-	BUILD_IN_SOURCE YES
+-	URL https://github.com/samtools/htslib/releases/download/1.10.2/htslib-1.10.2.tar.bz2
+-	CONFIGURE_COMMAND ./configure --prefix=${installDir} --disable-libcurl
+-	BUILD_COMMAND $(MAKE) lib-static
+-)
+-
+-
+-# Setup boost user config so that it uses the same c++ compiler as other components:
+-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+-	set (BOOST_COMPILER_TAG "gcc")
+-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+-	set (BOOST_COMPILER_TAG "clang")
+-	set(B2_OPTIONS ${B2_OPTIONS} "toolset=clang")
+-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+-	set (BOOST_COMPILER_TAG "darwin")
+-	set(B2_OPTIONS ${B2_OPTIONS} "toolset=clang")
+-endif()
+-
+-if (BOOST_COMPILER_TAG)
+-	set(BOOST_UCONFIG "${CMAKE_BINARY_DIR}/user-config.jam")
+-	file(WRITE "${BOOST_UCONFIG}" "using ${BOOST_COMPILER_TAG} : : \"${CMAKE_CXX_COMPILER}\" ;\n")
+-	set(BOOST_PATCH_COMMAND ${CMAKE_COMMAND} -E copy ${BOOST_UCONFIG} tools/build/src/user-config.jam)
+-endif()
+-
+-ExternalProject_Add(Boost
+-	BUILD_IN_SOURCE YES
+-	URL https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.tar.bz2
+-	PATCH_COMMAND ${BOOST_PATCH_COMMAND}
+-	CONFIGURE_COMMAND ./bootstrap.sh --prefix=${installDir}
+-	BUILD_COMMAND ./b2 install -j8 --with-filesystem --with-system --with-program_options link=static ${B2_OPTIONS}
+-	INSTALL_COMMAND ""
+-)
+-
+-
+-ExternalProject_Add(spdlog
+-	URL https://github.com/gabime/spdlog/archive/refs/tags/v1.6.1.tar.gz
+-	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${installDir}
+-		-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+-		-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+-)
+-
+-
+-ExternalProject_Add(catch2
+-	URL https://github.com/catchorg/Catch2/archive/refs/tags/v2.12.4.tar.gz
+-	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${installDir}
+-		-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+-		-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+-		-DBUILD_TESTING=OFF
+-)
+-
+-
+ ExternalProject_Add(reviewer
+ 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/reviewer
+ 	BUILD_ALWAYS YES
+@@ -78,5 +23,5 @@ ExternalProject_Add(reviewer
+ 
+ 
+ ExternalProject_Add_StepDependencies(reviewer configure
+-	Boost spdlog htslib catch2)
++	)
+ 
+diff --git a/reviewer/CMakeLists.txt b/reviewer/CMakeLists.txt
+index c7602afa0..b7fa22539 100644
+--- a/reviewer/CMakeLists.txt
++++ b/reviewer/CMakeLists.txt
+@@ -10,16 +10,12 @@ if (NOT CMAKE_BUILD_TYPE)
+             "Choose the type of build (default: ${DEFAULT_CMAKE_BUILD_TYPE})" FORCE)
+ endif ()
+ 
+-set(Boost_USE_STATIC_LIBS ON)
+ find_package(Boost 1.73 REQUIRED COMPONENTS program_options filesystem system)
+ 
+ find_package(spdlog REQUIRED)
+-find_package(ZLIB REQUIRED)
+-find_package(BZip2 REQUIRED)
+-find_package(LibLZMA REQUIRED)
+-find_package(CURL REQUIRED)
+ find_package(Catch2 REQUIRED)
+ find_package(Threads REQUIRED)
++find_package(fmt)
+ find_library(htslib libhts.a)
+ find_library(htslib hts)
+ 
+@@ -82,11 +78,8 @@ target_link_libraries(REViewer PUBLIC
+         Core
+         Metrics
+         ${STATIC_FLAGS}
+-        ${htslib}
+-        ${LIBLZMA_LIBRARIES}
+-        ${CURL_LIBRARIES}
+-        ZLIB::ZLIB
+-        BZip2::BZip2
++        hts
++        fmt::fmt
+         Threads::Threads)
+ 
+ 

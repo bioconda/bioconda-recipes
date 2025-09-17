@@ -1,67 +1,62 @@
-{% set version = "0.5.0" %}
-{% set name = "lorikeet" %}
-{% set sha256 = "5682ab775b8979dbd3fad1b84dd2c0bdf932d7a51ce03106dbd574291fd1d44f" %}
-
+{% set version = "0.8.2" %}
+{% set name = "lorikeet-genome" %}
+{% set sha256 = "125fb87f7aa586aa92183ed2c11721477d0b2ba2481f80a1e047ab581e3ff50b" %}
 
 package:
-  name: lorikeet-genome
+  name: {{ name }}
   version: {{ version }}
 
 build:
   number: 1
   skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 source:
-  url: https://github.com/rhysnewell/{{ name }}/archive/v{{ version }}.tar.gz
+  url: https://github.com/rhysnewell/lorikeet/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 requirements:
   build:
-    - rust >=1.40
+    - rust >=1.70
+    - python ==3.10
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - pkg-config
+    - make
+    - cmake
   host:
     - zlib
-    - gsl
+    - blis
     - libblas
+    - openblas
     - openssl
-    - htslib
+    - clangdev
   run:
-    - python >=3
-    - htslib
-    - parallel
-    - pysam >=0.16
-    - umap-learn
-    - hdbscan
-    - scikit-learn
-    - scikit-bio
-    - seaborn
-    - numpy
-    - matplotlib-base
-    - freebayes
-    - prodigal
-    - svim
     - samtools >=1.9
-    - bcftools
-    - vt
-    - zlib
-    - gsl
-    - starcode
+    - coreutils
+    - python ==3.10
+    - prodigal
+    - minimap2 >=2.24
     - bwa >=0.7.17
-    - minimap2
-    - fastani
-    - dashing
-    - ngmlr
-    - r-base
+    - bwa-mem2
+    - numpy
+    - scikit-allel >=1.3.6
+    - svim
+    - bcftools
+    - pip
+    - polars >=0.18
+    - scipy >=1.11
+    - cmake >=3.21
 
 test:
   commands:
-    - {{ name }} --version | grep '{{ version }}'
+    - lorikeet --version | grep '{{ version }}'
 
 about:
   home: https://github.com/rhysnewell/Lorikeet
+  doc_url: https://rhysnewell.github.io/Lorikeet/
   license: GPL3
   license_file: LICENSE
-  summary: Metagenomic Strain Resolver
-  description: Lorikeet aims to generate strain level genotypes from metagenomic communities using information from both long and short reads.
+  summary: Metagenomic Variant Calling & Diversity Analysis
+  description: Lorikeet aims to call variants in metagenomes using local reassembly of haplotypes.

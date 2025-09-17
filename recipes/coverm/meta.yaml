@@ -1,46 +1,67 @@
-{% set version = "0.6.1" %}
+{% set version = "0.7.0" %}
 {% set name = "coverm" %}
-{% set sha256 = "b6211e6f89ef986691b910d7d7b4c6d1e9eb9beb64e4f71902178ed60d27f4e6" %}
+{% set sha256 = "539142529d2590166e98ed399db36913fbf8b256d8c74a1966acae849c18a828" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 2
-  skip: True  # [osx]
-
 source:
   url: https://github.com/wwood/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-master.patch
+
+build:
+  number: 4
+  run_exports:
+    - {{ pin_subpackage('coverm', max_pin="x.x") }}
 
 requirements:
   build:
-    - rust >=1.19
+    - {{ compiler('rust') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - clangdev  #  one of the rust submodules explicitly requires clang. As it's statically compiled that will hopefully work
+    - cargo-bundle-licenses
+    - clangdev  # one of the rust submodules explicitly requires clang. As it's statically compiled that will hopefully work
     - pkg-config
+    - make
+    - cmake
   host:
     - zlib
     - gsl
     - openblas
   run:
-    - zlib
     - gsl
-    - starcode
     - openblas
+    - starcode
     - bwa >=0.7.17
     - samtools >=1.9
-    - minimap2 =2.17 # Pin to 2.17 because of a bug in 2.18 - see https://github.com/lh3/minimap2/issues/734
+    - minimap2 >=2.28
+    - python-dashing
     - fastani >=1.31
-    - dashing >=0.4.0
+    - strobealign >=0.11.0
 
 test:
   commands:
     - {{ name }} --version | grep '{{ version }}'
 
 about:
-  home: https://github.com/wwood/CoverM
-  license: GPL3
-  summary: CoverM aims to be a configurable, easy to use and fast DNA read coverage and relative abundance calculator focused on metagenomics applications
+  home: "https://github.com/wwood/CoverM"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "LICENCE.txt"
+  summary: "CoverM aims to be a configurable, easy to use and fast DNA read coverage and relative abundance calculator focused on metagenomics applications."
+  description: "CoverM aims to be a configurable, easy to use and fast DNA read coverage and relative abundance calculator focused on metagenomics application."
+  dev_url: "https://github.com/wwood/CoverM"
+  doc_url: "https://github.com/wwood/CoverM/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/bioinformatics/btaf147
+    - biotools:coverm
+    - usegalaxy-eu:coverm_contig
+    - usegalaxy-eu:coverm_genome

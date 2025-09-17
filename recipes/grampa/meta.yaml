@@ -1,23 +1,19 @@
 {% set name = "GRAMPA" %}
-{% set version = "1.3.1" %}
+{% set version = "1.4.4" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://github.com/gwct/grampa/archive/refs/tags/{{ version }}.tar.gz"
-  sha256: e4fd1d0db17734860e197334c8d2dcc6d32fa07cc2603954f3c484b2f63c74eb
-  patches:
-    - grampa.patch
+  url: "https://github.com/gwct/grampa/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: 81325b44291227f9cd4e93da98909f103a0c99123e08f39adf795a334465b578
 
 build:
   number: 0
   noarch: python
-  script:
-    - cp grampa.py ${PREFIX}/bin
-    - mkdir -p ${SP_DIR}
-    - cp -R lib ${SP_DIR}/grampa_lib
+  run_exports:
+    - {{ pin_subpackage('grampa', max_pin="x") }}  
 
 requirements:
   host:
@@ -26,14 +22,19 @@ requirements:
     - python >=3
 
 test:
-  commands:
-    - "grampa.py --version 2>&1 | grep -q GRAMPA"
+  requires:
+    - wget
+    - unzip
 
 about:
-  home: https://github.com/gwct/grampa
+  home: https://gwct.github.io/grampa
   license: GPL-3.0-only
   license_family: GPL3
   license_file: LICENSE
-  summary: 'GRAMPA is a program to identify and place polyploidy events on a phylogeny and count duplications and losses in the presence of polyploidy.'
-  doc_url: https://gwct.github.io/grampa/
+  summary: 'GRAMPA is a program to identify and place polyploidy events on a phylogeny and to count duplications and losses in the presence of polyploidy.'
+  doc_url: https://gwct.github.io/grampa
   dev_url: https://github.com/gwct/grampa
+
+extra:
+  recipe-maintainers:
+    - gwct

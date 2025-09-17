@@ -1,23 +1,25 @@
 {% set name = "perl-dbd-mysql" %}
-{% set version = "4.046" %}
-{% set sha256 = "6165652ec959d05b97f5413fa3dff014b78a44cf6de21ae87283b28378daf1f7" %}
+{% set version = "5.013" %}
+{% set sha256 = "aeb0a6e1c26fc28a5cf6de1161e0f056ddcbb739f87954dba7cb1c5acb4e1c33" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://cpan.metacpan.org/authors/id/C/CA/CAPTTOFU/DBD-mysql-4.046.tar.gz
+  url: https://cpan.metacpan.org/authors/id/D/DV/DVEEDEN/DBD-mysql-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-
+    - pkg-config
   host:
     - perl
     - perl-time-hires
@@ -26,23 +28,34 @@ requirements:
     - perl-test-deep
     - perl-data-dumper
     - perl-extutils-makemaker
-    - mysql-connector-c
-
+    - perl-devel-checklib >=1.09
+    - mysql <9
+    - mysql-libs <9
+    - mysql-common <9
+    - openssl
+    - zstd
+    - zlib
   run:
     - perl
     - perl-dbi
-    - mysql-connector-c
+    - mysql <9
+    - mysql-libs <9
+    - mysql-common <9
 
 test:
   imports:
     - DBD::mysql
 
 about:
-  home: http://dbi.perl.org/
-  license: perl_5
-  summary: 'A MySQL driver for the Perl5 Database Interface (DBI)'
+  home: "https://dbi.perl.org"
+  license: "Perl_5"
+  summary: "A MySQL driver for the Perl5 Database Interface (DBI)."
+  doc_url: "https://dbi.perl.org"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:dbd
     - doi:10.1093/nar/gkm964

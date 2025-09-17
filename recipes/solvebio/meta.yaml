@@ -1,44 +1,52 @@
-{% set version = "2.16.0" %}
-{% set sha256 = "5e7b0c2faed1db59e7d975303e87865f90c001ebdf2d6a6bb33247371d160587" %}
+{% set name = "solvebio" %}
+{% set version = "2.32.0" %}
+{% set sha256 = "69ec910a853ab68a36ec4cc34b8e195098e699dddc951d6e9cb13cd1fb972777" %}
 
 package:
-  name: solvebio
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/s/solvebio/solvebio-{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/solvebio-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  noarch: python
   number: 0
+  noarch: python
   entry_points:
     - solvebio = solvebio.cli.main:main
-  script: python -m pip install --no-deps --ignore-installed --no-cache-dir .
+    - solvebio-recipes = recipes.sync_recipes:sync_recipes
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -rf *.bak
+    - {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir --use-pep517 . -vvv
+  run_exports:
+    - {{ pin_subpackage('solvebio', max_pin="x") }}
 
 requirements:
   host:
     - python
     - pip
+    #- setuptools <58  # setup.py uses use_2to3
   run:
     - python
     - six
     - pyprind
     - pycurl >=7.0.0
     - requests >=2.0.0
-      # For dash, if enabled along with dash-auth
-      # - flask
-      # - flask-seasurf
-
+    - dash-auth <2
+    - dash-html-components
+    - dash-core-components
+    - flask
+    - flask-seasurf
+    
 test:
   imports:
     - solvebio
     - solvebio.cli
     - solvebio.contrib
-      # Requires dash-auth, not yet packaged in conda
-      #- solvebio.contrib.dash
-      #- solvebio.contrib.dash.tests
-    - solvebio.contrib.vcf_parser
+    - solvebio.contrib.dash
+    - solvebio.contrib.dash.tests
     - solvebio.resource
     - solvebio.test
     - solvebio.utils
@@ -46,8 +54,10 @@ test:
     - solvebio --help
 
 about:
-  home: https://github.com/solvebio/solvebio-python
+  home: "https://github.com/solvebio/solvebio-python"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: The SolveBio Python client
+  summary: "The SolveBio Python client."
+  doc_url: "https://docs.solvebio.com"
+  dev_url: "https://github.com/solvebio/solvebio-python"

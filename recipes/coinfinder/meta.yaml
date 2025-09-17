@@ -1,5 +1,5 @@
 {% set name = "coinfinder" %}
-{% set version = "1.0.7" %}
+{% set version = "1.2.1" %}
 
 package:
   name: "{{ name }}"
@@ -7,11 +7,12 @@ package:
 
 source:
   url: "https://github.com/fwhelan/{{ name }}/archive/{{ version }}.tar.gz"
-  sha256: 0d44db16b4a5d1cf93bbafcf3d69199f1b8765b20925bdb3d8cb55a4edba8161
+  sha256: 98985910bff4d1845c8d8b11482205b77ef85bbc4f16a2144f5b540945d8548d
 
 build:
-  number: 1
-  skip: True  # [py2k]
+  number: 3
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
   rpaths:
    - lib/R/lib/
    - lib/
@@ -21,34 +22,35 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake
     - make
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
   host:
     - boost-cpp
-    - openmp
     - python
   run:
-    - openmp
     - boost-cpp
     - python
     #Depends
-    - r-base
+    - r-base 3.6
     #Imports
-    - r-caper
+    - r-caper >=1.0.1
     - 'r-phytools >=0.6_99'
-    - r-getopt
-    - r-igraph
+    - r-getopt >=1.20.3
+    # version constraints not in quotes are to make the solver quicker for CI testing.
+    - r-igraph >=1.2.6
     - 'r-dplyr >=1.0.2'
-    - r-cowplot
-    - r-data.table
-    - r-ggraph
-    - r-future
-    - r-flock
+    - r-cowplot >=1.1.1
+    - r-data.table >=1.14
+    - r-ggraph >=2.0.5
+    - r-future >=1.21
+    - r-flock >=0.7
     #Bioconductor
     - 'r-ape >=5.4.1'
     - 'r-ggplot2 >=3.0.0'
-    - r-magrittr
-    - r-purrr
-    - r-rlang
-    - r-rvcheck
+    - r-magrittr >=2.0.1
+    - r-purrr >=0.3.4
+    - r-rlang >=0.4.1
+    - r-rvcheck >=0.1.8
     - 'r-tidyr >=1.1.2'
     - 'r-tidytree >=0.2.6'
     - 'bioconductor-ggtree >=2.0.0,<2.1.0'

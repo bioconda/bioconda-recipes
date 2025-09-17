@@ -1,6 +1,6 @@
-{% set version = "1.12.0" %}
+{% set version = "1.22.0" %}
 {% set name = "ChIC.data" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.18" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,27 +8,30 @@ package:
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: d29e088e6c890b4ca3a8786f9093c69c
+  md5: 34b50ea53e6b5c982dc044addc68c33b
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-chic.data", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-genomeintervals >=1.48.0,<1.49.0'
+    - 'bioconductor-genomeintervals >=1.58.0,<1.59.0'
     - r-base
     - 'r-caret >=6.0-78'
     - r-randomforest
   run:
-    - 'bioconductor-genomeintervals >=1.48.0,<1.49.0'
+    - 'bioconductor-genomeintervals >=1.58.0,<1.59.0'
     - r-base
     - 'r-caret >=6.0-78'
     - r-randomforest
     - curl
+    - 'bioconductor-data-packages >=20231203'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
