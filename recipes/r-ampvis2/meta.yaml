@@ -1,0 +1,86 @@
+{% set name = "r-ampvis2" %}
+{% set version = "2.8.9" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url:  https://github.com/KasperSkytte/ampvis2/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 0e94062ab2a366ed7a0dec0881fdfbaf7d650e153e3249bb73992766352a5a80
+
+build:
+  number: 1
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage('r-ampvis2', max_pin="x.x") }}
+
+requirements:
+  host:
+    - r-base
+    - r-ggplot2
+    - r-plyr
+    - r-dplyr
+    - r-magrittr
+    - r-vegan
+    - r-tidyr
+    - r-purrr
+    - r-data.table
+    - r-plotly
+    - r-stringr
+    - r-scales
+    - r-rcolorbrewer
+    - r-ggrepel
+    - r-ape
+    - r-crayon
+    - r-cli
+    - parallel
+  run:
+    # requirements according to https://github.com/MadsAlbertsen/ampvis2/blob/main/DESCRIPTION
+    # Depends/Imports section
+    - r-base
+    - r-ggplot2
+    - r-r.utils # ??? utils
+    - r-plyr
+    - r-dplyr
+    - r-magrittr
+    - r-vegan
+    - r-tidyr
+    - r-purrr
+    - r-data.table
+    - r-plotly
+    - r-stringr
+    - r-scales
+    - r-rcolorbrewer
+    - r-ggrepel
+    - r-ape
+    - r-crayon
+    - r-cli
+    - parallel
+    - r-foreach # required by ordinate
+    # Suggests section
+    - bioconductor-biomformat
+    - r-network # needed in amp_out_network (I think this could also be added to r-gally)
+    - r-sna  # needed in amp_out_network (I think this could also be added to r-gally)
+    - r-ggally # provides ggnet/ggnet2 functionality needed in amp_otu_network (also see ggally.patch)
+    - r-patchwork # needed in amp_heatmap if plot_functions=T
+    - r-lubridate # needed in amp_timeseries
+    # Others
+    - r-svglite # needed if ggsave is used for saving the plots
+
+test:
+  commands:
+    - $R -e "library('ampvis2')"
+
+about:
+  home: https://github.com/MadsAlbertsen/ampvis2
+  license: AGPL-3.0-only
+  license_file: LICENSE
+  summary: 'Tools for visualising amplicon data'
+
+extra:
+  recipe-maintainers:
+    - bernt-matthias

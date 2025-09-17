@@ -1,65 +1,86 @@
-{% set version = "1.18.0" %}
+{% set version = "1.32.0" %}
 {% set name = "Pigengene" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: fb70b34d48f3084b29f587e9cd08a904
+about:
+  description: Pigengene package provides an efficient way to infer biological signatures from gene expression profiles. The signatures are independent from the underlying platform, e.g., the input can be microarray or RNA Seq data. It can even infer the signatures using data from one platform, and evaluate them on the other. Pigengene identifies the modules (clusters) of highly coexpressed genes using coexpression network analysis, summarizes the biological information of each module in an eigengene, learns a Bayesian network that models the probabilistic dependencies between modules, and builds a decision tree based on the expression of eigengenes.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Infers biological signatures from gene expression data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-pigengene", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: org.Hs.eg.db (>= 3.7.0), org.Mm.eg.db (>= 3.7.0), biomaRt (>= 2.30.0), knitr, AnnotationDbi, energy
 requirements:
+
   host:
-    - 'bioconductor-biocstyle >=2.20.0,<2.21.0'
-    - 'bioconductor-go.db >=3.13.0,<3.14.0'
-    - 'bioconductor-graph >=1.70.0,<1.71.0'
-    - 'bioconductor-impute >=1.66.0,<1.67.0'
-    - 'bioconductor-preprocesscore >=1.54.0,<1.55.0'
-    - 'bioconductor-rgraphviz >=2.36.0,<2.37.0'
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-clusterprofiler >=4.14.0,<4.15.0
+    - bioconductor-dose >=4.0.0,<4.1.0
+    - bioconductor-go.db >=3.20.0,<3.21.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - bioconductor-preprocesscore >=1.68.0,<1.69.0
+    - bioconductor-reactomepa >=1.50.0,<1.51.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
     - r-base
-    - 'r-bnlearn >=4.4.1'
-    - 'r-c50 >=0.1.2'
+    - r-bnlearn >=4.7
+    - r-c50 >=0.1.2
+    - r-dbi
     - r-dplyr
     - r-gdata
+    - r-ggplot2
     - r-mass
     - r-matrixstats
+    - r-openxlsx
     - r-partykit
-    - 'r-pheatmap >=1.0.8'
+    - r-pheatmap >=1.0.8
     - r-wgcna
+
   run:
-    - 'bioconductor-biocstyle >=2.20.0,<2.21.0'
-    - 'bioconductor-go.db >=3.13.0,<3.14.0'
-    - 'bioconductor-graph >=1.70.0,<1.71.0'
-    - 'bioconductor-impute >=1.66.0,<1.67.0'
-    - 'bioconductor-preprocesscore >=1.54.0,<1.55.0'
-    - 'bioconductor-rgraphviz >=2.36.0,<2.37.0'
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-clusterprofiler >=4.14.0,<4.15.0
+    - bioconductor-dose >=4.0.0,<4.1.0
+    - bioconductor-go.db >=3.20.0,<3.21.0
+    - bioconductor-graph >=1.84.0,<1.85.0
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - bioconductor-preprocesscore >=1.68.0,<1.69.0
+    - bioconductor-reactomepa >=1.50.0,<1.51.0
+    - bioconductor-rgraphviz >=2.50.0,<2.51.0
     - r-base
-    - 'r-bnlearn >=4.4.1'
-    - 'r-c50 >=0.1.2'
+    - r-bnlearn >=4.7
+    - r-c50 >=0.1.2
+    - r-dbi
     - r-dplyr
     - r-gdata
+    - r-ggplot2
     - r-mass
     - r-matrixstats
+    - r-openxlsx
     - r-partykit
-    - 'r-pheatmap >=1.0.8'
+    - r-pheatmap >=1.0.8
     - r-wgcna
+
+source:
+  md5: 593b50d56cfb5bc2f5f5c83aadb236e8
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>=2)'
-  summary: 'Infers biological signatures from gene expression data'
-  description: 'Pigengene package provides an efficient way to infer biological signatures from gene expression profiles. The signatures are independent from the underlying platform, e.g., the input can be microarray or RNA Seq data. It can even infer the signatures using data from one platform, and evaluate them on the other. Pigengene identifies the modules (clusters) of highly coexpressed genes using coexpression network analysis, summarizes the biological information of each module in an eigengene, learns a Bayesian network that models the probabilistic dependencies between modules, and builds a decision tree based on the expression of eigengenes.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

@@ -1,0 +1,46 @@
+{% set name = "TMB" %}
+{% set version = "1.5.0" %}
+{% set sha256 = "a0de571bf44fa57a85195cbb310b41df0f4bae7b1c28e9870fbbec701170c93a" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bioinfo-pf-curie/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('tmb', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3
+    - pip
+  run:
+    - python >=3
+    - pandas
+    - cyvcf2
+    - pyyaml
+    - mosdepth
+    - pybedtools
+
+test:
+  commands:
+    - pyTMB.py -h
+    - pyEffGenomeSize.py -h
+
+about:
+  home: "https://github.com/bioinfo-pf-curie/TMB"
+  license: "CeCILL FREE SOFTWARE LICENSE AGREEMENT"
+  license_file: LICENSE
+  summary: "This tool was designed to calculate a Tumor Mutational Burden (TMB) score from a VCF file."
+  dev_url: "https://github.com/bioinfo-pf-curie/TMB"
+  doc_url: "https://github.com/bioinfo-pf-curie/TMB/blob/v{{ version }}/README.md"
+
+extra:
+  identifiers:
+    - doi:10.1186/s12915-024-01839-8

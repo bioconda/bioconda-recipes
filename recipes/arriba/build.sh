@@ -1,13 +1,22 @@
 #!/bin/bash
+set -xe
+
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -I${PREFIX}/include/htslib"
+export CXXFLAGS="${CXXFLAGS} -Wall -Wno-parentheses -pthread -std=c++14 -O3"
+
+mkdir -p "${PREFIX}/bin"
+mkdir -p "${PREFIX}/var/lib/arriba"
 
 # compile Arriba
-make CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/htslib" LDFLAGS="$LDFLAGS" CXX=$CXX bioconda
+make CXXFLAGS="${CXXFLAGS}" \
+	CPPFLAGS="${CPPFLAGS}" \
+	LDFLAGS="${LDFLAGS}" \
+	CXX="${CXX}" \
+	bioconda -j"${CPU_COUNT}"
 
-# copy executables
-mkdir -p "$PREFIX/bin"
-cp -pf arriba run_arriba.sh draw_fusions.R "$PREFIX/bin/"
+# install executables
+install -v -m 0755 arriba run_arriba.sh draw_fusions.R scripts/* "${PREFIX}/bin"
 
 # copy database files
-mkdir -p "$PREFIX/var/lib/arriba"
-cp -pf test/* database/* download_references.sh "$PREFIX/var/lib/arriba/"
-
+cp -prf test/* database/* download_references.sh "${PREFIX}/var/lib/arriba/"

@@ -1,0 +1,43 @@
+{% set name = "mutalyzer_hgvs_parser" %}
+{% set version = "0.3.8" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 674554d14a366f1fbef5a9da0493c46be949b84dfd2310473893451d5f28426a
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage("mutalyzer_hgvs_parser", max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - python
+    - lark >=1.0.0
+
+about:
+  home: The package home page
+  license: MIT
+  license_family: MIT
+  summary: "Mutalyzer HGVS variant description parser"
+  doc_url: https://mutalyzer-hgvs-parser.readthedocs.io
+  dev_url: https://github.com/mutalyzer/hgvs-parser
+
+extra:
+  recipe-maintainers:
+    - Redmar-van-den-Berg
+
+
+test:
+  commands:
+    - mutalyzer_hgvs_parser --help
+    - mutalyzer_hgvs_parser -c "NG_012337.1:c.20del"

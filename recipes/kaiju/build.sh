@@ -1,31 +1,18 @@
 #!/bin/bash
 
-
-export C_INCLUDE_PATH="${PREFIX}/include"
-export CPP_INCLUDE_PATH="${PREFIX}/include"
-export CXX_INCLUDE_PATH="${PREFIX}/include"
-export CPLUS_INCLUDE_PATH="${PREFIX}/include"
+export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
-mkdir -p $PREFIX/bin
+mkdir -p "$PREFIX/bin"
 
-cd $SRC_DIR/src/
+cd src
 
-make CC=${CC} CXX=${CXX}
+make CC="${CC}" CXX="${CXX}" INCLUDES="-I${PREFIX}/include -I./include -I./include/ncbi-blast+" -j"${CPU_COUNT}"
 
-cd $SRC_DIR/bin/
-cp kaiju-addTaxonNames $PREFIX/bin
-cp kaiju-convertNR $PREFIX/bin
-cp kaiju-gbk2faa.pl $PREFIX/bin
-cp kaiju $PREFIX/bin
-cp kaiju2krona $PREFIX/bin
-cp kaiju2table $PREFIX/bin
-cp kaijup $PREFIX/bin
-cp kaijux $PREFIX/bin
-cp kaiju-makedb $PREFIX/bin
-cp kaiju-mergeOutputs $PREFIX/bin
-cp kaiju-mkbwt $PREFIX/bin
-cp kaiju-mkfmi $PREFIX/bin
-cp kaiju-convertMAR.py $PREFIX/bin
-cp kaiju-taxonlistEuk.tsv $PREFIX/bin
-cp kaiju-excluded-accessions.txt $PREFIX/bin
+cd $SRC_DIR/bin
+
+install -v -m 0755 kaiju* "${PREFIX}/bin"

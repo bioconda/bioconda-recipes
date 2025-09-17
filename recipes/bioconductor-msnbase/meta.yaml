@@ -1,90 +1,104 @@
-{% set version = "2.18.0" %}
+{% set version = "2.32.0" %}
 {% set name = "MSnbase" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: cd7e9be5e4fa53657e418c25271d9fd5
+about:
+  description: MSnbase provides infrastructure for manipulation, processing and visualisation of mass spectrometry and proteomics data, ranging from raw to quantitative and annotated data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Base Functions and Classes for Mass Spectrometry and Proteomics
+
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: testthat, pryr, gridExtra, microbenchmark, zoo, knitr (>= 1.1.0), rols, Rdisop, pRoloc, pRolocdata (>= 1.7.1), msdata (>= 0.19.3), roxygen2, rgl, rpx, AnnotationHub, BiocStyle (>= 2.5.19), rmarkdown, imputeLCMD, norm, gplots, shiny, magrittr, SummarizedExperiment
-requirements:
-  host:
-    - 'bioconductor-affy >=1.70.0,<1.71.0'
-    - 'bioconductor-biobase >=2.52.0,<2.53.0'
-    - 'bioconductor-biocgenerics >=0.38.0,<0.39.0'
-    - 'bioconductor-biocparallel >=1.26.0,<1.27.0'
-    - 'bioconductor-impute >=1.66.0,<1.67.0'
-    - 'bioconductor-iranges >=2.26.0,<2.27.0'
-    - 'bioconductor-mscoreutils >=1.4.0,<1.5.0'
-    - 'bioconductor-mzid >=1.30.0,<1.31.0'
-    - 'bioconductor-mzr >=2.26.0,<2.27.0'
-    - 'bioconductor-pcamethods >=1.84.0,<1.85.0'
-    - 'bioconductor-protgenerics >=1.24.0,<1.25.0'
-    - 'bioconductor-s4vectors >=0.30.0,<0.31.0'
-    - 'bioconductor-vsn >=3.60.0,<3.61.0'
-    - r-base
-    - r-digest
-    - r-ggplot2
-    - r-lattice
-    - 'r-maldiquant >=1.16'
-    - r-mass
-    - r-plyr
-    - r-rcpp
-    - r-scales
-    - r-xml
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-affy >=1.70.0,<1.71.0'
-    - 'bioconductor-biobase >=2.52.0,<2.53.0'
-    - 'bioconductor-biocgenerics >=0.38.0,<0.39.0'
-    - 'bioconductor-biocparallel >=1.26.0,<1.27.0'
-    - 'bioconductor-impute >=1.66.0,<1.67.0'
-    - 'bioconductor-iranges >=2.26.0,<2.27.0'
-    - 'bioconductor-mscoreutils >=1.4.0,<1.5.0'
-    - 'bioconductor-mzid >=1.30.0,<1.31.0'
-    - 'bioconductor-mzr >=2.26.0,<2.27.0'
-    - 'bioconductor-pcamethods >=1.84.0,<1.85.0'
-    - 'bioconductor-protgenerics >=1.24.0,<1.25.0'
-    - 'bioconductor-s4vectors >=0.30.0,<0.31.0'
-    - 'bioconductor-vsn >=3.60.0,<3.61.0'
-    - r-base
-    - r-digest
-    - r-ggplot2
-    - r-lattice
-    - 'r-maldiquant >=1.16'
-    - r-mass
-    - r-plyr
-    - r-rcpp
-    - r-scales
-    - r-xml
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Base Functions and Classes for Mass Spectrometry and Proteomics'
-  description: 'MSnbase provides infrastructure for manipulation, processing and visualisation of mass spectrometry and proteomics data, ranging from raw to quantitative and annotated data.'
+  run_exports: '{{ pin_subpackage("bioconductor-msnbase", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:msnbase
   parent_recipe:
     name: bioconductor-msnbase
     path: recipes/bioconductor-msnbase
     version: 2.6.4
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat, pryr, gridExtra, microbenchmark, zoo, knitr (>= 1.1.0), rols, Rdisop, pRoloc, pRolocdata (>= 1.43.3), magick, msdata (>= 0.19.3), roxygen2, rgl, rpx, AnnotationHub, BiocStyle (>= 2.5.19), rmarkdown, imputeLCMD, norm, gplots, XML, shiny, magrittr, SummarizedExperiment
+requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
+  host:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-mscoreutils >=1.18.0,<1.19.0
+    - bioconductor-mzid >=1.44.0,<1.45.0
+    - bioconductor-mzr >=2.40.0,<2.41.0
+    - bioconductor-pcamethods >=1.98.0,<1.99.0
+    - bioconductor-protgenerics >=1.38.0,<1.39.0
+    - bioconductor-psmatch >=1.10.0,<1.11.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-vsn >=3.74.0,<3.75.0
+    - r-base
+    - r-digest
+    - r-ggplot2
+    - r-lattice
+    - r-maldiquant >=1.16
+    - r-mass
+    - r-plyr
+    - r-rcpp
+    - r-scales
+    - libblas
+    - liblapack
+
+  run:
+    - bioconductor-affy >=1.84.0,<1.85.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-mscoreutils >=1.18.0,<1.19.0
+    - bioconductor-mzid >=1.44.0,<1.45.0
+    - bioconductor-mzr >=2.40.0,<2.41.0
+    - bioconductor-pcamethods >=1.98.0,<1.99.0
+    - bioconductor-protgenerics >=1.38.0,<1.39.0
+    - bioconductor-psmatch >=1.10.0,<1.11.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-vsn >=3.74.0,<3.75.0
+    - r-base
+    - r-digest
+    - r-ggplot2
+    - r-lattice
+    - r-maldiquant >=1.16
+    - r-mass
+    - r-plyr
+    - r-rcpp
+    - r-scales
+
+source:
+  md5: c9ddc0c7d42dbfa22cff5683a41a27de
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

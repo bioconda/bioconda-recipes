@@ -1,0 +1,72 @@
+{% set name = "meta-neuro" %}
+{% set version = "1.0.1" %}
+{% set sha256 = "996f41bffc5a6468f44adc33ecb1104cdace56bd81be7e65e7218fc00a5db529" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bagari/meta/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: true  # [win ]
+  run_exports:
+    - {{ pin_subpackage('meta-neuro', max_pin="x.x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make  # [not win]
+
+  host:
+    - vtk >=9.2.6,<9.3.0 build=*{{ build_variant }}*
+    - libitk-devel ==5.3.0
+    - hdf5 >=1.14.2,<1.14.3.0a0
+    - libboost-python-devel >=1.82.0,<1.83.0
+    - python
+    - pip
+    - setuptools
+
+  run:
+    - vtk >=9.2.6,<9.3.0 build=*{{ build_variant }}*
+    - libitk-devel ==5.3.0
+    - qhull
+    - python
+    - pip
+    - setuptools
+    - numpy
+    - tqdm
+    - dipy
+    - scipy
+    - pandas
+    - nibabel
+    - tslearn
+    - pyvista
+
+test:
+  imports:
+    - meta
+  commands:
+    - vtklevelset $PREFIX/share/meta-neuro/example/test.nii.gz test.vtk 0.1
+    - cmrep_vskel -c 3 -p 1.5 -g test.vtk test_skeleton.vtk
+
+about:
+  home: https://github.com/USC-LoBeS/meta
+  license: BSD-3-Clause
+  license_file: LICENSE.txt
+  summary: 'Medial Tractography Analysis (MeTA)'
+  description: |
+    MeTA is a workflow implemented to minimize microstructural heterogeneity in diffusion MRI (dMRI) metrics by extracting and parcellating the core volume along the bundle length in the voxel-space directly while effectively preserving bundle shape and efficiently capturing the regional variation within and along white matter (WM) bundles.
+  dev_url: https://github.com/bagari/meta
+  doc_url: https://github.com/USC-LoBeS/meta/wiki
+
+extra:
+  bulk: true
+  additional-platforms:
+    - osx-arm64
+  recipe-maintainers:
+    - bagari

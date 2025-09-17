@@ -1,0 +1,49 @@
+{% set name = "wgatools" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/wjwei-handsome/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: bda11c98bca471d29a6bb3bd0afc6b7a15aa2a7c76b7cd8bf52738020c05466e 
+  patches:
+    - rust-htslib-0.49.0.patch
+
+build:
+  number: 0
+  run_exports:
+      - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - make
+    - cmake
+    - pkg-config
+    - clangdev
+  host:
+    - openssl
+  run:
+    - perl
+
+test:
+  commands:
+    - wgatools --help
+
+about:
+  home: https://github.com/wjwei-handsome/{{ name }}
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A Rust library and tools for whole genome alignment files."
+  dev_url: https://github.com/wjwei-handsome/{{ name }}
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - AndreaGuarracino

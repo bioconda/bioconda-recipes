@@ -1,0 +1,34 @@
+diff --git i/Makefile w/Makefile
+index de28bc8..613fa79 100644
+--- i/Makefile
++++ w/Makefile
+@@ -6,7 +6,7 @@ SRCS := $(shell find $(SRC_DIR) -type f -name *.cpp)
+ OBJS := $(patsubst $(SRC_DIR)/%,$(BUILD_DIR)/%,$(SRCS:.cpp=.o))
+ 
+ # Compiler
+-CXX = g++ -std=c++14
++CXX ?= g++ -std=c++14
+ CC = $(CXX)
+ 
+ # SeqAn
+@@ -29,7 +29,7 @@ CXXFLAGS += -march=native -DMAX_KMER_SIZE=64
+ CXXFLAGS += -I$(SEQAN_LIB)
+ 
+ # Linker flags
+-LDLIBS = -lbifrost -pthread -lz -rdynamic -DMAX_KMER_SIZE=64
++LDLIBS = -L"${PREFIX}/lib" -lbifrost -pthread -lz -rdynamic -DMAX_KMER_SIZE=64
+ # MacOS users might have to comment out the next line
+ LDLIBS += -lrt
+ 
+diff --git i/src/Traceback.h w/src/Traceback.h
+index 745db68..6323e80 100644
+--- i/src/Traceback.h
++++ w/src/Traceback.h
+@@ -6,6 +6,7 @@
+ #ifndef TRACEBACK_
+ #define TRACEBACK_
+ 
++#include <cstdint>
+ #include <iostream>
+ #include <fstream>
+ 

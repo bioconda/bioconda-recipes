@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import shutil
 import re
 import sys
 import yaml
@@ -12,7 +13,6 @@ re_header = re.compile(r'^=+\s+(?P<program>\w+)\s+=+$')
 
 # e.g.,# "addCols - Sum columns in a text file."
 re_summary = re.compile(r'^(?P<program>\w.*?) - (?P<description>.*)$')
-
 
 def parse_footer(fn):
     """
@@ -54,13 +54,13 @@ def parse_footer(fn):
 #
 #   version: 332
 #   sha256: 8c2663c7bd302a77cdf52b2e9e85e2cd
-ucsc_config = yaml.load(open('ucsc_config.yaml'))
+ucsc_config = yaml.safe_load(open('ucsc_config.yaml'))
 VERSION = ucsc_config['version']
 SHA256 = ucsc_config['sha256']
 
 # Download tarball if it doesn't exist. Always download FOOTER.
 tarball = (
-    'http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{0}.src.tgz'
+    'http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{0}.src.tgz'
     .format(VERSION))
 if not os.path.exists(os.path.basename(tarball)):
     f = urllib.request.urlopen(tarball)
@@ -198,6 +198,72 @@ SKIP = [
     'gfServer',
 ]
 
+# A list of programs which have problems to build on linux-aarch64
+SKIP_AARCH64 = [
+    'pslCDnaFilter', # https://github.com/bioconda/bioconda-recipes/pull/49297
+    'pslCheck',      # https://github.com/bioconda/bioconda-recipes/pull/50193
+    'bedCoverage',
+    'bedExtendRanges',
+    'bedItemOverlapCount',
+    'bedToGenePred',
+    'checkCoverageGaps',
+    'checkTableCoords',
+    'chromGraphFromBin',
+    'chromGraphToBin',
+    'dbTrash',
+    'estOrient',
+    'featureBits',
+    'gapToLift',
+    'genePredCheck',
+    'genePredFilter',
+    'genePredHisto',
+    'genePredSingleCover',
+    'genePredToBed',
+    'genePredToBigGenePred',
+    'genePredToFakePsl',
+    'genePredToGtf',
+    'genePredToMafFrames',
+    'genePredToProt',
+    'getRna',
+    'getRnaPred',
+    'gff3ToGenePred',
+    'gtfToGenePred',
+    'hgFindSpec',
+    'hgGcPercent',
+    'hgLoadBed',
+    'hgLoadChain',
+    'hgLoadMaf',
+    'hgLoadNet',
+    'hgLoadOut',
+    'hgLoadOutJoined',
+    'hgLoadWiggle',
+    'hgSpeciesRna',
+    'hgTrackDb',
+    'hubCheck',
+    'hubPublicCheck',
+    'ldHgGene',
+    'liftOver',
+    'liftUp',
+    'mafCoverage',
+    'mafFetch',
+    'mafFrag',
+    'mafFrags',
+    'mafGene',
+    'mafSplitPos',
+    'mafToSnpBed',
+    'makeTableList',
+    'mrnaToGene',
+    'netClass',
+    'overlapSelect',
+    'positionalTblCheck',
+    'pslLiftSubrangeBlat',
+    'pslToBigPsl',
+    'raSqlQuery',
+    'tdbQuery',
+    'transMapPslToGenePred',
+    'validateFiles'
+]
+
 # Some programs need to be built differently. It seems that a subset of
 # programs need the "stringify" binary build as well. Or, in the case of
 # fetchChromSizes, it's simply a script that needs to be copied.
@@ -294,6 +360,7 @@ for block in parse_footer('FOOTER'):
                 summary=description,
                 version=VERSION,
                 sha256=SHA256,
+                linux_aarch64='' if program in SKIP_AARCH64 else 'additional-platforms:\n    - linux-aarch64\n    - osx-arm64\n',
             )
         )
 
@@ -319,7 +386,6 @@ for block in parse_footer('FOOTER'):
             )
         )
 
-    with open(os.path.join(recipe_dir, 'include.patch'), 'w') as fout:
-        fout.write(open('include.patch').read())
+    shutil.copytree('patches', recipe_dir, dirs_exist_ok=True)
 
 sys.stderr.write('\n')

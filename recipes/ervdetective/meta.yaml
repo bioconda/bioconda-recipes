@@ -1,0 +1,48 @@
+{% set name = "ervdetective" %}
+{% set version = "1.0.9" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 163a414f36f3f1587d65e7f451d5c50316f790a1867fa06a3f9616bbdc8733b7
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('ervdetective', max_pin="x") }}
+
+  script: $PYTHON setup.py install --single-version-externally-managed --record=record.txt
+
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - setuptools
+
+  run:
+    - python >=3.6
+    - biopython >=1.77
+    - psutil >=5.9.1
+    - blast >=2.9.0
+    - genometools-genometools >=1.6.1
+    - hmmer >=3.0
+
+test:
+  commands:
+    - ervdetective --help
+
+about:
+  home: "https://github.com/ZhijianZhou01/ervdetective"
+  license: "LGPL-2.1-or-later"
+  license_family: "LGPL"
+  license_file: LICENSE
+  summary: "An efficient pipeline for identification and annotation of endogenous retroviruses (ERVs)."
+
+extra:
+  recipe-maintainers:
+    - ZhijianZhou01

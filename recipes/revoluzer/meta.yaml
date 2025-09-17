@@ -1,0 +1,44 @@
+{% set name = "revoluzer" %}
+{% set version = "0.1.8" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: https://gitlab.com/Bernt/{{ name }}/-/archive/{{ version }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 169c007430bbc531ca557c5cf6c67886c315416ac547ddae371b24ab204d178d
+
+build:
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('revoluzer', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - boost-cpp
+    - glpk
+  host:
+  run:
+    - boost-cpp
+    - glpk
+
+test:
+  commands:
+    - crex --help
+    - trex -h
+
+about:
+  home: https://gitlab.com/Bernt/revoluzer/
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  summary: Genome rearrangement analysis tools
+
+extra:
+  recipe-maintainers:
+    - bernt-matthias

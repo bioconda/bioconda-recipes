@@ -1,81 +1,94 @@
-{% set version = "2.0.0" %}
+{% set version = "2.14.0" %}
 {% set name = "InPAS" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 945c40f540f13491764085d67064c53d
+about:
+  description: Alternative polyadenylation (APA) is one of the important post- transcriptional regulation mechanisms which occurs in most human genes. InPAS facilitates the discovery of novel APA sites and the differential usage of APA sites from RNA-Seq data. It leverages cleanUpdTSeq to fine tune identified APA sites by removing false sites.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Identify Novel Alternative PolyAdenylation Sites (PAS) from RNA-seq data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: RUnit, BiocGenerics, BiocManager, rtracklayer, BiocStyle, knitr, markdown, rmarkdown, EnsDb.Hsapiens.v86, EnsDb.Mmusculus.v79, BSgenome.Hsapiens.UCSC.hg19, BSgenome.Mmusculus.UCSC.mm10, TxDb.Hsapiens.UCSC.hg19.knownGene, TxDb.Mmusculus.UCSC.mm10.knownGene
+  run_exports: '{{ pin_subpackage("bioconductor-inpas", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocGenerics,BiocManager, BiocStyle, BSgenome.Mmusculus.UCSC.mm10, BSgenome.Hsapiens.UCSC.hg19, EnsDb.Hsapiens.v86, EnsDb.Mmusculus.v79, knitr, markdown, rmarkdown, rtracklayer, RUnit, grDevices, TxDb.Hsapiens.UCSC.hg19.knownGene,TxDb.Mmusculus.UCSC.mm10.knownGene
 requirements:
+
   host:
-    - 'bioconductor-annotationdbi >=1.54.0,<1.55.0'
-    - 'bioconductor-biobase >=2.52.0,<2.53.0'
-    - 'bioconductor-biocparallel >=1.26.0,<1.27.0'
-    - 'bioconductor-biostrings >=2.60.0,<2.61.0'
-    - 'bioconductor-bsgenome >=1.60.0,<1.61.0'
-    - 'bioconductor-cleanupdtseq >=1.30.0,<1.31.0'
-    - 'bioconductor-genomeinfodb >=1.28.0,<1.29.0'
-    - 'bioconductor-genomicfeatures >=1.44.0,<1.45.0'
-    - 'bioconductor-genomicranges >=1.44.0,<1.45.0'
-    - 'bioconductor-iranges >=2.26.0,<2.27.0'
-    - 'bioconductor-limma >=3.48.0,<3.49.0'
-    - 'bioconductor-plyranges >=1.12.0,<1.13.0'
-    - 'bioconductor-preprocesscore >=1.54.0,<1.55.0'
-    - 'bioconductor-s4vectors >=0.30.0,<0.31.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-cleanupdtseq >=1.44.0,<1.45.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-plyranges >=1.26.0,<1.27.0
+    - bioconductor-preprocesscore >=1.68.0,<1.69.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
-    - r-dbi
+    - r-batchtools
     - r-depmixs4
     - r-dplyr
+    - r-flock
+    - r-future
+    - r-future.apply
     - r-ggplot2
     - r-magrittr
-    - r-purrr
+    - r-parallelly
     - r-readr
     - r-reshape2
     - r-rsqlite
+
   run:
-    - 'bioconductor-annotationdbi >=1.54.0,<1.55.0'
-    - 'bioconductor-biobase >=2.52.0,<2.53.0'
-    - 'bioconductor-biocparallel >=1.26.0,<1.27.0'
-    - 'bioconductor-biostrings >=2.60.0,<2.61.0'
-    - 'bioconductor-bsgenome >=1.60.0,<1.61.0'
-    - 'bioconductor-cleanupdtseq >=1.30.0,<1.31.0'
-    - 'bioconductor-genomeinfodb >=1.28.0,<1.29.0'
-    - 'bioconductor-genomicfeatures >=1.44.0,<1.45.0'
-    - 'bioconductor-genomicranges >=1.44.0,<1.45.0'
-    - 'bioconductor-iranges >=2.26.0,<2.27.0'
-    - 'bioconductor-limma >=3.48.0,<3.49.0'
-    - 'bioconductor-plyranges >=1.12.0,<1.13.0'
-    - 'bioconductor-preprocesscore >=1.54.0,<1.55.0'
-    - 'bioconductor-s4vectors >=0.30.0,<0.31.0'
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biostrings >=2.74.0,<2.75.0
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
+    - bioconductor-cleanupdtseq >=1.44.0,<1.45.0
+    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
+    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-plyranges >=1.26.0,<1.27.0
+    - bioconductor-preprocesscore >=1.68.0,<1.69.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
-    - r-dbi
+    - r-batchtools
     - r-depmixs4
     - r-dplyr
+    - r-flock
+    - r-future
+    - r-future.apply
     - r-ggplot2
     - r-magrittr
-    - r-purrr
+    - r-parallelly
     - r-readr
     - r-reshape2
     - r-rsqlite
+
+source:
+  md5: f4983122d1db9dbbea961de3b5d6e9da
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'A Bioconductor package for identifying novel Alternative PolyAdenylation Sites (PAS) from RNA-seq data'
-  description: 'Alternative polyadenylation (APA) is one of the important post- transcriptional regulation mechanisms which occurs in most human genes. InPAS facilitates the discovery of novel APA sites and the differential usage of APA sites from RNA-Seq data. It leverages cleanUpdTSeq to fine tune identified APA sites by removing false sites.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

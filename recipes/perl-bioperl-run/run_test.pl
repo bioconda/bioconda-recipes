@@ -1,8 +1,6 @@
 #!/usr/bin/env perl
 
 my @items = (
-    ["Bio::Tools::Run::Bowtie", '1.007002'],
-    ["Bio::Tools::Run::BWA", undef],
     ["Bio::Tools::Run::EMBOSSApplication", undef],
     ["Bio::Tools::Run::Hmmer", undef],
     ["Bio::Tools::Run::Samtools", undef],

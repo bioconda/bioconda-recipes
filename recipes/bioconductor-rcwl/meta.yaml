@@ -1,29 +1,32 @@
-{% set version = "1.8.0" %}
+{% set version = "1.22.0" %}
 {% set name = "Rcwl" %}
-{% set bioc = "3.13" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 61e2505415851cc23dfd4c1993574727
+about:
+  description: The Common Workflow Language (CWL) is an open standard for development of data analysis workflows that is portable and scalable across different tools and working environments. Rcwl provides a simple way to wrap command line tools and build CWL data analysis pipelines programmatically within R. It increases the ease of usage, development, and maintenance of CWL pipelines.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2 | file LICENSE
+  license_file: LICENSE
+  summary: An R interface to the Common Workflow Language
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-rcwl", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: testthat, knitr, rmarkdown, BiocStyle
-# SystemRequirements: python (>= 2.7), cwltool (>= 1.0.2018)
 requirements:
   host:
-    - 'bioconductor-basilisk >=1.4.0,<1.5.0'
-    - 'bioconductor-biocparallel >=1.26.0,<1.27.0'
-    - 'bioconductor-s4vectors >=0.30.0,<0.31.0'
+    - bioconductor-basilisk >=1.18.0,<1.19.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-batchtools
     - r-codetools
@@ -31,11 +34,10 @@ requirements:
     - r-r.utils
     - r-shiny
     - r-yaml
-    - 'python >=2.7'
   run:
-    - 'bioconductor-basilisk >=1.4.0,<1.5.0'
-    - 'bioconductor-biocparallel >=1.26.0,<1.27.0'
-    - 'bioconductor-s4vectors >=0.30.0,<0.31.0'
+    - bioconductor-basilisk >=1.18.0,<1.19.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
     - r-base
     - r-batchtools
     - r-codetools
@@ -43,14 +45,16 @@ requirements:
     - r-r.utils
     - r-shiny
     - r-yaml
-    - 'python >=2.7'
+
+source:
+  md5: 0a5a5d1c4e6080eaa34d121a5e59fbc9
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL-2 | file LICENSE'
-  summary: 'An R interface to the Common Workflow Language'
-  description: 'The Common Workflow Language (CWL) is an open standard for development of data analysis workflows that is portable and scalable across different tools and working environments. Rcwl provides a simple way to wrap command line tools and build CWL data analysis pipelines programmatically within R. It increases the ease of usage, development, and maintenance of CWL pipelines.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

@@ -1,0 +1,72 @@
+{% set name = "MACS3" %}
+{% set version = "3.0.3" %}
+{% set sha256 = "ee1c892901c4010ff9e201b433c0623cbd747a3058300322386a7185623b1684" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/macs3-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True  # [py < 39]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('macs3', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - zlib
+    - pip
+    - numpy >=1.25
+    - scipy >=1.12
+    - cython >=3.0
+    - hmmlearn >=0.3.2
+    - scikit-learn >=1.3
+    - cykhash >=2.0,<3.0
+  run:
+    - python
+    - numpy >=1.25
+    - scipy >=1.12
+    - hmmlearn >=0.3.2
+    - scikit-learn >=1.3
+    - cykhash >=2.0,<3.0
+
+test:
+  imports:
+    - MACS3
+  commands:
+    - macs3 -h
+
+about:
+  dev_url: "https://github.com/macs3-project/MACS"
+  doc_url: "https://macs3-project.github.io/MACS"
+  home: "https://github.com/macs3-project/MACS"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: LICENSE
+  summary: "Model Based Analysis for ChIP-Seq data."
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:macs
+    - doi:10.1186/gb-2008-9-9-r137
+    - usegalaxy-eu:peakcalling_macs
+    - usegalaxy-eu:macs2_bdgbroadcall
+    - usegalaxy-eu:macs2_bdgcmp
+    - usegalaxy-eu:macs2_bdgdiff
+    - usegalaxy-eu:macs2_bdgpeakcall
+    - usegalaxy-eu:macs2_callpeak
+    - usegalaxy-eu:macs2_filterdup
+    - usegalaxy-eu:macs2_predictd
+    - usegalaxy-eu:macs2_randsample
+    - usegalaxy-eu:macs2_refinepeak

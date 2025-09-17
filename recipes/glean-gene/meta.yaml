@@ -1,0 +1,45 @@
+{% set name = "glean-gene" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://sourceforge.net/projects/glean-gene/files/GLEAN/glean-1-0-1/glean-1-0-1.tar.gz
+  sha256: 461079d5e44f97e745db5f66ed453a1d74701081c84bc5fba942bc436d337e5f
+
+build:
+  noarch: generic
+  number: 0
+  script: cp -r {bin,data,lib} ${PREFIX}/
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  run:
+    - perl
+    - perl-bioperl
+    - perl-data-dumper
+    - perl-findbin
+    - perl-yaml
+    - perl-storable
+    - perl-getopt-long
+    - perl-algorithm-diff
+    - perl-module-pluggable
+    - graphviz
+
+test:
+  commands:
+    - test -x ${PREFIX}/bin/glean-dp
+    - test -x ${PREFIX}/bin/glean-lca
+    - test -x ${PREFIX}/bin/glean-overlap
+
+about:
+  home: https://sourceforge.net/projects/glean-gene/
+  license: Artistic-1.0-Perl
+  summary: GLEAN is an unsupervised learning system to integrate disparate 
+    sources of gene structure evidence (gene model predictions, EST/protein 
+    genomic sequence alignments, SAGE/peptide tags, etc) to produce a 
+    consensus gene prediction, without prior training.
+  dev_url: https://sourceforge.net/projects/glean-gene/

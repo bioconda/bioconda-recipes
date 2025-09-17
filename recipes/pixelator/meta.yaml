@@ -1,0 +1,84 @@
+{% set name = "pixelator" %}
+{% set pypi_name = "pixelgen-pixelator" %}
+{% set version = "0.20.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ pypi_name[0] }}/{{ pypi_name }}/pixelgen_pixelator-{{ version }}.tar.gz
+  sha256: c7079d21ee425dd7dc8c7efc42e772c6e00b49860ad235e58380753feaedc60f
+
+build:
+  entry_points:
+    - pixelator = pixelator.cli:main_cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('pixelator', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.12
+    - poetry-core
+    - poetry-dynamic-versioning >=1.0.1
+    - pip
+  run:
+    - python >=3.10,<3.12
+    - click
+    - yapf
+    - cutadapt >=4.2
+    - umi_tools >=1.1.4,<2.0.0
+    - pyfastx
+    - yappi
+    - pandas >=2.0.0,<3.0.0
+    - numpy <2.0.0
+    - python-annoy <=1.17.0
+    # I had to lock xopen < 1.9.0 because zlib-ng which is required by xopen
+    # does not install as expected
+    - xopen <1.9.0
+    - python-xxhash
+    - anndata >=0.8.0
+    - numba >=0.56.4
+    - scanpy
+    - lxml
+    - cssselect
+    - typing_extensions
+    - scipy >=1.0.0,<2.0.0
+    - pyarrow >=14,<16
+    - semver >=3.0.0,<4.0.0
+    - ruamel.yaml >=0.17.21,<0.18.0
+    - pydantic >=2.0,<2.5
+    - polars >=1.0.0,<2.0
+    - importlib-resources >=5.12.0,<6.0.0
+    - fsspec
+    - fastparquet
+    - graspologic-native >=1.2.4,<2.0.0
+    - fastp
+    - plotly
+    - python-duckdb >=1.2.1,<2.0.0
+    - faiss-cpu >=1.9.0
+    - zstandard >=0.23.0
+
+test:
+  imports:
+    - pixelator
+  commands:
+    - pixelator --help
+
+about:
+  home: "https://github.com/PixelgenTechnologies/pixelator"
+  summary: "A command-line tool and library to process and analyze sequencing data from Molecular Pixelation (MPX) assays."
+  license: MIT
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  dev_url: "https://github.com/PixelgenTechnologies/pixelator"
+  doc_url: "https://software.pixelgen.com"
+
+extra:
+  recipe-maintainers:
+    - johandahlberg
+    - ambarrio
+    - fbdtemme

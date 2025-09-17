@@ -1,0 +1,61 @@
+{% set name = "hapROH" %}
+{% set version = "0.64" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/hapROH-{{ version }}.tar.gz
+  sha256: bc67bce2a7b376fa63a90b0383134d8fbfc0347a00eb63e273aea109023eb787
+
+build:
+  number: 4
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - hapConX = hapsburg.hapCONX:main
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - cython
+    - pip
+    - python
+  run:
+    - h5py
+    - matplotlib-base
+    - numdifftools
+    - numpy
+    - pandas
+    - psutil
+    - pysam
+    - python
+    - scipy
+    - cython
+
+test:
+  imports:
+    - hapsburg
+  commands:
+    - hapConX --help
+
+about:
+  home: "https://github.com/hringbauer/hapROH"
+  summary: "Identify runs of homozygosity (hapROH) and contamination (hapCon) in low coverage ancient human DNA data (1240K SNPs) using modern reference panel."
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  dev_url: "https://github.com/hringbauer/hapROH"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - cython_must_be_in_host
+  recipe-maintainers:
+    - hringbauer
+    - hyl317
