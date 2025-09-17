@@ -24,12 +24,5 @@ case $(uname -m) in
 	;;
 esac
 
-#sed -i.bak -e 's|"stdafx.h"|"../SNAPLib/stdafx.h"|' tests/*.cpp
-#sed -i.bak -e 's|"AffineGap.h"|"../SNAPLib/AffineGap.h"|' tests/*.cpp
-#sed -i.bak -e 's|"LandauVishkin.h"|"../SNAPLib/LandauVishkin.h"|' tests/*.cpp
-#sed -i.bak -e 's|"AffineGapVectorized.h"|"../SNAPLib/AffineGapVectorized.h"|' tests/*.cpp
-#sed -i.bak -e 's|"Compat.h"|"../SNAPLib/Compat.h"|' tests/*.cpp
-#rm -f tests/*.bak
-
 make CXX="${CXX}" -j"${CPU_COUNT}"
 install -v -m 0755 snap-aligner "${PREFIX}/bin"
