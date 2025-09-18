@@ -5,7 +5,8 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
 
-cp -f ${RECIPE_DIR}/config.* .
+wget https://raw.githubusercontent.com/bioconda/bioconda-recipes/70fd7ab07ad07338a840ac1b581ec94435133fd3/recipes/bambamc/config.sub
+wget https://raw.githubusercontent.com/bioconda/bioconda-recipes/70fd7ab07ad07338a840ac1b581ec94435133fd3/recipes/bambamc/config.guess
 
 autoconf
 ./configure --prefix="${PREFIX}" \
