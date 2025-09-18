@@ -18,6 +18,6 @@ esac
 
 install -d "${PREFIX}/bin"
 
-make CCC="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}" -j"${CPU_COUNT}"
+make CCC="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
 install -v -m 0755 bin/edena "${PREFIX}/bin"
