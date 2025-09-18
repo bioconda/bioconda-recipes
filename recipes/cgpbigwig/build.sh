@@ -1,13 +1,16 @@
 #!/bin/bash
-
 set -xe
 
-mkdir -p $PREFIX/bin
+# This is needed for the testing in the makefile to work
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3"
+
+mkdir -p "$PREFIX/bin"
+
 make -C c clean
 sed -i.bak "s#gcc#${CC}#" c/Makefile
+rm -f c/*.bak
 
-# This is needed for the testing in the makefile to work
-export LD_LIBRARY_PATH=${PREFIX}/lib
-make -j ${CPU_COUNT} -C c prefix=$PREFIX HTSLOC=$PREFIX/lib OPTINC="-I$PREFIX/include" LFLAGS="-L$PREFIX/lib"
+make -j"${CPU_COUNT}" -C c prefix="$PREFIX" HTSLOC="$PREFIX/lib" OPTINC="-I$PREFIX/include" LFLAGS="${LDFLAGS}"
 
-cp bin/* $PREFIX/bin
+install -v -m 0755 bin/* "$PREFIX/bin"
