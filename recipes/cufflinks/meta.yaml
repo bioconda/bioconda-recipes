@@ -1,37 +1,57 @@
-package:
-  name: cufflinks
-  version: 2.2.1
+{% set name = "cufflinks" %}
+{% set version = "2.2.1" %}
 
-build:
-  number: 2
+package:
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  - url: http://cole-trapnell-lab.github.io/cufflinks/assets/downloads/cufflinks-2.2.1.OSX_x86_64.tar.gz # [osx]
-    sha256: 98a78cdf9e38783f9809d74faadc70654977d5f6120e262ef623a04840da00c6  # [osx]
-    patches:  # [osx]
-      - cuffmerge.python3.patch # [py3k and osx]
-  - url: http://cole-trapnell-lab.github.io/cufflinks/assets/downloads/cufflinks-2.2.1.Linux_x86_64.tar.gz # [linux]
-    sha256: 39f812452cae26462e5d2671d38104d9e8ef30aaf9ab6dea8ca57f50f46448e4  # [linux]
-    patches:  # [linux]
-      - cuffmerge.python3.patch # [py3k and linux]
+  url: https://github.com/cole-trapnell-lab/cufflinks/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: c069c8666c2f7d6b382d08c75aacd08e4c341996228fbb3687a147f2aacbc1ab
+  patches:
+    - 0001-configure.ac.patch
+
+build:
+  number: 3
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - make
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - gnuconfig
   host:
     - python
+    - boost-cpp
+    - eigen
+    - samtools ==0.1.19
   run:
     - python
+    - boost-cpp
+    - eigen
+    - samtools ==0.1.19
 
 test:
   commands:
     - (cuffmerge --help 2>&1) | grep Options > /dev/null
 
 about:
-  home: 'http://cole-trapnell-lab.github.io/cufflinks/'
-  license: Boost Software License
-  summary: Transcriptome assembly and differential expression analysis for RNA-Seq.
+  home: "https://cole-trapnell-lab.github.io/cufflinks"
+  license: "Boost Software License"
+  summary: "Transcriptome assembly and differential expression analysis for RNA-Seq."
+  dev_url: "https://github.com/cole-trapnell-lab/cufflinks"
+  doc_url: "https://cole-trapnell-lab.github.io/cufflinks"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:cufflinks
-  skip-lints:
-    - should_be_noarch_generic
+    - usegalaxy-eu:cufflinks
