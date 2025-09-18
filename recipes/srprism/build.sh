@@ -12,10 +12,7 @@ cd gnuac
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 
 # depends on automake, autoconf
-aclocal
-autoheader
-automake -a -c
-autoconf
+autoreconf -if
 ./configure --prefix="$PREFIX"
 
 make -j"${CPU_COUNT}"
