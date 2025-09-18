@@ -1,6 +1,6 @@
-{% set name = 'GeneNoteBook' %}
-{% set version = '0.3.2' %}
-{% set sha256 = 'c582bda81063140d07649dfbccce159d92bf4b1782bda246d6ec3d13e5dba05a' %}
+{% set name = "GeneNoteBook" %}
+{% set version = "0.3.2" %}
+{% set sha256 = "c582bda81063140d07649dfbccce159d92bf4b1782bda246d6ec3d13e5dba05a" %}
 
 package:
   name: {{ name|lower }}
@@ -10,28 +10,40 @@ source:
   url: https://github.com/genenotebook/genenotebook/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
+build:
+  number: 4
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
 requirements:
-  host:
-    - jq
-    - nodejs >=15, <16
-    - python >=3
   build:
     - {{ compiler('cxx') }}
     - make
+    - pkg-config
+    - python >=3
+  host:
+    - curl
+    - jq
+    - nodejs >=16,<17
   run:
     - blast
-    - nodejs >=15, <16
+    - nodejs >=16,<17
     - mongodb >=5.0
-
-build:
-  number: 3
 
 test:
   commands:
     - genenotebook -v
 
 about:
-  home: https://genenotebook.github.io
-  license: AGPL-3.0
+  home: "https://github.com/genenotebook/genenotebook"
+  license: "AGPL-3.0-or-later"
+  license_family: AGPL
   license_file: LICENSE
-  summary: A colleborative notebook for comparative genomics
+  summary: "A colleborative notebook for comparative genomics."
+  doc_url: "https://genenotebook.github.io"
+  dev_url: "https://github.com/genenotebook/genenotebook"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
