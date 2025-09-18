@@ -5,7 +5,7 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
 
-#cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
+cp -f ${RECIPE_DIR}/config.* .
 
 autoconf
 ./configure --prefix="${PREFIX}" \
