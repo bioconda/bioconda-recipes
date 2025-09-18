@@ -25,10 +25,6 @@ cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/
 sed -i.bak 's|-m64||' configure.ac
 rm -f *.bak
 
-if [[ $PY3K -eq 1 ]]; then
-	2to3 --write cuffmerge
-fi
-
 autoreconf -if
 ./configure --prefix="${PREFIX}" \
 	--with-boost="${PREFIX}" \
@@ -46,6 +42,10 @@ autoreconf -if
 
 make -j"${CPU_COUNT}"
 make install
+
+if [[ $PY3K -eq 1 ]]; then
+	2to3 --write ${PREFIX}/bin/cuffmerge
+fi
 
 #cp cufflinks $PREFIX/bin
 #cp cuffcompare $PREFIX/bin
