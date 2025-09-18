@@ -34,8 +34,8 @@ autoreconf -if
 	--with-boost="${PREFIX}" \
 	--with-mpi="${PREFIX}" \
 	--with-sparsehash="${PREFIX}" \
-	--without-sqlite || cat config.log \
-	--disable-dependency-tracking --enable-silent-rules --disable-option-checking
+	--without-sqlite \
+	--disable-dependency-tracking --enable-silent-rules --disable-option-checking || cat config.log
 
 make AM_CXXFLAGS="-Wall" -j"${CPU_COUNT}"
 make install
