@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -euxo pipefail
 
 mkdir -p $PREFIX/bin
 
