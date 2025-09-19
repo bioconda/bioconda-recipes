@@ -5,10 +5,11 @@ set -euxo pipefail
 mkdir -p $PREFIX/bin
 
 ./waf configure \
-    --prefix=${PREFIX} \
-    --bindir=${PREFIX}/bin \
-    --libdir=${PREFIX}/lib \
-    CFLAGS="${CFLAGS} -I${PREFIX}/include LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    --prefix="${PREFIX}" \
+    --bindir="${PREFIX}/bin" \
+    --libdir="${PREFIX}/lib" \
+    CFLAGS="${CFLAGS} -I${PREFIX}/include" \
+    LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 ./waf
 
