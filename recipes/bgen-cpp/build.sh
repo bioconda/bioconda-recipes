@@ -4,12 +4,14 @@ set -euxo pipefail
 
 mkdir -p $PREFIX/bin
 
+export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++ -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
 ./waf configure \
     --prefix="${PREFIX}" \
     --bindir="${PREFIX}/bin" \
-    --libdir="${PREFIX}/lib" \
-    CFLAGS="${CFLAGS} -I${PREFIX}/include -I${PREFIX}/include/boost" \
-    LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    --libdir="${PREFIX}/lib"
 
 ./waf
 
