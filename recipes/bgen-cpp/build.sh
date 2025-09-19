@@ -8,7 +8,7 @@ mkdir -p $PREFIX/bin
     --prefix="${PREFIX}" \
     --bindir="${PREFIX}/bin" \
     --libdir="${PREFIX}/lib" \
-    CFLAGS="${CFLAGS} -I${PREFIX}/include" \
+    CFLAGS="${CFLAGS} -I${PREFIX}/include -I${PREFIX}/include/boost" \
     LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 ./waf
