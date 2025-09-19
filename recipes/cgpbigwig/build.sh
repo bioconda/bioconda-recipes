@@ -7,7 +7,6 @@ export CFLAGS="${CFLAGS} -O3"
 
 mkdir -p "$PREFIX/bin"
 
-make -C c clean
 sed -i.bak "s#gcc#${CC}#" c/Makefile
 rm -f c/*.bak
 
