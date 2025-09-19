@@ -2,16 +2,16 @@
 {% set version = "0.0.20" %}
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: 604ca62e1ef64cb221446166b19b9edb45b647af7255d6205c3a470da4d2549e
 
 build:
-  number: 0
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  number: 1
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
@@ -20,28 +20,32 @@ requirements:
     - {{ compiler('c') }}
   host:
     - python
+    - pip
     - setuptools
     - cython
   run:
     - python
+    - setuptools
     - scipy
     - numpy
     - natsort
     - pysam
     - pandas
-    - setuptools
 
 test:
   imports:
     - bamread
 
 about:
-  home: http://github.com/endrebak/bamread
+  home: "https://github.com/endrebak/bamread"
   license: MIT
-  summary: Read bam files quickly into dataframes in Python
+  license_family: MIT
+  summary: "Read bam files quickly into dataframes in Python."
+  dev_url: "https://github.com/endrebak/bamread"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   skip-lints:
     - uses_setuptools
