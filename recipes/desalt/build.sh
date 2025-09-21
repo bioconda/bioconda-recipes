@@ -8,12 +8,12 @@ mkdir -p "$PREFIX/bin"
 
 if [[ "$(uname -m)" == "aarch64" ]] || [[ "$(uname -m)" == "arm64" ]]; then
 	git clone https://github.com/DLTcollab/sse2neon.git
- 	cp -f sse2neon/sse2neon.h .
-  	sed -i'' -e '9c #include "sse2neon.h"'  ksw2_ll_sse.c
-   	sed -i'' -e '9c #include "sse2neon.h"'  ksw2_extz2_sse.c
-	sed -i'' -e '10c #include "sse2neon.h"' ksw2_extd2_sse.c
- 	sed -i'' -e '10c #include "sse2neon.h"' ksw2_exts2_sse.c
-  	rm -f *.bak
+ 	cp -f sse2neon/sse2neon.h src/
+  	sed -i'' -e '9c #include "sse2neon.h"'  src/ksw2_ll_sse.c
+   	sed -i'' -e '9c #include "sse2neon.h"'  src/ksw2_extz2_sse.c
+	sed -i'' -e '10c #include "sse2neon.h"' src/ksw2_extd2_sse.c
+ 	sed -i'' -e '10c #include "sse2neon.h"' src/ksw2_exts2_sse.c
+  	rm -f src/*.bak
 fi
 
 case $(uname -m) in
