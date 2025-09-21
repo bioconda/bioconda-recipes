@@ -1,14 +1,18 @@
 #!/bin/bash
-
 set -xe
 
-export CFLAGS="-I$PREFIX/include"
-export CPPFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+export CFLAGS="${CFLAGS} -O3 -I$PREFIX/include"
+export CPPFLAGS="${CPPFLAGS} -I$PREFIX/include"
+export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
 tag=share/metasnv-${PKG_VERSION}/
 odir=$PREFIX/$tag
 
-make -j ${CPU_COUNT}
+if [[ "$(uname -s)" == Darwin ]]; then
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names"
+fi
+
+make -j"${CPU_COUNT}"
+
 mkdir -p $odir
 cp -pr src $odir
 cp -pr metaSNV.py $odir
