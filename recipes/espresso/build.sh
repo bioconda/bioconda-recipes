@@ -14,4 +14,4 @@ install -v -m 0755 src/ESPRESSO_C.pl \
 	src/ESPRESSO_S.pl src/ESPRESSO_Version.pm \
 	src/Parasail.pm src/Parasail.so "${PREFIX}/bin"
 
-cp -f src/libparasail.so $PREFIX/lib/
+cp -f src/libparasail.* $PREFIX/lib/
