@@ -1,6 +1,6 @@
 #!/bin/bash
 mkdir -p "${PREFIX}/bin"
 
-make
+make LongTR DenovoFinder PhasingChecker
 
 cp LongTR "${PREFIX}/bin/"
