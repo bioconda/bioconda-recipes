@@ -13,5 +13,6 @@ cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 	CPPFLAGS="${CPPFLAGS}" \
 	LDFLAGS="${LDFLAGS}"
 
+make clean
 make -j"${CPU_COUNT}"
 make install
