@@ -18,6 +18,6 @@ esac
 
 mkdir -p "${PREFIX}/bin"
 
-make LongTR DenovoFinder PhasingChecker CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}"
+make CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}"
 
 install -v -m 0755 LongTR DenovoFinder PhasingChecker "${PREFIX}/bin"
