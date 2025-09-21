@@ -42,9 +42,11 @@ requirements:
     - seqtk
     - srf-n-trf >=0.1.1
     - stringdecomposer
-    # Rule inheritance in modules broken in 9.5.1
-    # https://github.com/snakemake/snakemake/issues/3616
-    - snakemake ==9.5.0
+    # cenmap uses faster subsample jobs introduced in 8.24
+    # https://github.com/snakemake/snakemake/pull/3112
+    # Rule inheritance rename rules changed in 9.11.4. 
+    # https://github.com/snakemake/snakemake/pull/3714
+    - snakemake >=8.24.0,<9.11.4
     - intervaltree
     - matplotlib-base
     - numpy
@@ -60,6 +62,8 @@ requirements:
 test:
   commands:
     - cenmap --version
+    # Do dry-run to ensure snakemake workflow is correct.
+    - touch test.fa && cenmap -i test.fa -s example --snake-opts="-n"
   import:
     - numpy
     - scipy
