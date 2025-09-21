@@ -14,7 +14,7 @@ mv * ${CENMAP_DIR}
 # Both have no GH releases so workflow release has both as archived git submodules.
 srf_dir="${CENMAP_DIR}/workflow/rules/Snakemake-srf/workflow/scripts/srf"
 pushd ${srf_dir}
-make CFLAGS="${CFLAGS}" CC="${CC}"
+make LIBS="${LDFLAGS} -lz" CFLAGS="${CFLAGS}" CC="${CC}"
 chmod 755 ${srf_dir}/srf
 ln -s ${srf_dir}/srf ${PREFIX}/bin/srf
 ln -s ${srf_dir}/srfutils.js ${PREFIX}/bin/srfutils.js
