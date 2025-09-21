@@ -9,10 +9,10 @@ mkdir -p "$PREFIX/bin"
 if [[ "$(uname -m)" == "aarch64" ]] || [[ "$(uname -m)" == "arm64" ]]; then
 	git clone https://github.com/DLTcollab/sse2neon.git
  	cp -f sse2neon/sse2neon.h .
-  	sed -i.bak '9c #include "sse2neon.h"'  ksw2_ll_sse.c
-   	sed -i.bak '9c #include "sse2neon.h"'  ksw2_extz2_sse.c
-	sed -i.bak '10c #include "sse2neon.h"' ksw2_extd2_sse.c
- 	sed -i.bak '10c #include "sse2neon.h"' ksw2_exts2_sse.c
+  	sed -i'' -e '9c #include "sse2neon.h"'  ksw2_ll_sse.c
+   	sed -i'' -e '9c #include "sse2neon.h"'  ksw2_extz2_sse.c
+	sed -i'' -e '10c #include "sse2neon.h"' ksw2_extd2_sse.c
+ 	sed -i'' -e '10c #include "sse2neon.h"' ksw2_exts2_sse.c
   	rm -f *.bak
 fi
 
@@ -30,8 +30,8 @@ sed -i.bak "s/malloc.h/stdlib.h/" deBGA-master/index_build.c
 rm -f *.bak
 
 case $(uname -m) in
-	aarch64|arm64) make INCLUDES="-I$PREFIX/include" CFLAGS="${CFLAGS}" LIBS="-lm -lz -pthread" arm_neon=1 -j"${CPU_COUNT}" ;;
-	*) make INCLUDES="-I$PREFIX/include" CFLAGS="${CFLAGS}" LIBS="-lm -lz -pthread" -j"${CPU_COUNT}" ;;
+	aarch64|arm64) make INCLUDES="-I$PREFIX/include" CFLAGS="${CFLAGS}" LIBS="-lm -lz -pthread" arm_neon=1 -j"${CPU_COUNT}";;
+	*) make INCLUDES="-I$PREFIX/include" CFLAGS="${CFLAGS}" LIBS="-lm -lz -pthread" -j"${CPU_COUNT}";;
 esac
 
 install -v -m 0755 deSALT deBGA Annotation_Load.py "$PREFIX/bin"
