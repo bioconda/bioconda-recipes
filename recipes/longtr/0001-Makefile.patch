@@ -1,15 +1,30 @@
---- Makefile	2025-09-22 13:15:58
-+++ Makefile	2025-09-22 13:17:29
-@@ -25,10 +25,9 @@
+diff --git a/Makefile b/Makefile
+index 74e23ea..fcf9a0b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -25,7 +25,7 @@ SRC_DENOVO  = src/denovos/denovo_main.cpp src/error.cpp src/stringops.cpp src/ve
  
  CEPHES_ROOT=lib/cephes
  
--LIBS              = -L./ -lm -Llib/htslib/lib -lhts -ldeflate -lz -L$(CEPHES_ROOT)/ -llzma -lbz2 -lcurl -lcrypto -Llib/spoa/build/lib -lspoa
--INCLUDE           = -Ilib -Ilib/htslib/include -Ilib/spoa/include
-+LIBS              = -L./ -lm -lhts -ldeflate -lz -L$(CEPHES_ROOT)/ -llzma -lbz2 -lcurl -lcrypto -lspoa
-+INCLUDE           = -Ilib
+-LIBS              = -L./ -lm -Llib/htslib/lib -lz -L$(CEPHES_ROOT)/ -llzma -lbz2 -lcurl -lcrypto -Llib/spoa/build/lib -lspoa
++LIBS              = -L./ -lm -lhts -lz -L$(CEPHES_ROOT)/ -llzma -lbz2 -lcurl -lcrypto -lspoa
+ INCLUDE           = -Ilib -Ilib/htslib/include -Ilib/spoa/include
  CEPHES_LIB        = lib/cephes/libprob.a
--HTSLIB_LIB        = lib/htslib/lib/libhts.a
+ HTSLIB_LIB        = lib/htslib/lib/libhts.a
+@@ -110,13 +110,13 @@ SPOA-docker: SPOA-update
+ 		cd lib/spoa/build && cmake -DCMAKE_BUILD_TYPE=Release .. && cd .. && make -C build;\
+ 	fi
  
- # For each CPP file, generate an object file
- OBJ_COMMON  := $(SRC_COMMON:.cpp=.o)
+-LongTR: $(OBJ_COMMON) $(OBJ_HIPSTR) $(HTSLIB_LIB) $(OBJ_SEQALN)
++LongTR: $(OBJ_COMMON) $(OBJ_HIPSTR) $(OBJ_SEQALN)
+ 	$(CXX) $(LDFLAGS) $(CXXFLAGS) $(INCLUDE) -o $@ $^ $(LIBS)
+ 
+-DenovoFinder: $(OBJ_DENOVO) $(HTSLIB_LIB)
++DenovoFinder: $(OBJ_DENOVO)
+ 	$(CXX) $(LDFLAGS) $(CXXFLAGS) $(INCLUDE) -o $@ $^ $(LIBS)
+ 
+-PhasingChecker: src/check_phasing.cpp src/region.cpp src/error.cpp src/haplotype_tracker.cpp src/version.cpp src/pedigree.cpp src/vcf_reader.cpp src/stringops.cpp $(HTSLIB_LIB)
++PhasingChecker: src/check_phasing.cpp src/region.cpp src/error.cpp src/haplotype_tracker.cpp src/version.cpp src/pedigree.cpp src/vcf_reader.cpp src/stringops.cpp
+ 	$(CXX) $(LDFLAGS) $(CXXFLAGS) $(INCLUDE) -o $@ $^ $(LIBS)
+ 
+ test/haplotype_test: test/haplotype_test.cpp src/SeqAlignment/Haplotype.cpp src/SeqAlignment/HapBlock.cpp src/SeqAlignment/NeedlemanWunsch.cpp src/error.cpp src/stringops.cpp
