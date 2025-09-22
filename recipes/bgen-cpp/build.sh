@@ -19,7 +19,7 @@ case "$(uname)"  in
         ;;
     Darwin)
         # Use an older version of clang for macOS
-        export CC=clang-17
+        export CC=clang-14
         export CXX=clang++
         ./waf configure \
             --check-c-compiler clang \
