@@ -7,6 +7,18 @@ export CXXFLAGS="${CXXFLAGS} -O3 -D_HDF5USEDLL_=1 -DUSE_NEW_CXX"
 
 mkdir -p $PREFIX/bin
 
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
+
 sed -i.bak 's/cmake_minimum_required(VERSION 3.1)/cmake_minimum_required(VERSION 3.5...3.28)/g' CMakeLists.txt
 rm -f *.bak
 
@@ -53,4 +65,7 @@ cmake -S .. -B . -DCMAKE_BUILD_TYPE=Release \
 
 make -j"${CPU_COUNT}"
 
-install -v -m 0755 bin/MindTheGap ext/gatb-core/bin/dbgh5 ext/gatb-core/bin/dbginfo "${PREFIX}/bin"
+install -v -m 0755 bin/MindTheGap "${PREFIX}/bin"
+
+cp -f ext/gatb-core/bin/dbgh5 ${PREFIX}/bin/ && chmod +x ${PREFIX}/bin/dbgh5
+cp -f ext/gatb-core/bin/dbginfo ${PREFIX}/bin/ && chmod +x ${PREFIX}/bin/dbginfo
