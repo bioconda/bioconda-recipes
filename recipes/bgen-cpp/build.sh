@@ -10,8 +10,8 @@ export LDFLAGS="${LDFLAGS:-} -L${PREFIX}/lib"
 case "$(uname)"  in
     Linux)
         ./waf configure \
-            --use-c-compiler=gcc \
-            --use-cxx-compiler=g++ \
+            --check-c-compiler=gcc \
+            --check-cxx-compiler=g++ \
             --prefix=${PREFIX} \
             --bindir=${PREFIX}/bin \
             --libdir=${PREFIX}/lib \
@@ -22,8 +22,8 @@ case "$(uname)"  in
         export CC=clang-17
         export CXX=clang++
         ./waf configure \
-            --use-c-compiler clang \
-            --use-cxx-compiler clang++ \
+            --check-c-compiler clang \
+            --check-cxx-compiler clang++ \
             --prefix=${PREFIX} \
             --bindir=${PREFIX}/bin \
             --libdir=${PREFIX}/lib \
