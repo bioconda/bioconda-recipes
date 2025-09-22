@@ -5,6 +5,7 @@ export SHARE_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 export C_INCLUDE_PATH="${PREFIX}/include"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration -Wno-incompatible-function-pointer-types"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
 case $(uname -m) in
@@ -38,6 +39,7 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_C_COMPILER="$CC" \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCPPUNIT_INCLUDE_DIR="${PREFIX}/include" \
+	-DCMAKE_C_FLAGS="${CFLAGS}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
