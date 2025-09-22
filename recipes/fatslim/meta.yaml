@@ -1,0 +1,50 @@
+{% set name = "fatslim" %}
+{% set version = "0.2.2" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  - url: https://files.pythonhosted.org/packages/3f/bb/d2d63385cb16e8db530cab3375c9c94ebb5bc1a7d9eac9649bae0443fa0e/fatslim-0.2.2.tar.gz
+    sha256: 6f82cd73387b8fe046c08e00029ed07f0cb449f4ecf407e5cca9fa5bfc423ba9
+    patches: numpy2.patch  # [np==126]
+  - url: https://raw.githubusercontent.com/FATSLiM/fatslim/refs/heads/master/LICENSE
+    sha256: d62f065830aa3739cc031156b9690805c7b2e811b4a178c8b4acd8725d561c94
+
+build:
+  number: 0
+  script: 
+    - {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python {{ python }}
+    - cython ==3.0.11
+    - pip
+    - setuptools
+    - numpy
+  run:
+    - python
+    - pip
+    - numpy
+
+test:
+  commands:
+    - fatslim -h 
+
+about:
+  home: https://fatslim.github.io/
+  license: GPL-3.0
+  license_file: LICENSE
+  summary: FATSLiM is a software dedicated to the analysis of molecular dynamics simulations of lipid membranes.
+  doc_url: https://pythonhosted.org/fatslim/
+  dev_url: https://github.com/FATSLiM/fatslim
+
+extra:
+  recipe-maintainers:
+    - RubenChM
