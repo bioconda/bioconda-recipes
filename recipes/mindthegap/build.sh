@@ -51,4 +51,4 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 
 cmake --build build -j "${CPU_COUNT}"
 
-install -v -m build/bin/MindTheGap build/ext/gatb-core/bin/dbgh5 build/ext/gatb-core/bin/dbginfo "${PREFIX}/bin"
+install -v -m 0755 build/bin/MindTheGap build/ext/gatb-core/bin/dbgh5 build/ext/gatb-core/bin/dbginfo "${PREFIX}/bin"
