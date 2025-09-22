@@ -1,0 +1,50 @@
+{% set name = "altex-be" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/altex_be-{{ version }}.tar.gz
+  sha256: c89a28dfaad3195d38a0a289f498d4dea1d9f182ced40bf02a5dc9c66a5f16b9
+
+build:
+  entry_points:
+    - altex-be = altex_be.main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - - {{ pin_subpackage('altex-be', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.12,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.12.0,<4.0.0
+    - pandas >=2.3.0,<3.0.0
+    - pybedtools >=0.12.0,<0.13.0
+    - tqdm >=4.67.1,<5.0.0
+    - pyahocorasick >=2.2.0,<3.0.0
+
+test:
+  imports:
+    - altex_be
+  commands:
+    - pip check
+    - altex-be --help
+  requires:
+    - pip
+
+about:
+  home: "https://github.com/kinari-labwork/AltEx-BE"
+  summary: automatically design sgRNA for exon skipping with many base editors
+  license: MIT
+  license_file: LICENSE.md
+
+extra:
+  recipe-maintainers:
+    - kinari-labwork

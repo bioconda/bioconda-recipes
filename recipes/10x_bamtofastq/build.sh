@@ -1,11 +1,13 @@
 #!/bin/bash -e
 
-# TODO: Remove the following export when pinning is updated and we use
-#       {{ compiler('rust') }} in the recipe.
-export \
-    CARGO_NET_GIT_FETCH_WITH_CLI=true \
-    CARGO_HOME="${BUILD_PREFIX}/.cargo"
-
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
 export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
-cargo install --no-track --verbose --root "${PREFIX}" --path .
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+
+RUST_BACKTRACE=1
+cargo install --no-track -v --root "${PREFIX}" --path .
+
+"${STRIP}" "$PREFIX/bin/bamtofastq"

@@ -1,0 +1,53 @@
+{% set name = "censtats" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/censtats-{{ version }}.tar.gz
+  sha256: 346a498866159415110fd2215ca7a37464ada20ed3a1c93ddb9eb9c7f707db5e
+
+build:
+  entry_points:
+    - censtats = censtats.main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.12
+    - setuptools >=60
+    - pip
+  run:
+    - python >=3.12
+    - polars >=1.19.0
+    - loguru >=0.7.2
+    - intervaltree >=3.1.0
+    - matplotlib-base >=3.10.0
+    - mmh3 >=5.0.1
+    - pyfaidx >=0.8.1.4
+    - numpy >=2.2.1
+
+test:
+  imports:
+    - censtats
+  commands:
+    - pip check
+    - censtats --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/logsdon-lab/CenStats
+  summary: Centromere statistics toolkit.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - koisland

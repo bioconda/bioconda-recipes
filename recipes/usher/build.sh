@@ -9,6 +9,10 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
+curl -sSLO https://github.com/oneapi-src/oneTBB/archive/2019_U9.tar.gz
+tar -xzf 2019_U9.tar.gz
+export tbb_root="oneTBB-2019_U9"
+
 if [[ "$(uname -s)" == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
@@ -27,6 +31,7 @@ else
 fi
 
 cmake -S .. -B . -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+	-DTBB_DIR="$(pwd)/../${tbb_root}" -DCMAKE_PREFIX_PATH="$(pwd)/../${tbb_root}/cmake" \
 	-DCMAKE_C_COMPILER="${CC}" -DCMAKE_C_FLAGS="${CFLAGS}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-DBOOST_ROOT="${PREFIX}" -Wno-dev -Wno-deprecated \
@@ -49,13 +54,17 @@ echo ""
 EOF
 	chmod a+x ripples-fast
 else
-	cmake --build . --clean-first --target install -j "${CPU_COUNT}"
+	cmake --build . --target install -j "${CPU_COUNT}"
 fi
 
 if [[ "$(uname -s)" == "Darwin" && "$(uname -m)" == "x86_64" ]]; then
 	install -v -m 755 usher* mat* ripples* "${PREFIX}/bin"
 else
 	install -v -m 755 usher* mat* transpose* ripples* compareVCF check_samples_place "${PREFIX}/bin"
+fi
+
+if [[ -d ./tbb_cmake_build ]]; then
+    cp -rf ./tbb_cmake_build/tbb_cmake_build_subdir_release/* ${PREFIX}/lib/
 fi
 
 popd
