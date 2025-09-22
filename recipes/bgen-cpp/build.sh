@@ -8,7 +8,7 @@ export CFLAGS="${CFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 # use an older version of clang for macs
-if [[ "${OS}" == "Darwin" ]]; then
+if [[ "$(uname)" == "Darwin" ]]; then
     export CC=clang-17 CXX=clang++-17
 fi
 
