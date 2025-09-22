@@ -63,4 +63,4 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 
 cmake --build build -j "${CPU_COUNT}"
 
-install -v -m 0755 build/bin/MindTheGap bin/Release/* "${PREFIX}/bin"
+install -v -m 0755 build/bin/MindTheGap "${PREFIX}/bin"
