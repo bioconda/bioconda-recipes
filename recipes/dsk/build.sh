@@ -30,7 +30,7 @@ rm -rf thirdparty/gatb-core
 git clone https://github.com/GATB/gatb-core.git thirdparty/gatb-core
 
 cd thirdparty/gatb-core
-git checkout db4e7da969eec8d432a61d1b09d7ab8ac149f468
+git checkout e80aa72fc91bac58de11341b536c3a94ecb54719
 cd ../..
 
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
