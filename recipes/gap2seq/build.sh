@@ -1,12 +1,14 @@
 #!/bin/bash
 set -xe -o pipefail
 
-export CPPFLAGS="$CPPFLAGS -I${PREFIX}/include"
+export C_INCLUDE_PATH="${PREFIX}/include"
+export CPLUS_INCLUDE_PATH="${PREFIX}/include"
+export CPPFLAGS="$CPPFLAGS -I${PREFIX}/include -Wno-deprecated-declarations"
 export LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
 export BOOST_ROOT="${PREFIX}"
-export C_INCLUDE_PATH="${PREFIX}/include"
-export CPLUS_INCLUDE_PATH="${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration -Wno-incompatible-function-pointer-types -Wno-deprecated-declarations"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
 mkdir -p "$PREFIX/bin"
 
@@ -29,8 +31,6 @@ else
 fi
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
-	ln -s ${PREFIX}/include/boost ../thirdparty/gatb-core/thirdparty/
-
 	# c++11 compatibility
 	LDFLAGS="$LDFLAGS -Wl,-rpath ${PREFIX}/lib";
 
@@ -45,9 +45,18 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
 	export CC=clang
 fi
 
+rm -rf thirdparty/gatb-core
+git clone https://github.com/GATB/gatb-core.git thirdparty/gatb-core
+
+cd thirdparty/gatb-core
+git checkout e80aa72fc91bac58de11341b536c3a94ecb54719
+cd ../..
+
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-DCMAKE_C_FLAGS="${CFLAGS}" \
+	-DCMAKE_C_COMPILER="$CC" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	-DSYSTEM_HTSLIB=1 \
 	-DCMAKE_INSTALL_PREFIX="$PREFIX" \
