@@ -1,0 +1,42 @@
+{% set name = "excludonfinder" %}
+{% set version = "0.1.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Alvarosmb/ExcludonFinder/archive/v{{ version }}.tar.gz
+  sha256: 6946813ae4a239c78b5ea58d40a7ceb7bcd97d9231fad46a0f13d036700790f5
+
+build:
+  number: 0
+  noarch: generic
+  script: |
+    mkdir -p ${PREFIX}/share/excludonfinder/scripts
+    cp scripts/*.R ${PREFIX}/share/excludonfinder/scripts/
+    cp scripts/main.sh ${PREFIX}/bin/ExcludonFinder
+    chmod +x ${PREFIX}/bin/ExcludonFinder
+
+requirements:
+  run:
+    - bwa-mem2
+    - samtools
+    - minimap2
+    - r-base >=4.0
+    - bioconductor-subread
+
+test:
+  commands:
+    - ExcludonFinder --help
+
+about:
+  home: https://github.com/Alvarosmb/ExcludonFinder
+  summary: A tool for identifying and analyzing excludons in genomic data using RNA-seq data
+  license: MIT
+  doc_url: https://github.com/Alvarosmb/ExcludonFinder/blob/main/README.md
+  dev_url: https://github.com/Alvarosmb/ExcludonFinder
+
+extra:
+  recipe-maintainers:
+    - Alvarosmb
