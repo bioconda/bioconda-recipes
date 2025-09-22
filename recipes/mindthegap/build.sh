@@ -54,18 +54,13 @@ else
 fi
 
 rm -rf build
-mkdir -p build
-cd build
 
-cmake -S .. -B . -DCMAKE_BUILD_TYPE=Release \
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_CXX_COMPILER="${CXX}" \
   -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
   -Wno-dev -Wno-deprecated --no-warn-unused-cli \
   "${CONFIG_ARGS}"
 
-make -j"${CPU_COUNT}"
+cmake --build build -j "${CPU_COUNT}"
 
-install -v -m 0755 bin/MindTheGap "${PREFIX}/bin"
-
-cp -f ext/gatb-core/bin/dbgh5 ${PREFIX}/bin/ && chmod +x ${PREFIX}/bin/dbgh5
-cp -f ext/gatb-core/bin/dbginfo ${PREFIX}/bin/ && chmod +x ${PREFIX}/bin/dbginfo
+install -v -m 0755 build/bin/MindTheGap bin/* "${PREFIX}/bin"
