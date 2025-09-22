@@ -3,19 +3,32 @@ set -euo pipefail
 
 mkdir -p "${PREFIX}/bin"
 
-export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++ -I${PREFIX}/include"
-export CFLAGS="${CFLAGS} -I${PREFIX}/include"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS:-} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS:-} -std=c++11 -stdlib=libc++ -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS:-} -L${PREFIX}/lib"
 
-# use an older version of clang for macs
-if [[ "$(uname)" == "Darwin" ]]; then
-    export CC=clang-17 CXX=clang++-17
-fi
+case "$(uname)"  in
+    Linux)
+        ./waf configure \
+            --use-c-compiler=gcc \
+            --use-cxx-compiler=g++ \
+            --prefix=${PREFIX} \
+            --bindir=${PREFIX}/bin \
+            --libdir=${PREFIX}/lib \
+            --jobs=${CPU_COUNT}
+        ;;
+    Darwin)
+        # Use an older version of clang for macOS
+        export CC=clang-17
+        export CXX=clang++
+        ./waf configure \
+            --use-c-compiler clang \
+            --use-cxx-compiler clang++ \
+            --prefix=${PREFIX} \
+            --bindir=${PREFIX}/bin \
+            --libdir=${PREFIX}/lib \
+            --jobs=${CPU_COUNT}
+        ;;
+esac
 
-./waf configure build install \
-      --prefix=${PREFIX} \
-      --bindir=${PREFIX}/bin \
-      --libdir=${PREFIX}/lib \
-      --jobs=${CPU_COUNT} \
-      CFLAGS="${CFLAGS} -I${PREFIX}/include -I${PREFIX}/include/boost" \
-      LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+./waf build install
