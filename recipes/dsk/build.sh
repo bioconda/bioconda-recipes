@@ -20,7 +20,7 @@ case $(uname -m) in
 esac
 
 if [[ `uname -s` == "Darwin" ]]; then
-        export MACOSX_DEPLOYMENT_TARGET=11.0
+	export MACOSX_DEPLOYMENT_TARGET=11.0
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
 	export CONFIG_ARGS=""
@@ -30,7 +30,7 @@ rm -rf thirdparty/gatb-core
 git clone https://github.com/GATB/gatb-core.git thirdparty/gatb-core
 
 cd thirdparty/gatb-core
-git checkout d053d0dffdfb9d31e45d42a3da49d2f71c8f87b3
+git checkout db4e7da969eec8d432a61d1b09d7ab8ac149f468
 cd ../..
 
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
