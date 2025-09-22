@@ -21,6 +21,10 @@ case "$(uname)"  in
         # Use an older version of clang for macOS
         export CC=clang-12
         export CXX=clang++
+
+        # test boost fix
+        export CFLAGS="${CFLAGS} -DBOOST_ATOMIC_NO_CMPXCHG16B"
+        export CXXFLAGS="${CXXFLAGS} -DBOOST_ATOMIC_NO_CMPXCHG16B"
         ./waf configure \
             --check-c-compiler clang \
             --check-cxx-compiler clang++ \
