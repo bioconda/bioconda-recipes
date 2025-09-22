@@ -1,27 +1,26 @@
 {% set name = "dbcan" %}
-{% set version = "5.1.2" %}
+{% set version = "5.2.1" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/bcb-unl/run_dbcan/archive/v{{ version }}.tar.gz
-  sha256: a43460cf946fa34ba9035f4db1c7c47385eb4646b02c33b7c1a27b8a3c8ecdd3
-  patches:
-    - 0001-version.patch
+  sha256: 781dfe8423ed021b59dfb9b38c136b9b6d86839b378739d298dd10a8d875c021
 
 build:
-  number: 1
+  number: 0
   noarch: python
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   script:
-    - export SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
     - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   entry_points:
     - run_dbcan = dbcan.main:cli
-    - dbcan_utils = dbcan.utils.utils:main
-    - dbcan_plot = dbcan.utils.plots:main
-    - dbcan_asmfree = dbcan.utils.diamond_unassembly:main
+    - dbcan_plot = dbcan.utils.plots:cli
+    - dbcan_utils = dbcan.utils.utils:cli
+    - dbcan_asmfree = dbcan.utils.diamond_unassembly:cli
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
@@ -31,10 +30,10 @@ requirements:
     - python >=3.10
     - hatchling
     - hatch-vcs
-    - setuptools_scm
+    - setuptools-scm
   run:
-    - natsort
     - python >=3.10
+    - natsort
     - diamond
     - pyhmmer
     - pyrodigal
