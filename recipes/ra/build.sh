@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-narrowing"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 mkdir -p "$PREFIX/bin"
 
