@@ -23,6 +23,12 @@ case $(uname -m) in
         ;;
 esac
 
+case $(uname -s) in
+    Darwin)
+        sed -i.bak 's|-fopenmp|-Xpreprocessor -fopenmp|' ra/Makefile.rules
+        ;;
+esac
+
 rm -f ra/*.bak
 
 make CXX="${CXX}" -j"${CPU_COUNT}"
