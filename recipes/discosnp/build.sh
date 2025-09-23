@@ -69,7 +69,6 @@ rm -f discoSnpRAD/*.bak
 install -v -m 0755 run_discoSnp++.sh run_discoSnp++_ML.sh discoSnpRAD/run_discoSnpRad.sh ${PREFIX}/bin
 
 # copy binaries
-install -v -m 0755 build/ext/gatb-core/bin/dbgh5 ${PREFIX}/bin
 install -v -m 0755 build/bin/read_file_names build/bin/kissnp2 build/bin/kissreads2 build/bin/quick_hierarchical_clustering ${PREFIX}/bin
 
 # copy scripts directory
