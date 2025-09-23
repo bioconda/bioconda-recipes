@@ -1,25 +1,19 @@
 #!/bin/bash
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-narrowing"
 
 mkdir -p "$PREFIX/bin"
 
 case $(uname -m) in
-    aarch64|arm64)
-	sed -i.bak 's|-m64||' ra/Makefile.rules && rm -f ra/*.bak
-	;;
-esac
-
-case $(uname -m) in
     aarch64)
-	sed -i.bak 's|-std=c++0x|-O3 -std=c++14 -march=armv8-a|' ra/Makefile.rules
+	sed -i.bak 's|-std=c++0x|-O3 -std=c++14 -march=armv8-a -Wno-narrowing|' ra/Makefile.rules
 	;;
     arm64)
-	sed -i.bak 's|-std=c++0x|-O3 -std=c++14 -march=armv8.4-a|' ra/Makefile.rule
+	sed -i.bak 's|-std=c++0x|-O3 -std=c++14 -march=armv8.4-a -Wno-narrowing|' ra/Makefile.rules
 	;;
     x86_64)
-	sed -i.bak 's|-std=c++0x|-O3 -std=c++14 -march=x86-64-v3|' ra/Makefile.rules
+	sed -i.bak 's|-std=c++0x|-O3 -std=c++14 -march=x86-64-v3 -Wno-narrowing|' ra/Makefile.rules
 	;;
 esac
 
