@@ -21,7 +21,6 @@ case $(uname -m) in
 	;;
 esac
 
-autoreconf -if
 ./configure --prefix="${PREFIX}" \
 	--disable-option-checking --enable-silent-rules --disable-dependency-tracking \
 	--with-mummer=yes \
