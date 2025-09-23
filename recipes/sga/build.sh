@@ -3,7 +3,7 @@
 export CFLAGS="${CFLAGS} -O3"
 export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
 export CPATH="${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 pushd $SRC_DIR/src
