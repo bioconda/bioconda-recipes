@@ -1,7 +1,5 @@
 #!/bin/bash
-set -ex 
-
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+set -ex
 
 case $(uname -m) in
 	aarch64|arm64) sed -i.bak 's|-mavx2||' include.mk && sed -i.bak 's|-D__AVX2__||' include.mk && rm -rf *.bak
@@ -19,7 +17,7 @@ make CFLAGS="${CFLAGS} -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}"
 cd ../../
 
 cd submodules/cPecan/externalTools/lastz-distrib-1.03.54/src
-export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include -I${PREFIX}/include/libxml2"
+export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include/libxml2"
 make CC="${CC}" -j"${CPU_COUNT}"
 cd ../../../../../
 
