@@ -35,7 +35,7 @@ sed -i.bak "s/getline/getlineSeq/g" HMMer2/sqio.c
 
 sed -i.bak "s/csh welcome.csh//g" makefile
 
-make all
+make all CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
 
 install -v -m 0755 bin/* "$PREFIX/bin"
 mkdir -p $PREFIX/share/wise2
