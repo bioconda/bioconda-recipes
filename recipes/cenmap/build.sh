@@ -1,6 +1,8 @@
 #!/bin/bash
 set -ex
 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
 CENMAP_DIR="${PREFIX}/share/CenMAP"
 mkdir -p "${PREFIX}/bin/"
 mkdir -p "${CENMAP_DIR}"
@@ -28,4 +30,4 @@ ln -s ${trf_dir}/trf-mod ${PREFIX}/bin/trf-mod
 popd
 
 # Symlink to bin
-ln -s ${CENMAP_DIR}/cenmap ${PREFIX}/bin/cenmap
+ln -sf ${CENMAP_DIR}/cenmap ${PREFIX}/bin/cenmap
