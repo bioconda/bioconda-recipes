@@ -1,4 +1,4 @@
-#!/bin/bash
+b#!/bin/bash
 # Copied and adapted from https://github.com/RSAT-doc/rsat-conda/blob/master/vmatch/build.sh
 set -euxo pipefail
 
@@ -7,6 +7,9 @@ BIN_DIR="$PREFIX"/bin
 SHARE_DIR="$PREFIX"/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 DOC_DIR="$SHARE_DIR"/doc
 export CFLAGS="${CFLAGS} -O3 -Wno-format-overflow"
+
+sed -i.bak 's|-O3 -g|-O3 -g -Wno-format-overflow -Wno-deprecated-declarations|' SELECT/makefile
+rm -f SELECT/*.bak
 
 # Create directories
 mkdir -p ${BIN_DIR}
@@ -34,6 +37,6 @@ cp -p *.so ${PREFIX}/lib
 popd
 
 # Copy data, doc and various files
-cp -r TRANS ${SHARE_DIR}
-cp *.pdf ${DOC_DIR}
-cp LICENSE README.distrib CHANGELOG ${SHARE_DIR}
+cp -rf TRANS ${SHARE_DIR}
+cp -f *.pdf ${DOC_DIR}
+cp -f LICENSE README.distrib CHANGELOG ${SHARE_DIR}
