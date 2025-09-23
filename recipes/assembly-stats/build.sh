@@ -33,4 +33,4 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 
 cmake --build build
 
-install -v -m 0755 assembly-stats "$PREFIX/bin"
+install -v -m 0755 build/assembly-stats "$PREFIX/bin"
