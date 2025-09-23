@@ -25,7 +25,7 @@ esac
 
 case $(uname -s) in
     Darwin)
-        sed -i.bak 's|-fopenmp|-Xpreprocessor -fopenmp|' ra/Makefile.rules
+        sed -i.bak 's|-Wall -fopenmp|-Wall -stdlib=libc++ -Xpreprocessor -fopenmp -lomp|' ra/Makefile.rules
         ;;
 esac
 
