@@ -1,4 +1,4 @@
-b#!/bin/bash
+#!/bin/bash
 # Copied and adapted from https://github.com/RSAT-doc/rsat-conda/blob/master/vmatch/build.sh
 set -euxo pipefail
 
