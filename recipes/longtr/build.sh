@@ -1,4 +1,9 @@
 #!/bin/bash
+
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
 mkdir -p "${PREFIX}/bin"
 
 make LIBS="-L./ -L\$(CEPHES_ROOT)/ -L${PREFIX}/lib -lm -lhts -lspoa" \
