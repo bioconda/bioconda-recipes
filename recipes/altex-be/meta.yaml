@@ -2,7 +2,7 @@
 {% set version = "1.0.2" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -10,13 +10,13 @@ source:
   sha256: 8cb733087d440ce9921ea7361325687a363112f97ab4bdac3d575e7de46b32c4
 
 build:
+  number: 0
+  noarch: python
   entry_points:
     - altex-be = altex_be.main:main
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  number: 0
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   run_exports:
-    - - {{ pin_subpackage('altex-be', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
@@ -34,16 +34,15 @@ test:
   imports:
     - altex_be
   commands:
-    - pip check
     - altex-be --help
-  requires:
-    - pip
 
 about:
   home: "https://github.com/kinari-labwork/AltEx-BE"
-  summary: automatically design sgRNA for exon skipping with many base editors
+  summary: "Automatically design sgRNA for exon skipping with many base editors."
   license: MIT
-  license_file: LICENSE.md
+  license_family: MIT
+  license_file: "LICENSE.md"
+  dev_url: "https://github.com/kinari-labwork/AltEx-BE"
 
 extra:
   recipe-maintainers:
