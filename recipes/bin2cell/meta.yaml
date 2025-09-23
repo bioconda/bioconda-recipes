@@ -1,0 +1,48 @@
+{% set name = "bin2cell" %}
+{% set version = "0.3.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/bin2cell-{{ version }}.tar.gz
+  sha256: 62b41b92d8924e008dc0f3c1f1cc683b96ac124faa21b0070bd646123bc8adc7
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('bin2cell', max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.7
+    - flit-core >=3.2,<4
+    - pip
+  run:
+    - python >=3.7
+    - numpy <2
+    - scanpy
+    - stardist
+    - opencv
+    - fastparquet
+
+test:
+  imports:
+    - bin2cell
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/Teichlab/bin2cell
+  summary: Join subcellular Visium HD bins into cells
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - camlloyd
