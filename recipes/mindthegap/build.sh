@@ -1,8 +1,8 @@
 #!/bin/bash
 
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-deprecated-declarations"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CFLAGS="${CFLAGS} -O3 -DH5_USE_110_API=1"
+export CFLAGS="${CFLAGS} -O3 -DH5_USE_110_API=1 -Wno-implicit-function-declaration -Wno-incompatible-function-pointer-types -Wno-deprecated-declarations"
 export CXXFLAGS="${CXXFLAGS} -O3 -D_HDF5USEDLL_=1 -DUSE_NEW_CXX"
 
 mkdir -p $PREFIX/bin
@@ -22,18 +22,12 @@ esac
 sed -i.bak 's/cmake_minimum_required(VERSION 3.1)/cmake_minimum_required(VERSION 3.5...3.28)/g' CMakeLists.txt
 rm -f *.bak
 
-if [[ `uname -s` == "Linux" ]]; then
-  sed -i '1i #include "H5public.h"\n#if defined(H5_HAVE_114_API) || H5_VERSION_GE(1,12,0)\n#include "H5CXpublic.h"\n#else\n#define H5CX_set_apl(...) (0)\n#endif\n' thirdparty/gatb-core/gatb-core/thirdparty/hdf5/src/H5Odeprec.c
+rm -rf thirdparty/gatb-core
+git clone https://github.com/GATB/gatb-core.git thirdparty/gatb-core
 
-  sed -i 's/H5P__encode_chunk_cache_nslots(const void \*value, void \*\*_pp, size_t \*size)/H5P__encode_chunk_cache_nslots(const void \*value, void \*\*_pp, size_t \*size, void \*udata)/g' thirdparty/gatb-core/gatb-core/thirdparty/hdf5/src/H5Pdapl.c
-  sed -i '117s/)/, void *udata)/' thirdparty/gatb-core/gatb-core/thirdparty/hdf5/src/H5Pdapl.c
-  sed -i 's/H5P__encode_chunk_cache_nbytes(const void \*value, void \*\*_pp, size_t \*size)/H5P__encode_chunk_cache_nbytes(const void \*value, void \*\*_pp, size_t \*size, void \*udata)/g' thirdparty/gatb-core/gatb-core/thirdparty/hdf5/src/H5Pdapl.c
-  sed -i '120s/)/, void *udata)/' thirdparty/gatb-core/gatb-core/thirdparty/hdf5/src/H5Pdapl.c
-  sed -i 's/H5P__dapl_vds_file_pref_enc(const void \*value, void \*\*_pp, size_t \*size)/H5P__dapl_vds_file_pref_enc(const void \*value, void \*\*_pp, size_t \*size, void \*udata)/g' thirdparty/gatb-core/gatb-core/thirdparty/hdf5/src/H5Pdapl.c
-  sed -i 's/H5P__facc_libver_type_enc(const void \*value, void \*\*_pp, size_t \*size)/H5P__facc_libver_type_enc(const void \*value, void \*\*_pp, size_t \*size, void \*udata)/g' thirdparty/gatb-core/gatb-core/thirdparty/hdf5/src/H5Pfapl.c
-  sed -i 's/H5P__ocpy_merge_comm_dt_list_enc(const void \*value, void \*\*_pp, size_t \*size)/H5P__ocpy_merge_comm_dt_list_enc(const void \*value, void \*\*_pp, size_t \*size, void \*udata)/g' thirdparty/gatb-core/gatb-core/thirdparty/hdf5/src/H5Pocpypl.c
-  sed -i 's/this->m_solid_stretch_size()/this->m_solid_stretch_size/g' src/FindBreakpoints.hpp
-fi
+cd thirdparty/gatb-core
+git checkout e80aa72fc91bac58de11341b536c3a94ecb54719
+cd ../..
 
 case $(uname -m) in
     aarch64)
@@ -48,18 +42,20 @@ case $(uname -m) in
 esac
 
 if [[ `uname -s` == "Darwin" ]]; then
-  export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
-  export CONFIG_ARGS=""
+	export CONFIG_ARGS=""
 fi
 
 rm -rf build
 
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_CXX_COMPILER="${CXX}" \
-  -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-  -Wno-dev -Wno-deprecated --no-warn-unused-cli \
-  "${CONFIG_ARGS}"
+	-DCMAKE_CXX_COMPILER="${CXX}" \
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-DCMAKE_C_COMPILER="$CC" \
+	-DCMAKE_C_FLAGS="${CFLAGS}" \
+	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
+	"${CONFIG_ARGS}"
 
 cmake --build build -j "${CPU_COUNT}"
 
