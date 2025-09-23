@@ -3,8 +3,8 @@ set -x -e
 
 #import
 export CFLAGS="${CFLAGS} -O3 -fomit-frame-pointer -DNDBUG -I$PREFIX/include -Wno-register"
-export CPPFLAGS="${CPPFLAGS} -I$PREFIX/include"
-export CXXFLAGS="${CXXFLAGS} -fomit-frame-pointer -DNDBUG -O3 -I$PREFIX/include"
+export CPPFLAGS="${CPPFLAGS} -I$PREFIX/include -Wno-register"
+export CXXFLAGS="${CXXFLAGS} -fomit-frame-pointer -DNDBUG -O3 -I$PREFIX/include -Wno-register"
 export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
 export LIBRARY_PATH="${PREFIX}/lib"
 
