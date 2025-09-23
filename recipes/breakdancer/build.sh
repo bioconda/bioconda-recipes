@@ -50,7 +50,9 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
-cmake --build build --target install -j 1
+cd build
+make
+make install
 
 # Make bam2cfg.pl work from bin; it needs some modules from lib.
 BAM2CFG_LIB=`dirname $( find ${PREFIX}/lib -name "bam2cfg.pl" )`
