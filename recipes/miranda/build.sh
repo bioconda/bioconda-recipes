@@ -8,7 +8,6 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 # use newer config.guess and config.sub that support linux-aarch64
 cp -f $BUILD_PREFIX/share/gnuconfig/config.* .
 
-mv configure.in configure.ac
 
 ./configure --prefix="${PREFIX}" \
 	--disable-option-checking --enable-silent-rules --disable-dependency-tracking \
