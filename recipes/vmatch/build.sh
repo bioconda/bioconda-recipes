@@ -20,7 +20,7 @@ mkdir -p ${PREFIX}/lib
 # Copy binaries and scripts
 # perl scripts use /usr/bin/env so there is no need to do modify them
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    find . -maxdepth 1 -type f -perm +x -exec cp -p \{\} ${BIN_DIR} \;
+    find . -maxdepth 1 -type f -perm -x -exec cp -p \{\} ${BIN_DIR} \;
 else
     find . -maxdepth 1 -type f -executable -exec cp -p \{\} ${BIN_DIR} \;
 fi
