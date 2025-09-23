@@ -1,6 +1,5 @@
 #!/bin/bash
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-narrowing"
 
 mkdir -p "$PREFIX/bin"
@@ -25,7 +24,8 @@ esac
 
 case $(uname -s) in
     Darwin)
-        sed -i.bak 's|-Wall -fopenmp|-Wall -stdlib=libc++ -Xpreprocessor -fopenmp -lomp|' ra/Makefile.rules
+        sed -i.bak 's|-Wall -fopenmp|-Wall -Xpreprocessor -fopenmp|' ra/Makefile.rules
+		sed -i.bak 's|-lstdc++ -fopenmp|-lstdc++ -L$(PREFIX)/lib -lomp|' ra/Makefile.rules
         ;;
 esac
 
