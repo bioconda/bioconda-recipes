@@ -4,8 +4,10 @@ set -euo pipefail
 mkdir -p "${PREFIX}/bin"
 
 export CFLAGS="${CFLAGS:-} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS:-} -std=c++11 -stdlib=libc++ -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS:-} -std=c++11 -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS:-} -L${PREFIX}/lib"
+
+CLANG_VERSION=17
 
 case "$(uname)"  in
     Linux)
@@ -19,12 +21,14 @@ case "$(uname)"  in
         ;;
     Darwin)
         # Use an older version of clang for macOS
-        export CC=clang-12
+        export CC=clang-${CLANG_VERSION}
         export CXX=clang++
 
-        # test boost fix
-        export CFLAGS="${CFLAGS} -DBOOST_ATOMIC_NO_CMPXCHG16B"
-        export CXXFLAGS="${CXXFLAGS} -DBOOST_ATOMIC_NO_CMPXCHG16B"
+        if ! clang++ --version | grep -q "clang version ${CLANG_VERSION}"; then
+            echo "Error: clang++ ${CLANG_VERSION} required." >&2
+            exit 1
+        fi
+
         ./waf configure \
             --check-c-compiler clang \
             --check-cxx-compiler clang++ \
@@ -35,4 +39,4 @@ case "$(uname)"  in
         ;;
 esac
 
-./waf build install
+./waf build
