@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-mkdir _buildchain
+mkdir -p _buildchain
 export PATH="$(pwd)/_buildchain:$PATH"
 [ -n $CC ] && ln -s $CC _buildchain/cc
 [ -n $LD ] && ln -s $LD _buildchain/ld
@@ -36,6 +36,7 @@ sed -i.bak "s/getline/getlineSeq/g" HMMer2/sqio.c
 sed -i.bak "s/csh welcome.csh//g" makefile
 
 make all
-cp -v ./bin/* $PREFIX/bin/
-mkdir $PREFIX/share/wise2
+
+install -v -m 0755 bin/* "$PREFIX/bin"
+mkdir -p $PREFIX/share/wise2
 cp -rf ../wisecfg $PREFIX/share/wise2/
