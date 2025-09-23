@@ -2,7 +2,7 @@
 set -x -e
 
 #import
-export CFLAGS="${CFLAGS} -O3 -fomit-frame-pointer -DNDBUG -I$PREFIX/include"
+export CFLAGS="${CFLAGS} -O3 -fomit-frame-pointer -DNDBUG -I$PREFIX/include -Wno-register"
 export CPPFLAGS="${CPPFLAGS} -I$PREFIX/include"
 export CXXFLAGS="${CXXFLAGS} -fomit-frame-pointer -DNDBUG -O3 -I$PREFIX/include"
 export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
