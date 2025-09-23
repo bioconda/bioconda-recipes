@@ -6,10 +6,9 @@ export CPATH="${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
-mkdir -p build-aux
-
 pushd $SRC_DIR/src
 
+mkdir -p build-aux
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/
 
