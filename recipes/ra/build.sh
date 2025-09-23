@@ -1,23 +1,36 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
-make
+mkdir -p "$PREFIX/bin"
 
+case $(uname -m) in
+    aarch64|arm64)
+	sed -i.bak 's|-m64||' ra/Makefile.rules && rm -f ra/*.bak
+	;;
+esac
 
-binaries="\
-consensus \
-depot \
-fill_read_coverage \
-filter_contained \
-filter_erroneous_overlaps \
-filter_transitive \
-overlap2dot \
-ra_consensus \
-to_afg \
-unitigger \
-widen_overlaps \ 
-zoom \
-"
+case $(uname -m) in
+    aarch64)
+	sed -i.bak 's|-std=c++0x|-O3 -std=c++14 -march=armv8-a|' ra/Makefile.rules
+	;;
+    arm64)
+	sed -i.bak 's|-std=c++0x|-O3 -std=c++14 -march=armv8.4-a|' ra/Makefile.rule
+	;;
+    x86_64)
+	sed -i.bak 's|-std=c++0x|-O3 -std=c++14 -march=x86-64-v3|' ra/Makefile.rules
+	;;
+esac
 
-for i in $binaries; do cp bin/release/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
+case $(uname -m) in
+    aarch64|arm64)
+        sed -i.bak 's|-m64||' ra/Makefile.rules
+        ;;
+esac
+
+rm -f ra/*.bak
+
+make CXX="${CXX}" -j"${CPU_COUNT}"
+
+install -v -m 0755 bin/release/* "$PREFIX/bin"
