@@ -1,12 +1,12 @@
 #!/bin/bash
 # Copied and adapted from https://github.com/RSAT-doc/rsat-conda/blob/master/vmatch/build.sh
-
 set -euxo pipefail
 
 # Those variables are also used in pre and post-link scripts
 BIN_DIR="$PREFIX"/bin
 SHARE_DIR="$PREFIX"/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 DOC_DIR="$SHARE_DIR"/doc
+export CFLAGS="${CFLAGS} -O3 -Wno-format-overflow"
 
 # Create directories
 mkdir -p ${BIN_DIR}
