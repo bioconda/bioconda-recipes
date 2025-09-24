@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lboost_filesystem"
 export CPPFLAGS="${CPPFLAGS} -I$PREFIX/include -Wno-maybe-uninitialized -Wno-unused-result"
 export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations"
 export CXXFLAGS="${CXXFLAGS} -O3 -Wno-maybe-uninitialized -Wno-unused-result"
@@ -24,11 +24,8 @@ esac
 
 ./configure --prefix="${PREFIX}" \
 	--disable-option-checking --enable-silent-rules --disable-dependency-tracking \
-	--enable-optimisations --enable-64 \
 	--with-boost="${PREFIX}" \
 	--with-boost-libdir="${PREFIX}/lib" \
-	--disable-static \
-	--enable-shared \
 	--with-expat="${PREFIX}" \
 	--with-zlib="${PREFIX}" \
 	CC="${CC}" \
