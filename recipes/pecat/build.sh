@@ -29,7 +29,7 @@ case $(uname -m) in
 	;;
     x86_64)
 	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
-    sed -i.bak 's|-std=c++11 -Wall -O3|-std=c++14 -Wall -O3 -march=x86-64-v3|' src/makefile
+    sed -i.bak 's|-std=c++11 -Wall -O3|-std=c++14 -Wall -O3 -march=x86-64|' src/makefile
 	;;
 esac
 rm -f src/*.bak
