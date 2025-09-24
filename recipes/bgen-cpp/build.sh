@@ -12,9 +12,8 @@ case "$(uname)"  in
         echo "Patching Linux build script"
         # patch waf script on Linux
         # force gcc to use C11 plus GNU extensions
-        sed -i "s/\(\s*cfg\.env\.CFLAGS *= *\[\)/\1'-std=gnu11', /" wscript
-        # force g++ to use C++11 plus GNU extensions
-        sed -i "s/\(\s*cfg\.env\.CXXFLAGS *= *\[\)/\1'-std=gnu++11', /" wscript
+        sed -i "15s/\(\s*cfg\.env\.CXXFLAGS *= *\[\)/\1'-std=gnu++11', /" wscript
+        sed -i "16s/\(\s*cfg\.env\.CFLAGS *= *\[\)/\1'-std=gnu11', /" wscript
 
         ./waf configure \
             --check-c-compiler=gcc \
@@ -28,9 +27,8 @@ case "$(uname)"  in
         echo "Patching macOS build script"
         # patch waf script on macOS (remember: different sed version)
         # force clang to use C11 standard
-        sed -i '' "s/\(\s*cfg\.env\.CFLAGS *= *\[\)/\1'-std=c11', /" wscript
-        # force clang++ to use GCC's C++ library
-        sed -i '' "s/\(\s*cfg\.env\.CXXFLAGS *= *\[\)/\1'-stdlib=libc++', '-std=c++11', /" wscript
+        sed -i '' "15s/\(\s*cfg\.env\.CXXFLAGS *= *\[\)/\1'-stdlib=libc++', '-std=c++11', /" wscript
+        sed -i '' "16s/\(\s*cfg\.env\.CFLAGS *= *\[\)/\1'-std=c11', /" wscript
 
         ./waf configure \
             --check-c-compiler=clang \
@@ -42,10 +40,7 @@ case "$(uname)"  in
         ;;
 esac
 
-# print patched wscript for testing
-cat wscript
-
-./waf build install
+./waf build --mode=release install
 
 # run unit tests after building
 if ./build/test/unit/test_bgen | grep -q "All tests passed"; then
