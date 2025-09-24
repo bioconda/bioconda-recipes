@@ -1,9 +1,9 @@
 #!/bin/bash
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I$PREFIX/include -Wno-maybe-uninitialized"
-export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations -Wno-unused-result -Wno-maybe-uninitialized"
-export CXXFLAGS="${CXXFLAGS} -O3 -Wno-maybe-uninitialized"
+export CPPFLAGS="${CPPFLAGS} -I$PREFIX/include -Wno-maybe-uninitialized -Wno-unused-result"
+export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-maybe-uninitialized -Wno-unused-result"
 
 mkdir -p "${PREFIX}/bin"
 
