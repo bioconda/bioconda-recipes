@@ -2,7 +2,7 @@
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3 -Wno-template-body -Wno-maybe-uninitialized"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-template-body -Wno-maybe-uninitialized -Wno-non-pod-varargs"
 
 mkdir -p biocondabuild
 cd biocondabuild
