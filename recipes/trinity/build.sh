@@ -5,10 +5,21 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -fopenmp"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3 -Wno-unused-parameter -Wno-sign-compare -Wno-deprecated-declarations -Wno-unused-variable -Wno-char-subscripts -Wno-cpp -Wno-maybe-uninitialized"
-
 export BINARY_HOME="${PREFIX}/bin"
 
-if [[ "$(uname)" == "Darwin" ]]; then
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
+
+if [[ "$(uname -s)" == "Darwin" ]]; then
 	# for Mac OSX
 	export CXXFLAGS="${CXXFLAGS} -std=c++14"
 fi
@@ -17,15 +28,15 @@ sed -i.bak 's|VERSION 3.1|VERSION 3.5|' Chrysalis/CMakeLists.txt
 sed -i.bak 's|-O2|-O3|' Chrysalis/CMakeLists.txt
 sed -i.bak 's|VERSION 3.1|VERSION 3.5|' Inchworm/CMakeLists.txt
 sed -i.bak 's|-O2|-O3|' Inchworm/CMakeLists.txt
-rm -rf Chrysalis/*.bak
-rm -rf Inchworm/*.bak
+rm -f Chrysalis/*.bak
+rm -f Inchworm/*.bak
 
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${SRC_DIR}/util/*.pl
-rm -rf ${SRC_DIR}/util/*.bak
+rm -f ${SRC_DIR}/util/*.bak
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${SRC_DIR}/util/misc/*.pl
-rm -rf ${SRC_DIR}/util/misc/*.bak
+rm -f ${SRC_DIR}/util/misc/*.bak
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${SRC_DIR}/util/support_scripts/*.pl
-rm -rf ${SRC_DIR}/util/support_scripts/*.bak
+rm -f ${SRC_DIR}/util/support_scripts/*.bak
 
 make CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}" plugins
 make CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}"
@@ -39,11 +50,8 @@ rm -rf ${SRC_DIR}/sample_data
 cd ${BINARY_HOME}
 ln -sf util/*.pl .
 ln -sf Analysis/DifferentialExpression/PtR .
-ln -sf Analysis/DifferentialExpression/run_DE_analysis.pl .
-ln -sf Analysis/DifferentialExpression/analyze_diff_expr.pl .
-ln -sf Analysis/DifferentialExpression/define_clusters_by_cutting_tree.pl .
-ln -sf Analysis/SuperTranscripts/Trinity_gene_splice_modeler.py .
-ln -sf Analysis/SuperTranscripts/extract_supertranscript_from_reference.py .
+ln -sf Analysis/DifferentialExpression/*.pl .
+ln -sf Analysis/SuperTranscripts/*.py .
 ln -sf util/support_scripts/get_Trinity_gene_to_trans_map.pl .
 ln -sf util/misc/contig_ExN50_statistic.pl .
 cp -rf trinity-plugins/BIN/seqtk-trinity .
@@ -67,5 +75,5 @@ echo "export TRINITY_HOME=${BINARY_HOME}" > ${PREFIX}/etc/conda/activate.d/${PKG
 mkdir -p ${PREFIX}/etc/conda/deactivate.d/
 echo "unset TRINITY_HOME" > ${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}-${PKG_VERSION}.sh
 
-rm -rf trinityrnaseq.wiki sample_data WDL Docker
+rm -rf trinityrnaseq.wiki sample_data WDL Docker make.macOSX.sh
 rm -rf *.patch LICENSE* README* developer.notes Changelog.txt Makefile

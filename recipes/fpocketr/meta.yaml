@@ -1,0 +1,58 @@
+{% set name = "fpocketr" %}
+{% set version = "1.3.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/fpocketr-{{ version }}.tar.gz
+  sha256: ee1fe143f2f4016c18365c18c99b9f89f7f37af2cf94947fec74c1ff226decc8
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('fpocketr', max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.11,<3.12
+    - setuptools >=61.0
+    - versioningit >=2.0,<3.dev0
+    - pip
+  run:
+    - biopython ==1.83
+    - fpocket =4.0.3
+    - pandas
+    - prody ==2.3.0
+    - pymol-open-source ==2.5
+    - python >=3.11,<3.12
+    - rdkit ==2023.9.6
+    - scipy ==1.12.0
+    - seaborn
+    - trimesh ==4.2.0
+
+test:
+  imports:
+    - fpocketR
+    - rnavigate
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/Weeks-UNC/fpocketR
+  summary: CLI tool to find, characterize, and visualize RNA-ligand binding pockets.
+  license: MIT
+  license_file: LICENSE
+  description: |
+    fpocketR is an RNA-specific wrapper for fpocket 4.0, providing CLI tools to find, characterize, and visualize RNA binding pockets for drug-like ligands. Only available for x86_64 architectures on linux and MacOS.
+
+extra:
+  recipe-maintainers:
+    - VonBoss
+  identifiers:
+    - doi:10.1101/2025.03.13.643147
