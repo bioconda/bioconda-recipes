@@ -7,7 +7,15 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 export CPATH="${PREFIX}/include"
 export C_INCLUDE_PATH="${PREFIX}/include"
 export CPLUS_INCLUDE_PATH="${PREFIX}/include"
-export PATH="${PATH}:${PREFIX}/bin"
+export CFLAGS="${CFLAGS} -O3"
+
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    sed -i.bak 's|-lrt||' src/makefile
+fi
+sed -i.bak 's|ar -r|$(AR) -rcs|' src/makefile
+sed -i.bak 's|g++|$(CXX)|' src/makefile
+sed -i.bak 's|gcc|$(CC)|' src/makefile
+rm -f src/*.bak
 
 case $(uname -m) in
     aarch64|arm64)
@@ -43,7 +51,6 @@ clean:
 EOF
 
 sed -i 's/<TAB>/\t/g' ${KSW2_DIR}/Makefile
-
 
 
 cd "${KSW2_DIR}" || exit 1
