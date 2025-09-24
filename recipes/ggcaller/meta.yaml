@@ -6,28 +6,16 @@ package:
   version: {{ version }}
 
 source:
-- url: https://github.com/bacpop/{{ name }}/archive/v{{ version }}.tar.gz
+  url: https://github.com/bacpop/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: 6c381e4f9c69a6f5eb77152dbaec5995e92d9d4f7d961ff76bd2dc26d9dee311
-- url: https://files.pythonhosted.org/packages/97/28/1461048d37d258c820ed7db3cbb847f5cf39830a1ef671e6ac33b62f3607/intbitset-4.0.0.tar.gz
-  sha256: c141edaa1c17b91c2987537e269d955ab6bdc3966af3deb6e1e0d20edbd09dd2
-  folder: intbitset-4.0.0
 
 build:
   number: 0
-  skip: True  # [py < 39]
-  script:
-    - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-    - export CFLAGS="${CFLAGS} -O3"
-    - export CXXFLAGS="${CXXFLAGS} -O3"
-    - cd intbitset-4.0.0
-    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
-    - cd ..
-    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  skip: True  # [osx or py < 39]
   entry_points:
     - ggcaller = ggCaller.__main__:main
   run_exports:
-    - {{ pin_subpackage('ggcaller', max_pin="x") }}
+    - {{ pin_subpackage("ggcaller", max_pin="x") }}
 
 requirements:
   build:
@@ -35,38 +23,44 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake >=3.10
     - make
-    - pkg-config
+    - tbb
+    - tbb-devel
+    - mkl-devel >=2021.4.0,<2023.0.0 # [linux]
+    - openblas  # [osx]
+    - protobuf
+    - pytorch-cpu =1.10
+    - pytorch =1.10
   host:
-    - python
+    - python >=3.9
     - pybind11
-    - bifrost
+    - bifrost >=1.2
     - zlib
     - pip
     - bzip2
-    - pytorch-cpu
-    - pytorch
+    - pytorch-cpu =1.10
+    - pytorch =1.10
     - boost-cpp
     - setuptools
-    - llvm-openmp  # [osx]
-    - libgomp  # [linux]
-    - mkl-devel >=2021.4.0,<2023.0.0  # [linux]
-    - lapack  # [osx]
-    - openblas  # [osx]
-    - eigen
+    - llvm-openmp # [osx]
+    - libgomp # [linux]
+    - mkl-devel >=2021.4.0,<2023.0.0 # [linux]
+    - lapack # [osx]
+    - openblas # [osx]
+    - eigen =3.3
     - tbb
     - tbb-devel
     - protobuf
   run:
-    - python
+    - python >=3.9
     - numpy
     - scipy
     - pandas
-    - bifrost
+    - bifrost >=1.2
     - biopython =1.80
     - bcbio-gff
-    - diamond
-    - pytorch-cpu
-    - pytorch
+    - diamond >=2.0
+    - pytorch-cpu =1.10
+    - pytorch =1.10
     - hmmer
     - mafft
     - snp-sites
@@ -82,10 +76,11 @@ requirements:
     - xorg-libxpm
     - xorg-libxaw
     - xorg-libxfixes
+    - intbitset
     - networkx
     - uncertainties
     - tqdm
-    - seaborn-base
+    - seaborn
     - rapidnj
     - python-edlib
     - joblib
@@ -103,13 +98,8 @@ test:
     - ggcaller -h | grep -q "Generates ORFs from a Bifrost graph."
 
 about:
-   home: "https://github.com/bacpop/ggCaller"
+   home: https://github.com/bacpop/ggCaller
    license: MIT
    license_family: MIT
    license_file: LICENSE
-   summary: "A de Bruijn graph-based gene-caller and pangenome analysis tool."
-   dev_url: "https://github.com/bacpop/ggCaller"
-
-extra:
-  additional-platforms:
-    - osx-arm64
+   summary: 'A de Bruijn graph-based gene-caller and pangenome analysis tool'
