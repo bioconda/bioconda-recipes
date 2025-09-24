@@ -18,7 +18,7 @@ if [[ "$(uname -s)" == "Linux" ]]; then
 	sed -i "27a #include <cstdint>" ../subprojects/cxxopts-2.2.1/include/cxxopts.hpp
 fi
 
-meson install
+ninja install -j"${CPU_COUNT}"
 
 cd ..
 
