@@ -15,18 +15,24 @@ fi
 sed -i.bak 's|ar -r|$(AR) -rcs|' src/makefile
 sed -i.bak 's|g++|$(CXX)|' src/makefile
 sed -i.bak 's|gcc|$(CC)|' src/makefile
-rm -f src/*.bak
 
 case $(uname -m) in
-    aarch64|arm64)
-        CFLAGS="${CFLAGS} -march=armv8-a+simd -DKSW_CPU_DISPATCH=0"
-        CFLAGS="${CFLAGS} -mtune=cortex-a72"
-        ;;
-    *)
-        CFLAGS="${CFLAGS} -march=native"
-        ;;
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+    sed -i.bak 's|-Wall -O3  -D_FILE_OFFSET_BITS=64|-Wall -O3 -D_FILE_OFFSET_BITS=64 -DKSW_CPU_DISPATCH=0|' src/makefile
+    sed -i.bak 's|-std=c++11 -Wall -O3|-std=c++14 -Wall -O3 -march=armv8-a|' src/makefile
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+    sed -i.bak 's|-Wall -O3  -D_FILE_OFFSET_BITS=64|-Wall -O3 -D_FILE_OFFSET_BITS=64 -DKSW_CPU_DISPATCH=0|' src/makefile
+    sed -i.bak 's|-std=c++11 -Wall -O3|-std=c++14 -Wall -O3 -march=armv8.4-a|' src/makefile
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+    sed -i.bak 's|-std=c++11 -Wall -O3|-std=c++14 -Wall -O3 -march=x86-64-v3|' src/makefile
+	;;
 esac
-
+rm -f src/*.bak
 
 KSW2_DIR="${SRC_DIR}/thirdparty/ksw2"
 [ -d "${KSW2_DIR}" ] || { echo "err：ksw2"; exit 1; }
