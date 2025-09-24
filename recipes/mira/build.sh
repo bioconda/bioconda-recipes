@@ -28,7 +28,6 @@ esac
 	--with-boost-libdir="${PREFIX}/lib" \
 	--with-expat="${PREFIX}" \
 	--with-zlib="${PREFIX}" \
-	--enable-mirastatic \
 	CC="${CC}" \
 	CFLAGS="${CFLAGS}" \
 	CXX="${CXX}" \
