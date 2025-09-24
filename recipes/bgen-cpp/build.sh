@@ -29,6 +29,7 @@ case "$(uname)"  in
         # force clang to use C11 standard
         sed -i '' "15s/\(\s*cfg\.env\.CXXFLAGS *= *\[\)/\1'-stdlib=libc++', '-std=c++11', /" wscript
         sed -i '' "16s/\(\s*cfg\.env\.CFLAGS *= *\[\)/\1'-std=c11', /" wscript
+        export CC=clang-17
 
         ./waf configure \
             --check-c-compiler=clang \
