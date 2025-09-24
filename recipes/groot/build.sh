@@ -1,8 +1,12 @@
-#!/usr/bin/env bash
-
+#!/bin/bash
 set -xe
 
-mkdir -p $PREFIX/bin
+export CGO_ENABLED=0
+export GOPATH=$PWD
+export GOCACHE=$PWD/.cache/
+
+mkdir -p "${GOCACHE}"
+mkdir -p "$PREFIX/bin"
 
 go get -d -v ./...
 go get github.com/dgryski/go-metro
@@ -10,4 +14,4 @@ go get github.com/dgryski/go-spooky
 go test -v ./...
 go build -o groot
 
-mv groot $PREFIX/bin
+install -v -m 0755 groot "$PREFIX/bin"
