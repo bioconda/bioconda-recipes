@@ -1,33 +1,32 @@
-{% set version="2.0.1" %}
-{% set sha256="1f50748d2f8f4bf5888394154d366e0eed8d4e20a3cd0da8b33e200aa1d9edf7" %}
-{% set vrnaversion="2.5.1" %}
+{% set name = "locarna" %}
+{% set version = "2.0.1" %}
+{% set sha256 = "1f50748d2f8f4bf5888394154d366e0eed8d4e20a3cd0da8b33e200aa1d9edf7" %}
+{% set vrnaversion= "2.5.1" %}
 
 package:
-  name: locarna
+  name: {{ name }}
   version: {{ version }}
 
-about:
-  home: https://s-will.github.io/LocARNA
-  license: GPL
-  license_file: COPYING
-  summary: Multiple alignment of RNAs
-
-build:
-  number: 1
-  run_exports:
-    - {{ pin_subpackage('locarna', max_pin="x.x") }}
-
 source:
-  url: "https://github.com/s-will/LocARNA/releases/download/v{{ version }}/locarna-{{ version }}.tar.gz"
+  url: https://github.com/s-will/LocARNA/releases/download/v{{ version }}/locarna-{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
     - strip-fno-lto.patch
 
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - gnuconfig
   host:
     - viennarna >={{ vrnaversion }},<3
     - perl
@@ -37,15 +36,24 @@ requirements:
 
 test:
   commands:
-    - "ls -la"
-    - LC_ALL=en_US.UTF-8 mlocarna --version
-    - LC_ALL=en_US.UTF-8 locarna --version
-    - LC_ALL=en_US.UTF-8 locarna_p --version
-    - LC_ALL=en_US.UTF-8 sparse --version
-    - LC_ALL=en_US.UTF-8 exparna_p --version
-    - echo -e ">D10744\nGGAAAAUUGAUCAUCGGCAAGAUAAGUUAUUUACUAAAUAAUAGGAUUUAAUAACCUGGUGAGUUCGAAUCUCACAUUUUCCG" | LC_ALL=en_US.UTF-8 locarna_rnafold_pp --in-loop --stacking --noLP -p0.5 |head -n3
+    - locarna --version  # [not aarch64]
+    - test -x ${PREFIX}/bin/locarna  # [aarch64]
+    - echo -e ">D10744\nGGAAAAUUGAUCAUCGGCAAGAUAAGUUAUUUACUAAAUAAUAGGAUUUAAUAACCUGGUGAGUUCGAAUCUCACAUUUUCCG" | LC_ALL="en_US.UTF-8" locarna_rnafold_pp --in-loop --stacking --noLP -p0.5 |head -n3  # [not aarch64]
+
+about:
+  home: "https://github.com/s-will/LocARNA"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: COPYING
+  summary: "Multiple alignment of RNAs."
+  doc_url: "https://s-will.github.io/LocARNA"
+  dev_url: "https://github.com/s-will/LocARNA"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:locarna
+    - usegalaxy-eu:locarna_multiple
     - doi:10.1371/journal.pcbi.0030065
