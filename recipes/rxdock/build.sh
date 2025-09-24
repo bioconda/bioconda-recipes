@@ -40,7 +40,7 @@ cp -f biocondabuild/subprojects/fmt-7.0.1/libfmt.so ${PREFIX}/lib
 
 # Create wrappers for binaries that need RBT_ROOT to be in the environment
 
-if [[ ${target_platform}  == "linux-aarch64" ]]; then
+if [[ "$(uname -s)" == "Linux" ]]; then
 	for f in rbcalcgrid  rbconvgrid  rblist  rbmoegrid  rbrms; do
             mv "${PREFIX}/bin/$f" "${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/bin/"
             sed -e "s|CHANGEME|${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}|" "$RECIPE_DIR/wrapper.sh" > "${PREFIX}/bin/$f"
@@ -53,6 +53,7 @@ else
 	    chmod +x "${PREFIX}/bin/$f"
 	done
 fi
+
 # Remove unused to_unix
 rm -rf bin/to_unix
 install -v -m 0755 bin/* "${PREFIX}/bin"
