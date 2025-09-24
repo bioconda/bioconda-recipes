@@ -9,7 +9,7 @@ mkdir -p "${PREFIX}/bin"
 
 if [[ "$(uname -s)" == "Linux" ]]; then
 	sed -i "19a  #include <cstdint>" src/SingleBamRec.h
-	sed -i "8a  #include <cstdint>" src/Config.cpp
+	#sed -i "8a  #include <cstdint>" src/Config.cpp
 	sed -i "19a  #include <cstdint>" src/Config.h
 fi
 
