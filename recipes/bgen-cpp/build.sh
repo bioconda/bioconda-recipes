@@ -4,13 +4,17 @@ set -euo pipefail
 mkdir -p "${PREFIX}/bin"
 
 export CFLAGS="${CFLAGS:-} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS:-} -std=c++11 -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS:-} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS:-} -L${PREFIX}/lib"
-
-CLANG_VERSION=17
 
 case "$(uname)"  in
     Linux)
+        # patch waf script on Linux
+        # force gcc to use C11 plus GNU extensions
+        sed -i "s/\(\s*cfg\.env\.CFLAGS *= *\[\)/\1'-std=gnu11', /" wscript
+        # force g++ to use C++11 plus GNU extensions
+        sed -i "s/\(\s*cfg\.env\.CXXFLAGS *= *\[\)/\1'-std=gnu++11', /" wscript
+
         ./waf configure \
             --check-c-compiler=gcc \
             --check-cxx-compiler=g++ \
@@ -20,18 +24,15 @@ case "$(uname)"  in
             --jobs=${CPU_COUNT}
         ;;
     Darwin)
-        # Use an older version of clang for macOS
-        export CC=clang-${CLANG_VERSION}
-        export CXX=clang++
-
-        if ! clang++ --version | grep -q "clang version ${CLANG_VERSION}"; then
-            echo "Error: clang++ ${CLANG_VERSION} required." >&2
-            exit 1
-        fi
+        # patch waf script on macOS (remember: different sed version)
+        # force clang to use C11 standard
+        sed -i '' "s/\(\s*cfg\.env\.CFLAGS *= *\[\)/\1'-std=c11', /" wscript
+        # force clang++ to use GCC's C++ library
+        sed -i '' "s/\(\s*cfg\.env\.CXXFLAGS *= *\[\)/\1'-stdlib=libc++', '-std=c++11', /" wscript
 
         ./waf configure \
-            --check-c-compiler clang \
-            --check-cxx-compiler clang++ \
+            --check-c-compiler=clang \
+            --check-cxx-compiler=clang++ \
             --prefix=${PREFIX} \
             --bindir=${PREFIX}/bin \
             --libdir=${PREFIX}/lib \
@@ -39,4 +40,11 @@ case "$(uname)"  in
         ;;
 esac
 
-./waf build
+./waf build install
+
+# run unit tests after building
+if ./build/test/unit/test_bgen | grep -q "All tests passed"; then
+  exit 0
+else
+  exit 1
+fi

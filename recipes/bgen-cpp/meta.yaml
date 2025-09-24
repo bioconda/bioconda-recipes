@@ -7,16 +7,15 @@ package:
   version: "{{ version }}"
 
 source:
+  # bgen is distributed via a fossil repo, so I created a git mirror by importing fossil's history
+  # (the repo hasn't been updated for a few years)
   url: https://github.com/nebfield/bgen-git-mirror/archive/refs/tags/v{{version}}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - patch.file
 
 build:
   number: 0
   run_exports:
     - {{ pin_subpackage('bgen-cpp', max_pin="x") }}
-  skip: True  # [not osx]
 
 requirements:
   build:
@@ -28,10 +27,16 @@ requirements:
     - zlib
 
 test:
+  source_files:
+    - example/example.15bits.bgen
+    - example/example.16bits.bgen
+    - example/example.16bits.bgen.bgi
   commands:
     - bgenix -help
     - cat-bgen -help
     - edit-bgen -help
+    - bgenix -g example/example.16bits.bgen >/dev/null
+    - bgenix -g example/example.15bits.bgen -index
 
 about:
   home: https://enkre.net/cgi-bin/code/bgen/
@@ -45,3 +50,7 @@ about:
     Includes applications for working with BGEN files: bgenix,
     cat-bgen, and edit-bgen.
 
+extra:
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64
