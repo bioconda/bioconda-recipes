@@ -39,5 +39,8 @@ esac
 make -j"${CPU_COUNT}"
 
 patch -p1 < ${RECIPE_DIR}/0003-tophat.patch
+2to3 -w src/generate_chromosome.py src/bed_to_juncs src/contig_to_chr_coords src/sra_to_solid src/tophat-fusion-post
+rm -f src/*.bak
 
 make install
+install -v -m 0755 src/generate_chromosome.py src/bed_to_juncs src/contig_to_chr_coords src/sra_to_solid src/tophat-fusion-post "${PREFIX}/bin"
