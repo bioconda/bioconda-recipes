@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I$PREFIX/include -Wno-maybe-uninitialized -Wno-unused-result -Wno-register"
+export CPPFLAGS="${CPPFLAGS} -I$PREFIX/include -Wno-maybe-uninitialized -Wno-unused-result"
 export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations"
 export CXXFLAGS="${CXXFLAGS} -O3 -Wno-maybe-uninitialized -Wno-unused-result -Wno-register"
 
