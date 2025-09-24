@@ -1,0 +1,47 @@
+{% set name = "epimetheus-py" %}
+{% set version = "0.7.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/epimetheus_py-{{ version }}.tar.gz
+  sha256: aa7ad8c4344fa4fe2d481289f5384dd6b783e418c800b6a4d3cd01c02b0316c0
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('epimetheus-py', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - {{ compiler("rust") }}
+    - {{ stdlib("c") }}
+  host:
+    - python
+    - maturin >=1.5,<2
+    - pip
+  run:
+    - python
+
+test:
+  imports:
+    - epymetheus
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/SebastianDall/epimetheus
+  summary: Cli tool for fast lookup in pileup for motif methylation
+  license: MIT
+
+extra:
+  recipe-maintainers:
+    - SebastianDall
+  skip-lints:
+    - version_constraints_missing_whitespace  # see https://github.com/bioconda/bioconda-recipes/issues/51185

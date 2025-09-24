@@ -1,16 +1,34 @@
+{% set name = "blast-legacy" %}
+{% set version = "2.2.26" %}
+
 package:
-  name: blast-legacy
-  version: 2.2.26
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  - url: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/legacy.NOTSUPPORTED/2.2.26/blast-2.2.26-x64-linux.tar.gz          # [linux64]
-    sha256: 8a2f986cf47f0f7cbdb3478c4fc7e25c7198941d2262264d0b6b86194b3d063d                                            # [linux64]
-  - url: ftp://ftp.ncbi.nlm.nih.gov/toolbox/ncbi_tools/old/20120620/ncbi.tar.gz                                         # [osx]
-    sha256: 603c9a4ade2a6f2f8e412558b732924d78fae403d225706e2ac38d553b08073c                                            # [osx]
-    patches:
-      - fix-osx-build.patch                                                                                             # [osx]
+  url: ftp://ftp.ncbi.nlm.nih.gov/toolbox/ncbi_tools/old/20120620/ncbi.tar.gz
+  sha256: 603c9a4ade2a6f2f8e412558b732924d78fae403d225706e2ac38d553b08073c
+  patches:
+    - fix-osx-build.patch
+    - makedis.patch
+
 build:
-  number: 3
+  number: 5
+  run_exports:
+    - {{ pin_subpackage('blast-legacy', max_pin='x') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - tcsh  # [linux]
+    - gnutls
+    - xorg-libx11  # [linux]
+    - xorg-libxt  # [linux]
+    - xorg-libxft  # [linux]
+    - xorg-libxp  # [linux]
+    - xorg-libxmu  # [linux]
 
 test:
   commands:
@@ -28,12 +46,12 @@ test:
     - rpsblast --help | grep rpsblast > /dev/null
     - seedtop --help | grep seedtop > /dev/null
 
-extra:
-  skip-lints:
-    - should_be_noarch_generic
-    - should_not_be_noarch_source
-
 about:
-  home: http://blast.ncbi.nlm.nih.gov
+  home: https://blast.ncbi.nlm.nih.gov
   license: Public Domain
-  summary: The Basic Local Alignment Search Tool (BLAST) finds regions of local similarity between sequences.
+  summary: "The Basic Local Alignment Search Tool (BLAST) finds regions of local similarity between sequences."
+
+extra:
+  additional-platforms:
+    - linux-aarch64           
+    - osx-arm64

@@ -1,0 +1,75 @@
+{% set name = "kled" %}
+{% set version = "1.2.10" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/CoREse/kled/releases/download/v{{ version }}/kledv{{ version }}.allmodules.tar.gz
+  sha256: a232e163f89901cd790a5c026bd386ac8c6d7c33e5f9780c5c70e4463c14bc64
+
+build:
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - automake
+    - autoconf
+    - libtool
+    - pkg-config
+    - clangdev  # [osx]
+  host:
+    - zlib
+    - bzip2
+    - liblzma-devel
+    - libcurl
+    - openssl
+    - libdeflate
+    - boost-cpp >=1.84
+    - gmp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - openmpi
+  run:
+    - boost-cpp >=1.84
+    - gmp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - openmpi
+
+test:
+  commands:
+    - kled --help
+    - kled --version
+
+about:
+  home: "https://github.com/CoREse/kled"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "An ultra-fast and sensitive structural variant detection tool for long-read sequencing data."
+  description: |
+    Kled is designed to call SVs nicely and quickly using long-read sequencing data. 
+    It takes mapped reads file (bam) as input and reports SVs to the stdout in the 
+    VCF file format. Kled can yield precise and comprehensive SV detection results 
+    within minutes and can run on any modern computer without needing of any field 
+    knowledge of the user to perform the SV detection.
+  doc_url: "https://github.com/CoREse/kled/blob/v{{ version }}/README.md"
+  dev_url: "https://github.com/CoREse/kled"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - CoREse
+  identifiers:
+    - biotools:kled
+    - doi:10.1093/bib/bbae049
+    - doi:10.3389/fgene.2024.1435087

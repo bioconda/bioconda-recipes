@@ -1,0 +1,51 @@
+{% set name = "kpop" %}
+{% set version = "1.1.1" %}
+{% set sha_linux = "915eb6d4e0b41b4f6409b5fd97188193106b3300734c92131ab8ad0618051e4a" %}
+{% set sha_macos = "06c15129e9ecea58092f5e4d5df136a0c227815f011f80f63ad9093d70cc46d3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/PaoloRibeca/KPop/releases/download/v{{ version }}/KPop-{{ version }}-Linux_x86-64.tar.xz  # [linux]
+    sha256: {{ sha_linux }}  # [linux]
+  - url: https://github.com/PaoloRibeca/KPop/releases/download/v{{ version }}/KPop-{{ version }}-MacOS_x86-64.tar.xz  # [osx]
+    sha256: {{ sha_macos }}  # [osx]
+
+build:
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  number: 1
+
+requirements:
+  run:
+    - bash >=4.4.20
+    - r-data.table
+    - r-ca
+
+test:
+  commands:
+    - KPopCount -V
+    - KPopCountDB -V
+    - KPopTwist_ -V
+    - KPopTwistDB -V
+
+about:
+  home: https://github.com/PaoloRibeca/KPop
+  license: GPL-3.0-only
+  license_file: LICENSE
+  summary: 'An assembly-free and scalable method for the comparative analysis of microbial genomes, based on full k-mer spectra and dataset-specific transformations.'
+  description:
+    KPop is an assembly-free and scalable method for the comparative analysis of microbial genomes, 
+    based on full k-mer spectra and dataset-specific transformations. It is built using OCaml <https://ocaml.org> and R <https://www.r-project.org/>.
+  dev_url: https://github.com/PaoloRibeca/KPop
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic
+  identifiers:
+    - doi:10.1101/2022.06.22.497172
+  recipe-maintainers:
+    - PaoloRibeca
+    - ryanmorrison22

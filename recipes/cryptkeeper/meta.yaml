@@ -1,0 +1,50 @@
+{% set name = "cryptkeeper" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/cryptkeeper-{{ version }}.tar.gz
+  sha256: 7e43d858043073a98903b890846636c3b7c9e5ce289fe97c00ff5734d47357e8
+
+build:
+  entry_points:
+    - cryptkeeper = cryptkeeper.cryptkeeper:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+     - {{ pin_subpackage("cryptkeeper", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+  run:
+    - python >=3.9
+    - ostir
+    - rhotermpredict
+    - promotercalculator
+    - bokeh
+    - biopython
+
+test:
+  imports:
+    - cryptkeeper
+  commands:
+    - cryptkeeper --help
+
+about:
+  home: https://github.com/barricklab/cryptkeeper
+  summary: "A negative design tool for predicting and visualizing undesired gene expression"
+  license: "GPL-3.0-only"
+  license_file: LICENSE
+  license_family: GPL3
+  dev_url: https://github.com/barricklab/cryptkeeper
+
+extra:
+  recipe-maintainers:
+    - croots
+    - jeffreybarrick

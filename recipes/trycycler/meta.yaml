@@ -1,5 +1,5 @@
 {% set name="trycycler" %}
-{% set version="0.5.4" %}
+{% set version="0.5.5" %}
 
 package:
   name: {{ name }}
@@ -7,20 +7,24 @@ package:
 
 build:
   noarch: python
-  number: 0
+  number: 1
   script: {{ PYTHON }} -m pip install --no-deps --ignore-installed .
+  run_exports:
+    - {{ pin_subpackage('trycycler', max_pin="x.x") }}
 
 source:
   url: https://github.com/rrwick/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 6880e6920a5e4f3764fc3c7dd1dfc7ec4c9106eb5eb2ed90ae292e73c74893df
+  sha256: 5794a4520c3b8673adc69c975cee06d7658cd74ac6d9378d1fc7af860bec1a89
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.6,<3.11
     - pip
+    - setuptools
   run:
-    - python >=3.6
+    - python >=3.6,<3.11
     - python-edlib
+    - setuptools
     - scipy
     - numpy
     - pillow
@@ -35,6 +39,13 @@ requirements:
 test:
   commands:
     - trycycler --version
+    - trycycler subsample --help
+    - trycycler cluster --help
+    - trycycler dotplot --help
+    - trycycler reconcile --help
+    - trycycler msa --help
+    - trycycler partition --help
+    - trycycler consensus --help
 
 about:
   home: https://github.com/rrwick/Trycycler

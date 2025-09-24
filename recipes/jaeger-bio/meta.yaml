@@ -1,0 +1,58 @@
+{% set name = "jaeger-bio" %}
+{% set version = "1.1.30" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/jaeger_bio-{{ version }}.tar.gz"
+  sha256: ffc54d7257201310ff137dd61dcb1d8afe6c7f95bf2fdf578fec79a16145aeae
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('jaeger-bio', max_pin="x") }}
+  noarch: python
+
+requirements:
+  host:
+    - python >=3.9,<3.12
+    - pip
+  run:
+    - h5py >=3.8
+    - kneed >=0.8.5
+    - matplotlib-base >=3.7
+    - numpy >=1.24
+    - pandas >=1.5
+    - progressbar2 >=4.4.2
+    - psutil >=5
+    - pycirclize
+    - pyfastx >=2
+    - python >=3.9,<3.12
+    - ruptures >=1.1.9
+    - scikit-learn ==1.3.2
+    - parasail-python >=1.3.4
+    - tensorflow >=2.15,<2.16
+
+test:
+  imports:
+    - jaegeraa
+    - jaegeraa.data
+    - jaegeraa.nnlib
+  commands:
+    - jaeger --help
+
+about:
+  home: "https://github.com/Yasas1994/Jaeger"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A quick and precise pipeline for detecting phages in sequence assemblies."
+  dev_url: https://github.com/Yasas1994/Jaeger
+  doc_url: https://readthedocs.org/projects/jaeger-docs/
+
+extra:
+  recipe-maintainers:
+    - Yasas1994

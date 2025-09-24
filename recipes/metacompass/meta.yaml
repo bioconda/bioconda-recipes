@@ -1,0 +1,47 @@
+{% set name = "MetaCompass" %}
+{% set version = "1.12" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: 
+    - https://ftp.nandesyn.single-cell.cn/MetaCompass-{{ version }}.tar.gz
+    - https://github.com/marbl/MetaCompass/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 61b72c468ad27147de9f0b67f3aa828fb54c47249c7578826a988831f124b682
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('metacompass', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  run:
+    - python >=3.1
+    - perl >=5.16
+    - snakemake-minimal >=3.7.1
+    - blast >=2.4.0
+    - bowtie2 >=2.2.5
+    - samtools >=1.12
+    - megahit >=1.0.6
+    - openjdk >=7
+
+test:
+  commands:
+    - go_metacompass.py -h 2>&1 | grep 'usage' > /dev/null
+
+about:
+  home: "https://github.com/marbl/MetaCompass"
+  license: "Artistic-License-2.0"
+  license_file: LICENSE
+  summary: 'MetaCompass: Reference-guided Assembly of Metagenomes.'
+  dev_url: "https://github.com/marbl/MetaCompass"
+  doc_url: "https://github.com/marbl/MetaCompass/wiki"
+
+extra:
+  identifiers:
+    - biotools:MetaCompass
+    - doi:10.1101/212506

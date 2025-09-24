@@ -1,0 +1,57 @@
+{% set name = "HairSplitter" %}
+{% set version = "1.9.10" %}
+{% set sha256 = "ab20c7700d9b4cc04fed68933a1c4081167c4c0dd560de7b19672a7fe39b50f8" %}
+
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/RolandFaure/HairSplitter/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - hairsplitter-aarch64.patch
+
+build:
+  number : 1
+  run_exports:
+    - {{ pin_subpackage("hairsplitter", max_pin="x.x") }}
+
+requirements:
+  build:
+    - cmake
+    - make
+    - {{ compiler('cxx') }}
+    - libcxx <18 # [osx]
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  run:
+    - python
+    - scipy
+    - numpy
+    - minimap2
+    - minigraph >=0.20
+    - racon
+    - samtools >=1.16
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - raven-assembler
+
+test:
+  commands:
+    - hairsplitter.py --help
+    
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - rolandfaure
+
+about:
+  home: https://github.com/RolandFaure/HairSplitter
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  summary: "Recovers collapsed haplotypes from a draft assembly and long reads"
+  maintainer : RolandFaure # Optional

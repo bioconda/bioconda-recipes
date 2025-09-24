@@ -1,48 +1,47 @@
-{% set version = "3.15.5" %}
-{% set sha256 = "155c3640d571f2e7b19a05031d1fd0d19bd82df785d38870fb93bd241b12bbfa" %}
+{% set name = "spades" %}
+{% set version = "4.2.0" %}
+{% set sha256 = "043322129f8536411f1172b7d1c9adfcb6d49d152c10066ccc03e86b6f615a6b" %}
 
 package:
-  name: spades
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/ablab/spades/releases/download/v{{version}}/SPAdes-{{version}}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - 0001-change-verbosity.patch
+    - 0001-change-verbosity-remove-expr.patch
 
 build:
   number: 1
-  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('spades', max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - clangdev  # [osx]
-    - llvm-openmp  # [osx]
-    - openmp  # [linux]
     - cmake
     - make
     - pkg-config
-    - sysroot_linux-64=2.17 # [linux]
+    - bison
+    - flex
   host:
     - llvm-openmp  # [osx]
-    - openmp  # [linux]
+    - libgomp  # [linux]
+    - openmpi
+    - doxygen
     - zlib
     - bzip2
-    - sysroot_linux-64=2.17 # [linux]
   run:
     - llvm-openmp  # [osx]
-    - openmp  # [linux]
-    - python
-    - sysroot_linux-64=2.17 # [linux]
+    - libgomp  # [linux]
+    - openmpi
+    - python >=3.8
 
 test:
   commands:
     - spades.py --version 2>&1 | grep {{ version }}
     - rnaspades.py --version 2>&1 | grep {{ version }}
-    - truspades.py --help 2>&1 | grep {{ version }}
     - metaspades.py --version 2>&1 | grep {{ version }}
     - plasmidspades.py --version 2>&1 | grep {{ version }}
     - spades-kmercount -h 2>&1 | grep spades-kmercount
@@ -50,29 +49,30 @@ test:
     - spades-gbuilder 2>&1 | grep spades-gbuilder
     - spades.py --test && rm -rf spades_test
 
-
 about:
-  home: http://cab.spbu.ru/software/spades/
-  license: GPLv2
+  home: "https://github.com/ablab/spades"
+  license: "GPL-2.0-only"
   license_family: GPL
   license_file: LICENSE
-  summary: SPAdes (St. Petersburg genome assembler) is intended for both standard isolates and single-cell MDA bacteria assemblies.
+  summary: "SPAdes (St. Petersburg genome assembler) is intended for both standard isolates and single-cell MDA bacteria assemblies."
   description: |
     SPAdes (St. Petersburg genome assembler) is a genome assembly algorithm which was designed for
     single cell and multi-cells bacterial data sets. However, it might not be suitable for large
     genomes projects.
 
     SPAdes works with Ion Torrent, PacBio, Oxford Nanopore, and Illumina paired-end, mate-pairs and
-    single reads
-
-  dev_url: https://github.com/ablab/spades
-  doc_url: http://cab.spbu.ru/files/release{{version}}/manual.html
-
+    single reads.
+  dev_url: "https://github.com/ablab/spades"
+  doc_url: "https://ablab.github.io/spades"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - druvus
     - notestaff
+    - chrisjackson-pellicle
   identifiers:
     - biotools:spades
     - usegalaxy-eu:spades
@@ -80,5 +80,3 @@ extra:
     - doi:10.1101/gr.213959.116
     - doi:10.1093/gigascience/giz100
     - doi:10.1093/bioinformatics/btz349
-  skip-lints:
-    - should_not_be_noarch_source

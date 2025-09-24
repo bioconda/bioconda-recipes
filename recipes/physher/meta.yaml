@@ -1,0 +1,49 @@
+{% set name = "physher" %}
+{% set version = "2.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/4ment/physher/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 0e90418f0a2d4b57295917925b7293f953c3a532a30c5e4601b8ff7474b9a4a8
+  patches:
+    - physher-aarch64.patch  # [arm64 or aarch64]
+
+build:
+  number: 3
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - pkg-config
+  host:
+    - gsl
+
+test:
+  commands:
+    - physher
+
+about:
+  home: "https://github.com/4ment/physher"
+  license: "GPL-2.0-or-later"
+  license_family: GPL2
+  license_file: LICENSE
+  summary: "A multi-algorithmic framework for phylogenetic inference."
+  dev_url: "https://github.com/4ment/physher"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - 4ment
+  identifiers:
+    - doi:10.1186/s12862-014-0163-6
+    - biotools:physher

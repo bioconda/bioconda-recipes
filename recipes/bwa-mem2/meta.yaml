@@ -1,17 +1,22 @@
-{% set version = "2.2.1" %}
+{% set name = "bwa-mem2" %}
+{% set version = "2.3" %}
 
 package:
-  name: bwa-mem2
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  - url: https://github.com/bwa-mem2/bwa-mem2/releases/download/v{{ version }}/Source_code_including_submodules.tar.gz
-    sha256: 9b001bdc7666ee3f14f3698b21673714d429af50438b894313b05bc4688b1f6d
-    patches:
-      - Makefile.patch
+  url: https://github.com/bwa-mem2/bwa-mem2/releases/download/v{{ version }}/Source_code_including_submodules.tar.gz
+  sha256: 0c48a1ea800af499ae7264b4c8908c4ca35fbe5a7df2ad6106c79aa94bb49cbb
+  patches:
+    - Makefile.patch  # [ not aarch64 and not arm64 ]
+    - safestr-makefile.patch  # [ not aarch64 and not arm64 ] 
+    - sse2neon.patch  # [ aarch64 or arm64 ]
 
 build:
-  number: 5
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('bwa-mem2', max_pin="x") }}
 
 requirements:
   build:
@@ -20,22 +25,32 @@ requirements:
     - {{ compiler('cxx') }}
   host:
     - zlib
+    - wget
 
 test:
   commands:
     - bwa-mem2 version
-    - bwa-mem2.sse41 version
-    - bwa-mem2.sse42 version
-    - bwa-mem2.avx version
-    - bwa-mem2.avx2 version
-    - bwa-mem2.avx512bw version
+    - bwa-mem2.sse41 version # [ not aarch64 and not arm64 ]
+    - bwa-mem2.sse42 version # [ not aarch64 and not arm64 ]
+    - bwa-mem2.avx version # [ not aarch64 and not arm64 ]
+    - bwa-mem2.avx2 version # [ not aarch64 and not arm64 ]
+    - bwa-mem2.avx512bw version # [ not aarch64 and not arm64 ]
 
 about:
-  home: https://github.com/bwa-mem2/bwa-mem2
+  home: "https://github.com/bwa-mem2/bwa-mem2"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: The next version of bwa-mem 
+  summary: "The next version of bwa-mem."
+  dev_url: "https://github.com/bwa-mem2/bwa-mem2"
+  doc_url: "https://github.com/bwa-mem2/bwa-mem2/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.1109/IPDPS.2019.00041
+    - biotools:bwa-mem2
+    - usegalaxy-eu:bwa_mem2
+    - usegalaxy-eu:bwa_mem2_idx

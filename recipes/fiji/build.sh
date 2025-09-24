@@ -1,20 +1,28 @@
 #!/bin/bash
-set -eu -o pipefail
+set -xeu -o pipefail
 
 sharedir=$PREFIX/share
 outdir=$sharedir/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
 mkdir -p $PREFIX/bin
 
-unamestr=`uname`
+UNAME_S=$(uname -s)
+UNAME_M=$(uname -m)
 cp -R $SRC_DIR/* $sharedir
+
 # Make a symlink to get a single executable name
 # for both arch
-if [ "$unamestr" == 'Linux' ];
+if [ "${UNAME_S}" == 'Linux' ];
 then
     # Provide a link to the Linux executable from $PREFIX/bin.
-    ln -s $sharedir/ImageJ-linux64 $PREFIX/bin/ImageJ_bin
-elif [ "$unamestr" == 'Darwin' ];
+    if [ "${UNAME_M}" == 'x86_64' ];
+    then
+        ln -s $sharedir/ImageJ-linux64 $PREFIX/bin/ImageJ_bin
+    elif [ "${UNAME_M}" == 'aarch64' ];
+    then
+        ln -s $sharedir/fiji-linux-arm64 $PREFIX/bin/ImageJ_bin
+    fi
+elif [ "${UNAME_S}" == 'Darwin' ];
 then
     # Provide a link to the osx executable from $PREFIX/bin.
     ln -s $sharedir/Contents/MacOS/ImageJ-macosx $PREFIX/bin/ImageJ_bin

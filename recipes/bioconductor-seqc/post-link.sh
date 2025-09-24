@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "seqc-1.36.0"
+installBiocDataPackage.sh "seqc-1.40.0"

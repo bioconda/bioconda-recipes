@@ -9,7 +9,7 @@ import sys
 import subprocess
 from os import access, getenv, X_OK
 
-jar_file = os.path.join(os.path.dirname(__file__), "IonQuant.jar")
+jar_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "IonQuant.jar")
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
