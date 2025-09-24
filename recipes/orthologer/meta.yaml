@@ -1,19 +1,19 @@
 {% set name = "orthologer" %}
-{% set version = "3.6.1" %}
-{% set sha256 = "414b2839bfbc08006cecdb12ddd83763e72db32d6dbd1ce0b8f4f3caaf34e050" %}
+{% set version = "3.8.0" %}
+{% set sha256 = "6a2b5742b60c9b899e5f870f3cbf36a32d15b7a904875f853b4c85ce86bf4467" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
+source:
+  url: https://data.orthodb.org/current/download/software/orthologer_{{ version }}.tgz
+  sha256: {{ sha256 }}
+
 build:
   number: 0
   run_exports:
     - {{ pin_subpackage('orthologer', max_pin="x") }}
-
-source:
-  url: https://data.orthodb.org/current/download/software/orthologer_{{ version }}.tgz
-  sha256: {{ sha256 }}
 
 requirements:
   build:
@@ -21,17 +21,22 @@ requirements:
     - {{ compiler('c') }}
     - cmake
     - make
-    - bash >=4.1
-    - spdlog
+    - pkg-config
   host:
+    - python >=3.4,<3.12
+    - bash >=4.1
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
     - rsync
     - wget
     - bash >=4.1
+    - spdlog
+    - ete3
+    - boost-cpp
   run:
+    - boost-cpp
     - bash >=4.1
-    - python >=3.4
+    - python >=3.4,<3.12
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
     - rsync
@@ -43,20 +48,22 @@ requirements:
     - biopython
     - numpy
     - busco >=5.7.0
+    - ete3
 
 test:
   commands:
     - ALLOW_RUNAS_ROOT=1 orthologer -h
 
 about:
-  home: https://orthologer.ezlab.org
-  license: GPL3
+  home: "https://orthologer.ezlab.org"
+  license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: LICENSE
   summary: "Ortholog detection for comparative genomics and fast functional annotation behind OrthoDB and BUSCO."
   description: "Ortholog detection for comparative genomics and fast functional annotation behind OrthoDB and BUSCO."
-  dev_url: https://gitlab.com/ezlab/orthologer_container
-  doc_url: https://orthologer.ezlab.org/#on-orthodb-data
+
+  dev_url: "https://gitlab.com/ezlab/orthologer_container"
+  doc_url: "https://orthologer.ezlab.org/#on-orthodb-data"
 
 extra:
   container:

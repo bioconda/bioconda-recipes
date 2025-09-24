@@ -1,13 +1,11 @@
 #!/bin/bash
 
 RM_DIR="${PREFIX}/share/RepeatMasker"
-mkdir -p ${PREFIX}/bin
-mkdir -p ${RM_DIR}
+mkdir -p "${PREFIX}/bin"
+mkdir -p "${RM_DIR}"
 mv * ${RM_DIR}
 
-export LANGUAGE=en_US.UTF-8
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
+export LC_ALL="en_US.UTF-8"
 
 # configure
 cd ${RM_DIR}

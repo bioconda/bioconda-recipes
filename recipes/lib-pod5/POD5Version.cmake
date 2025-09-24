@@ -1,0 +1,6 @@
+# Created by pod5_make_version.py 
+set(POD5_VERSION_MAJOR 0 )
+set(POD5_VERSION_MINOR 3 )
+set(POD5_VERSION_REV 27 )
+set(POD5_NUMERIC_VERSION 0.3.27 )
+set(POD5_FULL_VERSION 0.3.27 ) 

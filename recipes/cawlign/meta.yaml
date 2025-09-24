@@ -1,0 +1,57 @@
+{% set version = "0.1.11" %}
+{% set sha256 = "6b7ced6cf77c3b1b62066e5261eb603573ba7876e51c4c731519c734f2ae2921" %}
+
+package:
+  name: cawlign
+  version: {{ version }}
+
+source:
+  url: https://github.com/veg/cawlign/archive/refs/tags/{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("cawlign", max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - cmake >=3.10.0
+    - {{ compiler("cxx") }}
+  host:
+    - libcurl
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - openmpi
+    - zlib
+  run:
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - openmpi
+
+test:
+  commands:
+    - cawlign --version
+
+about:
+  home: https://github.com/veg/cawlign
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A tool for aligning consensus sequences to reference genomes"
+  description: |
+    A standalone C++ port of bealign, a part of the BioExt package. The purpose of this program 
+    is to align/map sequences in a FASTA file to a reference sequence and output the alignment 
+    as another FASTA file. 
+
+    Key features:
+    * Lightweight and self-contained
+    * Allows codon-aware alignment while handling out-of-frame events
+    * Flexible specification of scoring matrices
+    * OpenMP support
+  dev_url: https://github.com/veg/cawlign
+
+extra:
+  container:
+    extended-base: true
