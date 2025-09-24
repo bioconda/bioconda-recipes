@@ -9,7 +9,13 @@ export LDFLAGS="${LDFLAGS:-} -L${PREFIX}/lib"
 
 case "$(uname)"  in
     Linux)
-        # use gcc on linux
+        echo "Patching Linux build script"
+        # patch waf script on Linux
+        # force gcc to use C11 plus GNU extensions
+        sed -i "s/\(\s*cfg\.env\.CFLAGS *= *\[\)/\1'-std=gnu11', /" wscript
+        # force g++ to use C++11 plus GNU extensions
+        sed -i "s/\(\s*cfg\.env\.CXXFLAGS *= *\[\)/\1'-std=gnu++11', /" wscript
+
         ./waf configure \
             --check-c-compiler=gcc \
             --check-cxx-compiler=g++ \
@@ -19,9 +25,12 @@ case "$(uname)"  in
             --jobs=${CPU_COUNT}
         ;;
     Darwin)
+        echo "Patching macOS build script"
         # patch waf script on macOS (remember: different sed version)
-        # Update line 18 (CXXFLAGS) to add -stdlib=libc++ and -std=c++11
-        sed -i '' "18s/\[/['-stdlib=libc++', '-std=c++11', /" wscript
+        # force clang to use C11 standard
+        sed -i '' "s/\(\s*cfg\.env\.CFLAGS *= *\[\)/\1'-std=c11', /" wscript
+        # force clang++ to use GCC's C++ library
+        sed -i '' "s/\(\s*cfg\.env\.CXXFLAGS *= *\[\)/\1'-stdlib=libc++', '-std=c++11', /" wscript
 
         ./waf configure \
             --check-c-compiler=clang \
@@ -33,8 +42,10 @@ case "$(uname)"  in
         ;;
 esac
 
-# release mode is important
-./waf build --mode=release install
+# print patched wscript for testing
+cat wscript
+
+./waf build install
 
 # run unit tests after building
 if ./build/test/unit/test_bgen | grep -q "All tests passed"; then
