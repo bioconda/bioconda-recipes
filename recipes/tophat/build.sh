@@ -9,6 +9,10 @@ mkdir -p "$PREFIX/bin"
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 
+sed -i.bak 's|-O2|-O3|' src/samtools-0.1.18/Makefile
+sed -i.bak 's|CC=	|CC?=	|' src/samtools-0.1.18/Makefile
+rm -f src/samtools-0.1.18/*.bak
+
 autoreconf -if
 case $(uname -m) in
     aarch64)
