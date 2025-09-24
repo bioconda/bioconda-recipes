@@ -10,7 +10,7 @@ export CPLUS_INCLUDE_PATH="${PREFIX}/include"
 export PATH="${PATH}:${PREFIX}/bin"
 
 case $(uname -m) in
-    aarch64|arm*)
+    aarch64|arm64)
         CFLAGS="${CFLAGS} -march=armv8-a+simd -DKSW_CPU_DISPATCH=0"
         CFLAGS="${CFLAGS} -mtune=cortex-a72"
         ;;
@@ -27,7 +27,7 @@ KSW2_DIR="${SRC_DIR}/thirdparty/ksw2"
 cat > "${KSW2_DIR}/Makefile" <<'EOF'
 CC ?= gcc
 AR ?= ar
-CFLAGS += -Wall -O2
+CFLAGS += -Wall -O3
 
 OBJS = ksw2_gg.o ksw2_extz.o ksw2_extd.o
 
