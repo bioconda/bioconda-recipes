@@ -1,5 +1,5 @@
 {% set name = "art_modern" %}
-{% set version = "1.1.4" %}
+{% set version = "1.1.7" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/YU-Zhejian/art_modern/archive/refs/tags/{{ version }}.zip
-  sha256: 66ecbd1c5f0fd4cb7ba501303f6ee58a6128a3aff3fb81b2dbabd31aae3b34be
+  sha256: 9aacc88ea582eddcea0f0c27dc72df5980707ca7066ffcceea53ff8104cd2a31
 
 build:
   number: 0
@@ -23,13 +23,17 @@ requirements:
     - coreutils >=8.28
     - bash
     - {{ compiler('cxx') }}
-  host:
+    # Python is only needed for the build
     - python {{ python }}
+  host:
     # Boost version copied from package ProMod3 at bioconda recepies ver. 0ff2abb3f8
     - libboost-devel >=1.86,<1.87
     - zlib
+    - abseil-cpp
+    - htslib # samtools does not specify HTSLib version, so do us.
+    - fmt
+    # Conda do not have moodycamel-concurrentqueue, so using the bundled one.
   run:
-    - python {{ python }}
     - libboost >=1.86,<1.87
 
 test:
@@ -41,7 +45,7 @@ about:
   license: "GPL-3.0-only"
   license_family: GPL3
   license_file: "License.md"
-  summary: "Simulator of Diverse Next-Generation Sequencing Reads"
+  summary: "Modernized ART simulator of diverse Next-Generation Sequencing reads"
   dev_url: "https://github.com/YU-Zhejian/art_modern"
   doc_url: "https://github.com/YU-Zhejian/art_modern/releases/download/{{ version }}/art_modern.pdf"
 
