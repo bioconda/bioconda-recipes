@@ -2,19 +2,22 @@
 {% set version = "1.6.7" %}
 
 package:
-  name: "{{ name|lower }}"
+  name: "{{ name }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  url: "https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
   sha256: "81889ccaa04bd530a7f2f0b93064c748940b573d736c824f2e97450df5b2033e"
 
 build:
-  number: 0
+  number: 1
   skip: True  # [py < 36]
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -f *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
-    - {{ pin_subpackage('phanotate', max_pin="x") }}
+    - {{ pin_subpackage('name', max_pin="x") }}
 
 requirements:
   build:
