@@ -9,7 +9,6 @@ mkdir -p "${PREFIX}/bin"
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 
-autoreconf -if
 ./configure --prefix="${PREFIX}" \
 	--disable-option-checking --enable-silent-rules --disable-dependency-tracking \
 	--with-boost="${PREFIX}" \
@@ -26,5 +25,5 @@ autoreconf -if
 	CPPFLAGS="${CPPFLAGS}" \
 	LDFLAGS="${LDFLAGS}"
 
-make
+make -j"${CPU_COUNT}"
 make install
