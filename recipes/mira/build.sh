@@ -9,6 +9,7 @@ mkdir -p "${PREFIX}/bin"
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 
+autoreconf -if
 case $(uname -m) in
     aarch64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
@@ -23,11 +24,11 @@ esac
 
 ./configure --prefix="${PREFIX}" \
 	--disable-option-checking --enable-silent-rules --disable-dependency-tracking \
+	--enable-optimisations --enable-64 \
 	--with-boost="${PREFIX}" \
-	--with-boost-filesystem=yes \
-	--with-boost-thread=yes \
-	--with-boost-system=yes \
-	--with-boost-iostreams=yes \
+	--with-boost-libdir="${PREFIX}/lib" \
+	--disable-static \
+	--enable-shared \
 	--with-expat="${PREFIX}" \
 	--with-zlib="${PREFIX}" \
 	CC="${CC}" \
