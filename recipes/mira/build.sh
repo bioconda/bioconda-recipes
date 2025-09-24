@@ -21,7 +21,8 @@ autoreconf -if
 	CXX="${CXX}" \
 	CXXFLAGS="${CXXFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" \
-	LDFLAGS="${LDFLAGS}"
+	LDFLAGS="${LDFLAGS}" \
+	LIBS="-lz -lbz2 -lboost_filesystem -lboost_thread -lboost_system -lboost_iostreams"
 
 make
 make install
