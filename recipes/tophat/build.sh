@@ -9,8 +9,7 @@ mkdir -p "$PREFIX/bin"
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 
-sed -i.bak 's|-O2|-O3|' src/samtools-0.1.18/Makefile
-sed -i.bak 's|CC=	|CC?=	|' src/samtools-0.1.18/Makefile
+sed -i.bak -E 's/(inline void __ks_insertsort_)/static \1/g' src/samtools-0.1.18/ksort.h
 rm -f src/samtools-0.1.18/*.bak
 
 autoreconf -if
