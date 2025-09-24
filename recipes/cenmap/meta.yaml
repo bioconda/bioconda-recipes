@@ -1,0 +1,85 @@
+{% set name = "cenmap" %}
+{% set version = "1.0.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/logsdon-lab/CenMAP/releases/download/v{{ version }}/srcs-full-CenMAP.tar.gz
+  sha256: 200a57ff65274532fe08b83287f0da421ff5e9c939726057f27ea676a79e3507
+
+build:
+  number: 1
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - zlib
+  run:
+    - python >=3.12
+    - findutils
+    - coreutils
+    - bedops
+    - hmmer
+    - gzip
+    - gawk
+    - bedtools
+    - kmc >=3.2.4
+    - minimap2 >=2.29
+    - ont-modkit >=0.3.2
+    - pbmm2 >=1.17.0
+    # Last compatible repeatmasker version. post-link script removed in 4.1.8
+    # https://github.com/bioconda/bioconda-recipes/commit/8fdb7a3556da35a6e2bc2ef7bbd4895377867a05
+    - repeatmasker ==4.1.7p1
+    - rustybam
+    - samtools >=1.13
+    - seqkit
+    - seqtk
+    - srf-n-trf >=0.1.1
+    - stringdecomposer
+    # cenmap uses faster subsample jobs introduced in 8.24
+    # https://github.com/snakemake/snakemake/pull/3112
+    # Rule inheritance rename rules changed in 9.11.4. 
+    # https://github.com/snakemake/snakemake/pull/3714
+    - snakemake >=8.24.0,<9.11.4
+    - intervaltree
+    - matplotlib-base
+    - numpy
+    - polars
+    - pyarrow
+    - pyyaml
+    - scipy
+    - seaborn
+    - nucflag >=0.3.7
+    - cenplot >=0.1.4
+    - censtats >=0.1.0
+
+test:
+  commands:
+    - cenmap --version
+    # Do dry-run to ensure snakemake workflow is correct.
+    - touch test.fa && cenmap -i test.fa -s example --snake-opts="-n" -o results && rm -rf results
+  import:
+    - numpy
+    - scipy
+    - pysam
+    - cenplot
+    - censtats
+
+about:
+  home: "https://github.com/logsdon-lab/CenMAP"
+  license: MIT
+  license_family: MIT
+  summary: "A centromere mapping and annotation pipeline for T2T human and primate genome assemblies implemented in Snakemake."
+  dev_url: "https://github.com/logsdon-lab/CenMAP"
+  doc_url: "https://github.com/logsdon-lab/CenMAP/blob/v{{ version }}/README.md"
+
+extra:
+  recipe-maintainers:
+    - koisland
