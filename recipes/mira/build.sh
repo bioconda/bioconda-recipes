@@ -2,8 +2,8 @@
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I$PREFIX/include"
-export CFLAGS="${CFLAGS} -O3"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
+export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations -Wno-unused-result -Wno-maybe-uninitialized"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
 mkdir -p "${PREFIX}/bin"
 
@@ -13,7 +13,10 @@ autoreconf -if
 ./configure --prefix="${PREFIX}" \
 	--disable-option-checking --enable-silent-rules --disable-dependency-tracking \
 	--with-boost="${PREFIX}" \
-	--with-boost-libdir="${PREFIX}/lib" \
+	--with-boost-filesystem=yes \
+	--with-boost-thread=yes \
+	--with-boost-system=yes \
+	--with-boost-iostreams=yes \
 	--with-expat="${PREFIX}" \
 	--with-zlib="${PREFIX}" \
 	CC="${CC}" \
@@ -21,8 +24,7 @@ autoreconf -if
 	CXX="${CXX}" \
 	CXXFLAGS="${CXXFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" \
-	LDFLAGS="${LDFLAGS}" \
-	LIBS="-lz -lbz2 -lexpat -lboost_filesystem -lboost_thread -lboost_system -lboost_iostreams"
+	LDFLAGS="${LDFLAGS}"
 
 make
 make install
