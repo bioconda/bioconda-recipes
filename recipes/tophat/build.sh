@@ -16,12 +16,15 @@ autoreconf -if
 case $(uname -m) in
     aarch64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	export ARCH="-march=armv8-a"
 	;;
     arm64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	export ARCH="-march=armv8.4-a"
 	;;
     x86_64)
 	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	export ARCH="-march=x86-64-v3"
 	;;
 esac
 
@@ -31,7 +34,7 @@ esac
 	--with-boost-libdir="${PREFIX}/lib" \
 	CC="${CC}" \
 	CFLAGS="${CFLAGS}" \
-	CXX="${CXX} -std=c++14" \
+	CXX="${CXX} ${ARCH} -std=c++14" \
 	CXXFLAGS="${CXXFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" \
 	LDFLAGS="${LDFLAGS}"
