@@ -20,6 +20,7 @@ case $(uname -m) in
 	;;
 esac
 
+sed -i.bak 's|-lpthread|-pthread|' Makefile
 if [[ "$(uname -s)" == "Darwin" ]]; then
 	sed -i.bak 's|-lrt||' Makefile
 fi
@@ -28,7 +29,12 @@ if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
 	sed -i.bak 's|-m64||' Makefile
 	sed -i.bak 's|-msse4.2 -D__SSE4_2_||' Makefile
 fi
-sed -i.bak 's|-lpthread|-pthread|' Makefile
+
+if [[ "$(uname -m)" == "aarch64" ]]; then
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a|' Makefile
+elif [[ "$(uname -m)" == "arm64" ]]; then
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a|' Makefile
+fi
 rm -f *.bak
 
 make CC="${CC} -std=gnu11" LD="${CXX} -std=c++14" CXX="${CXX} -std=c++14" \
