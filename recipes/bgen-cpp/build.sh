@@ -9,6 +9,7 @@ export LDFLAGS="${LDFLAGS:-} -L${PREFIX}/lib"
 
 case "$(uname)"  in
     Linux)
+        echo "Patching Linux build script"
         # patch waf script on Linux
         # force gcc to use C11 plus GNU extensions
         sed -i "s/\(\s*cfg\.env\.CFLAGS *= *\[\)/\1'-std=gnu11', /" wscript
@@ -24,6 +25,7 @@ case "$(uname)"  in
             --jobs=${CPU_COUNT}
         ;;
     Darwin)
+        echo "Patching macOS build script"
         # patch waf script on macOS (remember: different sed version)
         # force clang to use C11 standard
         sed -i '' "s/\(\s*cfg\.env\.CFLAGS *= *\[\)/\1'-std=c11', /" wscript
@@ -39,6 +41,9 @@ case "$(uname)"  in
             --jobs=${CPU_COUNT}
         ;;
 esac
+
+# print patched wscript for testing
+cat wscript
 
 ./waf build install
 
