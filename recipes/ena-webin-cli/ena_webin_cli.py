@@ -60,7 +60,11 @@ def jvm_opts(argv):
       (memory_options, prop_options, passthrough_options)
     """
     mem_opts = []
-    prop_opts = []
+
+    # To avoid warnings in java >=24
+    # See https://github.com/enasequence/webin-cli/issues/157
+    prop_opts = ["--enable-native-access=ALL-UNNAMED"]
+
     pass_args = []
     exec_dir = None
 
