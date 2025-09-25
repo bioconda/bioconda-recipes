@@ -7,23 +7,36 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/PacificBiosciences/pb-StarPhase/releases/download/v{{ version }}/pbstarphase-v{{ version }}-x86_64-unknown-linux-gnu.tar.gz
-  sha256: {{ sha256 }}
+  - url: https://github.com/PacificBiosciences/pb-StarPhase/archive/v{{ version }}.tar.gz
+    sha256: 6c7e409e472dd13861d63bbc0ac9a82ce9e50ca6560a796d8ccca75ca843904a
+    folder: source
 
 build:
-  number: 0
+  number: 1
   skip: True  # [osx]
   run_exports:
-    - {{ pin_subpackage('pbstarphase', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+    - pkg-config
+  host:
+    - zlib
 
 test:
   commands:
-    - pbstarphase --version
+    - test -f ${PREFIX}/bin/pbstarphase
+    - pbstarphase 2>&1 | grep "Usage"
+    - pbstarphase --help
 
 about:
-  home: https://github.com/PacificBiosciences/pb-StarPhase
-  license: BSD-3-Clause-Clear
-  summary: A phase-aware pharmacogenomic diplotyper for PacBio sequencing data
+  home: "https://github.com/PacificBiosciences/pb-StarPhase"
+  license: "BSD-3-Clause-Clear"
+  summary: "A phase-aware pharmacogenomic diplotyper for PacBio sequencing data."
+  dev_url: "https://github.com/PacificBiosciences/pb-StarPhase"
 
 extra:
   recipe-maintainers:
@@ -33,3 +46,5 @@ extra:
   skip-lints:
     - should_use_compilers
     - should_be_noarch_generic
+  additional-platforms:
+    - linux-aarch64
