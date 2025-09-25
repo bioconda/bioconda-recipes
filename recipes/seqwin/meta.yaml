@@ -1,0 +1,50 @@
+{% set name = "seqwin" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/treangenlab/seqwin/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f3ba4ae3b86ec7d0b9734824bb14a9a97cb59d230b3e2d21f4b44910327f0f3a
+
+build:
+  number: 1
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('seqwin', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=61
+    - wheel
+  run:
+    - python >=3.10
+    - numpy >=2
+    - numba
+    - pandas >=2
+    - networkx
+    - pydantic
+    - typer
+    - btllib
+    - mash
+    - blast
+    - ncbi-datasets-cli
+
+test:
+  imports:
+    - seqwin
+  commands:
+    - seqwin --help
+
+about:
+  home: https://github.com/treangenlab/seqwin
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Ultrafast identification of signature sequences in microbial genomes via minimizer graphs"
+  dev_url: https://github.com/treangenlab/seqwin

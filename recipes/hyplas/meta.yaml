@@ -1,0 +1,58 @@
+{% set version = "1.0.1" %}
+{% set sha256 = "82fc13d067915c8d76c32228a53fa63f24631cdd64da5f0fb9ae139fe9286c50" %}
+
+package:
+  name: hyplas
+  version: {{ version }}
+
+source:
+    url: https://github.com/cchauve/HyPlAs/archive/refs/tags/v{{ version }}.zip
+    sha256: {{ sha256 }}
+
+build:
+  number: 1
+  entry_points:
+    - hyplas = hyplas.hyplas:main
+    - unicycler_hyplas_modified = unicycler_hyplas_modified.unicycler:main
+  run_exports:
+    - {{ pin_subpackage('hyplas', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - pkg-config
+  host:
+    - python
+    - pip
+    - zlib
+  run:
+    - python
+    - numpy
+    - pandas
+    - packaging 
+    - platon
+    - minimap2
+    - minigraph
+    - racon
+    - spades
+    - miniasm
+    - spades >=4.0.0
+
+test:
+  commands:
+    - hyplas --help
+    - unicycler_hyplas_modified --help
+
+about:
+  home: "https://github.com/cchauve/hyplas"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Hybrid long- short- plasmid assembler."
+  dev_url: "https://github.com/cchauve/hyplas"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
