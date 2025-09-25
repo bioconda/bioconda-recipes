@@ -25,6 +25,6 @@ esac
 rm -f Release/*.bak
 
 make clean
-make CXX="${CXX}" -j"${CPU_COUNT}"
+make CXX="${CXX}"
 
 install -v -m 0755 Release/GapCloser "$PREFIX/bin"
