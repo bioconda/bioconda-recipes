@@ -9,11 +9,13 @@ package:
 source:
   url: https://github.com/{{ name }}/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-Makefile.patch
 
 build:
-  # distutils was removed from python 3.12
-  skip: true # [py == 312 ]
   number: 4
+  # distutils was removed from python 3.12
+  skip: True  # [py > 311]
   run_exports:
     - {{ pin_subpackage('genometools-genometools', max_pin="x") }}
 
@@ -22,38 +24,43 @@ requirements:
     - make
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
+    - pkg-config
   host:
     - python
     - glib
-    - pango  # [not osx]
-    - cairo  # [not osx]
+    - pango
+    - cairo
   run:
-    - fontconfig  # https://github.com/AdoptOpenJDK/openjdk-build/issues/693
-    - font-ttf-dejavu-sans-mono
     - python
+    # https://github.com/AdoptOpenJDK/openjdk-build/issues/693
+    - fontconfig
+    - font-ttf-dejavu-sans-mono
     - gettext
-    - pango  # [not osx]
-    - cairo  # [not osx]
+    - pango
+    - cairo
     - xorg-libxrender
     - xorg-libsm
     - xorg-libxext
 
 test:
-  commands:
-    - gt -version
   imports:
     - gt
+  commands:
+    - gt -version
 
 about:
-  home: http://genometools.org/
-  summary: GenomeTools genome analysis system.
+  home: "https://genometools.org"
+  summary: "GenomeTools genome analysis system."
   license: BSD
+  license_family: BSD
   license_file: LICENSE
-  doc_url: http://genometools.org/documentation.html
-  dev_url: https://github.com/genometools/genometools
+  doc_url: "https://genometools.org/documentation.html"
+  dev_url: "https://github.com/genometools/genometools"
+
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - notestaff
   identifiers:
