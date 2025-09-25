@@ -3,23 +3,27 @@
 
 package:
   name: nextgenmap
-  version: '{{version}}'
+  version: {{ version }}
 
 source:
-  url: https://github.com/Cibiv/NextGenMap/archive/v{{version}}.tar.gz
-  sha256: '{{sha256}}'
+  url: https://github.com/Cibiv/NextGenMap/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-CMakeLists.patch
 
 build:
   number: 5
   # Compilation failed under osx.
   # src/ReadProvider.cpp:474:34: error: ordered comparison between pointer and zero ('char *' and 'int')
-  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('nextgenmap', max_pin="x.x") }}
 
 requirements:
   build:
-    - make
+    - ninja
     - {{ compiler('cxx') }}
     - cmake
+    - pkg-config
   run:
     - binutils
 
@@ -29,9 +33,16 @@ test:
     - ngm-utils 2>&1 | grep "ngm-utils"
 
 about:
-  home: https://github.com/Cibiv/NextGenMap
+  home: "https://github.com/Cibiv/NextGenMap"
   license: MIT
   license_family: MIT
   summary: NextGenMap is a flexible highly sensitive short read mapping tool that
     handles much higher mismatch rates than comparable algorithms while still outperforming
     them in terms of runtime.
+  dev_url: "https://github.com/Cibiv/NextGenMap"
+  doc_url: "https://github.com/Cibiv/NextGenMap/wiki"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
