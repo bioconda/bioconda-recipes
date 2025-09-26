@@ -26,6 +26,7 @@ esac
 
 ./autogen.sh
 ./configure --prefix="${PREFIX}" \
+	--with-boost="${PREFIX}" \
 	CXX="${CXX}" \
 	CXXFLAGS="${CXXFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" \
