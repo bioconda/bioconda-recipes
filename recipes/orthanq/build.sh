@@ -6,7 +6,7 @@ export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
 
 # Make sure bindgen passes on our compiler flags.
 export BINDGEN_EXTRA_CLANG_ARGS="${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
-export RUSTFLAGS="-L ${PREFIX}/include -C link-args=-Wl,-rpath,${PREFIX}/lib"
+export RUSTFLAGS="-C link-args=-Wl,-rpath,${PREFIX}/lib"
 
 if [[ "${target_platform}" == "${build_platform}" ]]; then
   export PYO3_PYTHON="${PYTHON}"
