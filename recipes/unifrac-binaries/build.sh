@@ -12,23 +12,24 @@ env |grep PREFIX
 echo "Arch: $(uname -s)"
 pwd
 
-if [[ "$(uname -s)" == "Linux" ]];
+#if [[ "$(uname -s)" == "Linux" ]];
+if [[ ${target_platform}  == "linux-64"  ]];
 then
-          which aarch64-conda-linux-gnu-gcc
-          aarch64-conda-linux-gnu-gcc -v
-          aarch64-conda-linux-gnu-g++ -v
+          which x86_64-conda-linux-gnu-gcc
+          x86_64-conda-linux-gnu-gcc -v
+          x86_64-conda-linux-gnu-g++ -v
 else
           which clang
           clang -v
 fi
 which h5c++
 
-if [[ ${target_platform} == "linux-64" ]] && [[ "x${BUILD_NV_OFFLOAD}" != "xcpu" ]];
+#if [[ "$(uname -s)" == "Linux" ]] && [[ "x${BUILD_NV_OFFLOAD}" != "xcpu" ]];
+if [[ ${target_platform}  == "linux-64"   ]] && [[ "x${BUILD_NV_OFFLOAD}" != "xcpu" ]];
         then
           export BUILD_NV_OFFLOAD=acc
           # force an older compiler version, since the default has library compatibility issues
           export NV_URL=https://developer.download.nvidia.com/hpc-sdk/24.7/nvhpc_2024_247_Linux_x86_64_cuda_multi.tar.gz
-# 	  export NV_URL=https://developer.download.nvidia.com/hpc-sdk/24.7/nvhpc_2024_247_linux_aarch64_cuda_12.5.tar.gz
           # install PGI locally
           ./scripts/install_hpc_sdk.sh </dev/null
           # get the compilers in the path and set NV_CXX and AMD_CXX
@@ -40,24 +41,39 @@ if [[ ${target_platform} == "linux-64" ]] && [[ "x${BUILD_NV_OFFLOAD}" != "xcpu"
 fi
 # else, no NV_CXX or AMD_CXX in the env, so no GPU build
 # all == build (shlib,bins,tests) and install
-
 if [[ ${target_platform}  == "linux-aarch64" ]]; then
-	sed -i "46c \\\tBLASLIB += -lgfortran " ./src/Makefile
-	sed -i "131c \\\t        CPPFLAGS += -march=native  -mtune=generic " ./src/Makefile 
-        sed -i "139c \\\tCPPFLAGS += " ./src/Makefile
-	sed -i "141c \\\tCPPFLAGS += -march=native -moutline-atomics -mtune=native "  ./src/Makefile
-	sed -i "152c \\\t        CPPFLAGS +=  -march=native -moutline-atomics  -mtune=native " ./src/Makefile
-	sed -i "20c \\\t \$(CC)  \$(CPPFLAGS) \$(CFLAGS) -std=c99  -c libssu.c -Wno-implicit-function-declaration -fPIC" combined/Makefile 
-	sed -i "17c \\\t\$(CC) \$(CFLAGS)  -march=native -mtune=generic  -std=c99 -O0 -g capi_test.c -I../src -lssu -L\${PREFIX}/lib -Wl,-rpath,\${PREFIX}/lib \$(LDFLAGS) -o capi_test" test/Makefile
-        sed -i "27c \\\ /*__builtin_cpu_init ();*/" combined/libssu.c
-	sed -i "28c \\\   bool has_v2  = false; " combined/libssu.c
-	sed -i "29c \\\   bool has_v3  = false; " combined/libssu.c
-	sed -i "30c \\\   bool has_v4  = false; " combined/libssu.c
+sed -i "131c         CPPFLAGS += -march=native -mtune=generic" src/Makefile
+sed -i "46c  BLASLIB += -lgfortran " src/Makefile
+sed -i '317s|^|# |' src/Makefile
+sed -i '40,42s|^|# |' Makefile
+sed -i '65,75s|^|# |' Makefile
+sed -i '97,104s|^|# |' Makefile
+sed -i '128,135s|^|# |' Makefile
+export CFLAGS="${CFLAGS}  -Wno-implicit-function-declaration"
 
-	export UNIFRAC_MAX_CPU=basic
-	export UNIFRAC_CPU_INFO=Y
+cat > $SRC_DIR/test/cpu_compat.c << 'EOF'
+// cpu_compat.c - 为非 x86 架构提供兼容性函数
 
+#if !defined(__x86_64__) && !defined(_M_AMD64)
+
+void __builtin_cpu_init(void) {
+    // 空实现
+}
+
+int __builtin_cpu_supports(const char *feature) {
+    return 0;
+}
+
+#endif
+EOF
+sed -i "17c\\\t\$(CC) \$(CFLAGS) -std=c99 -O0 -g capi_test.c cpu_compat.c -I../src -lssu -L\${PREFIX}/lib -Wl,-rpath,\${PREFIX}/lib \$(LDFLAGS) -o capi_test"  test/Makefile
+sed -i "20c\\\t\$(CC) \$(CFLAGS) -std=c99 -O0 -g cpu_compat.c capi_inmem_test.c -I../src -lssu -L\${PREFIX}/lib -Wl,-rpath,\${PREFIX}/lib \$(LDFLAGS) -o capi_inmem_test"  test/Makefile
+
+cp -rf $SRC_DIR/test/cpu_compat.c $SRC_DIR/combined/
+sed -i "18a cpu_compat.o: cpu_compat.c " combined/Makefile
+sed -i "19a\\\t\$(CC) \$(CPPFLAGS) \$(CFLAGS) -c cpu_compat.c -fPIC " combined/Makefile
+sed -i "24c libssu.so: libssu.o cpu_compat.o" combined/Makefile
+sed -i "25c\\\t\$(CC) -shared -o libssu.so libssu.o cpu_compat.o -fPIC -ldl \$(LDFLAGS) " combined/Makefile
 fi
-
 make clean && make clean_install && make all
 
