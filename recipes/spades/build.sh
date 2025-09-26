@@ -10,4 +10,14 @@ export CXXFLAGS="${CXXFLAGS} -O3 -fcommon -Wno-deprecated-declarations -Wno-unus
 
 PREFIX="${PREFIX}" ./spades_compile.sh -rj"${CPU_COUNT}"
 
-"${STRIP}" ${PREFIX}/bin/*
+cd ${PREFIX}/bin
+
+"${STRIP}" spades-bwa binspreader \
+  spades-corrector-core spades-hammer \
+  spades-hpc spades-ionhammer \
+  pathracer pathracer-seq-fs \
+  spades-core spades-convert-bin-to-fasta \
+  spades-gbuilder spades-gmapper \
+  spades-gsimplifier spades-kmercount \
+  spades-read-filter spades-kmer-estimating \
+  spades-gfa-split spaligner
