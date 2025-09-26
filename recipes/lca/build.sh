@@ -9,7 +9,7 @@ mkdir -p "${PREFIX}/bin"
 sed -i -e 's/-static //' Makefile
 sed -i.bak 's|-std=c++0x|-std=c++0x -march=x86-64-v3|' Makefile
 sed -i.bak 's|$(LINK.cc)|$(CXX) $(CPPFLAGS)|' Makefile
-sed -i -e 's/-lz/-L$(PREFIX)/lib -lz/' Makefile
+sed -i.bak 's|-lz|-L$(PREFIX)/lib -lz|' Makefile
 
 case $(uname -m) in
     aarch64)
