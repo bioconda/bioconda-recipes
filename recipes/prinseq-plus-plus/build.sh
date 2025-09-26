@@ -26,7 +26,6 @@ esac
 
 autoreconf -if
 ./configure --prefix="${PREFIX}" \
-	--with-boost="${PREFIX}" \
 	CXX="${CXX}" \
 	CXXFLAGS="${CXXFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" \
