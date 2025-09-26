@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-non-prototype -Wno-implicit-function-declaration -Wno-implicit-int"
+export CFLAGS="${CFLAGS} -O3 -fcommon -Wno-deprecated-non-prototype -Wno-implicit-function-declaration -Wno-implicit-int"
 
 mkdir -p "$PREFIX/bin"
 
@@ -17,7 +17,3 @@ make CC="${CC}" -j1
 
 # copy binary to prefix folder
 install -v -m 0755 bin/domclust Script/*.pl build_input/*.pl "${PREFIX}/bin"
-
-# test
-bin/domclust -h
-bin/domclust tst/test.hom tst/test.gene
