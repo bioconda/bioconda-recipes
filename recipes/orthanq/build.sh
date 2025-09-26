@@ -15,6 +15,6 @@ fi
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 RUST_BACKTRACE=1
-cargo install -v --no-track --root "${PREFIX}" --path .
+cargo install -v --no-track --locked --root "${PREFIX}" --path .
 
 "${STRIP}" "${PREFIX}/bin/orthanq"
