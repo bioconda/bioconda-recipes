@@ -2,9 +2,9 @@
 
 export CPPFLAGS="${CPPFLAGS} -I$PREFIX/include"
 export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
-export CFLAGS="${CFLAGS} -O3"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration -Wno-implicit-int"
 
-mkdir -p ${PREFIX}/bin
+mkdir -p "${PREFIX}/bin"
 
 # use newer config.guess and config.sub that support linux-aarch64
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
@@ -17,7 +17,7 @@ if [[ "$(uname -m)" == "arm64" ]]; then
 
 	cd argtable2-13/
 	autoreconf -if
-	./configure --prefix="${PREFIX}" CC="${CC}"
+	./configure --prefix="${PREFIX}" CC="${CC}" CFLAGS="${CFLAGS}"
 	make -j"${CPU_COUNT}"
 	make install
 
@@ -28,9 +28,9 @@ autoreconf -if
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
 	# clang doesn't accept -fopenmp and there's no clear way around that
-	./configure --prefix="${PREFIX}"
+	./configure --prefix="${PREFIX}" CC="${CC}" CFLAGS="${CFLAGS}"
 else
-	./configure --prefix="${PREFIX}" OPENMP_CFLAGS='-fopenmp' CFLAGS='-DHAVE_OPENMP'
+	./configure --prefix="${PREFIX}" CC="${CC}" CFLAGS="${CFLAGS} -DHAVE_OPENMP" OPENMP_CFLAGS='-fopenmp'
 fi
 
 make -j"${CPU_COUNT}"
