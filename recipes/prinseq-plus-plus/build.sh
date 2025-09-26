@@ -24,12 +24,12 @@ case $(uname -m) in
 	;;
 esac
 
-autoreconf -if
+./autogen.sh
 ./configure --prefix="${PREFIX}" \
 	CXX="${CXX}" \
 	CXXFLAGS="${CXXFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" \
 	LDFLAGS="${LDFLAGS}"
 
-make -j"${CPU_COUNT}"
+make
 make install
