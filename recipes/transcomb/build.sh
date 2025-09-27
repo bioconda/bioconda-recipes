@@ -21,7 +21,7 @@ esac
 
 case $(uname -s) in
     "Darwin")
-	export CXXFLAGS="${CXXFLAGS} -stdlib=libstdc++"
+	export CXXFLAGS="${CXXFLAGS} -mmacosx-version-min=11.0 -stdlib=libc++"
 	;;
 esac
 sed -i.bak "s#g++#$CXX#g" src/CMakeLists.txt
