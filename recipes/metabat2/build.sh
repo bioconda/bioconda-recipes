@@ -2,8 +2,8 @@
 set -xe
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -ldeflate"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-deprecated-declarations"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-c++11-narrowing-const-reference -Wno-non-pod-varargs -Wno-deprecated-declarations -Wno-maybe-uninitialized -Wno-template-body"
 export CFLAGS="${CFLAGS} -O3"
 
 # Fix the version
