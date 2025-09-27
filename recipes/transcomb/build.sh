@@ -19,6 +19,12 @@ case $(uname -m) in
 	;;
 esac
 
+case $(uname -s) in
+    "Darwin")
+	sed -i.bak 's|tr1/unordered_map|unordered_map|g' src/*.cc
+	sed -i.bak 's|tr1::unordered_map|unordered_map|g' src/*.cc
+	;;
+esac
 sed -i.bak "s#g++#$CXX#g" src/CMakeLists.txt
 rm -f src/*.bak
 
