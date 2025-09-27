@@ -27,7 +27,7 @@ cd build
 
 cmake -S ../src -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
-	-DCMAKE_CXX_FLAGS="$CXXFLAGS -std=c++14" \
+	-DCMAKE_CXX_FLAGS="$CXXFLAGS -std=c++03" \
 	-DBOOST_ROOT="${PREFIX}" \
 	-DBAMTOOLS_INCLUDE_DIR="${PREFIX}/include/bamtools" \
 	-DBAMTOOLS_LIB_DIR="${PREFIX}/lib"
