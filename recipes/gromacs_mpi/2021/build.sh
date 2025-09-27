@@ -9,7 +9,36 @@ fi
 mkdir build
 cd build
 
-## See INSTALL of gromacs distro
+if [[ "$(uname -m)" == "aarch64" ]]; then
+for ARCH in ARM_NEON ARM_NEON_ASIMD ARM_SVE; do
+  DENSITY_FILE="$SRC_DIR/src/gromacs/applied_forces/densityfitting/densityfitting.cpp"
+  sed -i '45a #include "gromacs/selection/indexutil.h"' "${DENSITY_FILE}"
+  cmake_args=(
+    -DSHARED_LIBS_DEFAULT=ON
+    -DBUILD_SHARED_LIBS=ON
+    -DGMX_PREFER_STATIC_LIBS=NO
+    -DGMX_BUILD_OWN_FFTW=OFF
+    -DGMX_GPU=OFF
+    -DGMX_SIMD_ARM_SVE_LENGTH=256
+    -DCMAKE_PREFIX_PATH="${PREFIX}"
+    -DGMX_INSTALL_PREFIX="${PREFIX}"
+    -DCMAKE_INSTALL_PREFIX="${PREFIX}"
+    -DGMX_SIMD="${ARCH}"
+    -DCMAKE_INSTALL_BINDIR="bin.${ARCH}"
+    -DCMAKE_INSTALL_LIBDIR="lib.${ARCH}"
+    -DGMX_MPI=ON
+    -DCMAKE_CXX_STANDARD_REQUIRED=ON
+    -DCMAKE_CXX_FLAGS="-Wno-template-body"
+    -DGMX_EXCLUDE_DENSITYFITTING=ON
+  )
+sed -i '1i #include <cstdint>' ../src/gromacs/utility/flags.h
+sed -i '1i #include <cstdint>' ../src/gromacs/options/optionflags.h
+  CXXFLAGS="-std=c++11 -fpermissive -Wno-template-body -Wno-error=incomplete-type" cmake .. "${cmake_args[@]}"
+  make -j "${CPU_COUNT}"
+  make install
+done
+else
+
 for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do
   cmake_args=(
     -DSHARED_LIBS_DEFAULT=ON
@@ -31,7 +60,7 @@ for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do
   make -j "${CPU_COUNT}"
   make install
 done
-
+fi
 
 #
 # Build the program to identify number of AVX512 FMA units
@@ -39,7 +68,7 @@ done
 # are dual AVX-512 FMA units, it will be faster to use AVX-512 SIMD, but if
 # there's only a single one we prefer AVX2_256 SIMD instead.
 #
-
+if [[ "$(uname -m)" != "aarch64" ]]; then
 ${CXX} -O3 -mavx512f -std=c++11 \
 -DGMX_IDENTIFY_AVX512_FMA_UNITS_STANDALONE=1 \
 -DGMX_X86_GCC_INLINE_ASM=1 \
@@ -48,7 +77,7 @@ ${CXX} -O3 -mavx512f -std=c++11 \
 ${SRC_DIR}/src/gromacs/hardware/identifyavx512fmaunits.cpp
 # Create wrapper and activation scripts
 # Variable declaration from MPI script fewer changes if left in.
-
+fi
 gmx='gmx_mpi'
 
 mkdir -p "${PREFIX}/etc/conda/activate.d"
@@ -97,6 +126,7 @@ chmod +x "${PREFIX}/bin/${gmx}"
 #
 # where only the available features are listed. Either way, we then use
 # bash extended pattern matching to find the features we need.
+if [[ "$(uname -m)" != "aarch64" ]]; then
 case "$OSTYPE" in
     darwin*) hardware_info_command="sysctl -a | grep '^hw.optional\..*: 1$'"
              ;;
@@ -138,3 +168,4 @@ EOF
 cat >> "${PREFIX}/bin/${gmx}" <<EOF
 exec "\$( _gromacs_bin_dir )/${gmx}" "\${@}"
 EOF
+fi
