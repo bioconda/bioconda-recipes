@@ -17,7 +17,7 @@ rm -rf *.bak
 if [[ `uname -s` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 	export CXXFLAGS="${CXXFLAGS} -std=c++14 -D_LIBCPP_DISABLE_AVAILABILITY"
-	mv VERSION{,.txt} || True
+	cp -f VERSION VERSION.txt
 else
 	export CONFIG_ARGS=""
 fi
