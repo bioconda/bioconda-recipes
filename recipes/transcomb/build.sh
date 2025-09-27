@@ -3,9 +3,9 @@ set -x -e
 
 mkdir -p "${PREFIX}/bin"
 
-export LIBS='-lboost_regex -lboost_system -lboost_program_options -lboost_filesystem -lboost_timer'
-export CXXFLAGS="$CXXFLAGS -DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR}"
-export LDFLAGS="$LDFLAGS -L${BOOST_LIBRARY_DIR} -lboost_regex -lboost_filesystem -lboost_system"
+export CXXFLAGS="$CXXFLAGS"
+export LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -I${PREFIX}/include/bamtools"
 
 case $(uname -m) in
     aarch64)
@@ -27,7 +27,7 @@ cd build
 
 cmake -S ../src -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
-	-DCMAKE_CXX_FLAGS="$CXXFLAGS -std=c++03" \
+	-DCMAKE_CXX_FLAGS="$CXXFLAGS -std=c++14" \
 	-DBOOST_ROOT="${PREFIX}" \
 	-DBAMTOOLS_INCLUDE_DIR="${PREFIX}/include/bamtools" \
 	-DBAMTOOLS_LIB_DIR="${PREFIX}/lib"
