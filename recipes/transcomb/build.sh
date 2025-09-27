@@ -3,7 +3,7 @@ set -x -e
 
 mkdir -p "${PREFIX}/bin"
 
-export CXXFLAGS="$CXXFLAGS"
+export CXXFLAGS="$CXXFLAGS -std=c++14"
 export LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -I${PREFIX}/include/bamtools"
 
@@ -21,12 +21,10 @@ esac
 
 case $(uname -s) in
     "Darwin")
-	sed -i.bak "s#g++#$CXX -stdlib=libstdc++#g" src/CMakeLists.txt	
-	;;
-	*)
-	sed -i.bak "s#g++#$CXX#g" src/CMakeLists.txt	
+	export CXXFLAGS="${CXXFLAGS} -stdlib=libstdc++"
 	;;
 esac
+sed -i.bak "s#g++#$CXX#g" src/CMakeLists.txt
 rm -f src/*.bak
 
 mkdir -p build
@@ -34,7 +32,7 @@ cd build
 
 cmake -S ../src -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
-	-DCMAKE_CXX_FLAGS="$CXXFLAGS -std=c++14" \
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-DBOOST_ROOT="${PREFIX}" \
 	-DBAMTOOLS_INCLUDE_DIR="${PREFIX}/include/bamtools" \
 	-DBAMTOOLS_LIB_DIR="${PREFIX}/lib"
