@@ -19,7 +19,11 @@ case $(uname -m) in
 	;;
 esac
 
-sed -i.bak "s#g++#$CXX#g" src/CMakeLists.txt
+case $(uname -s) in
+    "Darwin")
+	sed -i.bak "s#g++#$CXX -stdlib=libstdc++#g" src/CMakeLists.txt	
+	;;
+esac
 rm -f src/*.bak
 
 mkdir -p build
