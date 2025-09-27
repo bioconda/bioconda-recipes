@@ -11,13 +11,10 @@ sed -i.bak 's|2.17|2.18|' VERSION
 # make check_git_repository
 sed -i.bak 's/GIT-NOTFOUND/'$PKG_VERSION' (Bioconda)/' version.h
 
-sed -i.bak 's|VERSION 3.5.1|VERSION 3.5|' CMakeLists.txt
-rm -rf *.bak
-
 if [[ `uname -s` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 	export CXXFLAGS="${CXXFLAGS} -std=c++14 -D_LIBCPP_DISABLE_AVAILABILITY"
-	cp -f VERSION VERSION.txt
+	mv VERSION version.txt
 else
 	export CONFIG_ARGS=""
 fi
@@ -42,4 +39,4 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	"${CONFIG_ARGS}"
 
 # Build & install
-cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+cmake --build build --target install -j "${CPU_COUNT}"
