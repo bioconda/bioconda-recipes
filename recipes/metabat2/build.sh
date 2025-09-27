@@ -15,6 +15,7 @@ if [[ `uname -s` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 	export CXXFLAGS="${CXXFLAGS} -std=c++14 -D_LIBCPP_DISABLE_AVAILABILITY"
 	mv VERSION version.txt
+	sed -i.bak 's|CMAKE_CXX_STANDARD 17|CMAKE_CXX_STANDARD 14|' CMakeLists.txt
 	sed -i.bak 's|get_git_version(MetaBAT)|#get_git_version(MetaBAT)|' CMakeLists.txt
 	rm -f *.bak
 else
