@@ -1,31 +1,39 @@
 #!/bin/bash
-
 set -x -e
 
 mkdir -p "${PREFIX}/bin"
 
-export INCLUDE_PATH="${PREFIX}/include/:${PREFIX}/include/bamtools/"
-export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
-export BOOST_INCLUDE_DIR="${PREFIX}/include"
-export BOOST_LIBRARY_DIR="${PREFIX}/lib"
 export LIBS='-lboost_regex -lboost_system -lboost_program_options -lboost_filesystem -lboost_timer'
-
-export BAMTOOLS_INCLUDE_DIR="${BUILD_PREFIX}/include/bamtools/"
-export BAMTOOLS_LIBRARY_DIR="${BUILD_PREFIX}/lib/"
-
 export CXXFLAGS="$CXXFLAGS -DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR}"
 export LDFLAGS="$LDFLAGS -L${BOOST_LIBRARY_DIR} -lboost_regex -lboost_filesystem -lboost_system"
 
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
+
 sed -i.bak "s#g++#$CXX#g" src/CMakeLists.txt
-mkdir build
+rm -f src/*.bak
+
+mkdir -p build
 cd build
-cmake ../src -DCMAKE_INSTALL_PREFIX=$PREFIX -DCMAKE_CXX_COMPILER=${CXX} -DCMAKE_CXX_FLAGS="$CXXFLAGS"
-make CXX=$CXX
+
+cmake -S ../src -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+	-DCMAKE_CXX_COMPILER="${CXX}" \
+	-DCMAKE_CXX_FLAGS="$CXXFLAGS -std=c++14" \
+	-DBOOST_ROOT="${PREFIX}" \
+	-DBAMTOOLS_INCLUDE_DIR="${PREFIX}/include/bamtools" \
+	-DBAMTOOLS_LIB_DIR="${PREFIX}/lib"
+
+make
 
 cd ..
 
-cp TransComb $PREFIX/bin
-cp build/Assemble $PREFIX/bin
-cp build/CorrectName $PREFIX/bin
-cp build/Pre_Alignment $PREFIX/bin
+install -v -m 0755 TransComb build/Assemble build/CorrectName build/Pre_Alignment "$PREFIX/bin"
