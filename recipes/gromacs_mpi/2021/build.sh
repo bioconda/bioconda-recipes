@@ -56,6 +56,8 @@ for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do
     -DCMAKE_INSTALL_LIBDIR="lib.${ARCH}"
     -DGMX_MPI=ON
   )
+  sed -i '1i #include <cstdint>' ../src/gromacs/utility/flags.h
+  sed -i '1i #include <cstdint>' ../src/gromacs/options/optionflags.h
   cmake .. "${cmake_args[@]}"
   make -j "${CPU_COUNT}"
   make install
