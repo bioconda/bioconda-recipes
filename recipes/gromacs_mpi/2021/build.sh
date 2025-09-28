@@ -8,11 +8,12 @@ fi
 
 mkdir build
 cd build
-
+DENSITY_FILE="$SRC_DIR/src/gromacs/applied_forces/densityfitting/densityfitting.cpp"
+sed -i '45a #include "gromacs/selection/indexutil.h"' "${DENSITY_FILE}"
+sed -i '/#ifndef GMX_UTILITY_FLAGS_H/a #include <cstdint>' ../src/gromacs/utility/flags.h
+sed -i '/#ifndef GMX_OPTIONS_OPTIONFLAGS_H/a #include <cstdint>' ../src/gromacs/options/optionflags.h
 if [[ "$(uname -m)" == "aarch64" ]]; then
-for ARCH in ARM_NEON ARM_NEON_ASIMD ARM_SVE; do
-  DENSITY_FILE="$SRC_DIR/src/gromacs/applied_forces/densityfitting/densityfitting.cpp"
-  sed -i '45a #include "gromacs/selection/indexutil.h"' "${DENSITY_FILE}"
+for ARCH in ARM_NEON ARM_NEON_ASIMD ARM_SVE; do  
   cmake_args=(
     -DSHARED_LIBS_DEFAULT=ON
     -DBUILD_SHARED_LIBS=ON
@@ -31,8 +32,8 @@ for ARCH in ARM_NEON ARM_NEON_ASIMD ARM_SVE; do
     -DCMAKE_CXX_FLAGS="-Wno-template-body"
     -DGMX_EXCLUDE_DENSITYFITTING=ON
   )
-sed -i '1i #include <cstdint>' ../src/gromacs/utility/flags.h
-sed -i '1i #include <cstdint>' ../src/gromacs/options/optionflags.h
+#sed -i '1i #include <cstdint>' ../src/gromacs/utility/flags.h
+#sed -i '1i #include <cstdint>' ../src/gromacs/options/optionflags.h
   CXXFLAGS="-std=c++11 -fpermissive -Wno-template-body -Wno-error=incomplete-type" cmake .. "${cmake_args[@]}"
   make -j "${CPU_COUNT}"
   make install
@@ -56,8 +57,6 @@ for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do
     -DCMAKE_INSTALL_LIBDIR="lib.${ARCH}"
     -DGMX_MPI=ON
   )
-  sed -i '1i #include <cstdint>' ../src/gromacs/utility/flags.h
-  sed -i '1i #include <cstdint>' ../src/gromacs/options/optionflags.h
   cmake .. "${cmake_args[@]}"
   make -j "${CPU_COUNT}"
   make install
