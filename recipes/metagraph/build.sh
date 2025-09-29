@@ -9,21 +9,6 @@ export JEMALLOC_INCLUDE_DIR="${PREFIX}/include"
 export BOOST_INCLUDEDIR="${PREFIX}/include"
 export BOOST_LIBRARYDIR="${PREFIX}/lib"
 
-sed -i.bak 's|VERSION 2.8.2|VERSION 3.5|' metagraph/CMakeLists.txt.in
-sed -i.bak 's|VERSION 2.8.12|VERSION 3.5|' metagraph/CMakeListsKMC.txt.in
-sed -i.bak 's|VERSION 2.8.11|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/CMakeLists.txt
-sed -i.bak 's|VERSION 2.4.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/libdivsufsort/CMakeLists.txt
-sed -i.bak 's|VERSION 2.6.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/googletest/CMakeLists.txt
-sed -i.bak 's|VERSION 2.6.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/googletest/googletest/CMakeLists.txt
-sed -i.bak 's|VERSION 2.6.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/googletest/googlemock/CMakeLists.txt
-sed -i.bak 's|VERSION 2.6|VERSION 3.5|' metagraph/external-libraries/DYNAMIC/CMakeLists.txt
-sed -i.bak 's|VERSION 2.8.12|VERSION 3.5|' metagraph/external-libraries/zlib/CMakeLists.txt
-sed -i.bak 's|VERSION 3.1.3|VERSION 3.5|' metagraph/external-libraries/caches/CMakeLists.txt
-sed -i.bak 's|VERSION 2.8.11|VERSION 3.5|' metagraph/external-libraries/eigen/CMakeLists.txt
-sed -i.bak 's|VERSION 3.0.2|VERSION 3.5|' metagraph/external-libraries/folly/CMakeLists.txt
-sed -i.bak 's|VERSION 3.1|VERSION 3.5|' metagraph/external-libraries/hopscotch-map/CMakeLists.txt
-sed -i.bak 's|VERSION 3.1|VERSION 3.5|' metagraph/external-libraries/ordered-map/CMakeLists.txt
-
 ARCH=$(uname -m)
 OS=$(uname -s)
 
@@ -56,10 +41,6 @@ fi
 
 sed -i.bak 's|-O2|-O3|' metagraph/CMakeLists.txt
 sed -i.bak 's|-lpthread|-pthread|' metagraph/CMakeLists.txt
-sed -i.bak 's|-std=c++11|-std=c++14|' metagraph/CMakeListsKMC.txt.in
-rm -rf metagraph/*.bak
-sed -i.bak 's|-std=c++11|-std=c++14|' metagraph/external-libraries/sdsl-lite/CMakeLists.txt
-rm -rf metagraph/external-libraries/sdsl-lite/*.bak
 
 pushd metagraph/external-libraries/sdsl-lite
 ./install.sh "${PWD}"
