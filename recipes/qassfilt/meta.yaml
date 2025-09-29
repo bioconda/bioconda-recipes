@@ -1,0 +1,40 @@
+{% set name = "qassfilt" %}
+{% set version = "1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/hsamrach/QAssfilt/archive/refs/tags/qassfilt_version{{ version }}.tar.gz
+  sha256: 9be361600520be5d51a296e5960f1e108f89c9c2f3f107c785e65fca9fc9e6bf
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("qassfilt", max_pin="x") }}
+  script: |
+    mkdir -p ${PREFIX}/bin
+    chmod +x qassfilt.sh
+    cp qassfilt.sh ${PREFIX}/bin/qassfilt
+
+requirements:
+  host:
+    - bash
+  run:
+    - bash
+
+about:
+  home: https://github.com/hsamrach/QAssfilt
+  license: GPL-3.0-only
+  license_file: LICENSE
+  summary: "QAssfilt: a ready-to-use genome assembly quality filtering pipeline"
+
+test:
+  commands:
+    - qassfilt --help
+
+extra:
+  identifiers:
+    - biotools:qassfilt
