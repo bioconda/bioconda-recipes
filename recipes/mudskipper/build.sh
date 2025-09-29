@@ -7,7 +7,7 @@ export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}"
 export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
 sed -i.bak 's|"0.16.2"|"0.18.0"|' Cargo.toml
-sed -i.bak 's|"0.39.5"|"0.47.1"|' Cargo.toml
+sed -i.bak 's|"0.39.5"|"*"|' Cargo.toml
 rm -f *.bak
 
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
