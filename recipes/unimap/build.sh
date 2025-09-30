@@ -7,15 +7,15 @@ export CFLAGS="${CFLAGS} -O3"
 install -d "${PREFIX}/bin"
 
 if [[ "$(uname -m)" == "aarch64" ]] || [[ "$(uname -m)" == "arm64" ]]; then
-  export EXTRA_ARGS="arm_neon=1 aarch64=1"
-  git clone https://github.com/DLTcollab/sse2neon.git
-  cp sse2neon/sse2neon.h .
-  sed -i.bak '9c #include "sse2neon.h"'  ksw2_ll_sse.c
-  sed -i.bak '9c #include "sse2neon.h"'  ksw2_extz2_sse.c
-  sed -i.bak '10c #include "sse2neon.h"' ksw2_extd2_sse.c
-  sed -i.bak '10c #include "sse2neon.h"' ksw2_exts2_sse.c
+	export EXTRA_ARGS="arm_neon=1 aarch64=1"
+	git clone https://github.com/DLTcollab/sse2neon.git
+	cp -f sse2neon/sse2neon.h .
+	sed -i'' -e '9c #include "sse2neon.h"'  ksw2_ll_sse.c
+	sed -i'' -e '9c #include "sse2neon.h"'  ksw2_extz2_sse.c
+	sed -i'' -e '10c #include "sse2neon.h"' ksw2_extd2_sse.c
+	sed -i'' -e '10c #include "sse2neon.h"' ksw2_exts2_sse.c
 else
-  export EXTRA_ARGS=""
+	export EXTRA_ARGS=""
 fi
 
 make CC="${CC}" \
