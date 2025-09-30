@@ -169,7 +169,7 @@ def _gen_new_index(repodata, subdir):
         if has_dep(record, 'htslib'):
             # skip deps prior to 1.10, which was the first with soversion 3
             # TODO adjust replacement (exclusive) upper bound with each new compatible HTSlib
-            _pin_looser(fn, record, 'htslib', min_lower_bound='1.10', upper_bound='1.22')
+            _pin_looser(fn, record, 'htslib', min_lower_bound='1.10', upper_bound='1.23')
 
         # future libdeflate versions are compatible until they bump their soversion; relax dependencies accordingly
         if record_name in ['htslib', 'staden_io_lib', 'fastp', 'pysam'] and has_dep(record, 'libdeflate'):

@@ -3,14 +3,20 @@
 set -exo pipefail
 
 # Prevent build failures due to insufficient memory in the CI environment
+# Use parallel build because of serial build on osx-arm64 causing occasional errors
 if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm64" ]]; then
-  export CPU_COUNT=1
+  export CPU_COUNT=$(( CPU_COUNT * 70 / 100 ))
 fi
 
-if [[ "$(uname)" == "Linux" ]]; then
+if [[ "${target_platform}" == "linux-"* ]]; then
     export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined,--export-dynamic"
-elif [[ "$(uname)" == "Darwin" ]]; then
+elif [[ "${target_platform}" == "osx-"* ]]; then
     export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic -framework OpenGL"
+fi
+
+if [[ "${target_platform}" == osx-64 ]]; then
+  export FFLAGS="-m64 -fPIC"
+  export FCFLAGS="-m64 -fPIC"
 fi
 
 mkdir -p build && cd build
@@ -70,8 +76,9 @@ cmake .. \
 make VERBOSE=1 -j"${CPU_COUNT}"
 
 # GFX-related tests time out for CI checks on linux-aarch64
-if [[ "${build_platform}" != "linux-aarch64" ]]; then
+if [[ "${target_platform}" != "linux-aarch64" ]]; then
     make check
 fi
 
 make install
+cd "${SRC_DIR}" && rm -rf build
