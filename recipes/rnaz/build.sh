@@ -22,9 +22,6 @@ case $(uname -m) in
 	;;
 esac
 
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' perl/*.pl
-rm -f perl/*.bak
-
 autoreconf -if
 ./configure --prefix="$PREFIX" \
 	--datadir="$PREFIX/share" \
