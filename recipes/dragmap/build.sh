@@ -31,8 +31,8 @@ case $(uname -s) in
 	sed -i.bak 's|-fipa-cp-clone||g' config.mk
 	sed -i.bak 's|-ftree-phiprop||g' config.mk
 	sed -i.bak 's|-lrt -lgomp|-lomp|' config.mk
-	#sed -i.bak 's|$(CXXSTD)|$(CXXSTD) -std=c++14|' config.mk
-	export CXXFLAGS="${CXXFLAGS} -std=c++14"
+	sed -i.bak 's|#include <queue>|\#include <algorithm>|' src/lib/align/Aligner.cpp
+	export CXXFLAGS="${CXXFLAGS} -stdlib=libstdc++"
 	;;
 esac
 
