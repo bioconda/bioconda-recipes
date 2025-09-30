@@ -32,7 +32,7 @@ case $(uname -s) in
 	sed -i.bak 's|-ftree-phiprop||g' config.mk
 	sed -i.bak 's|-lrt -lgomp|-lomp|' config.mk
 	sed -i.bak 's|#include <queue>|\#include <algorithm>|' src/lib/align/Aligner.cpp
-	export CXXFLAGS="${CXXFLAGS} -stdlib=libstdc++ -D_LIBCPP_DISABLE_AVAILABILITY"
+	export CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -D_LIBCPP_DISABLE_AVAILABILITY"
 	;;
 esac
 
