@@ -8,6 +8,7 @@ export JEMALLOC_LIBRARY="${PREFIX}/lib"
 export JEMALLOC_INCLUDE_DIR="${PREFIX}/include"
 export BOOST_INCLUDEDIR="${PREFIX}/include"
 export BOOST_LIBRARYDIR="${PREFIX}/lib"
+export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}"
 
 ARCH=$(uname -m)
 OS=$(uname -s)
@@ -37,6 +38,8 @@ elif [[ "${OS}" == "Darwin" ]]; then
 	sed -i.bak 's|/usr/local/gcc-6.3.0/bin/g++|${CXX}|' metagraph/external-libraries/KMC/makefile_mac
  	sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile_mac
 	rm -rf metagraph/external-libraries/KMC/*.bak
+	sed -i.bak 's|link_directories(/opt/homebrew/opt/icu4c/lib)|link_directories(${PREFIX}/lib)|' metagraph/CMakeLists.txt
+	sed -i.bak 's|link_directories(/usr/local/opt/icu4c/lib)|link_directories(${PREFIX}/lib)|' metagraph/CMakeLists.txt
 	CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
 	export CXXFLAGS="${CXXFLAGS} -Wno-implicit-function-declaration -Wno-suggest-destructor-override -Wno-error=deprecated-copy -D_LIBCPP_DISABLE_AVAILABILITY"
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
