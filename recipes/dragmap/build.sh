@@ -34,12 +34,12 @@ case $(uname -s) in
 	sed -i.bak 's|$(CXXSTD)|$(CXXSTD) -std=c++14|' config.mk
 	export CXXFLAGS="${CXXFLAGS} -std=c++14"
 	;;
-fi
+esac
 
 if [[ "$target_platform" == "linux-aarch64" || "$target_platform" == "osx-arm64" ]]; then
-	sed -i'' -e 's%-mavx2% %g' config.mk
-	sed -i'' -e 's%-msse4.2% %g' config.mk
-	sed -i'' -e 's/__m256i\*/void*/g' ./thirdparty/sswlib/ssw/ssw_internal.hpp
+	sed -i'.bak' 's%-mavx2% %g' config.mk
+	sed -i'.bak' 's%-msse4.2% %g' config.mk
+	sed -i'.bak' 's/__m256i\*/void*/g' ./thirdparty/sswlib/ssw/ssw_internal.hpp
 	git clone https://github.com/DLTcollab/sse2neon.git
 	cp -f sse2neon/sse2neon.h thirdparty/dragen/src/host/metrics/public
 	cp -f sse2neon/sse2neon.h thirdparty/sswlib/ssw
