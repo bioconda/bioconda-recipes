@@ -31,7 +31,7 @@ case $(uname -s) in
 	sed -i.bak 's|-fipa-cp-clone||g' config.mk
 	sed -i.bak 's|-ftree-phiprop||g' config.mk
 	sed -i.bak 's|-lrt -lgomp|-lomp|' config.mk
-	sed -i.bak 's|$(CXXSTD)|$(CXXSTD) -std=c++14|' config.mk
+	#sed -i.bak 's|$(CXXSTD)|$(CXXSTD) -std=c++14|' config.mk
 	export CXXFLAGS="${CXXFLAGS} -std=c++14"
 	;;
 esac
@@ -42,12 +42,14 @@ if [[ "$target_platform" == "linux-aarch64" || "$target_platform" == "osx-arm64"
 	sed -i'.bak' 's/__m256i\*/void*/g' ./thirdparty/sswlib/ssw/ssw_internal.hpp
 	sed -i'.bak' 's|#include "SSE2NEON.h"|#include "sse2neon.h"|' thirdparty/dragen/src/host/metrics/public/mapping_stats.hpp
 	sed -i'.bak' 's|#include <xmmintrin.h>|#include "sse2neon.h"|' thirdparty/dragen/src/host/metrics/public/mapping_stats.hpp
+	sed -i'.bak' 's|#define _TARGET_X86_|#define __ARM_NEON|' thirdparty/dragen/src/host/metrics/public/mapping_stats.hpp
+	sed -i'.bak' 's|#elif defined(_TARGET_ARM_)|#elif defined(__ARM_NEON)|' thirdparty/dragen/src/host/metrics/public/mapping_stats.hpp
 	git clone https://github.com/DLTcollab/sse2neon.git
-	cp -f sse2neon/sse2neon.h thirdparty/dragen/src/host/metrics/public
-	cp -f sse2neon/sse2neon.h thirdparty/sswlib/ssw
-	cp -f sse2neon/sse2neon.h src/include/align
-	cp -f sse2neon/sse2neon.h src/lib/align
-	cp -f sse2neon/sse2neon.h src/lib/sequences
+	cp -f sse2neon/sse2neon.h thirdparty/dragen/src/host/metrics/public/
+	cp -f sse2neon/sse2neon.h thirdparty/sswlib/ssw/
+	cp -f sse2neon/sse2neon.h src/include/align/
+	cp -f sse2neon/sse2neon.h src/lib/align/
+	cp -f sse2neon/sse2neon.h src/lib/sequences/
 fi
 rm -f *.bak
 
