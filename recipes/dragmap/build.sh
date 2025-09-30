@@ -1,6 +1,9 @@
 #!/bin/bash
 
-
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3"
+export CFLAGS="${CFLAGS} -O3"
 export HAS_GTEST=0
 
 mkdir -p "${PREFIX}/bin"
@@ -17,31 +20,47 @@ case $(uname -m) in
 	;;
 esac
 
+sed -i.bak 's|-lpthread|-pthread|' config.mk
+sed -i.bak 's|-O2|-O3|' config.mk
 # fix build number in config
 sed -i.bak 's/VERSION_STRING.*/VERSION_STRING="${PKG_VERSION}"/' config.mk
 
+case $(uname -s) in
+    Darwin)
+	sed -i.bak 's|-fpredictive-commoning||' config.mk
+	sed -i.bak 's|-fipa-cp-clone||' config.mk
+	sed -i.bak 's|-ftree-phiprop||' config.mk
+	sed -i.bak 's|-lrt -lgomp|-lomp|' config.mk
+	sed -i.bak 's|$(CXXSTD)|$(CXXSTD) -std=c++14|' config.mk
+	export CXXFLAGS="${CXXFLAGS} -std=c++14"
+	;;
+fi
+
 if [[ "$target_platform" == "linux-aarch64" || "$target_platform" == "osx-arm64" ]]; then
 	sed -i.bak 's%-mavx2% %g' config.mk
-        sed -i.bak 's%-msse4.2% %g' config.mk
-        sed -i'.bak' 's/__m256i\*/void*/g' ./thirdparty/sswlib/ssw/ssw_internal.hpp
+    sed -i.bak 's%-msse4.2% %g' config.mk
+    sed -i'.bak' 's/__m256i\*/void*/g' thirdparty/sswlib/ssw/ssw_internal.hpp
 	git clone https://github.com/DLTcollab/sse2neon.git
-	cp -f sse2neon/sse2neon.h ./thirdparty/dragen/src/host/metrics/public
-	cp -f sse2neon/sse2neon.h ./thirdparty/sswlib/ssw
-	cp -f sse2neon/sse2neon.h ./src/include/align
-	cp -f sse2neon/sse2neon.h ./src/lib/align
-	cp -f sse2neon/sse2neon.h ./src/lib/sequences
+	cp -f sse2neon/sse2neon.h thirdparty/dragen/src/host/metrics/public
+	cp -f sse2neon/sse2neon.h thirdparty/sswlib/ssw
+	cp -f sse2neon/sse2neon.h src/include/align
+	cp -f sse2neon/sse2neon.h src/lib/align
+	cp -f sse2neon/sse2neon.h src/lib/sequences
 fi
+rm -f *.bak
 
 if [[ "$target_platform" == "linux-aarch64" ]]; then
-	sed -i'.bak' '/CXXFLAGS +=/ s/$/ -march=armv8-a /' ./make/lib.mk
+	sed -i'.bak' '/CXXFLAGS +=/ s/$/ -march=armv8-a /' make/lib.mk
 elif [[ "$target_platform" == "osx-arm64" ]]; then
-	sed -i'.bak' '/CXXFLAGS +=/ s/$/ -march=armv8.4-a /' ./make/lib.mk
+	sed -i'.bak' '/CXXFLAGS +=/ s/$/ -march=armv8.4-a /' make/lib.mk
+else
+	sed -i'.bak' '/CXXFLAGS +=/ s/$/ -march=x86-64-v3 /' make/lib.mk
 fi
+rm -f make/*.bak
 
 echo "pwd:----------------------------$PWD----------------"
-make CXX=$CXX CC=$CC CXXFLAGS="$CXXFLAGS" CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS"
-else
-make CXX=$CXX CC=$CC CXXFLAGS="$CXXFLAGS" CFLAGS="$CFLAGS"
-fi
+make CXX="${CXX}" CC="${CC}" CXXFLAGS="$CXXFLAGS" CFLAGS="$CFLAGS" -j"${CPU_COUNT}"
 
-install -v -m 0755 build/release/dragen-os ${PREFIX}/bin
+install -v -m 0755 build/release/dragen-os "${PREFIX}/bin"
+
+"${STRIP}" "${PREFIX}/bin/dragen-os"
