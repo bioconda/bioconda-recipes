@@ -1,0 +1,36 @@
+diff --git a/src/makefile b/src/makefile
+index 455dd26..7da054e 100644
+--- a/src/makefile
++++ b/src/makefile
+@@ -1,23 +1,23 @@
+-CXXFLAGS = -O3 -std=c++11 -mcmodel=medium -g
+-CXX = g++
++CXXFLAGS = -O3 -std=c++11 -mcmodel=medium -g -I$(PREFIX)/include
++CXX ?= g++
+ LIBS = -lbifrost -pthread -lz
+ 
+-all: rnabridge-denovo build clean
++all: rnabridge-denovo build
+ 
+ utils.o: utils.cpp
+ 	$(CXX) $(CXXFLAGS) -c utils.cpp
+ 
+-graph.o: graph.cpp 
+-	$(CXX) $(CXXFLAGS) -march=native -Wextra -c graph.cpp
++graph.o: graph.cpp
++	$(CXX) $(CXXFLAGS) -march=x86-64-v3 -c graph.cpp
+ bridging.o: bridging.cpp
+ 	$(CXX) $(CXXFLAGS) -c bridging.cpp
+ 
+ build: graph.o bridging.o utils.o main.cpp
+-	$(CXX) $(CXXFLAGS) -march=native -Wextra -o rnabridge-build build.cpp graph.o bridging.o utils.o $(LIBS) ${LDFLAGS}
++	$(CXX) $(CXXFLAGS) -march=x86-64-v3 -o rnabridge-build build.cpp graph.o bridging.o utils.o $(LIBS) ${LDFLAGS}
+ 
+ rnabridge-denovo: graph.o bridging.o utils.o main.cpp
+-	$(CXX) $(CXXFLAGS) -march=native -Wextra -o rnabridge-denovo main.cpp graph.o bridging.o utils.o $(LIBS) ${LDFLAGS}
+-	
++	$(CXX) $(CXXFLAGS) -march=x86-64-v3 -o rnabridge-denovo main.cpp graph.o bridging.o utils.o $(LIBS) ${LDFLAGS}
++
+ .PHONY:clean
+ 
+ 

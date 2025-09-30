@@ -2,35 +2,46 @@
 {% set version = "1.0.1" %}
 
 package:
-  name: "{{ name }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://github.com/Shao-Group/rnabridge-denovo/releases/download/v{{ version }}/rnabridge-denovo-{{ version }}.tar.gz"
-  sha256: "1bfe3dd9fa2f9151aa7bbc36b7308a9fe9a1355415a4dc5dbd99b8eadf91c221"
+  url: https://github.com/Shao-Group/rnabridge-denovo/archive/293047368835948e2e3a66c2c1bd62932c1aac07.tar.gz
+  sha256: 8f2f65745e04a329f59b786dbeb94a6cc651f11f72332eaa282898a68bea6730
+  patches:
+    - 0001-makefile.patch
 
 build:
-  number: 1
+  number: 2
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - pkg-config
   host:
     - bifrost
+    - zlib
   run:
     - bifrost
 
 test:
   commands:
     - rnabridge-denovo --help
-    
+
 about:
   home: "https://github.com/Shao-Group/rnabridge-denovo"
   license: BSD-3-Clause
+  license_family: BSD
   license_file: LICENSE
   summary: "A tool to construct the alignments of entire fragments given the alignments of paired-end reads."
+  dev_url: "https://github.com/Shao-Group/rnabridge-denovo"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - shaogroup

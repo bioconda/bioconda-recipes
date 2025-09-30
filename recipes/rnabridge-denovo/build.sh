@@ -1,11 +1,21 @@
 #!/bin/bash
-export C_INCLUDE_PATH=$PREFIX/include/
-export CPLUS_INCLUDE_PATH=$PREFIX/include/
-export LIBRARY_PATH=$PREFIX/lib
+
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-export LD_LIBRARY_PATH=$PREFIX/lib
+
+mkdir -p $PREFIX/bin
 
 cd src
-make CXX=$CXX
-mkdir -p $PREFIX/bin
-cp rnabridge-denovo $PREFIX/bin
+
+case $(uname -m) in
+    aarch64)
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a|' makefile
+	;;
+    arm64)
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a|' makefile
+	;;
+esac
+
+make CXX="${CXX}" -j"${CPU_COUNT}"
+
+install -v -m 0755 rnabridge-* "$PREFIX/bin"
