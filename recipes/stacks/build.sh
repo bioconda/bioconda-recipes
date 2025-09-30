@@ -1,8 +1,8 @@
 #!/bin/bash
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-unqualified-std-cast-call -Wno-c++11-narrowing-const-reference"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-unqualified-std-cast-call -Wno-c++11-narrowing-const-reference"
 
 case $(uname -m) in
     aarch64)
