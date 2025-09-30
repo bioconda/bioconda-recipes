@@ -320,34 +320,6 @@ index 6ca832b..60e0e11 100644
  
    int  alignerSecAligns_     = 0;      // Aligner.sec-aligns
    int  alignerSecScoreDelta_ = 0;      // Aligner.sec-score-delta
-diff --git a/src/include/reference/HashtableConfig.hpp b/src/include/reference/HashtableConfig.hpp
-index 3508fa5..80280f7 100644
---- a/src/include/reference/HashtableConfig.hpp
-+++ b/src/include/reference/HashtableConfig.hpp
-@@ -220,8 +220,8 @@ public:
-   uint64_t getHashtableBytes() const { return header_.hashtableBytes; }  // #bytes in references hash table
-   uint64_t getHashtableRecordCount() const { return getHashtableBytes() / 8; }
-   uint64_t getHashtableBucketCount() const { return getHashtableBytes() / 64; }
--  uint32_t getExtendTableRecordCount() const { return header_.extTabRecs; }
--  uint32_t getExtendTableBytes() const { return getExtendTableRecordCount() * 8; }
-+  uint64_t getExtendTableRecordCount() const { return header_.extTabRecs; }
-+  uint64_t getExtendTableBytes() const { return getExtendTableRecordCount() * 8; }
-   uint32_t getMinimunFrequencyToExtend() const { return header_.minFreqToExtend; }
-   uint32_t getMaxSeedFrequency() const { return header_.maxSeedFreq; }
-   /// total number of bases in the reference sequence file - including padding
-diff --git a/src/include/sam/SamGenerator.hpp b/src/include/sam/SamGenerator.hpp
-index fe877fe..cca0f27 100644
---- a/src/include/sam/SamGenerator.hpp
-+++ b/src/include/sam/SamGenerator.hpp
-@@ -169,7 +169,7 @@ public:
-       const std::string                 rgsm)
-   {
-     os << "@HD\tVN:1.4\tSO:unsorted\n";
--    os << "@PG\tID: DRAGEN-OS\tVN:" DRAGEN_OS_VERSION "\tCL:" << commandLine << "\n";
-+    os << "@PG\tID:DRAGEN-OS\tVN:" DRAGEN_OS_VERSION "\tCL:" << commandLine << "\n";
-     os << "@RG\tID:" << rgid << "\tLB:LB0\tPL:PL0\tPU:PU0\tSM:" << rgsm << "\n";
- 
-     // sequences must be generated in the original order but they are internally sorted by increasing
 diff --git a/src/include/sequences/Read.hpp b/src/include/sequences/Read.hpp
 index 460c1cb..8a7add6 100644
 --- a/src/include/sequences/Read.hpp
@@ -578,26 +550,6 @@ index ab7557d..0b0c8ee 100644
  
    char reference[] =
        "TCCATCGAGATGGACGCCGTTGGCGCTCTCCGTCTTTCTCCATTGCGTCGTGGCCTTGCTATTGACTCTACTGTAGACATTTTTACTTTTTATGTCCCTCTTATG";
-diff --git a/src/lib/map/Mapper.cpp b/src/lib/map/Mapper.cpp
-index 6eaa2c5..8012b1f 100644
---- a/src/lib/map/Mapper.cpp
-+++ b/src/lib/map/Mapper.cpp
-@@ -13,6 +13,7 @@
-  **/
- 
- #include <boost/format.hpp>
-+#include <boost/range/iterator_range.hpp>
- //#include <boost/range/adaptor/reversed.hpp>
- #include <numeric>
- #include <unordered_set>
-@@ -22,6 +23,7 @@
- //#include "common/Crc32Hw.hpp"
- #include "common/DragenLogger.hpp"
- #include "map/Mapper.hpp"
-+#include <boost/range/iterator_range.hpp>
- 
- namespace dragenos {
- namespace map {
 diff --git a/src/lib/reference/ExtendTableInterval.cpp b/src/lib/reference/ExtendTableInterval.cpp
 index f6bd36c..eb53ed1 100644
 --- a/src/lib/reference/ExtendTableInterval.cpp
@@ -921,6 +873,18 @@ index b9b777c..e3e7242 100644
  
  
  #define MAPSTR "MIDNSHP=X"
+diff --git a/src/lib/map/Mapper.cpp b/src/lib/map/Mapper.cpp
+index 6eaa2c5..781988c 100644
+--- a/src/lib/map/Mapper.cpp
++++ b/src/lib/map/Mapper.cpp
+@@ -22,6 +22,7 @@
+ //#include "common/Crc32Hw.hpp"
+ #include "common/DragenLogger.hpp"
+ #include "map/Mapper.hpp"
++#include <boost/range/iterator_range.hpp>
+ 
+ namespace dragenos {
+ namespace map {
 diff --git a/thirdparty/sswlib/ssw/ssw_avx2.cpp b/thirdparty/sswlib/ssw/ssw_avx2.cpp
 index 8464392..11e2f02 100644
 --- a/thirdparty/sswlib/ssw/ssw_avx2.cpp
