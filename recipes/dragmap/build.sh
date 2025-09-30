@@ -4,7 +4,7 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3"
 export CFLAGS="${CFLAGS} -O3"
-export HAS_GTEST=0
+export BOOST_ROOT="${PREFIX}"
 
 mkdir -p "${PREFIX}/bin"
 
@@ -63,7 +63,7 @@ fi
 rm -f make/*.bak
 
 echo "pwd:----------------------------$PWD----------------"
-make CXX="${CXX}" CC="${CC}" CXXFLAGS="$CXXFLAGS" CFLAGS="$CFLAGS" -j"${CPU_COUNT}"
+HAS_GTEST=0 make CXX="${CXX}" CC="${CC}" CXXFLAGS="$CXXFLAGS" CFLAGS="$CFLAGS" -j"${CPU_COUNT}"
 
 install -v -m 0755 build/release/dragen-os "${PREFIX}/bin"
 
