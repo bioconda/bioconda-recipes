@@ -26,7 +26,7 @@ sed -i.bak 's|-O2|-O3|' config.mk
 sed -i.bak 's/VERSION_STRING.*/VERSION_STRING="${PKG_VERSION}"/' config.mk
 
 case $(uname -s) in
-    Darwin)
+    "Darwin")
 	sed -i.bak 's|-fpredictive-commoning||g' config.mk
 	sed -i.bak 's|-fipa-cp-clone||g' config.mk
 	sed -i.bak 's|-ftree-phiprop||g' config.mk
@@ -37,8 +37,9 @@ case $(uname -s) in
 fi
 
 if [[ "$target_platform" == "linux-aarch64" || "$target_platform" == "osx-arm64" ]]; then
-	sed -i.bak 's|-msse4.2 -mavx2| |' config.mk
-	sed -i.bak 's|__m256i\*|void*|g' thirdparty/sswlib/ssw/ssw_internal.hpp
+	sed -i'' -e 's%-mavx2% %g' config.mk
+	sed -i'' -e 's%-msse4.2% %g' config.mk
+	sed -i'' -e 's/__m256i\*/void*/g' ./thirdparty/sswlib/ssw/ssw_internal.hpp
 	git clone https://github.com/DLTcollab/sse2neon.git
 	cp -f sse2neon/sse2neon.h thirdparty/dragen/src/host/metrics/public
 	cp -f sse2neon/sse2neon.h thirdparty/sswlib/ssw
