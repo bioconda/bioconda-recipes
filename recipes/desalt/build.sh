@@ -14,6 +14,8 @@ if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
 	sed -i.bak 's|#undef __SSE4_1__|#include "sse2neon.h"|' src/ksw2_extz2_sse.c
 	sed -i.bak 's|#undef __SSE4_1__|#include "sse2neon.h"|' src/ksw2_extd2_sse.c
 	sed -i.bak 's|#undef __SSE4_1__|#include "sse2neon.h"|' src/ksw2_exts2_sse.c
+	sed -i.bak 's|#include <emmintrin.h>|#include "sse2neon.h"|' src/ksw2_ext?2_sse.c
+	sed -i.bak 's|#include <smmintrin.h>|#include "sse2neon.h"|' src/ksw2_ext?2_sse.c
   	rm -f src/*.bak
 fi
 
