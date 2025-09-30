@@ -7,6 +7,7 @@ export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
 mkdir -p ${PREFIX}/bin
+mkdir -p ${PREFIX}/lib64
 
 # This script uses ideas from the build script for BLAST. See comments there.
 
