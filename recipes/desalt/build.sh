@@ -1,7 +1,7 @@
 #!/bin/bash
 set -xe
 
-export CFLAGS="${CFLAGS} -fcommon -g -Wall -O3 -Wc++-compat -L$PREFIX/lib -fopenmp"
+export CFLAGS="${CFLAGS} -fcommon -g -Wall -O3 -Wc++-compat -L$PREFIX/lib -fopenmp -Wno-implicit-function-declaration -Wno-unused-variable"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 mkdir -p "$PREFIX/bin"
@@ -9,7 +9,6 @@ mkdir -p "$PREFIX/bin"
 if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
 	git clone https://github.com/DLTcollab/sse2neon.git
  	cp -f sse2neon/sse2neon.h src/
-  	sed -i.bak 's|#define UNLIKELY(x) __builtin_expect((x),0)|#include "sse2neon.h"|' src/ksw2_ll_sse.c
 	sed -i.bak 's|#include <emmintrin.h>||' src/ksw2_ll_sse.c
 	sed -i.bak 's|#undef __SSE4_1__|#include "sse2neon.h"|' src/ksw2_extz2_sse.c
 	sed -i.bak 's|#undef __SSE4_1__|#include "sse2neon.h"|' src/ksw2_extd2_sse.c
