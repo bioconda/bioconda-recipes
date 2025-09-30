@@ -2,8 +2,12 @@
 set -xeuo pipefail
 
 # This script uses ideas from the build script for BLAST. See comments there.
-
 SHARE_DIR=$PREFIX/share/igblast
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* src/build-system/
 
 mkdir -p $PREFIX/bin
 
@@ -25,7 +29,7 @@ if [[ "$uname_str" == "Linux" || ("$uname_str" == "Darwin" && "$arch_str" == "ar
          --with-bz2=$PREFIX \
          --with-vdb=$PREFIX
 
-    make -j2
+    make -j${CPU_COUNT}
 
     # Move one up so it looks like the binary release
     mv ReleaseMT/bin .
@@ -37,8 +41,8 @@ else
     echo "Unsupported OS or architecture: $uname_str $arch_str"
     exit 1
 fi
-mv bin/makeblastdb $PREFIX/bin/
-mv bin/{igblastn,igblastp} $SHARE_DIR/bin/
+install -v -m 0755 bin/makeblastdb "$PREFIX/bin"
+install -v -m 0755 bin/{igblastn,igblastp} "$SHARE_DIR/bin"
 
 # Replace the shebang
 sed '1 s_^.*$_#!/usr/bin/env perl_' bin/edit_imgt_file.pl > $PREFIX/bin/edit_imgt_file.pl
