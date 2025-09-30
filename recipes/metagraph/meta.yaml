@@ -2,26 +2,26 @@
 {% set version = "0.4.5" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  git_url: https://github.com/ratschlab/metagraph.git
-  git_tag: v{{ version }}
-  sha256: unused
+  url: https://github.com/ratschlab/metagraph/releases/download/v{{ version }}/v{{ version }}-sources-with-submodules.tar.gz
+  sha256: adb2e73829bbfb1fd25036dc8faecffca85806e3433b9e0db5fd90bedd8958ac
   patches:
-    - 0001-boost-cmake.patch
     - arm_hwcap.patch
 
 build:
   number: 0
   skip: True  # [win]
   run_exports:
-    - {{ pin_subpackage('metagraph', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - clangdev  # [osx]
+    - llvmlite  # [osx]
     - make
     - cmake
     - autoconf
@@ -32,16 +32,14 @@ requirements:
     - bzip2
     - htslib
     - jemalloc
-    - boost-cpp ==1.71.0
+    - boost-cpp
     - llvm-openmp  # [osx]
     - libgomp  # [linux]
-    - clangdev  # [osx]
-    - llvmlite  # [osx]
     - doxygen
   run:
     - htslib
     - jemalloc
-    - boost-cpp ==1.71.0
+    - boost-cpp
     - llvm-openmp  # [osx]
     - libgomp  # [linux]
 
@@ -68,5 +66,4 @@ extra:
     - karasikov
   additional-platforms:
     - linux-aarch64
-  skip-lints:
-    - uses_vcs_url
+    - osx-arm64
