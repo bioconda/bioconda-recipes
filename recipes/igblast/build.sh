@@ -7,8 +7,6 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* src/build-system/
-
 mkdir -p $PREFIX/bin
 
 # $SHARE_DIR contains the actual igblastn and igblastp binaries and also the
@@ -23,6 +21,7 @@ if [[ "$uname_str" == "Linux" || ("$uname_str" == "Darwin" && "$arch_str" == "ar
     export AR="$AR rcs"
 
     cd c++
+    cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* src/build-system/
 
     ./configure \
          --with-z=$PREFIX \
@@ -56,6 +55,5 @@ IGDATA="\${IGDATA-"${PREFIX}/share/igblast"}" exec "${PREFIX}/share/igblast/bin/
 EOF
   chmod +x $PREFIX/bin/$name
 done
-
 # To Do
 # - makeblastdb conflicts with the one from BLAST
