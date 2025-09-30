@@ -1,8 +1,9 @@
 #!/bin/bash
 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 RM_DIR="${PREFIX}/share/RepeatMasker"
-mkdir -p ${PREFIX}/bin
-mkdir -p ${RM_DIR}
+mkdir -p "${PREFIX}/bin"
+mkdir -p "${RM_DIR}"
 mv * ${RM_DIR}
 
 export LC_ALL="en_US.UTF-8"

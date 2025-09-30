@@ -23,3 +23,6 @@ cmake -S . -B build \
 
 # Build
 cmake --build build --target install -j "${CPU_COUNT}"
+
+# Test
+ctest --test-dir build

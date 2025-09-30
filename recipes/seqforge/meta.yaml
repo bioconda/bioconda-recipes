@@ -1,0 +1,60 @@
+{% set name = "seqforge" %}
+{% set version = "1.0.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ERBringHorvath/SeqForge/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 649699eeaa33bd401276a7879be7d67e442239d97df29f0b592f0762423f7f37
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.10
+    - biopython
+    - pandas
+    - blast
+    - matplotlib-base
+    - seaborn
+    - logomaker
+
+test:
+  requires:
+    - python
+  commands:
+    - seqforge --version
+    - seqforge --module-health
+    - mkdir -p work && cd work
+    - python -c "from pathlib import Path; Path('t.fa').write_text('>a\\nACGT\\n>b\\nACGT\\n')"
+    - seqforge unique-headers -f t.fa -o sf_out --progress none
+    - python -c "from pathlib import Path; p=Path('sf_out')/'t.fa'; assert p.exists(); print(p.read_text()); print('OK')"
+    - cd ..
+    - chmod -R a+rwX work
+
+about:
+  home: https://github.com/ERBringHorvath/SeqForge
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "SeqForge: A genomics toolkit for FASTA processing, BLAST orchestration, and motif mining."
+  description: |
+    SeqForge provides utilities to sanitize, split, annotate, and analyze FASTA files; run BLAST+ queries
+    in parallel; and perform motif mining with export options. Progress reporting is handled by an
+    in-house progress bar (no tqdm dependency).
+
+extra:
+  recipe-maintainers:
+    - ERBringHorvath
