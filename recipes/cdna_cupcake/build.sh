@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 find . -name *.c -exec rm {} \;
 find . -name *.so -exec rm {} \;
-$PYTHON -m pip install . --ignore-installed --no-deps -vv
+$PYTHON -m pip install . --no-build-isolation --no-deps --no-cache-dir --use-pep517 -vvv
 
 # N.B., not all directories are included, some have files that can't reasonably be reused by anyone.
 chmod +x */*.py
