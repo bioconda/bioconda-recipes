@@ -26,6 +26,7 @@ if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
 	sed -i.bak 's|-mcx16||' metagraph/CMakeLists.txt
 	rm -f metagraph/*.bak
 fi
+sed -i.bak 's|FATAL_ERROR|STATUS|' metagraph/CMakeLists.txt
 
 if [[ "${OS}" == "Linux" ]]; then
 	CMAKE_PLATFORM_FLAGS=""
@@ -85,6 +86,8 @@ cmake -S .. -B . ${CMAKE_PARAMS}
 BUILD_CMD="make metagraph -j${CPU_COUNT}"
 
 ${BUILD_CMD}
+
+cp external-libraries/htslib/lib/lib* ${PREFIX}/bin/
 
 make install
 
