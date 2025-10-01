@@ -5,7 +5,8 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export DISABLE_AUTOBREW=1
 
 sed -i.bak 's|CC = $(GCC_PREFIX)/gcc$(GCC_SUFFIX)|CC ?= $(CC)|' src/Makefile
-sed -i.bak 's|CPP = $(GCC_PREFIX)/g++$(GCC_SUFFIX)|CPP ?= $(CXX)|' src/Makefile
+sed -i.bak 's|CXX = $(CPP)|CXX ?= $(CXX)|' src/Makefile
+sed -i.bak 's|ar rc|$(AR) rcs|' src/Makefile
 sed -i.bak 's|g++|$(CXX)|' src/Makefile
 sed -i.bak 's|-lpthread|-pthread|' src/Makefile
 rm -f src/*.bak
