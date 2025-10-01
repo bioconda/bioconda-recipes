@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "zebrafishrnaseq-1.22.0"
+installBiocDataPackage.sh "zebrafishrnaseq-1.26.0"
