@@ -1,6 +1,14 @@
 #!/bin/bash
 
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export DISABLE_AUTOBREW=1
+
+sed -i.bak 's|CC = $(GCC_PREFIX)/gcc$(GCC_SUFFIX)|CC ?= $(CC)|' src/Makefile
+sed -i.bak 's|CPP = $(GCC_PREFIX)/g++$(GCC_SUFFIX)|CPP ?= $(CXX)|' src/Makefile
+sed -i.bak 's|g++|$(CXX)|' src/Makefile
+sed -i.bak 's|-lpthread|-pthread|' src/Makefile
+rm -f src/*.bak
 
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
@@ -13,4 +21,4 @@ CXX98=$CXX
 CXX11=$CXX
 CXX14=$CXX" > ~/.R/Makevars
 
-$R CMD INSTALL --build . "${R_ARGS}"
+${R} CMD INSTALL --build . "${R_ARGS}"
