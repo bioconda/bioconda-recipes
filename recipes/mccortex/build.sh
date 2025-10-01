@@ -20,6 +20,13 @@ for make_file in libs/string_buffer/Makefile $(find libs/seq_file -name Makefile
 	sed -i.bak 's/-lz/-lz $(LDFLAGS)/' $make_file
 done
 
+case $(uname -m) in
+    aarch64|arm64)
+	for make_file in libs/string_buffer/Makefile $(find libs/seq_file -name Makefile) $(find libs/seq-align -name Makefile) Makefile; do
+		sed -i.bak 's/-m64//' $make_file
+	;;
+esac
+
 make MAXK=31
 make MAXK=63
 make MAXK=95
