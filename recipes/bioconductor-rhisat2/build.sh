@@ -4,6 +4,13 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export DISABLE_AUTOBREW=1
 
+case $(uname -m) in
+    aarch64|arm64)
+        sed -i.bak 's|-m64||' src/Makefile
+        sed -i.bak 's|-msse2||' src/Makefile
+        ;;
+esac
+
 sed -i.bak 's|CC = $(GCC_PREFIX)/gcc$(GCC_SUFFIX)|CC ?= $(CC)|' src/Makefile
 sed -i.bak 's|CXX = $(CPP)|CXX ?= $(CXX)|' src/Makefile
 sed -i.bak 's|ar rc|$(AR) rcs|' src/Makefile
