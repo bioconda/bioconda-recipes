@@ -13,15 +13,14 @@ source:
     - 0002-main-cpp.patch
 
 build:
-  number: 0
+  number: 3
   run_exports:
-    - {{ pin_subpackage('usher', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
-    - make
     - cmake
     - autoconf
     - automake
@@ -30,19 +29,20 @@ requirements:
     - pkg-config
   host:
     - boost-cpp
-    - protobuf <4
+    - protobuf <5
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
     - openmpi
     - openssh
     - tbb-devel <2021.1.1
     - isa-l
+    - curl
     - wget
   run:
     - mafft
     - boost-cpp
-    - protobuf <4
-    - ucsc-fatovcf  # [not arm64]
+    - protobuf <5
+    - ucsc-fatovcf
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
     - openmpi
@@ -54,8 +54,8 @@ test:
   commands:
     - usher --help
     - usher-sampled --help
-    - matOptimize --help
-    - matUtils --help
+    - matOptimize --help  # [not (osx and x86_64)]
+    - matUtils --help  # [not (osx and x86_64)]
 
 about:
   home: "https://github.com/yatisht/usher"
