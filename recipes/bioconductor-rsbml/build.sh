@@ -4,6 +4,9 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export DISABLE_AUTOBREW=1
 
+mkdir -p config
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* config/
+
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 mkdir -p ~/.R
