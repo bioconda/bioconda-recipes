@@ -24,6 +24,7 @@ case $(uname -m) in
     aarch64|arm64)
 	for make_file in libs/string_buffer/Makefile $(find libs/seq_file -name Makefile) $(find libs/seq-align -name Makefile) Makefile; do
 		sed -i.bak 's/-m64//' $make_file
+	done
 	;;
 esac
 
