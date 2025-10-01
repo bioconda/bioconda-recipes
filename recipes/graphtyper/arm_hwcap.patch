@@ -1,0 +1,15 @@
+Conda-forge's build environment on ARM uses sysroot_linux-aarch64 2.17, which
+is based on glibc 2.17 so <sys/auxv.h> does not define HWCAP_* values on ARM.
+Work around this by including the kernel header to get the desired values.
+
+--- a/htslib/htscodecs/htscodecs/rANS_static4x16pr.c	2023-10-10 02:54:16
++++ b/htslib/htscodecs/htscodecs/rANS_static4x16pr.c	2024-03-06 00:01:14
+@@ -1011,6 +1011,8 @@ unsigned char *(*rans_dec_func(int do_simd, int order))
+ 
+ #if defined(__linux__) || defined(__FreeBSD__)
+ #include <sys/auxv.h>
++// Ensure ARM HWCAP_* values are defined even on old glibc
++#include <asm/hwcap.h>
+ #elif defined(_WIN32)
+ #include <processthreadsapi.h>
+ #endif

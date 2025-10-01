@@ -1,4 +1,4 @@
-{% set version = "2.1.1" %}
+{% set version = "2.1.7" %}
 {% set name = "vamos" %}
 
 package:
@@ -7,37 +7,40 @@ package:
 
 source:
   url: https://github.com/ChaissonLab/vamos/archive/refs/tags/vamos-v{{ version }}.tar.gz
-  sha256: 2ddd1d0eee9df8090d1a920334154bc3909bddf2a605125a947c8b1da32516aa
-
+  sha256: 32bcee21ce3271ba1bbec3fe31792b3255d453b1bdbf4f48e488406336b54c3f
+  patches:
+    - vamos-aarch64.patch  # [arm64 or aarch64]
 
 build:
-  number: 1
+  number: 0
   run_exports:
     - {{ pin_subpackage(name, max_pin='x') }}
-
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - zlib 1.2.*    
-
   host:
     - zlib
     - htslib
-    - boost
-    - zlib 1.2.*    
+    - boost-cpp
   run:
     - htslib
-    - zlib 1.2.*
     
 test:
   commands:
     - vamos | grep 'Usage'
 
 about:
-  home: https://github.com/ChaissonLab/vamos
-  license: USC-RL v1.0
-  license_file: LICENSE.txt
-  summary: 'VNTR annotation using efficient motif selection'
+  home: "https://github.com/ChaissonLab/vamos"
+  license: "GPL-2.0-only"
+  license_family: GPL
+  license_file: "LICENSE.txt"
+  summary: 'VNTR annotation using efficient motif selection.'
+  dev_url: "https://github.com/ChaissonLab/vamos"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

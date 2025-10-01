@@ -1,28 +1,27 @@
 {% set name = "pybedlite" %}
-{% set version = "0.1.0" %}
+{% set version = "1.1.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pybedlite-{{ version }}.tar.gz
-  sha256: d7296b876d2093e7b877bea0e5d347353282c5d6cd110dcd03d5851f5eeda7dc
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pybedlite-{{ version }}.tar.gz
+  sha256: 9ac35f1b6760fe550993d88ca0a7d36e21b15f01eea54fc6087177086b01c72f
 
 build:
-  skip: True  # [py < 38]
-  number: 1
+  number: 0
   script: {{ PYTHON }} -m pip install . -vvv --no-deps
   run_exports:
-    - {{ pin_subpackage('pybedlite', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - pip
     - python
-    - poetry-core
+    - pip
+    - hatchling
     - cython
   run:
     - python
@@ -30,22 +29,27 @@ requirements:
     - typing_extensions >=3.7.4
     - typing_inspect >=0.3.1
     - attrs >=23.0.0
+    - superintervals >=0.2.10
 
 test:
   imports:
     - pybedlite
 
 about:
-  home: https://pypi.org/project/pybedlite/
-  summary: Lightweight python classes for interfacing with bed intervals
+  home: "https://github.com/fulcrumgenomics/pybedlite"
+  summary: "Lightweight python classes for interfacing with bed intervals."
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  dev_url: https://github.com/fulcrumgenomics/pybedlite
-  doc_url: https://pybedlite.readthedocs.io/en/latest/
+  dev_url: "https://github.com/fulcrumgenomics/pybedlite"
+  doc_url: "https://pybedlite.readthedocs.io/en/latest"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
-    - NatPRoach
     - nh13
     - tfenne
+  identifiers:
+    - doi:10.5281/zenodo.11223166

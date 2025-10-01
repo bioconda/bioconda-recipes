@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "hdo.db-0.99.1"
+installBiocDataPackage.sh "hdo.db-1.0.0"

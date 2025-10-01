@@ -1,0 +1,44 @@
+{% set name = "gtdb_to_taxdump" %}
+{% set version = "0.1.9" %}
+{% set sha256 = "28c6d1b05892514ac79ce7017ac7c132e9d51fe6ce54b5a05fdfec2fb2a5e6d1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage("gtdb_to_taxdump", max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python
+    - numpy
+  run:
+    - networkx
+    - python
+    - tqdm
+    - {{ pin_compatible('numpy') }}
+
+test:
+  imports:
+    - bin
+    - gtdb2td
+  commands:
+    - gtdb_to_taxdump.py -h
+    - gtdb_to_taxdump.py --version
+
+about:
+  home: https://github.com/nick-youngblut/gtdb_to_taxdump
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "GTDB database utility scripts"

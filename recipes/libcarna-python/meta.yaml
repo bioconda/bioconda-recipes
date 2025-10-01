@@ -1,0 +1,67 @@
+{% set name = "libcarna-python" %}
+{% set version = "0.2.0" %}
+{% set repo_url = "https://github.com/kostrykin/LibCarna-Python" %}
+{% set docs_url = "https://libcarna.readthedocs.io" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: "{{ repo_url }}/archive/refs/tags/{{ version }}.zip"
+  sha256: 1e2ebfc7486c78d7588b7c4d8917f482e0248b9864c773815ca93b2b8d90e78a
+
+build:
+  number: 0
+  skip: true  # [not linux or py < 310]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake >=3.5, <=3.28.3
+    - eigen >=3.0.5
+    - libcarna ==3.4
+    - pybind11 <3
+    - libxcrypt  # [py < 311]
+  host:
+    - libgl-devel      # [linux]
+    - libegl-devel     # [linux]
+    - libopengl-devel  # [linux]
+    - libglu
+    - libcarna ==3.4
+    - python
+    - python-build
+    - setuptools
+  run:
+    - python
+    - libcarna ==3.4
+    - matplotlib-base
+    - numpngw >=0.1.4, <0.2
+    - typing_extensions  # [py < 311]
+    - scikit-video =1.1
+    - scikit-image
+    - tifffile
+    - ffmpeg
+    - scipy
+    - pooch
+
+test:
+  requires:
+    - pip
+  commands:
+    - pip check
+    - python -c "import libcarna; print(libcarna.version)"
+
+about:
+  home: "{{ repo_url }}"
+  license: 'MIT'
+  summary: 'Real-time 3D visualization of biomedical data and beyond in Python'
+  dev_url: "{{ repo_url }}"
+  doc_url: "{{ docs_url }}"
+
+extra:
+  recipe-maintainers:
+    - kostrykin

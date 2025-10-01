@@ -1,0 +1,37 @@
+{% set name = "smakcr" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/julibeg/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 4e474bf3068d7befedbc59533f3eed759dc476b4c446b997530f375c9c4be7d2
+
+build:
+  number: 0
+  script: "cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
+  run_exports:
+    - {{ pin_subpackage('smakcr', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+
+test:
+  commands:
+    - smakcr -h
+
+about:
+  home: https://github.com/julibeg/smakcr
+  license: MIT
+  license_file: LICENSE
+  summary: Count short k-mers fast
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - julibeg

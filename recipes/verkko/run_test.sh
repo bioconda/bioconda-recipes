@@ -40,7 +40,7 @@ if [ ! -s asm/assembly_circular.fasta ]; then
    exit 1
 fi
 
-verkko -d asm --hifi reference.fasta.gz $ONT --hic1 empty.fasta --hic2 empty.fasta
+verkko -d asm --hifi reference.fasta.gz $ONT --porec reference.fasta.gz
 
 if [[ ! -s asm/assembly.unassigned.fasta || -s asm/assembly.haplotype1.fasta || -s asm/assembly.haplotype2.fasta ]]; then
    echo "Error: verkko hic assembly test failed!"

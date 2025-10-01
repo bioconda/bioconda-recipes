@@ -1,9 +1,9 @@
 {% set name = "libcifpp" %}
-{% set version = "7.0.4" %}
-{% set sha256 = "324eda2f6874df32671cd984c7249bfae025ca3fe1bfd875cbef35b046408b88" %}
+{% set version = "9.0.4" %}
+{% set sha256 = "b7c3ac628c2ea78febf98f54fdd7a595773bddb07cbedcd55b9866b11a013aba" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -11,37 +11,44 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  skip: True  # [osx]
-  number: 1
+  number: 0
   run_exports:
-    - {{ pin_subpackage(name|lower, max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
-    - make
+    - ninja
+    - pkg-config
   host:
+    - eigen
+    # Use v1.88.0 to match the version pinned in conda-forge
+    - libboost-devel ==1.88.0  # [linux]
+    - pcre2
     - zlib
-    - boost-cpp
-  run:
-    - zlib
-    - boost-cpp
-    
+
 test:
   commands:
-    - test -e $PREFIX/lib/libcifpp.a
+    - test -e ${PREFIX}/lib/libcifpp.so  # [linux]
+    - test -e ${PREFIX}/lib/libcifpp.dylib  # [osx]
 
 about:
-  home: https://github.com/PDB-REDO/libcifpp
-  license: BSD-2-Clause
+  home: "https://github.com/PDB-REDO/libcifpp"
+  license: "BSD-2-Clause"
   license_file: LICENSE
   license_family: BSD
-  summary: Library containing code to manipulate mmCIF and PDB files
-  doc_url: https://pdb-redo.github.io/libcifpp/
-  dev_url: https://github.com/PDB-REDO/libcifpp
+  summary: "Library containing code to manipulate mmCIF and PDB files."
+  doc_url: "https://pdb-redo.github.io/libcifpp"
+  dev_url: "https://github.com/PDB-REDO/libcifpp"
+  description: |
+    This library, libcifpp, is a generic CIF library with some specific additions to work with mmCIF files.
+    The main focus of this library is to make sure that files read or written are valid.
+    That is, they are syntactically valid and their content is valid with respect to a CIF dictionary, if such a dictionary is available and specified.
 
 extra:
   recipe-maintainers:
     - multimeric
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

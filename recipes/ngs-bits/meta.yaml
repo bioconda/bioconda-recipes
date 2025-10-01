@@ -1,52 +1,52 @@
-{% set version = "2024_02" %}
+{% set version = "2025_09" %}
 
 package:
   name: ngs-bits
   version: {{ version }}
 
-build:
-  number: 1
-  run_exports:
-    - {{ pin_subpackage("ngs-bits", max_pin=None) }}
-
 source:
   url: https://github.com/imgag/ngs-bits/releases/download/{{ version }}/ngs-bits-{{ version }}.tgz
-  sha256: 29f95f6e4e5c1cd57e463730312464bb2b632758c46abd5e1531a1d75a26a782
+  sha256: 41bd41211d3015f86f350b7d159c736627f14a52dc060accc1503ac7074c3866
 
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('ngs-bits', max_pin=None) }}
+
+# Note: pinning of sysroot_linux-64 =2.17 enforces cos7 and is currently needed to prevent an memcpy@GLIBC2.14 error
 requirements:
   build:
+    - sysroot_linux-64 =2.17  # [linux]
     - make
     - {{ compiler('cxx') }}
-    - {{ cdt('mesa-libgl-devel') }}
-    - {{ cdt('mesa-dri-drivers') }}
-    - {{ cdt('libselinux') }}
-    - {{ cdt('libxdamage') }}
-    - {{ cdt('libxxf86vm') }}
-    - {{ cdt('libxfixes') }}
+    - pkg-config
   host:
+    - sysroot_linux-64 =2.17  # [linux]
+    - qt-main
+    - libxml2
     - bzip2
     - xz
     - zlib
-    - qt
     - htslib
-    - xorg-libxfixes  # [linux]
   run:
-    - bzip2
-    - xz
-    - zlib
+    - sysroot_linux-64 =2.17  # [linux]
     - python
     - matplotlib-base
-    - qt
+    - qt-main
     - htslib
 
+about:
+  home: "https://github.com/imgag/ngs-bits"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Short-read sequencing tools."
+  dev_url: "https://github.com/imgag/ngs-bits"
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  #For libGL dependency docu see: https://conda-forge.org/docs/maintainer/knowledge_base.html#core-dependency-tree-packag>extra:
   container:
     extended-base: True
-
-about:
-  home: https://github.com/imgag/ngs-bits
-  license: MIT license
-  license_file: LICENSE
-  summary: Short-read sequencing tools
-
-#For libGL dependency docu see: https://conda-forge.org/docs/maintainer/knowledge_base.html#core-dependency-tree-packages-cdt
