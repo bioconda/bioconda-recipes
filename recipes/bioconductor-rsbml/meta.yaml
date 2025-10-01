@@ -4,20 +4,25 @@
 
 about:
   description: Links R to libsbml for SBML parsing, validating output, provides an S4 SBML DOM, converts SBML to R graph objects. Optionally links to the SBML ODE Solver Library (SOSLib) for simulating models.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: Artistic-2.0
-  summary: R support for SBML, using libsbml
+  home: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
+  license: "Artistic-2.0"
+  summary: "R support for SBML, using libsbml."
 
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-  run_exports: '{{ pin_subpackage("bioconductor-rsbml", max_pin="x.x") }}'
+  run_exports: {{ pin_subpackage('bioconductor-rsbml', max_pin="x") }}
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
 
 package:
   name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
+  version: {{ version }}
 
 # SystemRequirements: libsbml (==5.10.2)
 requirements:
@@ -25,7 +30,10 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - automake
+    - autoconf
+    - libtool
     - make
+    - pkg-config
   host:
     - bioconductor-biocgenerics >=0.52.0,<0.53.0
     - bioconductor-graph >=1.84.0,<1.85.0
@@ -40,7 +48,7 @@ requirements:
     - libsbml >=5.10.2
 
 source:
-  md5: c0f210dcdea4192cd5745ff9813b1a5b
+  sha256: 703c5e7dff3304556259eb34307c6f902c81a9decaad72b9960a6af0cf63f279
   url:
     - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
     - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
@@ -50,4 +58,3 @@ source:
 test:
   commands:
     - $R -e "library('{{ name }}')"
-
