@@ -3,7 +3,7 @@
 export DISABLE_AUTOBREW=1
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+#export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}"
 
 mkdir -p config
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* config/
