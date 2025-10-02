@@ -15,20 +15,19 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 # -fsigned-char is needed for aarch64; register needs to be hidden for os-x's C++ compiler
 export CFLAGS="${CFLAGS} -O3 -fsigned-char -Wno-write-strings -Dregister=''"
+# silence some LANG perl warning messages:
+export LC_ALL="en_US.UTF-8"
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
 	export CFLAGS="${CFLAGS} -fno-define-target-os-macros"
 fi
 
-# silence some LANG perl warning messages:
-export LC_ALL="en_US.UTF-8"
-
 export SHARE_DIR="${PREFIX}/libexec/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 OS=$(./install get_os)
 
 sed -i.bak 's|CC=g++|CC=$(CXX)|' t_coffee_source/makefile
-sed -i.bak 's|-O3 -Wno-write-strings|-O3 -fpermissive -fsigned-char -Wno-write-strings -march=x86-64-v3|' t_coffee_source/makefile
+sed -i.bak 's|-O3 -Wno-write-strings|-O3 -fpermissive -fsigned-char -Wno-write-strings -Wno-register -march=x86-64-v3|' t_coffee_source/makefile
 
 case $(uname -m) in
     aarch64)
