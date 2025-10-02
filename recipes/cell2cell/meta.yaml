@@ -8,42 +8,41 @@ package:
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/cell2cell-{{ version }}.tar.gz
   sha256: cafbadf60721655be8790be1f1de25dd53c0ffb6bab891120c408fb2fbeeb76f
-  patches:
-    - cell2cell-aarch64.patch  # [aarch64 or arm64]
 
 build:
   number: 0
-  skip: True  # [py > 310]
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -f *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
-    - {{ compiler("cxx") }}
+    - {{ compiler('cxx') }}
   host:
     - python
     - cython
     - pip
   run:
     - python
-    - numpy >=1.16,<2.0
+    - numpy >=1.16
     - pandas >=1.0.0
     - xlrd >=1.1
     - openpyxl >=2.6.2
     - networkx >=2.3
-    - matplotlib-base >=3.2.0,<3.7.3
+    - matplotlib-base >=3.2.0
     - seaborn-base >=0.11.0
     - scikit-learn
     - umap-learn
     - tqdm
     - statsmodels
     - statannotations
-    - tensorly ==0.8.1
+    - tensorly
     - kneed
-    - scanpy <=1.9.3
-    - gseapy ==1.0.3  # [x86_64]
-    - gseapy >=1.1.3  # [aarch64 or arm64]
+    - scanpy
+    - gseapy >=1.1.6
 
 test:
   imports:
@@ -57,10 +56,13 @@ about:
   license_family: BSD
   license_file: "LICENSE.txt"
   dev_url: "https://github.com/earmingol/cell2cell"
+  doc_url: "https://github.com/earmingol/cell2cell"
 
 extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
+  identifiers:
+    - doi:10.1371/journal.pcbi.1010715
   recipe-maintainers:
     - nilchia
