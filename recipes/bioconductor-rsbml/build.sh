@@ -5,8 +5,8 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 #export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}"
 
-mkdir -p config
-cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* config/
+mkdir -p inst/SBML_odeSolver-1.7.0beta/config
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* inst/SBML_odeSolver-1.7.0beta/config/
 
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
