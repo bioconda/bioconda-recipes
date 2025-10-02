@@ -1,0 +1,46 @@
+{% set version = "1.1.6" %}
+{% set sha256 = "378b49030bef1627494c81bbd285d85f3b78843f691f68963bd6e703ae7bac20" %}
+
+package:
+  name: sideretro
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("sideretro", max_pin="x.x.x") }}
+
+source:
+  url: https://github.com/galantelab/sideRETRO/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - fix-macos.patch
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - meson >=0.58.0
+    - ninja
+  host:
+    - htslib
+    - libsqlite
+    - zlib
+  run:
+    - htslib
+    - libsqlite
+    - zlib
+
+test:
+  commands:
+    - sider --help
+
+about:
+  home: https://github.com/galantelab/sideRETRO
+  license: GPL-3.0-only
+  license_file: COPYING
+  license_family: GPL3
+  summary: "A pipeline for detecting Somatic Insertion of DE novo RETROcopies"
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btaa689
