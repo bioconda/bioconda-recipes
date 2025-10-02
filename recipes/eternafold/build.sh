@@ -32,8 +32,14 @@ rm -f src/*.bak
 cd src
 
 # Build Eternafold
-make clean
-make multi CXX="${CXX}" -j"${CPU_COUNT}"
+case $(uname -s) in
+	"Darwin")
+	make CXX="${CXX}" -j"${CPU_COUNT}"
+	;;
+	*)
+	make multi CXX="${CXX}" -j"${CPU_COUNT}"
+	;;
+esac
 
 # Move built binaries to environment-specific location
 install -v -m 0755 contrafold api_test score_prediction "$PREFIX/bin/eternafold-bin"
