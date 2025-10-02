@@ -4,6 +4,7 @@ set -xe
 
 cd ${SRC_DIR}"/MaBoSS-2.0/engine/src/"
 
+echo "make -j"${CPU_COUNT}" install CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" prefix="${PREFIX}""
 make -j"${CPU_COUNT}" install \
     CC="${CC}" \
     CXX="${CXX}" \
@@ -11,6 +12,7 @@ make -j"${CPU_COUNT}" install \
     CXXFLAGS="${CXXFLAGS}" \
     LDFLAGS="${LDFLAGS}" \
     prefix="${PREFIX}"
+echo "DONE" 
 
 cd ${SRC_DIR}"/mpbn-4.2/"
 
