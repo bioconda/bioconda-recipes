@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-unused-but-set-variable"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -Wno-stringop-overflow -Wno-unused-but-set-variable -Wno-deprecated-declarations -Wno-unused-but-set-variable -Wno-unknown-warning-option"
 
