@@ -21,7 +21,7 @@ case $(uname -m) in
 esac
 
 chmod +x gflags.py
-2to3 -w draw_circular_plot gflags.py linearfold testcons
+2to3 -w draw_circular_plot linearfold
 
 rm -f *.bak
 
