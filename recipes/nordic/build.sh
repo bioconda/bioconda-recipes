@@ -2,17 +2,17 @@
 
 set -xe
 
-cd ${SRC_DIR}"/MaBoSS-2.0/engine/src/"
+#cd ${SRC_DIR}"/MaBoSS-2.0/engine/src/"
 
-echo "make -j"${CPU_COUNT}" install CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" prefix="${PREFIX}""
-make -j"${CPU_COUNT}" install \
-    CC="${CC}" \
-    CXX="${CXX}" \
-    CFLAGS="${CFLAGS}" \
-    CXXFLAGS="${CXXFLAGS}" \
-    LDFLAGS="${LDFLAGS}" \
-    prefix="${PREFIX}"
-echo "DONE" 
+#make -j"${CPU_COUNT}" install \
+#    CC="${CC}" \
+#    CXX="${CXX}" \
+#    CFLAGS="${CFLAGS}" \
+#    CXXFLAGS="${CXXFLAGS}" \
+#    LDFLAGS="${LDFLAGS}" \
+#    prefix="${PREFIX}"
+
+conda install -c colomoto -y -q maboss
 
 cd ${SRC_DIR}"/mpbn-4.2/"
 
