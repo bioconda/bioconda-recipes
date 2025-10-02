@@ -32,6 +32,7 @@ sed -i.bak 's|-O3 -Wno-write-strings|-O3 -fpermissive -fsigned-char -Wno-write-s
 
 sed -i.bak 's|our $CXX="g++"|our $CXX=$ENV{"CXX"}|' install
 sed -i.bak 's|our $FC="f77"|our $FC=$ENV{"FC"}|' install
+rm -f *.bak
 
 case $(uname -m) in
     aarch64)
@@ -54,7 +55,7 @@ cd ..
 # the t-coffee home only has plugins with x86_64 support; let's not
 # download them. Instead use only bioconda's own installs.
 # the t_coffee application is the only one from the set required by Bio::Tools::Run::Alignment::TCoffee
-./install t_coffee -tcdir="${SHARE_DIR}" CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" FCC="${FC}"
+./install tcoffee -tcdir="${SHARE_DIR}"
 
 # The installer may try to update dependencies and install them to bin/,
 # which will cause conflicts with the dependencies as separately packaged.
