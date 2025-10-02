@@ -14,7 +14,7 @@ mkdir -p "${PREFIX}/bin"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 # -fsigned-char is needed for aarch64; register needs to be hidden for os-x's C++ compiler
-export CFLAGS="${CFLAGS} -O3 -fsigned-char -Wno-write-strings -Dregister=''"
+export CXXFLAGS="${CXXFLAGS} -O3 -fsigned-char -Wno-write-strings -Wno-return-type -Dregister=''"
 # silence some LANG perl warning messages:
 export LC_ALL="en_US.UTF-8"
 
@@ -28,7 +28,7 @@ OS=$(./install get_os)
 
 sed -i.bak 's|CC=g++|CC=$(CXX)|' t_coffee_source/makefile
 sed -i.bak 's|$(FCC)|$(FC)|' t_coffee_source/makefile
-sed -i.bak 's|-O3 -Wno-write-strings|-O3 -fpermissive -fsigned-char -Wno-write-strings -Wno-register -march=x86-64-v3|' t_coffee_source/makefile
+sed -i.bak 's|-O3 -Wno-write-strings|-O3 -fpermissive -fsigned-char -Wno-write-strings -Wno-register -Wno-return-type -march=x86-64-v3|' t_coffee_source/makefile
 
 case $(uname -m) in
     aarch64)
@@ -51,7 +51,7 @@ cd ..
 # the t-coffee home only has plugins with x86_64 support; let's not
 # download them. Instead use only bioconda's own installs.
 # the t_coffee application is the only one from the set required by Bio::Tools::Run::Alignment::TCoffee
-./install t_coffee -tcdir="${SHARE_DIR}" CC="${CXX}" CFLAGS="${CFLAGS}"
+./install t_coffee -tcdir="${SHARE_DIR}" CC="${CXX}" CFLAGS="${CXXFLAGS}"
 
 # The installer may try to update dependencies and install them to bin/,
 # which will cause conflicts with the dependencies as separately packaged.
