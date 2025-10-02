@@ -28,7 +28,7 @@ export SHARE_DIR="${PREFIX}/libexec/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 OS=$(./install get_os)
 
 sed -i.bak 's|CC=g++|CC=$(CXX)|' t_coffee_source/makefile
-sed -i.bak 's|-O3 -Wno-write-strings|-O3 -Wno-write-strings -march=x86-64-v3|' t_coffee_source/makefile
+sed -i.bak 's|-O3 -Wno-write-strings|-O3 -fpermissive -fsigned-char -Wno-write-strings -march=x86-64-v3|' t_coffee_source/makefile
 
 case $(uname -m) in
     aarch64)
