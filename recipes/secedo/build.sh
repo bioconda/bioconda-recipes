@@ -2,7 +2,7 @@
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -Wno-stringop-overflow -Wno-unused-but-set-variable -Wno-deprecated-declarations -Wunknown-warning-option"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-stringop-overflow -Wno-unused-but-set-variable -Wno-deprecated-declarations -Wno-unknown-warning-option"
 
 case $(uname -m) in
     aarch64)
