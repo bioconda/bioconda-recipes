@@ -4,6 +4,10 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-unused-but-set-variable"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -Wno-stringop-overflow -Wno-unused-but-set-variable -Wno-deprecated-declarations -Wno-unused-but-set-variable -Wno-unknown-warning-option"
 
+sed -i.bak 's|-Wall -Wextra -Wfatal-errors|-Wall|' CMakeLists.txt
+sed -i.bak 's|-Werror||' CMakeLists.txt
+rm -f *.bak
+
 case $(uname -m) in
     aarch64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
