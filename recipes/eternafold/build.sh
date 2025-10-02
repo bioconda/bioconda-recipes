@@ -6,8 +6,6 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 mkdir -p -v "$PREFIX/bin/eternafold-bin"
 mkdir -p -v "$PREFIX/lib/eternafold-lib"
 
-ln -sf ${PREFIX}/bin/mpicc ${PREFIX}/bin/mpiCC
-
 case $(uname -m) in
     aarch64)
 	sed -i.bak 's|-std=c++11 -O3|-std=c++14 -O3 -march=armv8-a|' src/Makefile
