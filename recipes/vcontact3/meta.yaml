@@ -1,5 +1,5 @@
 {% set name = "vcontact3" %}
-{% set version = "3.0.5" %}
+{% set version = "3.1.4" %}
 
 package:
   name: {{ name|lower }}
@@ -7,25 +7,34 @@ package:
 
 source:
   url: https://bitbucket.org/MAVERICLab/vcontact3/get/{{ version }}.tar.gz
-  sha256: a48f0ef0257d0ce851a815d2baa87acd8e2a63072d800a7e66a9d685adc13942
+  sha256: a51a1deb6779693faac4f4191dc58080968c2121c9e5d41bf49f5a6d022676bf
 
 build:
-  number: 0
+  number: 1
   noarch: python
-  script: {{ PYTHON }} -m pip install .
   run_exports:
     - {{ pin_subpackage('vcontact3', max_pin='x') }}
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+    - PIP_NO_BUILD_ISOLATION=1
+    - SETUPTOOLS_SCM_FALLBACK_VERSION={{ version }}
+  script: |
+    {{ PYTHON }} -m pip install . --no-deps --no-build-isolation
 
 requirements:
   host:
-    - pip
     - python >=3.10,<3.12
+    - pip
+    - wheel
+    - setuptools-scm
+    - setuptools >=70
   run:
     - python >=3.10,<3.12
-    - numpy >=1.23.5
+    - pip
+    - numpy >=1.23.5,<2.0.0
     - pandas >=2.1.1
     - scikit-learn >=1.5.0
-    - seaborn-base >=0.12.1
+    - seaborn >=0.12.1
     - matplotlib-base >=3.7.1
     - scipy >=1.10.1
     - upsetplot >=0.7.0
@@ -43,19 +52,20 @@ requirements:
     - dill >=0.3.6
     - pytables >=3.8.0
     - markupsafe >=2.0.1
-    - fastcluster <=1.2.6
-    - networkit <=11.0
     - mmseqs2 >=15.6f452
+    - fastcluster >=1.2.6,<1.3.0
+    - networkit <=11.0
 
 test:
   commands:
     - vcontact3 --help
+    - vcontact3 version
+    - python -c "import vcontact3; print('vcontact3.__version__ =', vcontact3.__version__); assert vcontact3.__version__ == '{{ version }}'"
 
 about:
-  home: "https://bitbucket.org/MAVERICLab/vcontact3"
-  license: "GPL-3.0-or-later"
+  home: https://bitbucket.org/MAVERICLab/vcontact3
+  license: GPLv3
   license_file: LICENSE
-  license_family: GPL3
-  summary: "Viral Contig Automatic Clustering and Taxonomy."
-  doc_url: "https://bitbucket.org/MAVERICLab/vcontact3/src/{{ version }}/README.md"
-  dev_url: "https://bitbucket.org/MAVERICLab/vcontact3"
+  license_family: GPL
+  summary: Viral Contig Automatic Clustering and Taxonomy
+  doc_url: https://bitbucket.org/MAVERICLab/vcontact3/src/master/README.md

@@ -1,43 +1,61 @@
-{% set version = "2.4" %}
-{% set sha256 = "4b217b6d3a2a1c932008caef55e69b9d691e61462c3bf309ee0f20b2aa584a4d" %}
+{% set name = "harpy" %}
+{% set version = "3.0.1" %}
+{% set sha256 = "72268af222fc308ba3b0db953c9f5b67d008ee28bd49595fbc4678bea35c497c" %}
 
 package:
-  name: harpy
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/pdimens/harpy/releases/download/{{ version }}/harpy.{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  url: https://github.com/pdimens/harpy/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   noarch: python
   script_env:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
-  run_exports:
-    - {{ pin_subpackage('harpy', max_pin="x") }}
-  script: |
-    mkdir -p ${PREFIX}/bin
-    ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
-    install -v -m 0755 harpy/bin/* ${PREFIX}/bin
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   entry_points:
     - harpy = harpy.__main__:cli
+    - assign_mi = harpy.scripts:assign_mi.main
+    - bx_stats = harpy.scripts:bx_stats.main
+    - bx_to_end = harpy.scripts:bx_to_end.main
+    - check_bam = harpy.scripts:check_bam.main
+    - check_fastq = harpy.scripts:check_fastq.main
+    - concatenate_bam = harpy.scripts:concatenate_bam.main
+    - count_bx = harpy.scripts:count_bx.main
+    - create_simulation_data = harpy.scripts:create_simulation_data.main
+    - deconvolve_alignments = harpy.scripts:deconvolve_alignments.main
+    - depth_windows = harpy.scripts:depth_windows.main
+    - extract_bxtags = harpy.scripts:extract_bxtags.main
+    - haplotag_acbd = harpy.scripts:haplotag_acbd.main
+    - haplotag_barcodes = harpy.scripts:haplotag_barcodes.main
+    - infer_sv = harpy.scripts:infer_sv.main
+    - make_windows = harpy.scripts:make_windows.main
+    - molecule_coverage = harpy.scripts:molecule_coverage.main
+    - parse_phaseblocks = harpy.scripts:parse_phaseblocks.main
+    - rename_bam = harpy.scripts:rename_bam.main
+    - separate_singletons = harpy.scripts:separate_singletons.main
+    - separate_validbx = harpy.scripts:separate_validbx.main
+    - standardize_barcodes_sam = harpy.scripts:standardize_barcodes_sam.main
+  run_exports:
+    - {{ pin_subpackage('harpy', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.9
+    - python >=3.11
     - pip
-    - setuptools-scm >=3.4
+    - setuptools-scm >=8
   run:
-    - apptainer # [linux]
-    - bcftools =1.22
+    - python >=3.11
+    - bcftools >=1.22
     - conda >24.7
-    - htslib =1.22
-    - pysam =0.23
-    - python >=3.9
+    - htslib >=1.22
+    - pysam >=0.23
     - rich-click >=1.8
-    - snakemake-minimal =9
-    - samtools =1.22
+    - snakemake-minimal >=9.0
+    - samtools >=1.22
     - seqtk
 
 test:
@@ -52,11 +70,11 @@ about:
   license_file: LICENSE
   summary: "Process raw haplotagging data, from raw sequences to phased haplotypes."
   description: |
-    Harpy is a command-line tool to easily process haplotag or 10x linked-read data. It uses
+    Harpy is a command-line tool to easily process platform-agnostic linked-read or WGS data. It uses
     Snakemake under the hood to execute different workflows (quality control, trimming, 
     alignment, variant calling, phasing, etc.), but the user is rarely, if ever, exposed
     to Snakemake directly. With an emphasis on user-friendliness, parallelization, transparency,
-    and reproducibility, Harpy aims to quickly handle data processing so that you can focus more
+    and reproducibility, Harpy quickly handles data processing so that you can focus more
     on analyzing your data. 
   doc_url: "https://pdimens.github.io/harpy"
   dev_url: "https://github.com/pdimens/harpy"

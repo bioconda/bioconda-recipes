@@ -10,13 +10,23 @@ source:
   sha256: 7c837e29d62d1889379a8b6a3ad634a6aa5f0bc0459d5719597c87e046502528
 
 build:
-  number: 7
+  number: 8
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
+  script:
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --disable-pip-version-check
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler("c") }}
+    - {{ compiler("rust") }}
+    - {{ stdlib("c") }}
+    - cargo-bundle-licenses
+    - python                              # [build_platform != target_platform]
+    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+    - crossenv                            # [build_platform != target_platform]
+    - maturin <=1.7.8                     # [build_platform != target_platform]
   host:
     - pip
     - maturin <=1.7.8
@@ -29,8 +39,15 @@ test:
     - kcounter
 
 about:
-  home: http://apcamargo.github.io/kcounter/
+  home: https://github.com/apcamargo/kcounter
   license: GPL-3
   license_family: GPL
   license_file: LICENSE
-  summary: "A simple package for counting DNA k-mers in Python. Written in Rust."
+  summary: "A simple library for counting DNA k-mers in Python. Written in Rust."
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - version_constraints_missing_whitespace  # see https://github.com/bioconda/bioconda-recipes/issues/51185
