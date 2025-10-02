@@ -3,7 +3,7 @@
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
-mkdir -p "$PREFIX/bin"
+mkdir -p "$PREFIX/bin/bin"
 
 sed -i.bak 's|CC=g++|CC=$(CXX)|' Makefile
 
@@ -28,4 +28,5 @@ rm -f *.bak
 make -j"${CPU_COUNT}"
 
 # Install
-install -v -m 0755 bin/* linearfold AUTHORS draw_circular_plot gflags.py testcons "$PREFIX/bin"
+install -v -m 0755 bin/* "$PREFIX/bin/bin"
+install -v -m 0755 linearfold AUTHORS draw_circular_plot gflags.py testcons "$PREFIX/bin"
