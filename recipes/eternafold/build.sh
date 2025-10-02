@@ -32,6 +32,7 @@ rm -f src/*.bak
 cd src
 
 # Build Eternafold
+make clean
 make multi CXX="${CXX}" -j"${CPU_COUNT}"
 
 # Move built binaries to environment-specific location
