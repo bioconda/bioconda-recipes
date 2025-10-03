@@ -136,6 +136,19 @@ index 2869260..aa0ed80 100644
  cd ..
 -
 -
+diff --git a/demo_run/run.config b/demo_run/run.config
+index c4be33c..51be852 100644
+--- a/demo_run/run.config
++++ b/demo_run/run.config
+@@ -77,7 +77,7 @@ AVG_READ_THRESHOLD=2
+ SPECIES=human
+ 
+ # Bowtie index for miRNA, hairpin, smallRNA, and mRNA
+-RNA_BOWTIE_INDEX=/hpc/grid/shared/ngsapp/QuickMIRSeq/database/human/db_stranded_0
++RNA_BOWTIE_INDEX=../database/human/db_stranded_0
+ 
+ #Bowtie index for reference genome
+ GENOME_BOWTIE_INDEX=/hpc/grid/shared/ngsdb/bowtie/hg19
 diff --git a/merge-tRNA.pl b/merge-tRNA.pl
 old mode 100644
 new mode 100755
@@ -172,8 +185,26 @@ index 28be415..c1d592e
  
  # read mirBase downloaded sequences, and extract specifies specific sequence. For instance,
  # mirnaSelect.pl  mature.fa mmu > mouse.mature.fa
+diff --git a/plot-53-offset.R b/plot-53-offset.R
+old mode 100644
+new mode 100755
+index e45ebd3..016444a
+--- a/plot-53-offset.R
++++ b/plot-53-offset.R
+@@ -1,3 +1,4 @@
++#!/usr/bin/env Rscript
+ ################################################################################
+ #
+ # Plot the distribution of 5' and 3' end offsets
+@@ -81,4 +82,4 @@ cloud(Freq~End5+End3, d, panel.3d.cloud=panel.3dbars, col.facet='grey',
+       par.settings = list(axis.line = list(col = "transparent")))
+ 	  
+ dev.off()
+-  
+\ No newline at end of file
++  
 diff --git a/plot-QuickMIRSeq-all.sh b/plot-QuickMIRSeq-all.sh
-index a643154..240125b 100644
+index a643154..1aa5f76 100644
 --- a/plot-QuickMIRSeq-all.sh
 +++ b/plot-QuickMIRSeq-all.sh
 @@ -1,3 +1,4 @@
@@ -181,6 +212,116 @@ index a643154..240125b 100644
  ################################################################################
  #
  # A utility function to plot all metrics related to QuickMIRSeq
+@@ -11,11 +12,6 @@
+ #
+ #################################################################################
+ 
+-if [ -z "$QuickMIRSeq" ]; then
+-	echo "Environment variable QuickMIRSeq was NOT set"
+-	exit
+-fi
+-
+ if [ -f readAnnotDistribution.csv ]
+ then
+ 	no_sample=`cat readAnnotDistribution.csv | wc -l | awk '{print $1}'`
+@@ -39,24 +35,24 @@ fi
+ 
+ 
+ if [ -f cutadapt.summary.txt ]; then 
+-	Rscript $QuickMIRSeq/plot-cut-adapter.R cutadapt.summary.txt ${width}X6
++	plot-cut-adapter.R cutadapt.summary.txt ${width}X6
+ fi
+ 
+-Rscript $QuickMIRSeq/plot-readAnnot-distribution.R readAnnotDistribution.csv 
++plot-readAnnot-distribution.R readAnnotDistribution.csv 
+ 
+-Rscript $QuickMIRSeq/plot-readLen-distribution.R readLenDistribution.csv 
++plot-readLen-distribution.R readLenDistribution.csv 
+ 
+-Rscript $QuickMIRSeq/plot-QuickMIRSeq-summary.R QuickMIRSeq.summary.txt ${width}X6
++plot-QuickMIRSeq-summary.R QuickMIRSeq.summary.txt ${width}X6
+ 
+-Rscript $QuickMIRSeq/plot-miR-corr.R miR.filter.RPM.csv ${width}X6
++plot-miR-corr.R miR.filter.RPM.csv ${width}X6
+ 
+ if [ -f Offset.summary.txt ]; then 
+-	Rscript $QuickMIRSeq/plot-53-offset.R Offset.summary.txt
++	plot-53-offset.R Offset.summary.txt
+ fi
+ 
+ 
+ if [ -f uniqReads.library.csv ]; then 
+-	Rscript $QuickMIRSeq/plot-joint-mapping.R uniqReads.library.csv ${width}X6
++	plot-joint-mapping.R uniqReads.library.csv ${width}X6
+ fi
+ 
+ 
+diff --git a/plot-QuickMIRSeq-summary.R b/plot-QuickMIRSeq-summary.R
+old mode 100644
+new mode 100755
+index 41046b7..5578e45
+--- a/plot-QuickMIRSeq-summary.R
++++ b/plot-QuickMIRSeq-summary.R
+@@ -1,3 +1,4 @@
++#!/usr/bin/env Rscript
+ ################################################################################
+ #
+ # Plot summaries for QuickMIRSeq summary
+diff --git a/plot-cut-adapter.R b/plot-cut-adapter.R
+old mode 100644
+new mode 100755
+index c09e603..516b889
+--- a/plot-cut-adapter.R
++++ b/plot-cut-adapter.R
+@@ -1,3 +1,4 @@
++#!/usr/bin/env Rscript
+ ################################################################################
+ #
+ # Plot summaries for adapter trimming
+diff --git a/plot-joint-mapping.R b/plot-joint-mapping.R
+old mode 100644
+new mode 100755
+index f3ed4cc..b631334
+--- a/plot-joint-mapping.R
++++ b/plot-joint-mapping.R
+@@ -1,3 +1,4 @@
++#!/usr/bin/env Rscript
+ ################################################################################
+ #
+ # Plot summaries for QuickMIRSeq summary
+diff --git a/plot-miR-corr.R b/plot-miR-corr.R
+old mode 100644
+new mode 100755
+index 69a4ec2..c9f8511
+--- a/plot-miR-corr.R
++++ b/plot-miR-corr.R
+@@ -1,3 +1,4 @@
++#!/usr/bin/env Rscript
+ ################################################################################
+ #
+ # Plot a correlation matrix for expressed miRNA
+diff --git a/plot-readAnnot-distribution.R b/plot-readAnnot-distribution.R
+old mode 100644
+new mode 100755
+index 37b8577..af5a3ea
+--- a/plot-readAnnot-distribution.R
++++ b/plot-readAnnot-distribution.R
+@@ -1,3 +1,4 @@
++#!/usr/bin/env Rscript
+ ################################################################################
+ #
+ # Usage
+diff --git a/plot-readLen-distribution.R b/plot-readLen-distribution.R
+old mode 100644
+new mode 100755
+index 047303a..ed60d61
+--- a/plot-readLen-distribution.R
++++ b/plot-readLen-distribution.R
+@@ -1,3 +1,4 @@
++#!/usr/bin/env Rscript
+ ################################################################################
+ #
+ # Usage
 diff --git a/prepare_smallRNA_mRNA.sh b/prepare_smallRNA_mRNA.sh
 index 1f19a80..bf1a8d1 100644
 --- a/prepare_smallRNA_mRNA.sh
