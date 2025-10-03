@@ -1,0 +1,54 @@
+{% set name = "PANORAMA" %}
+{% set version = "0.4.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/labgem/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: ''
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed -vv .
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+  run:
+    - python >=3.10
+    - ppanggolin >= 2.1.0
+    - pyhmmer >= 0.6
+    - lxml >= 4.9.2
+    - selenium >= 4.35.0
+    - geckodriver >= 0.36.0
+
+test:
+  imports:
+    - panorama
+  commands:
+    - panorama -h
+
+about:
+  home: https://github.com/labgem/{{ name|lower }}
+  doc_url: https://panorama.readthedocs.io
+  license: CeCiLL 2.1
+  license_family: CeCiLL
+  license_file: LICENSE
+  summary: "A robust pangenome-based method for predicting and comparing biological systems across species."
+
+
+extra:
+  recipe-maintainers:
+    - jpjarnoux
+    - JeanMainguy
