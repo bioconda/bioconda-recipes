@@ -6,14 +6,16 @@ package:
   name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 5
-  skip: True  # [osx]
-
 source:
   # download is a stable link for https://sourceforge.net/code-snapshots/svn/g/ge/genform/code/genform-code-r8-trunk.zip
   url: https://depot.galaxyproject.org/software/genform/genform_r8_src_all.zip
   sha256: {{ sha256 }}
+
+build:
+  number: 8
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin=None) }}
 
 requirements:
   build:
@@ -24,18 +26,22 @@ requirements:
 test:
   commands:
     - 'echo -e "132.07686\t147049184\n133.08012\t4004960.8" > CreatineMs.txt && genform ms=CreatineMs.txt'
+
 about:
-  home: https://sourceforge.net/projects/genform/
+  home: "https://sourceforge.net/projects/genform"
   # note sources say GPL (wo version) but LGPL licence file is shipped since 
   # - LGPL allows to relicense under the GPL and
   # - the package contains just a single executable and not a library
   # we say GPL-2.0-only
-  license: 'GPL-2.0-only'
-  license_file: src/lgpl-2.0.txt 
-  summary: Generation of molecular formulas by high-resolution MS and MS/MS data
+  license: "GPL-2.0-only"
+  license_family: GPL
+  license_file: "src/lgpl-2.0.txt" 
+  summary: "Generation of molecular formulas by high-resolution MS and MS/MS data."
 
 extra:
-  maintainers:
+  recipe-maintainers:
     - bernt-matthias
   identifiers:
     - doi:10.1101/295071
+  additional-platforms:
+    - linux-aarch64
