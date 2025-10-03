@@ -5,7 +5,7 @@ export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
 
 mkdir -p "$PREFIX/bin"
 
-sed -i.bak 's|-O4|-O4 -std=gnu11 -I$(PREFIX)/include -Wno-implicit-function-declaration -Wno-int-conversion|' Makefile
+sed -i.bak 's|-O4|-O4 -std=gnu11 -I$(PREFIX)/include -L$(PREFIX)/lib -Wno-implicit-function-declaration -Wno-int-conversion|' Makefile
 sed -i.bak 's|-lpthread|-pthread|' Makefile
 
 case $(uname -m) in
