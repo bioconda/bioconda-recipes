@@ -16,6 +16,7 @@ case $(uname -m) in
         sed -i.bak 's|-mpopcnt -msse4.2||' Makefile
         sed -i.bak 's|#include <emmintrin.h>|#include "sse2neon.h"|' ksw.c
         sed -i.bak 's|#include <emmintrin.h>|#include "sse2neon.h"|' poacns.h
+        sed -i.bak 's|#include <tmmintrin.h>||' poacns.h
         ;;
 esac
 
