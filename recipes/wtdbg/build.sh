@@ -6,7 +6,7 @@ export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
 mkdir -p "$PREFIX/bin"
 mkdir -p "$PREFIX/bin/scripts"
 
-sed -i.bak 's|-O4|-O4 -std=gnu99 -I$(PREFIX)/include -L$(PREFIX)/lib -Wno-implicit-function-declaration -Wno-int-conversion|' Makefile
+sed -i.bak 's|-O4|-O4 -std=gnu11 -I$(PREFIX)/include -L$(PREFIX)/lib -Wno-implicit-function-declaration -Wno-int-conversion|' Makefile
 sed -i.bak 's|-lpthread|-pthread|' Makefile
 
 case $(uname -m) in
@@ -34,5 +34,5 @@ rm -f scripts/*.bak
 
 make CC="${CC}"
 
-install -v -m 0755 wtdbg2 wtdbg-cns wtpoa-cns "$PREFIX/bin"
+install -v -m 0755 wtdbg2.pl wtdbg2 wtdbg-cns wtpoa-cns kbm2 pgzf "$PREFIX/bin"
 install -v -m 0755 scripts/* "$PREFIX/bin/scripts"
