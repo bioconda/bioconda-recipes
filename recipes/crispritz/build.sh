@@ -7,6 +7,8 @@ export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
 mkdir -p "${PREFIX}/bin"
 mkdir -p "${PREFIX}/opt/crispritz"
 
+sed -i.bak 's|#include <parallel/algorithm>|#include <algorithm>|' sourceCode/CRISPR-Cas-Tree/mainParallel.cpp
+
 make -f Makefile_conda \
     CXX="${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS}" \
     BUILD_PREFIX="${PREFIX}"
