@@ -1,23 +1,35 @@
+{% set name = "kraken-ea" %}
+{% set version = "0.10.5ea.3" %}
+
 package:
-  name: kraken-ea
-  version: "0.10.5ea.3"
+  name: {{ name }}
+  version: {{ version }}
+
 source:
   url: https://github.com/ExpressionAnalysis/kraken/archive/v0.10.5-beta-ea.3.tar.gz
   md5: 34dce0103874e199a13eeed9bf20bd73
+  patches:
+    - 0001-install.sh.patch
 
 build:
-  number: 4
-  skip: False
+  number: 5
+  run_exports:
+    - {{ pin_subpackage('kraken-ea', max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+    - pkg-config
   host:
     - perl
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - zlib
   run:
-    - zlib
     - kmer-jellyfish 1.*
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - perl
 
 test:
@@ -26,6 +38,12 @@ test:
     - kraken-build --version
 
 about:
-  home: https://github.com/ExpressionAnalysis/kraken/tree/v0.10.5-beta-ea.2
-  license: GPLv3
-  summary: Kraken is a system for assigning taxonomic labels to short DNA sequences, usually obtained through metagenomic studies. This is a modified version allowing for splitting of fastq files based on read classifications.
+  home: "https://github.com/ExpressionAnalysis/kraken/tree/v0.10.5-beta-ea.3"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  summary: "Kraken is a system for assigning taxonomic labels to short DNA sequences, usually obtained through metagenomic studies. This is a modified version allowing for splitting of fastq files based on read classifications."
+  dev_url: "https://github.com/ExpressionAnalysis/kraken/tree/v0.10.5-beta-ea.3"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
