@@ -62,6 +62,80 @@ index fcdbb91..778a87b
  	while ($$line[0] = <$fh>) {
  		$$line[1] = <$fh>;
  		$$line[2] = <$fh>;
+diff --git a/database/create_database_util.sh b/database/create_database_util.sh
+index 2869260..aa0ed80 100644
+--- a/database/create_database_util.sh
++++ b/database/create_database_util.sh
+@@ -25,11 +25,6 @@
+ #
+ #!!!
+ 
+-if [ -z "$QuickMIRSeq" ]; then
+-	echo "Environment variable QuickMIRSeq was NOT set"
+-	exit
+-fi
+-
+ if ! type "bowtie" > /dev/null; then
+   echo "Make bowtie executable is in your PATH"
+   exit
+@@ -39,14 +34,14 @@ fi
+ #
+ #extract species related miRNA and hairpin
+ #
+-$QuickMIRSeq/mirnaSelect.pl  mature.fa mmu >  mouse/mature.fa
+-$QuickMIRSeq/mirnaSelect.pl  hairpin.fa  mmu > mouse/hairpin.fa
++mirnaSelect.pl  mature.fa mmu >  mouse/mature.fa
++mirnaSelect.pl  hairpin.fa  mmu > mouse/hairpin.fa
+ 
+-$QuickMIRSeq/mirnaSelect.pl  mature.fa hsa > human/mature.fa
+-$QuickMIRSeq/mirnaSelect.pl  hairpin.fa  hsa > human/hairpin.fa
++mirnaSelect.pl  mature.fa hsa > human/mature.fa
++mirnaSelect.pl  hairpin.fa  hsa > human/hairpin.fa
+ 
+-$QuickMIRSeq/mirnaSelect.pl  mature.fa  rno > rat/mature.fa
+-$QuickMIRSeq/mirnaSelect.pl  hairpin.fa rno > rat/hairpin.fa
++mirnaSelect.pl  mature.fa  rno > rat/mature.fa
++mirnaSelect.pl  hairpin.fa rno > rat/hairpin.fa
+ 
+ 
+ #
+@@ -55,27 +50,25 @@ $QuickMIRSeq/mirnaSelect.pl  hairpin.fa rno > rat/hairpin.fa
+ 
+ #cutoff 0
+ cd human
+-perl $QuickMIRSeq/QuickMIRSeq-build.pl --target db_stranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
+-perl $QuickMIRSeq/QuickMIRSeq-build.pl --target db_nonsstranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
+-$QuickMIRSeq/prepare_smallRNA_mRNA.sh download.config
++perl QuickMIRSeq-build.pl --target db_stranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
++perl QuickMIRSeq-build.pl --target db_nonsstranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
++prepare_smallRNA_mRNA.sh download.config
+ cp *.ebwt db_stranded_0
+ mv *.ebwt db_nonsstranded_0
+ cd ..
+ 
+ cd mouse
+-perl $QuickMIRSeq/QuickMIRSeq-build.pl --target db_stranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
+-perl $QuickMIRSeq/QuickMIRSeq-build.pl --target db_nonsstranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
+-$QuickMIRSeq/prepare_smallRNA_mRNA.sh download.config
++perl QuickMIRSeq-build.pl --target db_stranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
++perl QuickMIRSeq-build.pl --target db_nonsstranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
++prepare_smallRNA_mRNA.sh download.config
+ cp *.ebwt db_stranded_0
+ mv *.ebwt db_nonsstranded_0
+ cd ..
+ 
+ cd rat
+-perl $QuickMIRSeq/QuickMIRSeq-build.pl --target db_stranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
+-perl $QuickMIRSeq/QuickMIRSeq-build.pl --target db_nonsstranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
+-$QuickMIRSeq/prepare_smallRNA_mRNA.sh download.config
++perl QuickMIRSeq-build.pl --target db_stranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
++perl QuickMIRSeq-build.pl --target db_nonsstranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
++prepare_smallRNA_mRNA.sh download.config
+ cp *.ebwt db_stranded_0
+ mv *.ebwt db_nonsstranded_0
+ cd ..
+-
+-
 diff --git a/merge-tRNA.pl b/merge-tRNA.pl
 old mode 100644
 new mode 100755
@@ -107,3 +181,31 @@ index a643154..240125b 100644
  ################################################################################
  #
  # A utility function to plot all metrics related to QuickMIRSeq
+diff --git a/prepare_smallRNA_mRNA.sh b/prepare_smallRNA_mRNA.sh
+index 1f19a80..bf1a8d1 100644
+--- a/prepare_smallRNA_mRNA.sh
++++ b/prepare_smallRNA_mRNA.sh
+@@ -29,12 +29,6 @@ else
+ 		source $CONFIG
+ fi
+ 
+-
+-if [ -z "$QuickMIRSeq" ]; then
+-	echo "Environment variable QuickMIRSeq was NOT set"
+-	exit
+-fi
+-
+ #
+ # downloading
+ #
+@@ -69,8 +63,8 @@ ln -s $trna tRNA.fa
+ ln -s $cdna mrna.fa
+ ln -s $ncrna ncrna.fa
+ 
+-$QuickMIRSeq/merge_tRNA.pl tRNA.fa  > smallRNA.fa
+-$QuickMIRSeq/merge_smallRNA.pl ncrna.fa >> smallRNA.fa
++merge_tRNA.pl tRNA.fa  > smallRNA.fa
++merge_smallRNA.pl ncrna.fa >> smallRNA.fa
+ if [ -f rRNA.fa ]
+ then
+ 	cat rRNA.fa >> smallRNA.fa
