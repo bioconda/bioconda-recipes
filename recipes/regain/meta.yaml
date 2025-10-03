@@ -1,0 +1,77 @@
+{% set name = "regain" %}
+{% set version = "1.6.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ERBringHorvath/regain_CLI/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 1217fab5170fe1d212814f8acf7b892db2658c14d4df4cadb4a615679d44696a
+
+build:
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+  number: 0
+  entry_points:
+    - regain = regain.cli:main
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+  run:
+    - python >=3.10
+    # CLI calls to external tools used by Module 1 / Curate (if applicable):
+    - ncbi-amrfinderplus
+    - blast
+    - biopython
+    - pandas
+    # R runtime + packages used by bnS/bnL/MVA/visualize:
+    - r-base >=4.2
+    - r-optparse
+    - r-dplyr
+    - r-tidyr
+    - r-tibble
+    - r-igraph
+    - r-visnetwork
+    - r-reshape2
+    - r-scales
+    - r-ggplot2
+    - r-ggrepel
+    - r-tidygraph
+    - r-ggraph
+    - r-ellipse
+    - r-vegan
+    - r-ape
+    - r-compositions
+    - r-cluster
+    - r-pbapply
+    - r-foreach
+    - r-doparallel
+    - r-progressr
+    - r-rcolorbrewer
+    - r-bnlearn
+    - r-grain
+    - bioconductor-graph
+    # (Add any other R deps you `library()` in the scripts.)
+
+test:
+  commands:
+    - regain -h
+    - regain --module-health
+    - regain bnS -h
+    - regain AMR -h
+    - regain matrix -h
+    - regain MVA -h
+
+about:
+  home: https://github.com/ERBringHorvath/regain_CLI
+  summary: "ReGAIN: Resistance Gene Association and Inference Network — datasets + Bayesian network analysis for bacterial resistance gene co-occurrence."
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - ERBringHorvath
