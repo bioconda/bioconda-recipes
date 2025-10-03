@@ -13,8 +13,8 @@ case $(uname -m) in
     aarch64|arm64)
         git clone https://github.com/DLTcollab/sse2neon.git
         cp -f sse2neon/sse2neon.h .
-
-	sed -i.bak 's|-mpopcnt -msse4.2||' Makefile
+		
+		sed -i.bak 's|-mpopcnt -msse4.2||' Makefile
         sed -i.bak 's|#include <emmintrin.h>|#include "sse2neon.h"|' ksw.c
         sed -i.bak 's|#include <emmintrin.h>|#include "sse2neon.h"|' poacns.h
         sed -i.bak 's|#include <tmmintrin.h>||' poacns.h
@@ -24,7 +24,7 @@ esac
 case $(uname -s) in
     "Darwin")
         sed -i.bak 's|-lrt||' Makefile
-	sed -i.bak 's|_proc_deamon|_sig_proc_deamon|' kbm.c
+		#sed -i.bak 's|_proc_deamon|_sig_proc_deamon|' kbm.c
         ;;
 esac
 rm -f *.bak
