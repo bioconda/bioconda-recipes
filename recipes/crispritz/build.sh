@@ -1,15 +1,22 @@
 #!/bin/bash
 
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
+
+mkdir -p "${PREFIX}/bin"
+mkdir -p "${PREFIX}/opt/crispritz"
+
 make -f Makefile_conda \
     CXX="${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS}" \
     BUILD_PREFIX="${PREFIX}"
-mkdir -p "${PREFIX}/bin"
-mkdir -p "${PREFIX}/opt/crispritz"
+
 chmod -R 700 .
-cp crispritz.py "${PREFIX}/bin/"
-cp -R \
-    buildTST \
-    searchTST \
-    searchBruteForce \
-    sourceCode/Python_Scripts \
-    "${PREFIX}/opt/crispritz/"
+
+install -v -m 0755 crispritz.py "${PREFIX}/bin"
+
+cp -Rf buildTST \
+	searchTST \
+	searchBruteForce \
+	sourceCode/Python_Scripts \
+	"${PREFIX}/opt/crispritz/"
