@@ -1,0 +1,55 @@
+{% set version = "1.1.0" %}
+{% set commit = "f039f49baa89e8f9bef2e7953751df015fac2c24" %}
+{% set sha256 = "1a8c21e1a78c8a415874949527b03e4e79ddfbff2e4609eabe6fdc05d22b1d83" %}
+
+package:
+  name: rfdiffusion
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/prihoda/RFdiffusion-fork/archive/{{ commit }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - rfdiffusion = rfdiffusion.run_inference:main
+  script: {{ PYTHON }} -m pip install ./env/SE3Transformer --no-build-isolation --no-deps --no-cache-dir -vvv && {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage("rfdiffusion", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+  run:
+    - pytorch==2.3.1
+    - dgl==2.0.0
+    - e3nn==0.4.4
+    - wandb==0.12.1
+    - pynvml==11.0.0
+    - decorator==5.1.0
+    - hydra-core==1.3.2
+    - pyrsistent==0.19.3
+    - numpy==1.26.4
+
+test:
+  imports:
+    - rfdiffusion
+  requires:
+    - curl
+  commands:
+    - rfdiffusion --help
+    - |
+      mkdir rfdiffusion_models; 
+      curl --output rfdiffusion_models/Base_ckpt.pt https://files.ipd.uw.edu/pub/RFdiffusion/6f5902ac237024bdd0c176cb93063dc4/Base_ckpt.pt;
+      rfdiffusion inference.output_prefix=out/design_unconditional 'contigmap.contigs=[10-10]' inference.num_designs=1 diffuser.T=1 inference.deterministic=True inference.model_directory_path=./rfdiffusion_models
+
+about:
+  home: "https://github.com/prihoda/RFdiffusion-fork"
+  license: BSD
+  license_family: BSD
+  license_file: LICENSE
+  summary: "RFdiffusion open source method for structure generation"
