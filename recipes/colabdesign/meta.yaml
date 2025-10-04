@@ -1,0 +1,52 @@
+{% set version = "1.1.3" %}
+{% set commit = "v1.1.3" %}
+{% set sha256 = "c5d6eceb60cd09d6779362a1b91808df749ad6bb1a38b290ced4336ac62c6950" %}
+
+package:
+  name: colabdesign
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/sokrypton/ColabDesign/archive/{{ commit }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage("colabdesign", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+  run:
+    - absl-py
+    - biopython
+    - chex
+    - dm-haiku
+    - dm-tree
+    - immutabledict
+    - jax
+    - ml-collections
+    - numpy
+    - pandas
+    - scipy
+    - optax
+    - joblib
+    - matplotlib
+
+test:
+  imports:
+    - colabdesign
+  commands:
+    - python -c "from colabdesign import mk_af_model; mk_af_model(protocol='binder')"
+
+about:
+  home: "https://github.com/sokrypton/ColabDesign"
+  license: Custom
+  license_family: Other
+  license_file: LICENSE.txt
+  summary: "ColabDesign: Making Protein Design accessible to all"
