@@ -1,66 +1,69 @@
-{% set version = "1.10.0" %}
+{% set name = "orthanq" %}
+{% set version = "1.16.0" %}
 
 package:
-  name: orthanq
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 0
-  skip: True  # [osx]
-  run_exports:
-    - {{ pin_subpackage("orthanq", max_pin="x") }}
 
 source:
   url: https://github.com/orthanq/orthanq/archive/v{{ version }}.tar.gz
-  sha256: 213bf294190b36fdacd6191f159f11b48d7dc9a5f2469e387d8e6af3e1783a06
+  sha256: b4725c26d240a33a640accc20ac5af6bf869541431159e6b9300bd04e5958cc7
+
+build:
+  number: 0
+  skip: True  # [py < 310 or (aarch64 and py < 311)]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('rust') }}
-    - pkg-config
+    - cargo-bundle-licenses
     - make
     - cmake
-    - perl-findbin
+    - pkg-config
+    - clangdev
+    #datavzrd dependencies
+    - nodejs >=16
+    - pnpm
   host:
+    - python
+    - pkg-config
     - gsl
     - libcblas
-    - openssl
+    - openssl  # [linux]
+    - coincbc
+    - fontconfig
     - zlib
     - bzip2
     - xz
-    - clangdev
-    - coincbc
-    - hdf5 =1.10.5
-    - fontconfig
+  run:
+    - python
+    - gsl
+    - openssl  # [linux]
+    - varlociraptor ==8.7.3
+    - samtools ==1.20
+    - vg ==1.63.1  # [linux]
     - htslib
-    - varlociraptor =8.4.7
-    - samtools =1.19
-    - vg =1.56
     - minimap2
     - bwa
-  run:
-    - gsl
-    - libcblas
-    - openssl
-    - clangdev
-    - coincbc
-    - hdf5 =1.10.5
-    - fontconfig
 
 test:
   commands:
     - orthanq -h
 
 about:
-  home: https://github.com/orthanq/orthanq
+  home: "https://github.com/orthanq/orthanq"
   license: MIT
   license_family: MIT
   license_file: LICENSE
   summary: "Uncertainty aware HLA typing and general haplotype quantification."
-  dev_url: https://github.com/orthanq/orthanq
+  dev_url: "https://github.com/orthanq/orthanq"
+  doc_url: "https://orthanq.github.io"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
