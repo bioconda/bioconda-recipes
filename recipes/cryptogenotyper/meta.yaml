@@ -1,35 +1,49 @@
-{% set version = "1.0" %}
+{% set name = "cryptogenotyper" %}
+{% set version = "1.5.0" %}
 
 package:
-    name: cryptogenotyper
-    version: {{ version }}
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/phac-nml/CryptoGenotyper/archive/{{ version }}.tar.gz
-  sha256: aae472b673073ba67f4424b615d317fd460c51ddc6965cc4fbc2ebbfb99d3b2a
+  sha256: 4b9c95e8cd6a2d07633e45f16199f2039c57f86b758ff6abd6504e8888ae9dfb
 
 build:
-    number: 3 
-    noarch: python
-    script: python -m pip install --no-deps --ignore-installed . -vv
+  number: 3 
+  noarch: python
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  entry_points:
+    - cryptogenotyper = CryptoGenotyper.typer:main
+    - cryptogenotyper_init = CryptoGenotyper.utilities:init_blast_databases
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
-    host:
-        - python >=3.4
-        - pip
-    run:
-        - python >=3.4
-        - numpy >=1.15.4
-        - biopython >=1.70,<1.78
-        - blast ==2.9.0
-        - clustalw >=2.1
+  host:
+    - python >=3.6
+    - pip
+    - setuptools
+    - pytest-runner
+  run:
+    - python >=3.6
+    - numpy >=1.15.4
+    - biopython >=1.70,<1.78
+    - blast >=2.9.0
+    - clustalw >=2.1
 
 test:
   commands:
-    - "cryptogenotyper -h"
-    - "blastn -h"
+    - cryptogenotyper -h
+    - cryptogenotyper_init
 
 about:
-    home: https://github.com/phac-nml/CryptoGenotyper
-    license: Apache License, Version 2.0
-    summary: 'This package crypto_typer: tool to subtype the parasite, Cryptosporidium, based on the 18S and gp60 markers.'
+  home: "https://github.com/phac-nml/CryptoGenotyper"
+  license: "Apache-2.0"
+  license_family: APACHE
+  summary: "This package crypto_typer: tool to subtype the parasite, Cryptosporidium, based on the 18S and gp60 markers."
+  description: |
+    A comprehensive tool for subtyping the parasite Cryptosporidium based on two key genetic markers: 18S and gp60.
+    The tool provides a streamlined workflow for analyzing sequencing data and assigning species and subtypes,
+    making it a valuable resource for research and public health surveillance.
+  dev_url: "https://github.com/phac-nml/CryptoGenotyper"

@@ -1,10 +1,15 @@
 #!/bin/bash -e
+set -ex
 
-# Build statically linked binary with Rust
-C_INCLUDE_PATH=$PREFIX/include \
-LIBRARY_PATH=$PREFIX/lib \
-cargo build --release
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
-# Install the binary
-mkdir -p ${PREFIX}/bin
-cp target/release/galah $PREFIX/bin
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+
+# build statically linked binary with Rust
+RUST_BACKTRACE=1
+cargo install -v --no-track --path . --root "${PREFIX}"
+
+"${STRIP}" "${PREFIX}/bin/galah"
