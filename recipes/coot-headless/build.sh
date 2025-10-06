@@ -24,6 +24,10 @@ pushd api/doxy-sphinx
 doxygen coot-api-dox.cfg
 popd
 
+sed -i.bak \
+  's|../coot/api/doxy-sphinx/xml/classmolecules__container__t.xml|../api/doxy-sphinx/xml/classmolecules__container__t.xml|' \
+  api/molecules-container-nanobind.cc
+
 sed -i.bak '/find_package(RDKit CONFIG COMPONENTS RDGeneral REQUIRED)/a\
 set_target_properties(RDKit::rdkit_base PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${RDKit_INCLUDE_DIRS}")' CMakeLists.txt
 rm -rf *.bak
