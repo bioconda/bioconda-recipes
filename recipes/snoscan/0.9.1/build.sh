@@ -45,5 +45,9 @@ ln -sf "$PREFIX/bin/sort-snos.pl" "$PREFIX/bin/sort-snos"
 
 install -v -m 0755 snoscan scan-yeast "$PREFIX/bin"
 
-chmod +rx "$PREFIX/bin/*2gsi.pl"
+chmod +rx "$PREFIX/bin/genpept2gsi.pl"
+chmod +rx "$PREFIX/bin/genbank2gsi.pl"
+chmod +rx "$PREFIX/bin/swiss2gsi.pl"
+chmod +rx "$PREFIX/bin/fasta2gsi.pl"
+chmod +rx "$PREFIX/bin/pir2gsi.pl"
 chmod +rx "$PREFIX/bin/sort-snos.pl"
