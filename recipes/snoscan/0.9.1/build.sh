@@ -43,6 +43,9 @@ cd ..
 
 ln -sf "$PREFIX/bin/sort-snos.pl" "$PREFIX/bin/sort-snos"
 
+cp -f snoscan "$PREFIX/bin/snoscanA"
+cp -f snoscan "$PREFIX/bin/snoscanH"
+cp -f snoscan "$PREFIX/bin/snoscanY"
 install -v -m 0755 snoscan scan-yeast "$PREFIX/bin"
 
 chmod +rx "$PREFIX/bin/genpept2gsi.pl"
