@@ -31,6 +31,13 @@ case $(uname -m) in
 esac
 rm -f *.bak
 
-make CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}"
+case $(uname -s) in
+    "Darwin")
+	make no_omp CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}"
+	;;
+    "Linux")
+	make release CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}"
+	;;
+esac
 
 install -v -m 0755 akt "${PREFIX}/bin"
