@@ -21,7 +21,10 @@ mkdir -p "$PREFIX/bin"
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* src/
 
+cd src/
 autoreconf -if -I .
+cd ..
+
 ./configure
 
 make CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}"
