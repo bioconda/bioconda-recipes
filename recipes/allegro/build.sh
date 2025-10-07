@@ -1,9 +1,29 @@
 #!/bin/bash
-rm -rf src/config.guess
-rm -rf src/config.sub
-wget "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD" -O src/config.guess
-wget "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD" -O src/config.sub
-./configure
-make CXXFLAGS="${CXXFLAGS} -std=c++03"
 
-cp allegro $PREFIX/bin
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++03"
+export LC_ALL=C
+
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
+
+mkdir -p "$PREFIX/bin"
+
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* src/
+
+autoreconf -if -I .
+./configure
+
+make CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}"
+
+install -v -m 0755 allegro "$PREFIX/bin"
