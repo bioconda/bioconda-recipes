@@ -1,9 +1,10 @@
 #!/bin/bash
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lmpfr -lgmp"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I$PREFIX/include"
 export CFLAGS="${CFLAGS} -O3"
-export CXXFLAGS="${CXXFLAGS} -O3 -Wno-deprecated-declarations -Wno-maybe-uninitialized -Wno-unused-result -Wno-register"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-deprecated-declarations -Wno-maybe-uninitialized -Wno-unused-result -Wno-register -Wno-unknown-warning-option"
+export LC_ALL=C
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 
@@ -23,7 +24,8 @@ esac
 	--disable-qt \
 	--disable-option-checking \
 	CXX="${CXX}" \
-	CXXFLAGS="${CXXFLAGS}"
+	CXXFLAGS="${CXXFLAGS}" \
+	CFLAGS="${CFLAGS}"
 
 sed -i'.bak' 's|-lmpfr  -lgmp|-L$(PREFIX)/lib  -lmpfr  -lgmp|' Makefile
 rm -f *.bak
