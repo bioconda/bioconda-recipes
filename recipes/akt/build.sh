@@ -8,6 +8,12 @@ export LC_ALL=C
 
 install -d "${PREFIX}/bin"
 
+chmod +x htslib-1.6/version.sh
+sed -i.bak 's|-O2|-O3 -I$(PREFIX)/include -Wno-implicit-function-declaration|g' htslib-1.6/Makefile
+sed -i.bak 's|AR     = ar|#AR     = ar|' htslib-1.6/Makefile
+sed -i.bak 's|-lpthread|-pthread|g' htslib-1.6/Makefile
+rm -f htslib-1.6/*.bak
+
 if [[ `uname -m` == "aarch64" || `uname -m` == "arm64" ]]; then
 	sed -i'.bak' 's/\-mpopcnt//g' Makefile
 fi
