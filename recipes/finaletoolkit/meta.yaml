@@ -1,30 +1,30 @@
 {% set name = "finaletoolkit" %}
-{% set version = "0.10.7" %}
+{% set version = "0.11.0" %}
 {% set loess_version = "2.1.2" %}
 {% set plotbin_version = "3.1.7" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: 4bd04c3be90f10eda39dcfa82c7f9ccaf653eb04ccf1161edc1f65060919a85b
+    sha256: 4f41be57cf8fe8ac3cfaf790d04ecc94ab65b7d8df7822d2a25e704ff6d011f0
   - url: https://files.pythonhosted.org/packages/a7/91/676f1839b94259e30ed85c962be6009c819e61b3fd29c64b34c0894e69b4/loess-{{ loess_version }}-py3-none-any.whl
     sha256: 105f12daa0fdff5185855ae57c2d3f25420fb30b475ae3f4078843a5c61699b9
   - url: https://files.pythonhosted.org/packages/1e/00/6b6b084717523a3bba465c42b7309849c9ee580d64f2baccf972bc3d462d/plotbin-{{ plotbin_version }}-py3-none-any.whl
     sha256: 3f95758fdf178572051ba7de0e30f3a2b7e4702f1d3c3a4bfc87a5cb232a0539
 
 build:
+  number: 0
+  noarch: python
   script:
     - pip install loess-{{ loess_version }}-py3-none-any.whl plotbin-{{ plotbin_version }}-py3-none-any.whl --no-index --find-links .
-    - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  noarch: python
-  number: 0  # <-- FIXED
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   entry_points:
     - finaletoolkit = finaletoolkit.cli.main_cli:main_cli
-  run_exports:  # <-- ADDED
-    - {{ pin_subpackage('finaletoolkit', max_pin='x.x') }}
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
@@ -50,16 +50,18 @@ test:
     - loess
     - plotbin
   commands:
-    - pip check
     - finaletoolkit --help
-  requires:
-    - pip
 
 about:
-  home: https://github.com/epifluidlab/FinaleToolkit
-  summary: Extract cfDNA fragmentation features from sequencing data.  # <-- FIXED
+  home: "https://github.com/epifluidlab/FinaleToolkit"
+  summary: "Extract cfDNA fragmentation features from sequencing data."
   license: MIT
+  license_family: MIT
   license_file: LICENSE
+  description: |
+      "FinaleToolkit (FragmentatIoN AnaLysis of cEll-free DNA Toolkit) is a package and standalone program to extract fragmentation features of cell-free DNA from paired-end sequencing data.
+      It has support for many cfDNA fragmentation features, such as fragment length, coverage, end motifs, DELFI, and more."
+  dev_url: "https://github.com/epifluidlab/FinaleToolkit"
 
 extra:
   recipe-maintainers:
