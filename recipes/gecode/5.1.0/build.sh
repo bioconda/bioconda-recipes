@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lmpfr -lgmp"
 export CPPFLAGS="${CPPFLAGS} -I$PREFIX/include"
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-deprecated-declarations -Wno-maybe-uninitialized -Wno-unused-result -Wno-register"
@@ -26,8 +26,7 @@ autoreconf -if
 	CXX="${CXX}" \
 	CXXFLAGS="${CXXFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" \
-	LDFLAGS="${LDFLAGS}" \
-	LIBS="-lmpfr -lgmp"
+	LDFLAGS="${LDFLAGS}"
 
 make -j"${CPU_COUNT}"
 make install
