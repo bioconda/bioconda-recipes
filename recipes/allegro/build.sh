@@ -3,7 +3,7 @@
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++03 -Wno-implicit-function-declaration"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++03"
 export LC_ALL=C
 
 case $(uname -m) in
@@ -25,6 +25,8 @@ cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* src/
 cd src/
 autoreconf -if -I .
 cd ..
+
+sed -i.bak 's|CFLAGS = -g -O3|CFLAGS = -g -O3 -Wno-implicit-function-declaration|' src/cudd-2.4.0/cudd/Makefile
 
 ./configure
 
