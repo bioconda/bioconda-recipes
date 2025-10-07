@@ -1,11 +1,11 @@
 #!/bin/bash
 
 export LC_ALL="en_US.UTF-8"
-export KMER="$PREFIX"
+export KMER="${PREFIX}"
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++03"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++03 -Wno-reserved-user-defined-literal"
 
 case $(uname -m) in
     aarch64)
@@ -28,7 +28,7 @@ case $(uname -m) in
 esac
 rm -f *.bak
 
-CXXFLAGS="${CXXFLAGS}" make
+make
 
 cd ../
 
