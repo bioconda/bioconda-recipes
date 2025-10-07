@@ -23,7 +23,7 @@ esac
 case $(uname -s) in
     "Darwin")
         export CXXFLAGS="${CXXFLAGS} -std=c++03"
-        export EXTRA_ARGS="--disable-cpp11 --with-macosx-version-min=11.0"
+        export EXTRA_ARGS="--disable-cpp11"
         ;;
     "Linux")
         export CXXFLAGS="${CXXFLAGS} -std=c++14"
