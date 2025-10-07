@@ -1,40 +1,44 @@
-{% set version = "2.5.61" %}
-{% set sha256 = "5a470ad64e9ea53296d87e69298ab2354d563338a9ec05b529679c42e23b3025" %}
+{% set name = "hyphy" %}
+{% set version = "2.5.84" %}
+{% set sha256 = "12a6f117239a9a558e8c005582f91b4252f458abd9273f96793b3d44b2c7964a" %}
 
 package:
-  name: hyphy
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/veg/hyphy/archive/{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  sha256: {{ sha256 }}
 
 build:
   number: 0
   run_exports:
-    - {{ pin_subpackage("hyphy", max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
+
 requirements:
   build:
-    - make
+    - ninja
     - cmake
     - {{ compiler("cxx") }}
+    - pkg-config
+  host:
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
-  host:
-    - libcurl
     - openmpi
-    - openssl
+    - libcurl
+    - libblas
+    - zlib
   run:
-    - libcurl
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
     - openmpi
-    - openssl
 
 test:
   commands:
     - hyphy --help
 
 about:
-  home: http://hyphy.org/
+  home: "https://hyphy.org"
   license: MIT
   license_family: MIT
   license_file: LICENSE
@@ -42,10 +46,33 @@ about:
   description: |
     HyPhy (Hypothesis Testing using Phylogenies) is an open-source software package for the analysis of genetic sequences
     (in particular the inference of natural selection) using techniques in phylogenetics, molecular evolution, and machine learning.
-  dev_url: https://github.com/veg/hyphy
+  dev_url: "https://github.com/veg/hyphy"
+  doc_url: "https://hyphy.org"
 
 extra:
+  container:
+    # mpirun won't run with ssh present, which is not included in the base image
+    extended-base: True
   additional-platforms:
     - linux-aarch64
-  container:
-    extended-base: true
+    - osx-arm64
+  identifiers:
+    - biotools:HyPhy
+    - usegalaxy-eu:hyphy_busted
+    - usegalaxy-eu:hyphy_bgm
+    - usegalaxy-eu:hyphy_gard
+    - usegalaxy-eu:hyphy_absrel
+    - usegalaxy-eu:hyphy_fubar
+    - usegalaxy-eu:hyphy_fade
+    - usegalaxy-eu:hyphy_sm19
+    - usegalaxy-eu:hyphy_meme
+    - usegalaxy-eu:hyphy_prime
+    - usegalaxy-eu:hyphy_slac
+    - usegalaxy-eu:hyphy_fel
+    - usegalaxy-eu:hyphy_relax
+    - usegalaxy-eu:hyphy_cfel
+    - usegalaxy-eu:hyphy_summary
+    - usegalaxy-eu:hyphy_conv
+    - doi:10.1093/bioinformatics/bti079
+    - doi:10.1093/molbev/msz197
+    - doi:10.1007/978-1-4939-8736-8_6

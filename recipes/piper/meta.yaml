@@ -1,34 +1,35 @@
 {% set name = "piper" %}
-{% set version = "0.14.0" %}
+{% set version = "0.14.5" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "2d2b226689f2e992da0735f25ea432f16f230bfaef51e732ef50b1b495ce153c"
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: f866533c0bb8b997094bb4c647bb32c7de57053d77cf255c4a1b68586d8d9fde
 
 build:
   number: 0
   noarch: python
-  script: "2to3 . && {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  script: 2to3 . && {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage('piper', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
     - pip
     - python >=3
+    - setuptools
   run:
-    - attmap >=0.12.5
     - logmuse >=0.2.4
     - pandas
     - psutil
     - python >=3
-    - ubiquerg >=0.4.5
-    - yacman
-    - pipestat >=0.4.0
+    - ubiquerg >=0.8.0
+    - yacman >=0.9.3
+    - pipestat >=0.11.0
+    - importlib_metadata
 
 test:
   imports:
@@ -42,13 +43,13 @@ test:
     - veracitools
 
 about:
-  home: "https://github.com/databio/pypiper/"
+  home: "https://github.com/databio/pypiper"
   license: "BSD-2-Clause"
-  license_family: "BSD"
-  license_file: LICENSE.txt
-  dev_url: https://github.com/databio/pypiper/
-  doc_url: https://pypiper.databio.org/en/latest/
-  summary: "A lightweight python toolkit for gluing together restartable, robust command line pipelines"
+  license_family: BSD
+  license_file: "LICENSE.txt"
+  dev_url: "https://github.com/databio/pypiper"
+  doc_url: "https://pypiper.databio.org/en/latest"
+  summary: "A lightweight python toolkit for gluing together restartable, robust command line pipelines."
 
 extra:
   recipe-maintainers:

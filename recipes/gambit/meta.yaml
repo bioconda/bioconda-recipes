@@ -1,4 +1,4 @@
-{% set version = "1.0.1" %}
+{% set version = "1.1.0" %}
 
 package:
   name: gambit
@@ -6,12 +6,13 @@ package:
 
 source:
   url: https://github.com/jlumpe/gambit/archive/v{{ version }}.tar.gz
-  sha256: d99285b1b8df971d36292ca3639bab5998b501262db8c72769dc1287920f73e8
+  sha256: 19ec968f75366a5129f4db79024f8a717575fef88b0265c9dd281f767a0d888d
 
 build:
-  number: 0
-  script: "{{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv"
-  skip: True  # [py < 37]
+  number: 2
+  # Biopython not currently available for 3.13
+  skip: True  # [py < 39 or py > 312]
+  script: "{{ PYTHON }} -m pip install --no-deps -vvv ."
   entry_points:
     - gambit = gambit.cli:cli
   run_exports:
@@ -20,23 +21,23 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
+    - libgomp      # [linux]
+    - llvm-openmp  # [osx]
   host:
     - python
     - pip
-    - numpy >=1.13
-    - cython >=0.27,<1
+    - cython >=3
   run:
     - python
-    - {{ pin_compatible('numpy') }}
-    - sqlalchemy >=1.1,<2.dev0
-    - biopython >=1.69
-    - alembic >=1.0
+    - numpy >=1.13,<2
+    - sqlalchemy >=1.4
+    - biopython >=1.79
     - attrs >=20
-    - cattrs >=1.0
+    - cattrs >=23.2
     - click >=7.0
     - h5py >=3.0
-    - setuptools
     - scipy >=1.7
+    - typing-extensions >=4
 
 test:
   requires:
@@ -65,10 +66,11 @@ about:
   dev_url: https://github.com/jlumpe/gambit
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - jlumpe
-  skip-lints:
-    - uses_setuptools  # uses pkg_resoures during run time
   identifiers:
     - doi:10.1371/journal.pone.0277575
     - biotools:gambit_bacterial

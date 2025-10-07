@@ -6,6 +6,7 @@ You can download the database by running the following commands:
 
     downloadKalamari.sh
     buildTaxonomy.sh
+    filterTaxonomy.sh
     buildKraken1.sh
 
 ===================

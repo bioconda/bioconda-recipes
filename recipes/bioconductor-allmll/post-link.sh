@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "allmll-1.42.0"
+installBiocDataPackage.sh "allmll-1.46.0"

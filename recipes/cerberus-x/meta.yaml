@@ -1,0 +1,61 @@
+{% set name = "Cerberus-x" %}
+{% set version = "1.5.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/raw-lab/cerberus/archive/refs/tags/v{{version}}.tar.gz
+  sha256: 585ff78446eb666a75f1efb609db1951adaa8fe9589557eaa200a903058abb59
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_compatible('cerberus-x', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.8
+    - setuptools <70.0.0
+    - wheel
+  run:
+    - python >=3.8
+    - setuptools <70.0.0
+    - pandas
+    - flash2
+    - pyrodigal
+    - pyrodigal-gv
+    - pyhmmer
+    - plotly
+    - scikit-learn
+    - dominate
+    - python-kaleido
+    - configargparse
+    - metaomestats
+    - psutil
+    - hydrampp
+    - importlib-resources
+
+test:
+  imports:
+    - cerberus_x
+  commands:
+    - cerberus.py --help
+
+about:
+  home: "https://github.com/raw-lab/cerberus"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: "LICENSE.txt"
+  summary: "Versatile Functional Ontology Assignments via Hidden Markov Model (HMM) searching with environmental focus of shotgun 'omics data."
+  doc_url: "https://github.com/raw-lab/cerberus/blob/v{{ version }}/README.md"
+  dev_url: "https://github.com/raw-lab/cerberus"
+
+extra:
+  recipe-maintainers:
+    - decrevi
+    - raw-lab

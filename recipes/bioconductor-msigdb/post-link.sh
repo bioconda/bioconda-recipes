@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "msigdb-1.10.0"
+installBiocDataPackage.sh "msigdb-1.14.0"

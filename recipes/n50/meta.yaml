@@ -1,68 +1,51 @@
 {% set name = "n50" %}
-{% set version = "1.5.8" %}
-{% set sha256 = "ee720bc4a13689d179adbd3e1aaef16fcfcc85c0773f88a31e8e5c89085243d6" %}
+{% set version = "1.9.3" %}
+{% set sha256 = "007f9dab944f5a51c752838f9d68130ffd652c1c104d325a1edd4b31342f59b9" %}
 
 package:
-  name: {{ name }}
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://cpan.metacpan.org/authors/id/P/PR/PROCH/Proch-N50-{{ version }}.tar.gz
+  url: https://github.com/quadram-institute-bioscience/n50/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  noarch: generic
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
+    - {{ compiler('c') }}
   host:
-    - perl
-    - perl-app-cpanminus
-    - perl-perlio-encoding
-    - perl-file-which
-    - perl-json-pp
-    - perl-fastx-reader >=1.8.0
-    - perl-getopt-long
-    - perl-exporter
-    - perl-text-asciitable
-    - perl-pod-usage
-
-  run:
-    - perl
-    - perl-perlio-encoding
-    - perl-file-which
-    - perl-getopt-long
-    - perl-json-pp
-    - perl-fastx-reader >=1.8.0
-    - perl-exporter
-    - perl-text-asciitable
-    - perl-pod-usage
+    - zlib
 
 test:
-  files:
-    - test.fa
   commands:
-  # (see run_test.sh for remainder of tests)
-  # Perl 'use' tests
-    - perl -e "use FASTX::Reader"
-    - perl -e "use Proch::N50"
-
+    - n50 --help
+    - n50 --version
+    - n50_simseqs --version  
+    - n50 --version | grep -q "{{ version }}"
+    - n50_simseqs --version | grep -q "{{ version }}"
 
 about:
-  home: http://metacpan.org/pod/Proch::N50
-  dev_url: https://github.com/quadram-institute-bioscience/seqfu/
-  doc_url: https://github.com/quadram-institute-bioscience/seqfu/wiki/n50
-  license: mit
-  summary: 'calculate N50 from FASTA/FASTQ files, producing both machine and human friendly outputs'
-  description: |
-    a program to calculate size metrics of a FASTA (or FASTQ) file: minimum, maximum, average length, N50, N75, N90 and the area of the Nx curve (auN).
-    Gzipped files are supported as input, and the output can be in compact, csv, tsv, json or screen friendly format.
-
-extra:  
+  home: "https://github.com/quadram-institute-bioscience/n50"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A command-line tool to calculate the N50 value of a set of sequences and other utilities."
+  description: "This repository provides tools for N50 calculation and dataset simulation."
+  doc_url: "https://github.com/quadram-institute-bioscience/n50/blob/v{{ version }}/README.md"
+  dev_url: "https://github.com/quadram-institute-bioscience/n50"
+  
+extra:
   recipe-maintainers:
     - telatin
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:{{ name }}
-    - doi:10.3390/bioengineering8050059 
+    - doi:10.3390/bioengineering8050059

@@ -1,0 +1,57 @@
+{% set version = "3-954d202" %}
+{% set sha256 = "9c9488efaedd7c35044005f6368e07180f08b7fbf730b603bff256f371db2d33" %}
+
+package:
+  name: foldmason
+  version: {{ version|replace("-", ".")  }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('foldmason', max_pin="x") }}
+
+source:
+  url: https://github.com/steineggerlab/foldmason/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cmake <4.0.0
+    - make
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - perl
+  host:
+    - zlib
+    - bzip2
+  run:
+    - aria2
+    - wget
+    - gawk
+    - zlib
+    - bzip2
+
+test:
+  commands:
+    - foldmason > /dev/null
+
+about:
+  home: https://github.com/steineggerlab/foldmason
+  summary: "Multiple Protein Structure Alignment at Scale with FoldMason"
+  license: GPL-3
+  license_family: GPL
+  license_file: LICENSE.md 
+
+extra:
+  identifiers:
+    - biotools:foldmason
+  recipe-maintainers:
+    - gamcil
+    - milot-mirdita
+    - martin-steinegger
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

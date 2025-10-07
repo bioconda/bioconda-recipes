@@ -1,0 +1,54 @@
+{% set version = "0.0.2" %}
+
+package:
+  name: gambitcore
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/gambit-suite/gambitcore/archive/v{{ version }}.tar.gz
+  sha256: 3a457e06d6688f138c295b27faac69ed53a30c0fe1998197cc600bf03dbaee0d
+
+build:
+  number: 0
+  skip: True  # [py < 310 or py > 311]
+  script: "{{ PYTHON }} -m pip install --no-deps -vvv ."
+  run_exports:
+    - {{ pin_subpackage("gambitcore", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - gambit
+    - pandas
+
+test:
+  commands:
+    # Just check command is available
+    - gambitcore --help
+    - gambitcore-species --help
+
+about:
+  home: https://github.com/gambit-suite/gambitcore
+  summary: Tool for rapid taxonomic identification of microbial pathogens
+  description: |
+    A tool for bacterial species identification and assembly quality assessment. It 
+    evaluates assemblies by comparing their k-mer profiles against species-specific 
+    core genome references, providing both taxonomic identification and assembly 
+    completeness metrics.
+  license: LGPL-3.0-or-later
+  license_family: GPL
+  license_file: LICENSE
+  doc_url: https://github.com/gambit-suite/gambitcore
+  dev_url: https://github.com/gambit-suite/gambitcore
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - thanhleviet

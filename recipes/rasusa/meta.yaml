@@ -1,4 +1,4 @@
-{% set version = "2.0.0" %}
+{% set version = "2.2.2" %}
 {% set name = "rasusa" %}
 
 package:
@@ -7,17 +7,21 @@ package:
 
 source:
   url: https://github.com/mbhall88/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: 7921a94cb5c30c194c3d966e7dd80d034a9cf840d853b3fe1725d90d5800e2bd
+  sha256: f764d257fcdedcf08b8cb18bd4e93ffab8a788785e7161feb16ea1f2d4f30361
 
 build:
   number: 0
   run_exports:
     - {{ pin_subpackage('rasusa', max_pin="x.x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path .
 
 requirements:
   build:
-    - rust >=1.74.1
+    - {{ compiler('rust') }}
     - {{ compiler('c') }}              # [not win]
+    - cargo-bundle-licenses
 
 test:
   commands:
@@ -30,8 +34,13 @@ about:
   home: https://github.com/mbhall88/rasusa
   license: MIT
   summary: Randomly subsample sequencing reads or alignments
-  license_file: LICENSE
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - mbhall88

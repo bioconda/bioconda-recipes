@@ -1,16 +1,48 @@
-#!/bin/bash
+#!/bin/bash -ex
 
-mkdir build
-pushd build
+export INCLUDES="-I${PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64"
 
-# Cmake is having trouble finding the sysroot with conda so we're giving it a little help...
-if [[ ${HOST} =~ .*darwin.* ]]; then
-	cmake -DCMAKE_BUILD_TYPE=Release -DCOMPILATION_ARCH=OFF -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}" ..
+ARCH=$(uname -m)
+
+case "${ARCH}" in
+	x86_64) ARCH_FLAGS="-DCOMPILATION_ARCH=OFF" ;;
+	aarch64) ARCH_FLAGS="-DCOMPILATION_ARCH=OFF" ;;
+	*) ARCH_FLAGS="-DCOMPILATION_ARCH=ON" ;;
+esac
+
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
+
+if [[ `uname -s` == Darwin ]]; then
+	export CONFIG_ARGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} -DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
 else
-	cmake -DCMAKE_BUILD_TYPE=Release -DCOMPILATION_ARCH=OFF -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake" ..
+	export CONFIG_ARGS="-DCMAKE_TOOLCHAIN_FILE=${RECIPE_DIR}/cross-linux.cmake"
 fi
 
-make VERBOSE=1
-make install
+cmake -S . -B build -G Ninja \
+	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_CXX_COMPILER="${CXX}" \
+        -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-DCMAKE_C_COMPILER="${CC}" \
+	-DCMAKE_C_FLAGS="${CFLAGS}" \
+	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
+	"${ARCH_FLAGS}" \
+	"${CONFIG_ARGS}"
 
-popd
+ninja -C build install -j "${CPU_COUNT}"

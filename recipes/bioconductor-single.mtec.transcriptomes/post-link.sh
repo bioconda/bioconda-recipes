@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "single.mtec.transcriptomes-1.30.0"
+installBiocDataPackage.sh "single.mtec.transcriptomes-1.34.0"

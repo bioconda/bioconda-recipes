@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-make FC="${FC}" CC="${CC}"
+if [[ ${target_platform} =~ osx.* ]]; then
+	make FC="${FC}" CC="${FC}" CXX="${CXX}"
+else
+	make FC="${FC}" CC="${FC}"
+fi
 
 chmod u+x Cur+
 chmod u+x Canal
