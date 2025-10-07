@@ -37,7 +37,7 @@ autoreconf -if
 	CXX="${CXX}" \
 	CXXFLAGS="${CXXFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" \
-	LDFLAGS="${LDFLAGS}"
+	LDFLAGS="${LDFLAGS}" \
 	"${EXTRA_ARGS}"
 
 make -j"${CPU_COUNT}"
