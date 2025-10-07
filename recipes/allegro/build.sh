@@ -26,9 +26,10 @@ cd src/
 autoreconf -if -I .
 cd ..
 
-sed -i.bak 's|CFLAGS = -g -O3|CFLAGS = -g -O3 -Wno-implicit-function-declaration|' src/cudd-2.4.0/cudd/Makefile
-
 ./configure
+
+sed -i.bak 's|CFLAGS = -g -O3|CFLAGS = -g -O3 -Wno-implicit-function-declaration|' src/cudd-2.4.0/cudd/Makefile
+sed -i.bak 's|CFLAGS = -g -O3|CFLAGS = -g -O3 -Wno-implicit-function-declaration|' src/cudd-2.4.0/Makefile
 
 make CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}"
 
