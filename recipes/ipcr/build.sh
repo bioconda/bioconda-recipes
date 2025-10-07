@@ -1,13 +1,18 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -euxo pipefail
 
 export CGO_ENABLED=0
+export GOPATH=$PWD
+export GOCACHE=$PWD/.cache/
 export GOFLAGS="${GOFLAGS:-} -trimpath -buildvcs=false"
-if [ -d vendor ]; then
+
+mkdir -p "${GOCACHE}"
+mkdir -p "${PREFIX}/bin"
+
+if [[ -d vendor ]]; then
   export GOFLAGS="$GOFLAGS -mod=vendor"
 fi
 
-mkdir -p "${PREFIX}/bin"
 go version
 go build -o "${PREFIX}/bin/ipcr" ./cmd/ipcr
 
