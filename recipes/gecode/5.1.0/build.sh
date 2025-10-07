@@ -25,7 +25,7 @@ esac
 	CXX="${CXX}" \
 	CXXFLAGS="${CXXFLAGS}"
 
-sed -i.bak 's|-lmpfr  -lgmp|-L$(PREFIX)/lib -lmpfr -lgmp|' Makefile
+sed -i'.bak' 's|-lmpfr  -lgmp|-L$(PREFIX)/lib  -lmpfr  -lgmp|' Makefile
 rm -f *.bak
 
 make -j"${CPU_COUNT}"
