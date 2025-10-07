@@ -3,7 +3,7 @@
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lmpfr -lgmp"
 export CPPFLAGS="${CPPFLAGS} -I$PREFIX/include"
 export CFLAGS="${CFLAGS} -O3"
-export CXXFLAGS="${CXXFLAGS} -O3 -I$PREFIX/include -L${PREFIX}/lib -Wno-deprecated-declarations -Wno-maybe-uninitialized -Wno-unused-result -Wno-register"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-deprecated-declarations -Wno-maybe-uninitialized -Wno-unused-result -Wno-register"
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 
@@ -24,6 +24,9 @@ esac
 	--disable-option-checking \
 	CXX="${CXX}" \
 	CXXFLAGS="${CXXFLAGS}"
+
+sed -i.bak 's|-lmpfr  -lgmp|-L$(PREFIX)/lib -lmpfr -lgmp|' Makefile
+rm -f *.bak
 
 make -j"${CPU_COUNT}"
 make install
