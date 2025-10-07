@@ -26,7 +26,8 @@ autoreconf -if
 	CXX="${CXX}" \
 	CXXFLAGS="${CXXFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" \
-	LDFLAGS="${LDFLAGS}"
+	LDFLAGS="${LDFLAGS}" \
+	LIBS="-lmpfr -lgmp"
 
 make -j"${CPU_COUNT}"
 make install
