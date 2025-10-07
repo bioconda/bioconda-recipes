@@ -2,7 +2,7 @@
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++03"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++03 -Wno-implicit-function-declaration"
 export LC_ALL=C
 
 case $(uname -m) in
