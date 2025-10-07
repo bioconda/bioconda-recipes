@@ -2,8 +2,8 @@
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I$PREFIX/include"
-export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations"
-export CXXFLAGS="${CXXFLAGS} -O3 -Wno-maybe-uninitialized -Wno-unused-result -Wno-register"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-deprecated-declarations -Wno-maybe-uninitialized -Wno-unused-result -Wno-register"
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 
@@ -21,12 +21,12 @@ esac
 
 case $(uname -s) in
     "Darwin")
-        export CXXFLAGS="${CXXFLAGS} -std=c++11"
-        #export EXTRA_ARGS="--disable-cpp11"
+        export CXXFLAGS="${CXXFLAGS} -std=c++03"
+        export EXTRA_ARGS="--disable-cpp11"
         ;;
     "Linux")
         export CXXFLAGS="${CXXFLAGS} -std=c++14"
-        #export EXTRA_ARGS=""
+        export EXTRA_ARGS=""
         ;;
 esac
 
@@ -38,6 +38,7 @@ autoreconf -if
 	CXXFLAGS="${CXXFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" \
 	LDFLAGS="${LDFLAGS}"
+	"${EXTRA_ARGS}"
 
 make -j"${CPU_COUNT}"
 make install
