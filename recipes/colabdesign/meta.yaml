@@ -1,3 +1,4 @@
+{% set python_min = "3.9" %}
 {% set version = "1.1.3" %}
 {% set sha256 = "c5d6eceb60cd09d6779362a1b91808df749ad6bb1a38b290ced4336ac62c6950" %}
 
@@ -18,10 +19,11 @@ build:
 
 requirements:
   host:
-    - python >=3.9
+    - python >={{ python_min }}
     - pip
     - setuptools
   run:
+    - python >={{ python_min }}
     - absl-py
     - biopython
     - chex
@@ -36,8 +38,15 @@ requirements:
     - optax
     - joblib
     - matplotlib-base
+    - cuda-nvcc           # [linux]
+    - cuda-cudart-dev     # [linux]
+    - libcublas-dev       # [linux]
+    - libcublas-static    # [linux]
+    - cuda-version >=12.6 # [linux]
 
 test:
+  requires:
+    - python {{ python_min }}
   imports:
     - colabdesign
   commands:
