@@ -2,10 +2,9 @@
 
 export LC_ALL="en_US.UTF-8"
 export KMER="${PREFIX}"
-
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-reserved-user-defined-literal -Wno-literal-suffix"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-reserved-user-defined-literal"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-reserved-user-defined-literal -Wno-literal-suffix"
 
 case $(uname -m) in
     aarch64)
@@ -28,7 +27,7 @@ case $(uname -m) in
 esac
 rm -f *.bak
 
-make
+CXXFLAGS="${CXXFLAGS}" make
 
 cd ../
 sed -i.bak "s/FileHandle;$/&\\nuse File::Basename;/" ${PREFIX}/bin/runCA
