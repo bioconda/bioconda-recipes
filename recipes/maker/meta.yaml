@@ -14,9 +14,9 @@ source:
     - mpi_init.patch
 
 build:
-  number: 0
+  number: 1
   run_exports:
-    - {{ pin_subpackage('maker', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -39,10 +39,13 @@ requirements:
   run:
     - augustus >=3.5.0
     - blast {{ blast_version }}
+    - evidencemodeler
     - exonerate
     - repeatmasker >=4.1.9
     - rmblast {{ blast_version }}
     - snap
+    - snoscan ==0.9.1
+    - trnascan-se
     # GeneMarkS, GeneMark-ES and FGENESH are optional requirements but are not free
     - perl
     - perl-bioperl-core >=1.7.8
@@ -52,16 +55,18 @@ requirements:
     - perl-dbi
     - perl-io-all
     - perl-io-prompt
-    - perl-inline-c >=0.78
+    - perl-inline-c
     - perl-perlio-gzip
     - perl-forks
     - perl-perl-unsafe-signals
     - perl-uri
     - mpich-mpicc
+    - postgresql
 
 test:
   commands:
-    - maker --version
+    - LC_ALL=C maker --version  # [aarch64]
+    - maker --version  # [not aarch64]
 
 about:
   home: "https://www.yandell-lab.org/software/maker.html"
@@ -72,6 +77,13 @@ about:
   doc_url: "https://www.yandell-lab.org/software/maker.html"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    # perl-termreadkey is not available on osx-arm64
+    #- osx-arm64
+  container:
+    # mpich needs /etc/resolv.conf : https://github.com/bioconda/bioconda-recipes/issues/11583
+    extended-base: True
   identifiers:
     - biotools:maker
     - usegalaxy-eu:maker

@@ -2,6 +2,7 @@
 
 mkdir -p "${PREFIX}/bin"
 mkdir -p "${PREFIX}/perl/lib"
+export LC_ALL=C
 
 # We will need this script to precompile inline C code for MPI support
 cp -f maker_mpi_init $PREFIX/bin/
