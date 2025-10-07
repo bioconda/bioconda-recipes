@@ -7,7 +7,6 @@ export CXXFLAGS="${CXXFLAGS} -O3 -Wno-maybe-uninitialized -Wno-unused-result -Wn
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 
-autoreconf -if
 case $(uname -m) in
     aarch64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
@@ -22,23 +21,23 @@ esac
 
 case $(uname -s) in
     "Darwin")
-        export CXXFLAGS="${CXXFLAGS} -std=c++03"
-        export EXTRA_ARGS="--disable-cpp11"
+        export CXXFLAGS="${CXXFLAGS} -std=c++11"
+        #export EXTRA_ARGS="--disable-cpp11"
         ;;
     "Linux")
         export CXXFLAGS="${CXXFLAGS} -std=c++14"
-        export EXTRA_ARGS=""
+        #export EXTRA_ARGS=""
         ;;
 esac
 
+autoreconf -if
 ./configure --prefix="${PREFIX}" \
 	--disable-qt \
 	--disable-option-checking \
 	CXX="${CXX}" \
 	CXXFLAGS="${CXXFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" \
-	LDFLAGS="${LDFLAGS}" \
-	"${EXTRA_ARGS}"
+	LDFLAGS="${LDFLAGS}"
 
 make -j"${CPU_COUNT}"
 make install
