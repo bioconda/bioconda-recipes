@@ -2,6 +2,7 @@
 
 export CONAN_NON_INTERACTIVE=1
 export CMAKE_BUILD_PARALLEL_LEVEL="${CPU_COUNT}"
+export CMAKE_CXX_STANDARD=23
 export CTEST_PARALLEL_LEVEL="${CPU_COUNT}"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
@@ -44,7 +45,7 @@ conan profile detect
 # Install header-only deps
 conan install conanfile.py \
        -s build_type="${CMAKE_BUILD_TYPE}" \
-       -s compiler.cppstd=17 \
+       -s compiler.cppstd="${CMAKE_CXX_STANDARD}" \
        -o 'hictk/*:with_cli_tool_deps=False' \
        -o 'hictk/*:with_benchmark_deps=False' \
        -o 'hictk/*:with_arrow=False' \
@@ -61,24 +62,25 @@ sed -i.bak 's/set(HICTK_PROJECT_VERSION_SUFFIX "")/set(HICTK_PROJECT_VERSION_SUF
 CMAKE_PREFIX_PATH="${CMAKE_PREFIX_PATH}:${PWD}/cmake-prefix"
 
 # https://docs.conda.io/projects/conda-build/en/stable/user-guide/environment-variables.html#environment-variables-set-during-the-build-process
-cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"   \
-      -DCMAKE_PREFIX_PATH="${CMAKE_PREFIX_PATH}" \
-      -DCMAKE_SYSTEM_PROCESSOR="$(uname -m)"     \
-      -DBUILD_SHARED_LIBS=ON                     \
-      -DENABLE_DEVELOPER_MODE=OFF                \
-      -DHICTK_ENABLE_TESTING=ON                  \
-      -DHICTK_ENABLE_FUZZY_TESTING=OFF           \
-      -DHICTK_BUILD_EXAMPLES=OFF                 \
-      -DHICTK_BUILD_BENCHMARKS=OFF               \
-      -DHICTK_WITH_ARROW=OFF                     \
-      -DHICTK_WITH_EIGEN=OFF                     \
-      -DHICTK_BUILD_TOOLS=ON                     \
-      -DHICTK_ENABLE_GIT_VERSION_TRACKING=OFF    \
-      -DCMAKE_INSTALL_PREFIX="${PREFIX}"         \
-      -DCMAKE_C_COMPILER="${CC}"                 \
-      -DCMAKE_CXX_COMPILER="${CXX}"              \
-      "${CMAKE_PLATFORM_FLAGS[@]}"               \
-      -B build/                                  \
+cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"     \
+      -DCMAKE_PREFIX_PATH="${CMAKE_PREFIX_PATH}"   \
+      -DCMAKE_SYSTEM_PROCESSOR="$(uname -m)"       \
+      -DBUILD_SHARED_LIBS=ON                       \
+      -DENABLE_DEVELOPER_MODE=OFF                  \
+      -DHICTK_ENABLE_TESTING=ON                    \
+      -DHICTK_ENABLE_FUZZY_TESTING=OFF             \
+      -DHICTK_BUILD_EXAMPLES=OFF                   \
+      -DHICTK_BUILD_BENCHMARKS=OFF                 \
+      -DHICTK_WITH_ARROW=OFF                       \
+      -DHICTK_WITH_EIGEN=OFF                       \
+      -DHICTK_BUILD_TOOLS=ON                       \
+      -DHICTK_ENABLE_GIT_VERSION_TRACKING=OFF      \
+      -DCMAKE_INSTALL_PREFIX="${PREFIX}"           \
+      -DCMAKE_C_COMPILER="${CC}"                   \
+      -DCMAKE_CXX_COMPILER="${CXX}"                \
+      -DCMAKE_CXX_STANDARD="${CMAKE_CXX_STANDARD}" \
+      "${CMAKE_PLATFORM_FLAGS[@]}"                 \
+      -B build/                                    \
       -S .
 
 cmake --build build/
