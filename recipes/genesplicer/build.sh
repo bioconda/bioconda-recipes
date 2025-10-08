@@ -25,6 +25,11 @@ rm -rf bin/
 
 #compile new executable
 cd sources/
+
+# fix error: "C++ requires a type specifier for all declarations" on macOS
+sed -i.bak 's|main  (|int main  (|' genesplicer.cpp
+rm -f *.bak
+
 make CC="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
 #move everything to target directory
