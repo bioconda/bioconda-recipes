@@ -1,11 +1,14 @@
+{% set name = "sift4g" %}
+{% set version = "2.0.0" %}
+
 package:
-  name: sift4g
-  version: "2.0.0"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url:
-    - https://depot.galaxyproject.org/software/sift4g/sift4g_2.0.0_src_all.tar.gz
-    - http://sift.bii.a-star.edu.sg/sift4g/SIFT4G_v2.0.0.tar.gz
+    - https://depot.galaxyproject.org/software/sift4g/sift4g_{{ version }}_src_all.tar.gz
+    - http://sift.bii.a-star.edu.sg/sift4g/SIFT4G_v{{ version }}.tar.gz
   sha256: c55c0690cc6437eb6c726be3390d5368a2145bda726130d8a6b0c2faaf4152fb
   patches:
     - 0001-Remove-superfluous-use-of-non-imported-function.patch
@@ -14,7 +17,7 @@ source:
 build:
   number: 8
   run_exports:
-    - {{ pin_subpackage('sift4g', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -22,6 +25,12 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - pkg-config
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
 
 test:
   commands:
