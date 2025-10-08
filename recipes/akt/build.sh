@@ -40,10 +40,10 @@ rm -f *.bak
 
 case $(uname -s) in
     "Darwin")
-	make no_omp CC="${CC} -Wno-implicit-function-declaration" CXX="${CXX} -I${PREFIX}/include"
+	make no_omp CC="${CC} -Wno-implicit-function-declaration ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 	;;
     "Linux")
-	make release CC="${CC} -Wno-implicit-function-declaration" CXX="${CXX} -I${PREFIX}/include"
+	make release CC="${CC} -Wno-implicit-function-declaration ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 	;;
 esac
 
