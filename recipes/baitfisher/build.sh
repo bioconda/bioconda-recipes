@@ -4,7 +4,7 @@ install -d "${PREFIX}/bin"
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++03 -I."
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++03 -Wno-register -I."
 
 case $(uname -m) in
     aarch64)
