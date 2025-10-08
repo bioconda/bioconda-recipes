@@ -12,9 +12,11 @@ cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/
 case $(uname -m) in
     aarch64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	sed -i.bak 's|-m64||' configure.ac && rm -f *.bak
 	;;
     arm64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	sed -i.bak 's|-m64||' configure.ac && rm -f *.bak
 	;;
     x86_64)
 	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
