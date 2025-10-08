@@ -43,7 +43,7 @@ case $(uname -s) in
 	make no_omp CC="${CC} -Wno-implicit-function-declaration ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 	;;
     "Linux")
-	make release CC="${CC} -Wno-implicit-function-declaration ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS} -ldl"
+	make CC="${CC} -Wno-implicit-function-declaration ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 	;;
 esac
 
