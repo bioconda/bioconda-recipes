@@ -18,7 +18,7 @@ case $(uname -m) in
 	;;
 esac
 
-make CPP="${CXX}"
+make CPP="${CXX}" CPPFLAGS="${CXXFLAGS}"
 
 install -v -m 0755 BaitFisher-v1.2.7 "${PREFIX}/bin/BaitFisher"
 install -v -m 0755 BaitFilter-v1.0.5 "${PREFIX}/bin/BaitFilter"
