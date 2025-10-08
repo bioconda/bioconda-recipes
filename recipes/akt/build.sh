@@ -39,10 +39,10 @@ rm -f *.bak
 
 case $(uname -s) in
     "Darwin")
-	make no_omp CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}"
+	make no_omp CC="${CC} -Wno-implicit-function-declaration" CXX="${CXX} -I${PREFIX}/include"
 	;;
     "Linux")
-	make release CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}"
+	make release CC="${CC} -Wno-implicit-function-declaration" CXX="${CXX} -I${PREFIX}/include"
 	;;
 esac
 
