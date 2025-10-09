@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Ensure C compiler is visible to setuptools/pip
+export CC=${CC:-$(which ${GCC:-gcc})}
+
 export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
