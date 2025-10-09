@@ -6,7 +6,11 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -frtti"
 
 # Set environment variables to locate dependency libraries in `build/`
-export LD_LIBRARY_PATH="${PWD}/build:${LD_LIBRARY_PATH}"
+if [[ "${target_platform}" == "linux-"* ]]; then
+  export LD_LIBRARY_PATH="${PWD}/build:${LD_LIBRARY_PATH}"
+elif [[ "${target_platform}" == "osx-"* ]]; then
+  export DYLD_LIBRARY_PATH="${PWD}/build:${DYLD_LIBRARY_PATH}"
+fi
 
 if [[ "${target_platform}" == "linux-aarch64" ]]; then
   export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
