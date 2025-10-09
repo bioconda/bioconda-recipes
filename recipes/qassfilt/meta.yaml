@@ -1,0 +1,54 @@
+{% set name = "qassfilt" %}
+{% set version = "1.2.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/hsamrach/QAssfilt/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 0e2836a17b57a98663d986c2e6a802b7830c0a69cd46bf4ed1aa5cf2920ba3e9
+
+build:
+  noarch: generic
+  number: 2
+  script: |
+    mkdir -p "${PREFIX}/bin"
+    cp qassfilt.sh "${PREFIX}/bin/qassfilt"
+    chmod +x "${PREFIX}/bin/qassfilt"
+
+requirements:
+  host:
+    - bash
+  run:
+    - bash
+
+about:
+  home: https://github.com/hsamrach/QAssfilt
+  license: GPL-3.0-only
+  license_file: LICENSE
+  summary: "QAssfilt: a ready-to-use genome assembly quality filtering pipeline"
+  description: |
+    Make sure that the following tools are installed in the environment:
+      - fastp
+      - spades
+      - seqkit
+      - checkm2
+      - quast
+      - kraken2
+      - gtdbtk
+      - abritamr
+      - abricate
+      - multiqc
+      Otherwise, run qassfilt -ini
+test:
+  commands:
+    - qassfilt --help
+
+extra:
+  identifiers:
+    - biotools:qassfilt
+  requirements_note: |
+    The following external tools are required but not installed automatically:
+      fastp, spades, seqkit, checkm2, quast, kraken2,
+      gtdbtk, abritamr, abricate, multiqc
