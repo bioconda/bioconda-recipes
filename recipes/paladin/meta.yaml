@@ -1,17 +1,20 @@
 {% set name = "paladin" %}
-{% set version = "1.4.6" %}
-{% set sha256 = "fd23a8907d832cada060e112addb1b3b3751353dda515887c69c1772fd37cc4a" %}
+{% set version = "1.6.0" %}
+{% set sha256 = "a3ff5dcb3ad4a7b09d0f2667af50217dac6c03a1c08aebc187f01b024f01f7c6" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/twestbrookunh/{{ name }}/archive/v{{ version }}.tar.gz
+  # v1.6.0 has a leading . in front of the 1
+  url: https://github.com/ToniWestbrook/{{ name }}/archive/refs/tags/v.{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 6
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -19,26 +22,28 @@ requirements:
     - {{ compiler('c') }}
   host:
     - zlib
-    - curl
-
-  run:
-    - zlib
-    - curl
+    - libcurl
 
 test:
   commands:
     - command -v paladin
 
 about:
-  home: http://genomebio.org/paladin/
+  home: "https://github.com/ToniWestbrook/paladin"
   license: MIT
-  summary: Protein Alignment and Detection Interface
-  description: |
-    PALADIN is a protein sequence alignment tool designed for the accurate
-    functional characterization of metagenomes.
-  dev_url: https://github.com/twestbrookunh/paladin
-
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Protein Alignment and Detection Interface."
+  description: "PALADIN is a protein sequence alignment tool designed for the accurate functional characterization of metagenomes."
+  dev_url: "https://github.com/ToniWestbrook/paladin"
+  doc_url: "https://genomebio.org/paladin"
 
 extra:
   recipe-maintainers:
     - keuv-grvl
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:paladin
+    - doi:10.1093/bioinformatics/btx021
