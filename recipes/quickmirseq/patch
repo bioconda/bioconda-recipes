@@ -108,7 +108,7 @@ index 3a9c928..80d056b 100644
 diff --git a/QuickMIRSeq.pl b/QuickMIRSeq.pl
 old mode 100644
 new mode 100755
-index fcdbb91..5f6b3b3
+index fcdbb91..5b22220
 --- a/QuickMIRSeq.pl
 +++ b/QuickMIRSeq.pl
 @@ -1,3 +1,4 @@
@@ -133,7 +133,7 @@ index fcdbb91..5f6b3b3
 +	if ($infile !~ /\.gz$/) {
 +		open $fh, "<", $infile;
 +	} else {
-+		open $fh, "gzip -c $infile |";
++		open $fh, "gunzip -c $infile |";
 +	}
  	while ($$line[0] = <$fh>) {
  		$$line[1] = <$fh>;
@@ -330,10 +330,10 @@ index c4be33c..fad28ff 100644
  #Bowtie index for reference genome
  GENOME_BOWTIE_INDEX=/hpc/grid/shared/ngsdb/bowtie/hg19
 diff --git a/make_HTMLs.sh b/make_HTMLs.sh
-index f3c9e11..58dd51c 100644
+index f3c9e11..a75ab98 100644
 --- a/make_HTMLs.sh
 +++ b/make_HTMLs.sh
-@@ -3,13 +3,8 @@
+@@ -3,14 +3,9 @@
  # please use full path of installation
  
  
@@ -344,10 +344,67 @@ index f3c9e11..58dd51c 100644
 -
  # change it to your installation
 -export SCRIPTPATH=$QuickMIRSeq/QuickMIRSeq_html
-+export SCRIPTPATH=QuickMIRSeq_html
- export PATH=$SCRIPTPATH:$PATH
+-export PATH=$SCRIPTPATH:$PATH
++SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
++export SCRIPTPATH=${SCRIPT_DIR}/QuickMIRSeq_html
  
  
+ set -x
+@@ -28,11 +23,11 @@ fi
+ cp -R $SCRIPTPATH/package .
+ 
+ # miRNA expression table
+-make_gex.pl
+-make_gex.pl filter
++${SCRIPTPATH}/make_gex.pl
++${SCRIPTPATH}/make_gex.pl filter
+ 
+ # QC parallel plot
+-make_qc_overview.pl
++${SCRIPTPATH}/make_qc_overview.pl
+ 
+ # alignment table
+ if [ ! -e 'alignment_html' ]
+@@ -40,27 +35,27 @@ then
+ 	mkdir alignment_html
+ fi
+ 
+-make_aln_data.pl   #compress
+-make_aln.pl
++${SCRIPTPATH}/make_aln_data.pl   #compress
++${SCRIPTPATH}/make_aln.pl
+ 
+ # include qc_overview and gex pages
+-make_index.pl
++${SCRIPTPATH}/make_index.pl
+ 
+ # Individual Dynamic Plot
+-make_JSON.pl
++${SCRIPTPATH}/make_JSON.pl
+ 
+ 
+-make_multiBarChart.pl miRNA-detected
++${SCRIPTPATH}/make_multiBarChart.pl miRNA-detected
+ 
+-make_lineWithFocusChart.pl miRNASeq-reads-redundancy
++${SCRIPTPATH}/make_lineWithFocusChart.pl miRNASeq-reads-redundancy
+ 
+ if [ -f 'graphs/cut-adapter-SurvivalReads.png' ]
+ then
+-        make_stackedAreaChart.pl cut-adapter-SurvivalReads
+-        make_stackedAreaChart.pl cut-adapter-withAdapter
++        ${SCRIPTPATH}/make_stackedAreaChart.pl cut-adapter-SurvivalReads
++        ${SCRIPTPATH}/make_stackedAreaChart.pl cut-adapter-withAdapter
+ fi
+ 
+-make_stackedAreaChart.pl miRNASeq-reads-annotation
+-make_stackedAreaChart.pl total-miRNA-reads
+-make_stackedAreaChart.pl miRNA-reads
+-make_stackedAreaChart.pl miRNA-reads-split
++${SCRIPTPATH}/make_stackedAreaChart.pl miRNASeq-reads-annotation
++${SCRIPTPATH}/make_stackedAreaChart.pl total-miRNA-reads
++${SCRIPTPATH}/make_stackedAreaChart.pl miRNA-reads
++${SCRIPTPATH}/make_stackedAreaChart.pl miRNA-reads-split
 diff --git a/merge-tRNA.pl b/merge-tRNA.pl
 old mode 100644
 new mode 100755
