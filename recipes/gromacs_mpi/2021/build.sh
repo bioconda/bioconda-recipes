@@ -8,12 +8,10 @@ fi
 
 mkdir build
 cd build
-if [[ "$(uname -m)" == "aarch64" ]]; then
 DENSITY_FILE="$SRC_DIR/src/gromacs/applied_forces/densityfitting/densityfitting.cpp"
 sed -i '45a #include "gromacs/selection/indexutil.h"' "${DENSITY_FILE}"
 sed -i '/#ifndef GMX_UTILITY_FLAGS_H/a #include <cstdint>' ../src/gromacs/utility/flags.h
 sed -i '/#ifndef GMX_OPTIONS_OPTIONFLAGS_H/a #include <cstdint>' ../src/gromacs/options/optionflags.h
-fi
 if [[ "$(uname -m)" == "aarch64" ]]; then
 for ARCH in ARM_NEON ARM_NEON_ASIMD ARM_SVE; do  
   cmake_args=(
