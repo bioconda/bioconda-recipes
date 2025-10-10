@@ -2,7 +2,7 @@
 
 # gromacs > 2021 requires a non default OSX version
 if [ "$(uname)" = 'Darwin' ] ; then
-    export MACOSX_DEPLOYMENT_TARGET=10.13 
+    export MACOSX_DEPLOYMENT_TARGET=11.0
 fi
 
 
