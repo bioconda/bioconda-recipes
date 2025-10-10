@@ -1,0 +1,55 @@
+diff --git a/libs/seq_file/Makefile b/libs/seq_file/Makefile
+index 840abbb..0ba4430 100644
+--- a/libs/seq_file/Makefile
++++ b/libs/seq_file/Makefile
+@@ -17,8 +17,8 @@ ifdef HTSLIB
+ 	HTSARGS=-I $(HTSLIB) -D_USESAM=1 $(HTSLIB)/libhts.a -lm
+ endif
+ 
+-CFLAGS=-Wall -Wextra -std=c99 -pedantic -I.
+-LINKING=$(HTSARGS) -lpthread -lz
++CFLAGS=-Wextra -O3 -std=c99 -pedantic -I. -I$(PREFIX)/include
++LINKING=$(HTSARGS) -pthread -lz
+ 
+ ifdef DEBUG
+ 	OPT = -O0 --debug -g
+diff --git a/libs/string_buffer/Makefile b/libs/string_buffer/Makefile
+index cc92fcf..6815f37 100644
+--- a/libs/string_buffer/Makefile
++++ b/libs/string_buffer/Makefile
+@@ -14,7 +14,7 @@ else
+ 	endif
+ endif
+ 
+-CFLAGS = -Wall -Wextra -pedantic -std=c99 $(OPT)
++CFLAGS = -Wextra -pedantic -O3 -std=c99 -I$(PREFIX)/include $(OPT)
+ OBJFLAGS = -fPIC
+ LIBFLAGS = -L. -lstrbuf -lz
+ 
+diff --git a/Makefile b/Makefile
+index 5a1c47c..4136c28 100644
+--- a/Makefile
++++ b/Makefile
+@@ -89,18 +89,18 @@ ifdef LIB_PATH
+ 	EXTRA_INCS := -I $(LIB_PATH) -L $(LIB_PATH)
+ endif
+ 
+-INCS=-I libs -I $(IDIR_HTS) $(EXTRA_INCS)
++INCS=-I libs -I $(IDIR_HTS) -I $(PREFIX)/include $(EXTRA_INCS)
+ 
+ # Library linking
+ LIB_OBJS=$(LIB_MISC) $(LIB_STRS) $(LIB_CARRAYS) $(LIB_HTS) $(LIB_ALIGN) libs/cJSON/cJSON.o
+-LINK=-lpthread -lz -lm
++LINK=-pthread -lz -lm
+ 
+ # Preprocessor declarations
+-CPPFLAGS=$(HASH_KEY_FLAGS) -D_USESAM=1
++CPPFLAGS=$(HASH_KEY_FLAGS) -I$(PREFIX)/include -D_USESAM=1
+ KMERARGS=-DMIN_KMER_SIZE=$(MIN_KMER_SIZE) -DMAX_KMER_SIZE=$(MAX_KMER_SIZE)
+ 
+ # C Compiler flags
+-CFLAGS = -std=c99 -Wall -Wextra
++CFLAGS = -O3 -std=c99 -Wall -Wextra -Wno-implicit-function-declaration -Wno-int-conversion
+ # -fno-strict-aliasing
+ CFLAGS_USEFUL = -Wshadow -Wstrict-aliasing=2 \
+ 	              -Winit-self -Wmissing-include-dirs \

@@ -1,0 +1,33 @@
+ 
+{% set name = "r-hmm" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name }}
+  version: "{{ version }}"
+
+source:
+  url: https://cran.r-project.org/src/contrib/HMM_{{ version }}.tar.gz
+  sha256: 3b97e726845c361af69aaab60737f9825a11c76db028bba1a19af08a0ad069e7
+
+build:
+  number: 0
+  noarch: generic
+  script: R CMD INSTALL --build .
+  run_exports:
+      - {{ pin_subpackage("r-hmm", max_pin="x.x") }}
+
+requirements:
+  host:
+    - r-base
+  run:
+    - r-base
+
+test:
+  commands:
+    - $R -e "library('HMM')"
+
+about:
+  home: https://cran.r-project.org/package=HMM
+  license: GPL-3
+  summary: "Functions for hidden Markov Models (HMM)."
