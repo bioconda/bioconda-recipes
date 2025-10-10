@@ -1,36 +1,41 @@
 {% set name = "ipcr" %}
-{% set version = "1.1.0" %}
+{% set version = "4.1.1" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/KPU-AGC/ipcr/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 9c8810d95b7c4353a5ac3461d56ff1f77bd8c45e324a3b436d738a0cf84c73bc
+  sha256: bb03d6d4bea510f13655d6d10bd9b952aaa4d8a95754c51927c147f0ea435e54
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - go >=1.21
+    - {{ compiler('go') }}
+    - go-licenses
+    - make
 
 test:
   commands:
     - ipcr --version
 
 about:
-  home: https://github.com/KPU-AGC/ipcr
+  home: "https://github.com/KPU-AGC/ipcr"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
   summary: "In-silico PCR with mismatch thresholds and pretty alignment output."
-  dev_url: https://github.com/KPU-AGC/ipcr
+  dev_url: "https://github.com/KPU-AGC/ipcr"
+  doc_url: "https://github.com/KPU-AGC/ipcr/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - ericksamera
-  skip-lints:
-    - should_be_noarch_generic
-    - missing_run_exports
-    - should_use_compilers
