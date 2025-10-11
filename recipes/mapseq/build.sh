@@ -1,10 +1,38 @@
 #!/bin/bash
 
-#wget http://www.microbeatlas.org/mapref/mapref-2.2b.tar.gz
-#tar -Cdata -xvzf mapref-2.2b.tar.gz && mv data/mapref-2.2b/* data/ && rmdir data/mapref-2.2b && touch data/mapref-2.2b.fna
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
+
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
 
 touch data/mapref-3.0.fna data/mapref-3.0.fna.mscluster data/mapref-3.0.fna.ncbitax data/mapref-3.0.fna.otutax data/mapref-3.0.gold.fna data/mapref-3.0.gold.fna.mscluster data/mapref-3.0.gold.fna.ncbitax data/mapref-3.0.fna.otutax.97.ncbitax data/mapref-3.0.otus.info
+
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
+
 ./bootstrap
-./configure --prefix=$PREFIX CXXFLAGS="-O2 -I$CONDA_PREFIX/include"
-make
+
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* libs/eutils/
+
+./configure --prefix="${PREFIX}" \
+	--disable-option-checking --disable-dependency-tracking --enable-silent-rules \
+	CXXFLAGS="${CXXFLAGS}" \
+	CXX="${CXX}" \
+	CC="${CC}" \
+	CFLAGS="${CFLAGS}" \
+	CPPFLAGS="${CPPFLAGS}" \
+	LDFLAGS="${LDFLAGS}"
+
+make -j"${CPU_COUNT}"
 make install
