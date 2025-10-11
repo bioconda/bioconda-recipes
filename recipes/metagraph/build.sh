@@ -3,26 +3,12 @@
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3 -Wno-deprecated-declarations"
-export CFLAGS="${CFLAGS} -O3 -Wno-unused-but-set-variable"
+export CFLAGS="${CFLAGS} -O3 -Wno-unused-but-set-variable -Wno-implicit-function-declaration -Wno-int-conversion"
 export JEMALLOC_LIBRARY="${PREFIX}/lib"
 export JEMALLOC_INCLUDE_DIR="${PREFIX}/include"
 export BOOST_INCLUDEDIR="${PREFIX}/include"
 export BOOST_LIBRARYDIR="${PREFIX}/lib"
-
-sed -i.bak 's|VERSION 2.8.2|VERSION 3.5|' metagraph/CMakeLists.txt.in
-sed -i.bak 's|VERSION 2.8.12|VERSION 3.5|' metagraph/CMakeListsKMC.txt.in
-sed -i.bak 's|VERSION 2.8.11|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/CMakeLists.txt
-sed -i.bak 's|VERSION 2.4.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/libdivsufsort/CMakeLists.txt
-sed -i.bak 's|VERSION 2.6.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/googletest/CMakeLists.txt
-sed -i.bak 's|VERSION 2.6.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/googletest/googletest/CMakeLists.txt
-sed -i.bak 's|VERSION 2.6.4|VERSION 3.5|' metagraph/external-libraries/sdsl-lite/external/googletest/googlemock/CMakeLists.txt
-sed -i.bak 's|VERSION 2.6|VERSION 3.5|' metagraph/external-libraries/DYNAMIC/CMakeLists.txt
-sed -i.bak 's|VERSION 2.8.12|VERSION 3.5|' metagraph/external-libraries/zlib/CMakeLists.txt
-sed -i.bak 's|VERSION 3.1.3|VERSION 3.5|' metagraph/external-libraries/caches/CMakeLists.txt
-sed -i.bak 's|VERSION 2.8.11|VERSION 3.5|' metagraph/external-libraries/eigen/CMakeLists.txt
-sed -i.bak 's|VERSION 3.0.2|VERSION 3.5|' metagraph/external-libraries/folly/CMakeLists.txt
-sed -i.bak 's|VERSION 3.1|VERSION 3.5|' metagraph/external-libraries/hopscotch-map/CMakeLists.txt
-sed -i.bak 's|VERSION 3.1|VERSION 3.5|' metagraph/external-libraries/ordered-map/CMakeLists.txt
+export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}"
 
 ARCH=$(uname -m)
 OS=$(uname -s)
@@ -38,17 +24,26 @@ if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
 	sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile
 	rm -rf metagraph/external-libraries/KMC/*.bak
 	sed -i.bak 's|-mcx16||' metagraph/CMakeLists.txt
-	rm -rf metagraph/*.bak
+	rm -f metagraph/*.bak
 fi
+sed -i.bak 's|FATAL_ERROR|STATUS|' metagraph/CMakeLists.txt
 
 if [[ "${OS}" == "Linux" ]]; then
 	CMAKE_PLATFORM_FLAGS=""
 	export CXXFLAGS="${CXXFLAGS} -Wno-attributes -Wno-narrowing -Wno-type-limits"
 	export CONFIG_ARGS=""
+	sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' metagraph/CMakeLists.txt
+	sed -i.bak 's|HTSCODECS_VERSION_TEXT|HTSCODECS_VERSION|' metagraph/external-libraries/htslib/htscodecs/htscodecs/htscodecs.c
+	rm -f metagraph/external-libraries/htslib/htscodecs/htscodecs/*.bak
 elif [[ "${OS}" == "Darwin" ]]; then
 	sed -i.bak 's|/usr/local/gcc-6.3.0/bin/g++|${CXX}|' metagraph/external-libraries/KMC/makefile_mac
  	sed -i.bak 's|-m64||' metagraph/external-libraries/KMC/makefile_mac
 	rm -rf metagraph/external-libraries/KMC/*.bak
+	sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' metagraph/CMakeLists.txt
+	sed -i.bak 's|link_directories(/opt/homebrew/opt/icu4c/lib)|link_directories(${PREFIX}/lib)|' metagraph/CMakeLists.txt
+	sed -i.bak 's|link_directories(/usr/local/opt/icu4c/lib)|link_directories(${PREFIX}/lib)|' metagraph/CMakeLists.txt
+	sed -i.bak 's|HTSCODECS_VERSION_TEXT|HTSCODECS_VERSION|' metagraph/external-libraries/htslib/htscodecs/htscodecs/htscodecs.c
+	rm -f metagraph/external-libraries/htslib/htscodecs/htscodecs/*.bak
 	CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
 	export CXXFLAGS="${CXXFLAGS} -Wno-implicit-function-declaration -Wno-suggest-destructor-override -Wno-error=deprecated-copy -D_LIBCPP_DISABLE_AVAILABILITY"
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
@@ -56,10 +51,6 @@ fi
 
 sed -i.bak 's|-O2|-O3|' metagraph/CMakeLists.txt
 sed -i.bak 's|-lpthread|-pthread|' metagraph/CMakeLists.txt
-sed -i.bak 's|-std=c++11|-std=c++14|' metagraph/CMakeListsKMC.txt.in
-rm -rf metagraph/*.bak
-sed -i.bak 's|-std=c++11|-std=c++14|' metagraph/external-libraries/sdsl-lite/CMakeLists.txt
-rm -rf metagraph/external-libraries/sdsl-lite/*.bak
 
 pushd metagraph/external-libraries/sdsl-lite
 ./install.sh "${PWD}"
@@ -83,7 +74,7 @@ CMAKE_PARAMS="-DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX=${PREFIX} \
             -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=1 \
             -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DBUILD_KMC=OFF \
-	    -DWITH_AVX=OFF -Wno-dev -Wno-deprecated --no-warn-unused-cli \
+			-DWITH_AVX=OFF -Wno-dev -Wno-deprecated --no-warn-unused-cli \
             ${CMAKE_PLATFORM_FLAGS} ${CONFIG_ARGS}"
 
 if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
@@ -95,6 +86,8 @@ cmake -S .. -B . ${CMAKE_PARAMS}
 BUILD_CMD="make metagraph -j${CPU_COUNT}"
 
 ${BUILD_CMD}
+
+cp external-libraries/htslib/lib/lib* ${PREFIX}/bin/
 
 make install
 
