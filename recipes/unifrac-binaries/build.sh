@@ -1,13 +1,29 @@
 #!/bin/bash
 set -e
 set -x
+
 export PERFORMING_CONDA_BUILD=True
-export LIBRARY_PATH="${CONDA_PREFIX}/lib"
-export LD_LIBRARY_PATH=${LIBRARY_PATH}:${LD_LIBRARY_PATH}
-export CPLUS_INCLUDE_PATH="${CONDA_PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export LD_LIBRARY_PATH=${LIBRARY_PATH}:"${LD_LIBRARY_PATH}"
+export CPLUS_INCLUDE_PATH="${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
 
 echo "=== PREFIX ==="
-env |grep PREFIX
+env | grep PREFIX
 
 echo "Arch: $(uname -s)"
 pwd
@@ -37,7 +53,7 @@ if [[ "$(uname -s)" == "Linux" ]] && [[ "x${BUILD_NV_OFFLOAD}" != "xcpu" ]];
           #./scripts/install_amd_clang.sh </dev/null
           #. ./setup_amd_compiler.sh
 fi
+
 # else, no NV_CXX or AMD_CXX in the env, so no GPU build
 # all == build (shlib,bins,tests) and install
 make clean && make clean_install && make all
-
