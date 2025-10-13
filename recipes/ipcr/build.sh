@@ -17,6 +17,6 @@ go version
 go build -o "${PREFIX}/bin/ipcr" ./cmd/ipcr
 
 # smoke test: use a zero-exit flag
-"${PREFIX}/bin/ipcr" --version >/dev/null
+"${PREFIX}/bin/ipcr" --version > /dev/null
 # if you want to keep a help check too, do it non-fatal:
 # "${PREFIX}/bin/ipcr" --help >/dev/null 2>&1 || true
