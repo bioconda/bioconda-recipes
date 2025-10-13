@@ -22,29 +22,15 @@ outputs:
     requirements:
       run:
         - biopython =1.72
-        # - blast =2.6.0
-        # - bmtagger =3.101
-        # - bowtie2 =2.3.5
-        # - bwa =0.7.17
-        # - fastqc =0.11.8
-        # - kraken2 =2.0
         # - matplotlib-base =2.2.3
-        # - megahit =1.1.3
         # - openssl =1.0
         # - pandas =0.24.2
-        # - perl-bioperl
         # - pplacer =1.1.alpha19
         # - prokka =1
-        # - quast =5.0.2
-        # - r-ggplot2 =3.1.0
-        # - r-reshape2
-        # - r-recommended =3.5.1
         # - salmon =0.13.1
         # - samtools =1.9
         # - seaborn =0.9.0
-        # - spades =3.13.0
         # - taxator-tk =1.3.3e
-        # - trim-galore =0.5.0
         # not direct dependencies, only here to speed up dependency resolution
         - python =2.7.15
 
@@ -61,6 +47,83 @@ outputs:
       summary: "MetaWRAP is a pipeline for genome-resolved metagenomic data analysis"
 
 
+  - name: metawrap-read-qc
+    version: {{ version }}
+    build:
+      noarch: generic
+    requirements:
+      run:
+        - {{ pin_subpackage('metawrap-mg', max_pin="x.x") }}
+        - fastqc =0.11.8
+        - trim-galore =0.5.0
+        - bmtagger =3.101
+    test:
+      commands:
+        - "metawrap read_qc | grep 'Usage: metaWRAP read_qc'"
+    about:
+      home: https://github.com/bxlab/metaWRAP
+      license: MIT
+      summary: "MetaWRAP requirements for read_qc step"
+
+  - name: metawrap-assembly
+    version: {{ version }}
+    build:
+      noarch: generic
+    requirements:
+      run:
+        - {{ pin_subpackage('metawrap-mg', max_pin="x.x") }}
+        - spades =3.13.0
+        - bowtie2 =2.3.5
+        - bwa =0.7.17
+        - megahit =1.1.3
+        - quast =5.0.2
+    test:
+      commands:
+        - "metawrap assembly | grep 'Usage: metaWRAP assembly'"
+    about:
+      home: https://github.com/bxlab/metaWRAP
+      license: MIT
+      summary: "MetaWRAP requirements for assembly step"
+
+  - name: metawrap-kraken
+    version: {{ version }}
+    build:
+      noarch: generic
+    requirements:
+      run:
+        - {{ pin_subpackage('metawrap-mg', max_pin="x.x") }}
+        - kraken2 =2.0
+        # TODO fix version as in krona tools
+        - krona =2.7
+    test:
+      commands:
+        - "metawrap kraken | grep 'Usage: metaWRAP kraken'"
+    about:
+      home: https://github.com/bxlab/metaWRAP
+      license: MIT
+      summary: "MetaWRAP requirements for kraken step"
+  
+  - name: metawrap-blobology
+    version: {{ version }}
+    build:
+      noarch: generic
+    requirements:
+      run:
+        - {{ pin_subpackage('metawrap-mg', max_pin="x.x") }}
+        - blast =2.6.0
+        # TODO fix version as in assembly
+        - bowtie2 =2.3.5
+        - perl-bioperl
+        - r-ggplot2 =3.1.0
+        - r-reshape2
+        - r-recommended =3.5.1
+    test:
+      commands:
+        - "metawrap blobology | grep 'Usage: metaWRAP blobology'"
+    about:
+      home: https://github.com/bxlab/metaWRAP
+      license: MIT
+      summary: "MetaWRAP requirements for read_qc step"
   - name: metawrap-mg-binning
     version: {{ version }}
     build:
@@ -72,12 +135,9 @@ outputs:
         - concoct =1.0.0
         - maxbin2 =2.2.6
         - metabat2 =2.12.1
-
     test:
-      # Test copied from openms output to make sure a test environment for this output is created.
       commands:
         - "metawrap binning | grep 'Usage: metaWRAP binning'"
-
     about:
       home: https://github.com/bxlab/metaWRAP
       license: MIT
@@ -93,16 +153,19 @@ outputs:
         - checkm-genome =1.0.12
         - kraken =1.1.1
         - krona =2.7
-
     test:
-      # Test copied from openms output to make sure a test environment for this output is created.
       commands:
         - "metawrap bin_refinement | grep 'Usage: metaWRAP bin_refinement'"
-
     about:
       home: https://github.com/bxlab/metaWRAP
       license: MIT
       summary: "MetaWRAP requirements for bin_refinement step"
+
+  # - name: metawrap-reassemble-bins
+  # - name: metawrap-quant-bins
+  # - name: metawrap-classify-bins
+  # - name: metawrap-annotate-bins
+
 
 test:
   commands:
