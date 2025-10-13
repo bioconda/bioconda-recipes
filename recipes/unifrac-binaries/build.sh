@@ -9,18 +9,6 @@ export LD_LIBRARY_PATH=${LIBRARY_PATH}:"${LD_LIBRARY_PATH}"
 export CPLUS_INCLUDE_PATH="${CONDA_PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-case $(uname -m) in
-    aarch64)
-	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
-	;;
-    arm64)
-	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
-	;;
-    x86_64)
-	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
-	;;
-esac
-
 echo "=== PREFIX ==="
 env | grep PREFIX
 
