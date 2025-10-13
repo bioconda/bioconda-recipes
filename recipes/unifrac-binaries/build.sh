@@ -3,11 +3,10 @@ set -e
 set -x
 
 export PERFORMING_CONDA_BUILD=True
-export LIBRARY_PATH="${PREFIX}/lib"
+export LIBRARY_PATH="${CONDA_PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export LD_LIBRARY_PATH=${LIBRARY_PATH}:"${LD_LIBRARY_PATH}"
-export CPLUS_INCLUDE_PATH="${PREFIX}/include"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CPLUS_INCLUDE_PATH="${CONDA_PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
 case $(uname -m) in
@@ -28,7 +27,7 @@ env | grep PREFIX
 echo "Arch: $(uname -s)"
 pwd
 
-if [[ "$(uname -s)" == "Linux" ]];
+if [[ "$(uname -s)" == "Linux" && "$(uname -m)" == "x86_64" ]];
 then
           which x86_64-conda-linux-gnu-gcc
           x86_64-conda-linux-gnu-gcc -v
