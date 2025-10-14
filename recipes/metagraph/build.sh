@@ -87,8 +87,6 @@ BUILD_CMD="make metagraph -j${CPU_COUNT}"
 
 ${BUILD_CMD}
 
-cp external-libraries/htslib/lib/lib* ${PREFIX}/bin/
-
 make install
 
 ### Make Protein binary version
