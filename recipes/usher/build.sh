@@ -54,7 +54,7 @@ echo ""
 EOF
 	chmod a+x ripples-fast
 else
-	cmake --build . --target install -j "${CPU_COUNT}"
+	ninja -j "${CPU_COUNT}"
 fi
 
 if [[ "$(uname -s)" == "Darwin" && "$(uname -m)" == "x86_64" ]]; then
@@ -62,6 +62,10 @@ if [[ "$(uname -s)" == "Darwin" && "$(uname -m)" == "x86_64" ]]; then
 else
 	install -v -m 755 usher* mat* transpose* ripples* compareVCF check_samples_place "${PREFIX}/bin"
 fi
+
+"${STRIP}" ${PREFIX}/bin/usher*
+"${STRIP}" ${PREFIX}/bin/mat*
+"${STRIP}" ${PREFIX}/bin/ripples*
 
 if [[ -d ./tbb_cmake_build ]]; then
     cp -rf ./tbb_cmake_build/tbb_cmake_build_subdir_release/* ${PREFIX}/lib/
