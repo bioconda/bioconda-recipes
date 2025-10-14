@@ -12,7 +12,7 @@ case $(uname -m) in
 	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
 	;;
     x86_64)
-	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64"
 	;;
 esac
 
