@@ -23,7 +23,7 @@ elif [[ "${OS}" == "Darwin" ]]; then
 	rm -rf metagraph/external-libraries/KMC/*.bak
 	sed -i.bak 's|link_directories(/opt/homebrew/opt/icu4c/lib)|link_directories(${PREFIX}/lib)|' metagraph/CMakeLists.txt
 	sed -i.bak 's|link_directories(/usr/local/opt/icu4c/lib)|link_directories(${PREFIX}/lib)|' metagraph/CMakeLists.txt
-	export LDFLAGS="${LDFLAGS} -ljemalloc"
+	sed -i.bak 's| -DUSE_JEMALLOC||' metagraph/CMakeLists.txt
 	CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
 	export CXXFLAGS="${CXXFLAGS} -Wno-suggest-destructor-override -Wno-error=deprecated-copy -Wno-invalid-specialization -Wno-error=invalid-specialization"
 fi
@@ -50,7 +50,6 @@ CMAKE_PARAMS="-DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX=${PREFIX} \
             -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=1 \
             -DBUILD_KMC=OFF \
-            -DJEMALLOC_ROOT=${PREFIX} \
             ${CMAKE_PLATFORM_FLAGS} ${CONFIG_ARGS}"
 
 cmake -S .. -B . ${CMAKE_PARAMS}
