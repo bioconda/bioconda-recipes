@@ -2,7 +2,7 @@
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -Wno-deprecated-declarations -Wno-invalid-specialization"
+export CXXFLAGS="${CXXFLAGS} -Wno-deprecated-declarations"
 export CFLAGS="${CFLAGS} -Wno-unused-but-set-variable -Wno-implicit-function-declaration -Wno-int-conversion"
 export BOOST_INCLUDEDIR="${PREFIX}/include"
 export BOOST_LIBRARYDIR="${PREFIX}/lib"
@@ -17,7 +17,7 @@ echo '#define HTSCODECS_VERSION_TEXT "1.6.4"' > metagraph/external-libraries/hts
 
 if [[ "${OS}" == "Linux" ]]; then
 	CMAKE_PLATFORM_FLAGS=""
-	export CXXFLAGS="${CXXFLAGS} -Wno-attributes -Wno-narrowing -Wno-type-limits"
+	export CXXFLAGS="${CXXFLAGS} -Wno-attributes -Wno-narrowing -Wno-type-limits -Wno-invalid-specialization"
 	sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' metagraph/CMakeLists.txt
 elif [[ "${OS}" == "Darwin" ]]; then
 	rm -rf metagraph/external-libraries/KMC/*.bak
