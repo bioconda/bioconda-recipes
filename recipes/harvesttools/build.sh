@@ -2,7 +2,7 @@
 
 mkdir -p "$PREFIX/bin"
 #mkdir -p "google/protobuf/stubs"
-if [[ $(uname) == 'Darwin' ]];then
+if [[ "$(uname -m)" == 'Darwin' ]];then
    cp harvesttools $PREFIX/bin/
 else
 	export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
@@ -13,7 +13,7 @@ else
 	sed -i "53s/compile/compile -I@capnp@\/include/" Makefile.in
 	sed -i '210s/INT_MAX, //' src/harvest/HarvestIO.cpp
 	sed -i 's/ln -sf/cp -f/g' Makefile.in 
-	if [[ $(uname) == 'aarch64' ]];then
+	if [[ "$(uname -m)" == 'aarch64' ]];then
 	 	sed -i "1s/2.2.5/2.17/" src/harvest/memcpyLink.h
 	fi
 	./configure --prefix="${PREFIX}" \
