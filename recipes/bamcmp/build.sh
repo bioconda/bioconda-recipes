@@ -18,8 +18,6 @@ case $(uname -m) in
 	;;
 esac
 
-cd bamcmp-2.2 || True
-
 make CPP="${CXX}" CPPFLAGS="${CXXFLAGS} -g -fexceptions" HTSLIBDIR="${PREFIX}"
 
 install -v -m 0755 build/bamcmp "$PREFIX/bin"
