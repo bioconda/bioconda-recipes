@@ -50,6 +50,7 @@ CMAKE_PARAMS="-DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX=${PREFIX} \
             -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=1 \
             -DBUILD_KMC=OFF \
+            -DJEMALLOC_ROOT=${PREFIX} \
             ${CMAKE_PLATFORM_FLAGS} ${CONFIG_ARGS}"
 
 cmake -S .. -B . ${CMAKE_PARAMS}
