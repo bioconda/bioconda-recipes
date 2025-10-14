@@ -14,18 +14,17 @@ OS=$(uname -s)
 # set version manually since we're installing from source and not from a checked out git repo
 echo '#define HTSCODECS_VERSION_TEXT "1.6.4"' > metagraph/external-libraries/htslib/htscodecs/htscodecs/version.h
 
+sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' metagraph/CMakeLists.txt
 
 if [[ "${OS}" == "Linux" ]]; then
 	CMAKE_PLATFORM_FLAGS=""
 	export CXXFLAGS="${CXXFLAGS} -Wno-attributes -Wno-narrowing -Wno-type-limits"
-	sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' metagraph/CMakeLists.txt
 elif [[ "${OS}" == "Darwin" ]]; then
 	rm -rf metagraph/external-libraries/KMC/*.bak
-	sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' metagraph/CMakeLists.txt
 	sed -i.bak 's|link_directories(/opt/homebrew/opt/icu4c/lib)|link_directories(${PREFIX}/lib)|' metagraph/CMakeLists.txt
 	sed -i.bak 's|link_directories(/usr/local/opt/icu4c/lib)|link_directories(${PREFIX}/lib)|' metagraph/CMakeLists.txt
 	CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
-	export CXXFLAGS="${CXXFLAGS} -Wno-suggest-destructor-override -Wno-error=deprecated-copy"
+	export CXXFLAGS="${CXXFLAGS} -Wno-suggest-destructor-override -Wno-error=deprecated-copy -Wno-invalid-specialization -Wno-error=invalid-specialization"
 fi
 
 
@@ -50,8 +49,6 @@ CMAKE_PARAMS="-DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX=${PREFIX} \
             -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=1 \
             -DBUILD_KMC=OFF \
-            -DMODE_TI=ON \
-            -DDISABLE_INT128=ON \
             ${CMAKE_PLATFORM_FLAGS} ${CONFIG_ARGS}"
 
 cmake -S .. -B . ${CMAKE_PARAMS}
