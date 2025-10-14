@@ -62,7 +62,6 @@ export PIP_NO_INDEX=False
 
 CMAKE_PARAMS="-DCMAKE_BUILD_TYPE=Release \
             -DBOOST_ROOT=${PREFIX} \
-            -DJEMALLOC_ROOT=${PREFIX} \
             -DOMP_ROOT=${PREFIX} \
             -DCMAKE_PREFIX_PATH=${PREFIX} \
             -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib \
