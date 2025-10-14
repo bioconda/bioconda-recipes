@@ -13,6 +13,9 @@ export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}"
 ARCH=$(uname -m)
 OS=$(uname -s)
 
+# set version manually since we're installing from source and not from a checked out git repo
+echo '#define HTSCODECS_VERSION_TEXT "1.6.4"' > metagraph/external-libraries/htslib/htscodecs/htscodecs/version.h
+
 if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
 	sed -i.bak 's|"-mavx"|""|' metagraph/CMakeListsKMC.txt.in
 	sed -i.bak 's|-mavx2||' metagraph/CMakeListsKMC.txt.in
