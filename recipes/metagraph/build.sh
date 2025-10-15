@@ -19,7 +19,6 @@ sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' metagraph/CMa
 if [[ "${OS}" == "Darwin" ]]; then
 	sed -i.bak 's|link_directories(/opt/homebrew/opt/icu4c/lib)|link_directories(${PREFIX}/lib)|' metagraph/CMakeLists.txt
 	sed -i.bak 's|link_directories(/usr/local/opt/icu4c/lib)|link_directories(${PREFIX}/lib)|' metagraph/CMakeLists.txt
-	sed -i.bak 's| -DUSE_JEMALLOC||' metagraph/CMakeLists.txt
 fi
 
 
