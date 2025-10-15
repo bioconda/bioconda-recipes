@@ -2,7 +2,7 @@
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -Wno-deprecated-declarations"
+export CXXFLAGS="${CXXFLAGS} -Wno-deprecated-declarations -Wno-attributes"
 export CFLAGS="${CFLAGS} -Wno-unused-but-set-variable -Wno-implicit-function-declaration -Wno-int-conversion"
 export BOOST_INCLUDEDIR="${PREFIX}/include"
 export BOOST_LIBRARYDIR="${PREFIX}/lib"
