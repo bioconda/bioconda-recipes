@@ -27,8 +27,7 @@ if [[ "${OS}" == "Darwin" ]]; then
     export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include"
     export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
     echo "Using conda OpenMP from ${PREFIX}"
-    ls -l "/usr/local/src/conda-prefix"
-    ls -l "/usr/local/opt/libomp/lib/"
+    ls -l "${PREFIX}"
     CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
 fi
 
@@ -50,8 +49,6 @@ CMAKE_PARAMS="-DCMAKE_BUILD_TYPE=Release \
             -DOMP_ROOT=${PREFIX} \
             -DCMAKE_PREFIX_PATH=${PREFIX} \
             -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib \
-            -DCMAKE_CXX_COMPILER=${CXX} \
-            -DCMAKE_C_COMPILER=${CC} \
             -DCMAKE_INSTALL_PREFIX=${PREFIX} \
             -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=1 \
             -DBUILD_KMC=OFF \
