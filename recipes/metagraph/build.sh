@@ -15,6 +15,7 @@ OS=$(uname -s)
 echo '#define HTSCODECS_VERSION_TEXT "1.6.4"' > metagraph/external-libraries/htslib/htscodecs/htscodecs/version.h
 
 sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' metagraph/CMakeLists.txt
+sed -i.bak 's|APPLE|NOT APPLE|' metagraph/CMakeListsHelpers.txt
 
 CMAKE_PLATFORM_FLAGS=""
 if [[ "${OS}" == "Darwin" ]]; then
@@ -26,8 +27,6 @@ if [[ "${OS}" == "Darwin" ]]; then
     export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
     export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include"
     export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-    echo "Using conda OpenMP from ${PREFIX}"
-    ls -l "${PREFIX}/lib"
     CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
 fi
 
