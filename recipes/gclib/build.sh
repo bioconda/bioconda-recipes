@@ -2,7 +2,7 @@
 export CC=$CC
 sed -i '41s/g++/${CXX}/' Makefile
 mkdir -p $PREFIX/lib $PREFIX/bin $PREFIX/include
-make CXX="$CXX" CXXFLAGS="$CXXFLAGS LDFLAGS="$LDFLAGS" PREFIX="$PREFIX"
+make CXX="$CXX" CXXFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS" PREFIX="$PREFIX"
 install *.o $PREFIX/lib/
 if [ -f libgffc.so ] ; then
     install *.so $PREFIX/lib/
