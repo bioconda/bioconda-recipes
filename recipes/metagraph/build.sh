@@ -16,6 +16,7 @@ echo '#define HTSCODECS_VERSION_TEXT "1.6.4"' > metagraph/external-libraries/hts
 
 sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' metagraph/CMakeLists.txt
 
+CMAKE_PLATFORM_FLAGS=""
 if [[ "${OS}" == "Darwin" ]]; then
     sed -i.bak 's|link_directories(/opt/homebrew/opt/icu4c/lib)|link_directories(${PREFIX}/lib)|' metagraph/CMakeLists.txt
     sed -i.bak 's|link_directories(/usr/local/opt/icu4c/lib)|link_directories(${PREFIX}/lib)|' metagraph/CMakeLists.txt
@@ -25,6 +26,7 @@ if [[ "${OS}" == "Darwin" ]]; then
     export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
     export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include"
     export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
 fi
 
 
@@ -40,6 +42,7 @@ cd metagraph/build
 export PIP_NO_INDEX=False
 
 CMAKE_PARAMS="-DCMAKE_BUILD_TYPE=Release \
+            $CMAKE_PLATFORM_FLAGS \
             -DBOOST_ROOT=${PREFIX} \
             -DCMAKE_PREFIX_PATH=${PREFIX} \
             -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib \
