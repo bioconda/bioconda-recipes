@@ -3,10 +3,6 @@
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -Wno-deprecated-declarations -Wno-attributes"
-export CFLAGS="${CFLAGS} -Wno-unused-but-set-variable -Wno-implicit-function-declaration -Wno-int-conversion"
-export BOOST_INCLUDEDIR="${PREFIX}/include"
-export BOOST_LIBRARYDIR="${PREFIX}/lib"
-export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}"
 
 ARCH=$(uname -m)
 OS=$(uname -s)
@@ -16,12 +12,6 @@ echo '#define HTSCODECS_VERSION_TEXT "1.6.4"' > metagraph/external-libraries/hts
 
 sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' metagraph/CMakeLists.txt
 sed -i.bak 's|APPLE|NOT APPLE|' metagraph/CMakeListsHelpers.txt
-
-if [[ "${OS}" == "Darwin" ]]; then
-    sed -i.bak 's|link_directories(/opt/homebrew/opt/icu4c/lib)|link_directories(${PREFIX}/lib)|' metagraph/CMakeLists.txt
-    sed -i.bak 's|link_directories(/usr/local/opt/icu4c/lib)|link_directories(${PREFIX}/lib)|' metagraph/CMakeLists.txt
-fi
-
 
 pushd metagraph/external-libraries/sdsl-lite
 ./install.sh "${PWD}"
@@ -36,7 +26,6 @@ export PIP_NO_INDEX=False
 
 CMAKE_PARAMS="-DCMAKE_BUILD_TYPE=Release \
             -DBOOST_ROOT=${PREFIX} \
-            -DOMP_ROOT=${PREFIX} \
             -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib \
             -DCMAKE_INSTALL_PREFIX=${PREFIX} \
             -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=1 \
