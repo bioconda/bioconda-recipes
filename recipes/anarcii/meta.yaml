@@ -1,0 +1,46 @@
+{% set name = "anarcii" %}
+{% set version = "2.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/anarcii-{{ version }}.tar.gz
+  sha256: 970594c432423532fb46f9576ae432bd535ffaf8c4bcbabbc77c58e10e791697
+
+build:
+  entry_points:
+    - anarcii = anarcii.cli:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python
+    - hatchling
+    - pip
+  run:
+    - python
+    - gemmi
+    - msgpack-python
+    - numpy
+    - psutil
+    - sortedcontainers
+    - pytorch
+
+test:
+  imports:
+    - anarcii
+  commands:
+    - pip check
+    - anarcii --help
+  requires:
+    - pip
+
+about:
+  summary: A language model suite for numbering antigen receptor sequences.
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENCE
