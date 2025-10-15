@@ -1,7 +1,6 @@
 #!/bin/bash
 set -ex
 
-# 设置构建环境
 export R_HOME=${PREFIX}/lib/R
 export CFLAGS="-I${PREFIX}/include -O2 -fPIC"
 export CXXFLAGS="-I${PREFIX}/include -O2 -fPIC"
@@ -9,15 +8,12 @@ export LDFLAGS="-L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
 export BLAS_LIBS="-L${PREFIX}/lib -lblas"
 export LAPACK_LIBS="-L${PREFIX}/lib -llapack"
 
-# 显示构建信息
 echo "Building TraMineR for aarch64 architecture"
 echo "R_HOME: ${R_HOME}"
 echo "PREFIX: ${PREFIX}"
 
-# 进入源码目录
 cd "${SRC_DIR}"
 
-# 首先安装缺失的依赖包（确保在构建环境中可用）
 echo "Installing required R dependencies..."
 ${R_HOME}/bin/R -e "
 install.packages(
@@ -28,11 +24,9 @@ install.packages(
 )
 "
 
-# 检查 DESCRIPTION 文件以确认所有依赖
 echo "Package dependencies from DESCRIPTION:"
 grep -E "Depends|Imports|Suggests" DESCRIPTION || true
 
-# 构建和安装 R 包
 echo "Installing TraMineR package..."
 ${R_HOME}/bin/R CMD INSTALL . \
     --build \
@@ -41,7 +35,6 @@ ${R_HOME}/bin/R CMD INSTALL . \
     --clean \
     --no-test-load
 
-# 验证安装
 echo "Verifying installation..."
 if [[ -f "${PREFIX}/lib/R/library/TraMineR/libs/TraMineR.so" ]]; then
     echo "✓ TraMineR package built successfully for aarch64"
