@@ -1,29 +1,26 @@
+{% set name = "taxoniumtools" %}
 {% set version = "2.1.10" %}
 
 package:
-  name: taxoniumtools
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/t/taxoniumtools/taxoniumtools-{{ version }}.tar.gz
-  sha256: b04d3b453d9d18d7edbfd2c5ed7f6704e7342100e856e014567ed1dd9d6eaea0
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/taxoniumtools-{{ version }}.tar.gz
+  sha256: 743783508c8346e88b8132dab030ced3417ba8d0f16870e983dcdf113d579b3b
 
 build:
   noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
-  entry_points:
-    - usher_to_taxonium = taxoniumtools.usher_to_taxonium:main
-    - newick_to_taxonium = taxoniumtools.newick_to_taxonium:main
-    - view_taxonium = taxoniumtools.view_taxonium:main
 
 requirements:
   host:
-    - pip
     - python >=3.8
     - setuptools >=42
     - wheel
     - setuptools-scm >=6.2
+    - pip
   run:
     - python >=3.8
     - treeswift
@@ -40,22 +37,15 @@ test:
   imports:
     - taxoniumtools
   commands:
-    - usher_to_taxonium --help
-    - newick_to_taxonium --help
-    - view_taxonium --help
+    - pip check
+  requires:
+    - pip
 
 about:
   home: https://github.com/theosanderson/taxonium
-  license: MIT
-  license_family: MIT
-  license_file: LICENSE
   summary: Generate files for taxonium
-  description: |
-    taxoniumtools is a Python package for generating files for Taxonium,
-    a tool for exploring large phylogenetic trees. It provides utilities
-    for converting various tree formats (like UShER and Newick) to the
-    Taxonium format.
-  dev_url: https://github.com/theosanderson/taxonium
+  license: GPL-3.0-only
+  license_file: LICENSE
 
 extra:
   recipe-maintainers:
