@@ -3,6 +3,7 @@
 # gromacs > 2021 requires a non default OSX version
 if [ "$(uname)" = 'Darwin' ] ; then
     export MACOSX_DEPLOYMENT_TARGET=11.0
+    export MPI_ARGS="-DGMX_MPI=ON -DMPI_C_COMPILER=mpicc -DMPI_CXX_COMPILER=mpicxx"
 fi
 
 
