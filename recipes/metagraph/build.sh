@@ -19,6 +19,9 @@ sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' metagraph/CMa
 if [[ "${OS}" == "Darwin" ]]; then
 	sed -i.bak 's|link_directories(/opt/homebrew/opt/icu4c/lib)|link_directories(${PREFIX}/lib)|' metagraph/CMakeLists.txt
 	sed -i.bak 's|link_directories(/usr/local/opt/icu4c/lib)|link_directories(${PREFIX}/lib)|' metagraph/CMakeLists.txt
+	# Set OpenMP flags for macOS
+	export OPENMP_LIBRARIES="${PREFIX}/lib"
+	export OPENMP_INCLUDES="${PREFIX}/include"
 fi
 
 
@@ -35,7 +38,6 @@ export PIP_NO_INDEX=False
 
 CMAKE_PARAMS="-DCMAKE_BUILD_TYPE=Release \
             -DBOOST_ROOT=${PREFIX} \
-            -DOMP_ROOT=${PREFIX} \
             -DCMAKE_PREFIX_PATH=${PREFIX} \
             -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib \
             -DCMAKE_CXX_COMPILER=${CXX} \
