@@ -1,0 +1,62 @@
+{% set version = "2.1.10" %}
+
+package:
+  name: taxoniumtools
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/t/taxoniumtools/taxoniumtools-{{ version }}.tar.gz
+  sha256: b04d3b453d9d18d7edbfd2c5ed7f6704e7342100e856e014567ed1dd9d6eaea0
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  entry_points:
+    - usher_to_taxonium = taxoniumtools.usher_to_taxonium:main
+    - newick_to_taxonium = taxoniumtools.newick_to_taxonium:main
+    - view_taxonium = taxoniumtools.view_taxonium:main
+
+requirements:
+  host:
+    - pip
+    - python >=3.8
+    - setuptools >=42
+    - wheel
+    - setuptools-scm >=6.2
+  run:
+    - python >=3.8
+    - treeswift
+    - alive-progress
+    - biopython <=1.81
+    - pandas
+    - google-api-python-client
+    - protobuf <4
+    - orjson
+    - psutil
+    - docker-py
+
+test:
+  imports:
+    - taxoniumtools
+  commands:
+    - usher_to_taxonium --help
+    - newick_to_taxonium --help
+    - view_taxonium --help
+
+about:
+  home: https://github.com/theosanderson/taxonium
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Generate files for taxonium
+  description: |
+    taxoniumtools is a Python package for generating files for Taxonium,
+    a tool for exploring large phylogenetic trees. It provides utilities
+    for converting various tree formats (like UShER and Newick) to the
+    Taxonium format.
+  dev_url: https://github.com/theosanderson/taxonium
+
+extra:
+  recipe-maintainers:
+    - theosanderson
