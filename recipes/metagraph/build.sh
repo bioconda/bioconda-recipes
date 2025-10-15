@@ -17,11 +17,14 @@ echo '#define HTSCODECS_VERSION_TEXT "1.6.4"' > metagraph/external-libraries/hts
 sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' metagraph/CMakeLists.txt
 
 if [[ "${OS}" == "Darwin" ]]; then
-	sed -i.bak 's|link_directories(/opt/homebrew/opt/icu4c/lib)|link_directories(${PREFIX}/lib)|' metagraph/CMakeLists.txt
-	sed -i.bak 's|link_directories(/usr/local/opt/icu4c/lib)|link_directories(${PREFIX}/lib)|' metagraph/CMakeLists.txt
-	# Set OpenMP flags for macOS
-	export OPENMP_LIBRARIES="${PREFIX}/lib"
-	export OPENMP_INCLUDES="${PREFIX}/include"
+    sed -i.bak 's|link_directories(/opt/homebrew/opt/icu4c/lib)|link_directories(${PREFIX}/lib)|' metagraph/CMakeLists.txt
+    sed -i.bak 's|link_directories(/usr/local/opt/icu4c/lib)|link_directories(${PREFIX}/lib)|' metagraph/CMakeLists.txt
+    # Force CMake to use conda's OpenMP instead of system OpenMP
+    export CMAKE_PREFIX_PATH="${PREFIX}:${CMAKE_PREFIX_PATH}"
+    # Add conda OpenMP to compiler flags
+    export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+    export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include"
+    export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 fi
 
 
