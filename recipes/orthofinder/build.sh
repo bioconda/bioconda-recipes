@@ -4,12 +4,11 @@ mkdir -p $PREFIX/bin
 
 cp orthofinder.py $PREFIX/bin/orthofinder
 
-# scripts_of now contains the config.json file
-mkdir $PREFIX/bin/scripts_of
-cp -r scripts_of/*py $PREFIX/bin/scripts_of/
+mkdir -p $PREFIX/bin/src/orthofinder
+cp -r src/orthofinder/* $PREFIX/bin/src/orthofinder/
 
-sed -i.bak 's/raxmlHPC-AVX/raxmlHPC-AVX2/g' scripts_of/config.json
-cp scripts_of/config.json $PREFIX/bin/scripts_of/config.json
+sed -i.bak 's/raxmlHPC-AVX/raxmlHPC-AVX2/g' src/orthofinder/run/config.json
+cp src/orthofinder/run/config.json $PREFIX/bin/src/orthofinder/run/config.json
 
 cp tools/convert_orthofinder_tree_ids.py $PREFIX/bin/
 cp tools/create_files_for_hogs.py $PREFIX/bin/

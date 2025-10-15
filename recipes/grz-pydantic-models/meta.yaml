@@ -1,0 +1,45 @@
+{% set name = "grz-pydantic-models" %}
+{% set version = "2.3.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/grz_pydantic_models-{{ version }}.tar.gz
+  sha256: aa54845c67ae6e4db23b3b3772e48c3dc849cd37fd1b95981d0c7c884e350dc9
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - hatchling
+    - pip
+  run:
+    - python >=3.12
+    - pydantic >=2.9.2,<3
+
+test:
+  imports:
+    - grz_pydantic_models
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/BfArM-MVH/grz-tools
+  summary: Pydantic models for the GRZ metadata schema
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - tedil
+    - twrightsman

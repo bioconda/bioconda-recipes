@@ -1,0 +1,75 @@
+{% set name = "deepchopper" %}
+{% set version = "1.2.6" %}
+{% set sha256 = "f264d1d451a9ad28073af0c2be95f177b71c39fa63a726408592bf412f56e4fe" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  skip: True  # [py < 310]
+  run_exports:
+    - {{ pin_subpackage("deepchopper", max_pin="x") }}
+  entry_points:
+    - deepchopper = deepchopper.cli:app
+    
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - make
+    - cmake
+  host:
+    - python
+    - pip
+    - maturin >=1.2.1,<2
+    - setuptools-rust
+    - setuptools
+  run:
+    - python
+    - pytorch >=2.1.0
+    - lightning >=2.1.2
+    - torchmetrics >=1.2.0
+    - rich >=13.7.0
+    - transformers >=4.37.2
+    - safetensors >=0.4.2
+    - datasets ==2.14.2
+    - evaluate >=0.4.1
+    - typer >=0.12.0
+    - gradio ==5.0.1
+    - fastapi ==0.112.2
+    - scikit-learn >=1.5.2
+    - hydra-core >=1.3.2
+    - omegaconf >=2.3.0
+    - python-multipart ==0.0.12
+    - deepchopper-cli >=1.2.5
+
+test:
+  imports:
+    - deepchopper
+  commands:
+    - deepchopper --help
+
+about:
+  home: https://github.com/ylab-hi/DeepChopper
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE
+  summary: 'A Genomic Language Model for Chimera Artifact Detection in Nanopore Direct RNA Sequencing.'
+  description: |
+    DeepChopper is a genomic language model designed to identify artificial sequences.
+    It provides functionality for encoding FASTQ files, making predictions, and chopping sequences.
+  doc_url: https://github.com/ylab-hi/DeepChopper
+  dev_url: https://github.com/ylab-hi/DeepChopper
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - yangyangli

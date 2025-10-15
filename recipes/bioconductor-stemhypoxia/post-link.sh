@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "stemhypoxia-1.38.0"
+installBiocDataPackage.sh "stemhypoxia-1.42.0"

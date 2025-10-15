@@ -1,0 +1,58 @@
+{% set name = "biox" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/TianMayCry9/BioX/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: cd4febca028bcf93540262dea6498fd152b15f4dc6a5f06fb41f86bbdb80f03d
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  run_exports:
+    - {{ pin_subpackage('biox', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - setuptools
+    - wheel
+
+  run:
+    - python >=3.6
+    - numpy >=1.19.0
+    - multiprocess >=0.70.0
+    - scikit-learn
+    - biopython
+    - taxonomy
+    
+test:
+  requires:
+    - scikit-learn 
+    - biopython
+    - taxonomy
+  commands:
+    - biox -h
+    - printf ">test_seq\nACGTCGCGCGCGCG\n" > test.fa
+    - biox -c -t dna -i test.fa
+
+
+about:
+  home: https://github.com/TianMayCry9/BioX
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: 'Biological Sequence Compression and Analysis Tool'
+  description: |
+    BioX is an efficient, lossless compression tool designed specifically for 
+    biological sequence data.Also offers sequence analysis features and phylogenetic tree construction.
+  dev_url: https://github.com/TianMayCry9/BioX
+
+extra:
+  recipe-maintainers:
+    - TianMayCry9

@@ -1,6 +1,6 @@
 {% set name = "ipyrad" %}
-{% set version = "0.9.102" %}
-{% set sha256 = "2a8dc210d69cdedd34ac92715f23a9c3b7b4593a97b0d16851a566eacf33ef42" %}
+{% set version = "0.9.106" %}
+{% set sha256 = "6d26e771216a90e1598bfe6bfc474782fad7a8e99a40d26a5ce4229162390d88" %}
 
 package:
   name: {{ name }}
@@ -12,19 +12,23 @@ source:
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
   noarch: python
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -f *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   entry_points:
     - ipyrad = ipyrad.__main__:main
   run_exports:
-    - {{ pin_subpackage('ipyrad', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
+    - python >=3.5
     - pip
-    - python
+    - setuptools
   run:
-    - python
+    - python >=3.5
     - pandas
     - scipy
     - numpy
@@ -52,8 +56,15 @@ test:
     - ipyrad -h
 
 about:
-  home: http://github.com/dereneaton/ipyrad
-  license: GPL-3.0-only
+  home: "https://github.com/dereneaton/ipyrad"
+  license: "GPL-3.0-only"
   license_family: GPL3
-  license_file: LICENSE.txt
-  summary: Interactive assembly and analysis of RAD-seq data sets.
+  license_file: "LICENSE.txt"
+  summary: "Interactive assembly and analysis of RAD-seq data sets."
+  dev_url: "https://github.com/dereneaton/ipyrad"
+  doc_url: "https://ipyrad.readthedocs.io/en/master"
+
+extra:
+  identifiers:
+    - biotools:ipyrad
+    - doi:10.1093/bioinformatics/btz966
