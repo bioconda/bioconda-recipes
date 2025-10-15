@@ -1,4 +1,5 @@
 #!/bin/bash
+export CC=$CC
 sed -i '41s/g++/$CC/' Makefile
 mkdir -p $PREFIX/lib $PREFIX/bin $PREFIX/include
 make
