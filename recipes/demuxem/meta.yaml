@@ -1,28 +1,33 @@
 {% set name = "demuxEM" %}
-{% set version = "0.1.7.post1" %}
+{% set version = "0.1.8" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "f6e6608c37875fb2db6cbd1abe48ce1149b41c7b2b26380cd4d581dca6cac260"
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/demuxem-{{ version }}.tar.gz
+  sha256: 388dec2399430b4ac8d7c89f9697144639b2745460dba686ad44660f1ef41f50
 
 build:
   number: 0
   noarch: python
   entry_points:
     - demuxEM = demuxEM.__main__:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --use-pep517 -vvv"
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -f *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
-    - {{ pin_subpackage('demuxem', max_pin="x.x") }}
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 requirements:
   host:
     - python >=3.8
     - pip
-    - setuptools_scm
+    - setuptools-scm
   run:
     - python >=3.8
     - docopt
@@ -30,8 +35,8 @@ requirements:
     - pandas
     - scipy
     - scikit-learn
-    - seaborn
-    - pegasusio >=0.2.12
+    - seaborn-base
+    - pegasusio >=0.10.0
     - importlib_metadata >=0.7  # [py < 38]
 
 test:
@@ -44,10 +49,11 @@ test:
 about:
   home: "https://github.com/lilab-bcb/demuxEM"
   doc_url: "https://demuxEM.readthedocs.io"
-  license: BSD-3-Clause
+  license: "BSD-3-Clause"
   license_family: BSD
   license_file: LICENSE
   summary: "DemuxEM is the demultiplexing module of Pegasus, which works on cell-hashing and nucleus-hashing genomics data."
+  dev_url: "https://github.com/lilab-bcb/demuxEM"
 
 extra:
   recipe-maintainers:

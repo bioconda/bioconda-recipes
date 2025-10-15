@@ -5,18 +5,32 @@ package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
+source:
+  url: "https://pypi.io/packages/source/h/haddock3/haddock3-{{ version }}.0.tar.gz"
+  sha256: 14f696e20a2ff5fcc2596abd57248100acd6ea695eeb1f03040de353b7ad2971
+  
 build:
-  number: 1
-  noarch: python
+  number: 3
   run_exports:
     - {{ pin_subpackage(name, max_pin='x') }}
+  script: |
+    ln -sf $CC $BUILD_PREFIX/bin/gcc
+    ln -sf $CXX $BUILD_PREFIX/bin/g++
+    {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
 
 requirements:
-  host:
-    - python >=3.9,<3.13
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - python
+    - pip
     - setuptools
+  host:
+    - python
+    - setuptools
+    - pip
   run:
-    - python >=3.9,<3.13
+    - python
     - pip
     - biopython
     - jsonpickle
@@ -33,7 +47,7 @@ requirements:
 
 test:
   commands:
-    - echo "DONE!"
+    - haddock3 -v
 
 about:
   home: https://github.com/haddocking/haddock3
@@ -43,9 +57,9 @@ about:
   description: "HADDOCK3 is the next generation integrative modelling software in the long-lasting HADDOCK project. It represents a complete rethinking and rewriting of the HADDOCK2.X series, implementing a new way to interact with HADDOCK and offering new features to users who can now define custom workflows."
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers: 
     - gbayarri
     - RubenChM
-  notes: >
-    The Haddock3 package requires `gcc` hardcoded in the `setup.py`, which is unavailable in the Bioconda test environment.
-    Therefore, the post-link test is skipped.

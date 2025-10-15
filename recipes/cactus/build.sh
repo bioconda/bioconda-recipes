@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex 
+set -ex
 
 case $(uname -m) in
 	aarch64|arm64) sed -i.bak 's|-mavx2||' include.mk && sed -i.bak 's|-D__AVX2__||' include.mk && rm -rf *.bak

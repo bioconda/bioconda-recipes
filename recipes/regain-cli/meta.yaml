@@ -1,0 +1,86 @@
+{% set name = "regain-cli" %}
+{% set version = "1.7.1" %}
+
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ERBringHorvath/regain_CLI/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 2b45f0f3382313861831005b978826c0404e6defc48d681ef62d0f1609d98544
+
+build:
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+  number: 0
+  entry_points:
+    - regain = regain.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+  run:
+    - python >=3.10
+    # CLI calls to external tools used by Module 1 / Curate (if applicable):
+    - ncbi-amrfinderplus
+    - blast
+    - biopython >=1.83
+    - pandas
+    - tqdm >=4.67
+    # R runtime + packages used by bnS/bnL/MVA/visualize:
+    - r-base >=4.4
+    - r-optparse
+    - r-dplyr
+    - r-tidyr
+    - r-tibble
+    - r-igraph
+    - r-visnetwork
+    - r-reshape2
+    - r-scales
+    - r-ggplot2
+    - r-ggrepel
+    - r-tidygraph
+    - r-ggraph
+    - r-ellipse
+    - r-vegan
+    - r-ape
+    - r-compositions
+    - r-cluster
+    - r-pbapply
+    - r-foreach
+    - r-doparallel
+    - r-progressr
+    - r-rcolorbrewer
+    - r-bnlearn
+    - r-grain
+    - bioconductor-graph
+    # (Add any other R deps you `library()` in the scripts.)
+
+test:
+  commands:
+    - regain -h
+    - regain --module-health
+    - regain bnS -h
+    - regain AMR -h
+    - regain matrix -h
+    - regain MVA -h
+
+about:
+  home: https://github.com/ERBringHorvath/regain_CLI
+  summary: "Bayesian-network pipeline for ARG/virulence co-occurrence analysis."
+  license: MIT
+  license_file: LICENSE
+  description: |
+    ReGAIN is a reproducible CLI for quantifying co-occurrence among
+    bacterial antibiotic/heavy metal resistance and virulence genes using Bayesian network
+    structure learning (bnlearn/gRain) and post-hoc metrics. It includes
+    dataset curation, visualization, and multivariate analysis.
+
+extra:
+  recipe-maintainers:
+    - ERBringHorvath

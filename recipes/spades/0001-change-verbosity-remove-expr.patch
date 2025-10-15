@@ -1,5 +1,5 @@
 diff --git a/spades_compile.sh b/spades_compile.sh
-index e13ca4f..ad8e6a3 100755
+index e13ca4f..e068098 100755
 --- a/spades_compile.sh
 +++ b/spades_compile.sh
 @@ -37,10 +37,10 @@ check_whether_OPTARG_is_an_integer() {
@@ -15,7 +15,7 @@ index e13ca4f..ad8e6a3 100755
  
  print_help() {
    echo
-@@ -221,11 +221,22 @@ else
+@@ -221,11 +221,34 @@ else
    ADDITIONAL_FLAGS="$ADDITIONAL_FLAGS -DSPADES_BUILD_INTERNAL=OFF"
  fi
  
@@ -24,7 +24,19 @@ index e13ca4f..ad8e6a3 100755
 -make -j $AMOUNT_OF_THREADS
 -make install
 -cd "$PREFIX"
-+if [[ `uname` == "Darwin" ]]; then
++case $(uname -m) in
++    aarch64)
++	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
++	;;
++    arm64)
++	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
++	;;
++    x86_64)
++	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
++	;;
++esac
++
++if [[ `uname -s` == "Darwin" ]]; then
 +	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 +	export CFLAGS="${CFLAGS} -Wunused-command-line-argument"
 +	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
@@ -35,8 +47,8 @@ index e13ca4f..ad8e6a3 100755
 +cd "${WORK_DIR}"
 +cmake -S "${BASEDIR}/src" -B . -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 +	-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
-+	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DCMAKE_C_COMPILER="${CC}" \
-+	-DCMAKE_C_FLAGS="${CFLAGS}" -DSPADES_USE_NCBISDK=ON -DSPADES_ENABLE_PROJECTS="all" \
++	-DCMAKE_CXX_FLAGS="${CXXFLAGS} -O3" -DCMAKE_C_COMPILER="${CC}" \
++	-DCMAKE_C_FLAGS="${CFLAGS} -O3" -DSPADES_USE_NCBISDK=ON -DSPADES_ENABLE_PROJECTS="all" \
 +	-Wno-dev -Wno-deprecated --no-warn-unused-cli "${ADDITIONAL_FLAGS}" \
 +	"${CONFIG_ARGS}"
 +cmake --build . --clean-first --target install -j "${CPU_COUNT}"

@@ -5,27 +5,28 @@ package:
   name: balrog
   version: {{ version }}
 
-build:
-  number: 6
-  run_exports:
-    - {{ pin_subpackage("balrog", max_pin="x.x") }}  
-
 source:
   url: https://github.com/salzberg-lab/BalrogCPP/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
+build:
+  number: 7
+  run_exports:
+    - {{ pin_subpackage('balrog', max_pin="x.x") }}
+
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - cmake
+    - cmake <4
     - make
+    - pkg-config
+  host:
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
-  host:
     - zlib
-
   run:
-    - zlib
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
     - scipy
 
 test:
@@ -33,11 +34,14 @@ test:
     - balrog --help
 
 about:
-  home: https://github.com/Markusjsommer/BalrogCPP
+  home: "https://github.com/salzberg-lab/BalrogCPP"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: "Balrog: A universal protein model for prokaryotic gene prediction"
+  summary: "Balrog: A universal protein model for prokaryotic gene prediction."
+  dev_url: "https://github.com/salzberg-lab/BalrogCPP"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64

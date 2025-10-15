@@ -1,3 +1,7 @@
+#!/bin/bash
+
+mkdir -p "$PREFIX/bin"
+
 # this script creates the file with configuration paths to the metaWRAP modules.
 echo "# Paths to metaWRAP scripts (dont have to modify)" > bin/config-metawrap
 echo 'mw_path=$(which metawrap)' >> bin/config-metawrap
@@ -20,13 +24,7 @@ echo "# paths to BLAST databases" >> bin/config-metawrap
 echo "BLASTDB=~/NCBI_NT_DB" >> bin/config-metawrap
 echo "TAXDUMP=~/NCBI_TAX_DB" >> bin/config-metawrap
 
-chmod +x bin/config-metawrap
-
-
 # copying over all necessary files
-mkdir -p $PREFIX/bin/
-cp bin/metaWRAP $PREFIX/bin/
-cp bin/metawrap $PREFIX/bin/
-cp bin/config-metawrap $PREFIX/bin/
-cp -r bin/metawrap-modules $PREFIX/bin/
-cp -r bin/metawrap-scripts $PREFIX/bin/
+install -v -m 0755 bin/metaWRAP bin/metawrap bin/config-metawrap "$PREFIX/bin"
+cp -rf bin/metawrap-modules $PREFIX/bin/
+cp -rf bin/metawrap-scripts $PREFIX/bin/
