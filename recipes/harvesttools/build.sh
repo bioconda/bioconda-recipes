@@ -8,7 +8,7 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 
 autoreconf -if
 ./configure --prefix="${PREFIX}" \
-	--with-protobuf="${PREFIX}" \
+	--with-protobuf="${BUILD_PREFIX}" \
 	--with-capnp="${PREFIX}" \
 	CXX="${CXX}" \
 	CXXFLAGS="${CXXFLAGS}" \
