@@ -1,0 +1,1 @@
+../metawrap-mg-binning/post-link.sh
