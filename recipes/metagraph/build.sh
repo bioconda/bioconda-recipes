@@ -27,7 +27,7 @@ if [[ "${OS}" == "Darwin" ]]; then
     export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include"
     export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
     echo "Using conda OpenMP from ${PREFIX}"
-    ls -l "${PREFIX}"
+    ls -l "${PREFIX}/lib"
     CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
 fi
 
