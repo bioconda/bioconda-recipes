@@ -11,7 +11,6 @@ OS=$(uname -s)
 echo '#define HTSCODECS_VERSION_TEXT "1.6.4"' > metagraph/external-libraries/htslib/htscodecs/htscodecs/version.h
 
 sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' metagraph/CMakeLists.txt
-sed -i.bak 's|APPLE|NOT APPLE|' metagraph/CMakeListsHelpers.txt
 
 pushd metagraph/external-libraries/sdsl-lite
 ./install.sh "${PWD}"
