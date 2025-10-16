@@ -4,15 +4,11 @@ set -eux
 
 echo PKG_NAME $PKG_NAME > $PREFIX/.messages.txt
 
-echo "====================== ENV ==================" >> $PREFIX/.messages.txt
-env >> $PREFIX/.messages.txt
-echo "====================== ENV ==================" >> $PREFIX/.messages.txt
- 
-
 # # Only execute for the binning, refinement, and reassemble-bins subpackages
 # # ie those that use checkm
 if [[ "$PKG_NAME" != "metawrap-mg-binning" && "$PKG_NAME" != "metawrap-mg-refinement" && "$PKG_NAME" != "metawrap-mg-reassemble-bins" ]]; then
     echo WRONG PKG_NAME $PKG_NAME >> $PREFIX/.messages.txt
+	exit 0
 fi
 
 CHECKM_DIR="${PREFIX}/etc/checkm"
