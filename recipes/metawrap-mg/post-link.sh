@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -eux
+
 # Only execute for the binning, refinement, and reassemble-bins subpackages
 # ie those that use checkm
 if [[ "$PKG_NAME" != "metawrap-mg-binning" && "$PKG_NAME" != "metawrap-mg-refinement" && "$PKG_NAME" != "metawrap-mg-reassemble-bins" ]]; then
