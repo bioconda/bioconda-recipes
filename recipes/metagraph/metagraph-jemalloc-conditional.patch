@@ -26,7 +26,7 @@ index e651d2176..2371386b7 100644
 
  # makes ASIO not depend on boost
 diff --git a/metagraph/CMakeListsHelpers.txt b/metagraph/CMakeListsHelpers.txt
-index d7777c644..a344774e6 100644
+index d7777c644..fd01b885d 100644
 --- a/metagraph/CMakeListsHelpers.txt
 +++ b/metagraph/CMakeListsHelpers.txt
 @@ -7,7 +7,7 @@ function (findOpenMP)
@@ -38,33 +38,8 @@ index d7777c644..a344774e6 100644
    execute_process(
        COMMAND brew --prefix libomp
        OUTPUT_VARIABLE BREW_OMP_PREFIX
-@@ -81,36 +81,47 @@ endfunction()
- function (findFolly)
- unset(FOLLY_FOUND PARENT_SCOPE)
- set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR})
--find_package(Jemalloc)
--
-+find_package(Jemalloc REQUIRED)
- if(Jemalloc_FOUND)
-+  set(Jemalloc_FOUND ${Jemalloc_FOUND} PARENT_SCOPE)
-+  set(JEMALLOC_LIBRARIES ${JEMALLOC_LIBRARIES} PARENT_SCOPE)
-+  set(JEMALLOC_INCLUDE_DIRS ${JEMALLOC_INCLUDE_DIRS} PARENT_SCOPE)
-+  set(JEMALLOC_VERSION ${JEMALLOC_VERSION} PARENT_SCOPE)
-+  message(STATUS "Jemalloc_FOUND: ${Jemalloc_FOUND}")
-+  message(STATUS "JEMALLOC_VERSION: ${JEMALLOC_VERSION}")
-+  message(STATUS "JEMALLOC_LIBRARIES: ${JEMALLOC_LIBRARIES}")
-+  message(STATUS "JEMALLOC_INCLUDE_DIRS: ${JEMALLOC_INCLUDE_DIRS}")
-+
-   if(${JEMALLOC_VERSION} VERSION_LESS 4.0)
-     message(WARNING "jemalloc version less than 4.0")
--    unset(Jemalloc_FOUND)
-+    unset(Jemalloc_FOUND PARENT_SCOPE)
-+  else()
-+    message(STATUS "jemalloc version ${JEMALLOC_VERSION} is >= 4.0 - OK")
+@@ -90,27 +90,25 @@ if(Jemalloc_FOUND)
    endif()
-+else()
-+    message(STATUS "Jemalloc_FOUND: ${Jemalloc_FOUND}")
-+    message(STATUS "Jemalloc not found")
  endif()
 
 -if(Jemalloc_FOUND)
@@ -108,59 +83,3 @@ index d7777c644..a344774e6 100644
 +target_link_libraries(fbvector PRIVATE ${JEMALLOC_LIBRARIES} ${Boost_LIBRARIES})
 +set(FOLLY_FOUND TRUE PARENT_SCOPE)
  endfunction()
-
-
-diff --git a/metagraph/FindJemalloc.cmake b/metagraph/FindJemalloc.cmake
-index 2b8145654..b3e261935 100644
---- a/metagraph/FindJemalloc.cmake
-+++ b/metagraph/FindJemalloc.cmake
-@@ -11,6 +11,9 @@
- find_package(PkgConfig)
- pkg_check_modules(PC_JEMALLOC QUIET libjemalloc)
-
-+# Try to use jemalloc-config if available
-+find_program(JEMALLOC_CONFIG jemalloc-config)
-+
- unset(JEMALLOC_INCLUDE_DIR CACHE)
- find_path(JEMALLOC_INCLUDE_DIR jemalloc/jemalloc.h
-   HINTS
-@@ -20,6 +23,8 @@ find_path(JEMALLOC_INCLUDE_DIR jemalloc/jemalloc.h
-     ${PC_JEMALLOC_INCLUDEDIR}
-     ${PC_JEMALLOC_INCLUDE_DIRS}
-     ~/.linuxbrew/
-+    /opt/homebrew
-+    /usr/local
-   PATH_SUFFIXES include)
-
- unset(JEMALLOC_LIBRARY CACHE)
-@@ -31,8 +36,30 @@ find_library(JEMALLOC_LIBRARY NAMES jemalloc libjemalloc
-     ${PC_JEMALLOC_LIBDIR}
-     ${PC_JEMALLOC_LIBRARY_DIRS}
-     ~/.linuxbrew/
-+    /opt/homebrew
-+    /usr/local
-   PATH_SUFFIXES lib lib64)
-
-+# If jemalloc-config is available, use it as additional hint
-+if(JEMALLOC_CONFIG)
-+  execute_process(COMMAND ${JEMALLOC_CONFIG} --prefix
-+    OUTPUT_VARIABLE JEMALLOC_PREFIX
-+    OUTPUT_STRIP_TRAILING_WHITESPACE)
-+
-+  # Add jemalloc-config prefix to search paths if not already found
-+  if(NOT JEMALLOC_INCLUDE_DIR)
-+    find_path(JEMALLOC_INCLUDE_DIR jemalloc/jemalloc.h
-+      HINTS ${JEMALLOC_PREFIX}
-+      PATH_SUFFIXES include)
-+  endif()
-+
-+  if(NOT JEMALLOC_LIBRARY)
-+    find_library(JEMALLOC_LIBRARY NAMES jemalloc libjemalloc
-+      HINTS ${JEMALLOC_PREFIX}
-+      PATH_SUFFIXES lib lib64)
-+  endif()
-+endif()
-+
- if(JEMALLOC_INCLUDE_DIR)
-   set(_version_regex "^#define[ \t]+JEMALLOC_VERSION[ \t]+\"([^\"]+)\".*")
-   file(STRINGS "${JEMALLOC_INCLUDE_DIR}/jemalloc/jemalloc.h"
