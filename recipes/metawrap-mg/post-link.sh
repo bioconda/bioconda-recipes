@@ -17,7 +17,7 @@ mkdir -p "${STAGING}"
 TARBALL="${STAGING}/${FN}"
 
 # download the reference data
-wget -O "${TARBALL}" "${URL}"
+curl -L -o "${TARBALL}" "${URL}"
 # md5sum -c <<< "${MD5} ${TARBALL}" || exit 1
 md5sum "${TARBALL}"
 
