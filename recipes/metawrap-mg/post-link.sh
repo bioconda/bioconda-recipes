@@ -2,11 +2,9 @@
 
 set -eux
 
-echo PKG_NAME $PKG_NAME > $PREFIX/.messages.txt
-
-ls -la "${PREFIX}/bin/" >> $PREFIX/.messages.txt
-
-if [[ -f "${PREFIX}/bin/.metawrap-mg-binning-post-link.sh" || -f "${PREFIX}/bin/.metawrap-mg--refinement-post-link.sh" || -f "${PREFIX}/bin/.metawrap-mg-reassemble-bins-post-link.sh" ]]; then
+if command -v checkm >/dev/null 2>&1; then
+    
+echo "checkm found" > $PREFIX/.messages.txt
 
 CHECKM_DIR="${PREFIX}/etc/checkm"
 FN="checkm_data.tar.gz"
