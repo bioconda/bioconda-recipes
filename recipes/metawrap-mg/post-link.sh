@@ -4,12 +4,9 @@ set -eux
 
 echo PKG_NAME $PKG_NAME > $PREFIX/.messages.txt
 
-# # Only execute for the binning, refinement, and reassemble-bins subpackages
-# # ie those that use checkm
-if [[ "$PKG_NAME" != "metawrap-mg-binning" && "$PKG_NAME" != "metawrap-mg-refinement" && "$PKG_NAME" != "metawrap-mg-reassemble-bins" ]]; then
-    echo WRONG PKG_NAME $PKG_NAME >> $PREFIX/.messages.txt
-	exit 0
-fi
+ls -la "${PREFIX}/bin/" >> $PREFIX/.messages.txt
+
+if [[ -f "${PREFIX}/bin/.metawrap-mg-binning-post-link.sh" || -f "${PREFIX}/bin/.metawrap-mg--refinement-post-link.sh" || -f "${PREFIX}/bin/.metawrap-mg-reassemble-bins-post-link.sh" ]]; then
 
 CHECKM_DIR="${PREFIX}/etc/checkm"
 FN="checkm_data.tar.gz"
@@ -38,3 +35,5 @@ echo "${CHECKM_DIR}"	\
 
 # tidy up
 rm -r "${STAGING}"
+
+fi
