@@ -1,6 +1,6 @@
 #!/bin/bash
 export CC=$CC
-sed -i '41错、CXX ?= g++' Makefile
+sed -i '41c\CXX ?= g++' Makefile
 mkdir -p $PREFIX/lib $PREFIX/bin $PREFIX/include
 make CXX="$CXX" CXXFLAGS="$CXXFLAGS -Wno-register" LDFLAGS="$LDFLAGS" PREFIX="$PREFIX"
 install *.o $PREFIX/lib/
