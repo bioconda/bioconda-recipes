@@ -1,0 +1,61 @@
+{% set version = "1.1.7" %}
+
+package:
+  name: bgenix
+  version: "{{ version|replace('-', '_') }}"
+
+source:
+  url: https://github.com/huntdatacenter/rbgen/releases/download/{{ version }}/bgen-{{ version }}.tar.bz2
+  sha256: 9d1cac81142ed639cd928db92a2f860f82665b82ebf858bc3ad43c99faffd5f2
+
+build:
+  run_exports:
+    - {{ pin_subpackage('bgenix', max_pin="x.x") }}
+  number: 4
+
+requirements:
+  build:
+    - gcc
+    - gxx
+    - python
+    - zlib
+    - boost
+    - boost-cpp
+  host:
+    - boost 
+    - boost-cpp
+    - sqlite
+    - zstd
+  run:
+    - boost
+    - boost-cpp
+
+test:
+  source_files:
+    - example/example.15bits.bgen
+    - example/example.16bits.bgen
+    - example/example.16bits.bgen.bgi
+  commands:
+    - bgenix -help
+    - bgenix -g example/example.16bits.bgen >/dev/null
+    - bgenix -g example/example.15bits.bgen -index
+
+about:
+  home: https://enkre.net/cgi-bin/code/bgen
+  license: BSL-1.0
+  license_file: LICENSE_1_0.txt
+  summary: 'Reference implementation of the BGEN format, written in C++.'
+  description: |
+    Reference implementation of the BGEN format, written in C++.
+    The library can be used as the basis for BGEN support
+    in other software, or as a reference for developers
+    writing their own implementations of the BGEN format.
+  dev_url: https://enkre.net/cgi-bin/code/bgen
+  doc_url: https://enkre.net/cgi-bin/code/bgen/wcontent
+
+extra:
+  recipe-maintainers:
+    - matuskosut
+  additional-platforms:
+    - linux-aarch64
+
