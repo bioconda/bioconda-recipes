@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -e -x -o pipefail
 mkdir -p $PREFIX/bin
 
