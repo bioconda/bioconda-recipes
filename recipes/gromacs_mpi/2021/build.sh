@@ -13,6 +13,22 @@ DENSITY_FILE="$SRC_DIR/src/gromacs/applied_forces/densityfitting/densityfitting.
 sed -i '45a #include "gromacs/selection/indexutil.h"' "${DENSITY_FILE}"
 sed -i '/#ifndef GMX_UTILITY_FLAGS_H/a #include <cstdint>' ../src/gromacs/utility/flags.h
 sed -i '/#ifndef GMX_OPTIONS_OPTIONFLAGS_H/a #include <cstdint>' ../src/gromacs/options/optionflags.h
+if [[ "$(uname)" == "Darwin" ]]; then
+    export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
+    cmake .. \
+        -DSHARED_LIBS_DEFAULT=ON \
+        -DBUILD_SHARED_LIBS=ON \
+        -DGMX_PREFER_STATIC_LIBS=NO \
+        -DGMX_BUILD_OWN_FFTW=OFF \
+        -DGMX_GPU=OpenCL \
+        -DOPENCL_LIBRARY="${PREFIX}/lib/libOpenCL.dylib" \ 
+        -DCMAKE_PREFIX_PATH="${PREFIX}" \
+        -DGMX_INSTALL_PREFIX="${PREFIX}" \
+        -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+        -DCMAKE_OSX_SYSROOT="${SDKROOT}" \                  
+        -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
+        ${MPI_ARGS}
+else
 if [[ "$(uname -m)" == "aarch64" ]]; then
 for ARCH in ARM_NEON ARM_NEON_ASIMD ARM_SVE; do  
   cmake_args=(
@@ -61,7 +77,7 @@ for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do
   make install
 done
 fi
-
+fi
 #
 # Build the program to identify number of AVX512 FMA units
 # This will only be executed on AVX-512-capable hosts. If there
