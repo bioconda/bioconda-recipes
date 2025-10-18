@@ -1,0 +1,85 @@
+diff --git a/metagraph/CMakeLists.txt b/metagraph/CMakeLists.txt
+index e651d2176..2371386b7 100644
+--- a/metagraph/CMakeLists.txt
++++ b/metagraph/CMakeLists.txt
+@@ -331,16 +331,17 @@ find_package(Boost REQUIRED COMPONENTS iostreams)
+
+ findFolly()
+ if(FOLLY_FOUND)
+-  add_definitions(-D_USE_FOLLY -DUSE_JEMALLOC)
++  add_definitions(-D_USE_FOLLY)
++  if(Jemalloc_FOUND)
++    add_definitions(-DUSE_JEMALLOC)
++  else()
++    message(WARNING "Jemalloc not found, some optimizations will be disabled.")
++  endif()
+   include_directories(SYSTEM
+     external-libraries/folly
+     ${CMAKE_BINARY_DIR}/external-libraries/folly/include
+   )
+   set(METALIBS ${METALIBS} fbvector)
+-else()
+-  message(WARNING "Prerequisites for Folly (Facebook Open Source Library) not found."
+-  " Install jemalloc to compile with folly and enable various"
+-  " optimizations as well as reduce memory taken up by the Row-Compressed annotator.")
+ endif()
+
+ # makes ASIO not depend on boost
+diff --git a/metagraph/CMakeListsHelpers.txt b/metagraph/CMakeListsHelpers.txt
+index d7777c644..fd01b885d 100644
+--- a/metagraph/CMakeListsHelpers.txt
++++ b/metagraph/CMakeListsHelpers.txt
+@@ -7,7 +7,7 @@ function (findOpenMP)
+ # and happily cached, thus messing up the compilation flags forever
+ unset(OpenMP_C_FLAGS CACHE)
+ unset(OpenMP_CXX_FLAGS CACHE)
+-if(APPLE AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
++if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+   execute_process(
+       COMMAND brew --prefix libomp
+       OUTPUT_VARIABLE BREW_OMP_PREFIX
+@@ -90,27 +90,25 @@ if(Jemalloc_FOUND)
+   endif()
+ endif()
+
+-if(Jemalloc_FOUND)
+-  message(STATUS "Configuring Folly")
+-  include(external-libraries/folly/CMake/FollyConfigChecks.cmake)
+-  configure_file(
+-    external-libraries/folly/CMake/folly-config.h.cmake
+-    ${CMAKE_BINARY_DIR}/external-libraries/folly/include/folly/folly-config.h
+-  )
+-  add_library(fbvector STATIC
+-    external-libraries/folly/folly/ScopeGuard.cpp
+-    external-libraries/folly/folly/memory/detail/MallocImpl.cpp
+-  )
+-  target_include_directories(fbvector SYSTEM PRIVATE
+-    ${JEMALLOC_INCLUDE_DIRS}
+-    ${Boost_INCLUDE_DIRS}
+-    external-libraries/folly
+-    ${CMAKE_BINARY_DIR}/external-libraries/folly/include
+-    ${PROJECT_SOURCE_DIR}/src/common
+-  )
+-  target_link_libraries(fbvector PRIVATE ${JEMALLOC_LIBRARIES} ${Boost_LIBRARIES})
+-  set(FOLLY_FOUND TRUE PARENT_SCOPE)
+-endif()
++message(STATUS "Configuring Folly")
++include(external-libraries/folly/CMake/FollyConfigChecks.cmake)
++configure_file(
++  external-libraries/folly/CMake/folly-config.h.cmake
++  ${CMAKE_BINARY_DIR}/external-libraries/folly/include/folly/folly-config.h
++)
++add_library(fbvector STATIC
++  external-libraries/folly/folly/ScopeGuard.cpp
++  external-libraries/folly/folly/memory/detail/MallocImpl.cpp
++)
++target_include_directories(fbvector SYSTEM PRIVATE
++  ${JEMALLOC_INCLUDE_DIRS}
++  ${Boost_INCLUDE_DIRS}
++  external-libraries/folly
++  ${CMAKE_BINARY_DIR}/external-libraries/folly/include
++  ${PROJECT_SOURCE_DIR}/src/common
++)
++target_link_libraries(fbvector PRIVATE ${JEMALLOC_LIBRARIES} ${Boost_LIBRARIES})
++set(FOLLY_FOUND TRUE PARENT_SCOPE)
+ endfunction()
