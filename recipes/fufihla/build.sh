@@ -9,4 +9,5 @@ install -d "$PREFIX/share/fufihla"
 cp -r "share/fufihla/"* "$PREFIX/share/fufihla/"
 
 chmod 0755 "$PREFIX/share/fufihla/scripts/FuFiHLA.sh" || true
+chmod 0755 "$PREFIX/share/fufihla/scripts/FuFiHLA_nano.sh" || true
 chmod 0755 "$PREFIX/share/fufihla/ref/ref-prep.sh" || true
