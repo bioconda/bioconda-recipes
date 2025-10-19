@@ -1,0 +1,50 @@
+{% set name = "py_nucflag" %}
+{% set version = "0.1.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 5f23787a813cfe29738017002985d34dc6e3f065695de183a36eb9f1fb324318
+
+build:
+  script:
+    - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler("rust") }}
+    - python
+    - maturin >=1.8,<2.0
+    - cargo-bundle-licenses
+  host:
+    - python
+    - maturin >=1.8,<2.0
+    - pip
+  run:
+    - python
+    - polars
+
+test:
+  imports:
+    - py_nucflag
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  license: MIT
+  license_file: py/LICENSE
+  summary: Library to call misassemblies in genome assemblies from long-read alignments.
+  home: https://github.com/logsdon-lab/rs-nucflag
+
+extra:
+  recipe-maintainers:
+    - koisland
