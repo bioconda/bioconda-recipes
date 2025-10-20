@@ -1,0 +1,51 @@
+{% set version = "1.0" %}
+{% set md5 = "f5861823b1eccd6326f62eb21ffac9e7" %}
+
+package:
+  name: stride
+  version: {{ version }}
+
+build:
+  number: 6
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage("stride",max_pin="x.x") }}
+
+source:
+  url: https://github.com/ythuang0522/StriDe/archive/v{{ version }}.tar.gz
+  md5: {{ md5 }}
+  #patches:
+  #  - 0001-Fix-type-errors.patch
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - autoconf
+    - automake
+    - m4
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - sysroot_linux-aarch64 ==2.17 
+  host:
+    - sparsehash
+    - perl
+    - zlib
+  run:
+    - zlib
+
+test:
+  commands:
+    - stride 2>&1 | grep "stride"
+
+about:
+  home: https://github.com/ythuang0522/StriDe
+  license: GPL3
+  license_file: LICENSE
+  summary: The StriDe Assembler integrates string and de Bruijn graph by decomposing reads within error-prone regions, while extending paire-end read into long reads for assembly through repetitive regions.
+
+extra: 
+  additional-platforms:
+    - linux-aarch64
+
+
