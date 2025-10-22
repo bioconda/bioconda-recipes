@@ -1,0 +1,54 @@
+{% set name = "bifidoannotator" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/bifidoannotator-{{ version }}.tar.gz
+  sha256: f1c4b0f274447a71bb878577cff76c9397a8b9caf61fcc998f8ca6a8b2457c84
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  entry_points:
+    - bifidoAnnotator = bifidoannotator.cli:main
+  run_exports:
+    - {{ pin_subpackage('bifidoannotator', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+  run:
+    - python >=3.10
+    - mmseqs2
+    - pandas >=1.0.0
+    - numpy >=1.18.0
+    - matplotlib-base >=3.3.0
+    - seaborn >=0.11.0
+    - scipy >=1.5.0
+
+test:
+  imports:
+    - bifidoannotator
+  commands:
+    - bifidoAnnotator --help
+
+about:
+  home: https://github.com/nicholaspucci/bifidoAnnotator
+  license: MIT
+  license_file: LICENSE
+  summary: Fine-grained annotation of bifidobacterial enzymes involved in human-milk glycan (HMG) utilization
+  description: |
+    bifidoAnnotator performs hierarchical annotation of enzymes involved in human-milk glycan (HMG) utilization using MMseqs2,
+    generates data matrices, and creates publication-ready heatmaps.
+  dev_url: https://github.com/nicholaspucci/bifidoAnnotator
+  doc_url: https://github.com/nicholaspucci/bifidoAnnotator
+
+extra:
+  recipe-maintainers:
+    - nicholaspucci
