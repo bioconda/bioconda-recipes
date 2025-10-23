@@ -48,4 +48,4 @@ cmake -S . -B build \
 cmake --build build -j "${CPU_COUNT}"
 
 mkdir -p "${PREFIX}/bin"
-install -v -m 075 $SRC_DIR/bin/* "${PREFIX}/bin"
+install -v -m 755 $SRC_DIR/bin/* "${PREFIX}/bin"
