@@ -22,7 +22,7 @@ mvn -DskipTests install
 
 # copy result into the share folder
 cp -r target/interproscan-5-dist/* ${IPR_DIR}/
-mvn -DskipTests package
+mvn clean package 
 
 # mv interproscan.sh in the bin
 mkdir -p ${PREFIX}/bin
