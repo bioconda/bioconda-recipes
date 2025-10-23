@@ -16,15 +16,13 @@ make
 cp ncoils ../../../../bin/ncoils/2.2.1/
 cd ${current_dir}
 
-# Run mvn clean install to build and install (into your local Maven repository) all of the modules for InterProScan 5.
-mvn clean install
-
 # cd into the jms-implementation directory and run mvn clean package
 cd jms-implementation
-mvn clean package
+mvn -DskipTests install
 
 # copy result into the share folder
 cp -r target/interproscan-5-dist/* ${IPR_DIR}/
+mvn -DskipTests package
 
 # mv interproscan.sh in the bin
 mkdir -p ${PREFIX}/bin
