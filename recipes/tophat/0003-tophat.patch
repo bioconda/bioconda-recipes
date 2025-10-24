@@ -1,0 +1,594 @@
+diff --git a/src/tophat b/src/tophat
+index f3fa8f3..41038ae 100755
+--- a/src/tophat
++++ b/src/tophat
+@@ -195,11 +195,11 @@ GFF_T_VER = 209 #GFF parser version
+ 
+ #mapping types:
+ 
+-_reads_vs_G, _reads_vs_T, _segs_vs_G, _segs_vs_J = range(1,5)
++_reads_vs_G, _reads_vs_T, _segs_vs_G, _segs_vs_J = list(range(1,5))
+ 
+ # execution resuming stages (for now, execution can be resumed only for stages
+ # after the pre-filter and transcriptome searches):
+-_stage_prep, _stage_map_start, _stage_map_segments, _stage_find_juncs, _stage_juncs_db, _stage_map2juncs, _stage_tophat_reports, _stage_alldone = range(1,9)
++_stage_prep, _stage_map_start, _stage_map_segments, _stage_find_juncs, _stage_juncs_db, _stage_map2juncs, _stage_tophat_reports, _stage_alldone = list(range(1,9))
+ stageNames = ["start", "prep_reads", "map_start", "map_segments", "find_juncs", "juncs_db", "map2juncs", "tophat_reports", "alldone"]
+ #                0           1               2            3           4                5          6           7          ,    8
+ runStages = dict([(stageNames[st], st) for st in range(0, 9)])
+@@ -214,14 +214,14 @@ def getResumeStage(rlog):
+     #first line must be the actual tophat command used
+     thcmd=None
+     try:
+-        thcmd = flog.next()
++        thcmd = next(flog)
+     except StopIteration:
+         die("Error: cannot resume, run.log is empty.")
+     oldargv=thcmd.split()
+     resume_tag = None
+     for line in flog:
+        #scan for last resume code, if any
+-       r=re.match("^#>(\w+):$", line)
++       r=re.match("^#>(\\w+):$", line)
+        if r:
+           resume_tag=r.group(1)
+     #global resumeStage
+@@ -257,7 +257,7 @@ def doResume(odir):
+       best_stage = r0stage
+       best_argv = r0argv[:]
+   if best_stage == _stage_alldone:
+-     print >> sys.stderr, "Nothing to resume."
++     print("Nothing to resume.", file=sys.stderr)
+      sys.exit(1)
+ 
+   global resumeStage
+@@ -266,7 +266,7 @@ def doResume(odir):
+ 
+ def setRunStage(stnum):
+    global currentStage
+-   print >> run_log, "#>"+stageNames[stnum]+":"
++   print("#>"+stageNames[stnum]+":", file=run_log)
+    currentStage = stnum
+ 
+ def init_logger(log_fname):
+@@ -1000,7 +1000,7 @@ class TopHatParams:
+                                          "b2-score-min=",
+                                          "b2-D=",
+                                          "b2-R="])
+-        except getopt.error, msg:
++        except getopt.error as msg:
+             raise Usage(msg)
+ 
+         self.splice_constraints.parse_options(opts)
+@@ -1023,7 +1023,7 @@ class TopHatParams:
+         # option processing
+         for option, value in opts:
+             if option in ("-v", "--version"):
+-                print "TopHat v%s" % (get_version())
++                print("TopHat v%s" % (get_version()))
+                 sys.exit(0)
+             if option in ("-h", "--help"):
+                 raise Usage(use_message)
+@@ -1224,9 +1224,9 @@ def th_log(out_str):
+        tophat_logger.info(out_str)
+ 
+ def th_logp(out_str=""):
+-  print >> sys.stderr, out_str
++  print(out_str, file=sys.stderr)
+   if tophat_log:
+-        print >> tophat_log, out_str
++        print(out_str, file=tophat_log)
+ 
+ def die(msg=None):
+   if msg is not None:
+@@ -1253,7 +1253,7 @@ def prepare_output_dir():
+     else:
+         try:
+           os.makedirs(tmp_dir)
+-        except OSError, o:
++        except OSError as o:
+           die("\nError creating directory %s (%s)" % (tmp_dir, o))
+ 
+ 
+@@ -1292,7 +1292,7 @@ def check_bowtie_index(idx_prefix, is_bowtie2, add="(genome)"):
+     bwtbotherr = "\tFound both Bowtie1 and Bowtie2 indexes."
+     if check_bowtie_index_for_ext(idx_prefix, idxext):
+         if os.path.exists(idx_prefix + ".1.ebwt") and os.path.exists(idx_prefix + ".1.bt2"):
+-            print >> sys.stderr, bwtbotherr
++            print(bwtbotherr, file=sys.stderr)
+         return
+     else:
+         if is_bowtie2:
+@@ -1312,13 +1312,13 @@ def check_bowtie_index(idx_prefix, is_bowtie2, add="(genome)"):
+         idx_in_bt_idx_path = os.path.join(bwtidx_env, idx_prefix)
+         if check_bowtie_index_for_ext(idx_in_bt_idx_path, idxext):
+             if os.path.exists(bwtidx_env + idx_prefix + ".1.ebwt") and os.path.exists(bwtidx_env + idx_prefix + ".1.bt2"):
+-                print >> sys.stderr, bwtbotherr
++                print(bwtbotherr, file=sys.stderr)
+             return
+         else:
+             if is_bowtie2:
+                 if check_bowtie_index_for_ext(idx_in_bt_idx_path, "bt2l"):
+                     if os.path.exists(bwtidx_env + idx_prefix + ".1.ebwt") and os.path.exists(bwtidx_env + idx_prefix + ".1.bt2l"):
+-                        print >> sys.stderr, bwtbotherr
++                        print(bwtbotherr, file=sys.stderr)
+                     return
+             die(bwtidxerr)
+ 
+@@ -1350,7 +1350,7 @@ def bowtie_idx_to_fa(idx_prefix, is_bowtie2):
+            die(fail_str+"Error: bowtie-inspect returned an error\n"+log_tail(logging_dir + "bowtie_inspect_recons.log"))
+ 
+     # Bowtie not found
+-    except OSError, o:
++    except OSError as o:
+         if o.errno == errno.ENOTDIR or o.errno == errno.ENOENT:
+             die(fail_str+"Error: bowtie-inspect not found on this system.  Did you forget to include it in your PATH?")
+ 
+@@ -1406,7 +1406,7 @@ def get_bowtie_version():
+         while len(bowtie_version)<4:
+             bowtie_version.append(0)
+         return bowtie_version
+-    except OSError, o:
++    except OSError as o:
+        errmsg=fail_str+str(o)+"\n"
+        if o.errno == errno.ENOTDIR or o.errno == errno.ENOENT:
+            errmsg+="Error: bowtie not found on this system"
+@@ -1471,7 +1471,7 @@ def get_index_sam_header(params, idx_prefix, name = ""):
+             else:
+                 preamble.append(line)
+ 
+-        print >> bowtie_sam_header_file, "@HD\tVN:1.0\tSO:coordinate"
++        print("@HD\tVN:1.0\tSO:coordinate", file=bowtie_sam_header_file)
+         if read_params.read_group_id and read_params.sample_id:
+             rg_str = "@RG\tID:%s\tSM:%s" % (read_params.read_group_id,
+                                             read_params.sample_id)
+@@ -1490,20 +1490,20 @@ def get_index_sam_header(params, idx_prefix, name = ""):
+             if read_params.seq_platform:
+                 rg_str += "\tPL:%s" % read_params.seq_platform
+ 
+-            print >> bowtie_sam_header_file, rg_str
++            print(rg_str, file=bowtie_sam_header_file)
+ 
+         if not params.keep_fasta_order:
+             sq_dict_lines.sort(lambda x,y: cmp(x[0],y[0]))
+ 
+         for [name, line] in sq_dict_lines:
+-            print >> bowtie_sam_header_file, line
+-        print >> bowtie_sam_header_file, "@PG\tID:TopHat\tVN:%s\tCL:%s" % (get_version(), run_cmd)
++            print(line, file=bowtie_sam_header_file)
++        print("@PG\tID:TopHat\tVN:%s\tCL:%s" % (get_version(), run_cmd), file=bowtie_sam_header_file)
+ 
+         bowtie_sam_header_file.close()
+         temp_sam_header_file.close()
+         return bowtie_sam_header_filename
+ 
+-    except OSError, o:
++    except OSError as o:
+        errmsg=fail_str+str(o)+"\n"
+        if o.errno == errno.ENOTDIR or o.errno == errno.ENOENT:
+            errmsg+="Error: bowtie not found on this system"
+@@ -1559,7 +1559,7 @@ def get_samtools_version():
+             samtools_version_arr.append(0)
+ 
+         return version_match.group(), samtools_version_arr
+-    except OSError, o:
++    except OSError as o:
+        errmsg=fail_str+str(o)+"\n"
+        if o.errno == errno.ENOTDIR or o.errno == errno.ENOENT:
+            errmsg+="Error: samtools not found on this system"
+@@ -1668,7 +1668,7 @@ class FastxReader:
+            if seq_len != qstrlen :
+               raise ValueError("Length mismatch between sequence and quality strings "+ \
+                                 "for %s (%i vs %i)." % (seqid, seq_len, qstrlen))
+-    except ValueError, err:
++    except ValueError as err:
+         die("\nError encountered parsing file "+self.fname+":\n "+str(err))
+     #return the record
+     self.numrecords+=1
+@@ -1705,7 +1705,7 @@ class FastxReader:
+        if seq_len < 3:
+           raise ValueError("Read %s too short (%i)." \
+                            % (seqid, seq_len))
+-    except ValueError, err:
++    except ValueError as err:
+         die("\nError encountered parsing fasta file "+self.fname+"\n "+str(err))
+     #return the record and continue
+     self.numrecords+=1
+@@ -1744,7 +1744,7 @@ def fa_write(fhandle, seq_id, seq):
+     """
+     line_len = 60
+     fhandle.write(">" + seq_id + "\n")
+-    for i in xrange(len(seq) / line_len + 1):
++    for i in range(len(seq) / line_len + 1):
+         start = i * line_len
+         #end = (i+1) * line_len if (i+1) * line_len < len(seq) else len(seq)
+         if (i+1) * line_len < len(seq):
+@@ -2085,7 +2085,7 @@ def prep_reads(params, l_reads_list, l_quals_list, r_reads_list, r_quals_list, p
+     if not use_bam: shell_cmd += ' >' +kept_reads_filename
+     retcode = None
+     try:
+-        print >> run_log, shell_cmd
++        print(shell_cmd, file=run_log)
+         if do_use_zpacker:
+             filter_proc = subprocess.Popen(prep_cmd,
+                                   stdout=subprocess.PIPE,
+@@ -2108,7 +2108,7 @@ def prep_reads(params, l_reads_list, l_quals_list, r_reads_list, r_quals_list, p
+         if retcode:
+             die(fail_str+"Error running 'prep_reads'\n"+log_tail(log_fname))
+ 
+-    except OSError, o:
++    except OSError as o:
+         errmsg=fail_str+str(o)
+         die(errmsg+"\n"+log_tail(log_fname))
+ 
+@@ -2197,7 +2197,7 @@ def bowtie(params,
+               os.remove(unmapped_reads_fifo)
+          try:
+               os.mkfifo(unmapped_reads_fifo)
+-         except OSError, o:
++         except OSError as o:
+               die(fail_str+"Error at mkfifo("+unmapped_reads_fifo+'). '+str(o))
+ 
+     # Launch Bowtie
+@@ -2231,7 +2231,7 @@ def bowtie(params,
+              unm_zipcmd=[ params.system_params.zipper ]
+              unm_zipcmd.extend(params.system_params.zipper_opts)
+              unm_zipcmd+=['-c']
+-             print >> run_log, ' '.join(unm_zipcmd)+' < '+ unmapped_reads_fifo + ' > '+ unmapped_reads_out + ' & '
++             print(' '.join(unm_zipcmd)+' < '+ unmapped_reads_fifo + ' > '+ unmapped_reads_out + ' & ', file=run_log)
+              fifo_pid=os.fork()
+              if fifo_pid==0:
+                  def on_sig_exit(sig, func=None):
+@@ -2440,7 +2440,7 @@ def bowtie(params,
+             bowtie_proc.stdout.close()
+             pipeline_proc = fix_order_proc
+ 
+-        print >> run_log, shellcmd
++        print(shellcmd, file=run_log)
+         retcode = None
+         if pipeline_proc:
+             pipeline_proc.communicate()
+@@ -2457,7 +2457,7 @@ def bowtie(params,
+                   pass
+         if retcode:
+             die(fail_str+"Error running:\n"+shellcmd)
+-    except OSError, o:
++    except OSError as o:
+         die(fail_str+"Error: "+str(o))
+ 
+     # Success
+@@ -2491,7 +2491,7 @@ def get_gtf_juncs(gff_annotation):
+ 
+     gtf_juncs_cmd=[prog_path("gtf_juncs"), gff_annotation]
+     try:
+-        print >> run_log, " ".join(gtf_juncs_cmd), " > "+gtf_juncs_out_name
++        print(" ".join(gtf_juncs_cmd), " > "+gtf_juncs_out_name, file=run_log)
+         retcode = subprocess.call(gtf_juncs_cmd,
+                                   stderr=gtf_juncs_log,
+                                   stdout=gtf_juncs_out)
+@@ -2503,7 +2503,7 @@ def get_gtf_juncs(gff_annotation):
+             die(fail_str+"Error: GTF junction extraction failed with err ="+str(retcode))
+ 
+     # cvg_islands not found
+-    except OSError, o:
++    except OSError as o:
+        errmsg=fail_str+str(o)+"\n"
+        if o.errno == errno.ENOTDIR or o.errno == errno.ENOENT:
+            errmsg+="Error: gtf_juncs not found on this system"
+@@ -2528,13 +2528,13 @@ def build_juncs_bwt_index(is_bowtie2, external_splice_prefix, color):
+     bowtie_build_cmd += [external_splice_prefix + ".fa",
+                          external_splice_prefix]
+     try:
+-        print >> run_log, " ".join(bowtie_build_cmd)
++        print(" ".join(bowtie_build_cmd), file=run_log)
+         retcode = subprocess.call(bowtie_build_cmd,
+                                  stdout=bowtie_build_log)
+ 
+         if retcode != 0:
+             die(fail_str+"Error: Splice sequence indexing failed with err ="+ str(retcode))
+-    except OSError, o:
++    except OSError as o:
+         errmsg=fail_str+str(o)+"\n"
+         if o.errno == errno.ENOTDIR or o.errno == errno.ENOENT:
+             errmsg+="Error: bowtie-build not found on this system"
+@@ -2580,7 +2580,7 @@ def build_juncs_index(is_bowtie2,
+                     fusions_file_list,
+                     reference_fasta]
+     try:
+-        print >> run_log, " ".join(juncs_db_cmd) + " > " + external_splices_out_name
++        print(" ".join(juncs_db_cmd) + " > " + external_splices_out_name, file=run_log)
+         retcode = subprocess.call(juncs_db_cmd,
+                                  stderr=juncs_db_log,
+                                  stdout=external_splices_out)
+@@ -2588,7 +2588,7 @@ def build_juncs_index(is_bowtie2,
+         if retcode != 0:
+             die(fail_str+"Error: Splice sequence retrieval failed with err ="+str(retcode))
+     # juncs_db not found
+-    except OSError, o:
++    except OSError as o:
+        errmsg=fail_str+str(o)+"\n"
+        if o.errno == errno.ENOTDIR or o.errno == errno.ENOENT:
+            errmsg+="Error: juncs_db not found on this system"
+@@ -2621,14 +2621,14 @@ def build_idx_from_fa(is_bowtie2, fasta_fname, out_dir, color):
+                        bwt_idx_path]
+     try:
+         th_log("Building Bowtie index from " + os.path.basename(fasta_fname))
+-        print >> run_log, " ".join(bowtie_idx_cmd)
++        print(" ".join(bowtie_idx_cmd), file=run_log)
+         retcode = subprocess.call(bowtie_idx_cmd,
+                                   stdout=open(os.devnull, "w"),
+                                   stderr=open(os.devnull, "w"))
+         if retcode != 0:
+             die(fail_str + "Error: Couldn't build bowtie index with err = "
+                 + str(retcode))
+-    except OSError, o:
++    except OSError as o:
+        errmsg=fail_str+str(o)+"\n"
+        if o.errno == errno.ENOTDIR or o.errno == errno.ENOENT:
+            errmsg+="Error: bowtie-build not found on this system"
+@@ -2639,7 +2639,7 @@ def build_idx_from_fa(is_bowtie2, fasta_fname, out_dir, color):
+ # Print out the sam header, embedding the user's specified library properties.
+ # FIXME: also needs SQ dictionary lines
+ def write_sam_header(read_params, sam_file):
+-    print >> sam_file, "@HD\tVN:1.0\tSO:coordinate"
++    print("@HD\tVN:1.0\tSO:coordinate", file=sam_file)
+     if read_params.read_group_id and read_params.sample_id:
+         rg_str = "@RG\tID:%s\tSM:%s" % (read_params.read_group_id,
+                                         read_params.sample_id)
+@@ -2658,8 +2658,8 @@ def write_sam_header(read_params, sam_file):
+         if read_params.seq_platform:
+             rg_str += "\tPL:%s" % read_params.seq_platform
+ 
+-        print >> sam_file, rg_str
+-    print >> sam_file, "@PG\tID:TopHat\tVN:%s\tCL:%s" % (get_version(), run_cmd)
++        print(rg_str, file=sam_file)
++    print("@PG\tID:TopHat\tVN:%s\tCL:%s" % (get_version(), run_cmd), file=sam_file)
+ 
+ # Write final TopHat output, via tophat_reports and wiggles
+ def compile_reports(params, sam_header_filename, ref_fasta, mappings, readfiles, gff_annotation):
+@@ -2727,7 +2727,7 @@ def compile_reports(params, sam_header_filename, ref_fasta, mappings, readfiles,
+         report_cmd.append(right_reads)
+ 
+     try:
+-        print >> run_log, " ".join(report_cmd)
++        print(" ".join(report_cmd), file=run_log)
+         report_proc=subprocess.call(report_cmd,
+                                             preexec_fn=subprocess_setup,
+                                             stderr=report_log)
+@@ -2754,7 +2754,7 @@ def compile_reports(params, sam_header_filename, ref_fasta, mappings, readfiles,
+                                    sorted_bam_parts[i]]
+ 
+                     sorted_bam_parts[i] += ".bam"
+-                    print >> run_log, " ".join(bamsort_cmd)
++                    print(" ".join(bamsort_cmd), file=run_log)
+ 
+                     if i + 1 < num_bam_parts:
+                         pid = os.fork()
+@@ -2791,7 +2791,7 @@ def compile_reports(params, sam_header_filename, ref_fasta, mappings, readfiles,
+             if params.report_params.convert_bam:
+                bammerge_cmd += ["%s.bam" % accepted_hits]
+                bammerge_cmd += bam_parts
+-               print >> run_log, " ".join(bammerge_cmd)
++               print(" ".join(bammerge_cmd), file=run_log)
+                subprocess.call(bammerge_cmd,
+                       stderr=open(logging_dir + "reports.merge_bam.log", "w"))
+             else: #make .sam
+@@ -2807,7 +2807,7 @@ def compile_reports(params, sam_header_filename, ref_fasta, mappings, readfiles,
+                               stderr=open(logging_dir + "accepted_hits_bam_to_sam.log", "w"))
+                merge_proc.stdout.close()
+                shellcmd = " ".join(bammerge_cmd) + " | " + " ".join(bam2sam_cmd)
+-               print >> run_log, shellcmd
++               print(shellcmd, file=run_log)
+                sam_proc.communicate()
+                retcode = sam_proc.returncode
+                if retcode:
+@@ -2820,7 +2820,7 @@ def compile_reports(params, sam_header_filename, ref_fasta, mappings, readfiles,
+                #just convert to .sam
+                bam2sam_cmd = [samtools_path, "view", "-h", accepted_hits+".bam"]
+                shellcmd = " ".join(bam2sam_cmd) + " > " + accepted_hits + ".sam"
+-               print >> run_log, shellcmd
++               print(shellcmd, file=run_log)
+                r = subprocess.call(bam2sam_cmd,
+                               stdout=open(accepted_hits + ".sam", "w"),
+                               stderr=open(logging_dir + "accepted_hits_bam_to_sam.log", "w"))
+@@ -2828,7 +2828,7 @@ def compile_reports(params, sam_header_filename, ref_fasta, mappings, readfiles,
+                   die(fail_str+"Error running: "+shellcmd)
+                os.remove(accepted_hits+".bam")
+ 
+-    except OSError, o:
++    except OSError as o:
+           die(fail_str+"Error: "+str(o)+"\n"+log_tail(log_fname))
+ 
+     try:
+@@ -2851,7 +2851,7 @@ def compile_reports(params, sam_header_filename, ref_fasta, mappings, readfiles,
+             merge_cmd=[prog_path("bam_merge"), "-Q",
+               "--sam-header", sam_header_filename, um_merged]
+             merge_cmd += um_parts
+-            print >> run_log, " ".join(merge_cmd)
++            print(" ".join(merge_cmd), file=run_log)
+             ret = subprocess.call( merge_cmd,
+                                    stderr=open(logging_dir + "bam_merge_um.log", "w") )
+             if ret != 0:
+@@ -2859,7 +2859,7 @@ def compile_reports(params, sam_header_filename, ref_fasta, mappings, readfiles,
+             for um_part in um_parts:
+                 os.remove(um_part)
+ 
+-    except OSError, o:
++    except OSError as o:
+           die(fail_str+"Error: "+str(o)+"\n"+log_tail(log_fname))
+ 
+     return junctions
+@@ -2945,15 +2945,15 @@ def split_reads(reads_filename,
+         while seg_num + 1 < len(offsets):
+             f = out_segf[seg_num].file
+             seg_seq = read_seq[last_seq_offset+color_offset:offsets[seg_num + 1]+color_offset]
+-            print >> f, "%s|%d:%d:%d" % (read_name,last_seq_offset,seg_num, len(offsets) - 1)
++            print("%s|%d:%d:%d" % (read_name,last_seq_offset,seg_num, len(offsets) - 1), file=f)
+             if color:
+-                print >> f, "%s%s" % (read_seq_temp[last_seq_offset], seg_seq)
++                print("%s%s" % (read_seq_temp[last_seq_offset], seg_seq), file=f)
+             else:
+-                print >> f, seg_seq
++                print(seg_seq, file=f)
+             if not fasta:
+                 seg_qual = read_qual[last_seq_offset:offsets[seg_num + 1]]
+-                print >> f, "+"
+-                print >> f, seg_qual
++                print("+", file=f)
++                print(seg_qual, file=f)
+             seg_num += 1
+             last_seq_offset = offsets[seg_num]
+ 
+@@ -3049,7 +3049,7 @@ def junctions_from_closures(params,
+                       left_maps,
+                       right_maps])
+     try:
+-        print >> run_log, ' '.join(juncs_cmd)
++        print(' '.join(juncs_cmd), file=run_log)
+         retcode = subprocess.call(juncs_cmd,
+                                  stderr=juncs_log)
+ 
+@@ -3057,7 +3057,7 @@ def junctions_from_closures(params,
+         if retcode != 0:
+            die(fail_str+"Error: closure-based junction search failed with err ="+str(retcode))
+     # cvg_islands not found
+-    except OSError, o:
++    except OSError as o:
+         if o.errno == errno.ENOTDIR or o.errno == errno.ENOENT:
+            th_logp(fail_str + "Error: closure_juncs not found on this system")
+         die(str(o))
+@@ -3088,8 +3088,8 @@ def junctions_from_segments(params,
+        return [juncs_out, insertions_out, deletions_out, fusions_out]
+     th_log("Searching for junctions via segment mapping")
+     if params.coverage_search == True:
+-        print >> sys.stderr, "\tCoverage-search algorithm is turned on, making this step very slow"
+-        print >> sys.stderr, "\tPlease try running TopHat again with the option (--no-coverage-search) if this step takes too much time or memory."
++        print("\tCoverage-search algorithm is turned on, making this step very slow", file=sys.stderr)
++        print("\tPlease try running TopHat again with the option (--no-coverage-search) if this step takes too much time or memory.", file=sys.stderr)
+ 
+     left_maps = ','.join(left_seg_maps)
+     log_fname = logging_dir + "segment_juncs.log"
+@@ -3111,7 +3111,7 @@ def junctions_from_segments(params,
+         right_maps = ','.join(right_seg_maps)
+         segj_cmd.extend([right_reads, right_reads_map, right_maps])
+     try:
+-        print >> run_log, " ".join(segj_cmd)
++        print(" ".join(segj_cmd), file=run_log)
+         retcode = subprocess.call(segj_cmd,
+                                  preexec_fn=subprocess_setup,
+                                  stderr=segj_log)
+@@ -3121,7 +3121,7 @@ def junctions_from_segments(params,
+            die(fail_str+"Error: segment-based junction search failed with err ="+str(retcode)+"\n"+log_tail(log_fname))
+ 
+     # cvg_islands not found
+-    except OSError, o:
++    except OSError as o:
+         if o.errno == errno.ENOTDIR or o.errno == errno.ENOENT:
+            th_logp(fail_str + "Error: segment_juncs not found on this system")
+         die(str(o))
+@@ -3191,12 +3191,12 @@ def join_mapped_segments(params,
+         align_cmd.append(spliced_seg_maps)
+ 
+     try:
+-        print >> run_log, " ".join(align_cmd)
++        print(" ".join(align_cmd), file=run_log)
+         ret = subprocess.call(align_cmd,
+                                   stderr=align_log)
+         if ret:
+           die(fail_str+"Error running 'long_spanning_reads':"+log_tail(log_fname))
+-    except OSError, o:
++    except OSError as o:
+         die(fail_str+"Error: "+str(o))
+ 
+ # This class collects spliced and unspliced alignments for each of the
+@@ -3234,13 +3234,13 @@ def m2g_convert_coords(params, sam_header_filename, gtf_fname, reads, out_fname)
+ 
+     try:
+         th_log("Converting " + fbasename + " to genomic coordinates (map2gtf)")
+-        print >> run_log, " ".join(m2g_cmd) + " > " + m2g_log
++        print(" ".join(m2g_cmd) + " > " + m2g_log, file=run_log)
+         ret = subprocess.call(m2g_cmd,
+                               stdout=open(m2g_log, "w"),
+                               stderr=open(m2g_err, "w"))
+         if ret != 0:
+             die(fail_str + " Error: map2gtf returned an error")
+-    except OSError, o:
++    except OSError as o:
+         err_msg = fail_str + str(o)
+         die(err_msg + "\n")
+ 
+@@ -3269,17 +3269,17 @@ def gtf_to_fasta(params, trans_gtf, genome, out_basename):
+     g2f_err = logging_dir + "g2f.err"
+ 
+     try:
+-        print >> run_log, " ".join(g2f_cmd)+" > " + g2f_log
++        print(" ".join(g2f_cmd)+" > " + g2f_log, file=run_log)
+         ret = subprocess.call(g2f_cmd,
+                               stdout = open(g2f_log, "w"),
+                               stderr = open(g2f_err, "w"))
+         if ret != 0:
+             die(fail_str + " Error: gtf_to_fasta returned an error.")
+-    except OSError, o:
++    except OSError as o:
+         err_msg = fail_str + str(o)
+         die(err_msg + "\n")
+     fver = open(out_fver, "w", 0)
+-    print >> fver, "%d %d %d" % (GFF_T_VER, os.path.getsize(trans_gtf), os.path.getsize(out_fname))
++    print("%d %d %d" % (GFF_T_VER, os.path.getsize(trans_gtf), os.path.getsize(out_fname)), file=fver)
+     fver.close()
+     return out_fname
+ 
+@@ -3391,7 +3391,7 @@ def get_preflt_data(params, ri, target_reads, out_mappings, out_unmapped):
+     shell_cmd += ' >' + out_unmapped
+  retcode=0
+  try:
+-     print >> run_log, shell_cmd
++     print(shell_cmd, file=run_log)
+      if do_use_zpacker:
+          prep_proc = subprocess.Popen(prep_cmd,
+                                stdout=subprocess.PIPE,
+@@ -3414,7 +3414,7 @@ def get_preflt_data(params, ri, target_reads, out_mappings, out_unmapped):
+      if retcode:
+          die(fail_str+"Error running 'prep_reads'\n"+log_tail(log_fname))
+ 
+- except OSError, o:
++ except OSError as o:
+      errmsg=fail_str+str(o)
+      die(errmsg+"\n"+log_tail(log_fname))
+  if not out_bam: um_reads.close()
+@@ -3809,7 +3809,7 @@ def get_version():
+    return "2.1.2"
+ 
+ def mlog(msg):
+-  print >> sys.stderr, "[DBGLOG]:"+msg
++  print("[DBGLOG]:"+msg, file=sys.stderr)
+ 
+ def test_input_file(filename):
+     try:
+@@ -3835,7 +3835,7 @@ def validate_transcriptome(params):
+      inf.close()
+      dlst = fline.split()
+      if len(dlst)>2:
+-         tver, tgff_size, tfa_size = map(lambda f: int(f), dlst)
++         tver, tgff_size, tfa_size = [int(f) for f in dlst]
+    else:
+      return False
+    tlst=tfa+".tlst"
+@@ -3899,7 +3899,7 @@ def main(argv=None):
+         run_log = open(logging_dir + "run.log", "w", 0)
+         global run_cmd
+         run_cmd = " ".join(run_argv)
+-        print >> run_log, run_cmd
++        print(run_cmd, file=run_log)
+ 
+         check_bowtie(params)
+         check_samtools()
+@@ -4097,7 +4097,7 @@ def main(argv=None):
+         th_log("A summary of the alignment counts can be found in %salign_summary.txt" % output_dir)
+         th_log("Run complete: %s elapsed" %  formatTD(duration))
+ 
+-    except Usage, err:
++    except Usage as err:
+         th_logp(sys.argv[0].split("/")[-1] + ": " + str(err.msg))
+         th_logp("    for detailed help see http://ccb.jhu.edu/software/tophat/manual.shtml")
+         return 2
