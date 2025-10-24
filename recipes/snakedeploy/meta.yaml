@@ -1,4 +1,4 @@
-{% set version = "0.9.1" %}
+{% set version = "0.14.0" %}
 
 package:
   name: snakedeploy
@@ -6,14 +6,14 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/snakedeploy/snakedeploy-{{ version }}.tar.gz
-  sha256: 3ce399ae67f991647f62ff67a73649cbf786842d888c17a93b1f98b34bfb98e5
+  sha256: 7072f859b2a8fc07ed5dff7ac720c7d4d128ae93c4b07666580e50147aca537d
 
 build:
   number: 0
   noarch: python
   entry_points:
     - snakedeploy=snakedeploy.client:main
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --use-pep517 -vvv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
     - {{ pin_subpackage('snakedeploy', max_pin="x.x") }}
 
@@ -21,31 +21,32 @@ requirements:
   host:
     - pip
     - pytest-runner
-    - python >=3.8
+    - python >=3.11,<3.13
+    - hatchling
   run:
-    - python >=3.8
-    - jinja2
-    - pandas
-    - requests
-    - pyyaml
-    - pygithub
-    - reretry
-    - packaging
+    - python >=3.11,<3.13
+    - setuptools
+    - jinja2 >=3.1.6,<4
+    - packaging >=25.0,<26
+    - pandas >=2.3.1,<3
+    - pygithub >=2.6.1,<3
+    - pyyaml >=6.0.2,<7
+    - requests >=2.32.4,<3
+    - reretry >=0.11.8,<1
+    - toml >=0.10.2,<1
 
 test:
   imports:
     - snakedeploy
   commands:
-    - pip check
     - snakedeploy --help
-  requires:
-    - pip
 
 about:
   home: https://github.com/snakemake/snakedeploy
-  summary: Helper for deploying published Snakemake pipelines
+  summary: "Helper for deploying published Snakemake pipelines."
   license: MPL-2.0
   license_file: LICENSE
+  dev_url: https://github.com/snakemake/snakedeploy
 
 extra:
   recipe-maintainers:

@@ -1,0 +1,52 @@
+{% set name = "longcallr_nn" %}
+{% set version = "0.0.2" %}
+{% set hash = "63537f858e6e2ce777ad1f5d4957c79dae1b397457a9f487614a17e8e283c7b7" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/huangnengCSU/longcallR-nn/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: {{ hash }}
+ 
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - longcallR_nn=longcallR_nn.longcallR_nn:main
+  script:
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.9,<3.11
+  run:
+    - python >=3.9,<3.11
+    - requests
+    - numpy >=1.21.0
+    - pyyaml >=5.3
+    - pysam >=0.16
+    - tensorboardX >=2.2
+    - pytorch >=1.13
+    - torchvision >=0.14
+    - torchmetrics >=0.9
+
+test:
+  commands:
+    - longcallR_nn --help
+
+about:
+  home: "https://github.com/huangnengCSU/longcallR-nn"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "longcallR_nn is a variant caller specifically designed for long-read RNA-seq data utilizing a ResNet model."
+  dev_url: "https://github.com/huangnengCSU/longcallR-nn"
+
+extra:
+  recipe-maintainers:
+    - huangnengCSU

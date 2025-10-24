@@ -1,0 +1,58 @@
+{% set name = "pycoverm" %}
+{% set version = "0.6.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: e5e96e55ee2756d0cbd1db383e136cd2c1e232204f25b015ce956b7a6f4ddee2
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('pycoverm', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - {{ compiler("cxx") }}
+    - {{ compiler("rust") }}
+    - {{ stdlib("c") }}
+    - python
+    - maturin >=1.7,<2
+    - make
+    - cmake
+    - cargo-bundle-licenses
+  host:
+    - pip
+    - maturin >=1.7,<2
+    - python
+  run:
+    - python
+    - numpy >=1.16,<3
+
+test:
+  files:
+    - test.bam
+  imports:
+    - pycoverm
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/apcamargo/pycoverm
+  license: GPL-3.0
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Python bindings for CoverM
+
+extra:
+  additional-platforms:
+    - osx-arm64
+  skip-lints:
+    - version_constraints_missing_whitespace  # see https://github.com/bioconda/bioconda-recipes/issues/51185

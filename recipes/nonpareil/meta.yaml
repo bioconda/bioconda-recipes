@@ -1,5 +1,5 @@
-{% set version = "3.4.1" %}
-{% set sha256 = "a6ce050ca263364799c46b3796a0d1a5ed067631ac5944d013ffa7c8651949ee" %}
+{% set version = "3.5.5" %}
+{% set sha256 = "a1896a3ecf1394cbbc685de8dcb0eef04aa089e5ad6badf51d0eaa89b4b3bf1e" %}
 
 package:
   name: nonpareil
@@ -10,25 +10,42 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 4
-  script: |
-    make cpp="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
-    make prefix="${PREFIX}" install
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('nonpareil', max_pin="x") }}
+  script:
+    - mkdir -p "${PREFIX}/bin"
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+    - export CXXFLAGS="${CXXFLAGS} -O3"
+    - make -j"${CPU_COUNT}" cpp="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}" nonpareil
+    - make prefix="${PREFIX}" install
+    - install -v -m 0755 utils/NonpareilCurves.R "${PREFIX}/bin"
 
 requirements:
   build:
     - {{ compiler('cxx') }}
   host:
     - r-base
+    - zlib
   run:
     - r-base
+    - r-optparse
+    - r-jsonlite
 
 test:
   commands:
     - nonpareil -h 2>&1 | grep "Nonpareil"
+    - NonpareilCurves.R -h
 
 about:
-  home: http://nonpareil.readthedocs.io/
-  license: Artistic License 2.0
-  summary: Estimate average coverage and create curves for metagenomic datasets
-  dev_url: https://github.com/lmrodriguezr/nonpareil
+  home: "https://github.com/lmrodriguezr/nonpareil"
+  license: "Artistic License 2.0"
+  summary: "Estimate average coverage and create curves for metagenomic datasets."
+  dev_url: "https://github.com/lmrodriguezr/nonpareil"
+  doc_url: "https://nonpareil.readthedocs.io"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

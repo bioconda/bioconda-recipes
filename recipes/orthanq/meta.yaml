@@ -1,58 +1,69 @@
-{% set version = "1.2.0" %}
+{% set name = "orthanq" %}
+{% set version = "1.17.0" %}
 
 package:
-  name: orthanq
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 0
-  run_exports:
-    - {{ pin_subpackage("orthanq", max_pin="x") }}
 
 source:
   url: https://github.com/orthanq/orthanq/archive/v{{ version }}.tar.gz
-  sha256: dbb7e68ef2c16d23aad479978b5403ae652e05a0b37635f55b59c61e08197477
+  sha256: 6446f717854b3c69c5725b98827e14f08b6e9ec15cfdc2a06f8311d3dd5914d5
+
+build:
+  number: 0
+  skip: True  # [py < 310 or (aarch64 and py < 311)]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('rust') }}
-    - rust >=1.54
-    - pkg-config
+    - cargo-bundle-licenses
     - make
     - cmake
-    - perl-findbin
+    - pkg-config
+    - clangdev
+    #datavzrd dependencies
+    - nodejs >=16
+    - pnpm
   host:
+    - python
+    - pkg-config
     - gsl
     - libcblas
-    - openssl
+    - openssl  # [linux]
+    - coincbc
+    - fontconfig
     - zlib
     - bzip2
     - xz
-    - clangdev
-    - coincbc
-    - hdf5 =1.10.5
-    - fontconfig
   run:
+    - python
     - gsl
-    - libcblas
-    - openssl
-    - zlib
-    - bzip2
-    - xz
-    - clangdev
-    - coincbc
-    - hdf5 =1.10.5
-    - fontconfig
+    - openssl  # [linux]
+    - varlociraptor ==8.7.3
+    - samtools ==1.20
+    - vg ==1.63.1  # [linux]
+    - htslib
+    - minimap2
+    - bwa
 
 test:
   commands:
     - orthanq -h
 
 about:
-  home: https://github.com/orthanq/orthanq
+  home: "https://github.com/orthanq/orthanq"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: Uncertainty aware HLA typing and general haplotype quantification
+  summary: "Uncertainty aware HLA typing and general haplotype quantification."
+  dev_url: "https://github.com/orthanq/orthanq"
+  doc_url: "https://orthanq.github.io"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

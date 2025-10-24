@@ -1,0 +1,48 @@
+{% set name = "meta_eukaryome_detect" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 0199ad179d36d3683b8122f41b1e5db6c5d7d94324c3fe5187d576fafdfa2cdc
+
+build:
+  number: 0
+  entry_points:
+    - meta_eukaryome_detect = meta_eukaryome_detect.meta_eukaryome_detect:main
+  script: "{{ PYTHON }} -m pip install . -vv --ignore-installed --no-deps"
+  noarch: python
+  run_exports:
+    {{ pin_subpackage(name, max_pin="x") }}
+    
+requirements:
+  host:
+    - pip
+    - python >=3.11
+    - poetry
+  run:
+    - ngless
+    - samtools
+    - pandas >=2.0
+    - requests
+test:
+  imports:
+    - meta_eukaryome_detect
+  commands:
+    - meta_eukaryome_detect --help
+
+about:
+  home: "https://github.com/grp-bork/meta_eukaryome_detect"
+  license: "MIT License"
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Pathogen, Parasite, Eukaryote and Virus detection in metagenomes."
+  doc_url: "https://grp-bork.embl-community.io/grp-microbiome-astrology/meta_eukaryome_detect/"
+  dev_url: "https://github.com/grp-bork/meta_eukaryome_detect"
+
+extra:
+  recipe-maintainers:
+    - fullama

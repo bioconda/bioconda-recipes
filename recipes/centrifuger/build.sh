@@ -1,12 +1,15 @@
 #!/bin/bash
-export LDFLAGS="-L$PREFIX/lib"
+
+set -xe
+
 export CPATH=${PREFIX}/include
+
+if [ $(uname -m) == "x86_64" ]; then
+    CXXFLAGS="${CXXFLAGS} -msse4.2"
+fi
 
 mkdir -p $PREFIX/bin
 
-make CXX=$CXX RELEASE_FLAGS="$CXXFLAGS"
-chmod +x centrifuger-download
-chmod +x centrifuger-kreport
-chmod +x centrifuger-inspect
+make -j ${CPU_COUNT} CXX="$CXX" CXXFLAGS="$CXXFLAGS" LINKPATH="-L${PREFIX}/lib"
 
-cp {centrifuger,centrifuger-build,centrifuger-download,centrifuger-kreport,centrifuger-inspect} $PREFIX/bin
+install -m 0755 {centrifuger,centrifuger-build,centrifuger-download,centrifuger-kreport,centrifuger-inspect,centrifuger-quant} $PREFIX/bin

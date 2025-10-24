@@ -1,38 +1,49 @@
-{% set version = "0.16.2" %}
+{% set name = "simpleaf" %}
+{% set version = "0.19.5" %}
 
 package:
-  name: simpleaf
+  name: {{ name }}
   version: {{ version }}
 
 build:
   number: 0
   run_exports:
     - {{ pin_subpackage("simpleaf", max_pin="x.x") }}
-#  script: cargo install --path . --root ${PREFIX}
 
 source:
   url: https://github.com/COMBINE-lab/simpleaf/archive/v{{ version }}.tar.gz
-  sha256: e35fb2773b3f4f158d23ebc6d0b51aed29ea54206a3c57a56931325e67add720
+  sha256: de18139dc3e4c2c81a033f3e97cbf05342fc80f962bcb5a0c0372f5d27d0c39c
 
 requirements:
   build:
-    - rust >=1.73
     - autoconf
+    - automake
+    - libtool
     - make
+    - cmake
     - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
     - pkg-config
-  host:
   run:
-    - alevin-fry >=0.8.1
+    - alevin-fry >=0.11.2
     - salmon >=1.10.1
-    - piscem >=0.7.0 # [not osx-arm64]
+    - piscem >=0.12.2
 
 test:
   commands:
     - simpleaf --help || test $? -eq 1
 
 about:
-  home: https://github.com/COMBINE-lab/simpleaf
-  license: BSD 3-Clause
+  home: "https://github.com/COMBINE-lab/simpleaf"
+  license: "BSD-3-Clause"
+  license_family: BSD
   license_file: LICENSE
-  summary: A rust framework to make using alevin-fry even simpler.
+  summary: "A rust framework to make using alevin-fry even simpler."
+  dev_url: "https://github.com/COMBINE-lab/simpleaf"
+  doc_url: "https://simpleaf.readthedocs.io/en/latest"
+
+extra:
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64

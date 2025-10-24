@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -xe
+
 mkdir -p build
 cd build
 cmake \
@@ -8,5 +11,5 @@ cmake \
     -DHTSLIB_USE_LZMA=1 \
     -DHTSLIB_USE_BZ2=1 \
     ..
-make
+make -j"${CPU_COUNT}"
 make install

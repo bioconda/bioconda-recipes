@@ -1,5 +1,5 @@
 {% set name = "pyani" %}
-{% set version = "0.2.12" %}
+{% set version = "0.2.13.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,29 +7,35 @@ package:
 
 source:
   url: https://github.com/widdowquinn/{{ name|lower }}/archive/v{{ version }}.tar.gz
-  sha256: 31bac50843d3af54cf273a4388f4f87bffb0688082e4e3179ea1640aa208626d
+  sha256: 98c2bb205eb286bd53b27d0deacd01ad25f00dd2483a91ba19765203af03d9ef
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('pyani', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >3
-    - setuptools
-
+    - python >=3.7
+    - pip
   run:
-    - python >3
+    - python >=3.7
     - biopython
-    - matplotlib-base
-    - pandas
-    - seaborn
-    - scipy
-    - numpy
-    - mummer
     - blast
     - blast-legacy  # [not osx]
+    - intervaltree
+    - matplotlib-base
+    - mummer
+    - namedlist
+    - networkx
+    - numpy
+    - pandas
+    - scipy
+    - seaborn-base
+    - sqlalchemy
+    - tqdm
 
 test:
   imports:
@@ -39,8 +45,15 @@ test:
     - genbank_get_genomes_by_taxon.py -h
 
 about:
-  home: http://widdowquinn.github.io/pyani/
+  home: "https://github.com/widdowquinn/pyani"
   license: MIT
   license_file: LICENSE
   summary: 'pyani provides a package and script for calculation of genome-scale average nucleotide identity.'
   license_family: MIT
+  dev_url: "https://github.com/widdowquinn/pyani"
+  doc_url: "https://widdowquinn.github.io/pyani"
+
+extra:
+  identifiers:
+    - doi:10.1039/C5AY02550H
+    - biotools:pyani

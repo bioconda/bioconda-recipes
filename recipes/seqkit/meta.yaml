@@ -1,31 +1,47 @@
-{% set version = "2.7.0" %}
+{% set name = "seqkit" %}
+{% set version = "2.10.1" %}
 
 package:
-  name: seqkit
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/shenwei356/seqkit/releases/download/v{{ version }}/seqkit_darwin_amd64.tar.gz # [osx]
-  md5: 2d0bd16060b100c90abd216eaf6c9947 # [osx]
-
-  url: https://github.com/shenwei356/seqkit/releases/download/v{{ version }}/seqkit_linux_amd64.tar.gz # [linux]
-  md5: 78311f53ecebbcd4acd5455ae46debbe # [linux]
+  url: https://github.com/shenwei356/seqkit/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e3897f9ccd9503d10c1a8d67d9790ee3e4c91da369e14b716ea7c4e8adba55ee
 
 build:
   number: 0
-  skip: False
   run_exports:
-    - {{ pin_subpackage("seqkit", max_pin="x.x") }}
+    - {{ pin_subpackage('seqkit', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('go') }}
+    - go-licenses
+
 test:
   commands:
     - seqkit version --help
 
 about:
-  home: https://github.com/shenwei356/seqkit
-  summary: a cross-platform and ultrafast toolkit for FASTA/Q file manipulation
+  home: "https://github.com/shenwei356/seqkit"
+  summary: "A cross-platform and ultrafast toolkit for FASTA/Q file manipulation."
   license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: "https://github.com/shenwei356/seqkit"
+  doc_url: "https://bioinf.shenwei.me/seqkit"
 
 extra:
-  skip-lints:
-    - should_be_noarch_generic
-    - should_not_be_noarch_source
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:seqkit
+    - usegalaxy-eu:seqkit_head
+    - usegalaxy-eu:seqkit_stats
+    - usegalaxy-eu:seqkit_fx2tab
+    - usegalaxy-eu:seqkit_locate
+    - usegalaxy-eu:seqkit_translate
+    - usegalaxy-eu:seqkit_sort
+    - doi:10.1371/journal.pone.0163962

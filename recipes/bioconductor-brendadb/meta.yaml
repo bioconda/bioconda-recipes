@@ -1,29 +1,35 @@
-{% set version = "1.16.0" %}
+{% set version = "1.20.0" %}
 {% set name = "brendaDb" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 35e521feef3f87b0122ac00ad0deae5b
+about:
+  description: R interface for importing and analyzing enzyme information from the BRENDA database.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: The BRENDA Enzyme Database
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-brendadb", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: testthat, BiocStyle, knitr, rmarkdown, devtools
 # SystemRequirements: C++11
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - 'bioconductor-biocfilecache >=2.10.0,<2.11.0'
-    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
     - r-base
     - r-crayon
     - r-dplyr
@@ -38,8 +44,8 @@ requirements:
     - libblas
     - liblapack
   run:
-    - 'bioconductor-biocfilecache >=2.10.0,<2.11.0'
-    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
     - r-base
     - r-crayon
     - r-dplyr
@@ -51,17 +57,16 @@ requirements:
     - r-stringr
     - r-tibble
     - r-tidyr
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: d60603b98537df788d499fbd84837974
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'The BRENDA Enzyme Database'
-  description: 'R interface for importing and analyzing enzyme information from the BRENDA database.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

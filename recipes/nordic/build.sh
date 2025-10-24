@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-cd ${SRC_DIR}"/MaBoSS-2.0/engine/src/"
+set -xe
 
-make install \
+cd ${SRC_DIR}"/MaBoSS-2.0/engine/src/"
+make -j"${CPU_COUNT}" install \
     CC="${CC}" \
     CXX="${CXX}" \
     CFLAGS="${CFLAGS}" \
@@ -10,14 +11,14 @@ make install \
     LDFLAGS="${LDFLAGS}" \
     prefix="${PREFIX}"
 
-cd ${SRC_DIR}"/mpbn-3.3/"
+cd ${SRC_DIR}"/mpbn-4.2/"
 
 "${PYTHON}" -m pip install --no-deps --no-build-isolation . -vvv
 
-cd ${SRC_DIR}"/bonesis-0.5.7/"
+cd ${SRC_DIR}"/bonesis-0.6.8.1/"
 
 "${PYTHON}" -m pip install --no-deps --no-build-isolation . -vvv
 
-cd ${SRC_DIR}"/NORDic-2.4.4/"
+cd ${SRC_DIR}"/NORDic-2.7.1/" || exit 1
 
 "${PYTHON}" -m pip install --no-deps --no-build-isolation . -vvv

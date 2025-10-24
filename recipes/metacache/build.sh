@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -xe
 
 export CPATH=${PREFIX}/include
 export CXXPATH=${PREFIX}/include
@@ -11,7 +11,7 @@ sed -i.bak "s|LDFLAGS       = -pthread|LDFLAGS       = -pthread -L$PREFIX/lib|" 
 
 mkdir -p $PREFIX/bin
 
-make
+make -j ${CPU_COUNT}
 chmod +x metacache download-ncbi-genomes download-ncbi-taxmaps download-ncbi-taxonomy metacache-build-refseq metacache-db-info metacache-partition-genomes summarize-results
 mv metacache $PREFIX/bin
 mv download-ncbi-genomes $PREFIX/bin
