@@ -1,0 +1,61 @@
+{% set name = "AMRfior" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0]|lower }}/{{ name|lower }}/amrfior-{{ version }}.tar.gz
+  sha256: 30230baf7d42e8c46131a7ec45a71fde9dcdc2049d621211cd3c3c3fadf47060
+
+build:
+  entry_points:
+    - AMRfior = AMRfior.AMRfior:main
+    - amrfior = AMRfior.AMRfior:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools
+    - wheel
+    - pip
+  run:
+    - python >=3.10
+    - bioconda::samtools >=1.19.2
+    - bioconda::blast >=2.17.0
+    - bioconda::diamond >=2.1.13
+    - bioconda::bowtie2 >=2.5.4
+    - bioconda::bwa >=0.7.19
+    - bioconda::minimap2 >=2.30
+
+test:
+  imports:
+    - AMRfior
+  commands:
+    - pip check
+    - AMRfior --help
+    - amrfior --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/NickJD/AMRfior
+  summary: 'AMRfíor: A customisable and multi-tool approach for antimicrobial resistance gene detection'
+  description: |
+    AMRfíor orchestrates multiple alignment tools (BLAST, DIAMOND, Bowtie2, BWA, Minimap2) 
+    to search DNA and protein sequences against AMR databases with transparent, 
+    coverage-based validation.
+  license: GPL-3.0-only
+  license_file: LICENSE
+  doc_url: https://github.com/NickJD/AMRfior
+  dev_url: https://github.com/NickJD/AMRfior
+
+extra:
+  recipe-maintainers:
+    - NickJD
