@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#find $PREFIX -name "pipeline.py" -path "*/transcriptm/*" -exec sed -i 's/print \(.*\)/print(\1)/' {} \; || true
+2to3 -w . || true
+find . -name "*.py" -exec python -m py_compile {} \; || true
 # copy setup.py to package directory
 cp ${RECIPE_DIR}/setup.py ${SRC_DIR}/setup.py
 python -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
