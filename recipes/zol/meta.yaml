@@ -1,5 +1,5 @@
 {% set name = "zol" %}
-{% set version = "1.6.1" %}
+{% set version = "1.6.11" %}
 
 package:
   name: {{ name|lower }}
@@ -7,11 +7,11 @@ package:
 
 source:
   url: https://github.com/Kalan-Lab/zol/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 802cd5765edc160fe8998095b5aea8fc465091947a60c4d8af1f0c10f7d55edd
+  sha256: 5e4a26bfadcac60cbcebae706944c4559bad196819aebf93e2a7cdc31ba09c92
 
 build:
   number: 0
-  skip: True  # [py != 310]
+  skip: True # [py <= 39]
   run_exports:
     - {{ pin_subpackage('zol', max_pin="x") }}
 
@@ -23,13 +23,13 @@ requirements:
     - setuptools
     - pip
   run:
-    - python
+    - python >=3.10
     - pip
+    - curl
     - setuptools
     - r-base
     - biopython
-    - muscle >=5.0,<=5.1  # [osx]
-    - muscle >=5.0  # [not osx]
+    - muscle =5.1
     - mcl
     - pal2nal >=14.1
     - hmmer >=3.0.0
@@ -43,10 +43,8 @@ requirements:
     - pandas >=2.0
     - xlsxwriter >=3.0.3
     - scikit-learn
-    - axel  # [not arm64]
     - hyphy >=2.5.14
     - pomegranate >=1.0.0
-    - cd-hit
     - r-ggplot2
     - r-cowplot
     - r-gggenes
@@ -59,6 +57,7 @@ requirements:
     - miniprot >=0.13  # [not x86_64]
     - bioconductor-ggtree
     - ete3
+    - legacy-cgi 
     - codoff
     - gravis
     - colour
@@ -66,6 +65,7 @@ requirements:
     - tqdm
     - aiofile
     - aiohttp
+    - peptides
 
 test:
   commands:
@@ -82,7 +82,7 @@ about:
   
 extra:
   additional-platforms:
-    - linux-aarch64
     - osx-arm64
+    - linux-aarch64
   recipe-maintainers:
     - raufs

@@ -4,7 +4,7 @@ export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-int-conversion -Wno-implicit-function-declaration"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -D_LIBCPP_DISABLE_AVAILABILITY"
 export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig"
 
 if [[ $(uname) == "Darwin" ]]; then
@@ -21,16 +21,19 @@ cmake -S . -B build -G Ninja \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DBUILD_SHARED_LIBS=ON \
     -DBUILD_TESTING=OFF \
-    -DCIFPP_DOWNLOAD_CCD=OFF \
+    -DCIFPP_DOWNLOAD_CCD=ON \
     -DCIFPP_INSTALL_UPDATE_SCRIPT=OFF \
     -DCIFPP_DATA_DIR='' \
     -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp" \
     ${CONFIG_ARGS}
 
 cmake --build build/ --target install -j "${CPU_COUNT}"
+install -m 644 "${SRC_DIR}/rsrc/components.cif" "${PREFIX}/share/libcifpp/components.cif"
 
 # activaton and deactivation scripts
 mkdir -p "${PREFIX}/etc/conda/activate.d"
 mkdir -p "${PREFIX}/etc/conda/deactivate.d"
-install -m 644 "${RECIPE_DIR}/activate.sh" "${PREFIX}/etc/conda/activate.d/env_vars.sh"
-install -m 644 "${RECIPE_DIR}/deactivate.sh" "${PREFIX}/etc/conda/deactivate.d/env_vars.sh"
+install -m 755 "${RECIPE_DIR}/activate.sh" "${PREFIX}/etc/conda/activate.d/libcifpp_activate.sh"
+install -m 755 "${RECIPE_DIR}/deactivate.sh" "${PREFIX}/etc/conda/deactivate.d/libcifpp_deactivate.sh"
+install -m 755 "${RECIPE_DIR}/activate.fish" "${PREFIX}/etc/conda/activate.d/libcifpp_activate.fish"
+install -m 755 "${RECIPE_DIR}/deactivate.fish" "${PREFIX}/etc/conda/deactivate.d/libcifpp_deactivate.fish"
