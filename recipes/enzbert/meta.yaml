@@ -1,20 +1,20 @@
-{% set version = "1.5" %}
+{% set version = "1.1" %}
 {% set name = "enzbert" %}
-{% set sha256 = "4bb475e614d49caba90a2c0ece0d39a08955f085e62aadfc716118291bfa253a" %} 
+{% set sha256 = "d1d68f6f53fcf5087ac1786db37db4688b07b7604e42ef9459334225b4383f76" %} 
 
 package:
   name: enzbert
   version: '{{ version }}'
 
 source:
-  url: https://gitlab.inria.fr/plecorre/enzbert-api-and-modif/-/archive/{{ version }}/enzbert-api-and-modif-{{ version }}.tar.gz 
+  url: https://gitlab.inria.fr/nbuton/tfpc/-/archive/v{{ version }}/tfpc-v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build: 
   noarch: python
-  number: 0 
+  number: 0
   entry_points:
-    - enzbert=tfpc.jupyter_notebook.pred_viz:main
+    - enzbert = predictions:main
   script: {{ PYTHON }} -m pip install --no-deps --ignore-installed --no-cache-dir -vvv . 
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
@@ -45,21 +45,15 @@ requirements:
     - torchmetrics
     - captum
     - streamlit
+    - ijson
 
 test:
-  imports:
-    - tfpc
-    - tfpc.models_architectures
-    - tfpc.utils
-    - tfpc.jupyter_notebook
-    - tfpc.analyse_how_to_agregate_attention_heads
-    - tfpc.interpretability
   commands:
     - enzbert --help
 
 about:
-  home: https://gitlab.inria.fr/plecorre/enzbert-api-and-modif
-  license: GNU AFFERO GENERAL PUBLIC LICENSE
+  home: https://gitlab.inria.fr/nbuton/tfpc/-/tree/EnzBert_conda
+  license: GNU AGPLv3
   license_file: LICENSE
   summary: "Run EnzBert model that predicts the functional annotation of enzymes from protein sequences"
 
