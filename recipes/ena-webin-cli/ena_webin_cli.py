@@ -60,7 +60,11 @@ def jvm_opts(argv):
       (memory_options, prop_options, passthrough_options)
     """
     mem_opts = []
-    prop_opts = []
+
+    # To avoid warnings in java >=24
+    # See https://github.com/enasequence/webin-cli/issues/157
+    prop_opts = ["--enable-native-access=ALL-UNNAMED"]
+
     pass_args = []
     exec_dir = None
 
@@ -98,9 +102,25 @@ def main():
     jar_dir = exec_dir if exec_dir else real_dirname(sys.argv[0])
     jar_arg = "-jar"
     jar_path = find_jar_file(jar_dir)
-    java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
-    command = " ".join(java_args)
-    sys.exit(os.system(command))
+    java_args = [java] + mem_opts + prop_opts + [jar_arg, jar_path] + pass_args
+
+    if os.getenv("WEBIN_LAUNCHER_DEBUG") == "1":
+        import shlex
+        print("[debug] exec:", shlex.join(java_args), file=sys.stderr)
+
+    try:
+        os.execvp(java, java_args)
+    except FileNotFoundError:
+        print(
+            "Error: could not execute 'java'. In bioconda environments, JAVA_HOME and PATH "
+            "should be configured automatically. If you see this, please open an issue at "
+            "https://github.com/bioconda/bioconda-recipes/issues (package: ena-webin-cli).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    except OSError as e:
+        print(f"Error: failed to exec java: {e}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
