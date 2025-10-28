@@ -7,23 +7,13 @@ from setuptools import setup, find_packages
 
 setup(
     name="kmetashot",
-    version="${PKG_VERSION}",   #  0.1.0
-    packages=find_packages(),
-    install_requires=[
-        "numpy",
-        "pandas",
-        "h5py",
-        "argcomplete"
-    ],
-    entry_points={
-        "console_scripts": [
-            "kmetashot=kMetaShot_package.kMetaShot_classifier_NV:main"
-        ]
-    },
+    version="${PKG_VERSION}",   #  2.0
+    packages=['kMetaShot_package'],
+    scripts=['https://github.com/gdefazio/kMetaShot/kMetaShot_classifier_NV.py', 'https://github.com/gdefazio/kMetaShot/kMetaShot/kMetaShot_test.py']
     author="Giuseppe Defazio",
     license="GPL-3.0-only",
-    url="https://github.com/LuigiMansi1/kMetaShot",
-    description="Fast taxonomic classifier per metagenome bins basato su k-mer/minimizer",
+    url="https://github.com/gdefazio/kMetaShot",
+    description="Fast taxonomic classifier for metagenome bins/MAGs based on k-mer/minimizer",
 )
 EOF
 
