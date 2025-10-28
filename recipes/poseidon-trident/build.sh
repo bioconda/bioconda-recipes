@@ -1,10 +1,7 @@
 #!/bin/bash
-declare -a tools=("trident")
 
 mkdir -p $PREFIX/bin
-for t in "${tools[@]}"
-do
-   mv $t* ${PREFIX}/bin/${t}-bin
-   echo -e "#!/bin/bash\nexport SYSTEM_CERTIFICATE_PATH=${PREFIX}/ssl/cacert.pem\n${PREFIX}/bin/${t}-bin \"\$@\"\n" > ${PREFIX}/bin/${t}
-   chmod 755 ${PREFIX}/bin/${t}
-done
+mv trident-* ${PREFIX}/bin/trident-bin
+echo -e "#!/bin/bash\nexport SYSTEM_CERTIFICATE_PATH=${PREFIX}/ssl/cacert.pem\n${PREFIX}/bin/trident-bin \"\$@\"\n" > ${PREFIX}/bin/trident
+chmod 755 ${PREFIX}/bin/trident
+chmod 755 ${PREFIX}/bin/trident-bin
