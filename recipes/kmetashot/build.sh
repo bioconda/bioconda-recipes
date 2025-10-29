@@ -3,7 +3,7 @@ set -euxo pipefail
 
 
 cat << EOF > setup.py
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name="kmetashot",
