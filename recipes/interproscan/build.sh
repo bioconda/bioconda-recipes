@@ -18,11 +18,10 @@ cd ${current_dir}
 
 # cd into the jms-implementation directory and run mvn clean package
 cd jms-implementation
-mvn -DskipTests install
+mvn -DskipTests -o install
 
 # copy result into the share folder
 cp -r target/interproscan-5-dist/* ${IPR_DIR}/
-mvn clean package 
 
 # mv interproscan.sh in the bin
 mkdir -p ${PREFIX}/bin
