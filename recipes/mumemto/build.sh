@@ -22,7 +22,7 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 
 cmake --build build --clean-first --target install -j "${CPU_COUNT}"
 
-install -v -m 0755 build/mumemto_exec build/compute_lengths build/newscanNT.x build/extract_mums build/anchor_merge "$PREFIX/bin"
+install -v -m 0755 build/mumemto_exec build/compute_lengths build/extract_mums build/anchor_merge "$PREFIX/bin"
 install -v -m 0755 mumemto/mumemto "$PREFIX/bin"
 install -v -m 0755 mumemto/*.py "$SP_DIR/mumemto"
 
