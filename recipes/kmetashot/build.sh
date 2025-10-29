@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-
 cat << EOF > setup.py
 from setuptools import setup
 
