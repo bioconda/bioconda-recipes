@@ -1,1 +1,42 @@
-
+--- Makefile
++++ Makefile
+@@ -38,7 +38,7 @@
+  EXE =
+ endif
+ 
+-CC      := g++
++CC      := $(CXX)
+ 
+ BASEFLAGS  := -Wall -Wextra ${SEARCHDIRS} $(MARCH) \
+  -D_REENTRANT -fno-exceptions -fno-rtti
+@@ -47,7 +47,7 @@
+ #add the link-time optimization flag if gcc version > 4.5
+-GCC_VERSION:=$(subst ., ,$(shell gcc -dumpversion))
++GCC_VERSION:=$(subst ., ,$(shell $(CXX) -dumpversion))
+ GCC_MAJOR:=$(word 1,$(GCC_VERSION))
+ GCC_MINOR:=$(word 2,$(GCC_VERSION))
+ #GCC_SUB:=$(word 3,$(GCC_VERSION))
+@@ -70,11 +70,11 @@
+ 
+ # C/C++ linker
+ 
+-LINKER  := g++
++LINKER  := $(CXX)
+ LIBS :=
+ OBJS := GBase.o GStr.o GArgs.o
+ 
+ .PHONY : all
+ all:    gtest threads
+ 
+@@ -85,11 +85,11 @@
+ gtest.o : GBase.h GArgs.h GVec.hh GList.hh GBitVec.h
+ GArgs.o : GArgs.h
+ gtest: $(OBJS) gtest.o
+-       ${LINKER} ${LDFLAGS} $(GCC45OPTS) $(GCC45OPTMAIN) -o $@ ${filter-out %.a %.so, $^} ${LIBS}
++       ${LINKER} ${LDFLAGS} $(GCC45OPTS) $(GCC45OPTMAIN) -o $@ ${filter-out %.a %.so, $^} ${LIBS} -lpthread
+ threads: GThreads.o threads.o
+-       ${LINKER} ${LDFLAGS} $(GCC45OPTS) $(GCC45OPTMAIN) -o $@ ${filter-out %.a %.so, $^} ${TLIBS} ${LIBS}
++       ${LINKER} ${LDFLAGS} $(GCC45OPTS) $(GCC45OPTMAIN) -o $@ ${filter-out %.a %.so, $^} ${TLIBS} ${LIBS} -lpthread
+ GThreads.o: GThreads.h GThreads.cpp
+ threads.o : GThreads.h GThreads.cpp
+ # target for removing all object files
