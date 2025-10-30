@@ -11,14 +11,15 @@ export CONDA_BUILD_DEPLOY=1
 export CXXFLAGS="${CXXFLAGS} -std=c++17 -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-if [ "$(uname -m)" = "aarch64" ]; then
+if [ "$(uname -m)" == "aarch64" ]; then
     echo "Building on ARM64 platform, disabling x86-specific optimizations"
     export CXXFLAGS="${CXXFLAGS} -DNO_X86_INSTRUCTIONS"
     
-    if [ -f "src/boink/storage/cqf/gqf.c" ]; then
+    if [ -f "${SRC_DIR}/src/boink/storage/cqf/gqf.c" ]; then
         echo "Patching gqf.c for ARM compatibility..."
-        sed -i 's/popcnt x[0-9]*,x[0-9]*/__builtin_popcountll/g' src/boink/storage/cqf/gqf.c
-        sed -i 's/bsr x[0-9]*,x[0-9]*/63 - __builtin_clzll/g' src/boink/storage/cqf/gqf.c
+        sed -i 's/popcnt x[0-9]*,x[0-9]*/__builtin_popcountll/g' ${SRC_DIR}/src/boink/storage/cqf/gqf.c
+        sed -i 's/popcnt x[0-9]*,x[0-9]*/__builtin_popcountll/g' ${SRC_DIR}/src/boink/storage/cqf/gqf.c
+        sed -i 's/bsr x[0-9]*,x[0-9]*/63 - __builtin_clzll/g' ${SRC_DIR}/src/boink/storage/cqf/gqf.c
     else
         echo "Warning: src/boink/storage/cqf/gqf.c not found, cannot patch for ARM"
     fi
