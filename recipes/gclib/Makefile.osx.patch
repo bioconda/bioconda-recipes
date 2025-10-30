@@ -1,7 +1,7 @@
---- Makefile
-+++ Makefile
-@@ -38,7 +38,7 @@
-  EXE =
+--- Makefile.bak	2025-10-27 15:49:38.345874940 +0800
++++ Makefile	2025-10-30 16:32:51.541874940 +0800
+@@ -38,13 +38,13 @@
+ EXE =
  endif
  
 -CC      := g++
@@ -9,34 +9,37 @@
  
  BASEFLAGS  := -Wall -Wextra ${SEARCHDIRS} $(MARCH) \
   -D_REENTRANT -fno-exceptions -fno-rtti
-@@ -47,7 +47,7 @@
+ 
  #add the link-time optimization flag if gcc version > 4.5
 -GCC_VERSION:=$(subst ., ,$(shell gcc -dumpversion))
-+GCC_VERSION:=$(subst ., ,$(shell $(CXX) -dumpversion))
++GCC_VERSION:=$(subst ., ,$(shell $(CC) -dumpversion))
  GCC_MAJOR:=$(word 1,$(GCC_VERSION))
  GCC_MINOR:=$(word 2,$(GCC_VERSION))
  #GCC_SUB:=$(word 3,$(GCC_VERSION))
-@@ -70,11 +70,11 @@
+@@ -70,12 +70,15 @@
  
  # C/C++ linker
  
 -LINKER  := g++
+-LIBS := 
 +LINKER  := $(CXX)
- LIBS :=
++LIBS :=
  OBJS := GBase.o GStr.o GArgs.o
  
  .PHONY : all
  all:    gtest threads
++all: libgffc.dylib
++libgffc.dylib: $(OBJS)
++	$(CXX) $(CXXFLAGS) $(LDFLAGS) -dynamiclib -install_name @rpath/libgffc.dylib -o $@ $^
  
-@@ -85,11 +85,11 @@
- gtest.o : GBase.h GArgs.h GVec.hh GList.hh GBitVec.h
- GArgs.o : GArgs.h
- gtest: $(OBJS) gtest.o
--       ${LINKER} ${LDFLAGS} $(GCC45OPTS) $(GCC45OPTMAIN) -o $@ ${filter-out %.a %.so, $^} ${LIBS}
-+       ${LINKER} ${LDFLAGS} $(GCC45OPTS) $(GCC45OPTMAIN) -o $@ ${filter-out %.a %.so, $^} ${LIBS} -lpthread
- threads: GThreads.o threads.o
--       ${LINKER} ${LDFLAGS} $(GCC45OPTS) $(GCC45OPTMAIN) -o $@ ${filter-out %.a %.so, $^} ${TLIBS} ${LIBS}
-+       ${LINKER} ${LDFLAGS} $(GCC45OPTS) $(GCC45OPTMAIN) -o $@ ${filter-out %.a %.so, $^} ${TLIBS} ${LIBS} -lpthread
- GThreads.o: GThreads.h GThreads.cpp
- threads.o : GThreads.h GThreads.cpp
- # target for removing all object files
+ version: ; @echo "GCC Version is: "$(GCC_MAJOR)":"$(GCC_MINOR)":"$(GCC_SUB)
+ 	@echo "> GCC Opt. string is: "$(GCC45OPTS)
+@@ -93,7 +96,7 @@
+ 
+ .PHONY : clean
+ clean:: 
+-	@${RM} $(OBJS) gtest.o GThreads.o threads.o threads$(EXE) gtest$(EXE)
++	@${RM} $(OBJS) gtest.o GThreads.o threads.o threads$(EXE) gtest$(EXE) libgffc.so libgffc.dylib
+ 	@${RM} core.*
+ 
+ 

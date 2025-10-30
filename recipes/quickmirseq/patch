@@ -1,0 +1,621 @@
+diff --git a/QuickMIRSeq-build.pl b/QuickMIRSeq-build.pl
+old mode 100644
+new mode 100755
+index 8b64523..3b55224
+--- a/QuickMIRSeq-build.pl
++++ b/QuickMIRSeq-build.pl
+@@ -1,3 +1,4 @@
++#!/usr/bin/env perl
+ ############################################################################
+ ##  
+ ##  Usage:
+diff --git a/QuickMIRSeq-report.pl b/QuickMIRSeq-report.pl
+old mode 100644
+new mode 100755
+index 018e81a..bec49e9
+--- a/QuickMIRSeq-report.pl
++++ b/QuickMIRSeq-report.pl
+@@ -1,3 +1,4 @@
++#!/usr/bin/env perl
+ ##  To generate summary and analysis reports for QuickMIRSeq pipeline
+ ##
+ ##  Usage:
+diff --git a/QuickMIRSeq-report.sh b/QuickMIRSeq-report.sh
+index 6bd9c9c..3848ee2 100644
+--- a/QuickMIRSeq-report.sh
++++ b/QuickMIRSeq-report.sh
+@@ -1,3 +1,4 @@
++#!/bin/bash
+ ################################################################################
+ #
+ # To generate comprehensive project report for QuickMIRSeq run
+@@ -11,14 +12,6 @@
+ #
+ #################################################################################
+ 
+-if [ -z "$QuickMIRSeq" ]; then
+-	echo "Environment variable QuickMIRSeq was NOT set"
+-	exit
+-fi
+-
+-export PATH=$QuickMIRSeq:$PATH
+-
+-
+ if [ ! -f readAnnotDistribution.csv ];
+ then
+    echo "Please run this script under QuickMIRSeq result folder"
+@@ -30,15 +23,15 @@ fi
+ #
+ if [[ $# -eq 1 ]]; then
+ 	width=$1
+-	$QuickMIRSeq/plot-QuickMIRSeq-all.sh $width
++	plot-QuickMIRSeq-all.sh $width
+ else
+-	$QuickMIRSeq/plot-QuickMIRSeq-all.sh
++	plot-QuickMIRSeq-all.sh
+ fi
+ 
+ 
+ #
+ # generate HTML report
+ #
+-#perl $QuickMIRSeq/QuickMIRSeq-report.pl
++#QuickMIRSeq-report.pl
+ make_HTMLs.sh
+ 
+diff --git a/QuickMIRSeq-summay.sh b/QuickMIRSeq-summay.sh
+index 3a9c928..80d056b 100644
+--- a/QuickMIRSeq-summay.sh
++++ b/QuickMIRSeq-summay.sh
+@@ -1,3 +1,4 @@
++#!/bin/bash
+ ################################################################################
+ #
+ # To generate comprehensive project report for QuickMIRSeq run
+@@ -11,14 +12,6 @@
+ #
+ #################################################################################
+ 
+-if [ -z "$QuickMIRSeq" ]; then
+-	echo "Environment variable QuickMIRSeq was NOT set"
+-	exit
+-fi
+-
+-export PATH=$QuickMIRSeq:$PATH
+-
+-
+ if [ ! -f readAnnotDistribution.csv ];
+ then
+    echo "Please run this script under QuickMIRSeq result folder"
+@@ -30,14 +23,14 @@ fi
+ #
+ if [[ $# -eq 1 ]]; then
+ 	width=$1
+-	$QuickMIRSeq/plot-QuickMIRSeq-all.sh $width
++	plot-QuickMIRSeq-all.sh $width
+ else
+-	$QuickMIRSeq/plot-QuickMIRSeq-all.sh
++	plot-QuickMIRSeq-all.sh
+ fi
+ 
+ 
+ #
+ # generate HTML report
+ #
+-perl $QuickMIRSeq/QuickMIRSeq-report.pl
++QuickMIRSeq-report.pl
+ 
+diff --git a/QuickMIRSeq.pl b/QuickMIRSeq.pl
+old mode 100644
+new mode 100755
+index fcdbb91..5b22220
+--- a/QuickMIRSeq.pl
++++ b/QuickMIRSeq.pl
+@@ -1,3 +1,4 @@
++#!/usr/bin/env perl
+ ##  Quick and accurate miRNA quantification:
+ ##	1. cut adapter sequences
+ ##	2. collapse redundant reads into unique ones 
+@@ -108,7 +109,7 @@ my $ext3 = $$settings{EXTENSION3};
+ my $keepTemp = uc($$settings{keepTemp}||"NO");
+ my $trimmed_adapter = uc($$settings{CUTADAPT_REQUIRED}) eq "YES" ? 1 : 0;
+ 
+-my $refine_mismatch_reads = uc($$settings{REFINE_MISMATACH_READS}) eq "YES" ? 1 : 0;
++my $refine_mismatch_reads = uc($$settings{REFINE_MISMATCH_READS}) eq "YES" ? 1 : 0;
+ my $filter_noise_reads = uc($$settings{FILTER_NOISE_READS}) eq "YES" ? 1 : 0;
+ 
+ my $unique_library_analysis = uc($$settings{UNIQUE_LIBRARY_ANALYSIS}) eq "YES" ? 1 : 0;
+@@ -368,7 +369,11 @@ sub quantReads {
+ 	
+ 	$$logHash{'quantStats'}[$sampleIndex]{'cpuTime-uniq'} = time;
+ 	$$logHash{'quantStats'}[$sampleIndex]{'inputReads'} = 0;
+-	open $fh, "<", $infile;
++	if ($infile !~ /\.gz$/) {
++		open $fh, "<", $infile;
++	} else {
++		open $fh, "gunzip -c $infile |";
++	}
+ 	while ($$line[0] = <$fh>) {
+ 		$$line[1] = <$fh>;
+ 		$$line[2] = <$fh>;
+diff --git a/README.txt b/README.txt
+index 1872c08..eaa0cb1 100644
+--- a/README.txt
++++ b/README.txt
+@@ -58,11 +58,7 @@ Note: Web browsers Firefox or Chrome are recommended, some features are not avai
+ #!!!
+ #You need to download and install QuickMIRSeq from http://QuickMIRSeq.sourceforge.net
+ 
+-#set environment variable to point to your installation directory
+-export QuickMIRSeq=QuickMIRSeq_installation_Directory
+-
+ #add QuickMIRSeq to your system path
+-export PATH=$QuickMIRSeq:$PATH
+ #!!!
+ 
+ 
+@@ -70,7 +66,7 @@ export PATH=$QuickMIRSeq:$PATH
+ ## Step #1: Preparation of miRNA/hairpin/mRNA/smallRNA database
+ #
+ After you download and unpack the QuickMIRSeq package, you should 
+-	1. go to $QuickMIRSeq/database folder 
++	1. go to the database folder 
+ 	2. run create_database_util.sh to create databases for human/mouse/rat. 
+ This step will take a couple of hours (between 2-4hr)
+ 
+@@ -82,7 +78,7 @@ and mRNA databases.
+ #
+ #Step #2: reads mapping, counting and summary
+ #
+-Please refer to $QuickMIRSeq/demo_run and see how to analyse your own dataset. 
++Please refer to demo_run and see how to analyse your own dataset. 
+ In essence, you need to prepare two files. 
+ 	1. allIDs.txt: containing the list of samples that you want to analyze
+ 	2. run.config: a control file in which you can instruct how the analysis is done
+@@ -94,7 +90,7 @@ There is run.config.template that comes with QuickMIRSeq package. You can copy t
+ and then customize it.
+ 
+ Run the pipeline:
+-	perl  $QuickMIRSeq/QuickMIRSeq.pl  allIDs.txt run.config
++	QuickMIRSeq.pl  allIDs.txt run.config
+ 
+ 
+ #
+@@ -102,7 +98,7 @@ Run the pipeline:
+ #
+ 
+ Go to your output folder, and run a single command line
+-	$QuickMIRSeq/QuickMIRSeq-report.sh
++	QuickMIRSeq-report.sh
+ 	
+ NOTE: TAB delimited sample.annotation.txt Annotation is optional but it is strongly recommended.
+       column #1:  sample_id
+diff --git a/database/create_database_util.sh b/database/create_database_util.sh
+index 2869260..1de4e42 100644
+--- a/database/create_database_util.sh
++++ b/database/create_database_util.sh
+@@ -25,11 +25,6 @@
+ #
+ #!!!
+ 
+-if [ -z "$QuickMIRSeq" ]; then
+-	echo "Environment variable QuickMIRSeq was NOT set"
+-	exit
+-fi
+-
+ if ! type "bowtie" > /dev/null; then
+   echo "Make bowtie executable is in your PATH"
+   exit
+@@ -39,14 +34,14 @@ fi
+ #
+ #extract species related miRNA and hairpin
+ #
+-$QuickMIRSeq/mirnaSelect.pl  mature.fa mmu >  mouse/mature.fa
+-$QuickMIRSeq/mirnaSelect.pl  hairpin.fa  mmu > mouse/hairpin.fa
++mirnaSelect.pl  mature.fa mmu >  mouse/mature.fa
++mirnaSelect.pl  hairpin.fa  mmu > mouse/hairpin.fa
+ 
+-$QuickMIRSeq/mirnaSelect.pl  mature.fa hsa > human/mature.fa
+-$QuickMIRSeq/mirnaSelect.pl  hairpin.fa  hsa > human/hairpin.fa
++mirnaSelect.pl  mature.fa hsa > human/mature.fa
++mirnaSelect.pl  hairpin.fa  hsa > human/hairpin.fa
+ 
+-$QuickMIRSeq/mirnaSelect.pl  mature.fa  rno > rat/mature.fa
+-$QuickMIRSeq/mirnaSelect.pl  hairpin.fa rno > rat/hairpin.fa
++mirnaSelect.pl  mature.fa  rno > rat/mature.fa
++mirnaSelect.pl  hairpin.fa rno > rat/hairpin.fa
+ 
+ 
+ #
+@@ -55,27 +50,19 @@ $QuickMIRSeq/mirnaSelect.pl  hairpin.fa rno > rat/hairpin.fa
+ 
+ #cutoff 0
+ cd human
+-perl $QuickMIRSeq/QuickMIRSeq-build.pl --target db_stranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
+-perl $QuickMIRSeq/QuickMIRSeq-build.pl --target db_nonsstranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
+-$QuickMIRSeq/prepare_smallRNA_mRNA.sh download.config
+-cp *.ebwt db_stranded_0
+-mv *.ebwt db_nonsstranded_0
++perl QuickMIRSeq-build.pl --target db_stranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
++prepare_smallRNA_mRNA.sh download.config
++mv *.ebwt db_stranded_0
+ cd ..
+ 
+ cd mouse
+-perl $QuickMIRSeq/QuickMIRSeq-build.pl --target db_stranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
+-perl $QuickMIRSeq/QuickMIRSeq-build.pl --target db_nonsstranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
+-$QuickMIRSeq/prepare_smallRNA_mRNA.sh download.config
+-cp *.ebwt db_stranded_0
+-mv *.ebwt db_nonsstranded_0
++perl QuickMIRSeq-build.pl --target db_stranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
++prepare_smallRNA_mRNA.sh download.config
++mv *.ebwt db_stranded_0
+ cd ..
+ 
+ cd rat
+-perl $QuickMIRSeq/QuickMIRSeq-build.pl --target db_stranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
+-perl $QuickMIRSeq/QuickMIRSeq-build.pl --target db_nonsstranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
+-$QuickMIRSeq/prepare_smallRNA_mRNA.sh download.config
+-cp *.ebwt db_stranded_0
+-mv *.ebwt db_nonsstranded_0
++perl QuickMIRSeq-build.pl --target db_stranded_0 --cutoff 0 --mirna mature.fa --hairpin  hairpin.fa --library stranded --extension5 4 --extension3 5
++prepare_smallRNA_mRNA.sh download.config
++mv *.ebwt db_stranded_0
+ cd ..
+-
+-
+diff --git a/demo_run/command.sh b/demo_run/command.sh
+index 9c9493a..e5c560a 100644
+--- a/demo_run/command.sh
++++ b/demo_run/command.sh
+@@ -5,7 +5,7 @@
+ #
+ # Please change RNA_BOWTIE_INDEX in run.config file so that it points the right folder
+ #
+-#RNA_BOWTIE_INDEX=$QuickMIRSeq/database/human/db_stranded_0
++#RNA_BOWTIE_INDEX=database/human/db_stranded_0
+ #
+ # !!!
+ 
+@@ -19,25 +19,18 @@
+ #
+ #!!!!
+ 
+-#!!!
+-# please point it to your QuickMIRSeq install directory
+-export QuickMIRSeq=/hpc/grid/shared/ngsapp/QuickMIRSeq
+-export PATH=$QuickMIRSeq:$PATH
+-#
+-#!!!
+-
+ 
+ #
+ #if you are working in LSF cluster, you can submit your job as below.
+-#otherwise, just run "perl  $QuickMIRSeq/QuickMIRSeq.pl  allIDs.txt run.config"
++#otherwise, just run "QuickMIRSeq.pl  allIDs.txt run.config"
+ #
+-#bsub -app large -n 13 -o QuickMIRSeq.log -e QuickMIRSeq.err "perl  $QuickMIRSeq/QuickMIRSeq.pl  allIDs.txt run.config"
+-perl  $QuickMIRSeq/QuickMIRSeq.pl  allIDs.txt run.config
++#bsub -app large -n 13 -o QuickMIRSeq.log -e QuickMIRSeq.err "QuickMIRSeq.pl  allIDs.txt run.config"
++QuickMIRSeq.pl  allIDs.txt run.config
+ 
+ 
+ #run summarization after step #1 is done (PLEASE WAIT).
+ cd output
+-$QuickMIRSeq/QuickMIRSeq-report.sh
++QuickMIRSeq-report.sh
+ cd ..
+ 
+ 
+diff --git a/demo_run/run.config b/demo_run/run.config
+index c4be33c..fad28ff 100644
+--- a/demo_run/run.config
++++ b/demo_run/run.config
+@@ -35,7 +35,7 @@ FILTER_NOISE_READS=yes
+ #!!!
+ # If turn it on, be sure you have created bowtie index library for the reference genome.
+ #!!!
+-REFINE_MISMATACH_READS=no
++REFINE_MISMATCH_READS=no
+ 
+ # run unique reads versus the library size analysis (optional, only recommended for comprehensive analysis)
+ # The results are written into uniqReads.library.csv
+@@ -77,7 +77,7 @@ AVG_READ_THRESHOLD=2
+ SPECIES=human
+ 
+ # Bowtie index for miRNA, hairpin, smallRNA, and mRNA
+-RNA_BOWTIE_INDEX=/hpc/grid/shared/ngsapp/QuickMIRSeq/database/human/db_stranded_0
++RNA_BOWTIE_INDEX=../database/human/db_stranded_0
+ 
+ #Bowtie index for reference genome
+ GENOME_BOWTIE_INDEX=/hpc/grid/shared/ngsdb/bowtie/hg19
+diff --git a/make_HTMLs.sh b/make_HTMLs.sh
+index f3c9e11..a75ab98 100644
+--- a/make_HTMLs.sh
++++ b/make_HTMLs.sh
+@@ -3,14 +3,9 @@
+ # please use full path of installation
+ 
+ 
+-if [ -z "$QuickMIRSeq" ]; then
+-	echo "Environment variable QuickMIRSeq was NOT set"
+-	exit
+-fi
+-
+ # change it to your installation
+-export SCRIPTPATH=$QuickMIRSeq/QuickMIRSeq_html
+-export PATH=$SCRIPTPATH:$PATH
++SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
++export SCRIPTPATH=${SCRIPT_DIR}/QuickMIRSeq_html
+ 
+ 
+ set -x
+@@ -28,11 +23,11 @@ fi
+ cp -R $SCRIPTPATH/package .
+ 
+ # miRNA expression table
+-make_gex.pl
+-make_gex.pl filter
++${SCRIPTPATH}/make_gex.pl
++${SCRIPTPATH}/make_gex.pl filter
+ 
+ # QC parallel plot
+-make_qc_overview.pl
++${SCRIPTPATH}/make_qc_overview.pl
+ 
+ # alignment table
+ if [ ! -e 'alignment_html' ]
+@@ -40,27 +35,27 @@ then
+ 	mkdir alignment_html
+ fi
+ 
+-make_aln_data.pl   #compress
+-make_aln.pl
++${SCRIPTPATH}/make_aln_data.pl   #compress
++${SCRIPTPATH}/make_aln.pl
+ 
+ # include qc_overview and gex pages
+-make_index.pl
++${SCRIPTPATH}/make_index.pl
+ 
+ # Individual Dynamic Plot
+-make_JSON.pl
++${SCRIPTPATH}/make_JSON.pl
+ 
+ 
+-make_multiBarChart.pl miRNA-detected
++${SCRIPTPATH}/make_multiBarChart.pl miRNA-detected
+ 
+-make_lineWithFocusChart.pl miRNASeq-reads-redundancy
++${SCRIPTPATH}/make_lineWithFocusChart.pl miRNASeq-reads-redundancy
+ 
+ if [ -f 'graphs/cut-adapter-SurvivalReads.png' ]
+ then
+-        make_stackedAreaChart.pl cut-adapter-SurvivalReads
+-        make_stackedAreaChart.pl cut-adapter-withAdapter
++        ${SCRIPTPATH}/make_stackedAreaChart.pl cut-adapter-SurvivalReads
++        ${SCRIPTPATH}/make_stackedAreaChart.pl cut-adapter-withAdapter
+ fi
+ 
+-make_stackedAreaChart.pl miRNASeq-reads-annotation
+-make_stackedAreaChart.pl total-miRNA-reads
+-make_stackedAreaChart.pl miRNA-reads
+-make_stackedAreaChart.pl miRNA-reads-split
++${SCRIPTPATH}/make_stackedAreaChart.pl miRNASeq-reads-annotation
++${SCRIPTPATH}/make_stackedAreaChart.pl total-miRNA-reads
++${SCRIPTPATH}/make_stackedAreaChart.pl miRNA-reads
++${SCRIPTPATH}/make_stackedAreaChart.pl miRNA-reads-split
+diff --git a/merge-tRNA.pl b/merge-tRNA.pl
+old mode 100644
+new mode 100755
+index d86c7de..3b13a9d
+--- a/merge-tRNA.pl
++++ b/merge-tRNA.pl
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ #
+ # merge all tRNA into a single ENTRY
+ #
+diff --git a/merge_smallRNA.pl b/merge_smallRNA.pl
+old mode 100644
+new mode 100755
+index da2ec23..0756520
+--- a/merge_smallRNA.pl
++++ b/merge_smallRNA.pl
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ #
+ # extract and merge RNAS from non-coding RNA
+diff --git a/mirnaSelect.pl b/mirnaSelect.pl
+old mode 100644
+new mode 100755
+index 28be415..c1d592e
+--- a/mirnaSelect.pl
++++ b/mirnaSelect.pl
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ # read mirBase downloaded sequences, and extract specifies specific sequence. For instance,
+ # mirnaSelect.pl  mature.fa mmu > mouse.mature.fa
+diff --git a/plot-53-offset.R b/plot-53-offset.R
+old mode 100644
+new mode 100755
+index e45ebd3..016444a
+--- a/plot-53-offset.R
++++ b/plot-53-offset.R
+@@ -1,3 +1,4 @@
++#!/usr/bin/env Rscript
+ ################################################################################
+ #
+ # Plot the distribution of 5' and 3' end offsets
+@@ -81,4 +82,4 @@ cloud(Freq~End5+End3, d, panel.3d.cloud=panel.3dbars, col.facet='grey',
+       par.settings = list(axis.line = list(col = "transparent")))
+ 	  
+ dev.off()
+-  
+\ No newline at end of file
++  
+diff --git a/plot-QuickMIRSeq-all.sh b/plot-QuickMIRSeq-all.sh
+index a643154..1aa5f76 100644
+--- a/plot-QuickMIRSeq-all.sh
++++ b/plot-QuickMIRSeq-all.sh
+@@ -1,3 +1,4 @@
++#!/bin/bash
+ ################################################################################
+ #
+ # A utility function to plot all metrics related to QuickMIRSeq
+@@ -11,11 +12,6 @@
+ #
+ #################################################################################
+ 
+-if [ -z "$QuickMIRSeq" ]; then
+-	echo "Environment variable QuickMIRSeq was NOT set"
+-	exit
+-fi
+-
+ if [ -f readAnnotDistribution.csv ]
+ then
+ 	no_sample=`cat readAnnotDistribution.csv | wc -l | awk '{print $1}'`
+@@ -39,24 +35,24 @@ fi
+ 
+ 
+ if [ -f cutadapt.summary.txt ]; then 
+-	Rscript $QuickMIRSeq/plot-cut-adapter.R cutadapt.summary.txt ${width}X6
++	plot-cut-adapter.R cutadapt.summary.txt ${width}X6
+ fi
+ 
+-Rscript $QuickMIRSeq/plot-readAnnot-distribution.R readAnnotDistribution.csv 
++plot-readAnnot-distribution.R readAnnotDistribution.csv 
+ 
+-Rscript $QuickMIRSeq/plot-readLen-distribution.R readLenDistribution.csv 
++plot-readLen-distribution.R readLenDistribution.csv 
+ 
+-Rscript $QuickMIRSeq/plot-QuickMIRSeq-summary.R QuickMIRSeq.summary.txt ${width}X6
++plot-QuickMIRSeq-summary.R QuickMIRSeq.summary.txt ${width}X6
+ 
+-Rscript $QuickMIRSeq/plot-miR-corr.R miR.filter.RPM.csv ${width}X6
++plot-miR-corr.R miR.filter.RPM.csv ${width}X6
+ 
+ if [ -f Offset.summary.txt ]; then 
+-	Rscript $QuickMIRSeq/plot-53-offset.R Offset.summary.txt
++	plot-53-offset.R Offset.summary.txt
+ fi
+ 
+ 
+ if [ -f uniqReads.library.csv ]; then 
+-	Rscript $QuickMIRSeq/plot-joint-mapping.R uniqReads.library.csv ${width}X6
++	plot-joint-mapping.R uniqReads.library.csv ${width}X6
+ fi
+ 
+ 
+diff --git a/plot-QuickMIRSeq-summary.R b/plot-QuickMIRSeq-summary.R
+old mode 100644
+new mode 100755
+index 41046b7..5578e45
+--- a/plot-QuickMIRSeq-summary.R
++++ b/plot-QuickMIRSeq-summary.R
+@@ -1,3 +1,4 @@
++#!/usr/bin/env Rscript
+ ################################################################################
+ #
+ # Plot summaries for QuickMIRSeq summary
+diff --git a/plot-cut-adapter.R b/plot-cut-adapter.R
+old mode 100644
+new mode 100755
+index c09e603..516b889
+--- a/plot-cut-adapter.R
++++ b/plot-cut-adapter.R
+@@ -1,3 +1,4 @@
++#!/usr/bin/env Rscript
+ ################################################################################
+ #
+ # Plot summaries for adapter trimming
+diff --git a/plot-joint-mapping.R b/plot-joint-mapping.R
+old mode 100644
+new mode 100755
+index f3ed4cc..b631334
+--- a/plot-joint-mapping.R
++++ b/plot-joint-mapping.R
+@@ -1,3 +1,4 @@
++#!/usr/bin/env Rscript
+ ################################################################################
+ #
+ # Plot summaries for QuickMIRSeq summary
+diff --git a/plot-miR-corr.R b/plot-miR-corr.R
+old mode 100644
+new mode 100755
+index 69a4ec2..c9f8511
+--- a/plot-miR-corr.R
++++ b/plot-miR-corr.R
+@@ -1,3 +1,4 @@
++#!/usr/bin/env Rscript
+ ################################################################################
+ #
+ # Plot a correlation matrix for expressed miRNA
+diff --git a/plot-readAnnot-distribution.R b/plot-readAnnot-distribution.R
+old mode 100644
+new mode 100755
+index 37b8577..af5a3ea
+--- a/plot-readAnnot-distribution.R
++++ b/plot-readAnnot-distribution.R
+@@ -1,3 +1,4 @@
++#!/usr/bin/env Rscript
+ ################################################################################
+ #
+ # Usage
+diff --git a/plot-readLen-distribution.R b/plot-readLen-distribution.R
+old mode 100644
+new mode 100755
+index 047303a..ed60d61
+--- a/plot-readLen-distribution.R
++++ b/plot-readLen-distribution.R
+@@ -1,3 +1,4 @@
++#!/usr/bin/env Rscript
+ ################################################################################
+ #
+ # Usage
+diff --git a/prepare_smallRNA_mRNA.sh b/prepare_smallRNA_mRNA.sh
+index 1f19a80..0f91ec9 100644
+--- a/prepare_smallRNA_mRNA.sh
++++ b/prepare_smallRNA_mRNA.sh
+@@ -29,12 +29,6 @@ else
+ 		source $CONFIG
+ fi
+ 
+-
+-if [ -z "$QuickMIRSeq" ]; then
+-	echo "Environment variable QuickMIRSeq was NOT set"
+-	exit
+-fi
+-
+ #
+ # downloading
+ #
+@@ -69,8 +63,8 @@ ln -s $trna tRNA.fa
+ ln -s $cdna mrna.fa
+ ln -s $ncrna ncrna.fa
+ 
+-$QuickMIRSeq/merge_tRNA.pl tRNA.fa  > smallRNA.fa
+-$QuickMIRSeq/merge_smallRNA.pl ncrna.fa >> smallRNA.fa
++merge-tRNA.pl tRNA.fa  > smallRNA.fa
++merge_smallRNA.pl ncrna.fa >> smallRNA.fa
+ if [ -f rRNA.fa ]
+ then
+ 	cat rRNA.fa >> smallRNA.fa
+diff --git a/run.config.template b/run.config.template
+index 7f43028..9e5d7dc 100644
+--- a/run.config.template
++++ b/run.config.template
+@@ -35,7 +35,7 @@ FILTER_NOISE_READS=yes
+ #!!!
+ # If turn it on, be sure you have created bowtie index library for the reference genome.
+ #!!!
+-REFINE_MISMATACH_READS=no
++REFINE_MISMATCH_READS=no
+ 
+ # run unique reads versus the library size analysis (optional, only recommended for comprehensive analysis)
+ # The results are written into uniqReads.library.csv
