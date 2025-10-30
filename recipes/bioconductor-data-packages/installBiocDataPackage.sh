@@ -2,9 +2,15 @@
 set -ex
 # takes a single parameter, the package name
 
-SCRIPT_DIR="$( dirname -- "${BASH_SOURCE[0]}" )/../share/bioconductor-data-packages"
+# FOR DEBUGGING
+PREFIX=/home/espenr/temp
+mkdir -p $PREFIX/lib/R/library
+SCRIPT_DIR="$( dirname -- "${BASH_SOURCE[0]}" )"
+
+#SCRIPT_DIR="$( dirname -- "${BASH_SOURCE[0]}" )/../share/bioconductor-data-packages"
 json="${SCRIPT_DIR}/dataURLs.json"
 FN=`yq ".\"$1\".fn" "${json}"`
+FN=`echo $FN | tr -d \"`  # Strip quotes from filename
 ##readarray is bash4, while OSX only has bash 3
 #readarray URLS < <(yq ".\"$1\".urls[]" "${json}")
 while IFS= read -r value; do
@@ -18,6 +24,16 @@ MD5=`yq ".\"$1\".md5" "${json}"`
 STAGING=$PREFIX/share/"$1"
 mkdir -p $STAGING
 TARBALL=$STAGING/$FN
+
+# Prepare caching
+CACHE_DIR=$PREFIX/cache/"$1" # need to be set to something sensible that persists
+mkdir -p $CACHE_DIR
+CACHED_TARBALL="$CACHE_DIR/$FN"
+
+# Prepend CACHED_TARBALL to URLS if it exists
+if [[ -f "$CACHED_TARBALL" ]]; then
+  URLS=("file://$CACHED_TARBALL" "${URLS[@]}")
+fi
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
@@ -49,5 +65,5 @@ fi
 
 # Install and clean up
 R CMD INSTALL --library=$PREFIX/lib/R/library $TARBALL
-rm $TARBALL
+mv $TARBALL $CACHE_DIR
 rmdir $STAGING
