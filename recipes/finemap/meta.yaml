@@ -1,37 +1,65 @@
-# This file created by conda-build 3.22.0
-# meta.yaml template originally from:
-# /home/conda/conda-forge/recipes/finemap, last modified Thu Oct 20 22:53:08 2022
-# ------------------------------------------------
+{% set name = "finemap" %}
+{% set version = "1.4.2" %}
 
 package:
-  name: finemap
-  version: 1.4.1
+  name: {{ name }}
+  version: {{ version }}
+
 source:
-  sha256: 75c919d9cc981bc08e1a982b1632110109ffe6a057e803c9aa36c143aa56d546
-  url: http://www.christianbenner.com/finemap_v1.4.1_x86_64.tgz
+  - url: http://www.christianbenner.com/finemap_v{{ version }}_x86_64.tgz
+    sha256: 3b1fc6eb3c2ccafd647b32e02d0244495cd0ade9ed7d474606c31ebf6e98b0c9
+
 build:
-  binary_relocation: false
-  noarch: generic
-  number: '0'
+  number: 1
+  # skip osx since binary cannot be relinked b/c it was built without the -headerpad_max_install_names option
+  skip: True # [not linux64]
+  run_exports:
+    - {{ pin_subpackage('finemap', max_pin="x") }}
   script:
-    - install -Dd ${PREFIX}/bin
-    - install -D -m 755 finemap_v1.4.1_x86_64 ${PREFIX}/bin/finemap
-  string: '0'
+    - mkdir -p ${PREFIX}/bin
+    - install -m 755 finemap_v{{ version }}_x86_64 ${PREFIX}/bin/finemap
+  missing_dso_whitelist:
+    - /lib64/libdl.so.2
+    - /lib64/libm.so.6
+    - $RPATH/libgomp.so.1
+    - /lib64/libgcc_s.so.1
+    - /lib64/libpthread.so.0
+    - /lib64/libc.so.6
+    - /lib64/ld-linux-x86-64.so.2
+
 requirements:
-  build: []
-  host: []
-  run: []
+  host:
+    - {{ stdlib("c") }}
+    - libgomp
+    - libgcc
+  run:
+    - {{ stdlib("c") }}
+    - libgomp
+    - libgcc
+
 test:
+  source_files:
+    - example
   commands:
-    - test -f $PREFIX/bin/finemap
+    - finemap --help
+    - finemap --sss --in-files example/data
+    - finemap --cond --in-files example/data
+    - finemap --config --in-files example/data --rsids rs30,rs11
+
 about:
   home: http://www.christianbenner.com
-  license: Other
+  license: Custom Academic
+  license_url: http://www.christianbenner.com/license_finemap_v1.4.html
+  # use LICENSE file in downloaded source
   license_file: LICENSE
-  summary: Program for identifying causal SNPs and their effect sizes and heritability
-    contributions
+  summary: >
+    Program for identifying causal SNPs and their effect sizes and heritability contributions
+
 extra:
-  copy_test_source_files: true
-  final: true
+  skip-lints:
+    - should_use_compilers
+    - should_be_noarch_generic
+    - version_constraints_missing_whitespace
   recipe-maintainers:
+    - aryarm
     - danielnachun

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "vulcandata-1.24.0"
+installBiocDataPackage.sh "vulcandata-1.28.0"

@@ -1,6 +1,6 @@
 {% set name = "StringTie" %}
-{% set version = "2.2.3" %}
-{% set sha256 = "f372640b70a8fde763712d2f0565aff71f5facdc2300c8af829fea94a05ff208" %}
+{% set version = "3.0.2" %}
+{% set sha256 = "c2d600eac61243b266a116370f4c48a7445616f7ca06511cf42dae0eed6638d7" %}
 
 package:
   name: {{ name|lower }}
@@ -14,21 +14,25 @@ source:
 
 build:
   number: 0
-  # TODO currently fails to build on osx.
-  # Feel free to re-enable and debug.
-  skip: True  # [osx]
   run_exports:
-    - {{ pin_subpackage("stringtie", max_pin="x") }}
+    - {{ pin_subpackage('stringtie', max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - zlib
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
   host:
     # curl is used to download prepDE.py
     - htslib
+    - curl
+    - bzip2
+    - xz
+    - zlib
   run:
     - htslib
     - python
@@ -50,6 +54,7 @@ about:
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:stringtie
     - usegalaxy-eu:stringtie

@@ -1,0 +1,79 @@
+diff --git a/src/main.c b/src/main.c
+index bc5a6e3..9a9c099 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -1,7 +1,7 @@
+ /*  main.c
+  *  Created by Mengyao Zhao on 06/23/11.
+- *	Version 1.2.2
+- *  Last revision by Mengyao Zhao on 2022-May-21.
++ *	Version 1.2.6
++ *  Last revision by Mengyao Zhao on 2024-Jul-03.
+  */
+ 
+ #include <stdlib.h>
+@@ -434,16 +434,19 @@ int main (int argc, char * const argv[]) {
+ 			result = ssw_align (p, ref_num, refLen, gap_open, gap_extension, flag, filter, 0, maskLen);
+ 			if (reverse == 1 && protein == 0)
+ 				result_rc = ssw_align(p_rc, ref_num, refLen, gap_open, gap_extension, flag, filter, 0, maskLen);
+-			if (result_rc && result_rc->score1 > result->score1 && result_rc->score1 >= filter) {
++			if (! result){
++				fprintf(stderr, "Warning: Alignment between the following sequences is failed.\nref_name: %s\nread_name: %s\n\n", ref_seq->name.s, read_seq->name.s);
++                continue;
++			}else if (result_rc && result_rc->score1 > result->score1 && result_rc->score1 >= filter) {
+                 if (result_rc->flag == 2) fprintf(stderr, "Warning: The reverse compliment alignment of the following sequences may miss a small part.\nref_seq: %s\nread_seq: %s\n\n", ref_seq->name.s, read_seq->name.s);
+ 				if (sam) ssw_write (result_rc, ref_seq, read_seq, read_rc, ref_num, num_rc, table, 1, 1);
+ 				else ssw_write (result_rc, ref_seq, read_seq, read_rc, ref_num, num_rc, table, 1, 0);
+-			}else if (result && result->score1 >= filter){
++			}else if (result->score1 > 0 && result->score1 >= filter){
+                 if (result->flag == 2) fprintf(stderr, "Warning: The alignment of the following sequences may miss a small part.\nref_seq: %s\nread_seq: %s\n\n", ref_seq->name.s, read_seq->name.s);
+ 				if (sam) ssw_write(result, ref_seq, read_seq, read_seq->seq.s, ref_num, num, table, 0, 1);
+ 				else ssw_write(result, ref_seq, read_seq, read_seq->seq.s, ref_num, num, table, 0, 0);
+-			} else if (! result) {
+-                fprintf(stderr, "Warning: Alignment between the following sequences is failed.\nref_seq: %s\nread_seq: %s\n\n", ref_seq->name.s, read_seq->name.s);
++			} else if (result->score1 <= 0) {
++				fprintf(stderr, "There is no identical residue between the following reference and read seqeunces.\nref_name: %s\nread_name: %s\n\n", ref_seq->name.s, read_seq->name.s);
+                 continue;
+             }
+ 			if (result_rc) align_destroy(result_rc);
+diff --git a/src/ssw.c b/src/ssw.c
+index e8599c6..82c8c7d 100644
+--- a/src/ssw.c
++++ b/src/ssw.c
+@@ -56,8 +56,8 @@
+  *
+  *  Created by Mengyao Zhao on 6/22/10.
+  *  Copyright 2010 Boston College. All rights reserved.
+- *	Version 1.2.5
+- *	Last revision by Mengyao Zhao on 2022-Apr-17.
++ *	Version 1.2.6
++ *	Last revision by Mengyao Zhao on 2024-Jul-03.
+  *
+  *  The lazy-F loop implementation was derived from SWPS3, which is
+  *  MIT licensed under ETH Zürich, Institute of Computational Science.
+@@ -860,6 +860,11 @@ s_align* ssw_align (const s_profile* prof,
+ 		free(r);
+ 		return NULL;
+ 	}
++	if (bests[0].score <= 0) {
++		free(bests);
++		goto end;
++	}
++
+ 	r->score1 = bests[0].score;
+ 	r->ref_end1 = bests[0].ref; // 0_based, always count from the input seq begin
+ 	r->read_end1 = bests[0].read;   // 0_based, count from the alignment begin (aligned length of the read)
+diff --git a/src/Makefile b/src/Makefile
+index 210b685..44a04dc 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -1,6 +1,6 @@
+-CC = gcc
+-CXX = g++
+-CFLAGS += -Wall -pipe -O2
++CC = $(CC)
++CXX = $(CXX)
++CFLAGS += -Wall -pipe -g -O3 -Wno-unused-command-line-argument
+ #CFLAGS += -Wall -pipe -g -fsanitize=address	# for debug
+ CXXFLAGS := $(CFLAGS)
+ LOBJS = ssw.o

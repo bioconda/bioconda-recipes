@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "connectivitymap-1.38.0"
+installBiocDataPackage.sh "connectivitymap-1.42.0"
