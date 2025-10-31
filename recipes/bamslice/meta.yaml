@@ -1,0 +1,64 @@
+{% set name = "bamslice" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/nebiolabs/bamslice/archive/v{{ version }}.tar.gz
+  sha256: 1771d5f45e077201ae58664808f2e6f6014ad63e826efdd797c39c6130d8a70f
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - pkg-config
+    - make
+    - clangdev
+  host:
+    - bzip2
+    - libdeflate
+    - xz
+    - zlib
+    - libcurl
+    - openssl # [not osx]
+  run:
+    - openssl # [not osx]
+
+test:
+  commands:
+    - bamslice --help
+    - bamslice --version
+
+about:
+  home: "https://github.com/nebiolabs/bamslice"
+  license: AGPL-3.0-only
+  license_family: AGPL
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "Extract byte ranges from BAM files and convert to interleaved FASTQ format for parallel processing"
+  description: |
+    bamslice extracts specific byte ranges from BAM files and converts them to
+    interleaved FASTQ format. Designed for parallel processing across compute nodes
+    without requiring pre-indexing. It auto-aligns to BGZF block boundaries and
+    guarantees no duplicate reads when using contiguous byte ranges.
+  dev_url: "https://github.com/nebiolabs/bamslice"
+  doc_url: "https://docs.rs/bamslice"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - bwlang
+  identifiers:
+    - biotools:bamslice
+
