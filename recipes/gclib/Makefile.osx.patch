@@ -1,45 +1,41 @@
---- Makefile.bak	2025-10-27 15:49:38.345874940 +0800
-+++ Makefile	2025-10-30 16:32:51.541874940 +0800
+--- Makefile	2025-10-31 11:04:27.673874940 +0800
++++ Makefile	2025-10-31 11:09:42.921874940 +0800
 @@ -38,13 +38,13 @@
  EXE =
  endif
  
 -CC      := g++
-+CC      := $(CXX)
++CC      := ${CXX}
  
  BASEFLAGS  := -Wall -Wextra ${SEARCHDIRS} $(MARCH) \
   -D_REENTRANT -fno-exceptions -fno-rtti
  
  #add the link-time optimization flag if gcc version > 4.5
 -GCC_VERSION:=$(subst ., ,$(shell gcc -dumpversion))
-+GCC_VERSION:=$(subst ., ,$(shell $(CC) -dumpversion))
++GCC_VERSION:=$(subst ., ,$(shell ${CC} -dumpversion))
  GCC_MAJOR:=$(word 1,$(GCC_VERSION))
  GCC_MINOR:=$(word 2,$(GCC_VERSION))
  #GCC_SUB:=$(word 3,$(GCC_VERSION))
-@@ -70,12 +70,15 @@
+@@ -70,17 +70,20 @@
  
  # C/C++ linker
  
 -LINKER  := g++
--LIBS := 
-+LINKER  := $(CXX)
-+LIBS :=
++LINKER  := ${CXX}
+ LIBS := 
  OBJS := GBase.o GStr.o GArgs.o
++GCLIBS := GFastaIndex.o GFaSeqGet.o gff.o gdna.o codons.o GBase.o GStr.o GArgs.o
  
  .PHONY : all
- all:    gtest threads
-+all: libgffc.dylib
-+libgffc.dylib: $(OBJS)
-+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -dynamiclib -install_name @rpath/libgffc.dylib -o $@ $^
+-all:    gtest threads
++all:    gtest gffcomparelibs
  
  version: ; @echo "GCC Version is: "$(GCC_MAJOR)":"$(GCC_MINOR)":"$(GCC_SUB)
  	@echo "> GCC Opt. string is: "$(GCC45OPTS)
-@@ -93,7 +96,7 @@
- 
- .PHONY : clean
- clean:: 
--	@${RM} $(OBJS) gtest.o GThreads.o threads.o threads$(EXE) gtest$(EXE)
-+	@${RM} $(OBJS) gtest.o GThreads.o threads.o threads$(EXE) gtest$(EXE) libgffc.so libgffc.dylib
- 	@${RM} core.*
- 
- 
+ debug:  gtest threads
+ nodebug:  gtest threads
++gffcomparelibs: ${GCLIBS}
++   ${LINKER} ${LDFLAGS} $(GCC45OPTS) $(GCC45OPTMAIN) -dynamiclib ${GCLIBS} -o libgffc.dylib
+ gtest.o : GBase.h GArgs.h GVec.hh GList.hh GBitVec.h
+ GArgs.o : GArgs.h
+ gtest: $(OBJS) gtest.o
