@@ -1,0 +1,57 @@
+{% set name = "lightmotif" %}
+{% set version = "0.10.0" %}  
+{% set sha256 = "c4bd28f381fa64dfc84de0abfa690f5df2d9f7c50fd8f5d7bdf40ab702eaefc2" %}    
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+
+source:
+  url: https://pypi.io/packages/source/l/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  compilers:
+    - c
+    - cxx
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+
+  host:
+    - python >=3.7,<3.14
+    - pip
+    - maturin >=1.2
+  run:
+    - python >=3.7,<3.14
+  
+
+test:
+  imports:
+    - lightmotif
+    - lightmotif.lib
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/althonos/lightmotif/
+  summary: lightmotif; a library for platform-accelerated biological motif scanning using position weight matrices.
+  license: MIT
+  license_file: COPYING
+  doc_url: https://lightmotif.readthedocs.io/
+  dev_url: https://github.com/althonos/lightmotif/
+
+extra:
+  recipe-maintainers:
+    - althonos
+    - birkiy
