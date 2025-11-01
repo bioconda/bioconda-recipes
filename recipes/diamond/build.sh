@@ -8,9 +8,6 @@ export CXXFLAGS="${CXXFLAGS} -O3 -Wno-attributes -Wno-volatile -Wno-inconsistent
 export CMAKE_C_COMPILER="${CC}"
 export CMAKE_CXX_COMPILER="${CXX}"
 
-sed -i.bak 's|VERSION 2.6|VERSION 3.5|' CMakeLists.txt
-rm -rf *.bak
-
 cd ncbi-cxx-toolkit-public
 export CMAKE_ARGS="-S src -B . -DCMAKE_BUILD_TYPE=Release -Wno-dev -Wno-deprecated --no-warn-unused-cli"
 
@@ -24,12 +21,12 @@ elif [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
 	export CONFIG_ARGS="-DX86=ON -DCMAKE_OSX_DEPLOYMENT_TARGET="10.15" -DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 	export CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
-	export CONFIG_ARGS="-DAARCH64=ON -DX86=OFF -DBUILD_STATIC=ON"
+	export CONFIG_ARGS="-DAARCH64=ON -DX86=OFF"
 	sed -i.bak 's|"-msse4.2"|""|' src/build-system/cmake/toolchains/*.cmake
 	sed -i.bak 's|"-msse4.2"|""|' src/build-system/cmake/toolchains/*.in
 	rm -rf src/build-system/cmake/toolchains/*.bak
 else
-	export CONFIG_ARGS="-DX86=ON -DBUILD_STATIC=ON"
+	export CONFIG_ARGS="-DX86=ON"
 	sed -i.bak 's|"-msse4.2"|""|' src/build-system/cmake/toolchains/*.cmake
 	sed -i.bak 's|"-msse4.2"|""|' src/build-system/cmake/toolchains/*.in
 	rm -rf src/build-system/cmake/toolchains/*.bak
