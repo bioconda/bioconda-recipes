@@ -7,39 +7,22 @@
 {% set pio_pkg_version = pio_version.replace('.', '_') %}
 {% set esmf_version = "8.9.0" %}
 {% set omb_version = "7.5.1" %}
-{% set build = 0 %}
+{% set build = 1 %}
 
 # BUILD TRIGGER - manually change this for each MPI variant to force bioconda rebuild
-{% set build_trigger = "psmpi" %}  # Change to: openmpi, mpich, psmpi or mvapich_ucx/mvapich_ofi
+{% set build_trigger = "mvapich" %}  # Change to: openmpi, mpich, psmpi or mvapich
 
 # Simple type-safe parsing
 {% if mpi and mpi is string %}
   {% set mpi_parts = mpi.split('=') %}
   {% set mpi_name = mpi_parts[0] %}
   {% set mpi_version = mpi_parts[1] if mpi_parts|length > 1 else '' %}
-{% else %}
-  {% set mpi_name = 'mvapich' %}
-  {% set mpi_version = '' %}
 {% endif %}
 
 {% set mpi_version_name = mpi_version.replace('.', '_') if mpi_version else '' %}
 
-# MVApich variants
-{% if mpi_name == "mvapich" %}
-  {% if "ucx" in build_trigger %}
-    {% set mpi_build_variant = "ucx" %}
-  {% elif "ofi" in build_trigger %}
-    {% set mpi_build_variant = "ofi" %}
-  {% else %}
-    {% set mpi_build_variant = "ucx" %}
-  {% endif %}
-  {% set mpi_pkg_suffix = mpi_name + '_' + mpi_version_name + '_' + mpi_build_variant %}
-  {% set mpi_spec = mpi_name + '=' + mpi_version + '=' + mpi_build_variant + '*' %}
-{% else %}
-  {% set mpi_build_variant = '' %}
-  {% set mpi_pkg_suffix = mpi_name + '_' + mpi_version_name %}
-  {% set mpi_spec = mpi_name + ('=' + mpi_version if mpi_version else '') %}
-{% endif %}
+{% set mpi_pkg_suffix = mpi_name + '_' + mpi_version_name %}
+{% set mpi_spec = mpi_name + ('=' + mpi_version if mpi_version else '') %}
 
 package:
   name: esme_{{ mpi_pkg_suffix }}
@@ -47,7 +30,7 @@ package:
 
 build:
   number: {{ build }}
-  string: {{ mpi_name }}_{{ mpi_build_variant }}_h{{ PKG_HASH }}_{{ build }}
+  string: {{ mpi_name }}_h{{ PKG_HASH }}_{{ build }}
   skip: true  # [not ((linux and (build_trigger != 'psmpi') and (x86_64 or aarch64)) or (linux and (build_trigger == 'psmpi') and (x86_64)))]
   ignore_run_exports:
     - libacl
@@ -167,7 +150,6 @@ outputs:
       host:
         - esme_hdf5_{{ mpi_pkg_suffix }}
         - libcurl
-        - libxml2
         - {{ mpi_spec }}
         - esme_pnetcdf_{{ mpi_pkg_suffix }}
         - zlib
