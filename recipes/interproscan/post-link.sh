@@ -15,8 +15,8 @@ Commands:
 =========
 # See here for latest db available: https://github.com/ebi-pf-team/interproscan or http://ftp.ebi.ac.uk/pub/software/unix/iprscan/5/
 # Set versions
-version_major=5.59
-version_minor=91.0
+version_major=5.75
+version_minor=106.0
 CONDA_PREFIX=/the/path/to/your/interproscan/conda/env/
 
 # get the md5 of the databases
