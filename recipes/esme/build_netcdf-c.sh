@@ -16,7 +16,8 @@ cd esme_netcdf-c
             --enable-shared=yes \
 	    --enable-static=no \
 	    --enable-netcdf4 \
-	    --enable-pnetcdf
+	    --enable-pnetcdf \
+	    --disable-libxml2  # From Issue #2410: Skip DAP XML to avoid libncxml header failure
 
 make -j ${CPU_COUNT}
 

@@ -2,6 +2,11 @@
 
 set -ex
 
+# CUDA stubs only for MVAPICH (resolves libmpi.so deps in ESMF linking)
+if [[ "${mpi}" == mvapich* ]]; then
+  source ${RECIPE_DIR}/mvapich_cuda_stub.sh
+fi
+
 export ESMF_F90=mpif90
 export ESMF_CXX=mpicxx
 export ESMF_C=mpicc
