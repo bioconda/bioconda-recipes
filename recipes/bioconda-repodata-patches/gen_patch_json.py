@@ -190,6 +190,13 @@ def _gen_new_index(repodata, subdir):
                 if dep.startswith("pulp") and has_no_upper_bound(dep):
                     deps[i] = "pulp >=2.0,<2.8.0"
 
+        # scprep <=1.2.3 requires pandas <2.1
+        if record_name == 'scprep' and has_dep(record, "pandas") and version <= "1.2.3":
+            for i, dep in enumerate(deps):
+                if dep == "pandas":
+                    deps[i] = "pandas <2.1"
+                elif dep.startswith("pandas") and has_no_upper_bound(dep):
+                    deps[i] += ",<2.1"
 
     return index
 
