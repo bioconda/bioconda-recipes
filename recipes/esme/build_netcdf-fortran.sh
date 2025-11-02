@@ -12,6 +12,9 @@ unset CC CXX FC F77 F90 F95 CFLAGS CXXFLAGS FCFLAGS FFLAGS LDFLAGS CPPFLAGS
 export CC=mpicc
 export FC=mpifort
 
+export CPPFLAGS="-I${PREFIX}/include"
+export LDFLAGS="-L${PREFIX}/lib"
+
 cd esme_netcdf-fortran
 
 export HDF5_PLUGIN_PATH="${PREFIX}/lib/hdf5/plugin"
