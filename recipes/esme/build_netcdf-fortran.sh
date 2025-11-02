@@ -21,8 +21,7 @@ export HDF5_PLUGIN_PATH="${PREFIX}/lib/hdf5/plugin"
             --disable-dot \
             --disable-internal-docs \
             --enable-static=no \
-            --enable-shared=yes \
-	    --with-netcdf="${PREFIX}"
+            --enable-shared=yes 
 
 make -j ${CPU_COUNT}
 

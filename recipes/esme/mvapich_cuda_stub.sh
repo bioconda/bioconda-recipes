@@ -9,7 +9,5 @@ if [[ "${target_platform}" == "linux-aarch64" ]]; then
   export CUDA_HOME="${PREFIX}/targets/sbsa-linux"
 fi
 
-export -f setup_cuda_stubs() {
-  export LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}${CUDA_HOME}/lib/stubs"
-  ln -sf "${CUDA_HOME}/lib/stubs/libcuda.so" "${CUDA_HOME}/lib/stubs/libcuda.so.1" || true
-}
+mkdir -p "${CUDA_HOME}/lib/stubs"
+ln -sf "${CUDA_HOME}/lib/stubs/libcuda.so" "${CUDA_HOME}/lib/stubs/libcuda.so.1" || true

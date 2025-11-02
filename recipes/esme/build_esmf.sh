@@ -40,8 +40,9 @@ export ESMF_CXXCOMPILEOPTS="$ESMF_CXXCOMPILEOPTS -include cstdint"
 
 cd esme_esmf
 
-if command -v setup_cuda_stubs >/dev/null 2>&1; then
-  setup_cuda_stubs
+# Enable CUDA stubs ONLY for ESMF linking
+if command -v setup_mvapich_cuda_stubs >/dev/null 2>&1; then
+  setup_mvapich_cuda_stubs
 fi
 
 make -j ${CPU_COUNT}
