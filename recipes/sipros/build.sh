@@ -35,6 +35,7 @@ rm -f percolator.zip
 
 # Generate workflow configuration
 cat << EOF > "$PREFIX/share/sipros/workflow.cfg"
+[Paths]
 configGenerator=$PREFIX/bin/configGenerator
 raxport=$PREFIX/bin/raxport
 sipros=$PREFIX/bin/sipros
