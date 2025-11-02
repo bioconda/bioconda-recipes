@@ -1,5 +1,5 @@
 {% set name = "pilea" %}
-{% set version = "1.2.4" %}
+{% set version = "1.3.0" %}
 
 package:
   name: '{{ name|lower }}'
@@ -7,30 +7,34 @@ package:
 
 source:
   url: https://github.com/xinehc/pilea/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 73e49197efda4fdbc3640ac49b06fcc2887995a84adaf3636df37c4c8926c22b
+  sha256: 2588d83145c7705e8d45b4abb98ddb59db55890c87ca36b27165528473871aa3
 
 build:
-  noarch: python
   number: 0
   script: '{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv'
   run_exports:
     - {{ pin_subpackage(name, max_pin='x.x') }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
-    - python >=3.7
+    - python
     - setuptools
     - pip
+    - wheel
+    - cython
   run:
-    - python >=3.7
-    - kmc >=3.2.4
-    - mmh3 >=5.1.0
+    - python
     - scikit-learn >=1.6.1
     - statsmodels >=0.14.4
+    - needletail >=0.7.0
+    - numpy
     - tqdm
-    - biopython
     - threadpoolctl
     - rich-argparse
+    - pigz
+    - tar
 
 test:
     imports:
