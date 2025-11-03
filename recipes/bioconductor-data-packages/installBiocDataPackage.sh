@@ -27,7 +27,7 @@ mkdir -p $STAGING
 TARBALL=$STAGING/$FN
 
 # Prepare caching of binary package
-CACHE_DIR="$PREFIX/cache/$1/$MD5"
+CACHE_DIR="${CONDA_PKGS_DIRS:-$HOME/.conda/pkgs}/bioc_data_cache/$1/$MD5"
 mkdir -p $CACHE_DIR
 R_PLATFORM=$(Rscript -e 'cat(R.version$platform)')
 BINARY_TARBALL="${FN%.tar.gz}_R_${R_PLATFORM}.tar.gz"
