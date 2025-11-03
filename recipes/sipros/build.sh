@@ -11,6 +11,7 @@ mkdir -p "$PREFIX/share/sipros/configTemplates"
 chmod u+x tools/*
 cp -r tools/configGenerator \
       tools/raxport \
+      tools/percolator \
       tools/sipros \
       tools/aerithFeatureExtractor \
       "$PREFIX/bin"
@@ -25,13 +26,6 @@ unzip "philosopher.zip"
 chmod u+x philosopher
 mv philosopher "$PREFIX/bin/"
 rm -f philosopher.zip
-
-# Download and install percolator
-curl -L -o "percolator.zip" "https://github.com/percolator/percolator/releases/download/rel-3-07-01/percolator-noxml-ubuntu-portable.zip"
-unzip "percolator.zip"
-chmod u+x percolator
-mv percolator "$PREFIX/bin/"
-rm -f percolator.zip
 
 # Generate workflow configuration
 cat << EOF > "$PREFIX/share/sipros/workflow.cfg"
