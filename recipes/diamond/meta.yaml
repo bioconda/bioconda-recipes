@@ -1,28 +1,41 @@
-{% set version = "2.1.11" %}
-{% set sha256 = "e669e74ac4a7e45d86024a6b9bfda0642fabb02a8b6ce90a2ec7fb3aeb0f8233" %}
+{% set name = "diamond" %}
+{% set version = "2.1.15" %}
+{% set sha256 = "8159e400bc2eea504199f0dae8ba82a6402546d4d2cd941012cdc13c7e651c66" %}
 
 package:
-  name: diamond
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/bbuchfink/diamond/archive/v{{ version }}.tar.gz
+- url: https://github.com/bbuchfink/diamond/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+- url: https://github.com/ncbi/ncbi-cxx-toolkit-public/archive/refs/tags/release/29.3.0.tar.gz
+  sha256: 1c229854f974054e62c7ca6247ebf64c95aed65c31a03ff4c886328e2168376a
+  folder: ncbi-cxx-toolkit-public
 
 build:
-  number: 2
+  number: 0
   run_exports:
     - {{ pin_subpackage('diamond', max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake <4
+    - cmake
     - make
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
   host:
     - zlib
     - zstd-static
+    - sqlite
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  run:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
 
 test:
   commands:

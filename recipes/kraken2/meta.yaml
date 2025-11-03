@@ -1,20 +1,20 @@
 {% set name = "kraken2" %}
-{% set version = "2.14" %}
-{% set sha256 = "75ffbf82bd13232ec8d39990f48454c6f7d98ceb589af80a60c7e9ed046e7f18" %}
+{% set version = "2.1.6" %}
+{% set sha256 = "5bbd79392ff7c530124986dfdfe126bf638477db94fb7a901ec2daf9261707f3" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/DerrickWood/kraken2/archive/v{{ version }}.tar.gz
+  url: https://github.com/DerrickWood/kraken2/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - Makefile.patch
+    - 0001-src-Makefile.patch
 
 build:
   number: 0
-  run_exports: 
+  run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
@@ -30,6 +30,7 @@ requirements:
     - rsync
     - zlib
   run:
+    - python
     - libgomp      # [linux]
     - llvm-openmp  # [osx]
     - blast
@@ -37,7 +38,6 @@ requirements:
     - wget
     - tar
     - rsync
-    - python
 
 test:
   commands:
@@ -58,8 +58,7 @@ about:
 extra:
   additional-platforms:
     - linux-aarch64
-    # osx-arm64 requires blast and its dependencies
-    # - osx-arm64
+    - osx-arm64
   identifiers:
     - biotools:kraken2
     - usegalaxy-eu:kraken2
