@@ -2,12 +2,7 @@
 set -ex
 # takes a single parameter, the package name
 
-# FOR DEBUGGING
-PREFIX=/home/espenr/temp
-mkdir -p $PREFIX/lib/R/library
-SCRIPT_DIR="$( dirname -- "${BASH_SOURCE[0]}" )"
-
-#SCRIPT_DIR="$( dirname -- "${BASH_SOURCE[0]}" )/../share/bioconductor-data-packages"
+SCRIPT_DIR="$( dirname -- "${BASH_SOURCE[0]}" )/../share/bioconductor-data-packages"
 json="${SCRIPT_DIR}/dataURLs.json"
 FN=`yq ".\"$1\".fn" "${json}"`
 FN=`echo $FN | tr -d \"`  # Strip quotes from filename
