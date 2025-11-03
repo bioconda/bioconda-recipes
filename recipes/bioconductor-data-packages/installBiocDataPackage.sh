@@ -17,6 +17,7 @@ while IFS= read -r value; do
   URLS+=($value);
 done < <(yq ".\"$1\".urls[]" "${json}")
 MD5=`yq ".\"$1\".md5" "${json}"`
+MD5=`echo $MD5 | tr -d \"`  # Trim any flanking quotes
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -25,20 +26,22 @@ STAGING=$PREFIX/share/"$1"
 mkdir -p $STAGING
 TARBALL=$STAGING/$FN
 
-# Prepare caching
-CACHE_DIR=$PREFIX/cache/"$1" # need to be set to something sensible that persists
+# Prepare caching of binary package
+CACHE_DIR="$PREFIX/cache/$1/$MD5"
 mkdir -p $CACHE_DIR
-CACHED_TARBALL="$CACHE_DIR/$FN"
+R_PLATFORM=$(Rscript -e 'cat(R.version$platform)')
+BINARY_TARBALL="${FN%.tar.gz}_R_${R_PLATFORM}.tar.gz"
+CACHED_BINARY_TARBALL="$CACHE_DIR/$BINARY_TARBALL"
 
-# Prepend CACHED_TARBALL to URLS if it exists
-if [[ -f "$CACHED_TARBALL" ]]; then
-  URLS=("file://$CACHED_TARBALL" "${URLS[@]}")
+# Install CACHED_BINARY_TARBALL if it exists
+if [[ -f "$CACHED_BINARY_TARBALL" ]]; then
+  R CMD INSTALL --library=$PREFIX/lib/R/library $CACHED_BINARY_TARBALL
+  exit 0
 fi
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
   URL=`echo $URL | tr -d \"`  # Trim any flanking quotes
-  MD5=`echo $MD5 | tr -d \"`  # Trim any flanking quotes
   curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
@@ -63,7 +66,15 @@ if [[ $SUCCESS != 1 ]]; then
   exit 1
 fi
 
-# Install and clean up
-R CMD INSTALL --library=$PREFIX/lib/R/library $TARBALL
-mv $TARBALL $CACHE_DIR
+# Build binary package and delete source package
+R CMD INSTALL --build $TARBALL
+rm $TARBALL
+
+# Install binary package
+R CMD INSTALL --library=$PREFIX/lib/R/library $BINARY_TARBALL
+
+# Cache binary package
+mv $BINARY_TARBALL $CACHED_BINARY_TARBALL
+
+# delete staging
 rmdir $STAGING
