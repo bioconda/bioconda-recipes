@@ -50,3 +50,21 @@ cat << EOF > "$PREFIX/bin/siproswf"
 python "$PREFIX/share/sipros/scripts/main.py" "\$@"
 EOF
 chmod u+x "$PREFIX/bin/siproswf"
+
+# Add environment variable modifications for activation
+mkdir -p "${PREFIX}/etc/conda/activate.d"
+cat << EOF > "${PREFIX}/etc/conda/activate.d/env_vars.sh"
+#!/usr/bin/env bash
+export LD_LIBRARY_PATH_BACKUP=\$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\${CONDA_PREFIX}/lib
+EOF
+chmod +x "${PREFIX}/etc/conda/activate.d/env_vars.sh"
+
+# Add environment variable restoration for deactivation
+mkdir -p "${PREFIX}/etc/conda/deactivate.d"
+cat << EOF > "${PREFIX}/etc/conda/deactivate.d/env_vars.sh"
+#!/usr/bin/env bash
+export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH_BACKUP
+unset LD_LIBRARY_PATH_BACKUP
+EOF
+chmod +x "${PREFIX}/etc/conda/deactivate.d/env_vars.sh"
