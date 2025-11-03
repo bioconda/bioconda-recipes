@@ -5,6 +5,9 @@ unset LD LINK ARCH
 export CMAKE_INSTALL_RPATH='$ORIGIN/../lib'
 export CMAKE_BUILD_WITH_INSTALL_RPATH=ON
 
+export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
+export PKG_CONFIG_LIBDIR="$PREFIX/lib/pkgconfig"
+
 mkdir -p "$PREFIX/bin"
 mkdir -p "$PREFIX/lib"
 mkdir -p "$PREFIX/share"
