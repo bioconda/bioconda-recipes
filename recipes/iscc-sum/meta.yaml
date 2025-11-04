@@ -10,19 +10,24 @@ source:
   sha256: dc0071b384e8fb3079fed79bca07c3b17adc8f908f95bc62ed83f6570ceaa6a2
 
 build:
+  skip: True  # [py<310]
   entry_points:
     - iscc-sum = iscc_sum.cli:cli
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script: ${RECIPE_DIR}/build.sh
   number: 0
   run_exports:
     - {{ pin_subpackage('iscc-sum', max_pin='x.x') }}
 
 requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
   host:
     - python >=3.10
     - maturin >=1.0,<2.0
     - pip
+    - setuptools
+    - wheel
   run:
     - python >=3.10
     - blake3 >=1.0.5
