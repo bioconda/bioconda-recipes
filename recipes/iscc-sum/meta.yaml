@@ -12,15 +12,19 @@ source:
 build:
   entry_points:
     - iscc-sum = iscc_sum.cli:cli
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  skip: True  # [py<310]
   number: 0
 
 requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
   host:
     - python >=3.10
     - maturin >=1.0,<2.0
     - pip
+    - setuptools
+    - wheel
   run:
     - python >=3.10
     - blake3 >=1.0.5
@@ -28,6 +32,8 @@ requirements:
     - pathspec >=0.12.1
     - universal-pathlib >=0.2.6
     - python-xxhash >=3.5.0
+  run_exports:
+    - {{ pin_subpackage('iscc-sum', max_pin='x.x') }}
 
 test:
   imports:
@@ -39,10 +45,17 @@ test:
     - pip
 
 about:
+  home: https://github.com/bio-codes/iscc-sum
   summary: High-performance ISCC Data-Code and Instance-Code hashing
+  description: High-performance ISCC Data-Code and Instance-Code hashing tool built in Rust with Python bindings.
   license: Apache-2.0
+  license_family: Apache
   license_file: LICENSE
+  doc_url: https://github.com/bio-codes/iscc-sum
+  dev_url: https://github.com/bio-codes/iscc-sum
 
 extra:
   recipe-maintainers:
     - etzm
+  skip-lints:
+    - has_windows_bat_file
