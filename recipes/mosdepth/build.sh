@@ -20,9 +20,9 @@ if [[ "$(uname -m)" == "arm64" ]]; then
 	echo "gcc.options.linker %= \"\${gcc.options.linker} ${LDFLAGS}\"" >>  nim-2.2.*/config/nim.cfg
 	cat nim-2.2.*/config/nim.cfg
 
-	nimble --localdeps build -y --verbose -d:release
+	nimble --localdeps build -y --verbose -d:release --mm:refc
 else
-	nimble --localdeps build -y --verbose -d:release
+	nimble --localdeps build -y --verbose -d:release --mm:refc
 fi
 
 install -v -m 0755 mosdepth "${PREFIX}/bin"
