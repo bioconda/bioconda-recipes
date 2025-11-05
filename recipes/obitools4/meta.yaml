@@ -10,7 +10,8 @@ package:
 build:
   number: 0
   # skip: true # [osx]
-  # run_exports:
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 source:
   url: "https://github.com/metabarcoding/obitools4/archive/refs/tags/Release_{{ version }}.tar.gz"
@@ -18,15 +19,19 @@ source:
 
 requirements:
   build:
-    - go-cgo==1.22.2
+    - {{ compiler('c')}}
+    - {{ stdlib("c") }}
+    - {{ compiler('go-cgo') }}
     - make
-    - sysroot_linux-64
     - zlib
-  # host:
-  # run:
+    - libzlib
+  run:
+    - zlib
+    - libzlib
+
 
 test:
-  commands:
+  commands:  # --help returns exit code 1
     - obiannotate --version
     - obiclean --version
     - obicleandb --version
@@ -47,8 +52,8 @@ test:
     - obimultiplex --version
     - obipairing --version
     - obipcr --version
-    # - obireffamidx --version
-    # - obirefidx --version
+    # - obireffamidx --version  # works on master but not on release 4.4.0
+    # - obirefidx --version  # works on master but not on release 4.4.0
     - obiscript --version
     - obisplit --version
     - obisummary --version
