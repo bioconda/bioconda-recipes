@@ -42,6 +42,9 @@ cd esme_esmf
 
 make -j ${CPU_COUNT}
 
-make install
+make install_lib
+make install_mod
+make install_include
+make install_cmake
 
 export ESMFMKFILE=${PREFIX}/lib/libO/Linux.gfortran.64.${ESMF_COMM}.default/esmf.mk
