@@ -44,4 +44,4 @@ make -j ${CPU_COUNT}
 
 make install
 
-export ESMFMKFILE=${PREFIX}/lib/libO/Linux.gfortran.64.${ESMF_COMM}.default/esmf.mk
+export ESMFMKFILE=${PREFIX}/lib/esmf.mk
