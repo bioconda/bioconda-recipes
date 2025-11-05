@@ -10,13 +10,19 @@ echo "Current directory: ${PWD}"
 echo "Building version: ${VERSION}"
 ls -lh
 
+# Explicitly initialize and update git submodules
+echo "Initializing git submodules..."
+git submodule update --init --recursive
+echo "Submodules initialized. Listing external/lz4:"
+ls -la external/lz4/ | head -20
+
 # Create the output directory
 mkdir -p ${PREFIX}/bin
 
 # Configure the build with CMake, with verbose output
 # Disable BUILD_TESTING to avoid downloading GoogleTest
+# NOTE: Do NOT use -DCONDA_BUILD=ON since we're building LZ4 from source
 cmake -S . -B build-conda \
-    -DCONDA_BUILD=ON \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_VERBOSE_MAKEFILE=ON \
     -DBUILD_TESTING=OFF
