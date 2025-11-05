@@ -74,8 +74,51 @@ requirements:
     - python=3.8
 
 test:
+  requires:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
   commands:
-    - echo "Skipping ESME tests, since individual packages were already tested"
+    # PnetCDF test
+    - export PATH=$PATH:${PREFIX}/bin
+    - pnetcdf-config --all
+
+    # HDF5 test
+    - export PATH=$PATH:${PREFIX}/bin
+    - h5pfc -showconfig
+
+    # NetCDF-C test
+    - export PATH=$PATH:${PREFIX}/bin
+    - nc-config --all
+
+    # NetCDF-Fortran test
+    - export PATH=$PATH:${PREFIX}/bin
+    - nf-config --all
+
+    # PIO test (file check)
+    - test -f ${PREFIX}/include/pio.h
+
+    # ESMF test
+    - |
+      export ESMFMKFILE=${PREFIX}/lib/libO/Linux.gfortran.64.{{ 'mpich' if mpi_name in ['psmpi', 'mvapich'] else 'openmpi' }}.default/esmf.mk
+      if test -f ${ESMFMKFILE}; then echo "ESMF makefile found"; else echo "ESMF makefile not found"; exit 1; fi
+
+    {% if mpi_name != "mvapich" %}
+    # OMB test (adapted for final env)
+    {% if mpi_name == "psmpi" %}
+    - echo "PSMPI does not have mpiexec, skipping OMB test."
+    {% elif mpi_name == "openmpi" %}
+    - echo "Setting plm_rsh_agent and allowing root execution for OpenMPI"
+    - export OMPI_MCA_plm_rsh_agent=$(command -v ssh)
+    - echo "Allow root execution for OpenMPI"
+    - mpiexec --allow-run-as-root -n 2 $PREFIX/libexec/osu-micro-benchmarks/mpi/pt2pt/osu_latency -m 1024:1024
+    {% else %}
+    - mpiexec -n 2 $PREFIX/libexec/osu-micro-benchmarks/mpi/pt2pt/osu_latency -m 1024:1024
+    {% endif %}
+    {% endif %}
+
+    # Overall ESME verification
+    - echo "All ESME components verified successfully"
 
 outputs:
 
@@ -91,10 +134,6 @@ outputs:
         - m4
       host:
         - {{ mpi_spec }}
-    test:
-      commands:
-        - export PATH=$PATH:${PREFIX}/bin
-        - pnetcdf-config --all
     build:
       string: h{{ PKG_HASH }}_{{ build }}
     about:
@@ -123,10 +162,6 @@ outputs:
       run:
         - libaec
         - zlib
-    test:
-      commands:
-        - export PATH=$PATH:${PREFIX}/bin
-        - h5pfc -showconfig
     build:
       string: h{{ PKG_HASH }}_{{ build }}
     about:
@@ -153,10 +188,6 @@ outputs:
         - {{ mpi_spec }}
         - esme_pnetcdf_{{ mpi_pkg_suffix }}
         - zlib
-    test:
-      commands:
-        - export PATH=$PATH:${PREFIX}/bin
-        - nc-config --all
     build:
       string: h{{ PKG_HASH }}_{{ build }}
     about:
@@ -183,10 +214,6 @@ outputs:
         - {{ mpi_spec }}
         - esme_netcdf-c_{{ mpi_pkg_suffix }}
         - esme_pnetcdf_{{ mpi_pkg_suffix }}
-    test:
-      commands:
-        - export PATH=$PATH:${PREFIX}/bin
-        - nf-config --all
     build:
       string: h{{ PKG_HASH }}_{{ build }}
     about:
@@ -218,9 +245,6 @@ outputs:
         - esme_netcdf-c_{{ mpi_pkg_suffix }}
         - esme_netcdf-fortran_{{ mpi_pkg_suffix }}
         - esme_pnetcdf_{{ mpi_pkg_suffix }}
-    test:
-      commands:
-        - test -f ${PREFIX}/include/pio.h
     build:
       string: h{{ PKG_HASH }}_{{ build }}
     about:
@@ -258,9 +282,6 @@ outputs:
         - openblas
         - esme_pio_{{ mpi_pkg_suffix }}
         - esme_pnetcdf_{{ mpi_pkg_suffix }}
-    test:
-      commands:
-        - if test -f ${ESMFMKFILE}; then echo "ESMF makefile found"; else echo "ESMF makefile not found"; exit 1; fi
     build:
       string: h{{ PKG_HASH }}_{{ build }}
     about:
@@ -286,20 +307,6 @@ outputs:
       run:
         - {{ mpi_spec }}
         - openssh  # [mpi_name == 'openmpi']
-    test:
-      commands:
-        {% if mpi_name == "psmpi" %}
-          - echo "PSMPI does not have mpiexec, skipping test."
-        {% elif mpi_name == "mvapich" %}
-          - echo "MVAPIch has built-in OSU benchmarks, no separate package needed."
-        {% elif mpi_name == "openmpi" %}
-          - echo "Setting plm_rsh_agent and allowing root execution for OpenMPI"
-          - export OMPI_MCA_plm_rsh_agent=$(command -v ssh)
-          - echo "Allow root execution for OpenMPI"
-          - mpiexec --allow-run-as-root -n 2 $PREFIX/libexec/osu-micro-benchmarks/mpi/pt2pt/osu_latency -m 1024:1024
-        {% else %}
-          - mpiexec -n 2 $PREFIX/libexec/osu-micro-benchmarks/mpi/pt2pt/osu_latency -m 1024:1024
-        {% endif %}
     build:
       string: h{{ PKG_HASH }}_{{ build }}
     about:
