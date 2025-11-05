@@ -17,7 +17,8 @@ mkdir -p ${PREFIX}/bin
 cmake -S . -B build-conda \
     -DCONDA_BUILD=ON \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_VERBOSE_MAKEFILE=ON
+    -DCMAKE_VERBOSE_MAKEFILE=ON \
+    -DBUILD_TESTING=OFF
 
 # Build the software with verbose output
 cmake --build build-conda -j${CPU_COUNT} --verbose
