@@ -20,12 +20,9 @@ cp -r tools/configGenerator \
 cp script33/* "$PREFIX/share/sipros/scripts/"
 cp configTemplates/* "$PREFIX/share/sipros/configTemplates/"
 
-# Download and install philosopher
-curl -L -o "philosopher.zip" "https://github.com/Nesvilab/philosopher/releases/download/v5.1.0/philosopher_v5.1.0_linux_amd64.zip"
-unzip "philosopher.zip"
+# install philosopher
 chmod u+x philosopher
 mv philosopher "$PREFIX/bin/"
-rm -f philosopher.zip
 
 # Generate workflow configuration
 cat << EOF > "$PREFIX/share/sipros/workflow.cfg"
