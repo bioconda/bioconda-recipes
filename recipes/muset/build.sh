@@ -10,44 +10,14 @@ echo "Current directory: ${PWD}"
 echo "Building version: ${VERSION}"
 ls -lh
 
-# Check if this is a git repo and if submodules exist
-echo "=== Checking git repository status ==="
-git status || echo "Not a git repository or git not available"
-echo "=== Checking .gitmodules ==="
-cat .gitmodules || echo "No .gitmodules file"
-
-# Check if submodules directory exists
-echo "=== Checking external directory before submodule init ==="
-ls -la external/ | head -20
-ls -la external/lz4/ | head -10 || echo "external/lz4 does not exist or is empty"
-
-# Try to initialize submodules if they're not already there
-if [ ! -f "external/lz4/lib/lz4.h" ]; then
-    echo "=== LZ4 submodule not populated, attempting to initialize ==="
-    git submodule update --init --recursive || echo "git submodule command failed"
-    echo "=== After submodule init ==="
-    ls -la external/lz4/ | head -20
-fi
-
-# Verify LZ4 source is present
-if [ ! -f "external/lz4/lib/lz4.h" ]; then
-    echo "ERROR: LZ4 source not found after submodule initialization!"
-    echo "Contents of external/lz4:"
-    ls -laR external/lz4/ || echo "Directory does not exist"
-    exit 1
-fi
-
-echo "=== LZ4 source verified, proceeding with build ==="
-
 # Create the output directory
 mkdir -p ${PREFIX}/bin
 
 # Configure the build with CMake, with verbose output
-# Disable BUILD_TESTING to avoid downloading GoogleTest
 cmake -S . -B build-conda \
+    -DCONDA_BUILD=ON \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_VERBOSE_MAKEFILE=ON \
-    -DBUILD_TESTING=OFF
+    -DCMAKE_VERBOSE_MAKEFILE=ON
 
 # Build the software with verbose output
 cmake --build build-conda -j${CPU_COUNT} --verbose
