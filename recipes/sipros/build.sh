@@ -44,3 +44,7 @@ cat << EOF > "$PREFIX/bin/siproswf"
 python "$PREFIX/share/sipros/scripts/main.py" "\$@"
 EOF
 chmod u+x "$PREFIX/bin/siproswf"
+
+# Create the link of extractPro.sh
+ln -s "$PREFIX/share/sipros/scripts/extractPro.sh" "$PREFIX/bin/extractPro"
+chmod u+x "$PREFIX/bin/extractPro"
