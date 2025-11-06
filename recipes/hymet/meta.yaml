@@ -1,13 +1,13 @@
 {% set name = "hymet" %}
-{% set version = "1.0.0" %}
+{% set version = "1.2.1" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://github.com/inesbmartins02/HYMET/archive/v{{ version }}.tar.gz
-  sha256: b4985691ab6f813bc919449a9d6bcb05ef02980bca05260cd3c3418530a927b7
+  url: https://github.com/ieeta-pt/HYMET/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 0fb8c4da24cd24b2272f65254c7507edebd5e5870afc8e36f9a7e5262973a65f
 
 build:
   number: 0
@@ -18,44 +18,41 @@ build:
 requirements:
   run:
     - perl
-    - python >=3.8
+    - python >=3.9
     - mash
     - minimap2
+    - taxonkit
     - wget
     - pandas
     - numpy
+    - matplotlib-base
+    - seaborn
     - biopython
-    - tqdm
     - csvkit
 
 test:
   commands:
-    - test -f $PREFIX/bin/config.pl
-    - test -f $PREFIX/bin/main.pl
-    - test -f $PREFIX/bin/scripts/mash.sh
-    - test -f $PREFIX/bin/scripts/minimap2.sh
-    - test -f $PREFIX/bin/scripts/downloadDB.py
-    - test -f $PREFIX/bin/scripts/classification.py
-    - test -f $PREFIX/bin/scripts/taxonomy_hierarchy.py
-    - perl -c $PREFIX/bin/config.pl
-    - perl -c $PREFIX/bin/main.pl
+    - test -f $PREFIX/share/hymet/run_hymet_cami.sh
+    - test -f $PREFIX/bin/hymet-config
+    - test -f $PREFIX/bin/hymet-legacy
+    - hymet version
 
 about:
-  home: https://github.com/inesbmartins02/HYMET
+  home: https://github.com/ieeta-pt/HYMET
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: "HYMET (Hybrid Metagenomic Tool) for taxonomic identification of metagenomic sequences."
+  summary: "HYMET provides hybrid Mash+minimap2 metagenomic classification with benchmark and case-study tooling."
   description: |
-    HYMET is a taxonomic identification tool designed for metagenomic sequence analysis. 
-    It uses a combination of tools including Mash, Minimap2, and custom classification 
-    algorithms to identify the taxonomic origin of metagenomic sequences with high accuracy.
-  dev_url: https://github.com/inesbmartins02/HYMET
-  doc_url: https://github.com/inesbmartins02/HYMET
+    HYMET couples Mash candidate filtering, minimap2 alignment, and a weighted LCA resolver to classify contigs
+    and reads. The project bundles the new Python CLI (`bin/hymet`), the legacy Perl pipeline, CAMI benchmark
+    harnesses, and case-study analysis scripts so users can reproduce the published experiments directly.
+  dev_url: https://github.com/ieeta-pt/HYMET
+  doc_url: https://github.com/ieeta-pt/HYMET
 
 extra:
   recipe-maintainers:
     - inesbmartins02
     - jorgeMFS
   identifiers:
-    - biotools:hymet 
+    - biotools:hymet
