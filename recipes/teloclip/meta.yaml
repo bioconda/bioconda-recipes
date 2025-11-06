@@ -1,5 +1,5 @@
 {% set name = "teloclip" %}
-{% set version = "0.2.0" %}
+{% set version = "0.3.2" %}
 
 package:
   name: '{{ name|lower }}'
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 4d468c542456574e30925526ce08171fd4ab0232c2cf5440c190805d6f0e5df9
+  sha256: c2c8573dc33a2f1e37cfd058d7409ed09e603dd6921bfb26983aa8ddfda3ecf2
 
 build:
   run_exports:
@@ -15,8 +15,7 @@ build:
   noarch: python
   number: 0
   entry_points:
-    - teloclip=teloclip.app:main
-    - teloclip-extract=teloclip.app_extract:main
+    - teloclip=teloclip.cli:main
   script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
 
 requirements:
@@ -27,13 +26,21 @@ requirements:
     - hatch-vcs
   run:
     - python >=3.8
+    - biopython
+    - click
+    - pyfaidx
+    - pysam 
+    - rich
 
 test:
   imports:
     - teloclip
   commands:
+    - teloclip --version | grep {{ version }}
     - teloclip --help
-    - teloclip-extract --help
+    - teloclip filter --help
+    - teloclip extract --help
+    - teloclip extend --help
 
 about:
   home: "https://github.com/Adamtaranto/teloclip"
