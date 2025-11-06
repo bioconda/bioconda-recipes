@@ -1,0 +1,66 @@
+{% set name = "bio2zarr" %}
+{% set version = "0.1.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/bio2zarr-{{ version }}.tar.gz
+  sha256: a1a3b28f5a8e433179270cb9ac6ba5113b0b0ae621e176603e22e8fcca888fbd
+
+build:
+  entry_points:
+    - vcf2zarr = bio2zarr.cli:vcf2zarr_main
+    - plink2zarr = bio2zarr.cli:plink2zarr_main
+    - tskit2zarr = bio2zarr.cli:tskit2zarr_main
+    - vcfpartition = bio2zarr.cli:vcfpartition
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("bio2zarr", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools >=69
+    - setuptools-scm >=8
+    - pip
+  run:
+    - python >=3.10
+    - numpy >=1.26
+    - zarr >=2.17,<3
+    - click
+    - tabulate
+    - tqdm
+    - humanfriendly
+    - cyvcf2
+    - tskit >=0.6.4
+    - pandas
+
+test:
+  imports:
+    - bio2zarr
+  commands:
+    - pip check
+    - vcf2zarr --help
+    - tskit2zarr --help
+    - plink2zarr --help
+    - vcfpartition --help
+  requires:
+    - pip
+
+about:
+  home: https://sgkit-dev.github.io/bio2zarr/
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: Convert bioinformatics data to Zarr
+  doc_url: https://sgkit-dev.github.io/bio2zarr/
+  dev_url: https://github.com/sgkit-dev/bio2zarr
+
+extra:
+  recipe-maintainers:
+    - jeromekelleher
+    - benjeffery
+    - tomwhite

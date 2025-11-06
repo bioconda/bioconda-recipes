@@ -1,11 +1,13 @@
 #!/bin/bash -euo
 
-export CFLAGS="${CFLAGS} -fcommon"
+export CFLAGS="${CFLAGS} -O3 -fcommon"
 export CXXFLAGS="${CFLAGS} -fcommon"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 unamestr=`uname`
 
-if [ "$unamestr" == 'Darwin' ];
+if [[ "$unamestr" == 'Darwin' ]];
 then
   if [[ $(uname -m) == 'x86_64' ]]; then
     echo "OSX x86-64: attempting to fix broken (old) SDK behavior"
@@ -18,16 +20,13 @@ then
   export CXXFLAGS="${CXXFLAGS} -fcommon -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
 
-# Add workaround for SSH-based Git connections from Rust/cargo.  See https://github.com/rust-lang/cargo/issues/2078 for details.
-# We set CARGO_HOME because we don't pass on HOME to conda-build, thus rendering the default "${HOME}/.cargo" defunct.
-export CARGO_NET_GIT_FETCH_WITH_CLI=true 
-export CARGO_HOME="$(pwd)/.cargo"
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
-if [ "$unamestr" == 'Darwin' ];
+if [[ "$unamestr" == 'Darwin' ]];
 then
-# build statically linked binary with Rust
-CONDA_BUILD=TRUE RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" RUST_BACKTRACE=1 cargo install -v -v -j 1 --locked --verbose --root $PREFIX --path .
+  # build statically linked binary with Rust
+  CONDA_BUILD=TRUE RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" RUST_BACKTRACE=1 cargo install -v -v -j 1 --locked --verbose --root $PREFIX --path .
 else 
-# build statically linked binary with Rust
-CONDA_BUILD=TRUE RUSTFLAGS="-L $PREFIX/lib64" RUST_BACKTRACE=1 cargo install -v -v --locked --verbose --root $PREFIX --path .
+  # build statically linked binary with Rust
+  CONDA_BUILD=TRUE RUSTFLAGS="-L $PREFIX/lib64" RUST_BACKTRACE=1 cargo install -v -v --locked --verbose --root $PREFIX --path .
 fi

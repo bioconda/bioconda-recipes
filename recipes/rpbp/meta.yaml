@@ -11,9 +11,10 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 2
-  skip: True  # [py >= 311 ]
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv && compile-rpbp-models"
+  number: 3
+  #The latest version of pbiotools is 4.0.2, need python < 311
+  skip: True  # [py > 310]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv && compile-rpbp-models
   entry_points:
     - extract-orf-coordinates = rpbp.reference_preprocessing.extract_orf_coordinates:main
     - label-orfs = rpbp.reference_preprocessing.label_orfs:main
@@ -44,7 +45,7 @@ build:
     - create-read-length-orf-profiles = rpbp.analysis.profile_construction.create_read_length_orf_profiles:main
     - collect-read-length-orf-profiles = rpbp.analysis.profile_construction.collect_read_length_orf_profiles:main
   run_exports:
-    - {{ pin_subpackage('rpbp', max_pin='x') }}
+    - {{ pin_subpackage('rpbp', max_pin="x") }}
 
 requirements:
   build:
@@ -62,7 +63,7 @@ requirements:
     - dash-bio
     - dash-bootstrap-components
     - fastqc
-    - flexbar
+    - flexbar  # [not (linux and aarch64)]
     - joblib
     - numpy
     - pandas
@@ -117,10 +118,12 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: "Ribosome profiling with Bayesian predictions (Rp-Bp)"
+  summary: "Ribosome profiling with Bayesian predictions (Rp-Bp)."
   dev_url: "https://github.com/dieterich-lab/rp-bp"
   doc_url: "https://rp-bp.readthedocs.io/en/latest"
 
 extra:
   identifiers:
     - doi:10.1093/nar/gkw1350
+  additional-platforms:
+    - linux-aarch64

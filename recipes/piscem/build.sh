@@ -37,7 +37,8 @@ CONDA_BUILD=TRUE RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" RUST_BAC
 else
 export CFLAGS="${CFLAGS} --param ggc-min-expand=20 --param ggc-min-heapsize=8192"
 export CXXFLAGS="${CXXFLAGS} --param ggc-min-expand=20 --param ggc-min-heapsize=8192"
+export CMAKE_POLICY_VERSION_MINIMUM=3.5
 # build statically linked binary with Rust
-CONDA_BUILD=TRUE RUSTFLAGS="-L $PREFIX/lib64" RUST_BACKTRACE=1 cargo install -v -v -j 1 --verbose --root $PREFIX --path .
+CMAKE_POLICY_VERSION_MINIMUM=3.5 CONDA_BUILD=TRUE RUSTFLAGS="-L $PREFIX/lib64" RUST_BACKTRACE=1 cargo install -v -v -j 1 --verbose --root $PREFIX --path .
 
 fi
