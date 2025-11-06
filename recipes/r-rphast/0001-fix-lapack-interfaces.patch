@@ -1,0 +1,142 @@
+--- src/eigen.c	2020-02-14 01:26:41.000000000 +0800
++++ src/eigen.c	2025-06-25 17:04:58.042656640 +0800
+@@ -56,8 +56,10 @@
+   mat_to_lapack(M, tmp);
+ 
+ #ifdef R_LAPACK
++  size_t jobvl_len = 1;
++  size_t jobvr_len = 1;
+   F77_CALL(dgeev)(&jobvl, &jobvr, &n, tmp, &n, wr, wi, vl, &n,
+-		  vr, &n, work, &lwork, &info);
++		  vr, &n, work, &lwork, &info, jobvl_len, jobvr_len);
+ #else
+   dgeev_(&jobvl, &jobvr, &n, tmp, &n, wr, wi, vl,
+ 	 &n, vr, &n, work, &lwork, &info);
+@@ -193,8 +195,10 @@
+ 	M->nrows, M->ncols);
+ 
+ #ifdef R_LAPACK
++  size_t jobvl_len = 1;
++  size_t jobvr_len = 1;
+   F77_CALL(dgeev)(&jobvl, &jobvr, &n, tmp, &n, wr, wi, NULL,
+-		  &n, NULL, &n, work, &lwork, &info);
++		  &n, NULL, &n, work, &lwork, &info, jobvl_len, jobvr_len);
+ #else
+   dgeev_(&jobvl, &jobvr, &n, tmp, &n, wr, wi, NULL,
+          &n, NULL, &n, work, &lwork, &info);
+--- src/markov_matrix.c	2020-02-14 01:26:41.000000000 +0800
++++ src/markov_matrix.c	2025-06-25 16:29:59.950656640 +0800
+@@ -283,7 +283,8 @@
+     mat_to_lapack(Qt, mat);
+     ln = (LAPACK_INT)n;
+ #ifdef R_LAPACK
+-    F77_CALL(dgebal)(&job, &ln, mat, &ln, &ilo, &ihi, scale, &info);
++    size_t job_len = 1;
++    F77_CALL(dgebal)(&job, &ln, mat, &ln, &ilo, &ihi, scale, &info, job_len);
+ #else
+     dgebal_(&job, &ln, mat, &ln, &ilo, &ihi, scale, &info);
+ #endif
+@@ -423,7 +424,9 @@
+     // undo balancing- check- this function is meant for eigenvalues,
+     // not sure if job should be 'R' or 'L', or if it will work at all.
+ #ifdef R_LAPACK
+-    F77_CALL(dgebak)(&job, &side, &ln, &ilo, &ihi, scale, &ln, mat, &ln, &info);
++    size_t job_len = 1;
++    size_t side_len = 1;
++    F77_CALL(dgebak)(&job, &side, &ln, &ilo, &ihi, scale, &ln, mat, &ln, &info, job_len, side_len);
+ #else
+     dgebak_(&job, &side, &ln, &ilo, &ihi, scale, &ln, mat, &ln, &info);
+ #endif
+--- src/memory_handler.c	2020-02-14 01:26:41.000000000 +0800
++++ src/memory_handler.c	2025-06-25 16:44:49.970656640 +0800
+@@ -34,6 +34,8 @@
+   int open_files_alloc_len;
+ };
+ 
++
++
+ static MemList *memlist=NULL;
+ #ifdef USE_PHAST_MEMORY_HANDLER
+ static MemList *big_memlist = NULL;
+@@ -46,11 +48,11 @@
+ 
+ #ifdef RPHAST
+ #undef malloc 
+-#define malloc(x) (void*)Calloc((x),char)
++#define malloc(x) (void*)R_Calloc((x),char)
+ #undef realloc
+-#define realloc(x,n) (void*)Realloc((x),(n),char)
++#define realloc(x,n) (void*)R_Realloc((x),(n),char)
+ #undef free
+-#define free(x) Free((x))
++#define free(x) R_Free((x))
+ #endif
+ 
+ 
+@@ -404,7 +406,7 @@
+     *(void**)ptr[0] = NULL;
+   }
+ #ifdef RPHAST
+-  Free(ptr);
++  R_Free(ptr);
+ #else
+   free((void*)ptr);
+ #endif
+--- src/phylo_fit.c	2020-02-14 01:26:41.000000000 +0800
++++ src/phylo_fit.c	2025-06-26 09:52:38.230656640 +0800
+@@ -38,16 +38,25 @@
+ /* initialize phyloFit options to defaults (slightly different
+    for rphast).
+  */
+-struct phyloFit_struct* phyloFit_struct_new(int rphast) {
++struct phyloFit_struct* phyloFit_struct_new() {
+   struct phyloFit_struct *pf = smalloc(sizeof(struct phyloFit_struct));
+   pf->msa = NULL;
+-  pf->output_fname_root = rphast ? NULL : "phyloFit";
++  #ifdef RPHAST
++  pf->output_fname_root = NULL;
++  pf->see_for_help = "phyloFit";
++  pf->estimate_backgd = TRUE;
++  pf->results = lol_new(2);
++  #else
++  pf->output_fname_root = "phyloFit";
++  pf->see_for_help = "'phyloFit -h'";
++  pf->estimate_backgd = FALSE;
++  pf->results = NULL;
++  #endif
+   pf->logf = NULL;
+   pf->reverse_group_tag = NULL;
+   pf->root_seqname = NULL;
+   pf->subtree_name = NULL;
+   pf->error_fname = NULL;
+-  pf->see_for_help = rphast ? "phyloFit" : "'phyloFit -h'";
+   pf->parsimony_cost_fname = NULL;
+   pf->msa_fname = NULL;
+   pf->subst_mod = UNDEF_MOD;
+@@ -64,7 +73,6 @@
+   pf->do_expected_nsubst_tot = FALSE;
+   pf->do_expected_nsubst_col = FALSE;
+   pf->random_init = FALSE;
+-  pf->estimate_backgd = rphast ? TRUE : FALSE;  //in rphast mode we use no.opt to specify no estimate backgd
+   pf->estimate_scale_only = FALSE;
+   pf->do_column_probs = FALSE;
+   pf->nonoverlapping = FALSE;
+@@ -98,7 +106,6 @@
+   pf->selection = 0.0;
+   pf->max_em_its = -1;
+ 
+-  pf->results = rphast ? lol_new(2) : NULL;
+   return pf;
+ }
+ 
+--- src/rph_phyloFit.c	2020-02-14 01:26:41.000000000 +0800
++++ src/rph_phyloFit.c	2025-06-25 16:16:43.078656640 +0800
+@@ -65,7 +65,7 @@
+   List *new_rate_weights = NULL;
+ 
+   GetRNGstate(); //seed R's random number generator
+-  pf = phyloFit_struct_new(1);  //sets appropriate defaults for RPHAST mode
++  pf = phyloFit_struct_new();  //sets appropriate defaults for RPHAST mode
+ 
+   pf->msa = (MSA*)EXTPTR_PTR(msaP);
+ 

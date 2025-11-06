@@ -6,8 +6,12 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/genome/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 8ebf84d9efee0f2d3b43f0452dbf16b27337c960e25128f6a7173119e62588b8
+  git_url: https://github.com/genome/bam-readcount.git
+  git_commit: 944c11fe08ca7330fbf7a5783aff75976714c0d4
+  patches:
+    - 0001_configure_boost_toolset.patch  # [linux]
+    - 0002_configure_boost_toolset_macOS.patch  # [osx]
+    - 0003-BuildSamtools.cmake.patch  # [osx]
 
 build:
   number: 3
@@ -20,11 +24,16 @@ requirements:
     - cmake
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
+    - clangdev  # [osx]
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
   host:
-    - zlib
     - pthread-stubs
     - wget
-    - clangdev
+    - icu
+    - tar
   run:
     - python
 
@@ -39,11 +48,15 @@ about:
   license_file: LICENSE
   summary: "bam-readcount generates metrics at single nucleotide positions."
   dev_url: "https://github.com/genome/bam-readcount"
-  doc_url: "https://github.com/genome/bam-readcount/blob/master/README.md"
+  doc_url: "https://github.com/genome/bam-readcount/blob/v{{ version }}/README.md"
 
 extra:
-  additional-platforms:
-    - linux-aarch64
   identifiers:
     - doi:10.21105/joss.03722
     - biotools:bam-readcount
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

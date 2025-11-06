@@ -1,0 +1,44 @@
+{% set name = "nwkit" %}
+{% set version = "0.18.1" %} 
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/kfuku52/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 465263d87a6dad860341f8f3cb590087aa01d9f898b5855c9b5af614956cbbe5
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-build-isolation --no-deps -vv"
+  run_exports:
+    - {{ pin_subpackage("nwkit", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.8
+    - ete3
+    - biopython
+
+test:
+  commands:
+    - nwkit --help
+  imports:
+    - nwkit
+
+about:
+  home: "https://github.com/kfuku52/nwkit"
+  license: "BSD-3-Clause"
+  license_file: LICENSE
+  summary: "Tools for processing newick trees"
+
+extra:
+  recipe-maintainers:
+    - kfuku52

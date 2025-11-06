@@ -17,6 +17,8 @@ mkdir -p $PREFIX/libexec/bcftools
 cp gtc2vcf/affy2vcf.c bcftools/plugins/
 cp gtc2vcf/gtc2vcf.c bcftools/plugins/
 cp gtc2vcf/gtc2vcf.h bcftools/plugins/
+cp gtc2vcf/BAFregress.c bcftools/plugins/
+cp gtc2vcf/idat2gtc.c bcftools/plugins/
 
 pushd bcftools
 ./configure --prefix=$PREFIX --with-htslib=system --enable-libgsl
@@ -26,3 +28,5 @@ popd
 # Move custom bcftools plugins to the ~/libexec/bcftools directory.
 mv bcftools/plugins/affy2vcf.so $PREFIX/libexec/bcftools/
 mv bcftools/plugins/gtc2vcf.so $PREFIX/libexec/bcftools/
+mv bcftools/plugins/idat2gtc.so $PREFIX/libexec/bcftools/
+mv bcftools/plugins/BAFregress.so $PREFIX/libexec/bcftools/
