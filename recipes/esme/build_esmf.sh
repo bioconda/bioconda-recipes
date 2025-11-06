@@ -44,4 +44,10 @@ make -j ${CPU_COUNT}
 
 make install
 
+echo "_________________________________________________________"
+
+find ${PREFIX} -name esmf.mk
+
+echo "_________________________________________________________"
+
 export ESMFMKFILE=${PREFIX}/lib/esmf.mk
