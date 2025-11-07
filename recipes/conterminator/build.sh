@@ -7,9 +7,9 @@ sed -i '1s/2.8.9/3.5/' CMakeLists.txt
 sed -i '1s/2.8.12/3.5/' lib/mmseqs/CMakeLists.txt
 sed -i '1s/2.8.4/3.5/' lib/mmseqs/lib/tinyexpr/CMakeLists.txt
 
-if [[ "$(uname -m)" == "aarch64" ]];then
+if [[ ! "$(uname -s)" == "Drawin" ]];then
 
-        sed -i '12c\#include <cstdint>' lib/mmseqs/src/prefiltering/Indexer.h
+    sed -i '12c\#include <cstdint>' lib/mmseqs/src/prefiltering/Indexer.h
 	sed -i '3c\#include <cstdint>' lib/mmseqs/src/commons/Util.h
 	sed -i '3c\#include <cstdint>' lib/mmseqs/src/commons/Debug.h
 	sed -i '168c\return {pattern, static_cast<unsigned int>(pair.second)};' lib/mmseqs/src/commons/Sequence.cpp
