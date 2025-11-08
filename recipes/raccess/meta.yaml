@@ -1,0 +1,36 @@
+{% set name = "raccess" %}
+{% set version = "0.0.0+git" %}
+
+package:
+    name: {{ name }}
+    version: {{ version }}
+
+source:
+   git_url: https://github.com/gterai/raccess.git
+   git_rev: ad29d098b62606aa4051951469780b4e7be54536
+   patches:
+    - raccess_fix.patch
+build:
+   number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host: []
+  run: []
+
+test:
+  commands:
+    - test -x "$PREFIX/bin/raccess"
+    - bash -lc '"$PREFIX/bin/raccess" -h > out.txt 2>&1 || true'
+    - grep -F "bad option" out.txt
+
+about:
+  home: https://github.com/gterai/raccess
+  license: MIT
+  summary: "Fast RNA accessibility estimator"
+
+extra:
+  recipe-maintainers:
+    - RedPenguin100
