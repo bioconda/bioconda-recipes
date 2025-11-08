@@ -1,7 +1,7 @@
 set -euxo pipefail
 
 if [[ -f src/Makefile ]]; then
-  make -C src -j8
+  make -C src
 else
   echo "No Makefile detected" >&2
   exit 1
