@@ -1,24 +1,24 @@
 {% set name = "sonicparanoid" %}
-{% set version = "2.0.8" %}
-{% set sha256 = "3649ca513f3ad72f495ccd3aa9871ca9e7bdc0bef21b4efa9e93eeae405c24c2" %}
+{% set version = "2.0.9" %}
+{% set sha256 = "0c62b9584c4f4f614f299935842033e7998cc84a528ae1c2bbf8c84b2beb80cc" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/sonicparanoid-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/sonicparanoid-{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
     - sys_tools.patch
     - use-env-vars.patch
 
 build:
-  number: 1
-  skip: True  # [py < 39 or py >= 313]
+  number: 0
+  skip: True  # [py < 310 or py >= 313]
   script:
-    - "mkdir -p ${PREFIX}/bin"
-    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+    - mkdir -p ${PREFIX}/bin
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   entry_points:
     - sonicparanoid = sonicparanoid.sonic_paranoid:main
     - sonicparanoid-get-test-data = sonicparanoid.get_test_data:main
@@ -26,7 +26,7 @@ build:
     - sonicparanoid-extract = sonicparanoid.sonic_paranoid_extract:main
     - sonic-debug-infer-ortho-table = sonicparanoid.sonic_infer_ortho_table:main
   run_exports:
-    - {{ pin_subpackage(name, max_pin='x') }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -39,7 +39,7 @@ requirements:
     - numpy
   run:
     - python
-    - {{ pin_compatible('numpy') }}
+    - numpy
     - pandas >=2.2.0
     - scipy <1.13
     - biopython >=1.83
@@ -68,7 +68,7 @@ test:
 about:
   home: "https://gitlab.com/salvo981/sonicparanoid2"
   license: "GPL-3.0-only"
-  license_family: "GPL"
+  license_family: GPL3
   license_file: "LICENSE.md"
   summary: "SonicParanoid: fast, accurate, and comprehensive orthology inference with machine learning and language models"
   dev_url: "https://gitlab.com/salvo981/sonicparanoid2"
@@ -81,3 +81,4 @@ extra:
     - biotools:SonicParanoid
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
