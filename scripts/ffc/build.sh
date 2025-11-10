@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 mkdir -p $PREFIX/bin
 
