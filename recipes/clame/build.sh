@@ -1,6 +1,10 @@
 #!/bin/bash
 echo $PREFIX
 
+export CPP=${CXX}
+export CXX=${CXX}
+export CC=${CC}
+
 echo "Binning compilation"
 cd binning
 make all CXX=${CXX}  ILIB="-I${BUILD_PREFIX}/include -L${BUILD_PREFIX}/lib"
