@@ -1,9 +1,7 @@
 #!/bin/bash
 echo $PREFIX
 
-export CPP=${CXX}
-export CXX=${CXX}
-export CC=${CC}
+sed -i '1c\CPP ?= $(CXX)' Makefile
 
 echo "Binning compilation"
 cd binning
