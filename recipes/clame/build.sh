@@ -2,7 +2,9 @@
 echo $PREFIX
 
 sed -i '1c\CPP ?= $(CXX)' Makefile
-
+sed -i '1c\CPP ?= $(CXX)' binning/Makefile
+sed -i '1c\CPP ?= $(CXX)' genFm9/Makefile
+sed -i '1c\CPP ?= $(CXX)' mapping/Makefile
 echo "Binning compilation"
 cd binning
 make all CXX=${CXX}  ILIB="-I${BUILD_PREFIX}/include -L${BUILD_PREFIX}/lib"
