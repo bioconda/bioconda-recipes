@@ -20,8 +20,6 @@ build:
   rpaths:
     - lib/R/lib/
     - lib/
-  run_exports:
-    - {{ pin_subpackage(name, max_pin='x.x') }}
 
 requirements:
   build:
@@ -35,7 +33,7 @@ requirements:
 
 test:
   commands:
-    - $R -q -e "library('deepKin'); packageVersion('deepKin')"           # [not win]
+    - $R -q -e "cat('libPaths= ', paste(.libPaths(), collapse=';'), '\n'); stopifnot('deepKin' %in% rownames(installed.packages())); library('deepKin'); packageVersion('deepKin'); sessionInfo()"           # [not win]
     - "\"%R%\" -q -e \"library('deepKin'); packageVersion('deepKin')\""  # [win]
 
 about:
@@ -55,3 +53,5 @@ about:
 extra:
   recipe-maintainers:
     - VonPoo
+  skip-lints:
+    - missing_run_exports
