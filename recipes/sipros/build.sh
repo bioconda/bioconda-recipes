@@ -20,6 +20,9 @@ cp -r tools/configGenerator \
 cp script33/* "$PREFIX/share/sipros/scripts/"
 cp configTemplates/* "$PREFIX/share/sipros/configTemplates/"
 
+# Copy the license file
+cp LICENSE "$PREFIX/share/sipros/LICENSE"
+
 # install philosopher
 chmod u+x philosopher
 mv philosopher "$PREFIX/bin/"
