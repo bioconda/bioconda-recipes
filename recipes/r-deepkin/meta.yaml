@@ -1,0 +1,55 @@
+{% set name = 'r-deepkin' %}
+{% set version = '0.1.0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url:
+    - https://github.com/qixininin/deepKin/archive/refs/tags/v1.0.0.tar.gz
+  sha256: 8354d2223dbc07fd11fd39270610c2a5c43146f4150a4a92185ff0ffd2eefe40
+
+build:
+  merge_build_host: True  # [win]
+  number: 0
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ posix }}zip               # [win]
+  host:
+    - r-base==4.3.2
+    - r-readr
+  run:
+    - r-base==4.3.2
+    - r-readr
+
+test:
+  commands:
+    - $R -q -e "library('deepKin'); packageVersion('deepKin')"           # [not win]
+    - "\"%R%\" -q -e \"library('deepKin'); packageVersion('deepKin')\""  # [win]
+
+about:
+  home: https://github.com/qixininin/deepKin
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: "DeepKin: efficient and precise estimation for in-depth genetic relatedness"
+  description: |
+    DeepKin provides efficient and precise estimation for in-depth genetic relatedness.
+    It includes functions for calculating critical values, minimum effective markers,
+    and power analysis for genetic relatedness studies.
+  doc_url: https://github.com/qixininin/deepKin
+  dev_url: https://github.com/qixininin/deepKin
+
+extra:
+  recipe-maintainers:
+    - VonPoo
