@@ -80,6 +80,7 @@ cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"     \
       -DCMAKE_CXX_COMPILER="${CXX}"                \
       -DCMAKE_CXX_STANDARD="${CMAKE_CXX_STANDARD}" \
       "${CMAKE_PLATFORM_FLAGS[@]}"                 \
+      -G ninja                                     \
       -B build/                                    \
       -S .
 
