@@ -2,6 +2,7 @@
 
 export CONAN_NON_INTERACTIVE=1
 export CMAKE_BUILD_PARALLEL_LEVEL="${CPU_COUNT}"
+export CMAKE_C_STANDARD=23
 export CMAKE_CXX_STANDARD=23
 export CTEST_PARALLEL_LEVEL="${CPU_COUNT}"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
@@ -80,7 +81,6 @@ cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"     \
       -DCMAKE_CXX_COMPILER="${CXX}"                \
       -DCMAKE_CXX_STANDARD="${CMAKE_CXX_STANDARD}" \
       "${CMAKE_PLATFORM_FLAGS[@]}"                 \
-      -G ninja                                     \
       -B build/                                    \
       -S .
 
