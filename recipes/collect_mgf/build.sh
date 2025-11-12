@@ -1,5 +1,5 @@
 #!/bin/bash
-if [[ "$(uname -m )" == 'aarch64']];then
+if [[ "$(uname -m )" == "aarch64"]]; then
 sed -i '12c\#include <unistd.h>' collect_mgf.c
 sed -i '58s/close/fclose/' collect_mgf.c
 sed -i '85s/close/fclose/' collect_mgf.c
