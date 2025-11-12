@@ -1,5 +1,8 @@
 #!/bin/bash
-if [[ ! "$(uname -s )" == "Darwin" ]]; then
+if [[  "$(uname -s )" == "Darwin" ]]; then
+sed -i 's/strtok('\''\\0'\'',/strtok(NULL,/g' collect_mgf.c
+sed -i '1i#include <unistd.h>' collect_mgf.c
+else
 sed -i '12c\#include <unistd.h>' collect_mgf.c
 sed -i '58s/close/fclose/' collect_mgf.c
 sed -i '85s/close/fclose/' collect_mgf.c
