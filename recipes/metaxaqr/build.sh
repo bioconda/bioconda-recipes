@@ -3,6 +3,7 @@
 sed -i 's+#!/usr/bin/perl+#!/usr/bin/env perl+' get_fasta
 sed -i 's+#!/usr/bin/perl+#!/usr/bin/env perl+' metaxaQR
 sed -i 's+#!/usr/bin/perl+#!/usr/bin/env perl+' metaxaQR_c
+sed -i 's+#!/usr/bin/perl+#!/usr/bin/env perl+' metaxaQR_dc
 sed -i 's+#!/usr/bin/perl+#!/usr/bin/env perl+' metaxaQR_dbb
 sed -i 's+#!/usr/bin/perl+#!/usr/bin/env perl+' metaxaQR_install_database
 sed -i 's+#!/usr/bin/perl+#!/usr/bin/env perl+' metaxaQR_rf
