@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export CCACHE_DISABLE=1
 export CONAN_NON_INTERACTIVE=1
 export CMAKE_BUILD_PARALLEL_LEVEL="${CPU_COUNT}"
 export CMAKE_C_STANDARD=23
@@ -90,7 +91,6 @@ cmake -DBUILD_SHARED_LIBS=ON                       \
       -DHICTK_ENABLE_TESTING=ON                    \
       -DHICTK_WITH_ARROW=OFF                       \
       -DHICTK_WITH_EIGEN=OFF                       \
-      -DOPT_ENABLE_CCACHE=OFF                      \
       "${CMAKE_PLATFORM_FLAGS[@]}"                 \
       -B build/                                    \
       -S .
