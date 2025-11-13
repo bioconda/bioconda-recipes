@@ -33,3 +33,20 @@ index df902f3..39be19e 100644
 -libtax: taxonomy.o mmap_file.o libtax.o
 +libtax.so: taxonomy.o mmap_file.o libtax.o
  	$(CXX) $(CXXFLAGS) -shared -o libtax.so taxonomy.o mmap_file.o libtax.o
+diff --git a/install_kraken2.sh b/install_kraken2.sh
+index 248b553..5a9a7eb 100755
+--- a/install_kraken2.sh
++++ b/install_kraken2.sh
+@@ -28,10 +28,10 @@ fi
+ # Perl cmd used to canonicalize dirname - "readlink -f" doesn't work
+ # on OS X.
+ export KRAKEN2_DIR
+-KRAKEN2_DIR=$(perl -MCwd=abs_path -le 'print abs_path(shift)' "$1")
++KRAKEN2_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}/libexec"
+
+ mkdir -p "$KRAKEN2_DIR"
+-make -C src install
++make -C src install CXX="$CXX" CC="$CC" -j"$CPU_COUNT"
+ for file in scripts/*
+ do
+   destination_file="$KRAKEN2_DIR/$(basename "$file")"
