@@ -63,28 +63,32 @@ sed -i.bak 's/set(HICTK_PROJECT_VERSION_SUFFIX "")/set(HICTK_PROJECT_VERSION_SUF
 CMAKE_PREFIX_PATH="${CMAKE_PREFIX_PATH}:${PWD}/cmake-prefix"
 
 # https://docs.conda.io/projects/conda-build/en/stable/user-guide/environment-variables.html#environment-variables-set-during-the-build-process
-cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"     \
-      -DCMAKE_PREFIX_PATH="${CMAKE_PREFIX_PATH}"   \
-      -DCMAKE_SYSTEM_PROCESSOR="$(uname -m)"       \
-      -DBUILD_SHARED_LIBS=ON                       \
-      -DENABLE_DEVELOPER_MODE=OFF                  \
-      -DHICTK_ENABLE_TESTING=ON                    \
-      -DHICTK_ENABLE_FUZZY_TESTING=OFF             \
-      -DHICTK_BUILD_EXAMPLES=OFF                   \
-      -DHICTK_BUILD_BENCHMARKS=OFF                 \
-      -DHICTK_WITH_ARROW=OFF                       \
-      -DHICTK_WITH_EIGEN=OFF                       \
-      -DHICTK_BUILD_TOOLS=ON                       \
-      -DHICTK_ENABLE_GIT_VERSION_TRACKING=OFF      \
-      -DCMAKE_INSTALL_PREFIX="${PREFIX}"           \
-      -DCMAKE_C_COMPILER="${CC}"                   \
+cmake -DBUILD_SHARED_LIBS=ON                       \
+      -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"     \
       -DCMAKE_CXX_COMPILER="${CXX}"                \
       -DCMAKE_CXX_STANDARD="${CMAKE_CXX_STANDARD}" \
+      -DCMAKE_C_COMPILER="${CC}"                   \
+      -DCMAKE_INSTALL_PREFIX="${PREFIX}"           \
+      -DCMAKE_PREFIX_PATH="${CMAKE_PREFIX_PATH}"   \
+      -DCMAKE_SYSTEM_PROCESSOR="$(uname -m)"       \
+      -DENABLE_DEVELOPER_MODE=OFF                  \
+      -DHICTK_BUILD_BENCHMARKS=OFF                 \
+      -DHICTK_BUILD_EXAMPLES=OFF                   \
+      -DHICTK_BUILD_TOOLS=ON                       \
+      -DHICTK_DOWNLOAD_TEST_DATASET=OFF            \
+      -DHICTK_ENABLE_FUZZY_TESTING=OFF             \
+      -DHICTK_ENABLE_GIT_VERSION_TRACKING=OFF      \
+      -DHICTK_ENABLE_TESTING=ON                    \
+      -DHICTK_WITH_ARROW=OFF                       \
+      -DHICTK_WITH_EIGEN=OFF                       \
+      -DOPT_ENABLE_CCACHE=OFF                      \
       "${CMAKE_PLATFORM_FLAGS[@]}"                 \
       -B build/                                    \
       -S .
 
 cmake --build build/
+
+"${RECIPE_DIR}/download_test_dataset.sh"
 
 ctest --test-dir build/   \
       --output-on-failure \
