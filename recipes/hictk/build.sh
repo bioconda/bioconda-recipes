@@ -61,6 +61,12 @@ conan install conanfile.py \
 # Add bioconda suffix to hictk version
 sed -i.bak 's/set(HICTK_PROJECT_VERSION_SUFFIX "")/set(HICTK_PROJECT_VERSION_SUFFIX "bioconda")/' CMakeLists.txt
 
+# Replace deprecated link flags for stripping (as stripping is done by cmake --install)
+mv src/hictk/CMakeLists.txt CMakeLists.txt.bak
+awk '/if\(CMAKE_CXX_COMPILER_ID STREQUAL "Clang"/{in_block=1; next} /endif()/{in_block=0; next} !in_block {print}' \
+    CMakeLists.txt.bak > src/hictk/CMakeLists.txt
+rm CMakeLists.txt.bak
+
 CMAKE_PREFIX_PATH="${CMAKE_PREFIX_PATH}:${PWD}/cmake-prefix"
 
 # help cmake find the tools required to enable LTO
