@@ -77,6 +77,7 @@ cmake -DBUILD_SHARED_LIBS=ON                       \
       -DCMAKE_C_COMPILER="${CC}"                   \
       -DCMAKE_C_COMPILER_AR="${AR}"                \
       -DCMAKE_C_COMPILER_RANLIB="${RANLIB}"        \
+      -DCMAKE_C_STANDARD="${CMAKE_C_STANDARD}"     \
       -DCMAKE_INSTALL_PREFIX="${PREFIX}"           \
       -DCMAKE_LINKER_TYPE=LLD                      \
       -DCMAKE_PREFIX_PATH="${CMAKE_PREFIX_PATH}"   \
