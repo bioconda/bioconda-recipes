@@ -4,9 +4,9 @@ export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -pthread"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-int-conversion -Wno-implicit-function-declaration"
-export CXXFLAGS="${CXXFLAGS} -O3 -pthread"
+export CXXFLAGS="${CXXFLAGS} -O3 -pthread -D_LIBCPP_DISABLE_AVAILABILITY"
 export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig"
-export CMAKE_THREAD_LIBS_INIT="-lpthread"
+export CMAKE_THREAD_LIBS_INIT="-pthread"
 export CMAKE_USE_PTHREADS_INIT=1
 export CMAKE_HAVE_LIBC_PTHREAD=1
 
