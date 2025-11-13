@@ -116,4 +116,4 @@ cmake \
   --component Runtime \
   --strip
 
-"${PREFIX}/bin/hictk" --version
+"${PREFIX}/bin/hictk" --version | grep 'bioconda$'
