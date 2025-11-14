@@ -1,0 +1,49 @@
+{% set version = "0.1.1" %}
+package:
+  name: rabbitsketch
+  version: {{ version }}
+
+source:
+  url: https://github.com/RabbitBio/RabbitSketch/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 3091e18804d84070b9a453b724858b30c1544be403007e54cfb2e526ecb14f20 
+
+build:
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('rabbitsketch', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+    - libgomp  # [linux]
+  host:
+    - python >=3.7,<3.11
+    - cmake
+    - zlib
+    - pybind11 >=2.6, <2.7
+    - cython
+    - libxcrypt
+    - setuptools
+    - pip
+    - wheel
+  run:
+    - python >=3.7,<3.11
+
+test:
+  requires:
+    - python >=3.7,<3.11
+  commands:
+    - python -c "import sys; print(sys.path)"
+    - python -c "import rabbitsketch; print(rabbitsketch.__file__)"
+    - python -c "import rabbitsketch"
+    - python -c "from rabbitsketch import Kssd"
+
+about:
+  home: https://github.com/RabbitBio/RabbitSketch
+  license: GPL-3.0-or-later
+  license_file: LICENSE.txt
+  summary: "RabbitSketch is a highly optimized sketching library that exploits the power of modern multi-core CPUs."
+

@@ -1,33 +1,34 @@
 {% set name = "savana" %}
-{% set version = "1.0.5" %}
+{% set version = "1.3.6" %}
 
 package:
-  name: "{{ name }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://github.com/cortes-ciriano-lab/{{ name }}/archive/{{ version }}.tar.gz"
-  sha256: 987cf91c355f98e45b29fbca32d7766284eea98d63333ed34f60885d8234510e
+  url: https://github.com/cortes-ciriano-lab/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: 8db4cb33baf3c71622c0508382e579dd9d83f1b6d9d57cbd3e1027b59b0a40a7
 
 build:
   number: 0
   noarch: python
-  script:
-    - "{{ PYTHON }} -m pip install . -vv"
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   entry_points:
-    - savana=savana.savana:main
+    - savana = savana.savana:main
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - python >=3.9
+    - pip
+    - setuptools
   run:
     - python >=3.9
     - pybedtools >=0.9.0
     - pysam >=0.20.0
     - cyvcf2 >=0.30.16
-    - scikit-learn >=1.2.2,<1.3.0
+    - scikit-learn 1.2.2
     - pandas >=2.0.0
     - matplotlib-base >=3.7.1
 
@@ -39,9 +40,12 @@ test:
     - savana classify --help
     - savana evaluate --help
     - savana train --help
+    - savana cna --help
 
 about:
   home: "https://github.com/cortes-ciriano-lab/{{ name }}"
-  license: Free for Academic Use
-  license_file: LICENSE.txt
-  summary: "SAVANA: a somatic structural variant caller for long-read data"
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: "LICENSE.txt"
+  summary: "SAVANA: a somatic structural variant caller for long-read data."
+  dev_url: "https://github.com/cortes-ciriano-lab/{{ name }}"

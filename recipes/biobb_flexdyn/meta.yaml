@@ -1,5 +1,5 @@
 {% set name = "biobb_flexdyn" %}
-{% set version = "4.2.0" %}
+{% set version = "5.1.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,28 +7,31 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 5cfe112fb35a86fff4d452efb966fa18757bad4ea1f4017b226e765a8e6f776e 
+  sha256: 0e787852501314c9f5e450cecd6f482a63e30b43faeecec35bff65640554fdf0 
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  entry_points:
+    - concoord_dist = biobb_flexdyn.flexdyn.concoord_dist:main
+    - concoord_disco = biobb_flexdyn.flexdyn.concoord_disco:main
+    - imod_imode = biobb_flexdyn.flexdyn.imod_imode:main
+    - imod_imove = biobb_flexdyn.flexdyn.imod_imove:main
+    - imod_imc = biobb_flexdyn.flexdyn.imod_imc:main
+    - nolb_nma = biobb_flexdyn.flexdyn.nolb_nma:main
+    - prody_anm = biobb_flexdyn.flexdyn.prody_anm:main
   run_exports:
     - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
   host:
-    - python >=3.8
-    - setuptools
-    - biobb_common ==4.2.0
-    - concoord
-    - prody
-    - imods
-    - nolb
-
+    - python >=3.9,<3.12
+    - pip
   run:
-    - python >=3.8
-    - biobb_common ==4.2.0
+    - python >=3.9,<3.12
+    - biobb_common ==5.1.0
+    - scipy >=1.13.0,<1.14.0
     - concoord
     - prody
     - imods
@@ -41,14 +44,16 @@ test:
 
 about:
   home: https://github.com/bioexcel/biobb_flexdyn
-  license: Apache Software License
-  license_family: APACHE
-  summary: Biobb_flexdyn is a BioBB category for studies on the conformational landscape of native proteins. 
-  description: "# biobb_flexdyn\n\n### Introduction\nBiobb_flexdyn allows the calculation of protein conformational transitions using the GOdMD package. \nBiobb (BioExcel building blocks) packages are Python building blocks that\ncreate\ 
-    \ new layer of compatibility and interoperability over popular\nbioinformatics tools.\nThe latest documentation of this package can be found in our readthedocs site:\n[latest API documentation](http://biobb_ml.readthedocs.io/en/latest/).\n\
-    \n\n### Copyright & Licensing\nThis software has been developed in the [MMB group](https://mmb.irbbarcelona.org) at the [BSC](https://www.bsc.es/) & [IRB](https://www.irbbarcelona.org/) for the [European BioExcel](http://bioexcel.eu/), funded by the European Commission (EU H2020 [823830](http://cordis.europa.eu/projects/823830), EU H2020 [675728](http://cordis.europa.eu/projects/675728)).\
-    \n\n* (c) 2015-2024 [Barcelona Supercomputing Center](https://www.bsc.es/)\n* (c) 2015-2024 [Institute for Research in Biomedicine](https://www.irbbarcelona.org/)\n\
+  license: Apache-2.0 license
+  summary: Biobb_flexdyn is a BioBB category for studies on the conformational landscape of native proteins.
+  description: "# biobb_flexdyn\n\n### Introduction\nBiobb_flexdyn is a BioBB category for studies on the conformational landscape of native proteins. Biobb (BioExcel building blocks) packages are Python building blocks that create new layer of compatibility and interoperability over popular bioinformatics tools.\nThe latest documentation of this package can be found in our readthedocs site:\n[latest API documentation](http://biobb-flexdyn.readthedocs.io/en/latest/).\n\
+    \n\n### Copyright & Licensing\nThis software has been developed in the [MMB group](http://mmb.irbbarcelona.org) at the [BSC](http://www.bsc.es/) & [IRB](https://www.irbbarcelona.org/) for the [European BioExcel](http://bioexcel.eu/), funded by the European Commission (EU Horizon Europe [101093290](https://cordis.europa.eu/project/id/101093290), EU H2020 [823830](http://cordis.europa.eu/projects/823830), EU H2020 [675728](http://cordis.europa.eu/projects/675728)).\
+    \n\n* (c) 2015-2025 [Barcelona Supercomputing Center](https://www.bsc.es/)\n* (c) 2015-2025 [Institute for Research in Biomedicine](https://www.irbbarcelona.org/)\n\
     Licensed under the\n\
     [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0), see the file LICENSE for details.\n\
     \n\
     ![](https://bioexcel.eu/wp-content/uploads/2019/04/Bioexcell_logo_1080px_transp.png \"Bioexcel\")\n\n\n"
+  doc_url: http://biobb-flexdyn.readthedocs.io/en/latest/
+
+extra:
+  recipe-maintainers: gbayarri

@@ -1,0 +1,41 @@
+{% set name = "HalfDeep" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/richard-burhans/{{ name }}/archive/refs/tags/{{ version }}.zip
+  sha256: 308341c567298703fb99d4ceac7b34f0718cf6a37b02fc166f68d661a7f44f27
+
+requirements:
+  run:
+    - bash
+    - coreutils
+    - gawk
+    - genodsp >=0.0.10
+    - grep
+    - gzip
+    - minimap2
+    - python >={{ python_min | default("3.9") }}
+    - r-base >={{ r_base | default("4.3.*") }}
+    - samtools
+    - sed
+
+build:
+  number: 1
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+test:
+  commands:
+    - ${PREFIX}/bin/genodsp --help
+
+about:
+  home: https://github.com/richard-burhans/{{ name }}
+  summary: Automated detection of intervals covered at half depth by sequenced reads.
+  license: BSD-3-Clause
+  license_file: LICENSE
+  license_url: https://github.com/richard-burhans/{{ name }}/blob/master/LICENSE

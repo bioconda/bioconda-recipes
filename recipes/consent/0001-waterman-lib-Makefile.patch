@@ -1,0 +1,63 @@
+diff --git a/BMEAN/Complete-Striped-Smith-Waterman-Library/src/Makefile b/BMEAN/Complete-Striped-Smith-Waterman-Library/src/Makefile
+index d8645c5..6ae5609 100644
+--- a/BMEAN/Complete-Striped-Smith-Waterman-Library/src/Makefile
++++ b/BMEAN/Complete-Striped-Smith-Waterman-Library/src/Makefile
+@@ -1,6 +1,6 @@
+-CC = gcc
+-CXX = g++
+-CFLAGS := -Wall -pipe -O2
++CC ?= $(CC)
++CXX ?= $(CXX)
++CFLAGS := -g -Wall -pipe -O3
+ CXXFLAGS := $(CFLAGS)
+ LOBJS = ssw.o
+ LCPPOBJS = ssw_cpp.o
+diff --git a/BMEAN/Complete-Striped-Smith-Waterman-Library/src/main.c b/BMEAN/Complete-Striped-Smith-Waterman-Library/src/main.c
+index 29ebc52..1c41fbe 100644
+--- a/BMEAN/Complete-Striped-Smith-Waterman-Library/src/main.c
++++ b/BMEAN/Complete-Striped-Smith-Waterman-Library/src/main.c
+@@ -6,7 +6,11 @@
+ 
+ #include <stdlib.h>
+ #include <stdint.h>
++#ifdef __ARM_NEON
++#include "sse2neon.h"
++#else
+ #include <emmintrin.h>
++#endif
+ #include <zlib.h>
+ #include <stdio.h>
+ #include <time.h>
+diff --git a/BMEAN/Complete-Striped-Smith-Waterman-Library/src/ssw.c b/BMEAN/Complete-Striped-Smith-Waterman-Library/src/ssw.c
+index af8f4f3..8bbfb83 100644
+--- a/BMEAN/Complete-Striped-Smith-Waterman-Library/src/ssw.c
++++ b/BMEAN/Complete-Striped-Smith-Waterman-Library/src/ssw.c
+@@ -36,7 +36,12 @@
+  */
+ 
+ //#include <nmmintrin.h>
++#ifdef __ARM_NEON
++#include "sse2neon.h"
++#else
+ #include <emmintrin.h>
++#endif
++
+ #include <stdint.h>
+ #include <stdlib.h>
+ #include <stdio.h>
+diff --git a/BMEAN/Complete-Striped-Smith-Waterman-Library/src/ssw.h b/BMEAN/Complete-Striped-Smith-Waterman-Library/src/ssw.h
+index 510f5f4..0a68166 100644
+--- a/BMEAN/Complete-Striped-Smith-Waterman-Library/src/ssw.h
++++ b/BMEAN/Complete-Striped-Smith-Waterman-Library/src/ssw.h
+@@ -14,7 +14,11 @@
+ #include <stdio.h>
+ #include <stdint.h>
+ #include <string.h>
++#ifdef __ARM_NEON
++#include "sse2neon.h"
++#else
+ #include <emmintrin.h>
++#endif
+ 
+ #ifdef __cplusplus
+ extern "C" {

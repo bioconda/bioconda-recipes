@@ -1,6 +1,6 @@
 {% set name = "hictk" %}
-{% set version = "1.0.0" %}
-{% set sha256 = "e337f52658a257eb6265e211dd3cef6b73db40bdc5b5a6433b47ce4faa6006fb" %}
+{% set version = "2.2.0" %}
+{% set sha256 = "989b6e84b967309d9822ee3274abf98daba66d3d6e6ae8c9abffcede07b24761" %}
 
 package:
   name: {{ name|lower }}
@@ -19,27 +19,37 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake >=3.25
-    - conan >=2
+    - ccache        # required to suppress warnings raised by CMake
+    - clang-tools   # required for LTO
+    - cmake >=3.29  # required for -DCMAKE_LINKER_TYPE
+    - conan >=2.21
+    - curl >=7.71   # required for --retry-all-errors
     - make
-    - catch2 >=3.5
-    - cli11 >=2.3
-    - eigen >=3.4
-    - fast_float >=5
-    - fmt >=10
-    - highfive >=2.8
-    - spdlog >=1.12
+    - catch2 >=3.8
+    - cli11 >=2.6
+    - fast_float >=8
+    - fmt >=12
+    - highfive >=3
+    - libboost-devel >=1.89  # required for the hash2 library (header-only)
+    - libopentelemetry-cpp-headers >=1
+    - lld         # required for LTO
+    - llvm-tools  # required for LTO
+    - nlohmann_json >=3.12
+    - spdlog >=1.16
+    - tomlplusplus >=3.3
 
   host:
     - hdf5 >=1.12
-    - libarrow >=16
-    - libdeflate
+    - libarchive >=3
+    - libdeflate >=1
+    - libopentelemetry-cpp >=1
     - zstd >=1.5
 
   run:
     - hdf5 >=1.12
-    - libarrow >=16
-    - libdeflate
+    - libarchive >=3
+    - libdeflate >=1
+    - libopentelemetry-cpp >=1
     - zstd >=1.5
 
 about:
@@ -48,45 +58,18 @@ about:
   license_file: LICENSE
   summary: Blazing fast toolkit to work with .hic and .cool files
   dev_url: https://github.com/paulsengroup/{{ name }}
-  doc_url: https://github.com/paulsengroup/{{ name }}#readme
+  doc_url: https://{{ name }}.readthedocs.io/en/stable/
 
 test:
   requires:
-    - curl
-    - cooler>=0.9.3
+    - python >=3.11,<3.14
+    - pip
+    - curl >=7.71  # required for --retry-all-errors
     - perl-digest-sha1
-    - xz
+    - zstd
   source_files:
     - cmake/FetchTestDataset.cmake
-    - test/scripts/check_test_files_exist.sh
-    - test/scripts/compare_matrix_files.sh
-    - test/scripts/compare_plain_files.sh
-    - test/scripts/compare_weights.py
-    - test/scripts/hictk_balance_ice.sh
-    - test/scripts/hictk_balance_scale.sh
-    - test/scripts/hictk_balance_vc.sh
-    - test/scripts/hictk_convert_hic2cool.sh
-    - test/scripts/hictk_convert_cool2hic.sh
-    - test/scripts/hictk_dump_cells.sh
-    - test/scripts/hictk_dump_normalizations.sh
-    - test/scripts/hictk_dump_resolutions.sh
-    - test/scripts/hictk_dump_chroms.sh
-    - test/scripts/hictk_dump_bins.sh
-    - test/scripts/hictk_dump_gw.sh
-    - test/scripts/hictk_dump_cis.sh
-    - test/scripts/hictk_dump_trans.sh
-    - test/scripts/hictk_dump_balanced.sh
-    - test/scripts/hictk_fix_mcool.sh
-    - test/scripts/hictk_load_coo.sh
-    - test/scripts/hictk_load_bg2.sh
-    - test/scripts/hictk_load_4dn.sh
-    - test/scripts/hictk_merge.sh
-    - test/scripts/hictk_rename_chromosomes.sh
-    - test/scripts/hictk_validate.sh
-    - test/scripts/hictk_zoomify.sh
-    - test/scripts/nproc.sh
-    - test/scripts/readlink.sh
-    - test/scripts/shuffle.sh
+    - test/integration/
   commands:
     - hictk --help
     - hictk --version
@@ -100,3 +83,4 @@ extra:
     - doi:10.5281/zenodo.8214221
   additional-platforms:
     - linux-aarch64
+    - osx-arm64

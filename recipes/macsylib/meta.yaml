@@ -1,0 +1,63 @@
+{% set name = "macsylib" %}
+{% set version = "1.0.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/macsylib-{{ version }}.tar.gz
+  sha256: 2c5bc974df41ae0711ad900358243875d0302a7b3c79a99fa8263ee58b880f50 
+
+build:
+  entry_points:
+    - msl_data = macsylib.scripts.macsydata:main
+    - msl_profile = macsylib.scripts.macsyprofile:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports: 
+    - {{ pin_subpackage('macsylib', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools
+    - pip
+  run:
+    - python >=3.10
+    - colorlog >=4.0.2
+    - pyyaml >=5.1.1
+    - packaging >=18.0
+    - networkx >=2.4
+    - pandas >=1.03
+    - colorama >=0.4.4
+    - certifi
+    - hmmer >=3.1b2,<=3.4
+    - git >1.7.0
+    - gitpython >=3.1.30
+
+test:
+  imports:
+    - macsylib
+  commands:
+    - pip check
+    - msl_data --help
+    - msl_profile --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/gem-pasteur/macsylib
+  summary: 'MacSyLib: Python library that help to detect of macromolecular, systems genetic pathways… in prokaryotes protein datasets using systems modelling and similarity search.'
+  doc_url: https://macsylib.readthedocs.io/en/latest
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: COPYING
+
+extra:
+  recipe-maintainers:
+    - bneron
+  identifiers:
+    - doi:10.24072/pcjournal.250
+    - biotools:macsylib
