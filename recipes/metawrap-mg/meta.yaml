@@ -1,4 +1,12 @@
 {% set version = "1.3.0" %}
+{% set matplotlib_version = "2.2.5" %}
+{% set samtools_version = "1.9" %}
+{% set krona_version = "2.7" %}
+{% set bowtie_version = "2.3.5" %}
+{% set checkm_version = "1.0.12" %}
+{% set pplacer_version = "1.1.alpha19" %}
+{% set blast_version = "2.6.0" %}
+{% set bwa_version = "0.7.17" %}
 
 package:
   name: metawrap-mg
@@ -11,51 +19,246 @@ source:
 
 build:
   noarch: generic
-  number: 1
+  number: 3
+  run_exports:
+    - {{ pin_compatible('metawrap-mg', max_pin="x.x") }}
 
-requirements:
-  run:
-    - biopython =1.68
-    - blas =2.5 mkl
-    - blast =2.6.0
-    - bmtagger =3.101
-    - bowtie2 =2.3.5
-    - bwa =0.7.17
-    - checkm-genome =1.0.12
-    - concoct =1.0.0
-    - fastqc =0.11.8
-    - kraken =1.1
-    - kraken2 =2.0
-    - krona =2.7
-    - matplotlib-base =2.2.3
-    - maxbin2 =2.2.6
-    - megahit =1.1.3
-    - metabat2 =2.12.1
-    - openssl =1.0
-    - pandas =0.24.2
-    - perl-bioperl
-    - pplacer =1.1.alpha19
-    - prokka =1
-    - quast =5.0.2
-    - r-ggplot2 =3.1.0
-    - r-reshape2
-    - r-recommended =3.5.1
-    - salmon =0.13.1
-    - samtools =1.9
-    - seaborn =0.9.0
-    - spades =3.13.0
-    - taxator-tk =1.3.3e
-    - trim-galore =0.5.0
-    # not direct dependencies, only here to speed up dependency resolution
-    - python =2.7.15
+outputs:
+  - name: metawrap-mg
+    version: {{ version }}
+
+    requirements:
+      run:
+        - biopython =1.72
+        # - openssl =1.0
+        # not direct dependencies, only here to speed up dependency resolution
+        - python =2.7.15
+
+    test:
+      commands:
+        - "metawrap --version | grep 'metaWRAP v={{ version }}'"
+        - "metawrap read_qc | grep 'Usage: metaWRAP read_qc'"
+        - which config-metawrap
+        - python2.7
+
+    about:
+      home: https://github.com/bxlab/metaWRAP
+      license: MIT
+      summary: "MetaWRAP is a pipeline for genome-resolved metagenomic data analysis"
+
+  - name: metawrap-read-qc
+    version: {{ version }}
+    build:
+      noarch: generic
+    requirements:
+      run:
+        - {{ pin_subpackage('metawrap-mg', max_pin="x.x") }}
+        - fastqc =0.11.8
+        - trim-galore =0.5.0
+        - bmtagger =3.101
+    test:
+      commands:
+        - "metawrap read_qc | grep 'Usage: metaWRAP read_qc'"
+    about:
+      home: https://github.com/bxlab/metaWRAP
+      license: MIT
+      summary: "MetaWRAP requirements for read_qc step"
+
+  - name: metawrap-assembly
+    version: {{ version }}
+    build:
+      noarch: generic
+    requirements:
+      run:
+        - {{ pin_subpackage('metawrap-mg', max_pin="x.x") }}
+        - spades =3.13.0
+        - bowtie2 ={{ bowtie_version }}
+        - bwa ={{ bwa_version }}
+        - megahit =1.1.3
+        - quast =5.0.2
+    test:
+      commands:
+        - "metawrap assembly | grep 'Usage: metaWRAP assembly'"
+    about:
+      home: https://github.com/bxlab/metaWRAP
+      license: MIT
+      summary: "MetaWRAP requirements for assembly step"
+
+  - name: metawrap-kraken
+    version: {{ version }}
+    build:
+      noarch: generic
+    requirements:
+      run:
+        - {{ pin_subpackage('metawrap-mg', max_pin="x.x") }}
+        - kraken =1.1.1
+        # https://github.com/conda-forge/jellyfish-feedstock/issues/10
+        - bioconda::jellyfish
+        - kraken2 =2.0
+        - krona ={{ krona_version }}
+    test:
+      commands:
+        - "metawrap kraken | grep 'Usage: metaWRAP kraken'"
+    about:
+      home: https://github.com/bxlab/metaWRAP
+      license: MIT
+      summary: "MetaWRAP requirements for kraken step"
+  
+  - name: metawrap-blobology
+    version: {{ version }}
+    build:
+      noarch: generic
+    requirements:
+      run:
+        - {{ pin_subpackage('metawrap-mg', max_pin="x.x") }}
+        - blast ={{ blast_version }}
+        - bowtie2 ={{ bowtie_version }}
+        - perl-bioperl
+        - r-ggplot2 =3.1.0
+        - r-reshape2
+        - r-recommended =3.5.1
+        - samtools ={{ samtools_version }}
+
+    test:
+      commands:
+        - "metawrap blobology | grep 'Usage: metaWRAP blobology'"
+    about:
+      home: https://github.com/bxlab/metaWRAP
+      license: MIT
+      summary: "MetaWRAP requirements for read_qc step"
+
+  - name: metawrap-binning
+    version: {{ version }}
+    build:
+      noarch: generic
+    requirements:
+      run:
+        - {{ pin_subpackage('metawrap-mg', max_pin="x.x") }}
+        - bwa ={{ bwa_version }}
+        - concoct =1.0.0
+        # libgfortran.so.3 needed by older builds of concoct
+        - libgfortran =3
+        - maxbin2 =2.2.6
+        - metabat2 =2.12.1
+        - checkm-genome ={{ checkm_version }}
+        - curl # needed for post-link
+        - pplacer ={{ pplacer_version }}
+        - samtools ={{ samtools_version }}
+    test:
+      commands:
+        - "metawrap binning | grep 'Usage: metaWRAP binning'"
+        - concoct -h
+    about:
+      home: https://github.com/bxlab/metaWRAP
+      license: MIT
+      summary: "MetaWRAP requirements for binning step"
+
+  - name: metawrap-refinement
+    version: {{ version }}
+    build:
+      noarch: generic
+    requirements:
+      run:
+        - {{ pin_subpackage('metawrap-mg', max_pin="x.x") }}
+        - checkm-genome ={{ checkm_version }}
+        - curl # needed for post-link
+        - pplacer ={{ pplacer_version }}
+        - kraken =1.1.1
+        # https://github.com/conda-forge/jellyfish-feedstock/issues/10
+        - bioconda::jellyfish
+        - krona ={{ krona_version }}
+        - matplotlib-base ={{ matplotlib_version }}
+    test:
+      commands:
+        - "metawrap bin_refinement | grep 'Usage: metaWRAP bin_refinement'"
+    about:
+      home: https://github.com/bxlab/metaWRAP
+      license: MIT
+      summary: "MetaWRAP requirements for bin_refinement step"
+
+  - name: metawrap-reassemble-bins
+    version: {{ version }}
+    build:
+      noarch: generic
+    requirements:
+      run:
+        - {{ pin_subpackage('metawrap-mg', max_pin="x.x") }}
+        - bwa ={{ bwa_version }}
+        - checkm-genome ={{ checkm_version }}
+        - curl # needed for post-link
+        - pplacer ={{ pplacer_version }}
+        - minimap2
+        - spades =3.13.0
+        - matplotlib-base ={{ matplotlib_version }}
+    test:
+      commands:
+        - "metawrap reassemble_bins | grep 'Usage: metaWRAP reassemble_bins'"
+    about:
+      home: https://github.com/bxlab/metaWRAP
+      license: MIT
+      summary: "MetaWRAP requirements for reassemble_bins step"
+
+  - name: metawrap-quant-bins
+    version: {{ version }}
+    build:
+      noarch: generic
+    requirements:
+      run:
+        - {{ pin_subpackage('metawrap-mg', max_pin="x.x") }}
+        - salmon =0.15.0
+        - seaborn =0.9.0
+        - matplotlib-base ={{ matplotlib_version }}
+        - pandas =0.24.2
+    test:
+      commands:
+        - "metawrap quant_bins | grep 'Usage: metaWRAP quant_bins'"
+    about:
+      home: https://github.com/bxlab/metaWRAP
+      license: MIT
+      summary: "MetaWRAP requirements for quant_bins step"
+
+  - name: metawrap-classify-bins
+    version: {{ version }}
+    build:
+      noarch: generic
+    requirements:
+      run:
+        - {{ pin_subpackage('metawrap-mg', max_pin="x.x") }}
+        - taxator-tk =1.3.3e
+        - blast ={{ blast_version }}
+    test:
+      commands:
+        - "metawrap classify_bins | grep 'Usage: metaWRAP classify_bins'"
+    about:
+      home: https://github.com/bxlab/metaWRAP
+      license: MIT
+      summary: "MetaWRAP requirements for classify_bins step"
+
+  - name: metawrap-annotate-bins
+    version: {{ version }}
+    build:
+      noarch: generic
+    requirements:
+      run:
+        - {{ pin_subpackage('metawrap-mg', max_pin="x.x") }}
+        - prokka =1
+    test:
+      commands:
+        - "metawrap annotate_bins | grep 'Usage: metaWRAP annotate_bins'"
+    about:
+      home: https://github.com/bxlab/metaWRAP
+      license: MIT
+      summary: "MetaWRAP requirements for annotate_bins step"
 
 test:
   commands:
-    - "metawrap --version | grep 'metaWRAP v={{ version }}'"
-    - "metawrap read_qc | grep 'Usage: metaWRAP read_qc'"
-    - which config-metawrap
+    - "metawrap | grep 'Usage: metaWRAP'"
 
 about:
   home: https://github.com/bxlab/metaWRAP
   license: MIT
   summary: "MetaWRAP is a pipeline for genome-resolved metagenomic data analysis"
+
+extra:
+  skip-lints:
+    - should_use_compilers
