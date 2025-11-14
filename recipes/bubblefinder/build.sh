@@ -1,11 +1,9 @@
-#!/usr/bin/env bash
 set -euo pipefail
 set -x
 
 export CMAKE_BUILD_PARALLEL_LEVEL="${CPU_COUNT:-1}"
 export MAKEFLAGS="-j${CPU_COUNT:-1}"
 
-# S'assurer que CMake cherche en priorité dans le prefix conda
 export CMAKE_PREFIX_PATH="${PREFIX}:${CMAKE_PREFIX_PATH:-}"
 export CMAKE_INCLUDE_PATH="${PREFIX}/include:${CMAKE_INCLUDE_PATH:-}"
 export CMAKE_LIBRARY_PATH="${PREFIX}/lib:${CMAKE_LIBRARY_PATH:-}"
@@ -30,7 +28,6 @@ cmake .. \
 cmake --build . -- -j${CPU_COUNT:-1}
 cmake --install . || true
 
-# Copie défensive si les install() amont ne posent pas les binaires
 for p in BubbleFinder snarls_bf; do
   if [ ! -x "$PREFIX/bin/$p" ]; then
     ex=$(find . -type f -name "$p" -perm -u+x -print -quit || true)
