@@ -1,0 +1,58 @@
+{% set name = "genomesyn2" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  #url: https://github.com/banzhou59/GenomeSyn2/releases/download/v1.0.0/GenomeSyn2-1.0.0.tar.gz
+  path: .
+  sha256: b7a2b715699a62d5bed20c8e894b66a9e038819bd48bddc1405bd8dad781e915
+
+build:
+  number: 0
+  noarch: generic
+  script: |
+    mkdir -p $PREFIX/bin
+    cp *.pl $PREFIX/bin/
+    if ls *.sh >/dev/null 2>&1; then
+      cp *.sh $PREFIX/bin/
+    fi
+    chmod +x $PREFIX/bin/*
+    ln -s $PREFIX/bin/GenomeSyn2.pl $PREFIX/bin/GenomeSyn2
+
+requirements:
+  run:
+    # Perl 基础
+    - perl >=5.32
+    - perl-bioperl-core
+    - perl-svg
+
+    # GenomeSyn2 Perl/系统依赖
+    - python >=3.8
+    - cairosvg
+
+    # 比对工具
+    - mummer
+    - minimap2
+    - gffread
+    - seqkit
+    - blast
+    - diamond
+    - mmseqs2
+
+about:
+  home: https://github.com/banzhou59/GenomeSyn2
+  license: MIT
+  license_file: LICENSE
+  summary: "A Comparative Genomics Framework Integrating Synteny Visualization"
+  description: |
+    GenomeSyn2 is a flexible and high-performance framework for comparative
+    genomics visualization, synteny construction, and multi-genome feature
+    analysis. It supports multiple alignment engines (MUMmer, minimap2, BLASTp,
+    Diamond, MMseqs2) and provides rich downstream visualization modules.
+
+extra:
+  recipe-maintainers:
+    - banzhou59
