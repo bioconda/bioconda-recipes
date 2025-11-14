@@ -5,11 +5,6 @@ set -ex
 export CC=mpicc
 export FC=mpifort
 
-#-------------------------------------------------------------------------------------
-# Thread-safety feature, --enable-thread-safe, requires MPICH version 4.0.3 and later. 
-# See bug fix in https://github.com/pmodels/mpich/pull/5954
-#-------------------------------------------------------------------------------------
-
 THREAD_SAFE_FLAG=""
 if [[ "$mpi" != *"mvapich"* ]]; then
   THREAD_SAFE_FLAG="--enable-thread-safe"
