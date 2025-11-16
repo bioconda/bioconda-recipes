@@ -23,10 +23,6 @@ cp configTemplates/* "$PREFIX/share/sipros/configTemplates/"
 # Copy the license file
 cp LICENSE "$PREFIX/share/sipros/LICENSE"
 
-# install philosopher
-chmod u+x philosopher
-mv philosopher "$PREFIX/bin/"
-
 # Generate workflow configuration
 cat << EOF > "$PREFIX/share/sipros/workflow.cfg"
 [Paths]
