@@ -51,21 +51,25 @@ popd
 # -----------------------------------------------------------------------------
 echo "[Themis] installing Themis (Python, manual copy) ..."
 
-#
+# 一定回到源码根目录：这里应该能看到 pyproject.toml, themis/, themis_scripts/
 pushd "${SRC_DIR}"
+echo "[Themis] SRC_DIR contents:"
+ls
 
-# 
-SP_DIR="$("${PREFIX}/bin/python" -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')"
-echo "[Themis] site-packages = ${SP_DIR}"
+# 用 conda 提供的 PYTHON（推荐用 $PYTHON，而不是手写 PREFIX/bin/python）
+SP_DIR="$(${PYTHON} -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')"
+echo "[Themis] purelib (site-packages) resolved by \$PYTHON = ${SP_DIR}"
 
 mkdir -p "${SP_DIR}"
-
-# 
+echo "[Themis] copying themis packages into ${SP_DIR} ..."
 cp -a themis themis_scripts "${SP_DIR}/"
+
+echo "[Themis] after copy, listing themis* under ${SP_DIR}:"
+find "${SP_DIR}" -maxdepth 2 -type d -name "themis*" -print || true
 
 popd
 
-# 
+# 在 PREFIX/bin 下手动写一个入口脚本
 cat > "${PREFIX}/bin/themis" << 'PY'
 #!/usr/bin/env python
 from themis.cli import main
@@ -75,16 +79,13 @@ if __name__ == "__main__":
 PY
 chmod +x "${PREFIX}/bin/themis"
 
-# -----------------------------------------------------------------------------
-# 5.
-# -----------------------------------------------------------------------------
-echo "[Themis] sanity check: import themis using PREFIX python ..."
-"${PREFIX}/bin/python" - << 'PY'
+echo "[Themis] listing potential themis locations under PREFIX for debugging:"
+find "${PREFIX}" -maxdepth 6 -type d -name "themis*" -print || true
+
+# sanity check：用 $PYTHON（conda 指向 host python）来 import themis
+echo "[Themis] sanity check in build env: import themis using \$PYTHON ..."
+${PYTHON} - << 'PY'
 import importlib
 m = importlib.import_module("themis")
 print("[sanity] themis module loaded from:", m.__file__)
 PY
-
-echo "[Themis] unified build finished"
-
-
