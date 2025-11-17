@@ -46,25 +46,45 @@ cargo-bundle-licenses --format yaml --output "${SRC_DIR}/THIRDPARTY.yml" || true
 popd
 
 # -----------------------------------------------------------------------------
-echo "[Themis] installing Themis (Python) ..."
+# -----------------------------------------------------------------------------
+# 
+# -----------------------------------------------------------------------------
+echo "[Themis] installing Themis (Python, manual copy) ..."
+
+#
 pushd "${SRC_DIR}"
-"${PYTHON}" -m pip install . --no-deps --no-build-isolation -vv
 
+# 
+SP_DIR="$("${PREFIX}/bin/python" -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')"
+echo "[Themis] site-packages = ${SP_DIR}"
 
-SP_DIR="$("${PYTHON}" -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')"
-
-echo "[Themis] copying Python packages to ${SP_DIR} ..."
 mkdir -p "${SP_DIR}"
+
+# 
 cp -a themis themis_scripts "${SP_DIR}/"
 
 popd
 
-# sanity check：import themis
-"${PREFIX}/bin/python" - <<'PY'
-import importlib, sys
+# 
+cat > "${PREFIX}/bin/themis" << 'PY'
+#!/usr/bin/env python
+from themis.cli import main
+
+if __name__ == "__main__":
+    main()
+PY
+chmod +x "${PREFIX}/bin/themis"
+
+# -----------------------------------------------------------------------------
+# 5.
+# -----------------------------------------------------------------------------
+echo "[Themis] sanity check: import themis using PREFIX python ..."
+"${PREFIX}/bin/python" - << 'PY'
+import importlib
 m = importlib.import_module("themis")
-print("[sanity] themis module:", m.__file__)
+print("[sanity] themis module loaded from:", m.__file__)
 PY
 
 echo "[Themis] unified build finished"
+
 
