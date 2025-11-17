@@ -2,7 +2,7 @@
 
 set -xe
 
-mkdir --parents $PREFIX/bin
+mkdir -p $PREFIX/bin
 
 if [ "$(uname)" == "Darwin" ]; then
     make "CGO_CFLAGS=$CGO_CFLAGS -Wl,-rpath,${CONDA_PREFIX}/lib -I${CONDA_PREFIX}/include"
