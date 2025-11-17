@@ -21,17 +21,14 @@ cmake --build build_cpp --parallel "${CMAKE_BUILD_PARALLEL_LEVEL}"
 cmake --install build_cpp
 popd
 
-# 这里原来有 `file "${PREFIX}/bin/ganon-classify"` 之类，已删掉
+# 
 
 # -----------------------------------------------------------------------------
 echo "[Themis] installing ganon (Python) ..."
 pushd "${SRC_DIR}/thirdparty/ganon_mod"
 "${PYTHON}" -m pip install . --no-deps --no-build-isolation -vv
 
-SP_DIR="$("${PYTHON}" -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')"
-echo "[Themis] copying Python packages to ${SP_DIR} ..."
-mkdir -p "${SP_DIR}"
-cp -a themis themis_scripts "${SP_DIR}/"
+
 
 popd
 
@@ -52,6 +49,12 @@ popd
 echo "[Themis] installing Themis (Python) ..."
 pushd "${SRC_DIR}"
 "${PYTHON}" -m pip install . --no-deps --no-build-isolation -vv
+
+SP_DIR="$("${PYTHON}" -c 'import sysconfig; print(sysconfig.get_paths()[\"purelib\"])')"
+echo "[Themis] copying Python packages to ${SP_DIR} ..."
+mkdir -p "${SP_DIR}"
+cp -a themis themis_scripts "${SP_DIR}/"
+
 popd
 
 # sanity check：import themis
