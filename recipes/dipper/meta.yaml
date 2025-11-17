@@ -1,20 +1,19 @@
 {% set name = "dipper" %}
-{% set version = "0.1.1" %}
-
+{% set version = "0.1.2" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: "https://github.com/TurakhiaLab/DIPPER/archive/refs/tags/v{{ version }}.tar.gz"
-  sha256: 04194246fdbe5c918b81df359912166a3631e8df6833505bc3819dfc534f1b84
+  url: https://github.com/TurakhiaLab/DIPPER/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b8c204b8ff7f3f6b1fbad797956b8078f5dc8b978a7a43c57365b8d1c8448e54
 
 build:
   number: 0
+  skip: True  # [osx]
   run_exports:
-    - {{ pin_subpackage("dipper", max_pin="x.x") }}
-  skip: True  # [win or osx]
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
@@ -22,6 +21,7 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake
     - make
+    - pkg-config
     - cuda-nvcc  # [linux]
     - cuda-cudart-dev  # [linux]
     - cuda-version >=12.2  # [linux]
@@ -30,9 +30,7 @@ requirements:
     - boost-cpp
     - tbb =2019.9
     - tbb-devel =2019.9
-    - pkg-config
   run:
-    - libboost
     - boost-cpp
     - tbb =2019.9
     - tbb-devel =2019.9
@@ -49,8 +47,10 @@ about:
   summary: "DIPPER: An ultrafast tool for phylogenetic tree reconstruction."
   dev_url: "https://github.com/TurakhiaLab/DIPPER"
   doc_url: "https://turakhia.ucsd.edu/DIPPER"
-  description: 'DIPPER (DIstance-based Phylogenetic PlacER) is a tool designed for ultrafast and ultralarge phylogenetic tree reconstruction on GPUs. It is capable of reconstructing a phylogenetic tree with 10 million taxa, with a minimal memory footprint.'
+  description: "DIPPER (DIstance-based Phylogenetic PlacER) is a tool designed for ultrafast and ultralarge phylogenetic tree reconstruction on GPUs. It is capable of reconstructing a phylogenetic tree with 10 million taxa, with a minimal memory footprint."
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   recipe-maintainers:
     - sumit-walia
