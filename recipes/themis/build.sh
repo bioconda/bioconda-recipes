@@ -49,10 +49,11 @@ pushd "${SRC_DIR}"
 popd
 
 # sanity check：import themis
-"${PYTHON}" - <<'PY'
-import importlib
+"${PREFIX}/bin/python" - <<'PY'
+import importlib, sys
 m = importlib.import_module("themis")
 print("[sanity] themis module:", m.__file__)
 PY
 
 echo "[Themis] unified build finished"
+
