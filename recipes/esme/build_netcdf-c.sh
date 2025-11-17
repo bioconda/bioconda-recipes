@@ -16,7 +16,8 @@ cd esme_netcdf-c
             --enable-shared=yes \
 	    --enable-static=no \
 	    --enable-netcdf4 \
-	    --enable-pnetcdf
+	    --enable-pnetcdf \
+	    --disable-libxml2
 
 make -j ${CPU_COUNT}
 
