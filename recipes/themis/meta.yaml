@@ -11,8 +11,9 @@ source:
 
 build:
   skip: True  # [osx]
-  number: 0            
-  
+  number: 1            
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}  
 
 requirements:
   build:
@@ -21,7 +22,7 @@ requirements:
     - cmake >=3.18
     - ninja
     - make
-    - rust >=1.72
+    - {{ compiler('rust') }}
     - cargo-bundle-licenses
   host:
     - python {{ python }}
@@ -55,18 +56,19 @@ requirements:
     - fastp
 
 test:
-  requires:
-    - python
-  script: |
-    themis -h
+  commands:
+    - themis -h
+    - themis profile -h
+    - themis build-custom -h
 
  
 
 about:
-  home: https://github.com/<your-org>/themis
-  summary: "Themis: integrated metagenomic profiling with bundled ganon (C++ & Python) and ggcat (Rust)"
+  home: https://github.com/xujialupaoli/Themis
+  summary: "Themis: metagenomic profiler"
   license: GPL-3.0
-  license_family: GPL3
+  license_file: {{ SRC_DIR }}/themis/LICENSE
+
 
 extra:
   final: true
