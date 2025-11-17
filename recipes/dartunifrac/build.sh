@@ -10,16 +10,16 @@ ARCH=$(uname -m)
 FEATURES=""
 if [[ "${OS}" == "Linux" ]]; then
     if [[ "${ARCH}" == "x86_64" ]]; then
-        FEATURES="intel-mkl-static"
+        FEATURES="intel-mkl-static,stdsimd"
     elif [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
-        FEATURES="openblas-system"
+        FEATURES="openblas-system,stdsimd"
     else
         echo "Unsupported architecture '${ARCH}' on Linux."
         exit 1
     fi
 elif [[ "${OS}" == "Darwin" ]]; then
     if [[ "${ARCH}" == "x86_64" || "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
-        FEATURES="openblas-system"
+        FEATURES="openblas-system,stdsimd"
     else
         echo "Unsupported architecture '${ARCH}' on Darwin."
         exit 1
