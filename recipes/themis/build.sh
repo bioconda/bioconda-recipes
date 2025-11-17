@@ -27,6 +27,12 @@ popd
 echo "[Themis] installing ganon (Python) ..."
 pushd "${SRC_DIR}/thirdparty/ganon_mod"
 "${PYTHON}" -m pip install . --no-deps --no-build-isolation -vv
+
+SP_DIR="$("${PYTHON}" -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')"
+echo "[Themis] copying Python packages to ${SP_DIR} ..."
+mkdir -p "${SP_DIR}"
+cp -a themis themis_scripts "${SP_DIR}/"
+
 popd
 
 cat > "${PREFIX}/bin/ganon-report" <<'SH'
