@@ -2,9 +2,14 @@
 
 set -xe
 
-mkdir -p $PREFIX/bin
+mkdir --parents $PREFIX/bin
 
-make "CGO_CFLAGS= $CGO_CFLAGS -L$CONDA_PREFIX/lib -I$CONDA_PREFIX/include"
+if [ "$(uname)" == "Darwin" ]; then
+    make "CGO_CFLAGS=$CGO_CFLAGS -Wl,-rpath,${CONDA_PREFIX}/lib -I${CONDA_PREFIX}/include"
+else
+    make "CGO_CFLAGS=-L$CONDA_PREFIX/lib -I$CONDA_PREFIX/include"    
+fi
+
 
 cp \
     build/obiannotate \
