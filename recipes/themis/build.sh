@@ -54,5 +54,6 @@ echo "[Themis] installing Themis (Python) ..."
 pushd "${SRC_DIR}"
 "${PYTHON}" -m pip install . --no-deps --no-build-isolation -vv
 popd
+find ${PREFIX} -name "themis"
 
 echo "[Themis] unified build finished"
