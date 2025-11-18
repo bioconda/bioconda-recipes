@@ -1,43 +1,43 @@
-{% set version = "3.0" %}
-{% set sha256 = "960dfb9c03171d2e5fb2605872fb0505c1a83c44d55e92f49f27891d742f82c4" %}
+{% set version = "3.0.1" %}
+{% set sha256 = "766bedd70b5afad912bd0f1af88d3f85450b8897e0ee608bf4701628e96fa7c0" %}
 
 package:
   name: mimick
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   url: https://github.com/pdimens/mimick/releases/download/{{ version }}/mimick.{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   noarch: python
   run_exports:
     - {{ pin_subpackage('mimick', max_pin="x") }}
   script: |
-    export PYTHON_JULIACALL_HANDLE_SIGNALS=yes
     {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
-    {{ PYTHON }} -c 'from juliacall import Main as jl; jl.seval("using Pkg ; Pkg.develop(path=\"./MimickLinkedReads.jl\") ; using MimickLinkedReads")'
-#    {{ PYTHON }} -c 'from juliacall import Main as jl; jl.seval("using Pkg ; Pkg.add(url=\"https://github.com/pdimens/mimick.git\", subdir=\"MimickLinkedReads.jl\")")'
   entry_points:
     - mimick = mimick.__main__:mimick
+    - test_mimick = mimick.__main__:mimick_test
+    - install_mimick = mimick.__main__:mimick_install
 
 requirements:
   host:
-    - python
+    - julia >=1.10
     - pip
     - pyjuliacall >=0.9.26
+    - python
     - setuptools >=80
   run:
     - click >=8.2
-    - rich-click >=1.9.3
-    - python >=3.10
+    - julia >=1.10
     - pyjuliacall >=0.9.26
+    - python >=3.10
+    - rich-click >=1.9.3
 
 test:
   commands:
     - "mimick --version"
-    - "test_mimick"
 
 about:
   home: "https://github.com/pdimens/mimick"
