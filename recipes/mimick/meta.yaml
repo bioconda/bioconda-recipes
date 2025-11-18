@@ -1,5 +1,5 @@
 {% set version = "3.0.1" %}
-{% set sha256 = "7ada9922dc68154bbf6e8e92ed5cc8a876a462befb29ee714afa804fcd172923" %}
+{% set sha256 = "766bedd70b5afad912bd0f1af88d3f85450b8897e0ee608bf4701628e96fa7c0" %}
 
 package:
   name: mimick
@@ -16,10 +16,7 @@ build:
     - {{ pin_subpackage('mimick', max_pin="x") }}
   script: |
     {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
-    export MIMICKPATH=$({{ PYTHON }} -m pip show mimick | grep "Location:" | cut -d " " -f2)
-    julia -e 'using Pkg; Pkg.add(["PythonCall", "OpenSSL_jll"])'
-    julia -e "using Pkg; Pkg.develop(path=\"${MIMICKPATH}/MimickLinkedReads.jl\"); using MimickLinkedReads"
-
+    {{ PYTHON }} -c 'from mimick.__main__ import mimick_install; mimick_install()'
   entry_points:
     - mimick = mimick.__main__:mimick
     - test_mimick = mimick.__main__:mimick_test
