@@ -1,0 +1,37 @@
+{% set name = "zipstrain" %}
+{% set version = "0.1.6" %}   # ← change to your current released version
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 15a1fd9b3c9a31c60d59a9bc58c9390ff17bdd9b081efc1731ebbdbbe7eca917   # ← run the one-liner below to get it
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+
+requirements:
+  host:
+    - python >=3.12
+    - poetry-core   
+    - pip
+  run:
+    - python >=3.12
+    - samtools 
+test:
+  imports:
+    - zipstrain
+  commands:
+    - zipstrain --help
+    - samtools --version
+
+about:
+  home: https://github.com/OlmLab/ZipStrain  # ← change to your real repo
+  summary: Fast strain-level metagenomics
+  license: MIT      # ← change if yours is different (BSD-3-Clause, Apache-2.0, etc.)
+  license_family: MIT
+
