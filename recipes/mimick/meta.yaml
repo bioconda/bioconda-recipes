@@ -1,38 +1,42 @@
-{% set version = "3.0" %}
-{% set sha256 = "960dfb9c03171d2e5fb2605872fb0505c1a83c44d55e92f49f27891d742f82c4" %}
+{% set version = "3.0.1" %}
+{% set sha256 = "7ada9922dc68154bbf6e8e92ed5cc8a876a462befb29ee714afa804fcd172923" %}
 
 package:
   name: mimick
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   url: https://github.com/pdimens/mimick/releases/download/{{ version }}/mimick.{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   noarch: python
   run_exports:
     - {{ pin_subpackage('mimick', max_pin="x") }}
   script: |
-    export PYTHON_JULIACALL_HANDLE_SIGNALS=yes
     {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
-    {{ PYTHON }} -c 'from juliacall import Main as jl; jl.seval("using Pkg ; Pkg.develop(path=\"./MimickLinkedReads.jl\") ; using MimickLinkedReads")'
-#    {{ PYTHON }} -c 'from juliacall import Main as jl; jl.seval("using Pkg ; Pkg.add(url=\"https://github.com/pdimens/mimick.git\", subdir=\"MimickLinkedReads.jl\")")'
+    MIMICKPATH=$(python -c 'import mimick; print(mimick.__path__[0])'
+    julia -e 'using Pkg; Pkg.add(["PythonCall", "OpenSSL_jll"])'
+    julia -e "using Pkg; Pkg.develop(path=\"${MIMICKPATH}/MimickLinkedReads.jl\"); using MimickLinkedReads"
+
   entry_points:
     - mimick = mimick.__main__:mimick
+    - test_mimick = mimick.__main__:mimick_test
 
 requirements:
   host:
+    - julia >=1.10
     - python
     - pip
-    - pyjuliacall >=0.9.26
     - setuptools >=80
+    - pyjuliacall >=0.9.26
   run:
     - click >=8.2
-    - rich-click >=1.9.3
+    - julia >=1.10
     - python >=3.10
     - pyjuliacall >=0.9.26
+    - rich-click >=1.9.3
 
 test:
   commands:
