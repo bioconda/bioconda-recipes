@@ -1,11 +1,5 @@
 #!/bin/bash
 
-declare -a CMAKE_PLATFORM_FLAGS
-
-if [[ ${HOST} =~ .*darwin.* ]]; then
-	CMAKE_PLATFORM_FLAGS+=(-DCMAKE_OSX_SYSROOT="${CONDA_BUILD_SYSROOT}")
-fi
-
 sed -i.bak 's|2.8.9|3.5|' CMakeLists.txt
 sed -i.bak 's|2.8.12|3.5|' lib/mmseqs/CMakeLists.txt
 sed -i.bak 's|2.8.4|3.5|' lib/mmseqs/lib/tinyexpr/CMakeLists.txt
@@ -24,11 +18,11 @@ fi
 mkdir -p build
 cd build
 
-if [[ "$(uname -m)" == "aarch64" ]]; then
-	cmake ${CMAKE_PLATFORM_FLAGS[@]} -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DVERSION_OVERRIDE="${PKG_VERSION}" -DHAVE_NEON=1 -DCMAKE_CXX_FLAGS="-O3 -Wno-error=strict-aliasing" ..
+if [[ `uname -m` == "aarch64" || `uname -m` == "arm64" ]]; then
+	cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DVERSION_OVERRIDE="${PKG_VERSION}" -DHAVE_NEON=1 -DHAVE_TESTS=0 -DCMAKE_CXX_FLAGS="-O3 -Wno-error=strict-aliasing" ..
 else
-	cmake ${CMAKE_PLATFORM_FLAGS[@]} -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DHAVE_TESTS=0 -DHAVE_MPI=0 -DHAVE_SSE4_1=1 -DVERSION_OVERRIDE="${PKG_VERSION}" ..
+	cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DVERSION_OVERRIDE="${PKG_VERSION}" -DHAVE_SSE4_1=1 -DHAVE_TESTS=0 -DCMAKE_CXX_FLAGS="-O3 -Wno-error=strict-aliasing" ..
 fi
 
-make -j1 ${VERBOSE_CM}
+cmake --build . --target install -j 1
 make install
