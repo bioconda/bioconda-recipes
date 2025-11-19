@@ -2,21 +2,21 @@
 {% set version = "0.0.12" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/quantms_rescoring-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/quantms_rescoring-{{ version }}.tar.gz
   sha256: d5da994fb3c533873734a4a2c2ad0a8b26cbaa7566db96a625421df29d5b82fc
 
 build:
-  entry_points:
-    - rescoring=quantmsrescore.rescoring:main
-  noarch: python
-  run_exports:
-    - {{ pin_subpackage('quantms-rescoring', max_pin="x.x") }}
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   number: 0
+  noarch: python
+  entry_points:
+    - rescoring = quantmsrescore.rescoring:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
@@ -30,12 +30,14 @@ requirements:
     - pandas
     - numpy >=1.25
     - ms2rescore ==3.1.4
-    - deepLC >=3.0
+    - deeplc >=3.0
     - psm-utils
     - scipy
     - pygam
     - protobuf
-    - ms2pip >=4.0 
+    - ms2pip >=4.0
+    - peptdeep
+
 test:
   imports:
     - quantmsrescore
@@ -44,11 +46,13 @@ test:
     - rescoring msrescore2feature --help
 
 about:
-  home: https://www.github.com/bigbio/quantms-rescoring
-  summary: PSM rescoring python package with scripts and helpers for the quantms workflow
-  license: Apache 2.0
+  home: "https://www.github.com/bigbio/quantms-rescoring"
+  summary: "PSM rescoring python package with scripts and helpers for the quantms workflow."
+  license: "Apache-2.0"
+  license_family: APACHE
   license_file: LICENSE
-  dev_url: https://www.github.com/bigbio/quantms-rescoring
+  dev_url: "https://www.github.com/bigbio/quantms-rescoring"
+  doc_url: "https://github.com/bigbio/quantms-rescoring/blob/v{{ version }}/README.md"
 
 extra:
   recipe-maintainers:
