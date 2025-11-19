@@ -1,0 +1,114 @@
+ src/gromacs/utility/simulationinformationjson.cpp | 93 +++++++++++++++++++++++
+ 1 file changed, 93 insertions(+)
+
+diff --git a/src/gromacs/utility/simulationinformationjson.cpp b/src/gromacs/utility/simulationinformationjson.cpp
+index 7852b4fb17..6aa1f59223 100644
+--- a/src/gromacs/utility/simulationinformationjson.cpp
++++ b/src/gromacs/utility/simulationinformationjson.cpp
+@@ -760,6 +760,98 @@ static void addBonds(const gmx_mtop_t& mtop, nlohmann::json& output)
+             "Lists of global atom indices which form improper dihedrals (0-indexed)");
+ }
+ 
++static void addVirtualSites(const gmx_mtop_t& mtop, nlohmann::json& output)
++{
++    std::vector<std::array<int, 2>> virtualSite1;
++    std::vector<std::array<int, 3>> virtualSite2;
++    std::vector<std::array<int, 4>> virtualSite3;
++    std::vector<std::array<int, 5>> virtualSite4;
++    std::vector<std::array<int, 2>> virtualSiteN;
++
++    const int numMoleculeBlocks = mtop.molblock.size();
++
++    for (int i = 0; i < numMoleculeBlocks; ++i)
++    {
++        const gmx_molblock_t&       block   = mtop.molblock[i];
++        const gmx_moltype_t&        moltype = mtop.moltype[block.type];
++
++        for (const auto& interactionList :
++             extractILists(moltype.ilist, IF_VSITE))
++        {
++            switch (interactionList.functionType)
++            {
++                case F_VSITE1:
++                {
++                    constexpr int stride = 3;
++                    const auto& iatoms = interactionList.iatoms;
++                    for (int j = 0; j < gmx::ssize(iatoms); j += stride)
++                    {
++                        virtualSite1.emplace_back(std::array<int, 2>{iatoms[j + 1], iatoms[j + 2]});
++                    }
++                    break;
++                }
++                case F_VSITE2:
++                case F_VSITE2FD:
++                {
++                    constexpr int stride = 4;
++                    const auto& iatoms = interactionList.iatoms;
++                    for (int j = 0; j < gmx::ssize(iatoms); j += stride)
++                    {
++                        virtualSite2.emplace_back(std::array<int, 3>{iatoms[j + 1], iatoms[j + 2], iatoms[j + 3]});
++                    }
++                    break;
++                }
++                case F_VSITE3:
++                case F_VSITE3FAD:
++                case F_VSITE3FD:
++                case F_VSITE3OUT:
++                {
++                    constexpr int stride = 5;
++                    const auto& iatoms = interactionList.iatoms;
++                    for (int j = 0; j < gmx::ssize(iatoms); j += stride)
++                    {
++                        virtualSite3.emplace_back(std::array<int, 4>{iatoms[j + 1], iatoms[j + 2], iatoms[j + 3], iatoms[j + 4]});
++                    }
++                    break;
++                }
++                case F_VSITE4FD:
++                case F_VSITE4FDN:
++                {
++                    constexpr int stride = 6;
++                    const auto& iatoms = interactionList.iatoms;
++                    for (int j = 0; j < gmx::ssize(iatoms); j += stride)
++                    {
++                        virtualSite4.emplace_back(std::array<int, 5>{iatoms[j + 1], iatoms[j + 2], iatoms[j + 3], iatoms[j + 4], iatoms[j + 5]});
++                    }
++                    break;
++                }
++                case F_VSITEN:
++                {
++                    constexpr int stride = 3;
++                    const auto& iatoms = interactionList.iatoms;
++                    for (int j = 0; j < gmx::ssize(iatoms); j += stride)
++                    {
++                        virtualSiteN.emplace_back(std::array<int, 2>{iatoms[j + 1], iatoms[j + 2]});
++                    }
++                    break;
++                }
++                default: fprintf(stderr, "Warning: undefined virtual site type\n");
++            }
++        }
++    }
++
++    output["virtual_site_1"] =
++            getIndexedList(virtualSite1, "Pairs of global atom indices which define 1-body virtual sites (0-indexed)");
++    output["virtual_site_2"] =
++            getIndexedList(virtualSite2, "Triples of global atom indices which define 2-body virtual sites (0-indexed)");
++    output["virtual_site_3"] =
++            getIndexedList(virtualSite3, "Quadruplets of global atom indices which define 3-body virtual sites (0-indexed)");
++    output["virtual_site_4"] =
++            getIndexedList(virtualSite4, "Quintuplets of global atom indices which define 4-body virtual sites (0-indexed)");
++    output["virtual_site_n"] =
++            getIndexedList(virtualSiteN, "Pairs of global atom indices which define N-body virtual sites (0-indexed)");
++}
++
+ static void addAtoms(const gmx_mtop_t& mtop, nlohmann::json& output)
+ {
+     std::vector<std::string_view> atomName;
+@@ -827,6 +919,7 @@ void SimulationInformationJson::addTopology(const gmx_mtop_t& mtop)
+ {
+     addBonds(mtop, topology_);
+     addAtoms(mtop, topology_);
++    addVirtualSites(mtop, topology_);
+ }
+ 
+ } // namespace gmx
