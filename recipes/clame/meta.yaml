@@ -11,21 +11,25 @@ source:
   
 build:
   number: 3
-  skip: True # [osx]
+  #skip: True  # [osx]
   run_exports:
-    - {{ pin_subpackage(name,max_pin="x.x") }}
+    - {{ pin_subpackage(name,max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - llvm-openmp
     - cmake
+    - pkg-config
+  host:
     - sdsl-lite
-    - libstdcxx-ng # [linux]
-    - libgomp # [linux]
-    - openlibm # [linux]
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - openlibm  # [linux]
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     
 test:
   commands:
@@ -35,15 +39,16 @@ test:
     - mapping -h 2>&1 | grep "mapping" > /dev/null
 
 about:
-  home: https://github.com/andvides/CLAME
-  license: GPL-3.0
+  home: "https://github.com/andvides/CLAME"
+  license: "GPL-3.0-or-later"
   license_file: LICENSE
-  license_family: GPL
+  license_family: GPL3
   summary: "CLAME is a binning software for metagenomic reads. It immplements a fm-index search algorithm for nucleotide sequence alignment. Then it uses strongly connected component strategy to bin sequences with similar DNA composition."
+  dev_url: "https://github.com/andvides/CLAME"
 
 extra:
   identifiers:
     - doi:10.1186/s12864-018-5191-y
   additional-platforms:
     - linux-aarch64
- 
+    - osx-arm64
