@@ -1,0 +1,52 @@
+{% set name = "pangbank-cli" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pangbank_cli-{{ version }}.tar.gz
+  sha256: 7f646f2db99727990cdd8a795667afcc751254ee0cba9d0e15143b25dd72ca1f
+
+build:
+  entry_points:
+    - pangbank = pangbank_cli.main:app
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.14
+    - setuptools >=61.0.0
+    - pip
+  run:
+    - python >=3.10,<3.14
+    - typer >=0.15.1
+    - requests >=2.32.3
+    - rich >=10.0.0
+    - pydantic >=2.10.0,<3.0.0
+    - pandas >=2.0.0,<3.0.0
+    - pangbank-api >=0.1.1
+
+test:
+  imports:
+    - pangbank_cli
+  commands:
+    - pip check
+    - pangbank --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/labgem/{{ name|lower }}
+  license: CeCiLL 2.1
+  license_file: LICENSE
+  summary: "Command-line tool for retrieving pangenomes using the PanGBank API."
+
+extra:
+  recipe-maintainers:
+    - JeanMainguy
