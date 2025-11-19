@@ -26,7 +26,7 @@ esac
 rm -rf *.bak
 
 LDFLAGS=""
-make WITH_ZSTD=1 USE_SRA=1 USE_SAIS_OPENMP=1
+make WITH_ZSTD=1 USE_SRA=1 USE_SAIS=1
 
 binaries="\
 bowtie2 \
