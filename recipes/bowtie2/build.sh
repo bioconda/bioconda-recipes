@@ -8,6 +8,7 @@ git clone https://github.com/ch4rr0/libsais third_party/libsais
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-deprecated-declarations"
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3"
+LDFLAGS=""
 
 sed -i.bak 's|3.0.9|3.2.1|' Makefile
 sed -i.bak 's|-lpthread|-pthread|' Makefile
@@ -17,15 +18,14 @@ case $(uname -m) in
 	sed -i.bak 's|-std=c++11|-std=c++14 -O3 -march=armv8-a|' Makefile
 	;;
     arm64)
-	sed -i.bak 's|-std=c++11|-std=c++14 -O3 -march=armv8.4-a' Makefile
+	sed -i.bak 's|-std=c++11|-std=c++14 -O3 -march=armv8.4-a|' Makefile
 	;;
     x86_64)
-	sed -i.bak 's|-std=c++11|-std=c++14 -O3 -march=x86-64-v3' Makefile
+	sed -i.bak 's|-std=c++11|-std=c++14 -O3 -march=x86-64-v3|' Makefile
 	;;
 esac
 rm -rf *.bak
 
-LDFLAGS=""
 make WITH_ZSTD=1 USE_SRA=1 USE_SAIS_OPENMP=1
 
 binaries="\
