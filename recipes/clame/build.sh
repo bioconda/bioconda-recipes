@@ -3,13 +3,13 @@
 mkdir -p $PREFIX/bin
 
 sed -i.bak 's|CPP=g++|CPP?=$(CXX)|' Makefile
-	sed -i.bak 's|CPP=g++|CPP?=$(CXX)|' binning/Makefile
-	sed -i.bak 's|CPP=g++|CPP?=$(CXX)|' genFm9/Makefile
-	sed -i.bak 's|CPP=g++|CPP?=$(CXX)|' mapping/Makefile
+sed -i.bak 's|CPP=g++|CPP?=$(CXX)|' binning/Makefile
+sed -i.bak 's|CPP=g++|CPP?=$(CXX)|' genFm9/Makefile
+sed -i.bak 's|CPP=g++|CPP?=$(CXX)|' mapping/Makefile
 echo "Binning compilation"
 
 cd binning
-make all CXX=${CXX} ILIB="-I${PREFIX}/include -L${PREFIX}/lib"
+make all CXX="${CXX}" ILIB="-I${PREFIX}/include -L${PREFIX}/lib"
 
 install -v -m 0755 binning $PREFIX/bin
 cd ..
