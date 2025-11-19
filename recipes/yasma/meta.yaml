@@ -1,0 +1,67 @@
+{% set version = "1.0.1" %}
+
+package:
+  name: yasma
+  version: {{ version }}
+
+source:
+  url: https://github.com/NateyJay/YASMA/archive/refs/tags/v1.0.1.tar.gz
+  sha256: dcc9b2abd311412bdc837773489f93684335d92bd333ec8a1002f79988766b78
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+     - {{ pin_subpackage("yasma", max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -v
+
+requirements:
+  build:
+    - python >=3.12
+    - setuptools
+    - pip
+  run:
+    - python >=3.12
+    - click
+    - click-option-group
+    - numpy
+    - pyBigWig
+    - pysam
+    - pprintpp
+    - python
+    - cutadapt
+    - levenshtein
+    - bowtie
+    - sra-tools
+    - viennarna
+
+test:
+  imports:
+    - click
+    - pprintpp
+    - RNA
+    - Levenshtein
+    - numpy
+    - pyBigWig
+    - pysam
+    - click_option_group
+    - yasma
+  commands:
+    - bowtie --version
+    - prefetch --version
+    - fasterq-dump --version
+    - RNAfold --version
+
+about:
+  home: https://github.com/NateyJay/YASMA
+  license: GPL-3.0-only
+  license_file: LICENSE
+  summary: 'Small RNA annotation suite'
+  description: |
+    This is a fully integrated pipeline for analysis of small RNAs based on short-read sequence data, focused on its annotation tool (YASMA-tradeoff). This tool produces accurate sRNA annotations in diverse species and library qualities, built specifically for dealing with samples with higher noise.
+
+extra:
+  dev_url: https://github.com/NateyJay/YASMA
+  doc_source_url: https://github.com/NateyJay/YASMA/blob/library-scaling/README.md
+  identifiers:
+    - doi:10.1016/j.csbj.2025.05.045
