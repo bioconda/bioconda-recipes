@@ -4,7 +4,7 @@ sed -i.bak 's|2.8.9|3.5|' CMakeLists.txt
 sed -i.bak 's|2.8.12|3.5|' lib/mmseqs/CMakeLists.txt
 sed -i.bak 's|2.8.4|3.5|' lib/mmseqs/lib/tinyexpr/CMakeLists.txt
 
-if [[ ! "$(uname -s)" == "Drawin" ]]; then
+if [[ ! ("$(uname -s)" == "Linux" && "$(uname -m)" == "aarch64") ]]; then
     sed -i '12c\#include <cstdint>' lib/mmseqs/src/prefiltering/Indexer.h
 	sed -i '3c\#include <cstdint>' lib/mmseqs/src/commons/Util.h
 	sed -i '3c\#include <cstdint>' lib/mmseqs/src/commons/Debug.h
