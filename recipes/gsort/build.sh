@@ -1,6 +1,14 @@
 #!/bin/bash
 
-chmod a+x gsort_*
-mkdir -p $PREFIX/bin
-cp gsort_* $PREFIX/bin/gsort
+export CGO_ENABLED=0
+export GOPATH=$PWD
+export GOCACHE=$PWD/.cache/
 
+mkdir -p "${GOCACHE}"
+mkdir -p "$PREFIX/bin"
+
+cd cmd/gsort/
+
+go build ./gsort.go
+
+install -v -m 0755 gsort "$PREFIX/bin"
