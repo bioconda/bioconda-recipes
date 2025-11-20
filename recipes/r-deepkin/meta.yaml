@@ -1,8 +1,5 @@
 {% set name = 'r-deepkin' %}
-{% set version = '0.1.0' %}
-
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set version = '1.0.0' %}
 
 package:
   name: {{ name }}
@@ -10,30 +7,27 @@ package:
 
 source:
   url:
-    - https://github.com/qixininin/deepKin/archive/refs/tags/v1.0.0.tar.gz
+    - https://github.com/qixininin/deepKin/archive/refs/tags/v{{ version }}.tar.gz
   sha256: 8354d2223dbc07fd11fd39270610c2a5c43146f4150a4a92185ff0ffd2eefe40
 
 build:
-  merge_build_host: True  # [win]
   number: 0
-  noarch: generic
   rpaths:
     - lib/R/lib/
     - lib/
+  script: {{ RECIPE_DIR }}/build.sh
 
 requirements:
-  build:
-    - {{ posix }}zip               # [win]
   host:
-    - r-base ==4.3.2
+    - r-base >=4.3
     - r-readr
   run:
-    - r-base ==4.3.2
+    - r-base >=4.3
     - r-readr
 
 test:
   commands:
-    - R -q -e "library('deepKin')"           # [not win]
+    - $R -q -e "library('deepKin')"
 
 about:
   home: https://github.com/qixininin/deepKin
@@ -52,5 +46,3 @@ about:
 extra:
   recipe-maintainers:
     - VonPoo
-  skip-lints:
-    - missing_run_exports
