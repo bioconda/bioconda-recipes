@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 ### 1. Create target directories
-TGT="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
+TGT="$PREFIX/share/mitosalt"
 mkdir -p "$TGT"
 mkdir -p "${PREFIX}/bin"
 
