@@ -1,0 +1,49 @@
+{% set version = "0.2.2" %}
+{% set name = "barbell" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/rickbeeloo/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 7919bb9c7422db1621b48d0801de460032e54e8bff9d31560e2bc9c856545dca
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('barbell', max_pin="x.x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path .
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}              # [not win]
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - barbell --help
+    - barbell annotate --help
+    - barbell filter --help
+    - barbell trim --help
+    - barbell inspect --help
+    - barbell kit --help
+
+about:
+  home: https://github.com/rickbeeloo/barbell
+  license: MIT
+  summary: Extremely fast and accurate Nanopore demultiplexing 
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - mbhall88
+    - rickbeeloo
