@@ -1,4 +1,4 @@
-{% set version = "0.2.2" %}
+{% set version = "0.3.0" %}
 {% set name = "barbell" %}
 
 package:
@@ -7,13 +7,18 @@ package:
 
 source:
   url: https://github.com/rickbeeloo/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 7919bb9c7422db1621b48d0801de460032e54e8bff9d31560e2bc9c856545dca
+  sha256: 0e205cd56ea4bc96543f1cb8c9bc40f33bfe2aa763b78d7b965ccab4a200bb3f
 
 build:
   number: 0
   run_exports:
     - {{ pin_subpackage('barbell', max_pin="x.x") }}
   script:
+    # The default config.toml has target-cpu=native,
+    # but we don't want that for portable CI builds.
+    # Instead, use x86-64-v3 for x64, apple-m14 (=M1) for macos,
+    # and the default otherwise.
+    - mv .cargo/config-portable.toml .cargo/config.toml
     - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
     - cargo install -v --locked --no-track --root $PREFIX --path .
 
