@@ -1,33 +1,37 @@
 {% set name = "verkko" %}
-{% set version = "2.2.1" %}
+{% set version = "2.3" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/marbl/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
-  sha256: 4ab40961352cac22eebfb37606c82bb5a589f9361c36430e7278227e62db3860
+  url: https://s3-us-west-2.amazonaws.com/human-pangenomics/backup/Sergey/verkko-v2.3.tar.gz
+  sha256: f32a794436b00586296dce9bd82c5059e816088fd203ee287c9edb834d6f769c
   patches:
     - osx_availability.patch  # [osx]
+    - vector_view.patch
 
 build:
-  number: 1
+  number: 0
   run_exports:
-      - {{ pin_subpackage('verkko', max_pin="x.x") }}
+      - {{ pin_subpackage('verkko', max_pin="2.3") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-    - rust >=1.74
+    - {{ compiler('rust') }}
   host:
     - boost-cpp >=1.56  #[osx]
     - llvm-openmp  # [osx]
     - libgomp  # [linux]
     - gsl
     - zlib
+    - xz
+    - bzip2
     - htslib
+    - bamtools >=2.5
   run:
     - python >=3.9
     - boost-cpp >=1.56  #[osx]
@@ -48,6 +52,7 @@ requirements:
     - bwa >=0.7.17
     - minimap2 >=2.28
     - samtools >=1.17
+    - bamtools >=2.5
 
 test:
   requires:
