@@ -5,13 +5,16 @@ package:
   name: conterminator 
   version: {{ version|replace("-", ".")  }}
 
-build:
-  skip: True  # [osx]
-  number: 2
-
 source:
   url: https://github.com/martin-steinegger/conterminator/archive/{{ version }}.tar.gz
   sha256: {{ sha256 }}
+
+build:
+  number: 3
+  # sed: 1: "lib/mmseqs/src/prefilte ...": extra characters at the end of l command
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('conterminator',max_pin="x.x") }}
 
 requirements:
   build:
@@ -20,29 +23,32 @@ requirements:
     - cmake
     - make
   host:
-    - openmp
+    - llvm-openmp  # [osx]
     - perl
     - gawk
     - zlib
     - bzip2
-
+    - mmseqs2
   run:
-    - openmp
+    - llvm-openmp  # [osx]
     - gawk
-    - zlib
-    - bzip2
+    - mmseqs2
 
 test:
   commands:
     - conterminator > /dev/null
 
 about:
-  home: https://github.com/martin-steinegger/conterminator
+  home: "https://github.com/martin-steinegger/conterminator"
   license: GPL3
-  license_file: LICENCE.md
-  summary: "Conterminator: software to detect contamination in large sequence sets" 
+  license_file: "LICENCE.md"
+  summary: "Conterminator: software to detect contamination in large sequence sets."
+  dev_url: "https://github.com/martin-steinegger/conterminator"
 
 extra:
   identifiers:
     - doi:10.1186/s13059-020-02023-1
     - biotools:conterminator
+  additional-platforms:
+    - linux-aarch64
+    #- osx-arm64
