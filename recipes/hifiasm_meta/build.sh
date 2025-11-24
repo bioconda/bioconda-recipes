@@ -13,5 +13,5 @@ esac
 
 sed -i.bak 's/CXXFLAGS=.*//' Makefile
 rm -rf *.bak
-make INCLUDES="-I$PREFIX/include" CXXFLAGS="${CXXFLAGS} -L$PREFIX/lib -g -O3 ${ARCH_OPTS} -fomit-frame-pointer -Wall" CC="${CC}" "CXX=${CXX}"
+make CXXFLAGS="${CXXFLAGS} -g -O3 ${ARCH_OPTS} -fomit-frame-pointer -Wall" CC="${CC}" "CXX=${CXX}"
 install -v -m 0755 hifiasm_meta "$PREFIX/bin"
