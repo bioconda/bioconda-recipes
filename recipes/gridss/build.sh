@@ -38,10 +38,10 @@ chmod +x $TGT/gridss_*
 rm gridsstools # don't use the pre-compiled gridsstools - rebuild it ourselves
 tar zxf gridsstools-src-$PKG_VERSION.tar.gz
 cd "${SRC_DIR}/gridsstools/htslib/"
-autoreconf -i && ./configure && make
+autoreconf -i && ./configure && make -j"${CPU_COUNT}"
 cd ..
-autoreconf -i && ./configure && make gridsstools
-cp gridsstools $PREFIX/bin
+autoreconf -i && ./configure && make gridsstools -j"${CPU_COUNT}"
+install -v -m 0755 gridsstools "$PREFIX/bin"
 
 # Wrapper script to add --jar command line argument
 ln -s $TGT/gridss_shell_with_jar_entrypoint $PREFIX/bin/gridss

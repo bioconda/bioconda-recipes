@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "kodata-1.28.0"
+installBiocDataPackage.sh "kodata-1.32.0"
