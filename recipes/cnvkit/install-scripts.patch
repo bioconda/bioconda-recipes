@@ -1,0 +1,728 @@
+From 037b580657979ad6a493bf375d29d7b33264d4a9 Mon Sep 17 00:00:00 2001
+From: David Laehnemann <david.laehnemann@hhu.de>
+Date: Fri, 27 Jun 2025 14:01:50 +0200
+Subject: [PATCH] feat: make all the python scripts available again in a
+ standard pip installation, standardise script argument parsing and invocation
+ setup
+
+---
+ cnvlib/cli/__init__.py                        |   0
+ {scripts => cnvlib/cli}/cnv_annotate.py       |  23 ++--
+ .../cli}/cnv_expression_correlate.py          |  39 +++---
+ cnvlib/cli/cnv_updater.py                     |  66 ++++++++++
+ .../cli}/genome_instability_index.py          |  36 +++---
+ {scripts => cnvlib/cli}/guess_baits.py        | 117 ++++++++++--------
+ cnvlib/cli/reference2targets.py               |  42 +++++++
+ pyproject.toml                                |  21 ++--
+ scripts/cnv_updater.py                        |  56 ---------
+ scripts/reference2targets.py                  |  31 -----
+ skgenome/cli/__init__.py                      |   0
+ {scripts => skgenome/cli}/skg_convert.py      |  81 ++++++------
+ 12 files changed, 285 insertions(+), 227 deletions(-)
+ create mode 100644 cnvlib/cli/__init__.py
+ rename {scripts => cnvlib/cli}/cnv_annotate.py (75%)
+ rename {scripts => cnvlib/cli}/cnv_expression_correlate.py (94%)
+ create mode 100755 cnvlib/cli/cnv_updater.py
+ rename {scripts => cnvlib/cli}/genome_instability_index.py (87%)
+ rename {scripts => cnvlib/cli}/guess_baits.py (96%)
+ create mode 100755 cnvlib/cli/reference2targets.py
+ delete mode 100755 scripts/cnv_updater.py
+ delete mode 100755 scripts/reference2targets.py
+ create mode 100644 skgenome/cli/__init__.py
+ rename {scripts => skgenome/cli}/skg_convert.py (92%)
+
+diff --git a/cnvlib/cli/__init__.py b/cnvlib/cli/__init__.py
+new file mode 100644
+index 0000000..e69de29
+diff --git a/scripts/cnv_annotate.py b/cnvlib/cli/cnv_annotate.py
+similarity index 75%
+rename from scripts/cnv_annotate.py
+rename to cnvlib/cli/cnv_annotate.py
+index 5f3c91b..4a18156 100755
+--- a/scripts/cnv_annotate.py
++++ b/cnvlib/cli/cnv_annotate.py
+@@ -6,12 +6,18 @@ import logging
+ import sys
+ 
+ from skgenome import tabio
+-from cnvlib.cmdutil import read_cna
++from ..cmdutil import read_cna
+ 
+-logging.basicConfig(level=logging.INFO, format="%(message)s")
++
++def argument_parsing():
++    AP = argparse.ArgumentParser(description=__doc__)
++    AP.add_argument('annotate', help="Genome annotations.")
++    AP.add_argument('cnv_file', help="CNVkit .cnn or .cnr file.")
++    AP.add_argument('-o', '--output', help="Output filename.")
++    return  AP.parse_args()
+ 
+ 
+-def main(args):
++def cnv_annotate(args):
+     annot = tabio.read_auto(args.annotate)
+     cnarr = read_cna(args.cnv_file)
+     cnarr['gene'] = annot.into_ranges(cnarr, 'gene', '-')
+@@ -24,10 +30,11 @@ def main(args):
+     #      some math for how to update probes, weight
+ 
+ 
++def main():
++    logging.basicConfig(level=logging.INFO, format="%(message)s")
++    arguments = argument_parsing()
++    cnv_annotate(arguments)
++
+ 
+ if __name__ == '__main__':
+-    AP = argparse.ArgumentParser(description=__doc__)
+-    AP.add_argument('annotate', help="Genome annotations.")
+-    AP.add_argument('cnv_file', help="CNVkit .cnn or .cnr file.")
+-    AP.add_argument('-o', '--output', help="Output filename.")
+-    main(AP.parse_args())
++    main()
+diff --git a/scripts/cnv_expression_correlate.py b/cnvlib/cli/cnv_expression_correlate.py
+similarity index 94%
+rename from scripts/cnv_expression_correlate.py
+rename to cnvlib/cli/cnv_expression_correlate.py
+index 971da6f..a983ece 100644
+--- a/scripts/cnv_expression_correlate.py
++++ b/cnvlib/cli/cnv_expression_correlate.py
+@@ -6,14 +6,23 @@ Data source for both inputs is TCGA via cBioPortal.
+ import logging
+ import sys
+ import warnings
++import argparse
+ 
+ import pandas as pd
+ from scipy.stats import spearmanr, kendalltau
+ 
+-from cnvlib.rna import before
+-
+-logging.basicConfig(level=logging.INFO, format="%(message)s")
++from ..rna import before
+ 
++def argument_parsing():
++    AP = argparse.ArgumentParser(description=__doc__)
++    AP.add_argument("cnv_fname", metavar="CNV_FILE",
++                    help="""Gene copy number calls for many samples.""")
++    AP.add_argument("expression_fname", metavar="RNA_FILE",
++                    help="""Gene expression for many samples (mostly
++                    overlapping with CNV samples).""")
++    AP.add_argument("-o", "--output", metavar="FILE",
++                    help="Output file name (summary table).")
++    return AP.parse_args()
+ 
+ def correlate_cnv_expression(cnv_fname, expression_fname):
+     """Get correlation coefficients for matched copy number and expression data.
+@@ -83,20 +92,18 @@ def load_tcga_table(fname, shared_key):
+     return table
+ 
+ 
+-if __name__ == '__main__':
+-    import argparse
+-    logging.basicConfig(level=logging.INFO, format="%(message)s")
+-
+-    AP = argparse.ArgumentParser(description=__doc__)
+-    AP.add_argument("cnv_fname", metavar="CNV_FILE",
+-                    help="""Gene copy number calls for many samples.""")
+-    AP.add_argument("expression_fname", metavar="RNA_FILE",
+-                    help="""Gene expression for many samples (mostly
+-                    overlapping with CNV samples).""")
+-    AP.add_argument("-o", "--output", metavar="FILE",
+-                    help="Output file name (summary table).")
+-    args = AP.parse_args()
++def cnv_expression_correlate(args):
+     table = correlate_cnv_expression(args.cnv_fname, args.expression_fname)
+     table.to_csv(args.output or sys.stdout, sep='\t', index=True)
+     if args.output:
+         logging.info("Wrote %s with %s rows", args.output, len(table))
++
++
++def main():
++    logging.basicConfig(level=logging.INFO, format="%(message)s")
++    arguments = argument_parsing()
++    cnv_expression_correlate(arguments)
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/cnvlib/cli/cnv_updater.py b/cnvlib/cli/cnv_updater.py
+new file mode 100755
+index 0000000..d1879d0
+--- /dev/null
++++ b/cnvlib/cli/cnv_updater.py
+@@ -0,0 +1,66 @@
++#!/usr/bin/env python
++"""Update .cnn/.cnr files from older CNVkit versions to match current defaults.
++
++CNVkit v0.8.0 and later uses a 'depth' column in the *.targetcoverage.cnn and
++*.antitargetcoverage.cnn files produced by the 'coverage' command.
++To use .cnn files created by CNVkit v0.7.11 or earlier with the current version,
++run this script on the old .cnn files to convert them to the new format,
++calculating 'depth' from 'log2'.
++
++CNVkit v0.9.0 and later automatically names off-target bins "Antitarget",
++instead of the previous "Background". This script also updates those bin names
++in the 'gene' column.
++"""
++import argparse
++import logging
++import os.path
++
++import numpy as np
++
++from .. import read, params
++from skgenome import tabio
++
++def argument_parsing():
++    AP = argparse.ArgumentParser(description=__doc__)
++    AP.add_argument("cnn_files", nargs='+',
++            help="""CNVkit coverage files to update (*.targetcoverage.cnn,
++                    *.antitargetcoverage.cnn).""")
++    AP.add_argument("-d", "--output-dir", default=".",
++            help="""Directory to write output .cnn files.""")
++    AP.add_argument("-s", "--suffix", default=".updated",
++            help="""Filename suffix to add before the '.cnn' extension in output
++                    files. [Default: %(default)s]""")
++    return AP.parse_args()
++
++
++def cnv_updater(args):
++    for fname in args.cnn_files:
++        cnarr = read(fname)
++        # Convert coverage depths from log2 scale to absolute scale.
++        # NB: The log2 values are un-centered in CNVkit v0.7.0(?) through v0.7.11;
++        # earlier than that, the average 'depth' will be about 1.0.
++        cnarr['depth'] = np.exp2(cnarr['log2'])
++        # Rename "Background" bins to "Antitarget"
++        # NB: The default off-target bin name was changed in CNVkit v0.9.0
++        cnarr['gene'] = cnarr['gene'].replace("Background",
++                                              params.ANTITARGET_NAME)
++        cnarr.sort_columns()
++        # Construct the output filename
++        base, ext = os.path.basename(fname).rsplit('.', 1)
++        if '.' in base:
++            base, zone = base.rsplit('.', 1)
++            out_fname = '.'.join((base + args.suffix, zone, ext))
++        else:
++            # e.g. reference.cnn or .cnr file, no "*.targetcoverage.*" in name
++            out_fname = '.'.join((base + args.suffix, ext))
++        tabio.write(cnarr, os.path.join(args.output_dir, out_fname))
++
++
++def main():
++    logging.basicConfig(level=logging.INFO, format="%(message)s")
++    arguments = argument_parsing()
++    cnv_updater(arguments)
++
++
++if __name__ == '__main__':
++    main()
+\ No newline at end of file
+diff --git a/scripts/genome_instability_index.py b/cnvlib/cli/genome_instability_index.py
+similarity index 87%
+rename from scripts/genome_instability_index.py
+rename to cnvlib/cli/genome_instability_index.py
+index 5598cd2..e879e77 100755
+--- a/scripts/genome_instability_index.py
++++ b/cnvlib/cli/genome_instability_index.py
+@@ -20,10 +20,21 @@ import argparse
+ import logging
+ import sys
+ 
+-from cnvlib.cmdutil import read_cna
+-from cnvlib.call import do_call
++from ..cmdutil import read_cna
++from ..call import do_call
+ 
+-logging.basicConfig(level=logging.INFO, format="%(message)s")
++
++def argument_parsing():
++    AP = argparse.ArgumentParser(description=__doc__)
++    AP.add_argument('cnv_files', nargs='+',
++                    help="CNVkit .cnr or .cns filenames.")
++    AP.add_argument("--diploid-parx-genome",
++                    type=str,
++                    help="Considers the given human genome's PAR of chromosome X as autosomal. Example: 'grch38'")
++    AP.add_argument('-o', '--output',
++                    type=argparse.FileType("w"), default=sys.stdout,
++                    help="Output filename.")
++    return AP.parse_args()
+ 
+ 
+ def cna_stats(cnarr, diploid_parx_genome):
+@@ -39,7 +50,7 @@ def cna_stats(cnarr, diploid_parx_genome):
+     return frac, count
+ 
+ 
+-def main(args):
++def genome_instability_index(args):
+     print("Sample", "CNA_Fraction", "CNA_Count", sep='\t', file=args.output)
+     for fname in args.cnv_files:
+         cnarr = read_cna(fname)
+@@ -47,14 +58,11 @@ def main(args):
+         print(fname, frac, count, sep='\t', file=args.output)
+ 
+ 
++def main():
++    logging.basicConfig(level=logging.INFO, format="%(message)s")
++    arguments = argument_parsing()
++    genome_instability_index(arguments)
++
++
+ if __name__ == '__main__':
+-    AP = argparse.ArgumentParser(description=__doc__)
+-    AP.add_argument('cnv_files', nargs='+',
+-                    help="CNVkit .cnr or .cns filenames.")
+-    AP.add_argument("--diploid-parx-genome",
+-                    type=str,
+-                    help="Considers the given human genome's PAR of chromosome X as autosomal. Example: 'grch38'")
+-    AP.add_argument('-o', '--output',
+-                    type=argparse.FileType("w"), default=sys.stdout,
+-                    help="Output filename.")
+-    main(AP.parse_args())
++    main()
+diff --git a/scripts/guess_baits.py b/cnvlib/cli/guess_baits.py
+similarity index 96%
+rename from scripts/guess_baits.py
+rename to cnvlib/cli/guess_baits.py
+index 2825249..2c2b54b 100755
+--- a/scripts/guess_baits.py
++++ b/cnvlib/cli/guess_baits.py
+@@ -25,12 +25,59 @@ import sys
+ import numpy as np
+ import pandas as pd
+ 
+-import cnvlib
+-from cnvlib import parallel
+-from cnvlib.descriptives import modal_location
++from .. import parallel 
++from ..coverage import do_coverage
++from ..descriptives import modal_location
+ from skgenome import tabio, GenomicArray as GA
+ 
+-logging.basicConfig(level=logging.INFO, format="%(message)s")
++
++def argument_parsing():
++    AP = argparse.ArgumentParser(description=__doc__)
++    AP.add_argument('sample_bams', nargs='+',
++                    help="""Sample BAM file(s) to test for target coverage.""")
++    AP.add_argument('-o', '--output', metavar='FILENAME',
++                    help="""The inferred targets, in BED format.""")
++    AP.add_argument('-c', '--coverage', metavar='FILENAME',
++                    help="""Filename to output average coverage depths in .cnn
++                    format.""")
++    AP.add_argument('-p', '--processes', metavar='CPU',
++                    nargs='?', type=int, const=0, default=1,
++                    help="""Number of subprocesses to segment in parallel.
++                    If given without an argument, use the maximum number
++                    of available CPUs. [Default: use 1 process]""")
++    AP.add_argument('-f', '--fasta', metavar="FILENAME",
++            help="Reference genome, FASTA format (e.g. UCSC hg19.fa)")
++
++    AP_x = AP.add_mutually_exclusive_group(required=True)
++    AP_x.add_argument('-t', '--targets', metavar='TARGET_BED',
++                    help="""Potentially targeted genomic regions, e.g. all known
++                    exons in the reference genome, in BED format. Each of these
++                    regions will be tested as a whole for enrichment. (Faster
++                    method)""")
++    AP_x.add_argument('-a', '--access', metavar='ACCESS_BED',
++                    # default="../data/access-5k-mappable.grch37.bed",
++                    help="""Sequencing-accessible genomic regions (e.g. from
++                    'cnvkit.py access'), or known genic regions in the reference
++                    genome, in BED format. All bases will be tested for
++                    enrichment. (Slower method)""")
++
++    AP_target = AP.add_argument_group("With --targets only")
++    AP_target.add_argument('-d', '--min-depth', metavar='DEPTH',
++                    type=int, default=5,
++                    help="""Minimum sequencing read depth to accept as captured.
++                    [Default: %(default)s]""")
++
++    AP_access = AP.add_argument_group("With --access only")
++    AP_access.add_argument('-g', '--min-gap', metavar='GAP_SIZE',
++                    type=int, default=25,
++                    help="""Merge regions separated by gaps smaller than this.
++                    [Default: %(default)s]""")
++    AP_access.add_argument('-l', '--min-length', metavar='TARGET_SIZE',
++                    type=int, default=50,
++                    help="""Minimum region length to accept as captured.
++                    [Default: %(default)s]""")
++
++    return AP.parse_args()
+ 
+ 
+ # ___________________________________________
+@@ -47,7 +94,7 @@ def filter_targets(target_bed, sample_bams, procs, fasta):
+     total_depths = np.zeros(len(baits), dtype=np.float64)
+     for bam_fname in sample_bams:
+         logging.info("Evaluating targets in %s", bam_fname)
+-        sample = cnvlib.do_coverage(target_bed, bam_fname, processes=procs, fasta=fasta)
++        sample = do_coverage(target_bed, bam_fname, processes=procs, fasta=fasta)
+         assert len(sample) == len(baits), \
+                 "%d != %d" % (len(sample), len(baits))
+         total_depths += sample['depth'].values
+@@ -189,55 +236,7 @@ def normalize_depth_log2_filter(baits, min_depth, enrich_ratio=0.1):
+     return baits[keep_idx]
+ 
+ 
+-
+-if __name__ == '__main__':
+-    AP = argparse.ArgumentParser(description=__doc__)
+-    AP.add_argument('sample_bams', nargs='+',
+-                    help="""Sample BAM file(s) to test for target coverage.""")
+-    AP.add_argument('-o', '--output', metavar='FILENAME',
+-                    help="""The inferred targets, in BED format.""")
+-    AP.add_argument('-c', '--coverage', metavar='FILENAME',
+-                    help="""Filename to output average coverage depths in .cnn
+-                    format.""")
+-    AP.add_argument('-p', '--processes', metavar='CPU',
+-                    nargs='?', type=int, const=0, default=1,
+-                    help="""Number of subprocesses to segment in parallel.
+-                    If given without an argument, use the maximum number
+-                    of available CPUs. [Default: use 1 process]""")
+-    AP.add_argument('-f', '--fasta', metavar="FILENAME",
+-            help="Reference genome, FASTA format (e.g. UCSC hg19.fa)")
+-
+-    AP_x = AP.add_mutually_exclusive_group(required=True)
+-    AP_x.add_argument('-t', '--targets', metavar='TARGET_BED',
+-                    help="""Potentially targeted genomic regions, e.g. all known
+-                    exons in the reference genome, in BED format. Each of these
+-                    regions will be tested as a whole for enrichment. (Faster
+-                    method)""")
+-    AP_x.add_argument('-a', '--access', metavar='ACCESS_BED',
+-                    # default="../data/access-5k-mappable.grch37.bed",
+-                    help="""Sequencing-accessible genomic regions (e.g. from
+-                    'cnvkit.py access'), or known genic regions in the reference
+-                    genome, in BED format. All bases will be tested for
+-                    enrichment. (Slower method)""")
+-
+-    AP_target = AP.add_argument_group("With --targets only")
+-    AP_target.add_argument('-d', '--min-depth', metavar='DEPTH',
+-                    type=int, default=5,
+-                    help="""Minimum sequencing read depth to accept as captured.
+-                    [Default: %(default)s]""")
+-
+-    AP_access = AP.add_argument_group("With --access only")
+-    AP_access.add_argument('-g', '--min-gap', metavar='GAP_SIZE',
+-                    type=int, default=25,
+-                    help="""Merge regions separated by gaps smaller than this.
+-                    [Default: %(default)s]""")
+-    AP_access.add_argument('-l', '--min-length', metavar='TARGET_SIZE',
+-                    type=int, default=50,
+-                    help="""Minimum region length to accept as captured.
+-                    [Default: %(default)s]""")
+-
+-    args = AP.parse_args()
+-
++def guess_baits(args):
+     # ENH: can we reserve multiple cores for htslib?
+     if args.processes < 1:
+         args.processes = None
+@@ -253,3 +252,13 @@ if __name__ == '__main__':
+     if args.coverage:
+         baits['log2'] = np.log2(baits['depth'] / baits['depth'].median())
+         tabio.write(baits, args.coverage, 'tab')
++
++
++def main():
++    logging.basicConfig(level=logging.INFO, format="%(message)s")
++    arguments = argument_parsing()
++    guess_baits(arguments)
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/cnvlib/cli/reference2targets.py b/cnvlib/cli/reference2targets.py
+new file mode 100755
+index 0000000..e61d1ef
+--- /dev/null
++++ b/cnvlib/cli/reference2targets.py
+@@ -0,0 +1,42 @@
++#!/usr/bin/env python
++"""Extract target and antitarget BED files from a CNVkit reference file.
++
++Once you have a stable CNVkit reference for your platform, you can use this
++script to drop the "bad" bins from your target and antitarget BED files and
++avoid unnecessarily calculating coverage in those bins during future runs.
++
++This script is also useful to recover the target and antitarget BED files that
++match the reference if those BED files are missing or you're not sure which ones
++are correct.
++"""
++import argparse
++import logging
++
++from .. import reference, read
++from skgenome import tabio
++
++
++def argument_parsing():
++    AP = argparse.ArgumentParser(description=__doc__)
++    AP.add_argument("reference", help="Reference file.")
++    AP.add_argument("-o", "--output",
++                    help="Output base name (extensions added automatically).")
++    return AP.parse_args()
++
++
++def reference2targets(args):
++    ref = read(args.reference)
++    targets, antitargets = reference.reference2regions(ref)
++    name = args.output or ref.sample_id
++    tabio.write(targets, name + '.target.bed', 'bed4')
++    tabio.write(antitargets, name + '.antitarget.bed', 'bed4')
++
++
++def main():
++    logging.basicConfig(level=logging.INFO, format="%(message)s")
++    arguments = argument_parsing()
++    reference2targets(arguments)
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/pyproject.toml b/pyproject.toml
+index c242ab2..92e30bb 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -38,17 +38,16 @@ changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
+ 
+ [project.scripts]
+ "cnvkit.py" = "cnvlib.cnvkit:main"
+-# XXX TODO -- move these scripts under cnvlib.cli and skgenome.cli?
+-#"cnv_annotate.py" = "scripts.cnv_annotate"
+-#"cnv_expression_correlate.py" = "scripts.cnv_expression_correlate"
+-#"cnv_updater.py" = "scripts.cnv_updater"
+-#"genome_instability_index.py" = "scripts.genome_instability_index"
+-#"guess_baits.py" = "scripts.guess_baits"
+-#"reference2targets.py" = "scripts.reference2targets"
+-#"skg_convert.py" = "scripts.skg_convert"
++"cnv_annotate.py" = "cnvlib.cli.cnv_annotate:main"
++"cnv_expression_correlate.py" = "cnvlib.cli.cnv_expression_correlate:main"
++"cnv_updater.py" = "cnvlib.cli.cnv_updater:main"
++"genome_instability_index.py" = "cnvlib.cli.genome_instability_index:main"
++"guess_baits.py" = "cnvlib.cli.guess_baits:main"
++"reference2targets.py" = "cnvlib.cli.reference2targets:main"
++"skg_convert.py" = "skgenome.cli.skg_convert:main"
++# XXX TODO -- figure out whether this script should and could be included
++# in the installation
+ #"snpfilter.sh" = "scripts/snpfilter.sh"
+-# -- from setup.py --
+-#   scripts=[join(DIR, 'cnvkit.py')] + glob(join(DIR, 'scripts/*.py')),
+ 
+ [build-system]
+ # Minimum requirements for the build system to execute (PEP 508)
+@@ -56,7 +55,7 @@ requires = ["setuptools"]
+ build-backend = "setuptools.build_meta"
+ 
+ [tool.setuptools]
+-packages = ["cnvlib", "cnvlib.segmentation", "skgenome", "skgenome.tabio"]
++packages = ["cnvlib", "cnvlib.cli", "cnvlib.segmentation", "skgenome", "skgenome.cli", "skgenome.tabio"]
+ 
+ [tool.setuptools.dynamic]
+ version = {attr = "cnvlib._version.__version__"}
+diff --git a/scripts/cnv_updater.py b/scripts/cnv_updater.py
+deleted file mode 100755
+index 5d73476..0000000
+--- a/scripts/cnv_updater.py
++++ /dev/null
+@@ -1,56 +0,0 @@
+-#!/usr/bin/env python
+-"""Update .cnn/.cnr files from older CNVkit versions to match current defaults.
+-
+-CNVkit v0.8.0 and later uses a 'depth' column in the *.targetcoverage.cnn and
+-*.antitargetcoverage.cnn files produced by the 'coverage' command.
+-To use .cnn files created by CNVkit v0.7.11 or earlier with the current version,
+-run this script on the old .cnn files to convert them to the new format,
+-calculating 'depth' from 'log2'.
+-
+-CNVkit v0.9.0 and later automatically names off-target bins "Antitarget",
+-instead of the previous "Background". This script also updates those bin names
+-in the 'gene' column.
+-"""
+-import argparse
+-import logging
+-import os.path
+-
+-import numpy as np
+-
+-import cnvlib
+-from skgenome import tabio
+-
+-logging.basicConfig(level=logging.INFO, format="%(message)s")
+-
+-
+-AP = argparse.ArgumentParser(description=__doc__)
+-AP.add_argument("cnn_files", nargs='+',
+-        help="""CNVkit coverage files to update (*.targetcoverage.cnn,
+-                *.antitargetcoverage.cnn).""")
+-AP.add_argument("-d", "--output-dir", default=".",
+-        help="""Directory to write output .cnn files.""")
+-AP.add_argument("-s", "--suffix", default=".updated",
+-        help="""Filename suffix to add before the '.cnn' extension in output
+-                files. [Default: %(default)s]""")
+-args = AP.parse_args()
+-
+-for fname in args.cnn_files:
+-    cnarr = cnvlib.read(fname)
+-    # Convert coverage depths from log2 scale to absolute scale.
+-    # NB: The log2 values are un-centered in CNVkit v0.7.0(?) through v0.7.11;
+-    # earlier than that, the average 'depth' will be about 1.0.
+-    cnarr['depth'] = np.exp2(cnarr['log2'])
+-    # Rename "Background" bins to "Antitarget"
+-    # NB: The default off-target bin name was changed in CNVkit v0.9.0
+-    cnarr['gene'] = cnarr['gene'].replace("Background",
+-                                          cnvlib.params.ANTITARGET_NAME)
+-    cnarr.sort_columns()
+-    # Construct the output filename
+-    base, ext = os.path.basename(fname).rsplit('.', 1)
+-    if '.' in base:
+-        base, zone = base.rsplit('.', 1)
+-        out_fname = '.'.join((base + args.suffix, zone, ext))
+-    else:
+-        # e.g. reference.cnn or .cnr file, no "*.targetcoverage.*" in name
+-        out_fname = '.'.join((base + args.suffix, ext))
+-    tabio.write(cnarr, os.path.join(args.output_dir, out_fname))
+diff --git a/scripts/reference2targets.py b/scripts/reference2targets.py
+deleted file mode 100755
+index 521df30..0000000
+--- a/scripts/reference2targets.py
++++ /dev/null
+@@ -1,31 +0,0 @@
+-#!/usr/bin/env python
+-"""Extract target and antitarget BED files from a CNVkit reference file.
+-
+-Once you have a stable CNVkit reference for your platform, you can use this
+-script to drop the "bad" bins from your target and antitarget BED files and
+-avoid unnecessarily calculating coverage in those bins during future runs.
+-
+-This script is also useful to recover the target and antitarget BED files that
+-match the reference if those BED files are missing or you're not sure which ones
+-are correct.
+-"""
+-import argparse
+-import logging
+-
+-import cnvlib
+-from cnvlib import reference
+-from skgenome import tabio
+-
+-logging.basicConfig(level=logging.INFO, format="%(message)s")
+-
+-
+-AP = argparse.ArgumentParser(description=__doc__)
+-AP.add_argument("reference", help="Reference file.")
+-AP.add_argument("-o", "--output",
+-                help="Output base name (extensions added automatically).")
+-args = AP.parse_args()
+-ref = cnvlib.read(args.reference)
+-targets, antitargets = reference.reference2regions(ref)
+-name = args.output or ref.sample_id
+-tabio.write(targets, name + '.target.bed', 'bed4')
+-tabio.write(antitargets, name + '.antitarget.bed', 'bed4')
+diff --git a/skgenome/cli/__init__.py b/skgenome/cli/__init__.py
+new file mode 100644
+index 0000000..e69de29
+diff --git a/scripts/skg_convert.py b/skgenome/cli/skg_convert.py
+similarity index 92%
+rename from scripts/skg_convert.py
+rename to skgenome/cli/skg_convert.py
+index 9d27f1c..c5ca99c 100755
+--- a/scripts/skg_convert.py
++++ b/skgenome/cli/skg_convert.py
+@@ -4,43 +4,9 @@ import argparse
+ import logging
+ import sys
+ 
+-from skgenome import tabio
++from .. import tabio
+ 
+-logging.basicConfig(level=logging.INFO, format="%(message)s")
+-
+-
+-def main(args):
+-    logging.info("Converting %s%s to %s",
+-                 "input" if args.infile is sys.stdin else args.infile,
+-                 " from "+ args.in_fmt if args.in_fmt != 'auto' else '',
+-                 args.out_fmt)
+-
+-    if args.in_fmt == 'auto':
+-        args.in_fmt = tabio.sniff_region_format(args.infile)
+-    # Format-specific input options
+-    kwargs = {}
+-    if args.in_fmt == 'gff':
+-        if args.gff_tag:
+-            kwargs['tag'] = args.gff_tag
+-        if args.gff_type:
+-            kwargs['keep_type'] = args.gff_type
+-    elif args.in_fmt == 'refflat':
+-        if args.refflat_type == 'exon':
+-            kwargs['exons'] = True
+-        elif args.refflat_type == 'cds':
+-            kwargs['cds'] = True
+-    regions = tabio.read(args.infile, args.in_fmt, **kwargs)
+-
+-    # Post-processing
+-    if args.flatten:
+-        regions = regions.flatten()
+-    elif args.merge:
+-        regions = regions.merge(bp=args.merge)
+-
+-    tabio.write(regions, args.output, args.out_fmt)
+-
+-
+-if __name__ == '__main__':
++def argument_parsing():
+     AP = argparse.ArgumentParser(description=__doc__)
+     AP.add_argument('infile', metavar="FILE",
+                     default=sys.stdin, nargs='?',
+@@ -79,4 +45,45 @@ if __name__ == '__main__':
+                     choices=('exon', 'cds', 'transcript'), default='transcript',
+                     help="""Emit each exon instead of the whole gene regions.""")
+ 
+-    main(AP.parse_args())
++    return AP.parse_args()
++
++
++def skg_convert(args):
++    logging.info("Converting %s%s to %s",
++                 "input" if args.infile is sys.stdin else args.infile,
++                 " from "+ args.in_fmt if args.in_fmt != 'auto' else '',
++                 args.out_fmt)
++
++    if args.in_fmt == 'auto':
++        args.in_fmt = tabio.sniff_region_format(args.infile)
++    # Format-specific input options
++    kwargs = {}
++    if args.in_fmt == 'gff':
++        if args.gff_tag:
++            kwargs['tag'] = args.gff_tag
++        if args.gff_type:
++            kwargs['keep_type'] = args.gff_type
++    elif args.in_fmt == 'refflat':
++        if args.refflat_type == 'exon':
++            kwargs['exons'] = True
++        elif args.refflat_type == 'cds':
++            kwargs['cds'] = True
++    regions = tabio.read(args.infile, args.in_fmt, **kwargs)
++
++    # Post-processing
++    if args.flatten:
++        regions = regions.flatten()
++    elif args.merge:
++        regions = regions.merge(bp=args.merge)
++
++    tabio.write(regions, args.output, args.out_fmt)
++
++
++def main():
++    logging.basicConfig(level=logging.INFO, format="%(message)s")
++    arguments = argument_parsing()
++    skg_convert(arguments)
++
++
++if __name__ == '__main__':
++    main()
+-- 
+2.49.0
+

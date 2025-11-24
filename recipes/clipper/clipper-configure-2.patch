@@ -1,0 +1,165 @@
+=== modified file 'configure'
+--- configure	2014-09-16 16:38:42 +0000
++++ configure	2019-03-01 00:48:29 +0000
+@@ -640,6 +640,7 @@
+ PTHREAD_LIBS
+ PTHREAD_CC
+ ax_pthread_config
++FFTW2_CPPFLAGS
+ FFTW2_LIBS
+ FLIBS
+ ac_ct_F77
+@@ -809,6 +810,7 @@
+ enable_ccp4
+ enable_cctbx
+ enable_fortran
++with_fftw2_prefix
+ '
+       ac_precious_vars='build_alias
+ host_alias
+@@ -1478,6 +1480,7 @@
+   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
+   --with-sysroot=DIR Search for dependent libraries within DIR
+                         (or the compiler's sysroot if not specified).
++  --with-fftw2-prefix=PFX Prefix where fftw2 has been installed
+ 
+ Some influential environment variables:
+   CC          C compiler command
+@@ -11271,10 +11274,14 @@
+   # before this can be enabled.
+   hardcode_into_libs=yes
+ 
++  # Add ABI-specific directories to the system library path.
++  sys_lib_dlsearch_path_spec="/lib64 /usr/lib64 /lib /usr/lib"
++
+   # Append ld.so.conf contents to the search path
+   if test -f /etc/ld.so.conf; then
+     lt_ld_extra=`awk '/^include / { system(sprintf("cd /etc; cat %s 2>/dev/null", \$2)); skip = 1; } { if (!skip) print \$0; skip = 0; }' < /etc/ld.so.conf | $SED -e 's/#.*//;/^[	 ]*hwcap[	 ]/d;s/[:,	]/ /g;s/=[^=]*$//;s/=[^= ]* / /g;s/"//g;/^$/d' | tr '\n' ' '`
+-    sys_lib_dlsearch_path_spec="/lib /usr/lib $lt_ld_extra"
++    sys_lib_dlsearch_path_spec="$sys_lib_dlsearch_path_spec $lt_ld_extra"
++
+   fi
+ 
+   # We used to test for /lib/ld.so.1 and disable shared libraries on
+@@ -15102,10 +15109,14 @@
+   # before this can be enabled.
+   hardcode_into_libs=yes
+ 
++  # Add ABI-specific directories to the system library path.
++  sys_lib_dlsearch_path_spec="/lib64 /usr/lib64 /lib /usr/lib"
++
+   # Append ld.so.conf contents to the search path
+   if test -f /etc/ld.so.conf; then
+     lt_ld_extra=`awk '/^include / { system(sprintf("cd /etc; cat %s 2>/dev/null", \$2)); skip = 1; } { if (!skip) print \$0; skip = 0; }' < /etc/ld.so.conf | $SED -e 's/#.*//;/^[	 ]*hwcap[	 ]/d;s/[:,	]/ /g;s/=[^=]*$//;s/=[^= ]* / /g;s/"//g;/^$/d' | tr '\n' ' '`
+-    sys_lib_dlsearch_path_spec="/lib /usr/lib $lt_ld_extra"
++    sys_lib_dlsearch_path_spec="$sys_lib_dlsearch_path_spec $lt_ld_extra"
++
+   fi
+ 
+   # We used to test for /lib/ld.so.1 and disable shared libraries on
+@@ -18214,10 +18225,14 @@
+   # before this can be enabled.
+   hardcode_into_libs=yes
+ 
++  # Add ABI-specific directories to the system library path.
++  sys_lib_dlsearch_path_spec="/lib64 /usr/lib64 /lib /usr/lib"
++
+   # Append ld.so.conf contents to the search path
+   if test -f /etc/ld.so.conf; then
+     lt_ld_extra=`awk '/^include / { system(sprintf("cd /etc; cat %s 2>/dev/null", \$2)); skip = 1; } { if (!skip) print \$0; skip = 0; }' < /etc/ld.so.conf | $SED -e 's/#.*//;/^[	 ]*hwcap[	 ]/d;s/[:,	]/ /g;s/=[^=]*$//;s/=[^= ]* / /g;s/"//g;/^$/d' | tr '\n' ' '`
+-    sys_lib_dlsearch_path_spec="/lib /usr/lib $lt_ld_extra"
++    sys_lib_dlsearch_path_spec="$sys_lib_dlsearch_path_spec $lt_ld_extra"
++
+   fi
+ 
+   # We used to test for /lib/ld.so.1 and disable shared libraries on
+@@ -19214,6 +19229,17 @@
+ 
+ fi
+ 
++
++# Check whether --with-fftw2-prefix was given.
++if test "${with_fftw2_prefix+set}" = set; then :
++  withval=$with_fftw2_prefix; fftw2_prefix="$withval"
++else
++  fftw2_prefix=""
++fi
++
++
++
++
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing cos" >&5
+ $as_echo_n "checking for library containing cos... " >&6; }
+ if ${ac_cv_search_cos+:} false; then :
+@@ -19280,6 +19306,7 @@
+   as_fn_error $? "math library not found." "$LINENO" 5
+ fi
+ 
++# SINGLE_FFTW2
+ 
+ saved_LIBS="$LIBS"
+ ac_ext=cpp
+@@ -19289,9 +19316,13 @@
+ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+ 
+ 
+-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for prefixed single-precision FFTW2 (sfftw.h)" >&5
+-$as_echo_n "checking for prefixed single-precision FFTW2 (sfftw.h)... " >&6; }
+-FFTW2_LIBS="-lsrfftw -lsfftw"
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for PE-standard FFTW2 (fftw.h)" >&5
++$as_echo_n "checking for PE-standard FFTW2 (fftw.h)... " >&6; }
++FFTW2_LIBS="-lrfftw -lfftw"
++if test x$fftw2_prefix != x ; then
++   FFTW2_LIBS="-L$fftw2_prefix/lib -lrfftw -lfftw"
++   FFTW2_CPPFLAGS=-I$fftw2_prefix/include
++fi
+ LIBS="$FFTW2_LIBS $saved_LIBS"
+ # FFTW2 uses sincos() from libm but is not linked with -lm.
+ # Which is nothing unusual, at the times of FFTW2 underlinking was common.
+@@ -19300,7 +19331,7 @@
+ # by the linker as not needed we put a math function into the test below.
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+-#include <sfftw.h>
++#include <fftw.h>
+ #include <math.h>
+ #ifdef F77_DUMMY_MAIN
+ 
+@@ -19327,18 +19358,19 @@
+     conftest$ac_exeext conftest.$ac_ext
+ { $as_echo "$as_me:${as_lineno-$LINENO}: result: $have_fftw" >&5
+ $as_echo "$have_fftw" >&6; }
+-if test $have_fftw = yes; then
+-
+-$as_echo "#define FFTW2_PREFIX_S 1" >>confdefs.h
+-
+-else
+-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for not prefixed single-precision FFTW2 (fftw.h)" >&5
+-$as_echo_n "checking for not prefixed single-precision FFTW2 (fftw.h)... " >&6; }
+-  FFTW2_LIBS="-lrfftw -lfftw"
++
++if test "$have_fftw" = no ; then
++  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for prefixed single-precision FFTW2 (fftw.h)" >&5
++$as_echo_n "checking for prefixed single-precision FFTW2 (fftw.h)... " >&6; }
++  FFTW2_LIBS="-lsrfftw -lsfftw"
++  if test x$fftw2_prefix != x ; then
++     FFTW2_LIBS="-L$fftw2_prefix/lib -lsrfftw -lsfftw"
++     FFTW2_CPPFLAGS=-I$fftw2_prefix/include
++  fi
+   LIBS="$FFTW2_LIBS $saved_LIBS"
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+-#include <fftw.h>
++#include <sfftw.h>
+ #include <math.h>
+ #ifdef F77_DUMMY_MAIN
+ 
+@@ -19378,6 +19410,7 @@
+ 
+ 
+ 
++
+ case $host_os in
+   cygwin* | mingw* | pw32* | cegcc*)
+     ac_fn_c_check_header_mongrel "$LINENO" "windows.h" "ac_cv_header_windows_h" "$ac_includes_default"
+

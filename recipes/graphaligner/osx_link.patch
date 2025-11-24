@@ -1,0 +1,13 @@
+diff --git a/makefile b/makefile
+index b3a70d9..481ec85 100755
+--- a/makefile
++++ b/makefile
+@@ -23,6 +23,8 @@ LINKFLAGS = $(CPPFLAGS) -Wl,-Bstatic $(LIBS) -Wl,-Bdynamic -Wl,--as-needed -lpth
+ ifeq ($(PLATFORM),Linux)
+ else
+    CPPFLAGS += -D_LIBCPP_DISABLE_AVAILABILITY
++   JEMALLOCFLAGS= -L`jemalloc-config --libdir` -Wl,-rpath,`jemalloc-config --libdir` -ljemalloc `jemalloc-config --libs`
++   LINKFLAGS = $(CPPFLAGS) $(LIBS) -lpthread -pthread -static-libstdc++ $(JEMALLOCFLAGS) `pkg-config --libs libdivsufsort` `pkg-config --libs libdivsufsort64`
+ endif
+ 
+ VERSION := Branch $(shell git rev-parse --abbrev-ref HEAD) commit $(shell git rev-parse HEAD) $(shell git show -s --format=%ci)
