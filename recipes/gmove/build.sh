@@ -4,6 +4,10 @@ export LC_ALL="en_US.UTF-8"
 
 mkdir -p "${PREFIX}/bin"
 
+if [[ `uname -s` == "Darwin" ]]; then
+	sed -i.bak "s|#include <malloc.h>||g" gmove.cpp
+fi
+
 case $(uname -m) in
     aarch64)
 	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a|' Makefile
