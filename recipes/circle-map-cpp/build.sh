@@ -16,6 +16,6 @@ case $(uname -m) in
 	;;
 esac
 
-make CXX="$CXX" -j"${CPU_COUNT}"
+make CXX="$CXX"
 
 install -v -m 0755 realign_cm merge_result read_extractor "${PREFIX}/bin"
