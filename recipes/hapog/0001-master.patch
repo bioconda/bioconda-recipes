@@ -1,0 +1,277 @@
+diff --git a/.gitignore b/.gitignore
+index 8cd0df3..d027a79 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,2 +1,4 @@
+ .vscode
+-.idea
+\ No newline at end of file
++.idea
++package_build
++hapog.egg-info
+diff --git a/README.md b/README.md
+index fe272fe..d98493d 100644
+--- a/README.md
++++ b/README.md
+@@ -83,7 +83,7 @@ A typical command line with a bam file would look like this:
+ ```
+ python3 HAPOG_ROOT/hapog.py \
+   --genome assembly.fasta \   # Fasta file of the genome to polish
+-  -b mapping.sorted.bam       # Sorted BAM file
++  -b mapping.sorted.bam  \    # Sorted BAM file
+   -o polishing \              # Output directory
+   -t 36 \                     # Number of threads to use
+   -u                          # Include unpolished sequences in the output
+@@ -93,7 +93,7 @@ python3 HAPOG_ROOT/hapog.py \
+ #### `hapog_results/hapog.fasta`
+ The corrected sequences. Hapo-G will parse the read alignments to the genome and focus on phasing errors (i.e the assembly switched from one haplotype to the other) and base errors (insertions, deletions, mismatches) that may be related or not to phasing errors. Remember to include the `-u` flag to tell Hapo-G to output sequences with no reads mapped and thus could not be changed.
+ 
+-Hapo-G will not add any new contigs or scaffolds to the assembly if, as an example, one of the haplotype is missing in the input assembly file. Instead, it will correct the haplotype that is present in the input file and output a corrected version of the sequence that is phased as best as we could with the data at hand. 
++Hapo-G will not add any new contigs or scaffolds to the assembly if, as an example, one of the haplotype is missing in the input assembly file. Instead, it will correct the haplotype that is present in the input file and output a corrected version of the sequence that is phased as best as we could with the data at hand.
+ 
+ As an example, let’s consider the following heterozygous genome:
+ ```text
+@@ -128,7 +128,18 @@ Contig_1  2000  ref=T read=G  readname=read_2 homo    ratio1=0.8142 ratio2=0.832
+ We can see that on the contig `Contig_1`, Hapo-G found a phasing error (`hetero` on the first line) and replaced a A at position 1000 by TA. This change was validated by 74.19% of reads of the same haplotype as the template read (ratio1) and by 42.37% of reads if we do not discriminate on which haplotype they belong to. It also found a mismatch at position 2000 (`homo`) and replaced a T by a G. This change was validated by 83% of reads of no matter which haplotype (ratio2).
+ 
+ 
++## Rerunning specific chunks
++When using multiple `--threads`, Hapo-G splits the assembly into numbered chunks (`chunks_1.fasta`, `chunks_2.fasta`, …) and processes each one independently. If a subset of chunks failed, you can rerun only those pieces by passing their numbers as a comma-separated list:
++```
++hapog --chunk-list 3,7,12 \
++      -o polishing \
++      [other options]
++```
++
++Re-run the command with the same output directory that contains the previous run. Hapo-G will reuse the existing mapping data, regenerate only the requested chunk files and refresh the merged `hapog_results/` outputs.
++
+ ## Acknowledgements
++
+ Some Cmake files have been taken and/or modified from several projects. We would like to thank:
+ - [panguangze](https://delta.cs.cityu.edu.hk/gzpan2) for their `FindHTSLIB.cmake` library
+ - [L. Kärkkäinen](https://github.com/Tronic) for their `LibFindMacros.cmake` library
+diff --git a/hapog/cli.py b/hapog/cli.py
+index 71ede8e..f0e5db5 100755
+--- a/hapog/cli.py
++++ b/hapog/cli.py
+@@ -111,6 +111,14 @@ def main():
+         default="5G",
+         required=False,
+     )
++    optional_args.add_argument(
++        "--chunk-list",
++        action="store",
++        dest="chunk_list",
++        help="Comma-separated list of chunk numbers to process (e.g., '12,18'). Useful for rerunning failed chunks.",
++        default=None,
++        required=False,
++    )
+ 
+     args = parser.parse_args()
+     pipeline.check_dependencies()
+@@ -122,20 +130,34 @@ def main():
+     if args.bam_file:
+         args.bam_file = os.path.abspath(args.bam_file)
+ 
++    # Parse chunk list if provided
++    chunk_list = None
++    if args.chunk_list:
++        try:
++            chunk_list = [int(x.strip()) for x in args.chunk_list.split(",")]
++            print(f"\nProcessing only chunks: {chunk_list}", flush=True)
++        except ValueError:
++            print(
++                f"ERROR: Invalid chunk list format. Please use comma-separated numbers (e.g., '12,18')"
++            )
++            sys.exit(1)
++
+     pe1 = []
+     pe2 = []
+     use_short_reads = False
+ 
+-    try:
+-        os.mkdir(args.output_dir)
+-    except:
+-        print(
+-            f"\nOutput directory {args.output_dir} can't be created, please erase it before launching Hapo-G.\n"
+-        )
+-        sys.exit(1)
+-    os.mkdir(f"{args.output_dir}/bam")
+-    os.mkdir(f"{args.output_dir}/logs")
+-    os.mkdir(f"{args.output_dir}/cmds")
++    if not args.chunk_list:
++        try:
++            os.mkdir(args.output_dir)
++        except:
++            print(
++                f"\nOutput directory {args.output_dir} can't be created, please erase it before launching Hapo-G.\n"
++            )
++            sys.exit(1)
++
++        os.mkdir(f"{args.output_dir}/bam")
++        os.mkdir(f"{args.output_dir}/logs")
++        os.mkdir(f"{args.output_dir}/cmds")
+ 
+     if args.bam_file:
+         mapping.remove_secondary_alignments(args.bam_file, args.output_dir)
+@@ -161,7 +183,10 @@ def main():
+     os.chdir(args.output_dir)
+ 
+     non_alphanumeric_chars = False
+-    if not args.bam_file:
++    if args.chunk_list and os.path.exists("correspondance.txt"):
++        non_alphanumeric_chars = True
++
++    if not args.bam_file and not args.chunk_list:
+         non_alphanumeric_chars = pipeline.check_fasta_headers(args.input_genome)
+         if non_alphanumeric_chars:
+             print(
+@@ -173,12 +198,16 @@ def main():
+             os.system(f"ln -s {args.input_genome} assembly.fasta")
+ 
+         if use_short_reads:
+-            mapping.launch_PE_mapping("assembly.fasta", pe1, pe2, args.threads, args.samtools_mem)
++            mapping.launch_PE_mapping(
++                "assembly.fasta", pe1, pe2, args.threads, args.samtools_mem
++            )
+         else:
+-            mapping.launch_LR_mapping("assembly.fasta", args.long_reads, args.threads, args.samtools_mem)
++            mapping.launch_LR_mapping(
++                "assembly.fasta", args.long_reads, args.threads, args.samtools_mem
++            )
+ 
+     else:
+-        if pipeline.check_fasta_headers(args.input_genome):
++        if not args.chunk_list and pipeline.check_fasta_headers(args.input_genome):
+             print(
+                 "\nERROR: Non-alphanumeric characters detected in fasta headers will cause samtools view to crash.",
+                 flush=True,
+@@ -193,13 +222,14 @@ def main():
+             )
+             sys.exit(-1)
+ 
+-        os.system(f"ln -s {args.input_genome} assembly.fasta")
+-        mapping.index_bam()
++        if not args.chunk_list:
++            os.system(f"ln -s {args.input_genome} assembly.fasta")
++            mapping.index_bam()
+ 
+-    if int(args.hapog_threads) > 1:
++    if not args.chunk_list and int(args.hapog_threads) > 1:
+         pipeline.create_chunks("assembly.fasta", args.threads)
+         pipeline.extract_bam(int(args.threads))
+-    else:
++    elif not args.chunk_list:
+         os.mkdir("chunks")
+         os.mkdir("chunks_bam")
+         if non_alphanumeric_chars:
+@@ -208,7 +238,7 @@ def main():
+             os.system(f"ln -s {args.input_genome} chunks/chunks_1.fasta")
+         os.system(f"ln -s ../bam/aln.sorted.bam chunks_bam/chunks_1.bam")
+ 
+-    pipeline.launch_hapog(args.hapog_bin, args.hapog_threads)
++    pipeline.launch_hapog(args.hapog_bin, args.hapog_threads, chunk_list)
+     pipeline.merge_results(int(args.threads))
+ 
+     if non_alphanumeric_chars:
+diff --git a/hapog/pipeline.py b/hapog/pipeline.py
+index 63a0fe0..e5175bb 100755
+--- a/hapog/pipeline.py
++++ b/hapog/pipeline.py
+@@ -29,9 +29,7 @@ def check_dependencies():
+ 
+ 
+ def check_fasta_headers(genome):
+-    authorized_chars = (
+-        "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_"
+-    )
++    authorized_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_"
+     with open(genome) as genome_file:
+         for line in genome_file:
+             if line.startswith(">"):
+@@ -131,7 +129,9 @@ def extract_bam(processes):
+             warnings.simplefilter("ignore")
+             procs.append(
+                 subprocess.Popen(
+-                    cmd, stdout=open(bam, "w"), stderr=open("logs/samtools_split.e", "a")
++                    cmd,
++                    stdout=open(bam, "w"),
++                    stderr=open("logs/samtools_split.e", "a"),
+                 )
+             )
+ 
+@@ -140,20 +140,21 @@ def extract_bam(processes):
+         p.wait()
+ 
+         if p.returncode != 0:
+-            print(
+-                f"ERROR: Samtools view didn't finish correctly, return code: {p.returncode}"
+-            )
++            print(f"ERROR: Samtools view didn't finish correctly, return code: {p.returncode}")
+             print("Faulty command: {p.args}")
+             has_failed = True
+-    
++
+     if has_failed:
+         exit(1)
+ 
+     print(f"Done in {int(time.perf_counter() - start)} seconds", flush=True)
+ 
+ 
+-def launch_hapog(hapog_bin, parallel_jobs):
+-    print(f"\nLaunching Hapo-G on each chunk", flush=True)
++def launch_hapog(hapog_bin, parallel_jobs, chunk_list=None):
++    if chunk_list:
++        print(f"\nLaunching Hapo-G on specified chunks: {chunk_list}", flush=True)
++    else:
++        print(f"\nLaunching Hapo-G on each chunk", flush=True)
+     try:
+         os.mkdir("hapog_chunks")
+     except:
+@@ -173,6 +174,14 @@ def launch_hapog(hapog_bin, parallel_jobs):
+     procs = []
+     for chunk in glob.glob("chunks/*.fasta"):
+         chunk_prefix = chunk.split("/")[-1].replace(".fasta", "")
++
++        # Extract chunk number from chunk_prefix (e.g., "chunks_12" -> 12)
++        chunk_number = int(chunk_prefix.split("_")[-1])
++
++        # Skip this chunk if chunk_list is specified and this chunk is not in the list
++        if chunk_list and chunk_number not in chunk_list:
++            continue
++
+         cmd = [
+             hapog_bin,
+             "-b",
+@@ -202,7 +211,6 @@ def launch_hapog(hapog_bin, parallel_jobs):
+         while len([p for p in procs if p.poll() is None]) >= int(parallel_jobs):
+             time.sleep(1)
+ 
+-
+     has_failed = False
+     for p in procs:
+         p.wait()
+@@ -226,6 +234,12 @@ def merge_results(threads):
+     except:
+         pass
+ 
++    try:
++        for f in glob.glob("hapog_results/*"):
++            os.remove(f)
++    except:
++        pass
++
+     start = time.perf_counter()
+ 
+     with open("hapog_results/hapog.fasta.tmp", "w") as out:
+@@ -258,9 +272,7 @@ def rename_results():
+     with open("hapog_results/hapog.fasta", "w") as out:
+         hapog_tmp = open("hapog_results/hapog.fasta.tmp")
+         for record in SeqIO.parse(hapog_tmp, "fasta"):
+-            out.write(
+-                f">{dict_correspondance[str(record.id).replace('_polished', '')]}\n{record.seq}\n"
+-            )
++            out.write(f">{dict_correspondance[str(record.id).replace('_polished', '')]}\n{record.seq}\n")
+         hapog_tmp.close()
+ 
+     with open("hapog_results/hapog.changes", "w") as out:

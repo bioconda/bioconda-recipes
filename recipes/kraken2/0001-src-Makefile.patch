@@ -1,8 +1,8 @@
 diff --git a/src/Makefile b/src/Makefile
-index df902f3..39be19e 100644
+index c340d06..4c5d169 100644
 --- a/src/Makefile
 +++ b/src/Makefile
-@@ -1,17 +1,17 @@
+@@ -1,8 +1,8 @@
 -CXX ?= g++
 +CXX ?= $(CXX)
  KRAKEN2_SKIP_FOPENMP ?= -fopenmp
@@ -15,9 +15,7 @@ index df902f3..39be19e 100644
  
  .PHONY: all clean install
  
--PROGS = estimate_capacity build_db classify dump_table lookup_accession_numbers k2mask blast_to_fasta libtax
-+PROGS = estimate_capacity build_db classify dump_table lookup_accession_numbers k2mask blast_to_fasta libtax.so
- 
+@@ -11,7 +11,7 @@ PROGS = estimate_capacity build_db classify dump_table lookup_accession_numbers
  all: $(PROGS)
  
  install: $(PROGS)
@@ -26,15 +24,8 @@ index df902f3..39be19e 100644
  
  clean:
  	rm -f *.o $(PROGS)
-@@ -61,5 +61,5 @@ blast_to_fasta: blast_to_fasta.o blast_defline.o blast_utils.o
- 
- libtax.o: libtax.cc
- 
--libtax: taxonomy.o mmap_file.o libtax.o
-+libtax.so: taxonomy.o mmap_file.o libtax.o
- 	$(CXX) $(CXXFLAGS) -shared -o libtax.so taxonomy.o mmap_file.o libtax.o
 diff --git a/install_kraken2.sh b/install_kraken2.sh
-index 248b553..5a9a7eb 100755
+index 248b553..750428a 100755
 --- a/install_kraken2.sh
 +++ b/install_kraken2.sh
 @@ -28,10 +28,10 @@ fi
@@ -43,7 +34,7 @@ index 248b553..5a9a7eb 100755
  export KRAKEN2_DIR
 -KRAKEN2_DIR=$(perl -MCwd=abs_path -le 'print abs_path(shift)' "$1")
 +KRAKEN2_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}/libexec"
-
+ 
  mkdir -p "$KRAKEN2_DIR"
 -make -C src install
 +make -C src install CXX="$CXX" CC="$CC" -j"$CPU_COUNT"
