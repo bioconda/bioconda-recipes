@@ -8,13 +8,13 @@ package:
   version: {{ knotinframe_version }}
 
 source:
-  sha256: {{ sha256 }}
   # the repository "fold-grammars" contains sources for several programs, i.e. pKiss, RNAshapes, ...
   # thus, the version number does not correspond to the {{ packagename }} version number
   url: https://github.com/jlab/fold-grammars/archive/{{ fold_grammars_version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 2
   run_exports:
     - {{ pin_subpackage('knotinframe', max_pin="x") }}
 
@@ -22,7 +22,7 @@ requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-    - libcxx <17 # [osx]
+    - pkg-config
   host:
     - perl
     - bellmans-gapc >=2024.01.12
@@ -30,6 +30,7 @@ requirements:
   run:
     - perl
     - bellmans-gapc >=2024.01.12
+    - libopenblas
 
 test:
   commands:
@@ -37,14 +38,17 @@ test:
 
 about:
   home: https://bibiserv.cebitec.uni-bielefeld.de/{{ packagename }}
+  dev_url: "https://github.com/jlab/fold-grammars"
+  doc_url: "https://bibiserv.cebitec.uni-bielefeld.de/fold-grammars"
   license_family: GPL3
   license: 'GPL-3.0-or-later'
   license_file: LICENSE
-  summary: 'Predicts -1 frameshift sites with simple pseudoknots'
+  summary: "Predicts -1 frameshift sites with simple pseudoknots."
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.1093/nar/gkn578
     - doi:10.1093/bioinformatics/btu649
