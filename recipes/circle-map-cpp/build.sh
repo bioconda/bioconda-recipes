@@ -16,14 +16,6 @@ case $(uname -m) in
 	;;
 esac
 
-if [[ "$(uname -s)" == "Darwin" ]]; then
-	RPATH='@loader_path/../lib'
-else
-	ORIGIN='$ORIGIN'
-	export ORIGIN
-	RPATH='$${ORIGIN}/../lib'
-fi
-
 make CXX="$CXX"
 
 install -v -m 0755 realign_cm merge_result read_extractor "${PREFIX}/bin"
