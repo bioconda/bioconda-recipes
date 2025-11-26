@@ -18,4 +18,4 @@ esac
 
 make CXX="$CXX"
 
-install -v -m 0755 realign_cm merge_result read_extractor "${PREFIX}/bin"
+install -v -m 0755 realign_cm merge_result read_extractor circle_map++ "${PREFIX}/bin"
