@@ -4,4 +4,4 @@ mkdir -p "${PREFIX}/bin"
 
 make CC="${CC}"
 
-make install
+make install CC="${CC}"
