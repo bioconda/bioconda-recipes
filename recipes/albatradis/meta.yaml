@@ -1,17 +1,23 @@
-{% set version="1.0.4" %}
+{% set name = "albatradis" %}
+{% set version = "1.1.2" %}
 
 package:
-  name: albatradis
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/quadram-institute-bioscience/albatradis/archive/v{{ version }}.tar.gz
-  sha256: b637ed73b810e610b9da8eb8a9f7289b2e1b53f297bd4071dac9b8995d097a39
+  url: https://github.com/quadram-institute-bioscience/albatradis/archive/{{ version }}.tar.gz
+  sha256: 6f9d9e1bbd22916a5d52c76504dec14805e2dc19858dd8112f7e1bd0ff041c19
 
 build:
-  number: 5
-  skip: True  # [py<30 or osx]
-  script: python -m pip install --ignore-installed .
+  number: 0
+  skip: True  # [py > 310]
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -f *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -28,29 +34,33 @@ requirements:
     - scipy
     - numpy
     - dendropy
-    - seaborn
+    - seaborn-base
     - pandas
-    - graphviz
     - python-graphviz
-    - biotradis >=1.4.5
+    - quatradis
 
 test:
   commands:
-    - albatradis --version
-    - albatradis-presence_absence -h
-    - albatradis-artemis_project -h
+    - test -x ${PREFIX}/bin/albatradis
+    - test -x ${PREFIX}/bin/albatradis-presence_absence
+    - test -x ${PREFIX}/bin/albatradis-artemis_project
 
 about:
-  home: https://github.com/quadram-institute-bioscience/albatradis
-  license: 'GNU General Public License v3 (GPLv3)'
+  home: "https://github.com/quadram-institute-bioscience/albatradis"
+  license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: LICENSE
-  summary: 'Comparative TraDIS analysis'
+  summary: "Comparative TraDIS analysis."
+  dev_url: "https://github.com/quadram-institute-bioscience/albatradis"
 
 extra:
-  skip-lints:
-    # Uses pyximport
-    - cython_must_be_in_host
+  additional-platforms:
+    - linux-aarch64
+    # smalt build error
+    #- osx-arm64
   recipe-maintainers:
     - sbastkowski
     - thanhleviet
+  skip-lints:
+    # Uses pyximport
+    - cython_must_be_in_host
