@@ -27,6 +27,13 @@ case $(uname -m) in
 	;;
 esac
 
+if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
+	git clone https://github.com/DLTcollab/sse2neon.git
+	cp -f sse2neon/sse2neon.h spoa/src/
+	sed -i.bak 's|#include <immintrin.h>|#include "sse2neon.h"|' spoa/src/simd_alignment_engine.cpp
+	rm -f spoa/src/*.bak
+fi
+
 if [[ `uname -s` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
