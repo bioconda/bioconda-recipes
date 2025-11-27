@@ -13,7 +13,14 @@ source:
 build:
   number: 0
   skip: True  # [py < 311]
-  script: {{ PYTHON }} -m pip install . -vvv --no-cache-dir --no-build-isolation --no-cache-dir
+  script:
+    - export CPATH="${PREFIX}/include"
+    - make -s INSTALL_PREFIX="${PREFIX}" CC="${CC}" -j"${CPU_COUNT}"
+    - {{ PYTHON }} -m pip install . -vvv --no-cache-dir --no-build-isolation --no-cache-dir
+    - install -C exec/smudgeplot.py $PREFIX/bin
+    - install -C exec/hetmers $PREFIX/bin
+    - install -C exec/smudgeplot_plot.R $PREFIX/bin
+    - install -C exec/centrality_plot.R $PREFIX/bin
   entry_points:
     - smudgeplot = smudgeplot.cli:main
   run_exports:
@@ -50,7 +57,7 @@ about:
   home: "https://github.com/KamilSJaron/smudgeplot"
   license: "Apache-2.0"
   license_family: APACHE
-  license_file: LICENSE.md
+  license_file: "LICENSE.md"
   summary: "Inference of ploidy and heterozygosity structure using whole genome sequencing data."
   dev_url: "https://github.com/KamilSJaron/smudgeplot"
   doc_url: "https://github.com/KamilSJaron/smudgeplot/blob/v{{ version }}/README.md"
