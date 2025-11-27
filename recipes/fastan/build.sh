@@ -2,6 +2,6 @@
 
 mkdir -p "${PREFIX}/bin"
 
-make CC="${CC}" -j"${CPU_COUNT}"
+make CC="${CC}"
 
 make install
