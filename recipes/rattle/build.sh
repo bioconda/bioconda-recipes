@@ -6,6 +6,8 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 
 mkdir -p "${PREFIX}/bin"
 
+sed -i.bak "s|-Ispoa/include|-Ispoa/include -L${PREFIX}/lib|" Makefile && rm -f *.bak
+
 case $(uname -m) in
     aarch64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
