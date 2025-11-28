@@ -2,11 +2,11 @@
 {% set version = "1.5.0" %}
 
 package:
-  name: {{ name }}
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://https://files.pythonhosted.org/packages/c7/f9/3f5455550c895dd22887f8b49221aca29f6e7b866e04660b8ed294c2c157/elastic_blast-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/elastic_blast-{{ version }}.tar.gz
   sha256: 92bd4e64638e58ef8565afd2d6e867c2ba9801f04d33237f9fb42847443263bc
 
 build:
@@ -24,6 +24,10 @@ requirements:
     - setuptools
   run:
     - python >=3.7,<3.13
+    - wheel
+    - setuptools
+    - importlib-resources
+    - importlib-metadata
     - boto3
     - awscli
     - awslimitchecker
@@ -36,6 +40,8 @@ requirements:
     - pex ==2.70.0
 
 test:
+  imports:
+    - elastic_blast
   commands:
     - elastic-blast --version
     - elastic-blast --help
@@ -43,6 +49,8 @@ test:
     - gsutil --version
     - aws --version
     - kubectl version --client=true
+  requires:
+    - pip
 
 about:
   home: https://github.com/ncbi/elastic-blast
