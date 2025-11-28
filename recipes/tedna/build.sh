@@ -15,12 +15,6 @@ case $(uname -m) in
 	;;
 esac
 
-case $(uname -s) in
-    Darwin)
-	sed -i.bak 's|<tr1/functional>|<functional>|' sparsehash/internal/sparseconfig.h && rm -f sparsehash/internal/*.bak
-	;;
-esac
-
 # make
 make -j"${CPU_COUNT}"
 
