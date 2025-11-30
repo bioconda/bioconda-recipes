@@ -34,5 +34,6 @@ make USE_CONDA=1 PREFIX="$PREFIX" -j"${CPU_COUNT}"
 
 # Binary'i install et
 mkdir -p "$PREFIX/bin"
-cp svarp "$PREFIX/bin/"
+cp build/svarp "$PREFIX/bin/"
+
 
