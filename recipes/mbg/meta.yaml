@@ -1,5 +1,5 @@
 {% set name = "MBG" %}
-{% set version = "1.0.16" %}
+{% set version = "1.0.17" %}
 
 package:
   name: {{ name|lower }}
@@ -7,15 +7,16 @@ package:
 
 
 source:
-  url: https://github.com/maickrau/{{ name }}/files/13408153/{{ name }}.tar.gz
-  sha256: b51f1013c72baed3f2f725bb605e98eb290df285afae7ba219b1cadd9791a50e
+  git_url: https://github.com/maickrau/{{name}}
+  git_rev: v{{version}}
   patches:
     - version.patch
     - osx_availability.patch # [osx]
     - mbg-aarch64.patch # [aarch64 or arm64]
 
 build:
-  number: 1
+  number: 0
+  skip: True # [osx]
   run_exports:
     - {{ pin_subpackage('mbg', max_pin="x.x") }}
 
@@ -25,6 +26,8 @@ requirements:
     - {{ compiler('cxx') }}
   host:
     - zlib
+    - pkg-config
+    - bamtools
 
 test:
   commands:
@@ -40,3 +43,6 @@ extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

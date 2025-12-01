@@ -1,0 +1,58 @@
+{% set name = "hymet" %}
+{% set version = "1.2.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/ieeta-pt/HYMET/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 0fb8c4da24cd24b2272f65254c7507edebd5e5870afc8e36f9a7e5262973a65f
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  run:
+    - perl
+    - python >=3.9
+    - mash
+    - minimap2
+    - taxonkit
+    - wget
+    - pandas
+    - numpy
+    - matplotlib-base
+    - seaborn
+    - biopython
+    - csvkit
+
+test:
+  commands:
+    - test -f $PREFIX/share/hymet/run_hymet_cami.sh
+    - test -f $PREFIX/bin/hymet-config
+    - test -f $PREFIX/bin/hymet-legacy
+    - hymet version
+
+about:
+  home: https://github.com/ieeta-pt/HYMET
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "HYMET provides hybrid Mash+minimap2 metagenomic classification with benchmark and case-study tooling."
+  description: |
+    HYMET couples Mash candidate filtering, minimap2 alignment, and a weighted LCA resolver to classify contigs
+    and reads. The project bundles the new Python CLI (`bin/hymet`), the legacy Perl pipeline, CAMI benchmark
+    harnesses, and case-study analysis scripts so users can reproduce the published experiments directly.
+  dev_url: https://github.com/ieeta-pt/HYMET
+  doc_url: https://github.com/ieeta-pt/HYMET
+
+extra:
+  recipe-maintainers:
+    - inesbmartins02
+    - jorgeMFS
+  identifiers:
+    - biotools:hymet

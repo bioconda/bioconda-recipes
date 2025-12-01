@@ -1,0 +1,67 @@
+{% set name = "MAXIT" %}
+{% set version = "11.300" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  - url: https://sw-tools.rcsb.org/apps/{{ name }}/{{ name|lower }}-v{{ version }}-prod-src.tar.gz
+    sha256: 04d23c16550690a50d6766c0081b9b8686786000c8430dcf8c25ff7dc1d289a2
+    patches:
+      - platform.sh.patch
+      - generate_assembly_cif_file.C.patch
+      - maxit.C.patch
+      - process_entry.C.patch
+      - make.platform.gnu8.patch  # [linux]
+      - binary.csh.patch  # [linux]
+      - system-util.C.patch  # [linux]
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+    - bison
+    - flex
+    - coreutils
+  host:
+    - tcsh  # [linux]
+  run:
+    - tcsh  # [linux]
+
+test:
+  requires:
+    - wget
+  commands:
+    - wget https://files.rcsb.org/view/7KNT.pdb
+    - maxit -input 7KNT.pdb -output 7KNT.cif -o 1
+    - cat maxit.log
+    - test -f 7KNT.cif
+
+about:
+  home: https://sw-tools.rcsb.org/apps/MAXIT
+  doc_url: https://sw-tools.rcsb.org/apps/MAXIT/README-source
+  license: "RCSB PDB Software License"
+  license_family: OTHER
+  summary: "MAXIT assists in the processing and curation of macromolecular structure data."
+  description: |
+    MAXIT assists in the processing and curation of macromolecular structure data. MAXIT can:
+      - Read and write PDB and mmCIF format files, and translate between file formats.
+      - Perform consistency checks on coordinates, sequence, and crystal data.
+      - Automatically construct, transform, and merge information between formats
+      - Align residue numbering in the coordinates with the sequence
+      - Reorder and rename atoms in standard and nonstandard residues and ligands according to the Chemical Component Dictionary
+      - Assign ligands the same chain IDs as the adjacent polymers
+      - Detect missing or additional atoms
+
+extra:
+  recipe-maintainers:
+    - eunos-1128
+  additional-platforms:
+    - osx-arm64

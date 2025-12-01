@@ -1,24 +1,32 @@
-{% set version = "1.2.3" %}
+{% set name = "YACHT" %}
+{% set version = "1.3.1" %}
 
 package:
-  name: yacht
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/KoslickiLab/YACHT/releases/download/v{{ version  }}/yacht-{{ version  }}.tar.gz
-  sha256: 93adb23ad4f143d48c9f0ea661fe2283ff42e9c51e073a05460596ecabc65214
+  url: https://github.com/KoslickiLab/YACHT/archive/v{{ version }}.tar.gz
+  sha256: 451d9fc14eaa331a50d4dcdf0c4467ebcc85c880c2efe227c6c61e5389e22157
 
 build:
   number: 0
-  noarch: python
-  skip: True  # [win or osx]
-  script: "{{ PYTHON  }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - sed -i.bak 's|g++|$(CXX)|' Makefile
+    - sed -i.bak 's|-lpthread|-pthread|' Makefile
+    - sed -i.bak 's|-Wsign-compare|-Wsign-compare -I$(PREFIX)/include|' Makefile
+    - rm -rf *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
     - {{ pin_subpackage('yacht', max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - python >3.6
+    - python >3.6,<3.12
     - pip
     - pandas
     - pytaxonkit
@@ -27,16 +35,14 @@ requirements:
     - loguru
     - tqdm
     - biom-format
-    - numpy
-    - setuptools
+    - numpy >=1.22.4
     - requests
   run:
-    - python >3.6
+    - python >3.6,<3.12
     - sourmash >=4.8.3,<5
-    - rust
     - scipy
     - requests
-    - numpy
+    - numpy >=1.22.4
     - pandas
     - scikit-learn
     - codecov
@@ -51,35 +57,28 @@ requirements:
     - ruff
     - sourmash_plugin_branchwater
 
-
 test:
   commands:
     - yacht --help
 
 about:
-  home: https://github.com/KoslickiLab/YACHT
-  summary: 'YACHT is a mathematically rigorous hypothesis test for the presence or absence of organisms in a metagenomic sample, based on average nucleotide identity (ANI).'
+  home: "https://github.com/KoslickiLab/YACHT"
+  summary: "YACHT is a mathematically rigorous hypothesis test for the presence or absence of organisms in a metagenomic sample, based on average nucleotide identity (ANI)."
   license: MIT
   license_family: MIT
-  license_file: LICENSE.txt
-  dev_url: https://github.com/KoslickiLab/YACHT
-  doc_url: https://github.com/KoslickiLab/YACHT/wiki
+  license_file: "LICENSE.txt"
+  dev_url: "https://github.com/KoslickiLab/YACHT"
+  doc_url: "https://usher-wiki.readthedocs.io/en/latest"
 
 extra:
-  skip-lints:
-    - should_not_be_noarch_skip
-    - should_use_compilers
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
-    - doi:10.1101/2023.04.18.537298
+    - doi:10.1093/bioinformatics/btae047
   recipe-maintainers:
+    - chunyuma
     - dkoslicki
   authors:
     - dkoslicki
     - chunyuma
-    - sew347
-    - mlupei
-    - mfl15
-    - ShaopengLiu1
-    - raquellewei
-    - mohsenht
-  

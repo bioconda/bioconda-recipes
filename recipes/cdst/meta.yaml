@@ -1,0 +1,47 @@
+{% set name = "cdst" %}
+{% set version = "0.2.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/cdst_genome/cdst_genome-{{ version }}.tar.gz
+  sha256: 5e6cd3827a54336679eba86be259de17ae9dfbba671e54ff60e9c257eb62271c
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - cdst = cdst.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+  run:
+    - python >=3.9
+    - biopython >=1.85
+    - pandas >=2.2
+    - networkx >=3.3
+    - scipy >=1.13
+
+test:
+  commands:
+    - cdst --help
+
+about:
+  home: "https://github.com/l1-mh/CDST"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "CoDing Sequence Typer (CDST): MD5 hash-based genome typing and clustering."
+  dev_url: "https://github.com/l1-mh/CDST"
+
+extra:
+  recipe-maintainers:
+    - l1-mh
