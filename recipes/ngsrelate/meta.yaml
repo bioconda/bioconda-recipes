@@ -1,0 +1,54 @@
+{% set name = "NgsRelate" %}
+{% set version = "2.0" %}
+{% set sha256 = "f2c20228720298d6ef2fd34324449ba7ebdd4b987477c78bd20ed99f176218c6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ANGSD/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - makefile.patch
+
+build:
+  number: 0
+  # OSX requires older G++ version
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin='x') }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - bzip2
+    - xz
+    - htslib
+    - libdeflate
+  run:
+    - zlib
+    - bzip2
+    - xz
+    - htslib
+    - libdeflate
+  
+test:
+  commands:
+    - ngsRelate
+
+about:
+  home: https://github.com/ANGSD/NgsRelate
+  license: GPL-2.0-only
+  license_family: GPL
+  license_file: LICENSE
+  summary: "Software tool for estimating pairwise relatedness from next-generation sequencing data."
+  dev_url: https://github.com/ANGSD/NgsRelate
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btv509
+    - doi:10.1093/gigascience/giz034

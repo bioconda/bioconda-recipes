@@ -1,18 +1,41 @@
 #!/bin/bash
-
 set -x -e
 
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -DUSE_BOOST -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -DUSE_BOOST"
+export LC_ALL="en_US.UTF-8"
 
 mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/scripts
 mkdir -p ${PREFIX}/config
 
+sed -i.bak 's|3.4.0|3.5.0|' common.mk
+rm -rf *.bak
+sed -i.bak 's|-std=gnu++0x -O2|-std=c++14 -O3|' auxprogs/joingenes/Makefile
+sed -i.bak 's|-lpthread|-pthread|' auxprogs/bam2wig/Makefile
+sed -i.bak 's|-lpthread|-pthread|' auxprogs/filterBam/src/Makefile
+sed -i.bak 's|-O2|-O3|' auxprogs/utrrnaseq/Makefile
+sed -i.bak 's|-std=c++11|-std=c++14|' auxprogs/utrrnaseq/Makefile
+sed -i.bak 's|-O2|-O3|' auxprogs/bam2wig/Makefile
+
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
+
 ## Make the software
-if [[ "$(uname)" = Darwin ]]; then
+if [[ "$(uname -s)" = "Darwin" ]]; then
 	# SQLITE disabled due to compile issue, see: https://svn.boost.org/trac10/ticket/13501
 	sqlite=
 else
@@ -28,22 +51,22 @@ make \
 	LIBRARY_PATH_LPSOLVE="-L${PREFIX}/lib" \
 	INCLUDE_PATH_HTSLIB="-I${PREFIX}/include/htslib" \
 	LIBRARY_PATH_HTSLIB="-L${PREFIX}/lib" \
+	INCLUDE_PATH_BOOST="-I${PREFIX}/include/boost" \
+	LIBRARY_PATH_BOOST="-L${PREFIX}/lib" \
 	COMPGENPRED=true \
 	MYSQL=false \
-	"${sqlite}" -j"${CPU_COUNT}"
+	"${sqlite}" \
+	-j"${CPU_COUNT}"
 
 # Fix perl shebang
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${SRC_DIR}/scripts/*.pl
 rm -rf ${SRC_DIR}/scripts/*.bak
 
 ## Build Perl
-
 mkdir perl-build
 find scripts -name "*.pl" | xargs -I {} mv {} perl-build
 cd perl-build
-# affects tests for Augustus 3.3:
-# https://github.com/Gaius-Augustus/Augustus/commit/7ca3ab
-#sed -i'' -e '1s/perl -w/perl/' *.pl
+
 cp -f ${RECIPE_DIR}/Build.PL ./
 perl ./Build.PL
 perl ./Build manifest
@@ -51,13 +74,11 @@ perl ./Build install --installdirs site
 
 cd ..
 
-
 ## End build perl
 
-chmod 0755 bin/augustus
-mv bin/* $PREFIX/bin/
-mv scripts/* $PREFIX/bin/
-mv config/* $PREFIX/config/
+install -v -m 0755 bin/* "${PREFIX}/bin"
+install -v -m 0755 scripts/* "${PREFIX}/bin"
+mv config/* ${PREFIX}/config/
 
 ## Set AUGUSTUS variables on env activation
 

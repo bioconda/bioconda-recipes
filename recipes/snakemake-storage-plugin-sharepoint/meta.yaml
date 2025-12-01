@@ -1,0 +1,46 @@
+{% set name = "snakemake-storage-plugin-sharepoint" %}
+{% set version = "0.4.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/snakemake_storage_plugin_sharepoint-{{ version }}.tar.gz
+  sha256: 4cd7c47d283439af18182760094afcc5a7888618d577b9a1b2c8bf765efe1087
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - flit-core >=3.2,<4
+    - pip
+  run:
+    - python >=3.11
+    - requests
+    - snakemake-interface-common >=1.14
+    - snakemake-interface-storage-plugins >=3.0
+
+test:
+  # We do not test the import as the plugin needs snakemake for importing, but adding
+  # it would create a circular dependency.
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/Hugovdberg/snakemake-storage-plugin-sharepoint
+  summary: Snakemake storage plugin for reading and writing files on Microsoft SharePoint.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - Hugovdberg

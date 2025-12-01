@@ -1,8 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 set -xe
-export LIBRARY_PATH="${PREFIX}/lib:$LIBRARY_PATH"
-export CXXFLAGS="-g -Wall -I$PREFIX/include -O3  -I$SRC_DIR/include -I$SRC_DIR/include/zlib -std=gnu++17 -lstdc++"
-make -j ${CPU_COUNT} CXX=$CXX
-mkdir -p $PREFIX/bin/
-cp build/bin/teloscope $PREFIX/bin/
-chmod +x $PREFIX/bin/teloscope
+
+export LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I$PREFIX/include"
+export CXXFLAGS="${CXXFLAGS} -g -Wall -O3 -I$PREFIX/include -I$SRC_DIR/include -I$SRC_DIR/include/zlib -std=gnu++17 -lstdc++"
+
+make CXX="$CXX" -j"${CPU_COUNT}"
+mkdir -p $PREFIX/bin
+install -v -m 0755 build/bin/teloscope $PREFIX/bin
