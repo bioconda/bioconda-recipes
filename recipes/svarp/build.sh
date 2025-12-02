@@ -1,37 +1,23 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -ex
 
-cd "$SRC_DIR"
+cd "${SRC_DIR}"
 
 echo "CXX is: ${CXX:-'(not set)'}"
-if ! command -v g++ >/dev/null 2>&1; then
-    echo "No system g++ found, creating wrapper that calls \$CXX"
-    mkdir -p "${BUILD_PREFIX}/bin"
+echo "PREFIX is: ${PREFIX}"
+echo "CPU_COUNT is: ${CPU_COUNT:-1}"
 
-    cat << 'EOF' > "${BUILD_PREFIX}/bin/g++"
-#!/bin/bash
-# Wrapper used in bioconda build: forward to $CXX from env
-if [ -z "${CXX}" ]; then
-    echo "Error: CXX is not set but g++ wrapper was called." >&2
-    exit 1
+make clean || true
+
+make USE_CONDA=1 BUILD=release PREFIX="${PREFIX}" -j"${CPU_COUNT}"
+
+# Binary'leri install et
+mkdir -p "${PREFIX}/bin"
+
+# Ana SVarp binary'si
+install -m 0755 build/svarp "${PREFIX}/bin/svarp"
+
+if [ -x dep/wtdbg2/wtdbg2 ]; then
+    install -m 0755 dep/wtdbg2/wtdbg2 "${PREFIX}/bin/svarp-wtdbg2"
 fi
-exec "${CXX}" "$@"
-EOF
-
-    chmod +x "${BUILD_PREFIX}/bin/g++"
-    export PATH="${BUILD_PREFIX}/bin:${PATH}"
-fi
-
-make clean
-
-echo "PREFIX is $PREFIX"
-echo "Listing headers under $PREFIX/include:"
-ls -R "$PREFIX/include"
-
-# Conda kütüphaneleri ile derle
-make USE_CONDA=1 PREFIX="$PREFIX" -j"${CPU_COUNT}"
-
-# Binary'i install et
-mkdir -p "$PREFIX/bin"
-cp build/svarp "$PREFIX/bin/"
 
