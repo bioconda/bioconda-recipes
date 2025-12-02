@@ -1,52 +1,52 @@
 {% set name = "sipros" %}
-{% set version = "4.02" %}
+{% set version = "5.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/thepanlab/Sipros4/releases/download/{{ version }}/siprosRelease.zip
-  sha256: 6e79761a147bd33a2a5feb522a153831f3d9fad0c75a7f9c811053da806d3cac
+  - url: https://github.com/thepanlab/sipros5/releases/download/{{ version }}/siprosRelease.zip
+    sha256: 841f51a412b0a213f5b6c14162ded8713b211a96abf10ab50acd2a5992fa55fa
 
 build:
   noarch: generic
-  number: 1
+  number: 0
   skip: False
   run_exports:
     - {{ pin_subpackage('sipros', max_pin="x") }}
     
 requirements:
+  build:
+    - unzip  
   run:
-    - bioconductor-biostrings
-    - mono <6
-    - numpy =1.16
-    - python =2.7
-    - r-base
-    - r-stringr
-    - r-tidyr
-    - scikit-learn =0.20.3
+    - python >=3.12,<3.13
+    - philosopher >=5.1.0,<5.2.0
+    - lxml
+    - pandas
+    - icu
+    - seqkit
 
 test:
   commands:
+    - siproswf -h
     - configGenerator -h
-    - SiprosEnsembleOMP --help
-    - SiprosV4OMP --help
-    - Raxport -h
-    - EnsembleScripts_sipros_psm_tabulating -v
-    - V4Scripts_sipros_peptides_filtering -v
-    - V4Scripts_getSpectraCountInEachFT -help
-    - V4Scripts_refineProteinFDR -help
-    - copyConfigTemplate -SIP
+    - raxport -h
+    - sipros -h
+    - aerithFeatureExtractor -h
+    - percolator -h
+    - philosopher -h
+    - extractPro -h
+    - seqkit -h
 
 about:
-  home: https://github.com/thepanlab/Sipros4
+  home: https://github.com/thepanlab/sipros5/
   license: MIT
-  # currently include in the recipe folder because from the release (https://github.com/thepanlab/Sipros4/issues/3)
+  # currently include in the recipe folder because from the release (https://github.com/xyz1396/sipros5/issues/2)
   license_file: LICENSE
   summary: "Tools for stable isotopic mass spectrometry-based metaproteomics"
   description: |
-      "Tools for stable isotopic mass spectrometry-based metaproteomics research developed by Sipros team. These include Raxport, SiprosV4, SiprosEnsemble and some python / R scripts."
+      "Tools for stable isotopic mass spectrometry-based metaproteomics research developed by Sipros team."
 
 extra:
   recipe-maintainers:
