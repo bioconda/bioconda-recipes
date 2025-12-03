@@ -1,26 +1,28 @@
-{% set version = "3.1.2" %}
+{% set name = "arvados-python-client" %}
+{% set version = "3.2.0" %}
 
 package:
-  name: arvados-python-client
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/a/arvados-python-client/arvados-python-client-{{ version }}.tar.gz
-  sha256: 9538e70073e489043e2c2ebd2e01c96215a90ee12e07678960cc3ef2f731534a
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/arvados_python_client-{{ version }}.tar.gz
+  sha256: d8ad0c1a5de55a12206a289e701c336dccccb23a5bc8977638c2b7cd50bd001f
 
 build:
-  noarch: python
   number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   run_exports:
-    - {{ pin_subpackage('arvados-python-client', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
-    - python 3.8
+    - python >=3.10
     - setuptools >=40.3.0
     - pip
   run:
-    - python >=3.8
+    - python >=3.10
     - setuptools >=40.3.0
     - ciso8601 >=2.0.0
     - google-api-python-client >=2.1.0
@@ -32,21 +34,13 @@ requirements:
 test:
   imports:
     - arvados
-  commands:
-    - pip check
-  requires:
-    - pip
 
 about:
-  home: https://github.com/curoverse/arvados/tree/main/sdk/python
-  license: Apache-2.0
-  summary: Python API for Arvados
+  home: "https://github.com/curoverse/arvados/tree/main/sdk/python"
+  license: "Apache-2.0"
+  license_family: APACHE
+  summary: "Arvados client library."
   description: |
      Python API for Arvados, an open source platform for managing and
      analyzing biomedical big data
-  license_file: LICENSE-2.0.txt
-
-extra:
-  skip-lints:
-    - uses_setuptools
-    - should_be_noarch_generic  # needs subprocess32 on py2k
+  license_file: "LICENSE-2.0.txt"
