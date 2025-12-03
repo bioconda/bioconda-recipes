@@ -3,34 +3,39 @@
 ## The build file is taken from the biobuilds conda recipe by Cheng
 ## H. Lee, adjusted to fit the bioconda format.
 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
+
 # Configure
 [ "$BB_ARCH_FLAGS" == "<UNDEFINED>" ] && BB_ARCH_FLAGS=
 [ "$BB_OPT_FLAGS" == "<UNDEFINED>" ] && BB_OPT_FLAGS=
 [ "$BB_MAKE_JOBS" == "<UNDEFINED>" ] && BB_MAKE_JOBS=1
-CFLAGS="${CFLAGS} ${BB_ARCH_FLAGS} ${BB_OPT_FLAGS}"
+export CFLAGS="${CFLAGS} ${BB_ARCH_FLAGS} ${BB_OPT_FLAGS}"
 
 # Additional flags suggested by the philip makefile
-CFLAGS="${CFLAGS} -fomit-frame-pointer -DUNX"
+export CFLAGS="${CFLAGS} -fomit-frame-pointer -DUNX"
 
-CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
-BUILD_ARCH=$(uname -m)
-BUILD_OS=$(uname -s)
+export CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
+BUILD_ARCH="$(uname -m)"
+BUILD_OS="$(uname -s)"
 
-if [ "$BUILD_ARCH" == "ppc64le" ] || [ "$BUILD_ARCH" == "aarch64" ] || ["$BUILD_ARCH" == "arm64" ]; then
+if [ "${BUILD_ARCH}" == "ppc64le" ] || [ "${BUILD_ARCH}" == "aarch64" ] || ["${BUILD_ARCH}" == "arm64" ]; then
     # Just in case; make the same assumptions about plain "char" declarations
     # on little-endian POWER8 + aarch64/arm64 as we do on x86_64.
-    CFLAGS="${CFLAGS} -fsigned-char"
+    export CFLAGS="${CFLAGS} -fsigned-char"
 fi
 
 # Build
 cd src
 sed -i.bak "s:@@prefix@@:${PREFIX}:" phylip.h
-if [ "$BUILD_OS" == "Darwin" ]; then
+if [[ "${BUILD_OS}" == "Darwin" ]]; then
     # Tweak a few things for building shared libraries on OS X.
     sed -i.bak 's/-Wl,-soname/-Wl,-install_name/g' Makefile.unx
     sed -i.bak 's/\.so/.dylib/g' Makefile.unx
 fi
-make -f Makefile.unx CFLAGS="$CFLAGS" CC="$CC" install
+rm -rf *.bak
+
+make -f Makefile.unx CFLAGS="${CFLAGS}" CC="${CC}" install
 
 # Install
 cd ..
@@ -51,12 +56,12 @@ ln -s $SHARE_DIR/exe/* $PREFIX/bin/
 # link them to $PREFIX/bin
 ln -s $SHARE_DIR/java/* $PREFIX/bin/
 
-cp $RECIPE_DIR/phylip.py $PREFIX/bin/phylip
+cp -f $RECIPE_DIR/phylip.py $PREFIX/bin/phylip
 
-cp $RECIPE_DIR/drawtree.py $SHARE_DIR/drawtree_gui
+cp -f $RECIPE_DIR/drawtree.py $SHARE_DIR/drawtree_gui
 ln -s $SHARE_DIR/drawtree_gui $PREFIX/bin
 
-cp $RECIPE_DIR/drawgram.py $SHARE_DIR/drawgram_gui
+cp -f $RECIPE_DIR/drawgram.py $SHARE_DIR/drawgram_gui
 ln -s $SHARE_DIR/drawgram_gui $PREFIX/bin
 
 cd "${PREFIX}/bin"
