@@ -1,0 +1,67 @@
+{% set name = "metaclock" %}
+{% set version = "1.0.0" %}
+
+package:
+  name:  "{{ name }}"
+  version:  "{{ version }}"
+
+source:
+  url: https://github.com/SegataLab/metaclock/archive/{{ version }}.tar.gz
+  sha256: cfdefeeb2ad949cff4f2da0b66f2aea226b7a86be63bcb19b9dc5dd7120a78d4
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+  entry_points:
+    - metaclock_mac = metaclock.metaclock_mac:main
+    - metaclock_visualizer = metaclock.metaclock_visualizer:main
+    - metaclock_tailor = metaclock.metaclock_tailor:main
+    - metaclock_combiner = metaclock.metaclock_combiner:main
+    - bo6_screen.py = metaclock.utils.bo6_screen:main
+    - filter.py = metaclock.utils.filter:main
+    - metaclock_mac_template_configs = metaclock.utils.metaclock_mac_template_configs:main
+
+requirements:
+  host:
+    - python >=3.6
+    - setuptools
+    - pip
+  run:
+    - python >=3.6
+    - numpy 
+    - matplotlib-base
+    - seaborn 
+    - samtools
+    - bzip2
+    - blast >=2.6.0
+    - biopython
+    - bowtie2
+    - pysam
+    - mapdamage2
+    - trimal
+    - cmseq
+    - perl-bioperl
+    - prokka
+    - scikit-learn
+    - ete3
+    - dendropy
+    - raxml
+
+test:
+  commands:
+    - metaclock_mac --help
+    - metaclock_visualizer --help
+    - metaclock_tailor --help
+    - metaclock_combiner --help
+
+extra:
+  maintainers:
+   - KD-Huang
+   - WYSIATI
+
+about:
+  home: https://github.com/SegataLab/metaclock
+  license: A-GPL 3.0
+  license_file: LICENSE
+  summary: A python package for facilitating strain-level phylogenetic and molecular clock analysis

@@ -1,0 +1,57 @@
+{% set name = "cogclassifier" %}
+{% set version = "2.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/cogclassifier-{{ version }}.tar.gz
+  sha256: 89eb464f3ad2c42ddf5d15a64249ee75e56ab7e8f8cf61a49fbeb7dcd5f3f42a
+
+build:
+  entry_points:
+    - COGclassifier = cogclassifier.scripts.cogclassifier:app
+    - plot_cog_count_barchart = cogclassifier.scripts.plot_cog_count_barchart:app
+    - plot_cog_count_piechart = cogclassifier.scripts.plot_cog_count_piechart:app
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('cogclassifier', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - hatchling
+    - pip
+  run:
+    - python >=3.9
+    - altair >=5.0.0
+    - pandas >=2.0.0
+    - requests >=2.27.1
+    - pydantic >=2.11.3
+    - typer >=0.15.2
+    - vl-convert-python >=1.7.0
+    - blast >=2.12.0
+
+test:
+  imports:
+    - cogclassifier
+  commands:
+    - COGclassifier --help
+    - plot_cog_count_barchart --help
+    - plot_cog_count_piechart --help
+
+about:
+  home: https://github.com/moshi4/COGclassifier
+  dev_url: https://github.com/moshi4/COGclassifier
+  summary: "Classify prokaryote protein sequences into COG functional category."
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: "https://github.com/moshi4/COGclassifier/blob/v{{ version }}/README.md"
+
+extra:
+  recipe-maintainers:
+    - moshi4

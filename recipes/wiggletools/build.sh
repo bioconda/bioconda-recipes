@@ -1,11 +1,17 @@
 #!/bin/bash
+set -xe
 
-cd $SRC_DIR
-mkdir -p lib
-cp -r $PREFIX/include/* src/
-cp -r $PREFIX/lib/* lib/
-cp $PREFIX/lib/libBigWig.a lib/
-make LIBS="-lwiggletools -lBigWig -lcurl -lgsl -lhts -lgslcblas -lz -lpthread -lm -llzma -lbz2 -ldl -ldeflate"
-cp lib/libwiggletools.a $PREFIX/lib/
-cp inc/wiggletools.h $PREFIX/include/
-cp bin/wiggletools $PREFIX/bin/
+mkdir -p $PREFIX/bin
+mkdir -p $PREFIX/lib
+mkdir -p $PREFIX/include
+
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+# Patch v1.2.8 makefile; remove in next release
+sed -i.orig -e 's/-L/${LDFLAGS} -L/' src/Makefile
+
+make LIBS="-lwiggletools -lBigWig -lgsl -lgslcblas -lhts -pthread -lm" -j"${CPU_COUNT}"
+
+cp -f lib/libwiggletools.a $PREFIX/lib/
+cp -f inc/wiggletools.h $PREFIX/include/
+install -v -m 755 bin/wiggletools "$PREFIX/bin"

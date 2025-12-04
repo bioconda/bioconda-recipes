@@ -1,0 +1,50 @@
+{% set version = "0.2.7" %}
+
+package:
+  name: dartunifrac
+  version: {{ version }}
+
+source:
+  url: https://github.com/jianshu93/DartUniFrac/archive/v{{ version }}.tar.gz
+  sha256: f23a0abcad58fa42d47dbb593d99b635e55669377a24d4d0fe084d2e2cbdeb0e
+
+build:
+  number: 0
+  run_exports:
+      - {{ pin_subpackage('dartunifrac', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - pkg-config
+    - make
+    - cmake
+  host:
+    # Only needed on macOS (any arch) and Linux aarch64
+    - openblas  # [not (linux and x86_64)]
+    - openssl
+  run:
+    - openblas  # [not (linux and x86_64)]
+    - openssl
+
+test:
+  commands:
+    - dartunifrac -h
+
+about:
+  home: "https://github.com/jianshu93/DartUniFrac"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "DartUniFrac is an ultra-fast UniFrac algorithm that scales to millions of samples. It was designed based on optimal balanced parenthesis and Weighted MinHash sketching."
+  dev_url: "https://github.com/jianshu93/DartUniFrac"
+  doc_url: "https://github.com/jianshu93/DartUniFrac/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64 
+  recipe-maintainers:
+   - jianshu93

@@ -1,0 +1,64 @@
+{% set version = "1.0.0" %}
+{% set name = "StabMap" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: StabMap performs single cell mosaic data integration by first building a mosaic data topology, and for each reference dataset, traverses the topology to project and predict data onto a common embedding. Mosaic data should be provided in a list format, with all relevant features included in the data matrices within each list object. The output of stabMap is a joint low-dimensional embedding taking into account all available relevant features. Expression imputation can also be performed using the StabMap embedding and any of the original data matrices for given reference and query cell lists.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Stabilised mosaic single cell data integration using unshared features
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-stabmap", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: scran, scater, knitr, UpSetR, gridExtra, SingleCellMultiModal, BiocStyle, magrittr, testthat (>= 3.0.0), purrr, sparseMatrixStats
+requirements:
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocneighbors >=2.0.0,<2.1.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-biocsingular >=1.22.0,<1.23.0
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-abind
+    - r-base
+    - r-igraph
+    - r-mass
+    - r-matrix
+    - r-slam
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocneighbors >=2.0.0,<2.1.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-biocsingular >=1.22.0,<1.23.0
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-abind
+    - r-base
+    - r-igraph
+    - r-mass
+    - r-matrix
+    - r-slam
+
+source:
+  md5: d6f3b17a6b922b54b815d22481ed956f
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

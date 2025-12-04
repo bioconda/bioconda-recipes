@@ -1,6 +1,6 @@
 {% set name = "upimapi" %}
-{% set version = "1.1.2" %}
-{% set sha256 = "5ea4000ffaf91784a876063b51788c4d2f229800eebcb92dc672c20a15743172" %}
+{% set version = "1.13.3" %}
+{% set sha256 = "47593ea6b37ed91981722726ccb257786f7dde820c067655b8545eab9eb9c36c" %}
 
 package:
   name: {{ name|lower }}
@@ -13,20 +13,27 @@ source:
 build:
   noarch: generic
   number: 0
-  script: "mkdir -p $PREFIX/bin && cp upimapi.py $PREFIX/bin && cp uniprot_support.py $PREFIX/bin"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: >
+    mkdir -p $PREFIX/bin && 
+    cp upimapi.py $PREFIX/bin &&
+    chmod +x $PREFIX/bin/upimapi.py &&
+    ln -s $PREFIX/bin/upimapi.py $PREFIX/bin/upimapi
 
 requirements:
   run:
-    - progressbar
     - pandas
-    - openpyxl
-    - xlrd
     - diamond
     - psutil
+    - tqdm
+    - requests
+    - biopython
+    - pyyaml
 
 test:
   commands:
-    - upimapi.py -v 
+    - upimapi -v 
 
 about:
   home: https://github.com/iquasere/UPIMAPI
@@ -47,4 +54,3 @@ about:
 extra:
   recipe-maintainers:
     - iquasere
-

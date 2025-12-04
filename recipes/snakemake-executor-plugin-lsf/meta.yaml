@@ -1,0 +1,43 @@
+{% set name = "snakemake-executor-plugin-lsf" %}
+{% set version = "0.2.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/snakemake_executor_plugin_lsf-{{ version }}.tar.gz
+  sha256: ddd4205c3a6da299d0962b6d3e689131ace1fd8547b528ab628543dd865f608d
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.11,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.11.0,<4.0.0
+    - snakemake-interface-common >=1.17.1,<2.0.0
+    - snakemake-interface-executor-plugins >=9.0.0,<10.0.0
+    - snakemake-executor-plugin-lsf-jobstep >=0.1.10,<0.2.0
+    - throttler >=1.2.2,<2.0.0
+
+test:
+  imports:
+    - snakemake_executor_plugin_lsf
+
+about:
+  home: https://github.com/befh/snakemake-executor-plugin-lsf
+  summary: A Snakemake executor plugin for submitting jobs to a LSF cluster.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - BEFH

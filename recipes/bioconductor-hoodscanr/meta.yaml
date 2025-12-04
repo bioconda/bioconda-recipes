@@ -1,0 +1,69 @@
+{% set version = "1.4.0" %}
+{% set name = "hoodscanR" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: hoodscanR is an user-friendly R package providing functions to assist cellular neighborhood analysis of any spatial transcriptomics data with single-cell resolution. All functions in the package are built based on the SpatialExperiment object, allowing integration into various spatial transcriptomics-related packages from Bioconductor. The package can result in cell-level neighborhood annotation output, along with funtions to perform neighborhood colocalization analysis and neighborhood-based cell clustering.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 + file LICENSE
+  license_file: LICENSE
+  summary: Spatial cellular neighbourhood scanning in R
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-hoodscanr", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat (>= 3.0.0), BiocStyle
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-spatialexperiment >=1.16.0,<1.17.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-circlize
+    - r-ggplot2
+    - r-knitr
+    - r-rann
+    - r-rcpp >=1.0.9
+    - r-rlang
+    - r-rmarkdown
+    - r-scico
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-complexheatmap >=2.22.0,<2.23.0
+    - bioconductor-spatialexperiment >=1.16.0,<1.17.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-circlize
+    - r-ggplot2
+    - r-knitr
+    - r-rann
+    - r-rcpp >=1.0.9
+    - r-rlang
+    - r-rmarkdown
+    - r-scico
+
+source:
+  md5: c61ed5273654b20c204142213c309391
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

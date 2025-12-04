@@ -1,0 +1,57 @@
+{% set name = "duplex-tools" %}
+{% set version = "0.3.3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/d/duplex_tools/duplex_tools-{{ version }}.tar.gz"
+  sha256: 883e0a6610d14328a640b6a31eaef90592d2967cda68db0547a4d99924281300
+
+build:
+  number: 0
+  entry_points:
+    - duplex_tools = duplex_tools:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('duplex-tools', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+  run:
+    - python >=3.7
+    - python-edlib
+    - mappy
+    - matplotlib-base
+    - more-itertools
+    - natsort
+    - numpy
+    - pandas
+    - parasail-python
+    - pod5
+    - pyfastx >=0.9.0
+    - pysam
+    - tqdm
+
+test:
+  imports:
+    - duplex_tools
+  commands:
+    - duplex_tools --help
+
+about:
+  home: "https://github.com/nanoporetech/duplex-tools"
+  license: "MPL-2.0"
+  license_family: OTHER
+  license_file: "LICENSE.md"
+  summary: "Duplex Tools contains a set of utilities for dealing with ONT Duplex sequencing data."
+  dev_url: "https://github.com/nanoporetech/duplex-tools"
+  doc_url: "https://github.com/nanoporetech/duplex-tools/blob/v{{ version }}/README.md"
+
+extra:
+  recipe-maintainers:
+    - ollenordesjo

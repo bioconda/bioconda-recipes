@@ -1,55 +1,105 @@
 {% set name = "ggCaller" %}
-{% set version = "1.1.1" %}
+{% set version = "1.4.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/samhorsfield96/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 99eeff6a10394cb8c26709099ea4dd15b0f346ec300555d6f8d740494e0f547f
-  patches:
-    - 0001-Corrects_CMakeLists_txt_for_location_of_z_and_bifrost_libraries_.patch
+  url: https://github.com/bacpop/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 6c381e4f9c69a6f5eb77152dbaec5995e92d9d4f7d961ff76bd2dc26d9dee311
 
 build:
   number: 0
-  skip: True  # [osx]
-  script: {{ PYTHON }} setup.py install --single-version-externally-managed --record=record.txt
+  skip: True  # [osx or py < 39]
   entry_points:
     - ggcaller = ggCaller.__main__:main
+  run_exports:
+    - {{ pin_subpackage("ggcaller", max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c')}}
     - {{ compiler('cxx') }}
-    - cmake >=3.4
-    - setuptools
-    - python >=3
+    - cmake >=3.10
+    - make
+    - tbb
+    - tbb-devel
+    - mkl-devel >=2021.4.0,<2023.0.0 # [linux]
+    - openblas  # [osx]
+    - protobuf
+    - pytorch-cpu =1.10
+    - pytorch =1.10
   host:
-    - python >=3
+    - python >=3.9
     - pybind11
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux64]
-    - seqan3
-    - bifrost
-    - pthread-stubs
-    - biopython
+    - bifrost >=1.2
     - zlib
+    - pip
     - bzip2
+    - pytorch-cpu =1.10
+    - pytorch =1.10
+    - boost-cpp
+    - setuptools
+    - llvm-openmp # [osx]
+    - libgomp # [linux]
+    - mkl-devel >=2021.4.0,<2023.0.0 # [linux]
+    - lapack # [osx]
+    - openblas # [osx]
+    - eigen =3.3
+    - tbb
+    - tbb-devel
+    - protobuf
   run:
-    - python >=3
-    - bifrost
+    - python >=3.9
+    - numpy
+    - scipy
+    - pandas
+    - bifrost >=1.2
+    - biopython =1.80
+    - bcbio-gff
+    - diamond >=2.0
+    - pytorch-cpu =1.10
+    - pytorch =1.10
+    - hmmer
+    - mafft
+    - snp-sites
+    - zlib
     - pthread-stubs
-    - biopython
+    - matplotlib-base
+    - xorg-libxi
+    - xorg-libxcursor
+    - xorg-libxdamage
+    - xorg-libxcomposite
+    - xorg-libxrandr
+    - xorg-libxinerama
+    - xorg-libxpm
+    - xorg-libxaw
+    - xorg-libxfixes
+    - intbitset
+    - networkx
+    - uncertainties
+    - tqdm
+    - seaborn
+    - rapidnj
+    - python-edlib
+    - joblib
+    - gffutils
+    - cd-hit
+    - python-wget
+    - boost-cpp
 
 test:
   imports:
     - ggCaller_cpp
+    - ggCaller
+    - panaroo_runner
   commands:
     - ggcaller -h | grep -q "Generates ORFs from a Bifrost graph."
 
 about:
-   home: https://github.com/samhorsfield96/ggCaller
+   home: https://github.com/bacpop/ggCaller
    license: MIT
+   license_family: MIT
    license_file: LICENSE
-   summary: 'a gene caller for Bifrost graphs'
+   summary: 'A de Bruijn graph-based gene-caller and pangenome analysis tool'

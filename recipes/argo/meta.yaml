@@ -1,0 +1,44 @@
+{% set name = "argo" %}
+{% set version = "0.2.1" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/xinehc/argo/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: bb0760ea177a1753246124976a8dc68df156773845bf3ec3f75dce01fa6da370
+
+build:
+  noarch: python
+  number: 0
+  script: '{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv'
+  run_exports:
+    - {{ pin_subpackage('argo', max_pin='x.x') }}
+
+requirements:
+  host:
+    - pip
+    - setuptools
+    - python >=3.7
+  run:
+    - python >=3.7
+    - diamond >=2.1.11
+    - melon >=0.3.0
+    - scikit-learn
+
+test:
+    imports:
+      - argo
+    commands:
+      - argo -h
+
+about:
+  home: https://github.com/xinehc/argo
+  license: MIT
+  license_family: MIT
+  summary: 'Argo: species-resolved profiling of antibiotic resistance genes in complex metagenomes through long-read overlapping'
+
+extra:
+  recipe-maintainers:
+    - xinehc

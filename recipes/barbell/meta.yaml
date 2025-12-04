@@ -1,0 +1,54 @@
+{% set version = "0.3.0" %}
+{% set name = "barbell" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/rickbeeloo/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 0e205cd56ea4bc96543f1cb8c9bc40f33bfe2aa763b78d7b965ccab4a200bb3f
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('barbell', max_pin="x.x") }}
+  script:
+    # The default config.toml has target-cpu=native,
+    # but we don't want that for portable CI builds.
+    # Instead, use x86-64-v3 for x64, apple-m14 (=M1) for macos,
+    # and the default otherwise.
+    - mv .cargo/config-portable.toml .cargo/config.toml
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path .
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}              # [not win]
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - barbell --help
+    - barbell annotate --help
+    - barbell filter --help
+    - barbell trim --help
+    - barbell inspect --help
+    - barbell kit --help
+
+about:
+  home: https://github.com/rickbeeloo/barbell
+  license: MIT
+  summary: Extremely fast and accurate Nanopore demultiplexing 
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - mbhall88
+    - rickbeeloo

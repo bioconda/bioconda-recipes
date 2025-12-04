@@ -1,0 +1,46 @@
+{% set version = '3.4.0' %}
+
+package:
+  name: r-jetset
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/jetset_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/jetset/jetset_{{ version }}.tar.gz
+  sha256: 1776e30d76d7c2cf8998d3b37c87e20bca8ad58498e8545a714f6c7d6d812931
+
+build:
+  number: 3
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  host:
+    - r-base
+    - bioconductor-annotationdbi
+    - bioconductor-org.hs.eg.db
+  run:
+    - r-base
+    - bioconductor-annotationdbi
+    - bioconductor-org.hs.eg.db
+
+test:
+  commands:
+    - $R -e "library('jetset')"
+
+about:
+  home: http://www.cbs.dtu.dk/biotools/jetset/
+  license: Artistic-2.0
+  summary: 'On Affymetrix gene expression microarrays, a single gene may be measured by multiple
+    probe sets. This can present a mild conundrum when attempting to evaluate a gene
+    "signature" that is defined by gene names rather than by specific probe sets. This
+    package provides a one-to-one mapping from gene to "best" probe set for four Affymetrix
+    human gene expression microarrays: hgu95av2, hgu133a, hgu133plus2, and u133x3p.
+    This package also includes the pre-calculated probe set quality scores that were
+    used to define the mapping.'
+  license_family: OTHER
+  license_file:
+    - {{ environ["PREFIX"] }}/lib/R/share/licenses/Artistic-2.0

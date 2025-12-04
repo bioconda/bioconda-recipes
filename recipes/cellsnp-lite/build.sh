@@ -1,17 +1,15 @@
 #!/bin/bash
 
-export C_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-export LD_LIBRARY_PATH=${PREFIX}/lib
+mkdir -p "${PREFIX}/bin"
 
-cflags="-g -Wall -O2 -Wno-unused-function -fgnu89-inline -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -g -Wall -O3 -Wno-implicit-function-declaration"
 
-if [ "`uname`" == "Darwin" ]; then
-    make CC=${CC} CFLAGS="-fgnu89-inline ${CFLAGS}" LDFLAGS="${LDFLAGS}"
-else
-    make CC=${CC} CFLAGS="${cflags}" htslib_lib_dir=${PREFIX}/lib
-fi
+autoreconf -if
+./configure --prefix="${PREFIX}" CC="${CC}" CFLAGS="${CFLAGS}" \
+	LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include" \
+	--disable-option-checking --enable-silent-rules --disable-dependency-tracking
 
-mkdir -p ${PREFIX}/bin
-cp -f cellsnp-lite ${PREFIX}/bin
-
+make -j"${CPU_COUNT}"
+make install

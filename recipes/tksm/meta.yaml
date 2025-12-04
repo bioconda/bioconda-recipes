@@ -1,0 +1,53 @@
+{% set version = "0.6.1" %}
+{% set sha256 = "20a206258ea778c73d94645596fb484723382adeb5b66a8d6ae0f2379603b993" %}
+
+package:
+  name: tksm
+  version: {{ version }}
+
+source:
+  - url: https://github.com/vpc-ccg/tksm/archive/v{{ version }}.zip
+    sha256: {{ sha256 }}
+
+build:
+  number: 2
+  skip: True  # [py < 3.8 or osx]
+  run_exports:
+    - {{ pin_subpackage('tksm', max_pin="x.x") }}
+
+requirements:
+  build:
+    - python
+    - {{ compiler('cxx') }}
+    - make
+    - vim
+    - lld
+    - nlohmann_json
+  host:
+    - python
+    - zlib
+    - nlohmann_json
+    - cxxopts >=3.1.0
+    - fmt >=9.1.0
+  run:
+    - python
+    - zlib
+    - python-edlib
+    - numpy
+    - joblib
+    - tqdm
+    - scikit-learn
+
+test:
+  commands:
+    - tksm list
+    - tksm sequence --help
+    - tksm abundance --help
+    - tksm model-truncation --help
+
+about:
+  home: https://github.com/vpc-ccg/tksm
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Very modular, very cool long-read transcriptomic simulator

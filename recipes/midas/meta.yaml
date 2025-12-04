@@ -1,20 +1,21 @@
-{% set name = "midas" %}
+{% set name = "MIDAS" %}
 {% set version = "1.3.2" %}
 {% set sha256 = "87621eaa5b51eb81edc87e3e6b86c7efd3e1d64f503c6abca246b1be79120859" %}
 
 package:
-  name: '{{name}}'
+  name: '{{name|lower}}'
   version: '{{version}}'
 
 source:
   url: https://github.com/snayfach/MIDAS/archive/v{{version}}.tar.gz
   sha256: '{{sha256}}'
   patches:
-    - midas.patch
+    # the working patch comes from https://github.com/snayfach/MIDAS/pull/113
+    - midas.patches
 
 build:
   noarch: python
-  number: 4
+  number: 7
   script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 requirements:
@@ -22,14 +23,14 @@ requirements:
     - python
     - pip
   run:
-    - python
-    - pandas
-    - pysam
-    - numpy
-    - biopython
+    - python >=2.7
+    - pandas >=0.17.1
+    - pysam >=0.8.1
+    - numpy >=1.7.0
+    - biopython >=1.6.2
     - hs-blastn
-    - bowtie2
-    - samtools >=1.4.0
+    - bowtie2 =2.3.2
+    - samtools =1.4.0
 
 test:
   commands:
@@ -45,6 +46,10 @@ test:
 about:
   home: https://github.com/snayfach/MIDAS
   license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
   summary: An integrated pipeline for estimating strain-level genomic variation from
     metagenomic data
-  license_family: GPL
+
+extra:
+  notes: MIDAS requires reference database that needs to be additionally downloaded and set, https://github.com/snayfach/MIDAS/blob/master/docs/ref_db.md.

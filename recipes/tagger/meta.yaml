@@ -1,36 +1,48 @@
+{% set name = "tagger" %}
 {% set version = "1.1" %}
 
 package:
-  name: tagger
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://bitbucket.org/larsjuhljensen/tagger/get/{{ version }}.tar.gz
-  sha256: 8177e794731ab77f0b4b271dff05c2bdc023117e9b37e94caa05b3fa490947a5
+  url: https://github.com/larsjuhljensen/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: f0844d13afe586dcee1508f0abbc6d28bc46f81123821660939374cfc971e49b
+  patches:
+    - 0001-makefile.patch
+    - 0002-tagger.patch
 
 build:
-  number: 1
-  skip: True # [osx]
+  number: 2
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('tagger', max_pin="x") }}
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
   host:
-    - boost
     - python
+    - boost-cpp
     - swig
   run:
-    - boost
     - python
-    - swig
+    - boost-cpp
 
 test:
   commands:
     - tagcorpus --help
 
 about:
-  home: https://bitbucket.org/larsjuhljensen/tagger
-  license: BSD 2-Clause License
-  summary: tagger allows you to tag a corpus of documents with search terms that you provide. It is often used to find mentions of proteins, species, diseases, tissues, chemicals and drugs, GO terms, and so forth, in articles in the Medline corpus.
+  home: "https://github.com/larsjuhljensen/tagger"
+  license: "BSD-2-Clause"
+  summary: "tagger allows you to tag a corpus of documents with search terms that you provide. It is often used to find mentions of proteins, species, diseases, tissues, chemicals and drugs, GO terms, and so forth, in articles in the Medline corpus."
   license_family: BSD
+  license_file: LICENSE
+  dev_url: "https://github.com/larsjuhljensen/tagger"
+  doc_url: "https://github.com/larsjuhljensen/tagger/blob/{{ version }}/README.md"
 
+extra:
+  additional-platforms:
+    - linux-aarch64

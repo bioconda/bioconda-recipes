@@ -1,10 +1,16 @@
 #!/bin/bash
+set -xe
 
-# https://bioconda.github.io/troubleshooting.html#zlib-errors
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
-export CPATH=${PREFIX}/include
+mkdir -p "${PREFIX}/bin"
 
-make
-mkdir -p ${PREFIX}/bin
-mv sdm ${PREFIX}/bin/
+# https://bioconda.github.io/contributor/troubleshooting.html#zlib-errors
+export CFLAGS="${CFLAGS} -O3 -I$PREFIX/include"
+export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
+
+sed -i.bak -e 's/ -static//' Makefile
+sed -i.bak -e 's/-lpthread/-pthread/' Makefile
+rm -f *.bak
+
+make -j"${CPU_COUNT}"
+
+install -v -m 755 sdm "${PREFIX}/bin"

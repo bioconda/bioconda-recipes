@@ -1,0 +1,47 @@
+diff --git a/Makefile b/Makefile
+index d29c461..0eb9c6b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,5 +1,5 @@
+ #-- for now these MUST point to the included "samtools-0.x.x" and "gclib" sub-directories
+-HTSLIB  := ./htslib
++HTSLIB  := ${PREFIX}/include/htslib
+ #-- 
+ LIBDEFLATE := ${HTSLIB}/xlibs/lib/libdeflate.a
+ LIBBZ2 := ${HTSLIB}/xlibs/lib/libbz2.a
+@@ -8,12 +8,12 @@ LIBLZMA := ${HTSLIB}/xlibs/lib/liblzma.a
+ GDIR := ./gclib
+ #--
+ 
+-INCDIRS := -I. -I${GDIR} -I${HTSLIB}
++INCDIRS := -I. -I${GDIR} -I${HTSLIB} -I${PREFIX}/include
+ 
+ CXX   := $(if $(CXX),$(CXX),g++)
+ 
+ BASEFLAGS := -Wall -Wextra ${INCDIRS} -fsigned-char -D_FILE_OFFSET_BITS=64 \
+--D_LARGEFILE_SOURCE -std=c++11 -fno-strict-aliasing -fno-exceptions -fno-rtti
++-D_LARGEFILE_SOURCE -std=c++14 -fno-strict-aliasing -fno-exceptions -fno-rtti
+ #for gcc 8+ add: -Wno-class-memaccess
+ GCCGTE5 := $(shell expr `${CXX} -dumpversion | cut -f1 -d.` \>= 5)
+ ifeq "$(GCCGTE5)" "1"
+@@ -31,7 +31,7 @@ LDFLAGS := $(if $(LDFLAGS),$(LDFLAGS),-g)
+ 
+ # LDFLAGS += -L${BAM}
+ 
+-LIBS    := ${HTSLIB}/libhts.a ${LIBBZ2} ${LIBLZMA} ${LIBDEFLATE} -lz -lm
++LIBS    := -lhts -lz -lm
+ 
+ ifneq (,$(filter %nothreads %prof %profile, $(MAKECMDGOALS)))
+  NOTHREADS=1
+@@ -170,10 +170,7 @@ tablemaker.o : tablemaker.h rlink.h
+ ##${BAM}/libbam.a: 
+ ##	cd ${BAM} && make lib
+ 
+-${HTSLIB}/libhts.a:
+-	cd ${HTSLIB} && ./build_lib.sh
+-
+-stringtie${EXE}: ${HTSLIB}/libhts.a $(OBJS) stringtie.o
++stringtie${EXE}: $(OBJS) stringtie.o
+ 	${LINKER} ${LDFLAGS} -o $@ ${filter-out %.a %.so, $^} ${LIBS}
+ 	@echo
+ 	${DBG_WARN}

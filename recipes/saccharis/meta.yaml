@@ -1,0 +1,94 @@
+{% set name = "SACCHARIS" %}
+{% set version = "2.0.4" %}
+{% set hash = "75A7BD345AA34E9030FD8DB4425E024FD56809A418D9FCA8847CE3E48810BF27" %}
+
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/saccharis/SACCHARIS_2/releases/download/v{{ version }}/saccharis-{{ version }}.tar.gz
+  sha256: {{ hash|lower }}
+
+build:
+  noarch: python
+  number: 0
+
+  script: {{ PYTHON }} setup.py install --single-version-externally-managed --record=record.txt
+  preserve_egg_dir: True  # added because the entry points below seem to be causing a build error
+  entry_points:
+    - saccharis = saccharis.CLI:cli_main
+    - saccharis.make_family_files = saccharis.utils.FamilyCategories:cli_main
+    - saccharis.add_family_category = saccharis.utils.FamilyCategories:cli_append_user_family
+    - saccharis.rename_user_file = saccharis.utils.UserFastaRename:cli_main
+    - saccharis.prune_seqs = saccharis.ExtractAndPruneCAZymes:cli_prune_seqs
+    - saccharis.screen_cazome = saccharis.ScreenUserFile:cli_cazome
+    - saccharis.show_family_categories = saccharis.utils.FamilyCategories:cli_show_categories
+    - saccharis-gui = saccharis.gui.PipelineGUI:main
+    - saccharis.config = saccharis.utils.AdvancedConfig:cli_config
+    - saccharis.update_db = saccharis.utils.DatabaseDownload:cli_update_hmms
+  run_exports:
+    - {{ pin_subpackage("saccharis", max_pin="x.x") }}
+
+requirements:
+  build:
+    - python
+    - setuptools
+  host:
+    - python >=3.11
+    - setuptools
+    - pip
+  run:
+    - beautifulsoup4 >=4.11.1
+    - biopython >=1.79
+    - blast >=2.*
+    - dbcan <4
+    - diamond >=2.0.15 # [not win]
+    - fasttree >=2.1.11 # [not win]
+    - hmmer >=3.3 # [not win]
+    - lxml >=4.9.0
+    - ncbi-datasets-pylib >=14.*
+    - modeltest-ng >=0.1.7  # [not win]
+    - muscle >=3.8  # [not win]
+    - psutil
+    - python >=3.11
+    - python-dotenv >=0.20.0
+    - raxml >=8.2.12 # [not win]
+    - raxml-ng >=1.2 # [not win]
+    - requests >=2.28.0
+    - pyqt >=5,<6
+    - pyqt5-sip >=12.11
+#    sort out pyqt5 install issues, sometimes pip seemed to install it with fewer errors?
+#    - pip:
+#        - lxml >=4.9.0
+#        - pyqt >=5,<6
+#        - pyqt5-sip >=12.11
+
+app:
+  entry: saccharis-gui
+  icon: icon.png
+  summary: "SACCHARIS Bioinformatics Pipeline"
+
+test:
+  commands:
+    # pipe test output to null for these tests, per https://bioconda.github.io/contributor/guidelines.html#tests
+    - saccharis -v > /dev/null
+    - saccharis.show_family_categories --help > /dev/null
+    - saccharis.make_family_files --help > /dev/null
+    - saccharis.add_family_category --help > /dev/null
+    - saccharis.rename_user_file --help > /dev/null
+    - saccharis.prune_seqs --help > /dev/null
+    - saccharis.screen_cazome --help > /dev/null
+    - saccharis.config --help > /dev/null
+    - saccharis.update_db --help > /dev/null
+
+about:
+  home: https://github.com/saccharis/SACCHARIS_2
+  dev_url: https://github.com/saccharis/SACCHARIS_2
+  description: Bioinformatics pipeline to automate phylogenetic analysis of CAZyme families in FASTA sequences via
+    creation of phylogenetic trees.
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: A CAZyme discovery tool. Easily create phylogenetic trees from FASTA files and CAZyme families.

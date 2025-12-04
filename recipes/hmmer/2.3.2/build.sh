@@ -4,7 +4,7 @@ set -e -u -x
 
 HMMER2_PROGRAMS="hmmalign hmmbuild hmmcalibrate hmmconvert hmmemit hmmfetch hmmindex hmmpfam hmmsearch"
 
-./configure --enable-threads --enable-debugging=3
+./configure --enable-threads --enable-debugging=3 --prefix=${PREFIX}
 make
 make install
 

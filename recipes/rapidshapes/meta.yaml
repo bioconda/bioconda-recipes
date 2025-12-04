@@ -1,0 +1,53 @@
+{% set fold_grammars_version = "2.3.2" %}
+{% set rapidshapes_version = "2.1.0" %}
+{% set packagename = "rapidshapes" %}
+{% set sha256 = "d3e6cc8d2ecd31d4764b41fea589b98c637ff227d7ab3dcfe66f2ad3f24dece5" %}
+
+package:
+  name: {{ packagename }}
+  version: {{ rapidshapes_version }}
+
+source:
+  sha256: {{ sha256 }}
+  # the repository "fold-grammars" contains sources for several programs, i.e. pKiss, RNAshapes, ...
+  # thus, the version number does not correspond to the {{ packagename }} version number
+  #url: https://github.com/jlab/fold-grammars/archive/{{ version }}.tar.gz
+  url: https://github.com/jlab/fold-grammars/archive/refs/tags/{{ fold_grammars_version }}.tar.gz
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('rapidshapes', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - libcxx <17 # [osx]
+    - rsync
+  host:
+    - perl
+    - bellmans-gapc >=2024.01.12
+    - libcxx <17 # [osx]
+    - rsync
+  run:
+    - perl
+    - bellmans-gapc >=2024.01.12
+    - libcxx <17 # [osx]
+    - gxx_linux-64 # [linux]
+    - clangxx_osx-64 # [osx]
+
+test:
+  commands:
+  - RapidShapes ccaaagg
+
+about:
+  home: https://bibiserv.cebitec.uni-bielefeld.de/{{ packagename }}
+  license: 'GPL-3.0-or-later'
+  license_file: LICENSE
+  summary: 'RapidShapes computes a thermodynamic matcher (TDM), using a runtime heuristic for probabilistic shape analysis.'
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btq014
+    - doi:10.1093/bioinformatics/btu649

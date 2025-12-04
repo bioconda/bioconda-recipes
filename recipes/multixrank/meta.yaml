@@ -1,0 +1,43 @@
+{% set name = "multixrank" %}
+{% set version = "0.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/multixrank-{{ version }}.tar.gz
+  sha256: 73dc29a1ec9325e59ae465d50eadffa507ce084c427a669f02bfdaa32eec5de0
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - networkx ==2.5
+    - numpy <2
+    - pandas
+    - psutil
+    - pyyaml
+    - scipy
+
+test:
+  imports:
+    - multixrank
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://multixrank.readthedocs.io
+  summary: MultiXrank - heterogeneous MULTIlayer eXploration by RANdom walK with restart. MultiXrank is a Python package for the exploration of heterogeneous multilayer networks, with random walk with restart method. It permits prioritization of nodes between full heterogeneous networks, whatever their complexities.
+  license: MIT

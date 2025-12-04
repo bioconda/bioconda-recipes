@@ -1,0 +1,44 @@
+{% set name = "kseqpp" %}
+{% set version = "1.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/cartoonist/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 80d5da09f725517fe27c13bbc3efea55735ef426ffe086fd0544e18e670190be
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - zlib
+  build:
+    - cmake
+    - make  # [unix]
+    - {{ compiler('cxx') }}
+
+test:
+  commands:
+    - test -f $PREFIX/include/kseq++/config.hpp # [unix]
+
+about:
+  home: https://github.com/cartoonist/kseqpp
+  license: MIT
+  license_family: MIT
+  summary: 'C++11 re-implementation of kseq by Heng Li'
+  description: |
+    The goal for re-implementation of kseq is providing modern API and resource
+    management while preserving its flexibility and performance. Like original
+    kseq, this parser is based on generic stream buffer and works with different
+    file types.
+  dev_url: https://github.com/cartoonist/kseqpp
+  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
+
+extra:
+  recipe-maintainers:
+    - cartoonist

@@ -1,0 +1,70 @@
+{% set name = "metagraph" %}
+{% set version = "0.4.5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ratschlab/metagraph/releases/download/v{{ version }}/v{{ version }}-sources-with-submodules.tar.gz
+  sha256: d377f16329d3725e580d3e57ea46a2b501855cd50fdac511d93d1b0bc8413189
+  patches:
+    - metagraph-jemalloc-conditional.patch
+
+build:
+  number: 0
+  skip: True  # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - python >=3
+    - setuptools
+    - libdeflate
+    - icu  # [osx,osx-arm64]
+    - zstd
+    - bzip2
+  host:
+    - jemalloc  # [linux]
+    - boost-cpp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx,osx-arm64]
+  run:
+    - jemalloc  # [linux]
+    - boost-cpp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx,osx-arm64]
+
+test:
+  commands:
+    - metagraph_DNA --help
+    - metagraph_Protein --help
+    - metagraph --help
+
+about:
+  home: "https://github.com/ratschlab/metagraph"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Ultra Scalable Framework for DNA Search, Alignment, Assembly."
+  description: |
+    The MetaGraph framework allows for indexing and analysis of very large biological sequence collections, producing compressed indexes that can represent several petabases of input data. The indexes can be efficiently queried with any query sequence of interest.
+  doc_url: "https://metagraph.ethz.ch"
+  dev_url: "https://github.com/ratschlab/metagraph"
+
+extra:
+  recipe-maintainers:
+    - adamant-pwn
+    - izcram
+    - karasikov
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

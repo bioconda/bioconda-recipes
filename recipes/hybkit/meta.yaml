@@ -1,0 +1,56 @@
+{% set name = "hybkit" %}
+{% set version = "0.3.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/RenneLab/hybkit/archive/v{{ version }}.tar.gz
+  sha256: 8b977039da3c6f915215111f9f9c591734f8a18aa447a23c7c3b442caacface8
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  number: 0
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - matplotlib-base
+    - biopython
+    - typing_extensions
+  run:
+    - python >=3.8
+    - matplotlib-base
+    - biopython
+    - typing_extensions
+
+test:
+  imports:
+    - hybkit
+    - hybkit.settings
+    - hybkit.type_finder
+    - hybkit.__about__
+    - hybkit.analysis
+    - hybkit.plot
+    - hybkit.util
+  commands:
+    - hyb_check --help > /dev/null
+    - hyb_filter --help > /dev/null
+    - hyb_eval --help > /dev/null
+    - hyb_analyze --help > /dev/null
+
+about:
+  home: https://github.com/RenneLab/hybkit
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Hybkit toolkit and Python3 API chimeric genomic data analysis from proximity ligation methods. 
+
+extra:
+  recipe-maintainers:
+    - dstrib

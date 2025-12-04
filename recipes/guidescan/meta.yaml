@@ -1,71 +1,37 @@
 {% set name="guidescan" %}
-{% set version="1.2" %}
+{% set version="2.2.1" %}
 
 package:
   name: {{ name }}
   version: '{{ version }}'
 
 source:
-  url: https://bitbucket.org/arp2012/guidescan_public/get/v{{ version }}.tar.gz
-  sha256: 8b3707922bfd986d9d3c784953c3d47c26c0cc5726462a1e2a39bcd5627320bc
+  url: https://github.com/pritykinlab/guidescan-cli/releases/download/v{{ version }}/guidescan-v{{ version }}-src.tar.gz
+  sha256: 24075dc9c391e16af7ac7bf0af4cba0682b420e7ed63ca7c928f16a61adc5ff1
 
 build:
-  number: 1
-  skip: True # [not py27]
+  number: 3
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
-  host:
-    - python
-    - setuptools
-    - samtools ==1.3.1
-    - coreutils
-    - rename
-    - biopython >=1.66
-    - pysam ==0.8.3
-    - pyfaidx ==0.4.7.1
-    - bx-python ==0.7.3
-    - scikit-learn >=0.16.1
-    - numpy
-    - psutil
-    - xlwt
-    - pandas
-    - openblas
-    - python-dateutil >=2.5.0
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
   run:
-    - python
-    - samtools ==1.3.1
-    - coreutils
-    - rename
-    - biopython >=1.66
-    - pysam ==0.8.3
-    - pyfaidx ==0.4.7.1
-    - bx-python ==0.7.3
-    - scikit-learn >=0.16.1
-    - numpy
-    - psutil
-    - xlwt
-    - pandas
-    - openblas
-    - python-dateutil >=2.5.0
-
-test:
-  imports:
-    - guidescan
-  commands:
-    - "guidescan_processer -h"
-    - "guidescan_bamdata -h"
-    - "guidescan_guidequery -h"
-    - "guidescan_cutting_efficiency_processer -h"
-    - "guidescan_cutting_specificity_processer -h"
-
-about:
-  home: https://bitbucket.org/arp2012/guidescan_public
-  license: Unknown
-  summary: Tools to create and interface genome-wide CRISPR guideRNA databases
+    - libcurl
 
 extra:
-  skip-lints:
-    - uses_vcs_url
-    - missing_hash
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+
+test:
+  commands:
+    - "guidescan --version"
+
+about:
+  home: https://github.com/pritykinlab/guidescan-cli
+  license: Unknown
+  summary: GuideScan is a tool for genome-wide CRISPR guide RNA (gRNA) design and analysis in custom genomes.
