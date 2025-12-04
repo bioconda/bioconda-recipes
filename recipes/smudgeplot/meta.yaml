@@ -1,19 +1,32 @@
-{% set version = "0.4.0" %}
+{% set version = "0.5.1" %}
 
 package:
   name: smudgeplot
   version: {{ version }}
 
-build:
-  number: 1
-  run_exports:
-    - {{ pin_subpackage('smudgeplot', max_pin="x.x") }}
-
 source:
   url: https://github.com/KamilSJaron/smudgeplot/archive/v{{ version }}.tar.gz
-  sha256: 61ca437e29830a415e6f18f39d5d1fd994d20ea4a9bd46d1ab5fdcc52fa4008d
+  sha256: 9ff5ae0b631cad7c0cae13a0056e5eef9a970f0c0a347997ddd6e5007bfb2ea3
   patches:
     - 0001-Makefile.patch
+
+build:
+  number: 0
+  skip: True  # [py < 311]
+  script:
+    - export CPATH="${PREFIX}/include"
+    - mkdir -p exec
+    - mkdir -p ${PREFIX}/bin
+    - {{ PYTHON }} -m pip install . -vvv --no-cache-dir --no-build-isolation --no-cache-dir
+    - make -s INSTALL_PREFIX="${PREFIX}" CC="${CC}" -j"${CPU_COUNT}"
+    - install -C exec/smudgeplot.py $PREFIX/bin
+    - install -C exec/hetmers $PREFIX/bin
+    - install -C exec/smudgeplot_plot.R $PREFIX/bin
+    - install -C exec/centrality_plot.R $PREFIX/bin
+  entry_points:
+    - smudgeplot = smudgeplot.cli:main
+  run_exports:
+    - {{ pin_subpackage('smudgeplot', max_pin="x.x") }}
 
 requirements:
   build:
@@ -25,6 +38,7 @@ requirements:
     - r-base
     - r-viridis
     - python
+    - pip
     - xorg-libxrender
     - zlib
   run:
@@ -34,6 +48,7 @@ requirements:
     - r-argparse
     - numpy
     - scipy
+    - matplotlib-base
     - pandas
 
 test:
@@ -41,14 +56,19 @@ test:
     - "smudgeplot.py --version 2>&1"
 
 about:
-  home: https://github.com/KamilSJaron/smudgeplot
-  license: Apache-2.0
+  home: "https://github.com/KamilSJaron/smudgeplot"
+  license: "Apache-2.0"
   license_family: APACHE
-  license_file: LICENSE
+  license_file: "LICENSE.md"
   summary: "Inference of ploidy and heterozygosity structure using whole genome sequencing data."
-  dev_url: https://github.com/KamilSJaron/smudgeplot
+  dev_url: "https://github.com/KamilSJaron/smudgeplot"
+  doc_url: "https://github.com/KamilSJaron/smudgeplot/blob/v{{ version }}/README.md"
 
 extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
+  identifiers:
+    - usegalaxy-eu:smudgeplot
+    - biotools:Smudgeplots
+    - doi:10.1038/s41467-020-14998-3
