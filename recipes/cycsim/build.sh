@@ -17,7 +17,9 @@ fi
 cargo fetch --locked --verbose
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
-RUST_BACKTRACE=1 cargo install --locked --verbose --no-track --path . --root "${PREFIX}"
+cargo build --release --locked --verbose
+cargo install --path . --root "${PREFIX}" --locked --verbose
+
 
 rm -rf "${CARGO_HOME}"
 
