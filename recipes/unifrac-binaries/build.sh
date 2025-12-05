@@ -9,21 +9,16 @@ export CPLUS_INCLUDE_PATH="${CONDA_PREFIX}/include"
 echo "=== PREFIX ==="
 env |grep PREFIX
 
-echo "Arch: $(uname -s)"
+echo "Host Arch: $(uname -s)"
+echo "Target Arch: ${target_platform}"
 pwd
 
-if [[ "$(uname -s)" == "Linux" ]];
-then
-          which x86_64-conda-linux-gnu-gcc
-          x86_64-conda-linux-gnu-gcc -v
-          x86_64-conda-linux-gnu-g++ -v
-else
-          which clang
-          clang -v
-fi
+which $CC
+$CC -v
+$CXX -v
 which h5c++
 
-if [[ "$(uname -s)" == "Linux" ]] && [[ "x${BUILD_NV_OFFLOAD}" != "xcpu" ]];
+if [[ "$(uname -s)" == "Linux" ]] && [[ "x${BUILD_NV_OFFLOAD}" != "xcpu" ]] && [[ "x${target_platform}" != "xlinux-aarch64" ]];
         then
           export BUILD_NV_OFFLOAD=acc
           # install PGI locally
