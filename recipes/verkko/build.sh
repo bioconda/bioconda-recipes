@@ -12,9 +12,12 @@ if [ "$(uname)" == "Darwin" ]; then
     mkdir -p $HOME/.cargo/registry/index/
 fi
 
+# set up CXX compliation
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
+# this is defaulted to system type (e.g. x86_64-unknown-linux-gnu) which breaks subsequent copy makefile as it wants just rukki/target/release/rukki not rukki/target/x86_64-unknown-linux-gnu/release/target
+unset CARGO_BUILD_TARGET
 
 # on osx we remove the built-in boost and make sure todepend on the system boost
 pushd src
