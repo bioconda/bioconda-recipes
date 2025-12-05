@@ -1,0 +1,76 @@
+{% set name = "wepp" %}
+{% set version = "0.1.4.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/TurakhiaLab/WEPP/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
+  sha256: fc43554544e884aed1ff4af542618c7987b2e812efc9f1c1f32e709510e70ceb
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("wepp", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - pkg-config
+    - nodejs
+
+  host:
+    - pip
+    - boost-cpp =1.78.0
+    - tbb-devel <2021.1.1
+    - protobuf <4
+    - mpich
+    - jsoncpp
+    - nodejs
+
+  run:
+    - conda
+    - pip
+    - boost =1.78.0
+    - tbb
+    - protobuf <4
+    - mpich
+    - jsoncpp
+    - snakemake-minimal >=7.0
+    - pandas
+    - altair
+    - aiohttp
+    - biopython
+
+test:
+  commands:
+    - wepp help
+
+about:
+  home: "https://github.com/TurakhiaLab/WEPP"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Wastewater-Based Epidemiology using Phylogenetic Placements"
+  description:
+    WEPP (Wastewater-Based Epidemiology using Phylogenetic Placements) is a 
+    pathogen-agnostic pipeline that enhances wastewater surveillance by leveraging 
+    the pathogen's full phylogeny. It reports haplotype and lineage abundances, 
+    maps reads parsimoniously to selected haplotypes, and flags Unaccounted Alleles 
+    — those observed in the sample but unexplained by selected haplotypes, 
+    potentially indicating novel variants.
+    
+    WEPP performs parsimonious read placement on the mutation-annotated tree (MAT) 
+    to select a subset of haplotypes and adds their neighbors to form an initial 
+    candidate pool, which is passed to a deconvolution algorithm to estimate their 
+    relative abundances. An interactive dashboard enables visualization of 
+    haplotypes in the global phylogenetic tree and read-level analysis.
+
+  doc_url: "https://turakhia.ucsd.edu/WEPP"
+
+extra:
+  recipe-maintainers:
+    - pgangwar-ucsd

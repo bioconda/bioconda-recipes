@@ -1,57 +1,78 @@
-{% set version="0.6.3" %}
+{% set name = "usher" %}
+{% set version = "0.6.6" %}
 
 package:
-  name: usher
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  - url: https://github.com/yatisht/usher/archive/v{{ version  }}.tar.gz
-    sha256: 95aba8f748599915f21f7bdf883c2e532f2d821138f06cb2e4e58d7323019946
+  url: https://github.com/yatisht/usher/archive/v{{ version  }}.tar.gz
+  sha256: 9630654895050a0cf83a60b66299c2ad940694580dcdae3536227ce5a521baec
+  patches:
+    - 0001-CMakeLists.patch
+    - 0002-main-cpp.patch
 
 build:
-  number: 2
+  number: 4
   run_exports:
-    - {{ pin_subpackage('usher', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
-    - make
-    - autoconf
-    - cmake
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
-    - wget
+    - cmake
+    - autoconf
+    - automake
+    - libtool
+    - ninja
+    - pkg-config
   host:
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - openmpi
     - boost-cpp
-    - libprotobuf
-    - openmpi =4.1.2
-    - openssh
+    - protobuf <5
+    - tbb-devel <2021.1.1
     - isa-l
+    - curl
+    - wget
   run:
-    - mafft
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - openmpi
     - boost-cpp
-    - ucsc-fatovcf
-    - openmpi =4.1.2
-    - openssh
+    - protobuf <5
+    - tbb-devel <2021.1.1
     - isa-l
+    - ucsc-fatovcf
+    - mafft
 
 test:
   commands:
     - usher --help
     - usher-sampled --help
-    - matOptimize --help
-    - matUtils --help
+    - matOptimize --help  # [not (osx and x86_64)]
+    - matUtils --help  # [not (osx and x86_64)]
 
 about:
-  home: https://github.com/yatisht/usher
+  home: "https://github.com/yatisht/usher"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: Ultrafast Sample Placement on Existing Trees (UShER)
-  doc_url: https://usher-wiki.readthedocs.io/en/latest/
+  summary: "Ultrafast Sample Placement on Existing Trees (UShER)."
+  doc_url: "https://usher-wiki.readthedocs.io/en/latest"
+  dev_url: "https://github.com/yatisht/usher"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.1038/s41588-021-00862-7
+    - biotools:usher
+    - usegalaxy-eu:usher_matutils
+    - usegalaxy-eu:usher
+  container:
+    # mpirun won't run with ssh present, which is not included in the base image
+    extended-base: True

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "pchicdata-1.30.0"
+installBiocDataPackage.sh "pchicdata-1.34.0"

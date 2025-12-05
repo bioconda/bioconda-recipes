@@ -1,69 +1,69 @@
-{% set version = "1.7.8" %}
+{% set name = "orthanq" %}
+{% set version = "1.20.0" %}
 
 package:
-  name: orthanq
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 0
-  skip: True  # [osx]
-  run_exports:
-    - {{ pin_subpackage("orthanq", max_pin="x") }}
 
 source:
   url: https://github.com/orthanq/orthanq/archive/v{{ version }}.tar.gz
-  sha256: bc4036a3d058263c8a49319573d1ef926e807a1d6b4bf845d09d686556c0d893
+  sha256: fd9318a0610b279e644f1a5f00fe1c8febf0febb8c77e033cb2fdd128cd3e276
+
+build:
+  number: 0
+  skip: True  # [py < 310 or (aarch64 and py < 311)]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('rust') }}
-    - rust >=1.54
-    - pkg-config
+    - cargo-bundle-licenses
     - make
     - cmake
-    - perl-findbin
+    - pkg-config
+    - clangdev
+    #datavzrd dependencies
+    - nodejs >=16
+    - pnpm
   host:
+    - python
+    - pkg-config
     - gsl
     - libcblas
-    - openssl
+    - openssl  # [linux]
+    - coincbc
+    - fontconfig
     - zlib
     - bzip2
     - xz
-    - clangdev
-    - coincbc
-    - hdf5 =1.10.5
-    - fontconfig
+  run:
+    - python
+    - gsl
+    - openssl  # [linux]
+    - varlociraptor ==8.7.3
+    - samtools ==1.20
+    - vg ==1.63.1  # [linux]
     - htslib
-    - varlociraptor =8.4.7
-    - samtools =1.19
-    - vg =1.56
     - minimap2
     - bwa
-  run:
-    - gsl
-    - libcblas
-    - openssl
-    - zlib
-    - bzip2
-    - xz
-    - clangdev
-    - coincbc
-    - hdf5 =1.10.5
-    - fontconfig
 
 test:
   commands:
     - orthanq -h
 
 about:
-  home: https://github.com/orthanq/orthanq
+  home: "https://github.com/orthanq/orthanq"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: Uncertainty aware HLA typing and general haplotype quantification
+  summary: "Uncertainty aware HLA typing and general haplotype quantification."
+  dev_url: "https://github.com/orthanq/orthanq"
+  doc_url: "https://orthanq.github.io"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
