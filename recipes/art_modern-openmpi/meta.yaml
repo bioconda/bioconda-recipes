@@ -1,0 +1,64 @@
+{% set name = "art_modern-openmpi" %}
+{% set version = "1.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/YU-Zhejian/art_modern/archive/refs/tags/{{ version }}.zip
+  sha256: b609b52e2565e657580cc7c60eb8441659fcb719f68639508501b355b2a0e94c
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('art_modern-openmpi', max_pin="x.x") }}
+
+requirements:
+  build:
+    - cmake >=3.17
+    - make
+    - pkg-config
+    # This is essential as coreutils >=8.28 provides `env -C` command.
+    - coreutils >=8.28
+    - bash
+    - {{ compiler('cxx') }}
+    # Python is only needed for the build
+    - python {{ python }}
+  host:
+    # Boost version copied from package ProMod3 at bioconda recepies ver. 0ff2abb3f8
+    - libboost-devel >=1.86,<1.87
+    - zlib
+    - abseil-cpp
+    - openmpi
+    - htslib # samtools does not specify HTSLib version, so do us.
+    - fmt
+    # Conda do not have moodycamel-concurrentqueue, so using the bundled one.
+  run:
+    - openmpi
+    - libboost >=1.86,<1.87
+
+test:
+  commands:
+    # Note that the -x parameter is OpenMPI-specific to pass env vars to the remote nodes.
+    # MPICH, instead, uses -env.
+    # The --allow-run-as-root is needed to test inside containers.
+    - mpiexec --allow-run-as-root -x ART_NO_LOG_DIR=1 -n 2 art_modern-mpi --version 2>&1 | grep -q "{{ version }}"
+    - mpiexec --allow-run-as-root -x ART_NO_LOG_DIR=1 -n 1 art_profile_builder-mpi --version 2>&1 | grep -q "{{ version }}"
+
+about:
+  home: "https://github.com/YU-Zhejian/art_modern"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: "License.md"
+  summary: "Modernized ART simulator of diverse Next-Generation Sequencing reads with MPI support"
+  dev_url: "https://github.com/YU-Zhejian/art_modern"
+  doc_url: "https://github.com/YU-Zhejian/art_modern/releases/download/{{ version }}/art_modern.pdf"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  container:
+    # openmpi needs ssh/rsh
+    extended-base: True

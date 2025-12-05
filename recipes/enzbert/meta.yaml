@@ -1,0 +1,61 @@
+{% set version = "1.1" %}
+{% set name = "enzbert" %}
+{% set sha256 = "d1d68f6f53fcf5087ac1786db37db4688b07b7604e42ef9459334225b4383f76" %} 
+
+package:
+  name: enzbert
+  version: '{{ version }}'
+
+source:
+  url: https://gitlab.inria.fr/nbuton/tfpc/-/archive/v{{ version }}/tfpc-v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build: 
+  noarch: python
+  number: 0
+  entry_points:
+    - enzbert = predictions:main
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed --no-cache-dir -vvv . 
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+
+requirements:
+  host:
+    - python 
+    - pip
+    - setuptools 
+  run:
+    - python 
+    - pytorch ==1.9.1
+    - transformers ==4.2.2
+    - biopython 
+    - matplotlib-base
+    - numpy
+    - pandas
+    - requests
+    - scikit-learn
+    - scipy
+    - seaborn
+    - statsmodels
+    - sty
+    - tqdm
+    - goatools
+    - lime
+    - torchmetrics
+    - captum
+    - streamlit
+    - ijson
+
+test:
+  commands:
+    - enzbert --help
+
+about:
+  home: https://gitlab.inria.fr/nbuton/tfpc/-/tree/EnzBert_conda
+  license: AGPL-3
+  license_file: LICENSE
+  summary: "Run EnzBert model that predicts the functional annotation of enzymes from protein sequences"
+
+
+

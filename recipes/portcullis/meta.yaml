@@ -13,8 +13,8 @@ source:
     - m64.patch
 
 build:
-  number: 3
-  skip: True # [osx or py27 or py == 310]
+  number: 4
+  skip: True  # [py > 39]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
@@ -24,15 +24,19 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - autoconf
-    - automake >=1.15.1
+    - automake
     - libtool
+    - pkg-config
+    - gnuconfig
   host:
-    - zlib
-    - pandas
-    - python <3.10    # configure script logic thinks 3.10 is < 3.5.. so avoid
+    - python    # configure script logic thinks 3.10 is < 3.5.. so avoid
+    - pip
+    - setuptools
     - boost-cpp
     - libboost-python-devel
     - samtools >=1.9
+    - zlib
+    - pandas
   run:
     - python
     - libboost
@@ -45,14 +49,18 @@ requirements:
 test:
   commands:
     - portcullis --version
-    - junctools --help  
+    - junctools --help
+
+about:
+  home: "https://github.com/maplesond/portcullis"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: COPYING
+  summary: "Splice junction analysis and filtering from BAM files."
+  dev_url: "https://github.com/maplesond/portcullis"
+  doc_url: "https://ei-corebioinformatics.github.io/portcullis"
 
 extra:
   additional-platforms:
     - linux-aarch64
-
-about:
-  home: https://github.com/maplesond/portcullis
-  license: GPL3
-  license_file: COPYING
-  summary: 'Splice junction analysis and filtering from BAM files'
+    - osx-arm64

@@ -1,5 +1,5 @@
 {% set name = "egap" %}
-{% set version = "3.1b" %}
+{% set version = "3.3.4" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   - url: https://github.com/iPsychonaut/EGAP/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: 5c845feb05da9cd9cec34cc3165c31354679d30448da3c53a674d5c4a23baacd
+    sha256: d1ac9723ef199ded14bb5f47613335b58520a727d84dc74bd757d06f3791eafc
   - url: https://github.com/iPsychonaut/runner/archive/refs/tags/v0.0.0.tar.gz
     sha256: 4e67bb1e970dadb86425cb2698e0e2e34f70d78cbf77a32f73c13f66dffb55fc
 
@@ -15,7 +15,9 @@ build:
   noarch: python
   number: 0
   run_exports:
-    - {{ pin_subpackage('egap', max_pin="x") }}
+    # Non-semver version ("3.3c"): export only a minimum pin, no upper bound
+    - {{ pin_subpackage(name, max_pin=None) }}
+  # NOTE: do NOT set build:script; conda will auto-run build.sh on Unix.
 
 requirements:
   host:
@@ -63,22 +65,23 @@ requirements:
     - geopy >=2.4.1
     - tabulate >=0.9.0
     - openpyxl >=3.1.5
-
+  
 test:
   commands:
     - EGAP --help
 
 about:
   home: https://github.com/iPsychonaut/EGAP
-  license: "BSD 3-Clause License"
+  license: BSD-3-Clause
   license_file: LICENSE
   summary: "EGAP pipeline for genome assembly and QC analysis"
   description: |
-    EGAP (Entheome Genome Assembly Pipeline) is a versatile bioinformatics pipeline
-    for hybrid genome assembly from Oxford Nanopore, Illumina, and PacBio data.
-    It supports multiple input modes and assembly methods and determines the best 
-    based on multiple metrics: BUSCO Completeness (Single + Duplicated), Assembly 
-    Contig Count, Assembly N50, Assembly L50, and Assembly GC-content.
+    EGAP (Entheome Genome Assembly Pipeline) is a versatile bioinformatics
+    pipeline for hybrid genome assembly from Oxford Nanopore, Illumina, and
+    PacBio data. It supports multiple input modes and assembly methods and
+    determines the best based on multiple metrics: BUSCO Completeness
+    (Single + Duplicated), Assembly Contig Count, Assembly N50, Assembly L50,
+    and Assembly GC-content.
 
 extra:
   notes: |
