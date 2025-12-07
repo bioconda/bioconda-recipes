@@ -1,22 +1,9 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
-sed -i.bak 's|\bgcc\b|\${CC}|g' Makefile # use platform-specific compiler
-make
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-binaries="\
- daligner  \
- HPC.daligner  \
- LAsort  \
- LAmerge  \
- LAsplit  \
- LAcat  \
- LAshow  \
- LAdump  \
- LAcheck  \
- LAa2b  \
- LAb2a  \
- dumpLA
-"
+mkdir -p "$PREFIX/bin"
 
-for i in $binaries; do cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
+make CC="${CC}"
+
+make install

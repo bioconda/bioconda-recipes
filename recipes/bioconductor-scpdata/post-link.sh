@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "scpdata-1.6.0"
+installBiocDataPackage.sh "scpdata-1.13.0"

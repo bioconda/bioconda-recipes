@@ -1,0 +1,53 @@
+{% set version = "1.6.0" %}
+{% set name = "gDNAinRNAseqData" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: Provides access to BAM files generated from RNA-seq data produced with different levels of gDNA contamination. It currently allows one to download a subset of the data published by Li et al., BMC Genomics, 23:554, 2022. This subset of data is formed by BAM files with about 100,000 alignments with three different levels of gDNA contamination.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: RNA-seq data with different levels of gDNA contamination
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-gdnainrnaseqdata", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, rmarkdown
+requirements:
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - r-base
+    - r-rcurl
+    - r-xml
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - r-base
+    - r-rcurl
+    - r-xml
+    - curl
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: 1051ca9adac9bf173e6ae6db69c7d5f8
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

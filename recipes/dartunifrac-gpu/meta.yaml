@@ -1,0 +1,49 @@
+{% set version = "0.2.7" %}
+
+package:
+  name: dartunifrac-gpu
+  version: {{ version }}
+
+source:
+  url: https://github.com/jianshu93/DartUniFrac/archive/v{{ version }}-gpu.tar.gz
+  sha256: 129915aaeed05c528865c93669777459300e744a57754feb1d635637f0fe0192
+
+build:
+  number: 0
+  skip: true  # [not linux64]
+  run_exports:
+    - {{ pin_subpackage('dartunifrac-gpu', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - pkg-config
+    - make
+    - cmake
+    - libgomp      # [linux]
+    - hdf5 =*=nompi*
+    - hdf5-static =*=nompi*
+    - curl 
+  host:
+    - lz4
+    - zlib
+    - openssl
+
+test:
+  commands:
+    - dartunifrac-cuda -h
+
+about:
+  home: "https://github.com/jianshu93/DartUniFrac"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "DartUniFrac is an ultra-fast UniFrac algorithm that scales to millions of samples. It was designed based on optimal balanced parenthesis and Weighted MinHash sketching."
+  dev_url: "https://github.com/jianshu93/DartUniFrac"
+  doc_url: "https://github.com/jianshu93/DartUniFrac/blob/v{{ version }}/README.md"
+
+extra:
+  recipe-maintainers:
+   - jianshu93

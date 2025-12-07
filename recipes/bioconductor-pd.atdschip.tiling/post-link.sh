@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "pd.atdschip.tiling-0.36.0"
+installBiocDataPackage.sh "pd.atdschip.tiling-0.44.0"

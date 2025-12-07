@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "methylaiddata-1.30.0"
+installBiocDataPackage.sh "methylaiddata-1.38.0"

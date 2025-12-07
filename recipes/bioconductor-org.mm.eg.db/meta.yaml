@@ -1,43 +1,45 @@
-{% set version = "3.16.0" %}
+{% set version = "3.20.0" %}
 {% set name = "org.Mm.eg.db" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 18c83b93687c5a618d5220cf5b0666c2
+about:
+  description: Genome wide annotation for Mouse, primarily based on mapping using Entrez Gene identifiers.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Genome wide annotation for Mouse
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: DBI, annotate, RUnit
-requirements:
-  host:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - r-base
-  run:
-    - 'bioconductor-annotationdbi >=1.60.0,<1.61.0'
-    - r-base
-    - curl
-    - bioconductor-data-packages>=20221103
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Genome wide annotation for Mouse'
-  description: 'Genome wide annotation for Mouse, primarily based on mapping using Entrez Gene identifiers.'
+  run_exports: '{{ pin_subpackage("bioconductor-org.mm.eg.db", max_pin="x.x") }}'
 extra:
   parent_recipe:
     name: bioconductor-org.mm.eg.db
     path: recipes/bioconductor-org.mm.eg.db
     version: 3.11.1
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: DBI, annotate, RUnit
+requirements:
+  host:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - r-base
+  run:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 63357791b48f3fc181edd8c772ee6f94
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

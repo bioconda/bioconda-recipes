@@ -1,22 +1,23 @@
-{% set version = "0.99.4" %}
+{% set version = "0.99.6" %}
 {% set name = "GeneSummary" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 39ee728e42c42ccf200568c9c736b15c
+about:
+  description: This package provides long description of genes collected from the RefSeq database. The text in "COMMENT" section started with "Summary" is extracted as the description of the gene. The long text descriptions can be used for analysis such as text mining.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: RefSeq Gene Summaries
 build:
-  number: 0
+  noarch: generic
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-genesummary", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: knitr, rmarkdown, markdown, testthat
 requirements:
   host:
@@ -24,14 +25,15 @@ requirements:
   run:
     - r-base
     - curl
-    - bioconductor-data-packages>=20221102
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 9df029a96bf0fa5bb76ee8b8923c458c
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'RefSeq Gene Summaries'
-  description: 'This package provides long description of genes collected from the RefSeq database. The text in "COMMENT" section started with "Summary" is extracted as the description of the gene. The long text descriptions can be used for analysis such as text mining.'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

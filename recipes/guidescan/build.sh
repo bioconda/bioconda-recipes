@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 mkdir -p $PREFIX/bin
 
 mkdir -p build
@@ -10,6 +12,6 @@ cd build
 # Further, certain features (related to filesystem/path.h) are only available in macOS 10.15
 cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15
 
-make
+make -j ${CPU_COUNT}
 cp bin/guidescan $PREFIX/bin
 chmod +x $PREFIX/bin/guidescan

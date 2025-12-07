@@ -1,0 +1,54 @@
+{% set name = "kegg-pathways-completeness" %}
+{% set version = "1.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/kegg_pathways_completeness-{{ version }}.tar.gz
+  sha256: 982f09f44aa863e86cadeed4c4f26e05c0b1a5830e8f8c39d5c3a8db69864d65
+
+build:
+  entry_points:
+    - give_pathways = kegg_pathways_completeness.bin.give_pathways:main
+    - plot_completeness_graphs = kegg_pathways_completeness.bin.plot_completeness_graphs:main
+    - generate_hmmtable = kegg_pathways_completeness.bin.generate_hmmtable.hmmscan_tab:main
+    - parsing_hmmscan = kegg_pathways_completeness.bin.generate_hmmtable.parsing_hmmscan:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('kegg-pathways-completeness', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools >=61.0
+    - pip
+  run:
+    - python >=3.10
+    - biopython >=1.83
+    - networkx >=3.3
+    - python-graphviz >=0.20.3
+    - pydot >=3.0.3
+
+test:
+  imports:
+    - kegg_pathways_completeness
+  #commands:
+    #- give_pathways --help
+    #- plot_completeness_graphs --help
+    #- generate_hmmtable --help
+    #- parsing_hmmscan --help
+
+about:
+  summary: "The tool counts completeness of each KEGG pathway for protein sequences."
+  home: https://github.com/EBI-Metagenomics/kegg-pathways-completeness-tool
+  license: Apache-2.0
+  license_file: LICENSE
+  dev_url: https://github.com/EBI-Metagenomics/kegg-pathways-completeness-tool
+
+extra:
+  recipe-maintainers:
+    - chrisAta

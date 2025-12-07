@@ -1,43 +1,45 @@
-{% set version = "1.25.0" %}
+{% set version = "1.34.0" %}
 {% set name = "PCHiCdata" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 59faa7d68d8c7e305c550846b3b639bc
+about:
+  description: Subsets of Promoter Capture Hi-C data conveniently packaged for Chicago users. Data includes interactions detected for chromosomes 20 and 21 in GM12878 cells and for chromosomes 18 and 19 in mESC.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Promoter Capture Hi-C data
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: testthat, BiocStyle, knitr
-requirements:
-  host:
-    - 'bioconductor-chicago >=1.26.0,<1.27.0'
-    - r-base
-  run:
-    - 'bioconductor-chicago >=1.26.0,<1.27.0'
-    - r-base
-    - curl
-    - bioconductor-data-packages>=20221103
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Promoter Capture Hi-C data'
-  description: 'Subsets of Promoter Capture Hi-C data conveniently packaged for Chicago users. Data includes interactions detected for chromosomes 20 and 21 in GM12878 cells and for chromosomes 18 and 19 in mESC.'
+  run_exports: '{{ pin_subpackage("bioconductor-pchicdata", max_pin="x.x") }}'
 extra:
   parent_recipe:
     name: bioconductor-pchicdata
     path: recipes/bioconductor-pchicdata
     version: 1.8.0
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: testthat, BiocStyle, knitr
+requirements:
+  host:
+    - bioconductor-chicago >=1.34.0,<1.35.0
+    - r-base
+  run:
+    - bioconductor-chicago >=1.34.0,<1.35.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 77d9d2d9ac8fb77a6c4824c15a0cac64
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

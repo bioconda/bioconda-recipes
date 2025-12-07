@@ -1,28 +1,31 @@
-{% set version = "1.36.0" %}
+{% set version = "1.41.0" %}
 {% set name = "RNAinteractMAPK" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 7d626f19929cda149d56b340d3249942
+about:
+  description: This package includes all data used in the paper -Mapping of Signalling Networks through Synthetic Genetic Interaction Analysis by RNAi- by Horn, Sandmann, Fischer et al.., Nat. Methods, 2011. The package vignette shows the R code to reproduce all figures in the paper.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Mapping of Signalling Networks through Synthetic Genetic Interaction Analysis by RNAi
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-rnainteractmapk", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: qvalue
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-genefilter >=1.80.0,<1.81.0'
-    - 'bioconductor-rnainteract >=1.46.0,<1.47.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-genefilter >=1.88.0,<1.89.0
+    - bioconductor-rnainteract >=1.54.0,<1.55.0
     - r-base
     - r-fields
     - r-gdata
@@ -30,9 +33,9 @@ requirements:
     - r-mass
     - r-sparselda
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
-    - 'bioconductor-genefilter >=1.80.0,<1.81.0'
-    - 'bioconductor-rnainteract >=1.46.0,<1.47.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-genefilter >=1.88.0,<1.89.0
+    - bioconductor-rnainteract >=1.54.0,<1.55.0
     - r-base
     - r-fields
     - r-gdata
@@ -40,13 +43,17 @@ requirements:
     - r-mass
     - r-sparselda
     - curl
-    - bioconductor-data-packages>=20221110
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: 41bafca51c673429835afbcf60b89454
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Mapping of Signalling Networks through Synthetic Genetic Interaction Analysis by RNAi'
-  description: 'This package includes all data used in the paper -Mapping of Signalling Networks through Synthetic Genetic Interaction Analysis by RNAi- by Horn, Sandmann, Fischer et al.., Nat. Methods, 2011. The package vignette shows the R code to reproduce all figures in the paper.'
+    - $R -e "library('{{ name }}')"
 

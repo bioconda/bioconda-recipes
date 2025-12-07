@@ -1,36 +1,63 @@
-{% set version = "0.99.6" %}
+{% set version = "0.99.9" %}
 {% set name = "geneplast.data" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 08ddcdb9b1cf56dab5fe358c85fe1526
+about:
+  description: The package geneplast.data provides datasets from different sources via AnnotationHub to use in geneplast pipelines. The datasets have species, phylogenetic trees, and orthology relationships among eukaryotes from different orthologs databases.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Input data for the geneplast package via AnnotationHub
+
 build:
-  number: 1
+  noarch: generic
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-geneplast.data", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: geneplast, BiocGenerics, BiocStyle, knitr, rmarkdown
 requirements:
   host:
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-geneplast >=1.32.0,<1.33.0
+    - bioconductor-treeio >=1.30.0,<1.31.0
+    - r-ape
     - r-base
+    - r-dplyr
+    - r-igraph
+    - r-purrr
+    - r-readr
+    - r-tibble
+    - r-tidyr
   run:
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-geneplast >=1.32.0,<1.33.0
+    - bioconductor-treeio >=1.30.0,<1.31.0
+    - r-ape
     - r-base
+    - r-dplyr
+    - r-igraph
+    - r-purrr
+    - r-readr
+    - r-tibble
+    - r-tidyr
     - curl
-    - bioconductor-data-packages>=20221102
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: c25d661b13014ce9abc6da7411a6e539
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Input data for the geneplast package via AnnotationHub'
-  description: 'The package geneplast.data provides datasets from different sources via AnnotationHub to use in geneplast pipelines. The datasets have species, phylogenetic trees, and orthology relationships among eukaryotes from different orthologs databases.'
+    - $R -e "library('{{ name }}')"
 

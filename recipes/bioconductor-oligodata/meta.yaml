@@ -1,39 +1,41 @@
 {% set version = "1.8.0" %}
 {% set name = "oligoData" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 9625cfd4b31bb575c4029a0632a7ee12
+about:
+  description: 'Dataset samples (Affymetrix: Expression, Gene, Exon, SNP; NimbleGen: Expression, Tiling) to be used with the oligo package.'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: LGPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: Dataset samples for the oligo package
 build:
-  number: 10
+  noarch: generic
+  number: 13
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-oligodata", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: pd.hg.u95av2, pd.huex.1.0.st.v2, pd.mapping50k.xba240, pd.hg18.60mer.expr, pd.2006.07.18.hg18.refseq.promoter, pd.hugene.1.0.st.v1
 requirements:
   host:
-    - 'bioconductor-oligo >=1.62.0,<1.63.0'
+    - bioconductor-oligo >=1.70.0,<1.71.0
     - r-base
   run:
-    - 'bioconductor-oligo >=1.62.0,<1.63.0'
+    - bioconductor-oligo >=1.70.0,<1.71.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221103
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 9625cfd4b31bb575c4029a0632a7ee12
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: 'LGPL (>= 2)'
-  summary: 'Dataset samples for the oligo package'
-  description: 'Dataset samples (Affymetrix: Expression, Gene, Exon, SNP; NimbleGen: Expression, Tiling) to be used with the oligo package.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+    - $R -e "library('{{ name }}')"
 

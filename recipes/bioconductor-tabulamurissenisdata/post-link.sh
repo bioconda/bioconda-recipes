@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "tabulamurissenisdata-1.4.0"
+installBiocDataPackage.sh "tabulamurissenisdata-1.12.0"

@@ -1,39 +1,43 @@
-{% set version = "1.1.0" %}
+{% set name = "elastic-blast" %}
+{% set version = "1.5.0" %}
 
 package:
-  name: elastic-blast
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/source/e/elastic-blast/elastic_blast-{{ version }}.tar.gz
-  sha256: 2e7fe4c312e43b2990fbe3420fd8a67bf5566ea5ace6d400d3e68058038dfa81
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/elastic_blast-{{ version }}.tar.gz
+  sha256: 92bd4e64638e58ef8565afd2d6e867c2ba9801f04d33237f9fb42847443263bc
 
 build:
-  number: 1
-  noarch: generic
-  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage("elastic-blast", max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.7
-    - google-cloud-sdk
-    - awscli
-    - awslimitchecker
+    - python >=3.11,<3.14
     - python-packit
-    - importlib-metadata
+    - setuptools
   run:
-    - python >=3.7
+    - python >=3.11,<3.14
     - boto3
     - awscli
     - awslimitchecker
     - tenacity
     - google-cloud-sdk
-    - kubernetes-client ==1.18.8
+    - kubernetes-client
+    - importlib-resources ==6.1.1
     - importlib-metadata
     - dataclasses-json
+    - pex
 
 test:
+  imports:
+    - elastic_blast
   commands:
     - elastic-blast --version
     - elastic-blast --help
@@ -41,13 +45,16 @@ test:
     - gsutil --version
     - aws --version
     - kubectl version --client=true
+  requires:
+    - pip
+
 about:
-  home: https://pypi.org/project/elastic-blast/
-  license: Public Domain
+  home: https://github.com/ncbi/elastic-blast
+  license: "Public Domain"
   license_family: PUBLIC-DOMAIN
   license_file: LICENSE.md
   summary: "ElasticBLAST is a cloud-based tool to perform your BLAST searches faster and make you more effective."
-  dev_url: https://github.com/ncbi/elastic-blast/
+  dev_url: https://github.com/ncbi/elastic-blast
 
 extra:
   identifiers:
@@ -58,4 +65,3 @@ extra:
     - christiam
     - victzh
     - boratyng
-    

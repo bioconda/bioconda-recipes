@@ -1,0 +1,43 @@
+{% set version = "0.2.1" %}
+{% set name = "scrubby" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/esteinig/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: 88aaf4420393501b1387f45c9291a373a3a01c034c1d1d72555cccb05fea92a2
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }} 
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - make
+    - cmake
+    - clang  # [osx]
+  run:
+    - minimap2 =2.24
+    - kraken2 =2.1.2
+    - strobealign =0.8.0
+
+test:
+  commands:
+    - scrubby -h
+
+about:
+  home: https://github.com/esteinig/scrubby
+  license: MIT
+  license_family: MIT
+  summary: Read depletion/extraction and database cleaning using k-mer and alignment methods
+  license_file: LICENSE
+  dev_url: https://github.com/esteinig/scrubby
+
+extra:
+  recipe-maintainers:
+    - esteinig

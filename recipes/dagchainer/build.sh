@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 mkdir -p ${PREFIX}/bin
-make CC=${CXX}
+make -j"${CPU_COUNT}" CC=${CXX}
 

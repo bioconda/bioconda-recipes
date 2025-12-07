@@ -1,0 +1,50 @@
+{% set name = "snakemake-executor-plugin-azure-batch" %}
+{% set version = "0.1.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/snakemake_executor_plugin_azure_batch-{{ version }}.tar.gz
+  sha256: 7883ecdc3983eb73ea0e1ae10010eeff1626510c7e99176203ee2050031f86e3
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.11,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.11.0,<4.0.0
+    - snakemake-interface-common >=1.15.0,<2.0.0
+    - snakemake-interface-executor-plugins >=8.1.1,<9.0.0
+    - azure-storage-blob >=12.17.0,<13.0.0
+    - azure-batch >=14.0.0,<15.0.0
+    - azure-mgmt-batch >=17.0.0,<18.0.0
+    - azure-identity >=1.14.0,<2.0.0
+    - msrest >=0.7.1,<0.8.0
+
+test:
+  imports:
+    - snakemake_executor_plugin_azure_batch
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/snakemake/snakemake-executor-plugin-azure-batch
+  summary: A Snakemake executor plugin for submitting jobs to Microsoft Azure Batch.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - koesterlab

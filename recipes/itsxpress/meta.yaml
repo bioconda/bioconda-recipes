@@ -1,35 +1,41 @@
 {% set name = "itsxpress" %}
-{% set version = "1.8.1" %}
+{% set version = "2.1.4" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "d93e70f0a7f0c9f7e62892f3b3ff261d4d6bacb87010d167c983de25f0005ec9" %}
+{% set hash_value = "c4a289e9eff17f9e728156af4c5964305d4fc56c6ebac2d428d06993d57e9d35" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://files.pythonhosted.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  url: "https://github.com/USDA-ARS-GBRU/{{ name }}/archive/v{{ version }}.tar.gz"
   '{{ hash_type }}': '{{ hash_value }}'
 
 build:
   noarch: python
   number: 0
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   entry_points:
     - itsxpress=itsxpress.main:main
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  run_exports:
+    - {{ pin_subpackage('itsxpress', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.8
+    - python >=3.7
+    - setuptools
+    - setuptools-scm >=8
   run:
-    - pip
-    - python >=3.8
+    - python >=3.7
     - biopython >=1.79
-    - bioconda::hmmer =3.1b2
-    - bioconda::bbmap =38.96
-    - bioconda::vsearch =2.21.1
+    - hmmer >=3.1b2
+    - vsearch
+    - pyzstd
+    - pandas
 
 test:
   imports:
@@ -39,15 +45,15 @@ test:
 
 about:
   home: http://github.com/usda-ars-gbru/itsxpress
-  license: 'CC0 1.0'
+  license: CC0-1.0
   license_family: 'PUBLIC-DOMAIN'
-  # license_file: ''
-  summary: 'ITSxpress: Software to rapidly trim the Internally Transcribed Spacer (ITS) region from FASTQ files'
-
+  summary: 'ITSxpress: Software to rapidly trim the Internally Transcribed Spacer (ITS) region from FASTQ files.'
+  dev_url: http://github.com/usda-ars-gbru/itsxpress
 
 extra:
   recipe-maintainers:
     - arivers
+    - seina001
   identifiers:
     - biotools:ITSxpress
     - doi:10.5281/zenodo.1304349

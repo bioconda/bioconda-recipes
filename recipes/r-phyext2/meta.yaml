@@ -1,8 +1,5 @@
 {% set version = '0.0.4' %}
 
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
-
 package:
   name: r-phyext2
   version: {{ version|replace("-", "_") }}
@@ -16,10 +13,12 @@ source:
 build:
   noarch: generic
   merge_build_host: True  # [win]
-  number: 8
+  number: 10
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports:
+    - {{ pin_subpackage('r-phyext2', max_pin="x") }}
 
 requirements:
   build:
@@ -35,12 +34,12 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('phyext2')"           # [not win]
-    - "\"%R%\" -e \"library('phyext2')\""  # [win]
+    - $R -e "library('phyext2')"
 
 about:
   home: https://CRAN.R-project.org/package=phyext2
   license: GPL-3
+  license_file: LICENSE.txt
   summary: Based on (but not identical to) the no-longer-maintained package 'phyext', provides
     enhancements to 'phylobase' classes, specifically for use by package 'SigTree';
     provides classes and methods which help users manipulate branch-annotated trees

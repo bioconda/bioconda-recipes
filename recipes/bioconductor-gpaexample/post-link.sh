@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "gpaexample-1.9.0"
+installBiocDataPackage.sh "gpaexample-1.18.0"

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "tenxbraindata-1.18.0"
+installBiocDataPackage.sh "tenxbraindata-1.26.0"

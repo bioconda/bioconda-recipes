@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "yeastgsdata-0.35.0"
+installBiocDataPackage.sh "yeastgsdata-0.44.0"

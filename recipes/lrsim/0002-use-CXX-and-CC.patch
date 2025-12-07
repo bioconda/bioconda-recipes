@@ -1,0 +1,167 @@
+From 406353bf60a7306bc33412a2baa3325ec6a5ef45 Mon Sep 17 00:00:00 2001
+From: Ilya Shlyakhter <ilya_shl@alum.mit.edu>
+Date: Thu, 30 Nov 2023 15:49:26 -0500
+Subject: [PATCH 2/2] use CXX and CC
+
+---
+ DWGSIMSrc/Makefile                        | 2 --
+ DWGSIMSrc/samtools/Makefile               | 2 --
+ DWGSIMSrc/samtools/bcftools/Makefile      | 2 --
+ DWGSIMSrc/samtools/misc/Makefile          | 4 ----
+ SURVIVORSrc/Debug/makefile                | 2 +-
+ SURVIVORSrc/Debug/src/convert/subdir.mk   | 2 +-
+ SURVIVORSrc/Debug/src/merge_vcf/subdir.mk | 2 +-
+ SURVIVORSrc/Debug/src/simulator/subdir.mk | 2 +-
+ SURVIVORSrc/Debug/src/subdir.mk           | 2 +-
+ SURVIVORSrc/Debug/src/vcfs/subdir.mk      | 2 +-
+ make.sh                                   | 4 ++--
+ 11 files changed, 8 insertions(+), 18 deletions(-)
+
+diff --git a/DWGSIMSrc/Makefile b/DWGSIMSrc/Makefile
+index 0d5b9ec..bbb7047 100644
+--- a/DWGSIMSrc/Makefile
++++ b/DWGSIMSrc/Makefile
+@@ -1,6 +1,4 @@
+ PACKAGE_VERSION="0.1.11"
+-CC=			gcc
+-CFLAGS=		-g -Wall -O3 #-m64 #-arch ppc
+ DFLAGS=		-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -D_USE_KNETFILE -DPACKAGE_VERSION=\\\"${PACKAGE_VERSION}\\\"
+ DWGSIM_AOBJS = src/dwgsim_opt.o src/mut.o src/contigs.o src/regions_bed.o \
+ 			   src/mut_txt.o src/mut_bed.o src/mut_vcf.o src/mut_input.o src/dwgsim.o
+diff --git a/DWGSIMSrc/samtools/Makefile b/DWGSIMSrc/samtools/Makefile
+index a584c7a..37d5345 100644
+--- a/DWGSIMSrc/samtools/Makefile
++++ b/DWGSIMSrc/samtools/Makefile
+@@ -4,8 +4,6 @@
+ #   make git-stamp
+ VERSION=
+ 
+-CC=			gcc
+-CFLAGS=		-g -Wall $(VERSION) -O2
+ #LDFLAGS=		-Wl,-rpath,\$$ORIGIN/../lib
+ DFLAGS=		-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -D_USE_KNETFILE -D_CURSES_LIB=1
+ KNETFILE_O=	knetfile.o
+diff --git a/DWGSIMSrc/samtools/bcftools/Makefile b/DWGSIMSrc/samtools/bcftools/Makefile
+index be831de..df67d1d 100644
+--- a/DWGSIMSrc/samtools/bcftools/Makefile
++++ b/DWGSIMSrc/samtools/bcftools/Makefile
+@@ -1,5 +1,3 @@
+-CC=			gcc
+-CFLAGS=		-g -Wall -O2 #-m64 #-arch ppc
+ DFLAGS=		-D_FILE_OFFSET_BITS=64 -D_USE_KNETFILE
+ LOBJS=		bcf.o vcf.o bcfutils.o prob1.o em.o kfunc.o kmin.o index.o fet.o mut.o bcf2qcall.o
+ OMISC=		..
+diff --git a/DWGSIMSrc/samtools/misc/Makefile b/DWGSIMSrc/samtools/misc/Makefile
+index d36e7ac..388bfb7 100644
+--- a/DWGSIMSrc/samtools/misc/Makefile
++++ b/DWGSIMSrc/samtools/misc/Makefile
+@@ -1,7 +1,3 @@
+-CC=			gcc
+-CXX=		g++
+-CFLAGS=		-g -Wall -O2 #-m64 #-arch ppc
+-CXXFLAGS=	$(CFLAGS)
+ DFLAGS=		-D_FILE_OFFSET_BITS=64
+ OBJS=		
+ PROG=		md5sum-lite md5fa maq2sam-short maq2sam-long ace2sam wgsim bamcheck
+diff --git a/SURVIVORSrc/Debug/makefile b/SURVIVORSrc/Debug/makefile
+index fb44537..e1fdd42 100644
+--- a/SURVIVORSrc/Debug/makefile
++++ b/SURVIVORSrc/Debug/makefile
+@@ -48,7 +48,7 @@ all: SURVIVOR
+ SURVIVOR: $(OBJS) $(USER_OBJS)
+ 	@echo 'Building target: $@'
+ 	@echo 'Invoking: Cross G++ Linker'
+-	g++  -o "SURVIVOR" $(OBJS) $(USER_OBJS) $(LIBS)
++	${CXX} ${CXXFLAGS}  -o "SURVIVOR" $(OBJS) $(USER_OBJS) $(LIBS)
+ 	@echo 'Finished building target: $@'
+ 	@echo ' '
+ 
+diff --git a/SURVIVORSrc/Debug/src/convert/subdir.mk b/SURVIVORSrc/Debug/src/convert/subdir.mk
+index b4e47c9..dccb68f 100644
+--- a/SURVIVORSrc/Debug/src/convert/subdir.mk
++++ b/SURVIVORSrc/Debug/src/convert/subdir.mk
+@@ -35,7 +35,7 @@ CPP_DEPS += \
+ src/convert/%.o: ../src/convert/%.cpp
+ 	@echo 'Building file: $<'
+ 	@echo 'Invoking: Cross G++ Compiler'
+-	g++ -O3 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
++	${CXX} ${CXXFLAGS} -O3 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+ 	@echo 'Finished building: $<'
+ 	@echo ' '
+ 
+diff --git a/SURVIVORSrc/Debug/src/merge_vcf/subdir.mk b/SURVIVORSrc/Debug/src/merge_vcf/subdir.mk
+index f4d793d..fd27596 100644
+--- a/SURVIVORSrc/Debug/src/merge_vcf/subdir.mk
++++ b/SURVIVORSrc/Debug/src/merge_vcf/subdir.mk
+@@ -20,7 +20,7 @@ CPP_DEPS += \
+ src/merge_vcf/%.o: ../src/merge_vcf/%.cpp
+ 	@echo 'Building file: $<'
+ 	@echo 'Invoking: Cross G++ Compiler'
+-	g++ -O3 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
++	${CXX} ${CXXFLAGS} -O3 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+ 	@echo 'Finished building: $<'
+ 	@echo ' '
+ 
+diff --git a/SURVIVORSrc/Debug/src/simulator/subdir.mk b/SURVIVORSrc/Debug/src/simulator/subdir.mk
+index 8ffd9ec..7f15f88 100644
+--- a/SURVIVORSrc/Debug/src/simulator/subdir.mk
++++ b/SURVIVORSrc/Debug/src/simulator/subdir.mk
+@@ -23,7 +23,7 @@ CPP_DEPS += \
+ src/simulator/%.o: ../src/simulator/%.cpp
+ 	@echo 'Building file: $<'
+ 	@echo 'Invoking: Cross G++ Compiler'
+-	g++ -O3 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
++	${CXX} ${CXXFLAGS} -O3 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+ 	@echo 'Finished building: $<'
+ 	@echo ' '
+ 
+diff --git a/SURVIVORSrc/Debug/src/subdir.mk b/SURVIVORSrc/Debug/src/subdir.mk
+index 24863c4..5a4bdf2 100644
+--- a/SURVIVORSrc/Debug/src/subdir.mk
++++ b/SURVIVORSrc/Debug/src/subdir.mk
+@@ -29,7 +29,7 @@ CPP_DEPS += \
+ src/%.o: ../src/%.cpp
+ 	@echo 'Building file: $<'
+ 	@echo 'Invoking: Cross G++ Compiler'
+-	g++ -O3 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
++	${CXX} ${CXXFLAGS} -O3 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+ 	@echo 'Finished building: $<'
+ 	@echo ' '
+ 
+diff --git a/SURVIVORSrc/Debug/src/vcfs/subdir.mk b/SURVIVORSrc/Debug/src/vcfs/subdir.mk
+index 6d434f7..d76422f 100644
+--- a/SURVIVORSrc/Debug/src/vcfs/subdir.mk
++++ b/SURVIVORSrc/Debug/src/vcfs/subdir.mk
+@@ -29,7 +29,7 @@ CPP_DEPS += \
+ src/vcfs/%.o: ../src/vcfs/%.cpp
+ 	@echo 'Building file: $<'
+ 	@echo 'Invoking: Cross G++ Compiler'
+-	g++ -O3 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
++	${CXX} -O3 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+ 	@echo 'Finished building: $<'
+ 	@echo ' '
+ 
+diff --git a/make.sh b/make.sh
+index eff30bb..186da1f 100755
+--- a/make.sh
++++ b/make.sh
+@@ -1,6 +1,6 @@
+ set -e
+ 
+-g++ extractReads.cpp -O3 -o extractReads
++${CXX} extractReads.cpp -O3 -o extractReads
+ 
+ cd DWGSIMSrc
+ make -j
+@@ -9,7 +9,7 @@ cp -f ./samtools/samtools ../
+ cd ../
+ 
+ cd msortSrc
+-g++ msort.c sort_funs.c stdhashc.cc -lm -m64 -fpermissive -o msort
++${CXX} msort.c sort_funs.c stdhashc.cc -lm -m64 -fpermissive -o msort
+ cp -f msort ../
+ cd ../
+ 
+-- 
+2.43.0
+

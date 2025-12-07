@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "golubesets-1.40.0"
+installBiocDataPackage.sh "golubesets-1.48.0"

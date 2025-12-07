@@ -1,41 +1,43 @@
-{% set version = "1.24.0" %}
+{% set version = "1.32.0" %}
 {% set name = "KOdata" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 56dcc1dbb530d00179ddc5494dbd92a3
+about:
+  description: Contains consensus genomic signatures (CGS) for experimental cell-line specific gene knock-outs as well as baseline gene expression data for a subset of experimental cell-lines. Intended for use with package KEGGlincs.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: LINCS Knock-Out Data Package
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-kodata", max_pin="x.x") }}'
+extra:
+  parent_recipe:
+    name: bioconductor-kodata
+    path: recipes/bioconductor-kodata
+    version: 1.6.0
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 requirements:
   host:
     - r-base
   run:
     - r-base
     - curl
-    - bioconductor-data-packages>=20221110
+    - bioconductor-data-packages >=20241103
+source:
+  md5: b31e70b88fa60ec9a64d94fe6b2b487e
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'LINCS Knock-Out Data Package'
-  description: 'Contains consensus genomic signatures (CGS) for experimental cell-line specific gene knock-outs as well as baseline gene expression data for a subset of experimental cell-lines. Intended for use with package KEGGlincs.'
-  license_file: LICENSE
-extra:
-  parent_recipe:
-    name: bioconductor-kodata
-    path: recipes/bioconductor-kodata
-    version: 1.6.0
+    - $R -e "library('{{ name }}')"
 

@@ -1,6 +1,6 @@
 {% set name = "qtlseq" %}
-{% set version = "2.2.3" %}
-{% set sha256 = "fb6e641f100316cd178254fc1f196cc5dd7bbebb18f2997c29cd896a997227d1" %}
+{% set version = "2.2.9" %}
+{% set sha256 = "aca1cecb48f0b9bcec4f77bb7a6ab07f7f687a924a58d7a7f81c460aa3abcd9e" %}
 
 package:
   name: {{ name|lower }}
@@ -11,14 +11,20 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
   noarch: python
   number: 0
+  entry_points:
+    - qtlseq = qtlseq.qtlseq:main
+    - qtlplot = qtlseq.qtlplot:main
+  run_exports:
+    - {{ pin_subpackage('qtlseq', max_pin="x") }}
 
 requirements:
   host:
     - python >=3.5
     - pip
+    - setuptools
   run:
     - python >=3.5
     - samtools >=1.7
@@ -30,7 +36,7 @@ requirements:
     - matplotlib-base
     - numpy
     - pandas
-    - seaborn
+    - seaborn-base
 
 test:
   commands:
@@ -39,9 +45,10 @@ test:
 
 about:
   home: https://github.com/YuSugihara/QTL-seq
-  summary: 'QTL-seq: pipeline to identify causative mutations responsible for a phenotype'
+  summary: 'QTL-seq: pipeline to identify causative mutations responsible for a phenotype.'
   license: 'GPL-3.0-or-later'
-  license_family: GPL
+  license_family: GPL3
+  dev_url: https://github.com/YuSugihara/QTL-seq
 
 extra:
   identifiers:

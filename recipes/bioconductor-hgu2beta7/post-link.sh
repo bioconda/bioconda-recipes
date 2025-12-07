@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "hgu2beta7-1.37.0"
+installBiocDataPackage.sh "hgu2beta7-1.46.0"

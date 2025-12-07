@@ -1,6 +1,6 @@
 {% set name = "pecat" %}
-{% set version = "0.0.2" %}
-{% set sha256 = "e88f1e9be1de6f8c90ffb2309d8e271b541191f5d1fa5482aab48e6d5e626cbb" %}
+{% set version = "0.0.3" %}
+{% set sha256 = "e7a1165f5602ace31bf77a852a7b26fd640ddf0a5a55670ee6e1fb8788be2fc3" %}
 
 package:
   name: {{ name }}
@@ -9,10 +9,14 @@ package:
 source:
   url: https://github.com/lemene/PECAT/releases/download/v{{ version }}/pecat_source_v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-makefile.patch
 
 build:
-  number: 1
-  skip: True # [osx]
+  number: 2
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
@@ -33,7 +37,17 @@ test:
     - pecat.pl | grep 'unzip'
 
 about:
-  home: https://github.com/lemene/PECAT
-  license: BSD-2-Clause
+  home: "https://github.com/lemene/PECAT"
+  license: "BSD-2-Clause"
+  license_family: BSD
   license_file: LICENSE
-  summary: A phased error correction and assembly tool
+  summary: "A phased error correction and assembly tool."
+  dev_url: "https://github.com/lemene/PECAT"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:pecat
+    - doi:10.1038/s41467-024-47349-7

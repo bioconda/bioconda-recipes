@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "mcseadata-1.18.0"
+installBiocDataPackage.sh "mcseadata-1.26.1"

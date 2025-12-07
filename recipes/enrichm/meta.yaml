@@ -1,40 +1,45 @@
 {% set name = "enrichm" %}
-{% set version = "0.6.5" %}
+{% set version = "0.6.6" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 4eccab060cd79450304b018dd1e1e0f10f25c986a23beaccbfe235c1ac1c3e80
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 50334674527019944ffbda48ec5845cb2774d8d2d4df1c24646074064813a8cf
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv --ignore-installed --no-deps"
+  script: {{ PYTHON }} -m pip install . -vvv --no-build-isolation --no-deps --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
     - pip
     - nose >=1.0
     - python >=3.6
+    - setuptools
   run:
     - biopython >=1.66
+    - fuzzywuzzy >=0.18.0
     - numpy >=1.9.1
     - pandas >=0.17.1
     - python >=3.6
-    - python-dateutil >=2.5.1
+    - python-dateutil >=2.8.0
     - scikit-learn
     - scipy >=0.17.0
     - six >=1.10.0
     - statsmodels >=0.8.0rc1
+    - tempdir >=0.7.1
     - mcl >=14.137
     - hmmer >=3.1b
-    - diamond ==0.9.22
+    - diamond
     - prodigal >=2.6.3
     - parallel >=20180222
-    - openmp
+    - openmpi
     - mmseqs2 >=2.23394
     - moreutils
     - seqmagick
@@ -48,7 +53,8 @@ test:
 
 about:
   home: "https://github.com/geronimp/enrichM"
-  license: GPL3+
+  license: "GPL-3.0-or-later"
   license_family: GPL3
-  license_file: LICENCE.txt
-  summary: "EnrichM is a toolbox for comparing the functional composition of population genomes"
+  license_file: "LICENCE.txt"
+  summary: "EnrichM is a toolbox for comparing the functional composition of population genomes."
+  dev_url: "https://github.com/geronimp/enrichM"

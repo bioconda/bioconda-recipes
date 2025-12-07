@@ -1,12 +1,15 @@
 #!/bin/bash
 
-export C_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
+export CFLAGS="${CFLAGS} -g -Wall -Wno-unused-function -O3"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-make CFLAGS="${CFLAGS} -fcommon"
-mkdir -p $PREFIX/bin
-mkdir -p $PREFIX/share/man/man1
-cp bwa $PREFIX/bin
-cp xa2multi.pl $PREFIX/bin
-cp qualfa2fq.pl $PREFIX/bin
-cp bwa.1 $PREFIX/share/man/man1
+mkdir -p "${PREFIX}/bin"
+mkdir -p "${PREFIX}/share/man/man1"
+
+make CC="${CC}" CFLAGS="${CFLAGS}" \
+	CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" \
+	-j"${CPU_COUNT}"
+
+install -v -m 0755 bwa xa2multi.pl qualfa2fq.pl "${PREFIX}/bin"
+install -v -m 0755 bwa.1 "${PREFIX}/share/man/man1"
