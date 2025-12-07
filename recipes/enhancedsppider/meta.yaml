@@ -1,71 +1,51 @@
-  {% set name = "enhancedsppider" %}
-  {% set version = "0.2.0" %}
+{% set name = "enhancedsppider" %}
+{% set version = "0.2.0" %}
 
-  package:
-    name: {{ name|lower }}
-    version: {{ version }}
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
 
-  source:
-    url: https://github.com/JohnnyChen1113/EnhancedSppIDer/archive/v{{ version }}.tar.gz
-    sha256: a550718ce0cb36f3b7fb4f8208a3d68767b9c35b7c46ac800211b6197d7966bd 
+source:
+  url: https://github.com/JohnnyChen1113/EnhancedSppIDer/archive/v{{ version }}.tar.gz
+  sha256: a550718ce0cb36f3b7fb4f8208a3d68767b9c35b7c46ac800211b6197d7966bd
 
-  build:
-    number: 0
-    noarch: python
-    script: |
-      mkdir -p $PREFIX/bin
-      mkdir -p $PREFIX/share/enhancedsppider/scripts
-      cp -r scripts/* $PREFIX/share/enhancedsppider/scripts/
-      # Create an entry script
-      cat > $PREFIX/bin/sppIDer << 'EOF'
-      #!/bin/bash
-      python $CONDA_PREFIX/share/enhancedsppider/scripts/sppIDer.py "$@"
-      EOF
-      chmod +x $PREFIX/bin/sppIDer
-      cat > $PREFIX/bin/combineRefGenomes << 'EOF'
-      #!/bin/bash
-      python $CONDA_PREFIX/share/enhancedsppider/scripts/combineRefGenomes.py "$@"
-      EOF
-      chmod +x $PREFIX/bin/combineRefGenomes
-      cat > $PREFIX/bin/extractReadsBySpecies << 'EOF'
-      #!/bin/bash
-      python $CONDA_PREFIX/share/enhancedsppider/scripts/extractReadsBySpecies.py "$@"
-      EOF
-      chmod +x $PREFIX/bin/extractReadsBySpecies
-    run_exports:
-      - {{ pin_subpackage(name, max_pin="x.x") }}
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
-  requirements:
-    host:
-      - python >=3.8
-    run:
-      - python >=3.8
-      - biopython
-      - bwa
-      - samtools
-      - bedtools
-      - seqtk
-      - r-base
-      - r-ggplot2
-      - r-dplyr
+requirements:
+  host:
+    - python >=3.8
+  run:
+    - python >=3.8
+    - biopython
+    - bwa
+    - samtools
+    - bedtools
+    - seqtk
+    - r-base
+    - r-ggplot2
+    - r-dplyr
 
-  test:
-    commands:
-      - sppIDer --version
-      - combineRefGenomes --version
-      - extractReadsBySpecies --version
+test:
+  commands:
+    - sppIDer --version
+    - combineRefGenomes --version
+    - extractReadsBySpecies --version
 
-  about:
-    home: https://github.com/JohnnyChen1113/EnhancedSppIDer
-    license: MIT
-    license_family: MIT
-    license_file: LICENSE
-    summary: Enhanced sppIDer for species identification from sequencing data
-    description: |
-      EnhancedSppIDer is a bioinformatics pipeline for species identification 
-      and read extraction from Illumina, PacBio, and Oxford Nanopore sequencing data.
-    dev_url: https://github.com/JohnnyChen1113/EnhancedSppIDer
+about:
+  home: https://github.com/JohnnyChen1113/EnhancedSppIDer
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Enhanced sppIDer for species identification from sequencing data
+  description: |
+    EnhancedSppIDer is a bioinformatics pipeline for species identification 
+    and read extraction from Illumina, PacBio, and Oxford Nanopore sequencing data.
+  dev_url: https://github.com/JohnnyChen1113/EnhancedSppIDer
 
-  extra:
-    recipe-maintainers:
-      - JohnnyChen1113
+extra:
+  recipe-maintainers:
+    - JohnnyChen1113
