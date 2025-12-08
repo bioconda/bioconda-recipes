@@ -50,7 +50,7 @@ if [ "${BUILD_VFD_GDS:-0}" = "1" ]; then
     -DBUILD_TESTING=OFF \
     -DHDF5_ROOT=${PREFIX} \
     -DHDF5_VFD_GDS_CUFILE_DIR=${PREFIX} \
-    -DHDF5_VFD_GDS_CUFILE_LIB=libcufile
+    -DHDF5_VFD_GDS_CUFILE_LIB=${PREFIX}/lib/libcufile.so
   make -j${CPU_COUNT}
   make install
   mkdir -p ${PREFIX}/lib/hdf5/plugin

@@ -84,7 +84,7 @@ requirements:
     {% if mpi_name != "mvapich" %}
     - esme_omb_{{ mpi_pkg_suffix }}
     {% endif %}
-    - bioconda::perl-xml-libxml
+    - perl-xml-libxml
     - python=3.8
 
 test:
@@ -117,7 +117,9 @@ test:
 
     # VFD-GDS test (MVAPICH-only)
     {% if mpi_name == "mvapich" %}
-    - test -f $PREFIX/lib/hdf5/plugin/libhdf5_vfd_gds.so
+    - echo "CONDA_PREFIX = $CONDA_PREFIX"
+    - ls -la "$CONDA_PREFIX/lib/hdf5/plugin/"
+    - test -f "$CONDA_PREFIX/lib/hdf5/plugin/libhdf5_vfd_gds.so"
     {% endif %}
 
     # OMB test
@@ -172,7 +174,7 @@ outputs:
         - make
         {% if mpi_name == "mvapich" %}
         - cmake >=3.18
-        - cufile-cu12=3.4.1 nvidia/label/cuda-12.6.0
+        - libcufile-dev
         {% endif %}
       host:
         - libaec
@@ -181,14 +183,14 @@ outputs:
         - zlib
         {% if mpi_name == "mvapich" %}
         - cuda-toolkit {{ cuda_version }}.*
-        - libcufile-dev nvidia/label/cuda-12.6.0
+        - libcufile-dev
         {% endif %}
       run:
         - libaec
         - zlib
         {% if mpi_name == "mvapich" %}
         - cuda-toolkit {{ cuda_version }}.*
-        - libcufile nvidia/label/cuda-12.6.0
+        - libcufile
         {% endif %}
     build:
       string: h{{ PKG_HASH }}_{{ build }}
