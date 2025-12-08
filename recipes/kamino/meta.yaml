@@ -1,0 +1,43 @@
+{% set name = "kamino" %}
+{% set version = "0.2.1" %}
+
+package:
+  name: {{ name|lower}}
+  version: {{ version }}
+
+source:
+  url: https://github.com/rderelle/kamino/archive/{{ version }}.tar.gz
+  sha256: 84c416bc600d84225c35e313b54a7006bd27a19475f5dd498dd9cfc085d8ea51
+
+build:
+  number: 0
+  script:
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - export export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - "RUST_BACKTRACE=1 cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - kamino -h
+
+about:
+   home: "https://github.com/rderelle/kamino"
+   license: MIT
+   license_family: MIT
+   license_file: LICENSE
+   summary: "Tool for building phylogenomic datasets quickly and reproducibly."
+   dev_url: "https://github.com/rderelle/kamino"
+   doc_url: "https://github.com/rderelle/kamino/blob/{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
