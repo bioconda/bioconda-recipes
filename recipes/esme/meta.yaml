@@ -79,10 +79,10 @@ source:
 requirements:
   run:
     - cmake
-    - esme_esmf_{{ mpi_pkg_suffix }} =={{ esmf_version }}
+    - esme_esmf_{{ mpi_pkg_suffix }}
     - make
     {% if mpi_name != "mvapich" %}
-    - esme_omb_{{ mpi_pkg_suffix }} =={{ omb_version }}
+    - esme_omb_{{ mpi_pkg_suffix }}
     {% endif %}
     - perl-xml-libxml
     - python=3.8
@@ -223,6 +223,9 @@ outputs:
         - {{ mpi_spec }}
         - esme_pnetcdf_{{ mpi_pkg_suffix }}
         - zlib
+      run:
+        - esme_hdf5_{{ mpi_pkg_suffix }}  
+        - esme_pnetcdf_{{ mpi_pkg_suffix }} 
     build:
       string: h{{ PKG_HASH }}_{{ build }}
     about:
@@ -247,6 +250,10 @@ outputs:
       host:
         - esme_hdf5_{{ mpi_pkg_suffix }}
         - {{ mpi_spec }}
+        - esme_netcdf-c_{{ mpi_pkg_suffix }}
+        - esme_pnetcdf_{{ mpi_pkg_suffix }}
+      run:
+        - esme_hdf5_{{ mpi_pkg_suffix }} 
         - esme_netcdf-c_{{ mpi_pkg_suffix }}
         - esme_pnetcdf_{{ mpi_pkg_suffix }}
     build:
@@ -275,6 +282,12 @@ outputs:
         - m4
         - pkg-config
       host:
+        - esme_hdf5_{{ mpi_pkg_suffix }}
+        - {{ mpi_spec }}
+        - esme_netcdf-c_{{ mpi_pkg_suffix }}
+        - esme_netcdf-fortran_{{ mpi_pkg_suffix }}
+        - esme_pnetcdf_{{ mpi_pkg_suffix }}
+      run:
         - esme_hdf5_{{ mpi_pkg_suffix }}
         - {{ mpi_spec }}
         - esme_netcdf-c_{{ mpi_pkg_suffix }}
@@ -353,11 +366,6 @@ outputs:
       description: |
         The OSU Micro Benchmarks (OMB) is a suite of performance measurement tools developed by The Ohio State University.
   {% endif %}
-
-  - name: esme_{{ mpi_pkg_suffix }}
-    version: {{ esme_version }}
-    build:
-      noarch: generic
 
 about:
   home: "https://github.com/j34ni/bioconda-recipes"
