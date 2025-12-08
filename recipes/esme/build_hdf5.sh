@@ -48,9 +48,11 @@ if [ "${BUILD_VFD_GDS:-0}" = "1" ]; then
     -DCMAKE_PREFIX_PATH=${PREFIX} \
     -DBUILD_EXAMPLES=OFF \
     -DBUILD_TESTING=OFF \
-    -DHDF5_ROOT=${PREFIX}
+    -DHDF5_ROOT=${PREFIX} \
+    -DHDF5_VFD_GDS_CUFILE_DIR=${PREFIX} \
+    -DHDF5_VFD_GDS_CUFILE_LIB=libcufile
   make -j${CPU_COUNT}
   make install
   mkdir -p ${PREFIX}/lib/hdf5/plugin
-  cp libhdf5_vfd_gds.so* ${PREFIX}/lib/hdf5/plugin/ || true
+  cp libhdf5_vfd_gds.so* ${PREFIX}/lib/hdf5/plugin/
 fi
