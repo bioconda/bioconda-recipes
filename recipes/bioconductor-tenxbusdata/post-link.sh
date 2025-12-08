@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "tenxbusdata-1.12.0"
+installBiocDataPackage.sh "tenxbusdata-1.20.0"

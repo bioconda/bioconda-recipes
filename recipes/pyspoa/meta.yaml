@@ -1,34 +1,34 @@
 {% set name = "pyspoa" %}
-{% set version = "0.0.9" %}
-{% set sha256 = "30b883b8dfc2355a6062f9f848e825f7ffac169657190d797cf17b4314d588fe" %}
+{% set version = "0.3.1" %}
+{% set sha256 = "4c198cb67a69792b0bb272bbf9397e078d764a4995c0e351b947ede95b53ffa2" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-- url: https://github.com/nanoporetech/pyspoa/archive/refs/tags/v{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pyspoa-{{ version }}.tar.gz
   sha256: {{ sha256 }}
-- url: https://github.com/rvaser/spoa/archive/refs/tags/4.0.8.tar.gz
-  sha256: 3fc7e837b1052bd470924e37e0ed9531e7c839cd14b400573171d3d46d3ed9cd
-  folder: src
 
 build:
   number: 0
   skip: True  # [py < 38]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('pyspoa', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - make
-    - cmake
+    - cmake <4
+    - pkg-config
   host:
     - python
     - pip
-    - setuptools
-    - wheel
     - pybind11
     - scikit-build
+    - zlib
   run:
     - python
 
@@ -37,14 +37,18 @@ test:
     - spoa
 
 about:
-  home: https://github.com/nanoporetech/pyspoa
+  home: "https://github.com/nanoporetech/pyspoa"
   license: MIT
-  license_file: LICENSE
-  summary: Python binding to spoa library.
-  doc_url: https://github.com/nanoporetech/spoa
-  dev_url: https://github.com/nanoporetech/spoa
+  license_family: MIT
+  license_file: "src/LICENSE"
+  summary: "Python binding to spoa library."
+  doc_url: "https://github.com/nanoporetech/spoa"
+  dev_url: "https://github.com/nanoporetech/pyspoa/blob/v{{ version }}/README.md"
 
 extra:
   recipe-maintainers:
     - cjw85
     - iiSeymour
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

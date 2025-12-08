@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "msdata-0.37.0"
+installBiocDataPackage.sh "msdata-0.46.0"

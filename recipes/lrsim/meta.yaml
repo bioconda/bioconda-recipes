@@ -1,0 +1,68 @@
+{% set name = "LRSIM" %}
+{% set version = "1.0" %}
+{% set sha256 = "89623fba2ce624da4e2c8ce8a99b1a46eb3bc03a8c38044c64f4b8a0d0d9721e" %}
+
+package:
+  name: {{ name | lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/aquaskyline/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0002-use-CXX-and-CC.patch
+    - 0003-use-ncurses.patch
+    - 0004-add-LDFLAGS.patch
+    - 0005-fix-perl-loc.patch
+
+build:
+  number: 1
+  skip: True  # [not linux]
+  run_exports:
+    - {{ pin_subpackage(name | lower, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - perl
+    - perl-inline
+    - perl-inline-c
+    - perl-math-random
+  host:
+    - gsl
+    - htslib
+    - ncurses
+    - perl
+    - perl-inline
+    - perl-inline-c
+    - perl-math-random
+    - pthread-stubs
+    - zlib
+  run:
+    - perl
+    - perl-inline
+    - perl-inline-c
+    - perl-math-random
+
+test:
+  commands:
+    - "lrsim 2>&1 | grep 'Usage'"
+    - "lrsim 2>&1 | grep 'simulateLinkedReads.pl'"
+
+about:
+  home: https://github.com/aquaskyline/{{ name }}
+  license: MIT
+  license_file: LICENSE
+  summary: "Simulator for 10X Genomics Linked Reads"
+
+extra:
+  recipe-maintainers:
+    - notestaff
+    - aquaskyline
+  identifiers:
+    - doi:10.1016/j.csbj.2017.10.002
+    - doi:10.5281/zenodo.808913

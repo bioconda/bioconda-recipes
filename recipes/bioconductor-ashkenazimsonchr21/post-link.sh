@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "ashkenazimsonchr21-1.28.0"
+installBiocDataPackage.sh "ashkenazimsonchr21-1.36.0"

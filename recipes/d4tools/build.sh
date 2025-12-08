@@ -1,11 +1,13 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 
-set -x
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
 
-# TODO: Remove the following export when pinning is updated and we use
-#       {{ compiler('rust') }} in the recipe.
-export \
-    CARGO_NET_GIT_FETCH_WITH_CLI=true \
-    CARGO_HOME="${BUILD_PREFIX}/.cargo"
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
-cargo install --verbose --path=d4tools --root ${PREFIX}
+cp -f ${RECIPE_DIR}/build_htslib.sh d4-hts/build_htslib.sh
+
+# build statically linked binary with Rust
+RUST_BACKTRACE=1
+cargo install --verbose --no-track --path d4tools --root "${PREFIX}"

@@ -1,39 +1,41 @@
-{% set version = "1.36.0" %}
+{% set version = "1.44.0" %}
 {% set name = "fabiaData" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 063160c25a97654ba5788619287688f3
+about:
+  description: 'Supplying gene expression data sets for the demos of the biclustering method "Factor Analysis for Bicluster Acquisition" (FABIA). The following three data sets are provided: A) breast cancer (van''t Veer, Nature, 2002), B) multiple tissues (Su, PNAS, 2002), and C) diffuse large-B-cell lymphoma (Rosenwald, N Engl J Med, 2002).'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: LGPL (>= 2.1)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: Data sets for FABIA (Factor Analysis for Bicluster Acquisition)
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-fabiadata", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: fabia
 requirements:
   host:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
     - r-base
   run:
-    - 'bioconductor-biobase >=2.58.0,<2.59.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221104
+    - bioconductor-data-packages >=20241103
+source:
+  md5: eda95b365fa1731facc3828ef343e176
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: 'LGPL (>= 2.1)'
-  summary: 'Data sets for FABIA (Factor Analysis for Bicluster Acquisition)'
-  description: 'Supplying gene expression data sets for the demos of the biclustering method "Factor Analysis for Bicluster Acquisition" (FABIA). The following three data sets are provided: A) breast cancer (van''t Veer, Nature, 2002), B) multiple tissues (Su, PNAS, 2002), and C) diffuse large-B-cell lymphoma (Rosenwald, N Engl J Med, 2002).'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+    - $R -e "library('{{ name }}')"
 

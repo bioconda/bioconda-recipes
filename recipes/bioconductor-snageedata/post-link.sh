@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "snageedata-1.33.0"
+installBiocDataPackage.sh "snageedata-1.42.0"

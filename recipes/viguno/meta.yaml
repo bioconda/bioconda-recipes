@@ -1,5 +1,5 @@
-{% set version = "0.1.6" %}
-{% set sha256 = "c4696ba9dab271216b80c560f78cddf8e0010474b7d7b8b6c717e666fd13cebd" %}
+{% set version = "0.4.0" %}
+{% set sha256 = "459895be75bdf7982998dd9eca20a2c87feafe10a05794ea24e35badb4a1fbcd" %}
 
 package:
   name: viguno
@@ -8,9 +8,11 @@ package:
 build:
   skip: True  # [osx]
   number: 0
+  run_exports:
+    - {{ pin_subpackage("viguno", max_pin="x.x") }}
 
 source:
-  url: https://github.com/bihealth/viguno/archive/v{{ version }}.tar.gz
+  url: https://github.com/varfish-org/viguno/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 requirements:
@@ -19,15 +21,17 @@ requirements:
     - {{ compiler('cxx') }}
     - {{ compiler('rust') }}
     - cmake
-    - protobuf
     - make
+    - cargo-bundle-licenses
     - pkg-config
-    - rust >=1.64
   host:
     - clangdev
+    - llvmlite
     - openssl
-    - sqlite
+    - protobuf
+    - libprotobuf
     - zlib
+    - sqlite
   run:
     - sqlite
 
@@ -36,6 +40,12 @@ test:
     - viguno -h
 
 about:
-  home: https://github.com/bihealth/viguno
+  home: https://github.com/bihealth/varfish-org
   license: MIT
-  summary: Lookup OMIM genes and HPO terms and compute similarities
+  license_family: MIT
+  summary: "Lookup OMIM genes and HPO terms and compute similarities."
+  dev_url: https://github.com/bihealth/varfish-org
+
+extra:
+  additional-platforms:
+    - linux-aarch64

@@ -1,6 +1,6 @@
 {% set name = "MakeHub" %}
-{% set version = "1.0.7" %}
-{% set sha256 = "a720fd4462af3e36bdaf5372245112af85795511954ca7d6e58e42f6a2b2df74" %}
+{% set version = "1.0.8" %}
+{% set sha256 = "0b4c2ccba430139b09ffa9c07205496f1d548bc8b2d51c0691e5024031147407" %}
 
 package:
   name: {{ name|lower }}
@@ -9,13 +9,15 @@ package:
 source:
   url: https://github.com/Gaius-Augustus/MakeHub/archive/refs/tags/{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patch:
+  patches:
     - patch
 
 build:
-  number: 0
+  number: 1
   noarch: generic
-  script: "mkdir -p ${PREFIX}/bin; chmod +x make_hub.py; cp make_hub.py ${PREFIX}/bin/"
+  script: "mkdir -p ${PREFIX}/bin; chmod +x make_hub.py; cp -rf make_hub.py ${PREFIX}/bin"
+  run_exports:
+    - {{ pin_subpackage('makehub', max_pin="x") }}
 
 requirements:
   run:
@@ -40,7 +42,9 @@ test:
 
 about:
   home: "https://github.com/Gaius-Augustus/MakeHub"
-  license: GPL-3.0
+  license: GPL-3.0-or-later
   license_family: GPL
   license_file: LICENSE
   summary: "MakeHub is a command line tool for the fully automatic generation of of track data hubs for visualizing genomes with the UCSC genome browser."
+  dev_url: "https://github.com/Gaius-Augustus/MakeHub"
+  doc_url: "https://github.com/Gaius-Augustus/MakeHub/blob/{{ version }}/README.md"

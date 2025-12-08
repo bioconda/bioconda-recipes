@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "rnaseqdata.hnrnpc.bam.chr14-0.35.0"
+installBiocDataPackage.sh "rnaseqdata.hnrnpc.bam.chr14-0.44.0"

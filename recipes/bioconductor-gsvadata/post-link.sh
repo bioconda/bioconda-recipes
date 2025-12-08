@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "gsvadata-1.34.0"
+installBiocDataPackage.sh "gsvadata-1.42.0"

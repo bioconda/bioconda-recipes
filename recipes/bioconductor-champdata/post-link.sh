@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "champdata-2.30.0"
+installBiocDataPackage.sh "champdata-2.38.0"

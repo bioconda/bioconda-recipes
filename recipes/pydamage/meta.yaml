@@ -1,6 +1,5 @@
 {% set name = "pydamage" %}
-{% set version = "0.70" %}
-
+{% set version = "1.0" %}
 
 package:
   name: {{ name|lower }}
@@ -8,19 +7,22 @@ package:
 
 source:
   url: https://github.com/maxibor/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
-  sha256: f06d76686cfd86e048a7663d3da460ad2cfccc899909f7a77e5aed307622f5d9
+  sha256: 6f8882f41cf9e8bb6c27257cfcd13aa7a46c84e3862cfaa75070b039de46a5cf
 
 build:
-  number: 1
+  number: 0
   noarch: python
   entry_points:
     - pydamage = pydamage.cli:cli
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
 
 requirements:
   host:
     - pip
-    - python >=3.6
+    - python >=3.10
+    - setuptools
   run:
     - biopython
     - click
@@ -29,25 +31,25 @@ requirements:
     - numpy
     - pandas
     - pysam >=0.13.0
-    - python >=3.6
+    - python >=3.10
     - scipy
     - statsmodels
     - tqdm
+    - numba
 
 test:
   imports:
     - pydamage
   commands:
-    - pip check
     - pydamage --help
-  requires:
-    - pip
 
 about:
   home: https://github.com/maxibor/pydamage
-  summary: Damage parameter estimation for ancient DNA
-  license: GPL-3.0
+  summary: "Damage parameter estimation for ancient DNA."
+  license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: LICENSE
+  dev_url: https://github.com/maxibor/pydamage
 
 extra:
   recipe-maintainers:

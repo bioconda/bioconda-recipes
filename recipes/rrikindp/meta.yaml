@@ -1,0 +1,66 @@
+ 
+{% set name = "RRIkinDP" %}
+{% set version = "0.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/mwaldl/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 3bdaa7657224b90945d864d0238010cf3337975f58c41106ab60427dd52bc93f
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('rrikindp', max_pin="x.x,x") }}
+
+requirements:
+  build:
+    - python
+    - pip
+    - make
+    - pybind11
+    - {{ compiler('cxx') }}
+  host:
+    - pybind11
+    - python
+    - boost-cpp
+    - viennarna >=2.6.0
+    - intarna
+    - llvm-openmp
+  run:
+    - boost-cpp
+    - llvm-openmp
+    - python >=3.6
+    - intarna
+    - viennarna >=2.6.0
+    - matplotlib-base >=3.7.0
+    - seaborn >=0.12.0
+    - pandas >=2.0.0
+
+test:
+  commands:
+    - RRIkinDP --version
+  imports:
+    - rrikindp
+
+about:
+  home: "https://github.com/mwaldl/RRIkinDP"
+  license: "GPL-3.0-only"
+  license_family: GPL
+  license_file: COPYING
+  summary: 'Evaluation of thermodynamic and kinetic features of RNA-RNA interactions.'
+  description: |
+    RRIkinDP evaluated thermodynamic and kinetic features of RNA-RNA interactions. As input, two RNA
+    sequences as well as their interaction structure is provided. The tool generates the state space of
+    all intermediate interactions from single base pair interactions to the full input interaction.
+    On top of this state space it computes the barrier energy for the best direct path from a given
+    start interaction to the full input interaction.
+  doc_url: https://doi.org/10.1101/2023.07.28.548983
+  dev_url: https://github.com/mwaldl/RRIkinDP
+
+extra:
+  recipe-maintainers:
+    - mwaldl
+    - s-will

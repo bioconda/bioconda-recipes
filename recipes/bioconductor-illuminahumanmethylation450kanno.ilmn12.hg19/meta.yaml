@@ -1,42 +1,44 @@
 {% set version = "0.6.1" %}
 {% set name = "IlluminaHumanMethylation450kanno.ilmn12.hg19" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: aeafc54d887b128ed265fa704a3efa42
+about:
+  description: Manifests and annotation for Illumina's 450k array data.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Annotation for Illumina's 450k methylation arrays
 build:
-  number: 0
+  noarch: generic
+  number: 3
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-requirements:
-  host:
-    - 'bioconductor-minfi >=1.44.0,<1.45.0'
-    - r-base
-  run:
-    - 'bioconductor-minfi >=1.44.0,<1.45.0'
-    - r-base
-    - curl
-    - bioconductor-data-packages>=20221103
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Annotation for Illumina''s 450k methylation arrays'
-  description: 'Manifests and annotation for Illumina''s 450k array data.'
+  run_exports: '{{ pin_subpackage("bioconductor-illuminahumanmethylation450kanno.ilmn12.hg19", max_pin="x.x") }}'
 extra:
   parent_recipe:
     name: bioconductor-illuminahumanmethylation450kanno.ilmn12.hg19
     path: recipes/bioconductor-illuminahumanmethylation450kanno.ilmn12.hg19
     version: 0.6.0
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+requirements:
+  host:
+    - bioconductor-minfi >=1.52.0,<1.53.0
+    - r-base
+  run:
+    - bioconductor-minfi >=1.52.0,<1.53.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20241103
+source:
+  md5: aeafc54d887b128ed265fa704a3efa42
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

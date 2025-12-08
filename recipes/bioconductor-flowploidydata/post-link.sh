@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "flowploidydata-1.23.0"
+installBiocDataPackage.sh "flowploidydata-1.32.0"

@@ -1,7 +1,10 @@
 #!/bin/bash -euo
 
-RUST_BACKTRACE=1 CARGO_HOME="${BUILD_PREFIX}/.cargo" cargo build --release
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
 
 mkdir -p $PREFIX/bin
-cp target/release/panacus $PREFIX/bin 
-cp scripts/panacus-visualize.py $PREFIX/bin/panacus-visualize
+
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+RUST_BACKTRACE=1 cargo install --no-track --verbose --root "${PREFIX}" --path .
+
+cp -rf scripts/panacus-visualize.py $PREFIX/bin/panacus-visualize

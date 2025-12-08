@@ -1,37 +1,39 @@
 {% set version = "1.5.0" %}
 {% set name = "BSgenome.Hsapiens.NCBI.T2T.CHM13v2.0" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 22a99174e1e17718e0b4f8b66f32fd9b
+about:
+  description: 'The T2T-CHM13v2.0 assembly (accession GCA_009914755.4), as submitted to NCBI by the T2T Consortium, and wrapped in a BSgenome object. Companion paper: "The complete sequence of a human genome" by Nurk S, Koren S, Rhie A, Rautiainen M, et al. Science, 2022.'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: T2T-CHM13v2.0 assembly (Homo sapiens) wrapped in a BSgenome object
 build:
-  number: 0
+  noarch: generic
+  number: 3
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-bsgenome.hsapiens.ncbi.t2t.chm13v2.0", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 requirements:
   host:
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
     - r-base
   run:
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221102
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 22a99174e1e17718e0b4f8b66f32fd9b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'T2T-CHM13v2.0 assembly (Homo sapiens) wrapped in a BSgenome object'
-  description: 'The T2T-CHM13v2.0 assembly (accession GCA_009914755.4), as submitted to NCBI by the T2T Consortium, and wrapped in a BSgenome object. Companion paper: "The complete sequence of a human genome" by Nurk S, Koren S, Rhie A, Rautiainen M, et al. Science, 2022.'
+    - $R -e "library('{{ name }}')"
 

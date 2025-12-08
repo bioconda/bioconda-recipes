@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "hmp16sdata-1.18.0"
+installBiocDataPackage.sh "hmp16sdata-1.26.0"

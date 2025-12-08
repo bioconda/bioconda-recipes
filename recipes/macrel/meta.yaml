@@ -1,6 +1,6 @@
 {% set name = "macrel" %}
-{% set version = "1.2.0" %}
-{% set sha256 = "7d506748a68c163478426c0fa8183b1fec4c31acf47a1cddf677104aca029cd8" %}
+{% set version = "1.6.0" %}
+{% set sha256 = "76c69e7eebd86b4c1c0790797ce3dea81f8c23513b7b3effa92cca14db7804e6" %}
 
 package:
   name: {{ name }}
@@ -12,10 +12,12 @@ source:
 
 build:
   noarch: python
-  number: 0
+  number: 1
   entry_points:
     - macrel= macrel.main:main
   script: python -m pip install --disable-pip-version-check --no-cache-dir --ignore-installed --no-deps -vv .
+  run_exports:
+    - {{ pin_subpackage("macrel", max_pin="x.x") }}
 
 requirements:
   host:
@@ -25,13 +27,16 @@ requirements:
     - python
     - atomicwrites
     - ngless
+    - joblib
     - megahit
     - paladin
     - pandas
     - scikit-learn
+    - requests
+    - onnxruntime
     - tzlocal
-    - pyrodigal
-
+    - pyrodigal >=0.7.3
+  
 test:
   imports:
     - macrel

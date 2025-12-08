@@ -1,42 +1,58 @@
-{% set version = "3.0.2" %}
+{% set name = "vamb" %}
+{% set version = "5.0.4" %}
 
 package:
-  name: vamb
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/RasmussenLab/vamb/archive/{{ version }}.tar.gz
-  sha256: fb63011a89ec7fe1052983973dda6cdcdd796938cdf80ed1013f253c7ded8c67
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/vamb-{{ version }}.tar.gz
+  sha256: b7980c607c97c8589160719a301dcd060b18d1a9605af3acb8348ec246969cb0
 
 build:
-  number: 2
-  # Skipping py>=38 since no pytorch-cpu builds for Py3.8 are available.	  skip: True  # [py27]
-  skip: True  # [py<30 or py>=38]
+  number: 0
+  noarch: python
   entry_points:
-    - vamb=vamb.__main__:main
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
+    - vamb = vamb.__main__:main
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('vamb', max_pin="x") }}
 
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - python
+    - python >=3.10,<4
+    - setuptools >=70.1,<71.dev0
+    - setuptools-scm >=8.0
     - pip
-    - cython >=0.25.2
   run:
-    - python
-    - numpy >=1.15
-    - pytorch-cpu >=0.4
-    - pysam >=0.14
+    - python >=3.10,<4
+    - vambcore >=0.1.2,<0.2
+    - numpy >=1.26.4,<3
+    - pytorch >=2.6.0
+    - pycoverm >=0.6.2
+    - networkx >=3.4.2
+    - scikit-learn >=1.6.1
+    - dadaptation >=3.2
+    - loguru >=0.7.0,<0.8
+    - pyhmmer >=0.10.15
+    - pyrodigal >=3.6.3
 
 test:
-  imports:
-    - vamb
   commands:
     - vamb --help
 
 about:
   home: https://github.com/RasmussenLab/vamb
-  license: MIT License
+  dev_url: https://github.com/RasmussenLab/vamb
+  doc_url: "https://vamb.readthedocs.io/en/latest"
+  license: MIT
   license_family: MIT
-  summary: Variational autoencoder for metagenomic binning
+  license_file: LICENSE
+  summary: "Variational autoencoder for metagenomic binning."
+
+extra:
+  identifiers:
+    - doi:10.1101/2024.10.25.620172
+    - biotools:vamb

@@ -1,0 +1,66 @@
+{% set version = "1.6.0" %}
+{% set name = "SparseArray" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: 'The SparseArray package provides array-like containers for efficient in-memory representation of multidimensional sparse data in R (arrays and matrices). The package defines the SparseArray virtual class and two concrete subclasses: COO_SparseArray and SVT_SparseArray. Each subclass uses its own internal representation of the nonzero multidimensional data: the "COO layout" and the "SVT layout", respectively. SVT_SparseArray objects mimic as much as possible the behavior of ordinary matrix and array objects in base R. In particular, they suppport most of the "standard matrix and array API" defined in base R and in the matrixStats package from CRAN.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: High-performance sparse data representation and manipulation in R
+
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-sparsearray", max_pin="x.x") }}'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: HDF5Array, ExperimentHub, testthat, knitr, rmarkdown, BiocStyle
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-s4arrays >=1.6.0,<1.7.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-xvector >=0.46.0,<0.47.0
+    - r-base
+    - r-matrix
+    - r-matrixstats
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-matrixgenerics >=1.18.0,<1.19.0
+    - bioconductor-s4arrays >=1.6.0,<1.7.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-xvector >=0.46.0,<0.47.0
+    - r-base
+    - r-matrix
+    - r-matrixstats
+
+source:
+  md5: b57caafbc8b4ad3fa535a6b6180d0476
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

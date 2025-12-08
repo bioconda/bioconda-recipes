@@ -1,38 +1,40 @@
 {% set version = "0.0.9999" %}
 {% set name = "BSgenome.Hsapiens.UCSC.hg38.dbSNP151.minor" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 2cc3a612a2064624735d6a92910be7f3
+about:
+  description: Full genome sequences for Homo sapiens (Human) as provided by UCSC (hg38, based on GRCh38.p12) with minor alleles injected from dbSNP151, and stored in Biostrings objects. Full genome sequences for Homo sapiens (Human) as provided by UCSC (hg38, based on GRCh38.p12) with minor alleles injected from dbSNP151, and stored in Biostrings objects. Only common single nucleotide variants (SNVs) with at least one alternate allele with frequency greater than 0.01 were considered. For SNVs with more than 1 alternate allele, the most frequent allele was chosen as the minor allele to be injected into the reference genome.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: CC BY-NC-ND 4.0
+  summary: Full genome sequences for Homo sapiens (UCSC version hg38, based on GRCh38.p12) with injected minor alleles (dbSNP151)
 build:
-  number: 2
+  noarch: generic
+  number: 5
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-bsgenome.hsapiens.ucsc.hg38.dbsnp151.minor", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: BSgenome.Hsapiens.UCSC.hg38, BSgenome.Hsapiens.UCSC.hg38.dbSNP151.major, testthat
 requirements:
   host:
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
     - r-base
   run:
-    - 'bioconductor-bsgenome >=1.66.0,<1.67.0'
+    - bioconductor-bsgenome >=1.74.0,<1.75.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221102
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 2cc3a612a2064624735d6a92910be7f3
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: 'CC BY-NC-ND 4.0'
-  summary: 'Full genome sequences for Homo sapiens (UCSC version hg38, based on GRCh38.p12) with injected minor alleles (dbSNP151)'
-  description: 'Full genome sequences for Homo sapiens (Human) as provided by UCSC (hg38, based on GRCh38.p12) with minor alleles injected from dbSNP151, and stored in Biostrings objects. Full genome sequences for Homo sapiens (Human) as provided by UCSC (hg38, based on GRCh38.p12) with minor alleles injected from dbSNP151, and stored in Biostrings objects. Only common single nucleotide variants (SNVs) with at least one alternate allele with frequency greater than 0.01 were considered. For SNVs with more than 1 alternate allele, the most frequent allele was chosen as the minor allele to be injected into the reference genome.'
+    - $R -e "library('{{ name }}')"
 

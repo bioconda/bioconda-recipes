@@ -1,5 +1,5 @@
 {% set name = "mercat2" %}
-{% set version = "1.0" %}
+{% set version = "1.4.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,27 +7,30 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 30dd54de28e8648c83c6ed0a773934655d8b62ffc3a0541864848d9e618e4bf0
+  sha256: 5a090b19db6beecae8d3a1f2014a239b306fa428e92cc8f02e98e0e4b4a89d31
 
 build:
   number: 0
   noarch: python
   script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage('mercat2', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python <3.10
+    - python >=3.9
     - setuptools
   run:
-    - python <3.10
-    - grpcio
+    - python >=3.9
+    - grpcio ==1.43
     - fastqc
     - fastp
     - prodigal
     - ray-core
     - ray-dashboard
     - ray-default
+    - ray-tune
     - configargparse
     - dominate
     - humanize
@@ -37,9 +40,10 @@ requirements:
     - psutil
     - scikit-learn
     - metaomestats
-    - scikit-bio
+    - scikit-bio ==0.5.7
     - scipy ==1.8.1
     - python-kaleido
+
 
 test:
   imports:

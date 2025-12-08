@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "harbchip-1.36.0"
+installBiocDataPackage.sh "harbchip-1.44.0"

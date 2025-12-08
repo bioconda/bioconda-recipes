@@ -1,0 +1,52 @@
+{% set name = "omark" %}
+{% set version = "0.4.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/omark-{{ version }}.tar.gz
+  sha256: 8ad178a21285c86fdf7273d3bd0a3b4a6275e71fae0f877de12cd9b10338310a
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  noarch: python
+
+requirements:
+  host:
+    - python
+    - pip
+    - uv-build
+  run:
+    - python
+    - biopython
+    - ete3
+    - libsqlite <=3.40.0 # Workaround (https://github.com/etetoolkit/ete/pull/770)
+    - omamer >=2.0.0
+    - matplotlib-base
+    - jinja2
+
+test:
+  imports:
+    - omark
+  commands:
+    - omark -h
+
+about:
+  home: https://github.com/DessimozLab/omark
+  summary: OMArk - Proteome quality assesment based on OMAmer placements
+  license: LGPL-3.0
+  license_file:
+    - LICENSE
+    - COPYING.LESSER
+    - COPYING
+
+extra:
+  recipe-maintainers:
+    - alpae
+  identifiers:
+    - doi:10.1101/2022.11.25.517970

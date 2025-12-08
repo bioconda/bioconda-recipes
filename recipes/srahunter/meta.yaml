@@ -1,0 +1,46 @@
+{% set name = "srahunter" %}
+{% set version = "0.0.9" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url:    https://github.com/GitEnricoNeko/srahunter/archive/refs/tags/{{version}}.tar.gz
+  sha256: 6362a0ac2d338b87505baa3c765ffde0f61fd21589d9715524884cfd018e14b7
+build:
+  entry_points:
+    - srahunter=scripts.cli:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('srahunter', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - setuptools
+  run:
+    - datavzrd
+    - entrez-direct
+    - python >=3.6
+    - pandas >=2.0.2
+    - psutil >=5.7
+    - pyfiglet
+    - requests >=2.31.0
+    - tqdm >=4.66.1
+    - sra-tools
+
+test:
+  commands:
+    - srahunter --help
+
+about:
+  home: https://github.com/GitEnricoNeko/srahunter
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "srahunter is a tool for processing SRA accession numbers."
+  dev_url: https://github.com/GitEnricoNeko/srahunter

@@ -1,41 +1,43 @@
-{% set version = "1.30.0" %}
+{% set version = "1.38.0" %}
 {% set name = "seq2pathway.data" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: ba746fb92617526bc8a994e098f66a7a
+about:
+  description: Supporting data for the seq2patheway package. Includes modified gene sets from MsigDB and org.Hs.eg.db; gene locus definitions from GENCODE project.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: GPL (>= 2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: data set for R package seq2pathway
 build:
-  number: 1
+  noarch: generic
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-seq2pathway.data", max_pin="x.x") }}'
+extra:
+  parent_recipe:
+    name: bioconductor-seq2pathway.data
+    path: recipes/bioconductor-seq2pathway.data
+    version: 1.12.0
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 requirements:
   host:
     - r-base
   run:
     - r-base
     - curl
-    - bioconductor-data-packages>=20221108
+    - bioconductor-data-packages >=20241103
+source:
+  md5: 56fcfc87bf877f64ff1283275f37ab73
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'data set for R package seq2pathway'
-  description: 'Supporting data for the seq2patheway package. Includes modified gene sets from MsigDB and org.Hs.eg.db; gene locus definitions from GENCODE project.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-extra:
-  parent_recipe:
-    name: bioconductor-seq2pathway.data
-    path: recipes/bioconductor-seq2pathway.data
-    version: 1.12.0
+    - $R -e "library('{{ name }}')"
 

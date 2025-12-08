@@ -1,53 +1,60 @@
-{% set version = "2.2.0" %}
+{% set version = "2.10.0" %}
 {% set name = "FlowSorted.Blood.EPIC" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: e386c74c9b0168a5891bec4445799438
+about:
+  description: Raw data objects to be used for blood cell proportion estimation in minfi and similar packages. The FlowSorted.Blood.EPIC object is based in samples assayed by Brock Christensen and colleagues; for details see Salas et al. 2018. https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE110554.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Illumina EPIC data on immunomagnetic sorted peripheral adult blood cells
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr,rmarkdown, FlowSorted.CordBlood.450k, FlowSorted.Blood.450k(>= 1.0.1), EpiDISH,FlowSorted.CordBloodNorway.450k, testthat, IlluminaHumanMethylation450kmanifest(>= 0.2.0), IlluminaHumanMethylation450kanno.ilmn12.hg19(>= 0.2.1), IlluminaHumanMethylationEPICanno.ilm10b4.hg19
+  run_exports: '{{ pin_subpackage("bioconductor-flowsorted.blood.epic", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr,rmarkdown, FlowSorted.CordBlood.450k, FlowSorted.Blood.450k(>= 1.0.1), EpiDISH,FlowSorted.CordBloodNorway.450k, testthat, IlluminaHumanMethylation450kmanifest(>= 0.2.0), IlluminaHumanMethylationEPICmanifest, IlluminaHumanMethylation450kanno.ilmn12.hg19(>= 0.2.1), IlluminaHumanMethylationEPICanno.ilm10b4.hg19
 requirements:
   host:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
-    - 'bioconductor-genefilter >=1.80.0,<1.81.0'
-    - 'bioconductor-minfi >=1.44.0,<1.45.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-genefilter >=1.88.0,<1.89.0
+    - bioconductor-minfi >=1.52.0,<1.53.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-nlme
     - r-quadprog
   run:
-    - 'bioconductor-annotationhub >=3.6.0,<3.7.0'
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
-    - 'bioconductor-genefilter >=1.80.0,<1.81.0'
-    - 'bioconductor-minfi >=1.44.0,<1.45.0'
-    - 'bioconductor-s4vectors >=0.36.0,<0.37.0'
-    - 'bioconductor-summarizedexperiment >=1.28.0,<1.29.0'
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-genefilter >=1.88.0,<1.89.0
+    - bioconductor-minfi >=1.52.0,<1.53.0
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
     - r-base
     - r-nlme
     - r-quadprog
     - curl
-    - bioconductor-data-packages>=20221110
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: a51230659106aa6ba33a7bdd616d4ae6
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: GPL-3
-  summary: 'Illumina EPIC data on immunomagnetic sorted peripheral adult blood cells'
-  description: 'Raw data objects to be used for blood cell proportion estimation in minfi and similar packages. The FlowSorted.Blood.EPIC object is based in samples assayed by Brock Christensen and colleagues; for details see Salas et al. 2018. https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE110554.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

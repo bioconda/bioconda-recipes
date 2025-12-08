@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "tmexplorer-1.8.0"
+installBiocDataPackage.sh "tmexplorer-1.16.0"

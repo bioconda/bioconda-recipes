@@ -1,0 +1,58 @@
+{% set version = "1.4.0" %}
+{% set name = "HiBED" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: Hierarchical deconvolution for extensive cell type resolution in the human brain using DNA methylation. The HiBED deconvolution estimates proportions up to 7 cell types (GABAergic neurons, glutamatergic neurons, astrocytes, microglial cells, oligodendrocytes, endothelial cells, and stromal cells) in bulk brain tissues.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: HiBED
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-hibed", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, testthat, IlluminaHumanMethylation450kmanifest
+requirements:
+  host:
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-flowsorted.blood.epic >=2.10.0,<2.11.0
+    - bioconductor-flowsorted.dlpfc.450k >=1.42.0,<1.43.0
+    - bioconductor-minfi >=1.52.0,<1.53.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-dplyr
+    - r-tibble
+  run:
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-flowsorted.blood.epic >=2.10.0,<2.11.0
+    - bioconductor-flowsorted.dlpfc.450k >=1.42.0,<1.43.0
+    - bioconductor-minfi >=1.52.0,<1.53.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-dplyr
+    - r-tibble
+    - curl
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: 2858803aaed3e0110711dfb4246789bc
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

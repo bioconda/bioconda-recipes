@@ -1,39 +1,41 @@
-{% set version = "1.16.0" %}
+{% set version = "1.24.0" %}
 {% set name = "TabulaMurisData" %}
-{% set bioc = "3.16" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 1d058a947e31a9f0f512688fc5509123
+about:
+  description: Access to processed 10x (droplet) and SmartSeq2 (on FACS-sorted cells) single-cell RNA-seq data from the Tabula Muris consortium (http://tabula-muris.ds.czbiohub.org/).
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: 10x And SmartSeq2 Data From The Tabula Muris Consortium
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-tabulamurisdata", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
 # Suggests: knitr, rmarkdown, BiocStyle, SingleCellExperiment, scran, scater, iSEE, testthat
 requirements:
   host:
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
     - r-base
   run:
-    - 'bioconductor-experimenthub >=2.6.0,<2.7.0'
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
     - r-base
     - curl
-    - bioconductor-data-packages>=20221108
+    - bioconductor-data-packages >=20241103
+source:
+  md5: c1bd6839155817b5f01874ac53fe91cd
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: '10x And SmartSeq2 Data From The Tabula Muris Consortium'
-  description: 'Access to processed 10x (droplet) and SmartSeq2 (on FACS-sorted cells) single-cell RNA-seq data from the Tabula Muris consortium (http://tabula-muris.ds.czbiohub.org/).'
-  license_file: LICENSE
+    - $R -e "library('{{ name }}')"
 

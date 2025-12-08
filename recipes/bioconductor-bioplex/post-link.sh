@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "bioplex-1.4.0"
+installBiocDataPackage.sh "bioplex-1.12.0"
