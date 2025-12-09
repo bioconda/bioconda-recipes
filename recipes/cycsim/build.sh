@@ -10,15 +10,29 @@ export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig"
 export OPENSSL_DIR="${PREFIX}"
 export OPENSSL_NO_VENDOR=1
 
+
+if [ "$(uname)" == "Darwin" ]; then
+    SHLIB_EXT="dylib"
+    # macOS uses DYLD_FALLBACK_LIBRARY_PATH
+    LIB_VAR="DYLD_FALLBACK_LIBRARY_PATH"
+else
+    SHLIB_EXT="so"
+    # Linux uses LD_LIBRARY_PATH
+    LIB_VAR="LD_LIBRARY_PATH"
+fi
+
 CLANG_ROOT="${BUILD_PREFIX:-$PREFIX}"
 export LIBCLANG_PATH="${CLANG_ROOT}/lib"
-export LD_LIBRARY_PATH="${CLANG_ROOT}/lib:${LD_LIBRARY_PATH:-}"
-if [ ! -f "${LIBCLANG_PATH}/libclang.so" ]; then
-    FOUND_LIB=$(find "${LIBCLANG_PATH}" -name "libclang*.so*" ! -name "*cpp*" | head -n 1)
+export "${LIB_VAR}"="${CLANG_ROOT}/lib:${!LIB_VAR:-}"
+TARGET_LIB="${LIBCLANG_PATH}/libclang.${SHLIB_EXT}"
+
+if [ ! -f "${TARGET_LIB}" ]; then
+    FOUND_LIB=$(find "${LIBCLANG_PATH}" -name "libclang*.${SHLIB_EXT}*" ! -name "*cpp*" | head -n 1)
+    
     if [ -n "$FOUND_LIB" ]; then
-        ln -sf "$FOUND_LIB" "${LIBCLANG_PATH}/libclang.so"
+        ln -sf "$FOUND_LIB" "${TARGET_LIB}"
     else
-        echo "FATAL: Could not find any libclang shared library in ${LIBCLANG_PATH}"
+        ls -F "${LIBCLANG_PATH}" || true
         exit 1
     fi
 fi
@@ -35,7 +49,7 @@ cmake ../edlib_cpp_manual \
     -DCMAKE_C_COMPILER="${CC}" \
     -DCMAKE_CXX_COMPILER="${CXX}"
 
-make -j"${CPU_COUNT}"
+make -j"${CPU_COUNT:-1}"
 make install
 popd
 
