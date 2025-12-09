@@ -10,7 +10,7 @@ source:
   sha256: 65b42a46e4d61ddb8a77d3e433e815019696dc839cf45de8afd0c95ae3c0f598
 
 build:
-  number: 0
+  number: 1
   noarch: python
   script:
     - sed -i.bak -e 's|"Apache-2.0"|{file = "LICENSE.md"}|' pyproject.toml
@@ -32,6 +32,7 @@ requirements:
     - datasets >=3.5.0
     - gitpython >=3.1.44
     - hydra-core >=1.3.2
+    - importlib-resources >=6.5.2 # Neptune has a transitive dependency on swagger_spec_validator, which tries to import importlib_resources. That package is not included in Python ≥3.9, because its functionality was merged into stdlib (importlib.resources)
     - jaxtyping >=0.2.34
     - jiwer >=3.0.5
     - matchms >=0.28.1
@@ -39,6 +40,7 @@ requirements:
     - numpy >=2.0.2
     - omegaconf >=2.3.0
     - pandas >=2.2.3
+    - platformdirs >=4.5.1 # spectrum_utils depends on platformdirs but does not list it properly in some older releases
     - polars >=1.12.0
     - pubchempy >=1.0.4
     - pyteomics >=4.7.5
@@ -47,7 +49,7 @@ requirements:
     - requests >=2.32.3
     - s3fs >=2024.12.0 
     - scikit-learn >=1.5.2
-    - signalrcore
+    - signalrcore >=0.9.5
     - spectrum_utils >=0.4.2
     - tensorboard >=2.18.0
     - tqdm >=4.67.0
@@ -55,9 +57,12 @@ requirements:
     - typer >=0.15.1
 
 test:
+  files:
+    - spectra.mgf
   commands:
     - instanovo version
     - instanovo --help
+    - pwd && ls -al && instanovo predict --data-path spectra.mgf --output-path predictions.csv
 
 about:
   home: https://github.com/instadeepai/instanovo
@@ -66,9 +71,11 @@ about:
   license_family: APACHE
   license_file: LICENSE.md
   dev_url: https://github.com/instadeepai/instanovo
+  doc_url: https://instadeepai.github.io/InstaNovo/
 
 extra:
   recipe-maintainers:
     - BioGeek
   identifiers:
     - doi:10.1038/s42256-025-01019-5
+    - biotools:instanovo
