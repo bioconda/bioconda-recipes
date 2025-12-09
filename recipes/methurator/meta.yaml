@@ -1,0 +1,55 @@
+{% set name = "methurator" %}
+{% set version = "0.1.6" %}
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/methurator-{{ version }}.tar.gz
+  sha256: 5e8aa0669d246d4388a53e00a8ef62b6077e8acf915d86d32f5fa9cc6f91b88d
+build:
+  run_exports:
+    - {{ pin_subpackage('methurator', max_pin="x.x") }}
+  entry_points:
+    - methurator = methurator.cli:entry_point
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+requirements:
+  host:
+    - python >=3.10,<3.14
+    - setuptools >=61
+    - pip
+  run:
+    - python >=3.10,<3.14
+    - matplotlib-base
+    - numpy
+    - packaging >=24
+    - pandas
+    - pyfaidx
+    - pysam
+    - rich
+    - rich-click
+    - scipy
+    - tqdm
+    - plotly
+    - samtools 1.21
+    - htslib 1.21
+    - methyldackel 0.6.1
+test:
+  imports:
+    - methurator
+  commands:
+    - pip check
+    - methurator --help
+    - samtools --version
+    - MethylDackel --version
+  requires:
+    - pip
+about:
+  home: https://github.com/VIBTOBIlab/methurator
+  summary: Python package designed to estimate sequencing saturation for reduced-representation bisulfite sequencing (RRBS) data.
+  license: MIT
+  license_file: LICENSE
+extra:
+  recipe-maintainers:
+    - edogiuili
