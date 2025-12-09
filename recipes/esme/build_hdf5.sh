@@ -5,7 +5,7 @@ export CC=mpicc
 export CXX=mpicxx
 export FC=mpifort
 
-cd esme_hdf5
+cd "${SRC_DIR}/esme_hdf5"
 
 mkdir -p build
 cd build
@@ -33,14 +33,18 @@ cmake .. \
 make -j ${CPU_COUNT}
 make install
 
-sed -i.bak '/^Libs\.private/d' ${PREFIX}/lib/pkgconfig/hdf5.pc
+sed -i.bak '/^Libs.private/d' ${PREFIX}/lib/pkgconfig/hdf5.pc
 rm -f ${PREFIX}/lib/pkgconfig/hdf5.pc.bak
 
 if [ "${BUILD_VFD_GDS:-0}" = "1" ]; then
-  cd ../../esme_vfd_gds
-  rm -rf build
+  cd "${SRC_DIR}/esme_vfd_gds"
+
   mkdir build
   cd build
+
+  export CMAKE_POLICY_VERSION_MINIMUM=3.5
+  export CMAKE_POLICY_DEFAULT_CMP0146=OLD
+
   cmake .. \
     -DCMAKE_INSTALL_PREFIX=${PREFIX} \
     -DCMAKE_BUILD_TYPE=Release \
@@ -49,10 +53,17 @@ if [ "${BUILD_VFD_GDS:-0}" = "1" ]; then
     -DBUILD_EXAMPLES=OFF \
     -DBUILD_TESTING=OFF \
     -DHDF5_ROOT=${PREFIX} \
+    -DHDF5_INCLUDE_DIR=${PREFIX}/include \
     -DHDF5_VFD_GDS_CUFILE_DIR=${PREFIX} \
     -DHDF5_VFD_GDS_CUFILE_LIB=${PREFIX}/lib/libcufile.so
+
   make -j${CPU_COUNT}
+
   make install
+
   mkdir -p ${PREFIX}/lib/hdf5/plugin
-  cp libhdf5_vfd_gds.so* ${PREFIX}/lib/hdf5/plugin/
+
+  SRC_LIB=$(ls ${PREFIX}/lib/libhdf5_vfd_gds.so* | head -1)
+
+  cp "$SRC_LIB" ${PREFIX}/lib/hdf5/plugin/libhdf5_vfd_gds.so
 fi

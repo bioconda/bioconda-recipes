@@ -5,7 +5,7 @@ set -ex
 export CC=mpicc
 export FC=mpifort
 
-cd esme_netcdf-c
+cd "${SRC_DIR}/esme_netcdf-c"
 
 autoreconf -fiv
 
