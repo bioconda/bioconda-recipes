@@ -17,7 +17,8 @@ sed -i.bak 's|libmcfp::libmcfp|mcfp::mcfp|g' CMakeLists.txt
 
 cmake -S . -B build -G Ninja \
   ${CMAKE_ARGS} \
-  -DCMAKE_CXX_FLAGS="${CXXFLAGS}"
+  -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+  -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp"
 
 cmake --build build --parallel "${CPU_COUNT}"
 cmake --install build
