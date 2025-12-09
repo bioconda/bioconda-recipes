@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -exo pipefail
+
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -pthread"
@@ -7,8 +9,9 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-int-conversion -Wno-implic
 export CXXFLAGS="${CXXFLAGS} -O3 -D_LIBCPP_DISABLE_AVAILABILITY -pthread"
 export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig"
 export CMAKE_THREAD_LIBS_INIT="-lpthread"
-export CMAKE_USE_PTHREADS_INIT=1
-export CMAKE_HAVE_LIBC_PTHREAD=1
+export CMAKE_USE_PTHREADS_INIT=ON
+export CMAKE_HAVE_LIBC_PTHREAD=ON
+export CPM_USE_LOCAL_PACKAGES=ON
 
 if [[ "${target_platform}" == "osx-"* ]]; then
     export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
@@ -22,6 +25,7 @@ cmake -S . -B build -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_COMPILER="${CXX}" \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+    -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=ALWAYS \
     -DTHREADS_PREFER_PTHREAD_FLAG=ON \
     -DBUILD_SHARED_LIBS=ON \
     -DBUILD_TESTING=OFF \
