@@ -1,13 +1,18 @@
 #!/bin/bash
 set -xe
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3"
-export CFLAGS="${CFLAGS} -O3"
+mkdir -p "${PREFIX}/include"
+mkdir -p "${PREFIX}/lib"
+mkdir -p "${PREFIX}/bin"
 
-mkdir -p "$PREFIX/lib"
-mkdir -p "$PREFIX/bin"
+#link global folderers in to ngs-bits htslib folders (there the htslib stuff is extracted)
+ln -s $PREFIX/include htslib/include
+ln -s $PREFIX/lib htslib/lib
+
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -I${PREFIX}/include/libxml2"
+export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include -I${PREFIX}/include/libxml2"
+export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include -I${PREFIX}/include/libxml2"
 
 case $(uname -m) in
     aarch64)
@@ -21,13 +26,6 @@ case $(uname -m) in
 	;;
 esac
 
-#link include and lib folders to allow using htslib
-ln -s $PREFIX/include htslib/include
-ln -s $PREFIX/lib htslib/lib
-
-#libxml2
-export CXXFLAGS="${CXXFLAGS} -I$(PREFIX)/include/libxml2"
-
 #qmake bugfix: qmake fails if there is no g++ executable available, even if QMAKE_CXX is explicitly set
 ln -s $CXX $BUILD_PREFIX/bin/g++
 export PATH=$BUILD_PREFIX/bin/:$PATH
@@ -35,7 +33,7 @@ export PATH=$BUILD_PREFIX/bin/:$PATH
 #build (enable debug info by adding '-Wall -d')
 mkdir build
 cd build
-qmake CONFIG-=debug CONFIG+=release DEFINES+=QT_NO_DEBUG_OUTPUT QMAKE_CXX="$CXX" QMAKE_CC="$CC" QMAKE_CFLAGS="$CFLAGS" QMAKE_CXXFLAGS="$CXXFLAGS" QMAKE_LIBDIR+="$PREFIX/lib" QMAKE_RPATHLINKDIR+="${PREFIX}/lib/" ../src/tools.pro
+qmake CONFIG-=debug CONFIG+=release DEFINES+=QT_NO_DEBUG_OUTPUT QMAKE_CXX="$CXX" QMAKE_CC="$CC" QMAKE_CFLAGS="$CFLAGS" QMAKE_CXXFLAGS="$CXXFLAGS" QMAKE_LIBDIR+="${PREFIX}/lib" QMAKE_RPATHLINKDIR+="${PREFIX}/lib/" ../src/tools.pro
 make -j"${CPU_COUNT}"
 cd ..
 
@@ -46,4 +44,4 @@ rm -rf bin/out bin/cpp*-TEST bin/tools-TEST
 mv bin/libcpp* $PREFIX/lib/
 
 #deploy (bin)
-install -v -m 0755 bin/* "$PREFIX/bin"
+install -v -m 0755 bin/* "${PREFIX}/bin"
