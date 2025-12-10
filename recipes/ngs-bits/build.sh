@@ -5,9 +5,12 @@ mkdir -p "${PREFIX}/include"
 mkdir -p "${PREFIX}/lib"
 mkdir -p "${PREFIX}/bin"
 
-#link global folderers in to ngs-bits htslib folders (there the htslib stuff is extracted)
+#link global folders in to ngs-bits htslib folders (there the htslib stuff is extracted)
 ln -s $PREFIX/include htslib/include
 ln -s $PREFIX/lib htslib/lib
+
+ls -al -I${PREFIX}/include/
+ls -al -I${PREFIX}/lib/
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -I${PREFIX}/include/libxml2"
