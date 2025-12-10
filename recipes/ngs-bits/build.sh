@@ -25,6 +25,9 @@ esac
 ln -s $PREFIX/include htslib/include
 ln -s $PREFIX/lib htslib/lib
 
+#libxml2
+export CXXFLAGS="${CXXFLAGS} -I$(PREFIX)/include/libxml2"
+
 #qmake bugfix: qmake fails if there is no g++ executable available, even if QMAKE_CXX is explicitly set
 ln -s $CXX $BUILD_PREFIX/bin/g++
 export PATH=$BUILD_PREFIX/bin/:$PATH
