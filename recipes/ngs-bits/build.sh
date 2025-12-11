@@ -1,20 +1,16 @@
 #!/bin/bash
-set -xe
-
-mkdir -p "${PREFIX}/include"
-mkdir -p "${PREFIX}/lib"
-mkdir -p "${PREFIX}/bin"
+set -euo pipefail
+set -x
 
 #link global folders in to ngs-bits htslib folders (there the htslib stuff is extracted)
 ln -s $PREFIX/include htslib/include
 ln -s $PREFIX/lib htslib/lib
 
 pkg-config --cflags libxml-2.0
+pkg-config --libs libxml-2.0
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -I${PREFIX}/include/libxml2"
-export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include -I${PREFIX}/include/libxml2"
-export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include -I${PREFIX}/include/libxml2"
+export CXXFLAGS="${CXXFLAGS} -O3"
+export CFLAGS="${CFLAGS} -O3"
 
 case $(uname -m) in
     aarch64)
@@ -28,9 +24,12 @@ case $(uname -m) in
 	;;
 esac
 
-#qmake bugfix: qmake fails if there is no g++ executable available, even if QMAKE_CXX is explicitly set
-ln -s $CXX $BUILD_PREFIX/bin/g++
-export PATH=$BUILD_PREFIX/bin/:$PATH
+# Ensure qmake uses correct compiler
+export QMAKE_CXX="${CXX}"
+export QMAKE_CC="${CC}"
+
+#check qmake version
+qmake --version
 
 #build (enable debug info by adding '-Wall -d')
 mkdir build
@@ -43,7 +42,7 @@ cd ..
 rm -rf bin/out bin/cpp*-TEST bin/tools-TEST
 
 #deploy (lib)
-mv bin/libcpp* $PREFIX/lib/
+install -m 0755 bin/libcpp* "${PREFIX}/lib/"
 
 #deploy (bin)
 install -v -m 0755 bin/* "${PREFIX}/bin"
