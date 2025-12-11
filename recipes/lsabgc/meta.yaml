@@ -1,33 +1,33 @@
 {% set name = "lsabgc" %}
-{% set version = "1.1.7" %}
+{% set version = "1.1.10" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/Kalan-Lab/lsaBGC-Pan/archive/refs/tags/v{{ version }}.tar.gz 
-  sha256: 004282d7a761d8444b20c8d8720724a495ce91ebd258382cbffd29c42681eb67 
-
+  url: https://github.com/Kalan-Lab/lsaBGC-Pan/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 35bfe057f9fa53863d925be16d395681463e7a86fc13de7ea2620ca25cbbdacd
+  
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
   run_exports:
-    - {{ pin_subpackage("lsabgc", max_pin="x") }}
-    
+    - {{ pin_subpackage('lsabgc', max_pin="x") }}
+  script:
+    - {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+
 requirements:
   host:
-    - python
+    - python >=3.10
     - setuptools
     - pip
   run:
     - python >=3.10
     - r-base
-    - zol >=1.6.3
+    - zol >=1.6.10
     - pyhmmer =0.10.15
-    - muscle =5.1 [osx]
-    - muscle >=5.0 [not osx]
+    - muscle =5.1
     - orthofinder =2.5.5
     - pyseer >=1.3
     - gecco =0.9.6
@@ -38,7 +38,7 @@ requirements:
     - pandas
     - xlsxwriter >=3.0.3
     - scikit-learn
-    - numpy
+    - numpy >=2.0.0, <=2.2.6
     - r-ggplot2
     - r-cowplot
     - r-phytools
@@ -49,6 +49,12 @@ requirements:
     - r-data.table
     - r-plyr
     - r-gridextra
+    - intbitset
+    - networkx
+    - gffutils
+    - edlib
+    - joblib
+    - cd-hit
 
 test:
   commands:
@@ -64,7 +70,5 @@ about:
   doc_url: "https://github.com/Kalan-Lab/lsaBGC-Pan/wiki"
 
 extra:
-  additional-platforms:
-    - osx-arm64
   recipe-maintainers:
     - raufs

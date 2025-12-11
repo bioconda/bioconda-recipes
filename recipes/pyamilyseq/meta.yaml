@@ -1,0 +1,86 @@
+{% set name = "PyamilySeq" %}
+{% set version = "1.3.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0]|lower }}/{{ name|lower }}/pyamilyseq-{{ version }}.tar.gz
+  sha256: 4a02f6b8d64d85550972f745cb11a2fdf06ff9558724c8b23e60f68bfedbcd2e
+
+build:
+  entry_points:
+    - PyamilySeq = PyamilySeq.PyamilySeq:main
+    - pyamilyseq = PyamilySeq.PyamilySeq:main
+    - Seq-Combiner = PyamilySeq.Seq_Combiner:main
+    - seq-combiner = PyamilySeq.Seq_Combiner:main
+    - Group-Splitter = PyamilySeq.Group_Splitter:main
+    - group-splitter = PyamilySeq.Group_Splitter:main
+    - Group-Summary = PyamilySeq.Group_Summary:main
+    - group-summary = PyamilySeq.Group_Summary:main
+    - Group-Extractor = PyamilySeq.Group_Extractor:main
+    - group-extractor = PyamilySeq.Group_Extractor:main
+    - Seq-Finder = PyamilySeq.Seq_Finder:main
+    - seq-finder = PyamilySeq.Seq_Finder:main
+    - Seq-Extractor = PyamilySeq.Seq_Extractor:main
+    - seq-extractor = PyamilySeq.Seq_Extractor:main
+#    - compute-singletrees-rf = aux_tools.RF.Compute_SingleTree_RFs:main
+#    - compare-rf = aux_tools.RF.compare_RF:main
+#    - compare-contree-singletrees = aux_tools.RF.compare_contree_singletrees:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools
+    - wheel
+    - python-levenshtein
+    - pip
+  run:
+    - python >=3.10
+    - python-Levenshtein
+
+test:
+  imports:
+    - PyamilySeq
+  commands:
+    - pip check
+    - PyamilySeq --help
+    - pyamilyseq --help
+    - Seq-Combiner --help
+    - seq-combiner --help
+    - Group-Splitter --help
+    - group-splitter --help
+    - Group-Summary --help
+    - group-summary --help
+    - Group-Extractor --help
+    - group-extractor --help
+    - Seq-Finder --help
+    - seq-finder --help
+    - Seq-Extractor --help
+    - seq-extractor --help
+#    - compute-singletrees-rf --help
+#    - compare-rf --help
+#    - compare-contree-singletrees --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/NickJD/PyamilySeq
+  summary: 'PyamilySeq: A pangenome investigation tool'
+  description: |
+    PyamilySeq - A tool to investigate gene-centric prokaryote pangenomes built with 
+    clustering methods such as CD-HIT, DIAMOND, BLAST or MMseqs2.
+  license: GPL-3.0-only
+  license_file: LICENSE
+  doc_url: https://github.com/NickJD/PyamilySeq
+  dev_url: https://github.com/NickJD/PyamilySeq
+
+extra:
+  recipe-maintainers:
+    - NickJD
