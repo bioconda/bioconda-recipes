@@ -2,10 +2,6 @@
 set -euo pipefail
 set -x
 
-#link global include/lib folders, where htslib is installed by conda, into ngs-bits htslib folder
-ln -s $PREFIX/include htslib/include
-ln -s $PREFIX/lib htslib/lib
-
 # Ensure pkg-config can find libxml2 (conda-forge installs .pc into $BUILD_PREFIX)
 export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${BUILD_PREFIX}/lib/pkgconfig"
 pkg-config --cflags libxml-2.0
