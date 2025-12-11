@@ -9,12 +9,6 @@ mkdir -p "${PREFIX}/bin"
 ln -s $PREFIX/include htslib/include
 ln -s $PREFIX/lib htslib/lib
 
-ls -al $PREFIX/include/
-ls -al $PREFIX/include/libxml2/
-ls -al $PREFIX/include/libxml2/libxml/
-ls -al $PREFIX/lib/
-ls -al $PREFIX/lib/libxml2/
-ls -al $PREFIX/lib/pkgconfig/
 pkg-config --cflags libxml-2.0
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
