@@ -1,0 +1,51 @@
+{% set name = "vitessce" %}
+{% set version = "3.7.7" %}
+
+package:
+  name: {{ name|lower }}-python
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/vitessce-{{ version }}.tar.gz
+  sha256: 69976734d8324834248e5d7c10576d7b4967f1ed3547ec8390e06671a47d85df
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('vitessce-python', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - hatchling
+    - pip
+  run:
+    - python >=3.10
+    - scipy >=1.2.1
+    - pandas >=1.1.2
+    - black >=21.11b1
+    - numpy >=1.21.2
+    - zarr >=2.5.0,<3
+    - numcodecs >=0.5.7,<0.16.0
+
+test:
+  imports:
+    - vitessce
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: "https://vitessce.io/"
+  summary: Jupyter widget facilitating interactive visualization of spatial single-cell data with Vitessce
+  license: MIT
+  license_file: LICENSE
+  dev_url: "https://github.com/vitessce/vitessce-python"
+  doc_url: "https://github.com/vitessce/vitessce-python/blob/main/README.md"
+
+extra:
+  recipe-maintainers:
+    - dannyspadaro
