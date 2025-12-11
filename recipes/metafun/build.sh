@@ -52,8 +52,3 @@ fi
 if [ -f "download_db_metafun.py" ]; then
     cp download_db_metafun.py $PREFIX/share/metafun/db/
 fi
-
-# # Copy SIF images if they exist
-# if [ -d "sif_images" ] && [ "$(ls -A sif_images/*.sif 2>/dev/null)" ]; then
-#     cp sif_images/*.sif $PREFIX/share/metafun/sif_images/
-# fi
