@@ -29,6 +29,7 @@ cmake -S . -B build -G Ninja \
     -DBUILD_SHARED_LIBS=ON \
     -DBUILD_TESTING=OFF \
     -DBUILD_FOR_CCP4=OFF \
+    -Dcifpp_DIR="${PREFIX}/lib/cmake/cifpp" \
     -DFFTW2_INCLUDE_DIRS="${PREFIX}/fftw2/include" \
     -DFFTW2_LIBRARY="${PREFIX}/fftw2/lib/libfftw${SHLIB_EXT}" \
     -DRFFTW2_LIBRARY="${PREFIX}/fftw2/lib/librfftw${SHLIB_EXT}" \
