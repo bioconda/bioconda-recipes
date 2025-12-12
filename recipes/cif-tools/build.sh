@@ -12,10 +12,10 @@ else
   export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
 
-sed -i '/if(NOT(mcfp_FOUND OR libmcfp_FOUND OR TARGET mcfp))/i\
-find_package(mcfp QUIET)
+sed -i '
+/find_package(cifpp 9\.0\.5 QUIET)/i\
+find_package(FastFloat CONFIG QUIET)\n
 ' CMakeLists.txt
-sed -i '/^\s*if(NOT(cifpp_FOUND OR TARGET cifpp))/,/^\s*endif()/d' CMakeLists.txt
 
 cmake -S . -B build -G Ninja \
   ${CMAKE_ARGS} \
