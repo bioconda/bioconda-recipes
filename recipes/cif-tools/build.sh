@@ -15,10 +15,7 @@ fi
 sed -i '/if(NOT(mcfp_FOUND OR libmcfp_FOUND OR TARGET mcfp))/i\
 find_package(mcfp QUIET)
 ' CMakeLists.txt
-
-sed -i \
-  '/^[[:space:]]*if\(NOT\(cifpp_FOUND OR TARGET cifpp\)\)/, /^[[:space:]]*endif\(\)/d' \
-  CMakeLists.txt
+sed -i '/^\s*if(NOT(cifpp_FOUND OR TARGET cifpp))/,/^\s*endif()/d' CMakeLists.txt
 
 cmake -S . -B build -G Ninja \
   ${CMAKE_ARGS} \
