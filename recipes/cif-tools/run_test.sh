@@ -2,6 +2,8 @@
 
 set -exu
 
+export LIBCIFPP_DATA_DIR="${CONDA_PREFIX}/share/libcifpp"
+
 pdb2cif 7f95-carb.pdb
 cif2pdb 7f95-carb.cif
 cif-diff 443d_final.cif 7f95-carb.cif
