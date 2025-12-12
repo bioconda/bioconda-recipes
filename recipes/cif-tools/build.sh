@@ -17,8 +17,11 @@ sed -i.bak 's|libmcfp::libmcfp|mcfp::mcfp|g' CMakeLists.txt
 
 cmake -S . -B build -G Ninja \
   ${CMAKE_ARGS} \
+  -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" \
+  -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON \
   -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-  -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp"
+  -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp" \
+  -Dcifpp_DIR="${PREFIX}/lib/cmake/cifpp"
 
 cmake --build build --parallel "${CPU_COUNT}"
 cmake --install build
