@@ -1,0 +1,40 @@
+{% set name = "fastan" %}
+{% set version = "0.5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/thegenemyers/FASTAN/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 0dbddc3b57e335574051311e49e45dfab45f38b5ffdf3865ad3a1a4c54df13c6
+  patches:
+    - 0001-Makefile.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - zlib
+
+test:
+  commands:
+    - FasTAN 2>&1 | grep "Usage:"
+
+about:
+  home: "https://github.com/thegenemyers/FASTAN"
+  license: Custom
+  license_file: LICENSE
+  summary: "Fast Tandem Repeat Finder."
+  dev_url: "https://github.com/thegenemyers/FASTAN"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
