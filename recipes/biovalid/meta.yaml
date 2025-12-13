@@ -1,0 +1,50 @@
+{% set name = "biovalid" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/biovalid-{{ version }}.tar.gz
+  sha256: 732835bb38fa8470709123799662dba332b222227b1e676715aaeccfb5f8b1e8
+
+build:
+  run_exports:
+      - {{ pin_subpackage("biovalid", max_pin="x") }}
+  entry_points:
+    - biovalid = biovalid.__main__:run_cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.10
+    - hatchling >=1.0
+    - pip
+  run:
+    - python >=3.10
+
+test:
+  imports:
+    - biovalid
+  commands:
+    - pip check
+    - biovalid --help
+  requires:
+    - pip
+
+about:
+  home: "https://github.com/RIVM-bioinformatics/biovalid"
+  summary: Quick validation of common bioinformatics files in pure Python
+  license: AGPL-3.0-or-later
+  license_file: LICENCE
+
+
+
+extra:
+  recipe-maintainers:
+    - raaijmag
+    - florianzwagemaker
+    - ids-bioinformatics
