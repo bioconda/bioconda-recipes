@@ -47,11 +47,8 @@ test:
     # Test binaries are in path
     - TargetPerla.pl 2>&1 | cat > /dev/null
     - EXCAVATORDataAnalysis.pl 2>&1 | grep "Usage" || true
-    
-    # MAINTAINER REQUEST: Test if the compiled Fortran libraries can be loaded by R
-    # We construct the path to the installed .so file and attempt to dyn.load it
-    - Rscript -e "tryCatch(dyn.load(paste0(Sys.getenv('PREFIX'), '/share/excavator2/lib/F77/F4R.so')), error = function(e) { print(e); quit(status=1) })"
-
+    # test compiled libs 
+    - Rscript -e "bin_path <- Sys.which('TargetPerla.pl'); install_root <- dirname(dirname(bin_path)); so_path <- file.path(install_root, 'share', 'excavator2', 'lib', 'F77', 'F4R.so'); print(paste('Loading:', so_path)); if(!file.exists(so_path)) quit(status=1); dyn.load(so_path)"
 about:
   home: https://github.com/ctglab/excavator2
   summary: "EXCAVATOR2 is the first read count based tool that exploits all the reads produced by WES experiments to detect CNVs with a genome-wide resolution."
