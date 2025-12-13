@@ -1,0 +1,85 @@
+{% set name = "famus" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/burstein-lab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 788beb31fbe8caf3f91d056279b05684f2a196742592edebf24a87829a407740
+
+build:
+  number: 0
+  noarch: generic
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage("famus", max_pin="x.x") }}
+  entry_points:
+    - famus-train = famus.cli.train:main
+    - famus-classify = famus.cli.classify:main
+    - famus-convert-sdf = famus.cli.convert_sdf:main
+    - famus-install = famus.cli.install_models:main
+    - famus-defaults = famus.config:main
+
+requirements:
+  host:
+    - python >=3.11,<3.13
+    - pip
+    - setuptools >=45
+    - wheel
+  run:
+    - python >=3.11,<3.13
+    - numpy >=1.26.4,<2.0
+    - pandas >=2.2.3
+    - scikit-learn >=1.3.0
+    - scipy >=1.10.0
+    - biopython >=1.76
+    - tqdm >=4.66.2
+    - matplotlib-base >=3.7.0
+    - seaborn >=0.13.2
+    - pyyaml >=5.0
+    # Bioinformatics tools
+    - hmmer
+    - mafft
+    - seqkit
+    - mmseqs2
+
+test:
+  imports:
+    - famus
+    - famus.cli
+    - famus.classification
+    - famus.data_preprocessing
+    - famus.model
+    - famus.sdf
+    - famus.train
+  commands:
+    - famus-train --help
+    - famus-classify --help
+    - famus-convert-sdf --help
+    - famus-install --help
+    - famus-defaults
+    - which hmmsearch
+    - which mafft
+    - which mmseqs
+    - which seqkit
+
+about:
+  home: https://github.com/burstein-lab/famus
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Functional Annotation Method Using Siamese neural networks (FAMUS)
+  description: |
+    FAMUS is a Siamese Neural Network based framework that annotates 
+    protein sequences with function using pre-trained models or custom training.
+    
+    NOTE: PyTorch must be installed separately according to your system configuration.
+    Visit https://pytorch.org/get-started/locally/ for installation instructions.
+  doc_url: https://github.com/burstein-lab/famus
+  dev_url: https://github.com/burstein-lab/famus
+
+extra:
+  recipe-maintainers:
+    - guyshur
