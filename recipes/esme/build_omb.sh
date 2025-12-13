@@ -6,7 +6,7 @@ export CC=mpicc
 export CXX=mpicxx
 export CFLAGS=-O3
 
-cd esme_omb
+cd "${SRC_DIR}/esme_omb"
 
 ./configure --prefix=$PREFIX \
 	    --disable-dependency-tracking \
