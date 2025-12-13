@@ -1,45 +1,69 @@
-{% set version = "1.1.1" %}
-{% set sha256 = "feda817aecc98bf0332de0e11e58e5a808279c452780be5b33741574158761e0" %}
+{% set version = "2.0.0" %}
+{% set sha256 = "d56e87fa27719c11d175e1d8d99c95fba7df1d56d350228c23c116fcddb37123" %}
 
 package:
   name: virmet
   version: '{{version}}'
 
 source:
-  url: https://github.com/ozagordi/VirMet/archive/v{{version}}.tar.gz
+  url: https://pypi.io/packages/source/v/virmet/virmet-{{ version }}.tar.gz
   sha256: '{{sha256}}'
 
 build:
   noarch: python
-  number: 0
-  script: python -m pip install --no-deps --ignore-installed .
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('virmet') }}
+  script: 
+    {% if not win %}
+    - export SETUPTOOLS_SCM_PRETEND_VERSION="{{ version }}"
+    {% else %}
+    - set SETUPTOOLS_SCM_PRETEND_VERSION="{{ version }}"
+    {% endif %}
+    - python -m pip install --no-deps --ignore-installed .
 
 requirements:
   host:
-    - python >=3
+    - python >=3.9
     - pip
+    - setuptools
   run:
     - biopython
     - blast >=2.3
     - bwa
-    - entrez-direct
+    - fastp
     - htslib
+    - kraken2 >=2.1.6
+    - ncbi-datasets-cli
+    - numpy
     - pandas
-    - prinseq
-    - python >=3
+    - python >=3.9
+    - requests
     - r-ggplot2
     - samtools >=1.3
+    - seqkit
     - seqtk
 
 test:
+  imports:
+    - virmet
+    - virmet.cli
   commands:
     - virmet fetch -h
     - virmet wolfpack -h
     - virmet --help
 
 about:
-  home: http://virmet.readthedocs.io
+  home: "https://github.com/medvir/VirMet"
   license: MIT
   license_family: MIT
   summary: A pipeline for viral metagenomics
-  dev_url: https://github.com/ozagordi/VirMet
+  description: |
+    VirMet is a Python package for viral metagenomics analysis in clinical applications.
+    It includes command-line utilities and depends on common bioinformatics tools.
+  doc_url: "https://medvir.github.io/VirMet/"
+  dev_url: "https://github.com/medvir/VirMet"
+
+extra:
+  recipe-maintainers:
+    - judithbergada
