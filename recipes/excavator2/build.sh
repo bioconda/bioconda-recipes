@@ -7,7 +7,7 @@ SOURCE_SUBDIR="excavator2"
 
 mkdir -p ~/.R
 
-# Expand environment variables explicitly for macOS
+# Create Makevars for R compilation
 cat <<EOF > ~/.R/Makevars
 F77 = ${FC}
 FC = ${FC}
@@ -24,16 +24,16 @@ find "${SOURCE_SUBDIR}" -name "*.o" -delete
 cp -r "${SOURCE_SUBDIR}"/* "${DEST_DIR}/"
 
 cd "${DEST_DIR}/lib/F77"
+
+# Set environment variables for R CMD SHLIB
+export F77="${FC}"
+export FFLAGS="${FFLAGS} -std=legacy -ffixed-line-length-none -w"
+export FLIBS="${LDFLAGS} -lgfortran -lquadmath"
+
 # compile libs
 for lib_file in *.f; do
     echo "Compiling ${lib_file}..."
-    # Use explicit environment variables for R CMD SHLIB
-    R CMD SHLIB "${lib_file}" \
-        F77="${FC}" \
-        FC="${FC}" \
-        FFLAGS="${FFLAGS} -std=legacy -ffixed-line-length-none -w" \
-        LDFLAGS="${LDFLAGS}" \
-        FLIBS="${LDFLAGS} -lgfortran -lquadmath"
+    R CMD SHLIB "${lib_file}"
 done
 cd -
 
