@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [[ "${OS}" == "Darwin" ]]; then
+if [[ "$build_platform" == osx-* ]]; then
     SERVER_FLAG="-DWITH_SERVER=OFF"
 else
     SERVER_FLAG="-DWITH_SERVER=ON"
@@ -18,6 +18,6 @@ cmake --build ./build -j 8
 
 cp ./build/app/kmindex/kmindex $PREFIX/bin
 
-if [[ "${OS}" == "Linux" ]]; then
+if [[ "$build_platform" != osx-* ]]; then
     cp ./build/app/kmindex/kmindex-server $PREFIX/bin
 fi
