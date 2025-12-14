@@ -19,5 +19,5 @@ cmake --build ./build -j 8
 cp ./build/app/kmindex/kmindex $PREFIX/bin
 
 if [[ "$build_platform" != osx-* ]]; then
-    cp ./build/app/kmindex/kmindex-server $PREFIX/bin
+    cp ./build/app/kmindex-server/kmindex-server $PREFIX/bin
 fi
