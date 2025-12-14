@@ -52,7 +52,11 @@ else
             git remote set-url origin https://github.com/ratschlab/metagraph.git
         # Fetch only the specific commit we need
         git fetch --depth 1 origin ${COMMIT_HASH}
-        git checkout ${COMMIT_HASH}
+        # Add all existing files to git to track them, then checkout will work
+        git add -A
+        git commit -m "Temporary commit" || true
+        # Now checkout the correct commit, which will overwrite with git version
+        git checkout -f ${COMMIT_HASH}
     fi
     
     # Now we can use git submodule commands to get the correct versions
