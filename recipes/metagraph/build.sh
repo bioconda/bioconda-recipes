@@ -14,6 +14,13 @@ else
     SOURCE_DIR="."
 fi
 
+# Initialize submodules if we're in a git repository (for local testing with git_url)
+if [ -d "${SOURCE_DIR}/.git" ]; then
+    pushd ${SOURCE_DIR}
+    git submodule update --init --recursive
+    popd
+fi
+
 # set version manually for htscodecs
 echo '#define HTSCODECS_VERSION_TEXT "1.6.4"' > ${SOURCE_DIR}/external-libraries/htslib/htscodecs/htscodecs/version.h
 
