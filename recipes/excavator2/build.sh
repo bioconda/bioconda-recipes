@@ -7,15 +7,11 @@ SOURCE_SUBDIR="excavator2"
 
 mkdir -p ~/.R
 
-# Create Makevars for R compilation
+# Create Makevars - don't set FLIBS in Makevars, let R handle it
 cat <<EOF > ~/.R/Makevars
-F77 = ${FC}
-FC = ${FC}
-FFLAGS = ${FFLAGS} -std=legacy -ffixed-line-length-none -w
-FLIBS = ${LDFLAGS} -lgfortran -lquadmath
-LDFLAGS = ${LDFLAGS}
-SHLIB_LDFLAGS = ${LDFLAGS}
-SHLIB_LIBADD = -lgfortran -lquadmath
+F77 = \${FC}
+FC = \${FC}
+FFLAGS = \${FFLAGS} -std=legacy -ffixed-line-length-none -w
 EOF
 
 find "${SOURCE_SUBDIR}" -name "*.so" -delete
@@ -25,10 +21,8 @@ cp -r "${SOURCE_SUBDIR}"/* "${DEST_DIR}/"
 
 cd "${DEST_DIR}/lib/F77"
 
-# Set environment variables for R CMD SHLIB
-export F77="${FC}"
+# Only override FFLAGS to add Fortran 77 specific flags
 export FFLAGS="${FFLAGS} -std=legacy -ffixed-line-length-none -w"
-export FLIBS="${LDFLAGS} -lgfortran -lquadmath"
 
 # compile libs
 for lib_file in *.f; do
