@@ -66,6 +66,41 @@ else
     git submodule update --init --recursive
     
     popd
+    
+    # After git checkout, re-detect SOURCE_DIR since structure may have changed
+    # The submodules are at metagraph/external-libraries/..., so check if there's a metagraph/ subdirectory
+    if [ -f "${SOURCE_DIR}/CMakeLists.txt" ]; then
+        # Original SOURCE_DIR still has CMakeLists.txt, keep it
+        :
+    elif [ -f "${SOURCE_DIR}/metagraph/CMakeLists.txt" ]; then
+        # CMakeLists.txt is in a metagraph/ subdirectory
+        SOURCE_DIR="${SOURCE_DIR}/metagraph"
+    elif [ -f "CMakeLists.txt" ]; then
+        # CMakeLists.txt is in current directory
+        SOURCE_DIR="."
+    elif [ -d "metagraph" ] && [ -f "metagraph/CMakeLists.txt" ]; then
+        # metagraph/ subdirectory exists in current directory
+        SOURCE_DIR="metagraph"
+    else
+        # Try to find CMakeLists.txt anywhere
+        FOUND_DIR=$(find . -maxdepth 3 -name "CMakeLists.txt" -type f | grep -v ".git" | head -1 | xargs dirname)
+        if [ -n "${FOUND_DIR}" ] && [ -f "${FOUND_DIR}/CMakeLists.txt" ]; then
+            SOURCE_DIR="${FOUND_DIR}"
+        fi
+    fi
+fi
+
+# Verify SOURCE_DIR is correct before proceeding
+if [ ! -f "${SOURCE_DIR}/CMakeLists.txt" ]; then
+    echo "Error: Could not find CMakeLists.txt at ${SOURCE_DIR}/CMakeLists.txt"
+    echo "Current directory: $(pwd)"
+    echo "SOURCE_DIR: ${SOURCE_DIR}"
+    ls -la
+    if [ -d "${SOURCE_DIR}" ]; then
+        echo "Contents of ${SOURCE_DIR}:"
+        ls -la "${SOURCE_DIR}" | head -20
+    fi
+    exit 1
 fi
 
 sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' ${SOURCE_DIR}/CMakeLists.txt
