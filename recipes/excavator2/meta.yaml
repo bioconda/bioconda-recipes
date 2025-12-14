@@ -12,17 +12,18 @@ build:
 
 source:
   url: https://github.com/ctglab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: f9c7f3f0f0374243f26cd9c5dde01c321566dd6006599b5d5f25265240c967d1 
+  sha256: f9c7f3f0f0374243f26cd9c5dde01c321566dd6006599b5d5f25265240c967d1
 
 requirements:
   build:
     - {{ compiler('fortran') }}
     - {{ compiler('cxx') }}
     - make
-    - llvm-openmp
+    - llvm-openmp  # [osx]
+
   host:
     - r-base
-    - llvm-openmp
+
   run:
     - perl
     - perl-yaml-tiny
@@ -46,16 +47,31 @@ requirements:
 
 test:
   commands:
-    # Test binaries are in path
+    # Test binaries are in PATH
     - TargetPerla.pl 2>&1 | cat > /dev/null
     - EXCAVATORDataAnalysis.pl 2>&1 | grep "Usage" || true
-    # test compiled libs 
-    - Rscript -e "bin_path <- Sys.which('TargetPerla.pl'); install_root <- dirname(dirname(bin_path)); so_path <- file.path(install_root, 'share', 'excavator2', 'lib', 'F77', 'F4R.so'); print(paste('Loading:', so_path)); if(!file.exists(so_path)) quit(status=1); dyn.load(so_path)"
+
+    # Test compiled Fortran shared library
+    - |
+      Rscript -e "
+      bin_path <- Sys.which('TargetPerla.pl');
+      install_root <- dirname(dirname(bin_path));
+      so_path <- file.path(
+        install_root, 'share', 'excavator2', 'lib', 'F77', 'F4R.so'
+      );
+      cat('Loading:', so_path, '\n');
+      if (!file.exists(so_path)) quit(status = 1);
+      dyn.load(so_path)
+      "
+
 about:
   home: https://github.com/ctglab/excavator2
-  summary: "EXCAVATOR2 is the first read count based tool that exploits all the reads produced by WES experiments to detect CNVs with a genome-wide resolution."
+  summary: >
+    EXCAVATOR2 is the first read-count-based tool that exploits all the reads
+    produced by WES experiments to detect CNVs with a genome-wide resolution.
   license: CC-BY-NC-SA-3.0
   license_family: CC
   license_file: LICENSE.txt
   dev_url: https://github.com/ctglab/excavator2
-  doc_url: "https://github.com/ctglab/excavator2/v{{ version }}/README.md"
+  doc_url: https://github.com/ctglab/excavator2/v{{ version }}/README.md
+
