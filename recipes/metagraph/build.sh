@@ -65,9 +65,12 @@ else
     # Fix .gitmodules paths - they have "metagraph/external-libraries/..." but we're at repo root
     # So we need to remove the "metagraph/" prefix from paths
     if [ -f ".gitmodules" ]; then
+        # Deinitialize existing submodules first
+        git submodule deinit --all -f 2>/dev/null || true
+        # Fix the paths in .gitmodules
         sed -i.bak 's|path = metagraph/|path = |g' .gitmodules
-        # Re-sync submodules with corrected paths
-        git submodule sync 2>/dev/null || true
+        # Remove any existing .git/modules entries for old paths
+        rm -rf .git/modules/metagraph 2>/dev/null || true
     fi
     
     # Now we can use git submodule commands to get the correct versions
