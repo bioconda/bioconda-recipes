@@ -6,16 +6,16 @@ mkdir -p "${DEST_DIR}"
 SOURCE_SUBDIR="excavator2"
 
 mkdir -p ~/.R
-# use fortran 77
-export F77="${FC}"
 
-# permissive flags for compiling fortran 77 with modern compilers.
+# Expand environment variables explicitly for macOS
 cat <<EOF > ~/.R/Makevars
 F77 = ${FC}
 FC = ${FC}
 FFLAGS = ${FFLAGS} -std=legacy -ffixed-line-length-none -w
 FLIBS = ${LDFLAGS} -lgfortran -lquadmath
 LDFLAGS = ${LDFLAGS}
+SHLIB_LDFLAGS = ${LDFLAGS}
+SHLIB_LIBADD = -lgfortran -lquadmath
 EOF
 
 find "${SOURCE_SUBDIR}" -name "*.so" -delete
@@ -27,7 +27,13 @@ cd "${DEST_DIR}/lib/F77"
 # compile libs
 for lib_file in *.f; do
     echo "Compiling ${lib_file}..."
-    R CMD SHLIB "${lib_file}"
+    # Use explicit environment variables for R CMD SHLIB
+    R CMD SHLIB "${lib_file}" \
+        F77="${FC}" \
+        FC="${FC}" \
+        FFLAGS="${FFLAGS} -std=legacy -ffixed-line-length-none -w" \
+        LDFLAGS="${LDFLAGS}" \
+        FLIBS="${LDFLAGS} -lgfortran -lquadmath"
 done
 cd -
 
