@@ -1,6 +1,10 @@
 #!/bin/bash
 
 export PLATFORM_CMAKE_EXTRAS=""
+
+# Tell CMake to use the installed libopenms
+export OPENMS_DIR=$PREFIX/lib/cmake/OpenMS
+
 if [[ "$CXX" == *gnu-c++* ]]; then
   # For stuff like this GCC bug (especially on ARM) https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111516
   echo "Detected gcc: ignoring some compile warnings."
@@ -36,6 +40,7 @@ cmake -S ../src/pyOpenMS -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
 	-DQT_HOST_PATH="${BUILD_PREFIX}" -DQT_HOST_PATH_CMAKE_DIR="${PREFIX}" \
     -DPython_EXECUTABLE="${PYTHON}" -DPython_FIND_STRATEGY="LOCATION" -DPY_NUM_MODULES=12 \
     -DNO_DEPENDENCIES=ON -DNO_SHARE=ON \
+	-DOPENMS_DIR=$OpenMS_DIR \
 	-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} \
  	${PLATFORM_CMAKE_EXTRAS}
 
