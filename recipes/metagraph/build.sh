@@ -7,18 +7,25 @@ export CXXFLAGS="${CXXFLAGS} -Wno-deprecated-declarations -Wno-attributes"
 ARCH=$(uname -m)
 OS=$(uname -s)
 
-# set version manually since we're installing from source and not from a checked out git repo
-echo '#define HTSCODECS_VERSION_TEXT "1.6.4"' > metagraph/external-libraries/htslib/htscodecs/htscodecs/version.h
+# Determine source directory - handle both git source (current dir) and tarball (metagraph/ subdir)
+if [ -d "metagraph" ]; then
+    SOURCE_DIR="metagraph"
+else
+    SOURCE_DIR="."
+fi
 
-sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' metagraph/CMakeLists.txt
+# set version manually for htscodecs
+echo '#define HTSCODECS_VERSION_TEXT "1.6.4"' > ${SOURCE_DIR}/external-libraries/htslib/htscodecs/htscodecs/version.h
 
-pushd metagraph/external-libraries/sdsl-lite
+sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' ${SOURCE_DIR}/CMakeLists.txt
+
+pushd ${SOURCE_DIR}/external-libraries/sdsl-lite
 ./install.sh "${PWD}"
 popd
 
-[[ ! -d metagraph/build ]] || rm -rf metagraph/build
-mkdir -p metagraph/build
-cd metagraph/build
+[[ ! -d ${SOURCE_DIR}/build ]] || rm -rf ${SOURCE_DIR}/build
+mkdir -p ${SOURCE_DIR}/build
+cd ${SOURCE_DIR}/build
 
 # needed for setting up python based integration test environment
 export PIP_NO_INDEX=False
