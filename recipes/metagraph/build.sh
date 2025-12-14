@@ -38,7 +38,10 @@ else
     pushd ${SOURCE_DIR}
     
     # Try to extract commit hash from directory name (metagraph-{hash}/) or use default
-    if [[ "${SOURCE_DIR}" =~ metagraph-([a-f0-9]{40}) ]]; then
+    # GitHub archives extract to metagraph-{full-commit-hash}/
+    if [[ "${SOURCE_DIR}" =~ metagraph-([a-f0-9]{40})$ ]]; then
+        COMMIT_HASH="${BASH_REMATCH[1]}"
+    elif [[ "$(basename ${SOURCE_DIR})" =~ metagraph-([a-f0-9]{40})$ ]]; then
         COMMIT_HASH="${BASH_REMATCH[1]}"
     else
         # Default commit hash from meta.yaml (should match the tarball)
@@ -69,6 +72,8 @@ else
         git submodule deinit --all -f 2>/dev/null || true
         # Fix the paths in .gitmodules
         sed -i.bak 's|path = metagraph/|path = |g' .gitmodules
+        # Clean up backup file
+        rm -f .gitmodules.bak
         # Remove any existing .git/modules entries for old paths
         rm -rf .git/modules/metagraph 2>/dev/null || true
     fi
@@ -78,22 +83,10 @@ else
     
     popd
     
-    # After git checkout, re-detect SOURCE_DIR since structure may have changed
-    # The submodules are at metagraph/external-libraries/..., so check if there's a metagraph/ subdirectory
-    if [ -f "${SOURCE_DIR}/CMakeLists.txt" ]; then
-        # Original SOURCE_DIR still has CMakeLists.txt, keep it
-        :
-    elif [ -f "${SOURCE_DIR}/metagraph/CMakeLists.txt" ]; then
-        # CMakeLists.txt is in a metagraph/ subdirectory
-        SOURCE_DIR="${SOURCE_DIR}/metagraph"
-    elif [ -f "CMakeLists.txt" ]; then
-        # CMakeLists.txt is in current directory
-        SOURCE_DIR="."
-    elif [ -d "metagraph" ] && [ -f "metagraph/CMakeLists.txt" ]; then
-        # metagraph/ subdirectory exists in current directory
-        SOURCE_DIR="metagraph"
-    else
-        # Try to find CMakeLists.txt anywhere
+    # Verify SOURCE_DIR is still valid after git operations
+    # (git checkout doesn't change directory structure, so SOURCE_DIR should still be correct)
+    if [ ! -f "${SOURCE_DIR}/CMakeLists.txt" ]; then
+        # Fallback: try to find CMakeLists.txt
         FOUND_DIR=$(find . -maxdepth 3 -name "CMakeLists.txt" -type f | grep -v ".git" | head -1 | xargs dirname)
         if [ -n "${FOUND_DIR}" ] && [ -f "${FOUND_DIR}/CMakeLists.txt" ]; then
             SOURCE_DIR="${FOUND_DIR}"
@@ -115,6 +108,7 @@ if [ ! -f "${SOURCE_DIR}/CMakeLists.txt" ]; then
 fi
 
 sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' ${SOURCE_DIR}/CMakeLists.txt
+rm -f ${SOURCE_DIR}/CMakeLists.txt.bak
 
 [[ ! -d ${SOURCE_DIR}/build ]] || rm -rf ${SOURCE_DIR}/build
 mkdir -p ${SOURCE_DIR}/build
