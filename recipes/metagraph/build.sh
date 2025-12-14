@@ -62,6 +62,14 @@ else
         git checkout -f ${COMMIT_HASH}
     fi
     
+    # Fix .gitmodules paths - they have "metagraph/external-libraries/..." but we're at repo root
+    # So we need to remove the "metagraph/" prefix from paths
+    if [ -f ".gitmodules" ]; then
+        sed -i.bak 's|path = metagraph/|path = |g' .gitmodules
+        # Re-sync submodules with corrected paths
+        git submodule sync 2>/dev/null || true
+    fi
+    
     # Now we can use git submodule commands to get the correct versions
     git submodule update --init --recursive
     
