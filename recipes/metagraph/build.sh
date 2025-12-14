@@ -68,9 +68,6 @@ else
     popd
 fi
 
-# set version manually for htscodecs
-echo '#define HTSCODECS_VERSION_TEXT "1.6.4"' > ${SOURCE_DIR}/external-libraries/htslib/htscodecs/htscodecs/version.h
-
 sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' ${SOURCE_DIR}/CMakeLists.txt
 
 [[ ! -d ${SOURCE_DIR}/build ]] || rm -rf ${SOURCE_DIR}/build
