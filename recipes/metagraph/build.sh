@@ -34,8 +34,12 @@ if [ -d "${SOURCE_DIR}/.git" ]; then
     popd
 else
     # GitHub archive doesn't include submodules, so initialize git repo and use submodule commands
-    echo "Initializing git repository to fetch submodules..."
+    echo "=== DEBUG: Initializing git repository to fetch submodules ==="
+    echo "Current directory: $(pwd)"
+    echo "SOURCE_DIR: ${SOURCE_DIR}"
+    echo "Absolute SOURCE_DIR: $(cd ${SOURCE_DIR} && pwd)"
     pushd ${SOURCE_DIR}
+    echo "After pushd, current directory: $(pwd)"
     
     # Try to extract commit hash from directory name (metagraph-{hash}/) or use default
     # GitHub archives extract to metagraph-{full-commit-hash}/
@@ -47,6 +51,7 @@ else
         # Default commit hash from meta.yaml (should match the tarball)
         COMMIT_HASH="cc7cc94948c77094e36fd97c94490f0be003e592"
     fi
+    echo "Using commit hash: ${COMMIT_HASH}"
     
     # Initialize git repo if not already one
     if [ ! -d ".git" ]; then
@@ -67,26 +72,96 @@ else
     
     # Fix .gitmodules paths - they have "metagraph/external-libraries/..." but we're at repo root
     # So we need to remove the "metagraph/" prefix from paths
-    if [ -f ".gitmodules" ] && grep -q "path = metagraph/" .gitmodules; then
-        # Deinitialize and remove all existing submodules first
-        git submodule deinit --all -f 2>/dev/null || true
-        # Remove all old submodule entries from .git/config
-        # Use awk to remove sections starting with [submodule "metagraph/
-        if [ -f ".git/config" ]; then
-            awk '/^\[submodule "metagraph\// {skip=1; next} /^\[/ {skip=0} !skip' .git/config > .git/config.new && mv .git/config.new .git/config || true
+    if [ -f ".gitmodules" ]; then
+        echo "=== DEBUG: Found .gitmodules ==="
+        echo "Current directory: $(pwd)"
+        echo "Contents of .gitmodules BEFORE fix:"
+        cat .gitmodules | head -20
+        echo "---"
+        
+        if grep -q "path = metagraph/" .gitmodules; then
+            echo "=== DEBUG: Fixing .gitmodules paths ==="
+            # Completely remove all submodule configuration
+            echo "Deinitializing all submodules..."
+            git submodule deinit --all -f 2>/dev/null || true
+            
+            # Show .git/config before cleanup
+            echo "=== DEBUG: .git/config BEFORE cleanup ==="
+            grep -A 2 '\[submodule' .git/config 2>/dev/null | head -30 || echo "No submodule entries found"
+            echo "---"
+            
+            # Remove all submodule entries from .git/config (both old and new paths)
+            if [ -f ".git/config" ]; then
+                awk '/^\[submodule / {skip=1; next} /^\[/ {skip=0} !skip' .git/config > .git/config.new && mv .git/config.new .git/config || true
+            fi
+            
+            # Show .git/config after cleanup
+            echo "=== DEBUG: .git/config AFTER cleanup ==="
+            grep -A 2 '\[submodule' .git/config 2>/dev/null | head -30 || echo "No submodule entries found"
+            echo "---"
+            
+            # Remove all .git/modules entries
+            echo "Removing .git/modules..."
+            ls -la .git/modules 2>/dev/null | head -10 || echo "No .git/modules directory"
+            rm -rf .git/modules 2>/dev/null || true
+            
+            # Fix the paths in .gitmodules
+            echo "Fixing paths in .gitmodules..."
+            sed -i.bak 's|path = metagraph/|path = |g' .gitmodules
+            # Clean up backup file
+            rm -f .gitmodules.bak
+            
+            echo "=== DEBUG: Contents of .gitmodules AFTER fix ==="
+            cat .gitmodules | head -20
+            echo "---"
+        else
+            echo "=== DEBUG: .gitmodules doesn't have metagraph/ paths, skipping fix ==="
         fi
-        # Fix the paths in .gitmodules
-        sed -i.bak 's|path = metagraph/|path = |g' .gitmodules
-        # Clean up backup file
-        rm -f .gitmodules.bak
-        # Remove any existing .git/modules entries for old paths
-        rm -rf .git/modules/metagraph 2>/dev/null || true
-        # Sync submodule URLs with the corrected .gitmodules
-        git submodule sync 2>/dev/null || true
+    else
+        echo "=== DEBUG: No .gitmodules file found ==="
     fi
     
     # Now we can use git submodule commands to get the correct versions
+    # This will re-initialize everything from the corrected .gitmodules
+    echo "=== DEBUG: Current directory before submodule update: $(pwd) ==="
+    echo "=== DEBUG: Directory structure before submodule update ==="
+    ls -la | head -20
+    echo "---"
+    if [ -d "external-libraries" ]; then
+        echo "=== DEBUG: external-libraries directory exists ==="
+        ls -la external-libraries | head -10
+    else
+        echo "=== DEBUG: external-libraries directory does NOT exist ==="
+    fi
+    if [ -d "metagraph" ]; then
+        echo "=== DEBUG: metagraph subdirectory exists ==="
+        ls -la metagraph | head -10
+    fi
+    echo "---"
+    
+    echo "=== DEBUG: Running git submodule update --init --recursive ==="
     git submodule update --init --recursive
+    
+    echo "=== DEBUG: After submodule update ==="
+    echo "Current directory: $(pwd)"
+    echo "=== DEBUG: Directory structure after submodule update ==="
+    ls -la | head -20
+    echo "---"
+    if [ -d "external-libraries" ]; then
+        echo "=== DEBUG: external-libraries directory exists ==="
+        ls -la external-libraries | head -15
+    fi
+    if [ -d "metagraph" ]; then
+        echo "=== DEBUG: metagraph subdirectory exists ==="
+        ls -la metagraph | head -15
+        if [ -d "metagraph/external-libraries" ]; then
+            echo "=== DEBUG: metagraph/external-libraries exists (WRONG!) ==="
+            ls -la metagraph/external-libraries | head -10
+        fi
+    fi
+    echo "=== DEBUG: .git/config after submodule update ==="
+    grep -A 2 '\[submodule' .git/config 2>/dev/null | head -30 || echo "No submodule entries found"
+    echo "---"
     
     popd
     
