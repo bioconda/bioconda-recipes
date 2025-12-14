@@ -67,15 +67,22 @@ else
     
     # Fix .gitmodules paths - they have "metagraph/external-libraries/..." but we're at repo root
     # So we need to remove the "metagraph/" prefix from paths
-    if [ -f ".gitmodules" ]; then
-        # Deinitialize existing submodules first
+    if [ -f ".gitmodules" ] && grep -q "path = metagraph/" .gitmodules; then
+        # Deinitialize and remove all existing submodules first
         git submodule deinit --all -f 2>/dev/null || true
+        # Remove all old submodule entries from .git/config
+        # Use awk to remove sections starting with [submodule "metagraph/
+        if [ -f ".git/config" ]; then
+            awk '/^\[submodule "metagraph\// {skip=1; next} /^\[/ {skip=0} !skip' .git/config > .git/config.new && mv .git/config.new .git/config || true
+        fi
         # Fix the paths in .gitmodules
         sed -i.bak 's|path = metagraph/|path = |g' .gitmodules
         # Clean up backup file
         rm -f .gitmodules.bak
         # Remove any existing .git/modules entries for old paths
         rm -rf .git/modules/metagraph 2>/dev/null || true
+        # Sync submodule URLs with the corrected .gitmodules
+        git submodule sync 2>/dev/null || true
     fi
     
     # Now we can use git submodule commands to get the correct versions
