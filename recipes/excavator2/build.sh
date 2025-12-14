@@ -10,6 +10,7 @@ mkdir -p ~/.R
 # Let R/conda manage compilers, only add legacy flags
 cat <<EOF > ~/.R/Makevars
 FFLAGS += -std=legacy -ffixed-line-length-none -w
+SHLIB_LDFLAGS += -undefined dynamic_lookup
 EOF
 
 find "${SOURCE_SUBDIR}" -name "*.so" -delete
