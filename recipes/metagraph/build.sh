@@ -48,6 +48,9 @@ else
     # Initialize git repo if not already one
     if [ ! -d ".git" ]; then
         git init
+        # Configure git user (required for commits)
+        git config user.name "Conda Build"
+        git config user.email "conda@build.local"
         git remote add origin https://github.com/ratschlab/metagraph.git 2>/dev/null || \
             git remote set-url origin https://github.com/ratschlab/metagraph.git
         # Fetch only the specific commit we need
