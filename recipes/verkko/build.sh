@@ -10,14 +10,11 @@ if [ "$(uname)" == "Darwin" ]; then
     export HOME=`pwd`
     echo "HOME is $HOME"
     mkdir -p $HOME/.cargo/registry/index/
+    
+    export DYLD_FALLBACK_LIBRARY_PATH="${PREFIX}/lib"
 fi
 
-# set up CXX compliation
-if [ "$(uname)" == "Darwin" ]; then
-    export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
-else
-    export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-fi
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
 # this is defaulted to system type (e.g. x86_64-unknown-linux-gnu) which breaks subsequent copy makefile as it wants just rukki/target/release/rukki not rukki/target/x86_64-unknown-linux-gnu/release/target
