@@ -28,17 +28,18 @@ esac
 
 # Ensure qmake uses correct compiler
 export QMAKE_CXX="${CXX}"
+echo $CXX
 export QMAKE_CC="${CC}"
+echo $CC
 
 #check qmake version
 qmake --version
-echo "bla"
 ls -al $PREFIX/include/
 
 #build (enable debug info by adding '-Wall -d')
 mkdir build
 cd build
-qmake CONFIG-=debug CONFIG+=release DEFINES+=QT_NO_DEBUG_OUTPUT QMAKE_CXX="$CXX" QMAKE_CC="$CC" QMAKE_CFLAGS="$CFLAGS" QMAKE_CXXFLAGS="$CXXFLAGS" QMAKE_LIBDIR+="${PREFIX}/lib" QMAKE_RPATHLINKDIR+="${PREFIX}/lib/" ../src/tools.pro
+qmake CONFIG-=debug CONFIG+=release DEFINES+=QT_NO_DEBUG_OUTPUT QMAKE_CXX="${CXX}" QMAKE_CC="${CC}" QMAKE_CFLAGS="${CFLAGS}" QMAKE_CXXFLAGS="${CXXFLAGS}" QMAKE_LIBDIR+="${PREFIX}/lib" QMAKE_RPATHLINKDIR+="${PREFIX}/lib/" ../src/tools.pro
 make -j"${CPU_COUNT}"
 cd ..
 
