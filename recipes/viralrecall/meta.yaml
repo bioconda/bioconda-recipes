@@ -1,0 +1,51 @@
+{% set name = "viralrecall" %}
+{% set version = "3.0.1" %}
+
+package:
+  name: {{ name | lower }}
+  version: {{ version }}
+
+source:
+  url : https://github.com/abdealijivaji/ViralRecall_3.0/archive/refs/tags/v{{ version }}.tar.gz
+  sha256 : 99896c5a2145b2b0a1a817ac6574754dd74c90a5d357f25bc5da9198843e70ea
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports :
+    - {{ pin_subpackage(name , max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+  run:
+    - python >=3.10
+    - numpy >=2.2,<2.3
+    - pandas >=2.2,<2.3
+    - matplotlib-base >=3.10,<3.11
+    - requests >=2.32,<2.33
+    - progressbar >=2.5
+    - pyfaidx ==0.9.0
+    - pyhmmer >=0.11.3
+    - pyrodigal-gv >=0.3
+
+about:
+  home: "https://github.com/abdealijivaji/ViralRecall_3.0"
+  license: "MIT"
+  license_file: LICENSE
+  summary: "Tool to identify giant viruses integrated into eukaryotic genomes"
+  license_family: "MIT"
+
+extra:
+  recipe-maintainers:
+    - abdealijivaji
+
+test:
+  imports:
+    - viralrecall
+  commands:
+    - viralrecall --version
+
