@@ -105,8 +105,11 @@ else
             ls -la .git/modules 2>/dev/null | head -10 || echo "No .git/modules directory"
             rm -rf .git/modules 2>/dev/null || true
             
-            # Fix the paths in .gitmodules
+            # Fix the paths in .gitmodules - need to fix both section headers and path lines
             echo "Fixing paths in .gitmodules..."
+            # Fix section headers: [submodule "metagraph/external-libraries/..."] -> [submodule "external-libraries/..."]
+            sed -i.bak 's|\[submodule "metagraph/|\[submodule "|g' .gitmodules
+            # Fix path lines: path = metagraph/... -> path = ...
             sed -i.bak 's|path = metagraph/|path = |g' .gitmodules
             # Clean up backup file
             rm -f .gitmodules.bak
