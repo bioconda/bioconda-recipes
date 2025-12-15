@@ -1,12 +1,12 @@
 --- a/metagraph/CMakeLists.txt
 +++ b/metagraph/CMakeLists.txt
-@@ -354,6 +354,9 @@ target_compile_options(zlib
-     -Wno-maybe-uninitialized
- )
- 
-+# Add zlib include directory to sshash so it can find zlib.h
-+target_include_directories(sshash_static PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external-libraries/zlib)
-+
- add_library(folly STATIC
-   external-libraries/folly/folly/lang/SafeAssert.cpp
-   external-libraries/folly/folly/lang/ToAscii.cpp
+@@ -342,6 +342,9 @@ IF(APPLE)
+     set(CMAKE_USE_PTHREADS_INIT 1)
+     set(THREADS_PREFER_PTHREAD_FLAG ON)
+ ENDIF()
++# Add zlib include directory before sshash is added so it can find zlib.h
++# The zlib submodule directory exists in the filesystem even though it's added as a subdirectory later
++include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external-libraries/zlib)
+ add_subdirectory(external-libraries/spdlog)
+ add_subdirectory(external-libraries/sshash SYSTEM)
+ add_subdirectory(external-libraries/DYNAMIC)
