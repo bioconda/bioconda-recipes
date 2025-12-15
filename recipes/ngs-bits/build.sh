@@ -32,8 +32,8 @@ export QMAKE_CC="${CC}"
 
 #check qmake version
 qmake --version
-ls -al {PREFIX}/include/
-ls -al {PREFIX}/include/libxml2/
+ls -al $PREFIX/include/
+ls -al $PREFIX/include/libxml2/
 
 #build (enable debug info by adding '-Wall -d')
 mkdir build
@@ -46,4 +46,7 @@ cd ..
 rm -rf bin/out bin/cpp*-TEST bin/tools-TEST
 
 #deploy (lib)
-install -m 0755 bin/libcpp* "${PREFIX}/lib/
+install -m 0755 bin/libcpp* "${PREFIX}/lib/"
+
+#deploy (bin)
+install -v -m 0755 bin/* "${PREFIX}/bin"
