@@ -33,7 +33,6 @@ export QMAKE_CC="${CC}"
 #check qmake version
 qmake --version
 ls -al $PREFIX/include/
-ls -al $PREFIX/include/libxml2/
 
 #build (enable debug info by adding '-Wall -d')
 mkdir build
