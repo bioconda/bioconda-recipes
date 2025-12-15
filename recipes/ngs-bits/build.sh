@@ -26,15 +26,13 @@ case $(uname -m) in
 	;;
 esac
 
-# Ensure qmake uses correct compiler
-export QMAKE_CXX="${CXX}"
-echo $CXX
-export QMAKE_CC="${CC}"
-echo $CC
-
 #check qmake version
 qmake --version
 ls -al $PREFIX/include/
+
+#qmake bugfix: qmake fails if there is no g++ executable available, even if QMAKE_CXX/QMAKE_CC is explicitly set
+ln -s $CXX $BUILD_PREFIX/bin/g++
+export PATH=$BUILD_PREFIX/bin/:$PATH
 
 #build (enable debug info by adding '-Wall -d')
 mkdir build
