@@ -105,6 +105,15 @@ else
             ls -la .git/modules 2>/dev/null | head -10 || echo "No .git/modules directory"
             rm -rf .git/modules 2>/dev/null || true
             
+            # Remove submodule entries from git index
+            echo "Removing submodule entries from git index..."
+            git ls-files --stage | grep "^160000" | awk '{print $4}' | while read submodule_path; do
+                if [[ "${submodule_path}" == metagraph/* ]]; then
+                    echo "Removing ${submodule_path} from git index"
+                    git rm --cached "${submodule_path}" 2>/dev/null || true
+                fi
+            done
+            
             # Fix the paths in .gitmodules - need to fix both section headers and path lines
             echo "Fixing paths in .gitmodules..."
             # Fix section headers: [submodule "metagraph/external-libraries/..."] -> [submodule "external-libraries/..."]
