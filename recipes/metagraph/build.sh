@@ -130,6 +130,13 @@ fi
 sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' ${SOURCE_DIR}/CMakeLists.txt
 rm -f ${SOURCE_DIR}/CMakeLists.txt.bak
 
+# Add zlib submodule include path - sshash needs zlib.h from external-libraries/zlib
+# The zlib submodule is built by metagraph's CMake, but headers need to be in include path
+if [ -d "${SOURCE_DIR}/external-libraries/zlib" ]; then
+    export CPPFLAGS="${CPPFLAGS} -I${SOURCE_DIR}/external-libraries/zlib"
+    export CXXFLAGS="${CXXFLAGS} -I${SOURCE_DIR}/external-libraries/zlib"
+fi
+
 [[ ! -d ${SOURCE_DIR}/build ]] || rm -rf ${SOURCE_DIR}/build
 mkdir -p ${SOURCE_DIR}/build
 cd ${SOURCE_DIR}/build
