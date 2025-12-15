@@ -32,6 +32,7 @@ export QMAKE_CC="${CC}"
 
 #check qmake version
 qmake --version
+echo "bla"
 ls -al $PREFIX/include/
 
 #build (enable debug info by adding '-Wall -d')
