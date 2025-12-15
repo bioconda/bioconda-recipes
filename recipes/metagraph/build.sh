@@ -8,14 +8,25 @@ ARCH=$(uname -m)
 OS=$(uname -s)
 
 # Determine source directory - find directory containing CMakeLists.txt
-# Handles: git source (current dir), tarball with metagraph/ subdir, or GitHub archive (metagraph-{hash}/)
+# GitHub archive extracts to metagraph-{hash}/ which contains metagraph/ subdirectory
+# So CMakeLists.txt is at metagraph-{hash}/metagraph/CMakeLists.txt
 if [ -f "CMakeLists.txt" ]; then
     SOURCE_DIR="."
 elif [ -d "metagraph" ] && [ -f "metagraph/CMakeLists.txt" ]; then
+    # Either we're in metagraph-{hash}/ and metagraph/ is a subdirectory, or conda renamed it
     SOURCE_DIR="metagraph"
-elif ls -d metagraph-* 2>/dev/null | head -1 | xargs test -f 2>/dev/null; then
+elif ls -d metagraph-* 2>/dev/null | head -1 | grep -q .; then
     # GitHub archive extracts to metagraph-{hash}/
-    SOURCE_DIR=$(ls -d metagraph-* 2>/dev/null | head -1)
+    ARCHIVE_DIR=$(ls -d metagraph-* 2>/dev/null | head -1)
+    if [ -f "${ARCHIVE_DIR}/metagraph/CMakeLists.txt" ]; then
+        # CMakeLists.txt is in metagraph-{hash}/metagraph/
+        SOURCE_DIR="${ARCHIVE_DIR}/metagraph"
+    elif [ -f "${ARCHIVE_DIR}/CMakeLists.txt" ]; then
+        # CMakeLists.txt is directly in metagraph-{hash}/ (unlikely but handle it)
+        SOURCE_DIR="${ARCHIVE_DIR}"
+    else
+        SOURCE_DIR="."
+    fi
 else
     SOURCE_DIR="."
 fi
@@ -23,6 +34,7 @@ fi
 # Verify we found the right directory
 if [ ! -f "${SOURCE_DIR}/CMakeLists.txt" ]; then
     echo "Error: Could not find CMakeLists.txt. Current directory: $(pwd)"
+    echo "SOURCE_DIR: ${SOURCE_DIR}"
     ls -la
     exit 1
 fi
@@ -34,24 +46,38 @@ if [ -d "${SOURCE_DIR}/.git" ]; then
     popd
 else
     # GitHub archive doesn't include submodules, so initialize git repo and use submodule commands
-    echo "=== DEBUG: Initializing git repository to fetch submodules ==="
-    echo "Current directory: $(pwd)"
-    echo "SOURCE_DIR: ${SOURCE_DIR}"
-    echo "Absolute SOURCE_DIR: $(cd ${SOURCE_DIR} && pwd)"
-    pushd ${SOURCE_DIR}
-    echo "After pushd, current directory: $(pwd)"
+    # We need to initialize git at the archive root (where .gitmodules is), not in SOURCE_DIR
+    # If SOURCE_DIR is metagraph-{hash}/metagraph/, then archive root is metagraph-{hash}/
+    if [[ "${SOURCE_DIR}" == */metagraph ]]; then
+        # SOURCE_DIR is something like metagraph-{hash}/metagraph/, archive root is one level up
+        ARCHIVE_ROOT=$(dirname "${SOURCE_DIR}")
+    elif [[ "${SOURCE_DIR}" =~ ^metagraph- ]]; then
+        # SOURCE_DIR is metagraph-{hash}/, that's the archive root
+        ARCHIVE_ROOT="${SOURCE_DIR}"
+    else
+        # SOURCE_DIR is just "metagraph" or ".", try to find archive root
+        if [ -d "metagraph" ] && [ -f "metagraph/CMakeLists.txt" ]; then
+            # We're at archive root, metagraph/ is subdirectory
+            ARCHIVE_ROOT="."
+        else
+            # Assume SOURCE_DIR is archive root
+            ARCHIVE_ROOT="${SOURCE_DIR}"
+        fi
+    fi
+    
+    echo "Initializing git repository at archive root to fetch submodules..."
+    pushd ${ARCHIVE_ROOT}
     
     # Try to extract commit hash from directory name (metagraph-{hash}/) or use default
     # GitHub archives extract to metagraph-{full-commit-hash}/
-    if [[ "${SOURCE_DIR}" =~ metagraph-([a-f0-9]{40})$ ]]; then
+    if [[ "${ARCHIVE_ROOT}" =~ metagraph-([a-f0-9]{40})$ ]] || [[ "${ARCHIVE_ROOT}" =~ metagraph-([a-f0-9]{40})/ ]]; then
         COMMIT_HASH="${BASH_REMATCH[1]}"
-    elif [[ "$(basename ${SOURCE_DIR})" =~ metagraph-([a-f0-9]{40})$ ]]; then
+    elif [[ "${SOURCE_DIR}" =~ metagraph-([a-f0-9]{40})/metagraph$ ]]; then
         COMMIT_HASH="${BASH_REMATCH[1]}"
     else
         # Default commit hash from meta.yaml (should match the tarball)
         COMMIT_HASH="cc7cc94948c77094e36fd97c94490f0be003e592"
     fi
-    echo "Using commit hash: ${COMMIT_HASH}"
     
     # Initialize git repo if not already one
     if [ ! -d ".git" ]; then
@@ -70,110 +96,10 @@ else
         git checkout -f ${COMMIT_HASH}
     fi
     
-    # Fix .gitmodules paths - they have "metagraph/external-libraries/..." but we're at repo root
-    # So we need to remove the "metagraph/" prefix from paths
-    if [ -f ".gitmodules" ]; then
-        echo "=== DEBUG: Found .gitmodules ==="
-        echo "Current directory: $(pwd)"
-        echo "Contents of .gitmodules BEFORE fix:"
-        cat .gitmodules | head -20
-        echo "---"
-        
-        if grep -q "path = metagraph/" .gitmodules; then
-            echo "=== DEBUG: Fixing .gitmodules paths ==="
-            # Completely remove all submodule configuration
-            echo "Deinitializing all submodules..."
-            git submodule deinit --all -f 2>/dev/null || true
-            
-            # Show .git/config before cleanup
-            echo "=== DEBUG: .git/config BEFORE cleanup ==="
-            grep -A 2 '\[submodule' .git/config 2>/dev/null | head -30 || echo "No submodule entries found"
-            echo "---"
-            
-            # Remove all submodule entries from .git/config (both old and new paths)
-            if [ -f ".git/config" ]; then
-                awk '/^\[submodule / {skip=1; next} /^\[/ {skip=0} !skip' .git/config > .git/config.new && mv .git/config.new .git/config || true
-            fi
-            
-            # Show .git/config after cleanup
-            echo "=== DEBUG: .git/config AFTER cleanup ==="
-            grep -A 2 '\[submodule' .git/config 2>/dev/null | head -30 || echo "No submodule entries found"
-            echo "---"
-            
-            # Remove all .git/modules entries
-            echo "Removing .git/modules..."
-            ls -la .git/modules 2>/dev/null | head -10 || echo "No .git/modules directory"
-            rm -rf .git/modules 2>/dev/null || true
-            
-            # Remove submodule entries from git index
-            echo "Removing submodule entries from git index..."
-            git ls-files --stage | grep "^160000" | awk '{print $4}' | while read submodule_path; do
-                if [[ "${submodule_path}" == metagraph/* ]]; then
-                    echo "Removing ${submodule_path} from git index"
-                    git rm --cached "${submodule_path}" 2>/dev/null || true
-                fi
-            done
-            
-            # Fix the paths in .gitmodules - need to fix both section headers and path lines
-            echo "Fixing paths in .gitmodules..."
-            # Fix section headers: [submodule "metagraph/external-libraries/..."] -> [submodule "external-libraries/..."]
-            sed -i.bak 's|\[submodule "metagraph/|\[submodule "|g' .gitmodules
-            # Fix path lines: path = metagraph/... -> path = ...
-            sed -i.bak 's|path = metagraph/|path = |g' .gitmodules
-            # Clean up backup file
-            rm -f .gitmodules.bak
-            
-            echo "=== DEBUG: Contents of .gitmodules AFTER fix ==="
-            cat .gitmodules | head -20
-            echo "---"
-        else
-            echo "=== DEBUG: .gitmodules doesn't have metagraph/ paths, skipping fix ==="
-        fi
-    else
-        echo "=== DEBUG: No .gitmodules file found ==="
-    fi
-    
-    # Now we can use git submodule commands to get the correct versions
-    # This will re-initialize everything from the corrected .gitmodules
-    echo "=== DEBUG: Current directory before submodule update: $(pwd) ==="
-    echo "=== DEBUG: Directory structure before submodule update ==="
-    ls -la | head -20
-    echo "---"
-    if [ -d "external-libraries" ]; then
-        echo "=== DEBUG: external-libraries directory exists ==="
-        ls -la external-libraries | head -10
-    else
-        echo "=== DEBUG: external-libraries directory does NOT exist ==="
-    fi
-    if [ -d "metagraph" ]; then
-        echo "=== DEBUG: metagraph subdirectory exists ==="
-        ls -la metagraph | head -10
-    fi
-    echo "---"
-    
-    echo "=== DEBUG: Running git submodule update --init --recursive ==="
+    # We're at the archive root, so .gitmodules paths like "metagraph/external-libraries/..." are correct
+    # No need to fix paths - git will create submodules at the correct locations
+    echo "Initializing submodules from archive root: $(pwd)"
     git submodule update --init --recursive
-    
-    echo "=== DEBUG: After submodule update ==="
-    echo "Current directory: $(pwd)"
-    echo "=== DEBUG: Directory structure after submodule update ==="
-    ls -la | head -20
-    echo "---"
-    if [ -d "external-libraries" ]; then
-        echo "=== DEBUG: external-libraries directory exists ==="
-        ls -la external-libraries | head -15
-    fi
-    if [ -d "metagraph" ]; then
-        echo "=== DEBUG: metagraph subdirectory exists ==="
-        ls -la metagraph | head -15
-        if [ -d "metagraph/external-libraries" ]; then
-            echo "=== DEBUG: metagraph/external-libraries exists (WRONG!) ==="
-            ls -la metagraph/external-libraries | head -10
-        fi
-    fi
-    echo "=== DEBUG: .git/config after submodule update ==="
-    grep -A 2 '\[submodule' .git/config 2>/dev/null | head -30 || echo "No submodule entries found"
-    echo "---"
     
     popd
     
