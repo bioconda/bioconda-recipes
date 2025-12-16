@@ -1,5 +1,5 @@
 {% set name = "nanomotif" %}
-{% set version = "0.8.0" %}
+{% set version = "1.0.2" %}
 
 package:
   name: {{ name }}
@@ -7,38 +7,42 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/nanomotif-{{ version }}.tar.gz
-  sha256: 38961fb39d0227ac6de4200b28f95e452fc7ad34a4e99913d773df60d1e06718
+  sha256: 738e17793cfa7223f438a942028ec9ec71d9034df07a92496f11dc70c80090f5
 
 build:
+  number: 0
+  noarch: python
   entry_points:
     - nanomotif = nanomotif.main:main
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
-  number: 0
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -f *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
-    - {{ pin_subpackage('nanomotif', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3
     - pip
     - setuptools
   run:
-    - python
+    - python >=3
     - requests
-    - numpy >=1.24.4
+    - numpy >=1.24.4,<=2.0.0
     - pandas >=2.0.2
-    - polars >=0.19,<=0.20.23
+    - polars >=1.31
     - scipy >=1.10.1
     - scikit-learn >=1.5.2
     - networkx >=3.1
     - pyarrow >=15.0.2
-    - pymethylation_utils ==0.5.2
+    - epimetheus-py ==0.7.4
     - hdbscan
-    - Bio >=1.6.2
+    - bio >=1.6.2
     - snakemake-minimal >=7.32.4
     - progressbar2 >=3.53.1
-    - epimetheus-py
+    - pyfastx >=0.2.10
+    - pysam >=0.22.0
 
 test:
   imports:
@@ -48,7 +52,7 @@ test:
 
 about:
   home: "https://github.com/MicrobialDarkMatter/nanomotif"
-  summary: "Identifying methlyation motifs in nanopore data"
+  summary: "Identifying methlyation motifs in nanopore data."
   license: MIT
   license_family: MIT
   license_file: LICENSE
