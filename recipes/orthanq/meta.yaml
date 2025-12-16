@@ -1,0 +1,69 @@
+{% set name = "orthanq" %}
+{% set version = "1.21.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/orthanq/orthanq/archive/v{{ version }}.tar.gz
+  sha256: 56c517e413819d694cabc6566854f54cccd71da2ed277e6c4268046b0f7aba0d
+
+build:
+  number: 0
+  skip: True  # [py < 310 or (aarch64 and py < 311)]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - make
+    - cmake
+    - pkg-config
+    - clangdev
+    #datavzrd dependencies
+    - nodejs >=16
+    - pnpm
+  host:
+    - python
+    - pkg-config
+    - gsl
+    - libcblas
+    - openssl  # [linux]
+    - coincbc
+    - fontconfig
+    - zlib
+    - bzip2
+    - xz
+  run:
+    - python
+    - gsl
+    - openssl  # [linux]
+    - varlociraptor ==8.7.3
+    - samtools ==1.20
+    - vg ==1.63.1  # [linux]
+    - htslib
+    - minimap2
+    - bwa
+
+test:
+  commands:
+    - orthanq -h
+
+about:
+  home: "https://github.com/orthanq/orthanq"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Uncertainty aware HLA typing and general haplotype quantification."
+  dev_url: "https://github.com/orthanq/orthanq"
+  doc_url: "https://orthanq.github.io"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

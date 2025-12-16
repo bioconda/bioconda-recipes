@@ -1,0 +1,51 @@
+{% set version = "1.0.2" %}
+
+package:
+  name: cutefc
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/c/cuteFC/cuteFC-{{ version }}.tar.gz
+  sha256: 082c49d0a05675ddce3852eef00cbda20a52041ed8e2755ed98608b1a8fb0ca4
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage("cutefc", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3
+    - scipy
+    - pysam
+    - biopython
+    - cigar
+    - numpy
+    - pyvcf3
+    - scikit-learn
+
+test:
+  imports:
+    - benchmarks
+    - cuteFC
+  commands:
+    - cuteFC -h
+  requires:
+    - pip
+
+about:
+  home: https://github.com/Meltpinkg/cuteFC
+  summary: Regenotyping structural variants through an accurate and efficient force-calling method
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - Meltpinkg

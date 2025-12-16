@@ -7,6 +7,6 @@ TGT="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
 cd "${SRC_DIR}"
 mv sage*.jar $TGT/sage.jar
 
-cp $RECIPE_DIR/SAGE.sh $TGT/SAGE
-ln -s $TGT/SAGE $PREFIX/bin
-chmod 0755 "${PREFIX}/bin/SAGE"
+cp $RECIPE_DIR/sage.sh $TGT/sage
+ln -s $TGT/sage $PREFIX/bin
+chmod 0755 "${PREFIX}/bin/sage"

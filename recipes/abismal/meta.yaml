@@ -1,8 +1,13 @@
-{% set version = "3.2.2" %}
+{% set name = "abismal" %}
+{% set version = "3.3.0" %}
 
 package:
-  name: abismal
+  name: {{ name }}
   version: {{ version }}
+
+source:
+  url: https://github.com/smithlabcode/abismal/releases/download/v{{ version }}/abismal-{{ version }}.tar.gz
+  sha256: 0ba33668836c1bff914a1b11c00056134edd7a151ffdd1552030684716f1d6db
 
 build:
   number: 0
@@ -10,37 +15,41 @@ build:
     # abismal is currently not intended to be stable between minor versions (x.x).
     - {{ pin_subpackage('abismal', max_pin="x.x") }}
 
-
-source:
-  url: https://github.com/smithlabcode/abismal/releases/download/v{{ version }}/abismal-{{ version }}.tar.gz
-  sha256: c7014da2e97e8821f4d1fca4f0618dcf5433e26db7e1cae5b6efa937da5d2ff2
-
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
     - autoconf
     - automake
+    - libtool
+    - pkg-config
+  host:
+    - zlib
+    - htslib
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
-  host:
-    - htslib
   run:
     - htslib
-
-about:
-  home: https://github.com/smithlabcode/abismal
-  license: GPL-3.0-only
-  license_file: LICENSE
-  summary: |
-    abismal is a fast and memory-efficient mapper for short bisulfite sequencing reads
-  doc_url: 'https://github.com/smithlabcode/abismal/blob/master/docs/MANUAL.md'
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
 
 test:
   commands:
     - abismal
 
+about:
+  home: "https://github.com/smithlabcode/abismal"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "abismal is a fast and memory-efficient mapper for short bisulfite sequencing reads."
+  doc_url: "https://github.com/smithlabcode/abismal/blob/v{{ version }}/docs/MANUAL.md"
+  dev_url: "https://github.com/smithlabcode/abismal"
+
 extra:
   recipe-maintainers:
     - andrewdavidsmith
     - guilhermesena1
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -31,3 +31,5 @@ echo "export PASAHOME=${PASAHOME}" > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}-
 
 mkdir -p ${PREFIX}/etc/conda/deactivate.d/
 echo "unset PASAHOME" > ${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}-${PKG_VERSION}.sh
+
+make clean

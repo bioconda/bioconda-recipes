@@ -1,14 +1,15 @@
-{% set version = '1.12.0' %}
+{% set name = "r-signac" %}
+{% set version = '1.16.0' %}
 
 package:
-  name: r-signac
+  name: {{ name }}
   version: {{ version|replace("-", "_") }}
 
 source:
   url:
     - {{ cran_mirror }}/src/contrib/Signac_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/Signac/Signac_{{ version }}.tar.gz
-  sha256: 0a4f1e53bcb6c3ba1e3a8e0800d6c4e65983560ff1147a643b7109452374c937
+  sha256: 71750f98af3b9e40ddcf52a7b665d33e3cefd0d63837f07cc3c54af807e109bf
 
 build:
   number: 0
@@ -16,13 +17,14 @@ build:
     - lib/R/lib/
     - lib/
   run_exports:
-    - {{ pin_subpackage("r-signac", max_pin="x") }}
+    - {{ pin_subpackage('r-signac', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+    - pkg-config
   host:
     - r-base
     - bioconductor-biocgenerics
@@ -34,7 +36,7 @@ requirements:
     - r-rcpproll
     - bioconductor-rsamtools
     - bioconductor-s4vectors
-    - r-seuratobject >=4.0.0
+    - r-seuratobject >=5.0.2
     - r-data.table
     - r-dplyr >=1.0.0
     - r-fastmatch
@@ -50,6 +52,7 @@ requirements:
     - r-tidyr
     - r-tidyselect
     - r-vctrs
+    - zlib
   run:
     - r-base
     - bioconductor-biocgenerics
@@ -61,7 +64,7 @@ requirements:
     - r-rcpproll
     - bioconductor-rsamtools
     - bioconductor-s4vectors
-    - r-seuratobject >=4.0.0
+    - r-seuratobject >=5.0.2
     - r-data.table
     - r-dplyr >=1.0.0
     - r-fastmatch
@@ -83,13 +86,17 @@ test:
     - $R -e "library('Signac')"
 
 about:
-  home: https://github.com/timoast/signac, https://satijalab.org/signac
+  home: "https://github.com/timoast/signac"
   license: MIT
-  summary: 'A framework for the analysis and exploration of single-cell chromatin data. The ''Signac''
-    package contains functions for quantifying single-cell chromatin data, computing
-    per-cell quality control metrics, dimension reduction and normalization, visualization,
-    and DNA sequence motif analysis. Reference: Stuart and Butler et al. (2019) <doi:10.1016/j.cell.2019.05.031>.'
   license_family: MIT
-  license_file:
-    - {{ environ["PREFIX"] }}/lib/R/share/licenses/MIT
-    - LICENSE
+  license_file: {{ environ["PREFIX"] }}/lib/R/share/licenses/MIT
+  summary: 'A framework for the analysis and exploration of single-cell chromatin data. The ''Signac'' package contains functions for quantifying single-cell chromatin data, computing per-cell quality control metrics, dimension reduction and normalization, visualization, and DNA sequence motif analysis.'
+  doc_url: "https://satijalab.org/signac"
+  dev_url: "https://github.com/timoast/signac"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1016/j.cell.2019.05.031

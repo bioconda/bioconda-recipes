@@ -1,0 +1,107 @@
+diff --git a/Changelog.txt b/Changelog.txt
+index 846d01a..9ed8181 100644
+--- a/Changelog.txt
++++ b/Changelog.txt
+@@ -1,4 +1,8 @@
+-## v5.7.0
++## v5.7.1 July 16, 2023
++- Minor updates to better support Docker-based execution.
++- Output directory (via --output_dir | -O) can be set by user, but the working directory name will be fixed within the output directory and based on the name of the target transcriptome.
++
++## v5.7.0 Jan 27, 2023
+ - compatible with hmmsearch or hmmscan output
+ - cleaner organization of outputs and checkpoints
+ - TransDecoder.LongOrfs includes option for --complete_orfs_only (as requested)
+diff --git a/Docker/Dockerfile b/Docker/Dockerfile
+index 5bc455d..5514b3d 100644
+--- a/Docker/Dockerfile
++++ b/Docker/Dockerfile
+@@ -94,16 +94,13 @@ RUN wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/${BLASTPLUS_VERSION
+ # Hmmer
+ 
+ WORKDIR $SRC
+-RUN wget http://eddylab.org/software/hmmer/hmmer.tar.gz && \
+-    tar xvf hmmer.tar.gz && \
++RUN wget -q http://eddylab.org/software/hmmer/hmmer-3.3.2.tar.gz && \
++    tar xvf hmmer-3.3.2.tar.gz && \
+     cd hmmer-3.3.2 && \
+     ./configure && \
+     make && make install
+ 
+ 
+-
+-
+-
+ # Trinotate
+ WORKDIR $SRC
+ ENV TRANSDECODER_CO=817d772325c8a354aec6b94ac58993b994ac7392
+diff --git a/README.md b/README.md
+index 55452e7..446eb61 100644
+--- a/README.md
++++ b/README.md
+@@ -1,3 +1,6 @@
++>Note, as of March 2024, TransDecoder is no longer actively supported by the developer. Please continue to use as it fits your needs.
++
++
+ # TransDecoder
+ 
+ Visit the project [wiki](https://github.com/TransDecoder/TransDecoder/wiki) for all TransDecoder documentation.
+diff --git a/sample_data/pasa_example/runMe.sh b/sample_data/pasa_example/runMe.sh
+index b11cdab..081bae9 100755
+--- a/sample_data/pasa_example/runMe.sh
++++ b/sample_data/pasa_example/runMe.sh
+@@ -26,10 +26,10 @@ cut -f2,3 pasa_assemblies_described.txt > pasa.gene_trans_map.txt
+ 
+ ../../TransDecoder.Predict -t pasa_assemblies.fasta $ARGS -O pasa.transdecoder_workdir
+ 
+-../../util/cdna_alignment_orf_to_genome_orf.pl  pasa_assemblies.fasta.transdecoder.gff3 pasa_assemblies.gff3 pasa_assemblies.fasta  >  pasa_assemblies.fasta.transdecoder.genome.gff3
++../../util/cdna_alignment_orf_to_genome_orf.pl  pasa.transdecoder_workdir/pasa_assemblies.fasta.transdecoder.gff3 pasa_assemblies.gff3 pasa_assemblies.fasta  >  pasa_assemblies.fasta.transdecoder.genome.gff3
+ 
+ 
+-../../util/fasta_prot_checker.pl pasa_assemblies.fasta.transdecoder.pep
++../../util/fasta_prot_checker.pl pasa.transdecoder_workdir/pasa_assemblies.fasta.transdecoder.pep
+ 
+ 
+ echo "Done.  See pasa_assemblies.fasta.transdecoder.\*"
+diff --git a/util/misc/get_FP_FN_scores.py b/util/misc/get_FP_FN_scores.py
+index 414a576..a3b3556 100755
+--- a/util/misc/get_FP_FN_scores.py
++++ b/util/misc/get_FP_FN_scores.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ 
+ import os, sys, re
+ 
+diff --git a/util/misc/plot_indiv_seq_likelihood_profile.py b/util/misc/plot_indiv_seq_likelihood_profile.py
+index e93a822..da4db60 100755
+--- a/util/misc/plot_indiv_seq_likelihood_profile.py
++++ b/util/misc/plot_indiv_seq_likelihood_profile.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ 
+ import os,sys
+ import re
+@@ -39,9 +39,9 @@ def main():
+         score_vec.sort()
+ 
+     if args.cumsum:
+-        plt.plot(range(1,len(score_vec)+1), np.cumsum(score_vec), marker ='o')
++        plt.plot(list(range(1,len(score_vec)+1)), np.cumsum(score_vec), marker ='o')
+     else:
+-        plt.plot(range(1,len(score_vec)+1), score_vec, marker ='+')
++        plt.plot(list(range(1,len(score_vec)+1)), score_vec, marker ='+')
+     
+     
+     plt.show()
+diff --git a/util/misc/select_TD_orfs.py b/util/misc/select_TD_orfs.py
+index d9684a8..0dc0641 100755
+--- a/util/misc/select_TD_orfs.py
++++ b/util/misc/select_TD_orfs.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ 
+ import sys, os, re
+ import collections

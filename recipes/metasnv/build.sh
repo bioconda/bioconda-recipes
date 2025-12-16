@@ -1,11 +1,14 @@
 #!/bin/bash
+
+set -xe
+
 export CFLAGS="-I$PREFIX/include"
 export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 tag=share/metasnv-${PKG_VERSION}/
 odir=$PREFIX/$tag
 
-make
+make -j ${CPU_COUNT}
 mkdir -p $odir
 cp -pr src $odir
 cp -pr metaSNV.py $odir

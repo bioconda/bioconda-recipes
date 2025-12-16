@@ -1,0 +1,57 @@
+{% set name = "sipros" %}
+{% set version = "5.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/thepanlab/sipros5/releases/download/{{ version }}/siprosRelease.zip
+    sha256: 3519c5503a0e4873db81d7dc7214dc7174fbd3928974de485010546a45fadf07
+
+build:
+  noarch: generic
+  number: 0
+  skip: False
+  run_exports:
+    - {{ pin_subpackage('sipros', max_pin="x") }}
+    
+requirements:
+  build:
+    - unzip  
+  run:
+    - python >=3.12,<3.13
+    - philosopher >=5.1.0,<5.2.0
+    - lxml
+    - pandas
+    - icu
+    - seqkit
+
+test:
+  commands:
+    - siproswf -h
+    - configGenerator -h
+    - raxport -h
+    - sipros -h
+    - aerithFeatureExtractor -h
+    - percolator -h
+    - philosopher -h
+    - extractPro -h
+    - seqkit -h
+
+about:
+  home: https://github.com/thepanlab/sipros5/
+  license: MIT
+  # currently include in the recipe folder because from the release (https://github.com/xyz1396/sipros5/issues/2)
+  license_file: LICENSE
+  summary: "Tools for stable isotopic mass spectrometry-based metaproteomics"
+  description: |
+      "Tools for stable isotopic mass spectrometry-based metaproteomics research developed by Sipros team."
+
+extra:
+  recipe-maintainers:
+    - bernt-matthias
+    - yi-xiong
+  identifiers:
+    - biotools:sipros
+    - doi:10.1186/s40168-024-01866-1

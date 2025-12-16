@@ -1,5 +1,5 @@
 {% set name = "SuperDSM" %}
-{% set version = "0.1.3" %}
+{% set version = "0.4.0" %}
 {% set repo_url = "https://github.com/BMCV/SuperDSM" %}
 {% set docs_url = "https://superdsm.readthedocs.io" %}
 
@@ -9,35 +9,39 @@ package:
 
 source:
   url: "{{ repo_url }}/archive/refs/tags/v{{ version }}.zip"
-  sha256: f55abbd6818a66886ddfe3f7fd9c5dd93c63ed2b6e3179552106e560a000ad5f
+  sha256: a46a150298a8c611b6ed18bebcf67fe1fc98895760acc70291fb5ca3fe435ea5
 
 build:
-  number: 1
+  number: 0
   noarch: python
   script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed . -vv "
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.6,<3.11
+    - python >=3.11
     - pip
     - setuptools
   run:
-    - python >=3.6,<3.11 
+    - python >=3.11
     - blas =*=mkl
     - ipython >=7.31.1
-    - numpy >=1.18,<2.0
-    - scipy >=1.6.3,<2.0
-    - scikit-image >=0.18,<=0.19
+    - numpy >=1.26,<2.0
+    - scipy >=1.13.1,<1.14
+    - scikit-image >=0.24.0
     - dill >=0.3.2
-    - cvxopt >=1.2.6,<2.0
-    - cvxpy >=1.1.13,<2.0
+    - cvxopt >=1.3.2,<2.0
+    - cvxpy >=1.5.3,<2.0
     - matplotlib-base >=3.0,<4.0
     - mkl >=2020.0
-    - ray-core >=0.8.7,<1.7
+    - ray-core >=0.8.7
+    - imagecodecs >=2024.6.1
+    - repype >=1.0.0,<1.1
 
 test:
   commands:
-    - python -m superdsm.batch --help
+    - python -m superdsm --help
 
 about:
   home: "{{ repo_url }}"

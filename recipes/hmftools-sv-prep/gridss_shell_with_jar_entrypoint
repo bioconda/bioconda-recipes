@@ -1,0 +1,30 @@
+#!/bin/bash
+# Wrapper scripts that sets --jar gridss.jar command line argument
+# so users don't need to know the path to the GRIDSS jar
+
+# Adapted from bioconda-recipes/picard/picard.sh
+set -o pipefail
+
+resolve_source_directory() {
+     # Find original directory of bash script, resolving symlinks
+     # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128
+     local SOURCE="${1}"
+     while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+         DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+         SOURCE="$(readlink "$SOURCE")"
+         [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+     done
+     DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+     echo $DIR
+}
+
+# Sanity check for GRIDSS dependency
+if ! hash gridss 2>/dev/null; then
+    echo "Could not find 'gridss' in PATH, exiting";
+    exit 1;
+fi
+
+SCRIPT_DIR=$(resolve_source_directory ${BASH_SOURCE[0]})
+JAR_DIR=$(resolve_source_directory $(which gridss))
+
+$SCRIPT_DIR/$(basename $0)  --jar "$JAR_DIR/gridss.jar" "$@"
