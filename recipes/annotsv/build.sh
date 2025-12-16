@@ -1,7 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-chmod +x bin/INSTALL_annotations.sh
-mv bin/INSTALL_annotations.sh ${PREFIX}/bin/INSTALL_annotations.sh
-make
-make install
+mkdir -p "${PREFIX}/bin"
+
+install -v -m 0755 bin/INSTALL_annotations.sh "${PREFIX}/bin"
+
+make install -j"${CPU_COUNT}"

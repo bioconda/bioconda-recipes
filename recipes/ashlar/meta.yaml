@@ -1,5 +1,5 @@
 {% set name = "ashlar" %}
-{% set version = "1.17.0" %}
+{% set version = "1.19.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,31 +7,34 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 3c4fb3a2d1ffee986f86c633d12f753544904ddccbd8499851badbdeec3142be
+  sha256: d51d680681bd5d63ae40d92a035705f87a1963b49a8d9154802368ce4f3eca91
 
 build:
   number: 0
   entry_points:
     - ashlar=ashlar.scripts.ashlar:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+    - preview_slide=ashlar.scripts.preview_slide:main
+    - make_alignment_movie=ashlar.scripts.make_alignment_movie:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('ashlar', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python <3.12
   run:
     - blessed >=1.17
     - matplotlib-base >=3.1.2
     - networkx >=2.4
     - numpy >=1.18.1
-    - pip
     - pyjnius >=1.2.1
-    - python
+    - python <3.12
     - scikit-image ==0.19
     - scikit-learn >=0.21.1
     - scipy >=1.4.1
-    - tifffile>=2022.4.8
+    - tifffile >=2022.4.8
     - zarr
 
 test:
@@ -44,6 +47,8 @@ test:
 about:
   home: "https://github.com/sorgerlab/ashlar"
   license: MIT
+  license_family: MIT
+  license_file: LICENSE
   summary: "Alignment by Simultaneous Harmonization of Layer/Adjacency Registration"
   doc_url: https://labsyspharm.github.io/ashlar/
 

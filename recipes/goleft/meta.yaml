@@ -1,20 +1,24 @@
-{% set version = "0.2.4" %}
+{% set name = "goleft" %}
+{% set version = "0.2.6" %}
 
 package:
-  name: goleft
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  - url: https://github.com/brentp/goleft/releases/download/v{{ version }}/goleft_linux64  # [linux]
-    sha256: 5f8df703f7a369213961b4fc583aa625012548fb213dd906eaaeaaed89a319ab  # [linux]
-  - url: https://github.com/brentp/goleft/releases/download/v{{ version }}/goleft_osx  # [osx]
-    sha256: eab89fe80063095f9d01d02bac6770ea9ef102abab900ce01477ebb6fd9bdebc  # [osx]
+  url: https://github.com/brentp/goleft/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 0c563edea898059a75adf6250149643bdc61e4660544fabafbaefc09b4c9d1b3
 
 build:
   number: 1
-  binary_relocation: false
+  binary_relocation: False
+  run_exports:
+    - {{ pin_subpackage('goleft', max_pin="x.x") }}
 
 requirements:
+  build:
+    - {{ compiler('go') }}
+    - go-licenses
   run:
     - samtools
 
@@ -24,11 +28,15 @@ test:
     - goleft indexcov -h
 
 about:
-  home: https://github.com/brentp/goleft
+  home: "https://github.com/brentp/goleft"
   license: MIT
-  summary: goleft is a collection of bioinformatics tools distributed under MIT license in a single static binary
+  license_family: MIT
+  license_file: LICENSE
+  summary: "goleft is a collection of bioinformatics tools distributed under MIT license in a single static binary."
+  dev_url: "https://github.com/brentp/goleft"
+  doc_url: "https://github.com/brentp/goleft/blob/v{{ version }}/README.md"
 
 extra:
-  skip-lints:
-    - should_be_noarch_generic
-    - should_not_be_noarch_source
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,6 +1,6 @@
 {% set name = "GMAP" %}
-{% set version = "2023.10.10" %}
-{% set sha256 = "f76cc3d0024c6c963ea1c13e46236b62a548d965ad8e295a181f138b82aca36e" %}
+{% set version = "2025.07.31" %}
+{% set sha256 = "cc7212446683785a5b94aba79861212360d421ea409cd7cbf287f1dc63ed844d" %}
 
 package:
   name: {{ name|lower }}
@@ -11,6 +11,7 @@ source:
   sha256: {{ sha256 }}
   patches:
     - single_quote_paths.patch
+    - bsr.patch   # workaround clang falsely detected bsr mnemomic on osx-arm64
 
 build:
   number: 1
@@ -22,8 +23,11 @@ requirements:
     - make
     - {{ compiler('c') }}
     - autoconf
-    - perl
+    - automake
+    - libtool
+    - pkg-config
   host:
+    - perl
     - zlib
     - bzip2
   run:
@@ -36,13 +40,18 @@ test:
     - "gsnap --help"
 
 about:
-  home: "http://research-pub.gene.com/gmap/"
+  home: "http://research-pub.gene.com/gmap"
   license: "Apache-2.0"
   license_family: APACHE
   license_file: LICENSE
   summary: "Genomic mapping and alignment program for mRNA and EST sequences."
+  dev_url: "http://research-pub.gene.com/gmap"
+  doc_url: "http://research-pub.gene.com/gmap"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:gmap
     - biotools:gsnap

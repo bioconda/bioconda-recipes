@@ -1,10 +1,10 @@
 #!/bin/bash
-set -x
+set -ex
 
-PYVER=`python -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version_info[1]))'`
-OUTDIR=${PREFIX}/lib/python${PYVER}/site-packages/nextdenovo
+OUTDIR="${SP_DIR}/nextdenovo"
+
 mkdir -p ${PREFIX}/bin ${OUTDIR}
-cp -r ./* ${OUTDIR}
-chmod a+x ${OUTDIR}/nextDenovo
-ln -s ${OUTDIR}/nextDenovo ${PREFIX}/bin/nextDenovo
 
+cp -rf ${SRC_DIR}/* ${OUTDIR}
+chmod 755 ${OUTDIR}/nextDenovo
+ln -sf ${OUTDIR}/nextDenovo ${PREFIX}/bin/nextDenovo

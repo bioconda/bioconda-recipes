@@ -1,0 +1,55 @@
+{% set name = "AmpliconTyper" %}
+{% set version = "0.1.29" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/AntonS-bio/AmpliconTyper/archive/{{ version }}.tar.gz
+  sha256: 7d19b41d1588900a641ff197cb6feb0d8ddb7dffd3a08fc5189158b0881f1b08
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+      - {{ pin_subpackage('amplicontyper', max_pin="x.x") }}  
+  number: 0
+
+requirements:
+  host:
+    - pip
+    - python >=3.10
+    - setuptools
+  run:
+    - python >=3.10
+    - pandas >=2.0.0
+    - scikit-learn =1.5.*
+    - pysam >=0.22.0
+    - numpy >=1.20.*
+    - tqdm >=4.66.*
+    - biopython >=1.78
+    - minimap2
+    - requests
+    - samtools
+
+test:
+  commands:
+    - train -h
+    - classify -h
+  requires:
+    - pip
+
+about:
+  license: GPL-3.0-only
+  license_file: LICENSE
+  home: https://github.com/AntonS-bio/AmpliconTyper
+  summary: 'Tool for training model and classifying reads from environmental ONT amplicon sequencing.'
+  description: |
+    Tool for training model and classifying reads from environmental ONT amplicon sequencing. 
+  doc_source_url: https://github.com/AntonS-bio/AmpliconTyper/blob/main/README.md
+
+
+extra:
+  recipe-maintainers:
+    - AntonS-bio

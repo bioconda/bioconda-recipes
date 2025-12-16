@@ -1,5 +1,5 @@
 {% set name = "ViroConstrictor" %}
-{% set version = "1.4.0" %}
+{% set version = "1.6.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/RIVM-bioinformatics/ViroConstrictor/archive/v{{ version }}.tar.gz
-  sha256: 56944f978fc5bb4f934d8a82be3862236552b9beab090f7e61c10023b51b8b25
+  sha256: 821a1c86fa54b811531a40f625600ca71f6c5aa2ae7f1a62c73c87da05343438
 
 build:
   noarch: python
@@ -16,40 +16,50 @@ build:
     - viroconstrictor = ViroConstrictor.__main__:main
     - viroConstrictor = ViroConstrictor.__main__:main
     - Viroconstrictor = ViroConstrictor.__main__:main
-  script: {{ PYTHON }} -m pip install . --no-deps -vvv
-  number: 1
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
   run_exports:
     - {{ pin_subpackage('viroconstrictor', max_pin="x") }}
 
 requirements:
   host:
     - python >=3.10
+    - hatchling
     - pip
-    - snakemake >=7.15.2, < 8
-    - conda
+    - snakemake ==9.5.1
   run:
-    - python >=3.10
-    - urllib3
-    - biopython >=1.79
-    - drmaa ==0.7.9
-    - fpdf2
-    - pandas >=1.5.1
-    - openpyxl
-    - pyyaml ==6.0
-    - rich ==13.*
-    - snakemake >=7.15.2, < 8
-    - aminoextract ==0.3.1
+    - mamba >=1.5.0, <2.0.0
     - conda
-    - mamba
+    - python >=3.10
+    - urllib3 ==2.5.0
+    - snakemake-minimal ==9.5.1
+    - snakemake-interface-logger-plugins ==1.2.4
+    - snakemake-executor-plugin-lsf ==0.2.6
+    - snakemake-executor-plugin-slurm ==2.0.0
+    - snakemake-executor-plugin-drmaa ==0.1.5
+    - drmaa ==0.7.9
+    - python-magic ==0.4.27
+    - pandas ==2.3.3
+    - openpyxl ==3.1.5
+    - pyyaml ==6.0.3
+    - rich ==13.9.4
+    - biopython ==1.85
+    - biovalid ==0.3.0
+    - bcbio-gff ==0.7.1
+    - aminoextract ==0.4.1
+    - fpdf2 ==2.8.4
 
 test:
   imports:
     - ViroConstrictor
   commands:
+    - pip check
     - ViroConstrictor --help
     - viroconstrictor --help
     - viroConstrictor --help
     - Viroconstrictor --help
+  requires:
+    - pip
 
 about:
   home: https://rivm-bioinformatics.github.io/ViroConstrictor/
@@ -63,5 +73,6 @@ about:
 extra:
   recipe-maintainers:
     - florianzwagemaker
-    - KHajji
+    - raaijmag
+    - wolthuisr
     - ids-bioinformatics

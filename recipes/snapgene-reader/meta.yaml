@@ -1,5 +1,5 @@
 {% set name = "snapgene-reader" %}
-{% set version = "0.1.20" %}
+{% set version = "0.1.23" %}
 
 package:
   name: {{ name|lower }}
@@ -7,36 +7,38 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/snapgene_reader-{{ version }}.tar.gz
-  sha256: 5fbae3e8624a9578f584f840733328eecbf17ac837b021add56a560fce2f107f
+  sha256: ab146f29008ab7f44f5a5e413677cfddbf0c609503db81aa9cbf0c18406aa70c
 
 build:
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   number: 0
+  run_exports:
+    - {{ pin_subpackage('snapgene-reader', max_pin="x.x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3
+    - setuptools
   run:
     - biopython
     - html2text
-    - python
+    - python >=3
     - xmltodict
 
 test:
   imports:
     - snapgene_reader
-  commands:
-    - pip check
-  requires:
-    - pip
 
 about:
-  home: https://pypi.org/project/snapgene-reader/
-  summary: Convert Snapgene *.dna files dict/json/biopython.
+  home: "https://github.com/Edinburgh-Genome-Foundry/SnapGeneReader"
+  summary: "Convert Snapgene *.dna files dict/json/biopython."
   license: MIT
-  license_file: LICENCE.txt
+  license_family: MIT
+  license_file: "LICENCE.txt"
+  dev_url: "https://github.com/Edinburgh-Genome-Foundry/SnapGeneReader"
+  doc_url: "https://github.com/Edinburgh-Genome-Foundry/SnapGeneReader/blob/v{{ version }}/README.rst"
 
 extra:
   recipe-maintainers:

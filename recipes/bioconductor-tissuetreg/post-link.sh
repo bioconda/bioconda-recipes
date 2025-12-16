@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "tissuetreg-1.22.0"
+installBiocDataPackage.sh "tissuetreg-1.26.0"
