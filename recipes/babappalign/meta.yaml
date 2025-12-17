@@ -11,7 +11,6 @@ source:
 
 build:
   number: 0
-  noarch: python
   script: "{{ PYTHON }} -m pip install . --no-deps -vv"
   run_exports:
     - {{ pin_subpackage('babappalign', max_pin='x') }}
@@ -22,7 +21,7 @@ requirements:
     - pip
     - setuptools
     - wheel
-    - transformers >=4.30   # required for import-time
+    - transformers >=4.30   # needed at import-time
 
   run:
     - python >=3.9
@@ -31,22 +30,27 @@ requirements:
     - pandas
     - biopython
     - tqdm
+
+    # ML stack (architecture-specific → NOT noarch)
     - pytorch >=1.12
     - transformers >=4.30
     - fair-esm
 
 test:
   commands:
+    # --- CRITICAL: redirect all caches away from /tmp ---
     - export HF_HOME="$PWD/hf_home"
     - export TRANSFORMERS_CACHE="$PWD/hf_home"
     - export XDG_CACHE_HOME="$PWD/hf_home"
+
+    # sanity check only (no heavy downloads)
     - babappalign --help
 
 about:
   home: https://github.com/sinhakrishnendu/BABAPPAlign
   license: MIT
   license_file: LICENSE
-  summary: "Deep learning–based progressive multiple sequence alignment engine"
+  summary: "Deep learning–based progressive multiple sequence alignment engine with learned residue scoring"
 
 extra:
   keywords:
@@ -54,4 +58,5 @@ extra:
     - protein-alignment
     - deep-learning
     - esm
+    - transformers
     - bioinformatics
