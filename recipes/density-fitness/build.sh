@@ -2,6 +2,11 @@
 
 set -exo pipefail
 
+# Workaround for CMakeLists.txt to find FastFloat package
+sed -i.bak '/^cmake_minimum_required(VERSION/a\
+find_package(FastFloat REQUIRED CONFIG)
+' CMakeLists.txt
+
 cmake -S . -B build ${CMAKE_ARGS} -G Ninja \
     -DBUILD_SHARED_LIBS=ON \
     -DFastFloat_DIR="${PREFIX}/share/cmake/FastFloat" \
