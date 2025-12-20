@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#  Force C locale to be  Deterministic, Portable, and avoid warnings
+export LC_ALL=C
+export LANG=C
+
 # install Test::TempDir::Tiny from CPAN
 cpanm Test::TempDir::Tiny
 
