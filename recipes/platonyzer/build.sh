@@ -12,6 +12,7 @@ sed -i.bak 's|libmcfp::libmcfp|mcfp::mcfp|g' CMakeLists.txt
 
 cmake -S . -B build ${CMAKE_ARGS} -G Ninja \
     -DBUILD_SHARED_LIBS=ON \
+    -DFastFloat_DIR="${PREFIX}/share/cmake/FastFloat" \
     -DFFTW2_INCLUDE_DIRS="${PREFIX}/fftw2/include" \
     -DFFTW2_LIBRARY="${PREFIX}/fftw2/lib/libfftw${SHLIB_EXT}" \
     -DRFFTW2_LIBRARY="${PREFIX}/fftw2/lib/librfftw${SHLIB_EXT}" \
