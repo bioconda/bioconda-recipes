@@ -26,8 +26,27 @@ cmake --build build -j "${CPU_COUNT}"
 # Copy WEPP files to $PREFIX/WEPP
 mkdir -p ${PREFIX}/WEPP
 cp -rf "${SRC_DIR}"/* "${PREFIX}/WEPP"
-# Removes build directory to allow users to locally build WEPP based on their OS
+
+# Remove the dirty build directory (avoids "cmake not found" crashes) and copy  the compiled binary we just built 
 rm -rf "${PREFIX}/WEPP/build"
+mkdir -p "${PREFIX}/WEPP/build"
+cp build/wepp "${PREFIX}/WEPP/build/"
+
+# This satisfies Snakemake's output requirement without running bad commands.
+cat <<'EOF' > "${PREFIX}/WEPP/build/Makefile"
+all:
+	@echo "WEPP is pre-compiled. Skipping build."
+install:
+	@echo "Nothing to install."
+clean:
+	@echo "Nothing to clean."
+EOF
+
+# Set Source Code date to the Past (Year 2000)
+find "${PREFIX}/WEPP/src" -exec touch -t 200001010000 {} +
+# Set Binary/Makefile date to Now
+touch "${PREFIX}/WEPP/build/Makefile"
+touch "${PREFIX}/WEPP/build/wepp"
 
 # Creates a function 'snakemake' that injects the -s argument
 ACTIVATE_DIR="${PREFIX}/etc/conda/activate.d"
