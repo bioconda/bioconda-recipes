@@ -10,7 +10,7 @@ sed -i.bak 's|TARGET libmcfp)|TARGET mcfp)|g' CMakeLists.txt
 sed -i.bak 's|find_package(libmcfp|find_package(mcfp|g' CMakeLists.txt
 sed -i.bak 's|libmcfp::libmcfp|mcfp::mcfp|g' CMakeLists.txt
 
-cmake -S . -B build ${CMAKE_ARGS} \
+cmake -S . -B build ${CMAKE_ARGS} -G Ninja \
     -DBUILD_SHARED_LIBS=ON \
     -DFFTW2_INCLUDE_DIRS="${PREFIX}/fftw2/include" \
     -DFFTW2_LIBRARY="${PREFIX}/fftw2/lib/libfftw${SHLIB_EXT}" \
