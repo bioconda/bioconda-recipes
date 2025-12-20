@@ -2,6 +2,11 @@
 
 set -exo pipefail
 
+# Workaround for CMakeLists.txt to find FastFloat package
+sed -i.bak '/^cmake_minimum_required(VERSION/a\
+find_package(FastFloat REQUIRED CONFIG)
+' CMakeLists.txt
+
 # Prevent static linking for GNU compilers
 sed -i.bak '/if(NOT MSVC AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")/,/endif()/d' CMakeLists.txt
 
