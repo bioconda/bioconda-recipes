@@ -2,6 +2,10 @@
 
 set -exo pipefail
 
+if [[ "${target_platform}" == "osx-"* ]]; then
+    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+fi
+
 # Workaround for CMakeLists.txt to find FastFloat package
 sed -i.bak '/^cmake_minimum_required(VERSION/a\
 find_package(FastFloat REQUIRED CONFIG)
@@ -16,6 +20,7 @@ sed -i.bak 's|find_package(libmcfp|find_package(mcfp|g' CMakeLists.txt
 sed -i.bak 's|libmcfp::libmcfp|mcfp::mcfp|g' CMakeLists.txt
 
 cmake -S . -B build ${CMAKE_ARGS} -G Ninja \
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DBUILD_SHARED_LIBS=ON \
     -DFastFloat_DIR="${PREFIX}/share/cmake/FastFloat" \
     -DFFTW2_INCLUDE_DIRS="${PREFIX}/fftw2/include" \
