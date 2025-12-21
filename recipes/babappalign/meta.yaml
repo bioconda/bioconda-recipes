@@ -1,3 +1,13 @@
+# NOTE:
+# noarch: python was removed because BABAPPAlign depends at runtime on
+# architecture-specific libraries (e.g., PyTorch, fair-esm, transformers);
+# although the source is pure Python, the runtime ABI is not architecture-
+# independent. Cache directories are redirected away from /tmp because
+# Bioconda CI aggressively cleans temporary paths; HuggingFace/ESM create
+# nested, permission-restricted caches under /tmp that cause reproducible
+# PermissionError failures during CI teardown. Using the package working
+# directory ensures deterministic cleanup without affecting runtime behavior.
+
 {% set name = "babappalign" %}
 {% set version = "1.0.2" %}
 
@@ -35,12 +45,9 @@ requirements:
 
 test:
   commands:
-    # --- CRITICAL: redirect all caches away from /tmp ---
     - export HF_HOME="$PWD/hf_home"
     - export TRANSFORMERS_CACHE="$PWD/hf_home"
     - export XDG_CACHE_HOME="$PWD/hf_home"
-
-    # sanity check only (no heavy downloads)
     - babappalign --help
 
 about:
