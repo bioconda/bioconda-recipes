@@ -7,8 +7,6 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3 -Wno-attributes -Wno-volatile -Wno-inconsistent-missing-override -Wno-deprecated-declarations -Wno-format -Wno-unknown-warning-option"
 export CMAKE_C_COMPILER="${CC}"
 export CMAKE_CXX_COMPILER="${CXX}"
-
-cd ncbi-cxx-toolkit-public
 export CMAKE_ARGS="-S src -B . -DCMAKE_BUILD_TYPE=Release -Wno-dev -Wno-deprecated --no-warn-unused-cli"
 
 OS=$(uname -s)
@@ -22,31 +20,15 @@ elif [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
 	export CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
 	export CONFIG_ARGS="-DAARCH64=ON -DX86=OFF"
-	sed -i.bak 's|"-msse4.2"|""|' src/build-system/cmake/toolchains/*.cmake
-	sed -i.bak 's|"-msse4.2"|""|' src/build-system/cmake/toolchains/*.in
-	rm -rf src/build-system/cmake/toolchains/*.bak
 else
 	export CONFIG_ARGS="-DX86=ON"
-	sed -i.bak 's|"-msse4.2"|""|' src/build-system/cmake/toolchains/*.cmake
-	sed -i.bak 's|"-msse4.2"|""|' src/build-system/cmake/toolchains/*.in
-	rm -rf src/build-system/cmake/toolchains/*.bak
 fi
-
-./cmake-configure --without-debug --with-build-root=build \
-	--with-projects="objtools/blast/seqdb_reader;objtools/blast/blastdb_format"
-
-cd build
-cmake --build build --clean-first -j"${CPU_COUNT}"
-
-cp -rf "${SRC_DIR}/ncbi-cxx-toolkit-public/build/inc/ncbiconf_unix.h" "${SRC_DIR}/ncbi-cxx-toolkit-public/include"
 
 cd "${SRC_DIR}"
 
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DWITH_ZSTD=ON \
 	-DZSTD_LIBRARY="${PREFIX}/lib/libzstd.a" -DZSTD_INCLUDE_DIR="${PREFIX}/include" \
-	-DBLAST_INCLUDE_DIR="${SRC_DIR}/ncbi-cxx-toolkit-public/include" \
-	-DBLAST_LIBRARY_DIR="${SRC_DIR}/ncbi-cxx-toolkit-public/build/lib" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
