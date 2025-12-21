@@ -72,4 +72,3 @@ def test_snakemake_files():
 
 if __name__ == "__main__":
     sys.exit(test_snakemake_files())
-    sys.exit(test_snakemake_files())
