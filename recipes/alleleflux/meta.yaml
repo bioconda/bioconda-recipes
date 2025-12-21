@@ -57,11 +57,6 @@ test:
     - alleleflux.scripts.analysis
     - alleleflux.scripts.preprocessing
     - alleleflux.scripts.statistics
-  # files:
-  #   # Verify Snakemake workflow files are installed
-  #   - test_snakemake_files.py
-  source_files:
-    - conda-recipe/test_snakemake_files.py
   commands:
     # Main CLI
     - alleleflux --help > /dev/null 2>&1
@@ -102,7 +97,54 @@ test:
     - alleleflux-track-alleles --help > /dev/null 2>&1
     - alleleflux-plot-trajectories --help > /dev/null 2>&1
     # Test Snakemake workflow files
-    - python conda-recipe/test_snakemake_files.py > /dev/null
+    - |
+      python - <<'PY'
+      import alleleflux, sys
+      from pathlib import Path
+      from alleleflux.workflow import get_snakefile, get_template_path
+
+      pkg = Path(alleleflux.__file__).parent
+
+      sf = get_snakefile()
+      tp = get_template_path()
+
+      if not sf.exists():
+          raise SystemExit(f"FATAL: get_snakefile() points to missing file: {sf}")
+      if not tp.exists():
+          raise SystemExit(f"FATAL: get_template_path() points to missing file: {tp}")
+
+      required = [
+          "smk_workflow/alleleflux_pipeline/Snakefile",
+          "smk_workflow/config.template.yml",
+          "smk_workflow/slurm_profile/config.yaml",
+          "smk_workflow/alleleflux_pipeline/shared/common.smk",
+          "smk_workflow/alleleflux_pipeline/shared/dynamic_targets.smk",
+          "smk_workflow/alleleflux_pipeline/rules/metadata.smk",
+          "smk_workflow/alleleflux_pipeline/rules/profiling.smk",
+          "smk_workflow/alleleflux_pipeline/rules/quality_control.smk",
+          "smk_workflow/alleleflux_pipeline/rules/eligibility.smk",
+          "smk_workflow/alleleflux_pipeline/rules/allele_analysis.smk",
+          "smk_workflow/alleleflux_pipeline/rules/gene_analysis.smk",
+          "smk_workflow/alleleflux_pipeline/rules/scoring.smk",
+          "smk_workflow/alleleflux_pipeline/rules/p_value_summary.smk",
+          "smk_workflow/alleleflux_pipeline/rules/dnds_analysis.smk",
+          "smk_workflow/accessory/coverage_and_allele_stats.smk",
+          "smk_workflow/visualization/visualization.smk",
+          "smk_workflow/visualization/visualization_config.yaml",
+          "smk_workflow/visualization/smks/metadata_prep.smk",
+          "smk_workflow/visualization/smks/analysis.smk",
+          "smk_workflow/visualization/smks/plotting.smk",
+      ]
+
+      missing = []
+      for rel in required:
+          if not (pkg / rel).exists():
+              missing.append(rel)
+      if missing:
+          raise SystemExit("FATAL: Missing workflow files:\n  - " + "\n  - ".join(missing))
+
+      print("✅ All Snakemake workflow files verified!")
+      PY
 
 about:
   home: https://github.com/MoellerLabPU/AlleleFlux
