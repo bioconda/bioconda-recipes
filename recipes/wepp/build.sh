@@ -23,6 +23,10 @@ cmake -S . -B build \
 
 cmake --build build -j "${CPU_COUNT}"
 
+# Install the WEPP binary to $PREFIX/bin
+mkdir -p "${PREFIX}/bin"
+install -v -m 0755 build/wepp "${PREFIX}/bin/wepp"
+
 # Copy WEPP files to $PREFIX/WEPP
 mkdir -p ${PREFIX}/WEPP
 cp -rf "${SRC_DIR}"/* "${PREFIX}/WEPP"
