@@ -1,26 +1,26 @@
 {% set name = "polap" %}
 {% set version = "0.5.3.1" %}
-{% set sha256 = "04cd58f7a1dad56f06c3b558d6a17a8abc84802c8cc4088212f6255cc3741026" %}
 
 package:
-  name: "{{ name }}"
+  name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
   url: https://github.com/goshng/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
-  sha256: "{{ sha256 }}"
+  sha256: 04cd58f7a1dad56f06c3b558d6a17a8abc84802c8cc4088212f6255cc3741026
 
 build:
   noarch: generic
   number: 0
-
   run_exports:
     - {{ pin_subpackage('polap', max_pin="x.x") }}
+  script: 
+    - mkdir -p $PREFIX/bin
+    - cp polap $PREFIX/bin/
 
 requirements:
   host:
     - python >=3.8,<3.13
-    - minimap2 >=2.28
   run:
     - python >=3.8,<3.13
     - flye >=2.9.6
@@ -65,7 +65,7 @@ requirements:
 
 test:
   commands:
-    - polap
+    - polap --help
 
 about:
   home: https://github.com/goshng/polap
