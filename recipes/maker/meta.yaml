@@ -1,20 +1,22 @@
+{% set name = "maker" %}
+{% set version = "3.01.04" %}
 {% set blast_version = "2.14.1" %}
 
 package:
-  name: maker
-  version: 3.01.03
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: http://weatherby.genetics.utah.edu/maker_downloads/static/maker-3.01.03.tgz
-  sha256: f36cc7ef584c215955a4d9fdd46287a49f7508bbe59c6fe78d50e0c6e99192ae
+  url: http://weatherby.genetics.utah.edu/maker_downloads/static/{{ name }}-{{ version }}.tgz
+  sha256: 3d1f90a5ced5a7ed00e1136700d76d4d82315d76690223dcc50ceb712d5b5611
   patches:
-    - "repeatmasker_check.patch"
-    - "mpi_init.patch"
+    - repeatmasker_check.patch
+    - mpi_init.patch
 
 build:
-  number: 4
+  number: 0
   run_exports:
-    - {{ pin_subpackage("maker", max_pin="x") }}
+    - {{ pin_subpackage('maker', max_pin="x") }}
 
 requirements:
   build:
@@ -28,20 +30,20 @@ requirements:
     - perl-dbi
     - perl-io-all
     - perl-io-prompt
-    - perl-inline-c >=0.78
+    - perl-inline-c
     - perl-perlio-gzip
     - perl-forks
     - perl-perl-unsafe-signals
-    - mpich
+    - perl-uri
+    - mpich-mpicc
   run:
-    - augustus >=3.2.3
+    - augustus >=3.5.0
     - blast {{ blast_version }}
     - exonerate
-    - evidencemodeler
-    - repeatmasker >=4.1.1
-    - rmblast {{ blast_version }} # blast and rmblast must be pinned to the same version as they share some libraries
+    - repeatmasker >=4.1.9
+    - rmblast {{ blast_version }}
     - snap
-    - snoscan
+    # GeneMarkS, GeneMark-ES and FGENESH are optional requirements but are not free
     - perl
     - perl-bioperl-core >=1.7.8
     - perl-bit-vector
@@ -54,26 +56,22 @@ requirements:
     - perl-perlio-gzip
     - perl-forks
     - perl-perl-unsafe-signals
-    - mpich
-    - rapsearch # [not osx]
-    - trnascan-se
-    - postgresql
-    # GeneMarkS, GeneMark-ES and FGENESH are optional requirements but are not free
-
-about:
-  home: http://www.yandell-lab.org/software/maker.html
-  license: GPL3
-  license_file: LICENSE
-  summary: MAKER is a portable and easily configurable genome annotation pipeline.
+    - perl-uri
+    - mpich-mpicc
 
 test:
   commands:
     - maker --version
 
+about:
+  home: "https://www.yandell-lab.org/software/maker.html"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "MAKER is a portable and easily configurable genome annotation pipeline."
+  doc_url: "https://www.yandell-lab.org/software/maker.html"
+
 extra:
-  container:
-    # mpich needs /etc/resolv.conf : https://github.com/bioconda/bioconda-recipes/issues/11583
-    extended-base: true
   identifiers:
     - biotools:maker
     - usegalaxy-eu:maker

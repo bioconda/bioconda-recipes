@@ -1,6 +1,6 @@
 {% set name = "sepp" %}
-{% set version = "4.5.5" %}
-{% set sha256 = "af6b985bc16c96cd7c57bf78b3decce448f976aea612b3fad07b91697e4e1cfd" %}
+{% set version = "4.5.6" %}
+{% set sha256 = "e4aae4908b33d54d34c8796bc1f5aed38e8969c411102d713da075a0d7832560" %}
 
 package:
   name: {{ name }}
@@ -14,7 +14,7 @@ source:
     - relocate.sepp.config.patch
 
 build:
-  number: 3
+  number: 1
   run_exports:
     - {{ pin_subpackage('sepp', max_pin="x") }}
 
@@ -24,19 +24,20 @@ requirements:
   host:
     - python
     - setuptools
+    - hatchling
     - pip
     - dendropy
     - openjdk
     - hmmer
   run:
+    - hmmer
     - python
     - pasta
-    # TODO: source bundled binaries as conda packages.
-    # But pplacer / guppy are not available for OSX.
-    # - pplacer
+    - pplacer >=1.1.alpha17
 
 test:
   commands:
+    - pplacer --version
     - run_sepp.py --help
     - run-sepp.sh $PREFIX/share/sepp/ref/input_fragments.fasta testrun_tiny -a $PREFIX/share/sepp/ref/reference_alignment_tiny.fasta -t $PREFIX/share/sepp/ref/reference_phylogeny_tiny.nwk -r $PREFIX/share/sepp/ref/RAxML_info-reference-gg-raxml-bl.info -x 1 -b 1
     - grep "f__Halomonadaceae" testrun_tiny_placement.tog.relabelled.tre
@@ -55,3 +56,7 @@ about:
 extra:
   identifiers:
     - biotools:sepp
+  additional-platforms:
+    - linux-aarch64
+#     osx-arm64 builds but hangs in tests
+#    - osx-arm64

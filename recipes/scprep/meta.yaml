@@ -6,23 +6,24 @@ package:
   version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: cc4ba4cedbba256935298f2ba6a973b4e74ea8cb9ad2632b693b6d4e6ab77c3f
 
 build:
-  number: 0
+  number: 1
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
   noarch: python
 
 requirements:
   host:
     - pip
-    - python >=3.5
+    - python >=3.6
+    - setuptools
   run:
     - decorator >=4.3.0
     - numpy >=1.12.0
-    - pandas >=0.25
-    - python >=3.5
+    - pandas >=0.25,<2.1
+    - python >=3.6
     - scikit-learn >=0.19.1
     - scipy >=0.18.1
     - packaging
@@ -30,9 +31,18 @@ requirements:
 test:
   imports:
     - scprep
+  commands:
+    - pip check
+  requires:
+    - pip
 
 about:
   home: https://github.com/KrishnaswamyLab/scprep
-  license: GNU General Public Version 2
-  license_family: GPL2
+  doc_url: https://scprep.readthedocs.io/en/stable/
+  license: GPL-3.0-only
+  license_family: GPL
   summary: Tools for loading and preprocessing biological matrices in Python.
+
+extra:
+  recipe-maintainers:
+   - mfansler
