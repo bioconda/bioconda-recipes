@@ -13,7 +13,7 @@ if [[ "$(uname)" == "Darwin" ]]; then
     export LDFLAGS="${LDFLAGS} -lomp -lGLEW -lglfw -framework OpenGL"
 elif [[ "$(uname)" == "Linux" ]]; then
     export CXXFLAGS="${CXXFLAGS} -fopenmp"
-    export LDFLAGS="${LDFLAGS} -lGLEW -lglfw -lGL -lGLU"
+    export LDFLAGS="${LDFLAGS} -lGLEW -lglfw -lGL -lGLU -ldl"
 fi
 
 # Allow CMake to find framework OpenGL on MacOS
