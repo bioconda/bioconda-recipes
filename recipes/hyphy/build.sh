@@ -13,11 +13,11 @@ fi
 case $(uname -m) in
     aarch64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
-    export HYPHY_OPTS="-DNOSSE4=ON"
+    export HYPHY_OPTS="-DNOSSE4=ON -DNOSVE=ON"
 	;;
     arm64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
-    export HYPHY_OPTS="-DNOSSE4=ON"
+    export HYPHY_OPTS="-DNOSSE4=ON -DNOSVE=ON"
 	;;
     x86_64)
 	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
