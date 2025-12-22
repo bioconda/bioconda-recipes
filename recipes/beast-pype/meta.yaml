@@ -1,0 +1,75 @@
+{% set name = "beast-pype" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/beast_pype-{{ version }}.tar.gz
+  sha256: e83700f9417f2c02e52c2a5544d925c746ea2d232145b774edcccce40637f9e8
+
+build:
+  entry_points:
+    - beast_pype = beast_pype.cli:beast_pype
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools >=77.0.3
+    - unidep
+    - wheel >=0.38
+    - pip
+  run:
+    - python >=3.10
+    - arviz
+    - bash_kernel
+    - beast2-xml >=1.4.1
+    - biopython
+    - click
+    - dark-matter
+    - ete3
+    - ipywidgets
+    - jupyter
+    - matplotlib-base
+    - nbconvert
+    - nbformat
+    - numpy
+    - pandas
+    - papermill
+    - phylo-treetime
+    - python-dateutil
+    - pyyaml
+    - scipy
+    - seaborn
+    - xarray
+    - beast2
+    - iqtree
+    - seqkit
+    - parallel
+
+test:
+  imports:
+    - beast_pype
+  commands:
+    - pip check
+    - beast_pype --help
+    - beast_pype run-workflow --help
+    - beast_pype diagnose-results --help
+  requires:
+    - pip
+
+about:
+  summary: A package of BEAST 2 pipelines for phylodynamics.
+  home: https://github.com/m-d-grunnill/BEAST_pype
+  license: GPL-2.0-only
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - MGrunnill
