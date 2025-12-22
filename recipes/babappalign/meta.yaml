@@ -1,5 +1,5 @@
 {% set name = "babappalign" %}
-{% set version = "1.0.0" %}
+{% set version = "1.0.1" %}
 
 package:
   name: {{ name }}
@@ -7,11 +7,10 @@ package:
 
 source:
   url: https://github.com/sinhakrishnendu/BABAPPAlign/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 18ac0c4efd0a44b70aee9f2d1cd2afb04a4fc0a49cb64e90c259a4852b075aa0
+  sha256: 765c6aa34e1d804ea47191112b7b47782553ec9749b84d2584ecd24d1b77aa09
 
 build:
   number: 0
-  noarch: python
   script: "{{ PYTHON }} -m pip install . --no-deps -vv"
   run_exports:
     - {{ pin_subpackage('babappalign', max_pin='x') }}
@@ -22,6 +21,7 @@ requirements:
     - pip
     - setuptools
     - wheel
+
   run:
     - python >=3.9
     - numpy
@@ -29,18 +29,27 @@ requirements:
     - pandas
     - biopython
     - tqdm
-    - pytorch
+
+    # --- ML stack (architecture-dependent) ---
+    - pytorch >=1.12
+    - transformers >=4.30
     - fair-esm
 
 test:
   commands:
-    - babappalign --help
+    # Redirect HuggingFace / transformers cache to writable test directory
+    - export HF_HOME="$PWD/hf_home"
+    - export TRANSFORMERS_CACHE="$PWD/hf_home"
+    - export XDG_CACHE_HOME="$PWD/hf_home"
+    - export HF_HUB_DISABLE_TELEMETRY=1
 
+    # Smoke test (no model download)
+    - babappalign --help
 about:
   home: https://github.com/sinhakrishnendu/BABAPPAlign
   license: MIT
   license_file: LICENSE
-  summary: "Deep learning–based progressive multiple sequence alignment engine"
+  summary: "Deep learning–based progressive multiple sequence alignment engine with learned residue scoring"
 
 extra:
   keywords:
@@ -48,4 +57,5 @@ extra:
     - protein-alignment
     - deep-learning
     - esm
+    - transformers
     - bioinformatics
