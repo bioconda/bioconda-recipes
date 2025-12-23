@@ -1,0 +1,48 @@
+{% set name = "sassy" %}
+{% set version = "0.1.8" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ragnargrootkoerkamp/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 9e01894cae22387a5c40c9b2cf077e89f2b0e18d492623d7e4fb8c65f3fc20c1
+
+build:
+  number: 0
+  script:
+    # The default config.toml has target-cpu=native,
+    # but we don't want that for portable CI builds.
+    # Instead, use x86-64-v3 for x64, apple-m14 (=M1) for macos,
+    # and the default otherwise.
+    - mv .cargo/config-portable.toml .cargo/config.toml
+    - cargo install --no-track --locked --verbose --root "${PREFIX}" --path .
+  run_exports:
+    - {{ pin_subpackage('sassy', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - sassy --help
+    - sassy grep --help
+    - sassy search --help
+    - sassy crispr --help
+
+about:
+  home: https://github.com/ragnargrootkoerkamp/sassy
+  license: MIT
+  license_file: LICENSE
+  summary: Fast approximate string searching
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - ragnargrootkoerkamp
+    - rickbeeloo

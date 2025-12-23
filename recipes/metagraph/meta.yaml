@@ -1,23 +1,21 @@
 {% set name = "metagraph" %}
-{% set version = "0.4.3" %}
+{% set version = "0.4.5" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  git_url: https://github.com/ratschlab/metagraph.git
-  git_tag: v{{ version }}
-  sha256: unused
+  url: https://github.com/ratschlab/metagraph/releases/download/v{{ version }}/v{{ version }}-sources-with-submodules.tar.gz
+  sha256: d377f16329d3725e580d3e57ea46a2b501855cd50fdac511d93d1b0bc8413189
   patches:
-    - 0001-boost-cmake.patch
-    - arm_hwcap.patch
+    - metagraph-jemalloc-conditional.patch
 
 build:
   number: 0
-  skip: True  # [osx]
+  skip: True  # [win]
   run_exports:
-    - {{ pin_subpackage('metagraph', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
@@ -28,22 +26,22 @@ requirements:
     - automake
     - libtool
     - pkg-config
-  host:
+    - python >=3
+    - setuptools
+    - libdeflate
+    - icu  # [osx,osx-arm64]
+    - zstd
     - bzip2
-    - htslib
-    - jemalloc
-    - boost-cpp ==1.71.0
-    - llvm-openmp  # [osx]
+  host:
+    - jemalloc  # [linux]
+    - boost-cpp
     - libgomp  # [linux]
-    - clangdev  # [osx]
-    - llvmlite  # [osx]
-    - doxygen
+    - llvm-openmp  # [osx,osx-arm64]
   run:
-    - htslib
-    - jemalloc
-    - boost-cpp ==1.71.0
-    - llvm-openmp  # [osx]
+    - jemalloc  # [linux]
+    - boost-cpp
     - libgomp  # [linux]
+    - llvm-openmp  # [osx,osx-arm64]
 
 test:
   commands:
@@ -64,9 +62,9 @@ about:
 
 extra:
   recipe-maintainers:
+    - adamant-pwn
     - izcram
     - karasikov
   additional-platforms:
     - linux-aarch64
-  skip-lints:
-    - uses_vcs_url
+    - osx-arm64
