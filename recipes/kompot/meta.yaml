@@ -1,0 +1,72 @@
+{% set name = "kompot" %}
+{% set version = "0.6.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: ba2407d24f6fe3ba9448763d9ca93600fa4cc8eb891f9bcdcb49ee3875268e94
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  entry_points:
+    - kompot = kompot.cli:main
+  run_exports:
+    - {{ pin_subpackage('kompot', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.9
+    - setuptools >=61.0
+    - wheel
+  run:
+    - python >=3.9
+    - numpy >=1.20.0
+    - scipy >=1.7.0
+    - pandas >=1.3.0
+    - scikit-learn >=1.0.0
+    - statsmodels >=0.13.0
+    - jax >=0.3.0
+    - jaxlib >=0.3.0
+    - mellon >=1.6.0
+    - matplotlib-base >=3.5.0
+    - tqdm >=4.60.0
+    - anndata >=0.8.0
+    - pynndescent >=0.5.0
+    - python-igraph >=0.10.0
+    - psutil >=5.9.0
+    - filelock >=3.12.0
+    - pyyaml >=5.0.0
+
+test:
+  imports:
+    - kompot
+    - kompot.anndata
+    - kompot.cli
+    - kompot.differential
+  commands:
+    - kompot --help
+    - kompot --version
+
+about:
+  home: "https://github.com/settylab/kompot"
+  license: GPL-3.0-or-later
+  license_family: GPL
+  license_file: LICENSE
+  summary: "Differential abundance and gene expression analysis using Mahalanobis distance with JAX backend"
+  description: |
+    Kompot performs differential abundance and differential gene expression
+    analysis using Gaussian process-based methods with Mahalanobis distance.
+    It features a fast JAX backend and supports both Python API and CLI.
+  doc_url: "https://kompot.readthedocs.io/"
+  dev_url: "https://github.com/settylab/kompot"
+
+extra:
+  recipe-maintainers:
+    - katosh
+    - ManuSetty
