@@ -1,5 +1,6 @@
 #!/bin/bash
 
+python -m pip install . -vv --no-deps --no-build-isolation
 python -m ipykernel install --user --name=beast_pype
 python -m bash_kernel.install --user
 
