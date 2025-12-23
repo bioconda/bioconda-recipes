@@ -1,0 +1,55 @@
+{% set name = "nifflr" %}
+{% set version = "2.0.0" %}
+{% set sha256 = "33e732a08621dd06b40051d64e91557b063d3059ec315d3252657e50945d639c" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/alguoo314/NIFFLR/releases/download/v{{ version }}/nifflr-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - boost-cpp
+  host:
+    - perl
+    - zlib
+    - bzip2
+    - tar
+    - boost-cpp
+    - libboost
+  run:
+    - libboost
+    - perl
+    - wget
+
+test:
+  commands:
+    - nifflr.sh --version
+
+about:
+  home: "https://github.com/alguoo314/NIFFLR"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "NIFFLR: Novel IsoForm Finder using Long RNASeq reads."
+  dev_url: "https://github.com/alguoo314/NIFFLR"
+  doc_url: "https://github.com/alguoo314/NIFFLR/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
