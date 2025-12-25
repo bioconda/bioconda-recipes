@@ -1,43 +1,16 @@
 #!/bin/bash
 
-# Build TandemTwister
-cd ${SRC_DIR}
+export CXXFLAGS="-std=c++23 -funroll-loops -ftree-vectorize -fopenmp -Wall -Wextra -O3 -g -mtune=native -Wno-unknown-pragmas -I${PREFIX}/include -Wno-error=deprecated-declarations -Wno-error=unused-function -Wno-error=type-limits -Wno-error=template-body -fpermissive -Wno-error"
+export LDFLAGS="-lhts -lfmt -Wl,-rpath=${PREFIX}/lib -L${PREFIX}/lib"
+export CXX=${CXX:-g++}
 
-echo "Building TandemTwister..."
-echo "Working directory: $(pwd)"
-echo "SRC_DIR: ${SRC_DIR}"
-echo "CXX: ${CXX}"
-echo "CXXFLAGS: ${CXXFLAGS}"
-echo "LDFLAGS: ${LDFLAGS}"
-echo "PREFIX: ${PREFIX}"
-echo "CONDA_PREFIX: ${CONDA_PREFIX}"
-
-# Show directory contents to verify source was cloned
-echo "Source directory contents:"
-ls -la
-
-# Set CONDA_PREFIX to PREFIX for the Makefile (conda sets PREFIX, Makefile expects CONDA_PREFIX)
+# Update CONDA_PREFIX for the Makefile
 export CONDA_PREFIX="${PREFIX}"
 
-# Set up library paths
-export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH}"
-export LIBRARY_PATH="${PREFIX}/lib:${LIBRARY_PATH}"
-export CPATH="${PREFIX}/include:${CPATH}"
 
+# Build the project - use make -e to prefer environment variables over Makefile settings
+make -e -j 10
 
-make -j${CPU_COUNT} CXX="${CXX}"
-
-# Verify the executable was built
-if [ -f "tandemtwister" ]; then
-    echo "Build successful: tandemtwister created"
-    ls -lh tandemtwister
-else
-    echo "ERROR: Build failed - tandemtwister not found"
-    exit 1
-fi
-
-# Install to conda prefix
+# Install the binary
 mkdir -p ${PREFIX}/bin
 install -m 755 tandemtwister ${PREFIX}/bin/
-
-echo "Installation complete: ${PREFIX}/bin/tandemtwister"
