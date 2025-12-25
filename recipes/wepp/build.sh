@@ -35,6 +35,7 @@ cp -rf "${SRC_DIR}"/* "${PREFIX}/WEPP"
 rm -rf "${PREFIX}/WEPP/build"
 mkdir -p "${PREFIX}/WEPP/build"
 cp build/wepp "${PREFIX}/WEPP/build/"
+cp build/closest_peak_clustering "${PREFIX}/WEPP/build/"
 
 # This satisfies Snakemake's output requirement without running bad commands.
 cat <<'EOF' > "${PREFIX}/WEPP/build/Makefile"
