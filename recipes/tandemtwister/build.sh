@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CXXFLAGS="-std=c++23 -funroll-loops -ftree-vectorize -fopenmp -Wall -Wextra -O3 -g -mtune=native -Wno-unknown-pragmas -I${PREFIX}/include -Wno-error=deprecated-declarations -Wno-error=unused-function -Wno-error=type-limits -Wno-error=template-body -fpermissive -Wno-error"
+export CXXFLAGS="-std=c++23 -funroll-loops -ftree-vectorize -fopenmp -Wall -Wextra -O3 -g -mtune=native -Wno-unknown-pragmas -I${PREFIX}/include -Wno-error=deprecated-declarations -Wno-error=unused-function -Wno-error=type-limits -fpermissive -Wno-error"
 export LDFLAGS="-lhts -lfmt -Wl,-rpath=${PREFIX}/lib -L${PREFIX}/lib"
 export CXX=${CXX:-g++}
 
