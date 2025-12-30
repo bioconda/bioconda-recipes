@@ -1,6 +1,5 @@
-#!/bin/bash -euo
-
-set -xe
+#!/usr/bin/env bash
+set -xue -o pipefail
 
 # build statically linked binary with Rust
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
