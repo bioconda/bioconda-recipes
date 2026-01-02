@@ -2,7 +2,17 @@
 set -euxo pipefail
 
 if [[ "${target_platform}" == osx-* ]]; then
-  install -Dm755 mac/decenttree-1.0.0-MacOSX/bin/decenttree "${PREFIX}/bin/decenttree"
+  # Allow for either preserved top-level directory or flattened extraction
+  if [[ -f mac/decenttree-1.0.0-MacOSX/bin/decenttree ]]; then
+    BIN_PATH="mac/decenttree-1.0.0-MacOSX/bin/decenttree"
+  elif [[ -f mac/bin/decenttree ]]; then
+    BIN_PATH="mac/bin/decenttree"
+  else
+    echo "decenttree binary not found in extracted mac archive" >&2
+    ls -R mac >&2 || true
+    exit 1
+  fi
+  install -Dm755 "${BIN_PATH}" "${PREFIX}/bin/decenttree"
   install -Dm644 source/LICENSE "${PREFIX}/share/licenses/decenttree/LICENSE"
   exit 0
 fi
