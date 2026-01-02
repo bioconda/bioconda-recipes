@@ -13,7 +13,8 @@ if [[ "${target_platform}" == osx-* ]]; then
     exit 1
   fi
   install -Dm755 "${BIN_PATH}" "${PREFIX}/bin/decenttree"
-  install -Dm644 source/LICENSE "${PREFIX}/share/licenses/decenttree/LICENSE"
+  mkdir -p "${PREFIX}/share/licenses/decenttree"
+  cp source/LICENSE "${PREFIX}/share/licenses/decenttree/LICENSE"
   exit 0
 fi
 
