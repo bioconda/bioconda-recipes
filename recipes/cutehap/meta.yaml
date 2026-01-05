@@ -1,0 +1,51 @@
+{% set version = "1.0.2" %}
+
+package:
+  name: cutehap
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/c/cutehap/cutehap-{{ version }}.tar.gz
+  sha256: 84547603bc0339ca3cce45739d98765c48c8bbe8083c1218acc8802cffe9df3f
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("cutehap", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python >=3.7,<3.13
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.7,<3.13
+    - scipy
+    - pysam
+    - biopython
+    - cigar
+    - numpy
+    - Cython
+
+test:
+  imports:
+    - benchmarks
+    - cuteHap
+  commands:
+    - cuteHap -h
+  requires:
+    - pip
+
+about:
+  home: https://github.com/Meltpinkg/cuteHap
+  summary: Haplotype-Aware Structural Variant Detector
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - Meltpinkg
