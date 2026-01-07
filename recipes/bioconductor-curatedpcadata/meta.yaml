@@ -1,0 +1,57 @@
+{% set version = "1.6.0" %}
+{% set name = "curatedPCaData" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: de624df40e15ee02987806029888d2b0
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-curatedpcadata", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: BiocStyle, knitr, ggplot2, rmarkdown, survival, survminer, ComplexHeatmap, corrplot, formatR
+requirements:
+  host:
+    - bioconductor-annotationhub >=4.0.0,<4.1.0
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - bioconductor-multiassayexperiment >=1.36.0,<1.37.0
+    - bioconductor-raggedexperiment >=1.34.0,<1.35.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - r-base
+    - r-reshape2
+    - r-rlang
+  run:
+    - bioconductor-annotationhub >=4.0.0,<4.1.0
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - bioconductor-multiassayexperiment >=1.36.0,<1.37.0
+    - bioconductor-raggedexperiment >=1.34.0,<1.35.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - r-base
+    - r-reshape2
+    - r-rlang
+    - curl
+    - bioconductor-data-packages >=20260107
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: CC BY 4.0
+  summary: Curated Prostate Cancer Data
+  description: The package curatedPCaData offers a selection of annotated prostate cancer datasets featuring multiple omics, manually curated metadata, and derived downstream variables. The studies are offered as MultiAssayExperiment (MAE) objects via ExperimentHub, and comprise of clinical characteristics tied to gene expression, copy number alteration and somatic mutation data. Further, downstream features computed from these multi-omics data are offered. Multiple vignettes help grasp characteristics of the various studies and provide example exploratory and meta-analysis of leveraging the multiple studies provided here-in.
+

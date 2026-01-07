@@ -1,0 +1,54 @@
+{% set version = "1.6.0" %}
+{% set name = "TENxXeniumData" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 788d348360bc26683061d2fadfdfc2f3
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-tenxxeniumdata", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: BiocStyle, knitr, rmarkdown
+requirements:
+  host:
+    - bioconductor-bumpymatrix >=1.18.0,<1.19.0
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - bioconductor-spatialexperiment >=1.20.0,<1.21.0
+    - bioconductor-spatialfeatureexperiment >=1.12.0,<1.13.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+  run:
+    - bioconductor-bumpymatrix >=1.18.0,<1.19.0
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - bioconductor-spatialexperiment >=1.20.0,<1.21.0
+    - bioconductor-spatialfeatureexperiment >=1.12.0,<1.13.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20260107
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Collection of Xenium spatial data by 10X genomics
+  description: Collection of Xenium spatial transcriptomics datasets provided by 10x Genomics, formatted into the Bioconductor classes, the SpatialExperiment or SpatialFeatureExperiment (SFE), to facilitate seamless integration into various applications, including examples, demonstrations, and tutorials. The constructed data objects include gene expression profiles, per-transcript location data, centroid, segmentation boundaries (e.g., cell or nucleus boundaries), and image.
+  license_file: LICENSE
+

@@ -1,0 +1,56 @@
+{% set version = "1.2.0" %}
+{% set name = "islify" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 4cd70e972329c4b14b3a6b78509373b2
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-islify", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: knitr, rmarkdown, testthat, BiocStyle
+requirements:
+  host:
+    - bioconductor-rbioformats >=1.10.0,<1.11.0
+    - r-abind >=1.4.8
+    - r-autothresholdr >=1.4.2
+    - r-base
+    - r-dbscan >=1.1.12
+    - r-matrix >=1.6.1
+    - r-png >=0.1.8
+    - r-tiff >=0.1.12
+  run:
+    - bioconductor-rbioformats >=1.10.0,<1.11.0
+    - r-abind >=1.4.8
+    - r-autothresholdr >=1.4.2
+    - r-base
+    - r-dbscan >=1.1.12
+    - r-matrix >=1.6.1
+    - r-png >=0.1.8
+    - r-tiff >=0.1.12
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  summary: Automatic scoring and classification of cell-based assay images
+  description: This software is meant to be used for classification of images of cell-based assays for neuronal surface autoantibody detection or similar techniques. It takes imaging files as input and creates a composite score from these, that for example can be used to classify samples as negative or positive for a certain antibody-specificity. The reason for its name is that I during its creation have thought about the individual picture as an archielago where we with different filters control the water level as well as ground characteristica, thereby finding islands of interest.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

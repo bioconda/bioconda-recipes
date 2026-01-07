@@ -1,17 +1,19 @@
-{% set version = "1.12.0" %}
+{% set version = "1.20.0" %}
 {% set name = "ISAnalytics" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: d1962980b18dd3ff8fdcc1bb0c855eaf
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: ea519838d8689d5a8b69398cb1709c8d
+
 build:
   number: 0
   rpaths:
@@ -19,11 +21,14 @@ build:
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-isanalytics", max_pin="x.x") }}'
   noarch: generic
-# Suggests: testthat, covr, knitr, BiocStyle, sessioninfo, rmarkdown, roxygen2, vegan, withr, extraDistr, ggalluvial, scales, gridExtra, R.utils, RefManageR, flexdashboard, circlize, plotly, gtools, eulerr, openxlsx, jsonlite, pheatmap, BiocParallel, progressr, future, doFuture, foreach, psych, data.table, Rcapture
+
+# Suggests: testthat, covr, knitr, BiocStyle, sessioninfo, rmarkdown, roxygen2, withr, extraDistr, ggalluvial, scales, gridExtra, R.utils, RefManageR, flexdashboard, circlize, plotly, gtools, eulerr, openxlsx, jsonlite, pheatmap, BiocParallel, progressr, future, doFuture, foreach, psych, Rcapture
 requirements:
+
   host:
     - r-base
     - r-bslib
+    - r-data.table
     - r-datamods
     - r-dplyr
     - r-dt
@@ -43,9 +48,12 @@ requirements:
     - r-stringr
     - r-tibble
     - r-tidyr
+    - r-vegan
+
   run:
     - r-base
     - r-bslib
+    - r-data.table
     - r-datamods
     - r-dplyr
     - r-dt
@@ -65,12 +73,15 @@ requirements:
     - r-stringr
     - r-tibble
     - r-tidyr
+    - r-vegan
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'CC BY 4.0'
-  summary: 'Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies'
-  description: 'In gene therapy, stem cells are modified using viral vectors to deliver the therapeutic transgene and replace functional properties since the genetic modification is stable and inherited in all cell progeny. The retrieval and mapping of the sequences flanking the virus-host DNA junctions allows the identification of insertion sites (IS), essential for monitoring the evolution of genetically modified cells in vivo. A comprehensive toolkit for the analysis of IS is required to foster clonal trackign studies and supporting the assessment of safety and long term efficacy in vivo. This package is aimed at (1) supporting automation of IS workflow, (2) performing base and advance analysis for IS tracking (clonal abundance, clonal expansions and statistics for insertional mutagenesis, etc.), (3) providing basic biology insights of transduced stem cells in vivo.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: CC BY 4.0
+  summary: Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies
+  description: In gene therapy, stem cells are modified using viral vectors to deliver the therapeutic transgene and replace functional properties since the genetic modification is stable and inherited in all cell progeny. The retrieval and mapping of the sequences flanking the virus-host DNA junctions allows the identification of insertion sites (IS), essential for monitoring the evolution of genetically modified cells in vivo. A comprehensive toolkit for the analysis of IS is required to foster clonal trackign studies and supporting the assessment of safety and long term efficacy in vivo. This package is aimed at (1) supporting automation of IS workflow, (2) performing base and advance analysis for IS tracking (clonal abundance, clonal expansions and statistics for insertional mutagenesis, etc.), (3) providing basic biology insights of transduced stem cells in vivo.
 

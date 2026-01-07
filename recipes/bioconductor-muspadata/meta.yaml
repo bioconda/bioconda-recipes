@@ -1,0 +1,41 @@
+{% set version = "1.2.0" %}
+{% set name = "muSpaData" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: bbd753ac03b3704db7050e714a5ee47a
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-muspadata", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: SpatialExperiment, ggplot2, BiocStyle, knitr, rmarkdown, R.utils
+requirements:
+  host:
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - r-base
+  run:
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20260107
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Multi-sample multi-group spatially resolved transcriptomic data
+  description: Data package containing a multi-sample multi-group spatial dataset in SpatialExperiment Bioconductor object format.
+  license_file: LICENSE
+

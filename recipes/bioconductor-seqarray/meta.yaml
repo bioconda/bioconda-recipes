@@ -1,13 +1,18 @@
-{% set version = "1.46.0" %}
+{% set version = "1.50.0" %}
 {% set name = "SeqArray" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: 'Data management of large-scale whole-genome sequencing variant calls with thousands of individuals: genotypic data (e.g., SNVs, indels and structural variation calls) and annotations in SeqArray GDS files are stored in an array-oriented and compressed manner, with efficient data access using the R programming language.'
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL-3
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-  summary: Data Management of Large-Scale Whole-Genome Sequence Variant Calls
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 17ed44f3115358c0a416fa85db1c8a3b
 
 build:
   number: 0
@@ -16,50 +21,49 @@ build:
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-seqarray", max_pin="x.x") }}'
 
-extra:
-  additional-platforms:
-    - linux-aarch64
-  identifiers:
-    - biotools:seqarray
-
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
-
-# Suggests: Biobase, BiocGenerics, BiocParallel, RUnit, Rcpp, SNPRelate, digest, crayon, knitr, markdown, rmarkdown, Rsamtools, VariantAnnotation
+# Suggests: Biobase, BiocGenerics, BiocParallel, RUnit, Rcpp, SNPRelate, crayon, knitr, markdown, rmarkdown, Rsamtools, VariantAnnotation
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
   host:
-    - bioconductor-biostrings >=2.74.0,<2.75.0
-    - bioconductor-gdsfmt >=1.42.0,<1.43.0
-    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
-    - bioconductor-genomicranges >=1.58.0,<1.59.0
-    - bioconductor-iranges >=2.40.0,<2.41.0
-    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-gdsfmt >=1.46.0,<1.47.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
     - r-base
+    - r-digest
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - bioconductor-biostrings >=2.74.0,<2.75.0
-    - bioconductor-gdsfmt >=1.42.0,<1.43.0
-    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
-    - bioconductor-genomicranges >=1.58.0,<1.59.0
-    - bioconductor-iranges >=2.40.0,<2.41.0
-    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-gdsfmt >=1.46.0,<1.47.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
     - r-base
-
-source:
-  md5: 3cfd40aeb8399455e23b265f96b8f695
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+    - r-digest
 
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  summary: Data management of large-scale whole-genome sequence variant calls using GDS files
+  description: 'Data management of large-scale whole-genome sequencing variant calls with thousands of individuals: genotypic data (e.g., SNVs, indels and structural variation calls) and annotations in SeqArray GDS files are stored in an array-oriented and compressed manner, with efficient data access using the R programming language.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:seqarray
 

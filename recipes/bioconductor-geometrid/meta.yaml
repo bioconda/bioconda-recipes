@@ -1,0 +1,102 @@
+{% set version = "1.4.1" %}
+{% set name = "geomeTriD" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: aa94e1ea4c28fa004f72b2689268c4d3
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-geometrid", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: RUnit, org.Hs.eg.db, TxDb.Hsapiens.UCSC.hg19.knownGene, BSgenome.Hsapiens.UCSC.hg19, manipulateWidget, shiny, BiocStyle, knitr, rmarkdown, testthat
+requirements:
+
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
+
+  host:
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-interactionset >=1.38.0,<1.39.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
+    - bioconductor-trackviewer >=1.46.0,<1.47.0
+    - r-aricode
+    - r-base
+    - r-clue
+    - r-cluster
+    - r-dbscan
+    - r-future.apply
+    - r-htmlwidgets
+    - r-igraph
+    - r-mass
+    - r-matrix
+    - r-plotrix
+    - r-progressr
+    - r-rann
+    - r-rgl
+    - r-rjson
+    - r-scales
+
+  run:
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-interactionset >=1.38.0,<1.39.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
+    - bioconductor-trackviewer >=1.46.0,<1.47.0
+    - r-aricode
+    - r-base
+    - r-clue
+    - r-cluster
+    - r-dbscan
+    - r-future.apply
+    - r-htmlwidgets
+    - r-igraph
+    - r-mass
+    - r-matrix
+    - r-plotrix
+    - r-progressr
+    - r-rann
+    - r-rgl
+    - r-rjson
+    - r-scales
+
+test:
+  commands:
+    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: A R/Bioconductor package for interactive 3D plot of epigenetic data or single cell data
+  description: The geomeTriD (Three-Dimensional Geometry) Package provides interactive 3D visualization of chromatin structures using the WebGL-based 'three.js' (https://threejs.org/) or the rgl rendering library. It is designed to identify and explore spatial chromatin patterns within genomic regions. The package generates dynamic 3D plots and HTML widgets that integrate seamlessly with Shiny applications, enabling researchers to visualize chromatin organization, detect spatial features, and compare structural dynamics across different conditions and data types.
+  license_file: LICENSE
+
+extra:
+  container:
+    extended-base: yes
+

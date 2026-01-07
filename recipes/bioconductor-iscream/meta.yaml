@@ -1,0 +1,71 @@
+{% set version = "1.0.0" %}
+{% set name = "iscream" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: b9614328b66fb1830adb3c99d26f8f9c
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-iscream", max_pin="x.x") }}'
+
+# Suggests: BiocFileCache, BiocStyle, bsseq, ggplot2, ggridges, knitr, microbenchmark, rmarkdown, GenomicRanges, IRanges, Rsamtools, SummarizedExperiment, S4Vectors, testthat (>= 3.0.0)
+# SystemRequirements: htslib: htslib-devel (rpm) or libhts-dev (deb) & tabix: htslib-tools (rpm) or tabix (deb) & GNU make
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
+  host:
+    - bioconductor-rhtslib >=3.6.0,<3.7.0
+    - r-base
+    - r-data.table
+    - r-matrix
+    - r-parallelly
+    - r-pbapply
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-rcppprogress
+    - r-rcppspdlog
+    - r-stringfish
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-rhtslib >=3.6.0,<3.7.0
+    - r-base
+    - r-data.table
+    - r-matrix
+    - r-parallelly
+    - r-pbapply
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-rcppprogress
+    - r-rcppspdlog
+    - r-stringfish
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Make fast and memory efficient BED file queries, summaries and matrices
+  description: 'BED files store ranged genomic data that can be queried even when the files are compressed. iscream can query data from BED files and return them in muliple formats: parsed records or their summary statistics as data frames or GenomicRanges objects, and matrices as matrix, GenomicRanges, or SummarizedExperiment objects. iscream also provides specialized support for importing methylation data.'
+  license_file: LICENSE
+

@@ -1,0 +1,40 @@
+{% set version = "0.1.1" %}
+{% set name = "IlluminaHumanMethylationMSAmanifest" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: bc70b05eebebb2a6ca122319b3df9e7f
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-illuminahumanmethylationmsamanifest", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: knitr
+requirements:
+  host:
+    - bioconductor-minfi >=1.56.0,<1.57.0
+    - r-base
+  run:
+    - bioconductor-minfi >=1.56.0,<1.57.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20260107
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Apache License 2.0
+  summary: Package for MSA Infinium array compatibility with minfi
+  description: A manifest package for use with Illumina's MSA methylation arrays, compatible with minfi.
+

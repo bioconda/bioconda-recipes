@@ -1,0 +1,43 @@
+{% set version = "1.1.0" %}
+{% set name = "TENET.AnnotationHub" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 5dd1a5b2c28549c7e02092cdc420275f
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-tenet.annotationhub", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: TENET, AnnotationHubData, testthat (>= 3.0.0), BiocManager, knitr, rmarkdown, BiocStyle
+requirements:
+  host:
+    - bioconductor-annotationhub >=4.0.0,<4.1.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - r-base
+  run:
+    - bioconductor-annotationhub >=4.0.0,<4.1.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20260107
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: GPL-2
+  summary: Annotation data for the TENET package
+  description: AnnotationHub package containing datasets for use in the TENET package. Includes GenomicRanges objects representing putative enhancer, promoter, and open chromatin regions. All included datasets are aligned to the hg38 human genome.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+

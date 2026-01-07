@@ -1,0 +1,41 @@
+{% set version = "1.4.0" %}
+{% set name = "eoPredData" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 26307e8618403f748306ad63b3d0533b
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-eopreddata", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocStyle, knitr, rmarkdown, RefManageR, planet, mixOmics
+requirements:
+  host:
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - r-base
+  run:
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20260107
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: ExperimentHub package containing model data for predicting preeclampsia status for based on plcaental DNA methylation profile
+  description: 'Provides access to eoPred pretrained model hosted on ExperimentHub. Model was trained on placental DNA methylation preeclampsia samples using mixOmics splsda. There are two resources: 1. the model object, and 2. a testing data set used to demonstrate the function.'
+  license_file: LICENSE
+

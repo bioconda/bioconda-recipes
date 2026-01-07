@@ -1,0 +1,51 @@
+{% set version = "0.99.1" %}
+{% set name = "CENTREannotation" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 2bad81852e1a04d39aae9cb87020e909
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-centreannotation", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: knitr, rmarkdown, testthat, BiocStyle
+requirements:
+  host:
+    - bioconductor-annotationhub >=4.0.0,<4.1.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - r-base
+    - r-dbi
+    - r-rsqlite
+  run:
+    - bioconductor-annotationhub >=4.0.0,<4.1.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - r-base
+    - r-dbi
+    - r-rsqlite
+    - curl
+    - bioconductor-data-packages >=20260107
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Hub package for the annotation data of CENTRE (GENCODE v40 and SCREEN v3)
+  description: This is an AnnotationHub package for the CENTRE Bioconductor software package. It contains the GENCODE version 40 annotation and ENCODE Registry of candidate cis-regulatory elements (cCREs) version 3. All for Human hg38 genome.
+

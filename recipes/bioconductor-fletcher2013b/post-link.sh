@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "fletcher2013b-1.42.0"
+installBiocDataPackage.sh "fletcher2013b-1.46.0"

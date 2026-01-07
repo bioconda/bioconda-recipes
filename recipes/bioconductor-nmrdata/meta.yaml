@@ -1,0 +1,41 @@
+{% set version = "1.0.0" %}
+{% set name = "nmrdata" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 8355820d765acbdc1a23874f7be8765d
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-nmrdata", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocStyle, knitr, rmarkdown
+requirements:
+  host:
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - r-base
+  run:
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20260107
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Example 1d NMR Data for Metabolic Profiling
+  description: Provides example one-dimensional proton NMR spectra of murine urine samples collected before and after bariatric or sham surgery (Roux-en-Y gastric bypass). The data are adapted from Jia V Li et al. (2011), "Metabolic surgery profoundly influences gut microbial-host metabolic cross-talk", Gut, 60(9), 1214–1223. <doi:10.1136/gut.2010.234708>. This package serves as example data for metabolomics analysis and teaching purposes.
+  license_file: LICENSE
+
