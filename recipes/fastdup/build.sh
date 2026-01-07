@@ -5,7 +5,7 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export CPATH="${PREFIX}/include"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -Og"
+export CXXFLAGS="${CXXFLAGS} -O0 -g"
 
 mkdir -p "$PREFIX/bin"
 
