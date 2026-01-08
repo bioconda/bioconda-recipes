@@ -1,36 +1,17 @@
+{% set name = "delly" %}
 {% set version = "1.7.2" %}
 {% set sha256 = "7a6034ce502d8ca72c9c8ffc9f991f4702bccc45bb5879fd73bfa6b171b98657" %}
 
 package:
-  name: delly
+  name: "{{ name }}_meta"
   version: {{ version }}
 
 source:
-  url: https://github.com/dellytools/delly/archive/v{{ version }}.tar.gz
+  url: https://github.com/dellytools/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 0
-  run_exports:
-    - {{ pin_subpackage("delly", max_pin="x") }}
-
-requirements:
-  build:
-    - make
-    - {{ compiler('cxx') }}
-  host:
-    - zlib
-    - bzip2
-    - libdeflate
-    - boost-cpp
-    - htslib
-  run:
-    - boost-cpp
-    - htslib
-
-test:
-  commands:
-    - delly --help
+  number: 1
 
 about:
   home: "https://github.com/dellytools/delly"
@@ -40,6 +21,9 @@ about:
   summary: "Structural variant discovery by integrated paired-end and split-read analysis."
   dev_url: "https://github.com/dellytools/delly"
   doc_url: "https://github.com/dellytools/delly/blob/v{{ version }}/README.md"
+  description: |
+    Structural variant discovery by integrated paired-end and split-read analysis.
+    Python scripts like delly2bnd can be obtained with the delly-scripts subpackage.
 
 extra:
   additional-platforms:
@@ -54,3 +38,54 @@ extra:
     - usegalaxy-eu:delly_call
     - usegalaxy-eu:delly_merge
     - usegalaxy-eu:delly_filter
+
+outputs:
+
+  - name: {{ name }}
+    script: build_delly.sh
+    build:
+      run_exports:
+        - {{ pin_subpackage(name, max_pin="x") }}
+    
+    requirements:
+      build:
+        - make
+        - {{ compiler('cxx') }}
+      host:
+        - zlib
+        - bzip2
+        - libdeflate
+        - boost-cpp
+        - htslib
+      run:
+        - boost-cpp
+        - htslib
+    
+    test:
+      commands:
+        - delly --help
+
+  - name: delly-scripts
+
+    build:
+      noarch: python
+      script: python -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+      entry_points:
+        - delly2bnd = scripts.delly2bnd:main
+      run_exports:
+        - {{ pin_subpackage("delly-scripts", max_pin="x") }}
+
+    requirements:
+      host:
+        - python >=3.8
+        - pip
+        - hatch
+        - cyvcf2 >=0.31.1, <0.32 # this requirement ensures a compatible python version
+      run:
+        # Keep in sync with delly's pyproject.toml: https://github.com/dellytools/delly/blob/main/pyproject.toml
+        - python >=3.8
+        - cyvcf2 >=0.31.1, <0.32
+
+    test:
+      commands:
+        - delly2bnd --help
