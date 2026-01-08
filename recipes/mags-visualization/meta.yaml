@@ -13,11 +13,13 @@ source:
 build:
   noarch: python
   number: 5
-  script:
+  sscript:
     - {{ PYTHON }} -m pip install . --no-deps -vv
     - SP_DIR="$({{ PYTHON }} -c 'import site; print(site.getsitepackages()[0])')"
     - {{ PYTHON }} -m compileall -q -f -b "$SP_DIR/mags_visualization/sanky_taxa.py"
     - test -f "$SP_DIR/mags_visualization/sanky_taxa.pyc"
+  always_include_files:
+    - lib/python*/site-packages/mags_visualization/sanky_taxa.pyc
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
