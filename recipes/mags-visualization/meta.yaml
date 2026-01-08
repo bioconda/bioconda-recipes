@@ -12,12 +12,12 @@ source:
 
 build:
   noarch: python
-  number: 4
+  number: 5
   script:
     - {{ PYTHON }} -m pip install . --no-deps -vv
-    - {{ PYTHON }} -m compileall -f $SP_DIR/mags_visualization/sanky_taxa.py
-    - test -f $SP_DIR/mags_visualization/sanky_taxa.pyc || test -f $SP_DIR/mags_visualization/__pycache__/sanky_taxa.*.pyc
-
+    - SP_DIR="$({{ PYTHON }} -c 'import site; print(site.getsitepackages()[0])')"
+    - {{ PYTHON }} -m compileall -q -f -b "$SP_DIR/mags_visualization/sanky_taxa.py"
+    - test -f "$SP_DIR/mags_visualization/sanky_taxa.pyc"
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
@@ -43,6 +43,6 @@ test:
 about:
   home: https://github.com/alexandrah1704/MAGs-visualization
   summary: "Visualization toolkit for MAG quality, taxonomy, clustering, and annotation."
-  license: GPL3
+  license: GPL-3.0
   license_family: GPL3
   license_file: LICENSE
