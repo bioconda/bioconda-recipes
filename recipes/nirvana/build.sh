@@ -3,7 +3,14 @@ DOTNET_ROOT="${PREFIX}/lib/dotnet"
 NIRVANA_ROOT=$DOTNET_ROOT/tools/nirvana
 
 mkdir -p $PREFIX/bin $NIRVANA_ROOT
-cp -r $SRC_DIR/Nirvana-v${PKG_VERSION}/* $NIRVANA_ROOT
+
+# Handle different extraction patterns - check if files are in subdirectory or directly in SRC_DIR
+if [ -d "$SRC_DIR/Nirvana-v${PKG_VERSION}" ]; then
+    cp -r $SRC_DIR/Nirvana-v${PKG_VERSION}/* $NIRVANA_ROOT
+else
+    # Files extracted directly to SRC_DIR
+    cp -r $SRC_DIR/* $NIRVANA_ROOT
+fi
 
 # Create wrapper scripts
 cat > "$PREFIX/bin/Nirvana" << 'EOF'
