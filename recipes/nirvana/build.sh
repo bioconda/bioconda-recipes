@@ -1,5 +1,4 @@
 #!/bin/bash
-PREFIX=$(echo "${PREFIX}" | tr '\\' '/')
 DOTNET_ROOT="${PREFIX}/lib/dotnet"
 NIRVANA_ROOT=$DOTNET_ROOT/tools/nirvana
 
