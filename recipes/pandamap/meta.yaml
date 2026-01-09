@@ -10,25 +10,27 @@ source:
   sha256: e732fe54c3bd0bfc1fe2a7f9627769b2c7a943cd17288339aef313b581eb9f62
 
 build:
+  noarch: python
+  number: 0
   entry_points:
     - pandamap = pandamap.cli:main
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  number: 0
+  script: ${PYTHON} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 requirements:
   host:
-    - python ${{ python_min }}.*
+    - python {{ python_min }}.*
     - setuptools >=42
     - wheel
     - pip
   run:
-    - python >=${{ python_min }}
+    - python >={{ python_min }}
     - numpy >=1.20.0
     - matplotlib-base >=3.4.0
     - biopython >=1.79
     - requests >=2.25.0
-    - dssp >=3.0.0
+    - dssp
 
 test:
   imports:
