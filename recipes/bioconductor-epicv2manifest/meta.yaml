@@ -1,0 +1,40 @@
+{% set version = "0.99.7" %}
+{% set name = "EPICv2manifest" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: cca8526c45bc0124b76fdc206d1ae482
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-epicv2manifest", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: AnnotationHubData, knitr
+requirements:
+  host:
+    - bioconductor-annotationhub >=4.0.0,<4.1.0
+    - r-base
+  run:
+    - bioconductor-annotationhub >=4.0.0,<4.1.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20260107
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Illumina Infinium MethylationEPIC v2.0 extended manifest from Peters et al. 2024
+  description: A data.frame containing an extended probe manifest for the Illumina Infinium Methylation v2.0 Kit. Contains the complete manifest from the Illumina-provided EPIC-8v2-0_EA.csv, plus additional probewise information described in Peters et al. (2024).
+

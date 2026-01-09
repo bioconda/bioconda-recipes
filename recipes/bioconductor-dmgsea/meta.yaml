@@ -1,0 +1,55 @@
+{% set version = "1.0.1" %}
+{% set name = "dmGsea" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 7156b8a7db336e77fbc4f92e5730f05d
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-dmgsea", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: msigdbr, org.Hs.eg.db, org.Mm.eg.db, minfi, knitr, rmarkdown, GO.db, KEGGREST, testthat, IlluminaHumanMethylationEPICanno.ilm10b4.hg19, IlluminaHumanMethylation450kanno.ilmn12.hg19, BiocStyle, RUnit
+requirements:
+  host:
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-biasedurn
+    - r-dqrng
+    - r-matrix
+    - r-poolr
+  run:
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-biasedurn
+    - r-dqrng
+    - r-matrix
+    - r-poolr
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Efficient Gene Set Enrichment Analysis for DNA Methylation Data
+  description: The R package dmGsea provides efficient gene set enrichment analysis specifically for DNA methylation data. It addresses key biases, including probe dependency and varying probe numbers per gene. The package supports Illumina 450K, EPIC, and mouse methylation arrays. Users can also apply it to other omics data by supplying custom probe-to-gene mapping annotations. dmGsea is flexible, fast, and well-suited for large-scale epigenomic studies.
+

@@ -1,0 +1,40 @@
+{% set version = "1.4.0" %}
+{% set name = "EpipwR.data" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 576d57c17aed0a4bab1ade6eb4c0a34a
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-epipwr.data", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: knitr, rmarkdown, sessioninfo
+requirements:
+  host:
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - r-base
+  run:
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20260107
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: 'EpipwR.data: Reference data for EpipwR'
+  description: This package provides reference data for EpipwR. EpipwR is a fast and efficient power analysis for continuous and binary phenotypes of epigenomic-wide association studies. This package is only meant to be used in conjunction with EpipwR.
+

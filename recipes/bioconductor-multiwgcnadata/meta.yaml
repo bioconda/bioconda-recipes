@@ -1,0 +1,40 @@
+{% set version = "1.8.0" %}
+{% set name = "multiWGCNAdata" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 728709d7c7b6c2f37320cfc33d97b1c3
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-multiwgcnadata", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocStyle, knitr, multiWGCNA, rmarkdown, SummarizedExperiment
+requirements:
+  host:
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - r-base
+  run:
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20260107
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Data Package for multiWGCNA
+  description: Stores expression profiling data from experiments compatible with the multiWGCNA R package. This includes human postmortem microarray data from patients and controls (GSE28521), astrocyte Ribotag RNA-seq data from EAE and wildtype mice (GSE100329), and mouse RNA-seq data from tau pathology (rTg4510) and wildtype control mice (GSE125957). These data can be accessed using the ExperimentHub workflow (see multiWGCNA vignettes).
+
