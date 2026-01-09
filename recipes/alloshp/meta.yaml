@@ -1,0 +1,53 @@
+{% set version = "2025.09.12" %}
+{% set sha256 = "3caaf31db3d0bc4519a7fabf6cf290895351f2d704d6081409b2c17ce63ee218" %}
+
+package:
+  name: alloshp
+  version: {{ version }}
+
+build:
+  number: 0
+  script_env:
+    - LC_ALL=POSIX
+  run_exports:
+    - {{ pin_subpackage('alloshp', max_pin="x") }}
+
+source:
+  url: https://github.com/eead-csic-compbio/AlloSHP/archive/refs/tags/{{ version }}.tar.gz 
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make  
+    - git
+    - wget
+  run:
+    - grep
+    - coreutils
+    - gzip
+    - bzip2  
+    - perl
+    - perl-db_file
+    - red
+    - gsalign  
+    - gnuplot
+    - make  
+
+test:
+  commands:
+    - WGA -c
+    - vcf2alignment
+    - vcf2synteny  
+
+about:
+  home: https://github.com/eead-csic-compbio/AlloSHP
+  summary: "From mapped reads to Single Homeologous Polymorphisms (SHPs): pipeline for phylogenetic studies of allopolyploids" 
+  license: "Apache-2.0"
+  license_family: APACHE 
+  license_file: LICENSE
+  description: "This 3-step protocol computes Whole Genome Alignments (WGA) to discover Single Homeologous Polymorphisms (SHPs) out of reads mapped to concatenated genome sequeces. It requires FASTA and VCF input files and produces multiple sequence alignments of subgenomes that make up allopolyploids."
+
+extra:
+  identifiers:
+    - doi:10.1101/2025.07.17.665301 
