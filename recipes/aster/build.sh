@@ -19,7 +19,7 @@ fi
 if [[ "$(uname)" == "Darwin" ]]; then
 	sed -i.bak 's/g++/${CXX}/g' makefile
 	sed -i.bak 's/g++/${CXX}/g' makefile
-	make -j"${CPU_COUNT}" mac
+	make -j"${CPU_COUNT}"
 else
 	sed -i.bak 's/g++/${CXX}/g' makefile
 	sed -i.bak 's/g++/${CXX}/g' makefile

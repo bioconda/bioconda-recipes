@@ -1,6 +1,6 @@
 {% set name = "medaka" %}
-{% set version = "2.0.1" %}
-{% set sha256 = "7b7a0dc558f19d10fe8eb588f709a179ef5204a53aad5cfdfbd5c57039193a9f" %}
+{% set version = "2.1.1" %}
+{% set sha256 = "81f048bf0c56753bdfeee84114b78fa08655bc38e6f2fcdc06214de47e07426a" %}
 # Bot PRs - Always review requirements.txt for new release
 
 package:
@@ -8,21 +8,20 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/medaka-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/medaka-{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - patch
+    - 0001-setup.py.patch
 
 build:
-  number: 2
-  skip: True  # [osx]
+  number: 0
   entry_points:
     - medaka = medaka.medaka:main
     - medaka_counts = medaka.medaka_counts:main
     - medaka_data_path = medaka.common:print_data_path
     - medaka_version_report = medaka:report_binaries
   run_exports:
-    - {{ pin_subpackage('medaka', max_pin='x') }}
+    - {{ pin_subpackage('medaka', max_pin="x") }}
 
 requirements:
   build:
@@ -30,37 +29,37 @@ requirements:
     - cmake
     - make
   host:
-    - python =3.8
+    - python
     - pip
     - cffi
-    - htslib >=1.20
     - libcurl
     - bzip2
     - xz
     - zlib
+    - htslib >=1.14
   run:
-    - python =3.8
-    - cffi
+    - python
     - grpcio
     - h5py
     - intervaltree
-    - pytorch >=2.3,<2.4
+    - mappy
     - numpy >=1.21.0,<2.0.0
     - nomkl  # [osx]
-    - mappy
     - ont-fast5-api
     - parasail-python
     - pyabpoa
     - pyspoa >=0.2.1
     - pysam >=0.16.0.1
     - python-edlib
+    - pytorch >=2.3,<2.4
     - requests
-    - samtools >=1.14
-    - bcftools >=1.14
-    - minimap2 >=2.28
-    - htslib >=1.20
+    - toml
     - tqdm
     - wurlitzer
+    - samtools >=1.14
+    - bcftools >=1.14
+    - minimap2 >=2.24
+    - htslib >=1.14
 
 test:
   imports:
@@ -74,7 +73,7 @@ test:
 about:
   home: "https://github.com/nanoporetech/medaka"
   summary: "A tool to create consensus sequences and variant calls from nanopore sequencing data using neural networks."
-  license: "MPL-2.0"
+  license: "Oxford Nanopore Technologies PLC. Public License Version 1.0"
   license_family: OTHER
   license_file: "LICENSE"
   dev_url: "https://github.com/nanoporetech/medaka"
@@ -83,7 +82,7 @@ about:
 extra:
   additional-platforms:
     - linux-aarch64
-
+    - osx-arm64
   identifiers:
     - usegalaxy-eu:medaka_consensus
     - usegalaxy-eu:medaka_consensus_pipeline

@@ -1,27 +1,33 @@
-{% set version = "3.0.1b1" %}
-{% set sha256 = "0252560f7ee2303ac3400f130e9eb81b3f6419062aa677642a7258659b43a68c" %}
+{% set name = "orthofinder" %}
+{% set version = "3.1.2" %}
+{% set sha256 = "9a715ba3e3d18b9d01801bad6530d9b00f3139269530dc4e63780a2bcab4c73e" %}
 
 package:
-  name: orthofinder
+  name: {{ name }}
   version: {{ version }}
 
-build:
-  noarch: generic
-  number: 0
-  run_exports:
-    - {{ pin_subpackage('orthofinder', max_pin="x") }}
-
 source:
-  url: https://github.com/davidemms/OrthoFinder/releases/download/{{ version }}/OrthoFinder_source.tar.gz
+  url: https://github.com/OrthoFinder/OrthoFinder/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+
+build:
+  number: 1
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   run:
-    - python >=3.7,<3.12
+    - python >=3.11,<=3.14
+    - numpy
     - scipy
+    - scikit-learn
+    - biopython
+    - ete4
+    - rich
     - blast
     # https://github.com/davidemms/OrthoFinder/issues/826 https://github.com/bbuchfink/diamond/issues/707
-    - diamond <2.1|>=2.1.7
+    - diamond <2.2|>=2.1.7
     - mcl
     - fastme
     - mafft
@@ -32,19 +38,22 @@ requirements:
     - iqtree
     - bzip2
     - mmseqs2
-    - scikit-learn
-    - biopython
     - aster
+    - famsa
 
 test:
+  source_files:
+    - ExampleData
+    - ExampleData/*
   commands:
-    - orthofinder > /dev/null
+    - orthofinder -h
+    - orthofinder -v
 
 about:
-  home: https://github.com/davidemms/OrthoFinder
-  summary: Accurate inference of orthogroups, orthologues, gene trees and rooted species tree made easy!
-  license: GPLv3
-  license_file: License.md
-
-files:
-  - ExampleData
+  home: "https://github.com/OrthoFinder/OrthoFinder"
+  summary: "Accurate inference of orthogroups, orthologues, gene trees and rooted species tree made easy!"
+  license: "GPL-3.0-only"
+  license_file: LICENSE
+  license_family: GPL3
+  dev_url: "https://github.com/OrthoFinder/OrthoFinder"
+  doc_url: "https://orthofinder.github.io/OrthoFinder"

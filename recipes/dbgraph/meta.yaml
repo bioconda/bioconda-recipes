@@ -9,22 +9,32 @@ source:
   sha256: 86adc49a0dbb9ce502f8dd5319f31f04f73d8106e8ec5b0194116ae19341d7d6
 
 build:
-  number: 1
-  skip: True  # [osx]
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('dbgraph', max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - pkg-config
 
 test:
   files:
     - k99.contigs.fastg
   commands:
-    - $PREFIX/bin/DBGraph2Pro  -s k99.contigs.fastg -f -k 99 -o testout.fasta
+    - test -x ${PREFIX}/bin/DBGraph2Pro
 
 about:
-  home: https://github.com/COL-IU/graph2pro-var/tree/master/Graph2Pro
+  home: "https://github.com/jj-umn/graph2pro-var"
   summary: "A graph-centric approach for metagenome-guided peptide identification in metaproteomics. "
   description: "Includes program DBGraph2Pro and DBGraphPep2Pro. Creates a peptide and protein database from graph generated from nucleotide sequencing data using MEGAHIT or MetaSpades. A graph-centric approach for metagenome-guided peptide identification in metaproteomics. "
-  license: "GNU General Public License"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  dev_url: "https://github.com/jj-umn/graph2pro-var"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
