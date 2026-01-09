@@ -26,17 +26,9 @@ find_package(MPI REQUIRED)
 include_directories(SYSTEM ${MPI_INCLUDE_PATH})
 include_directories(${Protobuf_INCLUDE_DIRS})
 
-set(TBB_ROOT "$ENV{PREFIX}")
-if(NOT TBB_ROOT)
-  message(FATAL_ERROR "TBB_ROOT or PREFIX environment variable must be set.")
-endif()
-find_library(TBB_LIB tbb HINTS ${TBB_ROOT}/lib REQUIRED)
-find_library(TBB_MALLOC_LIB tbbmalloc HINTS ${TBB_ROOT}/lib REQUIRED)
-find_library(TBB_MALLOC_PROXY_LIB tbbmalloc_proxy HINTS ${TBB_ROOT}/lib REQUIRED)
+find_package(TBB CONFIG REQUIRED)
 
 find_package(Boost COMPONENTS program_options iostreams filesystem date_time REQUIRED)
-
-#find_package(OpenMP REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIRS})
 file(GLOB WBE_SRCS "src/WEPP/*.cpp" "src/WEPP/*.hpp")
@@ -82,5 +74,5 @@ else()
 endif()
 
 
-target_link_libraries(wepp PRIVATE stdc++ ${Boost_LIBRARIES} ${TBB_LIB} ${TBB_MALLOC_LIB} ${TBB_MALLOC_PROXY_LIB} ${Protobuf_LIBRARIES})
-target_link_libraries(closest_peak_clustering PRIVATE stdc++ ${TBB_LIB} ${TBB_MALLOC_LIB} ${TBB_MALLOC_PROXY_LIB})
+target_link_libraries(wepp PRIVATE stdc++ ${Boost_LIBRARIES} TBB::tbb ${Protobuf_LIBRARIES})
+target_link_libraries(closest_peak_clustering PRIVATE stdc++ TBB::tbb)
