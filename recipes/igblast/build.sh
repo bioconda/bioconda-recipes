@@ -2,8 +2,10 @@
 set -xeuo pipefail
 
 # This script uses ideas from the build script for BLAST. See comments there.
-
 SHARE_DIR=$PREFIX/share/igblast
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
 mkdir -p $PREFIX/bin
 
@@ -12,27 +14,34 @@ mkdir -p $PREFIX/bin
 # $IGDATA to point to those data files.
 mkdir -p $SHARE_DIR/bin
 
-if [[ $(uname) == Linux ]]; then
+uname_str=$(uname)
+arch_str=$(uname -m)
+
+if [[ "$uname_str" == "Linux" || ("$uname_str" == "Darwin" && "$arch_str" == "arm64") ]]; then
     export AR="$AR rcs"
 
     cd c++
+    cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* src/build-system/
 
     ./configure \
          --with-z=$PREFIX \
          --with-bz2=$PREFIX \
          --with-vdb=$PREFIX
 
-    make -j2
+    make -j${CPU_COUNT}
 
     # Move one up so it looks like the binary release
     mv ReleaseMT/bin .
     mv src/app/igblast/{internal_data,optional_file} $SHARE_DIR
-else
-    # On macOS, prebuilt binaries are used
+elif [[ "$uname_str" == "Darwin" && "$arch_str" == "x86_64" ]]; then
+    # On Intel macOS, use prebuilt binaries
     mv internal_data optional_file $SHARE_DIR
+else
+    echo "Unsupported OS or architecture: $uname_str $arch_str"
+    exit 1
 fi
-mv bin/makeblastdb $PREFIX/bin/
-mv bin/{igblastn,igblastp} $SHARE_DIR/bin/
+install -v -m 0755 bin/makeblastdb "$PREFIX/bin"
+install -v -m 0755 bin/{igblastn,igblastp} "$SHARE_DIR/bin"
 
 # Replace the shebang
 sed '1 s_^.*$_#!/usr/bin/env perl_' bin/edit_imgt_file.pl > $PREFIX/bin/edit_imgt_file.pl
@@ -46,6 +55,5 @@ IGDATA="\${IGDATA-"${PREFIX}/share/igblast"}" exec "${PREFIX}/share/igblast/bin/
 EOF
   chmod +x $PREFIX/bin/$name
 done
-
 # To Do
 # - makeblastdb conflicts with the one from BLAST
