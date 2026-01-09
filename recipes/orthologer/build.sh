@@ -5,6 +5,4 @@
 export SKIP_EXTERNAL=1
 
 # install ORTHOLOGER and BRHCLUS
-which bash
-bash --version
 bash install_pkg.sh
