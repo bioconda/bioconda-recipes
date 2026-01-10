@@ -6,21 +6,28 @@ package:
   version: "{{ version }}"
 
 source:
-  url: https://github.com/iqtree/decenttree/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: d7d592e424b7969a8a361f2de74233659f52d76ad21b9aa2910bd312887addbb
+  - url: https://github.com/iqtree/decenttree/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: d7d592e424b7969a8a361f2de74233659f52d76ad21b9aa2910bd312887addbb
+    folder: source
+  - url: https://github.com/iqtree/decenttree/releases/download/v{{ version }}/decenttree-{{ version }}-MacOSX.zip  # [osx]
+    sha256: 3921d8185a63d876af8091799c7a082b9c80d6d6fed917c30ddef9191af39fe8  # [osx]
+    folder: mac  # [osx]
 
 build:
-  number: 0
-  skip: true  # [win or osx]
+  number: 3
+  skip: true  # [win or (osx and arm64)]
   run_exports:
     - {{ pin_subpackage("decenttree", max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - cmake
-    - make
+    - {{ compiler('c') }}  # [not osx]
+    - {{ compiler('cxx') }}  # [not osx]
+    - cmake  # [not osx]
+    - make  # [not osx]
+    - unzip  # [osx]
+  run:
+    - llvm-openmp  # [osx]
 
 test:
   commands:
@@ -30,7 +37,7 @@ about:
   home: https://github.com/iqtree/decenttree
   license: GPL-2.0-only
   license_family: GPL
-  license_file: LICENSE
+  license_file: source/LICENSE
   summary: "Scalable Neighbour-Joining and related algorithms for phylogenetic inference"
   description: |
     DecentTree is a fast and memory-efficient implementation of distance-based
