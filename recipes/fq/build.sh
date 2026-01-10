@@ -6,7 +6,4 @@ if [ "$(uname)" == "Darwin" ]; then
   export HOME=`mktemp -d`
 fi
 
-cargo build --release
-
-mv target/release/fq "${PREFIX}/bin"
-
+cargo install --verbose --locked --no-track --root "$PREFIX" --path .
