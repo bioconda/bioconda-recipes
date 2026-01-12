@@ -25,3 +25,7 @@ EOF
 
 chmod +x "$PREFIX/bin/Nirvana"
 chmod +x "$PREFIX/bin/Downloader"
+
+# Create symlink for dotnet to ensure it's in PATH even when conda activation scripts aren't run
+# This is critical for Singularity containers where conda activation doesn't happen
+ln -sf "$PREFIX/lib/dotnet/dotnet" "$PREFIX/bin/dotnet"
