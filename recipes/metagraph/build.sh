@@ -17,8 +17,6 @@ sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' metagraph/CMa
 sed -i.bak2 '/add_subdirectory(external-libraries\/sshash SYSTEM)/a\
 target_include_directories(sshash_static PRIVATE external-libraries/zlib)
 ' metagraph/CMakeLists.txt
-# print CMakeLists.txt
-cat metagraph/CMakeLists.txt
 
 [[ ! -d metagraph/build ]] || rm -rf metagraph/build
 mkdir -p metagraph/build
