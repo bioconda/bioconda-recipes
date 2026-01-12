@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
-set -eu
+set -eux
 
 # should use "install -m 755 ...." here
 mkdir -p "${PREFIX}/bin"
-chmod 755 any2fasta
-cp any2fasta "${PREFIX}/bin/"
-
+chmod 755 iupak
+cp iupak "${PREFIX}/bin/"
