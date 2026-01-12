@@ -14,13 +14,11 @@ sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' metagraph/CMa
 
 # Add zlib include directory for sshash target
 # Add it right after add_subdirectory(external-libraries/sshash SYSTEM)
-if ! grep -q "target_include_directories(sshash.*external-libraries/zlib" metagraph/CMakeLists.txt; then
-    sed -i.bak2 '/add_subdirectory(external-libraries\/sshash SYSTEM)/a\
-target_include_directories(sshash PUBLIC\
-  external-libraries/zlib\
-)
+sed -i.bak2 '/add_subdirectory(external-libraries\/sshash SYSTEM)/a\
+target_include_directories(sshash_static PRIVATE external-libraries/zlib)
 ' metagraph/CMakeLists.txt
-fi
+# print CMakeLists.txt
+cat metagraph/CMakeLists.txt
 
 [[ ! -d metagraph/build ]] || rm -rf metagraph/build
 mkdir -p metagraph/build
