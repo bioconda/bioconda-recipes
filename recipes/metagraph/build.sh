@@ -12,10 +12,6 @@ echo '#define HTSCODECS_VERSION_TEXT "1.6.4"' > metagraph/external-libraries/hts
 
 sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' metagraph/CMakeLists.txt
 
-pushd metagraph/external-libraries/sdsl-lite
-./install.sh "${PWD}"
-popd
-
 [[ ! -d metagraph/build ]] || rm -rf metagraph/build
 mkdir -p metagraph/build
 cd metagraph/build
