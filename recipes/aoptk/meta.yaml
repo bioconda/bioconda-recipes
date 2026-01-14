@@ -1,0 +1,60 @@
+{% set name = "aoptk" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/aoptk-{{ version }}.tar.gz
+  sha256: c75eb132a0c50ebdad1c657ad0bd0d632e53fd05e2cb7607c3fae6e246e04ac9
+
+build:
+  entry_points:
+    - chemical-identifier = aoptk.application.chemical_identifier:cli
+    - publication-tracker = aoptk.application.publication_tracker:cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools >=64.0.0
+    - setuptools-scm
+    - wheel
+    - pip
+  run:
+    - python >=3.10
+    - pandas
+    - pymupdf
+    - metapub
+    - requests
+    - scispacy
+    - spacy >=3.0.0
+    - bs4
+    - biopython
+    - transformers
+    - pytorch
+    - openpyxl
+    - click >=8.1
+
+test:
+  imports:
+    - aoptk
+  commands:
+    - pip check
+    - chemical-identifier --help
+    - publication-tracker --help
+  requires:
+    - pip
+
+about:
+  summary: Tools to support data mining for the development of (q)AOPs
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - hechth
+    - rdurnik
