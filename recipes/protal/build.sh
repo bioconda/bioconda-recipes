@@ -46,5 +46,6 @@ echo "ninja -C cmake-build-release -j ${CPU_COUNT} install"
 
 ninja -C cmake-build-release -j "${CPU_COUNT}" install
 
-install -v -m 0755 cmake-build-release/protal* "${PREFIX}/bin"
+install -v -m 0755 cmake-build-release/protal "${PREFIX}/bin/protal_plain"
+install -v -m 0755 cmake-build-release/protal_avx2 "${PREFIX}/bin"
 cp -fv protal_launcher "${PREFIX}/bin/protal"
