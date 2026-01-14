@@ -1,0 +1,46 @@
+{% set name = "h5max" %}
+{% set version = "0.3.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/h5max-{{ version }}.tar.gz
+  sha256: baea398b189792d21966b95e9992f1b3487d091ef68f70b8a8d7837ec4f963a5
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - setuptools >=45
+    - setuptools-scm >=6.2
+    - pip
+  run:
+    - python >=3.9
+    - numpy >=1.21.0
+    - scipy >=1.7.3
+
+test:
+  imports:
+    - h5max
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/jdcla/h5max
+  summary: scipy.sparse support on h5py
+  license: MIT
+  license_file: LICENCE
+
+extra:
+  recipe-maintainers:
+    - jdcla
