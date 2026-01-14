@@ -12,7 +12,7 @@ ACTIVATE_DIR="${PREFIX}/etc/conda/activate.d"
 DEACTIVATE_DIR="${PREFIX}/etc/conda/deactivate.d"
 mkdir -p "${ACTIVATE_DIR}" "${DEACTIVATE_DIR}"
 
-cat <<'EOF' > "${ACTIVATE_DIR}/metawepp_activate.sh"
+cat <<'EOF' > "${ACTIVATE_DIR}/z_metawepp_activate.sh"
 #!/bin/bash
 
 # Store the original snakemake command location if needed, or just use 'command'
@@ -29,10 +29,10 @@ export -f snakemake 2>/dev/null || true
 EOF
 
 # Removes the function when the user exits the environment
-cat <<'EOF' > "${DEACTIVATE_DIR}/metawepp_deactivate.sh"
+cat <<'EOF' > "${DEACTIVATE_DIR}/z_metawepp_deactivate.sh"
 #!/bin/bash
 unset -f snakemake
 EOF
 
-chmod +x "${ACTIVATE_DIR}/metawepp_activate.sh"
-chmod +x "${DEACTIVATE_DIR}/metawepp_deactivate.sh"
+chmod +x "${ACTIVATE_DIR}/z_metawepp_activate.sh"
+chmod +x "${DEACTIVATE_DIR}/z_metawepp_deactivate.sh"
