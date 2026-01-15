@@ -72,7 +72,7 @@ CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-strip"
 #   - C++20        Use '-std=gnu++20' compiler flag.
 #   - C2X          Use '-std=gnu2x' compiler flag.
 #   See c++/src/build-system/configure.ac lines 1020:1068 for the named options.
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-experimental=Int4GI"
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-experimental=Int8GI"
 # --with(out)-mt:
 #   Compile in a multi-threading safe manner.
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-mt"
@@ -152,14 +152,12 @@ export AR="${AR} rcs"
 
 # Run configure script
 cd "$NCBI_CXX_TOOLKIT"
-./configure $CONFIGURE_FLAGS >&2
+# use configure.orig, per docs recommendations
+# see: https://www.ncbi.nlm.nih.gov/books/NBK569861/#intro_Installation.Source_tarball
+./configure.orig $CONFIGURE_FLAGS >&2
 
 # Run GNU Make
 n_workers=${CPU_COUNT:-1}
-if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
-	# double it on CircleCI as resource usage is quite low with 4 workers
-	n_workers=8
-fi
 
 cd "$RESULT_PATH/build"
 echo "RUNNING MAKE" >&2
