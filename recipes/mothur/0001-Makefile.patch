@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index 5b095d62..600ce07b 100644
+index 5b095d62..11a777db 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -20,21 +20,21 @@
@@ -35,7 +35,18 @@ index 5b095d62..600ce07b 100644
  MOTHUR_FILES="\"Enter_your_default_path_here\""
  MOTHUR_TOOLS="\"Enter_your_mothur_tools_path_here\""
  VERSION = "\"1.48.5\""
-@@ -104,17 +104,19 @@ endif
+@@ -50,8 +50,8 @@ ifeq  ($(strip $(OPTIMIZE)),yes)
+     CXXFLAGS += -O3
+ endif
+ 
+-CXXFLAGS += -std=c++11 -pthread -DVERSION=${VERSION} -DRELEASE_DATE=${RELEASE_DATE}
+-LDFLAGS += -std=c++11 -pthread
++CXXFLAGS += -I$(PREFIX)/include -std=c++14 -pthread -DVERSION=${VERSION} -DRELEASE_DATE=${RELEASE_DATE}
++LDFLAGS += -L$(PREFIX)/lib -std=c++14 -pthread
+ 
+ ifeq  ($(strip $(MOTHUR_FILES)),"\"Enter_your_default_path_here\"")
+ else
+@@ -104,12 +104,12 @@ endif
  # INCLUDE directories for mothur
  
  	VPATH=source/calculators:source/chimera:source/classifier:source/clearcut:source/commands:source/communitytype:source/datastructures:source/engines:source/metastats:source/read:source/svm:source/
@@ -45,28 +56,16 @@ index 5b095d62..600ce07b 100644
 -    subDirLinking =  $(patsubst %, -L%, $(subdirs))
 -    CXXFLAGS += -I. $(subDirIncludes)
 -    LDFLAGS += $(subDirLinking)
--
--		OBJECTS=$(patsubst %.cpp,%.o,$(wildcard $(addsuffix *.cpp,$(subdirs))))
--    OBJECTS+=$(patsubst %.c,%.o,$(wildcard $(addsuffix *.c,$(subdirs))))
--    OBJECTS+=$(patsubst %.cpp,%.o,$(wildcard *.cpp))
--    OBJECTS+=$(patsubst %.c,%.o,$(wildcard *.c))
-+	skipUchime := source/uchime_src/
-+	subdirs :=  $(sort $(dir $(filter-out  $(skipUchime), $(wildcard source/*/)))) source/
-+	subDirIncludes = $(patsubst %, -I %, $(subdirs))
++  skipUchime := source/uchime_src/
++  subdirs :=  $(sort $(dir $(filter-out  $(skipUchime), $(wildcard source/*/)))) source/
++  subDirIncludes = $(patsubst %, -I %, $(subdirs))
 +	subDirLinking =  $(patsubst %, -L%, $(subdirs))
-+	CXXFLAGS += -I. $(subDirIncludes)
-+	LDFLAGS += $(subDirLinking)
-+
-+	OBJECTS=$(patsubst %.cpp,%.o,$(wildcard $(addsuffix *.cpp,$(subdirs))))
-+	OBJECTS+=$(patsubst %.c,%.o,$(wildcard $(addsuffix *.c,$(subdirs))))
-+#	OBJECTS+=$(patsubst %.cpp,%.o,$(wildcard *.cpp))
-+#	OBJECTS+=$(patsubst %.c,%.o,$(wildcard *.c))
-+#	OBJECTS+=$(patsubst %.cpp,%.o,$(wildcard source/*.cpp))
-+#	OBJECTS+=$(patsubst %.cpp,%.o,$(wildcard source/*.c))
++	CXXFLAGS += -I. -Isource $(subDirIncludes)
++	LDFLAGS += -Lsource $(subDirLinking)
  
- mothur : $(OBJECTS) uchime
- 	$(CXX) $(LDFLAGS) $(TARGET_ARCH) -o $@ $(OBJECTS) $(LIBS)
-@@ -127,7 +129,7 @@ install : mothur
+ 		OBJECTS=$(patsubst %.cpp,%.o,$(wildcard $(addsuffix *.cpp,$(subdirs))))
+     OBJECTS+=$(patsubst %.c,%.o,$(wildcard $(addsuffix *.c,$(subdirs))))
+@@ -127,7 +127,7 @@ install : mothur
  ifeq  ($(strip $(INSTALL_DIR)),"\"Enter_your_mothur_install_path_here\"")
  else
  	mkdir -p ${INSTALL_DIR}
