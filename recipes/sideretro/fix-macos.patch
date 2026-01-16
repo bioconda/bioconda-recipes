@@ -1,0 +1,64 @@
+diff --git a/meson.build b/meson.build
+index fd10255..cd60764 100644
+--- a/meson.build
++++ b/meson.build
+@@ -62,7 +62,13 @@ config_out = vcs_tag(
+ config_dep = declare_dependency(sources : config_out)
+ 
+ # Compiler flags
+-common_flags = ['-DHAVE_CONFIG_H', '-D_GNU_SOURCE']
++common_flags = ['-DHAVE_CONFIG_H']
++
++if host_machine.system() == 'darwin'
++  common_flags += '-D_DARWIN_C_SOURCE'
++elif host_machine.system() == 'linux'
++  common_flags += '-D_GNU_SOURCE'
++endif
+ 
+ # Set project flags and language
+ add_project_arguments(common_flags, language: 'c')
+@@ -91,13 +97,6 @@ sqlite_dep = dependency('sqlite3', version : '>= 3.28.0', fallback : ['sqlite',
+ # HTSLib
+ htslib_dep = dependency('htslib', version : '>= 1.9', fallback : ['htslib', 'htslib_dep'])
+ 
+-# Libcheck framework is used for testing, so it is not
+-# required for building and installing
+-check_dep = dependency('check', version : '>= 0.15.0', required : false)
+-
+-# Sphinx documentation generator
+-sphinx_build = find_program('sphinx-build', required : false)
+-
+ # All required deps
+ deps = [
+   config_dep,
+@@ -114,9 +113,3 @@ inc = include_directories('.')
+ 
+ # Build static library and executable
+ subdir('src')
+-
+-# Testing
+-subdir('tests')
+-
+-# Documentation
+-subdir('docs')
+diff --git a/src/utils.c b/src/utils.c
+index 04c4389..fad3189 100644
+--- a/src/utils.c
++++ b/src/utils.c
+@@ -228,6 +228,16 @@ xasprintf_concat (char **strp, const char *fmt, ...)
+ 	return ret;
+ }
+ 
++#ifdef __APPLE__
++char *
++secure_getenv (const char *name)
++{
++	return issetugid ()
++		?  NULL
++		: getenv (name);
++}
++#endif
++
+ int
+ which (const char *cmd)
+ {

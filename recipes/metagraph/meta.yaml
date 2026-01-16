@@ -1,37 +1,45 @@
 {% set name = "metagraph" %}
-{% set version = "0.3.6" %}
-{% set sha256 = "9ea6fd1ac8343286a97f8adf7734c5607ce05b850fadfcb2c8487cb5d599191f" %}
+{% set version = "0.5.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/ratschlab/metagraph/releases/download/v{{ version }}/v{{ version }}-sources-with-submodules.tar.gz
-  sha256: {{ sha256 }}
+  sha256: 4ba5b837c04711640845f22791094fc9bae84fbf5f31cb34d6f67e0a5feb3112
 
 build:
-  number: 4
-  skip: true # [win]
+  number: 0
+  skip: True  # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
-    - make
     - {{ compiler('cxx') }}
+    - make
     - cmake
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - python >=3
+    - setuptools
   host:
-    - htslib
-    - jemalloc # [linux]
-    - boost # [linux]
+    - jemalloc  # [linux]
+    - boost-cpp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx,osx-arm64]
+    - libdeflate
+    - icu  # [osx,osx-arm64]
+    - zstd
     - bzip2
-    - llvm-openmp # [osx]
-    - libgomp # [linux]
   run:
-    - htslib
-    - jemalloc # [linux]
-    - bzip2
-    - llvm-openmp # [osx]
-    - libgomp # [linux]
+    - jemalloc  # [linux]
+    - boost-cpp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx,osx-arm64]
 
 test:
   commands:
@@ -40,17 +48,21 @@ test:
     - metagraph --help
 
 about:
-  home: https://github.com/ratschlab/metagraph
+  home: "https://github.com/ratschlab/metagraph"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: 'Ultra Scalable Framework for DNA Search, Alignment, Assembly'
+  summary: "Ultra Scalable Framework for DNA Search, Alignment, Assembly."
   description: |
     The MetaGraph framework allows for indexing and analysis of very large biological sequence collections, producing compressed indexes that can represent several petabases of input data. The indexes can be efficiently queried with any query sequence of interest.
-  doc_url: https://metagraph.ethz.ch
-  dev_url: https://github.com/ratschlab/metagraph
+  doc_url: "https://metagraph.ethz.ch"
+  dev_url: "https://github.com/ratschlab/metagraph"
 
 extra:
   recipe-maintainers:
+    - adamant-pwn
     - izcram
     - karasikov
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

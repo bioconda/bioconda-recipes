@@ -1,0 +1,55 @@
+{% set name = "disco" %}
+{% set version = "1.3" %}
+{% set sha256 = "50d311ed8a5111d9a55e49ee74e6c9309af7b4173720731f4db17b87289befb0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/abiswas-odu/Disco/releases/download/1.3/Disco{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Replace-g++-by-CXX.patch
+    - sstr.patch
+    - 0003-Utils-cstdint.patch  # [linux]
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('disco', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - pkg-config
+  host:
+    - mpich-mpicxx
+    - zlib
+  run:
+    - mpich-mpicxx
+    - biopython
+    - bbmap
+
+test:
+  commands:
+    - runDisco.sh -h 2>&1 | grep "runDisco"
+    - runAssembly.sh -h 2>&1 | grep "runDisco"
+    - runECC.sh -h 2>&1 | grep "runDisco"
+    - buildG --help
+    - buildG-MPI --help
+    - buildG-MPIRMA --help
+    - fullsimplify --help
+
+about:
+  home: "http://disco.omicsbio.org"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  summary: "Multi-threaded Distributed Memory Overlap-Layout-Consensus (OLC) Metagenome Assembler."
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
