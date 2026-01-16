@@ -1,37 +1,44 @@
+{% set name = "breakinator" %}
+{% set version = "1.1.1" %}
+
 package:
-  name: breakinator
-  version: "1.0.1"       
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/jheinz27/breakinator/archive/refs/tags/v1.0.1.tar.gz
-  sha256: e8ce29eb3dc3910a1f2ca76f023f3d6e24f6e59a66842249d08839096a7b6dbb
+  url: https://github.com/jheinz27/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 3961a4c77e356881335c83f740517269993e391260dc4958f2f34a43c82e0516
 
 build:
-  noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
-  run_exports:
-    - {{ pin_compatible('python') }}
+  # We removed the 'script' line here. 
+  # Conda automatically looks for build.sh in the same folder.
 
 requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - make
+    - pkg-config
   host:
-    - python >=3.7
-    - pip
-    - setuptools
-    - wheel 
+    - htslib
+    - zlib
+    - xz
+    - openssl
+    - libcurl
   run:
-    - python
- 
+    - htslib
+    - zlib
+    - xz
+    - openssl
+    - libcurl
 
 test:
-  imports:
-    - breakinator
-  # optionally run CLI tests:
   commands:
+    # This ensures the binary was actually installed to the path and runs
     - breakinator --help
 
 about:
-  home: https://github.com/jheinz27/breakinator 
-  license: MIT        
-  summary: "Detection of foldback and chimeric read artifacts in PAF files"
-
+  home: https://github.com/jheinz27/breakinator
+  license: MIT
+  summary: "Detection of foldback and chimeric read artifacts in SAM/BAM/CRAM and PAF files"
