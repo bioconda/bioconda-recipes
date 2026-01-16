@@ -6,13 +6,13 @@
 {% set pio_version = "2.6.6" %}
 {% set pio_pkg_version = pio_version.replace('.', '_') %}
 {% set esmf_version = "8.9.0" %}
-{% set omb_version = "7.5.1" %}
+{% set omb_version = "8.0b2" %}
 {% set vfd_gds_version = "1.0.2" %}
 {% set cuda_version = "12.6" %}
 {% set build = 0 %}
 
 # BUILD TRIGGER - manually change this for each MPI variant to force bioconda rebuild if needed
-{% set build_trigger = "mvapich" %}  # Change to: openmpi, mpich, psmpi or mvapich
+{% set build_trigger = "psmpi" %}  # Change to: openmpi, mpich, psmpi or mvapich
 
 # Simple type-safe parsing
 {% if mpi and mpi is string %}
@@ -66,7 +66,8 @@ source:
     patches:
       - disable_esmf_apps.patch
   - url: https://mvapich.cse.ohio-state.edu/download/mvapich/osu-micro-benchmarks-{{ omb_version }}.tar.gz
-    sha256: 160d0d5e3c3cb022520ecb247e9875bb0973b1d3cadccd6c17624f8407c52e22  # 7.5.1
+#   sha256: 160d0d5e3c3cb022520ecb247e9875bb0973b1d3cadccd6c17624f8407c52e22  # 7.5.1
+    sha256: 2ea96f0d569b012e70eb5cf8d1025890a228e0dfdb3e84d202c3cf53ee34f1b7  # 8.0b2
     folder: esme_omb
   - url: https://github.com/hpc-io/vfd-gds/archive/refs/tags/{{ vfd_gds_version }}.tar.gz
     sha256: f7df64ff62e057b525bc30ed6534f9c0752e52bd58b65f7c147878d6c68105ae
@@ -171,6 +172,7 @@ outputs:
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - {{ compiler('fortran') }}
+        - cmake
         - make
         {% if mpi_name == "mvapich" %}
         - cmake >=3.18
@@ -352,8 +354,11 @@ outputs:
     script: build_omb.sh
     requirements:
       build:
+        - autoconf
+        - automake
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
+        - libtool
         - make
       host:
         - {{ mpi_spec }}

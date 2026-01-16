@@ -8,6 +8,8 @@ export CFLAGS=-O3
 
 cd "${SRC_DIR}/esme_omb"
 
+./autogen.sh
+
 ./configure --prefix=$PREFIX \
 	    --disable-dependency-tracking \
             --enable-static=no
