@@ -91,6 +91,8 @@ if [[ $(uname) != "Darwin" ]]; then
     fi
 fi
 
+export LIBCLANG_PATH="${CONDA_PREFIX}/lib"
+
 # Run cargo-bundle-licenses
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
