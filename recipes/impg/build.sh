@@ -54,6 +54,12 @@ if [[ $(uname) == "Darwin" ]]; then
     else
         export MAKE="make"
     fi
+
+    # Create gcc/g++ symlinks pointing to clang (needed for fastga-rs Makefile)
+    mkdir -p "$BUILD_PREFIX/bin"
+    ln -sf "$CC" "$BUILD_PREFIX/bin/gcc"
+    ln -sf "$CXX" "$BUILD_PREFIX/bin/g++"
+    export PATH="$BUILD_PREFIX/bin:$PATH"
 else
     CARGO_EXTRA_FLAGS=""
 
