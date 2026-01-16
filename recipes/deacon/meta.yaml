@@ -1,5 +1,5 @@
 {% set name = "deacon" %}
-{% set version = "0.12.0" %}
+{% set version = "0.13.2" %}
 
 package:
   name: {{ name }}
@@ -7,17 +7,26 @@ package:
 
 source:
   url: https://github.com/bede/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: eaf3f2ca478736fff6a7def3263298908f153fea2009dc6912173633b1efd33f
+  sha256: c80c8424f2236a984393e8ec542b3abcc35a3e8eb45650c4bc36ecb1f2413cb2
 
 build:
-  number: 0
-  script: "cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
+  number: 1
+  script:
+    # The default config.toml has target-cpu=native,
+    # but we don't want that for portable CI builds.
+    # Instead, use x86-64-v3 for x64, apple-m14 (=M1) for macos,
+    # and the default otherwise.
+    - mv .cargo/config-portable.toml .cargo/config.toml
+    - cargo install --no-track --locked --verbose --root "${PREFIX}" --path .
   run_exports:
     - {{ pin_subpackage('deacon', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+  host:
+    - openssl
 
 test:
   commands:
