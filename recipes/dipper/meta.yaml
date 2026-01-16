@@ -19,6 +19,8 @@ outputs:
   # 1. CPU Backend
   - name: dipper-cpu
     script: build.sh
+    run_exports:
+      - {{ pin_subpackage("dipper-cpu", max_pin="x.x") }}
     requirements:
       build:
         - {{ compiler('c') }}
@@ -35,10 +37,15 @@ outputs:
         - boost-cpp
         - tbb
         - zlib 
+      test:
+        commands:
+          - dipper_cpu --help
 
   # 2. NVIDIA CUDA Backend
   - name: dipper-cuda
     script: build.sh
+    run_exports:
+      - {{ pin_subpackage("dipper-cuda", max_pin="x.x") }}
     requirements:
       build:
         - {{ compiler('c') }}
@@ -60,10 +67,15 @@ outputs:
         - boost-cpp
         - tbb
         - zlib
+      test:
+        commands:
+          - dipper_cpu --help
 
   # 3. AMD ROCm Backend
   - name: dipper-rocm
     script: build.sh
+    run_exports:
+      - {{ pin_subpackage("dipper-rocm", max_pin="x.x") }}
     requirements:
       build:
         - {{ compiler('c') }}
@@ -85,6 +97,9 @@ outputs:
         - tbb
         - boost-cpp
         - hip-runtime-amd
+      test:
+        commands:
+          - dipper_cpu --help
 test:
   commands:
     - dipper_cpu --help
