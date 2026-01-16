@@ -1,4 +1,5 @@
-{% set version = "1.1.alpha19" %}
+{% set name = "pplacer" %}
+{% set version = "1.1.alpha20" %}
 {% set sha256 = "9131b45c35ddb927f866385f149cf64af5dffe724234cd4548c22303a992347d" %}
 
 package:
@@ -6,12 +7,34 @@ package:
   version: '{{ version }}'
 
 source:
-  url: https://github.com/matsen/pplacer/releases/download/v{{ version }}/pplacer-linux-v{{ version }}.zip
-  sha256: '{{ sha256 }}'
-
+  - url: https://github.com/matsen/pplacer/archive/refs/tags/v{{version}}.tar.gz  # [linux]
+    sha256: f88b4f0bf460d08e040e7178b5327c305f9b707af5e15b0522cdf6f2d5268ee5   # [linux]
+  - git_url: https://github.com/fhcrc/mcl   # [linux]
+    git_rev: b1f7a969371d434eaa6848bdbb79a851de617c1f  # [linux]
+    depth: 1  # [linux]
+    folder: mcl  # [linux]
+    sha256: unused  # [linux]
+  - url: https://github.com/matsen/pplacer/releases/download/v1.1.alpha20/pplacer-macos-arm64.zip  # [osx and arm64]
+    sha256: 0c7bc46ae1225b91e27983c0bddb6354b2d843ab4409d542dca87de1e83a33fb  # [osx and arm64]
+    
 build:
-  skip: true   # [osx]
-  number: 2
+  number: 0
+  skip: true  # [osx and x86_64]
+  run_exports:
+    - {{ pin_subpackage(name , max_pin=None) }}
+    
+requirements:
+  build:
+    - make   # [linux]
+    - {{ compiler('c') }}  # [linux]
+    - ocaml  # [linux]
+    - opam   # [linux]
+  host:
+    - zlib    # [linux]
+    - sqlite  # [linux]
+    - gsl 2.8
+  run:
+    - gsl     #[osx]
 
 test:
   commands:
@@ -29,5 +52,8 @@ about:
   dev_url: https://github.com/matsen/pplacer/
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   skip-lints:
-    - should_be_noarch_generic
+    - uses_vcs_url

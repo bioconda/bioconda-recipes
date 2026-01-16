@@ -1,34 +1,33 @@
 {% set name = "orthofinder" %}
-{% set version = "3.1.0" %}
-{% set sha256 = "1a4c95bd65feb8b337c191d209e0dc7fe7bedbf7ae1b3f2f077caad7cc196d27" %}
+{% set version = "3.1.2" %}
+{% set sha256 = "9a715ba3e3d18b9d01801bad6530d9b00f3139269530dc4e63780a2bcab4c73e" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
-build:
-  noarch: generic
-  number: 0
-  run_exports:
-    - {{ pin_subpackage('orthofinder', max_pin="x") }}
-
 source:
-  url: https://github.com/OrthoFinder/OrthoFinder/releases/download/v{{ version }}/orthofinder-3.1.0.tar.gz
+  url: https://github.com/OrthoFinder/OrthoFinder/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+
+build:
+  number: 1
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   run:
-    - python >=3.8,<3.12
+    - python >=3.11,<=3.14
     - numpy
     - scipy
     - scikit-learn
     - biopython
-    - six
-    - ete3
+    - ete4
     - rich
     - blast
     # https://github.com/davidemms/OrthoFinder/issues/826 https://github.com/bbuchfink/diamond/issues/707
-    - diamond <2.1|>=2.1.7
+    - diamond <2.2|>=2.1.7
     - mcl
     - fastme
     - mafft
@@ -42,20 +41,19 @@ requirements:
     - aster
     - famsa
 
-
 test:
+  source_files:
+    - ExampleData
+    - ExampleData/*
   commands:
     - orthofinder -h
     - orthofinder -v
 
 about:
-  home: https://github.com/OrthoFinder/OrthoFinder
-  summary: Accurate inference of orthogroups, orthologues, gene trees and rooted species tree made easy!
+  home: "https://github.com/OrthoFinder/OrthoFinder"
+  summary: "Accurate inference of orthogroups, orthologues, gene trees and rooted species tree made easy!"
   license: "GPL-3.0-only"
   license_file: LICENSE
   license_family: GPL3
-  dev_url: https://github.com/OrthoFinder/OrthoFinder
-  doc_url: https://orthofinder.github.io/OrthoFinder
-
-files:
-  - ExampleData
+  dev_url: "https://github.com/OrthoFinder/OrthoFinder"
+  doc_url: "https://orthofinder.github.io/OrthoFinder"

@@ -13,15 +13,14 @@ source:
     - 0002-main-cpp.patch
 
 build:
-  number: 0
+  number: 4
   run_exports:
-    - {{ pin_subpackage('usher', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
-    - make
     - cmake
     - autoconf
     - automake
@@ -29,33 +28,32 @@ requirements:
     - ninja
     - pkg-config
   host:
-    - boost-cpp
-    - protobuf <4
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
     - openmpi
-    - openssh
+    - boost-cpp
+    - protobuf <5
     - tbb-devel <2021.1.1
     - isa-l
+    - curl
     - wget
   run:
-    - mafft
-    - boost-cpp
-    - protobuf <4
-    - ucsc-fatovcf  # [not arm64]
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
     - openmpi
-    - openssh
+    - boost-cpp
+    - protobuf <5
     - tbb-devel <2021.1.1
     - isa-l
+    - ucsc-fatovcf
+    - mafft
 
 test:
   commands:
     - usher --help
     - usher-sampled --help
-    - matOptimize --help
-    - matUtils --help
+    - matOptimize --help  # [not (osx and x86_64)]
+    - matUtils --help  # [not (osx and x86_64)]
 
 about:
   home: "https://github.com/yatisht/usher"
@@ -75,3 +73,6 @@ extra:
     - biotools:usher
     - usegalaxy-eu:usher_matutils
     - usegalaxy-eu:usher
+  container:
+    # mpirun won't run with ssh present, which is not included in the base image
+    extended-base: True
