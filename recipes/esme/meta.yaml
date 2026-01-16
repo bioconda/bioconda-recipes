@@ -7,39 +7,24 @@
 {% set pio_pkg_version = pio_version.replace('.', '_') %}
 {% set esmf_version = "8.9.0" %}
 {% set omb_version = "7.5.1" %}
+{% set vfd_gds_version = "1.0.2" %}
+{% set cuda_version = "12.6" %}
 {% set build = 0 %}
 
-# BUILD TRIGGER - manually change this for each MPI variant to force bioconda rebuild
-{% set build_trigger = "psmpi" %}  # Change to: openmpi, mpich, psmpi or mvapich_ucx/mvapich_ofi
+# BUILD TRIGGER - manually change this for each MPI variant to force bioconda rebuild if needed
+{% set build_trigger = "mvapich" %}  # Change to: openmpi, mpich, psmpi or mvapich
 
 # Simple type-safe parsing
 {% if mpi and mpi is string %}
   {% set mpi_parts = mpi.split('=') %}
   {% set mpi_name = mpi_parts[0] %}
   {% set mpi_version = mpi_parts[1] if mpi_parts|length > 1 else '' %}
-{% else %}
-  {% set mpi_name = 'mvapich' %}
-  {% set mpi_version = '' %}
 {% endif %}
 
 {% set mpi_version_name = mpi_version.replace('.', '_') if mpi_version else '' %}
 
-# MVApich variants
-{% if mpi_name == "mvapich" %}
-  {% if "ucx" in build_trigger %}
-    {% set mpi_build_variant = "ucx" %}
-  {% elif "ofi" in build_trigger %}
-    {% set mpi_build_variant = "ofi" %}
-  {% else %}
-    {% set mpi_build_variant = "ucx" %}
-  {% endif %}
-  {% set mpi_pkg_suffix = mpi_name + '_' + mpi_version_name + '_' + mpi_build_variant %}
-  {% set mpi_spec = mpi_name + '=' + mpi_version + '=' + mpi_build_variant + '*' %}
-{% else %}
-  {% set mpi_build_variant = '' %}
-  {% set mpi_pkg_suffix = mpi_name + '_' + mpi_version_name %}
-  {% set mpi_spec = mpi_name + ('=' + mpi_version if mpi_version else '') %}
-{% endif %}
+{% set mpi_pkg_suffix = mpi_name + '_' + mpi_version_name %}
+{% set mpi_spec = mpi_name + ('=' + mpi_version if mpi_version else '') %}
 
 package:
   name: esme_{{ mpi_pkg_suffix }}
@@ -47,8 +32,8 @@ package:
 
 build:
   number: {{ build }}
-  string: {{ mpi_name }}_{{ mpi_build_variant }}_h{{ PKG_HASH }}_{{ build }}
-  skip: true  # [not ((linux and (build_trigger != 'psmpi') and (x86_64 or aarch64)) or (linux and (build_trigger == 'psmpi') and (x86_64)))]
+  string: {{ mpi_name }}_h{{ PKG_HASH }}_{{ build }}
+  skip: True  # [not ((linux and (build_trigger != 'psmpi') and (x86_64 or aarch64)) or (linux and (build_trigger == 'psmpi') and (x86_64)))]
   ignore_run_exports:
     - libacl
     - libstdcxx
@@ -75,9 +60,18 @@ source:
   - url: https://github.com/esmf-org/esmf/archive/refs/tags/v{{ esmf_version }}.tar.gz
     sha256: 586e0101d76ff9842d9ad43567fae50317ee794d80293430d9f1847dec0eefa5  # 8.9.0
     folder: esme_esmf
+    patches:
+      - disable_esmf_apps.patch
   - url: https://mvapich.cse.ohio-state.edu/download/mvapich/osu-micro-benchmarks-{{ omb_version }}.tar.gz
     sha256: 160d0d5e3c3cb022520ecb247e9875bb0973b1d3cadccd6c17624f8407c52e22  # 7.5.1
     folder: esme_omb
+  - url: https://github.com/hpc-io/vfd-gds/archive/refs/tags/{{ vfd_gds_version }}.tar.gz
+    sha256: f7df64ff62e057b525bc30ed6534f9c0752e52bd58b65f7c147878d6c68105ae
+    folder: esme_vfd_gds
+    patches:
+      - fix-cmake-min-version.patch
+      - fix-handle-register.patch
+      - fix-cbsize-redef.patch
 
 requirements:
   run:
@@ -91,8 +85,53 @@ requirements:
     - python=3.8
 
 test:
+  requires:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
   commands:
-    - echo "Skipping ESME tests, since individual packages were already tested"
+    # PnetCDF test
+    - export PATH=$PATH:${PREFIX}/bin
+    - pnetcdf-config --all
+
+    # HDF5 test
+    - export PATH=$PATH:${PREFIX}/bin
+    - h5pfc -showconfig
+
+    # NetCDF-C test
+    - export PATH=$PATH:${PREFIX}/bin
+    - nc-config --all
+
+    # NetCDF-Fortran test
+    - export PATH=$PATH:${PREFIX}/bin
+    - nf-config --all
+
+    # PIO test (file check)
+    - test -f ${PREFIX}/include/pio.h
+
+    # ESMF test
+    - export ESMFMKFILE=${PREFIX}/lib/esmf.mk && if test -f ${ESMFMKFILE}; then echo "ESMF makefile found"; else echo "ESMF makefile not found"; exit 1; fi
+
+    # VFD-GDS test (MVAPICH-only)
+    {% if mpi_name == "mvapich" %}
+    - test -f $PREFIX/lib/hdf5/plugin/libhdf5_vfd_gds.so
+    {% endif %}
+
+    # OMB test
+    {% if mpi_name == "mvapich" %}
+    # No OMB for MVAPICH
+    {% else %}
+    {% if mpi_name == "psmpi" %}
+    - echo "PSMPI does not have mpiexec, skipping OMB test."
+    {% elif mpi_name == "openmpi" %}
+    - echo "Setting plm_rsh_agent and allowing root execution for OpenMPI"
+    - export OMPI_MCA_plm_rsh_agent=$(command -v ssh)
+    - echo "Allow root execution for OpenMPI"
+    - mpiexec --allow-run-as-root -n 2 $PREFIX/libexec/osu-micro-benchmarks/mpi/pt2pt/osu_latency -m 1024:1024
+    {% else %}
+    - mpiexec -n 2 $PREFIX/libexec/osu-micro-benchmarks/mpi/pt2pt/osu_latency -m 1024:1024
+    {% endif %}
+    {% endif %}
 
 outputs:
 
@@ -108,10 +147,6 @@ outputs:
         - m4
       host:
         - {{ mpi_spec }}
-    test:
-      commands:
-        - export PATH=$PATH:${PREFIX}/bin
-        - pnetcdf-config --all
     build:
       string: h{{ PKG_HASH }}_{{ build }}
     about:
@@ -132,28 +167,43 @@ outputs:
         - {{ compiler('cxx') }}
         - {{ compiler('fortran') }}
         - make
+        {% if mpi_name == "mvapich" %}
+        - cmake >=3.18
+        - libcufile-dev
+        {% endif %}
       host:
         - libaec
         - libacl
         - {{ mpi_spec }}
         - zlib
+        {% if mpi_name == "mvapich" %}
+        - cuda-toolkit {{ cuda_version }}.*
+        - libcufile-dev
+        {% endif %}
       run:
         - libaec
         - zlib
-    test:
-      commands:
-        - export PATH=$PATH:${PREFIX}/bin
-        - h5pfc -showconfig
+        {% if mpi_name == "mvapich" %}
+        - cuda-toolkit {{ cuda_version }}.*
+        - libcufile
+        {% endif %}
     build:
       string: h{{ PKG_HASH }}_{{ build }}
+      script_env:
+        {% if mpi_name == "mvapich" %}
+        - BUILD_VFD_GDS=1
+        {% endif %}
     about:
-      home: https://www.hdfgroup.org/
+      home: https://www.hdfgroup.org/, https://github.com/hpc-io/vfd-gds
       license: BSD-3-Clause
       license_family: BSD
-      license_file: LICENSE_HDF5
-      summary: HDF5 - Hierarchical Data Format 5
+      license_file: 
+        - LICENSE_HDF5
+        - LICENSE_VFD-GDS
+      summary: HDF5 - Hierarchical Data Format 5 ((includes VFD-GDS plugin for the MVAPIch version)
       description: |
         HDF5 (Hierarchical Data Format 5) is a file format and set of tools designed for managing, storing, and organizing large and complex data.
+        The VFD-GDS plugin enables direct GPU-to-storage I/O in HDF5 applications using NVIDIA's GDS API, bypassing CPU buffers for improved performance in GPU workflows.
 
   - name: esme_netcdf-c_{{ mpi_pkg_suffix }}
     version: {{ netcdf_c_version }}
@@ -167,14 +217,9 @@ outputs:
       host:
         - esme_hdf5_{{ mpi_pkg_suffix }}
         - libcurl
-        - libxml2
         - {{ mpi_spec }}
         - esme_pnetcdf_{{ mpi_pkg_suffix }}
         - zlib
-    test:
-      commands:
-        - export PATH=$PATH:${PREFIX}/bin
-        - nc-config --all
     build:
       string: h{{ PKG_HASH }}_{{ build }}
     about:
@@ -201,10 +246,6 @@ outputs:
         - {{ mpi_spec }}
         - esme_netcdf-c_{{ mpi_pkg_suffix }}
         - esme_pnetcdf_{{ mpi_pkg_suffix }}
-    test:
-      commands:
-        - export PATH=$PATH:${PREFIX}/bin
-        - nf-config --all
     build:
       string: h{{ PKG_HASH }}_{{ build }}
     about:
@@ -236,9 +277,6 @@ outputs:
         - esme_netcdf-c_{{ mpi_pkg_suffix }}
         - esme_netcdf-fortran_{{ mpi_pkg_suffix }}
         - esme_pnetcdf_{{ mpi_pkg_suffix }}
-    test:
-      commands:
-        - test -f ${PREFIX}/include/pio.h
     build:
       string: h{{ PKG_HASH }}_{{ build }}
     about:
@@ -276,17 +314,14 @@ outputs:
         - openblas
         - esme_pio_{{ mpi_pkg_suffix }}
         - esme_pnetcdf_{{ mpi_pkg_suffix }}
-    test:
-      commands:
-        - if test -f ${ESMFMKFILE}; then echo "ESMF makefile found"; else echo "ESMF makefile not found"; exit 1; fi
     build:
       string: h{{ PKG_HASH }}_{{ build }}
     about:
-      home: http://earthsystemmodeling.org/
-      license: ESMF License
+      home: "http://earthsystemmodeling.org"
+      license: "ESMF License"
       license_family: OTHER
-      license_file: LICENSE_ESMF
-      summary: ESMF - Earth System Modeling Framework
+      license_file: "LICENSE_ESMF"
+      summary: "ESMF - Earth System Modeling Framework."
       description: |
         The Earth System Modeling Framework (ESMF) is a suite of software tools for developing high-performance, multi-component Earth science modeling applications.
 
@@ -304,38 +339,24 @@ outputs:
       run:
         - {{ mpi_spec }}
         - openssh  # [mpi_name == 'openmpi']
-    test:
-      commands:
-        {% if mpi_name == "psmpi" %}
-          - echo "PSMPI does not have mpiexec, skipping test."
-        {% elif mpi_name == "mvapich" %}
-          - echo "MVAPIch has built-in OSU benchmarks, no separate package needed."
-        {% elif mpi_name == "openmpi" %}
-          - echo "Setting plm_rsh_agent and allowing root execution for OpenMPI"
-          - export OMPI_MCA_plm_rsh_agent=$(command -v ssh)
-          - echo "Allow root execution for OpenMPI"
-          - mpiexec --allow-run-as-root -n 2 $PREFIX/libexec/osu-micro-benchmarks/mpi/pt2pt/osu_latency -m 1024:1024
-        {% else %}
-          - mpiexec -n 2 $PREFIX/libexec/osu-micro-benchmarks/mpi/pt2pt/osu_latency -m 1024:1024
-        {% endif %}
     build:
       string: h{{ PKG_HASH }}_{{ build }}
     about:
-      home: https://mvapich.cse.ohio-state.edu/
-      license: BSD-3-Clause
+      home: "https://mvapich.cse.ohio-state.edu"
+      license: "BSD-3-Clause"
       license_family: BSD
-      license_file: LICENSE_OMB
-      summary: OSU Micro Benchmarks
+      license_file: "LICENSE_OMB"
+      summary: "OSU Micro Benchmarks."
       description: |
         The OSU Micro Benchmarks (OMB) is a suite of performance measurement tools developed by The Ohio State University.
   {% endif %}
 
 about:
-  home: https://github.com/j34ni/bioconda-recipes
-  license: BSD-3-Clause
+  home: "https://github.com/j34ni/bioconda-recipes"
+  license: "BSD-3-Clause"
   license_family: BSD
-  license_file: LICENSE_ESME
-  summary: Earth System Modelling Environment (ESME) - A bundle for scientific computing packages for climate modelling with MPI support.
+  license_file: "LICENSE_ESME"
+  summary: "Earth System Modelling Environment (ESME) - A bundle for scientific computing packages for climate modelling with MPI support."
   description: |
     ESME (Earth System Modelling Environment) is a package designed to facilitate the installation and management of various scientific computing libraries with support for multiple MPI implementations (namely MPIch, OpenMPI, MVApich and ParaStationMPI). This bundle currently includes:
     - PnetCDF: Version {{ pnetcdf_version }}
@@ -345,6 +366,7 @@ about:
     - ParallelIO: Version {{ pio_version }} 
     - ESMF: Version {{ esmf_version }}
     - OSU_Micro_Benchmarks: Version {{ omb_version }}
+    - VFD_GDS: Version {{ vfd_gds_version }} (only for the MVAPIch version with CUDA)
 
 extra:
   recipe-maintainers:
@@ -355,3 +377,4 @@ extra:
     - folder_and_package_name_must_match
 # additional-platforms:
 #   - linux-aarch64
+
