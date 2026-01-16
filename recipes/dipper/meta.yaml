@@ -21,14 +21,12 @@ requirements:
 test:
   commands:
     - dipper_cpu --help
-    
+
 outputs:
-  # 1. CPU Backend
   - name: dipper-cpu
     script: build.sh
     build:
       number: 0
-      skip: True  # [win]
     run_exports:
       - {{ pin_subpackage("dipper-cpu", max_pin="x.x") }}
     requirements:
@@ -51,12 +49,11 @@ outputs:
         commands:
           - dipper_cpu --help
 
-  # 2. NVIDIA CUDA Backend
   - name: dipper-cuda
     script: build.sh
     build:
       number: 0
-      skip: True  # [win]
+      skip: True  # [not linux]
     run_exports:
       - {{ pin_subpackage("dipper-cuda", max_pin="x.x") }}
     requirements:
@@ -67,29 +64,26 @@ outputs:
         - make
         - pkg-config
         - cuda-nvcc  # [linux]
-        - cuda-cudart-dev  # [linux]
-        - cuda-version >=12.2  # [linux]
-
+        - cuda-version >= 12.2  # [linux]
       host:
         - zlib
         - boost-cpp
         - tbb
         - tbb-devel
-        
       run:
         - boost-cpp
         - tbb
         - zlib
+        - cuda-version >= 12.2  # [linux] 
       test:
         commands:
           - dipper_cpu --help
 
-  # 3. AMD ROCm Backend
   - name: dipper-rocm
     script: build.sh
     build:
       number: 0
-      skip: True  # [win]
+      skip: True  # [not linux]
     run_exports:
       - {{ pin_subpackage("dipper-rocm", max_pin="x.x") }}
     requirements:
@@ -101,7 +95,6 @@ outputs:
         - pkg-config
         - hipcc 
         - hip-devel
-
       host:
         - zlib
         - boost-cpp
@@ -122,14 +115,9 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: "DIPPER: An ultrafast tool for phylogenetic tree reconstruction."
-  dev_url: "https://github.com/TurakhiaLab/DIPPER"
-  doc_url: "https://turakhia.ucsd.edu/DIPPER"
-  description: "DIPPER (DIstance-based Phylogenetic PlacER) is a tool designed for ultrafast and ultralarge phylogenetic tree reconstruction on GPUs. It is capable of reconstructing a phylogenetic tree with 10 million taxa, with a minimal memory footprint."
+  summary: "Ultrafast tool for phylogenetic tree reconstruction"
+  description: "DIPPER (DIstance-based Phylogenetic PlacER) is a tool for phylogenetic tree reconstruction."
 
 extra:
-  additional-platforms:
-    - linux-aarch64
-    - osx-arm64
   recipe-maintainers:
     - sumit-walia
