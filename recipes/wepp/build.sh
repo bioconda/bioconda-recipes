@@ -2,7 +2,6 @@
 
 # ---- Build ----
 mkdir -p "${PREFIX}/bin"
-cp -rf ${RECIPE_DIR}/CMakeLists.txt $SRC_DIR/CMakeLists.txt
 
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
@@ -61,23 +60,18 @@ mkdir -p "${ACTIVATE_DIR}" "${DEACTIVATE_DIR}"
 cat <<'EOF' > "${ACTIVATE_DIR}/wepp_activate.sh"
 #!/bin/bash
 
-# Store the original snakemake command location if needed, or just use 'command'
-snakemake() {
-    # Check if the user manually provided -s or --snakefile
-    if [[ "$*" == *"-s "* ]] || [[ "$*" == *"--snakefile "* ]]; then
-        command snakemake "$@"
-    else
-        # Inject the WEPP Snakefile path
+run-wepp() {
+        # Calls the snakemake with correct Snakefile
         command snakemake -s "$CONDA_PREFIX/WEPP/workflow/Snakefile" "$@"
-    fi
 }
-export -f snakemake 2>/dev/null || true
+# Want this command available in sub-shells/scripts
+export -f run-wepp 2>/dev/null || true
 EOF
 
 # Removes the function when the user exits the environment
 cat <<'EOF' > "${DEACTIVATE_DIR}/wepp_deactivate.sh"
 #!/bin/bash
-unset -f snakemake
+unset -f run-wepp
 EOF
 
 chmod +x "${ACTIVATE_DIR}/wepp_activate.sh"
