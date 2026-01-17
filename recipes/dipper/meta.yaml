@@ -11,16 +11,22 @@ source:
 
 build:
   number: 0
+  skip: True  # [win]
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+test:
+  commands:
+    - dipper_cpu --help
 
 outputs:
-  - name: dipper-cpu
+  - name: {{ name|lower }}
     script: build.sh
     build:
       number: 0
+      skip: True  # [win]
     run_exports:
-      - {{ pin_subpackage("dipper-cpu", max_pin="x.x") }}
+      - {{ pin_subpackage(name|lower, max_pin="x.x") }}
     requirements:
       build:
         - {{ compiler('c') }}
@@ -37,10 +43,11 @@ outputs:
         - boost-cpp
         - tbb
         - zlib 
-      test:
-        commands:
-          - dipper_cpu --help
+    test:
+      commands:
+        - dipper_cpu --help
 
+  # 2. NVIDIA CUDA Backend
   - name: dipper-cuda
     script: build.sh
     build:
@@ -66,11 +73,12 @@ outputs:
         - boost-cpp
         - tbb
         - zlib
-        - cuda-version >=12.2  # [linux] 
-      test:
-        commands:
-          - dipper_cpu --help
+        - cuda-version >=12.2  # [linux]
+    test:
+      commands:
+        - dipper_cpu --help
 
+  # 3. AMD ROCm Backend
   - name: dipper-rocm
     script: build.sh
     build:
@@ -98,13 +106,9 @@ outputs:
         - tbb
         - boost-cpp
         - hip-runtime-amd
-      test:
-        commands:
-          - dipper_cpu --help
-
-test:
-  commands:
-    - dipper_cpu --help
+    test:
+      commands:
+        - dipper_cpu --help
 
 about:
   home: "https://github.com/TurakhiaLab/DIPPER"
@@ -112,7 +116,11 @@ about:
   license_family: MIT
   license_file: LICENSE
   summary: "Ultrafast tool for phylogenetic tree reconstruction"
-  description: "DIPPER (DIstance-based Phylogenetic PlacER) is a tool for phylogenetic tree reconstruction."
+  description: |
+    DIPPER (DIstance-based Phylogenetic PlacER) is designed for 
+    ultrafast and ultralarge phylogenetic tree reconstruction.
+  dev_url: "https://github.com/TurakhiaLab/DIPPER"
+  doc_url: "https://turakhia.ucsd.edu/DIPPER"
 
 extra:
   recipe-maintainers:
