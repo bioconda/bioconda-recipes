@@ -10,7 +10,7 @@ cd build
 EXTRA_FLAGS="-DCMAKE_BUILD_TYPE=Release -DTBB_DIR=${PREFIX}"
 
 case "${PKG_NAME}" in
-dipper-cpu)
+dipper)
         cmake .. ${CMAKE_ARGS} ${EXTRA_FLAGS} -DUSE_CUDA=OFF -DUSE_HIP=OFF -DUSE_CPU=ON
         cmake --build . --target install --parallel ${CPU_COUNT}
         cmake --install .
