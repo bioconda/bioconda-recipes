@@ -3,7 +3,6 @@
 python -m pip install "git+https://github.com/AngieHinrichs/viral_usher.git" --no-deps --ignore-installed --no-cache-dir
 
 # Copy metaWEPP files to $PREFIX/metaWEPP
-#mkdir -p "${PREFIX}/bin"
 mkdir -p ${PREFIX}/metaWEPP
 cp -rf "${SRC_DIR}"/* "${PREFIX}/metaWEPP"
 
@@ -15,23 +14,18 @@ mkdir -p "${ACTIVATE_DIR}" "${DEACTIVATE_DIR}"
 cat <<'EOF' > "${ACTIVATE_DIR}/z_metawepp_activate.sh"
 #!/bin/bash
 
-# Store the original snakemake command location if needed, or just use 'command'
-snakemake() {
-    # Check if the user manually provided -s or --snakefile
-    if [[ "$*" == *"-s "* ]] || [[ "$*" == *"--snakefile "* ]]; then
-        command snakemake "$@"
-    else
-        # Inject the metaWEPP Snakefile path
+run-metawepp() {
+        # Calls the snakemake with correct Snakefile
         command snakemake -s "$CONDA_PREFIX/metaWEPP/Snakefile" "$@"
-    fi
 }
-export -f snakemake 2>/dev/null || true
+# Want this command available in sub-shells/scripts
+export -f run-metawepp 2>/dev/null || true
 EOF
 
 # Removes the function when the user exits the environment
 cat <<'EOF' > "${DEACTIVATE_DIR}/z_metawepp_deactivate.sh"
 #!/bin/bash
-unset -f snakemake
+unset -f run-metawepp
 EOF
 
 chmod +x "${ACTIVATE_DIR}/z_metawepp_activate.sh"
