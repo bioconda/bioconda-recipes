@@ -1,0 +1,52 @@
+{% set name = "r-deepkin" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: "{{ version }}"
+
+source:
+  url: https://codeload.github.com/qixininin/deepKin/tar.gz/refs/tags/v{{ version }}
+  sha256: 8354d2223dbc07fd11fd39270610c2a5c43146f4150a4a92185ff0ffd2eefe40
+  folder: deepKin-{{ version }}
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  script: |
+    set -euxo pipefail
+    cd deepKin-{{ version }}
+    $R CMD build .
+    PKG_TGZ=$(ls -1t *.tar.gz | head -n1)
+    $R CMD INSTALL "$PKG_TGZ"
+
+requirements:
+  host:
+    - r-base >=4.3
+    - r-readr
+  run:
+    - r-base >=4.3
+    - r-readr
+
+test:
+  commands:
+    - $R -e "library('deepKin')"
+
+about:
+  home: https://github.com/qixininin/deepKin
+  summary: "DeepKin: efficient and precise estimation for in-depth genetic relatedness"
+  description: |
+    DeepKin provides efficient and precise estimation methods for in-depth genetic relatedness
+    analyses, with functions for estimation, classification, and summary of relatedness metrics.
+  license: GPL-3.0-or-later
+  license_family: GPL
+  doc_url: https://github.com/qixininin/deepKin
+  dev_url: https://github.com/qixininin/deepKin
+
+extra:
+  recipe-maintainers:
+    - VonPoo
+    - fengbo
