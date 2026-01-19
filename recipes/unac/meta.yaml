@@ -1,0 +1,56 @@
+{% set version = "0.2.0" %}
+
+package:
+  name: unac
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/u/uNAC/unac-{{ version }}.tar.gz
+  sha256: 89b9b756a84c572fbad11f00ac2217d162e3b361462e68303fda9e8212f301c9
+
+build:
+  entry_points:
+    - uNAC = unac.app:main
+    - uNAC-setup = unac.setup.isocorrector:install_isocorrector
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+  - {{ pin_subpackage('unac', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - setuptools >=68
+    - setuptools-scm >=8
+    - pip
+    - perl
+    - gcc
+  run:
+    - python >=3.11
+    - numpy >=1.25
+    - pandas >=2.0
+    - openpyxl >=3.0
+    - matplotlib-base >=3.7
+    - setuptools >=68.0.0
+    - bioconductor-isocorrector >=1.24.0
+    - isocor >=2.2
+
+test:
+  imports:
+    - unac
+  commands:
+    - pip check
+    - uNAC --help
+  requires:
+    - pip
+
+about:
+  home: https://jugit.fz-juelich.de/IBG-1/ModSim/uNAC
+  summary: A universal meta tool to perform natural abundance correction of isotopic labeling data
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - mbeyss
