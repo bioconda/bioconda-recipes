@@ -1,30 +1,35 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# In build.sh you generate this file into $PREFIX/bin/camisim2
+# 1) Install pipeline sources
+mkdir -p "${PREFIX}/share/${PKG_NAME}"
+cp -R . "${PREFIX}/share/${PKG_NAME}/"
+
+# 2) Create bin dir
+mkdir -p "${PREFIX}/bin"
+
+# 3) Write launcher
 cat > "${PREFIX}/bin/camisim2" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
 
 REPO_URL="https://github.com/CAMI-challenge/CAMISIM"
-DOC_URL="${REPO_URL}/wiki/Configuration-File-Options
+DOC_URL="${REPO_URL}/wiki/Configuration-File-Options"
 
 usage() {
   cat <<USAGE
 camisim2 - CAMISIM launcher
 
-Configuration and usage:
-  See ${DOC_URL}
+Running camisim2 without any options will start a small test run. To use your own configuration, see 
+${DOC_URL}
 
-If you run the command ./camisim2 without any options, CAMISIM will simulate a small test data set
 
-Notes:
-  This wrapper runs the packaged Nextflow workflow:
-    ${CONDA_PREFIX}/share/camisim2/main.nf
+Quick start:
+  camisim2 -c <metagenomic/metatranscriptomic.config> [nextflow options...]
+
 USAGE
 }
 
-# Handle help without invoking Nextflow
 case "${1:-}" in
   -h|--help|help)
     usage
@@ -32,7 +37,6 @@ case "${1:-}" in
     ;;
 esac
 
-# Otherwise run Nextflow
 PIPELINE_DIR="${CONDA_PREFIX}/share/camisim2"
 exec nextflow run "${PIPELINE_DIR}/main.nf" "$@"
 EOF
