@@ -1,0 +1,57 @@
+{% set name = "MetaXcan" %}
+{% set version = "0.8.0" %}
+{% set sha256 = "75682ec3abe42f68196c6dfafc5c3c353ea0af17ccd9803a64437ef9d1631e83" %}
+
+package:
+    name: {{ name | lower}}
+    version: {{ version }}
+
+source:
+  url: https://github.com/hakyimlab/{{name}}/archive/refs/tags/v{{version}}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+  - 0001-numpy-pandas-deprecation.patch
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install software/ --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('metaxcan', max_pin="x.x") }}
+
+requirements:
+    host:
+        - python >=3.7
+        - pip
+        - setuptools
+        - wheel
+    build:
+        - sqlalchemy >=1.4
+    run:
+        - python >=3.7
+        - scipy >=1.2.2
+        - numpy >=1.14.2
+        - pandas >=0.22.0
+        - patsy >=0.5.0
+        - statsmodels >=0.10.0
+        - h5py >=2.7.1
+        - bgen-reader >=3.0.3
+        - cyvcf2 >=0.8.0
+        - pyliftover >=0.4
+        - setuptools
+        - wheel
+
+test:
+    commands:
+        - Predict.py -h
+        - SPrediXcan.py -h
+        - MetaMany.py -h
+        - MulTiXcan.py -h
+        - SMulTiXcan.py -h
+
+about:
+  home: https://github.com/hakyimlab/{{name}}
+  license: MIT
+  license_file: LICENSE
+  summary: 'MetaXcan is a set of tools to integrate genomic information of biological mechanisms with complex traits.'
+  license_family: MIT
