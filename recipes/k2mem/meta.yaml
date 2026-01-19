@@ -1,0 +1,43 @@
+{% set name = "K2Mem" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "8bb2574a6bad179dc3ba279c197b23a9cb6ae0d9a6f7890d2e2c03e038db3f3f" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/davide92/K2Mem/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+  host:
+    - perl
+    - clangdev  # [osx]
+    - llvm-openmp  # [osx]
+  run:
+    - perl
+    - blast
+    - libcxx >=4.0  # [osx]
+    - llvm-openmp  # [osx]
+    - rsync
+    - wget
+    - tar
+
+test:
+  commands:
+    - k2mem --version
+    - k2mem-build --version
+    - k2mem-inspect --version
+
+about:
+  home: https://github.com/davide92/K2Mem
+  license: GNU
+  license_file: LICENSE
+  summary: K2Mem is a variant of Kraken 2 taxonomic sequence classification system that can learn from the previous classifications.
