@@ -1,0 +1,36 @@
+diff --git a/src/makefile b/src/makefile
+index 2f32523..a5057a8 100644
+--- a/src/makefile
++++ b/src/makefile
+@@ -1,14 +1,28 @@
++CXXFLAGS=-O3 -Wall -Wextra
++LDFLAGS=-O3 -flto
++
+ all: SuSiEx
+ 
++UNAME_S := $(shell uname -s)
++
++ifeq ($(UNAME_S),Darwin)
++	CXXFLAGS+=-fopenmp
++	LDLIBS+=-fopenmp
++else
++	CXXFLAGS=-fopenmp
++	LDFLAGS+=-fopenmp
++endif
++
+ SuSiEx: main.cpp data.o model.o
+ 	mkdir -p ../bin
+-	g++ main.cpp data.o model.o -o ../bin/SuSiEx -fopenmp
++	$(CXX) $(LDFLAGS) main.cpp data.o model.o -o ../bin/SuSiEx $(LDLIBS)
+ 
+ data.o: data.cpp data.hpp
+-	g++ -c data.cpp -fopenmp
++	$(CXX) $(CXXFLAGS) -c data.cpp
+ 
+ model.o: model.cpp model.hpp
+-	g++ -c model.cpp -fopenmp
++	$(CXX) $(CXXFLAGS) -c model.cpp
+ 
++.PHONY: clean
+ clean:
+ 	rm -rf *.o ../bin/SuSiEx
