@@ -5,18 +5,18 @@ index 45e3683..d06f51f 100755
 @@ -22,31 +22,34 @@
  # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  # DEALINGS IN THE SOFTWARE.
- 
+
 -CC     = gcc
 -AR     = ar
 -RANLIB = ranlib
 +#CC     = gcc
 +#AR     = ar
 +#RANLIB = ranlib
- 
+
  # Default libraries to link if configure is not used
 -htslib_default_libs = -lz -lm -lbz2 -llzma -lcurl
 +#htslib_default_libs = -lz -lm -lbz2 -llzma -lcurl
- 
+
 -CPPFLAGS =
 +#CPPFLAGS =
  # TODO: make the 64-bit support for VCF optional via configure, for now add -DVCF_ALLOW_INT64
@@ -30,7 +30,7 @@ index 45e3683..d06f51f 100755
 -LDFLAGS  = -fvisibility=hidden
 +#LDFLAGS  = -fvisibility=hidden
  LIBS     = $(htslib_default_libs)
- 
+
 -prefix      = /usr/local
 -exec_prefix = $(prefix)
 +#prefix      = /usr/local
@@ -62,7 +62,7 @@ index 45e3683..d06f51f 100755
 +#	echo '#endif' >> $@
  	echo '#define HAVE_DRAND48 1' >> $@
  	echo '#define HAVE_LIBCURL 1' >> $@
- 
+
 diff --git a/HTSLIB/config.h b/HTSLIB/config.h
 index 36a010f..6b34f6d 100644
 --- a/HTSLIB/config.h
@@ -89,7 +89,7 @@ index a5635bc..4b1ab96 100755
 +  pc_requires="$pc_requires"
 +  static_LIBS="$static_LIBS"
  fi
- 
+
  AS_IF([test "x$with_libdeflate" != "xno"],
 diff --git a/HTSLIB/htslib.pc.tmp b/HTSLIB/htslib.pc.tmp
 index 6784926..12abb6e 100644
@@ -101,7 +101,7 @@ index 6784926..12abb6e 100644
  static_ldflags=
 -static_libs=-lz -lm -lbz2 -llzma -lcurl
 +static_libs=-lz -lm -lbz2 -lcurl
- 
+
  Name: htslib
  Description: C library for high-throughput sequencing data formats
 diff --git a/HTSLIB/htslib_static.mk b/HTSLIB/htslib_static.mk
@@ -109,7 +109,7 @@ index e314b85..a01d4c3 100644
 --- a/HTSLIB/htslib_static.mk
 +++ b/HTSLIB/htslib_static.mk
 @@ -1,2 +1,2 @@
- HTSLIB_static_LDFLAGS = 
+ HTSLIB_static_LDFLAGS =
 -HTSLIB_static_LIBS = -lz -lm -lbz2 -llzma -lcurl
 +HTSLIB_static_LIBS = -lz -lm -lbz2 -lcurl
 diff --git a/LIBDEFLATE/Makefile b/LIBDEFLATE/Makefile
@@ -119,7 +119,7 @@ index 44fefaf..19139e8 100755
 @@ -40,21 +40,6 @@
  cc-option = $(shell if $(CC) $(1) -c -x c /dev/null -o /dev/null \
  	      1>&2 2>/dev/null; then echo $(1); fi)
- 
+
 -override CFLAGS :=							\
 -	-O2 -fomit-frame-pointer $(CFLAGS) -std=c99 -I. -Icommon	\
 -	-Wall -Wundef							\
@@ -143,21 +143,21 @@ index 44fefaf..19139e8 100755
      PROG_CFLAGS        := -static -municode
      HARD_LINKS         :=
 -    override CFLAGS    := $(CFLAGS) $(call cc-option,-Wno-pedantic-ms-format)
- 
+
      # If AR was not already overridden, then derive it from $(CC).
      # Note that CC may take different forms, e.g. "cc", "gcc",
 diff --git a/Makefile b/Makefile
-index 2d9c289..4785c9c 100644
+index 70722f3..e324eb7 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -1,12 +1,21 @@
+@@ -1,12 +1,23 @@
 -DEST_DIR = ~/bin
 -
 -CFLAGS = -O3 -Wall -Wextra -Wno-unused-result -fno-strict-aliasing
 -
 -CC = gcc
 -
--ALL = FastK Fastrm Fastmv Fastcp Fastmerge Histex Tabex Profex Logex Vennex Symmex Haplex Homex Fastcat
+-ALL = FastK Fastrm Fastmv Fastcp Fastmerge Histex Tabex Profex Logex Vennex Symmex Haplex Homex Fastcat KmerMap
 -
 -all: deflate.lib libhts.a $(ALL)
 +DEST_DIR = $(PREFIX)/bin
@@ -175,13 +175,15 @@ index 2d9c289..4785c9c 100644
 +		Vennex \
 +		Symmex \
 +		Haplex \
-+		Homex
++		Homex \
++		Fastcat \
++		KmerMap
 +
 +all: deflate.lib libhts.a $(PROGRAMS)
  
  include HTSLIB/htslib_static.mk
  
-@@ -14,7 +23,7 @@ deflate.lib: LIBDEFLATE
+@@ -14,7 +25,7 @@ deflate.lib: LIBDEFLATE
  	cd LIBDEFLATE; make; cd ..
  
  libhts.a: HTSLIB
@@ -190,7 +192,7 @@ index 2d9c289..4785c9c 100644
  
  HTSLIB/htslib_static.mk:
  	cd HTSLIB; make htslib_static.mk; cd ..
-@@ -23,46 +32,46 @@ libfastk.c : gene_core.c
+@@ -23,49 +34,49 @@ libfastk.c : gene_core.c
  libfastk.h : gene_core.h
  
  FastK: FastK.c FastK.h io.c split.c count.c table.c merge.c io.c gene_core.c gene_core.h MSDsort.c LSDsort.c libfastk.c libfastk.h
@@ -249,9 +251,13 @@ index 2d9c289..4785c9c 100644
 -	$(CC) $(CFLAGS) -o Homex Homex.c libfastk.c -lpthread -lm
 +	$(CC) $(CFLAGS) -o Homex Homex.c libfastk.c -pthread -lm
  
+ KmerMap: KmerMap.c libfastk.c libfastk.h
+-	$(CC) $(CFLAGS) -o KmerMap KmerMap.c libfastk.c -lpthread -lm
++	$(CC) $(CFLAGS) -o KmerMap KmerMap.c libfastk.c -pthread -lm
+ 
  
  tidyup:
-@@ -78,7 +87,7 @@ clean:
+@@ -81,7 +92,7 @@ clean:
  	rm -f FastK.tar.gz
  
  install:
