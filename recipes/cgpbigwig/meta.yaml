@@ -1,32 +1,24 @@
-{% set version = "1.4.0" %}
+{% set version = "1.7.0" %}
 
 package:
   name: cgpbigwig
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
   skip: True  # [osx]
+  run_exports:
+      - {{ pin_subpackage('cgpbigwig', max_pin="x") }}
 
 source:
   url: https://github.com/cancerit/cgpBigWig/archive/{{ version }}.tar.gz
-  sha256: b28f1178cba4be81b46dc87283f399ac78b4161228f5581051ef849b5969e931
+  sha256: d1dff8cdf35b8ffa231b999e79c44f8a4897e469224652da50d2a116c45b2b8b
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
   host:
-    - zlib
-    - bzip2
-    - xz
-    - gnutls
-    - gmp
-    - libtasn1
-    - nettle
-    - p11-kit
-    - htslib
-    - libbigwig
-  run:
     - zlib
     - bzip2
     - xz
@@ -40,11 +32,16 @@ requirements:
 
 about:
   home: https://github.com/cancerit/cgpBigWig
-  license: GPLv3
+  license: GPL-3.0-only
   license_file: LICENSE
+  license_family: GPL3
   summary: BigWig manpulation tools using libBigWig and htslib
 
 test:
   commands:
     - bam2bw -h
     - detectExtremeDepth -h
+
+extra:
+  additional-platforms:
+    - linux-aarch64

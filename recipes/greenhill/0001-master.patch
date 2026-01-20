@@ -1,0 +1,99 @@
+diff --git a/Platanus-allee_v2.2.2_modified/baseCommand.cpp b/Platanus-allee_v2.2.2_modified/baseCommand.cpp
+index 442c122..b095364 100644
+--- a/Platanus-allee_v2.2.2_modified/baseCommand.cpp
++++ b/Platanus-allee_v2.2.2_modified/baseCommand.cpp
+@@ -146,7 +146,7 @@ bool BaseCommand::parseArgs(int argc, char **argv)
+ int BaseCommand::divideArgvInt(char *args) const
+ {
+     char *moveArgs = args;
+-    for (;moveArgs != '\0'; ++moveArgs) {
++    for (;*moveArgs != '\0'; ++moveArgs) {
+         if (isdigit(*moveArgs)) {
+             return atoi(moveArgs);
+         }
+diff --git a/Platanus-allee_v2.2.2_modified/pairedDBG.cpp b/Platanus-allee_v2.2.2_modified/pairedDBG.cpp
+index 4c7b085..7408122 100644
+--- a/Platanus-allee_v2.2.2_modified/pairedDBG.cpp
++++ b/Platanus-allee_v2.2.2_modified/pairedDBG.cpp
+@@ -26,6 +26,7 @@ with Platanus-allee; if not, write to the Free Software Foundation, Inc.,
+ #include <sstream>
+ #include <queue>
+ #include <array>
++#include <numeric>
+ 
+ using std::vector;
+ using std::string;
+@@ -7020,7 +7021,7 @@ void PairedDBG::calculatePhysicalCoverage(vector<vector<unsigned> >& physicalCov
+ 	const long readLength = (*allLibraryMT)[targetLibraryIndex][0].getAverageLength();
+ 
+     omp_set_num_threads(numThread);
+-    omp_lock_t lock[node.size()];
++    vector<omp_lock_t> lock(node.size());
+     for (unsigned i = 0; i < node.size(); ++i)
+         omp_init_lock(&lock[i]);
+ 
+@@ -7129,7 +7130,7 @@ void PairedDBG::calculatePhysicalCoverage(vector<vector<unsigned> >& physicalCov
+ void PairedDBG::calculateLongReadPhysicalCoverage(vector<vector<unsigned> >& physicalCoverage, const long insertTolerence, const long numThread)
+ {
+     omp_set_num_threads(numThread);
+-    omp_lock_t lock[node.size()];
++    vector<omp_lock_t> lock(node.size());
+     for (unsigned i = 0; i < node.size(); ++i)
+         omp_init_lock(&lock[i]);
+ 
+@@ -7232,7 +7233,7 @@ void PairedDBG::calculateDiffCoverage(vector<vector<unsigned> >& diffCoverage, c
+ 	const int readLength = (*allLibraryMT)[targetLibraryIndex][0].getAverageLength();
+ 
+     omp_set_num_threads(numThread);
+-    omp_lock_t lock[node.size()];
++    vector<omp_lock_t> lock(node.size());
+     for (unsigned i = 0; i < node.size(); ++i)
+         omp_init_lock(&lock[i]);
+ 
+@@ -7329,7 +7330,7 @@ void PairedDBG::calculateLongReadDiffCoverage(vector<vector<unsigned> >& diffCov
+ 	const long averageInsSize = (*longReadLibraryMT)[0].getAverageInsSize() / 2;
+ 
+     omp_set_num_threads(numThread);
+-    omp_lock_t lock[node.size()];
++    vector<omp_lock_t> lock(node.size());
+     for (unsigned i = 0; i < node.size(); ++i)
+         omp_init_lock(&lock[i]);
+ 
+diff --git a/src/Makefile b/src/Makefile
+index ee0e14c..e97d307 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -1,5 +1,5 @@
+-CXX = g++
+-CXXFLAGS = -std=c++0x -O3 -funroll-loops -Wall -Wno-sign-compare -fopenmp -finline-limit=50000 -lm -Dnullptr=0 -g #-fsanitize=address -fno-omit-frame-pointer
++CXX ?= g++
++CXXFLAGS = -std=c++0x -O3 -march=x86-64 -I$(PREFIX)/include -funroll-loops -Wall -Wno-sign-compare -fopenmp -finline-limit=50000 -L$(PREFIX)/lib -lm -Dnullptr=0 -g -fpermissive  #-fsanitize=address -fno-omit-frame-pointer
+ 
+ 
+ PRG = greenhill
+diff --git a/src/common.cpp b/src/common.cpp
+index 12a48ee..2c2b93b 100644
+--- a/src/common.cpp
++++ b/src/common.cpp
+@@ -23,7 +23,7 @@ with GreenHill; if not, write to the Free Software Foundation, Inc.,
+ //////////////////////////////////////////////////////////////////////////////////////
+ // static constant
+ //////////////////////////////////////////////////////////////////////////////////////
+-const std::string platanus::ConstParam::VERSION = "1.0.0";
++const std::string platanus::ConstParam::VERSION = "1.1.0";
+ 
+ const unsigned long long platanus::ConstParam::MAX_READ_LEN = 500000;
+ const unsigned platanus::ConstParam::SCAFFOLD_HASH_OVERLAP = 32;
+diff --git a/src/pairedDBG.cpp b/src/pairedDBG.cpp
+index 99109d3..4c4cb38 100644
+--- a/src/pairedDBG.cpp
++++ b/src/pairedDBG.cpp
+@@ -17466,7 +17466,7 @@ void PairedDBG::outputConsensusCovTxt(const string &outputFilename, const long n
+ //added by ouchi
+ void PairedDBG::mincingBubble(const string filePrefix, const long numThread)
+ {
+-    cerr << "micing bubble scaffolds ..." << endl;
++    cerr << "mincing bubble scaffolds ..." << endl;
+ 
+     vector<vector<double> > baseCoverage(numNode);
+     for (unsigned i = 0; i < numNode; ++i) {

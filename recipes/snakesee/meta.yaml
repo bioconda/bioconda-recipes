@@ -1,0 +1,50 @@
+{% set name = "snakesee" %}
+{% set version = "0.6.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 070ae76adaeb7f30a5a1e1cc4fddc90da92563e7fa3748c66e1e2cba55fd9cdd
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - snakesee = snakesee.cli:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - hatchling
+  run:
+    - python >=3.11
+    - rich >=13.0.0
+    - defopt >=6.4.0
+    - orjson >=3.9.0
+    - snakemake >=8.0.0
+
+test:
+  imports:
+    - snakesee
+  commands:
+    - snakesee --help
+
+about:
+  home: https://github.com/nh13/snakesee
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: A terminal UI for monitoring Snakemake workflows
+  doc_url: https://snakesee.readthedocs.io
+  dev_url: https://github.com/nh13/snakesee
+
+extra:
+  recipe-maintainers:
+    - nh13

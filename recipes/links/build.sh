@@ -1,19 +1,36 @@
-mkdir -p $PREFIX/bin
+#!/bin/bash
+set -eux -o pipefail
 
-#Copying perl script to bin folder
-cp  LINKS $PREFIX/bin
-chmod +x $PREFIX/bin/LINKS
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
 
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
 
-#Recompiling C code
-cd lib/bloomfilter/swig/
+autoreconf -if
+ ./configure --prefix="${PREFIX}" \
+	--disable-option-checking --enable-silent-rules --disable-dependency-tracking \
+	CXX="${CXX}" \
+	CXXFLAGS="${CXXFLAGS}" \
+	CC="${CC}" \
+	CFLAGS="${CFLAGS}" \
+	CPPFLAGS="${CPPFLAGS}" \
+	LDFLAGS="${LDFLAGS}"
 
-PERL5DIR=`(perl -e 'use Config; print $Config{archlibexp}, "\n";') 2>/dev/null`
-swig -Wall -c++ -perl5 BloomFilter.i
-${CXX} -c BloomFilter_wrap.cxx -I$PERL5DIR/CORE -fPIC -O3
-${CXX} -Wall -shared BloomFilter_wrap.o -o BloomFilter.so -O3 
+make -j"${CPU_COUNT}"
+make install
 
-mkdir -p $PREFIX/lib/site_perl/BloomFilter
-
-cp BloomFilter.* $PREFIX/lib/site_perl/BloomFilter
-
+mv ${PREFIX}/bin/LINKS-make ${PREFIX}/bin/LINKS-make-real
+echo "#!/bin/bash" > ${PREFIX}/bin/LINKS-make
+echo "make -f $(command -v ${PREFIX}/bin/LINKS-make-real) \$@" >> ${PREFIX}/bin/LINKS-make

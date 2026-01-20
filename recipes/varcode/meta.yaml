@@ -1,0 +1,56 @@
+{% set name = "varcode" %}
+{% set version = "1.2.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: f2f0f608b266304cb6ceaa353357ea089cc6ae3f1fa15c8824b44e61fcf567cb
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - varcode-genes = varcode.cli.genes_script:main
+    - varcode = varcode.cli.effects_script:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('varcode', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - biopython >=1.64
+    - memoized-property >=1.0.2
+    - numpy >=1.7
+    - pandas >=0.15
+    - pyensembl >=1.8.1
+    - python
+    - pyvcf3 >=1.0.0
+    - sercol >=0.1.4
+    - serializable >=0.2.1
+
+test:
+  imports:
+    - test
+    - varcode
+    - varcode.cli
+    - varcode.effects
+  commands:
+    - varcode-genes --help
+    - varcode --help
+
+about:
+  home: "https://github.com/openvax/varcode"
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: "Variant annotation in Python"
+
+extra:
+  recipe-maintainers:
+    - jonasscheid

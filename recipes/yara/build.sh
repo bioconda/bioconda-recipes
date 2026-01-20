@@ -1,15 +1,5 @@
 #!/bin/bash
-set -eu -o pipefail
 
-mkdir -p $PREFIX/bin
-
-binaries="\
-yara_mapper \
-yara_indexer \
-"
-
-for i in $binaries
-do
-    cp $SRC_DIR/bin/$i $PREFIX/bin/$i
-    chmod a+x $PREFIX/bin/$i
-done
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DSEQAN_BUILD_SYSTEM=APP:yara -DCMAKE_INSTALL_PREFIX="${PREFIX}"
+cmake --build build/ -j "${CPU_COUNT}"
+cmake --install build/

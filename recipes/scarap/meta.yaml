@@ -1,0 +1,60 @@
+{% set name = "scarap" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/scarap-{{ version }}.tar.gz
+  sha256: cc3345aaaca58590e8728ac5b3d470f70f1a3a19d9a3ee893abeb492a3e0b35b
+
+build:
+  entry_points:
+    - scarap = scarap.__main__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.6.7,<=3.12
+    - setuptools
+    - setuptools-scm
+    - pip
+  
+  run:
+    - python >=3.6.7,<=3.12
+    - wheel
+    - biopython >=1.67
+    - ete3 >=3.1.1
+    - numpy >=1.16.5
+    - scipy >=1.4.1
+    - pandas
+    - mafft
+    - mmseqs2
+
+test:
+  imports:
+    - scarap
+  commands:
+    - pip check
+    - scarap --help
+  requires:
+    - pip 
+
+about:
+  home: https://pypi.org/project/{{ name }}
+  dev_url: https://github.com/swittouck/scarap
+  summary: A toolkit for prokaryotic comparative genomics
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - TheOafidian
+    - swittouck
+  identifiers:
+    - doi:10.1093/bioinformatics/btae735

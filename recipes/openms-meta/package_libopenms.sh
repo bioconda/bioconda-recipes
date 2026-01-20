@@ -6,17 +6,17 @@ mkdir -p $PREFIX/etc/conda/activate.d/ $PREFIX/etc/conda/deactivate.d/
 cp $RECIPE_DIR/activate.sh $PREFIX/etc/conda/activate.d/libopenms.sh
 cp $RECIPE_DIR/deactivate.sh $PREFIX/etc/conda/deactivate.d/libopenms.sh
 
-mkdir -p $PREFIX/lib
-cp -R build/lib/* $PREFIX/lib/
-# Copy share, excluding examples
-mkdir -p $PREFIX/share/OpenMS/examples
-shopt -s extglob
-cp -R share/!(OpenMS) $PREFIX/share/
-cp -R share/OpenMS/!(examples) $PREFIX/share/OpenMS
-# Copy the default models from the examples/simulation folder.
-# TODO move models and remove this exception in later OpenMS releases
-cp -R share/OpenMS/examples/simulation $PREFIX/share/OpenMS/examples/
-mkdir -p $PREFIX/include
-cp -R build/src/openms/include/* $PREFIX/include/
-cp -R build/src/openswathalgo/include/* $PREFIX/include/
-cp -R build/src/superhirn/include/* $PREFIX/include/
+#!/bin/bash
+if [[ "$target_platform" == osx-* ]]; then
+  # Conda adds the $PREFIX/lib RPATH already in LDFLAGS. We could remove it there before building.
+  # For now just ignore the meaningless warning.
+  cmake -DCOMPONENT="library" -P build/cmake_install.cmake 2>&1 | grep -v "would duplicate path"
+else
+  cmake -DCOMPONENT="library" -P build/cmake_install.cmake
+fi
+
+cmake -DCOMPONENT="OpenMS_headers" -P build/cmake_install.cmake
+cmake -DCOMPONENT="OpenSwathAlgo_headers" -P build/cmake_install.cmake
+cmake -DCOMPONENT="thirdparty_headers" -P build/cmake_install.cmake
+cmake -DCOMPONENT="share" -P build/cmake_install.cmake
+cmake -DCOMPONENT="cmake" -P build/cmake_install.cmake

@@ -1,28 +1,34 @@
 {% set name = "ipyrad" %}
-{% set version = "0.9.56" %}
-{% set sha256 = "1822ccdb121c9772e9910990972395ef8bb1f7b80bda56702483a83c23a74d6b" %}
+{% set version = "0.9.107" %}
+{% set sha256 = "562cadc0d84949ec78b4232177d968805259940978daf7f69a8ec48275f56cfe" %}
 
 package:
-  name: {{name}}
-  version: {{version}}
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/dereneaton/{{name}}/archive/{{version}}.tar.gz
-  sha256: {{sha256}}
+  url: https://github.com/dereneaton/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
-  noarch: python  
+  noarch: python
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -f *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   entry_points:
     - ipyrad = ipyrad.__main__:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
+    - python >=3.5
     - pip
-    - python
+    - setuptools
   run:
-    - python
+    - python >=3.5
     - pandas
     - scipy
     - numpy
@@ -33,10 +39,10 @@ requirements:
     - requests
     - cutadapt
     - pysam >=0.15
-    - mpi4py >=3.0 # [ py >= 37 ]
+    - mpi4py >=3.0  # [ py >= 37 ]
     - notebook
     - bedtools
-    - muscle
+    - muscle <5  # Pin muscle < v5 see issue #477
     - vsearch >=2.13
     - bwa
     - samtools
@@ -50,7 +56,15 @@ test:
     - ipyrad -h
 
 about:
-  home: http://github.com/dereneaton/ipyrad
-  license: GPL3
-  license_file: LICENSE.txt
-  summary: Interactive assembly and analysis of RAD-seq data sets.
+  home: "https://github.com/dereneaton/ipyrad"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: "LICENSE.txt"
+  summary: "Interactive assembly and analysis of RAD-seq data sets."
+  dev_url: "https://github.com/dereneaton/ipyrad"
+  doc_url: "https://ipyrad.readthedocs.io/en/master"
+
+extra:
+  identifiers:
+    - biotools:ipyrad
+    - doi:10.1093/bioinformatics/btz966

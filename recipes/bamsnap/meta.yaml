@@ -1,0 +1,46 @@
+{% set name = "bamsnap" %}
+{% set version = "0.2.19" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: fa35c8e53b21f70be5ce6108803d814079ca3225271f1dc3c4eb85dec9a051aa
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - bamsnap=bamsnap:cli
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - python >=3.4
+    - pip
+    - nose >=1.0
+  run:
+    - python >=3.4
+    - pillow >=2.0.0
+    - pyfaidx >=0.5.3.1
+    - pysam >=0.15.0
+    - pytabix >=0.0.2
+
+test:
+  imports:
+    - bamsnap
+    - bamsnap.templates
+  commands:
+    - bamsnap --help
+
+about:
+  home: "https://github.com/parklab/bamsnap"
+  license: MIT
+  license_family: MIT
+  summary: "A converter from .bam to .png for specific genomic region."
+
+extra:
+  recipe-maintainers:
+    - cbrueffer

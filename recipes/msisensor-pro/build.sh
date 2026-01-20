@@ -1,7 +1,7 @@
-export CPATH=${PREFIX}/include
-export INCLUDES+="-I$PREFIX/include -I$PREFIX/include/ncurses -Ivendor/samtools-0.1.19"
-export LDFLAGS="-L$PREFIX/lib -ltinfo"
-export LIBRARY_PATH=${PREFIX}/lib
-make INCLUDES="-I$PREFIX/include -I$PREFIX/include/ncurses -I$SRC_DIR/vendor/samtools-0.1.19" LIBCURSES="-L$PREFIX/lib -lncurses -ltinfo" LIBPATH="-L$PREFIX/lib" CC=$CC CXX=$CXX CFLAGS="-g -Wall -O2 -I$PREFIX/include -L$PREFIX/lib" -C$SRC_DIR/cpp/ 
-#make CC=$CC
-cp $SRC_DIR/cpp/msisensor-pro $PREFIX/bin
+#!/bin/bash
+
+mkdir -p ${PREFIX}/bin
+
+make -C cpp CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}"
+chmod 0755 cpp/msisensor-pro
+mv cpp/msisensor-pro ${PREFIX}/bin

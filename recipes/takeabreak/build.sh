@@ -1,18 +1,10 @@
 #!/bin/bash
 
-#strictly use anaconda build environment
-export INCLUDE_PATH="${PREFIX}/include"
-export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
+mkdir build
+cd build
 
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
-export CPATH=${PREFIX}/include
+cmake ..
+make -j"${CPU_COUNT}"
 
-mkdir -p ${PREFIX}/bin
-
-# installation
-sh INSTALL
-
-# copy binary
-cp build/bin/TakeABreak ${PREFIX}/bin
+install -d "${PREFIX}/bin"
+install bin/TakeABreak "${PREFIX}/bin/"

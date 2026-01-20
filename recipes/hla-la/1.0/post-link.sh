@@ -14,4 +14,4 @@ tar -xvzf reference_HLA_ASM.tar.gz
 ../bin/HLA-LA --action prepareGraph --PRG_graph_dir ../graphs/PRG_MHC_GRCh38_withIMGT
 
 
-" > $PREFIX/.messages.txt
+" >> $PREFIX/.messages.txt

@@ -1,26 +1,30 @@
-{% set version = "0.3.2" %}
+{% set version = "0.4.0" %}
+{% set name = "goalign" %}
 
 package:
-  name: goalign
+  name: {{name}}
   version: {{ version }}
 
 build:
   number: 0
   binary_relocation: false
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 source:
-  - url: https://github.com/evolbioinfo/goalign/archive/v{{ version }}.tar.gz
-    sha256: e499889916eaaa6955f179e45870b06e862c6a90c6fc2a7d62d618e965e26c01
-    folder: src/github.com/evolbioinfo/goalign/
+  - url: https://github.com/evolbioinfo/{{name}}/archive/v{{ version }}.tar.gz
+    sha256: c70415088e62925dc353d6a6e1250c5ecc0f0db4c2a75e61590de8faf70595ff
+    folder: src/github.com/evolbioinfo/{{name}}/
 
 requirements:
   build:
-    - {{ compiler('go') }}
+    - go-nocgo
 
 test:
   commands:
-    - goalign -h
+    - {{name}} -h
     - goalign_test.sh
+    - {{name}} version
 
 about:
   home: https://github.com/evolbioinfo/goalign
@@ -28,6 +32,9 @@ about:
   summary: goalign is a set of command line tools to manipulate multiple alignments
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   skip-lints:
     - should_be_noarch_generic
     - should_not_be_noarch_source

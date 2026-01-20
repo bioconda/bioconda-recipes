@@ -1,12 +1,8 @@
 #!/bin/bash
 
-export LIBRARY_PATH=${PREFIX}/lib
-
-if [ `uname` == Darwin ]; then
-    g++ -framework Accelerate -Isrc -o bin/trinculo src/trinculo.cpp
+mkdir -p "${PREFIX}/bin"
+if [[ ${target_platform} =~ osx.* ]]; then
+    "${CXX}" ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS} -framework Accelerate -Isrc -o "${PREFIX}/bin/trinculo" src/trinculo.cpp
 else
-    g++ -DLINUX -Isrc -o bin/trinculo src/trinculo.cpp -llapack -lpthread
+    "${CXX}" ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS} -DLINUX -Isrc -o "${PREFIX}/bin/trinculo" src/trinculo.cpp -llapack -lpthread
 fi
-
-mkdir -p $PREFIX/bin
-cp bin/trinculo $PREFIX/bin

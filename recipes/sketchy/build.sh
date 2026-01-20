@@ -1,18 +1,20 @@
 #!/bin/bash
-set -x
-export RUST_BACKTRACE=full
+set -ex
+
+# adopted from: https://github.com/bioconda/bioconda-recipes/blob/master/recipes/rasusa/build.sh 
+
+RUST_BACKTRACE=full
 
 if [ "$(uname)" == "Darwin" ]; then
-    # apparently the HOME variable isn't set correctly, and circle ci output indicates the following as the home directory
+    # apparently the HOME variable isn't set correctly, and circle ci 
+    # output indicates the following as the home directory
     export HOME="/Users/distiller"
+    export HOME=`pwd`
     echo "HOME is $HOME"
-    
-    # Fix for when some packages use ssh to fetch git repos
-    # See https://github.com/rust-lang/cargo/issues/1851#issuecomment-450130685
-    mkdir -p "${HOME}/.cargo"
-    printf "[net]\ngit-fetch-with-cli = true\n" >> "${HOME}/.cargo/config"
+
+    # according to https://github.com/rust-lang/cargo/issues/2422#issuecomment-198458960 
+    # removing circle ci default configuration solves cargo trouble downloading crates
+    # git config --global --unset url.ssh://git@github.com.insteadOf
 fi
 
 cargo install -v --locked --root "$PREFIX" --path .
-
-"$PYTHON" -m pip install --no-deps --ignore-installed -vv .

@@ -1,21 +1,28 @@
-#!/bin/sh
+#!/bin/bash
+set -xe
 
-# The static boost_thread library cannot be found during the linkage. Let us
-# comment the -static flag
-sed -i -e "s/CXXFLAGS += -static/#CXXFLAGS += -static/g" Makefile
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
-# Append to CXXFLAGS instead of overiding it
-sed -i -e "s/CXXFLAGS =/CXXFLAGS +=/g" Makefile
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
 
-# Tell the compiler where to find boost
-export CXXFLAGS=" -I${PREFIX}/include -L${PREFIX}/lib "
+mkdir -p "${PREFIX}/bin"
 
-#CXX=${PREFIX}/bin/g++
-
-if [ "$(uname)" == "Darwin" ]; then
-    make -f Makefile.osx bin #CXX=$CXX
+if [[ "$(uname -s)" == "Darwin" ]]; then
+	DEP_LIBS="${LDFLAGS}" make -j"${CPU_COUNT}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" -f Makefile.osx bin
 else
-    make bin #CXX=$CXX
+	DEP_LIBS="${LDFLAGS}" make -j"${CPU_COUNT}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" -f Makefile.c++11 bin
 fi
 
-cp bin/dsrc $PREFIX/bin
+install -v -m 0755 bin/dsrc "${PREFIX}/bin"

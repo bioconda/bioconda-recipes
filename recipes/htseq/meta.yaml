@@ -1,55 +1,64 @@
+{% set name = "htseq" %}
+{% set version = "2.0.9" %}
+{% set sha256 = "3bbec23f033d35f40ab33a40c2b5c43f75e382c424b804c099dea635b52c2b12" %}
+
 package:
-  name: htseq
-  version: "0.12.4"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/c4/04/b9b0c5514dcd09e64481e8ebc242aef162646b6de956ffb44595d1de0f69/HTSeq-0.12.4.tar.gz
-  sha256: e3980bb4f12899442b4fa6f24f0ba149090f71cedb1eaf7128249afe4eb921ff
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
-  skip: True  # [py2k]
-  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('htseq', max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-
   host:
     - python
-    - setuptools
     - pip
     - cython
     - numpy
-    - pysam >=0.9.0
+    - pysam >=0.15.1
     - swig >=3.0.8
-
   run:
     - python
     - {{ pin_compatible('numpy') }}
     - matplotlib-base >=1.4
-    - pysam >=0.9.0
+    - pysam >=0.15.1
+    - scipy >=1.5.0
+    - pandas >=1.1.0
 
 test:
-  # Python imports
   imports:
     - HTSeq._HTSeq_internal
     - HTSeq.StepVector
     - HTSeq._version
     - HTSeq.scripts.count
     - HTSeq.scripts.qa
-
   commands:
     - htseq-count -h
     - htseq-qa -h
 
 about:
-  home: https://github.com/simon-anders/htseq
-  license: GPL-3.0
-  summary: 'HTSeq is a Python library to facilitate processing and analysis of data from high-throughput sequencing (HTS) experiments.'
+  home: "https://github.com/htseq/htseq"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "HTSeq is a Python library to facilitate processing and analysis of data from high-throughput sequencing (HTS) experiments."
+  dev_url: "https://github.com/htseq/htseq"
+  doc_url: "https://htseq.readthedocs.io/en/latest"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:htseq
+    - usegalaxy-eu:htseq_count
     - doi:10.1093/bioinformatics/btu638

@@ -1,27 +1,16 @@
 #!/bin/bash
 
-set -e -x -o pipefail
+set -xe
 
-binaries="\
-bmtool \
-"
-
-mkdir -p $PREFIX/bin
-#for i in $binaries; do cp $SRC_DIR/bmtagger/$i $PREFIX/bin/ && chmod +x $PREFIX/bin/$i; done
-
-if [ "$(uname)" == "Darwin" ]; then
-    echo "Platform: Mac"
-
-    for i in $binaries; do cp $SRC_DIR/$i $PREFIX/bin/ && chmod +x $PREFIX/bin/$i; done
-
-elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-    echo "Platform: Linux"
-
-    # cd to location of Makefile and source
-    cd $SRC_DIR/
-    make    
-
-    for i in $binaries; do cp $SRC_DIR/bmtagger/$i $PREFIX/bin/ && chmod +x $PREFIX/bin/$i; done
+if [[ ${target_platform} =~ linux.* ]] ; then
+    make -j ${CPU_COUNT} -C general \
+        CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+        CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+    make -j ${CPU_COUNT} -C bmtagger \
+        CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+        CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+    cd bmtagger
 fi
 
-chmod +x $PREFIX/bin/*
+install -d "${PREFIX}/bin"
+install bmtool "${PREFIX}/bin/"

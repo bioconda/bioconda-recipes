@@ -32,6 +32,8 @@ fi
 
 if [ `uname` == Darwin ]; then
     export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
+    # See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
+    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 else
     export CPP_FOR_BUILD=$CPP
 fi
@@ -62,20 +64,37 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-magicblast
 # Fixes building on Linux
 export AR="${AR} rcs" 
 
-./configure \
-    --with-bin-release \
-    --with-mt \
-    --with-openmp \
-    --with-flat-makefile \
-    --without-debug \
-    --with-strip \
-    --with-vdb=$VDB \
-    --with-static-vdb \
-    --with-z=$PREFIX \
-    --with-bz2=$PREFIX \
-    --without-gnutls \
-    --without-gcrypt \
-    --without-pcre
+if [[ $(uname) = Linux ]] ; then
+    ./configure \
+        --with-bin-release \
+        --with-mt \
+        --with-openmp \
+        --with-flat-makefile \
+        --without-debug \
+        --with-strip \
+        --with-vdb=$VDB \
+        --with-static-vdb \
+        --with-z=$PREFIX \
+        --with-bz2=$PREFIX \
+        --without-gnutls \
+        --without-gcrypt \
+        --without-pcre
+else
+    ./configure \
+        --with-bin-release \
+        --with-mt \
+        --without-openmp \
+        --with-flat-makefile \
+        --without-debug \
+        --with-strip \
+        --with-vdb=$VDB \
+        --with-static-vdb \
+        --with-z=$PREFIX \
+        --with-bz2=$PREFIX \
+        --without-gnutls \
+        --without-gcrypt \
+        --without-pcre
+fi
 
 cd ReleaseMT
 

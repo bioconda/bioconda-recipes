@@ -1,0 +1,102 @@
+From 68f36be602b760bdde275bb882210f125958b868 Mon Sep 17 00:00:00 2001
+From: Aaron Darling <aaron.darling@uts.edu.au>
+Date: Sun, 29 Dec 2019 09:55:54 +0000
+Subject: [PATCH] [AD] fixes build system and compiler errors on ubuntu 19.10
+
+---
+ src/Makefile.am               | 2 +-
+ src/mauveAligner.cpp          | 2 +-
+ src/{getopt.h => my_getopt.h} | 9 +++++++--
+ src/progressiveMauve.cpp      | 2 +-
+ src/repeatoire.cpp            | 2 +-
+ 5 files changed, 11 insertions(+), 6 deletions(-)
+ rename src/{getopt.h => my_getopt.h} (94%)
+
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 7d9c94a..1bf9a76 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -4,7 +4,7 @@ D_CXXFLAGS = -Wall -g -DCOMMAND_LINE -D__GNDEBUG__
+ else
+ P_CXXFLAGS = -DCOMMAND_LINE
+ endif
+-OPTIMIZATION = -O2 -funroll-loops -fomit-frame-pointer -ftree-vectorize 
++OPTIMIZATION = -Ofast 
+ AM_CXXFLAGS = $(OPTIMIZATION) $(D_CXXFLAGS) $(P_CXXFLAGS) 
+ AM_LDFLAGS = @STATIC_FLAG@
+ LIBRARY_CL = $(DEPS_LIBS) 
+diff --git a/src/mauveAligner.cpp b/src/mauveAligner.cpp
+index 5eea936..6e1d967 100644
+--- a/src/mauveAligner.cpp
++++ b/src/mauveAligner.cpp
+@@ -11,7 +11,7 @@
+ #endif
+ 
+ #include "mauveAligner.h"
+-#include "getopt.h"
++#include "my_getopt.h"
+ #include <sstream>
+ #include <stdexcept>
+ #include "libGenome/gnSequence.h"
+diff --git a/src/getopt.h b/src/my_getopt.h
+similarity index 94%
+rename from src/getopt.h
+rename to src/my_getopt.h
+index 36fcf74..40d0192 100644
+--- a/src/getopt.h
++++ b/src/my_getopt.h
+@@ -17,16 +17,20 @@
+    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+    02111-1307 USA.  */
+ 
+-#ifndef _GETOPT_H
++#ifndef _MY_GETOPT_H
+ 
+ #ifndef __need_getopt
+-# define _GETOPT_H 1
++# define _MY_GETOPT_H 1
+ #endif
+ 
+ #ifdef HAVE_CONFIG_H
+ #include <config.h>
+ #endif
+ 
++#ifndef GETOPT_UNDEFINED
++#include <getopt.h>
++#else // define getopt for ourselves
++
+ /* If __GNU_LIBRARY__ is not already defined, either we are being used
+    standalone, or this is the first header included in the source file.
+    If we are being used with glibc, we need to include <features.h>, but
+@@ -182,4 +186,5 @@ extern int _getopt_internal ();
+ /* Make sure we later can get all the definitions and declarations.  */
+ #undef __need_getopt
+ 
++#endif /* getopt_core.h */
+ #endif /* getopt.h */
+diff --git a/src/progressiveMauve.cpp b/src/progressiveMauve.cpp
+index f64a5f8..2081fc9 100644
+--- a/src/progressiveMauve.cpp
++++ b/src/progressiveMauve.cpp
+@@ -11,7 +11,7 @@
+ #endif
+ 
+ #include "mauveAligner.h"
+-#include "getopt.h"
++#include "my_getopt.h"
+ #include <sstream>
+ #include <stdexcept>
+ #include "libMems/Matrix.h"
+diff --git a/src/repeatoire.cpp b/src/repeatoire.cpp
+index 45daf65..2ccaeb9 100644
+--- a/src/repeatoire.cpp
++++ b/src/repeatoire.cpp
+@@ -1591,7 +1591,7 @@ void processNovelSubsetMatches( GappedMatchRecord*& M_i, vector< NeighborhoodGro
+ 		getSubsets(M_j,-direction*ni_parity*nj_parity).push_back(nj_link);
+         //getExtraSubsets(M_j,-direction*ni_parity*nj_parity).push_back(nj_link);
+ 		// push M_n onto the heap
+-		novel_subset_list.push_back(M_n);
++		novel_subset_list.push_back(boost::make_tuple(M_n,vector<size_t>(),vector<size_t>()));
+ 		//procrastination_queue.push(M_n);
+ 		novel_subset_count++;
+ 	}

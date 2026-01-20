@@ -1,0 +1,63 @@
+{% set version = "1.2.4" %}
+
+package:
+  name: eukfinder
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('eukfinder', max_pin="x") }}
+
+source:
+  - url: https://github.com/RogerLab/Eukfinder/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: 396f62cb0bafbcbc80804212c348629eea02489828e37cbaa3746b4bee069a27
+  - url: https://github.com/etetoolkit/ete/archive/refs/tags/3.1.3.tar.gz
+    sha256: 805d34f2fe97c2ae61ca1ef8c5fe7138f1ac99aed0eb22cb0c6ed473bb8b08de
+    folder: ete3
+  - url: https://github.com/PLAST-software/plast-library/releases/download/v2.3.2/plastbinary_osx_v2.3.2.tar.gz # [osx]
+    sha256: 0dbbf88f6e59bb153ff04b5cc80743304d44fc1196de930fd2b56a1061792a6a # [osx]
+  - url: https://github.com/PLAST-software/plast-library/releases/download/v2.3.2/plastbinary_linux_v2.3.2.tar.gz # [linux]
+    sha256: d8a3ad66849b6090c41acde71750e3d0c339d6b9b7c6f316c307870d773d86fe # [linux]
+
+requirements:
+  build:
+    - wget
+    - python ==3.6.15
+    - setuptools
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
+    - python ==3.6.15
+    - pip
+    - setuptools 
+  run:
+    - python ==3.6.15
+    - numpy
+    - pandas
+    - joblib
+    - pyqt =5
+    - spades
+    - seqkit
+    - trimmomatic
+    - centrifuge
+    - bowtie2
+    - pip
+
+
+test:
+  commands:
+    - plast -h
+    - eukfinder --help
+    - eukfinder download_db -h
+    - eukfinder read_prep -h
+    - eukfinder short_seqs -h
+    - eukfinder long_seqs -h
+
+
+about:
+  home: https://github.com/RogerLab/Eukfinder
+  license: MIT
+  license_file: LICENSE.md
+  summary: "Eukfinder is a tool for detecting eukaryotic sequences in metagenomic data."

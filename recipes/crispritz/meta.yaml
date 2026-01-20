@@ -1,40 +1,35 @@
-{% set version = "2.2.0" %}
+{% set name = "crispritz" %}
+{% set version = "2.7.0" %}
 
 package:
-  name: crispritz
+  name: {{name}}
   version: {{ version }}
 
 source:
   url: https://github.com/pinellolab/CRISPRitz/archive/v{{ version }}.tar.gz
-  sha256: aa5eb34792f8dbbf6aa851feb9fe61e6b17f274151c526c8f3c7cd6aad287265
- 
+  sha256: 89edad0570e3766c41184139197320aae1263f8d91fbc8c30f12105329d67377
+
 build:
-  number: 0
+  number: 2
+  run_exports:
+    - {{ pin_subpackage(name, max_pin = "x") }}
+
   skip: True  # [osx]
 
 requirements:
-
   build:
-    - {{compiler('cxx')}}
-    - boost
-    - openmp
-
-  host:
+    - {{ compiler('cxx') }}
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - make
-    - boost
-    - openmp
-    - python >=3.6
-    
+  host:
+    - boost-cpp
+    - python >=3.8,<3.9
   run:
-    - dash
-    - dash-renderer
-    - dash-daq
-    - flask-caching
     - rename
-    - dash-bootstrap-components
-    - poppler
     - bedtools
-    - scikit-learn
+    - bedops
+    - scikit-learn =0.23.2
     - biopython
     - intervaltree
     - matplotlib-base
@@ -44,13 +39,13 @@ requirements:
     - more-itertools
     - statsmodels
     - bcftools
-    - boost
+    - boost-cpp
     - tk
-    - openmp
-    - libdeflate
-    - libcxx
-    - python >=3.6
-    
+    - openmp     # [osx]
+    - python >=3.8,<3.9
+    - pysam 0.22.1
+    - htslib
+
 test:
   commands:
     - crispritz.py
@@ -58,4 +53,8 @@ test:
 about:
   home: https://github.com/pinellolab/CRISPRitz
   license: GPL3
+  license_file: LICENSE
   summary: CRISPRitz, tool package for CRISPR experiments assessment and analysis.
+extra:
+  additional-platforms:
+    - linux-aarch64

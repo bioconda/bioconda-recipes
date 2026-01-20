@@ -3,50 +3,60 @@
 {% set sha256 = "f1bfb24bb5ecd108bc3a90145fad232012165c1e60608003f1c87d200f867b81" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
   url: https://github.com/rajanil/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - python_path.patch
+  patches: 
+    - py3.patch
+    - shebangs.patch
 
 build:
-  number: 0
-  skip: True  # [py3k]
+  number: 6
+  run_exports:
+    - {{ pin_subpackage('faststructure', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - clangdev  # [osx]
+    - libclang-cpp18.1  # [osx]
+    - tapi  # [osx]
+    - libtool
   host:
-    - python
-    - numpy
-    - scipy
-    - cython <0.28
-    - gsl
-    - openblas
+    - python =3.11
+    - numpy =2.3.0
+    - scipy =1.15.2
+    - cython =3.1.2
+    - gsl =2.8
+    - liblapack =3.9.0
   run:
     - python
     - numpy
     - scipy
-    - matplotlib
     - gsl
-    - openblas
+    - liblapack
+    - matplotlib-base
 
 test:
-  imports:
-    - fastStructure
-    - parse_bed
-    - parse_str
   commands:
-    - structure.py | grep "structure.py" > /dev/null
-    - chooseK.py | grep "chooseK.py" > /dev/null
-    - export MPLBACKEND="svg" && distruct.py | grep "distruct.py" > /dev/null
+    - structure.py | grep "Usage" > /dev/null
+    - distruct.py | grep "Usage" > /dev/null
+    - chooseK.py | grep "Usage" > /dev/null
 
 about:
-  home: https://github.com/rajanil/fastStructure
+  home: "https://github.com/rajanil/fastStructure"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: "A variational framework for inferring population structure from SNP genotype data."
+  summary: "A variational framework for inferring population structure from SNP genotype data. Ported to python3 by @StuntsPT based on the work of @jashapiro."
+  dev_url: "https://github.com/rajanil/fastStructure"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - StuntsPT

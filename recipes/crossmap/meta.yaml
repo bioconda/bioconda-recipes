@@ -1,49 +1,56 @@
 {% set name = "CrossMap" %}
-{% set version = "0.4.2" %}
-{% set sha256hash = "35e918bd6ff210d5156ec136b31df440e1783cfb96f6d2d4596e9803d64c3c14" %}
+{% set version = "0.7.3" %}
+{% set sha256 = "ba41bff487cadfbe949b3e05e892f2d2096c33dc45d20a74c929496861f255e7" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://sourceforge.net/projects/crossmap/files/CrossMap-{{ version }}.tar.gz
-  sha256: {{ sha256hash }}
+  url: https://github.com/liguowang/CrossMap/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
   noarch: python
+  entry_points:
+    - CrossMap = cmmodule:crossmap
+  run_exports:
+    - {{ pin_subpackage('crossmap', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3
-    - cython >=0.17
-    - numpy
-    - nose >=0.10.4
-    - pysam >=0.11.1
-    - bx-python
+    - python >=3.8
+    - pip
+    - setuptools
   run:
-    - python >=3
-    - cython >=0.17
+    - python >=3.8
     - numpy
-    - pysam >=0.11.1
+    - pysam
     - bx-python
-    - ucsc-wigtobigwig
     - pybigwig
+    - ucsc-wigtobigwig
 
 test:
   commands:
-    - CrossMap.py bed
-    - CrossMap.py vcf
+    - CrossMap bed -h
+    - CrossMap vcf -h
 
 about:
-  home: http://crossmap.sourceforge.net
-  license: GPL-3.0-or-later
-  license_family: GPL
-  license_file: LICENSE.txt
+  home: "https://crossmap.sourceforge.net"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "LICENSE.txt"
   summary: "CrossMap is a program for convenient conversion of genome coordinates and genomeannotation files between assemblies."
+  dev_url: "https://github.com/liguowang/CrossMap"
+  doc_url: "https://crossmap.readthedocs.io/en/latest"
 
 extra:
-  skip-lints:
-    - cython_must_be_in_host
-    - cython_needs_compiler
+  identifiers:
+    - usegalaxy-eu:crossmap_bam
+    - usegalaxy-eu:crossmap_bed
+    - usegalaxy-eu:crossmap_vcf
+    - usegalaxy-eu:crossmap_wig
+    - usegalaxy-eu:crossmap_gff
+    - doi:10.1093/bioinformatics/btt730
+    - biotools:crossmap

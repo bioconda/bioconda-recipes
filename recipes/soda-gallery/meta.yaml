@@ -1,0 +1,51 @@
+{% set name = "soda-gallery" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: dc71f503ecdf3d54ad00c9648176e98c0a1db37a18fe6fe7d5d1ea763340e92c
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - soda = soda.soda:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('soda-gallery', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3
+  run:
+    - beautifulsoup4 >=4.9.3
+    - certifi >=2024.2.2
+    - jinja2 >=3.0.1
+    - pdfminer >=20191125
+    - pdfrw >=0.4
+    - python >=3
+    - requests >=2.25.1
+    - requests-kerberos >=0.12.0
+
+test:
+  imports:
+    - soda
+  commands:
+    - soda --help
+
+about:
+  home: "https://github.com/alexpreynolds/soda"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Python-based UCSC genome browser gallery generator"
+  doc_url: "https://github.com/alexpreynolds/soda/blob/master/README.md"
+
+extra:
+  recipe-maintainers:
+    - alexpreynolds

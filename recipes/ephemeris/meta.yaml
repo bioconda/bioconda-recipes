@@ -1,42 +1,59 @@
+{% set name = "ephemeris" %}
+{% set version = "0.10.11" %}
+
 package:
-  name: ephemeris
-  version: "0.10.6"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/2b/c3/c124b802caea83ff0ac798426b34f65dcf35067eb90a372109de209db93f/ephemeris-0.10.6.tar.gz
-  sha256: 7996af48c8c7ba67e79a4004f0671df2423d26557a66860f47fb997fa23c3768
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/ephemeris-{{ version }}.tar.gz
+  sha256: 7966c731a6344c79b6a59fa9f9c2c0be0679b3a09f95479710f4bba776e586bd
 
 build:
   number: 0
   noarch: python
-  preserve_egg_dir: True
   entry_points:
-    - get-tool-list=ephemeris.get_tool_list_from_galaxy:main
-    - shed-tools=ephemeris.shed_tools:main
-    - workflow-install=ephemeris.workflow_install:main
-    - run-data-managers=ephemeris.run_data_managers:main
-    - workflow-to-tools=ephemeris.generate_tool_list_from_ga_workflow_files:main
-    - setup-data-libraries=ephemeris.setup_data_libraries:main
-    - galaxy-wait=ephemeris.sleep:main
-  script: python -m pip install --no-deps --ignore-installed .
+    - get-tool-list = ephemeris.get_tool_list_from_galaxy:main
+    - shed-tools = ephemeris.shed_tools:main
+    - workflow-install = ephemeris.workflow_install:main
+    - run-data-managers = ephemeris.run_data_managers:main
+    - workflow-to-tools = ephemeris.generate_tool_list_from_ga_workflow_files:main
+    - setup-data-libraries = ephemeris.setup_data_libraries:main
+    - galaxy-wait = ephemeris.sleep:main
+    - install_tool_deps = ephemeris.install_tool_deps:main
+    - install-tool-deps = ephemeris.install_tool_deps:main
+    - set-library-permissions = ephemeris.set_library_permissions:main
+    - _idc-lint = ephemeris._idc_lint:main
+    - _idc-split-data-manager-genomes = ephemeris._idc_split_data_manager_genomes:main
+    - _idc-data-managers-to-tools = ephemeris._idc_data_managers_to_tools:main
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -f *.bak
+    - {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir --use-pep517 . -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.9
     - pip
+    - setuptools
   run:
-    - python
+    - python >=3.9
+    - setuptools
     - pyyaml
     - six >=1.9.0
     - bioblend >=0.10.0
     - jinja2
-    - galaxy-tool-util >=19.9.1
-    - futures  # [py27]
+    - galaxy-tool-util >=20.9.1
+    - galaxy-util >=20.9.0
+    - pysam
+    - rich
+    - pydantic >=2.0
 
 test:
   imports:
     - ephemeris
-
   commands:
     - get-tool-list --help
     - shed-tools --help
@@ -45,9 +62,14 @@ test:
     - workflow-to-tools --help
     - setup-data-libraries --help
     - galaxy-wait --help
+    - install_tool_deps --help
+    - install-tool-deps --help
+    - set-library-permissions --help
 
 about:
-  home: https://github.com/galaxyproject/ephemeris
-  license: Academic Free License (AFL)
-  summary: 'Ephemeris is an opinionated library and set of scripts for managing the bootstrapping of Galaxy project plugins - tools, index data, and workflows.'
+  home: "https://github.com/galaxyproject/ephemeris"
+  license: "Academic Free License (AFL)"
+  summary: "Ephemeris is an opinionated library and set of scripts for managing the bootstrapping of Galaxy project plugins - tools, index data, and workflows."
   license_family: OTHER
+  doc_url: "https://ephemeris.readthedocs.io/en/latest"
+  dev_url: "https://github.com/galaxyproject/ephemeris"

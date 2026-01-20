@@ -1,0 +1,43 @@
+{% set name = "mlst-cge" %}
+{% set version = "2.0.9" %}
+{% set sha256 = "fec9e6e97ce625884075cffcf76c6eaecf8c58205a48cd81077ae812ab11f31c" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://bitbucket.org/genomicepidemiology/mlst/get/{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+  patches:
+    - python_path.patch
+
+build:
+  number: 0
+  noarch: generic
+
+requirements:
+  host:
+    - git
+    - kma
+  run:
+    - python >=3
+    - kma
+    - biopython
+    - blast >=2.8.1
+    - cgecore 1.5.5
+    - tabulate 0.7.7
+
+test:
+  commands:
+    - mlst.py --help
+
+about:
+  home: https://bitbucket.org/genomicepidemiology/mlst
+  license: APACHE-2.0
+  license_family: APACHE
+  license_file: LICENSE-2.0.txt
+  summary: Multi Locus Sequence Typing (MLST) determine the ST from an assembled genome or from a set of reads.
+
+extra:
+  notes: "MLST requires a database that can be downloaded with download-db.sh."

@@ -1,0 +1,47 @@
+{% set name = "PopLDdecay" %}
+{% set version = "3.43" %}
+{% set sha256 = "ce5b89005ac063e590d02f4a5922da646651fb2086c5708b280feda84c84dd72" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/BGI-shenzhen/PopLDdecay/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('poplddecay', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - libtool
+  host:
+    - zlib
+
+test:
+  commands:
+    - 'PopLDdecay 2>&1 | grep "Usage: PopLDdecay"'
+
+about:
+  home: "https://github.com/BGI-shenzhen/PopLDdecay"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "PopLDdecay: a fast and effective tool for linkage disequilibrium decay analysis based on variant call format (VCF) files."
+  dev_url: "https://github.com/BGI-shenzhen/PopLDdecay"
+  doc_url: "https://github.com/BGI-shenzhen/PopLDdecay/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/bioinformatics/bty875
+    - biotools:PopLDdecay
