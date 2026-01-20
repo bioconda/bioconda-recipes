@@ -1,0 +1,72 @@
+diff --git a/include/RbtTypes.h b/include/RbtTypes.h
+index 537fcd5..990f6e3 100644
+--- a/include/RbtTypes.h
++++ b/include/RbtTypes.h
+@@ -15,6 +15,7 @@
+ #ifndef _RBTTYPES_H_
+ #define _RBTTYPES_H_
+ 
++#include <cstddef>
+ #include <string>
+ using std::string;
+ 
+diff --git a/Makefile b/Makefile
+index 1ff53e4..d952bd1 100644
+--- a/Makefile
++++ b/Makefile
+@@ -45,10 +45,19 @@
+ #                 releases.
+ #
+ 
+-PREFIX                      ?= /usr
++PREFIX                      ?= $(PREFIX)
+ CONFIG                      ?= RELEASE
+ RBT_VERSION                 ?= v$(shell date +%y.%m-alpha)
+-CXX                         ?= g++
++CXX                         ?= $(CXX)
++
++# OS-specific settings
++LIB_PATH_VAR := LD_LIBRARY_PATH
++ifeq ($(shell uname),Darwin)
++    BREW_PREFIX := /opt/homebrew
++    CXX_BASE_FLAGS += -I$(PREFIX)/include
++    LINK_FLAGS += -L$(PREFIX)/lib
++    LIB_PATH_VAR := DYLD_LIBRARY_PATH
++endif
+ 
+ LEGACY_BUILD                ?= NO
+ ifeq ($(LEGACY_BUILD),YES)
+@@ -63,7 +72,7 @@ CXX_EXTRA_FLAGS             ?=
+ CXX_BASE_FLAGS              += -pipe -std=$(CXX_STD) -fPIC
+ CXX_DEBUG_CONFIG_FLAGS      += -O0 -g
+ CXX_RELEASE_CONFIG_FLAGS    += -O3 -ffast-math
+-CXX_WARNING_FLAGS           +=
++CXX_WARNING_FLAGS           += -Wno-deprecated-declarations
+ 
+ DEBUG_DEFINES               := -D_DEBUG
+ RELEASE_DEFINES             := -D_NDEBUG
+@@ -79,11 +88,15 @@ endif
+ DEFINES                     += -DRBT_VERSION=\"$(RBT_VERSION)\"
+ CXX_FLAGS                   := $(CXX_BASE_FLAGS) $(CXX_CONFIG_FLAGS) $(CXX_WARNING_FLAGS) $(CXX_EXTRA_FLAGS) $(DEFINES)
+ LINK_FLAGS                  := -shared
+-LIB_DEPENDENCIES            := -lpopt -lm -lstdc++
++LIB_DEPENDENCIES            := -L$(PREFIX)/lib -lpopt -lm -lstdc++
+ LIBS                        += $(LIB_DEPENDENCIES) -lRbt
+-INCLUDE                     := $(addprefix -I./, $(shell find include/ -type d )) $(addprefix -I./, $(shell find import/ -type d ))
++INCLUDE                     := -I$(PREFIX)/include $(addprefix -I./, $(shell find include/ -type d )) $(addprefix -I./, $(shell find import/ -type d ))
+ LIBRARY                     := ./lib
+ 
++# Modify library dependencies for macOS
++ifeq ($(shell uname),Darwin)
++    LIB_DEPENDENCIES = -L$(PREFIX)/lib -lpopt -lm
++endif
+ 
+ simplex_sources = $(shell find import/simplex/src/ -type f -name '*.cxx')
+ simplex_objects = $(subst import/simplex/src, obj/simplex, $(simplex_sources:.cxx=.o))
+@@ -208,4 +221,4 @@ targets:  ## Display this help
+ 	awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+ 
+ help:  ## detailed help
+-	@ awk '/^#/ {print; next} {if (NR>1) exit}' $(MAKEFILE_LIST) | sed -e 's/^#//'
+\ No newline at end of file
++	@ awk '/^#/ {print; next} {if (NR>1) exit}' $(MAKEFILE_LIST) | sed -e 's/^#//'

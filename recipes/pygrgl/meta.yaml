@@ -1,0 +1,51 @@
+{% set name = "pygrgl" %}
+{% set version = "2.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 04998bf8f38ffd3f8cc943761f2a97e76fad7b537e068a5928712dfddbd2177d
+
+build:
+  number: 0
+  entry_points:
+    - grg=pygrgl.cli:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage('pygrgl', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+  host:
+    - python
+    - zlib
+    - pip
+    - tqdm
+  run:
+    - python
+    - tqdm
+
+test:
+  imports:
+    - pygrgl
+  commands:
+    - grg --help
+
+about:
+  home: "https://aprilweilab.github.io/"
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Genotype Representation Graph Library for efficient storage/use of huge genetic datasets"
+  doc_url: "https://grgl.readthedocs.io/en/stable/"
+  dev_url: "https://github.com/aprilweilab/grgl"
+
+extra:
+  recipe-maintainers:
+    - dcdehaas
