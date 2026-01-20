@@ -1,0 +1,52 @@
+{% set name = "TSUMUGI" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/tsumugi-{{ version }}.tar.gz
+  sha256: b3b3a8e0acb8a0f4326e45aabb10d7d3b9e0f0cd432ef0cc49f3d61aeae04350
+
+build:
+  entry_points:
+    - tsumugi = TSUMUGI.main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('tsumugi', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - poetry-core
+    - pip
+  run:
+    - python >=3.10
+    - numpy >=1.21.0
+    - tqdm >=4.64.0
+    - networkx >=3.3
+
+test:
+  imports:
+    - TSUMUGI
+  commands:
+    - pip check
+    - tsumugi --help
+  requires:
+    - pip
+
+about:
+  summary: 'TSUMUGI: Phenotype-driven gene network identifier'
+  license: MIT
+  license_file: LICENSE
+  home: "https://github.com/akikuno/TSUMUGI-dev"
+  dev_url: "https://github.com/akikuno/TSUMUGI-dev"
+  doc_url: "https://github.com/akikuno/TSUMUGI-dev/blob/{{ version }}/README.md"
+
+
+extra:
+  recipe-maintainers:
+    - akikuno

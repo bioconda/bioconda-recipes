@@ -1,0 +1,156 @@
+diff --git a/Makefile b/Makefile
+index aa81f05..a5e78ad 100644
+--- a/Makefile
++++ b/Makefile
+@@ -9,9 +9,9 @@ install:
+ 	mkdir -p bin && make -C src install && cp sh/*.sh sh/fastq2bam bin
+ 
+ release:
+-	sed -i "s/#define VERSION.*/#define VERSION \"$(VERSION)\"/" src/*.c
+-	sed -i "s/#define VERSION.*/#define VERSION \"$(VERSION)\"/" src/*.h
+-	sed -i "s/^VERSION=.*/VERSION=\"$(VERSION)\"/" sh/*
++	sed -i.bak "s/#define VERSION.*/#define VERSION \"$(VERSION)\"/" src/*.c
++	sed -i.bak "s/#define VERSION.*/#define VERSION \"$(VERSION)\"/" src/*.h
++	sed -i.bak "s/^VERSION=.*/VERSION=\"$(VERSION)\"/" sh/*
+ 	git pull && \
+ 	git commit -m "New version $(VERSION)" . &&\
+ 	git push &&\
+diff --git a/src/Makefile b/src/Makefile
+index 8f5f4fa..e503209 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -1,7 +1,7 @@
+ # Note: avoid having boost in  -I : it may result on including the wrong regexp.h
+ # zlib is required
+ #CFLAGS+= -g -Wunused-result  -pg -Wall
+-CFLAGS+=  -O3 -Wunused-result  -Wall
++CFLAGS+= -I$(PREFIX)/include -O3 -Wunused-result -Wall
+ 
+ ifdef PROFILE
+ CFLAGS+= -pg
+@@ -19,7 +19,7 @@ ifeq ($(DEBUG),1)
+ CFLAGS+= -g -DDEBUG=1 -O1
+ endif
+ 
+-TARGETS=fastq_truncate fastq_filterpair  fastq_filter_n fastq_num_reads fastq_not_empty fastq_pre_barcodes fastq_trim_poly_at fastq_split_interleaved fastq_tests
++TARGETS=fastq_truncate fastq_filterpair fastq_filter_n fastq_num_reads fastq_not_empty fastq_pre_barcodes fastq_trim_poly_at fastq_split_interleaved fastq_tests
+ 
+ ifdef SAMTOOLS_PATH
+ TARGETS+= bam_add_tags bam_umi_count bam2fastq fastq_info
+@@ -32,82 +32,82 @@ install: $(TARGETS)
+ 	cp $^ ../bin
+ 
+ 
+-fastq_filterpair: hash.o fastq_filterpair.o fastq.o 
+-	gcc  $(CFLAGS) $^ -lz -o $@
++fastq_filterpair: hash.o fastq_filterpair.o fastq.o
++	$(CC)  $(CFLAGS) $^ -lz -o $@
+ 
+ fastq_info:  hash.o fastq_info.o fastq.o
+-	gcc  $(CFLAGS) $^ -lz -o $@
++	$(CC)  $(CFLAGS) $^ -lz -o $@
+ 
+ fastq_filter_n: fastq_filter_n.o fastq.o hash.o
+-	gcc  $(CFLAGS) $^ -lz -o $@ 
++	$(CC)  $(CFLAGS) $^ -lz -o $@
+ 
+ fastq_num_reads: fastq_num_reads.o hash.o fastq.o
+-	gcc  $(CFLAGS) $^ -lz -o $@ 
++	$(CC)  $(CFLAGS) $^ -lz -o $@
+ 
+ fastq_not_empty: fastq_not_empty.o hash.o fastq.o
+-	gcc  $(CFLAGS) $^ -lz -o $@ 
++	$(CC)  $(CFLAGS) $^ -lz -o $@
+ 
+ fastq_truncate:  fastq_truncate.o  hash.o fastq.o
+-	gcc  $(CFLAGS) $^ -lz -o $@  
++	$(CC)  $(CFLAGS) $^ -lz -o $@
+ 
+ fastq_split_interleaved: fastq_split_interleaved.o fastq.o hash.o
+-	gcc  $(CFLAGS) $^ -lz -o $@ 
++	$(CC)  $(CFLAGS) $^ -lz -o $@
+ 
+ fastq_tests: fastq_tests.o hash.o fastq.o range_list.o
+-	gcc  $(CFLAGS) $^ -lz -o $@
++	$(CC)  $(CFLAGS) $^ -lz -o $@
+ 
+ 
+ # deprecated
+ #fastq_validator:  hash.o fastq_validator.o
+-#	gcc  $(CFLAGS) $^ -o $@
++#	$(CC)  $(CFLAGS) $^ -o $@
+ 
+ fastq_trim_poly_at: fastq_trim_poly_at.o hash.o fastq.o
+-	gcc  $(CFLAGS) $^ -lz -o $@
++	$(CC)  $(CFLAGS) $^ -lz -o $@
+ 
+ ##fastq_trim_poly_at: fastq_sanger2phred.o hash.o fastq.o
+-##	gcc  $(CFLAGS) $^ -lz -o $@
++##	$(CC)  $(CFLAGS) $^ -lz -o $@
+ 
+ 
+ fastq_pre_barcodes: fastq.o fastq.h fastq_pre_barcodes.o hash.o
+-	gcc  $(CFLAGS) $(patsubst %.h,,$^) -lz -o $@ 
++	$(CC)  $(CFLAGS) $(patsubst %.h,,$^) -lz -o $@
+ 
+ 
+ # Companion of fastq preprocess barcodes fastq_pre_barcodes
+ bam_add_tags: hash.o bam_add_tags.o
+-	gcc  $(CFLAGS) $^ -L $(ZLIB_PATH) -I $(ZLIB_PATH) -L $(SAMTOOLS_PATH) -I $(SAMTOOLS_PATH) -lpthread  -lbam -lm -lz -pthread -o $@
++	$(CC)  $(CFLAGS) $^ -L $(ZLIB_PATH) -I $(ZLIB_PATH) -L $(SAMTOOLS_PATH) -I $(SAMTOOLS_PATH) -lpthread  -lbam -lm -lz -pthread -o $@
+ 
+-bam_umi_count: range_list.o  hash.o  bam_umi_count.o 
+-	gcc  $(CFLAGS)  $^  -L $(ZLIB_PATH) -I $(ZLIB_PATH) -L $(SAMTOOLS_PATH) -I $(SAMTOOLS_PATH) -lpthread  -lbam -lm -lz -pthread -o $@
++bam_umi_count: range_list.o  hash.o  bam_umi_count.o
++	$(CC)  $(CFLAGS)  $^  -L $(ZLIB_PATH) -I $(ZLIB_PATH) -L $(SAMTOOLS_PATH) -I $(SAMTOOLS_PATH) -lpthread  -lbam -lm -lz -pthread -o $@
+ 
+ 
+-bam_umi_count_old:   hash.o  bam_umi_count_old.o 
+-	gcc  $(CFLAGS)  $^  -L $(ZLIB_PATH) -I $(ZLIB_PATH) -L $(SAMTOOLS_PATH) -I $(SAMTOOLS_PATH) -lpthread  -lbam -lm -lz -pthread -o $@
++bam_umi_count_old:   hash.o  bam_umi_count_old.o
++	$(CC)  $(CFLAGS)  $^  -L $(ZLIB_PATH) -I $(ZLIB_PATH) -L $(SAMTOOLS_PATH) -I $(SAMTOOLS_PATH) -lpthread  -lbam -lm -lz -pthread -o $@
+ 
+ 
+ bam2fastq:   bam2fastq.o fastq.o hash.o
+-	gcc  $(CFLAGS)  $^  -L $(ZLIB_PATH) -I $(ZLIB_PATH) -L $(SAMTOOLS_PATH) -I $(SAMTOOLS_PATH) -lpthread  -lbam -lm -lz -pthread -o $@
++	$(CC)  $(CFLAGS)  $^  -L $(ZLIB_PATH) -I $(ZLIB_PATH) -L $(SAMTOOLS_PATH) -I $(SAMTOOLS_PATH) -lpthread  -lbam -lm -lz -pthread -o $@
+ 
+ 
+ ##################################################
+ 
+ 
+ fastq.o: fastq.c fastq.h hash.h
+-	gcc $(CFLAGS) -I $(ZLIB_PATH) -lz -c $< 
++	$(CC) $(CFLAGS) -I $(ZLIB_PATH) -lz -c $<
+ 
+ hash.o: hash.c hash.h
+-	gcc $(CFLAGS) -c $<
++	$(CC) $(CFLAGS) -c $<
+ 
+ range_list.o: range_list.c range_list.h
+-	gcc $(CFLAGS) -c $<
++	$(CC) $(CFLAGS) -c $<
+ 
+ fastq_tests.o: fastq_tests.c
+-	gcc $(CFLAGS) -c $<
++	$(CC) $(CFLAGS) -c $<
+ 
+ %.o: %.c
+-	gcc -I $(SAMTOOLS_PATH) $(CFLAGS)   -c $<
++	$(CC) -I $(SAMTOOLS_PATH) $(CFLAGS)   -c $<
+ 
+ fastq_pre_barcodes.o: fastq_pre_barcodes.c sam_tags.h hash.h fastq.h
+-	gcc -I $(SAMTOOLS_PATH) $(CFLAGS)   -c $<
++	$(CC) -I $(SAMTOOLS_PATH) $(CFLAGS)   -c $<
+ clean:
+ 	rm -f *.o $(TARGETS) *~
+ 
+@@ -117,7 +117,7 @@ tests:
+ 	../run_tests.sh
+ 
+ 
+-gcov: 
++gcov:
+ 	gcov $(TARGETS) hash.o range_list.o fastq.o
+ 
+ 

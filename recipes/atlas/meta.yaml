@@ -1,12 +1,12 @@
-{% set version = "2.0.0" %}
+{% set version = "2.0.1" %}
 
 package:
   name: atlas
   version: {{ version }}
 
 source:
-  url: https://bitbucket.org/wegmannlab/atlas/get/{{ version }}-rc.6.tar.gz
-  sha256: 017235049dddfac88fedf16bfc444cf38aed25ac84df084dc555736b5d48d6a3
+  url: https://bitbucket.org/wegmannlab/atlas/get/{{ version }}.tar.gz
+  sha256: f26066ad153b8873ef4856d0461841c48b4daea7e8b5c033fcd3f421b4a4d470
 
 build:
   number: 0
@@ -17,38 +17,32 @@ requirements:
   build:
     - {{ compiler('cxx') }}
     - cmake
-    - git
     - ninja
-    - sysroot_linux-64 =2.17  # [linux]
   host:
     - armadillo
     - fmt
     - htslib
+    - mkl # [x86]
     - lapack
-    - libgomp  # [linux]
-    - llvm-openmp  # [osx]
     - nlohmann_json
     - openblas
-    - sysroot_linux-64 =2.17  # [linux]
     - jsoncpp
     - zlib
   run:
     - armadillo
     - fmt
     - htslib
+    - mkl # [x86]
     - lapack
-    - libgomp  # [linux]
-    - llvm-openmp  # [osx]
     - nlohmann_json
     - openblas
-    - sysroot_linux-64 =2.17  # [linux]
     - jsoncpp
 
 test:
   commands:
     - atlas | grep "successfully"
     - atlas simulate
-    - atlas HKY85 --bam ATLAS_simulations.bam --fasta ATLAS_simulations.fasta
+    - atlas summaryStats --bam ATLAS_simulations.bam --fasta ATLAS_simulations.fasta
     - atlas GLF --bam ATLAS_simulations.bam
     - atlas saf --glf ATLAS_simulations.glf.gz --fasta ATLAS_simulations.fasta
     - atlas majorMinor --glf ATLAS_simulations.glf.gz

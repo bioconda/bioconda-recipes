@@ -1,0 +1,302 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a51f1e1..0938304 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.8)
++  cmake_minimum_required(VERSION 3.5)
+ project(ngmlr)
+ 
+ include(CheckCXXCompilerFlag)
+@@ -20,9 +20,9 @@ find_package ( Threads REQUIRED )
+ CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+ if(COMPILER_SUPPORTS_CXX11)
+     IF(NOT APPLE)
+-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
++        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+     ELSE()
+-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
++        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -stdlib=libc++")
+     ENDIF()
+ else()
+     message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+@@ -39,4 +39,4 @@ IF(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+   SET(CMAKE_BUILD_TYPE RELWITHDEBINFO)
+ ENDIF(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+ 
+-add_subdirectory(src)
+\ No newline at end of file
++add_subdirectory(src)
+diff --git a/README.md b/README.md
+index 16dcc93..457d42e 100644
+--- a/README.md
++++ b/README.md
+@@ -1,15 +1,15 @@
+ ### Quick start
+ 
+-Download [binary](https://github.com/philres/ngmlr/releases/tag/v0.2.7) from github and unzip or [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io/recipes/ngmlr/README.html) or pull docker [![Docker Automated buil](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/philres/ngmlr/). For updates follow [![Twitter URL](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&style=plastic)](https://twitter.com/philres1)
++Download [binary](https://github.com/philres/ngmlr/releases/tag/v0.2.6) from github and unzip or [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io/recipes/ngmlr/README.html) or pull docker [![Docker Automated buil](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/philres/ngmlr/). For updates follow [![Twitter URL](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&style=plastic)](https://twitter.com/philres1)
+ 
+ Download precompiled version:
+ ```bash
+-wget https://github.com/philres/ngmlr/releases/tag/v0.2.7
+-tar xvzf ngmlr-0.2.7-beta-linux-x86_64.tar.gz
+-cd ngmlr-0.2.7-beta-linux-x86_64
++wget https://github.com/philres/ngmlr/releases/download/v0.2.7/ngmlr-0.2.7-linux-x86_64.tar.gz
++tar xvzf ngmlr-0.2.7-linux-x86_64.tar.gz
++cd ngmlr-0.2.7/
+ ```
+ 
+-For Pacbio data run:
++For PacBio data run:
+ ```bash
+ ngmlr -t 4 -r reference.fasta -q reads.fastq -o test.sam
+ ```
+@@ -20,9 +20,9 @@ ngmlr -t 4 -r reference.fasta -q reads.fastq -o test.sam -x ont
+ 
+ ### Introduction
+  
+-CoNvex Gap-cost alignMents for Long Reads (ngmlr) is a long-read mapper designed to sensitively align PacBilo or Oxford Nanopore to (large) reference genomes. It was designed to quickly and correctly align the reads, including those spanning (complex) structural variations. Ngmlr uses an SV aware k-mer search to find approximate mapping locations for a read and then a banded Smith-Waterman alignment algorithm to compute the final alignment. Ngmlr uses a convex gap cost model that penalizes gap extensions for longer gaps less than for shorter ones to compute precise alignments. The gap model allows ngmlr to account for both the sequencing error and real genomic variations at the same time and makes it especially effective at more precisely identifying the position of breakpoints stemming from structural variations. The k-mer search helps to detect and split reads that cannot be aligned linearly, enabling ngmlr to reliably align reads to a wide range of different structural variations including nested SVs (e.g. inversions flanked by deletions).
++CoNvex Gap-cost alignMents for Long Reads (ngmlr) is a long-read mapper designed to sensitively align PacBio or Oxford Nanopore to (large) reference genomes. It was designed to quickly and correctly align the reads, including those spanning (complex) structural variations. Ngmlr uses an SV aware k-mer search to find approximate mapping locations for a read and then a banded Smith-Waterman alignment algorithm to compute the final alignment. Ngmlr uses a convex gap cost model that penalizes gap extensions for longer gaps less than for shorter ones to compute precise alignments. The gap model allows ngmlr to account for both the sequencing error and real genomic variations at the same time and makes it especially effective at more precisely identifying the position of breakpoints stemming from structural variations. The k-mer search helps to detect and split reads that cannot be aligned linearly, enabling ngmlr to reliably align reads to a wide range of different structural variations including nested SVs (e.g. inversions flanked by deletions).
+ 
+-With 10 cores (AMD Opteron 6348), ngmlr currently takes about 90 minutes and 10 GB RAM for aligning 3Gbp (~ 1x human data) of Pacbio reads.
++With 10 cores (AMD Opteron 6348), ngmlr currently takes about 90 minutes and 10 GB RAM for aligning 3Gbp (~ 1x human data) of PacBio reads.
+ 
+ 
+ ### Citation:
+@@ -48,12 +48,36 @@ Input/Output:
+         (required)  Path to the reference genome (FASTA/Q, can be gzipped)
+     -q <file>,  --query <file>
+         Path to the read file (FASTA/Q) [/dev/stdin]
+-    -o <file>,  --output <file>
++    -o <string>,  --output <string>
+         Path to output file [stdout]
+     --skip-write
+         Don't write reference index to disk [false]
+     --bam-fix
+-        Report reads with > 64k CIGAR operations as unmapped. Required to be compatibel to BAM format [false]
++        Report reads with > 64k CIGAR operations as unmapped. Required to be compatible with the BAM format [false]
++    --rg-id <string>
++        Adds RG:Z:<string> to all alignments in SAM/BAM [none]
++    --rg-sm <string>
++        RG header: Sample [none]
++    --rg-lb <string>
++        RG header: Library [none]
++    --rg-pl <string>
++        RG header: Platform [none]
++    --rg-ds <string>
++        RG header: Description [none]
++    --rg-dt <string>
++        RG header: Date (format: YYYY-MM-DD) [none]
++    --rg-pu <string>
++        RG header: Platform unit [none]
++    --rg-pi <string>
++        RG header: Median insert size [none]
++    --rg-pg <string>
++        RG header: Programs [none]
++    --rg-cn <string>
++        RG header: sequencing center [none]
++    --rg-fo <string>
++        RG header: Flow order [none]
++    --rg-ks <string>
++        RG header: Key sequence [none]
+ 
+ General:
+     -t <int>,  --threads <int>
+@@ -147,7 +171,7 @@ We provide the NGMLR aligned reads and the Sniffles calls for the data sets used
+ 
+ Arabidopsis trio: [http://labshare.cshl.edu/shares/schatzlab/www-data/fsedlaze/Sniffles/Arabidopsis_trio](http://labshare.cshl.edu/shares/schatzlab/www-data/fsedlaze/Sniffles/Arabidopsis_trio) . 
+ 
+-Genome in the Bottle trio: 
++Genome in a Bottle trio: 
+ + Mappings: [ftp://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/data/AshkenazimTrio/HG002_NA24385_son/PacBio_MtSinai_NIST/Baylor_NGMLR_bam_GRCh37/](ftp://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/data/AshkenazimTrio/HG002_NA24385_son/PacBio_MtSinai_NIST/Baylor_NGMLR_bam_GRCh37/) . 
+ 
+ + SV calls: [http://labshare.cshl.edu/shares/schatzlab/www-data/fsedlaze/Sniffles/GiaB/](http://labshare.cshl.edu/shares/schatzlab/www-data/fsedlaze/Sniffles/GiaB/)
+diff --git a/src/AlignmentBuffer.cpp b/src/AlignmentBuffer.cpp
+index 275a8e6..ff53276 100644
+--- a/src/AlignmentBuffer.cpp
++++ b/src/AlignmentBuffer.cpp
+@@ -1889,6 +1889,7 @@ int AlignmentBuffer::computeMappingQuality(Align const & alignment, int readLeng
+ 		mqCount += 1;
+ 	}
+ //	verbose(1, true, "");
++	if (mqCount == 0) return 0;
+ 	verbose(1, true, "%d / %d = %d", mqSum, mqCount, (int) (mqSum * 1.0f / mqCount));
+ 	return (int) (mqSum * 1.0f / mqCount);
+ 
+@@ -2208,7 +2209,8 @@ bool AlignmentBuffer::reconcileRead(ReadGroup * group) {
+ 	if(pacbioDebug) {
+ 		Log.Message("Aligned %.2f%% of read", aligned * 100.0f);
+ 	}
+-	mapped = aligned > Config.getMinResidues();
++	mapped = (Config.getMinResidues() < 1.0) ? aligned > Config.getMinResidues() : alignedBpSum > Config.getMinResidues();
++
+ 	if (pacbioDebug) {
+ 		Log.Message("%f > %f = %d", aligned, Config.getMinResidues(), mapped);
+ 	}
+@@ -2372,10 +2374,7 @@ void AlignmentBuffer::verbose(int const tabs, bool const newLine, char const * c
+ 		va_list args;
+ 
+ 		va_start(args, s);
+-		if (args != 0)
+-			vfprintf(stderr, s, args);
+-		else
+-			fprintf(stderr, "%s", s);
++		vfprintf(stderr, s, args);
+ 		va_end(args);
+ 
+ 		if(newLine) {
+@@ -2597,7 +2596,17 @@ void AlignmentBuffer::processShortRead(MappedRead * read) {
+ 
+ 			}
+ 
+-			if (align != 0 && align->Score > 0.0f && ((read->length - align->QStart - align->QEnd) * 1.0f / read->length) > Config.getMinResidues()) {
++
++			bool mapped = align != 0 && align->Score > 0.0f;
++			if(mapped) {
++				if (Config.getMinResidues() < 1.0) {
++					mapped = ((read->length - align->QStart - align->QEnd) * 1.0f / read->length) >
++							 Config.getMinResidues();
++				} else {
++					mapped = (read->length - align->QStart - align->QEnd) > Config.getMinResidues();
++				}
++			}
++			if (mapped) {
+ 				align->clearNmPerPosition();
+ 
+ 				align->MQ = read->mappingQlty;
+@@ -3313,7 +3322,8 @@ void AlignmentBuffer::processLongReadLIS(ReadGroup * group) {
+ 
+ 	float aligned = readBpCovered * 1.0f / read->length;
+ 	verbose(0, true, "Intervals cover %.2f%% of read", aligned * 100.0f);
+-	if (aligned < Config.getMinResidues()) {
++	bool mapped = (Config.getMinResidues() < 1.0) ? aligned > Config.getMinResidues() : readBpCovered > Config.getMinResidues();
++	if (!mapped) {
+ 		verbose(0, true, "Clearing intervals -> read unmapped");
+ 		for (int i = 0; i < nIntervals; ++i) {
+ 			if (intervals[i] != 0) {
+diff --git a/src/ArgParser.cpp b/src/ArgParser.cpp
+index 02e8658..3416268 100644
+--- a/src/ArgParser.cpp
++++ b/src/ArgParser.cpp
+@@ -66,7 +66,7 @@ void ArgParser::ParseArguments(int argc, char const * argv[]) {
+ 
+ 	TCLAP::ValueArg<std::string> queryArg("q", "query", "Path to the read file (FASTA/Q)", false, "/dev/stdin", "file", cmd);
+ 	TCLAP::ValueArg<std::string> refArg("r", "reference", "Path to the reference genome (FASTA/Q, can be gzipped)", true, noneDefault, "file", cmd);
+-	TCLAP::ValueArg<std::string> outArg("o", "output", "Adds RG:Z:<string> to all alignments in SAM/BAM", false, noneDefault, "string", cmd);
++	TCLAP::ValueArg<std::string> outArg("o", "output", "Path to output file", false, noneDefault, "string", cmd);
+ 	TCLAP::ValueArg<std::string> vcfArg("", "vcf", "SNPs will be taken into account when building reference index", false, noneDefault, "file", cmd);
+ 	TCLAP::ValueArg<std::string> bedfilterArg("", "bed-filter", "Only reads in the regions specified by the BED file are read from the input file (requires BAM input)", false, noneDefault, "file", cmd);
+ 
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 9483d4c..025b3e7 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.8)
++cmake_minimum_required(VERSION 3.5)
+ project(ngmlr)
+ 
+ include_directories (../lib/seqan-library-2.2.0/include)
+@@ -51,4 +51,4 @@ ADD_CUSTOM_TARGET(recompile_always ALL touch "${CMAKE_SOURCE_DIR}/src/main.cpp")
+ TARGET_LINK_LIBRARIES(ngmlr ${ZLIB_LIBRARIES})
+ TARGET_LINK_LIBRARIES(ngmlr ${CMAKE_THREAD_LIBS_INIT})
+ 
+-install (TARGETS ngmlr DESTINATION bin)
+\ No newline at end of file
++install (TARGETS ngmlr DESTINATION bin)
+diff --git a/src/MappedRead.cpp b/src/MappedRead.cpp
+index 11494b6..43288d8 100644
+--- a/src/MappedRead.cpp
++++ b/src/MappedRead.cpp
+@@ -1,5 +1,5 @@
+ /**
+- /**
++ *
+  * Contact: philipp.rescheneder@gmail.com
+  */
+ 
+diff --git a/src/SAMWriter.cpp b/src/SAMWriter.cpp
+index 8f502da..88a7733 100644
+--- a/src/SAMWriter.cpp
++++ b/src/SAMWriter.cpp
+@@ -36,7 +36,6 @@ void SAMWriter::DoWriteProlog() {
+ 	version << VERSION_MAJOR << "." << VERSION_MINOR << "." << VERSION_BUILD;
+ 	Print("@PG\tID:ngmlr\tPN:nextgenmap-lr\tVN:%s\tCL:%s\n", version.str().c_str(), Config.getFullCommandLineCall());
+ 
+-	rgId = Config.getRgId();
+ 	if (rgId != 0) {
+ 		Print("@RG\tID:%s", rgId);
+ 
+@@ -104,7 +103,7 @@ void SAMWriter::DoWriteReadGeneric(MappedRead const * const read,
+ 
+ 	if (read->Scores[scoreID].Location.isReverse()) {
+ 		readseq = read->RevSeq;
+-		if (qltystr != 0 && qltystr[0] != '*') {
++		if (qltystr != 0 && strlen(qltystr) > 0) {
+ 			std::reverse(qltystr, &qltystr[read->length]);
+ 		}
+ 		flags |= 0x10;
+@@ -198,15 +197,7 @@ void SAMWriter::DoWriteReadGeneric(MappedRead const * const read,
+ 
+ 	int clipped = read->Alignments[scoreID].QStart + read->Alignments[scoreID].QEnd;
+ 	float covered = (read->length - clipped) * 100.0f / read->length;
+-	Print("CV:f:%f\t", covered);
+-
+-//	Print("ID:i:%d\t", read->ReadId);
+-
+-//	float kmerPer100Bp = read->Scores[scoreID].Score.f * 100.0f / read->length;
+-//	Print("KB:f:%f\t", kmerPer100Bp);
+-
+-//	float scorePer100Bp = read->Alignments[scoreID].Score * 100.0f / read->length;
+-//	Print("SB:f:%f", scorePer100Bp);
++	Print("CV:f:%f", covered);
+ 
+ 	if (printLongCigar) { // write the real CIGAR at the CG:B,I tag
+ 		Print("\tCG:B:I");
+diff --git a/src/SAMWriter.h b/src/SAMWriter.h
+index 0fb1aae..962796d 100644
+--- a/src/SAMWriter.h
++++ b/src/SAMWriter.h
+@@ -13,11 +13,7 @@ public:
+ 	SAMWriter(FileWriter * writer) :
+ 			GenericReadWriter() {
+ 
+-//		if(Config.Exists(RG_ID)) {
+-//			RG = Config.GetString(RG_ID);
+-//		} else {
+-			rgId = 0;
+-//		}
++		rgId = Config.getRgId();
+ 		m_Writer = writer;
+ 	}
+ 
+diff --git a/src/main.cpp b/src/main.cpp
+index 9f22f23..4a733d0 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -54,7 +54,7 @@ int main(int argc, char * argv[]) {
+ 	version << VERSION_MAJOR << "." << VERSION_MINOR << "." << VERSION_BUILD;
+ 
+ 	Log.Message("ngmlr %s%s (build: %s %s, start: %s)", version.str().c_str(), cDebug ? " debug" : "", __DATE__, __TIME__, currentDateTime().c_str());
+-	Log.Message("Contact: philipp.rescheneder@univie.ac.at");
++	Log.Message("Contact: fritz.sedlazeck@gmail.com, philipp.rescheneder@gmail.com");
+ 
+ 	Timer tmr;
+ 	tmr.ST();
+diff --git a/test/test_6.sh b/test/test_6.sh
+index 49b7a9a..5fbcef5 100755
+--- a/test/test_6.sh
++++ b/test/test_6.sh
+@@ -8,9 +8,9 @@ PARAMETER=" --skip-write -x pacbio --no-progress -t 4 "
+ 
+ echo "Test: $NAME ($BIN)"
+ 
+-LEN=`zcat test/data/test_6/read.fa.gz | bin/${BIN}/ngmlr $PARAMETER -r test/data/test_6/reference.fasta.gz 2> /dev/null | samtools view -Sc - 2> /dev/null`
++LEN=`cat test/data/test_6/read.fa.gz | gunzip | bin/${BIN}/ngmlr $PARAMETER -r test/data/test_6/reference.fasta.gz 2> /dev/null | samtools view -Sc - 2> /dev/null`
+ 
+-if [ "$LEN" -eq 5 ]
++if [ "$LEN" -eq "5" ]
+ then
+ 	echo "Success"
+ else

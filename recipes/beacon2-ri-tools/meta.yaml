@@ -1,77 +1,58 @@
 {% set name = "beacon2-ri-tools" %}
-{% set version = "2.0.0" %}
-{% set sha256 = "ef35e9a9c2f059c8c442000e6371e872559b7cfa2511216e21c213f56083bb7b" %}
+{% set version = "2.0.5" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/EGA-archive/beacon2-ri-tools/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  url: https://github.com/EGA-archive/beacon2-ri-tools-v2/archive/refs/tags/v{{ version }}.zip
+  sha256: "b4a6ced64abc7afb9e1473134657cb8cc45ee66e184593d11889f5a9d3e5ac74"
 
 build:
-  number: 0
   noarch: generic
+  number: 0
+  run_exports:
+        - {{ pin_subpackage('beacon2-ri-tools', max_pin="x.x") }}
 
 requirements:
   host:
-    - perl =>5.32
-    - perl-app-cpanminus
-    - perl-text-unidecode
-    - perl-json-xs
-    - perl-path-tiny
-    - perl-file-which
-    - perl-yaml-libyaml
-    - json_schema_validator
-    - perl-list-moreutils
-    - perl-text-csv_xs
-    - perl-minion-backend-sqlite
-    - perl-data-structure-util
-    - perl-mojolicious
-    - perl-minion
-    - perl-data-dumper
-    - perl-autodie
-    - perl-excel-writer-xlsx
-    - perl-encode
-    - perl-date-calc
-    - perl-perldoc
-    - perl-perlio-gzip
-    - perl-json-validator
+    - python >=3.10,<3.11
   run:
-    - perl =>5.32
-    - perl-app-cpanminus
-    - perl-text-unidecode
-    - perl-json-xs
-    - perl-path-tiny
-    - perl-file-which
-    - perl-yaml-libyaml
-    - json_schema_validator
-    - perl-list-moreutils
-    - perl-text-csv_xs
-    - perl-minion-backend-sqlite
-    - perl-data-structure-util
-    - perl-mojolicious
-    - perl-minion
-    - perl-data-dumper
-    - perl-autodie
-    - perl-excel-writer-xlsx
-    - perl-encode
-    - perl-date-calc
-    - perl-perldoc
-    - perl-perlio-gzip
-    - perl-json-validator
+    - python >=3.10,<3.11
+    - annotated-types ==0.6.0
+    - certifi ==2023.7.22
+    - charset-normalizer ==3.3.1
+    - openpyxl ==3.1.2
+    - pandas ==2.1.2
+    - python-dateutil ==2.8.2
+    - tqdm ==4.66.1
+    - urllib3 ==2.0.7
+    - cyvcf2 ==0.30.28
+    - pymongo ==4.6.1
+    - pydantic ==2.6.4
+    - typing ==3.7.4.3
+    - typing_extensions ==4.11.0
+    
 test:
-  # Perl 'use' tests 
   commands:
-    - beacon -h
+    - analyses_csv.py --help
+    - biosamples_csv.py --help
+    - cohorts_csv.py --help
+    - datasets_csv.py --help
+    - genomicVariations_csv.py --help
+    - genomicVariations_vcf.py --help
+    - individuals_csv.py --help
+    - runs_csv.py --help
 
 about:
-  home: https://github.com/EGA-archive/beacon2-ri-tools/tree/main
-  license: GPL-3.0-only
-  summary: "Script to parse a VCF having SnepEff/SnpSift annotations"
-  description: "Beacon v2 Reference Implementation (Data ingestion tools)" 
+  home: https://github.com/EGA-archive/beacon2-ri-tools-v2/tree/main
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: "Package of tools designed to simplify the population of a Beacon v2 mongoDB database"
+  description: "Beacon2 RI Tools v2 is a software created with the main goal of generating BFF data from .csv or .vcf (and probably more types of datafiles in the future). This is based on the first beacon ri tools. Currently, the supported input formats are VCF, CSV, and Phenopackets. These formats are converted to BFF (Beacon Friendly Format JSON, following Beacon v2 official specifications) and inserted into a Beacon database." 
 
 extra:
   recipe-maintainers:
+    - costero-e
     - khaled196
