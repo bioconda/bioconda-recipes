@@ -1,13 +1,18 @@
 #!/bin/bash
-set -xe
+set -euo pipefail
+set -x
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3"
-export CFLAGS="${CFLAGS} -O3"
+#link global include/lib folders, where htslib is installed by conda, into ngs-bits htslib folder
+ln -s $PREFIX/include htslib/include
+ln -s $PREFIX/lib htslib/lib
 
-mkdir -p "$PREFIX/lib"
-mkdir -p "$PREFIX/bin"
+# Ensure pkg-config can find libxml2 (conda-forge installs .pc into $BUILD_PREFIX)
+#export PKG_CONFIG_PATH="${BUILD_PREFIX}/lib/pkgconfig"
+#pkg-config --cflags libxml-2.0
+#pkg-config --libs libxml-2.0
+
+export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include/libxml2"
+export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include/libxml2"
 
 case $(uname -m) in
     aarch64)
@@ -21,18 +26,18 @@ case $(uname -m) in
 	;;
 esac
 
-#link include and lib folders to allow using htslib
-ln -s $PREFIX/include htslib/include
-ln -s $PREFIX/lib htslib/lib
+#check qmake version
+qmake --version
+ls -al $PREFIX/include/
 
-#qmake bugfix: qmake fails if there is no g++ executable available, even if QMAKE_CXX is explicitly set
+#qmake bugfix: qmake fails if there is no g++ executable available, even if QMAKE_CXX/QMAKE_CC is explicitly set
 ln -s $CXX $BUILD_PREFIX/bin/g++
 export PATH=$BUILD_PREFIX/bin/:$PATH
 
 #build (enable debug info by adding '-Wall -d')
 mkdir build
 cd build
-qmake CONFIG-=debug CONFIG+=release DEFINES+=QT_NO_DEBUG_OUTPUT QMAKE_CXX="$CXX" QMAKE_CC="$CC" QMAKE_CFLAGS="$CFLAGS" QMAKE_CXXFLAGS="$CXXFLAGS" QMAKE_LIBDIR+="$PREFIX/lib" QMAKE_RPATHLINKDIR+="${PREFIX}/lib/" ../src/tools.pro
+qmake CONFIG-=debug CONFIG+=release DEFINES+=QT_NO_DEBUG_OUTPUT QMAKE_CXX="${CXX}" QMAKE_CC="${CC}" QMAKE_CFLAGS="${CFLAGS}" QMAKE_CXXFLAGS="${CXXFLAGS}" QMAKE_LIBDIR+="${PREFIX}/lib" QMAKE_RPATHLINKDIR+="${PREFIX}/lib/" ../src/tools.pro
 make -j"${CPU_COUNT}"
 cd ..
 
@@ -40,7 +45,7 @@ cd ..
 rm -rf bin/out bin/cpp*-TEST bin/tools-TEST
 
 #deploy (lib)
-mv bin/libcpp* $PREFIX/lib/
+install -m 0755 bin/libcpp* "${PREFIX}/lib/"
 
 #deploy (bin)
-install -v -m 0755 bin/* "$PREFIX/bin"
+install -v -m 0755 bin/* "${PREFIX}/bin"
