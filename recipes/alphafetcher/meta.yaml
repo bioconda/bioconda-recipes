@@ -1,0 +1,46 @@
+{% set version = "0.2.0" %}
+
+package:
+  name: alphafetcher
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/a/alphafetcher/AlphaFetcher-{{ version }}.tar.gz
+  sha256: c641984999fbcece38dcb3676baf0553f143687d68f0e069da7a0759908aa346
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('alphafetcher', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.6,<3.13
+    - pip
+  run:
+    - python >=3.6,<3.13
+    - requests
+    - tqdm
+
+test:
+  imports:
+    - alphafetcher
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://bitbucket.org/bio2byte/alphafetcher/
+  summary: Interface with the AlphaFold Protein Structure Database.
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - leightonpayne

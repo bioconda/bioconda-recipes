@@ -1,0 +1,63 @@
+{% set name = "yallhap" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: baaf3c7024eab0da720747a716905d654c4c8bdfe572a25950978a910ed1e588
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage("yallhap", max_pin="x.x") }}
+  entry_points:
+    - yallhap = yallhap.cli:main
+    - yallHap = yallhap.cli:main
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68.0
+  run:
+    - python >=3.10
+    - pysam >=0.22.0
+    - pandas >=2.0.0
+    - numpy >=1.24.0
+    - click >=8.0.0
+    - requests >=2.28.0
+    - pyliftover >=0.4
+
+test:
+  imports:
+    - yallhap
+    - yallhap.tree
+    - yallhap.snps
+    - yallhap.classifier
+  commands:
+    - yallhap --help
+    - yallhap --version
+    - yallHap --help
+    - yallHap --version
+
+about:
+  home: https://github.com/trianglegrrl/yallHap
+  license: PolyForm-Noncommercial-1.0.0
+  license_file: LICENSE
+  summary: Modern Y-chromosome haplogroup inference
+  description: |
+    yallHap is a pipeline-friendly tool for Y-chromosome haplogroup
+    classification supporting modern and ancient DNA with probabilistic
+    confidence scoring. It uses the YFull phylogenetic tree and supports
+    multiple reference genomes including T2T-CHM13v2.0.
+  doc_url: https://github.com/trianglegrrl/yallHap#readme
+  dev_url: https://github.com/trianglegrrl/yallHap
+
+extra:
+  recipe-maintainers:
+    - trianglegrrl

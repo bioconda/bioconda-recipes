@@ -1,0 +1,57 @@
+{% set name = "enzymm" %}
+{% set version = "0.3.1" %}
+{% set python_min = "3.9" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/enzymm-{{ version }}.tar.gz
+  sha256: 2a53ec335879cce75f43944f1fa196ab330ffd0790aadc1344eef340ab13915f
+
+build:
+  noarch: python
+  entry_points:
+    - enzymm = enzymm._cli:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("enzymm", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - setuptools >=61.0
+    - pip
+  run:
+    - python {{ python_min }}
+    - pyjess >=0.9.0,<0.10.dev0
+    - rich >=10.0.0
+    - readerwriterlock >=1.0.9,<1.1.dev0
+    - importlib-resources >=1.3  # [py<39]
+
+test:
+  imports:
+    - enzymm
+  commands:
+    - pip check
+    - enzymm --help
+  requires:
+    - pip
+
+about:
+  home: https://pypi.org/project/enzymm/
+  dev_url: https://github.com/RayHackett/enzymm
+  doc_url: https://enzymm.readthedocs.io/en/latest
+  summary: Detect catalytic enzyme residues in protein structures by matching a library of known templates.
+  description: |
+    Enzyme Motif Miner is a fast and scalable python tool to identify catalytic sites in protein structures.
+    It comes with a library of known arrangements of (partial) catalytic sites called templates
+    derived from the Mechanism and Catalytic Site Atlas. Results are fully knowledge based and traceable.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - RayHackett
