@@ -1,0 +1,72 @@
+diff --git a/circle_map++ b/circle_map++
+index 20fd633..eaf27c2 100755
+--- a/circle_map++
++++ b/circle_map++
+@@ -267,11 +267,11 @@ def merge_result(args):
+ class circle_map_cpp:
+     def __init__(self):
+         self.parser = argparse.ArgumentParser(
+-            description='circle-map++',
++            description='circle_map++',
+             usage='''
+ Brief: the circle_map++ suite, version=0.2.2
+ 
+-Usage: circle-map++ <subprogram> [options]
++Usage: circle_map++ <subprogram> [options]
+ 
+ Commands:
+    ReadExtractor   Extracts circular DNA read candidates
+@@ -283,20 +283,20 @@ Commands:
+         self.realigner = subparsers.add_parser(
+             name="Realign",
+             description='Realign circular DNA read candidates',
+-            prog="circle-map++ Realign",
+-            usage='''circle-map++ Realign [options]'''
++            prog="circle_map++ Realign",
++            usage='''circle_map++ Realign [options]'''
+             )
+         self.readextractor = subparsers.add_parser(
+             name="ReadExtractor",
+             description='Extracts circular DNA read candidates',
+-            prog="circle-map++ ReadExtractor",
+-            usage='''circle-map++ ReadExtractor [options]'''
++            prog="circle_map++ ReadExtractor",
++            usage='''circle_map++ ReadExtractor [options]'''
+         )
+ 
+         if len(sys.argv) <= 1:
+             self.parser.print_help()
+             time.sleep(0.01)
+-            sys.stderr.write("\nNo argument given to circle-map++"
++            sys.stderr.write("\nNo argument given to circle_map++"
+                                  "\nExiting\n")
+             sys.exit(0)
+ 
+diff --git a/realign_cm.cpp b/realign_cm.cpp
+index de6bfa5..4872774 100644
+--- a/realign_cm.cpp
++++ b/realign_cm.cpp
+@@ -241,6 +241,8 @@ inline bool non_colinearity(bool headclip, hts_pos_t pos, hts_pos_t realign_begi
+ 
+ std::string upper(const char *line, int size)
+ {
++    if (size <= 0)
++        return "";
+     std::string ret ;
+     ret.resize(size,'N');
+     for(int i = 0 ; i<size ; i++)
+@@ -701,12 +703,13 @@ struct all_caches
+          const auto & itr =  chromesomes.find(chrname);
+          if( itr == chromesomes.end() )
+          {
+-              hts_log_error("Error: genome not match bam!  \"%s\" not found. exit... ", chrname.c_str());
++              hts_log_error("Warning : genome not match bam!  \"%s\" not found. Ignore it ... ", chrname.c_str());
+               return "";
+          }
+          if (end<= start) return "";
+          if(start < 0 ) return "";
+          if(end >= hts_pos_t(itr->second.l)) end = hts_pos_t(itr->second.l)-1; 
++         if (end<= start) return "";
+          return upper(itr->second.s + start , end-start);
+     }
+ 
