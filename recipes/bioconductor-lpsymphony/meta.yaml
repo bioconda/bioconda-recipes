@@ -9,13 +9,16 @@ about:
   summary: Symphony integer linear programming solver in R
 
 build:
-  number: 0
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-lpsymphony", max_pin="x.x") }}'
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+
   identifiers:
     - biotools:lpsymphony
     - doi:10.1007/0-387-23529-9_5
@@ -41,6 +44,8 @@ requirements:
     - r-base
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
     - r-base
 
@@ -51,8 +56,10 @@ source:
     - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
     - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
     - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  patches:
+    - 0001-configure.patch  # [osx]
+    - 0002-SYMPHONY-configure.patch  # [osx]
 
 test:
   commands:
     - $R -e "library('{{ name }}')"
-
