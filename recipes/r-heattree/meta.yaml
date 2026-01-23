@@ -1,0 +1,41 @@
+{% set version = '0.2.1' %}
+{% set sha256 = '36f296fcbf62601f26acadcc2bc76404f086c49d822a075b54dd55f0a89fd783' %}
+
+package:
+  name: r-heattree
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url: https://github.com/grunwaldlab/heattree/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  script: ${R} CMD INSTALL --build . ${R_ARGS}
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage('r-heattree', max_pin="x.x") }}
+
+requirements:
+  host:
+    - r-base
+    - r-ape
+    - r-htmlwidgets
+  run:
+    - r-base
+    - r-ape
+    - r-htmlwidgets
+
+test:
+  commands:
+    - $R -e "library('heattree')"
+
+about:
+  home: https://github.com/grunwaldlab/heattree
+  license: MIT
+  license_family: MIT
+  summary: "A wrapper for the javascript `heat-tree` package for interactive phylogenetic tree visualization widgets"
+  dev_url: https://github.com/grunwaldlab/heattree
