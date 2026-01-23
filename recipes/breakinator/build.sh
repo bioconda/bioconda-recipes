@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -ex
+set -eux -o pipefail
 
 # --- 1. Environment Setup ---
 export HTSLIB_SYSTEM=1
