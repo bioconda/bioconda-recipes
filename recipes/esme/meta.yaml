@@ -1,6 +1,6 @@
-{% set esme_version = "1.0.2" %}
+{% set esme_version = "2.0.0" %}
 {% set pnetcdf_version = "1.14.1" %}
-{% set hdf5_version = "1.14.6" %}
+{% set hdf5_version = "2.0.0" %}
 {% set netcdf_c_version = "4.9.3" %}
 {% set netcdf_fortran_version = "4.6.2" %}
 {% set pio_version = "2.6.6" %}
@@ -45,12 +45,15 @@ source:
   - url: https://parallel-netcdf.github.io/Release/pnetcdf-{{ pnetcdf_version }}.tar.gz
     sha256: 6f0f7221006c211fce9ddd2c008796b8c69dd717b2ad1be0b4027fc328fd3220  # 1.14.1
     folder: esme_pnetcdf
-  - url: https://github.com/HDFGroup/hdf5/releases/download/hdf5_{{ hdf5_version }}/hdf5-{{ hdf5_version }}.tar.gz
-    sha256: e4defbac30f50d64e1556374aa49e574417c9e72c6b1de7a4ff88c4b1bea6e9b  # 1.14.6
+  - url: https://github.com/HDFGroup/hdf5/releases/download/{{ hdf5_version }}/hdf5-{{ hdf5_version }}.tar.gz
+    sha256: f4c2edc5668fb846627182708dbe1e16c60c467e63177a75b0b9f12c19d7efed  # 2.0.0
     folder: esme_hdf5
   - url: https://github.com/Unidata/netcdf-c/archive/refs/tags/v{{ netcdf_c_version }}.tar.gz
     sha256: 990f46d49525d6ab5dc4249f8684c6deeaf54de6fec63a187e9fb382cc0ffdff  # 4.9.3
     folder: esme_netcdf-c
+    patches:
+      - netcdf_c_493_hdf5_20.patch
+      - netcdf_c_493_hdf5_20_h5fdhttp.patch
   - url: https://github.com/Unidata/netcdf-fortran/archive/refs/tags/v{{ netcdf_fortran_version }}.tar.gz
     sha256: 44cc7b5626b0b054a8503b8fe7c1b0ac4e0a79a69dad792c212454906a9224ca  # 4.6.2
     folder: esme_netcdf-fortran
@@ -81,7 +84,7 @@ requirements:
     {% if mpi_name != "mvapich" %}
     - esme_omb_{{ mpi_pkg_suffix }}
     {% endif %}
-    - perl-xml-libxml
+    - bioconda::perl-xml-libxml
     - python=3.8
 
 test:
@@ -114,7 +117,9 @@ test:
 
     # VFD-GDS test (MVAPICH-only)
     {% if mpi_name == "mvapich" %}
-    - test -f $PREFIX/lib/hdf5/plugin/libhdf5_vfd_gds.so
+    - echo "CONDA_PREFIX = $CONDA_PREFIX"
+    - ls -la "$CONDA_PREFIX/lib/hdf5/plugin/"
+    - test -f "$CONDA_PREFIX/lib/hdf5/plugin/libhdf5_vfd_gds.so"
     {% endif %}
 
     # OMB test
@@ -210,8 +215,11 @@ outputs:
     script: build_netcdf-c.sh
     requirements:
       build:
+        - autoconf
+        - automake
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
+        - libtool
         - make
         - m4
       host:
@@ -220,6 +228,9 @@ outputs:
         - {{ mpi_spec }}
         - esme_pnetcdf_{{ mpi_pkg_suffix }}
         - zlib
+      run:
+        - esme_hdf5_{{ mpi_pkg_suffix }}
+        - esme_pnetcdf_{{ mpi_pkg_suffix }}
     build:
       string: h{{ PKG_HASH }}_{{ build }}
     about:
@@ -244,6 +255,10 @@ outputs:
       host:
         - esme_hdf5_{{ mpi_pkg_suffix }}
         - {{ mpi_spec }}
+        - esme_netcdf-c_{{ mpi_pkg_suffix }}
+        - esme_pnetcdf_{{ mpi_pkg_suffix }}
+      run:
+        - esme_hdf5_{{ mpi_pkg_suffix }}
         - esme_netcdf-c_{{ mpi_pkg_suffix }}
         - esme_pnetcdf_{{ mpi_pkg_suffix }}
     build:
@@ -272,6 +287,12 @@ outputs:
         - m4
         - pkg-config
       host:
+        - esme_hdf5_{{ mpi_pkg_suffix }}
+        - {{ mpi_spec }}
+        - esme_netcdf-c_{{ mpi_pkg_suffix }}
+        - esme_netcdf-fortran_{{ mpi_pkg_suffix }}
+        - esme_pnetcdf_{{ mpi_pkg_suffix }}
+      run:
         - esme_hdf5_{{ mpi_pkg_suffix }}
         - {{ mpi_spec }}
         - esme_netcdf-c_{{ mpi_pkg_suffix }}
@@ -377,4 +398,3 @@ extra:
     - folder_and_package_name_must_match
 # additional-platforms:
 #   - linux-aarch64
-
