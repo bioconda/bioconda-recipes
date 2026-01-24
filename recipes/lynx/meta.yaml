@@ -1,0 +1,45 @@
+{% set name = "lynx" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/xinehc/lynx/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ae16e65a3d48d159f539dedd13583028e475004cd64ab7b709ff46806d446a0d
+
+build:
+  noarch: python
+  number: 0
+  script: '{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv'
+  run_exports:
+    - {{ pin_subpackage('lynx', max_pin='x.x') }}
+
+requirements:
+  host:
+    - pip
+    - setuptools
+    - python >=3.12
+  run:
+    - python >=3.12
+    - diamond >=2.1.21
+    - rich-argparse
+    - pigz
+    - tqdm
+
+test:
+    imports:
+      - lynx
+    commands:
+      - lynx -h
+
+about:
+  home: https://github.com/xinehc/lynx
+  license: MIT
+  license_family: MIT
+  summary: 'Lynx: lightweight profiling of antibiotic resistance genes from short-read metagenomes'
+
+extra:
+  recipe-maintainers:
+    - xinehc
