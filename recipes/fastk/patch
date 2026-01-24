@@ -147,17 +147,17 @@ index 44fefaf..19139e8 100755
      # If AR was not already overridden, then derive it from $(CC).
      # Note that CC may take different forms, e.g. "cc", "gcc",
 diff --git a/Makefile b/Makefile
-index 2d9c289..4785c9c 100644
+index 70722f3..ef099fc 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -1,12 +1,21 @@
+@@ -1,12 +1,23 @@
 -DEST_DIR = ~/bin
 -
 -CFLAGS = -O3 -Wall -Wextra -Wno-unused-result -fno-strict-aliasing
 -
 -CC = gcc
 -
--ALL = FastK Fastrm Fastmv Fastcp Fastmerge Histex Tabex Profex Logex Vennex Symmex Haplex Homex Fastcat
+-ALL = FastK Fastrm Fastmv Fastcp Fastmerge Histex Tabex Profex Logex Vennex Symmex Haplex Homex Fastcat KmerMap
 -
 -all: deflate.lib libhts.a $(ALL)
 +DEST_DIR = $(PREFIX)/bin
@@ -175,13 +175,15 @@ index 2d9c289..4785c9c 100644
 +		Vennex \
 +		Symmex \
 +		Haplex \
-+		Homex
++		Homex \
++        Fastcat \
++        KmerMap
 +
 +all: deflate.lib libhts.a $(PROGRAMS)
  
  include HTSLIB/htslib_static.mk
  
-@@ -14,7 +23,7 @@ deflate.lib: LIBDEFLATE
+@@ -14,7 +25,7 @@ deflate.lib: LIBDEFLATE
  	cd LIBDEFLATE; make; cd ..
  
  libhts.a: HTSLIB
@@ -190,7 +192,7 @@ index 2d9c289..4785c9c 100644
  
  HTSLIB/htslib_static.mk:
  	cd HTSLIB; make htslib_static.mk; cd ..
-@@ -23,46 +32,46 @@ libfastk.c : gene_core.c
+@@ -23,49 +34,49 @@ libfastk.c : gene_core.c
  libfastk.h : gene_core.h
  
  FastK: FastK.c FastK.h io.c split.c count.c table.c merge.c io.c gene_core.c gene_core.h MSDsort.c LSDsort.c libfastk.c libfastk.h
@@ -249,9 +251,13 @@ index 2d9c289..4785c9c 100644
 -	$(CC) $(CFLAGS) -o Homex Homex.c libfastk.c -lpthread -lm
 +	$(CC) $(CFLAGS) -o Homex Homex.c libfastk.c -pthread -lm -lrt
  
+ KmerMap: KmerMap.c libfastk.c libfastk.h
+-	$(CC) $(CFLAGS) -o KmerMap KmerMap.c libfastk.c -lpthread -lm
++	$(CC) $(CFLAGS) -o KmerMap KmerMap.c libfastk.c -pthread -lm -lrt
+ 
  
  tidyup:
-@@ -78,7 +87,7 @@ clean:
+@@ -81,7 +92,7 @@ clean:
  	rm -f FastK.tar.gz
  
  install:
