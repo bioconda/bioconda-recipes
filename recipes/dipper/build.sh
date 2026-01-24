@@ -6,11 +6,19 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 
 mkdir -p "${PREFIX}/bin"
 
+
+cp -rf ${RECIPE_DIR}/CMakeLists.txt $SRC_DIR/CMakeLists.txt
+
 # Detect if we're building CPU-only version (dipper-cpu)
 if [[ "${PKG_NAME}" == "dipper-cpu" ]]; then
   BUILD_CPU_ONLY=true
 else
   BUILD_CPU_ONLY=false
+fi
+
+if [[ `uname -m` == "aarch64" ]]; then
+  # On aarch64, always build CPU-only
+  BUILD_CPU_ONLY=true
 fi
 
 if [[ `uname` == "Darwin" ]]; then
@@ -33,7 +41,7 @@ if [ "$BUILD_CPU_ONLY" = true ]; then
   install -m 0755 bin/dipper_cpu "${PREFIX}/bin/"
 else
   # Build full version with CUDA support (dipper)
-  cmake -S . -B build ${EXTRA_FLAGS} ${CONFIG_ARGS} -DUSE_CUDA=ON -DUSE_HIP=OFF -DUSE_CPU=ON
+  cmake -S . -B build ${EXTRA_FLAGS} ${CONFIG_ARGS} -DUSE_CUDA=ON -DUSE_HIP=OFF -DUSE_CPU=OFF
   cmake --build build -j "${CPU_COUNT}"
   install -m 0755 bin/dipper "${PREFIX}/bin/"
 fi
