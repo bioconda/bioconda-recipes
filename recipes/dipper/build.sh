@@ -4,29 +4,36 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-mkdir -p build
-cd build
+mkdir -p "${PREFIX}/bin"
 
-EXTRA_FLAGS="-DCMAKE_BUILD_TYPE=Release -DTBB_DIR=${PREFIX}"
+# Detect if we're building CPU-only version (dipper-cpu)
+if [[ "${PKG_NAME}" == "dipper-cpu" ]]; then
+  BUILD_CPU_ONLY=true
+else
+  BUILD_CPU_ONLY=false
+fi
 
-case "${PKG_NAME}" in
-dipper)
-        cmake .. ${CMAKE_ARGS} ${EXTRA_FLAGS} -DUSE_CUDA=OFF -DUSE_HIP=OFF -DUSE_CPU=ON
-        cmake --build . --target install --parallel ${CPU_COUNT}
-        cmake --install .
-    ;;  
-dipper-cuda)
-    if command -v nvcc >/dev/null 2>&1; then
-	    cmake .. ${CMAKE_ARGS} ${EXTRA_FLAGS} -DUSE_CUDA=ON -DUSE_HIP=OFF -DUSE_CPU=ON
-	    cmake --build . --target install --parallel ${CPU_COUNT}
-    	cmake --install .
-    fi
-    ;;
-dipper-rocm)
-    if command -v hipcc >/dev/null 2>&1; then
-    	export CXX=hipcc
-    	cmake .. ${CMAKE_ARGS} ${EXTRA_FLAGS} -DUSE_CUDA=OFF -DUSE_HIP=ON -DUSE_CPU=ON
-    	cmake --build . --target install --parallel ${CPU_COUNT}
-    	cmake --install .
-    fi ;;
-esac
+if [[ `uname` == "Darwin" ]]; then
+  export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+  # macOS doesn't support CUDA, so always build CPU-only
+  BUILD_CPU_ONLY=true
+fi
+
+EXTRA_FLAGS="-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+  -DCMAKE_PREFIX_PATH="${PREFIX}" \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_CXX_COMPILER="${CXX}" \
+  -DTBB_DIR="${PREFIX}/lib/cmake/TBB" \
+  -Wno-dev -Wno-deprecated --no-warn-unused-cli"
+
+if [ "$BUILD_CPU_ONLY" = true ]; then
+  # Build CPU-only version (dipper-cpu)
+  cmake -S . -B build ${EXTRA_FLAGS} ${CONFIG_ARGS} -DUSE_CPU=ON -DUSE_CUDA=OFF -DUSE_HIP=OFF
+  cmake --build build -j "${CPU_COUNT}"
+  install -m 0755 bin/dipper_cpu "${PREFIX}/bin/"
+else
+  # Build full version with CUDA support (dipper)
+  cmake -S . -B build ${EXTRA_FLAGS} ${CONFIG_ARGS} -DUSE_CUDA=ON -DUSE_HIP=OFF -DUSE_CPU=ON
+  cmake --build build -j "${CPU_COUNT}"
+  install -m 0755 bin/dipper "${PREFIX}/bin/"
+fi
