@@ -7,7 +7,6 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 mkdir -p "${PREFIX}/bin"
 
 
-cp -rf ${RECIPE_DIR}/CMakeLists.txt $SRC_DIR/CMakeLists.txt
 
 # Detect if we're building CPU-only version (dipper-cpu)
 if [[ "${PKG_NAME}" == "dipper-cpu" ]]; then
