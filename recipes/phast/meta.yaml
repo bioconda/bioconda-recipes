@@ -14,6 +14,8 @@ build:
   run_exports:
     - {{ pin_subpackage('phast', max_pin='x') }}  
   script:
+    # --- macOS-only: ensure conda-build uses cctools otool (avoids llvm-otool SIGABRT) ---
+    - ln -sf "${BUILD_PREFIX}/bin/${HOST}-otool" "${BUILD_PREFIX}/bin/otool"  # [osx]
     - cmake -S . -B build
       -DCMAKE_BUILD_TYPE=Release
       -DCMAKE_INSTALL_PREFIX=${PREFIX}
@@ -28,6 +30,7 @@ requirements:
     - {{ compiler('c') }}
     - cmake
     - make
+    - cctools
   host:
     - pcre
     - blas
