@@ -15,16 +15,6 @@ else
   BUILD_CPU_ONLY=false
 fi
 
-if [[ `uname -m` == "aarch64" ]]; then
-  # On aarch64, always build CPU-only
-  BUILD_CPU_ONLY=true
-fi
-
-if [[ `uname` == "Darwin" ]]; then
-  export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
-  # macOS doesn't support CUDA, so always build CPU-only
-  BUILD_CPU_ONLY=true
-fi
 
 EXTRA_FLAGS="-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_PREFIX_PATH="${PREFIX}" \
