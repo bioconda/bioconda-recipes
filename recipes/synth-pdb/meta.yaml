@@ -1,0 +1,47 @@
+{% set name = "synth-pdb" %}
+{% set version = "1.6.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name | replace("-", "_") }}-{{ version }}.tar.gz
+  sha256: 38471be824a9ab096417d3e81de139b1f34e5ec36f12668e6e3e4f502e05bfce
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+    - numpy >=1.20
+    - biotite >=0.35.0
+    - openmm  # Includes full minimization support
+
+test:
+  imports:
+    - synth_pdb
+  commands:
+    - synth-pdb --help
+
+about:
+  home: https://github.com/elkins/synth-pdb
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Realistic Protein Structure Generator
+  doc_url: https://github.com/elkins/synth-pdb
+  dev_url: https://github.com/elkins/synth-pdb
+
+extra:
+  recipe-maintainers:
+    - elkins
