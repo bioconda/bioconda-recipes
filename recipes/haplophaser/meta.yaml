@@ -1,0 +1,66 @@
+{% set name = "haplophaser" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: REPLACE_WITH_ACTUAL_SHA256
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - haplophaser = haplophaser.cli:cli
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('haplophaser', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - hatchling
+  run:
+    - python >=3.10
+    - numpy >=1.21
+    - pandas >=1.3
+    - pydantic >=2.0
+    - cyvcf2 >=0.30
+    - pysam >=0.19
+    - click >=8.0
+    - pyyaml >=6.0
+    - scipy >=1.7
+    - rich >=12.0
+    - typer >=0.9
+    - chromoplot >=0.1.0
+
+test:
+  imports:
+    - haplophaser
+    - haplophaser.core
+    - haplophaser.io
+    - haplophaser.markers
+    - haplophaser.proportion
+  commands:
+    - haplophaser --help
+
+about:
+  home: https://github.com/aseetharam/haplophaser
+  summary: "Haplotype analysis toolkit for complex genomes with full polyploid support"
+  description: |
+    Haplophaser analyzes haplotype inheritance patterns in derived lines relative 
+    to founder/source populations. Designed for polyploid genomes, from diploids 
+    through hexaploids and beyond. Features include haplotype proportion estimation,
+    chromosome painting, chimeric contig detection, and linkage-informed scaffolding.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: https://github.com/aseetharam/haplophaser#readme
+  dev_url: https://github.com/aseetharam/haplophaser
+
+extra:
+  recipe-maintainers:
+    - aseetharam
