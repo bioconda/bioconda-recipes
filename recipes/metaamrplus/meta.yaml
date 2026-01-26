@@ -1,0 +1,55 @@
+{% set name = "metaamrplus" %}
+{% set version = "1.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/migshaw03/MetaAMRplus/archive/refs/tags/v{{ version }}.tar.gz
+sha256: e8a8156476355f72d7eb04293af6f8b60816fd76a8c99c5381c2db82dd9bb96e
+
+build:
+  number: 0
+  noarch: python
+  script: |
+    mkdir -p $PREFIX/bin
+    cp bin/metaamrplus $PREFIX/bin/
+    cp bin/metaamrplus_batch $PREFIX/bin/
+    cp bin/metaamrplus-download-db $PREFIX/bin/
+    cp bin/annotate_metaamrplus.py $PREFIX/bin/
+    chmod +x $PREFIX/bin/metaamrplus*
+    chmod +x $PREFIX/bin/annotate_metaamrplus.py
+
+requirements:
+  host:
+    - python >=3.8
+  run:
+    - python >=3.8
+    - blast
+    - pandas
+    - ncbi-amrfinderplus
+    - wget
+    - awk
+
+test:
+  commands:
+    - metaamrplus --version
+    - metaamrplus_batch --version
+
+about:
+  home: https://github.com/migshaw03/MetaAMRplus
+  license: MIT
+  license_file: LICENSE
+  summary: "MetaAMRplus: unified detection of antimicrobial and metal resistance genes with colocalisation analysis"
+  description: |
+    MetaAMRplus is a command-line platform for the simultaneous identification
+    of antimicrobial resistance genes, metal and biocide resistance genes,
+    and their genomic colocalisation in bacterial genomes and plasmids.
+    The tool integrates AMRFinder and BacMet databases and is designed for
+    reproducible large-scale genomic analyses.
+
+extra:
+  recipe-maintainers:
+    - migshaw03
+
