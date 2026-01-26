@@ -4,7 +4,7 @@
 {% set version = "9.15.0" %}
 
 package:
-  name: {{ name }}
+  name: {{ name }}-meta
   version: {{ version }}
 
 source:
@@ -12,63 +12,41 @@ source:
   sha256: bfe08dca6c2b3ee9d8ccfcbb5c566af92bc88a671f6c941a3b904587e94210b4
 
 build:
-  number: 0
-  noarch: generic
-  run_exports:
-    - {{ pin_subpackage("snakemake", max_pin="x") }}
-
-requirements:
-  run:
-    - snakemake-minimal ={{ version }}
-    # pandas is optional, but required for many workflows
-    - pandas
-    # options.extras_require: messaging
-    - slack_sdk
-    # options.extras_require: pep
-    - eido
-    - peppy
-    # options.extras_require: reports
-    - pygments
-
-test:
-  imports:
-    - snakemake
-  commands:
-    - export GIT\_PYTHON_REFRESH=warn
-    - snakemake --version
-    - snakemake --version | grep "{{ version }}"
-    # Generate a report to check whether graphviz dependencies (libXau) are properly installed:
-    - 'printf %s\\n "rule empty:" > Snakefile && snakemake --cores 1 --report'
-    # Remove test artifacts from command above.
-    - rm -rf .snakemake Snakefile report.html
-
-about:
-  home: "https://snakemake.github.io"
-  license: MIT
-  license_family: MIT
-  license_file: LICENSE.md
-  dev_url: "https://github.com/snakemake/snakemake"
-  doc_url: "https://snakemake.readthedocs.io/en/stable"
-  summary: A popular workflow management system aiming at full in-silico reproducibility.
-  description: |
-        Snakemake is a workflow management system that aims to reduce the complexity of creating
-        workflows by providing a fast and comfortable execution environment, together with a clean
-        and modern specification language in python style. Snakemake workflows are essentially Python
-        scripts extended by declarative code to define rules. Rules describe how to create output
-        files from input files.
-
-extra:
-  identifiers:
-    - doi:10.1093/bioinformatics/bts480
-    - biotools:snakemake
-  skip-lints:
-    - should_be_noarch_python  # toplevel metapackage is noarch:generic
-  recipe-maintainers:
-    - johanneskoester
-    - corneliusroemer
+  number: 1
 
 outputs:
-  - name: snakemake-minimal
+  - name: {{ name }}
+    build:
+      noarch: generic
+      run_exports:
+        - {{ pin_subpackage("snakemake", max_pin="x") }}
+    
+    requirements:
+      run:
+        - {{ name }}-minimal ={{ version }}
+        # pandas is optional, but required for many workflows
+        - pandas
+        # options.extras_require: messaging
+        - slack_sdk
+        # options.extras_require: pep
+        - eido
+        - peppy
+        # options.extras_require: reports
+        - pygments
+    
+    test:
+      imports:
+        - snakemake
+      commands:
+        - export GIT\_PYTHON_REFRESH=warn
+        - snakemake --version
+        - snakemake --version | grep "{{ version }}"
+        # Generate a report to check whether graphviz dependencies (libXau) are properly installed:
+        - 'printf %s\\n "rule empty:" > Snakefile && snakemake --cores 1 --report'
+        # Remove test artifacts from command above.
+        - rm -rf .snakemake Snakefile report.html
+    
+  - name: {{ name }}-minimal
 
     build:
       noarch: python
@@ -124,20 +102,30 @@ outputs:
         - snakemake --version
         - snakemake --version | grep "{{ version }}"
 
-    about:
-      home: "https://snakemake.github.io"
-      license: MIT
-      license_family: MIT
-      license_file: LICENSE.md
-      dev_url: "https://github.com/snakemake/snakemake"
-      doc_url: "https://snakemake.readthedocs.io/en/stable"
-      summary: A popular workflow management system aiming at full in-silico reproducibility.
-      description: |
-        Snakemake is a workflow management system that aims to reduce the complexity
-        of creating workflows by providing a fast and comfortable execution
-        environment, together with a clean and modern specification language in
-        python style. Snakemake workflows are essentially Python scripts extended
-        by declarative code to define rules. Rules describe how to create output
-        files from input files. This package provides the core snakemake functionality.
-        For features like reports and remote files, check out the snakemake package
-        which provides all optional dependencies.
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/bts480
+    - biotools:snakemake
+  skip-lints:
+    - should_be_noarch_python  # toplevel metapackage is noarch:generic
+  recipe-maintainers:
+    - johanneskoester
+    - corneliusroemer
+
+about:
+  home: "https://snakemake.github.io"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.md
+  dev_url: "https://github.com/snakemake/snakemake"
+  doc_url: "https://snakemake.readthedocs.io/en/stable"
+  summary: A popular workflow management system aiming at full in-silico reproducibility.
+  description: |
+    Snakemake is a workflow management system that aims to reduce the complexity
+    of creating workflows by providing a fast and comfortable execution
+    environment, together with a clean and modern specification language in
+    python style. Snakemake workflows are essentially Python scripts extended
+    by declarative code to define rules. Rules describe how to create output
+    files from input files. The {{ name }}-minimal package provides the core
+    snakemake functionality. For features like reports and remote files, check
+    out the main {{ name }} package, which provides all optional dependencies.
