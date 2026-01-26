@@ -2,14 +2,9 @@
 {% set version = "1.2.6" %}
 {% set sha256 = "75b20df834d28410858ccd4e2d65b6c70849f3cbe5fc05959f38bfc2d041c704" %}
 
-package: 
-  name: {{ name|lower }}
+package:
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 2
-  run_exports:
-    - {{ pin_subpackage('purge_dups', max_pin="x") }}
 
 source:
   url: https://github.com/dfguan/{{ name|lower }}/archive/v{{ version }}.tar.gz
@@ -18,8 +13,13 @@ source:
     - 0001-makefile.patch
     - scripts.patches
 
+build:
+  number: 3
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
 requirements:
-  build: 
+  build:
     - {{ compiler('c') }}
     - make
   host:
@@ -31,13 +31,13 @@ requirements:
     - matplotlib-base
 
 test:
-  commands: 
-    - purge_dups -h 2>&1 | grep Usage
-    - split_fa -h 2>&1 | grep Usage
-    - pbcstat -h 2>&1 | grep Usage
-    - ngscstat -h 2>&1 | grep Usage
-    - calcuts -h 2>&1 | grep Usage
-    - get_seqs -h 2>&1 | grep Usage
+  commands:
+    - purge_dups -h 2>&1 | grep "Usage:"
+    - split_fa -h 2>&1 | grep "Usage:"
+    - pbcstat -h 2>&1 | grep "Usage:"
+    - ngscstat -h 2>&1 | grep "Usage:"
+    - calcuts -h 2>&1 | grep "Usage:"
+    - get_seqs -h 2>&1 | grep "Usage:"
     - hist_plot.py -h
     - pd_config.py -h
     - run_purge_dups.py -h

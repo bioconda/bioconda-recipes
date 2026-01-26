@@ -1,0 +1,47 @@
+{% set name = "covar" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/andersen-lab/covar/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ccd8b5376f54a82a1aecee30a459f807889207502f54d509ec8c001f0121425e
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cargo-bundle-licenses
+    - make
+    - pkg-config
+    - cmake
+    - clangdev
+  host:
+    - openssl
+
+test:
+  commands:
+    - covar --help
+
+about:
+  home: "https://github.com/andersen-lab/covar"
+  license: "MIT OR Apache-2.0"
+  license_file:
+    - LICENSE-MIT
+    - LICENSE-APACHE
+  license_family: MIT
+  summary: "Linked-read variant calling tool for wastewater sequencing data."
+  dev_url: "https://github.com/andersen-lab/covar"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,0 +1,51 @@
+{% set name = "snakemake-storage-plugin-cached-http" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/snakemake_storage_plugin_cached_http-{{ version }}.tar.gz
+  sha256: 07fe4d130a323554d0b50574f9dfc1ab59fbe5db941778be07ad0b6becb604a1
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - setuptools >=61.0
+    - pip
+  run:
+    - python >=3.11,<4.0.0
+    - httpx >=0.27,<1.dev0
+    - platformdirs >=4.0,<5.dev0
+    - reretry >=0.11,<1.dev0
+    - snakemake-interface-common >=1.14,<2.dev0
+    - snakemake-interface-storage-plugins >=4.2,<5.0
+    - snakemake-storage-plugin-http >=0.3,<1.dev0
+    - tqdm-loggable >=0.2,<1.dev0
+    - typing_extensions >=4.15,<5.dev0
+
+test:
+  # We do not test the import as the plugin needs snakemake for importing, but adding
+  # it would create a circular dependency.
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  summary: Snakemake storage plugin for downloading files via HTTP with caching and rate limiting
+  home: https://github.com/PyPSA/snakemake-storage-plugin-cached-http
+  license: MIT
+  license_file: LICENSES/MIT.txt
+
+extra:
+  recipe-maintainers:
+    - coroa
