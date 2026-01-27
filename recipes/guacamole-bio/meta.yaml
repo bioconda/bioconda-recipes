@@ -1,0 +1,56 @@
+{% set version = "1.0.2" %}
+
+package:
+  name: guacamole-bio
+  version: {{ version }}
+
+source:
+  url: https://github.com/CIBIV/GuaCAMOLE/archive/v{{ version }}.tar.gz
+  sha256: 7b2b813e14908a4fd187e3943d538041ae38916c470b08ccb0049140f5808464
+
+build:
+  entry_points:
+    - create-reference-dist = guacamole.create_reference_dist:main
+    - guacamole = guacamole.guacamole:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools >=61.0
+    - wheel
+    - python-build
+    - pip
+  run:
+    - python >=3.10
+    - pandas
+    - numpy
+    - matplotlib-base
+    - seaborn
+    - biopython
+    - scipy
+    - 'qpsolvers[cvxopt]'
+
+test:
+  imports:
+    - guacamole_bio
+  commands:
+    - pip check
+    - create-reference-dist --help
+    - guacamole --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://github.com/CIBIV/GuaCAMOLE
+  summary: GC-aware species abundance estimation from metagenomic data.
+  license: GPL-3.0-only
+  license_file: COPYING
+
+extra:
+  recipe-maintainers:
+    - Florian G. Pflug <fgp@phlo.org>
+    - Laurenz Holcik <laurenz.hocik@gmail.com>
