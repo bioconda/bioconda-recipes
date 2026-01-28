@@ -1,0 +1,54 @@
+{% set name = "transcript-transformer" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/transcript-transformer-{{ version }}.tar.gz
+  sha256: 492025e83ec0f0da23330602970a24191392661005c9359a930739e80e227038
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv
+  skip: True
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+    - cuda-version >=11.0
+  run:
+    - python
+    - pytorch >=1.10
+    - cuda-version >=11.0
+    - numpy
+    - pandas
+    - tqdm
+    - h5py
+    - pyfastx
+    - pyyaml
+    - biopython
+
+test:
+  imports:
+    - transcript_transformer
+  commands:
+    - transcript-transformer --help
+
+about:
+  home: https://github.com/claire-morand/transcript-transformer
+  license: MIT
+  license_file: LICENSE
+  summary: "A transformer-based model for transcript analysis"
+  dev_url: https://github.com/claire-morand/transcript-transformer
+
+extra:
+  recipe-maintainers:
+    - clauwaer
+  skip-lints:
+    - should_be_noarch_generic
+    - should_be_noarch_python
