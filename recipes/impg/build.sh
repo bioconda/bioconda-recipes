@@ -54,6 +54,12 @@ if [[ $(uname) == "Darwin" ]]; then
     else
         export MAKE="make"
     fi
+
+    # Create gcc/g++ symlinks pointing to clang (needed for fastga-rs Makefile)
+    mkdir -p "$BUILD_PREFIX/bin"
+    ln -sf "$CC" "$BUILD_PREFIX/bin/gcc"
+    ln -sf "$CXX" "$BUILD_PREFIX/bin/g++"
+    export PATH="$BUILD_PREFIX/bin:$PATH"
 else
     CARGO_EXTRA_FLAGS=""
 
@@ -90,6 +96,8 @@ if [[ $(uname) != "Darwin" ]]; then
         exit 1
     fi
 fi
+
+export LIBCLANG_PATH="${CONDA_PREFIX}/lib"
 
 # Run cargo-bundle-licenses
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
