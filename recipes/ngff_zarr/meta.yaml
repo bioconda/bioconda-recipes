@@ -1,0 +1,50 @@
+{% set name = "ngff_zarr" %}
+{% set version = "0.20.3" %}
+
+package:
+  name: {{ name }}
+  version: "{{ version }}"
+
+source:
+  url: https://files.pythonhosted.org/packages/98/2d/11634237253a2234046173627811a98f2d1b4bd21444e4aaba39a83053c3/ngff_zarr-{{ version }}.tar.gz
+  sha256: c072f1b92c95acf928407d7886b85afbf81b2728782d75a422d70323bee66582
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  host:
+    - python >=3.9   # Bioconda typically builds for the latest 3 normals of Python
+    - pip
+    - hatchling     # Build backend required by pyproject.toml
+  run:
+    - python >=3.9
+    - numpy >=1.21         # upstream often requires recent numpy
+    - zarr >=2.13          # core dependency
+    - numcodecs >=0.10     # codec support
+      # typing_extensions is optional if pyproject indicates it
+      # but not required if no direct use at runtime
+    - dask-core                # runtime dependency (pyproject.toml)
+    - importlib_resources  # declared dependency
+    - typing_extensions
+    - platformdirs
+    - psutil
+    - rich
+    - rich-argparse
+    - itkwasm
+
+test:
+  imports:
+    - ngff_zarr
+
+about:
+  home: https://github.com/zarr-developers/ngff_zarr
+  license: MIT
+  summary: "NGFF Zarr: Multiscale bioimaging data in Zarr format"
+  doc_url: https://ngff.readthedocs.io/
+
+extra:
+  recipe-maintainers:
+    - thewtex
