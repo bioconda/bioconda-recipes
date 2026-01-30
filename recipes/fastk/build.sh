@@ -8,7 +8,7 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -I$SRC_DIR -I$SRC_DIR/HTSLIB -I
 
 # build HTSLIB
 cd HTSLIB
-make CC="${CC}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}" lib-static
+make CC="${CC}" CFLAGS="-std=c99 -fomit-frame-pointer ${CFLAGS}" -j"${CPU_COUNT}" lib-static
 cd -
 # build LIBDEFLATE
 cd LIBDEFLATE
