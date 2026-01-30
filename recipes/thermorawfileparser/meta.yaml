@@ -9,7 +9,7 @@ build:
   run_exports:
     - {{ pin_subpackage('thermorawfileparser', max_pin="x.x.x") }}
   number: 0
-  skip: True  # [not linux64]
+  skip: True  # [not (linux64 or osx)]
   script:
     - mkdir -p $PREFIX/bin
     - cp -r * $PREFIX/bin
@@ -17,14 +17,15 @@ build:
     - ln -s $PREFIX/bin/ThermoRawFileParser $PREFIX/bin/thermorawfileparser
 
 source:
-  # downloading pre-compiled packages (self-contained .NET 8 build for Linux)
-  url: https://github.com/compomics/ThermoRawFileParser/releases/download/v.2.0.0-dev/ThermoRawFileParser-v.2.0.0-dev-linux.zip
-  sha256: 19566762ce6759a93cee9aa4cef50de1e9ae2ad9078bd95826e8e733d4bb0d52
+  url: https://github.com/compomics/ThermoRawFileParser/releases/download/v.2.0.0-dev/ThermoRawFileParser-v.2.0.0-dev-linux.zip  # [linux64]
+  url: https://github.com/compomics/ThermoRawFileParser/releases/download/v.2.0.0-dev/ThermoRawFileParser-v.2.0.0-dev-osx.zip  # [osx]
+  sha256: 19566762ce6759a93cee9aa4cef50de1e9ae2ad9078bd95826e8e733d4bb0d52  # [linux64]
+  sha256: 98bc806d5f45f32684d77d379c720bfd25aafe04cebcd4dc07f185fbc1942c59  # [osx]
 
 requirements:
   run:
     - icu >=70.1
-    - libstdcxx-ng >=7.5.0
+    - libstdcxx-ng >=7.5.0  # [linux]
     - libzlib
 
 test:
@@ -33,16 +34,16 @@ test:
 
 about:
   home: https://github.com/compomics/ThermoRawFileParser
-  license: Apache Software
+  license: Apache-2.0
   license_family: APACHE
   license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
-  summary: Parser for Thermo RAW files based on the ThermoFisher ThermoRawFileReader library (self-contained .NET 8 build)
+  summary: Parser for Thermo RAW files based on the ThermoFisher ThermoRawFileReader library
   dev_url: https://github.com/compomics/ThermoRawFileParser
   doc_url: https://github.com/compomics/ThermoRawFileParser/blob/master/README.md
 
 extra:
   skip-lints:
-    - should_be_noarch_generic  # Binary is platform-specific (self-contained .NET 8 Linux x86_64)
+    - should_be_noarch_generic  # Platform-specific self-contained .NET 8 binaries
   recipe-maintainers:
     - RECETOX
     - hechth
