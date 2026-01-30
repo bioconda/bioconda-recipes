@@ -171,7 +171,9 @@ export AR="${AR} rcs"
 
 # Run configure script
 cd "$BLAST_SRC_DIR"
-./configure $CONFIGURE_FLAGS >&2
+# use configure.orig, per docs recommendations (last sentence of section)
+# see: https://www.ncbi.nlm.nih.gov/books/NBK569861/#intro_Installation.Source_tarball
+./configure.orig $CONFIGURE_FLAGS >&2
 
 
 # Run GNU Make
@@ -206,10 +208,6 @@ windowmasker.exe \
 ln -s "$RESULT_PATH/lib" "$LIB_INSTALL_DIR"
 
 n_workers=${CPU_COUNT:-1}
-if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
-	# double it on CircleCI as resource usage is quite low with 4 workers
-	n_workers=8
-fi
 
 cd "$RESULT_PATH/build"
 echo "RUNNING MAKE" >&2
