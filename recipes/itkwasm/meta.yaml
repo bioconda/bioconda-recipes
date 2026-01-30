@@ -6,13 +6,15 @@ package:
   version: "{{ version }}"
 
 source:
-  url: https://files.pythonhosted.org/packages/22/49/14bf65b272240ff1aa030c9fbf3dac881c7922ce28407e73e18aeec940ed/itkwasm-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/i/itkwasm/itkwasm-{{ version }}.tar.gz
   sha256: d4e4344a278c11cad68888164f5750c57764f6509b583fb5c49d237c8af48ac5
 
 build:
-  noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  skip: true  # [py<39]
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
@@ -29,13 +31,16 @@ requirements:
 
 test:
   imports:
-    - itkwasm 
+    - itkwasm
 
 about:
-  home: https://github.com/InsightSoftwareConsortium/itkwasm
-  license: BSD-3-Clause
-  summary: "ITK compiled to WebAssembly and Python bindings"
+  summary: Python interface to itk-wasm WebAssembly (Wasm) modules.
+  license: Apache-2.0
+  license_file: LICENSE.txt
+  homepage: https://pypi.org/project/itkwasm/
+  repository: https://github.com/InsightSoftwareConsortium/ITK-Wasm
 
 extra:
   recipe-maintainers:
+    - khaled196
     - thewtex
