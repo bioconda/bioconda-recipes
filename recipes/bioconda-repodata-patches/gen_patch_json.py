@@ -206,8 +206,6 @@ def _gen_new_index(repodata, subdir):
                 elif dep.startswith("pandas") and has_no_upper_bound(dep):
                     deps[i] += ",<2.1"
 
-
-
     return index
 
 
