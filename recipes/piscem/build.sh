@@ -29,7 +29,7 @@ export NUM_JOBS=1
 export CARGO_BUILD_JOBS=1
 
 # Access the zlib-ng installed by conda and copy it
-if [ "$unamestr" == 'Darwin' ];
+if [ "$unamestr" == 'Darwin' ]; then
   LIBZ_STATIC_LIB=$PREFIX/lib/libz.a
   if [ -f $LIBZ_STATIC_LIB ]; then
      echo "File $LIBZ_STATIC_LIB exists, copying to libz-ng.a"
