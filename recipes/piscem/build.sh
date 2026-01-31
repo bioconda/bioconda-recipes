@@ -28,6 +28,10 @@ export CARGO_HOME="$(pwd)/.cargo"
 export NUM_JOBS=1
 export CARGO_BUILD_JOBS=1
 
+# Access the zlib-ng installed by conda and copy it
+cp $PREFIX/lib/libz.a $PREFIX/libz.a
+
+
 if [ "$unamestr" == 'Darwin' ];
 then
 
