@@ -2,6 +2,23 @@
 
 unamestr=`uname`
 
+## START ADDED to deal with zlib-ng strangeness on linux
+# Set up conda environment for C/C++ compilation
+export CFLAGS="${CFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig"
+
+# Tell CMake where to find packages
+export CMAKE_PREFIX_PATH="${PREFIX}"
+export CMAKE_INCLUDE_PATH="${PREFIX}/include"
+export CMAKE_LIBRARY_PATH="${PREFIX}/lib"
+
+# For the cmake crate in Rust
+export CMAKE_ARGS="-DCMAKE_PREFIX_PATH=${PREFIX} -DCMAKE_FIND_ROOT_PATH=${PREFIX}"
+## END ADDED to deal with zlib-ng strangeness on linux
+
+
 if [ "$unamestr" == 'Darwin' ];
 then
   if [[ $(uname -m) == 'x86_64' ]]; then
