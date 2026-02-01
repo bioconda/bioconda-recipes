@@ -17,8 +17,8 @@ export CMAKE_LIBRARY_PATH="${PREFIX}/lib"
 # For the cmake crate in Rust
 export CMAKE_ARGS="-DCMAKE_PREFIX_PATH=${PREFIX} -DCMAKE_FIND_ROOT_PATH=${PREFIX}"
 
-ls -la $PREFIX/include/zlib.h
-echo "PREFIX: $PREFIX"
+ls -la $PREFIX/include/ | grep -i zlib
+find $PREFIX -name "*zlib*"
 ## END ADDED to deal with zlib-ng strangeness on linux
 
 
