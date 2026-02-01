@@ -3,22 +3,11 @@
 unamestr=`uname`
 
 ## START ADDED to deal with zlib-ng strangeness on linux
-# Set up conda environment for C/C++ compilation
-export CFLAGS="${CFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig"
-
-# Tell CMake where to find packages
-export CMAKE_PREFIX_PATH="${PREFIX}"
-export CMAKE_INCLUDE_PATH="${PREFIX}/include"
-export CMAKE_LIBRARY_PATH="${PREFIX}/lib"
-
-# For the cmake crate in Rust
-export CMAKE_ARGS="-DCMAKE_PREFIX_PATH=${PREFIX} -DCMAKE_FIND_ROOT_PATH=${PREFIX}"
-
-ls -la $PREFIX/include/ | grep -i zlib
-find $PREFIX -name "*zlib*"
+# Check if we have zlib-ng headers
+if [ -f "$PREFIX/include/zlib-ng.h" ] && [ ! -f "$PREFIX/include/zlib.h" ]; then
+    echo "Creating zlib.h symlink to zlib-ng.h"
+    ln -s "$PREFIX/include/zlib-ng.h" "$PREFIX/include/zlib.h"
+fi
 ## END ADDED to deal with zlib-ng strangeness on linux
 
 
