@@ -4,10 +4,8 @@ unamestr=`uname`
 
 ## START ADDED to deal with zlib-ng strangeness on linux
 # Check if we have zlib-ng headers
-if [ -f "$PREFIX/include/zlib-ng.h" ] && [ ! -f "$PREFIX/include/zlib.h" ]; then
-    echo "Creating zlib.h symlink to zlib-ng.h"
-    ln -s "$PREFIX/include/zlib-ng.h" "$PREFIX/include/zlib.h"
-fi
+ls -la $PREFIX/include/ | grep -i zlib
+find $PREFIX -name "*zlib*"
 ## END ADDED to deal with zlib-ng strangeness on linux
 
 
