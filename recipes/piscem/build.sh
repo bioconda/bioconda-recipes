@@ -35,8 +35,11 @@ if [ "$unamestr" == 'Darwin' ]; then
      echo "File $LIBZ_STATIC_LIB exists, copying to libz-ng.a"
      cp $LIBZ_STATIC_LIB $PREFIX/lib/libz-ng.a
   else
-     echo "File $LIBZ_STATIC_LIB does not exist! contexts of $PREFIX/lib are"
-     echo $(ls)
+      LIBZ_STATIC_LIB=$PREFIX/lib64/libz.a
+      if [ -f $LIBZ_STATIC_LIB ]; then
+       echo "File $LIBZ_STATIC_LIB exists, copying to libz-ng.a"
+       cp $LIBZ_STATIC_LIB $PREFIX/lib64/libz-ng.a
+     fi
   fi
 fi
 
