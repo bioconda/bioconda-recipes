@@ -1,0 +1,48 @@
+{% set name = "piqtree" %}
+{% set version = "0.6.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('piqtree', max_pin="x.x") }}
+
+source:
+  url: https://github.com/iqtree/piqtree/releases/download/v{{ version }}/piqtree-v{{ version }}.tar.gz
+  sha256: b69d6a89d4545d61c113c1fa7e9e9c46e475d40664c945f310fa6a1e1ca20b70
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - ninja
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - boost-cpp
+    - eigen
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+test:
+  imports:
+    - piqtree
+
+about:
+  home: "https://github.com/iqtree/piqtree"
+  license: "GPL-2.0-or-later"
+  license_family: GPL2
+  license_file: LICENSE
+  summary: "A Python library that exposes features from IQ-TREE - efficient software for phylogenomic inference."
+  doc_url: "https://piqtree.readthedocs.io/"
+
+extra:
+  skip-lints:
+  additional-platforms:
+    - osx-arm64
+  recipe-maintainers:
+    - rmcar17
