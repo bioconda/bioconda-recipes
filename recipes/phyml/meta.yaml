@@ -1,6 +1,6 @@
 {% set name = "PhyML" %}
-{% set version = "3.3.20220408" %}
-{% set sha256 = "9cef375c0186e8a8d4db72ac02148707624c97174ffac244167a138ceb9f65bd" %}
+{% set version = "3.3.20250515" %}
+{% set sha256 = "c8d09f52f080a95dde8d7d797da5874796a148158cd18f956110cdba13cd3368" %}
 
 package:
   name: {{ name|lower }}
@@ -10,12 +10,12 @@ source:
   url: https://github.com/stephaneguindon/{{ name|lower }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - phytime.patch
-    - Makefile.patch
-    - phyml-aarch64.patch # [linux and aarch64]
+    - 0001-Makefile.patch
+    #- 0002-phytime.patch
+    - 0003-configure.ac.patch
 
 build:
-  number: 3
+  number: 0
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin="x") }}
 
@@ -26,10 +26,15 @@ requirements:
     - autoconf
     - automake
     - libtool
-  host:
-    - openmpi
     - pkg-config
+    - gnuconfig
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - openmpi
   run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - openmpi
 
 test:
@@ -42,13 +47,13 @@ test:
     - phytime --help | grep "PhyTime {{ version }}"
 
 about:
-  home: 'http://www.atgc-montpellier.fr/phyml/'
-  dev_url: 'https://github.com/stephaneguindon/phyml/'
-  doc_url: 'https://github.com/stephaneguindon/phyml/blob/master/doc/phyml-manual.pdf'
-  license: GPL-3.0-only
-  license_family: GPL
+  home: 'http://www.atgc-montpellier.fr/phyml'
+  dev_url: 'https://github.com/stephaneguindon/phyml'
+  doc_url: 'https://github.com/stephaneguindon/phyml/blob/v{{ version }}/doc/phyml-manual.pdf'
+  license: "GPL-3.0-only"
+  license_family: GPL3
   license_file: COPYING
-  summary: 'Phylogenetic estimation using (Maximum) Likelihood'
+  summary: 'Phylogenetic estimation using (Maximum) Likelihood.'
   description: |
     PhyML is a software that estimates maximum likelihood phylogenies from
     alignments of nucleotide or amino acid sequences. The main strength of
@@ -64,8 +69,12 @@ about:
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:phyml
+    - usegalaxy-eu:phyml
     - doi:10.1093/sysbio/syq010
-  maintainers:
+    - doi:10.1016/j.tpb.2016.05.002
+    - doi:10.1093/sysbio/syy003
+  recipe-maintainers:
     - epruesse
