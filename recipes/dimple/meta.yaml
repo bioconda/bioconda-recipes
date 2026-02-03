@@ -1,0 +1,56 @@
+{% set name = "dimple" %}
+{% set version = "2.6.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ccp4/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ""  # TODO: Add SHA256 checksum
+
+build:
+  number: 0
+  skip: true  # [win]
+  script: |
+    mkdir -p $PREFIX/bin
+    cp dimple $PREFIX/bin/
+    cp *.py $PREFIX/bin/
+    cp -r contaminants $PREFIX/bin/
+    chmod +x $PREFIX/bin/dimple
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
+    - python >=3
+    - clipper
+    - libccp4
+    - mmdb2
+  run:
+    - python >=3
+    - ccp4-tools
+    - phaser
+    - refmac5
+
+test:
+  commands:
+    - dimple --help
+
+about:
+  home: http://ccp4.github.io/dimple
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE
+  summary: 'Macromolecular crystallography pipeline for refinement and ligand screening'
+  description: |
+    DIMPLE is a macromolecular crystallography pipeline for automated refinement
+    and ligand screening. It is part of the CCP4 suite and runs programs like
+    refmac and phaser underneath to perform the work.
+  dev_url: https://github.com/ccp4/dimple
+  doc_url: http://ccp4.github.io/dimple
+
+extra:
+  recipe-maintainers:
+    - your-github-username
