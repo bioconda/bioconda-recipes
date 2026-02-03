@@ -1,0 +1,67 @@
+{% set name = "zna" %}
+{% set version = "0.1.0" %}
+{% set username = "mkiyer" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/{{ username }}/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 97d99ed82ec9790bba6d08da9a75457f2c0004e78586cc9142e2d6f2ce8a7e60
+
+build:
+  number: 0
+  skip: true  # [py<38]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake >=3.15
+    - make  # [unix]
+    - ninja  # [win]
+  host:
+    - python
+    - pip
+    - scikit-build-core >=0.10
+    - nanobind >=2.0
+    - zstandard
+  run:
+    - python
+    - zstandard
+
+test:
+  imports:
+    - zna
+    - zna.core
+    - zna.cli
+  commands:
+    - zna --help
+    - python -c "from zna.core import is_accelerated; print('Accelerated:', is_accelerated())"
+  requires:
+    - pytest
+
+about:
+  home: https://github.com/{{ username }}/{{ name }}
+  license: GPL-3.0-only
+  license_family: GPL
+  license_file: LICENSE
+  summary: High-performance binary format for compressed nucleic acid sequences
+  description: |
+    ZNA (Compressed Z-Nucleic N-Acid A) is a specialized binary format for 
+    storing DNA/RNA sequences with exceptional compression and I/O speed.
+    
+    Features:
+    - 135 MB/s roundtrip throughput (9.5x faster than Python baseline)
+    - 2.8+ GB/s encoding/decoding for long reads
+    - 3.7-4.0x compression ratio with Zstd
+    - C++ acceleration with pure Python fallback
+    - Block-based architecture for memory efficiency
+    - Supports single-end, paired-end, and interleaved reads
+  doc_url: https://github.com/{{ username }}/{{ name }}/blob/main/README.md
+  dev_url: https://github.com/{{ username }}/{{ name }}
+
+extra:
+  recipe-maintainers:
+    - {{ username }}
