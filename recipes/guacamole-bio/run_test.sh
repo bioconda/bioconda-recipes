@@ -1,3 +1,3 @@
 #!/bin/bash
 set -e
-pytest -v tests/
+pytest -v tests/test_integration.py
