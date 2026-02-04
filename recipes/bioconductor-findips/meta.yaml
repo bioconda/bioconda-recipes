@@ -1,0 +1,45 @@
+{% set version = "1.6.0" %}
+{% set name = "findIPs" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 1a65e7ae53876103419cbc5de2d6c56b
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-findips", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocStyle, knitr, rmarkdown, testthat
+requirements:
+  host:
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-survival
+  run:
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-survival
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  summary: Influential Points Detection for Feature Rankings
+  description: Feature rankings can be distorted by a single case in the context of high-dimensional data. The cases exerts abnormal influence on feature rankings are called influential points (IPs). The package aims at detecting IPs based on case deletion and quantifies their effects by measuring the rank changes (DOI:10.48550/arXiv.2303.10516). The package applies a novel rank comparing measure using the adaptive weights that stress the top-ranked important features and adjust the weights to ranking properties.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

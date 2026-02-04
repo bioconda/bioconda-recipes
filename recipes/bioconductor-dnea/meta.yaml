@@ -1,0 +1,62 @@
+{% set version = "1.0.0" %}
+{% set name = "DNEA" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 55a5050328ffbe1bc764aa0f7b78245c
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-dnea", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: BiocStyle, ggplot2, Hmisc, kableExtra, knitr, pheatmap, rmarkdown, testthat (>= 3.0.0), withr, airway
+requirements:
+  host:
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-dplyr
+    - r-gdata
+    - r-glasso
+    - r-igraph >=2.0.3
+    - r-janitor
+    - r-matrix
+    - r-netgsa
+    - r-stringr
+  run:
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-dplyr
+    - r-gdata
+    - r-glasso
+    - r-igraph >=2.0.3
+    - r-janitor
+    - r-matrix
+    - r-netgsa
+    - r-stringr
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Differential Network Enrichment Analysis for Biological Data
+  description: The DNEA R package is the latest implementation of the Differential Network Enrichment Analysis algorithm and is the successor to the Filigree Java-application described in Iyer et al. (2020). The package is designed to take as input an m x n expression matrix for some -omics modality (ie. metabolomics, lipidomics, proteomics, etc.) and jointly estimate the biological network associations of each condition using the DNEA algorithm described in Ma et al. (2019). This approach provides a framework for data-driven enrichment analysis across two experimental conditions that utilizes the underlying correlation structure of the data to determine feature-feature interactions.
+  license_file: LICENSE
+

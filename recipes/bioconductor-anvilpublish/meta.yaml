@@ -1,31 +1,33 @@
-{% set version = "1.16.0" %}
+{% set version = "1.20.0" %}
 {% set name = "AnVILPublish" %}
-{% set bioc = "3.20" %}
-
-about:
-  description: Use this package to create or update AnVIL workspaces from resources such as R / Bioconductor packages. The metadata about the package (e.g., select information from the package DESCRIPTION file and from vignette YAML headings) are used to populate the 'DASHBOARD'. Vignettes are translated to python notebooks ready for evaluation in AnVIL.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: Artistic-2.0
-  summary: Publish Packages and Other Resources to AnVIL Workspaces
-
-build:
-  noarch: generic
-  number: 0
-  rpaths:
-    - lib/R/lib/
-    - lib/
-  run_exports: '{{ pin_subpackage("bioconductor-anvilpublish", max_pin="x.x") }}'
+{% set bioc = "3.22" %}
 
 package:
   name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
 
-# Suggests: knitr, BiocStyle, testthat (>= 3.0.0)
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 2ca2978c71dc3d573f527fac5b9c3b1a
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-anvilpublish", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: knitr, BiocStyle, GCPtools, testthat (>= 3.0.0)
 requirements:
   host:
-    - bioconductor-anvil >=1.18.0,<1.19.0
-    - bioconductor-anvilgcp >=1.0.0,<1.1.0
-    - bioconductor-biocbaseutils >=1.8.0,<1.9.0
+    - bioconductor-anvil >=1.22.0,<1.23.0
+    - bioconductor-anvilgcp >=1.4.0,<1.5.0
+    - bioconductor-biocbaseutils >=1.12.0,<1.13.0
     - r-base
     - r-biocmanager
     - r-httr
@@ -35,9 +37,9 @@ requirements:
     - r-whisker
     - r-yaml
   run:
-    - bioconductor-anvil >=1.18.0,<1.19.0
-    - bioconductor-anvilgcp >=1.0.0,<1.1.0
-    - bioconductor-biocbaseutils >=1.8.0,<1.9.0
+    - bioconductor-anvil >=1.22.0,<1.23.0
+    - bioconductor-anvilgcp >=1.4.0,<1.5.0
+    - bioconductor-biocbaseutils >=1.12.0,<1.13.0
     - r-base
     - r-biocmanager
     - r-httr
@@ -47,15 +49,13 @@ requirements:
     - r-whisker
     - r-yaml
 
-source:
-  md5: 06c30bb2a89c9c9eb420ec131caba7ab
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Publish Packages and Other Resources to AnVIL Workspaces
+  description: Use this package to create or update AnVIL workspaces from resources such as R / Bioconductor packages. The metadata about the package (e.g., select information from the package DESCRIPTION file and from vignette YAML headings) are used to populate the 'DASHBOARD'. Vignettes are translated to python notebooks ready for evaluation in AnVIL.
 

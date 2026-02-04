@@ -1,0 +1,41 @@
+{% set version = "1.6.0" %}
+{% set name = "scaeData" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: c9a3e89acea35a1c48c15cb79cb3bb6f
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-scaedata", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: knitr, rmarkdown, markdown, SingleCellAlleleExperiment, Matrix, BiocStyle
+requirements:
+  host:
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - r-base
+  run:
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20260207
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Data Package for SingleCellAlleleExperiment
+  description: Contains default datasets used by the Bioconductor package SingleCellAlleleExperiment. The raw FASTQ files were sourced from publicly accessible datasets provided by 10x Genomics. Subsequently, our scIGD snakemake workflow was employed to process these FASTQ files. The resulting output from scIGD constitutes to the contents of this data package.
+  license_file: LICENSE
+

@@ -1,0 +1,71 @@
+{% set version = "1.2.0" %}
+{% set name = "RUCova" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: dce546b93e9a4dbbc51fbe2b9f53d279
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-rucova", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: knitr, rmarkdown, BiocManager, BiocStyle, remotes, ggpubr, ggcorrplot, ggh4x, testthat (>= 3.0.0)
+# SystemRequirements: GNU make
+requirements:
+  host:
+    - bioconductor-complexheatmap >=2.26.0,<2.27.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-circlize
+    - r-dplyr
+    - r-fastdummies
+    - r-ggplot2
+    - r-magrittr
+    - r-matrix
+    - r-stringr
+    - r-tibble
+    - r-tidyr
+    - r-tidyverse
+  run:
+    - bioconductor-complexheatmap >=2.26.0,<2.27.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-circlize
+    - r-dplyr
+    - r-fastdummies
+    - r-ggplot2
+    - r-magrittr
+    - r-matrix
+    - r-stringr
+    - r-tibble
+    - r-tidyr
+    - r-tidyverse
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  summary: Removes unwanted covariance from mass cytometry data
+  description: Mass cytometry enables the simultaneous measurement of dozens of protein markers at the single-cell level, producing high dimensional datasets that provide deep insights into cellular heterogeneity and function. However, these datasets often contain unwanted covariance introduced by technical variations, such as differences in cell size, staining efficiency, and instrument-specific artifacts, which can obscure biological signals and complicate downstream analysis. This package addresses this challenge by implementing a robust framework of linear models designed to identify and remove these sources of unwanted covariance. By systematically modeling and correcting for technical noise, the package enhances the quality and interpretability of mass cytometry data, enabling researchers to focus on biologically relevant signals.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

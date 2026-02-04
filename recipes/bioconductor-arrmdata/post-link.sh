@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "arrmdata-1.42.0"
+installBiocDataPackage.sh "arrmdata-1.46.0"

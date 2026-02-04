@@ -1,0 +1,58 @@
+{% set version = "1.2.0" %}
+{% set name = "XAItest" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: b0f41db8d45f8e2409691d305c3d0e81
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-xaitest", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: knitr, ggforce, shapr (>= 1.0.1), airway, xgboost, BiocGenerics, RUnit, S4Vectors
+requirements:
+  host:
+    - bioconductor-limma >=3.66.0,<3.67.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-caret
+    - r-dt
+    - r-ggplot2
+    - r-kernelshap
+    - r-lime
+    - r-randomforest
+  run:
+    - bioconductor-limma >=3.66.0,<3.67.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-caret
+    - r-dt
+    - r-ggplot2
+    - r-kernelshap
+    - r-lime
+    - r-randomforest
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: 'XAItest: Enhancing Feature Discovery with eXplainable AI'
+  description: XAItest is an R Package that identifies features using eXplainable AI (XAI) methods such as SHAP or LIME. This package allows users to compare these methods with traditional statistical tests like t-tests, empirical Bayes, and Fisher's test. Additionally, it includes simThresh, a system that enables the comparison of feature importance with p-values by incorporating calibrated simulated data.
+  license_file: LICENSE
+
