@@ -1,55 +1,47 @@
-# For inspiration, see also Debian's ncbi-vdb package:
-# https://salsa.debian.org/med-team/ncbi-vdb
-
-# This is a non-autotools configuration system. The usual ./configure options
-# don’t work. Paths to toolchain binaries (gcc, g++, ar) are in part hard-coded
-# and need to be patched.
-
-sed -i.backup \
-    -e "s|gcc|$CC|g" \
-    -e "s|g++|$CXX|g" \
-    build/Makefile.gcc
-
-# * --debug lets the configure script print extra info
-# * Only LDFLAGS and CXX can be customized at configure time.
-./configure \
-    --debug \
-    --prefix=$PREFIX \
-    --build-prefix=ncbi-outdir \
-    --with-ngs-sdk-prefix=$PREFIX \
-    CXX=$CXX
-
-# Edit the generated build configuration to use the proper tools
-# sed -i.backup \
-#     -e "s|= gcc|= $CC|" \
-#     -e "s|= g++|= $CXX|" \
-#     -e "s|= ar rc|= ar|" \
-#     -e "s|= ar|= $AR|" \
-#     build/Makefile.config.linux.x86_64
-
-make
-
-# This does not install the header files
-make install
-
-# These tests fail sometimes because they try to access online resources
-make -C test/vdb
-
-# Copy headers manually. As done by Debian, install them into a common subdirectory
-mv interfaces/* $PREFIX/include/ncbi-vdb
+#!/bin/bash -e
 
 
-# To Do
+# TODO: Ideally, we don't want the dynamic prefix-dependent patching below.
+#       The following hard-codes the environment's path in binaries such that
+#       those binaries have to be patched upon installation by conda
+#       (with the usual downsides, e.g., being excluded from hard-linking).
+#       This patch applies to a library which is statically linked such that
+#       nearly all binaries of the package are affected by this.
+{
+cat <<end-of-patch
+--- ncbi-vdb/libs/kns/tls.c
++++ ncbi-vdb/libs/kns/tls.c
+@@ -431,4 +431,6 @@
+         const char * root_ca_paths [] =
+         {
++            "${PREFIX}/ssl/cacert.pem",                          /* conda-forge::ca-certificates */
++            "/usr/local/ssl/cacert.pem",                         /* path in docker */
+             "/etc/ssl/certs/ca-certificates.crt",                /* Debian/Ubuntu/Gentoo etc */
+             "/etc/pki/tls/certs/ca-bundle.crt",                  /* Fedora/RHEL */
+end-of-patch
+} | patch -p0 -i-
 
-# Some of the internal libraries are not built. These messages are printed during the build:
 
-# NOTE - internal library libkff cannot be built: It requires 'libmagic' and its development headers.
-# NOTE - internal library libkxml cannot be built: It requires 'libxml2' and its development headers.
-# NOTE - internal library libkxfs cannot be built: It requires 'libxml2' and its development headers.
-# NOTE - library libkdf5 cannot be built: It requires 'libhdf5' and its development headers.
-# NOTE - library libvdb-sqlite cannot be built: It requires 'libxml2'.
+if [[ "$(uname)" == "Darwin" ]]; then
+	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	export CFLAGS="${CFLAGS} -fno-define-target-os-macros"
+else
+	export CONFIG_ARGS=""
+fi
 
-# These other notes are written at configure time:
+export INCLUDES="-I{PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include -O3 -D_FILE_OFFSET_BITS=64 -DH5_USE_110_API"
 
-# bison: command not found
-# bc: command not found
+cmake -S ncbi-vdb/ -B build_vdb \
+	-DNGS_INCDIR="${PREFIX}" \
+	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DBUILD_SHARED_LIBS=ON \
+	-DCMAKE_INSTALL_LIBDIR="${PREFIX}/lib" \
+	-DCMAKE_CXX_COMPILER="${CXX}" \
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	"${CONFIG_ARGS}"
+
+cmake --build build_vdb/ --target install -j "${CPU_COUNT}" -v

@@ -1,0 +1,66 @@
+{% set name = "DRAM" %}
+{% set pypi_name = "DRAM-bio" %}
+{% set version = "1.5.0" %}
+{% set sha256 = "2d4a503fa806e33b580afb6d21879b2399178e48ba3b05ada882449fee571889" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ pypi_name }}/{{ pypi_name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    # https://github.com/WrightonLabCSU/DRAM/issues/339
+    - fix_setup.patch
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+    - altair >=4
+    - networkx
+    - numpy
+    - openpyxl
+    - pandas >=1.5, <2
+    - scikit-bio >=0.5.8, <0.6
+    - sqlalchemy
+    - prodigal
+    - scipy >=1.9
+    - mmseqs2 >10.6d92c
+    - hmmer
+    - trnascan-se >=2
+    - barrnap
+    - ruby
+    - parallel
+    - wget
+    - curl
+
+test:
+  commands:
+    - DRAM-setup.py --help
+    - DRAM.py --help
+    - DRAM-v.py --help
+
+about:
+  home: https://github.com/shafferm/DRAM/
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: "Distilled and Refined Annotation of Metabolism: A tool for the annotation and curation of function for microbial and viral genomes"
+  dev_url: https://github.com/shafferm/DRAM/
+  doc_url: https://github.com/shafferm/DRAM/wiki
+
+extra:
+  identifiers:
+    - doi:10.1101/2020.06.29.177501
+  notes: "Databases are required. Please run 'DRAM-setup.py prepare_databases' with the respective options."

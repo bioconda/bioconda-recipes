@@ -1,0 +1,50 @@
+{% set version = "0.1" %}
+{% set revision = "-r46-dirty" %}
+{% set sha256 = "3302adb0ade4f5d77007b1f348147e190e0a142037e6dd2ff9cddc44db7ccf39" %}
+# NOTE: This uses a custom commit instead of the tagged release for license information.
+{% set commit = "cb7ad7560cf56a354d3abb91fc1bdf75108f9380" %}
+
+package:
+  name: unimap
+  version: {{ version }}
+
+source:
+  url: https://github.com/lh3/unimap/archive/{{ commit }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-gh-4-Consider-LDFLAGS-while-linking.patch
+
+build:
+  number: 7
+  run_exports:
+    - {{ pin_subpackage('unimap',max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - zlib
+
+test:
+  commands:
+    - unimap --help
+    - unimap --version | grep -qxF '{{ version }}{{ revision }}'
+
+about:
+  home: "https://github.com/lh3/unimap"
+  dev_url: "https://github.com/lh3/unimap"
+  doc_url: "https://github.com/lh3/unimap"
+  license: MIT
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  summary: "Unimap is a fork of minimap2 optimized for assembly-to-reference alignment."
+  description: |
+    Unimap is a fork of minimap2 optimized for assembly-to-reference alignment. It integrates the minigraph chaining algorithm and can align through long INDELs (up to 100kb by default) much faster than minimap2. Unimap is a better fit for resolving segmental duplications and is recommended over minimap2 for alignment between high-quality assemblies.
+
+    Unimap does not replace minimap2 for other types of alignment. It drops the support of multi-part index and short-read mapping. Its long-read alignment is different from minimap2 but is not necessarily better. Unimap is more of a specialized minimap2 at the moment.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

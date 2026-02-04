@@ -1,0 +1,33 @@
+{% set version = "23.09" %}
+
+package:
+  name: smashpp
+  version: {{ version }}
+
+build:
+  # Passes some invalid flags for clang
+  skip: True  # [osx]
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('smashpp', max_pin="x") }}
+
+source:
+  url: https://github.com/smortezah/smashpp/archive/refs/tags/{{ version }}.tar.gz
+  sha256: fefb51add6bcefb62d0e4c70a5566746eee94790eae5b72b5ced655a5174b0ed
+
+requirements:
+  build:
+    - make
+    - cmake
+    - {{ compiler('cxx') }}
+
+test:
+  commands:
+    - smashpp --version 2>&1 | grep {{ version }}
+
+about:
+  home: https://github.com/smortezah/smashpp
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  license_family: GPL3
+  summary: A fast tool to find and visualize rearrangements in DNA sequences

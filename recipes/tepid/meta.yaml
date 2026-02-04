@@ -1,42 +1,31 @@
 package:
   name: tepid
-  version: '0.8'
+  version: '0.10'
 
 source:
-  url: 'https://github.com/ListerLab/TEPID/archive/0.8.tar.gz'
-  sha256: 2f9ff777705f74abe54f916bd33783085696a4687c47efe61146dd9827c4e241
+  url: 'https://github.com/ListerLab/TEPID/archive/0.10.tar.gz'
+  sha256: 525c1d3a231c6880270bc200be67e5b481d2880e2877934a30b57b2ad1ea2be6
 
 build:
-  number: 1
-  skip: True # [not py27 or not linux]
+  number: 0
+  script: sed -i.bak "25,30d" setup.py && {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  noarch: python
 
-# numpy 1.9.2 was built against libgfortran 1.9.2
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - python
-    - setuptools
-    - 'pysam <0.9,>0.8'
-    - pybedtools
-    - numpy ==1.9.2
-    - libgfortran ==1.0
-    - pandas
-    - nose
-    - samtools ==1.2
-    - bedtools ==2.25.0
+    - python <3
+    - pip
   run:
-    - python
+    - python <3
     - pybedtools
-    - numpy ==1.9.2
-    - libgfortran ==1.0
+    - numpy >=1.9.2
     - pandas
-    - 'pysam <0.9,>0.8'
+    - pysam <0.9,>0.8
     - nose
     - bowtie2
-    - samtools ==1.2
+    - samtools >=1.4
     - samblaster
-    - bedtools ==2.25.0
+    - bedtools >=2.25.0
     - yaha
 
 test:
@@ -47,9 +36,6 @@ test:
 
 about:
   home: 'https://github.com/ListerLab/TEPID'
-  license: 'GPL'
+  license: GPL-3.0-only
+  license_file: LICENSE
   summary: 'TEPID uses paired-end illumina sequencing reads to identify novel TE variants.'
-
-extra:
-  skip-lints:
-    - should_use_compilers

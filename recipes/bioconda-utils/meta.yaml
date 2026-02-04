@@ -1,72 +1,73 @@
-{% set version = "0.16.7" %}
-{% set sha256 = "5cb557dd710403416c8985ad847eb71445f9bae8fb140b2a598de88b3ce577e7" %}
+{% set name = "bioconda-utils" %}
+{% set version = "3.9.2" %}
+{% set sha256 = "32735e6f5197ae2f29cd88026d78974afca1c6d3410ce371963998403a35c136" %}
 
 package:
-  name: bioconda-utils
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/bioconda/bioconda-utils/archive/v{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  sha256: {{ sha256 }}
 
 build:
+  number: 0
   noarch: python
-  number: 1
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   entry_points:
     - bioconda-utils = bioconda_utils.cli:main
+  run_exports:
+    - {{ pin_subpackage('bioconda-utils', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.6
+    - python 3.12.*
     - pip
   run:
-    - python >=3.6
-    - anaconda-client 1.6.*
-    - argh 0.26.*
-    - beautifulsoup4 4.6.*
-    - conda 4.6.14
-    - conda-build 3.18.9
-    - conda-verify 3.1.*
-    - galaxy-lib >=18.9.1
-    - jinja2 2.10.*
-    - jsonschema 2.6.*
-    - networkx 1.11
-    - pyaml 17.12.*
-    - requests 2.20.*
-    - sphinx
-    - sphinx-autodoc-typehints
-    - alabaster 0.7.*
-    - docutils
-    - involucro 1.1.*
-    - pandas 0.23.*
+    - conda-forge-pinning 2024.11.29.12.37.53
+    - python 3.12.*
+    - conda 25.7.*
+    - conda-libmamba-solver 25.4.*
+    - conda-build 25.7.*
+    - conda-index 0.6.*
+    - conda-package-streaming 0.12.*
+    - mamba 2.3.*
+    - argh 0.31.*
+    - colorlog 6.*
+    - tqdm 4.67.*
+    - yaspin 3.*
+    - ruamel.yaml 0.18.*
+    - pyaml 25.7.*
+    - networkx 3.5.*
+    - pandas 2.3.*
     - libblas * *openblas
-    - pygithub 1.34.*
-    - colorlog 3.1.*
-    - six 1.11.*
-    - git
-    - conda-forge-pinning 2019.07.11
-    - aiohttp 3.4.*
-    - aiofiles 0.4.*
-    - aioftp 0.12.*
-    - regex 2018.08.29
-    - backoff 1.6.*
-    - tqdm >=4.26
-    - ruamel_yaml 0.15.*
-    - gitpython 2.1.*
-    - gidgethub 3.0.*
-    - boltons 18.*
-    - gunicorn 19.9.*
-    - cachetools 3.0.*
-    - pyjwt 1.7.*
-    - celery 4.2.*
-    - skopeo 0.1.35
-    - aiohttp-jinja2 1.1.*
-    - aiohttp-security 0.4.*
-    - aiohttp-session 2.7.*
-    - aioredis 1.2.*
-    - cryptography 2.*
-    - markdown 3.1.*
+    - boltons 25.0.*
+    - jsonschema 4.25.*
+    - jinja2 3.1.*
+    - anaconda-client 1.13.*
+    - galaxy-tool-util 25.*
+    - involucro 1.1.*
+    - skopeo 1.15.*
+    - findutils
+    - git 2.*
+    - regex 2025.*
+    - aiohttp >=3.12.14
+    - aiohttp-jinja2
+    - aiohttp-session
+    - aiohttp-security
+    - aiofiles 24.*
+    - aioftp 0.26.*
+    - backoff 2.2.*
+    - cachetools 5.3.*
+    - gitpython 3.1.*
+    - gidgethub 5.*
+    - pyjwt >=2.4.0
+    - beautifulsoup4 4.*
+    - requests 2.32.*
+    - pygithub
+    - diskcache 5.*
+    - platformdirs 4.*
+    - tabulate 0.9.*
 
 test:
   imports:
@@ -75,10 +76,19 @@ test:
     - bioconda-utils --help
     - bioconda-utils lint --help
     - bioconda-utils build --help
+    #- >
+      #CONDA_AGGRESSIVE_UPDATE_PACKAGES=
+      #CONDA_AUTO_UPDATE_CONDA=0
+      #"${PREFIX}/bin/mamba" install --prefix="${PREFIX}" --dry-run --satisfied-skip-solve
+      #--file="$( python -c
+      #'from os.path import dirname, join; import bioconda_utils; print(join(dirname(bioconda_utils.__file__), "bioconda_utils-requirements.txt"))'
+      #)" 2>&1 | grep -qF 'All requested packages already installed'
 
 about:
-  home: http://bioconda.github.io/build-system.html
+  home: "https://bioconda.github.io/contributor/build-system.html"
   license: MIT
   license_family: MIT
-  summary: Utilities for building and managing bioconda recipes.
-  dev_url: https://github.com/bioconda/bioconda-utils
+  license_file: "LICENSE.md"
+  summary: "Utilities for building and managing bioconda recipes."
+  dev_url: "https://github.com/bioconda/bioconda-utils"
+  doc_url: "https://bioconda.github.io/contributor/guidelines.html"

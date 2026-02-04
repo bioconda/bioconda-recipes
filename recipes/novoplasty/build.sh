@@ -2,6 +2,7 @@
 
 mkdir -p $PREFIX
 ln -s NOVOPlasty${PKG_VERSION}.pl NOVOPlasty.pl
+chmod +x NOVOPlasty*.pl
 
 ## Build Perl
 
@@ -16,9 +17,3 @@ perl ./Build install --installdirs site
 
 cd ..
 ## End build perl
-
-
-
-#mv *.pl  $PREFIX/bin
-#chmod +x $PREFIX/bin/NOVOPlasty${PKG_VERSION}.pl
-#ln -s $PREFIX/bin/NOVOPlasty${PKG_VERSION}.pl $PREFIX/bin/NOVOPlasty.pl

@@ -1,0 +1,68 @@
+{% set version = "1.8.0" %}
+{% set name = "IFAA" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: This package offers a robust approach to make inference on the association of covariates with the absolute abundance (AA) of microbiome in an ecosystem. It can be also directly applied to relative abundance (RA) data to make inference on AA because the ratio of two RA is equal to the ratio of their AA. This algorithm can estimate and test the associations of interest while adjusting for potential confounders. The estimates of this method have easy interpretation like a typical regression analysis. High-dimensional covariates are handled with regularization and it is implemented by parallel computing. False discovery rate is automatically controlled by this approach. Zeros do not need to be imputed by a positive value for the analysis. The IFAA package also offers the 'MZILN' function for estimating and testing associations of abundance ratios with covariates.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+  summary: Robust Inference for Absolute Abundance in Microbiome Analysis
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-ifaa", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, RUnit, BiocGenerics, BiocStyle
+requirements:
+  host:
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-desctools
+    - r-doparallel >=1.0.11
+    - r-dorng
+    - r-foreach >=1.4.3
+    - r-glmnet
+    - r-hdci >=1.0-2
+    - r-mathjaxr
+    - r-matrix >=1.4-0
+    - r-matrixextra
+    - r-parallelly
+    - r-stringr
+  run:
+    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-desctools
+    - r-doparallel >=1.0.11
+    - r-dorng
+    - r-foreach >=1.4.3
+    - r-glmnet
+    - r-hdci >=1.0-2
+    - r-mathjaxr
+    - r-matrix >=1.4-0
+    - r-matrixextra
+    - r-parallelly
+    - r-stringr
+
+source:
+  md5: 8fb0287945a2dc4a4d6ff969d6e2b1c0
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

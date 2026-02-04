@@ -1,0 +1,47 @@
+{% set name = "rnamining" %}
+{% set version = "1.0.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/rnamining-{{ version }}.tar.gz
+  sha256: 03339dd81c1b163b966006559b50fbdca21481d3d82b14f52849b331d105012f
+
+build:
+  entry_points:
+    - rnamining = rnamining.rnamining:main
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('rnamining',max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+    - scipy
+    - biopython >=1.78
+    - scikit-learn >=0.21.3
+    - pandas >=0.23.3
+    - xgboost ==1.2.0
+
+test:
+  imports:
+    - rnamining
+  commands:
+    - rnamining -h
+
+about:
+  home: https://github.com/lfreitasl/RNAmining/tree/pypackage
+  summary: Package to predict potential coding of RNA sequences provided in fasta format
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - lfreitasl

@@ -1,28 +1,16 @@
 #!/bin/bash
-set -eu -o pipefail
 
-make CPP=$CXX EXTRA_FLAGS="-I${PREFIX}/include -L${PREFIX}/lib"
+set -xe
 
-binaries="\
-bowtie \
-bowtie-align-l \
-bowtie-align-s \
-bowtie-build \
-bowtie-build-l \
-bowtie-build-s \
-bowtie-inspect \
-bowtie-inspect-l \
-bowtie-inspect-s \
-"
-directories="scripts"
-pythonfiles="bowtie bowtie-build bowtie-inspect"
-
-PY3_BUILD="${PY_VER%.*}"
-
-if [ $PY3_BUILD -eq 3 ]
-then
-    for i in $pythonfiles; do 2to3 --write $i; done
+# If the environment is arm64 architecture, set POPCNT_CAPABILITY to 0 and run make.
+# This is because the POPCNT instruction is not supported on arm64 architecture.
+# By setting POPCNT_CAPABILITY=0, this instruction is disabled, ensuring build compatibility.
+# See https://github.com/BenLangmead/bowtie/blob/master/processor_support.h
+if [ "$(uname -m)" == "arm64" ]; then
+    make POPCNT_CAPABILITY=0 -j ${CPU_COUNT}
 fi
 
-for i in $binaries; do cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
-for d in $directories; do cp -r $d $PREFIX/bin; done
+
+make prefix="${PREFIX}"  -j ${CPU_COUNT} install
+
+cp -r scripts "${PREFIX}/bin/"

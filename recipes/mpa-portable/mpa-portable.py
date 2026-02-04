@@ -7,13 +7,13 @@
 # Program Parameters
 #
 import os
+import shutil
 import subprocess
 import sys
-import shutil
 from os import access
 from os import getenv
 from os import X_OK
-jar_file = 'mpa-portable-1.4.1.jar'
+jar_file = 'mpa-portable-2.0.0.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
@@ -58,7 +58,14 @@ def jvm_opts(argv):
         elif arg.startswith('--exec_dir='):
             exec_dir = arg.split('=')[1].strip('"').strip("'")
             if not os.path.exists(exec_dir):
-                shutil.copytree(real_dirname(sys.argv[0]), exec_dir, symlinks=False, ignore=None)
+                src = real_dirname(sys.argv[0])
+                shutil.copytree(src, exec_dir, symlinks=False)
+                os.remove(os.path.join(exec_dir, "built/X!Tandem/linux/linux_64bit/tandem"))
+                os.symlink(os.path.join(src, "built/X!Tandem/linux/linux_64bit/tandem"), 
+                           os.path.join(exec_dir, "built/X!Tandem/linux/linux_64bit/tandem"))
+                os.remove(os.path.join(exec_dir, "built/Comet/linux/comet.exe"))
+                os.symlink(os.path.join(src, "built/Comet/linux/comet.exe"),
+                           os.path.join(exec_dir, "built/Comet/linux/comet.exe"))
         else:
             pass_args.append(arg)
 
@@ -87,12 +94,22 @@ def main():
     if pass_args != [] and '-get_jar_dir' in pass_args:
         print(jar_dir)
         return
+    if exec_dir is None:
+        msg = """`--exec_dir=PATH` is a required option.
+The directory PATH will be created, i.e. must be absent
+on execution, e.g. --exec_dir=/tmp/exec_dir where /tmp
+exists and /tmp/exec_dir not. Reasons: MPA can only be
+executed in a copy of the installation. The reason is
+that it calls xtandem and writes the input files to
+the path where xtandem is located, i.e. into the
+conda environment (which is at least a bad idea and
+in containers impossible)"""
+        exit(msg)
 
     if pass_args != [] and pass_args[0].startswith('de'):
         jar_arg = '-cp'
     else:
         jar_arg = '-jar'
-
 
     java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
 

@@ -1,0 +1,56 @@
+{% set version = "1.6.0" %}
+{% set name = "DELocal" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: The goal of DELocal is to identify DE genes compared to their neighboring genes from the same chromosomal location. It has been shown that genes of related functions are generally very far from each other in the chromosome. DELocal utilzes this information to identify DE genes comparing with their neighbouring genes.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: Identifies differentially expressed genes with respect to other local genes
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-delocal", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: biomaRt, knitr, rmarkdown, stringr, BiocStyle
+requirements:
+  host:
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-dplyr
+    - r-ggplot2
+    - r-matrixstats
+    - r-reshape2
+  run:
+    - bioconductor-deseq2 >=1.46.0,<1.47.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-dplyr
+    - r-ggplot2
+    - r-matrixstats
+    - r-reshape2
+
+source:
+  md5: bf1f669d1cfeb5fc1b7e5b448a46ffac
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

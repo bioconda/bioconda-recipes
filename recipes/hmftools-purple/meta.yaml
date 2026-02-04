@@ -1,30 +1,41 @@
-{% set version = "2.32" %}
-{% set sha256 = "e109a70c9e71bb056bfa5c229a99297e2f7f5c50449718d48e104fa7c40db529" %}
+{% set version = "4.3" %}
+{% set beta_suffix = "" %}
+{% set sha256 = "0903f9fc186fe11cb7f886c42c9aa72f216f25ae2708b035d5e3a2dc524d37ff" %}
 
 package:
   name: hmftools-purple
   version: '{{ version }}'
 
 source:
-  url: https://github.com/hartwigmedical/hmftools/releases/download/purple-v{{ version|replace(".", "-") }}/purple-{{ version }}.jar
+  url: https://github.com/hartwigmedical/hmftools/releases/download/purple-v{{ version }}/purple_v{{ version }}{{ beta_suffix }}.jar
   sha256: '{{ sha256 }}'
 
 build:
   noarch: generic
   number: 0
+  run_exports:
+    - {{ pin_subpackage('hmftools-purple', max_pin="x") }}
 
 requirements:
   run:
     - zlib
-    - openjdk >=8
+    - openjdk >=8,<=21
     - xorg-libxtst
+    - circos >=0.69.6
+    - perl-gd >=2.76 # Fixes missing GD perl module error (even though circos does install GD)
+    - bioconductor-variantannotation
+    - r-cairo
+    - r-cowplot
+    - r-dplyr
+    - r-ggplot2
+    - r-tidyr
 
 test:
   commands:
-    - 'PURPLE -version'
+    - 'purple -version | grep Purple'
 
 about:
-  home: https://github.com/hartwigmedical/hmftools/tree/master/purity-ploidy-estimator
-  license: MIT
-  license_family: MIT
-  summary: Purity/ploidy estimator. Leverages the read depth and tumor BAF to estimate the purity of a sample and generate a copy number profile
+  home: https://github.com/hartwigmedical/hmftools/tree/master/purple
+  license: GPL-3.0-only
+  license_family: GPL3
+  summary: PURPLE is a purity ploidy estimator for tumor samples.

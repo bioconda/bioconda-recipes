@@ -1,32 +1,36 @@
 {% set name = "fastqe" %}
-{% set version = "0.1.1" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "c9edeca5995ae5c3e5abdcc83b3dfa9f662cd8f1d6a1f68b9193e9e2fd9e98c2" %}
+{% set version = "0.5.2" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: "cbf35d0bb2203538b986c0d1c44c4d737e0e2ebc12d851f80f65a4f7fe0ed37e"
+  patches:
+    - patch
 
 build:
+  noarch: python
   number: 0
   entry_points:
     - fastqe = fastqe.fastqe:main
-  script: 'python setup.py install '
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir --use-pep517 -vvv
+  run_exports:
+    - {{ pin_subpackage('fastqe', max_pin="x.x") }}
 
 requirements:
   host:
-    - python
-    - biopython >=1.66
-    - pyemojify
+    - python >=3.7
+    - pip
+    - twine >=1.11.0
+    - setuptools
   run:
-    - python
+    - python >=3.7
     - biopython >=1.66
     - pyemojify
+    - jinja2
 
 test:
   imports:
@@ -35,14 +39,9 @@ test:
     - fastqe --help
 
 about:
-  home: https://github.com/lonsbio/fastqe
-  license: MIT
-  license_family: MIT
-  license_file: ''
-  summary: A emoji based bioinformatics command line tool
+  home: https://github.com/fastqe/fastqe
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE.txt
+  summary: "A emoji based bioinformatics command line tool."
   description: "The program reads one or more input FASTQ files.\nFor each file it computes the minimum, maximum and mean FASTQ quality score at each position across all reads in a file.\n\nFor some reason, it then represents these as emoji."
-  doc_url: ''
-  dev_url: ''
-
-extra:
-  recipe-maintainers: ''

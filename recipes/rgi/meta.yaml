@@ -1,71 +1,96 @@
 {% set name = "rgi" %}
-{% set version = "5.1.0" %}
-{% set sha256 = "806ac75c38170b688222d264391e685b96a08bc77278ff9130be3797b56de2e9" %}
-{% set sha256database = "98d336e11bd84e2253c76b32d1f9371b0560c82053f4ce3cc17e91d1ca203c98" %}
+{% set version = "6.0.5" %}
+{% set sha256 = "5b9cc1b26234fc877d4dfb6652930111500694f6945412f714e32fc529d97af7" %}
+{% set sha256database = "b9052bb9f5fa84c488a52254fdd7e9080c7e31f1817c01b3f3d9261f9e4f0afd" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-    - url: https://github.com/arpcard/rgi/archive/{{ version }}.tar.gz
-      sha256: {{ sha256 }}
-    - url: https://card.mcmaster.ca/download/0/broadstreet-v3.0.4.tar.gz
-      sha256: {{ sha256database }}
-      folder: card-data
+- url: https://github.com/arpcard/rgi/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+- url: https://card.mcmaster.ca/download/0/broadstreet-v3.2.7.tar.bz2
+  sha256: {{ sha256database }}
+  folder: card-data
 
 build:
-  skip: True # [py27 or py == 37 ]
+  noarch: python
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - python
-    - blast ==2.6.0
-    - six >=1.7.0
-    - zlib
-    - prodigal ==2.6.3
-    - diamond ==0.8.36
-    - biopython ==1.72
+      # from rgi/requirements.txt - 6.0.4 tag
+    - biopython >=1.78
     - filetype >=1.0.0
     - pytest >=3.0.0
-    - mock >=2.0.0
     - pandas >=0.15.0
-    - matplotlib >=2.1.2
-    - seaborn >=0.8.1
+    - matplotlib-base >=2.1.2
+    - seaborn-base >=0.8.1
     - pyfaidx >=0.5.4.1
-    - pyahocorasick >=1.1.7
-    - setuptools
-    
+    - pyahocorasick ==2.1.0
+    - pysam >=0.16.0.1
+    - beautifulsoup4 >=4.9.3
+    - requests ==2.32.4
+    - lxml >=4.9.1
+    - dask
+    - pyrodigal >=3.0.0
+    - setuptools >=47.1.0
+
+    # from rgi/conda_env.yml - 6.0.4 tag
+    - python >=3.6
+    - pip
+    - blast ==2.16.0
+    - zlib
+    - prodigal 2.6.3
+    - diamond 0.8.36
+    - oligoarrayaux 3.8
+    - samtools 1.21
+    - bamtools 2.5.2
+    - bedtools >=2.31.1
+    - bowtie2 >=2.5.4
+    - bwa >=0.7.18
+    - kma >=1.4.17
+    - wget
   run:
-    # RGI requires these exact versions of blast prodigal and diamond, or else --alignment_mode DIAMOND fails
-    - python
-    - blast ==2.6.0
-    - six >=1.7.0
-    - zlib
-    - prodigal ==2.6.3
-    - diamond ==0.8.36
-    - biopython ==1.72
+      # from rgi/requirements.txt
+    - biopython >=1.78
     - filetype >=1.0.0
     - pytest >=3.0.0
-    - mock >=2.0.0
     - pandas >=0.15.0
-    - matplotlib >=2.1.2
-    - seaborn >=0.8.1
+    - matplotlib-base >=2.1.2
+    - seaborn-base >=0.8.1
     - pyfaidx >=0.5.4.1
-    - pyahocorasick >=1.1.7
-    - bowtie2 >=2.3.4.3
-    - samtools >=1.9
-    - bamtools >=2.5.1
-    - bedtools >=2.28.0
-    - bwa >=0.7.17
-    
+    - pyahocorasick ==2.1.0
+    - pysam >=0.16.0.1
+    - beautifulsoup4 >=4.9.3
+    - requests ==2.32.4
+    - lxml >=4.9.1
+    - dask
+    - pyrodigal >=3.0.0
+    - setuptools >=47.1.0
+
+    # from rgi/conda_env.yml - 6.0.4 tag
+    - python >=3.6
+    - blast ==2.16.0
+    - prodigal 2.6.3
+    - diamond 0.8.36
+    - oligoarrayaux 3.8
+    - samtools 1.21
+    - bamtools 2.5.2
+    - bedtools >=2.31.1
+    - bowtie2 >=2.5.4
+    - bwa >=0.7.18
+    - kma >=1.4.17
+    - wget
+
 test:
   commands:
-    - rgi database -v | grep "3.0.4"
+    - rgi database -v
     - rgi load -h
+    - rgi auto_load -h
     - rgi main -h
     - rgi tab -h
     - rgi parser -h
@@ -74,13 +99,15 @@ test:
     - rgi bwt -h
     - rgi kmer_build -h
     - rgi kmer_query -h
+    - wget --quiet --output-document=homolog.fasta https://raw.githubusercontent.com/arpcard/rgi/master/tests/inputs/homolog.fasta | rgi main -i homolog.fasta -o output --debug -a diamond --clean
+
 
 about:
-  home: https://card.mcmaster.ca
-  license: https://card.mcmaster.ca/about
+  home: "https://card.mcmaster.ca"
+  license: "https://card.mcmaster.ca/about"
   license_file: LICENSE
-  summary: 'This tool provides a preliminary annotation of your DNA sequence(s) based upon the data available in The Comprehensive Antibiotic Resistance Database (CARD). Hits to genes tagged with Antibiotic Resistance ontology terms will be highlighted. As CARD expands to include more pathogens, genomes, plasmids, and ontology terms this tool will grow increasingly powerful in providing first-pass detection of antibiotic resistance associated genes. See license at CARD website'
+  summary: "This tool provides a preliminary annotation of your DNA sequence(s) based upon the data available in The Comprehensive Antibiotic Resistance Database (CARD). Hits to genes tagged with Antibiotic Resistance ontology terms will be highlighted. As CARD expands to include more pathogens, genomes, plasmids, and ontology terms this tool will grow increasingly powerful in providing first-pass detection of antibiotic resistance associated genes. See license at CARD website."
 
 extra:
   identifiers:
-    - doi:10.1093/nar/gkw1004
+    - doi:10.1093/nar/gkz935

@@ -1,0 +1,51 @@
+{% set name = "zipstrain" %}
+{% set version = "0.3.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: ff07768aa3dc3f84940522bd494c94b8ebed36cd53ee04efdbaf0d78a9f244c3  
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  run_exports:
+    - {{ pin_subpackage('zipstrain', max_pin="x.x") }}
+requirements:
+  host:
+    - python >=3.12
+    - poetry-core   
+    - pip
+    
+  run:
+    - python >=3.12
+    - samtools 
+    - click
+    - polars
+    - plotly
+    - numpy
+    - seaborn
+    - scipy
+    - pyarrow
+    - intervaltree
+    - aiofiles
+    - pydantic
+    - rich
+    - psutil
+test:
+  imports:
+    - zipstrain
+  commands:
+    - zipstrain --help
+    - samtools --version
+
+about:
+  home: https://github.com/OlmLab/ZipStrain  
+  summary: Fast strain-level metagenomics
+  license: MIT     
+  license_family: MIT
+

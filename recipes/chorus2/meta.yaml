@@ -1,37 +1,41 @@
-{% set version = "2.0" %}
+{% set version = "2.1" %}
 
 package:
   name: chorus2
   version: {{ version }}
 
 source:
-  url: https://github.com/zhangtaolab/Chorus2/archive/v2.0.tar.gz
-  sha256: 7cb9895230705fc3d040d5ce8ee3f6f89bbec934ac7374a397e352fdf13abbc3
+  url: https://github.com/zhangtaolab/Chorus2/archive/v{{ version }}.tar.gz
+  sha256: 6f24b8ff6c61ff3f94165ca26f1612383d0a73621cab1f1e7249938deca6339b
 
 build:
-  number: 4
+  number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps -v"
+  run_exports:
+    - {{ pin_subpackage("chorus2", max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps -v
 
 requirements:
   host:
-    - python >=3
-    - setuptools
+    - python >=3,<3.10
     - pip
   run:
-    - cython
-    - python >=3
+    - python >=3,<3.10
     - pybigwig
     - numpy
     - pyfasta
-    - pandas
+    - pybedtools
+    - pandas <2
     - primer3-py >=0.4.2
-    - matplotlib >=3
-    - pyqt <5.11
+    - matplotlib-base >=3
+    - pyqt <6  # [py >= 38]
+    - pyqt <5.11  # [py < 38]
     - sip >=4
-    - jellyfish >=2.2.3
-    - bwa >=0.7.3a
-    - bwa <=0.7.8
+    - kmer-jellyfish >1
+    - bwa >=0.7.3a,<=0.7.8  # [x86_64]
+    - bwa  # [arm64 or aarch64]
+    - samtools
+    - bcftools
 
 test:
   imports:
@@ -51,3 +55,10 @@ about:
 extra:
   identifiers:
     - biotools:chorus2
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - zhangtaolab
+    - forrestzhang
+    - ljq12697

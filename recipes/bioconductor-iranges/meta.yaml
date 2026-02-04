@@ -1,46 +1,60 @@
-{% set version = "2.18.2" %}
+{% set version = "2.44.0" %}
 {% set name = "IRanges" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.22" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 4d4c5bf8506ded6e85e48a09983fd4a8
+about:
+  description: Provides efficient low-level and highly reusable S4 classes for storing, manipulating and aggregating over annotated ranges of integers. Implements an algebra of range operations, including efficient algorithms for finding overlaps and nearest neighbors. Defines efficient list-like classes for storing, transforming and aggregating large grouped data, i.e., collections of atomic vectors and DataFrames.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Foundation of integer range manipulation in Bioconductor
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: XVector, GenomicRanges, Rsamtools, GenomicAlignments, GenomicFeatures, BSgenome.Celegans.UCSC.ce2, pasillaBamSubset, RUnit, BiocStyle
-requirements:
-  host:
-    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
-    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
-    - r-base
-  run:
-    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
-    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
-    - r-base
-  build:
-    - {{ compiler('c') }}
-    - make
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Provides efficient low-level and highly reusable S4 classes for storing, manipulating and aggregating over annotated ranges of integers. Implements an algebra of range operations, including efficient algorithms for finding overlaps and nearest neighbors. Defines efficient list-like classes for storing, transforming and aggregating large grouped data, i.e., collections of atomic vectors and DataFrames.'
+  run_exports: '{{ pin_subpackage("bioconductor-iranges", max_pin="x.x") }}'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:iranges
   parent_recipe:
     name: bioconductor-iranges
     path: recipes/bioconductor-iranges
     version: 2.14.12
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: XVector, GenomicRanges, Rsamtools, GenomicAlignments, GenomicFeatures, BSgenome.Celegans.UCSC.ce2, pasillaBamSubset, RUnit, BiocStyle
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - r-base >=4.5.0
+    - libblas
+    - liblapack
+  run:
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - r-base >=4.5.0
+
+source:
+  md5: a169fe4941da3987cebbd383aa9b30f3
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

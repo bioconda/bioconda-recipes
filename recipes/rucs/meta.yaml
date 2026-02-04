@@ -1,0 +1,46 @@
+{% set name = "RUCS" %}
+{% set version = "1.0.3" %}
+{% set sha256 = "2584100b1e6c8e8268b868f33fbffd25a22effe8270af5420f881fef471fe34b" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://bitbucket.org/genomicepidemiology/rucs/get/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - python.patch
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('rucs', max_pin="x") }}
+
+requirements:
+  run:
+    - python >=3.5
+    - tabulate
+    - primer3-py
+    - numpy
+    - blast
+    - bwa
+    - samtools
+
+test:
+  commands:
+    - export SETTINGS_FILE="${PREFIX}/share/rucs-1.0.3/settings.default.cjson" && rucs -h
+
+about:
+  home: "https://bitbucket.org/genomicepidemiology/rucs/src/master"
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: "LICENSE-2.0.txt"
+  summary: "RUCS is a bioinformatics tool developed to ease the task of designing new primers."
+  doc_url: "https://cge.cbs.dtu.dk/services/rucs/instructions.php"
+  dev_url: "https://bitbucket.org/genomicepidemiology/rucs/src/master"
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btx526

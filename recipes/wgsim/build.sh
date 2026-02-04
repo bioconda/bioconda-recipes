@@ -1,8 +1,11 @@
 #!/bin/bash
 
-git clone http://github.com/lh3/wgsim
-cd wgsim
-gcc -g -O2 -Wall -I${PREFIX}/include -L${PREFIX}/lib -o wgsim wgsim.c -lz -lm
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3"
 
-cp wgsim wgsim_eval.pl $PREFIX/bin/
+"${CC}" ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -o wgsim wgsim.c -lz -lm
 
+mkdir -p "${PREFIX}/bin"
+
+install -v -m 0755 wgsim wgsim_eval.pl "${PREFIX}/bin"

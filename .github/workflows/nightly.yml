@@ -1,0 +1,51 @@
+name: Nightly Uploader
+on:
+  schedule:
+    - cron: "0 0 * * *"
+jobs:
+  nightly-osx-arm:
+    name: Nightly OSX-ARM64 Builds
+    if: github.repository == 'bioconda/bioconda-recipes'
+    runs-on: macOS-14 # M1
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: set path
+        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
+
+      - name: Fetch conda install script
+        run: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
+
+      - name: Set up bioconda-utils
+        run: bash install-and-set-up-conda.sh
+
+      - name: Configure conda
+        run: bash configure-conda.sh
+
+      - name: Build and push leftover packages
+        env:
+          QUAY_LOGIN: ${{ secrets.QUAY_LOGIN }}
+          QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+          INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Mimic circleci
+          OSTYPE: "darwin"
+          CI: "true"
+        run: |
+          set -e
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+
+          source common.sh
+          # Sets up OSX SDK
+          run_conda_forge_build_setup
+
+          # build and push all leftover packages
+          bioconda-utils build recipes config.yml \
+              --anaconda-upload \
+              --prelint --exclude bioconda-repodata-patches

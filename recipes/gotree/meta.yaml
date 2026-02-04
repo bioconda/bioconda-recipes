@@ -1,31 +1,45 @@
-{% set version = "0.2.10" %}
+{% set version = "0.5.1" %}
+{% set name = "gotree" %}
 
 package:
-  name: gotree
+  name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 1
-  skip: false
-  binary_relocation: false
-
 source:
-  fn: gotree_amd64_linux # [linux]
-  url: https://github.com/fredericlemoine/gotree/releases/download/v{{ version }}/gotree_amd64_linux # [linux]
-  md5: 05e09402f1605a665faa7c95043fb318 # [linux]
-  fn: gotree_amd64_darwin # [osx]
-  url: https://github.com/fredericlemoine/gotree/releases/download/v{{ version }}/gotree_amd64_darwin # [osx]
-  md5: cf0159284cc90e5fbd836b065961de69 # [osx]
+  url: https://github.com/evolbioinfo/{{name}}/archive/v{{ version }}.tar.gz
+  sha256: fcbb7d5545408accbb3b1aa08e69ca288dd1c5a2f1f9586ad3dd9a91329e7e1e
+  folder: src/github.com/evolbioinfo/{{name}}
 
+build:
+  number: 0
+  binary_relocation: False
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
-  run:
+  build:
+    - {{ compiler('go') }}
+    - go-licenses
+    - make
 
 test:
   commands:
-    - gotree -h
+    - {{name}} -h
+    - {{name}}_test.sh
+    - {{name}} version
 
 about:
-  home: https://github.com/fredericlemoine/gotree
-  license: GPL-2.0
-  summary: GoTree is a set of command line tools to manipulate phylogenetic trees.
+  home: "https://github.com/evolbioinfo/{{ name }}"
+  license: "GPL-2.0-or-later"
+  license_family: GPL
+  summary: "{{name}} is a set of command line tools to manipulate phylogenetic trees."
+  dev_url: "https://github.com/evolbioinfo/{{ name }}"
+  doc_url: "https://github.com/evolbioinfo/gotree/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/nargab/lqab075
+    - biotools:gotree

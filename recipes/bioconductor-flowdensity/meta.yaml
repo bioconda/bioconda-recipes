@@ -1,49 +1,21 @@
-{% set version = "1.18.0" %}
+{% set version = "1.40.0" %}
 {% set name = "flowDensity" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 8f3b83a8621c85305349c9e6e4a07e73
+about:
+  description: This package provides tools for automated sequential gating analogous to the manual gating strategy based on the density of the data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Sequential Flow Cytometry Data Gating
+
 build:
-  number: 1
+  noarch: generic
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# SystemRequirements: GEOS (>= 3.2.0);for building from source: GEOS from http://trac.osgeo.org/geos/; GEOS OSX frameworks built by William Kyngesburye at http://www.kyngchaos.com/ may be used for source installs on OSX.
-requirements:
-  host:
-    - 'bioconductor-flowcore >=1.50.0,<1.51.0'
-    - 'bioconductor-flowworkspace >=3.32.0,<3.33.0'
-    - r-base
-    - r-car
-    - r-gplots
-    - r-rfoc
-    - r-rgeos
-    - r-sp
-  run:
-    - 'bioconductor-flowcore >=1.50.0,<1.51.0'
-    - 'bioconductor-flowworkspace >=3.32.0,<3.33.0'
-    - r-base
-    - r-car
-    - r-gplots
-    - r-rfoc
-    - r-rgeos
-    - r-sp
-test:
-  commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'This package provides tools for automated sequential gating analogous to the manual gating strategy based on the density of the data.'
+  run_exports: '{{ pin_subpackage("bioconductor-flowdensity", max_pin="x.x") }}'
+
 extra:
   identifiers:
     - biotools:flowdensity
@@ -52,4 +24,40 @@ extra:
     name: bioconductor-flowdensity
     path: recipes/bioconductor-flowdensity
     version: 1.14.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr,rmarkdown
+# SystemRequirements: xml2, GNU make, C++11
+requirements:
+  host:
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-flowviz >=1.70.0,<1.71.0
+    - r-base
+    - r-car
+    - r-gplots
+    - r-polyclip
+    - libxml2
+  run:
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-flowviz >=1.70.0,<1.71.0
+    - r-base
+    - r-car
+    - r-gplots
+    - r-polyclip
+    - libxml2
+
+source:
+  md5: f8a6179a1f1db37cd7145195943ea570
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
 

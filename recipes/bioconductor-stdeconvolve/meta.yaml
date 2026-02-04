@@ -1,0 +1,59 @@
+{% set version = "1.6.0" %}
+{% set name = "STdeconvolve" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 2908e0d59713b2c3ef6c7bc549d0d123
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-stdeconvolve", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: knitr, BiocStyle, rmarkdown, testthat, rcmdcheck, gplots, gridExtra, hash, dplyr, parallel
+requirements:
+  host:
+    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
+    - r-base
+    - r-clue
+    - r-ggplot2
+    - r-liger
+    - r-matrix
+    - r-mgcv
+    - r-reshape2
+    - r-scatterpie
+    - r-slam
+    - r-topicmodels
+    - r-viridis
+  run:
+    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
+    - r-base
+    - r-clue
+    - r-ggplot2
+    - r-liger
+    - r-matrix
+    - r-mgcv
+    - r-reshape2
+    - r-scatterpie
+    - r-slam
+    - r-topicmodels
+    - r-viridis
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Reference-free Cell-Type Deconvolution of Multi-Cellular Spatially Resolved Transcriptomics Data'
+  description: 'STdeconvolve as an unsupervised, reference-free approach to infer latent cell-type proportions and transcriptional profiles within multi-cellular spatially-resolved pixels from spatial transcriptomics (ST) datasets. STdeconvolve builds on latent Dirichlet allocation (LDA), a generative statistical model commonly used in natural language processing for discovering latent topics in collections of documents. In the context of natural language processing, given a count matrix of words in documents, LDA infers the distribution of words for each topic and the distribution of topics in each document. In the context of ST data, given a count matrix of gene expression in multi-cellular ST pixels, STdeconvolve applies LDA to infer the putative transcriptional profile for each cell-type and the proportional representation of each cell-type in each multi-cellular ST pixel.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

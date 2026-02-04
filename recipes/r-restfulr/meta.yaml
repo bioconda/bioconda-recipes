@@ -1,0 +1,53 @@
+{% set version = '0.0.16' %}
+
+package:
+  name: r-restfulr
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/restfulr_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/restfulr/restfulr_{{ version }}.tar.gz
+  sha256: 574fd11a3f23f494ff8e94ce84d767f49d3399600d617ad26fb71b8332e93725
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage("r-restfulr", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - r-base
+    - r-rcurl
+    - bioconductor-s4vectors >=0.13.15
+    - r-xml
+    - r-rjson
+    - r-yaml
+  run:
+    - r-base
+    - r-rcurl
+    - bioconductor-s4vectors >=0.13.15
+    - r-xml
+    - r-rjson
+    - r-yaml
+
+test:
+  commands:
+    - $R -e "library('restfulr')"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+about:
+  home: https://CRAN.R-project.org/package=restfulr
+  license: Artistic-2.0
+  summary: Models a RESTful service as if it were a nested R list.
+  license_family: OTHER
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/Artistic-2.0'

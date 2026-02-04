@@ -1,0 +1,52 @@
+{% set name = "superSTR" %}
+{% set version = "1.0.1" %}
+{% set sha256 = "2ffd9c88df339b0f732247f444b27bf7a795abee5ada4a2dd410f24da825b050" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+
+source:
+  url: https://github.com/bahlolab/superSTR/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 5
+  # skip: True  # [osx]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+  host:
+    - htslib
+    - curl
+    - libcurl
+    - zlib
+  run:
+    - htslib
+    - python >=3.8.3
+    - numpy >=1.20.1
+    - matplotlib-base >=3.4.1
+    - pandas >=1.2.2
+    - arch-py >=4.15
+    - mpmath >=1.2.1
+    - scipy >=1.6.1
+    - statsmodels >=0.12.2
+    - tqdm >=4.59
+    - seaborn >=0.11.1
+
+test:
+  commands:
+    - superstr --help
+    - superstr-multiparse.py --help
+    - superstr-outliers.py --help
+    - superstr-screen.py --help
+    - superstr-visualise.py --help
+about:
+  home: https://github.com/bahlolab/superSTR
+  license: GPL-2.0
+  summary: A lightweight, alignment-free utility for detecting repeat-containing reads in short-read WGS, WES and RNA-seq data.

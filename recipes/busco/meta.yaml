@@ -1,54 +1,87 @@
 {% set name = "busco" %}
-{% set version = "3.0.2" %}
-{% set sha256 = "7cfc50b1a256cd697ec7e2b1c3b5af7118f50e2d809533df3d5d8dfca7560c46" %}
+{% set version = "6.0.0" %}
+{% set sha256 = "f5510d6e2eac7931fad8f0cb13445f706f2ddac4d7b9216c6d4c3eedc9289b03" %}
 
 package:
-  name: {{ name|lower }}
+  name: busco
   version: {{ version }}
 
 build:
-  number: 12
+  number: 2
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 source:
   url: https://gitlab.com/ezlab/busco/-/archive/{{ version }}/busco-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-Add-default-config-path-within-prefix-updated.patch
+    - 0001-Set-conda-distribution.patch
 
 requirements:
   host:
-    - python >=3
+    - python >=3.3
+    - pip
+    - wget
+    - blast >=2.10.1  # There is a multithreading problem for all BLAST versions between 2.4 and 2.10.0
+    - hmmer >=3.1b2  # sepp needs this version
+    - augustus >=3.3
+    - biopython >=1.79
+    - prodigal
+    - sepp ==4.5.5
+    - metaeuk >=6.a5d39d9  # needed for gff bug fix
+    - pandas
+    - bbmap
+    - miniprot
+    - requests
+    - matplotlib-base
   run:
-    - python >=3
-    - findutils
-    - blast >=2.2,<2.4
-    - hmmer
-    - augustus >=3.3.2
-    - r-base
-    - r-ggplot2 >=2.2.1
+    - python >=3.3
+    - wget
+    - blast >=2.10.1  # There is a multithreading problem for all BLAST versions between 2.4 and 2.10.0
+    - hmmer >=3.1b2  # sepp needs this version
+    - augustus >=3.3
+    - biopython >=1.79
+    - prodigal
+    - sepp ==4.5.5
+    - metaeuk >=6.a5d39d9  # needed for gff bug fix
+    - pandas
+    - bbmap
+    - miniprot
+    - requests
+    - matplotlib-base
+    - fonts-conda-ecosystem
 
 test:
-  requires:
-    - wget
   commands:
-    - run_BUSCO.py -h
-    - run_busco -h
-    - generate_plot.py -h
-    - generate_plot -h
-    - mkdir findtest ; cd findtest ; touch file ; find . -delete ; cd ..
-
-    # Message reported by busco when the config file exists but no input provided
-    - run_busco | grep "Please add it in the config file"
+    - busco -h
+  source_files:
+    # used in run_test.sh
+    - test_data
 
 about:
-  home: http://busco.ezlab.org/
-  license: GPL
-  summary: BUSCO provides measures for quantitative assessment of genome
+  home: "https://busco.ezlab.org"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Assessment of assembly completeness using Universal Single Copy Orthologs."
+  description: BUSCO provides measures for quantitative assessment of genome
            assembly, gene set, and transcriptome completeness based on
            evolutionarily informed expectations of gene content from
            near-universal single-copy orthologs selected from OrthoDB.
+  dev_url: "https://gitlab.com/ezlab/busco"
+  doc_url: "https://busco.ezlab.org/busco_userguide.html"
 
 extra:
+  container:
+    # Necessary to allow Busco to download files from the internet when used with Singularity
+    # and default bind paths (see also https://github.com/bioconda/bioconda-recipes/issues/11583).
+    # Should be removed again when the base container is fixed.
+    extended-base: True
   identifiers:
     - biotools:busco
     - doi:10.1093/bioinformatics/btv351
-  skip-lints:
-    - should_be_noarch
+    - usegalaxy-eu:busco
+  recipe-maintainers:
+    - berkelem

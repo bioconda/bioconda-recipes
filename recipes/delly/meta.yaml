@@ -1,30 +1,30 @@
-{% set version = "0.8.1" %}
-{% set sha256 = "7f775c1a22d46a5ecd1b6b6f32f53700fd7d8206ee9e5b066bd8bd82346a23b6" %}
+{% set version = "1.7.2" %}
+{% set sha256 = "7a6034ce502d8ca72c9c8ffc9f991f4702bccc45bb5879fd73bfa6b171b98657" %}
 
 package:
   name: delly
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   url: https://github.com/dellytools/delly/archive/v{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
-  patches:
-    - Makefile.patch
+  sha256: {{ sha256 }}
 
 build:
-  number: 3
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("delly", max_pin="x") }}
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
   host:
     - zlib
     - bzip2
+    - libdeflate
     - boost-cpp
     - htslib
   run:
-    - zlib
-    - bzip2
     - boost-cpp
     - htslib
 
@@ -33,6 +33,24 @@ test:
     - delly --help
 
 about:
-  home: https://github.com/dellytools/delly
-  license: GPLv3
-  summary: Structural variant discovery by integrated paired-end and split-read analysis
+  home: "https://github.com/dellytools/delly"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: LICENSE
+  summary: "Structural variant discovery by integrated paired-end and split-read analysis."
+  dev_url: "https://github.com/dellytools/delly"
+  doc_url: "https://github.com/dellytools/delly/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/bioinformatics/bts378
+    - biotools:delly2
+    - usegalaxy-eu:delly_cnv
+    - usegalaxy-eu:delly_classify
+    - usegalaxy-eu:delly_lr
+    - usegalaxy-eu:delly_call
+    - usegalaxy-eu:delly_merge
+    - usegalaxy-eu:delly_filter

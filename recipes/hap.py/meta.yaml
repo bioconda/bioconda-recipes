@@ -1,5 +1,6 @@
-{% set version = "0.3.10" %}
-{% set sha256 = "c5628831cf577d2c5d5369865688327b4f7bae144b767ea3101d60557963395e" %}
+{% set version = "0.3.15" %}
+{% set sha256 = "838912f1ab805224110af3c1035849d5483b5ce4c565ae0f0db7f7284af06676" %}
+
 package:
   name: hap.py
   version: '{{ version }}'
@@ -7,33 +8,26 @@ package:
 source:
   url: https://github.com/Illumina/hap.py/archive/v{{ version }}.tar.gz
   sha256: '{{ sha256 }}'
+  patches:
+    - patch
 
 build:
-  number: 2
+  number: 1
   skip: true # [not py27 or osx]
+
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
     - cmake
     - autoconf
     - automake
   host:
     - python
     - setuptools
-    - zlib
     - cython
-    - numpy
-    - pandas
-    - pybedtools
-    - pysam
-    - nose
-    - bx-python
-
-  run:
-    - python
-    - cython
-    - zlib
     - numpy
     - pandas
     - pybedtools
@@ -41,8 +35,25 @@ requirements:
     - scipy
     - nose
     - bx-python
-    - samtools
+    - boost-cpp
+    - htslib
     - bcftools
+    - samtools
+    - rtg-tools
+  run:
+    - python
+    - numpy
+    - pandas
+    - pybedtools
+    - {{ pin_compatible('pysam') }}
+    - scipy
+    - nose
+    - bx-python
+    - boost-cpp
+    - htslib
+    - bcftools
+    - samtools
+
 
 test:
   commands:

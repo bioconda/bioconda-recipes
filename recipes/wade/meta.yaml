@@ -1,0 +1,60 @@
+{% set name = "wade" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/phac-nml/wade/releases/download/v{{ version }}/WADE_{{ version }}.tar.gz
+  sha256: 35ba8fdd196b8553e4724531c73f4094fd0de27e6e45a99327911769879dcb80
+
+build:
+  number: 0
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  script:
+    - export LC_ALL="en_US.UTF-8"
+    - export DISABLE_AUTOBREW=1
+    - ${R} CMD INSTALL --build . "${R_ARGS}"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - r-base
+    - r-dplyr
+    - r-dt
+    - r-stringr
+    - r-optparse
+    - r-readxl
+    - r-shiny
+    - r-shinywidgets
+    - r-tidyverse
+    - bioconductor-biostrings
+  run:
+    - r-base
+    - r-dplyr
+    - r-dt
+    - r-stringr
+    - r-optparse
+    - r-readxl
+    - r-shiny
+    - r-shinywidgets
+    - r-tidyverse
+    - bioconductor-biostrings
+    - blast
+
+test:
+  commands:
+    - '$R -e "library(''WADE'')"'
+
+about:
+  home: "https://github.com/phac-nml/wade"
+  license: "Apache-2.0"
+  license_family: APACHE
+  summary: "WADE provides a flexible and customizable method to extract specific genes from a large number of genomes at once."
+  dev_url: "https://github.com/phac-nml/wade"
+  doc_url: "https://github.com/phac-nml/wade/blob/v{{ version }}/README.md"

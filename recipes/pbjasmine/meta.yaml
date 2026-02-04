@@ -1,0 +1,38 @@
+{% set name = "pbjasmine" %}
+{% set version = "2.7.99" %}
+{% set sha256 = "1247d288c01d82916b554945219306f57a07a1e0dc123de2e60a3b5e1e695302" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PacificBiosciences/jasmine/releases/download/v{{ version }}/jasmine.tar.xz
+  sha256: {{ sha256 }}
+
+about:
+  home: https://github.com/PacificBiosciences/pbbioconda
+  license: BSD-3-Clause-Clear
+  summary: jasmine
+
+extra:
+  recipe-maintainers:
+    - armintoepfer
+    - pb-dseifert
+  skip-lints:
+    #repackaged binary
+    - should_be_noarch_generic
+
+build:
+  number: 0
+  skip: True  # [osx]
+  binary_relocation: False
+  run_exports:
+    - {{ pin_subpackage('pbjasmine', max_pin='x.x') }}
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+
+test:
+  commands:
+    - jasmine -h

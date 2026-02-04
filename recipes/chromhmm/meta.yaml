@@ -1,28 +1,35 @@
+{% set name = "ChromHMM" %}
+{% set version = "1.27" %}
+
 package:
-  name: chromhmm
-  version: 1.15
+  name: {{ name|lower }}
+  version: {{ version }}
 
 build:
   number: 0
   noarch: generic
+  run_exports:
+    - {{ pin_subpackage('chromhmm', max_pin=None) }}
 
 source:
-  url: http://compbio.mit.edu/ChromHMM/ChromHMM.zip
-  sha256: e6e31c1f4695393b5446fdfcf0762a9643d8dc3e6c2e5d191ebc4b13e6ab2114
+  url: https://github.com/jernst98/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 425a1be44fbf25e21f67b37238f1e9fa21063c04d0be26df9845f9592759efd2
 
 requirements:
   run:
     - openjdk
     - unzip  # for the data-download script
+    - fonts-conda-ecosystem
 
 test:
   commands:
     - 'ChromHMM.sh -Xmx512M BinarizeBam | grep -q usage'
 
 about:
-  home: http://compbio.mit.edu/ChromHMM/
+  home: https://github.com/jernst98/ChromHMM
   license: GPLv3
   summary: 'ChromHMM is software for learning and characterizing chromatin states. ChromHMM can integrate multiple chromatin datasets such as ChIP-seq data of various histone modifications to discover de novo the major re-occuring combinatorial and spatial patterns of marks.'
+  license_file: LICENSE
 
 extra:
   notes: 'ChromHMM comes with about 36MB of example data which is not included in the recipe. This recipe installs a script, "download_chromhmm_data.sh", which downloads the data in the proper location, and which can be run after ChromHMM has been installed.'

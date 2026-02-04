@@ -1,0 +1,56 @@
+{% set version = "0.1.2" %}
+{% set sha256 = "abe5d2f6df6a5d2eba728160099ed68ecd77559d39c6d0e803c54fde5062633c" %}
+
+package:
+  name: mupbwt
+  version: {{ version }}
+
+source:
+  url: https://github.com/dlcgold/muPBWT/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - cmake.patch
+
+build:
+  number: 5
+  run_exports:
+    - {{ pin_subpackage('mupbwt', max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - cmake
+  host:
+    - zlib
+    - sdsl-lite
+    - htslib
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+  run:
+    - htslib
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+
+test:
+  commands:
+    - mupbwt -h
+
+about:
+  home: "https://github.com/dlcgold/muPBWT"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "A light pbwt-based index."
+  dev_url: "https://github.com/dlcgold/muPBWT"
+  doc_url: "https://github.com/dlcgold/muPBWT/blob/v{{ version }}/README.md"
+
+extra:
+  identifiers:
+    - biotools:mupbwt
+    - doi:10.1093/bioinformatics/btad552
+  recipe-maintainers:
+    - dlcgold
+  additional-platforms:
+    - linux-aarch64

@@ -12,7 +12,7 @@ import sys
 import subprocess
 from os import access, getenv, X_OK
 
-jar_file = 'Dinosaur-1.1.3.free.jar'
+jar_file = 'Dinosaur-1.2.0.free.jar'
 
 default_jvm_mem_opts = []
 

@@ -1,8 +1,11 @@
 #!/bin/bash
 
-export CPP_INCLUDE_PATH=${PREFIX}/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export CXX_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
+sed -i.bak -e 's/install -d/mkdir -p/' Makefile
+rm -f *.bak
+
 make
-make install PREFIX=$PREFIX
+make install PREFIX="${PREFIX}"

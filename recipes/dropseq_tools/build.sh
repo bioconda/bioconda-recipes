@@ -5,11 +5,14 @@ declare -a PROGRAMS=(
     'BamTagHistogram'
     'BamTagOfTagCounts'
     'BaseDistributionAtReadPosition'
+    'CensusSeq'
     'CollapseBarcodesInPlace'
     'CollapseTagWithContext'
     'CompareDropSeqAlignments'
     'ConvertToRefFlat'
+    'CountUnmatchedSampleIndices'
     'CreateIntervalsFiles'
+    'CsiAnalysis'
     'DetectBeadSubstitutionErrors'
     'DetectBeadSynthesisErrors'
     'DigitalExpression'
@@ -23,8 +26,10 @@ declare -a PROGRAMS=(
     'MergeDgeSparse'
     'PolyATrimmer'
     'ReduceGtf'
+    'RollCall'
     'SelectCellsByNumTranscripts'
     'SingleCellRnaSeqMetricsCollector'
+    'SplitBamByCell'
     'TagBamWithReadSequenceExtended'
     'TagReadWithGeneExonFunction'
     'TagReadWithGeneFunction'
@@ -33,9 +38,9 @@ declare -a PROGRAMS=(
     'ValidateReference'
 )
 
-outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+outdir="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
 mkdir -p $outdir
-bindir=$PREFIX/bin
+bindir="$PREFIX/bin"
 mkdir -p $bindir
 cp -r ./* $outdir/
 
@@ -43,7 +48,7 @@ for PROG in "${PROGRAMS[@]}"
 do
 	sed -i'.bak' -E 's@^thisdir=.+@thisdir='$outdir'@g' "${outdir}/${PROG}"
 	rm -f "${outdir}/${PROG}.bak"
-	ln -s "${outdir}/${PROG}" "${bindir}/${PROG}"
+	ln -sf "${outdir}/${PROG}" "${bindir}/${PROG}"
 	chmod 0755 "${bindir}/${PROG}"
 done
 

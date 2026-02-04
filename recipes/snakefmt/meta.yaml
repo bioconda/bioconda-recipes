@@ -1,0 +1,49 @@
+{% set name = "snakefmt" %}
+{% set version = "0.11.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 3efb82f66c0597712126ad540ec15cee24d797e443894fd86ccf6aa907506ec0
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - snakefmt = snakefmt.snakefmt:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('snakefmt', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - hatchling
+  run:
+    - python >=3.11
+    - black >=24.3,<25.0
+    - click >=8.2.0
+
+test:
+  imports:
+    - snakefmt
+  commands:
+    - snakefmt --help
+
+about:
+  home: "https://github.com/snakemake/snakefmt"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "The uncompromising Snakemake code formatter."
+  dev_url: "https://github.com/snakemake/snakefmt"
+  doc_url: "https://github.com/snakemake/snakefmt/blob/v{{ version }}/README.md"
+
+extra:
+  recipe-maintainers:
+    - mbhall88
+    - bricoletc

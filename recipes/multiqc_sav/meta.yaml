@@ -1,0 +1,44 @@
+{% set version = "0.2.0" %}
+
+package:
+  name: multiqc_sav
+  version: {{ version }}
+
+source:
+  url: https://github.com/MultiQC/MultiQC_SAV/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 486f22170b98b05dc22ac72918bbcebffe726b4472a9651e3bdb8b6af1b62fea
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  run_exports:
+    - {{ pin_subpackage("multiqc_sav", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - multiqc >=1.2
+
+  run:
+    - python
+    - multiqc >=1.25
+    - illumina-interop >=1.7.0,<2
+    - numpy
+    - pandas
+
+test:
+  # Python imports
+  imports:
+    - multiqc_sav
+
+about:
+  home: http://multiqc.info
+  license: GPL3
+  license_file: LICENSE
+  summary: 'MultiQC plugin to visualize Illumina SAV plots'
+  
+extra:
+  recipe-maintainers:
+    - matthdsm

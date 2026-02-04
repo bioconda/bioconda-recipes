@@ -1,14 +1,33 @@
 #!/bin/bash
 
+set -xe
+
 mkdir $PREFIX/rMATS
 
-if [[ "$(uname)" == "Darwin" ]]; then
-    SRCDIR="rMATS-turbo-Mac-UCS4"
-else
-    SRCDIR="rMATS-turbo-Linux-UCS4"
-fi
+GSL_LDFLAGS="$(gsl-config --libs)"
+GSL_CFLAGS="$(gsl-config --cflags)"
+export GSL_LDFLAGS
+export GSL_CFLAGS
+export LD_LIBRARY_PATH=${PREFIX}/lib
 
-cp -R $SRCDIR/* $PREFIX/rMATS
+case $(uname -m) in
+    aarch64)
+        sed -i.bak -e "s/-msse2//" rMATS_C/Makefile
+        ;;
+    *)
+        ;;
+esac
+
+make -j ${CPU_COUNT}
+
+cp rmats.py $PREFIX/rMATS
+cp cp_with_prefix.py $PREFIX/rMATS
+mkdir $PREFIX/rMATS/rMATS_C
+cp rMATS_C/rMATSexe $PREFIX/rMATS/rMATS_C
+cp -R rMATS_P $PREFIX/rMATS
+cp -R rMATS_R $PREFIX/rMATS
+cp *.so $PREFIX/rMATS
+
 chmod +x $PREFIX/rMATS/rmats.py
 ln -s $PREFIX/rMATS/rmats.py $PREFIX/bin/rmats.py
 ln -s $PREFIX/rMATS/rMATS_P/FDR.py $PREFIX/bin/FDR.py

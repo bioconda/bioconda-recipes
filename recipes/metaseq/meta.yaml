@@ -1,25 +1,25 @@
-{% set name = "metaseq" %}
 {% set version = "0.5.6" %}
 {% set sha256 = "8bb81b6d8e19f6a7227da188731717bde835662f48f6b07581e9605619db5e0d" %}
 
 package:
-  name: {{ name }}
+  name: metaseq
   version: {{ version }}
 
 source:
-  url: https://pypi.python.org/packages/source/m/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://pypi.python.org/packages/source/m/metaseq/metaseq-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 2
-  skip: True  # [py3k]
+  number: 5
+  skip: True  # [py>=30]
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
     - python
     - pip
-    - setuptools
     - scipy >=0.10.1
     - biopython
     - scikit-learn
@@ -39,7 +39,6 @@ requirements:
     - biopython
     - scikit-learn
     - bx-python >=0.7.1
-    - cython
     - numpy >=1.8.0
     - matplotlib >=1.3.1
     - pandas >=0.13.1
@@ -50,8 +49,8 @@ requirements:
     - fisher
 
 test:
-  imports:
-    - metaseq
+  commands:
+    - MPLBACKEND=agg python -c 'import metaseq'
 
 about:
   home: http://github.com/daler/metaseq

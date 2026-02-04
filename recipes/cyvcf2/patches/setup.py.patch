@@ -1,28 +1,42 @@
 diff --git a/setup.py b/setup.py
-index 84347c8..a2c0f0d 100644
+index ef361aa..4f7f819 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -55,20 +55,15 @@ install_requirements(missing_requirements(requires))
+@@ -10,13 +10,6 @@ from setuptools import setup, Extension, Command
+ from setuptools.command.build_ext import build_ext
+ from setuptools.command.sdist import sdist
  
- excludes = ['irods', 'plugin']
- 
--sources = [x for x in glob.glob('htslib/*.c') if not any(e in x for e in excludes)] + glob.glob('htslib/cram/*.c')
--# these have main()'s
--sources = [x for x in sources if not x.endswith(('htsfile.c', 'tabix.c', 'bgzip.c'))]
--sources.append('cyvcf2/helpers.c')
+-if sys.version_info.major == 2 and sys.version_info.minor != 7:
+-    sys.stderr.write(
+-        "ERROR: cyvcf2 is only for python 2.7 or greater you are running %d.%d\n",
+-        (sys.version_info.major, sys.version_info.minor),
+-    )
+-    sys.exit(1)
 -
  import numpy as np
- import platform
- from Cython.Distutils import build_ext
- 
- cmdclass = {'build_ext': build_ext}
- extension = [Extension("cyvcf2.cyvcf2",
--                        ["cyvcf2/cyvcf2.pyx"] + sources,
--                        libraries=['z', 'bz2', 'lzma', 'curl', 'ssl'] + (['crypt'] if platform.system() != 'Darwin' else []),
--                        include_dirs=['htslib', 'cyvcf2', np.get_include()])]
-+                        ["cyvcf2/cyvcf2.pyx", "cyvcf2/helpers.c"],
-+                        libraries=['z', 'bz2', 'lzma', 'curl', 'ssl', 'hts'] + (['crypt'] if platform.system() != 'Darwin' else []),
-+                        include_dirs=['cyvcf2', np.get_include()])]
  
  
- setup(
+@@ -236,19 +229,22 @@ htslib_include_dirs = ["htslib", "htslib/htslib"]
+ 
+ # Build the Cython extension by statically linking to the bundled htslib
+ sources = ["cyvcf2/cyvcf2.pyx", "cyvcf2/helpers.c"]
++extra_libs = ['hts']
+ 
+ extensions = [
+     Extension(
+         "cyvcf2.cyvcf2",
+         sources,
+         extra_objects=htslib_objects,
+-        libraries=htslib_librarys,
++        libraries=htslib_librarys + extra_libs,
+         extra_compile_args=[
+             "-Wno-sign-compare",
+             "-Wno-unused-function",
+             "-Wno-strict-prototypes",
+             "-Wno-unused-result",
+             "-Wno-discarded-qualifiers",
++            "-Wno-implicit-function-declaration",
++            "-Wno-int-conversion",
+         ],
+         include_dirs=["cyvcf2", np.get_include()] + htslib_include_dirs,
+         library_dirs=htslib_library_dirs,

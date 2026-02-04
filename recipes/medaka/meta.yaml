@@ -1,78 +1,94 @@
 {% set name = "medaka" %}
-{% set version = "0.9.1" %}
+{% set version = "2.2.0" %}
+{% set sha256 = "719c6ff2ff54841d3860f10582d62f2bea2f20db2a4b845e46f30a8b1b36e2aa" %}
+# Bot PRs - Always review requirements.txt for new release
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 56b13d964400eb38f5461bb99b32aff38b5cae0b3007af14fcecde5276d1a846
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/medaka-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-setup.py.patch
 
 build:
-  # keras is 2.7 or 3.6 only. We need py3: 3.6 is the only possibility
-  skip: True # [not py36]
   number: 0
+  skip: True  # [py<310]
   entry_points:
     - medaka = medaka.medaka:main
     - medaka_counts = medaka.medaka_counts:main
     - medaka_data_path = medaka.common:print_data_path
     - medaka_version_report = medaka:report_binaries
+  run_exports:
+    - {{ pin_subpackage('medaka', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-
+    - cmake
+    - make
   host:
-    - cffi
+    - python
     - pip
-    - python
-    - htslib ==1.9
-    - bzip2
-    - xz
-    - zlib
-    - libdeflate
-
-  run:
-    - biopython
     - cffi
-    - h5py ==2.7.1
-    - intervaltree >=3.0.0
-    - keras ==2.2.4
-    - mappy
-    - numpy ==1.16.1
-    - parasail-python
-    - pysam
-    - python
-    - tensorflow >=1.12.2
-    - whatshap ==0.18
-    - samtools ==1.9
-    - bcftools ==1.9
-    - minimap2 ==2.17
-    - htslib ==1.9
+    - libcurl
     - bzip2
     - xz
     - zlib
-    - libdeflate
+    - htslib >=1.20
+  run:
+    - python
+    - grpcio
+    - h5py
+    - intervaltree
+    - mappy
+    - cffi
+    - numpy >=2.0.0
+    - nomkl  # [osx]
+    - ont-fast5-api
+    - parasail-python
+    - pyabpoa
+    - pyspoa >=0.2.1
+    - pysam >=0.16.0.1
+    - python-edlib
+    - pytorch >=2.9.*
+    - tensordict
+    - requests
+    - toml
+    - tqdm
+    - wurlitzer
+    - samtools >=1.14
+    - bcftools >=1.14
+    - minimap2 >=2.24
+    - htslib >=1.20
 
 test:
   imports:
     - medaka
   commands:
     - medaka --help
-    - medaka consensus --help
+    - medaka inference --help
     - medaka_data_path
     - medaka_version_report
 
 about:
-  home: https://github.com/nanoporetech/medaka
-  license: Mozilla Public License 2.0
+  home: "https://github.com/nanoporetech/medaka"
+  summary: "A tool to create consensus sequences and variant calls from nanopore sequencing data using neural networks."
+  license: "Oxford Nanopore Technologies PLC. Public License Version 1.0"
   license_family: OTHER
-  license_file: LICENSE.md
-  summary: Neural network sequence error correction.
-  doc_url: https://nanoporetech.github.io/medaka/index.html
-  dev_url: https://github.com/nanoporetech/medaka
+  license_file: "LICENSE"
+  dev_url: "https://github.com/nanoporetech/medaka"
+  doc_url: "https://github.com/nanoporetech/medaka/blob/v{{ version }}/README.md"
 
 extra:
-  recipe-maintainers:
-    - cjw85
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - usegalaxy-eu:medaka_consensus
+    - usegalaxy-eu:medaka_consensus_pipeline
+    - usegalaxy-eu:medaka_variant
+    - usegalaxy-eu:medaka_variant_pipeline
+    - biotools:medaka

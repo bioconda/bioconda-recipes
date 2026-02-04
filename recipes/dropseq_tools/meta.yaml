@@ -1,32 +1,38 @@
-{% set name = "Drop-seq_tools" %}
-{% set version = "2.3.0" %}
+{% set name = "Dropseq_tools" %}
+{% set version = "3.0.2" %}
+{% set sha256 = "aa681dff54ede54154a9b626c6361da860eb5df749456ece340e152b42c16484" %}
 
 package:
-  name: dropseq_tools
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/broadinstitute/Drop-seq/releases/download/v{{ version }}/{{ name }}-{{ version }}.zip
-  sha256: a7fe229a9baca1f7826dc92ed7a93b57cb28f5a5a4fc46c3514c8156902f2139
+  url: https://github.com/broadinstitute/Drop-seq/releases/download/v{{ version }}/dropseq-{{ version }}.zip
+  sha256: {{ sha256 }}
 
 build:
   number: 0
   noarch: generic
+  run_exports:
+    - {{ pin_subpackage('dropseq_tools', max_pin="x") }}
 
 requirements:
   run:
-    - openjdk >=8
+    - openjdk >=21
 
 test:
   commands:
     - 'BamTagHistogram -- --help 2>&1 | grep "{{ version }}"'
     - 'BamTagOfTagCounts -- --help 2>&1 | grep "{{ version }}"'
     - 'BaseDistributionAtReadPosition -- --help 2>&1 | grep "{{ version }}"'
+    - 'CensusSeq -- --help 2>&1 | grep "{{ version }}"'
     - 'CollapseBarcodesInPlace -- --help 2>&1 | grep "{{ version }}"'
     - 'CollapseTagWithContext -- --help 2>&1 | grep "{{ version }}"'
     - 'CompareDropSeqAlignments -- --help 2>&1 | grep "{{ version }}"'
     - 'ConvertToRefFlat -- --help 2>&1 | grep "{{ version }}"'
+    - 'CountUnmatchedSampleIndices -- --help 2>&1 | grep "{{ version }}"'
     - 'CreateIntervalsFiles -- --help 2>&1 | grep "{{ version }}"'
+    - 'CsiAnalysis -- --help 2>&1 | grep "{{ version }}"'
     - 'DetectBeadSubstitutionErrors -- --help 2>&1 | grep "{{ version }}"'
     - 'DetectBeadSynthesisErrors -- --help 2>&1 | grep "{{ version }}"'
     - 'DigitalExpression -- --help 2>&1 | grep "{{ version }}"'
@@ -40,8 +46,10 @@ test:
     - 'MergeDgeSparse -- --help 2>&1 | grep "{{ version }}"'
     - 'PolyATrimmer -- --help 2>&1 | grep "{{ version }}"'
     - 'ReduceGtf -- --help 2>&1 | grep "{{ version }}"'
+    - 'RollCall -- --help 2>&1 | grep "{{ version }}"'
     - 'SelectCellsByNumTranscripts -- --help 2>&1 | grep "{{ version }}"'
     - 'SingleCellRnaSeqMetricsCollector -- --help 2>&1 | grep "{{ version }}"'
+    - 'SplitBamByCell -- --help 2>&1 | grep "{{ version }}"'
     - 'TagBamWithReadSequenceExtended -- --help 2>&1 | grep "{{ version }}"'
     - 'TagReadWithGeneExonFunction -- --help 2>&1 | grep "{{ version }}"'
     - 'TagReadWithGeneFunction -- --help 2>&1 | grep "{{ version }}"'
@@ -50,11 +58,13 @@ test:
     - 'ValidateReference -- --help 2>&1 | grep "{{ version }}"'
 
 about:
-  home: http://mccarrolllab.com/dropseq/
-  license: MIT License
+  home: "https://mccarrolllab.com/dropseq"
+  license: MIT
   license_family: MIT
   summary: |
     Package for the analysis of Drop-seq data developed by Jim Nemesh in the McCarroll Lab
+  dev_url: "https://github.com/broadinstitute/Drop-seq"
+  doc_url: "https://github.com/broadinstitute/Drop-seq/blob/v{{ version }}/README.md"
 
 extra:
   notes: |

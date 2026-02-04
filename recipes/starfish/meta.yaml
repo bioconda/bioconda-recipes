@@ -1,49 +1,63 @@
-{% set STARFISH_VERSION = "0.1.6" %}
+{% set name = "starfish" %}
+{% set version = "0.4.0" %}
 
 package:
-  name: starfish
-  version: {{ STARFISH_VERSION }}
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/spacetx/starfish/archive/{{ STARFISH_VERSION }}.zip
-  sha256: 661d56d18992f9df44db84491d76f8a4db8d77aa8fa088677a844d395680f859
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/starfish-{{ version }}.tar.gz
+  sha256: 36862de37d68e2c95f27aa640c8d3e1de114763bfff274702460d20f15289a4e
 
 build:
-  noarch: python
   number: 0
+  noarch: python
+  entry_points:
+    - starfish = starfish.core.starfish:starfish
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.6
-    - setuptools
+    - python >=3.9,<3.13
+    - pip
+    - versioneer
   run:
-    - python >=3.6
+    - python >=3.9,<3.13
     - click
-    - jsonschema
-    - matplotlib
-    - numpy !=1.13.0
-    - pandas >=0.23.4
-    - pytest >=3.6.3
+    - docutils <0.20
+    - h5py
+    - jsonschema <4.18
+    - matplotlib-base <3.8
+    - mistune ==0.8.4
+    - numpy <2
+    - referencing
     - regional
-    - requests
-    - scikit-image >=0.14.0
-    - scikit-learn
-    - scipy
-    - seaborn
+    - read-roi
     - semantic_version
+    - scikit-image >0.22
+    - scikit-learn
+    - seaborn-base
+    - showit
+    - slicedimage
+    - sympy
     - tqdm
     - trackpy
     - validators
-    - xarray
-    - showit >=1.1.4
-    - slicedimage >=4.0.0
-    - sympy
+    - xarray <2023.09
 
 test:
   imports:
     - starfish
+  commands:
+    - starfish --help
 
 about:
-  home: https://github.com/spacetx/starfish
+  home: "https://github.com/spacetx/starfish"
   license: MIT
-  summary: standardized analysis pipeline for image-based transcriptomics
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Standardized analysis pipeline for image-based transcriptomics."
+  dev_url: "https://github.com/spacetx/starfish"
+  doc_url: "https://spacetx-starfish.readthedocs.io/en/latest"

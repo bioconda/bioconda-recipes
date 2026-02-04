@@ -1,0 +1,43 @@
+{% set name = "htseq-clip" %}
+{% set version = "2.19.0b0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/htseq-clip-{{ version }}.tar.gz
+  sha256: 266e9f20efbf33bbc47d677eb590c024069f04dd979e8eb7495460da0f1652d1
+
+build:
+  entry_points:
+    - htseq-clip=clip.command_line:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+
+requirements:
+  host:
+    - python
+    - numpy
+    - pip
+  run:
+    - python
+    - htseq
+    - pysam
+
+test:
+  imports:
+    - clip
+  commands:
+    - htseq-clip --help
+
+about:
+  home: https://github.com/EMBL-Hentze-group/htseq-clip
+  summary: 'htseq-clip: a toolset for the analysis of eCLIP/iCLIP datasets'
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - michauhl

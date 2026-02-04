@@ -1,44 +1,57 @@
-{% set version = "3.1.1b" %}
-{% set sha256 = "b52a3a91442973206e4ca69b8224cc991a9e400bb522420605c67813d883ff3f" %}
+{% set version = "4.2.7" %}
+{% set sha256 = "fc636c0748bbcb6623deb5433d8a83d8638496c558a3da249176e1b3be2e3250" %}
 
 package:
   name: ncbi-amrfinderplus
   version: {{ version }}
 
-
 source:
-  url: https://github.com/ncbi/amr/archive/amrfinder_v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  git_url: https://github.com/ncbi/amr.git
+  git_rev: amrfinder_v{{ version }}
+  sha256: unused
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage('ncbi-amrfinderplus', max_pin="x") }}
 
 requirements:
   build:
+    - git
+    - make
     - {{ compiler('cxx') }}
-  host:
     - coreutils
+  host:
     - libcurl
   run:
     - blast >=2.9
     - hmmer >=3.2
-    - libcurl
+    - curl
 
 test:
   commands:
+    - echo "PREFIX=$PREFIX   CONDA_PREFIX=$CONDA_PREFIX" # for debugging
     - amr_report -help
-    - amrfinder --help
     - amrfinder_update --help
     - fasta_check -help
     - fasta2parts -help
     - gff_check -help
-    - point_mut -help
+    - dna_mutation -help
+    - amrfinder -U
+    - |
+        curl --silent \
+         -O https://raw.githubusercontent.com/ncbi/amr/master/test_dna.fa \
+         -O https://raw.githubusercontent.com/ncbi/amr/master/test_prot.fa \
+         -O https://raw.githubusercontent.com/ncbi/amr/master/test_prot.gff \
+         -O https://raw.githubusercontent.com/ncbi/amr/master/test_both.expected
+        amrfinder --plus -n test_dna.fa -p test_prot.fa -g test_prot.gff -O Escherichia --print_node > test_both.got
+        diff test_both.expected test_both.got
 
 about:
-  home: https://github.com/ncbi/amr/wiki
-  license: Public Domain
+  home: https://github.com/ncbi/amr
+  license: "Public Domain"
   license_file: LICENSE
-  summary: AMRFinderPlus finds antimicrobial resistance and other genes in protein or nucleotide sequences.
+  summary: "AMRFinderPlus finds antimicrobial resistance and other genes in protein or nucleotide sequences."
   description: |
       This software and the accompanying database are designed to
       find acquired antimicrobial resistance genes in bacterial protein or
@@ -46,5 +59,15 @@ about:
       AMRFinderPlus we have added select members of additional classes of genes
       such as virulence factors, biocide, heat, acid, and metal resistance genes.
   doc_url: https://github.com/ncbi/amr/wiki
+  dev_url: https://github.com/ncbi/amr
 
-
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - evolarjun
+  identifiers:
+    - doi:10.1038/s41598-021-91456-0
+  skip-lints:
+    - uses_vcs_url

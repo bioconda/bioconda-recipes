@@ -1,62 +1,56 @@
 {% set name = "bohra" %}
-{% set version = "1.0.23" %}
+{% set version = "3.2.9" %}
+{% set sha256 = "fee931e5914c2776100eef5f3d5f3ba60bc25d07050d1b3d6ed7bdebc415bb52" %}
 
 package:
-  name: "{{ name|lower }}"
+  name: "{{ name }}"
   version: "{{ version }}"
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "33ab2d8ed6e623c3847546ec0cbd07f177441a9aa329b98da1768dfda59ce25a"
+  sha256: "{{ sha256 }}"
 
 build:
   noarch: python
   number: 0
   entry_points:
-    - bohra=bohra.bohra:main
-  script: "sed -i.bak '35d;34d;28d' setup.py; {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+    - bohra=bohra.bohra:cli
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('bohra', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.8
     - pip
+    - hatchling
   run:
-    - biopython >=1.70
-    - jinja2
-    - numpy
-    - packaging
-    - pandas >=0.23.0
-    - psutil
-    - pytest-runner
+    - python >=3.11 
+    - nextflow
     - pytest
-    - python >=3.6
-    - sh
-    - snakemake >=5.4.0
-    - svgwrite
-    - snippy >=4.4.3
-    - shovill >=1.0.4
-    - roary
-    - prokka
-    - kraken2
-    - abricate
-    - mlst
-    - iqtree
-    - seqtk
-    - snp-dists >=0.6.3
+    - click
+    - pandas
+    - numpy
+    - psutil
+    - jinja2
+    - csvtk
 
 test:
   imports:
     - bohra
   commands:
+    - bohra --version | grep -F '{{ version }}'
     - bohra --help
 
 about:
-  home: "https://github.com/kristyhoran/bohra"
-  license: "GNU General Public v3 (GPLv3)"
+  home: "https://github.com/MDU-PHL/bohra"
+  license: "GPL-3.0-or-later"
   license_family: "GPL3"
   license_file: "LICENSE.txt"
-  summary: "A bioinformatics pipeline for analysing short read Illumina data microbiological public health."
+  summary: "Pipeline for analysing Illumina data for microbiological public health."
+  doc_url: "https://mdu-phl.github.io/bohra/"
 
 extra:
   recipe-maintainers:
     - kristyhoran
+    - tseemann

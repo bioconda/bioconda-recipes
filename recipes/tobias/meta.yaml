@@ -1,55 +1,81 @@
-{% set name = "tobias" %}
-{% set version = "0.8.0" %}
+{% set name = "TOBIAS" %}
+{% set version = "0.17.3" %}
+{% set sha256 = "d8aef3b83565f01e43e1b8087c2690652b836fe7064135f9be3b99178d97ecba" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 27f3d51bd7e5f75323450139a0132fc512bf5a4616afb23ce8f2d53345445aaa
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/tobias-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 0
-  skip: True # [py27]
+  number: 1
+  entry_points:
+    - TOBIAS=tobias.TOBIAS:main
+  run_exports:
+    - {{ pin_subpackage('tobias', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - python
-    - setuptools
     - cython
-    - numpy
+    - pip
+    - numpy >=2
   run:
     - python
-    - {{ pin_compatible('numpy') }}
     - scipy
-    - pysam >=0.15.3  #This is only due to pinning issues with earlier builds
-    - matplotlib >=2
+    - pysam
+    - pybedtools
+    - matplotlib-base >=2
     - scikit-learn
     - pandas
     - pypdf2
     - xlsxwriter
-    - pyBigWig
-    - moods
-    - pybedtools
     - adjusttext
+    - pybigwig >=0.3
+    - moods
+    - svist4get >=1.2.24
+    - logomaker
+    - seaborn-base >=0.9.1
+    - boto3
+    - pyyaml >5.1
+    - kneed
+    - xgboost >=0.71
+    - importlib-metadata
+    - {{ pin_compatible('numpy') }}
 
 test:
+  imports:
+    - tobias
   commands:
-    - "TOBIAS --help"
+    - TOBIAS --help
 
 about:
-  home: https://github.molgen.mpg.de/loosolab/TOBIAS
-  doc_url: https://github.molgen.mpg.de/loosolab/TOBIAS/wiki
+  home: 'https://github.com/loosolab/TOBIAS'
+  summary: 'Transcription factor Occupancy prediction By Investigation of ATAC-seq Signal.'
   license: MIT
-  summary: Transcription factor Occupancy prediction By Investigation of ATAC-seq Signal 
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: 'https://github.com/loosolab/TOBIAS/wiki'
+  dev_url: 'https://github.com/loosolab/TOBIAS'
   description: |
     TOBIAS (Transcription factor Occupancy prediction By Investigation of ATAC-seq Signal) is a collection
-    of command-line bioinformatics tools for performing footprinting analysis on ATAC-seq data. 
+    of command-line bioinformatics tools for performing footprinting analysis on ATAC-seq data.
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - msbentsen
     - jenzopr
+    - hschult
+    - mohobein
+    - jan1034
+  identifiers:
+    - biotools:TOBIAS
+    - doi:10.1038/s41467-020-18035-1

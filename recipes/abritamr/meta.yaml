@@ -1,0 +1,61 @@
+{% set name = "abritamr" %}
+{% set version = "1.0.20" %}
+{% set sha256 = "a2c2f0cd03a56a159a6d5192df9d2619a3a9a47f78a73f1b719cab475c73802c" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/abritamr-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - abritamr = abritamr.abritamr:main
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('abritamr', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.9
+    - setuptools
+    - libcurl
+  run:
+    - python >=3.9
+    - pandas
+    - xlsxwriter
+    # Please review ncbi-amrfinderplus pinning every release
+    # The version should be pinned to the database version used by abritamr
+    # Please see the "changes.txt" file in https://github.com/MDU-PHL/abritamr/blob/master/abritamr/db/amrfinderplus/data/<DATABASE_VERSION>/changes.txt
+    - ncbi-amrfinderplus =3.12.8
+    - blast
+    - hmmer
+    - parallel
+
+test:
+  imports:
+    - abritamr
+  commands:
+    - abritamr --help
+  requires:
+    - nose
+    - pytest
+
+about:
+  home: "https://github.com/MDU-PHL/abritamr"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  summary: "Running AMRFinderPlus for MDU."
+  dev_url: "https://github.com/MDU-PHL/abritamr"
+
+extra:
+  recipe-maintainers:
+    - kristyhoran
+    - andergs
+  identifiers:
+    - biotools:abritamr

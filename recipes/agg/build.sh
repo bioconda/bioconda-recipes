@@ -1,10 +1,7 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
-export C_INCLUDE_PATH=${PREFIX}/include
-export CPP_INCLUDE_PATH=${PREFIX}/include
-export CXX_INCLUDE_PATH=${PREFIX}/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-make
-mv agg $PREFIX/bin
+make \
+    CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+    CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+install -d "${PREFIX}/bin"
+install agg "${PREFIX}/bin/"

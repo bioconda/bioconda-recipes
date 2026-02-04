@@ -1,0 +1,62 @@
+{% set version = "1.4.0" %}
+{% set name = "RNAseqCovarImpute" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: The RNAseqCovarImpute package makes linear model analysis for RNA sequencing read counts compatible with multiple imputation (MI) of missing covariates. A major problem with implementing MI in RNA sequencing studies is that the outcome data must be included in the imputation prediction models to avoid bias. This is difficult in omics studies with high-dimensional data. The first method we developed in the RNAseqCovarImpute package surmounts the problem of high-dimensional outcome data by binning genes into smaller groups to analyze pseudo-independently. This method implements covariate MI in gene expression studies by 1) randomly binning genes into smaller groups, 2) creating M imputed datasets separately within each bin, where the imputation predictor matrix includes all covariates and the log counts per million (CPM) for the genes within each bin, 3) estimating gene expression changes using `limma::voom` followed by `limma::lmFit` functions, separately on each M imputed dataset within each gene bin, 4) un-binning the gene sets and stacking the M sets of model results before applying the `limma::squeezeVar` function to apply a variance shrinking Bayesian procedure to each M set of model results, 5) pooling the results with Rubins’ rules to produce combined coefficients, standard errors, and P-values, and 6) adjusting P-values for multiplicity to account for false discovery rate (FDR). A faster method uses principal component analysis (PCA) to avoid binning genes while still retaining outcome information in the MI models. Binning genes into smaller groups requires that the MI and limma-voom analysis is run many times (typically hundreds). The more computationally efficient MI PCA method implements covariate MI in gene expression studies by 1) performing PCA on the log CPM values for all genes using the Bioconductor `PCAtools` package, 2) creating M imputed datasets where the imputation predictor matrix includes all covariates and the optimum number of PCs to retain (e.g., based on Horn’s parallel analysis or the number of PCs that account for >80% explained variation), 3) conducting the standard limma-voom pipeline with the `voom` followed by `lmFit` followed by `eBayes` functions on each M imputed dataset, 4) pooling the results with Rubins’ rules to produce combined coefficients, standard errors, and P-values, and 5) adjusting P-values for multiplicity to account for false discovery rate (FDR).
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Impute Covariate Data in RNA Sequencing Studies
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-rnaseqcovarimpute", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, PCAtools, rmarkdown, tidyr, stringr, testthat (>= 3.0.0)
+requirements:
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - r-base
+    - r-dplyr
+    - r-foreach
+    - r-magrittr
+    - r-mice
+    - r-rlang
+  run:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - r-base
+    - r-dplyr
+    - r-foreach
+    - r-magrittr
+    - r-mice
+    - r-rlang
+
+source:
+  md5: 2b8770546c6f7feeacc2935c0db3065a
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
