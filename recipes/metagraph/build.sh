@@ -12,9 +12,11 @@ echo '#define HTSCODECS_VERSION_TEXT "1.6.4"' > metagraph/external-libraries/hts
 
 sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' metagraph/CMakeLists.txt
 
-pushd metagraph/external-libraries/sdsl-lite
-./install.sh "${PWD}"
-popd
+# Add zlib include directory for sshash target
+# Add it right after add_subdirectory(external-libraries/sshash SYSTEM)
+sed -i.bak2 '/add_subdirectory(external-libraries\/sshash SYSTEM)/a\
+target_include_directories(sshash_static PRIVATE external-libraries/zlib)
+' metagraph/CMakeLists.txt
 
 [[ ! -d metagraph/build ]] || rm -rf metagraph/build
 mkdir -p metagraph/build
