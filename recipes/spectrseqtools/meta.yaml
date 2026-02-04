@@ -1,0 +1,63 @@
+{% set version = "0.1.2" %}
+
+package:
+  name: spectrseqtools
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/s/spectrseqtools/spectrseqtools-{{ version }}.tar.gz
+  sha256: da58a6bef06bdcdcf880657dbbe17b3cebf3c34f0c05b4552a2f9ae51fb4552e
+
+build:
+  entry_points:
+    - spectrseqtools = spectrseqtools.cli:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage("spectrseqtools", max_pin="x") }}
+  noarch: python
+  number: 0
+
+requirements:
+  host:
+    - python >=3.12,<3.14
+    - hatchling
+    - pip
+  run:
+    - python >=3.12,<3.14
+    - polars >=1.9.0,<2.0
+    - pulp >=2.3.0,<3.0
+    - typed-argument-parser >=1.10.1,<2.0
+    - altair >=5.4.1,<6.0
+    - pyyaml >=6.0.2,<7.0
+    - loguru >=0.7.2,<0.8
+    - numpy >=2.2.3,<3.0
+    - platformdirs >=4.3.8,<5.0
+    - clr_loader >=0.2.7.post0,<0.3
+    - ms_deisotope >=0.0.60,<0.1
+    - pythonnet >=3.0.5,<4.0
+    - tqdm >=4.67.1,<5.0
+    - scikit-learn >=1.7.2,<2.0
+    - dbscan1d >=0.2.3,<0.3
+    - mono >=6.12.0.199,<7
+
+test:
+  imports:
+    - spectrseqtools
+  commands:
+    - pip check
+    - spectrseqtools --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://github.com/spectrseq/spectrseqtools
+  summary: |
+    SpectrSeqTools is a fully automatic analysis platform for sequencing small RNA molecules including
+    post translational modifications measured via LC-MS/MS data.
+  license: GPL-3.0-only
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - koesterlab
