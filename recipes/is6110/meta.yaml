@@ -1,0 +1,42 @@
+{% set name = "is6110" %}
+{% set version = "0.5.0" %}
+{% set sha256 = "d956297583cd4fa199045babd5af8c45478c5f4f0eb95b958ca9200914287cfb" %}
+
+package:
+  name: {{name}}
+  version: {{version}}
+
+source:
+  url: https://github.com/jodyphelan/{{name}}/archive/v{{version}}.tar.gz
+  sha256: '{{sha256}}'
+
+build:
+  script: python -m pip install --no-deps --ignore-installed .
+  noarch: python
+  number: 0
+  run_exports:
+    - { pin_subpackage('is6110', max_pin="x") }
+
+requirements:
+  host:
+    - python
+    - pip
+    - flit
+  run:
+    - python >=3.10
+    - samtools >=1.12
+    - bwa
+    - pysam
+    - tqdm
+
+test:
+  imports:
+    - is6110
+  commands:
+    - is6110 --version
+
+about:
+  home: https://github.com/jodyphelan/{{ name }}
+  license: MIT
+  license_file: LICENSE
+  summary: Tool to find IS6110 insertions in M. tuberculosis NGS data
