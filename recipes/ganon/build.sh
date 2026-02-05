@@ -2,6 +2,8 @@
 
 # Install python packages
 cd ${SRC_DIR}/ganon/
+# Link installed genome_updater.sh in the submodule dir to properly install script with pip
+ln -s $(whereis genome_updater.sh | cut -d " " -f 2) ${SRC_DIR}/ganon/libs/genome_updater/genome_updater.sh
 $PYTHON -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
 
 # Build and install cpp packages
