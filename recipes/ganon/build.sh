@@ -2,7 +2,7 @@
 
 # Install python packages
 cd ${SRC_DIR}/ganon/
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+$PYTHON -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
 
 # Build and install cpp packages
 mv ${SRC_DIR}/robin-hood-hashing ${SRC_DIR}/ganon/libs/
@@ -11,11 +11,8 @@ cmake -DCMAKE_BUILD_TYPE=Release -DVERBOSE_CONFIG=ON -DCONDA=ON -DCMAKE_INSTALL_
 make
 make install
 
-# Tests cpp
-ctest -VV . 
-
+# Test cpp
+ctest -VV .
 # Test python
 cd ${SRC_DIR}/ganon/
-
-$PYTHON -m unittest discover -s tests/ganon/integration/ -v 
-#$PYTHON -m unittest discover -s tests/ganon/integration_online/ -v
+$PYTHON -m unittest discover -s tests/ganon/integration/ -v
