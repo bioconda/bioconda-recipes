@@ -1,0 +1,64 @@
+{% set name = "docling-parse" %}
+{% set version = "5.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/docling_parse-{{ version }}.tar.gz
+  sha256: ba67e3cde7fddd3faaac1b32cf80659bd1810cc8ddc7ffbfecd6e39ccdc3d8fa
+
+build:
+  skip: true  # [py<310]
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools >=77.0.3
+    - pybind11 >=2.13.6
+    - cibuildwheel >=2.19.2,<3.0.0  # [py<311]
+    - cibuildwheel >=2.19.2,<4.0.0  # [py>=311]
+    - wheel >=0.43.0,<1.0.0
+    - delocate >=0.11.0,<1.0.0
+    - cmake >=3.27.0,<4.0.0
+    - pip
+    # build tools
+    - poetry-core
+    - pybind11 >=2.13.1
+    # libraries
+    - cxxopts
+    - loguru-cpp
+    - nlohmann_json
+    - utfcpp
+    - libjpeg-turbo
+    - qpdf <12
+    - zlib
+  run:
+    - python >=3.10
+    - tabulate >=0.9.0,<1.0.0
+    - pillow >=10.0.0,<13.0.0
+    - pydantic >=2.0.0
+    - docling-core >=2.44.1
+    - pywin32-on-windows >=305  # [win]
+  
+test:
+  imports:
+    - docling_parse
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  summary: Simple package to extract text with coordinates from programmatic PDFs
+  license: BSD-3-Clause AND MIT
+  license_file:
+    - LICENSE
+    - docling_parse/pdf_resources/cmap-resources/LICENSE.md
+
+extra:
+  recipe-maintainers:
+    - hechth
