@@ -7,11 +7,11 @@ package:
 
 source:
   url: https://github.com/TurakhiaLab/DIPPER/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: fc423ab3e34a88cc81d7e3e560d85c1020048427c70d0c61dd7d51b4047d975f
+  sha256: 241eb96a3fe11db8f15a4689d58c6f8a55f67a3998df415315f129a984e6c8fc
 
 build:
-  number: 0
-  skip: true # [win]
+  number: 1
+  skip: true # [win or osx]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
@@ -36,7 +36,7 @@ requirements:
 
 test:
   commands:
-    - dipper_cpu --help
+    - dipper --help
 
 about:
   home: "https://github.com/TurakhiaLab/DIPPER"
@@ -53,3 +53,39 @@ extra:
     - linux-aarch64
   recipe-maintainers:
     - sumit-walia
+
+outputs:
+  - name: {{ name }}
+    skip: true # [win or osx]
+    requirements:
+      run:
+        - boost-cpp
+        - tbb
+    test:
+      commands:
+        - dipper --help
+
+  - name: dipper-cpu
+    skip: true # [win]
+    script: build.sh  # [unix]
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - cmake
+        - make
+        - pkg-config
+      host:
+        - zlib
+        - boost-cpp
+        - tbb
+        - tbb-devel
+      run:
+        - boost-cpp
+        - tbb
+    test:
+      commands:
+        - dipper_cpu --help
+    about:
+      summary: "CPU-only variant of DIPPER (no CUDA dependencies)"
+      description: "This subpackage provides a CPU-only install of DIPPER, built without CUDA support, for environments lacking GPU capability."
