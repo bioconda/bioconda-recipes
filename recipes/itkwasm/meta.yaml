@@ -9,6 +9,12 @@ source:
   url: https://pypi.org/packages/source/i/itkwasm/itkwasm-{{ version }}.tar.gz
   sha256: d4e4344a278c11cad68888164f5750c57764f6509b583fb5c49d237c8af48ac5
 
+# NOTE:
+# This package depends at runtime on wasmtime-py, which includes
+# platform-specific compiled shared libraries (_libwasmtime.so)
+# linked against glibc. Therefore this package cannot be built
+# as noarch.
+
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
@@ -41,6 +47,8 @@ about:
   repository: https://github.com/InsightSoftwareConsortium/ITK-Wasm
 
 extra:
+  skip-lints:
+    - should_be_noarch_generic
   recipe-maintainers:
     - khaled196
     - thewtex
