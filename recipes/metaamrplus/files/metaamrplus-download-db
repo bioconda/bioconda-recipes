@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "MetaAMRplus database installer"
+
+if [[ -z "${CONDA_PREFIX:-}" ]]; then
+  echo "ERROR: No active conda environment detected"
+  echo "Please activate your conda environment first"
+  exit 1
+fi
+
+DB_BASE="${CONDA_PREFIX}/db"
+DB_NAME="MetaAMRplus_DB_v1.0"
+DB_DIR="${DB_BASE}/${DB_NAME}"
+
+mkdir -p "${DB_BASE}"
+
+if [[ -d "${DB_DIR}" ]]; then
+  echo "✔ MetaAMRplus database already exists:"
+  echo "  ${DB_DIR}"
+  exit 0
+fi
+
+TMP_DIR="$(mktemp -d)"
+cd "${TMP_DIR}"
+
+echo "Downloading MetaAMRplus database..."
+wget -q --show-progress \
+  https://github.com/migshaw03/MetaAMRplus/releases/download/v1.0/MetaAMRplus_DB_v1.0.tar.gz
+
+echo "Extracting database..."
+tar -xzf MetaAMRplus_DB_v1.0.tar.gz
+
+mv MetaAMRplus_DB_v1.0 "${DB_BASE}"
+
+cd /
+rm -rf "${TMP_DIR}"
+
+echo
+echo "✔ MetaAMRplus database installation complete"
+echo "✔ Location: ${DB_DIR}"
+
