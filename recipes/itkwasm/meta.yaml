@@ -1,0 +1,54 @@
+{% set name = "itkwasm" %}
+{% set version = "1.0b195" %}
+
+package:
+  name: {{ name }}
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.org/packages/source/i/itkwasm/itkwasm-{{ version }}.tar.gz
+  sha256: d4e4344a278c11cad68888164f5750c57764f6509b583fb5c49d237c8af48ac5
+
+# NOTE:
+# This package depends at runtime on wasmtime-py, which includes
+# platform-specific compiled shared libraries (_libwasmtime.so)
+# linked against glibc. Therefore this package cannot be built
+# as noarch.
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.13,<3.14
+    - pip
+    - hatchling
+    - wasmtime-py
+  run:
+    - python >=3.13,<3.14
+    - numpy
+    - platformdirs
+    - typing_extensions
+    - wasmtime-py
+    - importlib-metadata
+
+test:
+  imports:
+    - itkwasm
+
+about:
+  summary: Python interface to itk-wasm WebAssembly (Wasm) modules.
+  license: Apache-2.0
+  license_file: LICENSE.txt
+  home: https://pypi.org/project/itkwasm/
+  repository: https://github.com/InsightSoftwareConsortium/ITK-Wasm
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic
+  recipe-maintainers:
+    - khaled196
+    - thewtex
