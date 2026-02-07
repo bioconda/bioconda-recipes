@@ -1,0 +1,58 @@
+{% set name = "metawepp" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/TurakhiaLab/metaWEPP/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 95bf69859561051fe7ebba442e8228842e66a414515014dffe64c5e376bb2717
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("metawepp", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - git
+
+  host:
+    - protobuf <4
+
+  run:
+    - conda
+    - kraken2 >=2.1.0
+    - protobuf <4
+    - snakemake-minimal >=7.0
+    - pandas
+    - biopython
+    - matplotlib-base
+    - pigz
+    - minimap2
+    - docker-py
+    - wepp
+
+test:
+  commands:
+    - run-metawepp help --cores 1
+    - rm -rf .snakemake
+
+about:
+  home: "https://github.com/TurakhiaLab/metaWEPP"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "metaWEPP: Improving resolution of metagenomic analysis using WEPP"
+  description:
+    metaWEPP extends the current species-level resolution of existing metagenomic tools by providing near-haplotype detection and abundance estimation for multi-species samples. It utilizes a standard classifier to first segregate reads by species before applying the Wastewater-Based Epidemiology using Phylogenetic Placements (WEPP) pipeline to each segregated dataset. By performing parsimonious read placement on species-specific mutation-annotated trees (MATs), metaWEPP identifies the haplotypes that best explain the data and flags Unaccounted Alleles—mutations observed in the sample but unexplained by selected haplotypes—potentially indicating the presence of novel variants.
+
+    The pipeline enables high-resolution surveillance across diverse pathogens and includes an interactive dashboard for visualizing identified haplotypes within their global phylogenies. This allows for detailed, read-level analysis of emerging lineages within complex metagenomic datasets.
+
+  #doc_url: "https://turakhia.ucsd.edu/metaWEPP"
+
+extra:
+  recipe-maintainers:
+    - pgangwar-ucsd
