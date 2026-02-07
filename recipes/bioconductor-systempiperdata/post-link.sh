@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "systempiperdata-2.10.0"
+installBiocDataPackage.sh "systempiperdata-2.14.4"

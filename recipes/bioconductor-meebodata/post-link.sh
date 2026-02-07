@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "meebodata-1.44.0"
+installBiocDataPackage.sh "meebodata-1.48.0"

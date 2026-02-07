@@ -1,13 +1,18 @@
-{% set version = "1.46.0" %}
+{% set version = "1.50.0" %}
 {% set name = "pRoloc" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: The pRoloc package implements machine learning and visualisation methods for the analysis and interogation of quantitiative mass spectrometry data to reliably infer protein sub-cellular localisation.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL-2
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
-  summary: A unifying bioinformatics framework for spatial proteomics
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: cc6a3e6056c8fd4d25813db29f1814da
 
 build:
   number: 0
@@ -16,19 +21,7 @@ build:
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-proloc", max_pin="x.x") }}'
 
-extra:
-  identifiers:
-    - biotools:proloc
-  parent_recipe:
-    name: bioconductor-proloc
-    path: recipes/bioconductor-proloc
-    version: 1.20.2
-
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
-
-# Suggests: testthat, rmarkdown, pRolocdata (>= 1.43.2), roxygen2, xtable, rgl, BiocStyle (>= 2.5.19), hpar (>= 1.41.0), dplyr, akima, fields, vegan, GO.db, AnnotationDbi, Rtsne (>= 0.13), nipals, reshape, magick
+# Suggests: testthat, rmarkdown, pRolocdata (>= 1.43.2), roxygen2, xtable, rgl, BiocStyle (>= 2.5.19), hpar (>= 1.41.0), dplyr, akima, fields, vegan, GO.db, AnnotationDbi, Rtsne (>= 0.13), nipals, reshape, magick, umap
 requirements:
 
   build:
@@ -37,16 +30,17 @@ requirements:
     - make
 
   host:
-    - bioconductor-biobase >=2.66.0,<2.67.0
-    - bioconductor-biocgenerics >=0.52.0,<0.53.0
-    - bioconductor-biocparallel >=1.40.0,<1.41.0
-    - bioconductor-biomart >=2.62.0,<2.63.0
-    - bioconductor-mlinterfaces >=1.86.0,<1.87.0
-    - bioconductor-msnbase >=2.32.0,<2.33.0
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-biomart >=2.66.0,<2.67.0
+    - bioconductor-mlinterfaces >=1.90.0,<1.91.0
+    - bioconductor-msnbase >=2.36.0,<2.37.0
     - r-base
     - r-caret
     - r-class
     - r-coda
+    - r-colorspace
     - r-dendextend
     - r-e1071
     - r-fnn
@@ -72,18 +66,21 @@ requirements:
     - r-scales
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
 
   run:
-    - bioconductor-biobase >=2.66.0,<2.67.0
-    - bioconductor-biocgenerics >=0.52.0,<0.53.0
-    - bioconductor-biocparallel >=1.40.0,<1.41.0
-    - bioconductor-biomart >=2.62.0,<2.63.0
-    - bioconductor-mlinterfaces >=1.86.0,<1.87.0
-    - bioconductor-msnbase >=2.32.0,<2.33.0
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-biomart >=2.66.0,<2.67.0
+    - bioconductor-mlinterfaces >=1.90.0,<1.91.0
+    - bioconductor-msnbase >=2.36.0,<2.37.0
     - r-base
     - r-caret
     - r-class
     - r-coda
+    - r-colorspace
     - r-dendextend
     - r-e1071
     - r-fnn
@@ -108,15 +105,22 @@ requirements:
     - r-sampling
     - r-scales
 
-source:
-  md5: af27cefbe17786019c650bd56840013e
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  summary: A unifying bioinformatics framework for spatial proteomics
+  description: The pRoloc package implements machine learning and visualisation methods for the analysis and interogation of quantitiative mass spectrometry data to reliably infer protein sub-cellular localisation.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
+extra:
+  identifiers:
+    - biotools:proloc
+  parent_recipe:
+    name: bioconductor-proloc
+    path: recipes/bioconductor-proloc
+    version: 1.20.2
 

@@ -1,13 +1,18 @@
-{% set version = "2.30.0" %}
+{% set version = "2.34.0" %}
 {% set name = "Linnorm" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: Linnorm is an algorithm for normalizing and transforming RNA-seq, single cell RNA-seq, ChIP-seq count data or any large scale count data. It has been independently reviewed by Tian et al. on Nature Methods (https://doi.org/10.1038/s41592-019-0425-8). Linnorm can work with raw count, CPM, RPKM, FPKM and TPM.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: MIT + file LICENSE
-  license_file: LICENSE
-  summary: Linear model and normality based normalization and transformation method (Linnorm)
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 7109dc0437da067bad8983a345223bbb
 
 build:
   number: 0
@@ -15,16 +20,6 @@ build:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-linnorm", max_pin="x.x") }}'
-
-extra:
-  additional-platforms:
-    - linux-aarch64
-  identifiers:
-    - biotools:linnorm
-
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
 
 # Suggests: BiocStyle, knitr, rmarkdown, markdown, gplots, RColorBrewer, moments, testthat, matrixStats
 requirements:
@@ -35,7 +30,7 @@ requirements:
     - make
 
   host:
-    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-limma >=3.66.0,<3.67.0
     - r-amap
     - r-apcluster
     - r-base
@@ -56,9 +51,11 @@ requirements:
     - r-zoo
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
 
   run:
-    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-limma >=3.66.0,<3.67.0
     - r-amap
     - r-apcluster
     - r-base
@@ -78,15 +75,20 @@ requirements:
     - r-vegan
     - r-zoo
 
-source:
-  md5: 4adfc36d01bac9e486e4384f7e0f9976
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Linear model and normality based normalization and transformation method (Linnorm)
+  description: Linnorm is an algorithm for normalizing and transforming RNA-seq, single cell RNA-seq, ChIP-seq count data or any large scale count data. It has been independently reviewed by Tian et al. on Nature Methods (https://doi.org/10.1038/s41592-019-0425-8). Linnorm can work with raw count, CPM, RPKM, FPKM and TPM.
+  license_file: LICENSE
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:linnorm
 
