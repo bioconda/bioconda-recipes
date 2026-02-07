@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+############################################
+# MetaAMRplus Batch Runner v1.4
+# Author: Misheck Shawa
+############################################
+
+VERSION="MetaAMRplus_batch v1.4"
+COLOCAL_DISTANCE=10000   # 10 kb
+
+############################################
+# Help / Version
+############################################
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+  echo "========================================"
+  echo " $VERSION"
+  echo " Batch AMR, Metal & Colocalisation Analysis"
+  echo "========================================"
+  echo
+  echo "Usage:"
+  echo "  metaamrplus_batch <genome_directory>"
+  exit 0
+fi
+
+if [[ "${1:-}" == "--version" ]]; then
+  echo "$VERSION"
+  exit 0
+fi
+
+############################################
+# Argument checking
+############################################
+if [[ $# -ne 1 ]]; then
+  echo "ERROR: Usage: metaamrplus_batch <genome_directory>"
+  exit 1
+fi
+
+GENOME_DIR="$1"
+[[ -d "$GENOME_DIR" ]] || {
+  echo "ERROR: Directory not found: $GENOME_DIR"
+  exit 1
+}
+
+############################################
+# Results directories (conda-safe)
+############################################
+RESULTS_DIR="${METAAMRPLUS_RESULTS:-$PWD/metaamrplus_results}"
+SUMMARY_DIR="$RESULTS_DIR/summaries"
+mkdir -p "$SUMMARY_DIR"
+
+GENOME_SUMMARY="$SUMMARY_DIR/MetaAMRplus.genome_summary.tsv"
+COLOCAL_SUMMARY="$SUMMARY_DIR/MetaAMRplus.colocalisation_10kb.summary.tsv"
+
+echo -e "genome\tAMR_genes\tmetal_genes\ttotal_genes\tcolocalised_pairs_≤10kb" > "$GENOME_SUMMARY"
+echo -e "genome\tAMR_metal_pairs_≤10kb" > "$COLOCAL_SUMMARY"
+
+############################################
+# Collect genomes
+############################################
+shopt -s nullglob
+GENOMES=("$GENOME_DIR"/*.fasta "$GENOME_DIR"/*.fa "$GENOME_DIR"/*.fna)
+shopt -u nullglob
+
+[[ ${#GENOMES[@]} -gt 0 ]] || {
+  echo "ERROR: No genome files found in $GENOME_DIR"
+  exit 1
+}
+
+############################################
+# Loop over genomes
+############################################
+for GENOME in "${GENOMES[@]}"; do
+  BASENAME=$(basename "$GENOME")
+  PREFIX="${BASENAME%.*}"
+
+  echo
+  echo "▶ Processing $BASENAME"
+
+  ##########################################
+  # Run MetaAMRplus (full internal pipeline)
+  ##########################################
+  metaamrplus "$GENOME"
+
+  OUTDIR="$RESULTS_DIR/$PREFIX"
+
+  AMR_FILE="$OUTDIR/${PREFIX}.AMR.acquired.tsv"
+  METAL_FILE="$OUTDIR/${PREFIX}.metal.acquired.tsv"
+  WITH_LOC="$OUTDIR/${PREFIX}.metaamrplus.with_locations.acquired_only.tsv"
+  COLOCAL_FILE="$OUTDIR/${PREFIX}.AMR_metal_colocalised_10kb.tsv"
+
+  ##########################################
+  # Defensive check (crash-proofing)
+  ##########################################
+  if [[ ! -f "$WITH_LOC" ]]; then
+    echo "⚠ WARNING: MetaAMRplus failed for $PREFIX — skipping genome"
+    continue
+  fi
+
+  ##########################################
+  # Count colocalised pairs
+  ##########################################
+  if [[ -s "$COLOCAL_FILE" ]]; then
+    PAIR_COUNT=$(tail -n +2 "$COLOCAL_FILE" | wc -l)
+  else
+    PAIR_COUNT=0
+  fi
+
+  ##########################################
+  # Genome-level counts
+  ##########################################
+  AMR_COUNT=$(($(wc -l < "$AMR_FILE") - 1))
+  METAL_COUNT=$(($(wc -l < "$METAL_FILE") - 1))
+  TOTAL_COUNT=$(($(wc -l < "$WITH_LOC") - 1))
+
+  echo -e "${PREFIX}\t${AMR_COUNT}\t${METAL_COUNT}\t${TOTAL_COUNT}\t${PAIR_COUNT}" >> "$GENOME_SUMMARY"
+  echo -e "${PREFIX}\t${PAIR_COUNT}" >> "$COLOCAL_SUMMARY"
+
+done
+
+############################################
+# Done
+############################################
+echo
+echo "✔ Batch MetaAMRplus analysis complete"
+echo "✔ Genome summary: $GENOME_SUMMARY"
+echo "✔ Colocalisation summary: $COLOCAL_SUMMARY"
+
