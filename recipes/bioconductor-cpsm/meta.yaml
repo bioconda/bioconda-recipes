@@ -1,0 +1,74 @@
+{% set version = "1.2.0" %}
+{% set name = "CPSM" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 07c3cdc3eb58a53243283db6db58adf3
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-cpsm", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: knitr, rmarkdown, testthat (>= 3.0.0), BiocStyle
+requirements:
+  host:
+    - bioconductor-preprocesscore >=1.72.0,<1.73.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-caret
+    - r-ggfortify
+    - r-ggplot2
+    - r-glmnet
+    - r-hmisc
+    - r-mass
+    - r-matrix
+    - r-mtlr
+    - r-randomforestsrc
+    - r-reshape2
+    - r-rms
+    - r-survival
+    - r-survmetrics
+    - r-survminer
+  run:
+    - bioconductor-preprocesscore >=1.72.0,<1.73.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-caret
+    - r-ggfortify
+    - r-ggplot2
+    - r-glmnet
+    - r-hmisc
+    - r-mass
+    - r-matrix
+    - r-mtlr
+    - r-randomforestsrc
+    - r-reshape2
+    - r-rms
+    - r-survival
+    - r-survmetrics
+    - r-survminer
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 | file LICENSE
+  summary: 'CPSM: Cancer patient survival model'
+  description: CPSM provides a comprehensive computational pipeline for predicting survival probability and risk groups in cancer patients. The package includes steps for data preprocessing, training/test split, and normalization. It enables feature selection using univariate survival analysis and computes a LASSO-based prognostic index (PI) score. CPSM supports the development of predictive models using various feature sets and offers a suite of visualization tools, including survival curves based on predicted probabilities, barplots for predicted mean and median survival times, KM plots overlaid with individual survival predictions, and nomograms for estimating 1-, 3-, 5-, and 10-year survival probabilities. This makes CPSM a versatile tool for survival analysis in cancer research.
+  license_file: LICENSE
+

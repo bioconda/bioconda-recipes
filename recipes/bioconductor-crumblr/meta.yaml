@@ -1,0 +1,61 @@
+{% set version = "1.2.0" %}
+{% set name = "crumblr" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 17ef93803c1dfa66220e461555dccff3
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-crumblr", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: BiocStyle, RUnit, knitr, rmarkdown, dreamlet, muscat, ExperimentHub, scater, HMP, reshape2, glue, tidyverse, BiocGenerics, compositions
+requirements:
+  host:
+    - bioconductor-ggtree >=4.0.0,<4.1.0
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - bioconductor-variancepartition >=1.40.0,<1.41.0
+    - r-base
+    - r-dplyr
+    - r-ggplot2
+    - r-mass
+    - r-rdpack
+    - r-rfast
+    - r-tidytree
+    - r-viridis
+  run:
+    - bioconductor-ggtree >=4.0.0,<4.1.0
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - bioconductor-variancepartition >=1.40.0,<1.41.0
+    - r-base
+    - r-dplyr
+    - r-ggplot2
+    - r-mass
+    - r-rdpack
+    - r-rfast
+    - r-tidytree
+    - r-viridis
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Count ratio uncertainty modeling base linear regression
+  description: Crumblr enables analysis of count ratio data using precision weighted linear (mixed) models.  It uses an asymptotic normal approximation of the variance following the centered log ration transform (CLR) that is widely used in compositional data analysis.  Crumblr provides a fast, flexible alternative to GLMs and GLMM's while retaining high power and controlling the false positive rate.
+

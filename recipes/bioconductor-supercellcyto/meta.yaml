@@ -1,0 +1,45 @@
+{% set version = "1.0.0" %}
+{% set name = "SuperCellCyto" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: fb05de279bc8406b0b71abe45633b143
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-supercellcyto", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: flowCore, knitr, rmarkdown, usethis, testthat (>= 3.0.0), BiocSingular, bluster, scater, scran, Seurat, SingleCellExperiment, BiocStyle, magick, qs2
+requirements:
+  host:
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - r-base
+    - r-data.table
+    - r-matrix
+    - r-supercell
+  run:
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - r-base
+    - r-data.table
+    - r-matrix
+    - r-supercell
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 + file LICENSE
+  summary: SuperCell For Cytometry Data
+  description: SuperCellCyto provides the ability to summarise cytometry data into supercells by merging together cells that are similar in their marker expressions using the SuperCell package.
+  license_file: LICENSE
+

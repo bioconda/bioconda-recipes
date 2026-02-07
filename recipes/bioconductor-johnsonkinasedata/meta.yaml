@@ -1,0 +1,58 @@
+{% set version = "1.6.0" %}
+{% set name = "JohnsonKinaseData" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 018a588542ba7725aea3050c47380ef9
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-johnsonkinasedata", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: knitr, BiocStyle, ExperimentHubData, testthat (>= 3.0.0), rmarkdown
+requirements:
+  host:
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - r-base
+    - r-checkmate
+    - r-dplyr
+    - r-purrr
+    - r-stringr
+    - r-tidyr
+  run:
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - r-base
+    - r-checkmate
+    - r-dplyr
+    - r-purrr
+    - r-stringr
+    - r-tidyr
+    - curl
+    - bioconductor-data-packages >=20260207
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Kinase PWMs based on data published by Johnson et al. 2023 and Yaron-Barir et al. 2024
+  description: The packages provides position specific weight matrices (PWMs) for 303 human serine/threonine and 93 tyrosine kinases originally published in Johnson et al. 2023 (doi:10.1038/s41586-022-05575-3) and Yaron-Barir et al. 2024 (doi:10.1038/s41586-024-07407-y). The package includes basic functionality to score user provided phosphosites. It also includes pre-computed PWM scores ("background scores") for a large collection of curated human phosphosites which can be used to rank PWM scores relative to the background scores ("percentile rank").
+  license_file: LICENSE
+
