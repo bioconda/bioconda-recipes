@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ "$#" -ne 1 ]]; then
+  echo "Usage: metaamrplus_batch <directory_with_fasta_files>"
+  exit 1
+fi
+
+INPUT_DIR="$1"
+
+if [[ ! -d "$INPUT_DIR" ]]; then
+  echo "ERROR: Directory not found: $INPUT_DIR"
+  exit 1
+fi
+
+# Check that metaamrplus is available
+command -v metaamrplus >/dev/null 2>&1 || {
+  echo "ERROR: metaamrplus not found in PATH"
+  exit 1
+}
+
+echo "========================================"
+echo " MetaAMRplus batch analysis"
+echo " Input directory: $INPUT_DIR"
+echo "========================================"
+
+shopt -s nullglob
+
+for genome in "$INPUT_DIR"/*.fa "$INPUT_DIR"/*.fasta "$INPUT_DIR"/*.fna; do
+  echo
+  echo "▶ Processing: $(basename "$genome")"
+  metaamrplus "$genome"
+done
+
+echo
+echo "✔ Batch analysis complete"
+

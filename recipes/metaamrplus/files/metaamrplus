@@ -1,0 +1,243 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+########################################
+# MetaAMRplus v1.4
+# AMR, Metal & Colocalisation Analysis
+# Author: Misheck Shawa
+########################################
+
+VERSION="1.4"
+COLOC_DIST=10000
+MIN_CONTIG_LEN=200
+
+########################################
+# Banner
+########################################
+show_banner() {
+cat << EOF
+========================================
+ MetaAMRplus v${VERSION}
+ AMR, Metal & Colocalisation Analysis
+ Author: Misheck Shawa
+========================================
+EOF
+}
+
+########################################
+# Help / version (MUST EXIT EARLY)
+########################################
+case "${1:-}" in
+  --version)
+    show_banner
+    exit 0
+    ;;
+  --help|-h)
+    show_banner
+    cat << EOF
+Usage:
+  metaamrplus genome.fasta
+
+Environment variables:
+  METAAMRPLUS_DB       Override DB path
+  METAAMRPLUS_RESULTS  Output directory
+EOF
+    exit 0
+    ;;
+esac
+
+########################################
+# Argument check
+########################################
+if [[ $# -ne 1 ]]; then
+  show_banner
+  echo "ERROR: Exactly one genome FASTA is required"
+  exit 1
+fi
+
+GENOME="$1"
+[[ -f "$GENOME" ]] || { echo "ERROR: Genome not found: $GENOME"; exit 1; }
+
+########################################
+# Paths
+########################################
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RESULTS_DIR="${METAAMRPLUS_RESULTS:-$PWD/metaamrplus_results}"
+
+if [[ -n "${METAAMRPLUS_DB:-}" ]]; then
+  DB_BASE="$METAAMRPLUS_DB"
+elif [[ -n "${CONDA_PREFIX:-}" ]]; then
+  DB_BASE="$CONDA_PREFIX/db"
+else
+  echo "ERROR: METAAMRPLUS_DB not set and not running in Conda"
+  exit 1
+fi
+
+DB_PREFIX="$DB_BASE/MetaAMRplus_DB_v1.0"
+IDMAP="$DB_BASE/MetaAMRplus_v1.0.idmap.tsv"
+
+########################################
+# Dependency checks
+########################################
+for tool in prodigal blastp awk python3 sort grep; do
+  command -v "$tool" >/dev/null 2>&1 || {
+    echo "ERROR: Missing dependency: $tool"
+    exit 1
+  }
+done
+
+for ext in phr pin psq; do
+  [[ -f "${DB_PREFIX}.${ext}" ]] || {
+    echo "ERROR: BLAST DB missing: ${DB_PREFIX}.${ext}"
+    exit 1
+  }
+done
+
+[[ -f "$IDMAP" ]] || { echo "ERROR: Missing ID map: $IDMAP"; exit 1; }
+
+########################################
+# Output prep
+########################################
+PREFIX="$(basename "$GENOME")"
+PREFIX="${PREFIX%.*}"
+OUTDIR="$RESULTS_DIR/$PREFIX"
+mkdir -p "$OUTDIR"
+
+show_banner
+
+########################################
+# Step 1: FASTA validation
+########################################
+echo "[1/8] FASTA validation"
+grep -q '^>' "$GENOME" || { echo "ERROR: Invalid FASTA"; exit 1; }
+
+########################################
+# Step 2: Filter short contigs
+########################################
+echo "[2/8] Filter contigs < ${MIN_CONTIG_LEN} bp"
+
+FILTERED_FASTA="$OUTDIR/${PREFIX}.filtered.fasta"
+
+awk -v min="$MIN_CONTIG_LEN" '
+  /^>/ {
+    if (seq && length(seq) >= min) {
+      print header
+      print seq
+    }
+    header=$0
+    seq=""
+    next
+  }
+  { seq = seq $0 }
+  END {
+    if (seq && length(seq) >= min) {
+      print header
+      print seq
+    }
+  }
+' "$GENOME" > "$FILTERED_FASTA"
+
+if [[ ! -s "$FILTERED_FASTA" ]]; then
+  echo "WARNING: No contigs ≥${MIN_CONTIG_LEN} bp; skipping genome"
+  exit 0
+fi
+
+########################################
+# Step 3: ORF prediction
+########################################
+echo "[3/8] ORF prediction (Prodigal)"
+
+prodigal \
+  -i "$FILTERED_FASTA" \
+  -a "$OUTDIR/${PREFIX}.proteins.faa" \
+  -d "$OUTDIR/${PREFIX}.genes.fna" \
+  -f gff \
+  -o "$OUTDIR/${PREFIX}.gff" \
+  -p meta \
+  >/dev/null 2>&1 || {
+    echo "WARNING: Prodigal failed; skipping genome"
+    exit 0
+  }
+
+########################################
+# Step 4: BLASTP
+########################################
+echo "[4/8] BLASTP vs MetaAMRplus DB"
+
+blastp \
+  -query "$OUTDIR/${PREFIX}.proteins.faa" \
+  -db "$DB_PREFIX" \
+  -out "$OUTDIR/${PREFIX}.metaamrplus.raw.tsv" \
+  -evalue 1e-5 \
+  -outfmt "6 qseqid sseqid pident length qlen evalue bitscore"
+
+########################################
+# Step 5: Best hits
+########################################
+echo "[5/8] Filtering best hits"
+
+awk '$3>=95 && ($4/$5)*100>=80' \
+  "$OUTDIR/${PREFIX}.metaamrplus.raw.tsv" |
+  sort -k1,1 -k7,7nr |
+  awk '!seen[$1]++' \
+  > "$OUTDIR/${PREFIX}.metaamrplus.filtered.tsv"
+
+########################################
+# Step 6: Annotation
+########################################
+echo "[6/8] Annotation"
+
+python3 "$SCRIPT_DIR/annotate_metaamrplus.py" \
+  "$OUTDIR/${PREFIX}.metaamrplus.filtered.tsv" \
+  "$IDMAP" \
+  > "$OUTDIR/${PREFIX}.metaamrplus.final.annotated.tsv"
+
+grep -v -E '\t(gyrA|gyrB|parC|parE|rpoB|rpsL|rrs|folP|murA)\t' \
+  "$OUTDIR/${PREFIX}.metaamrplus.final.annotated.tsv" \
+  > "$OUTDIR/${PREFIX}.metaamrplus.acquired.tsv"
+
+########################################
+# Step 7: Add genomic coordinates
+########################################
+echo "[7/8] Adding genomic coordinates"
+
+{
+  echo -e "query_protein\tmetaamrplus_id\tgene\ttype\tphenotype\tmechanism\tsource\tpident\tcoverage\tbitscore\tcontig\tstart\tend\tstrand"
+  awk -F'\t' -v OFS='\t' '
+    NR==FNR && $3=="CDS" {
+      split($9,a,";")
+      sub(/^ID=/,"",a[1])
+      loc[a[1]]=$1"\t"$4"\t"$5"\t"$7
+      next
+    }
+    NR>FNR && FNR>1 {
+      if ($1 in loc) print $0, loc[$1]
+    }
+  ' "$OUTDIR/${PREFIX}.gff" \
+     "$OUTDIR/${PREFIX}.metaamrplus.acquired.tsv"
+} > "$OUTDIR/${PREFIX}.metaamrplus.with_locations.tsv"
+
+########################################
+# Step 8: AMR–metal colocalisation
+########################################
+echo "[8/8] AMR–metal colocalisation (≤${COLOC_DIST} bp)"
+
+awk -F'\t' -v OFS='\t' -v D="$COLOC_DIST" '
+  NR==1 { next }
+  $4=="AMR" { amr[$11,++n[$11]]=$3"\t"$12"\t"$13; next }
+  $4=="metal" {
+    for (i=1;i<=n[$11];i++) {
+      split(amr[$11,i],a,"\t")
+      dist = ($12>a[2] ? $12-a[2] : a[2]-$12)
+      if (dist<=D)
+        print a[1],$3,$11,a[2],a[3],$12,$13,dist
+    }
+  }
+' "$OUTDIR/${PREFIX}.metaamrplus.with_locations.tsv" \
+> "$OUTDIR/${PREFIX}.AMR_metal_colocalised_10kb.tsv"
+
+echo
+echo "✔ MetaAMRplus analysis complete"
+echo "✔ Bioconda & CI safe"
+echo "✔ Results written to: $OUTDIR"
+
