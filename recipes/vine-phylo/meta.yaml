@@ -1,0 +1,52 @@
+{% set version = "0.2.3" %}
+
+package:
+  name: vine-phylo
+  version: {{ version }}
+
+source:
+  url: https://github.com/CshlSiepelLab/vine/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 92c29a0912cfd905ff8df00aa044d2f5a7143feadb71b2bbda54e5fba1783d5d
+
+build:
+  number: 0
+  skip: true  # [win]
+  run_exports:
+    - {{ pin_subpackage('vine-phylo', max_pin='x') }}
+  script:
+    - if [[ -f "$PREFIX/lib/libopenblas.so.0" && ! -e "$PREFIX/lib/libopenblas.so" ]]; then ln -s "$PREFIX/lib/libopenblas.so.0" "$PREFIX/lib/libopenblas.so"; fi  # [linux]
+    - cmake -S . -B build
+      -DCMAKE_BUILD_TYPE=Release
+      -DCMAKE_INSTALL_PREFIX=${PREFIX}
+      -DPHAST_ROOT=${PREFIX}
+    - cmake --build build --parallel ${CPU_COUNT}
+    - cmake --install build
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - cmake
+    - make
+  host:
+    - phast
+    - pcre
+    - blas
+    - lapack
+  run:
+    - phast
+    
+test:
+  commands:
+    - vine --help
+
+about:
+  home: https://github.com/CshlSiepelLab/vine
+  license: BSD-3-Clause
+  license_file: LICENSE
+  summary: "VINE (phylogenetics): Variational Inference with Node Embeddings"
+  description: |
+    VINE is a tool for Bayesian variational phylogenetic inference.
+
+extra:
+  recipe-maintainers:
+    - asiepel
