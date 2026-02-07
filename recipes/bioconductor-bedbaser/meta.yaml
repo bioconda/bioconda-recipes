@@ -1,0 +1,69 @@
+{% set version = "1.2.4" %}
+{% set name = "bedbaser" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: b432f4d4a815ecbbe8c21a13b88d265f
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-bedbaser", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: BiocStyle, knitr, liftOver, testthat (>= 3.0.0)
+requirements:
+  host:
+    - bioconductor-anvil >=1.22.0,<1.23.0
+    - bioconductor-biocfilecache >=3.0.0,<3.1.0
+    - bioconductor-genomeinfodb >=1.46.0,<1.47.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-rtracklayer >=1.70.0,<1.71.0
+    - r-base
+    - r-curl
+    - r-dplyr
+    - r-httr
+    - r-purrr
+    - r-r.utils
+    - r-rlang
+    - r-stringr
+    - r-tibble
+    - r-tidyr
+  run:
+    - bioconductor-anvil >=1.22.0,<1.23.0
+    - bioconductor-biocfilecache >=3.0.0,<3.1.0
+    - bioconductor-genomeinfodb >=1.46.0,<1.47.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-rtracklayer >=1.70.0,<1.71.0
+    - r-base
+    - r-curl
+    - r-dplyr
+    - r-httr
+    - r-purrr
+    - r-r.utils
+    - r-rlang
+    - r-stringr
+    - r-tibble
+    - r-tidyr
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic License 2.0
+  summary: A BEDbase client
+  description: A client for BEDbase. bedbaser provides access to the API at api.bedbase.org. It also includes convenience functions to import BED files into GRanges objects and BEDsets into GRangesLists.
+
