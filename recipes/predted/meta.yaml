@@ -6,33 +6,39 @@ package:
   version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 0f7dac26d24d309435f1ecabcd9edce20c5c710e7c1797d0afdd7092f7c93e1b
+  url: https://github.com/syseitz/predTED/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 1bb0492a7d8d9acd8f1b6015b36017cea5ed0ccc1a8e76a5ee7ca9f55d020e72
 
 build:
   number: 0
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  skip: true  # [py<39]
+  skip: true  # [py<39 or win]
   run_exports:
     - {{ pin_subpackage("predted", max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - pkg-config
+    - llvm-openmp  # [osx]
   host:
     - python
     - pip
     - setuptools >=64
     - numpy
+    - lightgbm
+    - llvm-openmp  # [osx]
   run:
     - python >=3.9
     - numpy
     - lightgbm
+    - llvm-openmp  # [osx]
 
 test:
   imports:
     - predted
     - predted.features
+  commands:
+    - predted --version
 
 about:
   home: https://github.com/syseitz/predTED
@@ -40,6 +46,12 @@ about:
   license_family: MIT
   license_file: LICENSE
   summary: Fast approximate Tree Edit Distance prediction for RNA secondary structures
+  description: |
+    predTED uses structural features and a LightGBM model to approximate
+    pairwise Tree Edit Distances between RNA secondary structures without
+    running the expensive exact algorithm. Includes a Python library and
+    a standalone CLI binary with OpenMP parallelisation.
+  dev_url: https://github.com/syseitz/predTED
 
 extra:
   additional-platforms:
