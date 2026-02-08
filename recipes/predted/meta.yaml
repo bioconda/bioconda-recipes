@@ -1,0 +1,49 @@
+{% set name = "predted" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 0f7dac26d24d309435f1ecabcd9edce20c5c710e7c1797d0afdd7092f7c93e1b
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  skip: true  # [py<39]
+  run_exports:
+    - {{ pin_subpackage("predted", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - setuptools >=64
+    - numpy
+  run:
+    - python >=3.9
+    - numpy
+    - lightgbm
+
+test:
+  imports:
+    - predted
+    - predted.features
+
+about:
+  home: https://github.com/syseitz/predTED
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Fast approximate Tree Edit Distance prediction for RNA secondary structures
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - syseitz
