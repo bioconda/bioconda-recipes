@@ -31,7 +31,11 @@ cargo install --frozen --no-track --path . --root "${PREFIX}" --bin rastair --jo
 cargo-bundle-licenses --format yaml --output "${SRC_DIR}/THIRDPARTY.yml"
 
 # Copy licence to SRC_DIR so conda-build can find it for packaging.
-cp LICENSE.txt "${SRC_DIR}/LICENSE.txt"
+# When conda-build strips the top-level directory (macOS), we're already in
+# SRC_DIR and the file is already there — skip to avoid cp failing on self-copy.
+if [ "$(realpath LICENSE.txt)" != "$(realpath "${SRC_DIR}/LICENSE.txt")" ]; then
+    cp LICENSE.txt "${SRC_DIR}/LICENSE.txt"
+fi
 
 # Install auxiliary scripts used by `rastair mbias`.
 mkdir -p "${PREFIX}/share/rastair/scripts"
