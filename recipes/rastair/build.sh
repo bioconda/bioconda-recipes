@@ -9,6 +9,13 @@ fi
 
 export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig:${PKG_CONFIG_PATH:-}"
 
+# hts-sys uses bindgen, which needs libclang at build time.
+# On Linux (docker), clang/libclang are explicit conda deps in BUILD_PREFIX.
+# On macOS, the Xcode SDK provides libclang.
+if [ -d "${BUILD_PREFIX}/lib" ]; then
+    export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
+fi
+
 # Use a local CARGO_HOME to avoid conda-build HOME permission issues.
 export CARGO_HOME="${SRC_DIR}/.cargo-home"
 mkdir -p "${CARGO_HOME}"
