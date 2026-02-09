@@ -1,27 +1,36 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-# Standard flags
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
+export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig:${PKG_CONFIG_PATH:-}"
+# bindgen/clang-sys needs to load libclang at build time; in conda-build the
+# clang toolchain lives in $BUILD_PREFIX (not $PREFIX).
+export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
 
-# Keep cargo cache local to the build dir (avoid writing to $HOME)
-export CARGO_HOME="$(pwd)/.cargo-cache"
+# Use a local CARGO_HOME to avoid conda-build HOME permission issues.
+export CARGO_HOME="${SRC_DIR}/.cargo-home"
+mkdir -p "${CARGO_HOME}"
 
-# Bundle third-party licenses for Rust deps
-cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+# CI builders can have tight memory limits; cap parallel rustc jobs to avoid OOM.
+: "${CARGO_BUILD_JOBS:=1}"
+: "${CARGO_PROFILE_RELEASE_CODEGEN_UNITS:=1}"
 
-# Build and install Rust binaries into $PREFIX/bin reproducibly
-cargo install --locked --no-track --root "${PREFIX}" --path .
+# Build and install the Rust binary (--frozen for offline/vendored builds).
+cargo install --frozen --no-track --path . --root "${PREFIX}" --bin rastair --jobs "${CARGO_BUILD_JOBS}"
 
-# Remove cargo metadata files that shouldn't ship in the prefix
-rm -f "${PREFIX}/.crates.toml" "${PREFIX}/.crates2.json" || true
+# Generate third-party licence bundle required by bioconda.
+cargo-bundle-licenses --format yaml --output "${SRC_DIR}/THIRDPARTY.yml"
 
-# Install R scripts (they already have a proper Rscript shebang)
-install -d "${PREFIX}/bin"
-shopt -s nullglob
-for src in scripts/*; do
-  [[ -f "${src}" ]] || continue
-  install -m 0755 "${src}" "${PREFIX}/bin/"
-done
+# Install auxiliary scripts used by `rastair mbias`.
+mkdir -p "${PREFIX}/share/rastair/scripts"
+cp -v scripts/mbias.R scripts/QC_report.Rmd "${PREFIX}/share/rastair/scripts/"
+chmod +x "${PREFIX}/share/rastair/scripts/mbias.R"
+
+# Generate and install shell completion scripts.
+mkdir -p "${PREFIX}/share/bash-completion/completions"
+"${PREFIX}/bin/rastair" internal shell-completions bash > "${PREFIX}/share/bash-completion/completions/rastair"
+
+mkdir -p "${PREFIX}/share/zsh/site-functions"
+"${PREFIX}/bin/rastair" internal shell-completions zsh > "${PREFIX}/share/zsh/site-functions/_rastair"
+
+mkdir -p "${PREFIX}/share/fish/vendor_completions.d"
+"${PREFIX}/bin/rastair" internal shell-completions fish > "${PREFIX}/share/fish/vendor_completions.d/rastair.fish"
