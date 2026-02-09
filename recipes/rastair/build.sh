@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
+# conda-build does not strip the tarball's top-level directory.
+cd "${SRC_DIR}/rastair-${PKG_VERSION}-vendored"
+
 export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig:${PKG_CONFIG_PATH:-}"
 # bindgen/clang-sys needs to load libclang at build time; in conda-build the
 # clang toolchain lives in $BUILD_PREFIX (not $PREFIX).
@@ -19,6 +22,9 @@ cargo install --frozen --no-track --path . --root "${PREFIX}" --bin rastair --jo
 
 # Generate third-party licence bundle required by bioconda.
 cargo-bundle-licenses --format yaml --output "${SRC_DIR}/THIRDPARTY.yml"
+
+# Copy licence to SRC_DIR so conda-build can find it for packaging.
+cp LICENSE.txt "${SRC_DIR}/LICENSE.txt"
 
 # Install auxiliary scripts used by `rastair mbias`.
 mkdir -p "${PREFIX}/share/rastair/scripts"
