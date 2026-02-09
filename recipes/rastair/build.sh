@@ -8,9 +8,6 @@ if [ -d "${SRC_DIR}/rastair-${PKG_VERSION}-vendored" ]; then
 fi
 
 export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig:${PKG_CONFIG_PATH:-}"
-# bindgen/clang-sys needs to load libclang at build time; in conda-build the
-# clang toolchain lives in $BUILD_PREFIX (not $PREFIX).
-export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
 
 # Use a local CARGO_HOME to avoid conda-build HOME permission issues.
 export CARGO_HOME="${SRC_DIR}/.cargo-home"
