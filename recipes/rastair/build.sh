@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-# conda-build does not strip the tarball's top-level directory.
-cd "${SRC_DIR}/rastair-${PKG_VERSION}-vendored"
+# conda-build strips the tarball top-level directory on macOS but not in
+# the Linux docker build environment — handle both cases.
+if [ -d "${SRC_DIR}/rastair-${PKG_VERSION}-vendored" ]; then
+    cd "${SRC_DIR}/rastair-${PKG_VERSION}-vendored"
+fi
 
 export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig:${PKG_CONFIG_PATH:-}"
 # bindgen/clang-sys needs to load libclang at build time; in conda-build the
