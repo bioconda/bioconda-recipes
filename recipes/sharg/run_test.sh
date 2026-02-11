@@ -6,4 +6,4 @@ cmake -S test \
 
 make -C build -j "${CPU_COUNT}"
 
-./build/sharg_test_package --help
+./build/sharg_package_test --help
