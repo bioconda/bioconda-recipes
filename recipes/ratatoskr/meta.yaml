@@ -1,0 +1,57 @@
+{% set version = "1.0.2" %}
+{% set python_min = "3.12" %}
+{% set name = "ratatoskr" %}
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Fabian-Bastiaanssen/Ratatoskr/archive/v{{ version }}.tar.gz
+  sha256: 96b350c31d9f8356af81c6118596b747e0361c84dd6719d3e649af5aeb9b0266
+
+build:
+  entry_points:
+    - ratatoskr=ratatoskr.__main__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps
+  number: 0
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - setuptools <=80
+    - wheel
+    - pip
+    - hatchling
+  run:
+    - python {{ python_min }}
+    - pip
+    - ncbi-datasets-cli >=18.10.2
+    - biopython >=1.86
+    - loguru >=0.7.2
+    - polars >=1.32.2
+    - pyarrow >=13.0.0
+    - rich-click >=1.8.8
+    - setuptools <=80
+    - tqdm >=4.66.1
+    - python-keycloak
+    - aiohttp
+    - async-dsmz >=2025.0.5
+
+test:
+  commands:
+    - ratatoskr --help
+    - pip check
+  requires:
+    - python {{ python_min }}
+    - pip
+
+about:
+  home: https://github.com/Fabian-Bastiaanssen/Ratatoskr
+  summary: Tool for collecting and downloading taxonomic type strain data.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - Fabian-Bastiaanssen
