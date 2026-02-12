@@ -1,5 +1,5 @@
 {% set name = "alv" %}
-{% set version = "1.7.2" %}
+{% set version = "1.8.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,17 +7,20 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 1db6000ea2ae64e413fea4e978572c59baf59aa8d816437d19028483de48e75a
+  sha256: 1ef20c45b99c932f4325fd9ed82d163091181bc09da852755f5fb87f1d04b721
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
     - pip
     - python >=3.6
+    - setuptools
   run:
     - biopython >=1.70
     - colorama >=0.3.8
