@@ -1,0 +1,45 @@
+{% set version = "5.0.0" %}
+
+package:
+  name: variant-extractor
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/v/variant-extractor/variant_extractor-{{ version }}.tar.gz
+  sha256: 2bf6e68453a30b1907645a1af4485ef91ec860eb7140519df60847dc666edc93
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('variant-extractor', max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.6
+    - setuptools >=75.3.0,<75.4.dev0
+    - wheel >=0.42,<1.dev0
+    - pip
+  run:
+    - python >=3.6
+    - pysam >=0.22.1
+
+test:
+  imports:
+    - variant_extractor
+  commands:
+    - pip check
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://pypi.org/project/variant-extractor/
+  summary: Deterministic and standard extractor of indels, SNVs and structural variants (SVs) from VCF files.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - georgiakes
