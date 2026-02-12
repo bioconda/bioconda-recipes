@@ -1,0 +1,60 @@
+{% set name = "foldtree" %}
+{% set version = "1.1.0rc1" %}
+
+package:
+   name: {{ name|lower }}
+   version: {{ version }}
+
+
+source:
+   url: https://github.com/DessimozLab/fold_tree/archive/refs/tags/v{{ version }}.tar.gz
+   sha256: 7d2834fb6220c25f07d91933dc3bafc01162df6104423df016a42e0ed1af00ff
+   
+
+build:
+   # increase build number to fix recipe mistakes
+   # for the same version
+   number: 0
+
+   skip: true # [osx]
+
+   # Run exports -- see case 2 of: 
+   # https://bioconda.github.io/contributor/linting.html#missing-run-exports
+   # 
+   # Foldtree doesn't follow Semantic Versioning (https://semver.org)
+   # and instead follows PEP 440 (https://peps.python.org/pep-0440/)
+   # with the exception that the MAJOR version will always be 1, as
+   # versions 2.x.x are reserved for Foldtree2.
+   # That means MINOR versions (in terms of SemVer)
+   # can also bring breaking changes; therefore, we pin "x.x" not "x"
+   run_exports:
+      - {{ pin_subpackage("foldtree", max_pin="x.x") }}
+
+   noarch: python
+   
+   script: python -m pip install . --no-deps -vv --no-build-isolation
+      
+requirements:
+build:
+  - python
+  - pip
+run:
+   - python
+   - click
+   - snakemake-minimal
+
+test:
+commands:
+   - foldtree --help
+
+about:
+   home: https://github.com/DessimozLab/fold_tree
+   license: MIT
+   license_file: LICENSE
+   license_family: GPL3
+   summary: "Foldtree creates phylogenetic trees from protein structures using Foldseek."
+extra:
+additional-platforms:
+   - linux-aarch64
+identifiers:
+   - doi:10.1038/s41594-025-01649-8
