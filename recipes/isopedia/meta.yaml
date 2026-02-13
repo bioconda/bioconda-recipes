@@ -12,10 +12,13 @@ source:
 build:
   number: 0
   skip: True  # [osx]
+  binary_relocation: False  # 告诉 conda 这是预编译二进制
   run_exports:
     - {{ pin_subpackage('isopedia', max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}  # 添加一个编译器声明以避免 noarch 误判
   host:
     - zlib
     - bzip2
@@ -50,3 +53,5 @@ about:
 extra:
   recipe-maintainers:
     - zhengxinchang  
+  skip-lints:
+    - should_be_noarch_generic  # 这是预编译二进制，不是 noarch
