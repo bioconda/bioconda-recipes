@@ -7,26 +7,24 @@ if [[ "${build_platform}" == "linux-aarch64" || "${build_platform}" == "osx-arm6
   export CPU_COUNT=1
 fi
 
-if [[ "$(uname)" == "Darwin" ]]; then
+if [[ "${target_platform}" == "osx-"* ]]; then
     # c++11 compatibility
     export CXXFLAGS="${CXXFLAGS} -Xpreprocessor -fopenmp"
     export LDFLAGS="${LDFLAGS} -lomp -lGLEW -lglfw -framework OpenGL"
-elif [[ "$(uname)" == "Linux" ]]; then
+elif [[ "${target_platform}" == "linux-"* ]]; then
     export CXXFLAGS="${CXXFLAGS} -fopenmp"
-    export LDFLAGS="${LDFLAGS} -lGLEW -lglfw -lGL -lGLU"
+    export LDFLAGS="${LDFLAGS} -lGLEW -lglfw -lGL -lGLU -ldl"
 fi
 
-# Allow CMake to find framework OpenGL on MacOS
+# Enable CMake to find framework OpenGL on MacOS and link dl on Linux
 sed -i.bak \
     -e '/target_link_libraries(voronota-gl m GL GLEW glfw)/i\
 find_package(OpenGL REQUIRED)
 ' \
-    -e 's/target_link_libraries(voronota-gl m GL GLEW glfw)/target_link_libraries(voronota-gl m OpenGL::GL GLEW glfw)/' \
+    -e 's/target_link_libraries(voronota-gl m GL GLEW glfw)/target_link_libraries(voronota-gl m OpenGL::GL GLEW glfw dl)/' \
     expansion_gl/CMakeLists.txt
 
-mkdir build && cd build
-
-cmake .. \
+cmake -S . -B build \
     ${CMAKE_ARGS} \
     -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
     -DCMAKE_CXX_COMPILER="${CXX}" \
@@ -37,6 +35,5 @@ cmake .. \
     -DEXPANSION_JS=ON \
     -DEXPANSION_LT=ON \
     -DEXPANSION_GL=ON
-
-make -j"${CPU_COUNT}"
-make install
+cmake --build build --parallel "${CPU_COUNT}"
+cmake --install build --parallel "${CPU_COUNT}"
