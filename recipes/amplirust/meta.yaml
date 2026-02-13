@@ -1,0 +1,48 @@
+{% set name = "amplirust" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/erdikilic/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 5056d0545829d93528240c5759384220460f951c170cc06017fb1be39bf7f787
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - cmake
+    - make
+
+test:
+  commands:
+    - amplirust --help
+    - amplirust --version
+
+about:
+  home: https://github.com/erdikilic/amplirust
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: In-silico PCR primer matching and product extraction tool
+  description: |
+    Amplirust is a high-performance in-silico PCR tool written in Rust that
+    performs primer matching and PCR product extraction from FASTA sequences.
+    Features include SIMD-accelerated approximate matching, IUPAC ambiguity
+    code support, circular genome handling, and multi-threaded processing.
+  dev_url: https://github.com/erdikilic/amplirust
+
+extra:
+  recipe-maintainers:
+    - erdikilic
