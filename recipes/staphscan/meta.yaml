@@ -1,0 +1,44 @@
+{% set name = "staphscan" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/riccabolla/StaphSCAN/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: c9f7ed82fbfb3712bd3955f411fef3146d0034736018bbfde13a14d0b84d562f
+  
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage('staphscan', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+  run:
+    - python >=3.10
+    - pandas
+    - biopython >=1.78
+    - blast
+    - mash >=2.0
+
+test:
+  commands:
+    - staphscan --help
+
+about:
+  home: https://github.com/riccabolla/StaphSCAN
+  license: MIT
+  license_file: LICENSE
+  summary: "A tool for Staphylococcus aureus analysis."
+  doc_url: "https://staphscan.readthedocs.io/en/latest"
+
+extra:
+  recipe-maintainers:
+    - riccabolla 
