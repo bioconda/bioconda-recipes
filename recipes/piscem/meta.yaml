@@ -1,6 +1,6 @@
-{% set version = "0.14.2" %}
+{% set version = "0.14.6" %}
 {% set name = "piscem" %}
-{% set sha256 = "c5610ea4ce39287a0c16c686179c3a444f379eca47841a3034417c0314001bdf" %}
+{% set sha256 = "6565333f2a28dbf18a836d04f5069537faf827e1258f2042d150995d0d48b5ff" %}
 
 package:
   name: {{ name }}
@@ -8,26 +8,34 @@ package:
 
 build:
   number: 0
+  script_env:
+    - CFLAGS=-I$PREFIX/include
+    - CXXFLAGS=-I$PREFIX/include
+    - LDFLAGS=-L$PREFIX/lib
   run_exports:
     - {{ pin_subpackage("piscem", max_pin="x.x") }}
   
 source:
-  url: https://github.com/COMBINE-lab/piscem/releases/download/v{{ version }}/source.tar.gz
+  url: https://github.com/COMBINE-lab/piscem/releases/download/v{{ version }}/source-full.tar.gz
   sha256: {{ sha256 }}
-
+    
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+  
 requirements:
   build:
     - cmake <4.0.0
     - autoconf
     - make
-    - zlib
     - bzip2 
     - jemalloc >=5.2.1
     - {{ compiler('rust') }}
     - {{ compiler('cxx') }}
     - pkg-config
+    - curl
   host:
-    - zlib
     - bzip2
     - jemalloc >=5.2.1
     - tapi # [osx and x86_64]
