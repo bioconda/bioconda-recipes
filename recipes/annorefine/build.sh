@@ -24,8 +24,24 @@ export RUST_BACKTRACE=1
 # Bundle licenses for Rust dependencies
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
+# Determine the Rust target based on the platform
+if [[ "$(uname)" == "Darwin" ]]; then
+    if [[ "$(uname -m)" == "arm64" ]]; then
+        RUST_TARGET="aarch64-apple-darwin"
+    else
+        RUST_TARGET="x86_64-apple-darwin"
+    fi
+else
+    # Linux
+    if [[ "$(uname -m)" == "aarch64" ]]; then
+        RUST_TARGET="aarch64-unknown-linux-gnu"
+    else
+        RUST_TARGET="x86_64-unknown-linux-gnu"
+    fi
+fi
+
 # Build the package using maturin - should produce *.whl files
-maturin build --interpreter "${PYTHON}" -b pyo3 --release --strip --manylinux off
+maturin build --interpreter "${PYTHON}" -b pyo3 --release --strip --manylinux off --target "${RUST_TARGET}"
 
 # Install *.whl files using pip
 ${PYTHON} -m pip install target/wheels/*.whl --no-deps --no-build-isolation --no-cache-dir -vv
