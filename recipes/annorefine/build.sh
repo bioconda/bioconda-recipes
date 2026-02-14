@@ -2,6 +2,11 @@
 
 set -ex
 
+# Set macOS deployment target for proper wheel compatibility
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    export MACOSX_DEPLOYMENT_TARGET=11.0
+fi
+
 # Set environment variables to use system OpenSSL instead of building from source
 export OPENSSL_NO_VENDOR=1
 export OPENSSL_DIR=$PREFIX
