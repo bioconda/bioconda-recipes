@@ -1,12 +1,8 @@
 #!/bin/bash
-
-
-
+set -euo pipefail
 mkdir -p ${PREFIX}/bin
-cp isopedia ${PREFIX}/bin
-cp isopedia-tools ${PREFIX}/bin
-cp isopedia-splice-viz.py ${PREFIX}/bin
-cp isopedia-splice-viz-temp.html ${PREFIX}/bin
-chmod +x ${PREFIX}/bin/isopedia-splice-viz.py
-chmod +x ${PREFIX}/bin/isopedia
-chmod +x ${PREFIX}/bin/isopedia-tools
+install -m 755 isopedia "$PREFIX/bin/"
+install -m 755 isopedia-tools "$PREFIX/bin/"
+install -m 755 isopedia-splice-viz.py "$PREFIX/bin/"
+mkdir -p "$PREFIX/share/isopedia"
+install -m 644 isopedia-splice-viz-temp.html "$PREFIX/share/isopedia/"
