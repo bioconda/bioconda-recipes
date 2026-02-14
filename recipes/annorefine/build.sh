@@ -3,7 +3,7 @@
 set -ex
 
 # Set macOS deployment target for proper wheel compatibility
-if [[ "$OSTYPE" == "darwin"* ]]; then
+if [[ "$(uname)" == "Darwin" ]]; then
     export MACOSX_DEPLOYMENT_TARGET=11.0
 fi
 
