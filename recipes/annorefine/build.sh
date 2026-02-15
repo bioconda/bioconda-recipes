@@ -27,13 +27,6 @@ if [[ "$(uname)" != "Darwin" ]]; then
     export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
 fi
 
-# Force Rust to use the conda C compiler for linking (not clang)
-# This is critical to prevent Mach-O binaries on Linux
-export LD="${CC}"
-
-# Bundle licenses for Rust dependencies
-cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
-
 # Determine the Rust target based on the platform
 if [[ "$(uname)" == "Darwin" ]]; then
     if [[ "$(uname -m)" == "arm64" ]]; then
@@ -49,6 +42,24 @@ else
         RUST_TARGET="x86_64-unknown-linux-gnu"
     fi
 fi
+
+# Create .cargo/config.toml to explicitly configure the linker for the target
+# This prevents Rust from using the wrong linker/toolchain
+mkdir -p .cargo
+if [[ "$(uname)" != "Darwin" ]]; then
+    cat > .cargo/config.toml <<EOF
+[target.${RUST_TARGET}]
+linker = "${CC}"
+
+[build]
+target = "${RUST_TARGET}"
+EOF
+    echo "Created .cargo/config.toml with linker configuration:"
+    cat .cargo/config.toml
+fi
+
+# Bundle licenses for Rust dependencies
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # Build the package using maturin - should produce *.whl files
 maturin build --interpreter "${PYTHON}" -b pyo3 --release --strip --manylinux off --target "${RUST_TARGET}"
