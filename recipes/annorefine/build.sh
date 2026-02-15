@@ -43,6 +43,10 @@ else
     fi
 fi
 
+# Set Cargo environment variables to force the correct target and linker
+# CARGO_BUILD_TARGET is the standard way to set the default build target
+export CARGO_BUILD_TARGET="${RUST_TARGET}"
+
 # Create .cargo/config.toml to explicitly configure the linker for the target
 # This prevents Rust from using the wrong linker/toolchain
 mkdir -p .cargo
@@ -56,6 +60,12 @@ target = "${RUST_TARGET}"
 EOF
     echo "Created .cargo/config.toml with linker configuration:"
     cat .cargo/config.toml
+
+    # Also set CARGO_TARGET_<triple>_LINKER environment variable
+    # This is another way Cargo can be configured
+    TARGET_UPPER=$(echo "${RUST_TARGET}" | tr '[:lower:]-' '[:upper:]_')
+    export CARGO_TARGET_${TARGET_UPPER}_LINKER="${CC}"
+    echo "Set CARGO_TARGET_${TARGET_UPPER}_LINKER=${CC}"
 fi
 
 # Bundle licenses for Rust dependencies
@@ -63,6 +73,22 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # Build the package using maturin - should produce *.whl files
 maturin build --interpreter "${PYTHON}" -b pyo3 --release --strip --manylinux off --target "${RUST_TARGET}"
+
+# Debug: Check what binary format was produced
+echo "=== Checking binary format of built artifacts ==="
+if command -v file &> /dev/null; then
+    find target -name "*.so" -o -name "annorefine" | while read f; do
+        echo "File: $f"
+        file "$f"
+    done
+fi
+if command -v readelf &> /dev/null; then
+    find target -name "*.so" | while read f; do
+        echo "ELF header for: $f"
+        readelf -h "$f" 2>&1 | head -20 || echo "Not an ELF file"
+    done
+fi
+echo "=== End binary format check ==="
 
 # Install *.whl files using pip
 ${PYTHON} -m pip install target/wheels/*.whl --no-deps --no-build-isolation --no-cache-dir -vv
