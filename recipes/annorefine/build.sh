@@ -27,6 +27,10 @@ if [[ "$(uname)" != "Darwin" ]]; then
     export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
 fi
 
+# Force Rust to use the conda C compiler for linking (not clang)
+# This is critical to prevent Mach-O binaries on Linux
+export LD="${CC}"
+
 # Bundle licenses for Rust dependencies
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
