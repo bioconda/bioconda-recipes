@@ -2,10 +2,27 @@
 
 set -ex
 
-# Set macOS deployment target for proper wheel compatibility
+# Determine the Rust target based on the platform FIRST
 if [[ "$(uname)" == "Darwin" ]]; then
+    if [[ "$(uname -m)" == "arm64" ]]; then
+        RUST_TARGET="aarch64-apple-darwin"
+    else
+        RUST_TARGET="x86_64-apple-darwin"
+    fi
+    # Set macOS deployment target for proper wheel compatibility
     export MACOSX_DEPLOYMENT_TARGET=11.0
+else
+    # Linux
+    if [[ "$(uname -m)" == "aarch64" ]]; then
+        RUST_TARGET="aarch64-unknown-linux-gnu"
+    else
+        RUST_TARGET="x86_64-unknown-linux-gnu"
+    fi
 fi
+
+echo "Building for target: ${RUST_TARGET}"
+echo "CC is: ${CC}"
+echo "Build platform: $(uname) $(uname -m)"
 
 # Set environment variables to use system OpenSSL instead of building from source
 export OPENSSL_NO_VENDOR=1
@@ -27,46 +44,32 @@ if [[ "$(uname)" != "Darwin" ]]; then
     export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
 fi
 
-# Determine the Rust target based on the platform
-if [[ "$(uname)" == "Darwin" ]]; then
-    if [[ "$(uname -m)" == "arm64" ]]; then
-        RUST_TARGET="aarch64-apple-darwin"
-    else
-        RUST_TARGET="x86_64-apple-darwin"
-    fi
-else
-    # Linux
-    if [[ "$(uname -m)" == "aarch64" ]]; then
-        RUST_TARGET="aarch64-unknown-linux-gnu"
-    else
-        RUST_TARGET="x86_64-unknown-linux-gnu"
-    fi
-fi
-
-# Set Cargo environment variables to force the correct target and linker
-# CARGO_BUILD_TARGET is the standard way to set the default build target
+# CRITICAL: Set Cargo environment variables to force the correct target and linker
+# This must be done BEFORE any cargo commands are run
 export CARGO_BUILD_TARGET="${RUST_TARGET}"
 
+# Set the linker for the specific target using environment variable
+# This is the most reliable way to configure the linker
+if [[ "${RUST_TARGET}" == "aarch64-unknown-linux-gnu" ]]; then
+    export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER="${CC}"
+    echo "Set CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=${CC}"
+elif [[ "${RUST_TARGET}" == "x86_64-unknown-linux-gnu" ]]; then
+    export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="${CC}"
+    echo "Set CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=${CC}"
+fi
+
 # Create .cargo/config.toml to explicitly configure the linker for the target
-# This prevents Rust from using the wrong linker/toolchain
+# This is a backup to the environment variables above
 mkdir -p .cargo
-if [[ "$(uname)" != "Darwin" ]]; then
-    cat > .cargo/config.toml <<EOF
+cat > .cargo/config.toml <<EOF
 [target.${RUST_TARGET}]
 linker = "${CC}"
 
 [build]
 target = "${RUST_TARGET}"
 EOF
-    echo "Created .cargo/config.toml with linker configuration:"
-    cat .cargo/config.toml
-
-    # Also set CARGO_TARGET_<triple>_LINKER environment variable
-    # This is another way Cargo can be configured
-    TARGET_UPPER=$(echo "${RUST_TARGET}" | tr '[:lower:]-' '[:upper:]_')
-    export CARGO_TARGET_${TARGET_UPPER}_LINKER="${CC}"
-    echo "Set CARGO_TARGET_${TARGET_UPPER}_LINKER=${CC}"
-fi
+echo "Created .cargo/config.toml:"
+cat .cargo/config.toml
 
 # Bundle licenses for Rust dependencies
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
