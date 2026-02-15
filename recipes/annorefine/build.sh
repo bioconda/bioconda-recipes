@@ -21,6 +21,12 @@ export LIBRARY_PATH=$PREFIX/lib
 # Set Rust backtrace for better error messages
 export RUST_BACKTRACE=1
 
+# Set LIBCLANG_PATH for bindgen (needed for rust-htslib)
+# clangdev provides libclang but we want to use GCC for actual compilation
+if [[ "$(uname)" != "Darwin" ]]; then
+    export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
+fi
+
 # Bundle licenses for Rust dependencies
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
