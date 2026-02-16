@@ -1,36 +1,54 @@
 {% set name = "isopedia" %}
 {% set version = "1.6.5" %}
-{% set sha256 = "bd0ff8fe8e09fddc6562344ac905b4d94d346ed76fb6251551fec9cd92430b15" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/zhengxinchang/isopedia/releases/download/v{{ version }}/isopedia-v{{ version }}-linux-x86_64.tar.gz
-  sha256:  {{ sha256 }}
+  url: https://github.com/zhengxinchang/isopedia/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 321b3521412f734a54fc617434740749efd2db15fe0b09c4dca641702097f4e2
 
 build:
   number: 0
-  skip: True  # [osx]
-  binary_relocation: False  
+  skip: True  # [not linux64]
   run_exports:
     - {{ pin_subpackage('isopedia', max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - rust >=1.70
+    - cargo-bundle-licenses
+    - pkg-config
+    - cmake
+    - make
+    - perl
+    - clangdev
+    - libclang
+  host:
+    - openssl
+    - zlib
+    - bzip2
+    - xz
+    - libcurl
   run:
     - python >=3.6
 
 test:
   commands:
-    - {{ name }} --help
-    - {{ name }} --version
-
+    - isopedia --help
+    - isopedia --version
+    - isopedia-splice-viz.py --help
+    - test -f $PREFIX/share/isopedia/isopedia-splice-viz-temp.html
 about:
   home: https://github.com/zhengxinchang/{{ name }}
-  license: MIT  
+  license: MIT
   license_family: MIT
-  license_file: LICENSE
+  license_file:
+    - LICENSE
+    - THIRDPARTY_LICENSES
   summary: 'Simultaneous exploration of thousands of long-read transcriptomes by read-level indexing'
   description: |
     Simultaneous exploration of thousands of long-read transcriptomes by read-level indexing
@@ -39,6 +57,4 @@ about:
 
 extra:
   recipe-maintainers:
-    - zhengxinchang  
-  skip-lints:
-    - should_be_noarch_generic
+    - zhengxinchang
