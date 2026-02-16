@@ -10,7 +10,7 @@ make CC="${CC}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
 cp imagespread eledef eleredef edgeredef famdef ${PREFIX}/bin/
 
 cd ../scripts/
-sed -i "s|\$path = \"\";|\$path = \"${PREFIX}/bin\";|" recon.pl
+sed -i.bak "s|\$path = \"\";|\$path = \"${PREFIX}/bin\";|" recon.pl && rm -f recon.pl.bak
 install -v -m 0755 recon.pl ${PREFIX}/bin/
 install -v -m 0755 MSPCollect.pl ${PREFIX}/bin/
 
