@@ -1,31 +1,46 @@
-{% set version = "3.1.0" %}
-{% set sha256 = "d0ab3a89b23c5d93349d938aba5e08f025737f14b2daf37458d956f84306fff4" %}
+{% set version = "4.0.4" %}
+{% set sha256 = "e42f671f0dd46ac5606bc8c68a93ffdd09bfb90e8eb12e4b22269c320d0adc52" %}
 
 package:
   name: motus
   version: '{{ version }}'
 
 source:
-  url: https://github.com/motu-tool/mOTUs/archive/{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/m/motus_tool/motus_tool-{{ version }}.tar.gz
   sha256: '{{ sha256 }}'
 
 build:
   number: 0
   noarch: python
 
+channels:
+  - bioconda
+  - conda-forge
+
 requirements:
   host:
-    - python >=3.8
+    - python>=3.12
     - pip
   run:
-    - metasnv =1.0.3
-    - samtools >=1.9
-    - bwa >=0.7.17
-    - python >=3.8
+    - bwa>=0.7.19
+    - vsearch>=2.30.4
+    - python>=3.12
+    - biopython>=1.8.5
+    - bioconda::fetchmgs>=2.1.2
+    - pysam>=0.23.3
+    - polars>=1.32.2
+    - rapidfuzz>=3.13.0
+    - tqdm>=4.67.3
+
+outputs:
+  - name: motus
+    script: build.sh
 
 test:
-  commands:
-    - motus --version 2>&1 >/dev/null | { grep -i "downloaddb" ; echo $? ;}
+  import:
+    - motus
+#  commands:
+#    - 'motus 2>&1 | grep "Version" | sed "s%^.*Version: %%" | grep -qF "{{ version }}"'
 
 about:
   home: http://motu-tool.org/
@@ -40,4 +55,5 @@ extra:
   additional notes identifiers:
     - biotools:motus
   recipe-maintainers:
-    - AlessioMilanese
+    - Alessio Milanese
+    - Saul Pierotti
