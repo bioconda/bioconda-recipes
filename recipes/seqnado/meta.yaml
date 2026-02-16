@@ -1,5 +1,5 @@
 {% set name = "seqnado" %}
-{% set version = "0.7.6" %}
+{% set version = "1.0.3" %}
 
 package:
   name: {{ name|lower }}
@@ -7,8 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/seqnado-{{ version }}.tar.gz
-  sha256: 5bedf894aba91922f5befd4bef75c742236444012b78a0990de041e3aef64ea1
-
+  sha256: 2183f9656170a396e939e8ba7a18dd14478a3c36b8de38cdc7bdeb1382bf3a8f
 
 build:
   number: 0
@@ -17,9 +16,7 @@ build:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   script: {{ PYTHON }} -m pip install . --no-deps -vvv
   entry_points:
-    - seqnado = seqnado.cli:cli_pipeline
-    - seqnado-design = seqnado.cli:cli_design
-    - seqnado-config = seqnado.cli:cli_config
+    - seqnado = seqnado.cli:app
   run_exports:
     - {{ pin_subpackage('seqnado', max_pin="x.x") }}
 
@@ -31,7 +28,8 @@ requirements:
     - setuptools-scm >=6.2
     - pip
   run:
-    - pandas
+    - numpy >=1.24, <=2.1.0
+    - pandas >=2.0, <=2.3.3
     - pandera
     - pulp <=2.9.0
     - pydantic
@@ -39,9 +37,9 @@ requirements:
     - pyyaml
     - seaborn
     - setuptools_scm
-    - snakemake-wrapper-utils
-    - snakemake >8,<9
+    - snakemake >=9.12.0, <=9.14.5
     - snakemake-executor-plugin-slurm
+    - snakemake-wrapper-utils
     - tracknado
     - wget
 
@@ -50,12 +48,10 @@ test:
     - seqnado
   commands:
     - seqnado --help
-    - seqnado-design --help
-    - seqnado-config --help
 
 about:
-  home: https://alsmith151.github.io/SeqNado/
-  summary: Pipelines for genomics analysis
+  home: https://github.com/Milne-Group/SeqNado
+  summary: "A unified and user-friendly collection of pipelines for: ATAC-seq, ChIP-seq, CUT&RUN/TAG, RNA-seq, WGS, Methylation (Bisulphite/TAPS), CRISPR screens and Micro-Capture-C."
   license: GPL-3.0-or-later
   license_file: LICENSE
 
