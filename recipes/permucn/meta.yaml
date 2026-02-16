@@ -1,0 +1,50 @@
+{% set name = "permucn" %}
+{% set version = "0.1.0" %}
+{% set use_local_source = environ.get("PERMUCN_CONDA_LOCAL_SOURCE", "0") %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  {% if use_local_source == "1" %}
+  path: ..
+  {% else %}
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: a7fd9f5cd981ae1238647c9173e90fbee8e0f465bb00bc933f6c5bca9e689105
+  {% endif %}
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - permucn = permucn.cli:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.12
+
+test:
+  imports:
+    - permucn
+  commands:
+    - permucn --help
+
+about:
+  home: https://github.com/mkrg01/permucn
+  doc_url: https://github.com/mkrg01/permucn/wiki
+  dev_url: https://github.com/mkrg01/permucn
+  license: MIT
+  license_file: LICENSE
+  summary: Permutation-based test for copy-number and binary trait association.
+
+extra:
+  recipe-maintainers:
+    - mkrg01
+
