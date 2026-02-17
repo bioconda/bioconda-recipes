@@ -1,5 +1,7 @@
 {% set name = "ThermoRawFileParser" %}
 {% set version = "2.0.0" %}
+{% set tag = "v.2.0.0-dev" %}
+
 
 package:
   name: {{ name|lower }}
@@ -11,31 +13,43 @@ build:
   number: 0
   noarch: generic
   script:
-    - mkdir $PREFIX/bin
-    - cp -r * $PREFIX/bin
+    - git clone --depth 1 --branch {{ tag }} https://github.com/CompOmics/ThermoRawFileParser.git main
+    - git clone --depth 1 --sparse https://github.com/thermofisherlsms/RawFileReader ThermoPKG
+    - cd ThermoPKG
+    - git sparse-checkout set --no-cone /Libs/NetCore/Net8/*.nupkg
+    - dotnet nuget add source -n ThermoPKG `pwd`/Libs/NetCore/Net8
+    - cd ..
+    - dotnet publish --configuration Release --framework net8.0 main/ThermoRawFileParser.csproj -o publish
+    - mkdir -p $PREFIX/bin
+    - cp -r publish/* $PREFIX/bin
     - chmod +x $PREFIX/bin/ThermoRawFileParser
     - ln -s $PREFIX/bin/ThermoRawFileParser $PREFIX/bin/thermorawfileparser
-
-source:
-  # downloading pre-compiled packages, msbuild is a hell to compile under Linux
-  url: https://github.com/compomics/ThermoRawFileParser/releases/download/v.{{ version }}-dev/ThermoRawFileParser-v.{{ version }}-dev-net8.zip
-  sha256: fdd345acce50dc48a09a493103f7044eb73079dfb289c57d67c2c45c58f48e92
+    - rm -rf main
+    - rm -rf ThermoPKG
 
 requirements:
   build:
-  run:
+    - git
     - dotnet =8
-
+  run:
+    - openssl
+    - dotnet-runtime =8
+    - dotnet-aspnetcore =8
+  
 test:
+  requires:
+    - wget
   commands:
     - ThermoRawFileParser 2>&1 | grep metadata
+    - wget https://github.com/CompOmics/ThermoRawFileParser/raw/refs/heads/master/ThermoRawFileParserTest/Data/small.RAW
+    - ThermoRawFileParser -i small.RAW
 
 about:
   home: https://github.com/compomics/ThermoRawFileParser
   license: Apache Software
   license_family: APACHE
   license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
-  summary: Wrapper around the .net (C#) ThermoFisher ThermoRawFileReader library for running on Linux with mono
+  summary: A tool allowing reading Thermo RAW files and converting to common open formats
   dev_url: https://github.com/compomics/ThermoRawFileParser
   doc_url: https://github.com/compomics/ThermoRawFileParser/blob/master/README.md
 
