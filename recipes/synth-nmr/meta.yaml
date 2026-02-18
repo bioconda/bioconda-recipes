@@ -1,0 +1,44 @@
+{% set name = "synth-nmr" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name | replace("-", "_") }}-{{ version }}.tar.gz
+  sha256: 0f55d8406e30fa037e0890b4de501a7b021de6af34859e4c0e4b10e3a35800cb
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+    - numpy >=1.20
+    - biotite >=0.35.0
+
+test:
+  imports:
+    - synth_nmr
+
+about:
+  home: https://github.com/elkins/synth-nmr
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: NMR spectroscopy calculations for protein structures
+  doc_url: https://github.com/elkins/synth-nmr
+  dev_url: https://github.com/elkins/synth-nmr
+
+extra:
+  recipe-maintainers:
+    - elkins
