@@ -2,7 +2,7 @@
 {% set version = "1.2.4" %}
 
 package:
-  name: {{ name }}
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
@@ -13,8 +13,7 @@ source:
     - m64.patch
 
 build:
-  number: 4
-  skip: True  # [py > 39]
+  number: 5
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
@@ -29,9 +28,10 @@ requirements:
     - pkg-config
     - gnuconfig
   host:
-    - python    # configure script logic thinks 3.10 is < 3.5.. so avoid
+    - python
+    - cython <3.0
     - pip
-    - setuptools
+    - setuptools <80.9
     - boost-cpp
     - libboost-python-devel
     - samtools >=1.9
@@ -42,7 +42,7 @@ requirements:
     - libboost
     - libboost-python-devel
     - tabulate
-    - numpy
+    - {{ pin_compatible('numpy') }}
     - pandas
     - samtools >=1.9
 

@@ -6,6 +6,8 @@ export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export CXXFLAGS="$CXXFLAGS -O3"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
+export ax_cv_python_version_ok=yes
+
 mkdir -p build-aux
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
