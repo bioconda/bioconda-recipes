@@ -10,23 +10,22 @@ source:
   sha256: a6e13f3c50cf65c4975b92944ec9152f94716d2ae7d3e87e9e69b2d7b7dbaebc
 
 build:
-  number: 0
-  noarch: python
+  number: 1
+  skip: true  # [py<310 or py>=313 or (osx and arm64)]
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
   run_exports:
     - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
   host:
-    - python >=3.10
+    - python
     - setuptools
     - biobb_common ==5.2.0
-    - ambertools >=22.5
     - numpy <=2.2.6
   run:
-    - python >=3.10
+    - python >=3.10,<3.13
     - biobb_common ==5.2.0
-    - ambertools >=22.5
+    - ambertools ==24.8=*openmpi*
     - numpy <=2.2.6
 
 test:
@@ -56,4 +55,8 @@ about:
   doc_url: http://biobb-amber.readthedocs.io/en/latest/
 
 extra:
-  recipe-maintainers: gbayarri
+  recipe-maintainers: 
+    - gbayarri 
+    - RubenChM
+  skip-lints:
+    - should_be_noarch_generic
