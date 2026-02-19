@@ -1,0 +1,55 @@
+{% set name = "stopfree" %}
+{% set version = "0.2.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/stopfree-{{ version }}.tar.gz
+  sha256: b5e1c0956b8d4e30bdb634dfd690f609129f69f323b24e42a515155f91973053
+build:
+  number: 0
+  script: bash {{ RECIPE_DIR }}/build.sh
+  run_exports:
+    - {{ pin_subpackage('stopfree', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+  host:
+    - python >=3.8
+    - pip
+    - maturin >=1.8,<2.0
+  run:
+    - python >=3.8
+
+test:
+  imports:
+    - stopfree
+  commands:
+    - python -c "import stopfree; print(dir(stopfree))"
+
+about:
+  home: https://github.com/afg1/stopfree
+  license: MIT  # FIXME: confirm license with author — no LICENSE file in the repo currently
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "Rust implementation of the stopFree coding potential tool"
+  author: Andrew Green
+  description: |
+    A fast Rust implementation (with Python bindings via PyO3) of the stopFree
+    coding potential tool. It measures the longest stop codon free length of
+    sequence in each of the 6 possible reading frames, calculates per-sequence
+    GC content, and computes the probability of observing a stop-free run of
+    the given length under an iid model corrected for GC content.
+  dev_url: https://github.com/afg1/stopfree
+  doc_url: https://pypi.org/project/stopfree/
+
+extra:
+  recipe-maintainers:
+    - afg1
+    - pmb59
