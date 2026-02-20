@@ -1,17 +1,29 @@
-{% set version = "0.1.2" %}
+{% set name = "nwalign3" %}
+{% set version = "0.1.6" %}
 
 package:
-  name: nwalign3
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/44/4d/7f2d6c1b5d83f685bb0d01f331b8598388a6ca855c385583849fcd60fd95/nwalign3-0.1.2.tar.gz
-  sha256: 22e2ffc9c7c181cfbe21e19c1f1348d17cca072ea2ffabe8676ebcab9bb933be
+  url: https://github.com/briney/nwalign3/archive/v{{ version }}.tar.gz
+  sha256: ca8bee7edc96149d28a88006dbb662abd4cf66824718fed0ab14a88f06276b6c
 
 build:
-  number: 4
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
-  skip: True  # [py27]
+  number: 0
+  skip: True  # [py > 310]
+  entry_points:
+    - nwalign3 = nwalign3:main
+  script:
+    - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - export CFLAGS="${CFLAGS} -O3"
+    - sed -i.bak "s|0.1.5|${PKG_VERSION}|" setup.py
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -f *.bak
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir --use-pep517
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
@@ -33,11 +45,16 @@ test:
     - nwalign3 --help
 
 about:
-  home: https://github.com/briney/nwalign3 
-  license: BSD
-  summary: Updated version of nwalign with Python 3.x compatibility.
+  home: "https://github.com/briney/nwalign3"
+  license: "BSD-4-Clause-UC"
+  license_family: BSD
+  summary: "Updated version of nwalign (Needleman-Wunsch global sequence alignment) with Python 3.x compatibility."
+  dev_url: "https://github.com/briney/nwalign3"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - alienzj
   identifiers:

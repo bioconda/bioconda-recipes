@@ -11,8 +11,8 @@ mkdir -p "$DATA_HOME"
 
 chmod a+x *.sh
 
-cp -Rf * $BBMAP_HOME/
+cp -Rf * ${BBMAP_HOME}/
 
-find *.sh -type f -exec ln -sf $BBMAP_HOME/{} $BINARY_HOME/{} \;
+find *.sh -type f -exec ln -sf ${BBMAP_HOME}/{} ${BINARY_HOME}/{} \;
 
-cp -Rf $BBMAP_HOME/resources "$DATA_HOME"
+cp -Rf ${BBMAP_HOME}/resources "${DATA_HOME}"

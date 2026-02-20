@@ -1,39 +1,38 @@
 #!/bin/bash -euo
 
-export M4="${BUILD_PREFIX}/bin/m4"
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
-export LC_ALL=en_US.UTF-8
+export LC_ALL="en_US.UTF-8"
 
-if [[ "$(uname)" == "Darwin" ]]; then
+if [[ "$(uname -s)" == "Darwin" ]]; then
     # for Mac OSX
-    # -m64
-    export LDFLAGS="${LDFLAGS} -headerpad_max_install_names -Wl,-dead_strip_dylibs -Wl,-rpath,${PREFIX}/lib -L${PREFIX}/lib"
-    export CFLAGS="${CFLAGS} -fno-define-target-os-macros -Wno-implicit-function-declaration -Wno-deprecated-non-prototype -Wno-asm-operand-widths"
-    export LC_ALL=C
+	export LDFLAGS="${LDFLAGS} -headerpad_max_install_names -Wl,-dead_strip_dylibs -Wl,-rpath,${PREFIX}/lib"
+	export CFLAGS="${CFLAGS} -O3 -fno-define-target-os-macros -Wno-implicit-function-declaration -Wno-deprecated-non-prototype -Wno-asm-operand-widths -Wno-unused-result"
+ 	export LC_ALL=C
 fi
 
 case $(uname -m) in
 	x86_64)
-		SIMD_LEVEL="sse42"
+		export SIMD_LEVEL="sse42"
 		;;
 	aarch64)
-		SIMD_LEVEL="arm"
+		export SIMD_LEVEL="arm"
 		;;
 	arm64)
-		SIMD_LEVEL="arm"
+		export SIMD_LEVEL="arm"
                 ;;
 	*)
-		SIMD_LEVEL="none"
+		export SIMD_LEVEL="none"
 		;;
 esac
 
 autoreconf -if
-./configure CC="${CC}" CFLAGS="${CFLAGS}" \
+./configure CC="${CC}" \
+	CFLAGS="${CFLAGS}" \
 	CPPFLAGS="${CPPFLAGS}" \
 	LDFLAGS="${LDFLAGS}" \
 	--prefix="${PREFIX}" \

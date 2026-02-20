@@ -1,0 +1,54 @@
+{% set name = "blue-crab" %}
+{% set version = "0.4.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/blue_crab-{{ version }}.tar.gz
+  sha256: f7413739a4a19ce52cd0ff819c479a2395e606652492fa98ae5a5fb8a35efe79
+
+build:
+  number: 1
+  entry_points:
+    - blue-crab = src.blue_crab:main
+  noarch: python
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -rf *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  run_exports:
+    - {{ pin_subpackage('blue-crab', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+    - zlib
+    - pod5 >=0.3.27
+    - pyslow5 >=1.3.0
+  run:
+    - python >=3.9
+    - pod5 >=0.3.27
+    - pyslow5 >=1.3.0
+    - pyarrow ==20
+
+test:
+  commands:
+    - blue-crab --help
+    - blue-crab --version
+
+about:
+  home: "https://github.com/Psy-Fer/blue-crab"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "lossless nanopore pod5 <=> s/blow5 file conversion"
+  dev_url: "https://github.com/Psy-Fer/blue-crab"
+  doc_url: "https://github.com/Psy-Fer/blue-crab/blob/v{{ version }}/docs/cli.md"
+
+extra:
+  recipe-maintainers:
+    - hasindu2008

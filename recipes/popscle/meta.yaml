@@ -2,44 +2,49 @@
 
 package:
   name: popscle 
-  version: '{{version}}'
+  version: {{ version }}
 
 source:
-  #url: https://github.com/statgen/popscle/archive/v0.1-beta.tar.gz
   url: https://github.com/statgen/popscle/archive/da70fc78da385ef049e0e890342acfd62842cae0.zip
   sha256: 7d3f30909653529f3f1d18705088e3a0e077bf30371967fc344cb7013c1348d0
   patches:
     - patch
 
 build:
-  number: 0
+  number: 1
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('popscle', max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
     - cmake
+    - pkg-config
   host:
-    - samtools
-    - htslib
+    #- samtools
+    - htslib =1.10
     - openssl
     - bzip2
     - xz
     - zlib
   run:
-    - samtools
-    - htslib
+    #- samtools
+    - htslib =1.10
     - openssl
-    - bzip2
-    - xz
-    - zlib
 
 test:
   commands:
     - popscle --help 
 
 about:
-  home: https://github.com/statgen/popscle
+  home: "https://github.com/statgen/popscle"
   license: MIT
-  summary: A suite of population scale analysis tools for single-cell genomics data including implementation of Demuxlet / Freemuxlet methods and auxilary tools
+  license_family: MIT
+  summary: "A suite of population scale analysis tools for single-cell genomics data including implementation of Demuxlet / Freemuxlet methods and auxilary tools."
+  dev_url: "https://github.com/statgen/popscle"
 
+extra:
+  additional-platforms:
+    - linux-aarch64

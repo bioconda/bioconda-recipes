@@ -15,44 +15,43 @@
 {% set sha256 = "ab47ca446b21a28cee57635d0aa28e321db1fea2c13fef5244496a9d0afd6d1d" %}  # [osx and x86_64]
 {% set sha256 = "b015074b18a39ad08204ce64e7c853c6c61805e7ce04001b33eac8d883f3abda" %}  # [osx and arm64]
 
-
 package:
   name: vclust
   version: {{ version }}
-
-build:
-  number: 0
-  run_exports:
-    - {{ pin_subpackage('vclust', max_pin='x') }}
-  script: |
-    {{ PYTHON }} -m pip install vclust-{{ version }}-py3-none-{{ system }}.whl
 
 source:
   url: {{ site }}/vclust-{{ version }}-py3-none-{{ system }}.whl
   sha256: {{ sha256 }}
 
-requirements:
-  host:
-    - python >=3.7
-    - pip
-  run:
-    - python >=3.7
+build:
+  number: 1
+  script: {{ PYTHON }} -m pip install vclust-{{ version }}-py3-none-{{ system }}.whl
+  run_exports:
+    - {{ pin_subpackage('vclust', max_pin="x") }}
 
-about:
-  home: https://github.com/refresh-bio/vclust
-  summary: "Fast and accurate tool for calculating ANI and clustering virus genomes and metagenomes."
-  license: GPL-3.0-or-later
-  license_family: GPL3
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - pip
+    - setuptools
+  run:
+    - python
 
 test:
   commands:
     - vclust --help
     - vclust info
 
+about:
+  home: "https://github.com/refresh-bio/vclust"
+  summary: "Fast and accurate tool for calculating ANI and clustering virus genomes and metagenomes."
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  dev_url: "https://github.com/refresh-bio/vclust"
+
 extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
-  skip-lints:
-    - should_be_noarch_generic
-    - should_not_be_noarch_source
