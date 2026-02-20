@@ -12,13 +12,19 @@ build:
   number: 0
   skip: true  # [win]
   run_exports:
-    - {{ pin_subpackage('vine-phylo', max_pin='x') }}
+    - {{ pin_subpackage('vine-phylo', max_pin='x.x') }}
   script:
-    - if [[ -f "$PREFIX/lib/libopenblas.so.0" && ! -e "$PREFIX/lib/libopenblas.so" ]]; then ln -s "$PREFIX/lib/libopenblas.so.0" "$PREFIX/lib/libopenblas.so"; fi  # [linux]
+    # On linux, conda-forge's libopenblas may not provide an unversioned libopenblas.so
+    # (only libopenblas.so.0). If CMake/FindBLAS (or a dependency's exported link line)
+    # expects the unversioned name, builds can fail with "No rule to make target ...libopenblas.so".
+    # Prefer passing explicit versioned paths rather than mutating $PREFIX/lib with symlinks.
+    - export VINE_BLAS_ARGS=""  # [not linux]
+    - export VINE_BLAS_ARGS="-DBLAS_LIBRARIES=${PREFIX}/lib/libopenblas.so.0 -DLAPACK_LIBRARIES=${PREFIX}/lib/libopenblas.so.0"  # [linux]
     - cmake -S . -B build
       -DCMAKE_BUILD_TYPE=Release
       -DCMAKE_INSTALL_PREFIX=${PREFIX}
-      -DPHAST_ROOT=${PREFIX}
+      -DPHAST_ROOT=${PREFIX}      
+      ${VINE_BLAS_ARGS}
     - cmake --build build --parallel ${CPU_COUNT}
     - cmake --install build
 
