@@ -1,0 +1,41 @@
+{% set version = "1.0" %}
+
+package:
+  name: fast-fasta-compressor 
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('fast-fasta-compressor', max_pin="x") }}
+
+source:
+  url: https://github.com/kowallus/ffc/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 4775f64e3fc5f6e6869b838022cc49532680bfd2b3a1595efdf8fb4ceb7360a0 
+  patches:
+    - osx-byteswap.patch  #  [osx]
+  
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake >=3.10
+    - make
+    
+test:
+  commands:
+    - ffc -v 2>&1 | grep -F {{ version }}
+
+about:
+  home: https://github.com/kowallus/ffc
+  license: "GPL-3.0-or-later"
+  license_file: LICENSE
+  license_family: GPL3
+  summary: A tool for compressing FASTA files
+  dev_url: https://github.com/kowallus/ffc
+  
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - kowallus

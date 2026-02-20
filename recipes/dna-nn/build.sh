@@ -1,19 +1,14 @@
 #!/bin/bash
-
 set -x -e
 
-export CPATH=${PREFIX}/include
+export CPATH="${PREFIX}/include"
 
 mkdir -p "${PREFIX}/bin"
 
-make -j"${CPU_COUNT}"
+sed -i.bak 's|-O2|-O3|' Makefile
+sed -i.bak 's|-lpthread|-pthread|' Makefile
+rm -rf *.bak
 
-chmod 0755 dna-brnn
-chmod 0755 dna-cnn
-chmod 0755 gen-fq
-chmod 0755 parse-rm.js
+make CC="${CC}" -j"${CPU_COUNT}"
 
-cp -rf dna-brnn "${PREFIX}/bin"
-cp -rf dna-cnn "${PREFIX}/bin"
-cp -rf gen-fq "${PREFIX}/bin"
-cp -rf parse-rm.js "${PREFIX}/bin"
+install -v -m 0755 dna-brnn dna-cnn gen-fq parse-rm.js "${PREFIX}/bin"

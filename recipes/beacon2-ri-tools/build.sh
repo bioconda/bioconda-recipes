@@ -1,63 +1,26 @@
 #!/bin/bash
-
 set -exo pipefail
 
-mkdir -p $PREFIX/etc/conda/activate.d/
-echo "export BEACON_SOURCE_DIR=$PREFIX/opt/BEACON" > $PREFIX/etc/conda/activate.d/beacon2-ri-tools-sourcedir.sh
-chmod a+x $PREFIX/etc/conda/activate.d/beacon2-ri-tools-sourcedir.sh
+# Copy all source files from SRC_DIR into the bin folder
+# This will copy the python scripts and the 'files' directory
+mkdir -p "$PREFIX/bin/beacon2-ri-tools/"
+cp -r "$SRC_DIR"/{*.py,scripts,ref_schemas,conf,files,validators} "$PREFIX/bin/beacon2-ri-tools/"
 
-mkdir -p $PREFIX/etc/conda/deactivate.d/
-echo "unset BEACON_SOURCE_DIR" > $PREFIX/etc/conda/deactivate.d/beacon2-ri-tools-sourcedir.sh
-chmod a+x $PREFIX/etc/conda/deactivate.d/beacon2-ri-tools-sourcedir.sh
+# List of python script names
+scripts=("analyses_csv.py" "biosamples_csv.py" "cohorts_csv.py" "convert_csvTObff.py" "datasets_csv.py" "genomicVariations_csv.py" "genomicVariations_postprocessing.py" "genomicVariations_vcf.py" "individuals_csv.py" "individuals_to_cohorts_csv.py" "remove_dataset.py" "runs_csv.py" "update_record.py")
 
+# Loop through each script name
+for script in "${scripts[@]}"; do
+  # Define the wrapper script path
+  WRAPPER="$PREFIX/bin/${script}"
 
+  # Create the wrapper script that changes directory before running the Python script
+  # This ensures that relative paths work correctly.
+  echo '#!/bin/bash' > "$WRAPPER"
+  echo "cd \"\$CONDA_PREFIX/bin/beacon2-ri-tools/\"" >> "$WRAPPER"
+  echo "python \"./${script}\" \"\$@\"" >> "$WRAPPER"
 
-cd $SRC_DIR
-
-mkdir -p $PREFIX/lib/perl5/site_perl/BEACON
-cp -R BEACON/Help.pm $PREFIX/lib/perl5/site_perl/BEACON
-cp -R BEACON/Config.pm $PREFIX/lib/perl5/site_perl/BEACON
-cp -R BEACON/Beacon.pm $PREFIX/lib/perl5/site_perl/BEACON
-cp -R BEACON/bin/BFF.pm $PREFIX/lib/perl5/site_perl
-cp -R BEACON/bin/*.sh $PREFIX/lib/perl5/site_perl
-cp -R utils/bff_api/bff-api $PREFIX/lib/perl5/site_perl
-cp -R utils/bff_queue/bff-queue $PREFIX/lib/perl5/site_perl
-cp -R utils/bff_queue/minion_ui.pl $PREFIX/lib/perl5/site_perl
-cp -R utils/models2xlsx/parse_defaultSchema.pl $PREFIX/lib/perl5/site_perl
-
-
-chmod a+x $PREFIX/lib/perl5/site_perl/BEACON/*
-chmod a+x $PREFIX/lib/perl5/site_perl/BFF.pm
-chmod a+x $PREFIX/lib/perl5/site_perl/*.sh
-chmod a+x $PREFIX/lib/perl5/site_perl/*.pl
-chmod a+x $PREFIX/lib/perl5/site_perl/bff-*
-
-sed -i.bak 's|../src/perl5|../opt/beacon2-ri-tools/src/perl5|g' $PREFIX/lib/perl5/site_perl/BEACON/*
-sed -i.bak 's|../src/perl5|../opt/beacon2-ri-tools/src/perl5|g' $PREFIX/lib/perl5/site_perl/BFF.pm
-sed -i.bak 's|../src/perl5|../opt/beacon2-ri-tools/src/perl5|g' $PREFIX/lib/perl5/site_perl/*.pl
-sed -i.bak 's|../src/perl5|../opt/beacon2-ri-tools/src/perl5|g' $PREFIX/lib/perl5/site_perl/bff-*
-sed -i.bak 's|../src/perl5|../opt/beacon2-ri-tools/src/perl5|g' $PREFIX/lib/perl5/site_perl/*.sh
-
-rm $PREFIX/lib/perl5/site_perl/BEACON/*.bak
-rm $PREFIX/lib/perl5/site_perl/*.bak
-
-BINARY_HOME=$PREFIX/bin
-
-cp -R beacon $BINARY_HOME/
-cp -R utils/pxf2bff/pxf2bff  $BINARY_HOME/
-cp -R utils/bff_validator/bff-validator  $BINARY_HOME/
-cp -R utils/models2xlsx/csv2xlsx $BINARY_HOME/
-cp -R BEACON/bin/*.pl $BINARY_HOME/
-chmod a+x $BINARY_HOME/beacon
-chmod a+x $BINARY_HOME/pxf2bff
-chmod a+x $BINARY_HOME/bff-validator
-chmod a+x $BINARY_HOME/csv2xlsx
-chmod a+x $BINARY_HOME/*.pl
-
-# export PATH=$PREFIX/bin:${PATH}
-
-
-sed -i.bak 's|../src/perl5|../opt/beacon2-ri-tools/src/perl5|g' $PREFIX/bin/*
-rm $PREFIX/bin/*.bak
-mkdir -p $PREFIX/opt/beacon2-ri-tools/
-cp -r * $PREFIX/opt/beacon2-ri-tools/
+  # Make the wrapper and the original python script executable
+  chmod +x "$WRAPPER"
+  chmod +x "$PREFIX/bin/beacon2-ri-tools/${script}"
+done

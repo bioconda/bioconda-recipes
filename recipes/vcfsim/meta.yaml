@@ -1,22 +1,22 @@
 {% set name = "vcfsim" %}
-{% set version = "1.0.16.alpha" %}
+{% set version = "1.0.27.alpha" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/Pie115/VCFSimulator-SamukLab/archive/{{ version }}.tar.gz
-  sha256: 385640fdee385c6710ba7bda68cedd28f665f3b0d950d400662f3d5aa374ccfa
+  url: https://github.com/samuk-lab/vcfsim/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 541df57e9ef450978707fd1c473d56a139e085776155cac74b130e2dfcd9946c
 
 build:
+  number: 0
   noarch: python
   entry_points:
-    - vcfsim=vcfsim.__main__:main
-  script: {{ PYTHON }} -m pip install . -vv
-  number: 0
+    - vcfsim = vcfsim.__main__:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage('vcfsim', max_pin="x") }} 
+    - {{ pin_subpackage(name, max_pin="x") }} 
     
 requirements:
   host:
@@ -27,7 +27,6 @@ requirements:
     - pandas
     - msprime
     - ipython  # Include this only if IPython features are used outside notebooks
-
   run:
     - python >=3.6
     - numpy
@@ -42,12 +41,14 @@ test:
     - vcfsim --help
 
 about:
-  home: https://github.com/Pie115/VCFSimulator-SamukLab
+  home: "https://github.com/samuk-lab/vcfsim"
   license: MIT
-  license_file: LICENSE.txt
+  license_family: MIT
+  license_file: "LICENSE.txt"
   summary: "Script for generating simulated VCF's leveraging a coalescent simulating backend."
   description: |
       "VCFSim is a new command-line tool for generating simulated VCF's(variant call format files for encoding genetic data). Leveraging a coalescent simulating backend and providing an interface from Msprime coalescent simulating package to pandas. VCF's can now be easily simulated with just a few command line arguments!"
+  dev_url: "https://github.com/samuk-lab/vcfsim"
 
 extra:
   recipe-maintainers:

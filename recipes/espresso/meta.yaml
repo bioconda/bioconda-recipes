@@ -1,29 +1,37 @@
-{% set version = "1.5.0" %}
+{% set name = "espresso" %}
+{% set version = "1.6.0" %}
 
 package:
-  name: espresso
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  sha256: 7cc7dd73465f434c98e8c5a41c510bfc419edb32954f2736b20af3f05cc7e348
   url: https://github.com/Xinglab/espresso/releases/download/v{{ version }}/espresso_v_{{ version|replace(".", "_") }}.tar.gz
+  sha256: 1e3dc1b58fe8e9900b955db97a8421669a08fb7994e4f505361ba6c3b2fc180b
+  patches:
+    - check_for_cc_env_var.patch
 
 build:
   number: 1
-  skip: True # [osx]
+  skip: True  # [osx]
   run_exports:
-    - {{ pin_subpackage('espresso', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake
+    - cmake >=3.2,<4
     - make
+    - pkg-config
   host:
     - perl >=5.8
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - zlib
   run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - blast >=2.8.1
     - hmmer >=3.3.1
     - perl >=5.8
@@ -38,7 +46,13 @@ test:
     - perl -I$PREFIX/bin -e 'use Parasail;' > /dev/null
 
 about:
-  home: https://github.com/Xinglab/espresso
-  license: Free for non-commercial use, see LICENSE file
-  summary: ESPRESSO (Error Statistics PRomoted Evaluator of Splice Site Options) processes long read RNA-seq data
+  home: "https://github.com/Xinglab/espresso"
+  license: "Free for non-commercial use, see LICENSE file"
+  summary: "ESPRESSO (Error Statistics PRomoted Evaluator of Splice Site Options) processes long read RNA-seq data."
   license_file: LICENSE
+  dev_url: "https://github.com/Xinglab/espresso"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

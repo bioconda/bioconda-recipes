@@ -1,0 +1,53 @@
+{% set name = "pmidcite" %}
+{% set version = "0.3.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pmidcite-{{ version }}.tar.gz
+  sha256: 16a45509c04ba61802e912ac15aff5b71a5d2a5a0f29abd808ef5602ff37ebae
+
+build:
+  entry_points:
+    - icite = pmidcite.scripts.icite:main
+    - sumpaps = pmidcite.scripts.summarize_papers:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage("pmidcite", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools >=46.3.0
+    - pip
+  run:
+    - python >=3.8
+    - requests
+
+test:
+  imports:
+    - pmidcite
+  commands:
+    - pip check
+    - icite --help
+    - sumpaps --help
+  requires:
+    - pip
+    - pytest
+
+about:
+  home: http://github.com/dvklopfenstein/pmidcite
+  license: AGPL-3.0-only
+  license_file: LICENSE
+  summary: Download "Cited by" data from the NIH for any paper with a PubMed ID
+  dev_url: http://github.com/dvklopfenstein/pmidcite
+
+extra:
+  recipe-maintainers:
+    - dvklopfenstein
+  identifiers:
+    - doi:10.1002/jrsm.1456

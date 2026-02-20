@@ -1,0 +1,75 @@
+{% set name = "simphyni" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/simphyni-{{ version }}.tar.gz
+  sha256: 46c2480c83444ee0fdd390b7ceaa0c1d5c1abf437fecc1ba99317506211a4650
+
+build:
+  entry_points:
+    - simphyni = simphyni.simphyni_cli:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+  run_exports:
+    # Pins downstream dependencies to the current minor version (>=1.0,<1.1)
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+
+
+requirements:
+  host:
+    - python >=3.11,<3.13
+    - setuptools >=61
+    - wheel
+    - pip
+  run:
+    - python >=3.11,<3.13
+    - ete3 >=3.1.3
+    - joblib >=1.4.2
+    - matplotlib-base >=3.10.1
+    - numpy >=2.2.3
+    - numba >=0.62.0
+    - pandas >=2.2.3
+    - scikit-learn >=1.6.1
+    - seaborn >=0.13.0,<0.14
+    - statsmodels >=0.14.4
+    - annotated-types >=0.7.0
+    - biopython >=1.85
+    - certifi >=2025.1.31
+    - charset-normalizer >=3.4.1
+    - idna >=3.10
+    - itolapi >=4.1.5
+    - jinja2 >=3.1.6
+    - markupsafe >=3.0.2
+    - pastml >=1.9.50
+    - pydantic >=2.10.6
+    - pydantic-core >=2.27.2
+    - requests >=2.32.3
+    - scipy 1.14.0
+    - urllib3 >=2.4.0
+    - snakemake >=9.10
+
+test:
+  imports:
+    - simphyni
+  commands:
+    - simphyni --help
+    - simphyni run --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/jpeyemi/SimPhyNI
+  summary: 'SimPhyni: a tool for phylogenetic trait simulation and inference.'
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - ishaq

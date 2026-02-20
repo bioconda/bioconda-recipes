@@ -1,0 +1,55 @@
+{% set name = "dipper" %}
+{% set version = "0.1.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/TurakhiaLab/DIPPER/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: fc423ab3e34a88cc81d7e3e560d85c1020048427c70d0c61dd7d51b4047d975f
+
+build:
+  number: 0
+  skip: true # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - pkg-config
+    - cuda-nvcc  # [linux]
+    - cuda-cudart-dev  # [linux]
+    - cuda-version >=12.0,<13  # [linux]
+  host:
+    - zlib
+    - boost-cpp
+    - tbb
+    - tbb-devel
+  run:
+    - boost-cpp
+    - tbb
+
+test:
+  commands:
+    - dipper_cpu --help
+
+about:
+  home: "https://github.com/TurakhiaLab/DIPPER"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "DIPPER: An ultrafast tool for phylogenetic tree reconstruction."
+  dev_url: "https://github.com/TurakhiaLab/DIPPER"
+  doc_url: "https://turakhia.ucsd.edu/DIPPER"
+  description: "DIPPER (DIstance-based Phylogenetic PlacER) is a tool designed for ultrafast and ultralarge phylogenetic tree reconstruction on GPUs. It is capable of reconstructing a phylogenetic tree with 10 million taxa, with a minimal memory footprint."
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - sumit-walia
