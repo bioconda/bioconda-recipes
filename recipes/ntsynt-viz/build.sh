@@ -2,7 +2,7 @@
 
 
 mkdir -p ${PREFIX}/bin
-cp ntroot ${PREFIX}/bin
-cp ntRootAncestryPredictor.pl ${PREFIX}/bin
-cp ntroot_run_pipeline.smk ${PREFIX}/bin
-cp ntroot_cross_reference_vcf.py ${PREFIX}/bin
+cp bin/ntsynt_viz* ${PREFIX}/bin
+cp bin/convert_distance_matrix_to_phylip.py ${PREFIX}/bin
+cp bin/rename_synteny_blocks.py ${PREFIX}/bin
+cp bin/sort_ntsynt_blocks.py ${PREFIX}/bin
