@@ -16,7 +16,6 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 cargo build --release --locked -j "${CARGO_BUILD_JOBS}" "${target_args[@]}"
 
 # Debug (optional but helpful)
-ls -lah "$(dirname "${binpath}")"
 
 install -d "${PREFIX}/bin"
 install -m 0755 "${binpath}" "${PREFIX}/bin/itsxrust"
