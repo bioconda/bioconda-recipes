@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -ex
+
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 mkdir -p ~/.R
@@ -16,5 +19,7 @@ CXX14=$CXX
 CPPFLAGS=${CPPFLAGS}
 LDFLAGS=${LDFLAGS}
 " > ~/.R/Makevars
+
+cat src/Makefile
 
 $R CMD INSTALL --build .
