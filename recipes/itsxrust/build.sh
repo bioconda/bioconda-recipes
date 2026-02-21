@@ -11,6 +11,8 @@ if [[ -n "${CARGO_BUILD_TARGET:-}" ]]; then
   binpath="target/${CARGO_BUILD_TARGET}/release/itsxrust"
 fi
 
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+
 cargo build --release --locked -j "${CARGO_BUILD_JOBS}" "${target_args[@]}"
 
 # Debug (optional but helpful)
