@@ -15,6 +15,10 @@ fi
 # Bundle licenses for Rust dependencies
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
-# Build and install using pip - maturin is invoked automatically
-${PYTHON} -m pip install . --no-deps --no-build-isolation -vv
+# Build using maturin - produces *.whl files
+export RUST_BACKTRACE=1
+maturin build --interpreter "${PYTHON}" -b pyo3 --release --strip --manylinux off
+
+# Install *.whl files using pip
+${PYTHON} -m pip install target/wheels/*.whl --no-deps --no-build-isolation --no-cache-dir -vv
 
