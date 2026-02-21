@@ -16,4 +16,3 @@ rm -rf *.bak
 make CC="${CC}" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
 
 install -v -m 0755 yame "${PREFIX}/bin"
-
