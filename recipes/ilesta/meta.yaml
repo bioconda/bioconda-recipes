@@ -1,0 +1,39 @@
+{% set name = "ilesta" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/yvlaere/Ilesta/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 2c0621efdfba7c7f5eb8229ae293e919546841a3823fd09f4b5db41ff805bac6
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('ilesta', max_pin="x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yaml
+    - cargo install -v --locked --no-track --root $PREFIX --path .
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - Ilesta --help
+
+about:
+  home: https://github.com/yvlaere/Ilesta
+  license: GLP-3.0-only
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yaml
+  summary: "De novo genome assembler for long-read sequencing data"
+
+extra:
+  recipe-maintainers:
+    - yvlaere
