@@ -2,6 +2,11 @@
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 mkdir -p ~/.R
+
+# Ensure conda paths are visible to nested builds (e.g. bwa)
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
 echo -e "CC=$CC
 FC=$FC
 CXX=$CXX
