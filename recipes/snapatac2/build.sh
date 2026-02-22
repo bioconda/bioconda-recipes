@@ -6,9 +6,6 @@ export MACOSX_DEPLOYMENT_TARGET=10.15
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
 
-export CMAKE_C_COMPILER="${CC}"
-export CMAKE_CXX_COMPILER="${CXX}"
-
 # Build the package using maturin - should produce *.whl files.
 maturin build -m snapatac2-python/Cargo.toml -b pyo3 --interpreter "${PYTHON}" --release --strip
 
