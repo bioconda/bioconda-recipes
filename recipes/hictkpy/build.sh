@@ -4,6 +4,10 @@ set -e
 set -u
 set -o pipefail
 
+export CC=${CC}
+export CXX=${CXX}
+export CMAKE_C_COMPILER=${CC}
+export CMAKE_CXX_COMPILER=${CXX}
 
 export CCACHE_DISABLE=1
 export CONAN_NON_INTERACTIVE=1
