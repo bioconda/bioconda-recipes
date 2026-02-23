@@ -1,5 +1,5 @@
 {% set name = "csubst" %}
-{% set version = "1.4.20" %}
+{% set version = "1.8.0" %}
 
 package:
   name: {{ name }}
@@ -7,10 +7,11 @@ package:
 
 source:
   url: https://github.com/kfuku52/csubst/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 744939e9525f68cfa452d4fe7534fea9df0b4c7f34a92ffa880dfb6a691deb2c
+  sha256: eb568e33023db01e0516d373298f0b78d401be70109af5c532c2f6e588fa5304
 
 build:
-  number: 1
+  number: 0
+  skip: true  # [aarch64 or arm64]
   script:
     - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
     - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -I$(python -c 'import numpy; print(numpy.get_include())')"
@@ -26,20 +27,18 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - python
+    - python >=3.10,<3.14
     - pip
     - cython
     - setuptools
     - numpy
   run:
-    - python
-    - ete3
+    - python >=3.10,<3.14
+    - ete4 >=4.3.0
     - numpy
     - scipy
     - pandas
-    - joblib
     - matplotlib-base
-    - threadpoolctl
     - iqtree >=2.0.0  # required
     - pyvolve         # optional: for csubst simulate
     - biopython       # optional: for csubst site --pdb besthit
@@ -64,8 +63,5 @@ about:
 extra:
   recipe-maintainers:
     - kfuku52
-  additional-platforms:
-    - linux-aarch64
-    - osx-arm64
   identifiers:
     - doi:10.1038/s41559-022-01932-7
