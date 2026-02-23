@@ -1,0 +1,63 @@
+{% set name = "covsnap" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/enes-ak/covsnap/archive/v{{ version }}.tar.gz
+  sha256: e5a5f0d0d287b0d6fb4890d80812aba10f56f10cf5f2444d06af95a43659f80e
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=64
+    - setuptools-scm >=8
+  run:
+    - python >=3.9
+    - pysam >=0.22
+    - numpy >=1.24
+    - samtools >=1.17
+    - htslib >=1.17
+    - tabix
+  run_constrained:
+    - mosdepth >=0.3.4
+
+test:
+  imports:
+    - covsnap
+    - covsnap.cli
+    - covsnap.engines
+    - covsnap.annotation
+  commands:
+    - covsnap --version
+    - covsnap --help
+
+about:
+  home: https://github.com/enes-ak/covsnap
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Coverage inspector for targeted sequencing QC (hg38)
+  description: |
+    covsnap computes per-target and per-exon depth metrics from
+    BAM/CRAM files, producing a machine-readable raw TSV and a
+    human-readable interpreted report with PASS/FAIL classifications.
+    Supports gene symbols, genomic regions, and BED files as input.
+    Ships with a bundled GENCODE v44 hg38 gene index — no internet
+    or GTF files required at runtime.
+  dev_url: https://github.com/enes-ak/covsnap
+  doc_url: https://github.com/enes-ak/covsnap/blob/main/README.md
+
+extra:
+  recipe-maintainers:
+    - enes-ak
