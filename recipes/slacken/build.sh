@@ -11,7 +11,8 @@ sed -i 's%#SPARK_HOME=/local/spark-3.5.3-bin-hadoop3/%SPARK_HOME='"$PREFIX%" sla
 sed -i 's%#SLACKEN_TMP=/tmp%SLACKEN_TMP=${SLACKEN_TMP:-/tmp}%' slacken.sh
 sed -i 's#SLACKEN_HOME=${SLACKEN_HOME:-$(dirname -- "$(readlink "${BASH_SOURCE}")")}#SLACKEN_HOME='"$PACKAGE_HOME#" slacken.sh
 
-sed -i 's#SLACKEN_HOME="$(dirname -- "$(readlink "${BASH_SOURCE}")")"#SLACKEN_HOME='"$PACKAGE_HOME#" slacken-aws.sh.template
+sed -i 's#SLACKEN_HOME="$(dirname -- "$(readlink -f "${BASH_SOURCE}")")"#SLACKEN_HOME='"$PACKAGE_HOME#" slacken-aws.sh.template
+
 
 cp log4j.properties slacken.sh $PACKAGE_HOME
 cp slacken-aws.sh.template $PACKAGE_HOME/slacken-aws.sh
