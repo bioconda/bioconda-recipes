@@ -10,8 +10,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 	export GUROBI_HOME=/Library/gurobi1203
 	# FindGUROBI.cmake searches linux64/, mac64/, and top-level lib/include
 	# but the universal2 pkg installs to macos_universal2/; symlink so cmake finds them
-	ln -s $GUROBI_HOME/macos_universal2/lib $GUROBI_HOME/lib
-	ln -s $GUROBI_HOME/macos_universal2/include $GUROBI_HOME/include
+	ln -sfn $GUROBI_HOME/macos_universal2/lib $GUROBI_HOME/lib
+	ln -sfn $GUROBI_HOME/macos_universal2/include $GUROBI_HOME/include
 	mkdir -p $PREFIX/lib
 	cp -rf "$GUROBI_HOME/macos_universal2/lib/libgurobi120.dylib" "$PREFIX/lib"
 else
