@@ -3,9 +3,9 @@
 mkdir -p $PREFIX/bin
 
 cp BINge.py $PREFIX/bin/BINge.py
-cp BINge.py $PREFIX/bin/BINge
+ln -s $PREFIX/bin/BINge.py $PREFIX/bin/BINge
 cp BINge_post.py $PREFIX/bin/BINge_post.py
-cp BINge_post.py $PREFIX/bin/BINge_post
+ln -s $PREFIX/bin/BINge_post.py $PREFIX/bin/BINge_post
 cp _version.py $PREFIX/bin/_version.py
 
 mkdir -p $PREFIX/bin/modules
