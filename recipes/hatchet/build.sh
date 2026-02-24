@@ -8,6 +8,10 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 	sudo installer -pkg gurobi12.0.3_macos_universal2.pkg -target /
 
 	export GUROBI_HOME=/Library/gurobi1203
+	# FindGUROBI.cmake searches linux64/, mac64/, and top-level lib/include
+	# but the universal2 pkg installs to macos_universal2/; symlink so cmake finds them
+	ln -s $GUROBI_HOME/macos_universal2/lib $GUROBI_HOME/lib
+	ln -s $GUROBI_HOME/macos_universal2/include $GUROBI_HOME/include
 	mkdir -p $PREFIX/lib
 	cp -rf "$GUROBI_HOME/macos_universal2/lib/libgurobi120.dylib" "$PREFIX/lib"
 else
