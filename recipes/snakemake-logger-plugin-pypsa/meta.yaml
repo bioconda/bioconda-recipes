@@ -1,0 +1,48 @@
+{% set name = "snakemake-logger-plugin-pypsa" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/snakemake_logger_plugin_pypsa-{{ version }}.tar.gz
+  sha256: 62e57d9609541c33c54718de425b246955ec9f047d9cc71a867ca7e2b1bc2db3
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - python >=3.11
+    - setuptools >=61.0
+    - wheel
+    - pip
+  run:
+    - python >=3.11
+    - snakemake-interface-logger-plugins >=1.2.0,<2
+
+test:
+  # We do not test the import as the plugin needs snakemake for importing, but adding
+  # it would create a circular dependency.
+  commands:
+    - pip check
+  requires:
+    - pip
+    - python >=3.11
+
+about:
+  home: https://github.com/PyPSA/snakemake-logger-plugin-pypsa
+  summary: A PyPSA-Eur logger plugin for Snakemake
+  license: MIT
+  license_file: 
+    - LICENSES/MIT.txt
+
+extra:
+  recipe-maintainers:
+    - willu47
+    - lkstrp
