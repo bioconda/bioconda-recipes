@@ -1,0 +1,57 @@
+{% set name = "alphatims" %}
+{% set version = "1.0.9" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/MannLabs/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 9c706f70cbdc57e138d140b7b32c23ab160a8d969598a0db9afdd7207b776f3a
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('alphatims', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools
+    - pip
+  run:
+    - python >=3.8
+    - click
+    - h5py
+    - numba
+    - pandas
+    - psutil
+    - pyzstd
+    - tqdm
+
+test:
+  imports:
+    - alphatims
+  commands:
+    - pip check
+    - alphatims --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/MannLabs/alphatims
+  summary: A Python package for indexing Bruker timsTOF raw data
+  description: |
+    AlphaTims provides fast indexing and slicing of Bruker timsTOF raw
+    data for mass spectrometry-based proteomics.
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE.txt
+  dev_url: https://github.com/MannLabs/alphatims
+  doc_url: https://alphatims.readthedocs.io/en/latest/
+
+extra:
+  recipe-maintainers:
+    - jonasscheid
