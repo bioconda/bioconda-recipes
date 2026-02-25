@@ -31,8 +31,11 @@ export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER="$CC"
 # macOS-specific settings
 if [[ "$OSTYPE" == "darwin"* ]]; then
     export RUSTFLAGS="-C link-arg=-undefined -C link-arg=dynamic_lookup"
-    # Ensure maturin uses conda's deployment target, not the host SDK version
-    export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-10.13}"
+    # Force deployment target for correct wheel platform tag.
+    # The macosx_deployment_target_osx-64 conda package sets MACOSX_DEPLOYMENT_TARGET
+    # to the runner OS version (e.g. 26.0), but pip rejects wheels tagged higher
+    # than the actual running macOS. Hardcode like snapatac2/pybigtools recipes.
+    export MACOSX_DEPLOYMENT_TARGET=10.13
 fi
 
 # Build the Rust extension with maturin
