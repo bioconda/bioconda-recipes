@@ -14,6 +14,9 @@ cd rust
 cargo-bundle-licenses --format yaml --output ../THIRDPARTY.yml
 cd ..
 
+# Set LIBCLANG_PATH for bindgen (hts-sys generates FFI bindings via libclang)
+export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
+
 # Set up environment for htslib linking
 export HTSLIB_DIR="${PREFIX}"
 export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}"
