@@ -13,8 +13,7 @@ source:
 
 build:
   number: 0
-  skip: true  # [win]
-  # Uses build.sh for maturin-based Rust+Python build
+  skip: true  # [win or py < 310]
   run_exports:
     - {{ pin_subpackage('wasp2', max_pin="x") }}
 
@@ -38,7 +37,8 @@ requirements:
     - bzip2
     - xz
     - zlib
-    - openssl
+    - libdeflate
+    - openssl  # [not osx]
     - libcurl
   run:
     - python >=3.10
@@ -53,7 +53,7 @@ requirements:
     - anndata >=0.8.0,<0.12.0
     - scanpy >=1.9.0
     # CLI
-    - typer >=0.9.0
+    - typer >=0.12.0
     - rich >=13.0.0
     # External tools (bioconda)
     - samtools >=1.10
@@ -66,17 +66,22 @@ test:
     - mapping
     - analysis
     - wasp2_rust
+  requires:
+    - pip
   commands:
     - wasp2-count --help
     - wasp2-map --help
     - wasp2-analyze --help
     - python -c "import wasp2_rust; print('Rust extension OK')"
+    - pip check
 
 about:
   home: https://github.com/mcvickerlab/WASP2
   license: MIT
   license_family: MIT
-  license_file: LICENSE
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
   summary: Allele-specific analysis of next-generation sequencing data with Rust acceleration
   description: |
     WASP2 is a high-performance tool for allele-specific analysis of NGS data.
