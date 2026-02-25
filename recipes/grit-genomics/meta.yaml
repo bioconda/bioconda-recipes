@@ -1,0 +1,55 @@
+{% set name = "grit-genomics" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/manish59/grit/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e428b1fbebccf5974e1daa5af0a53daac0a49e3c33aef33861582c3ba3bdaa9d
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - rust >=1.70
+    - cargo
+  host:
+    - rust >=1.70
+  run: []
+
+test:
+  commands:
+    - grit --version
+    - grit --help
+    - echo -e "chr1\t100\t200\nchr1\t150\t250" | grit merge -i - | grep -q "chr1"
+
+about:
+  home: https://github.com/manish59/grit
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "GRIT: Genomic Range Interval Toolkit - high-performance BED file operations"
+  description: |
+    GRIT (Genomic Range Interval Toolkit) is a high-performance Rust implementation
+    of common BED file operations. It provides streaming algorithms with O(k) memory
+    complexity, achieving 3-13x speedup over bedtools with up to 1000x less memory.
+
+    Features:
+    - 10 BED commands: intersect, subtract, merge, coverage, closest, window, complement, jaccard, slop, sort
+    - Streaming mode for constant memory usage
+    - SHA256-verified correctness matching bedtools output
+  dev_url: https://github.com/manish59/grit
+  doc_url: https://github.com/manish59/grit#readme
+
+extra:
+  recipe-maintainers:
+    - manish59
+  identifiers:
+    - biotools:grit-genomics
