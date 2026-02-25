@@ -16,6 +16,8 @@ cd ..
 
 # Set LIBCLANG_PATH for bindgen (hts-sys generates FFI bindings via libclang)
 export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
+# Pass conda compiler flags to bindgen's clang invocation (needed for ARM builds)
+export BINDGEN_EXTRA_CLANG_ARGS="${CPPFLAGS} ${CFLAGS}"
 
 # Set up environment for htslib linking
 export HTSLIB_DIR="${PREFIX}"
