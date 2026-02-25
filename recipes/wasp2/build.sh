@@ -41,7 +41,7 @@ maturin build \
     -m rust/Cargo.toml
 
 # Install the built wheel
-"${PYTHON}" -m pip install target/wheels/*.whl --no-deps --no-build-isolation --no-cache-dir -vvv
+"${PYTHON}" -m pip install rust/target/wheels/*.whl --no-deps --no-build-isolation --no-cache-dir -vvv
 
 # Verify installation
 python -c "import wasp2_rust; print('Rust extension loaded successfully')"
