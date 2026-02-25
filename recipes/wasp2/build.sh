@@ -28,9 +28,11 @@ export CPATH="${PREFIX}/include:${CPATH}"
 export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="$CC"
 export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER="$CC"
 
-# macOS-specific linker flags
+# macOS-specific settings
 if [[ "$OSTYPE" == "darwin"* ]]; then
     export RUSTFLAGS="-C link-arg=-undefined -C link-arg=dynamic_lookup"
+    # Ensure maturin uses conda's deployment target, not the host SDK version
+    export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-10.13}"
 fi
 
 # Build the Rust extension with maturin
