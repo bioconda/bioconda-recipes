@@ -1,0 +1,53 @@
+{% set name = "raccoon" %}
+{% set version = "1.0" %}
+{% set sha256 = "dd6aa080f853d22e5c301c64bd96addd307985b7b761d254cd4bf6bca0547355" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/artic-network/raccoon/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('raccoon', max_pin='x') }}
+  noarch: python
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+  run:
+    - python >=3.10
+    - numpy >=1.20.0
+    - pandas >=1.3.0
+    - biopython >=1.79
+    - scipy
+    - matplotlib-base >=3.3.1
+    - baltic
+    - seaborn
+    - plotly >=5.0.0
+    - jinja2 >=3.1.0
+
+test:
+  commands:
+    - raccoon -h
+
+about:
+  home: https://github.com/artic-network/raccoon
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Raccoon - Rigorous Alignment Curation: Cleanup Of Outliers and Noise."
+  dev_url: https://github.com/artic-network/raccoon
+  doc_url: https://github.com/artic-network/raccoon/blob/main/README.md
+
+extra:
+  recipe-maintainers:
+    - aineniamh
+    - BioWilko
