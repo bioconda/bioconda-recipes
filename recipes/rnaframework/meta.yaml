@@ -1,0 +1,79 @@
+{% set version = "2.9.6" %}
+
+package:
+  name: rnaframework
+  version: {{ version }}
+
+source:
+  url: https://github.com/dincarnato/RNAFramework/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: PLACEHOLDER_SHA256  # Replace with: curl -sL <url> | sha256sum
+
+build:
+  number: 0
+  noarch: generic
+
+requirements:
+  host:
+    - perl
+  run:
+    - perl >=5.12
+    - perl-term-readkey
+    - bowtie >=1.2.3
+    - bowtie2 >=2.3.5
+    - samtools >=1.15
+    - bedtools >=2.31
+    - cutadapt >=2.1
+    - viennarna >=2.5.0
+
+test:
+  commands:
+    - rf-map 2>&1 | grep -qi "usage\|rf map\|options" || true
+    - rf-count 2>&1 | grep -qi "usage\|rf count\|options" || true
+    - rf-norm 2>&1 | grep -qi "usage\|rf norm\|options" || true
+    - rf-fold 2>&1 | grep -qi "usage\|rf fold\|options" || true
+    - rf-index 2>&1 | grep -qi "usage\|rf index\|options" || true
+    - rf-rctools 2>&1 | grep -qi "usage\|rf rctools\|options" || true
+    # Verify the lib is reachable from the installed scripts
+    - perl -I${PREFIX}/share/rnaframework/lib -e "use Core::Mathematics; print 'OK\n'"
+
+about:
+  home: https://github.com/dincarnato/RNAFramework
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: >-
+    Modular toolkit for the analysis of RNA structures and post-transcriptional
+    modifications from high-throughput sequencing data
+  description: |
+    RNA Framework is a modular toolkit designed to handle RNA structure probing
+    and post-transcriptional modifications mapping from high-throughput sequencing
+    data. It supports transcriptome-scale analysis of RNA secondary structure using
+    protocols such as CIRS-seq, SHAPE-seq, Structure-seq, DMS-seq, PARS,
+    SHAPE-MaP, and DMS-MaPseq, as well as mapping of post-transcriptional
+    modifications (Ψ, m1A, m6A, m5C, hm5C, 2'-OMe).
+
+    Key features:
+      - Automatic reference transcriptome creation (rf-index)
+      - Read preprocessing, adapter trimming, and mapping (rf-map)
+      - Per-base RT-stop/mutation counting and coverage (rf-count)
+      - Reactivity scoring and whole-transcriptome normalization (rf-norm)
+      - RNA secondary structure prediction with probing data (rf-fold)
+      - RNA-RNA interaction mapping (rf-duplex)
+      - Post-transcriptional modification calling (rf-modcall)
+      - Peak calling for RNA immunoprecipitation data (rf-peakcall)
+
+    Optional dependencies for additional functionality:
+      - rnastructure: alternative RNA folding engine
+      - r-base + r-ggplot2 + r-patchwork + r-rcolorbrewer: correlation heatmaps
+        and other plotting features
+
+  doc_url: https://rnaframework-docs.readthedocs.io/
+  dev_url: https://github.com/dincarnato/RNAFramework
+
+extra:
+  recipe-maintainers:
+    - dincarnato
+    - Vicbeg
+    - pmb59
+  identifiers:
+    - doi:10.1093/nar/gky486
