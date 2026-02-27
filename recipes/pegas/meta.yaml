@@ -1,8 +1,10 @@
-{% set name = "pegas" %}
-{% set version = "1.2.4" %}
+{% set recipe_name = "pegas-recipe" %}
+{% set pkg_name = "pegas" %}
+{% set lite_name = "pegas-lite" %}
+{% set version = "1.2.3" %}
 
 package:
-  name: {{ name }}
+  name: {{ recipe_name }}
   version: {{ version }}
 
 source:
@@ -13,15 +15,15 @@ build:
   number: 0
   noarch: generic
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
-    - {{ pin_subpackage(name ~ "-lite", max_pin="x") }}
+    - {{ pin_subpackage(pkg_name, max_pin="x") }}
+    - {{ pin_subpackage(lite_name, max_pin="x") }}
 
 test:
   imports:
     - pegas
 
 outputs:
-  - name: {{ name }}-lite
+  - name: {{ lite_name }}
 
     build:
       noarch: python
@@ -48,9 +50,9 @@ outputs:
 
     test:
       commands:
-        - pegas-lite --help
+        - python -m pegas.main_lite --help
 
-  - name: {{ name }}
+  - name: {{ pkg_name }}
 
     build:
       noarch: python
@@ -61,12 +63,12 @@ outputs:
       host:
         - python >=3.10
       run:
-        - {{ name }}-lite ={{ version }}
+        - {{ lite_name }} ={{ version }}
         - snakemake-minimal >=7.32.4
 
     test:
       commands:
-        - {{ name }} --help
+        - {{ pkg_name }} --help
 
 about:
   home: https://github.com/liviurotiul/PeGAS
