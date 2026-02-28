@@ -1,7 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+mkdir -p "${PREFIX}/bin"
 
-${CC} ${CFLAGS} ${LDFLAGS} -lz -o readfq kseq_fastq_base.c
-cp readfq $PREFIX/bin/readfq
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3"
+
+"${CC}" ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -o "${PREFIX}/bin/readfq" kseq_fastq_base.c -lz

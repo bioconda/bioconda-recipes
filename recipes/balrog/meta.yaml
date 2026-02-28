@@ -1,0 +1,47 @@
+{% set version = "0.5.1" %}
+{% set sha256 = "1c084d42b86d81424ffc2e490b20042bd9d0bd4528483498a16ede332cbd4b32" %}
+
+package:
+  name: balrog
+  version: {{ version }}
+
+source:
+  url: https://github.com/salzberg-lab/BalrogCPP/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 7
+  run_exports:
+    - {{ pin_subpackage('balrog', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake <4
+    - make
+    - pkg-config
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - zlib
+  run:
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - scipy
+
+test:
+  commands:
+    - balrog --help
+
+about:
+  home: "https://github.com/salzberg-lab/BalrogCPP"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Balrog: A universal protein model for prokaryotic gene prediction."
+  dev_url: "https://github.com/salzberg-lab/BalrogCPP"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,16 +1,20 @@
+{% set name = "perl-cgi" %}
 package:
-  name: perl-cgi
-  version: '4.40'
+  name: {{name}}
+  version: '4.71'
 
 source:
-  url: https://cpan.metacpan.org/authors/id/L/LE/LEEJO/CGI-4.40.tar.gz
-  sha256: 10efff3061b3c31a33b3cc59f955aef9c88d57d12dbac46389758cef92f24f56
+  url: https://cpan.metacpan.org/authors/id/L/LE/LEEJO/CGI-4.71.tar.gz
+  sha256: 9da85b30d9404d183da7ca7aedb83702cb07ed73c3078bf6f36c87f1e8a0196a
 
 build:
-  number: 2
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('perl-cgi', max_pin="x") }}
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
   host:
     - perl
@@ -25,7 +29,6 @@ requirements:
     - perl-base
     - perl-test-deep
     - perl-html-parser
-
   run:
     - perl
     - perl-file-temp
@@ -35,18 +38,26 @@ requirements:
     - perl-parent
     - perl-base
     - perl-html-parser
+    - perl-uri
+
 test:
   imports:
     - CGI
     - CGI::Carp
-    - CGI::Cookie
+    # - CGI::Cookie
     - CGI::File::Temp
     - CGI::HTML::Functions
-    - CGI::Pretty
+    #- CGI::Pretty
     - CGI::Push
     - CGI::Util
 
 about:
   home: https://metacpan.org/pod/distribution/CGI/lib/CGI.pod
   license: GPL
-  summary: A generic file fetching mechanism
+  license_file: LICENSE
+  summary: "A generic file fetching mechanism."
+  doc_url: https://metacpan.org/pod/distribution/CGI/lib/CGI.pod
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

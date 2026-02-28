@@ -1,36 +1,46 @@
+{% set name = "perl-sereal" %}
+{% set version = "5.004" %}
+
 package:
-  name: perl-sereal
-  version: "4.005"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://cpan.metacpan.org/authors/id/Y/YV/YVES/Sereal-4.005.tar.gz
-  sha256: 9987baecb9f8e591df6ed274b4dcd5aaecafb5732097d3c54af486305cfecc52
+  url: https://cpan.metacpan.org/authors/id/Y/YV/YVES/Sereal-{{ version }}.tar.gz
+  sha256: 9c25bb7ae4bd736d24b1ad1d93d77395b0c65ca8741e266bfc0cbe542261d76f
 
 build:
   number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('perl-sereal', max_pin="x") }}
 
 requirements:
+  build:
+    - make
   host:
     - perl
-    - perl-pathtools
-    - perl-test-warn
-    - perl-sereal-decoder >=4.005
-    - perl-test-simple
-    - perl-scalar-list-utils
     - perl-extutils-makemaker
-    - perl-sereal-encoder >=4.005
+    - perl-pathtools
+    - perl-scalar-list-utils
+    - perl-test-deep 
+    - perl-test-differences
     - perl-test-longstring
-
+    - perl-test-simple
+    - perl-test-warn
+    - perl-sereal-decoder >={{ version }}
+    - perl-sereal-encoder >={{ version }}
   run:
     - perl
-    - perl-sereal-decoder >=4.005
-    - perl-sereal-encoder >=4.005
+    - perl-sereal-decoder >={{ version }}
+    - perl-sereal-encoder >={{ version }}
 
 test:
   imports:
     - Sereal
 
 about:
-  home: http://metacpan.org/pod/Sereal
-  license: perl_5
-  summary: 'Fast, compact, powerful binary (de-)serialization'
+  home: "https://metacpan.org/pod/Sereal"
+  license: "Perl_5"
+  summary: "Fast, compact, powerful binary (de-)serialization."
+  doc_url: "https://metacpan.org/pod/Sereal"

@@ -1,0 +1,51 @@
+{% set version = "0.99.8" %}
+{% set name = "MPO.db" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: We have developed the human disease ontology R package HDO.db, which provides the semantic relationship between human diseases. Relying on the DOSE and GOSemSim packages we developed, we can carry out disease enrichment and semantic similarity analyses. Many biological studies are achieved through mouse models, and a large number of data indicate the association between genotypes and phenotypes or diseases.  The study of model organisms can be transformed into useful knowledge about normal human biology and disease to facilitate treatment and early screening for diseases. Organism-specific genotype-phenotypic associations can be applied to cross-species phenotypic studies to clarify previously unknown phenotypic connections in other species. Using the same principle to diseases can identify genetic associations and even help to identify disease associations that are not obvious. Therefore, as a supplement to HDO.db and DOSE, we developed mouse phenotypic ontology R package MPO.db.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: A set of annotation maps describing the Mouse Phenotype Ontology
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-mpo.db", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: rmarkdown, knitr, testthat (>= 3.0.0)
+requirements:
+  host:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - r-base
+    - r-dbi
+  run:
+    - bioconductor-annotationdbi >=1.68.0,<1.69.0
+    - bioconductor-annotationhub >=3.14.0,<3.15.0
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - r-base
+    - r-dbi
+    - curl
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: fd9bff2a147bbef37b58cef85ec79488
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

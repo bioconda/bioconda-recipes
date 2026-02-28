@@ -1,11 +1,21 @@
-#!/bin/sh
+#!/bin/bash
 
-cd src/
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3"
 
-make
-cp ../Phi $PREFIX/bin
-cp ../ppma_2_bmp $PREFIX/bin
+mkdir -p "$PREFIX/bin"
 
-chmod +x $PREFIX/bin/Phi
-chmod +x $PREFIX/bin/ppma_2_bmp
+# There's a . directory that's ignored on OSX but not Linux
+#
+if [[ "$(uname -s)" == "Darwin" ]]; then
+	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
+	cd src
+else
+	cd PhiPack/src/
+fi
 
+make CXX="${CC}" CXXFLAGS="${CFLAGS}"
+
+install -v -m 0755 Phi Profile "${PREFIX}/bin"
+
+cp -rf ppma_2_bmp $PREFIX/bin/

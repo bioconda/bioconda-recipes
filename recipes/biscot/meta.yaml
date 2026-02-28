@@ -1,0 +1,46 @@
+{% set name = "biscot" %}
+{% set version = "2.3.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/biscot-{{ version }}.tar.gz
+  sha256: ca304606b538078a5fcca9216e69a6fcf2b7260e43845da508209ae722161e49
+
+build:
+  entry_points:
+    - biscot = biscot.biscot:run
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - argparse
+    - biopython
+    - coloredlogs
+
+test:
+  imports:
+    - biscot
+  commands:
+    - pip check
+    - biscot --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/institut-de-genomique/biscot
+  summary: Bionano SCaffolding Correction Tool
+  license: LGPL-2.1
+  license_file: LICENSE.md
+
+extra:
+  recipe-maintainers:
+    - bgruening

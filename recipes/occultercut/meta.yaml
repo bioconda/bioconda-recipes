@@ -1,0 +1,44 @@
+{% set name = "occultercut" %}
+{% set version = "1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: "https://downloads.sourceforge.net/project/{{ name }}/OcculterCut_v{{ version }}.tar.gz"
+  sha256: 34aa8c3ef4c216435b4f722ea25f9dc431ef6937e47cfeb5afa323d451cc06ae
+
+build:
+  number: 1
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('occultercut', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  run:
+    - gnuplot
+
+test:
+  commands:
+    - OcculterCut | grep "OcculterCut"
+
+about:
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: COPYING
+  summary: 'A package for measuring the local GC-content bias in genomes and fungal species'
+  home: https://sourceforge.net/projects/occultercut
+
+extra:
+  identifiers:
+    - doi:10.1093/gbe/evw121
+  recipe-maintainers:
+    - KristinaGagalova

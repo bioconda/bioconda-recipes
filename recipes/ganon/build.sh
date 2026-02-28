@@ -1,14 +1,28 @@
 #!/bin/bash
 
-mv ${SRC_DIR}/seqan ${SRC_DIR}/ganon/libs/
-mv ${SRC_DIR}/sdsl-lite ${SRC_DIR}/ganon/libs/
+set -xe
 
-mkdir ${SRC_DIR}/ganon/build
-cd ${SRC_DIR}/ganon/build
-cmake -DCMAKE_BUILD_TYPE=Release -DVERBOSE_CONFIG=ON -DGANON_OFFSET=OFF -DINCLUDE_DIRS=${PREFIX}/include ..
-make
-ctest -VV .
+# Link installed genome_updater.sh (dependency) into ganon's submodule dir
+# to properly install script with pip
+ln -s "$(command -v genome_updater.sh)" libs/genome_updater/genome_updater.sh
+${PYTHON} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
 
-mkdir -p ${PREFIX}/bin
-cp ${SRC_DIR}/ganon/ganon ${SRC_DIR}/ganon/build/ganon-build ${SRC_DIR}/ganon/build/ganon-classify ${SRC_DIR}/ganon/scripts/ganon-get-len-taxid.sh ${PREFIX}/bin/
+# Build and install cpp packages
+cmake -S . \
+      -B build_cpp \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DVERBOSE_CONFIG=ON \
+      -DCONDA=ON \
+      -DCMAKE_INSTALL_PREFIX="${PREFIX}"
 
+make -C build_cpp -j "${CPU_COUNT}"
+make -C build_cpp install
+
+# Test cpp
+ctest --test-dir build_cpp \
+      --output-on-failure \
+      --no-tests=error \
+      --parallel "${CPU_COUNT}"
+
+# Test python
+${PYTHON} -m unittest discover -s tests/ganon/integration/ -v

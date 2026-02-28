@@ -1,0 +1,41 @@
+{% set name = "terrace" %}
+{% set version = "1.1.2" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/Shao-Group/TERRACE/releases/download/v{{ version }}/terrace-{{ version }}.tar.gz"
+  sha256: "cac4e9ae9ec61f49089c898f8c9484057ff16534fa1b12b02a5a06346dc56e8c"
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('terrace', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - htslib
+    - boost-cpp
+  run:
+    - htslib
+    - boost-cpp
+
+test:
+  commands:
+    - terrace --help
+
+about:
+  home: "https://github.com/Shao-Group/TERRACE"
+  license: BSD-3-Clause
+  license_file: LICENSE
+  summary: "TERRACE is an assembler for circular RNAs."
+
+extra:
+  recipe-maintainers:
+    - shaomingfu

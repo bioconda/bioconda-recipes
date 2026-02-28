@@ -1,44 +1,60 @@
 {% set name = "pyprophet" %}
-{% set version = "0.24.1" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "a7585d71dbd8127a68333fe65f0ffb77ef682f7e07424bbda3077e35ca929d2d" %}
+{% set version = "3.0.5" %}
+{% set sha256 = "ef684424c81d1e2723017b8a7637e167d57f8ae7ae0bae2234e15503f935c6dd" %}
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pyprophet-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
-  skip: True  # [not py27]
+  number: 0
+  skip: True  # [arm64 and (py < 310)]
   entry_points:
-    - pyprophet=pyprophet.main:main
-  script: python -m pip install --no-deps --ignore-installed .
+    - pyprophet = pyprophet.main:cli
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
     - python
     - pip
-    - setuptools
-    - numpy >=1.9.0
-    - pandas >=0.17
-    - scipy >=0.9.0
-    - numexpr >=2.1
-    - scikit-learn >=0.17
-    - matplotlib
-    - seaborn
+    - cython
+    - numpy ==2.0.2
+    - pypdf
+    - libgomp  # [linux]  
+    - llvm-openmp  # [osx]
   run:
     - python
-    - numpy >=1.9.0
-    - pandas >=0.17
-    - scipy >=0.9.0
-    - numexpr >=2.1
-    - scikit-learn >=0.17
-    - matplotlib
-    - seaborn
+    - libgomp  # [linux]  
+    - llvm-openmp  # [osx]
+    - click
+    #- duckdb-extensions
+    #- duckdb-extension-sqlite-scanner
+    - loguru
+    - lxml
+    - numpy ==2.0.2
+    - numexpr ==2.10.2
+    - pandas >=2.0
+    - polars
+    - psutil
+    - pyarrow
+    - pyopenms
+    - pypdf
+    - python-duckdb
+    - scikit-learn >=1.5
+    - scipy
+    - seaborn-base
+    - statsmodels >=0.8.0
+    - tabulate
+    - typing-extensions
+    - xgboost
 
 test:
   imports:
@@ -47,7 +63,17 @@ test:
     - pyprophet --help
 
 about:
-  home: http://github.com/uweschmitt/pyprophet
-  license: BSD License
+  home: "https://github.com/PyProphet/pyprophet"
+  license: "BSD-3-Clause"
   license_family: BSD
-  summary: Python reimplementation of mProphet peak scoring
+  license_file: LICENSE
+  summary: "PyProphet: Semi-supervised learning and scoring of OpenSWATH results."
+  dev_url: "https://github.com/PyProphet/pyprophet"
+  doc_url: "https://openswath.org/en/latest"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1038/nmeth.1584

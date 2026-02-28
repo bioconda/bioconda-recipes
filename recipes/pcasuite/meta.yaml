@@ -1,0 +1,53 @@
+{% set name = "pcasuite" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/mmb-irb/pcasuite/raw/refs/heads/master/dist/pcasuite_v1.0.0.tar.gz
+  sha256: 79d0d94d9e483d516b903970f8d5a9f69bc793fe4e8d81ed25b74af2b1d115e4
+
+build:
+  number: 6
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+    - make
+    - binutils
+    - cmake
+    - bison
+    - liblapack
+    - libnetcdf
+    - libblas
+  host:
+    - make
+    - binutils
+    - cmake
+    - bison
+    - liblapack
+    - libnetcdf
+    - libblas
+  run:
+    - bison
+    - liblapack
+    - libnetcdf
+    - libblas
+
+
+test:
+  commands:
+    - pcazip -h
+
+about:
+  home: https://github.com/mmb-irb/pcasuite
+  license: Apache Software License
+  license_family: APACHE
+  summary: PCAzip compresses a trajectory, recentering the snapshots using a standard RMS or a gaussian version.
+  description: "PCAunzip recreates the original trajectory from the projection data. PCZdump analyzes the compressed trajectory and gives coefficients and values computed from the stored trajectory."

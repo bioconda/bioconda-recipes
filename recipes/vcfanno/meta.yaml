@@ -1,25 +1,43 @@
-{% set version = '0.3.1' %}
+{% set name = "vcfanno" %}
+{% set version = "0.3.7" %}
 
 package:
-  name: vcfanno
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/brentp/vcfanno/releases/download/v{{ version }}/vcfanno_osx # [osx]
-  sha256: 8cba0a23dc0f93ca74e2d5c5cc10d7f2f86aa13b84e4bca88e25e172742bbec6 # [osx]
-  url: https://github.com/brentp/vcfanno/releases/download/v{{ version }}/vcfanno_linux64 # [linux]
-  sha256: 4df3bdac4809a3aca698819a2d56c58d1f4c117a3b8069bb9f7a9cbefe1df397 # [linux]
+  url: https://github.com/brentp/vcfanno/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: d7432f89427ed7f4970c4bf76b1d464aa04e64923d4a10905c9bf802e9094c54
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage('vcfanno', max_pin="x.x") }}
 
 requirements:
+  build:
+    - {{ compiler('go') }}
+    - go-licenses
+    - make
 
 test:
   commands:
-    - vcfanno
+    - "vcfanno 2>&1 | grep 'vcfanno'"
 
 about:
-  home: https://github.com/brentp/vcfanno
+  home: "https://github.com/brentp/vcfanno"
   license: MIT
-  summary: annotate a VCF with other VCFs/BEDs/tabixed files
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Annotate a VCF with other VCFs/BEDs/tabixed files."
+  dev_url: "https://github.com/brentp/vcfanno"
+  doc_url: "https://github.com/brentp/vcfanno/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1186/s13059-016-0973-5
+    - biotools:vcfanno
+    - usegalaxy-eu:vcfanno

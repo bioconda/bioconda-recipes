@@ -1,0 +1,47 @@
+{% set version = '0.1.8' %}
+
+package:
+  name: r-seqmagick
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/seqmagick_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/seqmagick/seqmagick_{{ version }}.tar.gz
+  sha256: 259591499edc61d947e135a44f0ef91f6fc002104172974b0cfd991c5df387b8
+
+build:
+  number: 0
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage('r-seqmagick', max_pin="x.x") }}
+
+requirements:
+  host:
+    - r-base
+    - bioconductor-biostrings
+    - r-magrittr
+    - r-yulab.utils >0.1.6
+  run:
+    - r-base
+    - bioconductor-biostrings
+    - r-magrittr
+    - r-yulab.utils >0.1.6
+
+test:
+  commands:
+    - $R -e "library('seqmagick')"
+
+about:
+  home: https://github.com/YuLab-SMU/seqmagick
+  license: Artistic-2.0
+  summary: Supports reading and writing sequences for different formats (currently interleaved
+    and sequential formats for 'FASTA' and 'PHYLIP'), file conversion, and manipulation
+    (e.g. filter sequences that contain specify pattern, export consensus sequence from
+    an alignment).
+  license_family: OTHER
+  license_file:
+    - {{ environ["PREFIX"] }}/lib/R/share/licenses/Artistic-2.0

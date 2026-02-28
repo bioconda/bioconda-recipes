@@ -1,0 +1,51 @@
+{% set version = "0.1.633d2e0" %}
+{% set sha256 = "9740c7882fe2ff39c0df9d44e85a725f73b531117ea265e2b45eeb1661d6a3e7" %}
+
+package:
+  name: metamaps
+  version: {{ version }}
+
+source:
+  url: https://github.com/DiltheyLab/MetaMaps/archive/633d2e0ec1ffb4fd9111aca52a54d236ef5ef379.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage("metamaps", max_pin=None) }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - autoconf
+    - llvm-openmp  # [osx]
+  host:
+    - zlib
+    - boost-cpp
+  run:
+    - llvm-openmp  # [osx]
+    - zlib
+    - boost-cpp
+    - perl
+    - perl-file-slurp
+    - perl-http-message
+    - perl-list-moreutils
+    - perl-lwp-simple
+    - perl-math-random
+    - perl-set-intervaltree
+    - perl-statistics-basic
+    - r-base
+    - r-ggplot2
+    - r-rcolorbrewer
+
+test:
+  commands:
+    - metamaps -h 2>&1 | grep "Simultaneous metagenomic classification and mapping" -q
+
+about:
+  home: https://github.com/DiltheyLab/MetaMaps
+  license: Public Domain
+  license_family: Public Domain
+  license_file: LICENSE.txt
+  summary: MetaMaps is a tool for long-read metagenomic analysis

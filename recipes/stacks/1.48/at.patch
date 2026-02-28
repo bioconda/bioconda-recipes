@@ -1,0 +1,69 @@
+# remove exe_path (the binaries are in the PATH anyway) and special chars 
+# like @ (which is present e.g. in Galaxy environment names) make problems
+diff -ruN stacks-1.46/scripts/denovo_map.pl stacks-1.46/scripts/denovo_map.pl
+--- stacks-1.46/scripts/denovo_map.pl	2017-02-23 22:38:55.000000000 +0100
++++ stacks-1.46/scripts/denovo_map.pl	2019-12-03 09:02:29.119785800 +0100
+@@ -43,7 +43,7 @@
+ my $gapped_alns  = false;
+ my $mysql_config = "_PKGDATADIR_" . "sql/mysql.cnf";
+ my $mysql_tables = "_PKGDATADIR_" . "sql/stacks.sql";
+-my $exe_path     = "_BINDIR_";
++my $exe_path     = "";
+ my $out_path     = "";
+ my $popmap_path  = "";
+ my $sample_path  = "";
+@@ -72,13 +72,6 @@
+ #
+ # Check for the existence of the necessary pipeline programs
+ #
+-die ("Unable to find '" . $exe_path . "ustacks'.\n")          if (!-e $exe_path . "ustacks"          || !-x $exe_path . "ustacks");
+-die ("Unable to find '" . $exe_path . "cstacks'.\n")          if (!-e $exe_path . "cstacks"          || !-x $exe_path . "cstacks");
+-die ("Unable to find '" . $exe_path . "sstacks'.\n")          if (!-e $exe_path . "sstacks"          || !-x $exe_path . "sstacks");
+-die ("Unable to find '" . $exe_path . "genotypes'.\n")        if (!-e $exe_path . "genotypes"        || !-x $exe_path . "genotypes");
+-die ("Unable to find '" . $exe_path . "populations'.\n")      if (!-e $exe_path . "populations"      || !-x $exe_path . "populations");
+-die ("Unable to find '" . $exe_path . "index_radtags.pl'.\n") if (!-e $exe_path . "index_radtags.pl" || !-x $exe_path . "index_radtags.pl");
+-
+ my ($log, $log_fh, $sample);
+ 
+ my (@sample_list, %pop_ids, %pops, %grp_ids, %grps, %sample_ids);
+@@ -869,7 +862,6 @@
+ 	}
+     }
+ 
+-    $exe_path = $exe_path . "/"          if (substr($exe_path, -1) ne "/");
+     $out_path = substr($out_path, 0, -1) if (substr($out_path, -1) eq "/");
+ 
+     if ($batch_id !~ /^\d+$/ || $batch_id < 0) {
+diff -ruN /tmp/stacks-1.46/scripts/ref_map.pl stacks-1.46/scripts/ref_map.pl
+--- /tmp/stacks-1.46/scripts/ref_map.pl	2017-02-24 23:52:39.000000000 +0100
++++ stacks-1.46/scripts/ref_map.pl	2019-12-03 09:02:37.811788324 +0100
+@@ -42,7 +42,7 @@
+ my $overw_db     = false;
+ my $mysql_config = "_PKGDATADIR_" . "sql/mysql.cnf";
+ my $mysql_tables = "_PKGDATADIR_" . "sql/stacks.sql";
+-my $exe_path     = "_BINDIR_";
++my $exe_path     = "";
+ my $out_path     = "";
+ my $popmap_path  = "";
+ my $sample_path  = "";
+@@ -71,12 +71,6 @@
+ #
+ # Check for the existence of the necessary pipeline programs
+ #
+-die ("Unable to find '" . $exe_path . "pstacks'.\n")          if (!-e $exe_path . "pstacks"          || !-x $exe_path . "pstacks");
+-die ("Unable to find '" . $exe_path . "cstacks'.\n")          if (!-e $exe_path . "cstacks"          || !-x $exe_path . "cstacks");
+-die ("Unable to find '" . $exe_path . "sstacks'.\n")          if (!-e $exe_path . "sstacks"          || !-x $exe_path . "sstacks");
+-die ("Unable to find '" . $exe_path . "genotypes'.\n")        if (!-e $exe_path . "genotypes"        || !-x $exe_path . "genotypes");
+-die ("Unable to find '" . $exe_path . "populations'.\n")      if (!-e $exe_path . "populations"      || !-x $exe_path . "populations");
+-die ("Unable to find '" . $exe_path . "index_radtags.pl'.\n") if (!-e $exe_path . "index_radtags.pl" || !-x $exe_path . "index_radtags.pl");
+ 
+ my ($log, $log_fh, $sample);
+ 
+@@ -828,7 +822,6 @@
+ 	}
+     }
+ 
+-    $exe_path = $exe_path . "/"          if (substr($exe_path, -1) ne "/");
+     $out_path = substr($out_path, 0, -1) if (substr($out_path, -1) eq "/");
+ 
+     if ($batch_id !~ /^\d+$/ || $batch_id < 0) {

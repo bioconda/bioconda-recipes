@@ -1,0 +1,41 @@
+{% set version = "1.6.0" %}
+{% set name = "marinerData" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: Subsampled Hi-C in HEK cells expressing the NHA9 fusion with an F to S mutated IDR ("FS") or without any mutations to the IDR ("Wildtype" or "WT"). These files are used for testing mariner functions and some examples.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: ExperimentHub data for the mariner package
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-marinerdata", max_pin="x.x") }}'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+# Suggests: knitr, rmarkdown, ExperimentHubData, testthat (>= 3.0.0)
+requirements:
+  host:
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - r-base
+  run:
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20241103
+source:
+  md5: a107161ab0d78f794f5088aa17e219bc
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

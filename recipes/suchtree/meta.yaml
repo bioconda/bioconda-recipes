@@ -1,0 +1,56 @@
+{% set name = "SuchTree" %}
+{% set version = "1.3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0]|lower }}/{{ name }}/{{ name|lower }}-{{ version }}.tar.gz"
+  sha256: fe294ac725f201581da27e54693a1bbfd39930a54438b0d089fd98031e32627a
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage( "suchtree", max_pin="x.x" ) }}
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - cython
+    - python
+    - pip
+    - setuptools
+    - scipy
+    - numpy >=2.0
+  run:
+    - python
+    - dendropy
+    - pandas >=2.1
+    - numpy >=2.0
+    - scipy
+
+test:
+  imports:
+    - SuchTree
+
+about:
+  home: https://github.com/ryneches/SuchTree/
+  license: BSD
+  license_family: BSD
+  license_file: LICENSE
+  summary: "A python library for doing fast, thread-safe computations on phylogenetic trees"
+  doc_url: https://github.com/ryneches/SuchTree/blob/master/README.md 
+  dev_url: https://github.com/ryneches/SuchTree/
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:suchtree
+    - doi:10.21105/joss.00678
+  recipe-maintainers:
+    - ryneches

@@ -1,17 +1,19 @@
 #!/bin/bash
 
-export CFLAGS="-I${PREFIX}/include"
-export CXXFLAGS="-I{$PREFIX}/include"
-export LDFLAGS="-L${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH}"
-export CPATH=${PREFIX}/include
-export C_INCLUDE_PATH=$PREFIX/include
+set -xe
 
-mkdir build 
-cd build
+export CXXFLAGS=`sed "s# -fvisibility-inlines-hidden##g" "$CXXFLAGS"`
 
-cmake ../src
-make
+cmake -S . -B build \
+    -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+    -DCMAKE_CXX_STANDARD=11 \
+    -DTBB_LIB_DIR="${PREFIX}/lib" \
+    -DTBB_INCLUDE_DIR="${PREFIX}/include" \
+    ./src
+cmake --build build -j"${CPU_COUNT}" -v
 
-cp graphconstructor/twopaco ${PREFIX}/bin/
-cp graphdump/graphdump ${PREFIX}/bin/
+install -d "${PREFIX}/bin"
+install -v -m 0755 \
+    build/graphconstructor/twopaco \
+    build/graphdump/graphdump \
+    "${PREFIX}/bin/"

@@ -1,19 +1,9 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
-make
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-binaries="\
- daligner  \
- HPC.daligner  \
- LAsort  \
- LAmerge  \
- LAsplit  \
- LAcat  \
- LAshow  \
- LAdump  \
- LAcheck  \
- LAindex
-"
+mkdir -p "$PREFIX/bin"
 
-for i in $binaries; do cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
+make CC="${CC}"
+
+make install

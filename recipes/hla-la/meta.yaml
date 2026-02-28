@@ -1,0 +1,59 @@
+{% set version = "1.0.4" %}
+
+package:
+  name: hla-la
+  version: {{ version }}
+
+build:
+  number: 1
+  skip: true # [osx]
+  run_exports:
+    - {{ pin_subpackage('hla-la', max_pin="x") }}
+
+source:
+  url: https://github.com/DiltheyLab/HLA-LA/archive/v{{ version }}.tar.gz
+  sha256: 6a6c28bbee6256fde1b845d23f5d21589e1b83b1c4c2aceb6309bc65a3284ea7
+  folder: src
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - boost-cpp ==1.74.00
+    - bamtools ==2.5.1
+    - perl-bio-db-hts
+    - perl-bioperl
+    - perl-bioperl-core
+    - perl-bio-featureio
+    - perl-text-levenshtein
+    - perl-list-moreutils
+  run:
+    - boost-cpp ==1.74.00
+    - bamtools ==2.5.1
+    - samtools >=1.10
+    - r-base =4
+    - picard
+    - bwa ==0.7.12
+    - mummer
+    - perl-bio-db-hts
+    - perl-bioperl
+    - perl-bioperl-core
+    - perl-bio-featureio
+    - perl-text-levenshtein
+    - perl-list-moreutils
+
+about:
+  home: https://github.com/DiltheyLab/HLA-LA
+  license: GPL
+  summary: HLA typing from short and long reads
+
+test:
+  commands:
+    - HLA-LA.pl --testing 1
+    - HLA-ASM.pl --testing 1
+
+extra:
+  identifiers:
+    - biotools:hla-la

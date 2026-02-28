@@ -1,40 +1,55 @@
-{% set version = "0.9.24" %}
-{% set sha256 = "22e8fc3980c2f5d6b584d4fefa3406172141697f7cb32b9742cb43a593b4ff24" %}
+{% set name = "diamond" %}
+{% set version = "2.1.23" %}
+{% set sha256 = "ebac52b733216b6d2585fdf13e99edf5edffcc6f8c46a340a445bb03684c8726" %}
 
 package:
-  name: diamond
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/bbuchfink/diamond/archive/v{{ version }}.tar.gz
+- url: https://github.com/bbuchfink/diamond/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('diamond', max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
+    - make
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
   host:
-    - boost
     - zlib
+    - zstd-static
+    - sqlite
   run:
-    - boost
-    - zlib
 
 test:
   commands:
     - diamond --help 2>&1 > /dev/null
 
 about:
-  home: https://github.com/bbuchfink/diamond
-  license: AGPL-3.0
-  license_family: AGPL
-  summary: Accelerated BLAST compatible local sequence aligner
+  home: "https://github.com/bbuchfink/diamond"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Accelerated BLAST compatible local sequence aligner."
+  doc_url: "https://github.com/bbuchfink/diamond/wiki"
+  dev_url: "https://github.com/bbuchfink/diamond"
 
 extra:
   identifiers:
-    - biotools:Diamond
-    - doi:10.1038/nmeth.3176
+    - biotools:diamond
+    - usegalaxy-eu:bg_diamond
+    - usegalaxy-eu:bg_diamond_makedb
+    - usegalaxy-eu:bg_diamond_view
+    - doi:10.1038/s41592-021-01101-x
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64

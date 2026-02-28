@@ -1,0 +1,37 @@
+diff --git a/src/Makefile b/src/Makefile
+index aed70a3..efe7547 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -1,5 +1,5 @@
+-CC=             gcc
+-CFLAGS=         -O3 -fomit-frame-pointer -static
++CC=             $(CC)
++CFLAGS=         -O3 -fomit-frame-pointer -static -Wno-implicit-function-declaration
+ #CFLAGS=         -O3 -g -D_DEBUG
+ DFLAGS= 
+ 
+@@ -31,12 +31,12 @@ CFLAGS += -DDEBUG
+ endif
+ INCLUDES=	-Iinc
+ SUBDIRS=        . 
+-LIBPATH=	
+-LIBS=      	-pthread -lm -lrt -lbam -lz -L./inc
++LIBPATH=	-L$(PREFIX)/lib
++LIBS=      	-pthread -lm -lrt -lbam -lz -Linc
+ EXTRA_FLAGS=
+ 
+ BIT_ERR = 0
+-ifeq (,$(findstring $(shell uname -m), x86_64 ppc64 ia64))
++ifeq (,$(findstring $(shell uname -m), x86_64 ppc64 ia64 aarch64 arm64))
+ BIT_ERR = 1
+ endif
+ 
+@@ -48,7 +48,7 @@ EXTRA_FLAGS += -Wl,--hash-style=both
+ endif
+ 
+ ifneq (,$(findstring $(shell uname -m), x86_64))
+-CFLAGS += -m64
++CFLAGS += 
+ endif
+ 
+ ifneq (,$(findstring $(shell uname -m), ia64))

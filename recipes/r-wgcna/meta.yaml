@@ -1,7 +1,4 @@
-{% set version = '1.66' %}
-
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set version = '1.74' %}
 
 package:
   name: r-wgcna
@@ -11,25 +8,21 @@ source:
   url:
     - {{ cran_mirror }}/src/contrib/WGCNA_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/WGCNA/WGCNA_{{ version }}.tar.gz
-  sha256: 1b4b8d2a0b7c8c096a8b47810378fbfc475ff36f66a72f89b87e24eb3ef41666
+  sha256: 4f61e117b82287f01b61bf936d5c5ea3814c9c4b0d0b90d5016dda77f1f955d6
 
 build:
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("r-wgcna", max_pin="x") }}
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{ compiler('c') }}        # [not win]
-    - {{ compiler('cxx') }}      # [not win]
-    - {{native}}toolchain        # [win]
-    - {{posix}}filesystem        # [win]
-    - {{posix}}make
-    - {{posix}}sed               # [win]
-    - {{posix}}coreutils         # [win]
-    - {{posix}}zip               # [win]
-
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
     - r-base
     - bioconductor-annotationdbi
@@ -45,10 +38,8 @@ requirements:
     - bioconductor-preprocesscore
     - r-robust
     - r-survival
-
   run:
     - r-base
-    - {{native}}gcc-libs         # [win]
     - bioconductor-annotationdbi
     - bioconductor-go.db
     - r-hmisc
@@ -70,7 +61,7 @@ test:
 
 about:
   home: http://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/
-  license: GPL (>= 2)
+  license: GPL-3.0-or-later
   summary: Functions necessary to perform Weighted Correlation Network Analysis on high-dimensional
     data as originally described in Horvath and Zhang (2005) <doi:10.2202/1544-6115.1128>
     and Langfelder and Horvath (2008) <doi:10.1186/1471-2105-9-559>. Includes functions
@@ -79,6 +70,8 @@ about:
     a number of utility functions for data manipulation and visualization.
   license_family: GPL3
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:wgcna
     - doi:10.1186/1471-2105-9-559

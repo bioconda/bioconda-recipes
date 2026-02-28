@@ -1,0 +1,45 @@
+{% set name = "borf" %}
+{% set version = "1.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 0d54614834545ff7898d64aef5af514db731e4d1b66eae1f53c8e172f6e2fa08
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - borf = borf.borf:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python >=3
+  run:
+    - biopython
+    - numpy
+    - pandas
+    - python >=3
+    - scikit-bio
+
+test:
+  imports:
+    - borf
+    - borf.tests
+  commands:
+    - borf --help
+
+about:
+  home: https://github.com/betsig/borf
+  license: MIT
+  license_family: MIT
+  summary: ORF predictions from .fa files
+
+extra:
+  recipe-maintainers:
+    - betsig

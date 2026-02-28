@@ -1,0 +1,137 @@
+diff --git a/modules/MLSTdb.py b/modules/MLSTdb.py
+index 764fa41..85736b1 100644
+--- a/modules/MLSTdb.py
++++ b/modules/MLSTdb.py
+@@ -52,7 +52,7 @@ def minimapFilter(sourceFna, targetFna, targetFiltFna, max_iden, min_iden, cover
+ 
+ def buildReference(alleles, references, max_iden=0.9,  min_iden=0.6, coverage=0.7, paralog=0.1, relaxEnd=False) :
+     orderedLoci = { t['fieldname']:i for i, t in reversed(list(enumerate(references))) }
+-    with tempfile.TemporaryDirectory(prefix='NS_', dir='.') as dirPath :
++    with tempfile.TemporaryDirectory(prefix='NS_') as dirPath :
+         sourceFna = os.path.join(dirPath, 'sourceFna')
+         clsFna = os.path.join(dirPath, 'clsFna')
+         targetFna = os.path.join(dirPath, 'targetFna')
+diff --git a/modules/MLSType.py b/modules/MLSType.py
+index 65407d5..d0f18e6 100644
+--- a/modules/MLSType.py
++++ b/modules/MLSType.py
+@@ -614,7 +614,7 @@ def write_query(self, query) :
+ def nomenclature(genome, refAllele, parameters) :
+     # write query
+     # TODO make this NS_ tempdir somewhere like /tmp instead of cluttering up the cwd
+-    dirPath = tempfile.mkdtemp(prefix='NS_', dir='.')
++    dirPath = tempfile.mkdtemp(prefix='NS_')
+     try :
+         # Put the query genome and reference alleles into the tempdir
+         qry = os.path.join(dirPath, 'query')
+diff --git a/modules/align.py b/modules/align.py
+index a8a5059..18b8f01 100644
+--- a/modules/align.py
++++ b/modules/align.py
+@@ -938,7 +938,7 @@ def mask_crispr(fasta_file, prefix) :
+         else :
+             subprocess.Popen('{0} -cR01 {2}.mmi {1}'.format(aligner[0], reference, prefix).split()).communicate()
+         import tempfile
+-        with tempfile.NamedTemporaryFile(dir='.') as tf :
++        with tempfile.NamedTemporaryFile() as tf :
+             seq, _ = readFastq(reference)
+             tf_fas = '{0}.fasta'.format(tf.name)
+             with open(tf_fas, 'wt') as fout:
+diff --git a/modules/cgMLST.py b/modules/cgMLST.py
+index 4186399..dbaa89b 100644
+--- a/modules/cgMLST.py
++++ b/modules/cgMLST.py
+@@ -81,7 +81,7 @@ def cgMLST(args) :
+         alleles.update(readFasta(allele_file, allele_names))
+ 
+     allele_stat = {}
+-    with tempfile.TemporaryDirectory(dir='.', prefix='CG_') as tmpdir:
++    with tempfile.TemporaryDirectory(prefix='CG_') as tmpdir:
+         allele_list = list(alleles.items())
+         fnames = []
+         for i in np.arange(8):
+diff --git a/modules/clust.py b/modules/clust.py
+index cfca12b..ae2ca95 100644
+--- a/modules/clust.py
++++ b/modules/clust.py
+@@ -33,7 +33,7 @@ def clust(argv) :
+     return exemplar, clust
+ def getClust(prefix, genes, params) :
+     groups = {}
+-    dirPath = tempfile.mkdtemp(prefix='NS_', dir='.')
++    dirPath = tempfile.mkdtemp(prefix='NS_')
+     try:
+         if not params['translate'] :
+             geneFile = genes
+diff --git a/modules/ongoing/MGplacer.py b/modules/ongoing/MGplacer.py
+index 33e3991..0e2f286 100644
+--- a/modules/ongoing/MGplacer.py
++++ b/modules/ongoing/MGplacer.py
+@@ -39,7 +39,7 @@ def parseBAMs(fnames, sites) :
+     knownSamples = np.zeros([sites.shape[0], len(fnames), 4])
+ 
+     from tempfile import NamedTemporaryFile
+-    tmpFile = NamedTemporaryFile(delete=False, dir='.')
++    tmpFile = NamedTemporaryFile(delete=False)
+     siteMap = {}
+     for i, s in enumerate(sites) :
+         tmpFile.write('{0}\t{1}\n'.format(*s[0]).encode('utf-8'))
+@@ -264,4 +264,4 @@ def updateGenotypes(genotypes, genolocs, initState, branches, knownMatrix, nChoi
+                         globalParams['genotypes'] = globalParams['genotypes'][ids]
+                     globalParams['pGenotype'][:] = newPGenotype
+                     lk = newLK
+-        print(ite, lk, [ knownNodes[int(branches[gt][1])] for gt in globalParams['genotypes'] ], globalParams['genolocs'], globalParams, )
+\ No newline at end of file
++        print(ite, lk, [ knownNodes[int(branches[gt][1])] for gt in globalParams['genotypes'] ], globalParams['genolocs'], globalParams, )
+diff --git a/modules/ongoing/MLSType_NG.py b/modules/ongoing/MLSType_NG.py
+index 629b93f..7dd685b 100644
+--- a/modules/ongoing/MLSType_NG.py
++++ b/modules/ongoing/MLSType_NG.py
+@@ -519,7 +519,7 @@ def write_query(self, query) :
+ 
+ def nomenclature(genome, refAllele, parameters) :
+     # write query
+-    dirPath = tempfile.mkdtemp(prefix='NS_', dir='.')
++    dirPath = tempfile.mkdtemp(prefix='NS_')
+     try :
+         qry = os.path.join(dirPath, 'query')
+         ref = os.path.join(dirPath, 'reference')
+diff --git a/modules/ongoing/ortho2.py b/modules/ongoing/ortho2.py
+index 2bd02fd..6c3048c 100644
+--- a/modules/ongoing/ortho2.py
++++ b/modules/ongoing/ortho2.py
+@@ -265,7 +265,7 @@ def filt_per_group(data) :
+ 
+         for ite in xrange(3) :
+             try :
+-                tmpFile = tempfile.NamedTemporaryFile(dir='.', delete=False)
++                tmpFile = tempfile.NamedTemporaryFile(delete=False)
+                 for n, s in tags.items() :
+                     tmpFile.write('>X{0}\n{1}\n{2}'.format(n, s, '\n'*ite).encode('utf-8'))
+                 tmpFile.close()
+diff --git a/modules/ortho.py b/modules/ortho.py
+index a342049..71d5b49 100644
+--- a/modules/ortho.py
++++ b/modules/ortho.py
+@@ -397,7 +397,7 @@ def filt_per_group(data) :
+ 
+         for ite in xrange(3) :
+             try :
+-                tmpFile = tempfile.NamedTemporaryFile(dir='.', delete=False)
++                tmpFile = tempfile.NamedTemporaryFile(delete=False)
+                 for n, s in tags.items() :
+                     tmpFile.write('>X{0}\n{1}\n{2}'.format(n, s, '\n'*ite).encode('utf-8'))
+                 tmpFile.close()
+diff --git a/modules/uberBlast.py b/modules/uberBlast.py
+index e50c736..c9a9990 100644
+--- a/modules/uberBlast.py
++++ b/modules/uberBlast.py
+@@ -339,7 +339,7 @@ def run(self, ref, qry, methods, min_id, min_cov, min_ratio, table_id=11, n_thre
+             self.pool = useProcess
+ 
+         blastab = []
+-        self.dirPath = tempfile.mkdtemp(prefix='NS_', dir='.')
++        self.dirPath = tempfile.mkdtemp(prefix='NS_')
+         try :
+             for method in methods :
+                 if method.lower() in tools :

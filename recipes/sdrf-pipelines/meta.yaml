@@ -1,0 +1,59 @@
+{% set name = "sdrf-pipelines" %}
+{% set pypi_name = "sdrf_pipelines" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ pypi_name[0] }}/{{ pypi_name }}/{{ pypi_name }}-{{ version }}.tar.gz"
+  sha256: 8c774a8e7d37be9bd5b656685e3b1a5627761755d4abfd10c74fa1821358f7dc
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  entry_points:
+    - parse_sdrf = sdrf_pipelines.parse_sdrf:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+
+requirements:
+  host:
+    - pip
+    - python >=3.10
+    - setuptools
+  run:
+    - python >=3.10
+    - click
+    - defusedxml
+    - numpy
+    - pandas
+    - pandas_schema
+    - pydantic >=2.0.0
+    - pyyaml
+    - fastparquet
+    - pooch
+    - rdflib
+    - requests
+
+test:
+  imports:
+    - sdrf_pipelines
+  commands:
+    - parse_sdrf --help
+
+about:
+  home: "https://github.com/bigbio/sdrf-pipelines"
+  license: "Apache-2.0"
+  license_family: Apache
+  license_file: LICENSE
+  summary: "Translate, convert SDRF to configuration pipelines"
+  doc_url: "https://github.com/bigbio/sdrf-pipelines"
+  dev_url: "https://github.com/bigbio/sdrf-pipelines"
+
+extra:
+  container:
+    # Click requires the extended container
+    extended-base: true

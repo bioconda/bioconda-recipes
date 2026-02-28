@@ -2,17 +2,19 @@
 set -e
 set -x
 
-platform="$(uname)"
-if [ "$platform" = "Darwin" ]; then
-	unzip comet_source_"$PKG_VERSION".zip
-	sed -i '' -e 's/ -static//' -e 's/ -o / -headerpad_max_install_names&/' Makefile
-	sed -i '' -e "s/sha1Report='..'/sha1Report=NULL/" MSToolkit/include/MSReader.h
-	make
-elif [ "$platform" = "Linux" ]; then
-	mv comet."$PKG_VERSION".linux.exe comet.exe
-fi
-chmod 755 comet.exe
+export INCLUDE_PATH="${PREFIX}/MSToolkit/include"
+export CPPFLAGS="-I${PREFIX}/MSToolkit/include"
+
+# To switch from static to dynamic linking on linux. The Makefile does not have this flag for macOS
+# Dynamic linking does not work with mulled container tests
+#sed -i.bak 's#-static##' Makefile
+sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" MSToolkit/Makefile
+sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" CometSearch/Makefile
+
+make CXX=${CXX} -j ${CPU_COUNT}
+
 mkdir -p "$PREFIX"/bin
-cp comet.exe "$PREFIX"/bin/comet
+cp comet.exe ${PREFIX}/bin/comet
+chmod a+x ${PREFIX}/bin/comet
 cd "$PREFIX"/bin/
 ln -s comet comet.exe

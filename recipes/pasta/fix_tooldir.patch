@@ -1,0 +1,28 @@
+--- a/pasta/__init__.py	2023-12-04 08:02:14.754964843 +0100
++++ b/pasta/__init__.condafixed.py	2023-12-04 09:36:40.981661306 +0100
+@@ -20,7 +20,7 @@
+ PROGRAM_LONG_DESCRIPTION = """
+ PASTA performs iterative realignment and tree inference, similar to SATe, but uses a very different merge algorithm which improves running time, memory usage, and accuracy. The current code is heavily based on SATe, with lots of modifications, many related to algorithmic differences between PASTA and SATe, but also many scalability improvements (parallelization, tree parsing, defaults, etc.)
+ 
+-Minimally you must provide a sequence file (with the '--input' option); a starting tree is optional. By default, important algorithmic parameters are set based on automatic rules. 
++Minimally you must provide a sequence file (with the '--input' option); a starting tree is optional. By default, important algorithmic parameters are set based on automatic rules.
+ 
+ The command line allows you to alter the behavior of the algorithm (termination criteria, when the algorithm switches to "Blind" acceptance of new alignments, how the tree is decomposed to find subproblems to be used, and the external tools to use).
+ 
+@@ -251,8 +251,9 @@
+     if "PASTA_TOOLS_RUNDIR" in os.environ:
+         bin_path = os.path.expanduser(os.path.expandvars(os.environ["PASTA_TOOLS_RUNDIR"]))
+     else:
+-        home_path = pasta_home_dir()
+-        bin_path = os.path.join(home_path, pasta_tools_deploy_subpath())
++        bin_path = os.path.join(os.path.abspath(os.environ['CONDA_PREFIX']), 'bin')  # injected via conda patching process
++        # home_path = pasta_home_dir()
++        # bin_path = os.path.join(home_path, pasta_tools_deploy_subpath())
+     if os.path.exists(bin_path) or not default_to_dev_dir:
+         return bin_path
+     try:
+@@ -288,4 +289,3 @@
+         raise ToolsDirNotFoundError(paths_tried=[bin_path],
+                 env_var_name="PASTA_TOOLS_DEVDIR")
+     return bin_path
+-

@@ -1,0 +1,58 @@
+{% set version = "1.4.0" %}
+{% set name = "HarmonizR" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: An implementation, which takes input data and makes it available for proper batch effect removal by ComBat or Limma. The implementation appropriately handles missing values by dissecting the input matrix into smaller matrices with sufficient data to feed the ComBat or limma algorithm. The adjusted data is returned to the user as a rebuild matrix. The implementation is meant to make as much data available as possible with minimal data loss.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Handles missing values and makes more data available
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-harmonizr", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
+requirements:
+  host:
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-sva >=3.54.0,<3.55.0
+    - r-base
+    - r-doparallel >=1.0.16
+    - r-foreach >=1.5.1
+    - r-janitor >=2.1.0
+    - r-plyr >=1.8.6
+    - r-seriation >=1.3.5
+  run:
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-sva >=3.54.0,<3.55.0
+    - r-base
+    - r-doparallel >=1.0.16
+    - r-foreach >=1.5.1
+    - r-janitor >=2.1.0
+    - r-plyr >=1.8.6
+    - r-seriation >=1.3.5
+
+source:
+  md5: c9b05bca57f63d6620a24fd199ab5425
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

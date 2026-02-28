@@ -1,10 +1,12 @@
 #!/bin/bash
+set -xe 
 
-mkdir -p "$PREFIX/bin"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
-export CPP_INCLUDE_PATH=${PREFIX}/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export CXX_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-make -j
-cp bin/filtlong $PREFIX/bin
+install -d "${PREFIX}/bin"
+
+make CXXFLAGS="${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}" -j"${CPU_COUNT}"
+
+install -v -m 0755 bin/filtlong "${PREFIX}/bin"

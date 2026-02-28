@@ -1,0 +1,50 @@
+{% set name = "harmony-pytorch" %}
+{% set version = "0.1.8" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "1b097906d49c6ed9dde6cf234f7d987fb49a3b649b8a1323d99e6ea71b5b7df2"
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('harmony-pytorch', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+    - setuptools_scm
+  run:
+    - python >=3.7
+    - numpy
+    - pandas
+    - psutil
+    - threadpoolctl
+    - scikit-learn >=0.23
+    - pytorch
+    - importlib_metadata >=0.7  # [py<38]
+
+test:
+  imports:
+    - harmony
+
+about:
+  home: "https://github.com/lilab-bcb/harmony-pytorch"
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: "This is a Pytorch implementation of Harmony algorithm on single-cell sequencing data integration."
+
+extra:
+  recipe-maintainers:
+    - yihming
+    - bli25
+  identifiers:
+    - doi:10.1038/s41592-019-0619-0

@@ -1,0 +1,47 @@
+{% set name = "pandora" %}
+{% set version = "0.9.2" %}
+{% set repo_URL = "https://github.com/rmcolq/pandora" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: {{ repo_URL }}/releases/download/{{ version }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 0e6189990dcf51eb28d175e0be76154a3ede1b602e5197f1a86ce8ba2839ba4e
+
+build:
+  number: 1
+  skip: True #  [osx]
+  run_exports:
+    - {{ pin_subpackage('pandora', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - wget
+    - mafft
+
+test:
+  commands:
+    - pandora --help
+    - pandora --version
+    - pandora map --help
+    - pandora index --help
+    - pandora discover --help
+    - pandora compare --help
+
+about:
+  home: {{ repo_URL }}
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Pan-genome inference and genotyping with long noisy or short accurate reads
+
+extra:
+  recipe-maintainers:
+    - mbhall88
+    - leoisl
+    - rmcolq

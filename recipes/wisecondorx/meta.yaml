@@ -1,0 +1,46 @@
+{% set version="1.2.9" %}
+package:
+  name: wisecondorx
+  version:  {{ version }}
+
+source:
+  url: https://github.com/CenterForMedicalGeneticsGhent/wisecondorX/archive/v{{ version }}.tar.gz
+  sha256: 345faaf81822d6532d278ca9819059c1a2860e0856432b054d3bed076c95326c
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  run_exports:
+    - {{ pin_subpackage('wisecondorx', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.6
+    - setuptools
+  run:
+    - pandas
+    - python >=3.6
+    - pysam ==0.22
+    - scipy ==1.13
+    - scikit-learn ==1.4
+    - numpy ==1.26
+    - r-jsonlite ==1.8.8
+    - r-png
+    - bioconductor-dnacopy ==1.76
+    - matplotlib-base ==3.8.4
+
+test:
+  imports:
+    - wisecondorx
+  commands:
+    - WisecondorX --help
+    - WisecondorX convert --help
+    - WisecondorX gender --help
+    - WisecondorX newref --help
+    - WisecondorX predict --help
+
+about:
+  home: https://github.com/CenterForMedicalGeneticsGhent/wisecondorX
+  license: Attribution-NonCommercial-ShareAlike CC BY-NC-SA
+  summary: 'WIthin-SamplE COpy Number aberration DetectOR, including sex chromosomes'

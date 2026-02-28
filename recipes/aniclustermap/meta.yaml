@@ -1,0 +1,52 @@
+{% set name = "aniclustermap" %}
+{% set version = "2.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/aniclustermap-{{ version }}.tar.gz
+  sha256: 2826beb6898e4871bc7153ab9da15deca849f83668893ddbeb985e0e4718cd52
+
+build:
+  entry_points:
+    - ANIclustermap = aniclustermap.scripts.aniclustermap:app
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('aniclustermap', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - hatchling
+    - pip
+  run:
+    - python >=3.9
+    - pandas >=1.4.1
+    - seaborn >=0.11.2
+    - scipy >=1.9.0
+    - typer >=0.15.2
+    - fastani >=1.33
+    - skani >=0.2.2
+
+test:
+  imports:
+    - aniclustermap
+  commands:
+    - ANIclustermap --help
+
+about:
+  home: https://github.com/moshi4/ANIclustermap
+  dev_url: https://github.com/moshi4/ANIclustermap
+  summary: A tool for drawing ANI clustermap between all-vs-all microbial genomes
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: "https://github.com/moshi4/ANIclustermap/blob/v{{ version }}/README.md"
+
+extra:
+  recipe-maintainers:
+    - moshi4

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sed -i -e 's/HOME/PREFIX/g' Makefile
-make -j 1
+make -j 1 CC="${CC}" CFLAGS="${CFLAGS}"
 
 mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/lib/tRNAscan-SE

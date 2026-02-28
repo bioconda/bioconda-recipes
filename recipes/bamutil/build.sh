@@ -1,16 +1,28 @@
 #!/usr/bin/env bash
+set -xe
 
-VERSION=1.0.14
-curl -o libStatGen-v$VERSION.tar.gz -L https://github.com/statgen/libStatGen/archive/v$VERSION.tar.gz
-openssl sha256 libStatGen-v$VERSION.tar.gz | grep 70a504c5cc4838c6ac96cdd010644454615cc907df4e3794c999baf958fa734b
-tar -xzvpf libStatGen-v$VERSION.tar.gz
-# remove profile flag to avoid "ld: cannot find gcrt1.o: No such file or directory"
-sed -i.bak '/OPTFLAG_PROFILE?=/ s/-pg//' ./libStatGen-$VERSION/Makefiles/Makefile.include
-export C_INCLUDE_PATH="${PREFIX}/include"
-export CPP_INCLUDE_PATH="${PREFIX}/include"
-export LIBRARY_PATH="${PREFIX}/lib"
-export CFLAGS="-I${PREFIX}/include"
-make LIB_PATH_GENERAL=./libStatGen-$VERSION
-make install INSTALLDIR=$PREFIX LIB_PATH_GENERAL=./libStatGen-$VERSION
-mkdir -p $PREFIX/bin/
-mv $PREFIX/bam $PREFIX/bin/
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3"
+export CFLAGS="${CFLAGS} -O3"
+
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
+
+cd bamUtil
+
+make -j"${CPU_COUNT}" \
+    CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS} -std=c++11" \
+    CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+    USER_WARNINGS='-Wno-strict-overflow' \
+    INSTALLDIR="${PREFIX}/bin" \
+    install

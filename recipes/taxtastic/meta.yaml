@@ -1,5 +1,5 @@
-{% set version = "0.8.9" %}
-{% set sha256 = "ecab46f1efa65f81c1a7f537ce5ff2749ee910b1ead3c8d46eaa2ce819e4d60a" %}
+{% set version = "0.12.0" %}
+{% set sha256 = "cdb60dcc7d0a847ed881935038fd8ff44e1c130d2397863d9e9a3a2b7bd67faa" %}
 
 package:
   name: taxtastic
@@ -10,40 +10,37 @@ source:
   sha256: '{{sha256}}'
 
 build:
-  skip: true # [not py27]
+  noarch: python
   number: 0
   script: python setup.py install --single-version-externally-managed --record=record.txt
+  run_exports:
+    - {{ pin_subpackage('taxtastic', max_pin='x.x') }}
 
 requirements:
   host:
-    - python
+    - python >=3
     - setuptools
-    - sqlalchemy >=0.7
-    - decorator
-    - biopython
-    - xlrd
 
   run:
-    - python
-    - sqlalchemy >=0.7
+    - python >=3
+    - dendropy
+    - pyyaml
     - decorator
-    - biopython
-    - xlrd
+    - fastalite
+    - jinja2
+    - psycopg2-binary
+    - sqlalchemy >=2
+    - sqlparse
 
 test:
-  # Python imports
   imports:
     - taxtastic
     - taxtastic.scripts
     - taxtastic.subcommands
 
-
 about:
   home: https://github.com/fhcrc/taxtastic
   license: GPL-3.0
   license_family: GPL
+  license_file: LICENSE
   summary: Tools for taxonomic naming and annotation
-
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml

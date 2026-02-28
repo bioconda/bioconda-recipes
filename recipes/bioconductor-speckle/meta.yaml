@@ -1,0 +1,52 @@
+{% set version = "1.6.0" %}
+{% set name = "speckle" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: The speckle package contains functions for the analysis of single cell RNA-seq data. The speckle package currently contains functions to analyse differences in cell type proportions. There are also functions to estimate the parameters of the Beta distribution based on a given counts matrix, and a function to normalise a counts matrix to the median library size. There are plotting functions to visualise cell type proportions and the mean-variance relationship in cell type proportions and counts. As our research into specialised analyses of single cell data continues we anticipate that the package will be updated with new functions.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Statistical methods for analysing single cell RNA-seq data
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-speckle", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: BiocStyle, knitr, rmarkdown, statmod, CellBench, scater, patchwork, jsonlite, vdiffr, testthat (>= 3.0.0)
+requirements:
+  host:
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - r-base
+    - r-ggplot2
+    - r-seurat
+  run:
+    - bioconductor-edger >=4.4.0,<4.5.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - r-base
+    - r-ggplot2
+    - r-seurat
+
+source:
+  md5: 02df000664c70b6ee85aa74170cb6248
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

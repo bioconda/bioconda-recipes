@@ -4,15 +4,19 @@ export LIBRARY_PATH=${PREFIX}/lib
 rm -rf build
 mkdir build
 cd build
-cmake ..
-make -j8
+cmake -DCMAKE_CXX_FLAGS="$CXXFLAGS -DUSE_NEW_CXX" ..
+make -j2
 
 binaries="\
 simka \
 simkaCount \
 simkaCountProcess \
 simkaMerge \
+simkaMinCore \
 "
 
-for i in $binaries; do cp $SRC_DIR/build/bin/$i $PREFIX/bin/$i; done
+mkdir -p $PREFIX/bin/
+for i in $binaries; do cp $SRC_DIR/build/bin/$i $PREFIX/bin/; done
 for i in $binaries; do chmod +x $PREFIX/bin/$i; done
+
+cp $SRC_DIR/simkaMin/*.py $PREFIX/bin/

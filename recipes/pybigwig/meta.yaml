@@ -1,29 +1,35 @@
-{% set version = "0.3.14" %}
+{% set name = "pybigwig" %}
+{% set version = "0.3.25" %}
 
 package:
-  name: pybigwig
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/b2/5f/31086a89f067e0f0ad3b5b039e1d99ed7f4e5e7bc0fe156aef724a45ed06/pyBigWig-0.3.14.tar.gz
-  sha256: 28bed8b4491df8704d54247d5d6e2d77a9b6fe4be6a77b8246e0ee3fb531c206
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 8c717b0222e6677956fd659c8a21650983679ffb3314427d7f68d2910fad202a
 
 build:
   number: 0
+  skip: True  # [py < 39]
+  script:
+    - export C_INCLUDE_PATH="$PREFIX/include"
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('pybigwig', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - python
+    - pip
     - curl
     - libcurl
     - zlib
-    - numpy >=1.10.*
+    - numpy >=2.0.0
   run:
     - python
-    - libcurl
-    - zlib
     - {{ pin_compatible('numpy') }}
 
 test:
@@ -33,6 +39,15 @@ test:
     - python -c "import pyBigWig; assert(pyBigWig.numpy == 1); assert(pyBigWig.remote == 1)"
 
 about:
-  home: https://github.com/dpryan79/pyBigWig
+  home: "https://github.com/deeptools/pyBigWig"
   license: MIT
-  summary: A python extension written in C for quick access to bigWig files.
+  license_family: MIT
+  license_file: LICENSE.txt
+  summary: "A python extension written in C for quick access to bigWig files."
+  dev_url: "https://github.com/deeptools/pyBigWig"
+  doc_url: "https://github.com/deeptools/pyBigWig/blob/{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

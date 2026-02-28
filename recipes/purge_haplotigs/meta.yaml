@@ -1,15 +1,19 @@
-{% set version = "1.0.4" %}
+{% set name = "purge_haplotigs" %}
+{% set version = "1.1.3" %}
 
 package:
-  name: purge_haplotigs
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://bitbucket.org/mroachawri/purge_haplotigs/get/v{{ version }}.tar.gz
-  sha256: 9fb6b7fbb7358030e8f54bafa77a2b9e2a3a6951fc72a256fe5d9899d7ce219c
+  url: https://bitbucket.org/mroachawri/{{ name }}/get/v{{ version }}.tar.gz
+  sha256: 68d9bc8464f6d53281127576eab67068fbc1c45d37a60dffdc344b2c0be4ff84
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+  noarch: generic
 
 requirements:
   build:
@@ -20,7 +24,6 @@ requirements:
     - r-base >=3.4.1
     - r-ggplot2 >=2.2.1
     - minimap2 >=2.12
-    - mummer4 >=4.0.0beta2
     - make >=4.2.1
 
 test:
@@ -29,7 +32,6 @@ test:
     - minimap2 -h
     - samtools --help
     - bedtools -h
-    - nucmer -h
     - make -h
     - Rscript -e 'require(ggplot2)'
     - perl -e 'use FindBin;use Getopt::Long;use threads;use Thread::Semaphore;use Thread::Queue;use List::Util;'
@@ -41,3 +43,7 @@ about:
   license_family: MIT
   license_file: LICENSE
   summary: Pipeline to help with curating heterozygous diploid genome assemblies.
+
+extra:
+  recipe-maintainers:
+    - beardymcjohnface

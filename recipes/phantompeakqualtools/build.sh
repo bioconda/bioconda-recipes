@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mkdir -p ${PREFIX}/bin
+
 #add shebang to make directly executable
 cat <(
       echo '#!/usr/bin/env Rscript'

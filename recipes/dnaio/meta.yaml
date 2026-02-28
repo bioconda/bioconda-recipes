@@ -1,29 +1,31 @@
-{% set version = "0.3" %}
+{% set version = "1.2.3" %}
 
 package:
   name: dnaio
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/1f/be/73d03ccdc8f721b938c5201d3031c676fa164fc6641f6d722160e5b63036/dnaio-0.3.tar.gz
-  sha256: 47e4449affad0981978fe986684fc0d9c39736f05a157f6cf80e54dae0a92638
+  url: https://files.pythonhosted.org/packages/ca/23/1afaeadecfe4712769db4b609ca4aeb4246f6a47a9ab39801cb6a5aa8c2e/dnaio-1.2.3.tar.gz
+  sha256: aad456d9f6272339958b2c5af32fd64d77a50aca12e394e7a143b4129d49b0b9
 
 build:
-  number: 1
+  number: 0
   script: "{{ PYTHON }} -m pip install . --no-deps -vv"
-  skip: True  # [py27]
+  run_exports:
+    - {{ pin_subpackage('dnaio', max_pin="x") }}
+
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - pip
-    - python
-    - xopen >=0.5.0
+    - python >=3.9
     - cython
+    - setuptools-scm
   run:
-    - python
-    - xopen >=0.5.0
+    - python >=3.9
+    - xopen >=1.4.0
 
 test:
   imports:
@@ -31,5 +33,12 @@ test:
 
 about:
   home: https://github.com/marcelm/dnaio/
-  license: MIT License
-  summary: 'Read FASTA and FASTQ files efficiently'
+  license: MIT
+  summary: 'Read and write FASTA and FASTQ files efficiently'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - marcelm

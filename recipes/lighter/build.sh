@@ -1,13 +1,17 @@
-#!/bin/sh
+#!/bin/bash
 
-export INCLUDE_PATH="${PREFIX}/include"
-export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
+mkdir -p ${PREFIX}/bin
 
-export LDFLAGS="-L${PREFIX}/lib"
-export CPPFLAGS="-I${PREFIX}/include"
-export CPLUS_INCLUDE_PATH=$PREFIX/include
+case $(uname -m) in
+	aarch64)
+		export CXXFLAGS="${CXXFLAGS} -Wno-narrowing"
+		;;
+	*)
+		export CXXFLAGS="${CXXFLAGS}"
+		;;
+esac
 
-mkdir -p $PREXIX/bin
-make
-cp lighter $PREFIX/bin
+make CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include" LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+chmod 0755 lighter
+cp -f lighter ${PREFIX}/bin

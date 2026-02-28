@@ -1,5 +1,6 @@
 #!/bin/bash
-
+# Debug for ARM build, can remove later
+set -x
 
 mkdir -p $PREFIX/bin
 
@@ -12,5 +13,4 @@ do
 done
 
 cd src
-make
-cp freec $PREFIX/bin
+$CXX -o $PREFIX/bin/freec $CXXFLAGS $LDFLAGS *.cpp -lpthread

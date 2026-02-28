@@ -1,0 +1,66 @@
+{% set version = "1.6.0" %}
+{% set name = "CytoPipeline" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: This package provides support for automation and visualization of flow cytometry data analysis pipelines. In the current state, the package focuses on the preprocessing and quality control part. The framework is based on two main S4 classes, i.e. CytoPipeline and CytoProcessingStep. The pipeline steps are linked to corresponding R functions - that are either provided in the CytoPipeline package itself, or exported from a third party package, or coded by the user her/himself. The processing steps need to be specified centrally and explicitly using either a json input file or through step by step creation of a CytoPipeline object with dedicated methods. After having run the pipeline, obtained results at all steps can be retrieved and visualized thanks to file caching (the running facility uses a BiocFileCache implementation). The package provides also specific visualization tools like pipeline workflow summary display, and 1D/2D comparison plots of obtained flowFrames at various steps of the pipeline.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Automation and visualization of flow cytometry data analysis pipelines
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-cytopipeline", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat (>= 3.0.0), vdiffr, diffviewer, knitr, rmarkdown, BiocStyle, reshape2, dplyr, CytoPipelineGUI
+requirements:
+  host:
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-flowai >=1.36.0,<1.37.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-ggcyto >=1.34.0,<1.35.0
+    - bioconductor-peacoqc >=1.16.0,<1.17.0
+    - r-base
+    - r-diagram
+    - r-ggplot2 >=3.4.1
+    - r-jsonlite
+    - r-rlang
+    - r-scales
+    - r-withr
+  run:
+    - bioconductor-biocfilecache >=2.14.0,<2.15.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-flowai >=1.36.0,<1.37.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - bioconductor-ggcyto >=1.34.0,<1.35.0
+    - bioconductor-peacoqc >=1.16.0,<1.17.0
+    - r-base
+    - r-diagram
+    - r-ggplot2 >=3.4.1
+    - r-jsonlite
+    - r-rlang
+    - r-scales
+    - r-withr
+
+source:
+  md5: 6166a108d4604b10a9563dfc7641b35b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

@@ -1,7 +1,17 @@
 #!/bin/bash
 
+set -xe
 
+pushd build/gmake
 
-./configure --prefix="$PREFIX"
-make
-make install
+make CC=${CC} CFLAGS="-g -pedantic -Wall -I ${SRC_DIR}/include -fPIC ${CFLAGS}"
+
+popd
+
+mkdir -p ${PREFIX}/bin
+mkdir -p ${PREFIX}/lib
+mkdir -p ${PREFIX}/include
+
+cp ./bin/tidyp ${PREFIX}/bin
+cp ./include/* ${PREFIX}/include
+cp ./lib/* ${PREFIX}/lib

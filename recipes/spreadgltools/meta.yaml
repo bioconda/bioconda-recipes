@@ -1,0 +1,60 @@
+{% set name ="SpreadGLtools" %}
+{% set version ="1.1.0" %}
+{% set sha256 ="de9319eb0cab7dcf042671c77fd473a7a03a8384ce7d476f10f89a8a100cbeec" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/GuyBaele/SpreadGL/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: |
+    cd scripts
+    {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+  run:
+    - python >=3.11
+    - setuptools >=67.4.0
+    - numpy >=1.23.2
+    - pandas >=2.2.0
+    - geojson >=3.0.1
+    - pyproj >=3.4.1
+    - dendropy >=4.5.2
+    - geopandas >=0.12.2
+    - rasterio >=1.3.6
+    - rioxarray >=0.14.0
+    - bottleneck >=1.3.7
+    - gdal >=3.3.0
+
+test:
+  commands:
+    - spread --help
+    - rates --help
+    - regions --help
+    - raster --help
+    - reprojection --help
+    - trimming --help
+
+about:
+  home: https://github.com/GuyBaele/SpreadGL
+  license: MIT
+  summary: 'Visualising pathogen dispersal in a high-performance browser application'
+  license_family: MIT
+  doc_url: https://github.com/GuyBaele/SpreadGL
+
+extra:
+  identifiers:
+    - doi:10.1101/2024.06.04.24308447

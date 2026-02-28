@@ -1,33 +1,18 @@
 #!/bin/bash
-
 set -x -e -o pipefail
 
-BINARY_HOME=$PREFIX/bin
-BBMAP_HOME=$PREFIX/opt/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+BINARY_HOME="$PREFIX/bin"
+BBMAP_HOME="$PREFIX/opt/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
+DATA_HOME="$PREFIX/share/$PKG_NAME"
 
-mkdir -p $BINARY_HOME
-mkdir -p $BBMAP_HOME
+mkdir -p "$BINARY_HOME"
+mkdir -p "$BBMAP_HOME"
+mkdir -p "$DATA_HOME"
 
 chmod a+x *.sh
 
-cp -R * $BBMAP_HOME/
+cp -Rf * ${BBMAP_HOME}/
 
-pushd $BBMAP_HOME/jni
+find *.sh -type f -exec ln -sf ${BBMAP_HOME}/{} ${BINARY_HOME}/{} \;
 
-export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-
-if test x"`uname`" = x"Linux"; then
-    make -f makefile.linux
-    ldd libbbtoolsjni.so
-fi
-
-if [ `uname` == Darwin ]; then
-    export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib"
-    make -f makefile.osx
-fi
-rm -f *.o
-
-popd
-
-find *.sh -type f -exec ln -s $BBMAP_HOME/{} $BINARY_HOME/{} \;
+cp -Rf ${BBMAP_HOME}/resources "${DATA_HOME}"

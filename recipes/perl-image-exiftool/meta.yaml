@@ -1,34 +1,38 @@
 {% set name = "perl-image-exiftool" %}
-{% set version = "11.30" %}
-{% set sha256 = "3a53733a1532bede4ce7eee763e5ab2bb87149e75e869e11a64d0e159858726e" %}
+{% set version = "13.50" %}
+{% set sha256 = "27e2d66eb21568cc0d59520f89afcaaa50735e1ad9fa4b36d0a4ccf916c70d31" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://cpan.metacpan.org/authors/id/E/EX/EXIFTOOL/Image-ExifTool-11.30.tar.gz
+  url: https://cpan.metacpan.org/authors/id/E/EX/EXIFTOOL/Image-ExifTool-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   number: 0
-
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('perl-image-exiftool', max_pin="x") }}
+  
 requirements:
+  build:
+    - make
   host:
     - perl
     - perl-extutils-makemaker
-
   run:
     - perl
 
 test:
   imports:
     - Image::ExifTool
-
   commands:
     - exiftool -ver
 
 about:
-  home: http://metacpan.org/pod/Image::ExifTool
-  license: perl_5
-  summary: 'ExifTool is a platform-independent Perl library plus a command-line application for reading, writing and editing meta information in a wide variety of files.'
+  home: "https://metacpan.org/pod/Image::ExifTool"
+  license: "perl_5"
+  summary: "ExifTool is a platform-independent Perl library plus a command-line application for reading, writing and editing meta information in a wide variety of files."
+  doc_url: "https://metacpan.org/pod/Image::ExifTool"

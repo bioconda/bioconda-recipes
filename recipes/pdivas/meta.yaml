@@ -1,0 +1,49 @@
+{% set name = "pdivas" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 4a2234564557622c5bd2213478956c4a4858ba6768251d24ee43a4fc7550f721
+
+build:
+  entry_points:
+    - pdivas=pdivas.__main__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('pdivas', exact=True) }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - pandas >=1.3
+    - numpy >=1.21
+    - cyvcf2 >=0.11
+    - scikit-learn =1.0.2
+
+test:
+  imports:
+    - pdivas
+  commands:
+    - pip check
+    - pdivas --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/shiro-kur/PDIVAS
+  summary: 'PDIVAS: Pathogenicity predictor of Deep-Intronic Variants causing Aberrant Splicing'
+  license: 'MIT'
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - shiro-kur

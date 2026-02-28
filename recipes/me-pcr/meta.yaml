@@ -1,0 +1,50 @@
+{% set name = "me-pcr" %}
+{% set version = "1.0.6" %}
+{% set sha256 = "61e84af827ef99de245a7a711746e0b0b905e40f5adaf5e34da936a486c8b0e7" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://web.archive.org/web/20100708193215/http://genome.chop.edu/mePCR/me-PCR-{{ version }}.zip
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}    
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+
+test:
+  commands:
+    - me-PCR 2>&1 | grep "Multithreaded Electronic PCR"
+    # - me-PCR test/test.sts test/test.fa
+
+about:
+  home: https://web.archive.org/web/20100708193215/http://genome.chop.edu/mePCR/
+  license: Public Domain
+  summary: Multithreaded Electronic PCR (in-silico PCR) based on NCBI e-PCR.
+  description: |
+    Multithreaded Electronic PCR (me-PCR) was developed by Kevin Murphy at
+    Children's Hospital of Philadelphia. It is described in Murphy et al
+    (2004) https://doi.org/10.1093/bioinformatics/btg466 and was originally
+    available from http://genome.chop.edu/mePCR (defunct). It was based on the
+    public domain NCBI tool e-PCR by Gregory D. Schuler, described in Schuler
+    (1997) https://doi.org/10.1101/gr.7.5.541 which was origially availble
+    from ftp://ncbi.nlm.nih.gov/pub/schuler/e-PCR/ (defunct). The final
+    release of me-PCR was v1.0.6 (2008-02-18), and the author wrote that in
+    general NCBI e-PCR should be used instead having been improved greatly
+    over the years. The NCBI retired and withdrew the e-PCR webservice and
+    command line tool on 2017-06-28, suggesting the online-only tool
+    Primer-BLAST instead. However, this is not suitable for offline high
+    throughput usage. See also Jim Kent's isPCR (aslo available in BioConda).
+
+extra:
+  identifiers:
+    - biotools:{{ name }}

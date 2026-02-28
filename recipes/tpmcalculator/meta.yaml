@@ -1,0 +1,41 @@
+{% set name = "tpmcalculator" %}
+{% set version = "0.0.6" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/NLM-DIR/TPMCalculator/archive/{{ version }}.tar.gz
+  sha256: 34a37e1aca15494d9b5fb7ee150f50d41dfe2dc0d777f9a58e573c92846a9bea
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - pkg-config
+  host:
+    - bamtools
+    - zlib
+  run:
+    - bamtools
+
+test:
+  commands:
+    - TPMCalculator -version
+
+about:
+  home: "https://github.com/NLM-DIR/TPMCalculator"
+  license: "Public Domain"
+  summary: "TPMCalculator quantifies mRNA abundance directly from the alignments by parsing BAM files."
+  dev_url: "https://github.com/NLM-DIR/TPMCalculator"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,9 +1,27 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
+set -xe
 
-curl -L https://github.com/attractivechaos/k8/releases/download/0.2.5/k8-0.2.5.tar.bz2 | tar jxf - k8-0.2.5/k8-`uname -s`
-cp k8-0.2.5/k8-* $PREFIX/bin/k8
+mkdir -p ${PREFIX}/bin ${PREFIX}/lib ${PREFIX}/include $PREFIX/share/man/man1
 
-make INCLUDES="-I$PREFIX/include" CFLAGS="-g -Wall -O2 -Wc++-compat -L$PREFIX/lib"
-cp minimap2 misc/paftools.js $PREFIX/bin
+case $(uname -m) in
+    aarch64)
+        ARCH_OPTS="aarch64=1"
+        ;;
+    arm64)
+	ARCH_OPTS="aarch64=1"
+        ;;
+    *)
+        ARCH_OPTS=""
+        ;;
+esac
+
+make CFLAGS="${CFLAGS} -g -Wall -O3 -Wc++-compat -I${PREFIX}/include -L${PREFIX}/lib" \
+    "${ARCH_OPTS}" -j"${CPU_COUNT}" minimap2 sdust
+
+chmod 755 minimap2 && chmod 755 sdust
+
+cp -rf minimap2 misc/paftools.js ${PREFIX}/bin
+cp -rf sdust ${PREFIX}/bin
+cp -rf libminimap2.a ${PREFIX}/lib
+cp -rf *.h ${PREFIX}/include

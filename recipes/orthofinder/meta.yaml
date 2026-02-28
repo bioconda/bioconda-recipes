@@ -1,39 +1,59 @@
-{% set version = "2.2.7" %}
-{% set sha256 = "01c8578ff6ca4be10220c14ba3404609b5f53a5136cae4017237426e2f0ca452" %}
+{% set name = "orthofinder" %}
+{% set version = "3.1.3" %}
+{% set sha256 = "ee93572b613510755e706310c7478150dd78d0ab0200de892993d67a568646c8" %}
 
 package:
-  name: orthofinder
+  name: {{ name }}
   version: {{ version }}
+
+source:
+  url: https://github.com/OrthoFinder/OrthoFinder/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
-
-source:
-  url: https://github.com/davidemms/OrthoFinder/releases/download/v{{ version }}/OrthoFinder-{{ version }}_source.tar.gz
-  sha256: {{ sha256 }}
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   run:
-    - python=2.7
+    - python >=3.11,<=3.14
+    - numpy
     - scipy
+    - scikit-learn
+    - biopython
+    - ete4
+    - rich
     - blast
-    - diamond
+    # https://github.com/davidemms/OrthoFinder/issues/826 https://github.com/bbuchfink/diamond/issues/707
+    - diamond <2.2|>=2.1.7
     - mcl
     - fastme
-    - dlcpar
     - mafft
     - fasttree
-    - muscle
+    - muscle <5
     - raxml
+    - raxml-ng
     - iqtree
     - bzip2
     - mmseqs2
+    - aster
+    - famsa
 
 test:
+  source_files:
+    - ExampleData
+    - ExampleData/*
   commands:
-    - orthofinder > /dev/null
+    - orthofinder -h
+    - orthofinder -v
 
 about:
-  home: https://github.com/davidemms/OrthoFinder
-  summary: Accurate inference of orthogroups, orthologues, gene trees and rooted species tree made easy!
-  license: GPLv3
+  home: "https://github.com/OrthoFinder/OrthoFinder"
+  summary: "Accurate inference of orthogroups, orthologues, gene trees and rooted species tree made easy!"
+  license: "GPL-3.0-only"
+  license_file: LICENSE
+  license_family: GPL3
+  dev_url: "https://github.com/OrthoFinder/OrthoFinder"
+  doc_url: "https://orthofinder.github.io/OrthoFinder"

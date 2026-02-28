@@ -1,11 +1,17 @@
 #!/bin/bash
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
-export CPATH=${PREFIX}/include
+set -xe
 
-mkdir -p $PREFIX/bin
+export CFLAGS="${CFLAGS} -O3 -I$PREFIX/include"
+export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
+export CPATH="${PREFIX}/include"
 
-autoreconf -i -f
-./configure --prefix=$PREFIX 
-make
+mkdir -p "$PREFIX/bin"
+
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* m4/
+
+autoreconf -if
+./configure --prefix="$PREFIX"
+
+make -j"${CPU_COUNT}"
 make install

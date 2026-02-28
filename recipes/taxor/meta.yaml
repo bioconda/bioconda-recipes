@@ -1,0 +1,57 @@
+{% set name = "taxor" %}
+{% set version = "0.2.1" %}
+{% set sha256 = "c595c6a9e47b9fb15c21f4585255cb58e1ccfc32a8ddf4f47b5fe0483067eb17" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/JensUweUlrich/Taxor/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('taxor', max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake >=3.21
+  host:
+    - libgomp  # [linux]
+    - cxxopts >=2.2.0
+    - grep
+    - coreutils
+    - curl
+    - diffutils
+    - zlib
+    - bzip2
+  run:
+    - libgomp  # [linux]
+    - grep
+    - coreutils
+    - curl
+    - diffutils
+
+test:
+  commands:
+    - taxor --help
+
+about:
+  home: "https://github.com/JensUweUlrich/Taxor"
+  summary: "Fast and space-efficient taxonomic classification of long reads."
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: "LICENSE.md"
+  dev_url: "https://github.com/JensUweUlrich/Taxor"
+  doc_url: "https://github.com/JensUweUlrich/Taxor/blob/{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - doi:10.1101/gr.278623.123

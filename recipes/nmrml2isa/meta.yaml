@@ -1,41 +1,42 @@
+{% set name = "nmrml2isa" %}
+{% set version = "0.3.3" %}
+
 package:
-  name: nmrml2isa
-  version: "0.3.0"
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://pypi.python.org/packages/61/87/eb7ed3b5dfcdaa5109355daf7ccab722ce984cf49283bead437d6a51cd8a/nmrml2isa-0.3.0.tar.gz
-  md5: 3f56e532da5ab8d7ee62bd32c1d21253
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 87269827b36b7df01f8909e4148c67ad585d8441432135fe41bf8abf4c41e99f
 
 build:
-  skip: True # [py3k]
-  number: 1
+  number: 0
+  noarch: python
   entry_points:
     - nmrml2isa = nmrml2isa.parsing:run
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('nmrml2isa', max_pin="x") }}
 
 requirements:
   host:
-    - python
-    - setuptools
-    - lxml
-    - six
-    - pronto
-    - chainmap
-
+    - pip
+    - python <3.10
   run:
-    - python
+    - openpyxl
+    - pronto
+    - python <3.10
     - lxml
     - six
-    - pronto
-    - chainmap
 
 test:
   imports:
     - nmrml2isa
-
   commands:
     - nmrml2isa --help
 
 about:
-  home: http://github.com/althonos/nmrml2isa
-  license: GNU General Public License v3 (GPLv3)
+  home: http://github.com/ISA-tools/nmrml2isa
+  license: GPL-3.0-or-later
+  license_family: GPL3
   summary: 'nmrml2isa - nmrML to ISA-Tab parsing tool'

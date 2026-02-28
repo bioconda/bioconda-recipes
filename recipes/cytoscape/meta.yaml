@@ -1,32 +1,31 @@
 {% set name = "cytoscape" %}
-{% set version = "3.7.1" %}
-{% set sha256 = "d1ad19c45a3bc6cfa6942a24eb599a5d935299948b9853145d75f698e3dd03d8" %}
+{% set version = "3.10.4" %}
+{% set sha256 = "e3208b503b3a153b3b62cfdceb9b9a94dd5f680d4d9093da187c3a6580e66927" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  fn: Cytoscape.sh
   url: https://github.com/cytoscape/cytoscape/releases/download/{{ version }}/Cytoscape_{{ version|replace(".","_") }}_unix.sh
   sha256: {{ sha256 }}
 
 build:
   number: 0
-  # skipping OSX for now due to installer bundling Java
-  skip: True # [osx]
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('cytoscape', max_pin="3") }}
 
 requirements:
   build:
     - gettext
   host:
-    # Cytoscape requires Java 8 (9+ not supported)
-    - openjdk=8
+    - openjdk >=17,<20
     - fontconfig
     - freetype
     - font-ttf-dejavu-sans-mono
   run:
-    - openjdk=8
+    - openjdk >=17,<20
     - xorg-libxtst
     - fontconfig
     - freetype
@@ -48,5 +47,3 @@ extra:
   identifiers:
     - biotools:cytoscape
     - doi:10.1101/gr.1239303
-  skip-lints:
-    - should_not_use_fn

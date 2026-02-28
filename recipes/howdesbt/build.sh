@@ -1,15 +1,7 @@
 #!/bin/bash
 
-cd ${SRC_DIR}
-sed -i -e "s:~:\$\${PREFIX}:g" Makefile
+mkdir -p "${PREFIX}/bin"
 
-cd ${PREFIX}/include
-ln -s jellyfish-2.2.10/jellyfish jellyfish
+make CXX="${CXX}" -f Makefile_full -j"${CPU_COUNT}"
 
-cd ${SRC_DIR}
-make
-
-mkdir -p ${PREFIX}/bin
-cp howdesbt ${PREFIX}/bin
-
-chmod +x ${PREFIX}/bin/howdesbt
+install -v -m 755 howdesbt "${PREFIX}/bin"

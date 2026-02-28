@@ -1,6 +1,6 @@
 {% set name = "tb-profiler" %}
-{% set version = "2.2" %}
-{% set sha256 = "81ea3a4435b85f21959c6732814e5b488a4d6a0d2aa7849d8580675ce964f196" %}
+{% set version = "6.6.6" %}
+{% set sha256 = "027e1ccd4e5337d6bf12ba3cdc57e06969409fb2dfa298053b0d8e5e29f565d8" %}
 
 package:
   name: {{name}}
@@ -11,28 +11,49 @@ source:
   sha256: '{{sha256}}'
 
 build:
-  script: python -m pip install --no-deps --ignore-installed .
   noarch: python
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('tb-profiler', max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.8
+    - setuptools
     - pip
+    - bwa
+    - pathogen-profiler =5.1.0
+    - pyyaml
+    - jinja2
+    - docxtpl
+    - filelock
   run:
-    - python
-    - pathogen-profiler
+    - python >=3.8
+    - git
+    - jinja2
+    - pathogen-profiler =5.1.0
+    - filelock
+    - docxtpl
+    - joblib
     - tqdm
+    - pysam
+    - rich-argparse
+    - pyyaml
+
 test:
   imports:
     - tbprofiler
+    - pathogenprofiler
   commands:
-    - tb-profiler -h
+    - tb-profiler
 
 about:
   home: https://github.com/jodyphelan/TBProfiler
-  license: GPL3
+  license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: LICENSE
-  summary: Profiling tool for Mycobacterium tuberculosis to detect drug resistance and lineage from WGS data
+  summary: Profiling tool for Mycobacterium tuberculosis to detect drug resistance and lineage from sequencing data
+
+extra:
   identifiers:
-    - doi:10.1186/s13073-015-0164-0
+    - doi:10.1186/s13073-019-0650-x

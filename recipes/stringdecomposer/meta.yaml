@@ -1,0 +1,58 @@
+{% set version = "1.1.2" %}
+
+package:
+  name: stringdecomposer
+  version: {{ version }}
+
+source:
+  url: https://github.com/ablab/stringdecomposer/archive/v{{ version }}.tar.gz
+  sha256: 6bcd81d1762edc39c9125965f2b7a3d6d7bf39eb2bd043eaffc732795754968a
+
+build:
+  number: 5
+  skip: True  # [osx]
+  script:
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+    - export CXXFLAGS="${CXXFLAGS} -O3"
+    - {{ PYTHON }} -m pip install . -vvv --no-build-isolation --no-deps --no-cache-dir
+  entry_points:
+    - stringdecomposer = stringdecomposer.main:main
+  run_exports:
+    - {{ pin_subpackage('stringdecomposer', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - pkg-config
+  host:
+    - python
+    - pip
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+  run:
+    - python
+    - biopython
+    - pandas
+    - python-edlib
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+
+test:
+  commands:
+    - stringdecomposer -h | grep -q "Decomposes string into blocks alphabet"
+
+about:
+  home: "https://github.com/ablab/stringdecomposer"
+  license: "GPL-2.0-or-later"
+  license_family: GPL
+  license_file: LICENSE
+  summary: "A tool for decomposing of strings into a set of given monomers."
+  description: StringDecomposer (SD) algorithm takes the set of monomers and a long error-prone read (or a genomic segment) and partitions this read into distinct monomers.
+  dev_url: "https://github.com/ablab/stringdecomposer"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

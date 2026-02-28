@@ -1,62 +1,83 @@
-{% set version = "0.7.0" %}
+{% set name = "mykrobe" %}
+{% set version = "0.13.0" %}
 
 package:
-    name   : mykrobe
-    version: {{ version }}
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-    url    : https://github.com/Mykrobe-tools/mykrobe/archive/v{{ version }}.tar.gz
-    sha256 : c1fba091bf72f95112211d53d5610297b4bcbca135592585ce2cde3e98156ef0 
+  url: https://github.com/Mykrobe-tools/mykrobe/archive/v{{ version }}.tar.gz
+  sha256: 49662937378a4ff10ffcb3876efcc069be58f0dc183615e9cffb57f51348a45e
 
 build:
-    number: 0 
-    entry_points:
-        - mykrobe = mykrobe.cli:main
+  number: 5
+  entry_points:
+    - mykrobe = mykrobe.cli:main
+  run_exports:
+    - {{ pin_subpackage("mykrobe", max_pin="x.x") }}
 
 requirements:
-    build:
-        - {{ compiler('cxx') }}
-    host:
-        - python >=3.4
-        - pip
-        - zlib
-        - wget
-        - numpy
-        - cython
-        - mongoengine
-        - pyvcf
-        - biopython
-    run:
-        - python >=3.4
-        - mongodb >3.0
-        - wget
-        - zlib
-        - numpy
-        - cython
-        - mongoengine
-        - pyvcf
-        - biopython
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - pip
+    - cython
+    - numpy
+    - mongodb
+    - mongoengine >=0.24.1
+    - pyvcf3 >=1.0.3
+    - biopython
+    - anytree
+    - requests
+    - wget
+    - tar
+    - gzip
+    - zlib
+  run:
+    - python
+    - setuptools
+    - mongodb
+    - mongoengine >=0.24.1
+    - numpy
+    - pyvcf3 >=1.0.3
+    - biopython
+    - anytree
+    - requests
 
 test:
-    imports:
-        - numpy
-        - cython
-        - mongoengine
-        - vcf
-        - Bio
-        - mykrobe
-
-    commands:
-        - mykrobe --version
-        - mykrobe --help
-        - mykrobe predict --help
-        - mykrobe variants --help
-        - mykrobe genotype --help
-        - 'mccortex31 2>&1 | head -n2 | grep "^usage: "'
+  imports:
+    - mykrobe
+  commands:
+    - mykrobe --version
+    - mykrobe --help
+    - mykrobe predict --help
+    - mykrobe variants --help
+    - mykrobe panels describe
+    - test -x $PREFIX/lib/python*/site-packages/mykrobe/cortex/mccortex31  # [py < 310]
+    - $PREFIX/lib/python*/site-packages/mykrobe/cortex/mccortex31 uniqkmers -k 7 1  # [py < 310]
 
 about:
-    home: https://github.com/Mykrobe-tools/mykrobe
-    license: MIT
-    license_file: LICENSE
-    summary: 'Rapid antibiotic-resistance predictions from genome sequence data for Staphylococcus aureus and Mycobacterium tuberculosis.'
+  home: "https://github.com/Mykrobe-tools/mykrobe"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'Antibiotic resistance prediction in minutes.'
+  description: 'Rapid antibiotic-resistance predictions from genome sequence data for Staphylococcus aureus and Mycobacterium tuberculosis.'
+  dev_url: "https://github.com/Mykrobe-tools/mykrobe"
+  doc_url: "https://github.com/Mykrobe-tools/mykrobe/wiki"
 
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - mbhall88
+    - martinghunt
+  identifiers:
+    - doi:10.12688/wellcomeopenres.15603.1
+    - biotools:Mykrobe
+  skip-lints:
+    - uses_setuptools

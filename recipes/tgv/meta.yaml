@@ -1,0 +1,48 @@
+{% set name = "tgv" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/zeqianli/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 14610135357e330983cc0da1fc65c7b81a20f0530950dc7175023902883206f8
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - make
+    - pkg-config
+    - clangdev
+  host:
+    - htslib
+    - sqlite
+    - openssl
+    - curl
+    - zlib
+
+test:
+  commands:
+    - tgv --version
+
+about:
+  home: "https://github.com/zeqianli/tgv"
+  license: MIT
+  license_family: MIT
+  summary: "Explore genomes in the terminal. Light, blazing fast 🚀, vim-motion."
+  dev_url: "https://github.com/zeqianli/tgv"
+  doc_url: "https://github.com/zeqianli/tgv/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

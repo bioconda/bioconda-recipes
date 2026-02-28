@@ -1,0 +1,55 @@
+{% set version = "1.2.7" %}
+{% set sha256 = "096009a07b5c7c285f7dbce26c37bf2c4298388c83a834b8650d8989a9b2895f" %}
+
+package:
+  name: sibeliaz
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/medvedevgroup/SibeliaZ.git
+  git_rev: v{{version}}
+  sha256: unused
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('sibeliaz', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - cmake
+    - pkg-config
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - twopaco
+    - spoa
+    - maf2synteny
+    - coreutils  # [osx]
+
+test:
+  commands:
+    - sibeliaz -h
+    - sibeliaz-lcb --help
+
+about:
+  home: "https://github.com/medvedevgroup/SibeliaZ"
+  license: "Custom OSS"
+  license_file: "LICENSE.txt"
+  summary: 'A fast whole-genome aligner based on de Bruijn graphs.'
+  dev_url: "https://github.com/medvedevgroup/SibeliaZ"
+  doc_url: "https://github.com/medvedevgroup/SibeliaZ/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:sibeliaz
+  skip-lints:
+    - uses_vcs_url

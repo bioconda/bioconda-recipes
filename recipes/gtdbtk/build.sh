@@ -1,29 +1,20 @@
 #!/bin/bash
 
-# install python libraries
-#python -m pip install . --no-deps --ignore-installed
+# Configuration
+TARGET="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
+GTDBTK_DATA_PATH="${TARGET}/db"
+DOWNLOAD_SCRIPT_BIN="${PREFIX}/bin/download-db.sh"
+
+# Install python libraries
 python -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
 
-# copy main gtdbtk python script
-chmod +x bin/gtdbtk
-cp bin/gtdbtk ${PREFIX}/bin/
+# Create folder for database download
+mkdir -p "$GTDBTK_DATA_PATH"
+touch "${GTDBTK_DATA_PATH}/.empty"
 
-# copy script to download database
-chmod +x ${RECIPE_DIR}/download-db.sh
-cp ${RECIPE_DIR}/download-db.sh ${PREFIX}/bin
-
-# create folder for database download
-target=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}
-mkdir -p ${target}/db/
-touch ${target}/db/.empty
-
-# set GTDBTK DB PATH variable on env activation
-mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
-cat <<EOF >> ${PREFIX}/etc/conda/activate.d/gtdbtk.sh
-export GTDBTK_DATA_PATH=${target}/db/
-EOF
-
-cat <<EOF >> ${PREFIX}/etc/conda/deactivate.d/gtdbtk.sh
-unset GTDBTK_DATA_PATH
-EOF
-
+# Copy script to download database
+mkdir -p "${PREFIX}/bin"
+echo '#!/usr/bin/env bash' > "$DOWNLOAD_SCRIPT_BIN"
+echo "export GTDBTK_DATA_PATH=\"${GTDBTK_DATA_PATH}\"" >> "$DOWNLOAD_SCRIPT_BIN"
+cat "${RECIPE_DIR}/download-db.sh" >> "$DOWNLOAD_SCRIPT_BIN"
+chmod +x "$DOWNLOAD_SCRIPT_BIN"

@@ -1,0 +1,58 @@
+{% set name = "varlociraptor" %}
+{% set version = "8.9.5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/varlociraptor/varlociraptor/archive/v{{ version }}.tar.gz
+  sha256: 4e130529023bf46b6bb5142ed184efdaf4ee7a209fd0aab5f72c5568ad570afd
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("varlociraptor", max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - pkg-config
+    - make
+    - cmake
+  host:
+    - gsl
+    - libcblas
+    # try using system openssl on macos
+    - openssl  # [not osx]
+    - zlib
+    - bzip2
+    - xz
+    - clangdev
+    - blis  # [not arm64]
+  run:
+    - blis  # [not arm64]
+
+test:
+  commands:
+    - varlociraptor -h
+
+about:
+  home: "https://github.com/varlociraptor/varlociraptor"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Flexible, uncertainty-aware variant calling with parameter free filtration via FDR control."
+  dev_url: "https://github.com/varlociraptor/varlociraptor"
+  doc_url: "https://varlociraptor.github.io"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:varlociraptor
+    - doi:10.1186/s13059-020-01993-6

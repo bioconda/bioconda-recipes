@@ -1,0 +1,45 @@
+{% set name = "SICER2" %}
+{% set version = "2.1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/tmx1228/SICER2.1.0/archive/refs/tags/v2.1.tar.gz"
+  sha256: 59a40143a83139cb619d5b7a364dc3f2b069735c7154f70b7908cf886f1cf70f
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_compatible(name|lower, max_pin="x") }}
+  script: "{{ PYTHON }} -m pip install --ignore-installed --no-deps ."
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - numpy
+    - pip
+    - python <3.11
+    - setuptools
+    - scipy >=1
+  run:
+    - {{ pin_compatible('numpy') }}
+    - python <3.11
+    - scipy >=1
+
+test:
+  imports:
+    - sicer
+
+about:
+  home: "https://pypi.org/project/SICER2/"
+  dev_url: "https://github.com/zanglab/SICER2"
+  license: MIT
+  license_family: MIT
+  summary: "Redesigned and improved ChIP-seq broad peak calling tool SICER."
+
+extra:
+  recipe-maintainers:
+    - mjsteinbaugh

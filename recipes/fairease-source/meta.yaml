@@ -1,0 +1,76 @@
+{% set name = "fairease-source" %}
+{% set version = "1.4.6" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/fair-ease/Source/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b807d5b732937f1d64f327a0a3b0e0f3744302059b1515aaa309612d91f15644
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('fairease-source', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.6,<3.13
+    - pip
+    - setuptools
+  run:
+    - python >=3.6,<3.13
+    - netCDF4
+    - numpy
+    - pandas
+    - pykml
+    - psutil
+    - scipy
+    - gsw
+    - scikit-learn
+    - seawater
+    - unidecode
+
+test:
+  imports:
+    - SOURCE
+    - SOURCE.time_calc
+    - SOURCE.obs_postpro.insitu_tac_pre_processing
+  commands:
+    - create_probes_earth_map.py
+    - duplicated_records_remover.py
+    - find_variable_name.py
+    - insitu_evaluation.py
+    - pointwise_datasets_concatenator.py
+    - ptmp_to_temp.py
+    - real_time_concatenator.py
+    - records_monotonicity_fixer.py
+    - time_calc.py | grep "Script to compute most probable"
+    - time_check.py | grep "Script to compute time step verification"
+    - model_postpro.py
+    - vertical_interpolation.py
+    - model_datasets_concatenator.py
+    - data_information_calc.py | grep "Script to calculate total, valid"
+    - depth_aggregator.py
+    - depth_calc.py | grep "Script to calculate rounded depth"
+    - insitu_tac_platforms_finder.py
+    - insitu_tac_pre_processing.py
+    - insitu_tac_timeseries_extractor.py
+    - mean_variance_nc_variable.py | grep "Script to compute variable average"
+    - metadata_merger.py
+    - obs_postpro.py
+    - quality_check_applier.py
+    - rejection_statistics.py
+    - time_averager.py
+    - time_from_index.py
+    - time_series_post_processing.py
+    - unique_values_nc_variable.py
+
+about:
+  home: "https://github.com/fair-ease/Source"
+  license: "CC-BY-NC-4.0"
+  license_family: CC
+  summary: "SOURCE: Sea Observations Utility for Reprocessing, Calibration and Evaluation."
+  dev_url: "https://github.com/fair-ease/Source"

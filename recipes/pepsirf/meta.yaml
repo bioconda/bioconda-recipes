@@ -1,0 +1,53 @@
+{% set version = "1.7.1" %}
+{% set sha256 = "790831c7a923b0ecb192b6e30c602e57755fa2e4db067f64366e04eab700d4d7" %}
+
+package:
+  name: pepsirf
+  version: {{ version }}
+
+source:
+  url: https://github.com/LadnerLab/PepSIRF/archive/refs/tags/1.7.1.zip
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('pepsirf', max_pin="x") }}
+
+requirements:
+  build:
+    - cmake
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - boost-cpp
+    - libgomp  # [linux]
+  run:
+    - boost-cpp
+    - libgomp  # [linux]
+
+test:
+  commands:
+    - pepsirf demux -h
+    - pepsirf enrich -h
+    - pepsirf deconv -h
+    - pepsirf zscore -h
+    - pepsirf info -h
+    - pepsirf subjoin -h
+
+about:
+  home: "https://github.com/LadnerLab/PepSIRF"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: "LICENSE.txt"
+  summary: "Peptide-based Serological Immune Response Framework."
+  dev_url: "https://github.com/LadnerLab/PepSIRF"
+  doc_url: "https://ladnerlab.github.io/PepSIRF"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.48550/arXiv.2007.05050

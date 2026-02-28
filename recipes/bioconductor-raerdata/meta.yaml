@@ -1,0 +1,54 @@
+{% set version = "1.4.0" %}
+{% set name = "raerdata" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: raerdata is an ExperimentHub package that provides a collection of files useful for demostrating functionality in the raer package. Datasets include 10x genomics scRNA-seq, bulk RNA-seq, and paired whole-genome and RNA-seq data. Additionally databases of human and mouse RNA editing sites are provided.
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: MIT + file LICENSE
+  license_file: LICENSE
+  summary: A collection of datasets for use with raer package
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-raerdata", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: rmarkdown, knitr, BiocStyle, testthat (>= 3.0.0)
+requirements:
+  host:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - r-base
+  run:
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-experimenthub >=2.14.0,<2.15.0
+    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-rtracklayer >=1.66.0,<1.67.0
+    - bioconductor-singlecellexperiment >=1.28.0,<1.29.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20241103
+
+source:
+  md5: d23f3d1df443467be1f57d2e9c6f4deb
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

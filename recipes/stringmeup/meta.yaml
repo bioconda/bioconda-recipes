@@ -1,0 +1,44 @@
+{% set name = "stringmeup" %}
+{% set version = "0.1.5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/danisven/StringMeUp/archive/{{ version }}.tar.gz
+  sha256: ef4b9c5ee41c829179baca6b91940542c4286063c372d832a6063f19ec91d694
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - stringmeup = stringmeup.stringmeup:stringmeup
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >3
+    - setuptools
+  run:
+    - python >3
+    - dataclasses
+
+test:
+  commands:
+    - stringmeup --help
+
+about:
+  home: "https://github.com/danisven/StringMeUp"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A post-processing tool to reclassify Kraken 2 output based on the confidence score and/or minimum minimizer hit groups."
+  dev_url: "https://github.com/danisven/StringMeUp"
+
+extra:
+  recipe-maintainers:
+    - druvus

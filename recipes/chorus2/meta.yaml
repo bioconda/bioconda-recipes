@@ -1,37 +1,41 @@
-{% set version = "2.0" %}
+{% set version = "2.1" %}
 
 package:
   name: chorus2
   version: {{ version }}
 
 source:
-  url: https://github.com/zhangtaolab/Chorus2/archive/v2.0.tar.gz
-  sha256: 7cb9895230705fc3d040d5ce8ee3f6f89bbec934ac7374a397e352fdf13abbc3
+  url: https://github.com/zhangtaolab/Chorus2/archive/v{{ version }}.tar.gz
+  sha256: 49d67a8ca8fd9235a453f409d20a8c06a016ab8db378be9bbd2fa4fc4972f24f
 
 build:
-  number: 4
+  number: 2
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps -v"
+  run_exports:
+    - {{ pin_subpackage("chorus2", max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps -v
 
 requirements:
   host:
-    - python >=3
-    - setuptools
+    - python >=3,<3.10
     - pip
   run:
-    - cython
-    - python >=3
+    - python >=3,<3.10
     - pybigwig
     - numpy
     - pyfasta
-    - pandas
-    - primer3-py >=0.4.2
-    - matplotlib >=3
-    - pyqt <5.11
+    - pybedtools
+    - pandas <2
+    - primer3-py >=1.0.0
+    - matplotlib-base >=3.5.0
+    - pyqt <6  # [py >= 38]
+    - pyqt <5.11  # [py < 38]
     - sip >=4
-    - jellyfish >=2.2.3
-    - bwa >=0.7.3a
-    - bwa <=0.7.8
+    - kmer-jellyfish >1
+    - bwa >=0.7.3a,<=0.7.8  # [x86_64]
+    - bwa  # [arm64 or aarch64]
+    - samtools
+    - bcftools
 
 test:
   imports:
@@ -44,10 +48,17 @@ test:
 about:
   home: https://github.com/zhangtaolab/Chorus2
   summary: A pipeline to select oligonucleotides for fluorescence in situ hbridization (Oligo-FISH).
-  license: MIT license
+  license: MIT
   dev_url: https://github.com/zhangtaolab/Chorus2
   doc_url: https://chorus2.readthedocs.io/en/dev/
 
 extra:
   identifiers:
     - biotools:chorus2
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - zhangtaolab
+    - forrestzhang
+    - ljq12697

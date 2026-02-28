@@ -1,0 +1,47 @@
+{% set name = "oncopipe" %}
+{% set version = "1.0.12" %}
+{% set sha256 = "6de420aa7d58e1cc27a60aed163f26c72389c270b1e73218ec18f6e080f0fd1f" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/LCR-BCCRC/lcr-modules/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  script: pushd oncopipe && python -m pip install --no-deps --ignore-installed .
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('oncopipe', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - pyyaml
+    - pandas
+    - snakemake >=5.4,<5.19
+  run:
+    - python >=3.6
+    - pyyaml
+    - pandas
+    - snakemake >=5.4,<5.19
+
+test:
+  imports:
+    - oncopipe
+
+about:
+  home: https://github.com/LCR-BCCRC/lcr-modules
+  doc_url: https://lcr-modules.readthedocs.io
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Functions for running Snakemake modules"
+
+extra:
+  recipe-maintainers:
+    - acaprez

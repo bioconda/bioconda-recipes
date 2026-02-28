@@ -10,7 +10,8 @@ export CXXFLAGS="-pthread -std=c++11"
 
 mkdir -p $PREFIX/bin
 
-autoconf
-./configure --prefix=$PREFIX --enable-multithreading
+mkdir build
+pushd build
+cmake -DCMAKE_INSTALL_PREFIX=$PREFIX -DHTSLIB_PREFIX=$PREFIX ..
 make
 make install 

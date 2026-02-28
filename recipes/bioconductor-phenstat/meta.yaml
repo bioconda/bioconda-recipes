@@ -1,27 +1,30 @@
-{% set version = "2.18.1" %}
+{% set version = "2.42.0" %}
 {% set name = "PhenStat" %}
-{% set bioc = "3.8" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: a51b583a8083c2dfa8359a84f0e9e6a162a11b662d2e3b13fcfe91c5c80c00bb
+about:
+  description: Package contains methods for statistical analysis of phenotypic data.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: file LICENSE
+  license_file: LICENSE
+  summary: Statistical analysis of phenotypic data
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-phenstat", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: RUnit, BiocGenerics
 requirements:
-  build:
-    - {{ compiler('fortran') }}
   host:
-    - 'bioconductor-graph >=1.60.0,<1.61.0'
+    - bioconductor-graph >=1.84.0,<1.85.0
     - r-base
     - r-car
     - r-corrplot
@@ -37,7 +40,7 @@ requirements:
     - r-reshape
     - r-smoothwin
   run:
-    - 'bioconductor-graph >=1.60.0,<1.61.0'
+    - bioconductor-graph >=1.84.0,<1.85.0
     - r-base
     - r-car
     - r-corrplot
@@ -52,11 +55,16 @@ requirements:
     - r-pingr
     - r-reshape
     - r-smoothwin
+
+source:
+  md5: 4010a9dad5f281a3054993c2092ced7b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'file LICENSE'
-  summary: 'Package contains methods for statistical analysis of phenotypic data.'
+    - $R -e "library('{{ name }}')"
 

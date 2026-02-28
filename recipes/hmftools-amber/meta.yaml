@@ -1,30 +1,33 @@
-{% set version = "2.3" %}
-{% set sha256 = "05d2cd63eccd1cdc3d9bf82c49c0b369ae09a309af6b56f6100ecbc8571762d2" %}
+{% set version = "4.2" %}
+{% set sha256 = "e580ecb93748e96d505dd6d43c223ffff1c254a920d1b00786c166ec27246dae" %}
 
 package:
   name: hmftools-amber
   version: '{{ version }}'
 
 source:
-  url: https://github.com/hartwigmedical/hmftools/releases/download/amber-v{{ version|replace(".", "-") }}/amber-{{ version }}.jar
+  url: https://github.com/hartwigmedical/hmftools/releases/download/amber-v{{ version|replace("_beta", "") }}/amber_v{{ version }}.jar
   sha256: '{{ sha256 }}'
 
 build:
   noarch: generic
   number: 0
+  run_exports:
+    - {{ pin_subpackage("hmftools-amber", max_pin="x.x") }}
 
 requirements:
   run:
     - zlib
-    - openjdk >=8
+    - openjdk >=8,<=21
     - bioconductor-copynumber
+    - r-dplyr
 
 test:
   commands:
-    - 'AMBER 2>&1 | grep usage'
+    - 'amber -version | grep Amber'
 
 about:
-  home: https://github.com/hartwigmedical/hmftools/tree/master/amber
-  license: MIT
-  license_family: MIT
-  summary: AMBER is designed to generate a tumor BAF file for use in PURPLE. Looking directly at the bam files, it locates heterozygous sites within the reference sample then calculates the allelic frequency of corresponding sites in the tumour
+  home: https://github.com/hartwigmedical/hmftools/blob/master/amber/README.md
+  license: GPL-3.0-only
+  license_family: GPL3
+  summary: Generates a tumor BAF file for use in PURPLE.

@@ -1,113 +1,95 @@
+{% set version = "0.19.6" %}
+{% set sha256 = "590b50c6d3eadc4d4b3bb15fe841bab8602003fcb33d5c4109204b13ab4f0e08" %}
 {% set name = "sequana" %}
-{% set version = "0.7.1" %}
-{% set sha = "891e9a27fd992a9713de2e3afac9b4c8042d492703be65e1ae2b0ab098e275d6" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: {{ sha }}
+  url: https://github.com/sequana/sequana/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  skip: True # [py27]
-  preserve_egg_dir: True
-  number: 1
+  number: 0
+  noarch: python
   entry_points:
-    - sequana_gui=sequana.gui.sequana_gui:main
-    - sequanix=sequana.gui.sequana_gui:main
-    - fastq_head=sequana.scripts.fastq_head:main
-    - fastq_count=sequana.scripts.fastq_count:main
-    - sequana_fastq_head=sequana.scripts.fastq_head:main
-    - sequana_fastq_count=sequana.scripts.fastq_count:main
-    - sequana=sequana.scripts.main:main
-    - sequana_taxonomy=sequana.scripts.taxonomy:main
-    - sequana_coverage=sequana.scripts.coverage:main
-    - sequana_summary=sequana.scripts.summary:main
-    - sequana_mapping=sequana.scripts.mapping:main
-    - sequana_compressor=sequana.scripts.compressor:main
-    - sequana_report=sequana.scripts.reports:main
-
+    - sequana = sequana.scripts.main.main:main
+    - sequana_taxonomy = sequana.scripts.taxonomy:main
+    - sequana_coverage = sequana.scripts.coverage:main
+    - sequana_substractor = sequana.scripts.substractor:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('sequana', max_pin="x.x") }}
 
 requirements:
   host:
-    - python
-    - setuptools
+    - python >=3.10
+    - pip
+    - poetry-core
   run:
-    - python
-    - atropos ==1.1.16
-    - bcftools
-    - bedtools
-    - bioservices >=1.5.1
-    - biokit >=0.4.3
-    - bleach
-    - bowtie
-    - bowtie2
-    - bwa
-    - colorlog
-    - cutadapt
-    - easydev >=0.9.36
-    - fastq-screen
-    - fastqc ==0.11.5
-    - freebayes
-    - graphviz
-    - khmer
-    - kraken # [not osx]
-    - krona
+    - adjusttext
+    - aiohttp
+    - bioservices >=1.10.0
+    - brokenaxes
+    - bx-python
+    - click >=8.1.8
+    - colorlog >=6.9.0
+    - colormap
+    - cookiecutter <2
+    - cython
+    - deprecated
+    - docutils
+    - easydev
+    - gseapy
+    - itolapi
+    - lxml
+    - matplotlib-base >3
+    - matplotlib-venn
     - mock
-    - multiqc ==1.0
-    - numexpr
-    - pandas
-    - pigz
+    - multiqc >=1.18,<=1.27
+    - natsort >=8.4.0
+    - packaging
+    - pandas >=2.2.3
+    - plotly
     - psutil
-    - pyyaml
-    - pyvcf
-    - pysam
-    - ruamel.yaml 
-    - qtconsole
-    - sambamba
-    - samtools
-    - snakemake ==4.0.0
-    - snpeff
-    - spades
-    - shustring
-    - subread
+    - pulp <2.8.0
+    - pykwalify
+    - pysam >=0.22.1
+    - python >=3.10
+    - python-kaleido >=0.1
+    - rich-click
+    - ruamel.yaml >=0.16.0
+    - scikit-learn
+    - scipy
+    - selenium
+    - snakemake-minimal <8
+    - seaborn-base
+    - statsmodels
+    - tqdm
+    - upsetplot
+    - vcfpy
     - xlrd
 
-#
 test:
   imports:
     - sequana
-    - sequana.modules_report
-    - sequana.pipelines
-    - sequana.plots
-    - sequana.scripts
-    - sequana.sphinxext
-    - sequana.utils
   commands:
-    - fastq_count --help 1>out 2>err
-    - sequana_fastq_head --help
-    - sequana_fastq_count --help
-    - sequana --help
-    - sequana_taxonomy --help 1>out 2>err
-    - sequana_coverage --help 1>out 2>err
-  #  - sequanix
-    - sequana_mapping --help 1>out 2>err
-    - sequana_compressor --help
-
-# commands:
-#    - MPLBACKEND=agg bioconvert --help
-#    - MPLBACKEND=agg bioconvert_init --help
-
-extra:
-  container:
-    # needs libGL.so.1
-    extended-base: true
+    - {{ name }} --version > /dev/null
+    - {{ name }} --version | grep {{ version }}
+    - {{ name }} --help
 
 about:
-  home: 'http://sequana.readthedocs.io/'
-  license: "BSD 3-clause"
-  summary: 'A set of standalone application and snakemake pipelines dedicated to NGS (new generation sequencing) analysis'
+  home: "https://sequana.readthedocs.io"
+  license: "BSD-3-Clause"
+  summary: "A set of standalone application and snakemake pipelines dedicated to NGS (new generation sequencing) analysis."
   license_family: BSD
+  license_file: LICENSE
+  doc_url: "https://sequana.readthedocs.io"
+  dev_url: "https://github.com/sequana/sequana"
 
+extra:
+  recipe-maintainers:
+    - cokelaer
+  skip-lints:
+    - cython_must_be_in_host

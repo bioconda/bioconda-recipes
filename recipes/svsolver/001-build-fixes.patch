@@ -1,0 +1,53 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7e0fc0a..98de776 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -139,7 +139,13 @@ if(${SV_USE_LOCAL_VTK})
+       -DCMAKE_MACOSX_RPATH:BOOL=ON
+       -DBUILD_TESTING:BOOL=OFF
+       -DBUILD_EXAMPLES:BOOL=OFF
+-      -DBUILD_SHARED_LIBS:BOOL=OFF
++      -DBUILD_SHARED_LIBS:BOOL=ON
++      -DSV_LIBRARY_TYPE:STRING="SHARED"
++      -DSV_USE_SYSTEM_VTK:BOOL=ON
++      -DSV_USE_SYSTEM_ZLIB:BOOL=ON
++      -DSV_USE_VTK_SHARED:BOOL=ON
++      -DSV_BUILD_ADDITIONAL_NOMPI_VERSION:BOOL=OFF
++      -DCMAKE_INSTALL_PREFIX:STRING=${CMAKE_INSTALL_PREFIX}
+       ${SV_ADDITIONAL_CMAKE_ARGS}
+       )
+
+diff --git a/Code/CMake/SimVascularDependentOptions.cmake b/Code/CMake/SimVascularDependentOptions.cmake
+index a715a1a..826b7e2 100644
+--- a/Code/CMake/SimVascularDependentOptions.cmake
++++ b/Code/CMake/SimVascularDependentOptions.cmake
+@@ -44,7 +44,7 @@ if(UNIX)
+ endif()
+ if(LINUX)
+   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
+-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -pthread -static")
++  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -pthread")
+ endif()
+ 
+ #-----------------------------------------------------------------------------
+@@ -70,7 +70,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
+   set(GLOBAL_DEFINES "${GLOBAL_DEFINES} -DGCC")
+ endif()
+-set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -pthread -static")
++set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -pthread")
+ 
+ #-----------------------------------------------------------------------------
+ # Set a default build type (if none was specified)
+diff --git a/Code/CMakeLists.txt b/Code/CMakeLists.txt
+index e54b213..eba521d 100644
+--- a/Code/CMakeLists.txt
++++ b/Code/CMakeLists.txt
+@@ -46,6 +46,7 @@ endif()
+ 
+ #-----------------------------------------------------------------------------
+ Project(SV)
++SET(CMAKE_EXECUTABLE_SUFFIX ".bin")
+ #-----------------------------------------------------------------------------
+ 
+ #-----------------------------------------------------------------------------

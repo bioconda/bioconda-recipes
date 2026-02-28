@@ -1,7 +1,4 @@
-{% set version = '3.0' %}
-
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set version = '4.7.9' %}
 
 package:
   name: r-breakaway
@@ -11,44 +8,54 @@ source:
   url:
     - {{ cran_mirror }}/src/contrib/breakaway_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/breakaway/breakaway_{{ version }}.tar.gz
-  sha256: ecce9505a84658bf85ba286b5e2a2a7e8f08d849b9ca73faf8e988ede23b7078
+  sha256: 11019e462415619fa56af60c92d574e2d29e57cfcaf554afc209fad929183691
 
 build:
-  merge_build_host: True  #[win]
-
-  number: 0
-
+  number: 3
+  noarch: generic
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
-  build:
-    - {{posix}}zip               # [win]
-
   host:
     - r-base
-
+    - r-mass
+    - r-ggplot2
+    - r-lme4
+    - r-magrittr
+    - bioconductor-phyloseq
+    - r-tibble
   run:
     - r-base
+    - r-mass
+    - r-ggplot2
+    - r-lme4
+    - r-magrittr
+    - bioconductor-phyloseq
+    - r-tibble
 
 test:
   commands:
-
-    - $R -e "library('breakaway')"           # [not win]
-    - "\"%R%\" -e \"library('breakaway')\""  # [win]
+    - $R -e "library('breakaway')"
 
 about:
-  home: https://CRAN.R-project.org/package=breakaway
+  home: https://adw96.github.io/breakaway/
   license: GPL-2
-  summary: Species richness estimation is an important problem in biodiversity analysis. This
-    package provides methods for total species richness estimation (observed plus unobserved)
-    and a method for modelling total diversity with covariates. breakaway() estimates
-    total (observed plus unobserved) species richness. Microbial diversity datasets
-    are characterized by a large number of rare species and a small number of highly
-    abundant species. The class of models implemented by breakaway() is flexible enough
-    to model both these features. breakaway_nof1() implements a similar procedure however
-    does not require a singleton count. betta() provides a method for modelling total
-    diversity with covariates in a way that accounts for its estimated nature and thus
-    accounts for unobserved taxa, and betta_random() permits random effects modelling.
+  summary: Understanding the drivers of microbial diversity is an important frontier of microbial
+    ecology, and investigating the diversity of samples from microbial ecosystems is
+    a common step in any microbiome analysis. 'breakaway' is the premier package for
+    statistical analysis of microbial diversity. 'breakaway' implements the latest and
+    greatest estimates of species richness, as well as the most commonly used estimates.
+    Methods uniquely available in this package include objective Bayes estimators described
+    in Barger and Bunge (2010) <doi:10.1214/10-BA527>, frequency-ratio-based estimators
+    described in Willis and Bunge (2015) <doi:10.1111/biom.12332>, and as described
+    in Willis, Whitman, and Bunge (2016) <doi:10.1111/rssc.12206>, a linear modeling
+    approach for detecting changes in diversity.
   license_family: GPL2
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
+extra:
+  skip-lints:
+    - in_other_channels

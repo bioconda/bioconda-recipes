@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eu
+set -xeu
 export LIBRARY_PATH=${PREFIX}/lib
 export INCPATH=${PREFIX}/include
 #export HTSLIB_VERSION=1.7
@@ -16,8 +16,8 @@ mkdir bin
 sed -i 's/CC = gcc /compiler = ${CC} /g' Makefile
 sed -i 's/$(CC) /$(compiler) /g' Makefile
 #Force HTSLIb locations
-sed -i 's#HTSLOC?=$(HTSLIB)#HTSLOC=${PREFIX}/include/htslib#g' Makefile
+sed -i 's#HTSLOC?=$(HTSLIB)#HTSLOC=${PREFIX}/lib#g' Makefile
 sed -i 's#prefix=?/usr/local#prefix=${PREFIX}#g' Makefile
-make 
+make -j ${CPU_COUNT} OPTINC="-I$PREFIX/include -L$PREFIX/lib"
 mkdir -p $PREFIX/bin
 cp bin/* $PREFIX/bin

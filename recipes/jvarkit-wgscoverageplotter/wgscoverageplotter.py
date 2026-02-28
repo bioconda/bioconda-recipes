@@ -1,0 +1,76 @@
+#!/usr/bin/env python
+#
+# Wrapper script for Java Conda packages that ensures that the java runtime
+# is invoked with the right options. Adapted from the bash script (http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128).
+
+#
+# Program Parameters
+#
+import os
+import subprocess
+import sys
+import shutil
+from os import access
+from os import getenv
+from os import X_OK
+
+default_jvm_mem_opts = ['-Xms512m', '-Xmx4g']
+
+# !!! End of parameter section. No user-serviceable code below this line !!!
+
+def java_executable():
+    """Return the executable name of the Java interpreter."""
+    java_home = getenv('JAVA_HOME')
+    java_bin = os.path.join('bin', 'java')
+
+    if java_home and access(os.path.join(java_home, java_bin), X_OK):
+        return os.path.join(java_home, java_bin)
+    else:
+        return 'java'
+
+
+def jvm_opts(argv):
+    """Construct list of Java arguments based on our argument list.
+
+    The argument list passed in argv must not include the script name.
+    The return value is a 3-tuple lists of strings of the form:
+      (memory_options, prop_options, passthrough_options)
+    """
+    mem_opts = []
+    prop_opts = []
+    pass_args = []
+
+    for arg in argv:
+        if arg.startswith('-D'):
+            prop_opts.append(arg)
+        elif arg.startswith('-XX'):
+            prop_opts.append(arg)
+        elif arg.startswith('-Xm'):
+            mem_opts.append(arg)
+        else:
+            pass_args.append(arg)
+
+    # In the original shell script the test coded below read:
+    #   if [ "$jvm_mem_opts" == "" ] && [ -z ${_JAVA_OPTIONS+x} ]
+    # To reproduce the behaviour of the above shell code fragment
+    # it is important to explictly check for equality with None
+    # in the second condition, so a null envar value counts as True!
+
+    if mem_opts == [] and getenv('_JAVA_OPTIONS') is None:
+        mem_opts = default_jvm_mem_opts
+
+    return (mem_opts, prop_opts, pass_args)
+
+def main():
+    java = java_executable()
+
+    (mem_opts, prop_opts, pass_args) = jvm_opts(sys.argv[1:])
+
+    jar_path = 'XXJARPATHXX'
+
+    java_args = [java] + mem_opts + prop_opts + ['-jar'] + [jar_path] + pass_args
+    sys.exit(subprocess.call(java_args))
+
+
+if __name__ == '__main__':
+    main()

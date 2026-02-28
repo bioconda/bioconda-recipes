@@ -1,28 +1,32 @@
 {% set name = "BBMap" %}
-{% set version = "38.46" %}
-{% set sha256 = "3b5332da58dc0041cad24ddb84a11afa9e88c9fd661fb27925b5c2004f3b319d" %}
-
-build:
-  number: 0
+{% set version = "39.76" %}
+{% set sha256 = "f1f8c38f09b6014c4d9e05e7585197806f6153d93624fe8045e9c26502745d41" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: http://downloads.sourceforge.net/project/{{ name|lower }}/{{ name }}_{{ version }}.tar.gz
+  url: https://downloads.sourceforge.net/project/{{ name|lower }}/{{ name }}_{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - 0001-changed-jni-makefiles-to-be-more-standards-compatibl.patch
-    - 0002-enable-jni-path.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - openjdk >=7.0
+    - openjdk >=11.0.1
+    - pbzip2
+    - bzip2
+    - samtools
+    - patchelf  # [osx]
   run:
-    - openjdk >=7.0
+    - openjdk >=11.0.1
+    - samtools
 
 test:
   files:
@@ -37,17 +41,27 @@ test:
     - bbnorm.sh --help 2>&1 | grep "BBNorm" > /dev/null
 
 about:
-  home: https://sourceforge.net/projects/bbmap
-  doc_url: https://jgi.doe.gov/data-and-tools/bbtools/bb-tools-user-guide/
-  license: "UC-LBL license (see package)"
-  license_file: license.txt
+  home: "https://sourceforge.net/projects/bbmap"
+  doc_url: "https://jgi.doe.gov/data-and-tools/bbtools/bb-tools-user-guide"
+  license: "BSD-3-Clause-LBNL"
+  license_file: "license.txt"
   summary: "BBMap is a short read aligner, as well as various other bioinformatic tools."
+  dev_url: "https://sourceforge.net/projects/bbmap"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   notes: |
     BBMap is a series of Java programs, but they come with a number of custom
     wrapper shell scripts. Each of these is symlinked to the conda bin directory
     during install.
   identifiers:
     - biotools:bbmap
+    - usegalaxy-eu:bbtools_bbmap
+    - usegalaxy-eu:bbtools_callvariants
+    - usegalaxy-eu:bbtools_bbmerge
+    - usegalaxy-eu:bbtools_tadpole
+    - usegalaxy-eu:bbtools_bbduk
+    - usegalaxy-eu:bbtools_bbnorm
     - doi:10.1371/journal.pone.0185056

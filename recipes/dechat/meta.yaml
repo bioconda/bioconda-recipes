@@ -1,0 +1,44 @@
+{% set name = "dechat" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/LuoGroup2023/DeChat/releases/download/v{{ version }}/{{ name }}.tar.gz
+  sha256: e637d985eb4fa3bfa276d6433a5ec3c014471eb8eea6da233720dfe78b16fcda
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('dechat', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+    - cmake
+  host:
+    - zlib
+    - boost-cpp ==1.67.0 
+    - sparsehash
+    - pkg-config
+    - libdivsufsort
+    - hdf5
+  run:
+    - boost-cpp ==1.67.0  # [osx]
+    - libdivsufsort  # [osx]
+    - hdf5
+
+test:
+  commands:
+    - (dechat -h || true)
+
+about:
+  home: "https://github.com/LuoGroup2023/DeChat"
+  license: MIT
+  license_family: MIT
+  summary: Repeat and haplotype aware error correction in nanopore sequencing reads with Dechat
+  dev_url: "https://github.com/LuoGroup2023/DeChat"

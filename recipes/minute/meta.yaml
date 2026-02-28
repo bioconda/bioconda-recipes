@@ -1,0 +1,62 @@
+{% set version = "0.12.1" %}
+
+package:
+  name: minute
+  version: {{ version }}
+
+source:
+  url: https://github.com/elsasserlab/minute/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 502d4eae1bd7182f5bf3c8b993fe2d6ba01d713ee07bff014a9bfd59029f9d78
+
+build:
+  number: 1
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('minute', max_pin='x.x') }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+    - setuptools
+  run:
+    - python >=3.7
+    - ruamel.yaml
+    - snakemake-minimal >=7.22.0
+    - samtools >=1.13
+    - cutadapt >=5.1
+    - bowtie2 >=2.5.4
+    - strobealign >=0.13.0
+    - je-suite >=2.0.RC
+    - deeptools >=3.5.0
+    - picard >=3.4.0
+    - fastqc >=0.11.9
+    - bedtools >=2.30.0
+    - multiqc >1.20
+    - xopen >=1.2.0
+    - sra-tools >=2.11.0
+    - r-base >=4.0.0
+    - r-ggplot2 >=3.3.0
+    - r-dplyr >=1.0.0
+    # click 8.2.2 release crashes MultiQC 1.30
+    - click =8.2.1
+
+test:
+  imports:
+    - minute
+  commands:
+    - minute init testdir && rm testdir/minute.yaml
+    - minute --version
+
+about:
+  home: https://github.com/elsasserlab/minute/
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: MINUTE-ChIP data analysis workflow
+  dev_url: https://github.com/elsasserlab/minute
+  doc_url: https://minute.readthedocs.io/en/latest
+extra:
+  recipe-maintainers:
+    - marcelm

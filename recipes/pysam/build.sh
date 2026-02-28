@@ -7,6 +7,11 @@ export CFLAGS="-I$PREFIX/include -DHAVE_LIBDEFLATE"
 export CPPFLAGS="-I$PREFIX/include -DHAVE_LIBDEFLATE"
 export LDFLAGS="-L$PREFIX/lib"
 
-export HTSLIB_LIBRARY_DIR=$PREFIX/lib
-export HTSLIB_INCLUDE_DIR=$PREFIX/include
-$PYTHON setup.py install
+# Fix for failing build of 0.20.0 on Linux
+# See https://github.com/pysam-developers/pysam/issues/1146
+platform=$(uname)
+if [[ "$platform" == "Linux" ]]; then
+    export CFLAGS="-fPIC $CFLAGS"
+fi
+
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt

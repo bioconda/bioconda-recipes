@@ -1,0 +1,57 @@
+{% set name = "amdirt" %}
+{% set version = "1.7.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/amdirt-{{ version }}.tar.gz
+  sha256: 8e497f20b91b704f27d0f161b7b40746e402d4b152d63e99259f08c2d24806f2
+
+build:
+  entry_points:
+    - amdirt = amdirt.cli:cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("amdirt", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+  run:
+    - python >=3.9
+    - click
+    - pandas
+    - tabulate
+    - jsonschema
+    - rich
+    - streamlit <=1.35.0
+    - streamlit-aggrid ==0.3.4.post3
+    - numpy
+    - requests
+    - colorlog
+    - protobuf <=3.20
+
+test:
+  imports:
+    - amdirt
+  commands:
+    - pip check
+    - amdirt --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/SPAAM-community/amdirt
+  summary: 'amdirt: AncientMetagenomeDir Toolkit'
+  license: GPL-3.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - maxibor

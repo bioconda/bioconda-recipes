@@ -1,24 +1,23 @@
 #!/bin/bash
 set -eu
 
-PACKAGE_HOME=$PREFIX/bin
+mkdir -p "${PREFIX}/bin"
 
-mkdir -p $PACKAGE_HOME
+# Compile and install novo2maq
+make -C novo2maq \
+    CC="${CC}" \
+    CXX="${CXX}" \
+    CFLAGS="${CFLAGS} ${CPPFLAGS} -g -Wall -O2 -m64 ${LDFLAGS}" \
+    CXXFLAGS="${CXXFLAGS} ${CPPFLAGS} -g -Wall -O2 -m64 -fpermissive ${LDFLAGS}"
+cp novo2maq/novo2maq ${PREFIX}/bin
 
-pushd novo2maq
-make
-cp novo2maq ${PACKAGE_HOME}
-popd
+# Install all executables
+find . -maxdepth 1 -perm -111 -type f -exec cp {} ${PREFIX}/bin ';'
 
-find . -maxdepth 1 -perm -111 -type f -exec cp {} ${PACKAGE_HOME} ';'
+# Install license script
+cp ${RECIPE_DIR}/novoalign-license-register.sh ${PREFIX}/bin/novoalign-license-register
 
-SOURCE_FILE=$RECIPE_DIR/novoalign-license-register.sh
-DEST_FILE=$PACKAGE_HOME/novoalign-license-register
-
-cp "$SOURCE_FILE" "$DEST_FILE"
-
-chmod +x $DEST_FILE
-
+# Install documentation
 DOC_DIR=${PREFIX}/share/doc/novoalign
 mkdir -p ${DOC_DIR}
 cp *.pdf *.txt ${RECIPE_DIR}/license.txt ${DOC_DIR}

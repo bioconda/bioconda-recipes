@@ -1,0 +1,48 @@
+{% set name = "nextclade2" %}
+{% set version = "2.14.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/nextclade-x86_64-unknown-linux-gnu    # [linux64]
+    sha256: 1a9a82655830243ffd01937ebb895744ff46ec49f725ef6feff9a3f0e37d90d1                                           # [linux64]
+  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/nextclade-x86_64-apple-darwin         # [osx and x86_64]
+    sha256: 432f56d2152edda49b8c4a2c3f81d9a5da7419a6cc7c4a3d5205d17d5f834cf6                                           # [osx and x86_64]
+  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/nextclade-aarch64-apple-darwin        # [arm64]
+    sha256: aaac669618d953381428eac3674fe6cb22bef66e7c1ae55552f6a1567f3d3030                                           # [arm64]
+  - url: https://github.com/nextstrain/nextclade/releases/download/{{ version }}/nextclade-aarch64-unknown-linux-gnu   # [aarch64]
+    sha256: e8bf11ba18c40aaad6b91b1a65bd49b304375f77b9273b1a17e75ba32cffbca8                                           # [aarch64]
+
+build:
+  number: 2
+  binary_relocation: False
+  run_exports:
+  - {{ pin_compatible(name, max_pin='x') }}
+
+requirements:
+
+test:
+  commands:
+    - nextclade2 --help
+
+about:
+  home: https://github.com/nextstrain/nextclade
+  license: MIT
+  license_family: MIT
+  summary: "Viral genome alignment, mutation calling, clade assignment, quality checks and phylogenetic placement"
+  doc_url: https://docs.nextstrain.org/projects/nextclade/en/stable/
+  dev_url: https://github.com/nextstrain/nextclade
+
+extra:
+  identifiers:
+    - doi:10.21105/joss.03773
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - corneliusroemer
+  skip-lints:
+    # repackaged binary
+    - should_be_noarch_generic

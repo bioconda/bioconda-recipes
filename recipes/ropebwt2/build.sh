@@ -1,7 +1,11 @@
 #!/bin/bash
-export C_INCLUDE_PATH="${PREFIX}/include"
-export LIBRARY_PATH="${PREFIX}/lib"
+set -xe
 
-mkdir -p $PREFIX/bin
-make 
-mv ropebwt2 $PREFIX/bin/
+mkdir -p "${PREFIX}/bin"
+
+make CC="${CC}" \
+	CFLAGS="${CFLAGS} -fcommon -g -Wall -O3" \
+	LIBS="${LDFLAGS} -L${PREFIX}/lib -lz -pthread" \
+	-j"${CPU_COUNT}"
+
+install -v -m 0755 ropebwt2 "${PREFIX}/bin"

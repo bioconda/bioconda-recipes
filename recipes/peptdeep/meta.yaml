@@ -1,0 +1,65 @@
+{% set name = "peptdeep" %}
+{% set version = "1.4.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/MannLabs/alphapeptdeep/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 6ba483b70058f96e494bcff143fd8bf293ea600f191622061a0238b7eb265025
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('peptdeep', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools
+    - pip
+  run:
+    - python >=3.8
+    - click
+    - pandas
+    - numpy <2
+    - pytorch
+    - tqdm
+    - numba
+    - psutil
+    - transformers
+    - scikit-learn
+    - lxml
+    - pyteomics
+    - alphabase >=1.5.0
+    - alpharaw >=0.2.0
+
+test:
+  imports:
+    - peptdeep
+  commands:
+    - pip check
+    - peptdeep --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/MannLabs/alphapeptdeep
+  summary: The AlphaX deep learning framework for Proteomics
+  description: |
+    PeptDeep provides deep learning models for mass spectrometry-based
+    proteomics. It includes built-in models for predicting retention time,
+    collision cross section, and tandem mass spectra for peptides, enabling
+    users to generate predicted spectral libraries from protein sequences.
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE.txt
+  dev_url: https://github.com/MannLabs/alphapeptdeep
+  doc_url: https://alphapeptdeep.readthedocs.io/en/latest/
+
+extra:
+  recipe-maintainers:
+    - jonasscheid
