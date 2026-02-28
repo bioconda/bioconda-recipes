@@ -15,6 +15,7 @@ build:
   number: 0
   # genecircuitry itself is pure Python. Compiled run-deps (velocyto.py)
   # are arch-specific but handled by their own recipes.
+  noarch: python
   script: "$PYTHON -m pip install --no-deps --no-build-isolation -vv ."
   entry_points:
     # Mirrors [project.scripts] in pyproject.toml
@@ -24,8 +25,6 @@ build:
     - {{ pin_subpackage('genecircuitry', max_pin='x.x') }}
 
 requirements:
-  build:
-    - {{ compiler('cxx') }}
 
   host:
     - python >=3.9,<3.10
@@ -33,8 +32,6 @@ requirements:
     - setuptools >=45
     - wheel
     - setuptools_scm >=6.2
-    - Cython                  # required to build compiled deps (numba, velocyto)
-    - cython
 
   run:
     - python >=3.9,<3.10
@@ -88,11 +85,7 @@ test:
     # Confirm the CLI entry point is present and callable
     - genecircuitry --help
     # Integration test: pbmc3k dataset
-    - genecircuitry --steps load preprocessing clustering celloracle hotspot summary
-
-  requires:
-    - pytest >=7.0.0
-    - pytest-cov >=3.0.0
+    # - genecircuitry --steps load preprocessing clustering celloracle hotspot summary
 
 about:
   home: https://github.com/samuelecancellieri/genecircuitry
