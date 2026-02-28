@@ -1,0 +1,111 @@
+{% set name = "genecircuitry" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/samuelecancellieri/GeneCircuitry/archive/refs/tags/v{{ version }}.tar.gz
+  # TODO: replace with the real sha256 of the release tarball before bioconda submission.
+  # Compute with: curl -sL <url> | sha256sum
+  sha256: 7380a91f342546b8a51df11d8e5487dac4e3968ecca13ef5ea454521e79c2e18
+
+build:
+  number: 0
+  # genecircuitry itself is pure Python. Compiled run-deps (velocyto.py)
+  # are arch-specific but handled by their own recipes.
+  noarch: python
+  script: "$PYTHON -m pip install --no-deps --no-build-isolation -vv ."
+  entry_points:
+    # Mirrors [project.scripts] in pyproject.toml
+    - genecircuitry = genecircuitry.pipeline.controller:main
+  run_exports:
+    # Allow downstream packages to depend on any patch-compatible release.
+    - {{ pin_subpackage('genecircuitry', max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.9,<3.10
+    - pip
+    - setuptools >=45
+    - wheel
+    - setuptools_scm >=6.2
+    - cython                  # required to build compiled deps (numba, velocyto)
+  run:
+    - python >=3.9,<3.10
+    # --- core numerical stack ---
+    - numpy ==1.26.4          # pinned; matches requirements.txt
+    - scipy
+    - numba >=0.50.1
+    - cython
+    - h5py >=3.1.0
+    - pyarrow >=0.17
+    - joblib
+    - tqdm >=4.45
+    # --- data / IO ---
+    - pandas >=1.3.0,<=1.5.3  # upper-bound from celloracle requirements
+    - anndata >=0.8.0,<=0.10.8
+    - scanpy >=1.9.0
+    # --- plotting ---
+    - matplotlib-base >=3.6.3,<3.7  # <3.7 required by gimmemotifs
+    - matplotlib-inline <=0.1.7
+    - seaborn
+    # --- clustering / graph ---
+    - igraph >=0.10.1
+    - louvain
+    - leidenalg
+    - umap-learn
+    - scikit-learn
+    - networkx >=2.6.0
+    # --- TRN / GRN tools ---
+    - velocyto.py >=0.17
+    - genomepy >=0.8.4        # bioconda
+    - gimmemotifs >=0.14.4,<=0.17.2  # bioconda
+    - goatools
+    - gseapy
+    # --- reporting / misc ---
+    - adjusttext >=0.7.3      # conda-forge name for adjustText
+    - fa2_modified
+    - weasyprint
+    - jupyter
+    # celloracle and hotspot are not on conda-forge/bioconda;
+    # they are installed automatically via post-link.sh
+
+
+test:
+  imports:
+    - genecircuitry
+    - genecircuitry.pipeline
+    - genecircuitry.preprocessing
+    - genecircuitry.plotting
+    - genecircuitry.reporting
+
+  commands:
+    # Confirm the CLI entry point is present and callable
+    - genecircuitry --help
+    # Integration test: pbmc3k dataset
+    - genecircuitry --steps load preprocessing clustering celloracle hotspot summary
+
+  requires:
+    - pytest >=7.0.0
+    - pytest-cov >=3.0.0
+
+about:
+  home: https://github.com/samuelecancellieri/genecircuitry
+  summary: "GeneCircuitry: TRN analysis from single-cell data (Scanpy, CellOracle, Hotspot)"
+  description: |
+    A modular, checkpoint-enabled pipeline for TRN analysis from
+    single-cell RNA-seq data. Integrates Scanpy for preprocessing and
+    clustering, CellOracle for GRN inference, and Hotspot for embedding-aware
+    gene modules identification. Provides an HTML/PDF reporting layer
+    and a standalone ``genecircuitry`` CLI entry point.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: https://github.com/samuelecancellieri/genecircuitry/blob/main/README.md
+  dev_url: https://github.com/samuelecancellieri/genecircuitry
+
+extra:
+  recipe-maintainers:
+    - samuelecancellieri
