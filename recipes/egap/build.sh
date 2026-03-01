@@ -3,10 +3,16 @@ set -eux
 
 mkdir -p "${PREFIX}/bin"
 
+# Install all helper scripts (includes bin/EGAP_TUI.py)
 cp -r bin/* "${PREFIX}/bin/"
 
-cp EGAP.py "${PREFIX}/bin/EGAP"
-chmod +x "${PREFIX}/bin/EGAP"
+# Keep EGAP.py available as a module for EGAP_TUI.py to import
+cp EGAP.py "${PREFIX}/bin/EGAP.py"
 
-cp EGAP_TUI.py "${PREFIX}/bin/EGAP_TUI"
-chmod +x "${PREFIX}/bin/EGAP_TUI"
+# Also install EGAP as the user-facing executable
+cp EGAP.py "${PREFIX}/bin/EGAP"
+
+# Provide an extensionless EGAP_TUI command (since your tests call EGAP_TUI)
+cp "${PREFIX}/bin/EGAP_TUI.py" "${PREFIX}/bin/EGAP_TUI"
+
+chmod +x "${PREFIX}/bin/EGAP" "${PREFIX}/bin/EGAP.py" "${PREFIX}/bin/EGAP_TUI" "${PREFIX}/bin/"*.py
