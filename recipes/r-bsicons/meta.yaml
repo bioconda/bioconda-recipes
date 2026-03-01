@@ -1,0 +1,78 @@
+{% set version = '0.1.2' %}
+{% set posix = 'm2-' if win else '' %}
+
+package:
+  name: r-bsicons
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/bsicons_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/bsicons/bsicons_{{ version }}.tar.gz
+  sha256: ea900e3ee9339a41db97e760b9feaf634c26dc50fc12912c11a896bab159ddc5
+
+build:
+  number: 0
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  missing_dso_whitelist:
+    - '*/R.dll'        # [win]
+    - '*/Rblas.dll'    # [win]
+    - '*/Rlapack.dll'  # [win]
+
+requirements:
+  build:
+    - {{ posix }}zip               # [win]
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
+  host:
+    - r-base
+    - r-cli
+    - r-htmltools
+    - r-rlang
+  run:
+    - r-base
+    - r-cli
+    - r-htmltools
+    - r-rlang
+
+test:
+  commands:
+    - $R -e "library('bsicons')"           # [not win]
+    - "\"%R%\" -e \"library('bsicons')\""  # [win]
+
+about:
+  home: https://github.com/rstudio/bsicons
+  license: MIT
+  summary: Easily use 'Bootstrap' icons inside 'Shiny' apps and 'R Markdown' documents. More
+    generally, icons can be inserted in any 'htmltools' document through inline 'SVG'.
+  license_family: MIT
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/MIT'
+    - LICENSE
+
+extra:
+  recipe-maintainers:
+    - conda-forge/r
+
+# Package: bsicons
+# Title: Easily Work with 'Bootstrap' Icons
+# Version: 0.1.2
+# Authors@R: c( person("Carson", "Sievert", , "carson@posit.co", role = c("cre", "aut"), comment = c(ORCID = "0000-0002-4958-2844")), person("Posit Software, PBC", role = c("cph", "fnd")), person("Mark", "Otto", role = "cph", comment = "Bootstrap icons maintainer") )
+# Description: Easily use 'Bootstrap' icons inside 'Shiny' apps and 'R Markdown' documents. More generally, icons can be inserted in any 'htmltools' document through inline 'SVG'.
+# License: MIT + file LICENSE
+# URL: https://github.com/rstudio/bsicons
+# BugReports: https://github.com/rstudio/bsicons/issues
+# Depends: R (>= 2.10)
+# Imports: cli, htmltools, rlang, utils
+# Suggests: bslib, processx, testthat, webshot2, withr
+# Config/testthat/edition: 3
+# Encoding: UTF-8
+# RoxygenNote: 7.2.3
+# NeedsCompilation: no
+# Packaged: 2023-11-03 23:29:00 UTC; cpsievert
+# Author: Carson Sievert [cre, aut] (<https://orcid.org/0000-0002-4958-2844>), Posit Software, PBC [cph, fnd], Mark Otto [cph] (Bootstrap icons maintainer)
+# Maintainer: Carson Sievert <carson@posit.co>
+# Repository: CRAN
+# Date/Publication: 2023-11-04 00:30:05 UTC

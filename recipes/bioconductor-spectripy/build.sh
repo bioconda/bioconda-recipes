@@ -2,6 +2,9 @@
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 mkdir -p ~/.R
+export RETICULATE_PYTHON="${PREFIX}/bin/python"
+export RETICULATE_USE_MANAGED_VENV="FALSE"
+
 echo -e "CC=$CC
 FC=$FC
 CXX=$CXX
