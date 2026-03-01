@@ -1,18 +1,20 @@
 {% set name = "cellitac" %}
-{% set version = "1.0.2" %}
+{% set version = "1.0.3" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/source/c/cellitac/cellitac-{{ version }}.tar.gz
-  sha256: bfadae79a61492d52d24643aeab60e5dda0e196f08b52fbfa896916964f8c620
+  url: https://files.pythonhosted.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: fbafbc0fbe30972fda6c00e6b35cd5832766ec13f720dd840b3000627014f8d0
 
 build:
   noarch: python
   number: 0
   script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  run_exports:
+    - {{ pin_subpackage('cellitac', max_pin="x") }}
 
 requirements:
   host:
@@ -25,12 +27,19 @@ requirements:
     - scikit-learn
     - xgboost
     - imbalanced-learn
-    - matplotlib
+    - matplotlib-base
     - seaborn
     - plotly
     - networkx
     - openpyxl
     - rpy2
+    - r-base >=4.3
+    - r-seurat
+    - bioconductor-signac
+    - bioconductor-singler
+    - bioconductor-celldex
+    - r-hdf5r
+    - r-matrix
 
 test:
   imports:
@@ -39,7 +48,7 @@ test:
     - cellitac --help
 
 about:
-  home: https://pypi.org/project/cellitac/
+  home: https://github.com/omicscodeathon/cellitac
   license: MIT
   license_file: LICENSE
   summary: "Cell type identification using Transcription factor Analysis and Chromatin accessibility"
