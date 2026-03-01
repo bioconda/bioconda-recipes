@@ -18,6 +18,8 @@ trap "rm -rf '${scratch}'" EXIT
 
 # Remove unnecessary dependencies from conanfile.py
 patch conanfile.py < "${RECIPE_DIR}/conanfile.py.patch"
+# Fix fmt v12 consteval formatting issue in nanobind warning helpers
+patch src/cpp/nanobind/nanobind_impl.hpp < "${RECIPE_DIR}/nanobind-fmt12-consteval.patch"
 
 # Build hictkpy as a shared library
 export HICTKPY_BUILD_SHARED_LIBS=ON
