@@ -13,8 +13,8 @@ else
     
     cd ${SRC_DIR}/pantax
     RUST_BACKTRACE=1 RUSTFLAGS="-C link-args=-Wl,-rpath,${PREFIX}/lib" cargo build --release
-    RUST_BACKTRACE=1 RUSTFLAGS="-C link-args=-Wl,-rpath,${CONDA_PREFIX}/lib" cargo build -r --features free --no-default-features --bin pantax-free
-    RUST_BACKTRACE=1 RUSTFLAGS="-C link-args=-Wl,-rpath,${CONDA_PREFIX}/lib" cargo build -r --features gb --no-default-features --bin pantax-gb
+    RUST_BACKTRACE=1 RUSTFLAGS="-C link-args=-Wl,-rpath,${PREFIX}/lib" cargo build -r --features free --no-default-features --bin pantax-free
+    RUST_BACKTRACE=1 RUSTFLAGS="-C link-args=-Wl,-rpath,${PREFIX}/lib" cargo build -r --features gb --no-default-features --bin pantax-gb
     cp target/*/release/pantax ${PREFIX}/bin/pantax
     cp target/*/release/pantax-free ${PREFIX}/bin/pantax-free
     cp target/*/release/pantax-gb ${PREFIX}/bin/pantax-gb
