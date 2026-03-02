@@ -15,9 +15,9 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
-      max-parallel: 9
+      max-parallel: 10
       matrix:
-        runner: [0, 1, 2, 3, 4]
+        runner: [0, 1, 2, 3, 4,5,6,7,8,9]
         # runner: [0]
     steps:
       - uses: actions/checkout@v4
@@ -61,10 +61,10 @@ jobs:
           python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
           echo '============'
           bioconda-utils build recipes config.yml \
-            --worker-offset ${{ matrix.runner }} --n-workers 5 \
+            --worker-offset ${{ matrix.runner }} --n-workers 10 \
             --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
             --lint --record-build-failures --skiplist-leafs \
-            --exclude bioconda-repodata-patches --subdag-depth 19
+            --exclude bioconda-repodata-patches ## --subdag-depth 19
           conda clean -y --all
 
   build-osx:
