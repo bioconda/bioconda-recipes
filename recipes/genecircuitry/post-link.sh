@@ -1,18 +1,17 @@
 #!/bin/bash
 # post-link.sh — runs automatically after `conda install genecircuitry`.
-# Installs pip-only dependencies (not available on conda-forge/bioconda).
+# Note: Do not install pip-only dependencies here; this must remain offline/reproducible.
 set -euo pipefail
 
 PYTHON_BIN="${PREFIX}/bin/python"
 
-echo "==> [genecircuitry post-link] Installing pip-only dependencies..."
-echo "    celloracle==0.18.0"
-echo "    hotspotsc==1.1.3"
-
-"${PYTHON_BIN}" -m pip install \
-    --no-deps \
-    --quiet \
-    celloracle==0.18.0 \
-    hotspotsc==1.1.3
-
+echo "==> [genecircuitry post-link] Skipping automatic installation of pip-only dependencies."
+echo "    The packages 'celloracle==0.18.0' and 'hotspotsc==1.1.3' are not installed"
+echo "    automatically by this conda package in order to keep installs"
+echo "    offline-capable and reproducible."
+echo
+echo "If you need functionality that depends on these packages, please install them"
+echo "manually in the active environment, for example:"
+echo "    pip install 'celloracle==0.18.0' 'hotspotsc==1.1.3'"
+echo
 echo "==> [genecircuitry post-link] Done."
