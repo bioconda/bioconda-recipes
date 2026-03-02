@@ -2,7 +2,7 @@
 {% set version = "1.2.4" %}
 
 package:
-  name: {{ name }}-meta
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -12,13 +12,15 @@ source:
 build:
   number: 0
   noarch: generic
-  run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
-    - {{ pin_subpackage(name ~ "-lite", max_pin="x") }}
+
+requirements:
+  run:
+    - {{ pin_subpackage(name ~ "-snakemake", exact=True) }}
 
 test:
-  imports:
-    - pegas
+  commands:
+    - pegas --help
+    - pegas-lite --help
 
 outputs:
   - name: {{ name }}-lite
@@ -50,7 +52,7 @@ outputs:
       commands:
         - pegas-lite --help
 
-  - name: {{ name }}
+  - name: {{ name }}-snakemake
 
     build:
       noarch: python
@@ -66,7 +68,7 @@ outputs:
 
     test:
       commands:
-        - {{ name }} --help
+        - pegas --help
 
 about:
   home: https://github.com/liviurotiul/PeGAS
