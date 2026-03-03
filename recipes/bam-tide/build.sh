@@ -12,4 +12,12 @@ else
 fi
 
 # Install all binaries into $PREFIX/bin
-cargo install -v --no-track --root "$PREFIX" --path ./bam_tide
+export RUST_BACKTRACE=full
+cargo install --verbose --no-track --root "$PREFIX" --path ./bam_tide --locked
+
+# Strip selected binaries if they exist (optional)
+for b in bam-coverage bw-compare; do
+  if [ -f "$PREFIX/bin/$b" ]; then
+    "${STRIP}" "$PREFIX/bin/$b" || true
+  fi
+done
