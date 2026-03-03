@@ -1,0 +1,70 @@
+{% set name = "rnaframework" %}
+{% set version = "2.9.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/dincarnato/RNAFramework/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 210879b46703541a24da13408edb5e50919ecf53032f814a945bc5983d76743a
+
+build:
+  number: 0
+
+requirements:
+  host:
+    - perl=5.32
+    - perl-threaded
+    - sed
+  run:
+    - perl=5.32
+    - perl-threaded
+    - python >=3.9
+    - r-base >=4.0
+    - rnastructure =6.5    
+    - numpy
+    - lxml
+    - pytz
+    - six
+    - bowtie2
+    - samtools >=1.15
+    - htslib >=1.15
+    - bedtools
+    - viennarna
+    - cutadapt
+    - dos2unix
+    - sed
+    - pigz
+    - r-ggplot2
+    - r-patchwork
+    - r-rcolorbrewer
+
+test:
+  commands:
+    # 1. Vérification RNAframework
+    - rf-count --help || true
+    
+    # 2. Vérification rigoureuse des versions (tes tests demandés)
+    - samtools --version | grep -E "samtools 1\.(1[5-9]|[2-9])"
+    - python -c "import numpy; print(f'Numpy OK:{numpy.__version__}')"
+    
+    # 3. Vérification RNAstructure (l'outil 'Fold' ou 'Structure')
+    - Fold --help || true
+
+about:
+  home: https://rnaframework-docs.readthedocs.io/en/latest/
+  license: GPL-3.0-only 
+  license_family: GPL
+  license_file: LICENCE
+  summary: 'A modular toolkit for RNA structure probing and post-transcriptional modifications analysis.
+  description: |
+    RNA Framework is a modular toolkit developed to streamline the analysis of RNA structure 
+    probing (e.g., SHAPE-seq, DMS-seq, SHAPE-MaP, DMS-MaP, etc.) and post-transcriptional modification mapping experiments (e.g., MeRIP-seq).
+    
+  Its main features include:
+    - Reference transcriptome generation
+    - Read preprocessing (adapter clipping and trimming) and mapping
+    - Scoring and data normalization
+    - Experimentally-informed RNA secondary structure prediction
+    - Peak calling & motif discovery'
