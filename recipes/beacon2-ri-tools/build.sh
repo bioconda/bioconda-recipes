@@ -8,6 +8,10 @@ mkdir -p "$PREFIX/bin/beacon2-ri-tools"
 cp -r "$SRC_DIR"/{*.py,ref_schemas,conf,files,validators} \
     "$PREFIX/bin/beacon2-ri-tools/"
 
+# Ensure package recognition
+touch "$PREFIX/bin/beacon2-ri-tools/validators/__init__.py"
+touch "$PREFIX/bin/beacon2-ri-tools/validators/update/__init__.py"
+
 # List of supported v2 entrypoints
 scripts=(
   "csv_to_bff.py"
