@@ -12,4 +12,4 @@ else
 fi
 
 # Install all binaries into $PREFIX/bin
-cargo install -v --no-track --root "$PREFIX" --path .
+cargo install -v --no-track --root "$PREFIX" --path ./bam_tide
