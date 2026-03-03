@@ -18,4 +18,5 @@ ls -lah "$(dirname "${binpath}")"
 
 install -d "${PREFIX}/bin"
 install -m 0755 "${binpath}" "${PREFIX}/bin/itsxrust"
-
+install -d "${PREFIX}/share/itsxrust/hmm"
+install -m 0644 "${SRC_DIR}/data/hmm/F.hmm" "${PREFIX}/share/itsxrust/hmm/F.hmm"
