@@ -1,0 +1,91 @@
+{% set version = '1.0.3' %}
+{% set posix = 'm2-' if win else '' %}
+
+package:
+  name: r-sched
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/sched_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/sched/sched_{{ version }}.tar.gz
+  sha256: 237723fa266ac71b2fc6c6e8163e3be3a3fad1a21238486ff4c68fc6ca43d9d8
+
+build:
+  number: 0
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  missing_dso_whitelist:
+    - '*/R.dll'        # [win]
+    - '*/Rblas.dll'    # [win]
+    - '*/Rlapack.dll'  # [win]
+  run_exports:
+    - {{ pin_subpackage('r-sched', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ posix }}zip               # [win]
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
+  host:
+    - r-base
+    - r-r6
+    - r-rcurl
+    - r-chk
+    - r-fscache >=1.0.3
+    - r-lgr
+    - r-openssl
+  run:
+    - r-base
+    - r-r6
+    - r-rcurl
+    - r-chk
+    - r-fscache >=1.0.3
+    - r-lgr
+    - r-openssl
+
+test:
+  commands:
+    - $R -e "library('sched')"           # [not win]
+    - "\"%R%\" -e \"library('sched')\""  # [win]
+
+about:
+  home: https://gitlab.com/cnrgh/databases/r-sched
+  license: AGPL-3
+  summary: 'Offers classes and functions to contact web servers while enforcing scheduling rules
+    required by the sites. The URL class makes it easy to construct a URL by providing
+    parameters as a vector. The Request class allows to describes SOAP (Simple Object
+    Access Protocol) or standard requests: URL, method (POST or GET), header, body.
+    The Scheduler class controls the request frequency for each server address by mean
+    of rules (Rule class). The RequestResult class permits to get the request status
+    to handle error cases and the content.'
+  license_family: AGPL
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+
+extra:
+  recipe-maintainers:
+    - conda-forge/r
+
+# Package: sched
+# Title: Request Scheduler
+# Version: 1.0.3
+# Authors@R: c(person("Pierrick", "Roger", email="pierrick.roger@cea.fr", role=c("aut", "cre"), comment=c(ORCID="0000-0001-8177-4873")))
+# Maintainer: Pierrick Roger <pierrick.roger@cea.fr>
+# Description: Offers classes and functions to contact web servers while enforcing scheduling rules required by the sites. The URL class makes it easy to construct a URL by providing parameters as a vector. The Request class allows to describes SOAP (Simple Object Access Protocol) or standard requests: URL, method (POST or GET), header, body. The Scheduler class controls the request frequency for each server address by mean of rules (Rule class). The RequestResult class permits to get the request status to handle error cases and the content.
+# URL: https://gitlab.com/cnrgh/databases/r-sched
+# BugReports: https://gitlab.com/cnrgh/databases/r-sched/-/issues
+# Depends: R (>= 4.1)
+# License: AGPL-3
+# Encoding: UTF-8
+# Suggests: roxygen2, testthat, knitr, rmarkdown, covr, lintr
+# Imports: R6, fscache (>= 1.0.3), chk, lgr, methods, RCurl, tools, openssl
+# NeedsCompilation: no
+# RoxygenNote: 7.3.2
+# Collate: 'Request.R' 'RequestResult.R' 'Rule.R' 'URL.R' 'request_fcts.R' 'Scheduler.R' 'package.R' 'rule_fcts.R'
+# VignetteBuilder: knitr
+# Packaged: 2024-10-01 13:19:07 UTC; pierrick
+# Author: Pierrick Roger [aut, cre] (<https://orcid.org/0000-0001-8177-4873>)
+# Repository: CRAN
+# Date/Publication: 2024-10-02 22:20:01 UTC
