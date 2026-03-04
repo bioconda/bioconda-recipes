@@ -14,6 +14,10 @@ chmod +x ${PREFIX}/bin/runRBH
 chmod +x ${PREFIX}/bin/splitDiamondResults
 chmod +x ${PREFIX}/bin/splitDiamondResultsForFai
 
+# setup gravis based on pull request
+# We point pip directly to the git repository and the specific branch/PR
+$PYTHON -m pip install git+https://github.com/raufs/gravis.git@master --upgrade --no-deps --no-build-isolation -vvv
+
 # create folder for database download
 ZOL_DATA_PATH="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}/db"
 ZOL_EXEC_PATH="${PREFIX}/bin"
