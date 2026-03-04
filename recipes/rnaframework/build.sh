@@ -19,7 +19,7 @@ find $INSTALL_DIR -maxdepth 1 -type f -name "rf-*" | while read rffile; do
     cat <<'EOF' > "$PREFIX/bin/$BIN_NAME"
 #!/bin/bash
 # setting the source directory to the location of the actual script
-SOURCE_DIR=$(dirname "$(dirname "$(readlink -f "$0")")")/share/rnaframework
+SOURCE_DIR=$(dirname "$(dirname "$(readlink -f "$0")")")/share/$PKG_NAME
 
 # Configuration of the environment variables for RNAframework
 export PERL5LIB="$SOURCE_DIR/lib:$PERL5LIB"

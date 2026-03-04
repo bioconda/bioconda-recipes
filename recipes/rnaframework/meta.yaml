@@ -13,52 +13,40 @@ build:
   noarch: generic
   number: 0
   run_exports:
-    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 requirements:
-  host:
-    - perl >=5.32
-    - sed
   run:
     - perl >=5.32
-    - python >=3.9
     - r-base >=4.0
-    - rnastructure =6.5    
-    - numpy
-    - lxml
-    - pytz
-    - six
+    - rnastructure >=6.5  
+    - bowtie
     - bowtie2
     - samtools >=1.15
-    - htslib >=1.15
     - bedtools
     - viennarna
     - cutadapt
-    - dos2unix
-    - sed
-    - pigz
     - r-ggplot2
     - r-patchwork
     - r-rcolorbrewer
 
 test:
   commands:
-    # 1. Vérification RNAframework
-    - rf-count --help || true
+    # 1. RNAframework check
+    - which rf-count
     
-    # 2. Vérification rigoureuse des versions (tes tests demandés)
+    # 2. sammtools test
     - samtools --version | grep -E "samtools 1\.(1[5-9]|[2-9])"
-    - python -c "import numpy; print(f'Numpy OK:{numpy.__version__}')"
     
-    # 3. Vérification RNAstructure (l'outil 'Fold' ou 'Structure')
-    - Fold --help || true
+    # 3. RNAstructure test
+    - which Fold
 
 about:
   home: https://rnaframework-docs.readthedocs.io/en/latest/
   license: GPL-3.0-only 
   license_family: GPL
   license_file: LICENSE
-  summary: 'A modular toolkit for RNA structure probing and post-transcriptional modifications analysis.
+  summary: 'A modular toolkit for RNA structure probing and post-transcriptional modifications analysis.'
   description: |
     RNA Framework is a modular toolkit developed to streamline the analysis of RNA structure 
     probing (e.g., SHAPE-seq, DMS-seq, SHAPE-MaP, DMS-MaP, etc.) and post-transcriptional modification mapping experiments (e.g., MeRIP-seq).
@@ -67,4 +55,4 @@ about:
     - Read preprocessing (adapter clipping and trimming) and mapping
     - Scoring and data normalization
     - Experimentally-informed RNA secondary structure prediction
-    - Peak calling & motif discovery'
+    - Peak calling & motif discovery
