@@ -15,8 +15,8 @@ chmod +x ${PREFIX}/bin/splitDiamondResults
 chmod +x ${PREFIX}/bin/splitDiamondResultsForFai
 
 # setup gravis from a pinned Git commit to ensure reproducible builds
-# We point pip directly to the git repository and a specific commit SHA
-$PYTHON -m pip install git+https://github.com/raufs/gravis.git@4f3c2d5e9b7a1c6d8e0f1234567890abcdef1234 --upgrade --no-deps --no-build-isolation -vvv
+# We point pip directly to the git repository 
+$PYTHON -m pip install git+https://github.com/raufs/gravis.git@master --upgrade --no-deps --no-build-isolation -vvv
 
 # create folder for database download
 ZOL_DATA_PATH="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}/db"
