@@ -1,5 +1,5 @@
 {% set name = "atol-genome-launcher" %}
-{% set version = "0.2.1" %}
+{% set version = "0.4.1" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/TomHarrop/atol-genome-launcher/archive/refs/tags/{{ version }}.tar.gz
-  sha256: ccb523b5d368a4e8656a2e98bc9007cdd2ce0ac151449baa3ffca15754d5d109
+  sha256: 45aee1ed54daf4cbb3ae218ca70b712659ccd53152525a829ecd5c955457c090
 
 build:
   number: 0
@@ -16,11 +16,11 @@ build:
   script_env:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   entry_points:
+    - assembly-config-generator = assembly_config_generator.assembly_config_generator:main
     - assembly-data-downloader = assembly_data_downloader.assembly_data_downloader:main
     - bpa-file-downloader = bpa_file_downloader.bpa_file_downloader:main
     - rnaseq-manifest-generator = rnaseq_manifest_generator.rnaseq_manifest_generator:main
     - rnaseq-reads-downloader = rnaseq_reads_downloader.rnaseq_reads_downloader:main
-
   run_exports:
     - {{ pin_subpackage('atol-genome-launcher', max_pin="x.x") }}
 
@@ -32,6 +32,7 @@ requirements:
   run:
     - wget
     - pandas >=2.3.3,<3
+    - pydantic >=2.12.5
     - python >=3.12,<3.15
     - snakemake >=9.11.6,<10
 
@@ -41,6 +42,7 @@ test:
     - "bpa-file-downloader --help | grep 'usage: bpa-file-downloader'"
     - "rnaseq-manifest-generator --help | grep 'usage: rnaseq-manifest-generator'"
     - "rnaseq-reads-downloader --help | grep 'usage: rnaseq-reads-downloader'"
+    - "assembly-config-generator --help | grep 'usage: assembly-config-generator'"
 
 about:
   home: "https://github.com/TomHarrop/atol-genome-launcher"
