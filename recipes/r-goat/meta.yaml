@@ -1,0 +1,112 @@
+{% set version = '1.1.5' %}
+{% set posix = 'm2-' if win else '' %}
+
+package:
+  name: r-goat
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/goat_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/goat/goat_{{ version }}.tar.gz
+  sha256: 2ef3bdc4e404c94e040f5ad5b24a05ef74496d3110ecb771d913b00bcbd80318
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  missing_dso_whitelist:
+    - '*/R.dll'        # [win]
+    - '*/Rblas.dll'    # [win]
+    - '*/Rlapack.dll'  # [win]
+
+requirements:
+  build:
+    - {{ compiler('c') }}              # [not win]
+    - {{ compiler('m2w64_c') }}        # [win]
+    - {{ compiler('cxx') }}            # [not win]
+    - {{ compiler('m2w64_cxx') }}      # [win]
+    - {{ posix }}filesystem        # [win]
+    - {{ posix }}make
+    - {{ posix }}sed               # [win]
+    - {{ posix }}coreutils         # [win]
+    - {{ posix }}zip               # [win]
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
+  host:
+    - r-base
+    - r-matrix >=1.4_0
+    - r-monopoly >=0.3_10
+    - r-rcpp >=1.0.9
+    - r-data.table >=1.14.0
+    - r-dplyr >=1.0.3
+    - r-ggplot2 >=3.3.0
+    - r-ggraph >=2.0.0
+    - r-igraph >=1.2.5
+    - r-pheatmap >=1.0.8
+    - r-readxl >=1.4.1
+    - r-tibble >=3.0.0
+    - r-tidyr >=1.1.2
+    - r-tidyselect >=1.2.0
+    - r-treemap >=2.4
+    - r-vctrs >=0.3.8
+    - r-writexl >=1.4.1
+  run:
+    - r-base
+    - r-matrix >=1.4_0
+    - r-monopoly >=0.3_10
+    - r-rcpp >=1.0.9
+    - r-data.table >=1.14.0
+    - r-dplyr >=1.0.3
+    - r-ggplot2 >=3.3.0
+    - r-ggraph >=2.0.0
+    - r-igraph >=1.2.5
+    - r-pheatmap >=1.0.8
+    - r-readxl >=1.4.1
+    - r-tibble >=3.0.0
+    - r-tidyr >=1.1.2
+    - r-tidyselect >=1.2.0
+    - r-treemap >=2.4
+    - r-vctrs >=0.3.8
+    - r-writexl >=1.4.1
+
+test:
+  commands:
+    - $R -e "library('goat')"           # [not win]
+    - "\"%R%\" -e \"library('goat')\""  # [win]
+
+about:
+  home: https://github.com/ftwkoopmans/goat/
+  license: Apache License (>= 2)
+  summary: Perform gene set enrichment analyses using the Gene set Ordinal Association Test (GOAT)
+    algorithm and visualize your results. Koopmans, F. (2024) <doi:10.1038/s42003-024-06454-5>.
+  license_family: APACHE
+
+extra:
+  recipe-maintainers:
+    - conda-forge/r
+
+# Package: goat
+# Type: Package
+# Title: Gene Set Analysis Using the Gene Set Ordinal Association Test
+# Version: 1.1.5
+# Authors@R: person(given = "Frank", family = "Koopmans", role = c("aut", "cre"), email = "ftwkoopmans@gmail.com", comment = c(ORCID = "0000-0002-4973-5732"))
+# Description: Perform gene set enrichment analyses using the Gene set Ordinal Association Test (GOAT) algorithm and visualize your results. Koopmans, F. (2024) <doi:10.1038/s42003-024-06454-5>.
+# URL: https://github.com/ftwkoopmans/goat/
+# License: Apache License (>= 2)
+# Depends: R (>= 4.1.0), dplyr (>= 1.0.3)
+# Imports: tibble (>= 3.0.0), tidyselect (>= 1.2.0), tidyr (>= 1.1.2), data.table (>= 1.14.0), Matrix (>= 1.4-0), readxl (>= 1.4.1), writexl (>= 1.4.1), Rcpp (>= 1.0.9), vctrs (>= 0.3.8), MonoPoly (>= 0.3-10), ggplot2 (>= 3.3.0), pheatmap (>= 1.0.8), treemap (>= 2.4), igraph (>= 1.2.5), ggraph (>= 2.0.0)
+# Suggests: AnnotationDbi, GO.db, org.Hs.eg.db, org.Pt.eg.db, org.Mmu.eg.db, org.Mm.eg.db, org.Rn.eg.db, org.Dr.eg.db, org.Dm.eg.db, org.Ce.eg.db, fgsea, testthat (>= 3.0.0)
+# LinkingTo: Rcpp
+# Encoding: UTF-8
+# LazyData: true
+# LazyDataCompression: xz
+# RoxygenNote: 7.3.3
+# Config/testthat/edition: 3
+# Language: en-US
+# NeedsCompilation: yes
+# Packaged: 2026-02-04 13:35:37 UTC; frank
+# Author: Frank Koopmans [aut, cre] (ORCID: <https://orcid.org/0000-0002-4973-5732>)
+# Maintainer: Frank Koopmans <ftwkoopmans@gmail.com>
+# Repository: CRAN
+# Date/Publication: 2026-02-04 14:10:02 UTC

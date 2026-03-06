@@ -1,0 +1,100 @@
+{% set version = '1.4.3' %}
+{% set posix = 'm2-' if win else '' %}
+
+package:
+  name: r-autothresholdr
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/autothresholdr_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/autothresholdr/autothresholdr_{{ version }}.tar.gz
+  sha256: 591c0203efc7637ce59a6fdf5aeaa6d259e9bc3c146b91a96446a6614271fa94
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  missing_dso_whitelist:
+    - '*/R.dll'        # [win]
+    - '*/Rblas.dll'    # [win]
+    - '*/Rlapack.dll'  # [win]
+
+requirements:
+  build:
+    - {{ compiler('c') }}              # [not win]
+    - {{ compiler('m2w64_c') }}        # [win]
+    - {{ compiler('cxx') }}            # [not win]
+    - {{ compiler('m2w64_cxx') }}      # [win]
+    - {{ posix }}filesystem        # [win]
+    - {{ posix }}make
+    - {{ posix }}sed               # [win]
+    - {{ posix }}coreutils         # [win]
+    - {{ posix }}zip               # [win]
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
+  host:
+    - r-base
+    - r-rcpp >=1.0.11
+    - r-checkmate >=1.9.3
+    - r-ijtiff >=2.2
+    - r-magrittr >=1.5
+    - r-purrr
+    - r-rlang >=0.3.3
+    - r-strex >=1.4.1
+    - r-stringr >=1.4
+  run:
+    - r-base
+    - r-rcpp >=1.0.11
+    - r-checkmate >=1.9.3
+    - r-ijtiff >=2.2
+    - r-magrittr >=1.5
+    - r-purrr
+    - r-rlang >=0.3.3
+    - r-strex >=1.4.1
+    - r-stringr >=1.4
+
+test:
+  commands:
+    - $R -e "library('autothresholdr')"           # [not win]
+    - "\"%R%\" -e \"library('autothresholdr')\""  # [win]
+
+about:
+  home: https://rorynolan.github.io/autothresholdr/, https://github.com/rorynolan/autothresholdr#readme
+  license: GPL-3.0-only
+  summary: Algorithms for automatically finding appropriate thresholds for numerical data, with
+    special functions for thresholding images. Provides the 'ImageJ' 'Auto Threshold'
+    plugin functionality to R users. See <https://imagej.net/plugins/auto-threshold>
+    and Landini et al.  (2017) <DOI:10.1111/jmi.12474>.
+  license_family: GPL3
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+# Type: Package
+
+extra:
+  recipe-maintainers:
+    - conda-forge/r
+
+# Package: autothresholdr
+# Title: An R Port of the 'ImageJ' Plugin 'Auto Threshold'
+# Version: 1.4.3
+# Authors@R: c( person("Rory", "Nolan", , "rorynoolan@gmail.com", role = c("aut", "cre", "trl"), comment = c(ORCID = "0000-0002-5239-4043")), person("Luis", "Alvarez", , "lalvarez@well.ox.ac.uk", role = "ctb", comment = c(ORCID = "0000-0003-1316-1906")), person("Sergi", "Padilla-Parra", , "spadilla@well.ox.ac.uk", role = c("ctb", "ths"), comment = c(ORCID = "0000-0002-8010-9481")), person("Gabriel", "Landini", , "G.Landini@bham.ac.uk", role = c("ctb", "cph"), comment = c(ORCID = "0000-0002-9689-0989")) )
+# Maintainer: Rory Nolan <rorynoolan@gmail.com>
+# Description: Algorithms for automatically finding appropriate thresholds for numerical data, with special functions for thresholding images. Provides the 'ImageJ' 'Auto Threshold' plugin functionality to R users. See <https://imagej.net/plugins/auto-threshold> and Landini et al.  (2017) <DOI:10.1111/jmi.12474>.
+# License: GPL-3
+# URL: https://rorynolan.github.io/autothresholdr/, https://github.com/rorynolan/autothresholdr#readme
+# BugReports: https://github.com/rorynolan/autothresholdr/issues
+# Depends: R (>= 3.5)
+# Imports: checkmate (>= 1.9.3), ijtiff (>= 2.2), magrittr (>= 1.5), purrr, Rcpp (>= 1.0.11), rlang (>= 0.3.3), stats, strex (>= 1.4.1), stringr (>= 1.4)
+# Suggests: covr, dplyr, ggplot2, knitr, rmarkdown, spelling, testthat (>= 3.0), utils
+# LinkingTo: Rcpp (>= 1.0.11)
+# VignetteBuilder: knitr
+# Config/testthat/edition: 3
+# Encoding: UTF-8
+# Language: en-US
+# RoxygenNote: 7.3.2
+# NeedsCompilation: yes
+# Packaged: 2025-09-25 08:52:48 UTC; rnolan
+# Author: Rory Nolan [aut, cre, trl] (ORCID: <https://orcid.org/0000-0002-5239-4043>), Luis Alvarez [ctb] (ORCID: <https://orcid.org/0000-0003-1316-1906>), Sergi Padilla-Parra [ctb, ths] (ORCID: <https://orcid.org/0000-0002-8010-9481>), Gabriel Landini [ctb, cph] (ORCID: <https://orcid.org/0000-0002-9689-0989>)
+# Repository: CRAN
+# Date/Publication: 2025-09-26 22:00:15 UTC
