@@ -1,0 +1,54 @@
+{% set version = "0.1.1" %}
+{% set name = "mim" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/COMBINE-lab/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 3b7add1583b5c279364768415f88662332e0901153e4f571795876f82e6c1175
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('mim', max_pin="x.x") }}
+  script:
+    # The default config.toml has target-cpu=native,
+    # but we don't want that for portable CI builds.
+    # Instead, use x86-64-v3 for x64, apple-m14 (=M1) for macos,
+    # and the default otherwise.
+    - mv .cargo/config-portable.toml .cargo/config.toml
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path .
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}              # [not win]
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - mim --help
+    - mim build --help
+    - mim verify --help
+    - mim unzip --help
+    - mim server --help
+    - mim upload --help
+    - mim download --help
+
+about:
+  home: https://github.com/COMBINE-lab/mim
+  license: BSD-3-Clause
+  summary: A small, auxiliary index to massively improve parallel fastq parsing 
+  license_file:
+    - LICENSE
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - rob-p
+    - RagnarGrootKoerkamp
