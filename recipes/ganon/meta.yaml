@@ -1,23 +1,26 @@
 {% set name = "ganon" %}
-{% set version = "2.1.1" %}
+{% set version = "2.2.0" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  - folder: ganon
-    url: https://github.com/pirovc/{{ name }}/archive/{{ version }}.tar.gz
-    sha256: adba3d1e632a49c9c7b4c7bbf07dfa164cf826465b802e4f9b254a3bc5bc0634
-  - folder: robin-hood-hashing
+  - url: https://github.com/pirovc/{{ name }}/archive/v{{ version }}.tar.gz
+    sha256: f413088fd7233a097358c54b0dbae190898706b42e5eed3129671bbbf47db585
+  - folder: libs/robin-hood-hashing
     url: https://github.com/martinus/robin-hood-hashing/archive/refs/tags/3.11.3.tar.gz
     sha256: dcf2b7fa9ef9dd0c67102d94c28e8df3effbe1845e0ed1f31f4772ca5e857fc4
-    
+
 build:
   number: 0
-  skip: True  # [py<36 or osx]
+  skip: True  # [py<310 or osx]
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
+  ignore_run_exports:
+    - seqan3
 
 requirements:
   build:
@@ -26,33 +29,33 @@ requirements:
     - cmake >=3.5
   host:
     - bzip2
-    - seqan3 ==3.3.0
     - catch2 ==2.*
+    - coreutils
+    - curl
     - cxxopts >=2.2.0
-    - python
-    - pandas >=1.2.0
-    - multitax >=1.3.1
-    - genome_updater >=0.6.4
+    - diffutils
+    - genome_updater >=0.7.0
     - grep
+    - multitax >=1.4.0
+    - pandas >=1.2.0
+    - parameterized >=0.9.0
+    - python
+    - raptor ==3.*
+    - seqan3 ==3.3.0
+    - setuptools
+    - setuptools_scm
+    - zlib
+  run:
     - coreutils
     - curl
     - diffutils
-    - zlib
-    - parameterized >=0.9.0
-    - raptor ==3.*
-  run:
-    - bzip2
-    - python
-    - pandas >=1.2.0
-    - multitax >=1.3.1
-    - genome_updater >=0.6.4
+    - genome_updater >=0.7.0
     - grep
-    - coreutils
-    - curl
-    - diffutils 
-    - zlib
+    - multitax >=1.4.0
+    - pandas >=1.2.0
+    - python
     - raptor ==3.*
-    
+
 test:
   commands:
     - ganon --help
@@ -61,20 +64,19 @@ test:
 
 about:
   home: https://github.com/pirovc/ganon
-  summary: "ganon2 classifies genomic sequences against large sets of references efficiently,"
+  summary: "ganon2 classifies genomic sequences against large sets of references efficiently"
   description: |
-          ganon2 classifies genomic sequences against large sets of references efficiently, 
-          with integrated download and update of databases (refseq/genbank), taxonomic profiling 
+          ganon2 classifies genomic sequences against large sets of references efficiently,
+          with integrated download and update of databases (refseq/genbank), taxonomic profiling
           (ncbi/gtdb), binning and hierarchical classification, customized reporting and more
   license: MIT License
   license_family: MIT
-  license_file: {{ SRC_DIR }}/ganon/LICENSE
+  license_file: LICENSE
 
 extra:
   additional-platforms:
     - linux-aarch64
-
   identifiers:
-    - doi:10.1101/406017
+    - doi:10.1093/nargab/lqaf094
   recipe-maintainers:
     - pirovc

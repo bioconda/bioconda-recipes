@@ -1,26 +1,55 @@
 {% set name = "SeqAn" %}
-{% set version = "2.4.0" %}
-{% set sha256 = "870dee2d758853a322dd561eb584fe66ddf6981e126c303c7c81c95e5495f153" %}
+{% set version = "2.5.2" %}
+{% set sha256 = "03baf2f4927b0ce3253fe5187a06c6b52dfb8c1059bfd17ce7d860f3dc997217" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: http://packages.seqan.de/seqan-library/seqan-library-{{ version }}.zip
+  url: https://github.com/seqan/seqan/releases/download/seqan-v{{ version }}/seqan-library-{{ version }}.tar.xz
   sha256: {{ sha256 }}
 
 build:
   noarch: generic
-  number: 2
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('seqan', max_pin="x") }}
+
+requirements:
+  run_constrained:
+    - cmake >=3.12
+    - bzip2 *
+    - zlib *
 
 test:
-  commands:
-    - test -e ${PREFIX}/include/seqan/align.h
-    - test -e ${PREFIX}/share/cmake/seqan/seqan-config.cmake
-    - test -e ${PREFIX}/share/pkgconfig/seqan-2.pc
+  files:
+    - test/CMakeLists.txt
+    - test/seqan_package_test.cpp
+  requires:
+    - make
+    - cmake
+    - {{ compiler('cxx') }}
+    - bzip2
+    - zlib
 
 about:
-  home: http://www.seqan.de/
-  license: BSD-3-Clause
-  summary: 'SeqAn is an open source C++ library of efficient algorithms and data structures for the analysis of sequences with the focus on biological data.'
+  home: "https://www.seqan.de"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: "share/doc/seqan/LICENSE"
+  summary: "SeqAn is a C++ template library for the analysis of biological sequences."
+  description: |
+    SeqAn is an open source C++ library of efficient algorithms and data
+    structures for the analysis of sequences with the focus on biological data.
+    Our library applies a unique generic design that guarantees high
+    performance, generality, extensibility, and integration with other
+    libraries. SeqAn is easy to use and simplifies the development of new
+    software tools with a minimal loss of performance.
+  dev_url: "https://github.com/seqan/seqan"
+  doc_url: "https://seqan.readthedocs.io/en/seqan-v{{ version }}"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
