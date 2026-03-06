@@ -21,6 +21,7 @@ DATA_DEST=$PREFIX/share/${PKG_NAME}/data_tables
 mkdir -p $DATA_DEST
 cp -r ./data_tables/* $DATA_DEST/
 
+
 # Script pour définir DATAPATH automatiquement à l'activation de l'env
 mkdir -p $PREFIX/etc/conda/activate.d
 echo "export DATAPATH=$DATA_DEST/" > $PREFIX/etc/conda/activate.d/rnastructure_path.sh
