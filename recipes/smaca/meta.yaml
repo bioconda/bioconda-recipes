@@ -1,5 +1,5 @@
 {% set name = "smaca" %}
-{% set version = "1.2.3" %}
+{% set version = "1.2.4rc11" %}
 
 
 package:
@@ -8,16 +8,18 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 1a0750ef2c58aeb997806be2c5f5c6952d8c13f95b4f4fff880e184a4fab2d43
+  sha256: 7d477cb72b5e5afdff14dcde8e9bda9ea661f84d50bba6dc570ff543dd1cc913
 
 build:
-  number: 6
-  run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
-  skip: true   # [osx]
+  number: 0
+  skip: true   # [py2k or osx]
   entry_points:
     - smaca = smaca.cli:main
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -26,6 +28,8 @@ requirements:
   host:
     - pip
     - python
+    - setuptools
+    - setuptools-scm
     - cython
     - numpy
     - pysam
@@ -55,3 +59,4 @@ extra:
     extended-base: True
   recipe-maintainers:
     - loucerac
+    - erdanieee
