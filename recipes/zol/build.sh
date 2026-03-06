@@ -16,7 +16,7 @@ chmod +x ${PREFIX}/bin/splitDiamondResultsForFai
 
 # setup gravis from a pinned Git commit to ensure reproducible builds
 # We point pip directly to the git repository 
-curl -sL https://github.com/raufs/gravis/archive/refs/tags/v0.1.1.tar.gz | sha256sum | grep -q "d8a8b09a23522ab746eea740adc05f22cb6a1d5190c1b64ee4f304e62b37268b" && echo "Matching SHA256 for gravis" || echo "Mismatch SHA256 for gravis" && exit 1
+curl -sL https://github.com/raufs/gravis/archive/refs/tags/v0.1.1.tar.gz | sha256sum | grep -q "d8a8b09a23522ab746eea740adc05f22cb6a1d5190c1b64ee4f304e62b37268b  -" && echo "Matching SHA256 for gravis" || echo "Mismatch SHA256 for gravis" && exit 1
 $PYTHON -m pip install https://github.com/raufs/gravis/archive/refs/tags/v1.0.0.tar.gz --upgrade --no-deps --no-build-isolation -vvv
 
 # create folder for database download
