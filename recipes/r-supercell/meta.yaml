@@ -1,0 +1,118 @@
+{% set version = '1.1' %}
+{% set posix = 'm2-' if win else '' %}
+
+package:
+  name: r-supercell
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/SuperCell_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/SuperCell/SuperCell_{{ version }}.tar.gz
+  sha256: f4dbad3ce11647295a702a000552bfcbe29a46d021efab65a0e188b098f132f3
+
+build:
+  number: 0
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  missing_dso_whitelist:
+    - '*/R.dll'        # [win]
+    - '*/Rblas.dll'    # [win]
+    - '*/Rlapack.dll'  # [win]
+
+requirements:
+  build:
+    - {{ posix }}zip               # [win]
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
+  host:
+    - r-base
+    - r-hmisc
+    - r-matrix
+    - r-rann
+    - r-rtsne
+    - r-corpcor
+    - r-dbscan
+    - r-entropy
+    - r-ggplot2
+    - r-igraph
+    - r-irlba
+    - r-matrixstats
+    - r-patchwork
+    - r-plotfunctions
+    - r-plyr
+    - r-proxy
+    - r-rlang
+    - r-scales
+    - r-umap
+    - r-weights
+  run:
+    - r-base
+    - r-hmisc
+    - r-matrix
+    - r-rann
+    - r-rtsne
+    - r-corpcor
+    - r-dbscan
+    - r-entropy
+    - r-ggplot2
+    - r-igraph
+    - r-irlba
+    - r-matrixstats
+    - r-patchwork
+    - r-plotfunctions
+    - r-plyr
+    - r-proxy
+    - r-rlang
+    - r-scales
+    - r-umap
+    - r-weights
+
+test:
+  commands:
+    - $R -e "library('SuperCell')"           # [not win]
+    - "\"%R%\" -e \"library('SuperCell')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=SuperCell
+  license: GPL-3.0-only
+  summary: Aggregates large single-cell data into metacell dataset by merging together gene expression
+    of very similar cells. 'SuperCell' uses 'velocyto.R' <doi:10.1038/s41586-018-0414-6>
+    <https://github.com/velocyto-team/velocyto.R> for RNA velocity and 'WeightedCluster'
+    <doi:10.12682/lives.2296-1658.2013.24> <https://mephisto.unige.ch/weightedcluster/>
+    for weighted clustering on metacells. We also recommend installing 'scater' Bioconductor
+    package <doi:10.18129/B9.bioc.scater> <https://bioconductor.org/packages/release/bioc/html/scater.html>.
+  license_family: GPL3
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+# biocViews: Software
+
+extra:
+  recipe-maintainers:
+    - conda-forge/r
+
+# Package: SuperCell
+# Type: Package
+# Title: Simplification of scRNA-Seq Data by Merging Together Similar Cells
+# Version: 1.1
+# Authors@R: c(person("Mariia","Bilous",role="aut",email = "mariia.bilous@unil.ch"),person("Matei","Teleman",role="cre",email = "matei.teleman@unil.ch"))
+# Description: Aggregates large single-cell data into metacell dataset by merging together gene expression of very similar cells. 'SuperCell' uses 'velocyto.R' <doi:10.1038/s41586-018-0414-6> <https://github.com/velocyto-team/velocyto.R> for RNA velocity and 'WeightedCluster' <doi:10.12682/lives.2296-1658.2013.24> <https://mephisto.unige.ch/weightedcluster/> for weighted clustering on metacells. We also recommend installing 'scater' Bioconductor package <doi:10.18129/B9.bioc.scater> <https://bioconductor.org/packages/release/bioc/html/scater.html>.
+# License: GPL-3
+# BugReports: https://github.com/GfellerLab/SuperCell/issues
+# Encoding: UTF-8
+# LazyData: true
+# LazyDataCompression: xz
+# Additional_repositories: https://mteleman.github.io/drat2
+# Imports: igraph, RANN, corpcor, weights, Hmisc, Matrix, matrixStats, plyr, irlba, grDevices, patchwork, ggplot2, umap, entropy, Rtsne, dbscan, scales, plotfunctions, proxy, methods, rlang,
+# RoxygenNote: 7.3.3
+# Suggests: SingleCellExperiment, SummarizedExperiment, cowplot, scater, Seurat, knitr, rmarkdown, remotes, bluster, velocyto.R, WeightedCluster, testthat (>= 3.0.0)
+# Depends: R (>= 4.0.0)
+# VignetteBuilder: knitr
+# Config/testthat/edition: 3
+# NeedsCompilation: no
+# Packaged: 2025-12-16 10:49:45 UTC; admin
+# Author: Mariia Bilous [aut], Matei Teleman [cre]
+# Maintainer: Matei Teleman <matei.teleman@unil.ch>
+# Repository: CRAN
+# Date/Publication: 2025-12-16 12:20:07 UTC

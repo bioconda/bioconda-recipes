@@ -1,0 +1,76 @@
+{% set version = '0.4.0' %}
+{% set posix = 'm2-' if win else '' %}
+
+package:
+  name: r-codingmatrices
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/codingMatrices_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/codingMatrices/codingMatrices_{{ version }}.tar.gz
+  sha256: 4f3106639fee03118e4e78f9a38e44f7221ead34c213b789c7ed43e1f992a414
+
+build:
+  number: 0
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  missing_dso_whitelist:
+    - '*/R.dll'        # [win]
+    - '*/Rblas.dll'    # [win]
+    - '*/Rlapack.dll'  # [win]
+
+requirements:
+  build:
+    - {{ posix }}zip               # [win]
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
+  host:
+    - r-base
+    - r-matrix
+    - r-fractional
+  run:
+    - r-base
+    - r-matrix
+    - r-fractional
+
+test:
+  commands:
+    - $R -e "library('codingMatrices')"           # [not win]
+    - "\"%R%\" -e \"library('codingMatrices')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=codingMatrices
+  license: GPL-2.0-only
+  summary: A collection of coding functions as alternatives to the standard functions in the
+    stats package, which have names starting with 'contr.'.  Their main advantage is
+    that they provide a consistent method for defining marginal effects in factorial
+    models.  In a simple one-way ANOVA model the intercept term is always the simple
+    average of the class means.
+  license_family: GPL2
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
+extra:
+  recipe-maintainers:
+    - conda-forge/r
+
+# Package: codingMatrices
+# Type: Package
+# Title: Alternative Factor Coding Matrices for Linear Model Formulae
+# Version: 0.4.0
+# Author: Bill Venables
+# Maintainer: Bill Venables <Bill.Venables@gmail.com>
+# Description: A collection of coding functions as alternatives to the standard functions in the stats package, which have names starting with 'contr.'.  Their main advantage is that they provide a consistent method for defining marginal effects in factorial models.  In a simple one-way ANOVA model the intercept term is always the simple average of the class means.
+# Depends: R (>= 3.5.0), stats
+# Imports: Matrix, methods, fractional, utils
+# Suggests: knitr, MASS, dplyr, car, ggplot2, xtable
+# License: GPL (>= 2)
+# Encoding: UTF-8
+# RoxygenNote: 7.2.3
+# VignetteBuilder: knitr
+# NeedsCompilation: no
+# Packaged: 2023-02-01 07:23:22 UTC; bill
+# Repository: CRAN
+# Date/Publication: 2023-02-01 08:40:02 UTC

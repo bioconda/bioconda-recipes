@@ -1,0 +1,101 @@
+{% set version = '0.4-2.26' %}
+{% set posix = 'm2-' if win else '' %}
+
+package:
+  name: r-mpath
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/mpath_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/mpath/mpath_{{ version }}.tar.gz
+  sha256: 795f03c8a8f586e69ecd3540b1d67f7c28ca237b97dd0317886eda3fc765f5df
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  missing_dso_whitelist:
+    - '*/R.dll'        # [win]
+    - '*/Rblas.dll'    # [win]
+    - '*/Rlapack.dll'  # [win]
+
+requirements:
+  build:
+    - {{ compiler('c') }}              # [not win]
+    - {{ compiler('m2w64_c') }}        # [win]
+    - {{ compiler('fortran') }}        # [not win]
+    - {{ compiler('m2w64_fortran') }}  # [win]
+    - {{ posix }}filesystem        # [win]
+    - {{ posix }}make
+    - {{ posix }}sed               # [win]
+    - {{ posix }}coreutils         # [win]
+    - {{ posix }}zip               # [win]
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
+  host:
+    - r-base
+    - r-mass
+    - r-weightsvm
+    - r-bst
+    - r-doparallel
+    - r-foreach
+    - r-glmnet
+    - r-numderiv
+    - r-pscl
+  run:
+    - r-base
+    - r-mass
+    - r-weightsvm
+    - r-bst
+    - r-doparallel
+    - r-foreach
+    - r-glmnet
+    - r-numderiv
+    - r-pscl
+
+test:
+  commands:
+    - $R -e "library('mpath')"           # [not win]
+    - "\"%R%\" -e \"library('mpath')\""  # [win]
+
+about:
+  home: https://github.com/zhuwang46/mpath
+  license: GPL-2.0-only
+  summary: Algorithms compute robust estimators for loss functions in the concave convex (CC)
+    family by the iteratively reweighted convex optimization (IRCO), an extension of
+    the iteratively reweighted least squares (IRLS). The IRCO reduces the weight of
+    the observation that leads to a large loss; it also provides weights to help identify
+    outliers. Applications include robust (penalized) generalized linear models and
+    robust support vector machines. The package also contains penalized Poisson, negative
+    binomial, zero-inflated Poisson, zero-inflated negative binomial regression models
+    and robust models with non-convex loss functions. Wang et al. (2014) <doi:10.1002/sim.6314>,
+    Wang et al. (2015) <doi:10.1002/bimj.201400143>, Wang et al. (2016) <doi:10.1177/0962280214530608>,
+    Wang (2021) <doi:10.1007/s11749-021-00770-2>, Wang (2024) <doi:10.1111/anzs.12409>.
+  license_family: GPL2
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
+extra:
+  recipe-maintainers:
+    - conda-forge/r
+
+# Package: mpath
+# Title: Regularized Linear Models
+# Version: 0.4-2.26
+# Date: 2024-06-27
+# Author: Zhu Wang, with contributions from Achim Zeileis, Simon Jackman, Brian Ripley, and Patrick Breheny
+# Maintainer: Zhu Wang <zwang145@uthsc.edu>
+# Description: Algorithms compute robust estimators for loss functions in the concave convex (CC) family by the iteratively reweighted convex optimization (IRCO), an extension of the iteratively reweighted least squares (IRLS). The IRCO reduces the weight of the observation that leads to a large loss; it also provides weights to help identify outliers. Applications include robust (penalized) generalized linear models and robust support vector machines. The package also contains penalized Poisson, negative binomial, zero-inflated Poisson, zero-inflated negative binomial regression models and robust models with non-convex loss functions. Wang et al. (2014) <doi:10.1002/sim.6314>, Wang et al. (2015) <doi:10.1002/bimj.201400143>, Wang et al. (2016) <doi:10.1177/0962280214530608>, Wang (2021) <doi:10.1007/s11749-021-00770-2>, Wang (2024) <doi:10.1111/anzs.12409>.
+# Depends: R (>= 3.5.0), methods, glmnet
+# Imports: MASS, pscl, numDeriv, foreach, doParallel, bst, WeightSVM
+# Suggests: zic, R.rsp, knitr, rmarkdown, openxlsx, e1071, SparseM, slam
+# VignetteBuilder: R.rsp, knitr
+# License: GPL-2
+# URL: https://github.com/zhuwang46/mpath
+# BugReports: https://github.com/zhuwang46/mpath
+# Packaged: 2024-06-27 20:57:41 UTC; zhu
+# NeedsCompilation: yes
+# RoxygenNote: 7.1.1
+# Repository: CRAN
+# Date/Publication: 2024-06-27 22:00:02 UTC
