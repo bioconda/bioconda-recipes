@@ -1,0 +1,51 @@
+{% set name = "bam-tide" %}
+{% set version = "1.2.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/stela2502/bam_tide/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ca06d1ae22eb6a699784cfabe486f20129ab9078822524f33f4bb5445bba7b67 
+
+build:
+  number: 0
+  skip: true  # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - pkg-config
+    - cargo-bundle-licenses
+  host:
+    - htslib
+    - zlib
+  run:
+    - htslib
+    - zlib
+
+test:
+  commands:
+    - bam-coverage --help
+    - bam-subset-tag --help
+
+about:
+  home: https://github.com/stela2502/bam_tide
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Fast BAM to BigWig coverage tool written in Rust
+  description: |
+    bam_tide provides a high-performance implementation of BAM coverage
+    calculation and BigWig generation, serving as a fast alternative to
+    deepTools bamCoverage.
+  dev_url: https://github.com/stela2502/bam_tide
+
+extra:
+  recipe-maintainers:
+    - stela2502
