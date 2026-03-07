@@ -39,4 +39,4 @@ unset ZOL_DATA_PATH
 unset ZOL_EXEC_PATH
 EOF
 
-echo "Users of zol, please note, we use an unofficial fork of gravis (v1.0.0; https://github.com/raufs/gravis), not the original/official gravis (https://github.com/robert-haas/gravis)"
+echo "Users of zol, please note, we use an unofficial fork of gravis (v0.1.1; https://github.com/raufs/gravis), not the original/official gravis (https://github.com/robert-haas/gravis)"
