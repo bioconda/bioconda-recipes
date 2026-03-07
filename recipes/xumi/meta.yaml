@@ -1,0 +1,47 @@
+{% set name = "xumi" %}
+{% set version = "1.0.0" %}
+{% set python_min = "3.10" %}
+{% set pysam_min = "0.20" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/fravadona/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: ea2b8bfc3ad293ea31544733208ae2d992a04f5badefcf468f569175eaff22ea
+
+build:
+  number: 0
+  noarch: generic
+  script: {{ PYTHON }} -m pip install . -vv --no-deps
+  run_exports:
+    - {{ pin_subpackage("xumi", max_pin="x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - flit-core >=3.4
+  run:
+    - python >={{ python_min }}
+    - bioconda::pysam >={{ pysam_min }}
+
+test:
+  requires:
+    - python >={{ python_min }}
+    - bioconda::pysam >={{ pysam_min }}
+  imports:
+    - xumi
+  commands:
+    - xumi --help
+
+about:
+  home: https://github.com/fravadona/{{ name }}
+  summary: 'Extract subsequences from read alignments at specified genomic regions with full CIGAR awareness'
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - Fravadona
