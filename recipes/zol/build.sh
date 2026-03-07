@@ -14,6 +14,13 @@ chmod +x ${PREFIX}/bin/runRBH
 chmod +x ${PREFIX}/bin/splitDiamondResults
 chmod +x ${PREFIX}/bin/splitDiamondResultsForFai
 
+# setup gravis from a pinned Git commit to ensure reproducible builds
+# We point pip directly to the git repository 
+curl -sL https://github.com/raufs/gravis/archive/refs/tags/v0.1.1.tar.gz -o gravis_v0.1.1.tar.gz
+shasum -a 256 gravis_v0.1.1.tar.gz | (grep -q "d8a8b09a23522ab746eea740adc05f22cb6a1d5190c1b64ee4f304e62b37268b" && echo "Matching SHA256 for gravis") || (echo "Mismatch SHA256 for gravis" && exit 1)
+$PYTHON -m pip install gravis_v0.1.1.tar.gz --upgrade --no-deps --no-build-isolation -vvv
+rm gravis_v0.1.1.tar.gz
+
 # create folder for database download
 ZOL_DATA_PATH="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}/db"
 ZOL_EXEC_PATH="${PREFIX}/bin"
@@ -31,3 +38,5 @@ cat <<EOF >> ${PREFIX}/etc/conda/deactivate.d/zol.sh
 unset ZOL_DATA_PATH
 unset ZOL_EXEC_PATH
 EOF
+
+echo "Users of zol, please note, we use an unofficial fork of gravis (v0.1.1; https://github.com/raufs/gravis), not the original/official gravis (https://github.com/robert-haas/gravis)"
