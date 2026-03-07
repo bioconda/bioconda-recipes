@@ -1,0 +1,56 @@
+{% set name = "metagenomescope" %}
+{% set version = "1.1.0" %}
+{% set sha256 = "861c9eb31be6a6ac5507bd2a6a32276ef3b19b12dba8859af7a361be02b3d089" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "{{ sha256 }}"
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - "{{ pin_subpackage('metagenomescope', max_pin='x') }}"
+
+requirements:
+  host:
+    - python >=3.8
+    - hatchling
+    - pip
+    - graphviz
+    - pygraphviz
+  run:
+    - python >=3.8
+    - graphviz
+    - pygraphviz
+    - click
+    - networkx
+    - gfapy
+    - pyfastg >=0.2.0
+    - pandas
+    - dash-bootstrap-components
+    - dash-ag-grid >=33.3.3
+    - dash
+    - plotly
+
+test:
+  commands:
+    - mgsc --version
+  imports:
+    - metagenomescope
+
+about:
+  home: "https://github.com/marbl/MetagenomeScope"
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: COPYING.txt
+  summary: "Visualization tool for (meta)genome assembly graphs"
+
+extra:
+  recipe-maintainers:
+    - fedarko
