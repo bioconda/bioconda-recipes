@@ -1,0 +1,67 @@
+{% set name = "csi-ssu" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/AlexTiceLab/CSI-SSU/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: c3c0107aa0fff722b96a9f4de265bdb94962d7be45487dc74bb20c0168c83d91
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('csi-ssu', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+    - snakemake-minimal >=7.0
+    - blast >=2.12
+    - mafft >=7.0
+    - pplacer >=1.0
+    - busco >=5.0
+    - biopython >=1.79
+    - pandas >=1.3
+    - matplotlib-base >=3.4
+    - ete3 >=3.1
+    - numpy >=1.20
+    - scipy >=1.7
+
+test:
+  imports:
+    - csi_ssu
+    - csi_ssu.cli
+    - csi_ssu.runner
+  commands:
+    - csi-ssu --help
+    - csi-ssu --version
+
+about:
+  home: https://github.com/AlexTiceLab/CSI-SSU
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: CSI SSU screening tool for genomic and transcriptomic data
+  description: |
+    A command-line tool for screening SSU (Small Subunit ribosomal RNA) sequences 
+    in genomic and transcriptomic data. This tool helps identify and classify SSU 
+    sequences using phylogenetic placement in SSU reference packages built from PR2 
+    via pplacer.
+    
+    Features include automated SSU screening using BLAST, MAFFT, and pplacer, 
+    phylogenetic placement for contamination screening and approximate taxonomic 
+    classification, and a command-line interface for easy integration into pipelines.
+  doc_url: https://github.com/AlexTiceLab/CSI-SSU/blob/main/README.md
+  dev_url: https://github.com/AlexTiceLab/CSI-SSU
+
+extra:
+  recipe-maintainers:
+    - robertejones
