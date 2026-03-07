@@ -1,26 +1,36 @@
 #!/bin/bash
-set -exo pipefail
+set -euo pipefail
 
-# Copy all source files from SRC_DIR into the bin folder
-# This will copy the python scripts and the 'files' directory
-mkdir -p "$PREFIX/bin/beacon2-ri-tools/"
-cp -r "$SRC_DIR"/{*.py,scripts,ref_schemas,conf,files,validators} "$PREFIX/bin/beacon2-ri-tools/"
+# Create installation directory inside conda prefix
+mkdir -p "$PREFIX/bin/beacon2-ri-tools"
 
-# List of python script names
-scripts=("analyses_csv.py" "biosamples_csv.py" "cohorts_csv.py" "convert_csvTObff.py" "datasets_csv.py" "genomicVariations_csv.py" "genomicVariations_postprocessing.py" "genomicVariations_vcf.py" "individuals_csv.py" "individuals_to_cohorts_csv.py" "remove_dataset.py" "runs_csv.py" "update_record.py")
+# Copy required project structure
+cp -r "$SRC_DIR"/{*.py,ref_schemas,conf,files,validators} \
+    "$PREFIX/bin/beacon2-ri-tools/"
 
-# Loop through each script name
+# Ensure package recognition
+touch "$PREFIX/bin/beacon2-ri-tools/validators/__init__.py"
+
+# List of supported v2 entrypoints
+scripts=(
+  "csv_to_bff.py"
+  "genomicVariations_vcf.py"
+  "genomicVariations_postprocessing.py"
+  "individuals_to_cohorts_csv.py"
+  "remove_dataset.py"
+  "update_record.py"
+)
+
+# Create wrapper scripts
 for script in "${scripts[@]}"; do
-  # Define the wrapper script path
   WRAPPER="$PREFIX/bin/${script}"
 
-  # Create the wrapper script that changes directory before running the Python script
-  # This ensures that relative paths work correctly.
-  echo '#!/bin/bash' > "$WRAPPER"
-  echo "cd \"\$CONDA_PREFIX/bin/beacon2-ri-tools/\"" >> "$WRAPPER"
-  echo "python \"./${script}\" \"\$@\"" >> "$WRAPPER"
+  cat <<EOF > "$WRAPPER"
+#!/bin/bash
+cd "\$CONDA_PREFIX/bin/beacon2-ri-tools"
+exec python "./${script}" "\$@"
+EOF
 
-  # Make the wrapper and the original python script executable
   chmod +x "$WRAPPER"
   chmod +x "$PREFIX/bin/beacon2-ri-tools/${script}"
 done
