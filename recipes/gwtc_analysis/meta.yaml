@@ -1,0 +1,70 @@
+{% set name = "gwtc_analysis" %}
+{% set version = "0.3.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/danielsentenac/gwtc_analysis/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 1499e81b39de25d459c94732c0112f986620ae2a902c5999543c2bf9bacfee5c
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('gwtc_analysis', max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.10,<3.13
+    - pip
+    - setuptools >=68
+  run:
+    - python >=3.10,<3.13
+    - astropy
+    - gwosc
+    - gwpy
+    - h5py
+    - healpy
+    - ligo.skymap
+    - matplotlib-base
+    - minio
+    - numpy
+    - pandas
+    - pesummary
+    - pycbc
+    - pyseobnr
+    - pyyaml
+    - requests
+    - scipy
+    - tqdm
+
+test:
+  imports:
+    - gwtc_analysis
+  commands:
+    - gwtc_analysis --help
+    - gwtc_analysis search_skymaps -h
+    - gwtc_analysis event_selection -h
+    - gwtc_analysis catalog_statistics -h
+    - gwtc_analysis parameters_estimation -h
+  requires:
+    - pip
+
+about:
+  home: https://github.com/danielsentenac/gwtc_analysis
+  summary: GWTC analysis for skymap search, event selection, catalog statistics, and PE reporting
+  description: >
+    gwtc_analysis provides command-line workflows for public LVK catalog analysis:
+    sky localization searches around RA/Dec, event selection from physical cuts,
+    catalog-level statistics, and parameter-estimation report generation.
+  license: MIT
+  license_file: LICENSE
+  doc_url: https://github.com/danielsentenac/gwtc_analysis/blob/main/README.md
+  dev_url: https://github.com/danielsentenac/gwtc_analysis
+
+extra:
+  recipe-maintainers:
+    - danielsentenac
