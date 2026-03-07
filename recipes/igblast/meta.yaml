@@ -8,26 +8,28 @@ about:
   home: http://www.ncbi.nlm.nih.gov/projects/igblast/
   license: Public Domain and others
   license_file:
-    - c++/include/misc/jsonwrapp/rapidjson11/license.txt  # [linux]
-    - c++/include/util/bitset/license.txt                 # [linux]
-    - c++/scripts/projects/blast/LICENSE                  # [linux]
-    - c++/scripts/projects/igblast/LICENSE                # [linux]
-    - c++/src/util/compress/bzip2/LICENSE                 # [linux]
-    - c++/src/util/lmdb/LICENSE                           # [linux]
-    - c++/src/util/lmdbxx/UNLICENSE                       # [linux]
-    - LICENSE                                             # [osx]
+    - c++/include/misc/jsonwrapp/rapidjson11/license.txt
+    - c++/include/util/bitset/license.txt
+    - c++/scripts/projects/blast/LICENSE
+    - c++/scripts/projects/igblast/LICENSE
+    - c++/src/util/compress/bzip2/LICENSE
+    - c++/src/util/lmdb/LICENSE
+    - c++/src/util/lmdbxx/UNLICENSE
   summary: A tool for analyzing immunoglobulin (IG) and T cell receptor (TR) sequences
 
 source:
-  url: ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/{{ version }}/ncbi-igblast-{{ version }}-src.tar.gz  # [linux]
-  sha256: a04eb195087447cf42e673401ae2d9f6ef8414b34f1534724a6953f41224df68 # [linux]
-  url: ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/{{ version }}/ncbi-igblast-{{ version }}-x64-macosx.tar.gz  # [osx]
-  sha256: b8a0034642b5dbef7f41c7fcfbb4bc035d2c5877d3e987af43605ea8e3d55c40 # [osx]
+  url: ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/{{ version }}/ncbi-igblast-{{ version }}-src.tar.gz
+  sha256: a04eb195087447cf42e673401ae2d9f6ef8414b34f1534724a6953f41224df68
   patches:
-    - shared_vdb.patch  # [linux]
+    - shared_vdb.patch
+    - configurellvm.patch
+    - get_species_taxids.patch
+    - update_configsub.patch
+    - project_tree_builder.patch
+    - configure.patch
 
 build:
-  number: 1
+  number: 2
   run_exports:
   - {{ pin_subpackage('igblast', max_pin="x") }}
 
@@ -40,9 +42,8 @@ requirements:
   host:
     - zlib
     - bzip2
-    - gnutls  # [osx]
-    - libidn11
-    - lzo # [osx]
+    - libidn11  #[osx] #[x86]
+    - libidn11  #[linux]
     - libsqlite >=3
     - ncbi-vdb >=2.9.6
   run:
@@ -53,10 +54,13 @@ test:
   commands:
     - igblastn -h
     - igblastp -h
-    - makeblastdb -h
+    - makeigblastdb -h
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - linux-x86
+    - osx-arm64
+    - osx-x86
   identifiers:
     - biotools:igblast
