@@ -11,6 +11,7 @@ export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig"
 export CMAKE_THREAD_LIBS_INIT="-lpthread"
 export CMAKE_USE_PTHREADS_INIT=ON
 export CMAKE_HAVE_LIBC_PTHREAD=ON
+export MACOSX_DEPLOYMENT_TARGET="12.0"
 
 if [[ "${target_platform}" == "linux-"* ]]; then
     export CONFIG_ARGS=""
