@@ -1,0 +1,55 @@
+{% set name = "specimmune" %}
+{% set version = "0.0.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/deepomicslab/SpecImmune/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b26b9314b76720abd7f47aab34188f7b83f7dd61a89ee27e5c37b6c8fabf2a55  # Run: curl -sL https://github.com/deepomicslab/SpecImmune/archive/refs/tags/v0.0.2.tar.gz | sha256sum
+
+build:
+  number: 0
+  noarch: generic
+  # build.sh in recipe dir is used automatically
+
+requirements:
+  host:
+    - python
+  run:
+    - python
+    - pysam
+    - minimap2
+    - samtools
+    - bwa
+    - bcftools
+    - biopython
+    - numpy
+    - pandas
+    - truvari
+    - bwapy
+    # Pip-only (install if needed): cutesv, genomeview, intervaltree, pyabpoa, dysgu
+
+test:
+  commands:
+    - specimmune --help
+    - specimmune-make-db --help
+  files:
+    - share/specimmune/scripts/main.py
+    - share/specimmune/scripts/make_db.py
+
+about:
+  home: https://github.com/deepomicslab/SpecImmune
+  license: MIT
+  license_file: LICENSE
+  summary: Typing of polymorphic immune genes (HLA, KIR, IG, TCR, CYP) from long-read data
+  description: |
+    SpecImmune types HLA, KIR, IG, TCR, and CYP from long-read sequencing data.
+    Build the allele database with specimmune-make-db, then run specimmune for typing.
+
+extra:
+  identifiers:
+    - biotools: specimmune
+  maintainers:
+    - deepomicslab
