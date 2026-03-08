@@ -11,7 +11,6 @@ export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig"
 export CMAKE_THREAD_LIBS_INIT="-lpthread"
 export CMAKE_USE_PTHREADS_INIT=ON
 export CMAKE_HAVE_LIBC_PTHREAD=ON
-export MACOSX_DEPLOYMENT_TARGET="12.0"
 
 if [[ "${target_platform}" == "linux-"* ]]; then
     export CONFIG_ARGS=""
@@ -25,7 +24,6 @@ cmake -S . -B build -G Ninja \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" \
     -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET} \
     -DTHREADS_PREFER_PTHREAD_FLAG=ON \
     -DBUILD_SHARED_LIBS=ON \
     -DBUILD_TESTING=OFF \
