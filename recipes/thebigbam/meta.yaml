@@ -14,6 +14,10 @@ build:
   skip: true  # [win or py<310 or py>313]
   run_exports:
     - {{ pin_subpackage("thebigbam", max_pin="x.x") }}
+  script_env:
+    - HTS_SYS_USE_SYSTEM_HTSLIB=1
+    - HTS_SYS_DISABLE_BINDGEN=1
+    - HTSLIB_DIR=$PREFIX
   script:
     - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
 
@@ -23,10 +27,12 @@ requirements:
     - {{ compiler('cxx') }}
     - {{ compiler('rust') }}
     - clangdev
+    - pkg-config
+    - pip
   host:
     - python >=3.10,<3.14
-    - pip
     - maturin >=1.4,<2.0
+    - htslib <1.19
   run:
     - python >=3.10,<3.14
     - bokeh >=3.0
