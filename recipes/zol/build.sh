@@ -2,8 +2,7 @@
 set -xe
 mkdir -p ${PREFIX}/bin
 
-# setup gravis from a pinned Git commit to ensure reproducible builds
-# We point pip directly to the git repository 
+# setup gravis from forked version
 cd gravis_fork_folder/
 $PYTHON -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
 
