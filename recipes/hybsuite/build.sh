@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu
 
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/share/${PKG_NAME}/bin
