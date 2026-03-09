@@ -7,6 +7,8 @@ mkdir -p "$PREFIX/bin/beacon2-ri-tools"
 # Copy required project structure
 cp -r "$SRC_DIR"/{*.py,ref_schemas,conf,files,validators} \
     "$PREFIX/bin/beacon2-ri-tools/"
+mkdir -p "$PREFIX/bin/beacon2-ri-tools/validators/update"
+cp -r "$SRC_DIR"/extra_update/* "$PREFIX/bin/beacon2-ri-tools/validators/update/"
 
 # Ensure package recognition
 touch "$PREFIX/bin/beacon2-ri-tools/validators/__init__.py"
