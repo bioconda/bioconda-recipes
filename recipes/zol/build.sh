@@ -5,7 +5,7 @@ mkdir -p ${PREFIX}/bin
 # setup gravis from a pinned Git commit to ensure reproducible builds
 # We point pip directly to the git repository 
 cd gravis_fork/
-$PYTHON -m pip install . --upgrade --no-deps --no-build-isolation -vvv
+$PYTHON -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
 
 cd ../zol/
 $PYTHON -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
