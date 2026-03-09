@@ -4,10 +4,10 @@ mkdir -p ${PREFIX}/bin
 
 # setup gravis from a pinned Git commit to ensure reproducible builds
 # We point pip directly to the git repository 
-cd gravis_fork/
+cd gravis_fork_folder/
 $PYTHON -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
 
-cd ../zol/
+cd ../zol_folder/
 $PYTHON -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
 
 export LDFLAGS=
