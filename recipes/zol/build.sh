@@ -1,16 +1,13 @@
 #!/bin/bash
 set -xe
+mkdir -p ${PREFIX}/bin
 
 # setup gravis from a pinned Git commit to ensure reproducible builds
 # We point pip directly to the git repository 
 cd gravis_fork/
-curl -sL https://github.com/raufs/gravis/archive/refs/tags/v0.1.1.tar.gz -o gravis_v0.1.1.tar.gz
-shasum -a 256 gravis_v0.1.1.tar.gz | (grep -q "d8a8b09a23522ab746eea740adc05f22cb6a1d5190c1b64ee4f304e62b37268b" && echo "Matching SHA256 for gravis") || (echo "Mismatch SHA256 for gravis" && exit 1)
-$PYTHON -m pip install gravis_v0.1.1.tar.gz --upgrade --no-deps --no-build-isolation -vvv
+$PYTHON -m pip install . --upgrade --no-deps --no-build-isolation -vvv
 
 cd ../zol/
-mkdir -p ${PREFIX}/bin
-
 $PYTHON -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
 
 export LDFLAGS=
