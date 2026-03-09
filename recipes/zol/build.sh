@@ -3,6 +3,7 @@ set -xe
 mkdir -p ${PREFIX}/bin
 
 # setup gravis from forked version
+# pip installation configuration based on conda-forge recipe: https://github.com/conda-forge/gravis-feedstock/blob/main/recipe/meta.yaml
 cd gravis_fork_folder/
 $PYTHON -m pip install . -vv
 
