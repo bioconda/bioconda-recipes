@@ -4,7 +4,7 @@ mkdir -p ${PREFIX}/bin
 
 # setup gravis from forked version
 cd gravis_fork_folder/
-$PYTHON -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+$PYTHON -m pip install . --no-build-isolation --no-cache-dir -vvv
 
 cd ../zol_folder/
 $PYTHON -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
