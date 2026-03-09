@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
+
+
 export CARGO_NET_GIT_FETCH_WITH_CLI=true
 
 # License bundle for Rust deps
@@ -13,11 +18,9 @@ fi
 
 # Install all binaries into $PREFIX/bin
 export RUST_BACKTRACE=full
-cargo install --verbose --no-track --root "$PREFIX" --path ./bam_tide --locked
 
-# Strip selected binaries if they exist (optional)
-for b in bam-coverage bw-compare; do
-  if [ -f "$PREFIX/bin/$b" ]; then
-    "${STRIP}" "$PREFIX/bin/$b" || true
-  fi
-done
+# not wormking due to the htslib not being supported
+cargo install --verbose --no-track --root "$PREFIX" --path ./ --locked
+#cp execuatables/bam-coverage "$PREFIX/bin/bam-coverage"
+#cp execuatables/bw-compare   "$PREFIX/bin/bw-compare"
+#cp execuatables/bam-coverage "$PREFIX/bin/bam-subset-tag"
