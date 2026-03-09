@@ -1,23 +1,24 @@
 #!/bin/bash
 set -euo pipefail
 
-# Create installation directory inside conda prefix
+MAIN_SRC="${SRC_DIR}/main_src"
+UPDATE_SRC="${SRC_DIR}/update_src"
+
 mkdir -p "$PREFIX/bin/beacon2-ri-tools"
 
-# Copy required project structure
-cp -r "$SRC_DIR"/{*.py,ref_schemas,conf,files,validators} \
+# Copy main release contents
+cp -r "$MAIN_SRC"/{*.py,ref_schemas,conf,files,validators} \
     "$PREFIX/bin/beacon2-ri-tools/"
 
-
-# Copy the whole missing update directory from the fixed commit
+# Copy the whole missing update directory from the fixed commit archive
 mkdir -p "$PREFIX/bin/beacon2-ri-tools/validators/update"
-cp -r "$UPDATE_SRC/validators/update/"* \
+cp -r "$UPDATE_SRC"/validators/update/* \
     "$PREFIX/bin/beacon2-ri-tools/validators/update/"
 
 # Ensure package recognition
 touch "$PREFIX/bin/beacon2-ri-tools/validators/__init__.py"
+touch "$PREFIX/bin/beacon2-ri-tools/validators/update/__init__.py"
 
-# List of supported v2 entrypoints
 scripts=(
   "csv_to_bff.py"
   "genomicVariations_vcf.py"
@@ -27,7 +28,6 @@ scripts=(
   "update_record.py"
 )
 
-# Create wrapper scripts
 for script in "${scripts[@]}"; do
   WRAPPER="$PREFIX/bin/${script}"
 
