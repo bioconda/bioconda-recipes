@@ -15,12 +15,8 @@ APP_DIR="$BLAST_SRC_DIR/src/app/igblast"
 
 SHARE_DIR=$PREFIX/share/igblast
 SHARE_BIN=$SHARE_DIR/bin
-mkdir -p $SHARE_BIN
 
-# # $SHARE_DIR contains the actual igblastn and igblastp binaries and also the
-# # required data files. Wrappers will be installed into $PREFIX/bin that set
-# # $IGDATA to point to those data files.
-mkdir -p $SHARE_DIR/bin
+mkdir -p $SHARE_BIN
 
 
 # C/C++ preprocessor header includes paths
@@ -182,12 +178,18 @@ makeblastdb.exe
 "
 
 ln -s "${RESULT_PATH}/lib" "$LIB_INSTALL_DIR"
+
 n_workers=${CPU_COUNT:-1}
+if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
+    n_workers=8
+fi
 
 cd $BUILD_PATH
 make -j $n_workers -f Makefile.flat $apps >&2
 
 rm "$LIB_INSTALL_DIR"
+
+chmod +x "$BIN_PATH/"*
 
 cp $BIN_PATH/igblastn $SHARE_BIN
 cp $BIN_PATH/igblastp $SHARE_BIN
