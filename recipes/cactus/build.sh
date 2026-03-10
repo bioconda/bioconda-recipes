@@ -13,7 +13,7 @@ make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DU
 cd ../../
 
 cd submodules/FASTGA
-make CFLAGS="${CFLAGS} -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}"
+make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}"
 cd ../../
 
 cd submodules/FASTAN
