@@ -18,8 +18,8 @@ cd ../../
 
 cd submodules/FASTAN
 sed -i Makefile -e 's/-lm -lz/-lm -lpthread -lz/g'
-make CFLAGS="${CFLAGS} -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}" FasTAN
-ln -f FasTAN "${PREFIX}/bin/FasTAN "
+make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}" FasTAN
+ln -f FasTAN "${PREFIX}/bin/"
 cd ../../
 
 cd submodules/alntools
