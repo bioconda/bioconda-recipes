@@ -17,7 +17,8 @@ make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -O3 -L${PREFIX}/lib" C
 cd ../../
 
 cd submodules/FASTAN
-sed -i Makefile -e 's/-lm -lz/-lm -lpthread -lz/g'
+sed -i.bak -e 's/-lm -lz/-lm -lpthread -lz/g' Makefile
+rm -f *.bak
 make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}" FasTAN
 ln -f FasTAN "${PREFIX}/bin/"
 cd ../../
