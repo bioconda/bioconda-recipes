@@ -180,7 +180,7 @@ makeblastdb.exe
 ln -s "${RESULT_PATH}/lib" "$LIB_INSTALL_DIR"
 
 n_workers=${CPU_COUNT:-1}
-if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
+if [[ "$(uname -m)" == "arm64" ]]; then
     n_workers=6
 fi
 
