@@ -1,0 +1,84 @@
+# This example shows how to define a recipe using the new YAML based recipe format introduced by 
+# CEP 13.
+
+# For more information about this format see: https://prefix-dev.github.io/rattler-build/latest/reference/recipe_file/
+
+# The main differences with the old format is that no preprocessing is required for the file to be valid YAML.
+# This means:
+# - No "selectors", use YAML if-then-else expressions instead (https://prefix-dev.github.io/rattler-build/latest/selectors/)
+# - Jinja expressions are formatted with a leading `$` to make them valid YAML
+
+# Note: there are many handy hints in comments in this example -- remove them when you've finalized your recipe
+
+# Define variables in this section that you can use in other parts.
+context:
+  version: "1.1.0"
+
+package:
+  name: himito
+  version: ${{ version }}
+
+source:
+  # If getting the source from GitHub, remove the line above,
+  # uncomment the line below, and modify as needed. Use releases if available:
+  url: https://github.com/broadinstitute/Himito/archive/refs/tags/v${{ version }}.tar.gz
+  sha256: 3b49b6c0af5c2c5a1f94d584cf61e1a06f16efad30a8ea3f33e102eb3abdba90
+  # sha256 is the preferred checksum -- you can get it for a file with:
+  #  `openssl sha256 <file name>`,
+  # or, in one go without keeping the file with:
+  # `curl -L <url> | sha256
+  # You may need the packages or openssl and/or curl, available on conda-forge:
+  #  `conda install openssl curl -c conda-forge``
+
+build:
+  # Uncomment the following line if the package is pure Python and the recipe is exactly the same for all platforms.
+  # It is okay if the dependencies are not built for all platforms/versions, although selectors are still not allowed.
+  # See https://conda-forge.org/docs/maintainer/knowledge_base.html#noarch-python for more details.
+  # noarch: python
+  # If the installation is complex, or different between Unix and Windows, use separate build.bat and build.sh files instead of this key.
+  # By default, the package will be built for the Python versions supported by conda-forge and for all major OSs.
+  # Uncomment the following lines to limit to Python 3.5 and newer (for example)
+  # skip:
+  #   - match(python, "<3.5")
+  # or the following to limit to Windows.
+  # skip:
+  #   - win
+  run_exports:
+    - {{ pin_subpackage('himito', max_pin="x.x") }}
+  # script:
+  #   - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+  #   - cargo install -v --locked --no-track --root $PREFIX --path .
+  number: 0
+
+requirements:
+  build:
+    # If your project compiles code (such as a C extension) then add the required compilers as separate entries here.
+    # Compiler names include 'c', 'cxx' and 'fortran', among others.
+    # - ${{ compiler('c') }}
+    # - ${{ stdlib('c') }}  # If you need any compiler, add the C standard library ("stdlib") too
+    - {{ compiler('rust') }}
+    # - cargo-bundle-licenses
+
+test:
+  commands:
+    - himito --version
+
+about:
+  home: https://github.com/broadinstitute/Himito
+  summary: 'Mitochondrial variant caller for long reads'
+  description: |
+    Building Mitochondrial anchor-based graphical genome from long reads. 
+    Filter Numts reads, assemble major haplotypes, call homoplasmic and heteroplasmic variants, 
+    analyze methylation signals
+  license: MIT
+  license_file: 
+      - himito/LICENSE
+      # - THIRDPARTY.yml
+  license_url: https://github.com/broadinstitute/Himito/blob/main/LICENSE
+  documentation: https://github.com/broadinstitute/Himito/blob/main/docs/User_guide.md
+  repository: https://github.com/broadinstitute/Himito
+
+extra:
+  recipe-maintainers:
+    - eliottBo
+    - 
