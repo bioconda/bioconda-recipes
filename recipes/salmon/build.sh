@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# -----------------------------
-# Paths and versions
-# -----------------------------
 BUILD_DIR="${SRC_DIR}/build"
 DEPS_PREFIX="${SRC_DIR}/_deps_prefix"
 THIRDPARTY_DIR="${SRC_DIR}/_thirdparty"
@@ -16,9 +13,7 @@ ZLIBNG_SRC_DIR="${THIRDPARTY_DIR}/zlib-ng-${ZLIBNG_VERSION}"
 
 mkdir -p "${BUILD_DIR}" "${DEPS_PREFIX}" "${THIRDPARTY_DIR}" "${CMAKE_SHIM_DIR}"
 
-# -----------------------------
-# Build zlib-ng (compat mode, static)
-# -----------------------------
+# Build zlib-ng (compat mode)
 curl -L --fail "${ZLIBNG_URL}" -o "${ZLIBNG_TARBALL}"
 tar -xzf "${ZLIBNG_TARBALL}" -C "${THIRDPARTY_DIR}"
 
@@ -37,22 +32,17 @@ cmake -S "${ZLIBNG_SRC_DIR}" -B "${ZLIBNG_SRC_DIR}/build" -G Ninja \
 cmake --build "${ZLIBNG_SRC_DIR}/build" --parallel "${CPU_COUNT:-4}"
 cmake --install "${ZLIBNG_SRC_DIR}/build"
 
-# -----------------------------
-# Detect libdir layout
-# -----------------------------
+# Detect libdir
 if [[ -f "${DEPS_PREFIX}/lib64/libz.a" ]]; then
   ZLIB_LIBDIR="${DEPS_PREFIX}/lib64"
 elif [[ -f "${DEPS_PREFIX}/lib/libz.a" ]]; then
   ZLIB_LIBDIR="${DEPS_PREFIX}/lib"
 else
-  echo "ERROR: Could not find libz.a in ${DEPS_PREFIX}/lib64 or ${DEPS_PREFIX}/lib"
+  echo "ERROR: libz.a not found under ${DEPS_PREFIX}/lib64 or ${DEPS_PREFIX}/lib"
   exit 1
 fi
 
-# -----------------------------
-# CMake shim: FindZLIBNG.cmake
-# Maps zlib-ng compat's ZLIB package to ZLIBNG::ZLIBNG
-# -----------------------------
+# Provide FindZLIBNG.cmake shim
 cat > "${CMAKE_SHIM_DIR}/FindZLIBNG.cmake" <<EOF
 find_package(ZLIB CONFIG REQUIRED
   PATHS "${ZLIB_LIBDIR}/cmake/ZLIB"
@@ -68,53 +58,33 @@ set(ZLIBNG_INCLUDE_DIR "${DEPS_PREFIX}/include")
 set(ZLIBNG_LIBRARY ZLIBNG::ZLIBNG)
 EOF
 
-# -----------------------------
 # Diagnostics
-# -----------------------------
 echo "Using DEPS_PREFIX=${DEPS_PREFIX}"
 echo "Using ZLIB_LIBDIR=${ZLIB_LIBDIR}"
-echo "Using CMAKE_SHIM_DIR=${CMAKE_SHIM_DIR}"
-
 test -f "${ZLIB_LIBDIR}/libz.a"
-test -f "${ZLIB_LIBDIR}/cmake/ZLIB/zlib-config.cmake"
 test -f "${CMAKE_SHIM_DIR}/FindZLIBNG.cmake"
 
-ls -la "${DEPS_PREFIX}" || true
-ls -la "${DEPS_PREFIX}/include" || true
-ls -la "${ZLIB_LIBDIR}" || true
-ls -la "${ZLIB_LIBDIR}/cmake/ZLIB" || true
-ls -la "${CMAKE_SHIM_DIR}" || true
-ls -la "${SRC_DIR}/vendor" || true
+# Build Salmon:
+# - allow fetch fallback for deps/submodules (needed for pufferfish recursive submodules)
+# - keep system deps ON so available conda libs are used first
+cmake -S . -B "${BUILD_DIR}" -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+  -DCMAKE_INSTALL_LIBDIR=lib \
+  -DCMAKE_PREFIX_PATH="${DEPS_PREFIX};${PREFIX}" \
+  -DCMAKE_MODULE_PATH="${CMAKE_SHIM_DIR}" \
+  -DCMAKE_LIBRARY_PATH="${ZLIB_LIBDIR};${PREFIX}/lib" \
+  -DCMAKE_INCLUDE_PATH="${DEPS_PREFIX}/include;${PREFIX}/include" \
+  -DSALMON_ENABLE_TESTS=OFF \
+  -DSALMON_USE_SYSTEM_DEPS=ON \
+  -DSALMON_FETCH_MISSING_DEPS=ON \
+  -DSALMON_USE_ZLIB_NG=REQUIRED \
+  -DSALMON_USE_HTSLIB=REQUIRED \
+  -DSALMON_BOOST_USE_STATIC_LIBS=OFF \
+  -DSALMON_PUFFERFISH_GIT_REPOSITORY="https://github.com/COMBINE-lab/pufferfish.git" \
+  -DSALMON_PUFFERFISH_GIT_TAG="81b6622d58be80566aa37a5793bd3e48f3463976" \
+  -DSALMON_FQFEEDER_GIT_REPOSITORY="https://github.com/rob-p/FQFeeder.git" \
+  -DSALMON_FQFEEDER_GIT_TAG="f5b08d1002351c192b69048ac9f6cf4c7c116265"
 
-# -----------------------------
-# Build Salmon
-# -----------------------------
-CMAKE_ARGS=(
-  -S . -B "${BUILD_DIR}" -G Ninja
-  -DCMAKE_BUILD_TYPE=Release
-  -DCMAKE_INSTALL_PREFIX="${PREFIX}"
-  -DCMAKE_INSTALL_LIBDIR=lib
-  -DCMAKE_PREFIX_PATH="${DEPS_PREFIX};${PREFIX}"
-  -DCMAKE_MODULE_PATH="${CMAKE_SHIM_DIR}"
-  -DCMAKE_LIBRARY_PATH="${ZLIB_LIBDIR};${PREFIX}/lib"
-  -DCMAKE_INCLUDE_PATH="${DEPS_PREFIX}/include;${PREFIX}/include"
-
-  -DSALMON_ENABLE_TESTS=OFF
-  -DSALMON_USE_SYSTEM_DEPS=ON
-  -DSALMON_FETCH_MISSING_DEPS=ON
-  -DSALMON_USE_ZLIB_NG=REQUIRED
-  -DSALMON_USE_HTSLIB=REQUIRED
-  -DSALMON_USE_MIMALLOC=AUTO
-
-  -DSALMON_PUFFERFISH_SOURCE_DIR="${SRC_DIR}/vendor/pufferfish"
-  -DSALMON_FQFEEDER_SOURCE_DIR="${SRC_DIR}/vendor/FQFeeder"
-  -DFETCHCONTENT_SOURCE_DIR_SALMON_LIBGFF="${SRC_DIR}/vendor/libgff"
-)
-
-CMAKE_ARGS+=(
-  -DSALMON_BOOST_USE_STATIC_LIBS=OFF
-)
-
-cmake "${CMAKE_ARGS[@]}"
 cmake --build "${BUILD_DIR}" --parallel "${CPU_COUNT:-4}"
 cmake --install "${BUILD_DIR}"
