@@ -94,7 +94,7 @@ cmake --build "${BUILD_DIR}" --parallel "${CPU_COUNT:-4}"
 if [[ ! -f "${BUILD_DIR}/libgff.a" ]]; then
   GFF_ARCHIVE="$(find "${BUILD_DIR}/_deps/salmon_libgff-build" -type f -name 'libgff.a' | head -n 1 || true)"
   if [[ -n "${GFF_ARCHIVE}" && -f "${GFF_ARCHIVE}" ]]; then
-    ln -sf "${GFF_ARCHIVE}" "${BUILD_DIR}/libgff.a"
+    cp -f "${GFF_ARCHIVE}" "${BUILD_DIR}/libgff.a"
   fi
 fi
 
