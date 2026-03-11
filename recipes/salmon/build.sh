@@ -111,18 +111,9 @@ CMAKE_ARGS=(
   -DFETCHCONTENT_SOURCE_DIR_SALMON_LIBGFF="${SRC_DIR}/vendor/libgff"
 )
 
-# Prefer static on Linux where possible; macOS usually needs shared Boost.
-if [[ "$(uname)" == "Linux" ]]; then
-  CMAKE_ARGS+=(
-    -DSALMON_BOOST_USE_STATIC_LIBS=ON
-    -DBUILD_SHARED_LIBS=OFF
-    -DCMAKE_FIND_LIBRARY_SUFFIXES=".a"
-  )
-else
-  CMAKE_ARGS+=(
-    -DSALMON_BOOST_USE_STATIC_LIBS=OFF
-  )
-fi
+CMAKE_ARGS+=(
+  -DSALMON_BOOST_USE_STATIC_LIBS=OFF
+)
 
 cmake "${CMAKE_ARGS[@]}"
 cmake --build "${BUILD_DIR}" --parallel "${CPU_COUNT:-4}"
