@@ -2,7 +2,7 @@
 
 # Copy metaWEPP files to $PREFIX/metaWEPP
 mkdir -p ${PREFIX}/metaWEPP
-cp -rf "${SRC_DIR}"/* "${PREFIX}/metaWEPP"
+cp -rf "${SRC_DIR}/Snakefile" "${SRC_DIR}/scripts" "${SRC_DIR}/config" "${SRC_DIR}/data" "${SRC_DIR}/LICENSE" "${PREFIX}/metaWEPP/"
 
 # Creates a function 'run-metawepp' that injects the -s argument
 ACTIVATE_DIR="${PREFIX}/etc/conda/activate.d"
