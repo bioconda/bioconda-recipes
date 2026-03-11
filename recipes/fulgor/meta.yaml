@@ -1,0 +1,42 @@
+{% set name = "fulgor" %}
+{% set version = "4.0.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  git_url: https://github.com/jermp/fulgor.git
+  git_rev: v4.0.0
+  git_depth: 1
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+  host:
+    - rust
+    - zlib
+  run:
+    - zlib
+
+test:
+  commands:
+    - "fulgor 2>&1 | grep 'Usage: fulgor'"
+
+about:
+  home: "https://github.com/jermp/fulgor"
+  license: MIT
+  license_file: LICENSE
+  summary: "A fast and space-efficient colored de Bruijn graph index."
+  description: |
+    Fulgor is a tool for indexing large-scale genomic data using 
+    a colored de Bruijn graph representation, optimized for 
+    low memory usage and fast pseudoalignment.
+  dev_url: "https://github.com/jermp/fulgor"
