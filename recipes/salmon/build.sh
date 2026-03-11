@@ -1,35 +1,20 @@
-#!/bin/bash
-set -eu -o pipefail
+#!/usr/bin/env bash
+set -euo pipefail
 
-export INCLUDES="-I${PREFIX}/include"
-export LIBPATH="-L${PREFIX}/lib"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CFLAGS="${CFLAGS} -O3"
-export CXXFLAGS="${CXXFLAGS} -O3"
+cmake -S . -B build -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+  -DCMAKE_INSTALL_LIBDIR=lib \
+  -DSALMON_ENABLE_TESTS=OFF \
+  -DSALMON_USE_SYSTEM_DEPS=ON \
+  -DSALMON_FETCH_MISSING_DEPS=OFF \
+  -DSALMON_BOOST_USE_STATIC_LIBS=OFF \
+  -DSALMON_USE_ZLIB_NG=REQUIRED \
+  -DSALMON_USE_HTSLIB=REQUIRED \
+  -DSALMON_USE_MIMALLOC=AUTO \
+  -DSALMON_PUFFERFISH_SOURCE_DIR="${SRC_DIR}/pufferfish" \
+  -DSALMON_FQFEEDER_SOURCE_DIR="${SRC_DIR}/FQFeeder" \
+  -DFETCHCONTENT_SOURCE_DIR_SALMON_LIBGFF="${SRC_DIR}/libgff"
 
-if [[ `uname` == "Darwin" ]]; then
-	export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument -Wno-unused-parameter -Wno-array-bounds"
-	export CONFIG_ARGS="-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 -DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
-	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
-else
-	export CONFIG_ARGS=""
-fi
-
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
-	-DCONDA_BUILD=TRUE \
-	-DNO_IPO=TRUE \
-	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-	-DCMAKE_CXX_COMPILER="${CXX}" \
-	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-DCMAKE_C_COMPILER="${CC}" \
-	-DCMAKE_C_FLAGS="${CFLAGS}" \
-	-DBOOST_ROOT="${PREFIX}" \
-	-DBoost_NO_SYSTEM_PATHS=ON \
-	-DCEREAL_INCLUDE_DIR="${PREFIX}/include" \
-	-DLIB_GFF_INCLUDE_DIR="${PREFIX}/include" \
-	-DLIBSTADEN_LDFLAGS="-L${PREFIX}/lib" \
-	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
-	"${CONFIG_ARGS}"
-
-cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+cmake --build build --parallel "${CPU_COUNT:-4}"
+cmake --install build
