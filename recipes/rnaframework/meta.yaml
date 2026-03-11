@@ -1,0 +1,84 @@
+{% set version = "2.9.6" %}
+
+package:
+  name: rnaframework
+  version: {{ version }}
+
+source:
+  url: https://github.com/dincarnato/RNAFramework/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 81f89568fe34ae50cd9986afcda590bb2ca02e19d031d683c265dc8cbd7a86a1
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('rnaframework', max_pin="x") }}
+
+requirements:
+  host:
+    - perl
+  run:
+    - perl >=5.12
+    - perl-termreadkey
+    - bowtie >=1.2.3
+    - bowtie2 >=2.3.5
+    - samtools >=1.15
+    - bedtools >=2.31
+    - cutadapt >=2.1
+    - viennarna >=2.5.0
+    - rnastructure >=6.4
+    - r-base >=4.4,<4.6 # For linux-aarch64 r-base =4.4.2 works
+    - r-ggplot2 >=3.5.2
+    - r-patchwork >=1.3.2
+    - r-rcolorbrewer >=1.1_3
+
+test:
+  commands:
+    - rf-map -h 2>&1 | grep -qi "usage\|rf-map\|options"
+    - rf-count -h 2>&1 | grep -qi "usage\|rf-count\|options"
+    - rf-norm -h 2>&1 | grep -qi "usage\|rf-norm\|options"
+    - rf-fold -h 2>&1 | grep -qi "usage\|rf-fold\|options"
+    - rf-index -h 2>&1 | grep -qi "usage\|rf-index\|options"
+    - rf-rctools -h 2>&1 | grep -qi "usage\|rf-rctools\|options"
+    # Verify the lib is reachable from the installed scripts
+    - perl -I${PREFIX}/share/rnaframework/lib -e "use Core::Mathematics; print 'OK\n'"
+
+about:
+  home: https://github.com/dincarnato/RNAFramework
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: >-
+    Toolkit for the analysis of RNA structures and post-transcriptional
+    modifications from HTS data
+  description: |
+    RNA Framework is a modular toolkit designed to handle RNA structure probing
+    and post-transcriptional modifications mapping from high-throughput sequencing
+    data. It supports transcriptome-scale analysis of RNA secondary structure using
+    protocols such as CIRS-seq, SHAPE-seq, Structure-seq, DMS-seq, PARS,
+    SHAPE-MaP, and DMS-MaPseq, as well as mapping of post-transcriptional
+    modifications (Ψ, m1A, m6A, m5C, hm5C, 2'-OMe).
+
+    Key features:
+      - Automatic reference transcriptome creation (rf-index)
+      - Read preprocessing, adapter trimming, and mapping (rf-map)
+      - Per-base RT-stop/mutation counting and coverage (rf-count)
+      - Reactivity scoring and whole-transcriptome normalization (rf-norm)
+      - RNA secondary structure prediction with probing data (rf-fold)
+      - RNA-RNA interaction mapping (rf-duplex)
+      - Post-transcriptional modification calling (rf-modcall)
+      - Peak calling for RNA immunoprecipitation data (rf-peakcall)
+
+  doc_url: https://rnaframework-docs.readthedocs.io/
+  dev_url: https://github.com/dincarnato/RNAFramework
+
+extra:
+  recipe-maintainers:
+    - dincarnato
+    - pmb59
+    - vicbeg
+  identifiers:
+    - doi:10.1093/nar/gky486
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
