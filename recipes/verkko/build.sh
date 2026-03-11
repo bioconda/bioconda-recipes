@@ -12,6 +12,9 @@ if [ "$(uname)" == "Darwin" ]; then
     mkdir -p $HOME/.cargo/registry/index/
     
     export DYLD_FALLBACK_LIBRARY_PATH="${PREFIX}/lib"
+    rustc --print sysroot
+    rustc --print target-list | grep apple
+    ls $(rustc --print sysroot)/lib/rustlib/ | grep apple
 fi
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
