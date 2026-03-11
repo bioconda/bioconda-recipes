@@ -86,5 +86,21 @@ cmake -S . -B "${BUILD_DIR}" -G Ninja \
   -DSALMON_FQFEEDER_GIT_REPOSITORY="https://github.com/rob-p/FQFeeder.git" \
   -DSALMON_FQFEEDER_GIT_TAG="f5b08d1002351c192b69048ac9f6cf4c7c116265"
 
+##
+# Temporary fix until 1.11.3
+##
+TWOPACO_HDR="${BUILD_DIR}/_deps/salmon_pufferfish-src/external/twopaco/graphconstructor/candidateoccurence.h"
+python - <<'PY'
+from pathlib import Path
+p = Path("${TWOPACO_HDR}")
+s = p.read_text()
+old = "count_ = toCopy.count_;"
+new = "count_.store(toCopy.count_.load(std::memory_order_relaxed), std::memory_order_relaxed);"
+if old not in s:
+    raise SystemExit(f"pattern not found in {p}")
+p.write_text(s.replace(old, new))
+print(f"patched {p}")
+PY
+
 cmake --build "${BUILD_DIR}" --parallel "${CPU_COUNT:-4}"
 cmake --install "${BUILD_DIR}"
