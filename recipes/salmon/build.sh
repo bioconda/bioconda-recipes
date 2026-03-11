@@ -88,4 +88,14 @@ cmake -S . -B "${BUILD_DIR}" -G Ninja \
 
 
 cmake --build "${BUILD_DIR}" --parallel "${CPU_COUNT:-4}"
+
+## temp until 1.11.4
+# libgff install-path workaround for FetchContent builds
+if [[ ! -f "${BUILD_DIR}/libgff.a" ]]; then
+  GFF_ARCHIVE="$(find "${BUILD_DIR}/_deps/salmon_libgff-build" -type f -name 'libgff.a' | head -n 1 || true)"
+  if [[ -n "${GFF_ARCHIVE}" && -f "${GFF_ARCHIVE}" ]]; then
+    ln -sf "${GFF_ARCHIVE}" "${BUILD_DIR}/libgff.a"
+  fi
+fi
+
 cmake --install "${BUILD_DIR}"
