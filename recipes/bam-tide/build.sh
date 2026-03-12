@@ -19,8 +19,4 @@ fi
 # Install all binaries into $PREFIX/bin
 export RUST_BACKTRACE=full
 
-# not wormking due to the htslib not being supported
 cargo install --verbose --no-track --root "$PREFIX" --path ./ --locked
-#cp execuatables/bam-coverage "$PREFIX/bin/bam-coverage"
-#cp execuatables/bw-compare   "$PREFIX/bin/bw-compare"
-#cp execuatables/bam-coverage "$PREFIX/bin/bam-subset-tag"
