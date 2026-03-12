@@ -7,7 +7,7 @@ OS=$(uname -s)
 PYPY_VER="3.11-v7.3.20"
 
 mkdir -pv $PREFIX/bin
-cp -rv clair3 models preprocess postprocess scripts shared $PREFIX/bin
+cp -rv clair3 preprocess postprocess scripts shared $PREFIX/bin
 cp clair3.py run_clair3.py $PREFIX/bin/
 cp run_clair3.sh $PREFIX/bin/
 
