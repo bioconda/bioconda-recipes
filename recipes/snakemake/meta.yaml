@@ -35,12 +35,15 @@ test:
     - snakemake
   commands:
     - export GIT\_PYTHON_REFRESH=warn
+    - pip check
     - snakemake --version
     - snakemake --version | grep "{{ version }}"
     # Generate a report to check whether graphviz dependencies (libXau) are properly installed:
     - 'printf %s\\n "rule empty:" > Snakefile && snakemake --cores 1 --report'
     # Remove test artifacts from command above.
     - rm -rf .snakemake Snakefile report.html
+  requires:
+    - pip
 
 about:
   home: "https://snakemake.github.io"
@@ -72,6 +75,8 @@ outputs:
 
     build:
       noarch: python
+      script_env:
+        - SETUPTOOLS_SCM_PRETEND_VERSION_SNAKEMAKE={{ version }}
       script: python -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
       entry_points:
         - snakemake = snakemake.cli:main
@@ -83,6 +88,7 @@ outputs:
         - python >=3.11
         - pip
         - setuptools
+        - setuptools-scm
       run:
         # Keep in sync with snakemake's pyproject.toml: https://github.com/snakemake/snakemake/blob/main/pyproject.toml
         - python >=3.11,<3.14 # we restrict to <3.13 because Python can have breaking changes in minor version bumps
@@ -122,6 +128,7 @@ outputs:
       commands:
         - export GIT\_PYTHON_REFRESH=warn
         - pip show snakemake
+        - pip check
         - snakemake --version
         - snakemake --version | grep "{{ version }}"
       requires:
