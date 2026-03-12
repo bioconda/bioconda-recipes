@@ -1,7 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-
-chmod +x Himito
 mkdir -p "${PREFIX}/bin"
-cp -f Himito "${PREFIX}/bin/"
+cp -f Himito "${PREFIX}/bin/himito"
+chmod +x "${PREFIX}/bin/himito"
