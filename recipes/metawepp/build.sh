@@ -4,27 +4,14 @@
 mkdir -p ${PREFIX}/metaWEPP
 cp -rf "${SRC_DIR}/Snakefile" "${SRC_DIR}/scripts" "${SRC_DIR}/config" "${SRC_DIR}/data" "${SRC_DIR}/LICENSE" "${PREFIX}/metaWEPP/"
 
-# Creates a function 'run-metawepp' that injects the -s argument
-ACTIVATE_DIR="${PREFIX}/etc/conda/activate.d"
-DEACTIVATE_DIR="${PREFIX}/etc/conda/deactivate.d"
-mkdir -p "${ACTIVATE_DIR}" "${DEACTIVATE_DIR}"
+# Ensure the bin directory exists
+mkdir -p "${PREFIX}/bin"
 
-cat <<'EOF' > "${ACTIVATE_DIR}/z_{{ name|lower }}_activate.sh"
+# Create the wrapper script
+cat <<WRAPPER > "${PREFIX}/bin/run-metawepp"
 #!/bin/bash
+exec snakemake -s "\${CONDA_PREFIX}/metaWEPP/Snakefile" "\$@"
+WRAPPER
 
-run-metawepp() {
-        # Calls the snakemake with correct Snakefile
-        command snakemake -s "$CONDA_PREFIX/metaWEPP/Snakefile" "$@"
-}
-# Want this command available in sub-shells/scripts
-export -f run-metawepp 2>/dev/null || true
-EOF
-
-# Removes the function when the user exits the environment
-cat <<'EOF' > "${DEACTIVATE_DIR}/z_{{ name|lower }}_deactivate.sh"
-#!/bin/bash
-unset -f run-metawepp
-EOF
-
-chmod +x "${ACTIVATE_DIR}/z_{{ name|lower }}_activate.sh"
-chmod +x "${DEACTIVATE_DIR}/z_{{ name|lower }}_deactivate.sh"
+# Make the wrapper executable
+chmod +x "${PREFIX}/bin/run-metawepp"
