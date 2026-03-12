@@ -1,6 +1,6 @@
 {% set name = "pydna" %}
-{% set version = "3.1.0" %}
-{% set hash = "99ed63c845e666b328f728a555ab622d42826cfa515c393d635c22be48727a7b" %}
+{% set version = "5.2.0" %}
+{% set hash = "24e89cc71c77c727c3681da8fe889fb65f243766db63fb17f67a8a6280fde313" %}
 
 package:
   name: {{ name|lower }}
@@ -10,25 +10,33 @@ build:
   number: 0
   noarch: python
   script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  script_env:
+    # Workaround for poetry-dynamic-versioning generating incorrect version due
+    # to missing Git metadata.
+    - POETRY_DYNAMIC_VERSIONING_BYPASS={{ version }}
+  run_exports:
+    - {{ pin_subpackage('pydna', max_pin='x.x') }}
 
 source:
-  url: https://github.com/BjornFJohansson/{{ name|lower }}/archive/{{ version }}.tar.gz
+  url: https://github.com/BjornFJohansson/{{ name|lower }}/archive/v{{ version }}.tar.gz
   sha256: {{ hash }}
 
 requirements:
   host:
-  - python >=3
+  - python >=3.8
   - pip
-  - pytest-runner
+  - poetry
+  - poetry-dynamic-versioning
   run:
-  - python >=3
-  - biopython >=1.65
-  - networkx >=1.8.1
-  - appdirs >=1.3.0
-  - prettytable >=0.7.2
-  - ordered-set >=2.0.1
-  - pyparsing >=2.1.10
-  - requests >=2.12
+  - python >=3.8
+  - appdirs >=1.4.4
+  - biopython >=1.80
+  - networkx >=2.8.8
+  - prettytable >=3.5.0
+  - pyperclip >=1.8.2
+  - pyfiglet >=0.8.post1
+  - pyparsing >=2.4.7
+  - requests >=2.26.0
 
 test:
   imports:
@@ -39,4 +47,4 @@ about:
   license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE.txt
-  summary: 'Representing double stranded DNA and simulating cloning, homologous recombination, Gibson assembly, Gel electrophoresis etc.'
+  summary: 'Representing double stranded DNA and functions for simulating cloning and homologous recombination between DNA molecules.'

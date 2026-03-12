@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "serumstimulation-1.36.0"
+installBiocDataPackage.sh "serumstimulation-1.42.0"

@@ -1,5 +1,5 @@
 #!/bin/bash
-# hmftools isofox executable shell script
+# hmftools Isofox executable shell script
 # https://github.com/hartwigmedical/hmftools/tree/master/isofox
 set -eu -o pipefail
 
@@ -60,7 +60,7 @@ if [ "$jvm_mem_opts" == "" ]; then
 fi
 
 pass_arr=($pass_args)
-if [[ ${pass_arr[0]:=} == org* ]]
+if [[ ${pass_arr[0]:=} == com.hartwig.* ]]
 then
     eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/isofox.jar" $pass_args
 else

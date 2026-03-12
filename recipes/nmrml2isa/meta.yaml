@@ -1,5 +1,5 @@
 {% set name = "nmrml2isa" %}
-{% set version = "0.3.1" %}
+{% set version = "0.3.3" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,23 +7,25 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 5bae79e717eaed9a0147324adae7dcb54d435f80683e7a1b2cec032a2803f97c
+  sha256: 87269827b36b7df01f8909e4148c67ad585d8441432135fe41bf8abf4c41e99f
 
 build:
   number: 0
   noarch: python
   entry_points:
     - nmrml2isa = nmrml2isa.parsing:run
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('nmrml2isa', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3
+    - python <3.10
   run:
     - openpyxl
     - pronto
-    - python >=3
+    - python <3.10
     - lxml
     - six
 
@@ -35,5 +37,6 @@ test:
 
 about:
   home: http://github.com/ISA-tools/nmrml2isa
-  license: GNU General Public License v3 (GPLv3)
+  license: GPL-3.0-or-later
+  license_family: GPL3
   summary: 'nmrml2isa - nmrML to ISA-Tab parsing tool'

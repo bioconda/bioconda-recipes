@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "antiprofilesdata-1.36.0"
+installBiocDataPackage.sh "antiprofilesdata-1.41.0"

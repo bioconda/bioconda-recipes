@@ -1,25 +1,25 @@
+{% set name = "hicmatrix" %}
+{% set version = "17.2" %}
+
 package:
-  name: hicmatrix
-  version: 17
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/deeptools/HiCMatrix/archive/refs/tags/17.tar.gz
-  sha256: 40d0d0ed670ca8084bd67ec1fe9eb7aff6c180ca0e0fca277f5ad76d25ed97bb
+  url: https://github.com/deeptools/HiCMatrix/archive/refs/tags/{{ version }}.tar.gz
+  sha256: a2428676b5aad014e7b1653e3effe94f7ea8a68cc78be83e4b67f2255f6b4fbb
 
 build:
   number: 0
   noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  run_exports:
+    - {{ pin_subpackage('hicmatrix', max_pin="x") }}
 
 requirements:
   host:
     - python >=3.7
-    - setuptools
-    - numpy >=1.20
-    - scipy >=1.2.*
-    - intervaltree >=3.0.*
-    - pytables >=3.5.*
-    - pandas >=0.25.*
-    - cooler >=0.8.10
+    - pip
   run:
     - python >=3.7
     - numpy >=1.20
@@ -28,6 +28,7 @@ requirements:
     - pytables >=3.5.*
     - pandas >=0.25.*
     - cooler >=0.8.10
+    - importlib-metadata  # [py < 38]
 
 test:
   imports:
@@ -35,5 +36,7 @@ test:
 
 about:
   home: https://github.com/deeptools/HiCMatrix
-  license: GPL3
+  license: GPL-3.0-or-later
+  license_family: GPL3
   summary: Library to manage Hi-C matrices for HiCExplorer and pyGenomeTracks
+  dev_url: https://github.com/deeptools/HiCMatrix

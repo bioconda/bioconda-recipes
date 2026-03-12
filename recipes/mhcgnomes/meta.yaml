@@ -1,5 +1,5 @@
 {% set name = "mhcgnomes" %}
-{% set version = "1.8.4" %}
+{% set version = "2.0.2" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,22 +7,25 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 6ee95dbb3f083d7a74197941e3fe993d9078593c865f1b6acc1153489f90d4b3
+  sha256: ec6a47753a1170d12d145c5fe9930c792a30180956310dc2745ffad3f8b1d3d4
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
     - pip
     - python
+    - setuptools
   run:
     - numpy
     - pandas
     - python
-    - pyyaml ==5.4
+    - pyyaml >=5.4
     - serializable
 
 test:
@@ -31,7 +34,7 @@ test:
 
 about:
   home: "https://github.com/til-unc/mhcgnomes"
-  license: Apache Software
+  license: Apache-2.0
   license_family: APACHE
   summary: "Python library for parsing MHC nomenclature in the wild"
 

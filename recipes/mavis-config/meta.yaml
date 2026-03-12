@@ -1,0 +1,37 @@
+{% set name = "mavis-config" %}
+{% set version = "1.2.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/mavis_config-{{ version }}.tar.gz
+  sha256: b44e24d8b0ef2d406cdbc3e6c82bb6e6d26d1056d80c10bc5deda8b2b223a9e5
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --use-pep517
+  run_exports:
+    - {{ pin_subpackage('mavis-config', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+  run:
+    - python >=3.7
+    - snakemake-minimal >=7.18.1
+    - braceexpand
+
+test:
+  imports:
+    - mavis_config
+
+about:
+  home: https://github.com/bcgsc/mavis_config.git
+  summary: Config validation for running MAVIS via Snakemake
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE

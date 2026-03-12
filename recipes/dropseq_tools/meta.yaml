@@ -1,21 +1,24 @@
-{% set name = "Drop-seq_tools" %}
-{% set version = "2.5.1" %}
+{% set name = "Dropseq_tools" %}
+{% set version = "3.0.2" %}
+{% set sha256 = "aa681dff54ede54154a9b626c6361da860eb5df749456ece340e152b42c16484" %}
 
 package:
-  name: dropseq_tools
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/broadinstitute/Drop-seq/releases/download/v{{ version }}/{{ name }}-{{ version }}.zip
-  sha256: 3274a59e612560fe3c3f73457fe75d38c60549a178c97603d34b83d15b7e32ab
+  url: https://github.com/broadinstitute/Drop-seq/releases/download/v{{ version }}/dropseq-{{ version }}.zip
+  sha256: {{ sha256 }}
 
 build:
   number: 0
   noarch: generic
+  run_exports:
+    - {{ pin_subpackage('dropseq_tools', max_pin="x") }}
 
 requirements:
   run:
-    - openjdk >=8
+    - openjdk >=21
 
 test:
   commands:
@@ -55,11 +58,13 @@ test:
     - 'ValidateReference -- --help 2>&1 | grep "{{ version }}"'
 
 about:
-  home: http://mccarrolllab.com/dropseq/
+  home: "https://mccarrolllab.com/dropseq"
   license: MIT
   license_family: MIT
   summary: |
     Package for the analysis of Drop-seq data developed by Jim Nemesh in the McCarroll Lab
+  dev_url: "https://github.com/broadinstitute/Drop-seq"
+  doc_url: "https://github.com/broadinstitute/Drop-seq/blob/v{{ version }}/README.md"
 
 extra:
   notes: |

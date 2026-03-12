@@ -1,0 +1,61 @@
+{% set name = "microview" %}
+{% set version = "0.11.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/MicroView-{{ version }}.tar.gz
+  sha256: c6713e83ee1488ed7baec6828513ffda6d6efa44f15e61821cf62d23e5568149
+
+build:
+  entry_points:
+    - microview = microview.cli:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+   - {{ compiler('c') }}
+  host:
+    - python >=3.8
+    - pip
+    - cython
+  run:
+    - python >=3.8
+    - scipy
+    - cython
+    - decorator
+    - scikit-bio
+    - pandas
+    - numpy
+    - plotly
+    - jinja2
+    - rich
+    - rich-click
+    - click-option-group
+    - frictionless >=4.32.0,<5
+
+test:
+  imports:
+    - microview
+  commands:
+    - pip check
+    - microview --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/jvfe/microview
+  summary: Generate reports from taxonomic classification data
+  license: BSD-3-Clause
+  license_file: LICENSE
+
+extra:
+  skip-lints:
+    - cython_must_be_in_host # Cython needs to be in run as well
+  recipe-maintainers:
+    - jvfe

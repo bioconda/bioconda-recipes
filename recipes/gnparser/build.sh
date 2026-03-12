@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 cd gnparser
 CGO_ENABLED=0
 go clean

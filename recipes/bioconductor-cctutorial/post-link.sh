@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "cctutorial-1.38.0"
+installBiocDataPackage.sh "cctutorial-1.40.0"

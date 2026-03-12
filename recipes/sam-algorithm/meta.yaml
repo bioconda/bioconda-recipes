@@ -1,44 +1,51 @@
 {% set name = "sam-algorithm" %}
-{% set version = "0.9.0" %}
+{% set version = "1.0.2" %}
+{% set sha256 = "971793c46af94472729f917d060619d76d167b1fe4fe4625aa0f2bb908baad51" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "85ad4d6eefabd54183278d7d734aa82ae8a128d54cadb53808a41bf8f638d62d"
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/sam-algorithm-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: {{ PYTHON }} -m pip install . --no-deps -vvv
+  run_exports:
+    - {{ pin_subpackage('sam-algorithm', max_pin="x") }}
 
 requirements:
   host:
-    - python>=3.7
+    - python >=3.6
+    - pip
   run:
-    - anndata >=0.7.4
-    - dill
-    - h5py <=2.10.0
-    - numba >=0.50.1
+    - python >=3.6
     - numpy >=1.19.0
-    - packaging
-    - pandas ==1.0.0
-    - python>=3.7
-    - scikit-learn >=0.23.1
     - scipy >=1.3.1
+    - pandas >1.0.0
+    - scikit-learn >=0.23.1
+    - packaging >=0.20.0
+    - numba >=0.50.1
     - umap-learn >=0.4.6
+    - dill
+    - anndata >=0.7.4
+    - h5py
+    - harmonypy
+    - hnswlib
 
 test:
   imports:
     - samalg
 
 about:
-  home: "https://github.com/atarashansky/self-assembling-manifold"
-  license: "MIT"
-  license_family: "MIT"
-  summary: "The Self-Assembling-Manifold algorithm"
+  home: https://github.com/atarashansky/self-assembling-manifold
+  summary: The Self-Assembling-Manifold algorithm
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
 
 extra:
   recipe-maintainers:

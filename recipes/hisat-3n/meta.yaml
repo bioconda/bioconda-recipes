@@ -1,0 +1,56 @@
+{% set hisat_3n_version = "0.0.3" %}
+{% set hisat2_version = "2.2.1" %}
+{% set name = "hisat-3n" %}
+
+package:
+  name: {{ name }}
+  version: {{ hisat_3n_version }}
+
+source:
+  url: https://github.com/fulcrumgenomics/hisat-3n/archive/{{ hisat_3n_version }}.tar.gz
+  sha256: 6a6c6ea7e46b8b75136fe93ea067bd77ef60baff9e7fc6dae9bbc60aec256acc
+  patches:
+    - simde-mr-c.patch
+
+build:
+  number: 0
+  run_exports: '{{ pin_subpackage(name,  max_pin="x") }}'
+  
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+  run:
+    - python >3.5
+    - perl
+
+test:
+  commands:
+    - hisat-3n --help | grep -F {{ hisat_3n_version }}
+    - hisat-3n-build --help | grep -F {{ hisat_3n_version }}
+    - hisat2-build --help | grep -F {{ hisat2_version }}
+
+about:
+  home: https://github.com/fulcrumgenomics/hisat-3n
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: "Graph-based alignment of next generation sequencing reads to a population of genomes."
+  description: "HISAT-3N (hierarchical indexing for spliced alignment of transcripts - 3 nucleotides) is designed for nucleotide conversion sequencing technologies and implemented based on HISAT2."
+  doc_url: https://github.com/fulcrumgenomics/hisat-3n
+  dev_url: https://github.com/fulcrumgenomics/hisat-3n
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - emmcauley    
+  identifiers:
+    - biotools:HISAT2
+    - doi:10.1038/nmeth.3317
+    - doi:10.1038/s41587-019-0201-4
+    - usegalaxy-eu:hisat2
+  notes: "Pre-built indices for HISAT2 can be downloaded from https://daehwankimlab.github.io/hisat2/download/."

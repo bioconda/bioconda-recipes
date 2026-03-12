@@ -1,0 +1,57 @@
+{% set name = "HTSinfer" %}
+{% set version = "1.0.0-rc.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url: https://github.com/zavolanlab/htsinfer/archive/refs/tags/v1.0.0-rc.1.zip
+  sha256: 74699248eccb9bcabba9ea01a69fe9202829e52ed36c07d02f6ce186fc2c0219
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - htsinfer = htsinfer.cli:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:  
+  host:
+    - python >=3.8, <=3.10
+    - pip >=20.2.3
+    - setuptools-git >=1.2
+    - numpy >=1.22, <1.25
+    - pandas >=1.3.5, <1.4.0
+    - biopython >=1.78
+    - pydantic >=2, <3
+    - pysam >=0.16.0
+    - pyahocorasick >=1.4.0
+  run:
+    - biopython >=1.78
+    - cutadapt >=3.5, <=4.2
+    - kallisto >=0.46.1, <= 0.48.0
+    - numpy >=1.22, <1.25
+    - pandas >=1.3.5, <1.4.0
+    - pyahocorasick >=1.4.0
+    - pydantic >=2, <3
+    - pysam >=0.16.0
+    - python >=3.8, <=3.10
+    - star >=2.7.6
+
+test:
+  commands:
+    - htsinfer --help
+
+about:
+  home: https://github.com/zavolanlab/htsinfer
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: HTSinfer infers metadata from Illumina high throughput sequencing (HTS) data
+
+extra:
+  recipe-maintainers:
+    - balajtimate

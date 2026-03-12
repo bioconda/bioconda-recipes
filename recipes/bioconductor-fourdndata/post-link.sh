@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "fourdndata-1.0.0"
+installBiocDataPackage.sh "fourdndata-1.6.0"

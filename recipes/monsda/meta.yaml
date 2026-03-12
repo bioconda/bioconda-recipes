@@ -1,61 +1,65 @@
 {% set name = "MONSDA" %}
-{% set version = "1.0.0" %}
-{% set sha256 = "5f9ba1ba502399734b7473f56e57a9df85e85fda0a8b615ab7858a502d827e9a" %}
+{% set version = "1.2.8" %}
+{% set sha256 = "dcfb363649328568fef304d25bb0278155f94e954b207d8f841a452fdaf67024" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name|lower }}-{{ version }}.tar.gz
   sha256: "{{ sha256 }}"
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  script: "{{ PYTHON }} -m pip install . --use-pep517 --no-deps --ignore-installed -vvv"
   entry_points:
     - monsda = MONSDA.RunMONSDA:main
     - monsda_configure = MONSDA.Configurator:main
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('monsda', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.9
+    - python >=3.12
     - pip
-    - setuptools
     - pytest-runner
+    - versioneer >=0.20
   run:
-    - biopython>=1.79
-    - grep>=3.4
-    - libmamba>=0.21.2
-    - mamba>=0.17.0
-    - more-itertools>=8.8.0
-    - natsort>=7.1.1
-    - nextflow
-    - numpy>=1.21.0
-    - pandas>=1.4.1
-    - perl>=5.32.1
-    - python>=3.9
-    - scipy>=1.7.0
-    - snakemake-minimal>=6.5.3
-    - snakemake>=6.5.3
-    - versioneer>=0.20
-    - yaml>=0.2.5
-    - zlib>=1.2.11
-    - zstd>=1.5.0
-    
+    - python >=3.12
+    - biopython >=1.83
+    - black >=21.5b2
+    - flake8 >=3.8.3
+    - natsort >=8.4.0
+    - nextflow >=23.10.1
+    - numpy >=1.26.4
+    - pandas >=2.2.1
+    - perl >=5.32.0
+    - pyyaml >=6.0.1
+    - scipy >=1.12.0
+    - snakemake >=8.11.3
+    - snakemake-executor-plugin-slurm =0.5.0
+    - snakemake-executor-plugin-cluster-generic =1.0.9
+    - snakemake-interface-common =1.17.2
+    - snakemake-interface-executor-plugins =9.1.1
+    - snakemake-interface-report-plugins =1.0.0
+    - snakemake-interface-storage-plugins =3.2.2
+    - snakemake-storage-plugin-s3 =0.2.11
+    - versioneer >=0.20
+
 test:
   commands:
     - monsda --version 2>&1 |grep {{ version }}
     - monsda_configure -h|grep help
     - rm -rf LOGS
-    
+
 about:
   home: https://github.com/jfallmann/MONSDA
-  license: GPL3
-  license_family: GPL
+  license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: LICENSE
-  summary: MONSDA, Modular Organizer of Nextflow and Snakemake driven hts Data Analysis
+  summary: MONSDA, Modular Organizer of Nextflow and Snakemake driven HTS Data Analysis
   doc_url: https://monsda.readthedocs.io/en/latest/
 
 extra:

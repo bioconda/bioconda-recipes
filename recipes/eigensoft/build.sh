@@ -1,7 +1,8 @@
-cd src
-make clobber
+#!/usr/bin/env bash
 
-make all
+set -xeuo pipefail
+cd src
+make -j ${CPU_COUNT} all
 
 # Install (makefile install has hard-coded destination, so have to do this manually)
  mkdir -p $PREFIX/bin

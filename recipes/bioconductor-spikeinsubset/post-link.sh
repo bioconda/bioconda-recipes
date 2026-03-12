@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "spikeinsubset-1.40.0"
+installBiocDataPackage.sh "spikeinsubset-1.46.0"

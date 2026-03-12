@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "lumibarnes-1.40.0"
+installBiocDataPackage.sh "lumibarnes-1.46.0"

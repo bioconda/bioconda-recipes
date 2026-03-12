@@ -1,0 +1,47 @@
+{% set name = "align_trim" %}
+{% set version = "1.0.2" %}
+{% set sha256 = "599e4548286b87ab5ecbec4f43d701df3f625c165886e9c995f1b1eebb5a7841" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url: https://github.com/artic-network/align_trim/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('align_trim', max_pin='x.x') }}  
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  entry_points:
+    - align_trim = align_trim.main:main
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - hatchling
+  run:
+    - python >=3.9
+    - numpy
+    - pysam
+    - primalbedtools >=0.10.1
+
+test:
+  commands:
+    - align_trim --help
+
+about:
+    home: https://github.com/artic-network/align_trim
+    license: MIT
+    license_family: MIT
+    license_file: LICENSE
+    summary: "ARTIC align_trim: A tool for trimming amplicon sequencing primers from aligned reads."
+    dev_url: https://github.com/artic-network/align_trim
+    doc_url: https://github.com/artic-network/align_trim/blob/main/README.md
+    recipe-maintainers:
+      - Biowilko
+      - ChrisgKent

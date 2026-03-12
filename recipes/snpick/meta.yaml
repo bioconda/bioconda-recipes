@@ -1,0 +1,70 @@
+{% set name = "snpick" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "6a5ae16a65c92c90ecf710c4d53afa0e3a76b7a43554c52e48cda843f7e20744" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/PathoGenOmics-Lab/{{ name }}/archive/refs/tags/{{ version }}.tar.gz"
+  sha256: "{{ sha256 }}"
+
+build:
+  number: 0
+  script: |
+    set -xe
+    export LANG=C.UTF-8
+    export LC_ALL=C.UTF-8
+    export RUST_BACKTRACE=1
+    export OPENSSL_NO_VENDOR=1
+    export OPENSSL_DIR=$PREFIX
+    export OPENSSL_INCLUDE_DIR=$PREFIX/include
+    export OPENSSL_LIB_DIR=$PREFIX/lib
+    export LIBCLANG_PATH=$PREFIX/lib
+    export CPLUS_INCLUDE_PATH=$PREFIX/include
+    cargo install --locked --verbose --root "${PREFIX}" --path .
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - pkg-config
+  host:
+    - openssl
+    - zlib
+    - xz
+    - bzip2
+  run:
+    - {{ pin_compatible('openssl') }}
+    - {{ pin_compatible('zlib') }}
+    - {{ pin_compatible('xz') }}
+    - {{ pin_compatible('bzip2') }}
+
+test:
+  commands:
+    - snpick --help
+    - snpick --version
+
+about:
+  home: "https://github.com/PathoGenOmics-Lab/snpick"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "A fast and memory-efficient tool for SNP extraction from genomic alignments."
+  description: |
+    snpick is a Rust-based tool designed for extracting SNPs efficiently from large genomic alignments, with minimal RAM usage and high performance. It outputs variable sites in alignment files and provides VCF generation.
+  doc_url: "https://github.com/PathoGenOmics-Lab/snpick"
+  dev_url: "https://github.com/PathoGenOmics-Lab/snpick"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - PathoGenOmics-Lab
+  categories:
+    - Genomics
+    - Variant Analysis
+    - SNP Extraction

@@ -1,34 +1,38 @@
-{% set version = "1.30.0" %}
+{% set version = "1.36.0" %}
 {% set name = "miRLAB" %}
-{% set bioc = "3.17" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 744b41ef84de2faa12cad1caefcae543
+about:
+  description: Provide tools exploring miRNA-mRNA relationships, including popular miRNA target prediction methods, ensemble methods that integrate individual methods, functions to get data from online resources, functions to validate the results, and functions to conduct enrichment analyses.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Dry lab for exploring miRNA-mRNA relationships
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
+  run_exports: '{{ pin_subpackage("bioconductor-mirlab", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: knitr,BiocGenerics, AnnotationDbi,RUnit,rmarkdown
 requirements:
+
   host:
-    - 'bioconductor-category >=2.66.0,<2.67.0'
-    - 'bioconductor-ctc >=1.74.0,<1.75.0'
-    - 'bioconductor-gostats >=2.66.0,<2.67.0'
-    - 'bioconductor-impute >=1.74.0,<1.75.0'
-    - 'bioconductor-limma >=3.56.0,<3.57.0'
-    - 'bioconductor-org.hs.eg.db >=3.17.0,<3.18.0'
-    - 'bioconductor-summarizedexperiment >=1.30.0,<1.31.0'
-    - 'bioconductor-tcgabiolinks >=2.28.0,<2.29.0'
+    - bioconductor-category >=2.72.0,<2.73.0
+    - bioconductor-ctc >=1.80.0,<1.81.0
+    - bioconductor-gostats >=2.72.0,<2.73.0
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-tcgabiolinks >=2.34.0,<2.35.0
     - r-base
     - r-dplyr
     - r-energy
@@ -41,15 +45,16 @@ requirements:
     - r-pcalg
     - r-rcurl
     - r-stringr
+
   run:
-    - 'bioconductor-category >=2.66.0,<2.67.0'
-    - 'bioconductor-ctc >=1.74.0,<1.75.0'
-    - 'bioconductor-gostats >=2.66.0,<2.67.0'
-    - 'bioconductor-impute >=1.74.0,<1.75.0'
-    - 'bioconductor-limma >=3.56.0,<3.57.0'
-    - 'bioconductor-org.hs.eg.db >=3.17.0,<3.18.0'
-    - 'bioconductor-summarizedexperiment >=1.30.0,<1.31.0'
-    - 'bioconductor-tcgabiolinks >=2.28.0,<2.29.0'
+    - bioconductor-category >=2.72.0,<2.73.0
+    - bioconductor-ctc >=1.80.0,<1.81.0
+    - bioconductor-gostats >=2.72.0,<2.73.0
+    - bioconductor-impute >=1.80.0,<1.81.0
+    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-org.hs.eg.db >=3.20.0,<3.21.0
+    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-tcgabiolinks >=2.34.0,<2.35.0
     - r-base
     - r-dplyr
     - r-energy
@@ -62,13 +67,16 @@ requirements:
     - r-pcalg
     - r-rcurl
     - r-stringr
+
+source:
+  md5: 1f3860b3bbf7168a19ff63930870bf1d
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>=2)'
-  summary: 'Dry lab for exploring miRNA-mRNA relationships'
-  description: 'Provide tools exploring miRNA-mRNA relationships, including popular miRNA target prediction methods, ensemble methods that integrate individual methods, functions to get data from online resources, functions to validate the results, and functions to conduct enrichment analyses.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

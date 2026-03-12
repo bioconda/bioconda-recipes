@@ -147,7 +147,7 @@ def _gen_new_index(repodata, subdir):
                     deps[i] = 'bokeh >=2.4,<3'
                     break
 
-        # Pin all old packages that do not have a pin to openssl 1.1.1 which should have been available 
+        # Pin all old packages that do not have a pin to openssl 1.1.1 which should have been available
         # TODO once we have updated to openssl 3, below timestamp should be updated
         if has_dep(record, "openssl") and record.get("timestamp", 0) < 1678355208942:
             for i, dep in enumerate(deps):
@@ -165,11 +165,17 @@ def _gen_new_index(repodata, subdir):
         if record_name.startswith('samtools') and record['subdir']=='linux-64' and not has_dep(record, "openssl") and not has_dep(record, "htslib"):
             deps.append('openssl >=1.1.0,<=1.1.1')
 
+        # future HTSlib versions are binary compatible until they bump their soversion
+        if has_dep(record, 'htslib'):
+            # skip deps prior to 1.10, which was the first with soversion 3
+            # TODO adjust replacement (exclusive) upper bound with each new compatible HTSlib
+            _pin_looser(fn, record, 'htslib', min_lower_bound='1.10', upper_bound='1.24')
+
         # future libdeflate versions are compatible until they bump their soversion; relax dependencies accordingly
-        if record_name in ['htslib', 'staden_io_lib', 'fastp'] and has_dep(record, 'libdeflate'):
+        if record_name in ['htslib', 'staden_io_lib', 'fastp', 'pysam'] and has_dep(record, 'libdeflate'):
             # skip deps that allow anything <1.3, which contained an incompatible library filename
             # TODO adjust the replacement (exclusive) upper bound each time a compatible new libdeflate is released
-            _pin_looser(fn, record, 'libdeflate', min_lower_bound='1.3', upper_bound='1.19')
+            _pin_looser(fn, record, 'libdeflate', min_lower_bound='1.3', upper_bound='1.26')
 
         # nanosim <=3.1.0 requires scikit-learn<=0.22.1
         if record_name.startswith('nanosim') and has_dep(record, "scikit-learn") and version <= "3.1.0":
@@ -177,6 +183,28 @@ def _gen_new_index(repodata, subdir):
                 if dep.startswith("scikit-learn") and has_no_upper_bound(dep):
                     deps[i] += ",<=0.22.1"  # append an upper bound
                     break
+
+        # snakemake <8.1.2 requires pulp <2.8.0
+        if record_name == 'snakemake-minimal' and has_dep(record, "pulp") and version < "8.1.2":
+            for i, dep in enumerate(deps):
+                if dep.startswith("pulp") and has_no_upper_bound(dep):
+                    deps[i] = "pulp >=2.0,<2.8.0"
+
+        # snakemake requires pandas <3
+        if record_name.startswith('snakemake') and has_dep(record, "pandas"):
+            for i, dep in enumerate(deps):
+                if dep == "pandas":
+                    deps[i] = "pandas <3"
+                elif dep.startswith("pandas") and has_no_upper_bound(dep):
+                    deps[i] += ",<3"
+
+        # scprep <=1.2.3 requires pandas <2.1
+        if record_name == 'scprep' and has_dep(record, "pandas") and version <= "1.2.3":
+            for i, dep in enumerate(deps):
+                if dep == "pandas":
+                    deps[i] = "pandas <2.1"
+                elif dep.startswith("pandas") and has_no_upper_bound(dep):
+                    deps[i] += ",<2.1"
 
     return index
 

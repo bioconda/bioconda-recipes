@@ -1,0 +1,58 @@
+{% set name = "tides-ml" %}
+{% set version = "1.3.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/TIdeS-ML-{{ version }}.tar.gz
+  sha256: f655bdddeb2d097c287657183b8032753623a42aa07248469145f2d6d8bf19e2
+
+build:
+  entry_points:
+    - tides = tides.tides:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.7,<=3.11
+    - pip
+  run:
+    - python >=3.7,<=3.11
+    - biopython ==1.79
+    - ete3 >=3.1.2
+    - optuna >=3.1.1
+    - pandas ==2.1.1
+    - seaborn-base >=0.12.2
+    - scikit-learn >=1.5.0
+    - diamond >=2.1.3
+    - cd-hit >=4.8.1
+    - barrnap >=0.9
+    - kraken2 >=2.1.0
+
+test:
+  imports:
+    - tides
+  commands:
+    - cd-hit --help | grep 'Usage' > /dev/null
+    - diamond --help 2>&1 > /dev/null
+    - (barrnap --help 2>&1; true) | grep -q Options
+    - tides --help
+    - kraken2 --version
+
+about:
+  home: https://github.com/xxmalcala/TIdeS
+  summary: "Tool for ORF-calling and ORF-classification using ML approaches."
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/xxmalcala/TIdeS
+
+extra:
+  recipe-maintainers:
+    - xxmalcala

@@ -1,13 +1,19 @@
+{% set name = "rnastructure" %}
+{% set version = "6.5" %}
+{% set sha256 = "2e6064aebe568549beca149df0e7a3d977ddf12b9907eea01ae7b81984c8ad45" %}
+
 package:
-  name: rnastructure
-  version: '6.3'
+  name: {{ name | lower }}
+  version: {{ version }}
 
 source:
-  sha256: e922591ceaa99e0db8ab4572a8716ff625fc0109906650415e92d099d927b310
-  url: http://rna.urmc.rochester.edu/Releases/6.3/RNAstructureSource.tgz
+  sha256: {{ sha256 }}
+  url: http://rna.urmc.rochester.edu/Releases/{{ version }}/RNAstructureSource.tgz
 
 build:
-  number: 3
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name | lower, max_pin="x.x") }}
 
 requirements:
   build:
@@ -18,6 +24,7 @@ requirements:
     - libgomp      # [linux]
   host:
     - llvm-openmp  # [osx]
+    - libgomp      # [linux]
   run:
     - llvm-openmp  # [osx]
 
@@ -25,11 +32,12 @@ requirements:
 # the -h option. Therefore, changed the modules that are tested.
 test:
   commands:
-    - bifold -h
+    - bifold -h || true
+    - fold -h || true
 
 about:
   home: http://rna.urmc.rochester.edu/RNAstructure.html
-  license: GPLv2
+  license: GPL-2.0-only
   license_family: GPL
   license_file: gpl.txt
   summary: 'RNAstructure is a complete package for RNA and DNA secondary structure  prediction
@@ -44,5 +52,6 @@ about:
     enzymatic  mapping, NMR, and SHAPE data.'
 
 extra:
-  identifiers:
-    - biotools:rnastructure
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,0 +1,39 @@
+{% set name = "isonform" %}
+{% set version = "0.3.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/isONform-{{ version }}.tar.gz
+  sha256: fb96c32e0ce177bf7866b7a19fa6855b1e9fac8f8f164cdccc972e284fbcce47
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("isonform", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - recordclass >=0.17.2
+    - networkx >=2.7.1
+    - parasail-python >=1.3.3
+    - edlib >=1.1.2
+    - spoa
+
+test:
+  commands:
+    - isONform_parallel --help
+
+about:
+  home: https://github.com/aljpetri/isONform
+  summary: De novo construction of isoforms from long-read data
+  license: GPL-3.0
+  license_file: LICENSE

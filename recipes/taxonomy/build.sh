@@ -1,17 +1,14 @@
 #!/bin/bash
 
-set -ex
+set -euo
 
-if [ `uname` == Darwin ]; then
-  export HOME=`mktemp -d`
-fi
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
-curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --profile=minimal -y
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
-export PATH="$HOME/.cargo/bin:$PATH"
+# build statically linked binary with Rust
+RUST_BACKTRACE=1
+maturin build --interpreter "${PYTHON}" --release --strip -b pyo3
 
-export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="$CC"
-
-maturin build --interpreter python --release #--cargo-extra-args="--features=python"
-
-$PYTHON -m pip install target/wheels/*.whl --no-deps --ignore-installed -vv
+${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv

@@ -1,0 +1,51 @@
+{% set name = "wtv" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/wtv-{{ version }}.tar.gz
+  sha256: a37234a8235c6c39f3e5d80033cc102dc6c37a92ac409b2e851185b952375ac7
+
+build:
+  entry_points:
+    - wtv-cli = wtv.cli:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  number: 0
+  run_exports:
+  - {{ pin_subpackage('wtv', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.13
+    - poetry-core
+    - pip
+  run:
+    - python >=3.10,<3.13
+    - numpy >=2.0.0
+    - pandas >=2.2.3,<3.0.0
+    - matchms >=0.30.2,<0.31.0
+    - lxml <6.0.0
+    - rdkit <2025.0.0
+
+test:
+  imports:
+    - wtv
+  commands:
+    - wtv-cli --help
+
+about:
+  summary: "A library and CLI for ion selection in mass spectrometry data."
+  home: "https://recetox.github.io/wtv"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: LICENSE
+  doc_url: "https://recetox.github.io/wtv"
+  
+extra:
+  recipe-maintainers:
+    - acquayefrank
+    - hechth

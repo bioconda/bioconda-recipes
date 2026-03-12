@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "metagxovarian-1.20.0"
+installBiocDataPackage.sh "metagxovarian-1.26.0"

@@ -1,0 +1,52 @@
+{% set name = "predictosaurus" %}
+{% set version = "0.10.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/fxwiegand/predictosaurus/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 0a61c68f489f2790cf8ee25354548478040519c993591ee01c4b0880788e1da2
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('predictosaurus', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - pkg-config
+    - make
+    - cmake
+    - clangdev <22
+  host:
+    - gsl
+    - libcblas
+    - libcurl
+    - openssl  # [not osx]
+
+test:
+  commands:
+    - predictosaurus --help
+
+about:
+  home: "https://github.com/fxwiegand/predictosaurus"
+  license: MIT
+  license_family: MIT
+  summary: "Predictosaurus is a command-line tool designed for uncertainty-aware haplotype-based genomic variant effect prediction."
+  dev_url: "https://github.com/fxwiegand/predictosaurus"
+  doc_url: "https://github.com/fxwiegand/predictosaurus/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - fxwiegand
+    - felixmoelder
+    - johanneskoester

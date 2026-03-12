@@ -1,4 +1,4 @@
-{% set version = "1.5.7" %} # put in correct version here
+{% set version = "1.7.3" %} # put in correct version here
 {% set name = "shiver" %}
 
 package:
@@ -6,11 +6,12 @@ package:
   version: {{ version }}
 source:
   url: https://github.com/ChrisHIV/{{ name|lower }}/archive/v{{ version }}.tar.gz
-  sha256: 64973462bfc10c725ef5f21e85532ef8dd58d26795b2cee326a77f690d31ebf0
-  patches:
-    - python2-python3.patch
+  sha256: 4d373bf4d257e52ea1cc548c492bfe654dc677c65df1d07402f898f73c9f1c65
 build:
-  number: 1
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('shiver', max_pin="x") }}
 
 
 requirements:
@@ -21,16 +22,18 @@ requirements:
     - samtools
     - biopython
     - mafft
-    - picard
     - blast >=2.2.28
     - pyfastaq
+    - six
+    - pandas
+    - bc
 
 test:
   commands:
-    - shiver_init.sh 2>&1 | grep "Arguments"
-    - shiver_full_auto.sh 2>&1 | grep "Arguments"
-    - shiver_align_contigs.sh 2>&1 | grep "Arguments"
-    - shiver_map_reads.sh 2>&1 | grep "Arguments"
+    - shiver_init.sh --test $PREFIX/bin/config.sh
+    - shiver_align_contigs.sh --test $PREFIX/bin/config.sh
+    - shiver_map_reads.sh --test $PREFIX/bin/config.sh paired
+    - $PREFIX/bin/tools/TestPythonModulesInstalled.py
 
 about:
   home: https://github.com/ChrisHIV/shiver
@@ -43,3 +46,4 @@ extra:
   recipe-maintainers:
     - notestaff
     - gtonkinhill
+    - chrishiv

@@ -1,0 +1,57 @@
+{% set name = "qimba" %}
+{% set version = "0.4.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+source:
+  url: https://github.com/quadram-institute-bioscience/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b08f8ac39b15be7d4a5d70ff9f855df2ebb9c63ee474b32406e8af859f4816fc
+
+requirements:
+  host:
+    - pip
+    - python >=3.9
+    - setuptools >=64.0
+  run:
+    - click >=8.0
+    - dnaio >=1.1
+    - configparser
+    - xopen >=2.0 
+    - python >=3.9
+    - seqfu >1.20
+    - pandas >=2.0.0
+    - cd-hit >=4.8.1
+    - fastp
+    - cutadapt >=3.5
+    - usearch
+    - kraken2 
+    - minimap2 >=2.1
+    - mafft >=7.0
+    - fasttree >=2.0
+
+test:
+  imports:
+    - qimba
+  commands:
+    - qimba version | grep {{ version }}
+  requires:
+    - pip
+
+about:
+  home: https://github.com/quadram-institute-bioscience/qimba
+  summary: Toolkit for metabarcoding analyses
+  license: MIT
+
+
+extra:
+  recipe-maintainers:
+    - telatin

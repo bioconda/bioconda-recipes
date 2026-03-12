@@ -1,4 +1,14 @@
 #!/bin/bash
-chmod a+x vcfanno*
-mkdir -p $PREFIX/bin
-cp vcfanno* $PREFIX/bin/vcfanno
+
+export CGO_ENABLED=0
+export GOPATH="${PWD}"
+export GOCACHE="${PWD}/.cache"
+
+mkdir -p "${GOCACHE}"
+mkdir -p "${PREFIX}/bin"
+
+go get .
+
+make build
+
+install -v -m 0755 vcfanno* "${PREFIX}/bin"

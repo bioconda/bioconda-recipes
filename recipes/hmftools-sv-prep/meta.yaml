@@ -1,27 +1,29 @@
-{% set version = "1.1" %}
-{% set sha256 = "e7487a16c609ad4d9f3b2d29ebada02b04fbd3bef3dacd26f228bb1928d5606e" %}
+{% set version = "1.2.4" %}
+{% set sha256 = "c6a49845968802c338cacd3778d3ab1f3eb21be9d7483115fea259db35015c86" %}
 
 package:
   name: hmftools-sv-prep
   version: '{{ version }}'
 
 source:
-  url: 'https://github.com/hartwigmedical/hmftools/releases/download/sv-prep-v{{ version }}/sv-prep_v{{ version }}.jar'
+  url: https://github.com/hartwigmedical/hmftools/releases/download/sv-prep-v{{ version }}/sv-prep_v{{ version }}.jar
   sha256: '{{ sha256 }}'
 
 build:
   noarch: generic
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('hmftools-sv-prep', max_pin="x") }}
 
 requirements:
   run:
     - zlib
     - openjdk >=8
-    - samtools
+    - gridss =2.13.2=h50ea8bc_3
 
 test:
   commands:
-    - 'SvPrep 2>&1 | grep -q "SvPrep version"'
+    - 'svprep -version | grep SvPrep'
 
 about:
   home: https://github.com/hartwigmedical/hmftools/tree/master/sv-prep

@@ -1,0 +1,55 @@
+{% set version = "1.0.1" %}
+
+package:
+  name: ntstat
+  version: {{ version }}
+
+source:
+  url: https://github.com/bcgsc/ntStat/releases/download/v{{ version }}/ntStat-{{ version }}.tar.gz
+  sha256: 4cf215c15c2b1035c40a453372e39c3a87c37c4b09b5716ef5a07bba96f9cb99
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('ntstat', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - meson
+    - meson-python
+    - cmake
+    - python
+  host:
+    - python
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - btllib >=1.7.2
+    - cpp-argparse
+    - cpp-tabulate
+    - indicators
+    - pybind11
+  run:
+    - python
+    - ntcard
+    - btllib >=1.7.2
+    - matplotlib-base
+    - numpy
+    - scipy
+    - tabulate
+
+test:
+  commands:
+    - ntstat --version
+    - ntstat count --help
+
+about:
+  home: https://github.com/bcgsc/ntStat
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  summary: 'a toolkit for statistical analysis of k-mer frequency and depth'
+
+extra:  
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

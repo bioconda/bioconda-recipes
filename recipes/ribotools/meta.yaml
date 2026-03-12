@@ -1,0 +1,77 @@
+{% set name = "ribotools" %}
+{% set version = "2.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/ribotools-{{ version }}.tar.gz
+  sha256: aa0619ebb6a18193e6b665cd173d5275cd1d22f1f9ea4a7068269dbc233b79a3
+
+build:
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  noarch: python
+  number: 0
+  entry_points:
+    - get-all-bam-periodic = ribotools.pgrms.get_all_bam_periodic:main
+    - get-gtf-from-predictions = ribotools.pgrms.get_gtf_from_predictions:main
+    - run-htseq-workflow = ribotools.htseq_wf.run_htseq_workflow:main
+    - alignment-workflow = ribotools.htseq_wf.alignment_workflow:main
+    - get-ribo-periodic = ribotools.htseq_wf.get_ribo_periodic:main
+    - keep-ribo-periodic = ribotools.htseq_wf.keep_ribo_periodic:main
+    - call-htseq-count = ribotools.htseq_wf.call_htseq_count:main
+    - get-sample-table = ribotools.scripts.__main__:get_sample_table
+    - run-tea = ribotools.scripts.__main__:run_tea
+    - run-dea = ribotools.scripts.__main__:run_dea
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11,<3.14
+    - pip
+    - setuptools
+  run:
+    - python >=3.11,<3.14
+    - rpbp >=4.0.1
+    - htseq
+    - r-base >=4.4.3
+    - r-r.utils
+    - r-devtools
+    - r-tidyverse
+    - r-openxlsx
+    - r-yaml
+    - r-ashr
+    - r-argparser
+    - bioconductor-ihw
+    - bioconductor-apeglm
+    - bioconductor-deseq2
+
+test:
+  imports:
+    - ribotools
+    - ribotools.utils
+    - ribotools.htseq_wf
+    - ribotools.pgrms
+  commands:
+    - get-all-bam-periodic --help
+    - get-gtf-from-predictions --help
+    - run-htseq-workflow --help
+    - alignment-workflow --help
+    - get-ribo-periodic --help
+    - keep-ribo-periodic --help
+    - call-htseq-count --help
+
+about:
+  home: "https://github.com/eboileau/ribotools"
+  summary: "Ribotools: a toolbox for translation efficiency (TE) and differential expression (DE) analyses."
+  doc_url: "https://ribotools.readthedocs.io/en/latest"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: "https://github.com/eboileau/ribotools"
+
+extra:
+  recipe-maintainers:
+    - eboileau

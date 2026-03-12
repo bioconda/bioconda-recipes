@@ -1,0 +1,41 @@
+{% set name = "pvga" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: d5a03120c998d547a1fcef4f6b6a53fa8a0441e9ea1828844b31b3d06ccf0c4a
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - pvga=pvga:main
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage('pvga', exact=True) }} 
+requirements:
+  host:
+    - python 
+    - pip
+    - setuptools
+  run:
+    - python =3.10
+    - numpy >=1.21
+    - pandas >=1.5
+    - biopython >=1.85
+    - networkx >=3.1
+
+test:
+  imports:
+    - pvga
+  commands:
+    - pvga --help
+
+about:
+  home: "https://github.com/SoSongzhi/PVGA"
+  license: MIT
+  summary: "PVGA is a powerful virus-focused assembler that does both assembly and polishing."

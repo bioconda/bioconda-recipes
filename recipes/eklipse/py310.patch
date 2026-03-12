@@ -1,0 +1,122 @@
+diff -upr a/eKLIPse_circos.py b/eKLIPse_circos.py
+--- a/eKLIPse_circos.py	2025-06-25 13:52:57.472534371 +0100
++++ b/eKLIPse_circos.py	2025-06-25 14:14:51.106975741 +0100
+@@ -1,7 +1,6 @@
+ import sys
+ import os
+ import shutil
+-from string import split
+ from eKLIPse_fct import *
+ 
+ 
+@@ -166,4 +165,4 @@ def circosPlot(titleBam,dicoInit,lstErro
+             lstError.append("PlotThread \""+titleBam+"\": any output .png created (check log file)")
+     except: 
+         exc_type, exc_value, exc_traceback = sys.exc_info()
+-        lstError.append("PlotThread \""+titleBam+"\": "+str(exc_value)+" (line "+str(exc_traceback.tb_lineno)+")")
+\ No newline at end of file
++        lstError.append("PlotThread \""+titleBam+"\": "+str(exc_value)+" (line "+str(exc_traceback.tb_lineno)+")")
+Only in b: eKLIPse_circos.py~
+diff -upr a/eKLIPse_fct.py b/eKLIPse_fct.py
+--- a/eKLIPse_fct.py	2025-06-25 13:52:57.459534225 +0100
++++ b/eKLIPse_fct.py	2025-06-25 14:08:08.823175321 +0100
+@@ -2,7 +2,7 @@ import sys
+ import os
+ import glob
+ import json
+-from string import split
++
+ 
+ 
+ #=================================================================================================================================================#
+Only in b: eKLIPse_fct.py~
+diff -upr a/eKLIPse_sc.py b/eKLIPse_sc.py
+--- a/eKLIPse_sc.py	2025-06-25 13:52:57.459534225 +0100
++++ b/eKLIPse_sc.py	2025-06-25 14:14:30.700987364 +0100
+@@ -2,7 +2,6 @@ import json
+ import os
+ import sys
+ import pybam
+-from string import split
+ from eKLIPse_fct import *
+ 
+ 
+Only in b: eKLIPse_sc.py~
+diff -upr a/pybam.py b/pybam.py
+--- a/pybam.py	2025-06-25 13:52:57.459534225 +0100
++++ b/pybam.py	2025-06-25 14:29:50.900849159 +0100
+@@ -100,7 +100,7 @@ Github:     http://github.com/JohnLongin
+ [ Force Internal bgzip Decompressor ]
+   my_bam = pybam.read('/my/data.bam',decompressor='internal')
+ [ Parse Words (hah) ]'''
+-wat += '\n'+''.join([('\n===============================================================================================\n\n  ' if code is 'file_alignments_read' or code is 'sam' else '  ')+(code+' ').ljust(25,'-')+description+'\n' for code,description in sorted(parse_codes.items())]) + '\n'
++wat += '\n'+''.join([('\n===============================================================================================\n\n  ' if code == 'file_alignments_read' or code == 'sam' else '  ')+(code+' ').ljust(25,'-')+description+'\n' for code,description in sorted(parse_codes.items())]) + '\n'
+ 
+ class read:
+     '''
+@@ -135,7 +135,7 @@ class read:
+         self.file_chromosome_lengths = {}
+ 
+         if fields is not False:
+-            if type(fields) is not list or len(fields) is 0:
++            if type(fields) is not list or len(fields) == 0:
+                 raise PybamError('\n\nFields for the static parser must be provided as a non-empty list. You gave a ' + str(type(fields)) + '\n')
+             else:
+                 for field in fields:
+@@ -147,7 +147,7 @@ class read:
+ 
+         if decompressor:
+             if type(decompressor) is str:
+-                 if decompressor is not 'internal' and '{}' not in decompressor: raise PybamError('\n\nWhen a custom decompressor is used and the input file is a string, the decompressor string must contain at least one occurence of "{}" to be substituted with a filepath by pybam.\n')
++                 if decompressor != 'internal' and '{}' not in decompressor: raise PybamError('\n\nWhen a custom decompressor is used and the input file is a string, the decompressor string must contain at least one occurence of "{}" to be substituted with a filepath by pybam.\n')
+             else: raise PybamError('\n\nUser-supplied decompressor must be a string that when run on the command line decompresses a named file (or stdin), to stdout:\ne.g. "lzma --decompress --stdout {}" if pybam is provided a path as input file, where {} is substituted for that path.\nor just "lzma --decompress --stdout" if pybam is provided a file object instead of a file path, as data from that file object will be piped via stdin to the decompression program.\n')
+ 
+         ## First we make a generator that will return chunks of uncompressed data, regardless of how we choose to decompress:
+@@ -184,7 +184,7 @@ class read:
+ 
+             elif magic == "\x1f\x8b\x08\x04":  # The user has passed us compressed gzip/bgzip data, which is typical for a BAM file
+                 # use custom decompressor if provided:
+-                if decompressor is not False and decompressor is not 'internal':
++                if decompressor is not False and decompressor != 'internal':
+                     if type(f) is str: self._subprocess = subprocess.Popen(                                    decompressor.replace('{}',f),    shell=True, stdout=subprocess.PIPE, stderr=DEVNULL)
+                     else:              self._subprocess = subprocess.Popen('{ printf "'+magic+'"; cat; } | ' + decompressor, stdin=self._file, shell=True, stdout=subprocess.PIPE, stderr=DEVNULL)
+                     self.file_decompressor = decompressor
+@@ -211,7 +211,7 @@ class read:
+                             use = 'gzip'
+                         except OSError: use = 'internal'
+ 
+-                    if use is not 'internal' and decompressor is not 'internal':
++                    if use != 'internal' and decompressor != 'internal':
+                         if type(f) is str: self._subprocess = subprocess.Popen([                                   use , '--decompress','--stdout',       f           ], stdout=subprocess.PIPE, stderr=DEVNULL)
+                         else:              self._subprocess = subprocess.Popen('{ printf "'+magic+'"; cat; } | ' + use + ' --decompress  --stdout', stdin=f, shell=True, stdout=subprocess.PIPE, stderr=DEVNULL)
+                         time.sleep(1)
+@@ -286,7 +286,7 @@ class read:
+                     if internal_cache != '': yield ''.join(internal_cache)
+                     raise StopIteration
+ 
+-            elif decompressor is not False and decompressor is not 'internal':
++            elif decompressor is not False and decompressor != 'internal':
+                 # It wouldn't be safe to just print to the shell four random bytes from the beginning of a file, so instead it's
+                 # written to a temp file and cat'd. The idea here being that we trust the decompressor string as it was written by 
+                 # someone with access to python, so it has system access anyway. The file/data, however, should not be trusted.
+@@ -724,4 +724,4 @@ class read:
+ 
+ 
+ class PybamWarn(Exception): pass
+-class PybamError(Exception): pass
+\ No newline at end of file
++class PybamError(Exception): pass
+Only in b: pybam.py~
+diff -upr a/tabulate.py b/tabulate.py
+--- a/tabulate.py	2025-06-25 13:52:57.472534371 +0100
++++ b/tabulate.py	2025-06-25 13:53:21.856804789 +0100
+@@ -4,7 +4,8 @@
+ 
+ 
+ 
+-from collections import namedtuple, Iterable
++from collections import namedtuple
++from collections.abc import Iterable
+ from platform import python_version_tuple
+ import re
+ 
