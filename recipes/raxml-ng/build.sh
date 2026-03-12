@@ -3,7 +3,7 @@
 # pthreads
 mkdir build_pthreads
 pushd build_pthreads
-   cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
+   cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DUSE_VCF=ON -DUSE_TERRAPHAST=ON ..
    make -j ${CPU_COUNT}
    install -d ${PREFIX}/bin
    install ../bin/raxml-ng ${PREFIX}/bin
@@ -14,7 +14,7 @@ if [ ! "$(uname)" = 'Darwin' ]
 then
   mkdir build_mpi
   pushd build_mpi
-     CXX=mpicxx cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DUSE_MPI=ON ..
+     CXX=mpicxx cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DUSE_MPI=ON -DUSE_TERRAPHAST=ON -DUSE_VCF=ON -DRAXML_BINARY_NAME=raxml-ng-mpi ..
      make -j ${CPU_COUNT}
      install -d ${PREFIX}/bin
      install ../bin/raxml-ng-mpi ${PREFIX}/bin
