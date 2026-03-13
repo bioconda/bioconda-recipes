@@ -20,12 +20,12 @@ if [ "$OS" = "Linux" ]; then
     cp -rv ${PYPY_DIR} $PREFIX/bin/pypy3.11
     ln -s $PREFIX/bin/pypy3.11/bin/pypy $PREFIX/bin/pypy3
     ln -s $PREFIX/bin/pypy3.11/bin/pypy $PREFIX/bin/pypy
-fi
 
 $PREFIX/bin/pypy3 -m ensurepip
 MPMATH_SRC=$(python -c "import mpmath, os; print(os.path.dirname(mpmath.__file__))")
 PYPY_SITE=$(${PREFIX}/bin/pypy3 -c "import site; print(site.getsitepackages()[0])")
 cp -r ${MPMATH_SRC} ${PYPY_SITE}/
+fi
 
 
 make CC=${GCC} CXX=${GXX}  PREFIX=${PREFIX}
