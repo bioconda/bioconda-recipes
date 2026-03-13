@@ -28,7 +28,7 @@ cp -r ${MPMATH_SRC} ${PYPY_SITE}/
 fi
 
 
-make CC=${GCC} CXX=${GXX}  PREFIX=${PREFIX}
+make CC=${CC} CXX=${CXX}  PREFIX=${PREFIX}
 cp  longphase libclair3* $PREFIX/bin
 
 mkdir -p $PREFIX/bin/models
