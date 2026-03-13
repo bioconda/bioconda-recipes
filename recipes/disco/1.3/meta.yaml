@@ -1,0 +1,49 @@
+{% set version = "1.3" %}
+{% set md5 = "8aac8c8efd2146aa24b26fb1729a4163" %}
+
+package:
+  name: disco
+  version: {{ version }}
+
+source:
+  url: https://github.com/abiswas-odu/Disco/archive/{{ version }}.tar.gz
+  md5: {{ md5 }}
+  patches:
+    - 0001-Replace-g++-by-CXX.patch
+    - sstr.patch
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+  host:
+    - openmpi >=1.8
+    - openssh
+    - zlib
+  run:
+    - openmpi >=1.8
+    - openssh
+    - zlib
+    - biopython
+    - bbmap
+
+test:
+  commands:
+    - runDisco.sh -h 2>&1 | grep "runDisco"
+    - runAssembly.sh -h 2>&1 | grep "runDisco"
+    - runECC.sh -h 2>&1 | grep "runDisco"
+    - buildG --help
+    - buildG-MPI --help
+    - buildG-MPIRMA --help
+    - fullsimplify --help
+
+about:
+  home: http://disco.omicsbio.org/
+  license: 'GPL-3.0'
+  summary: 'Multi-threaded Distributed Memory Overlap-Layout-Consensus (OLC) Metagenome Assembler'
