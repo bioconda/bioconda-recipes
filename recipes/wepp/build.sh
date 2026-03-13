@@ -28,7 +28,7 @@ install -v -m 0755 build/wepp "${PREFIX}/bin/wepp"
 
 # Copy WEPP files to $PREFIX/WEPP
 mkdir -p ${PREFIX}/WEPP
-cp -rf "${SRC_DIR}/src" "${SRC_DIR}/config" "${SRC_DIR}/workflow" "${SRC_DIR}/LICENSE" "${SRC_DIR}/parsimony.proto" "${SRC_DIR}/sam.proto" "${PREFIX}/WEPP/"
+cp -rf "${SRC_DIR}/src" "${SRC_DIR}/config" "${SRC_DIR}/workflow" "${SRC_DIR}/primers" "${SRC_DIR}/LICENSE" "${SRC_DIR}/parsimony.proto" "${SRC_DIR}/sam.proto" "${PREFIX}/WEPP/"
 
 # Copy the compiled binary we just built 
 mkdir -p "${PREFIX}/WEPP/build"
