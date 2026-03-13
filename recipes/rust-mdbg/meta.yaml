@@ -4,21 +4,24 @@ package:
   name: rust-mdbg
   version: {{ version }}
 
-build:
-  number: 4
-
 source:
   url: https://github.com/ekimb/rust-mdbg/archive/v{{ version }}.tar.gz
   sha256: c9c0d2980fff402ee78b5c537140aa2a92aceea74e2f206439c7a42211cbd80b
+  patches:
+    - 0001-master.patch
+
+build:
+  number: 5
+  run_exports:
+    - {{ pin_subpackage('rust-mdbg' ,max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler("cxx") }}
-    - rust>=1.39
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
     - pkg-config
-  host:
-  run:
-    
 
 test:
   commands:
@@ -26,12 +29,15 @@ test:
     - to_basespace --help
 
 about:
-  home: https://github.com/ekimb/rust-mdbg
+  home: "https://github.com/ekimb/rust-mdbg"
   license: MIT
-  summary: |
-    An ultra-fast minimizer-space de Bruijn graph (mdBG) implementation, geared towards the assembly of long and accurate reads.
+  license_family: MIT
+  summary: "An ultra-fast minimizer-space de Bruijn graph (mdBG) implementation."
+  dev_url: "https://github.com/ekimb/rust-mdbg"
 
 extra:
   recipe-maintainers:
     - thanhleviet
-
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
