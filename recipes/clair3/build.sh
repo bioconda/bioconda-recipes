@@ -28,7 +28,6 @@ PYPY_SITE=$(${PREFIX}/bin/pypy3 -c "import site; print(site.getsitepackages()[0]
 cp -r ${MPMATH_SRC} ${PYPY_SITE}/
 
 
-pip install --no-deps --no-build-isolation .
 make CC=${GCC} CXX=${GXX}  PREFIX=${PREFIX}
 cp  longphase libclair3* $PREFIX/bin
 
