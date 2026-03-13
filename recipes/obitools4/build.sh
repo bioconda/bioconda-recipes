@@ -1,44 +1,56 @@
 #!/bin bash
 
-set -xe
+set -eo
 
-mkdir -p $PREFIX/bin
+# The author provides the binaries and the source code in the tarball
+# There is a protection mechanism in GO that prevents re-builds. Disable it
+go env -w GOFLAGS=-buildvcs=false
+
 
 if [ "$(uname)" == "Darwin" ]; then
-    make "CGO_CFLAGS=$CGO_CFLAGS -I${CONDA_PREFIX}/include"
+    make "CGO_CFLAGS=$CGO_CFLAGS -I$CONDA_PREFIX/include"
 else
-    make "CGO_CFLAGS=$CGO_CFLAGS -L$CONDA_PREFIX/lib -I$CONDA_PREFIX/include"
+    make "CGO_CFLAGS=$CGO_CFLAGS -I$CONDA_PREFIX/include -L$CONDA_PREFIX/lib" 
 fi
 
 
-cp \
-    build/obiannotate \
-    build/obiclean \
-    build/obicleandb \
-    build/obicomplement \
-    build/obiconsensus \
-    build/obiconvert \
-    build/obicount \
-    build/obicsv \
-    build/obidemerge \
-    build/obidistribute \
-    build/obigrep \
-    build/obijoin \
-    build/obikmermatch \
-    build/obikmersimcount \
-    build/obilandmark \
-    build/obimatrix \
-    build/obimicrosat \
-    build/obimultiplex \
-    build/obipairing \
-    build/obipcr \
-    build/obireffamidx \
-    build/obirefidx \
-    build/obiscript \
-    build/obisplit \
-    build/obisummary \
-    build/obitag \
-    build/obitagpcr \
-    build/obitaxonomy \
-    build/obiuniq \
-    ${PREFIX}/bin/
+mkdir -p "$PREFIX/bin"
+
+tools=(
+    obiannotate
+    obiclean
+    obicleandb
+    obicomplement
+    obiconsensus
+    obiconvert
+    obicount
+    obicsv
+    obidemerge
+    obidistribute
+    obigrep
+    obijoin
+    obik
+    obikmermatch
+    obikmersimcount
+    obilandmark
+    obimatrix
+    obimicrosat
+    obimultiplex
+    obipairing
+    obipcr
+    obireffamidx
+    obirefidx
+    obiscript
+    obisplit
+    obisummary
+    obitag
+    obitagpcr
+    obitaxonomy
+    obiuniq 
+)
+
+for tool in "${tools[@]}" ; do
+
+    cp build/$tool ${PREFIX}/bin/$tool
+
+done
