@@ -1,0 +1,43 @@
+{% set version = "1.1.0" %}
+{% set commit = "3c9fb01e78375a60e3e542dcf4afb1de1cac4b69" %}
+{% set sha256 = "dd21f7c55c55a2f9871a0f44a448dbba48e1b800a7c4174ff01362ded197beb9" %}
+
+package:
+  name: filo
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/arq5x/filo/archive/refs/heads/master.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('filo', max_pin='x') }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+
+test:
+  commands:
+    - stats -h 2>&1 | grep -q "Program: stats"
+    - groupBy -h 2>&1 | grep -qi "Tool"
+
+about:
+  home: https://github.com/arq5x/filo
+  license: MIT
+  license_family: MIT
+  summary: Useful FILe and stream Operations (stats, groupBy, shuffle)
+  description: >-
+    filo provides useful file and stream operations including stats
+    (descriptive statistics on a column), groupBy (database-style groupBy
+    operations on tab-delimited files), and shuffle (randomize line order).
+  dev_url: https://github.com/arq5x/filo
+
+extra:
+  additional-platforms:
+    - linux-aarch64
