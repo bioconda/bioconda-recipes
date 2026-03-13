@@ -28,10 +28,13 @@ if [ "$OS" = "Linux" ]; then
 fi
 
 if [ "$OS" = "Linux" ]; then
-ln -sf ${PREFIX}/bin/longphase ${SRC_DIR}/longphase
-fi 
+    ln -sf ${PREFIX}/bin/longphase ${SRC_DIR}/longphase
+fi
 
 make CC=${CC} CXX=${CXX}  PREFIX=${PREFIX}
 cp libclair3* $PREFIX/bin
+if [ "$OS" = "Linux" ]; then
+    cp longphase $PREFIX/bin
+fi
 
 mkdir -p $PREFIX/bin/models
