@@ -21,14 +21,14 @@ if [ "$OS" = "Linux" ]; then
     ln -s $PREFIX/bin/pypy3.11/bin/pypy $PREFIX/bin/pypy3
     ln -s $PREFIX/bin/pypy3.11/bin/pypy $PREFIX/bin/pypy
 
-$PREFIX/bin/pypy3 -m ensurepip
-MPMATH_SRC=$(python -c "import mpmath, os; print(os.path.dirname(mpmath.__file__))")
-PYPY_SITE=$(${PREFIX}/bin/pypy3 -c "import site; print(site.getsitepackages()[0])")
-cp -r ${MPMATH_SRC} ${PYPY_SITE}/
+    $PREFIX/bin/pypy3 -m ensurepip
+    MPMATH_SRC=$(python -c "import mpmath, os; print(os.path.dirname(mpmath.__file__))")
+    PYPY_SITE=$(${PREFIX}/bin/pypy3 -c "import site; print(site.getsitepackages()[0])")
+    cp -r ${MPMATH_SRC} ${PYPY_SITE}/
 fi
 
-
+ln -sf ${PREFIX}/bin/longphase ${SRC_DIR}/longphase
 make CC=${CC} CXX=${CXX}  PREFIX=${PREFIX}
-cp  longphase libclair3* $PREFIX/bin
+cp libclair3* $PREFIX/bin
 
 mkdir -p $PREFIX/bin/models
