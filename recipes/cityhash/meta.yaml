@@ -1,0 +1,52 @@
+{% set name = "cityhash" %}
+{% set version = "0.2.3.post9" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/cityhash-{{ version }}.tar.gz
+  sha256: aa8919c00e8d8699df42dd788eda4f24ad13086ea9d83407fd7da4a0206d9d18  
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage(name,max_pin="x.x") }}
+  skip: true  # [win32]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+  host:
+    - python ==2.7.16
+    - pip
+    - setuptools
+    - libxcrypt  
+  run:
+    - python ==2.7.16
+    - libxcrypt  
+
+test:
+  commands:
+    - python -c "import cityhash; print('cityhash imported successfully')"
+    - python -c "from cityhash import CityHash32, CityHash64, CityHash128; print('All hash functions available')"
+    - python -c "from cityhash import CityHash32; print(CityHash32('hello'))"
+
+about:
+  home: https://github.com/escherba/python-cityhash
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'Python bindings for CityHash, a fast non-cryptographic hash algorithm'
+  description: |
+    Python wrapper for CityHash, a fast non-cryptographic hash function
+    developed by Google. It provides hash functions for strings and other data.
+  doc_url: https://github.com/escherba/python-cityhash
+  dev_url: https://github.com/escherba/python-cityhash
+
+extra:
+  additional-platforms:
+    - linux-aarch64
