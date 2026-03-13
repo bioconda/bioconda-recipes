@@ -27,7 +27,10 @@ if [ "$OS" = "Linux" ]; then
     cp -r ${MPMATH_SRC} ${PYPY_SITE}/
 fi
 
+if [ "$OS" = "Linux" ]; then
 ln -sf ${PREFIX}/bin/longphase ${SRC_DIR}/longphase
+fi 
+
 make CC=${CC} CXX=${CXX}  PREFIX=${PREFIX}
 cp libclair3* $PREFIX/bin
 
