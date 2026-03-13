@@ -1,0 +1,70 @@
+# NOTE:
+# noarch: python was removed because BABAPPAlign depends at runtime on
+# architecture-specific libraries (e.g., PyTorch, fair-esm, transformers);
+# although the source is pure Python, the runtime ABI is not architecture-
+# independent. Cache directories are redirected away from /tmp because
+# Bioconda CI aggressively cleans temporary paths; HuggingFace/ESM create
+# nested, permission-restricted caches under /tmp that cause reproducible
+# PermissionError failures during CI teardown. Using the package working
+# directory ensures deterministic cleanup without affecting runtime behavior.
+
+{% set name = "babappalign" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/sinhakrishnendu/BABAPPAlign/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 2b39eaa0d64dc91227bdcef4fac302f333f2575f20258ec8dc88e799e2b0e8e4
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  run_exports:
+    - {{ pin_subpackage('babappalign', max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.9,<3.14
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.9,<3.14
+    - numpy
+    - scipy
+    - pandas
+    - biopython
+    - tqdm
+    - pytorch >=1.12
+    - transformers >=4.30
+    - fair-esm
+
+test:
+  commands:
+    - export HF_HOME="$PWD/hf_home"
+    - export TRANSFORMERS_CACHE="$PWD/hf_home"
+    - export XDG_CACHE_HOME="$PWD/hf_home"
+    - babappalign --help
+
+about:
+  home: https://github.com/sinhakrishnendu/BABAPPAlign
+  license: MIT
+  license_file: LICENSE
+  summary: "Deep learning–based progressive multiple sequence alignment engine with learned residue scoring"
+
+extra:
+  skip-lints:
+      - should_be_noarch_generic
+  keywords:
+    - multiple-sequence-alignment
+    - protein-alignment
+    - deep-learning
+    - esm
+    - transformers
+    - bioinformatics
+  extra:
+    recipe-maintainers:
+      - sinhakrishnendu

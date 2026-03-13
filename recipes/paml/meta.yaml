@@ -1,6 +1,6 @@
 {% set name = "PAML" %}
-{% set version = "4.10.9" %}
-{% set sha256 = "19ca9d484d729324748b9c86453e4c8f4a1fa79ad6fa3ac7cdbfaa7d0bfb8c22" %}
+{% set version = "4.10.10" %}
+{% set sha256 = "173e8754ad78000371099a96910f2c72b03a7b7b13c717405dc23385ae2f2c0f" %}
 
 package:
   name: {{ name|lower }}
@@ -12,7 +12,7 @@ source:
 
 build:
   number: 0
-  skip: True  # [osx]
+  skip: True  # [osx and x86_64]
   run_exports:
     - {{ pin_subpackage('paml', max_pin="x.x") }}
 
@@ -20,6 +20,9 @@ requirements:
   build:
     - make
     - {{ compiler('c') }}
+  host:
+    - wget
+    - tar
 
 test:
   commands:
@@ -28,8 +31,8 @@ test:
     # baseml, basemlg, codeml, infinitesites, mcmctree,
     # pamp, yn00
     - chi2 1 .1
-    - evolver 1 | grep EVOLVER
-    - codeml /dev/null 2>&1 | grep paml
+    - evolver 1 | grep 'EVOLVER'
+    - codeml /dev/null 2>&1 | grep 'paml'
 
 about:
   home: "https://evomics.org/resources/software/molecular-evolution-software/paml"

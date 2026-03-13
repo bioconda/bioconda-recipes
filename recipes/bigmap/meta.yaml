@@ -1,0 +1,67 @@
+{% set version = "1.1.1" %}
+{% set sha256 = "8f41c534e63b157f8db59c21d7f92715d7c9ba5bb23ab6815c49daace97afe36" %}
+
+package:
+  name: bigmap
+  version: {{ version }}
+
+source:
+  url: https://github.com/medema-group/BiG-MAP/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  entry_points:
+    - bigmap-download = bigmap.download:main
+    - bigmap-family = bigmap.family:main
+    - bigmap-map = bigmap.map:main
+    - bigmap-analyse = bigmap.analyse:main
+  run_exports:
+    - {{ pin_subpackage('bigmap', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - hatchling
+  run:
+    - python >=3.11.11
+    - numpy <2
+    - pandas >=2.3.3
+    - biopython >=1.81
+    - mash >=2.3
+    - hmmer >=3.4
+    - importlib_resources >=6.5.2
+    - bowtie2 >=2.5.4
+    - samtools >=1.21
+    - bedtools >=2.31.1
+    - biom-format >=2.1.16
+    - sra-tools >=3.2.0
+    - cxx-compiler >=1.9.0
+    - bioconductor-biomformat >=1.30.0
+    - bioconductor-metagenomeseq >=1.43.0
+    - rpy2 >=3.5.11
+    - scipy >=1.17.0
+    - seaborn >=0.13.2
+    - statsmodels >=0.14.6
+
+test:
+  commands:
+    - bigmap-download --help
+    - bigmap-family --help
+    - bigmap-map --help
+    - bigmap-analyse --help
+
+about:
+  home: "https://github.com/medema-group/BiG-MAP"
+  license: "MIT"
+  license_family: MIT
+  license_file: LICENSE
+  summary: "The Biosynthetic Gene cluster Meta'omics Abundance Profiler"
+  dev_url: "https://github.com/medema-group/BiG-MAP"
+
+extra:
+  identifiers:
+    - doi:10.1128/mSystems.00937-21

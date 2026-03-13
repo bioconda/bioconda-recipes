@@ -1,7 +1,8 @@
-{% set version = '0.3.1' %}
+{% set name = "lumpy-sv-minimal" %}
+{% set version = "0.3.1" %}
 
 package:
-  name: lumpy-sv-minimal
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -12,18 +13,18 @@ source:
     - const.patch
 
 build:
-  number: 6
-  # The packaged bamtools has issues with compilation on OSX
-  skip: True  # [osx]
+  number: 7
   run_exports:
     - {{ pin_subpackage('lumpy-sv-minimal', max_pin="x.x") }}
 
 requirements:
   build:
-    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake
+    - make
+    - cmake <4
+    - pkg-config
+    - gnuconfig
   host:
     - htslib
     - zlib
@@ -37,12 +38,16 @@ test:
     - 'lumpyexpress 2>&1 | grep -q lumpyexpress'
 
 about:
-  home: https://github.com/arq5x/lumpy-sv
+  home: "https://github.com/arq5x/lumpy-sv"
   license: MIT
   license_family: MIT
-  dev_url: https://github.com/arq5x/lumpy-sv
-  summary: A general probabilistic framework for structural variant discovery. This package contains only the lumpy executable
+  dev_url: "https://github.com/arq5x/lumpy-sv"
+  summary: "A general probabilistic framework for structural variant discovery. This package contains only the lumpy executable."
+  doc_url: "https://github.com/arq5x/lumpy-sv/blob/v{{ version }}/README.md"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1186/gb-2014-15-6-r84

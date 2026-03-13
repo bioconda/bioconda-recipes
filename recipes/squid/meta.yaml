@@ -1,17 +1,17 @@
-{% set version="1.5" %}
+{% set version = "1.5" %}
 
 package:
   name: squid
   version: {{ version }}
 
-build:
-  number: 9
-  # Test fails on OSX
-  skip: True  # [osx]
-
 source:
   url: https://github.com/Kingsford-Group/squid/archive/v{{ version }}.tar.gz
   sha256: fb7b6e6985d5940b8e7caa22708a4da16b55504c9ef1d36f3deb85dd372ba4a6
+
+build:
+  number: 10
+  run_exports:
+    - {{ pin_subpackage('squid', max_pin="x") }}
 
 requirements:
   build:
@@ -22,18 +22,25 @@ requirements:
     - glpk
     - zlib
   run:
-    - zlib
+    - bamtools
+    - boost-cpp
+    - glpk
 
 test:
   commands:
-    - squid --help 2>&1 | grep SQUID
-
-extra:
-  identifiers:
-    - doi:10.1186/s13059-018-1421-5
+    - test -x ${PREFIX}/bin/squid
 
 about:
-  home: https://github.com/Kingsford-Group/squid
-  license: BSD 3
+  home: "https://github.com/Kingsford-Group/squid"
+  license: "BSD-3-Clause"
+  license_family: BSD
   licsense_file: LICENSE
-  summary: Detector for fusion-gene and non-fusion-gene transcriptomic structural variations from RNA-seq data
+  summary: "Detector for fusion-gene and non-fusion-gene transcriptomic structural variations from RNA-seq data."
+  dev_url: "https://github.com/Kingsford-Group/squid"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1186/s13059-018-1421-5

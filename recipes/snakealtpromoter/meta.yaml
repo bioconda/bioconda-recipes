@@ -1,0 +1,56 @@
+{% set name = "SnakeAltPromoter" %}
+{% set version = "1.0.5" %}
+
+package:
+  name: {{ name | lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/YidanSunResearchLab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 20f40c681201ffcf18e169b0f79903e9650f544ac0ef5c901bd6480c08aa13ab
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps"
+  run_exports:
+    - {{ pin_subpackage('snakealtpromoter', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.11
+    - snakemake
+    - streamlit
+    - pyarrow
+    - pandas
+
+test:
+  imports:
+    - snakealtpromoter
+  commands:
+    - Snakealtpromoter --help
+    - Genomesetup --help
+    - which sap-ui
+  requires:
+    - which
+
+about:
+  home: "https://github.com/YidanSunResearchLab/SnakeAltPromoter"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.md
+  dev_url: "https://github.com/YidanSunResearchLab/SnakeAltPromoter"
+  summary: A comprehensive pipeline for differential alternative promoter analysis.
+  description: |
+    SnakeAltPromoter is a Snakemake-based pipeline for streamlined, reproducible, and scalable analysis of
+    alternative promoter usage from RNA-seq or CAGE data. It integrates all major steps—from raw read
+    preprocessing to promoter-level quantification and differential analysis—using state-of-the-art tools.
+
+extra:
+  recipe-maintainers:
+    - jaredl7

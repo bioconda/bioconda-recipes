@@ -2,18 +2,21 @@
 {% set version = "0.121" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/genbank-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/genbank-{{ version }}.tar.gz
   sha256: 959df344018f8e104ef6d3c9d78f576228cb4997f4fa186050cfa69b231cb5af
 
 build:
-  number: 0
-  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  number: 1
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -f *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
-    - {{ pin_subpackage('genbank', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
@@ -21,6 +24,7 @@ requirements:
   host:
     - python
     - pip
+    - setuptools
   run:
     - python
 

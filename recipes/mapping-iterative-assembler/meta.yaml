@@ -3,15 +3,17 @@
 {% set sha256 = "3131c397a19a0f7b89a90f41e2f03258dfd62937994614e17c5a3013d96e079a" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
   url: https://github.com/mpieva/{{ name|lower }}/archive/{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 6
+  number: 7
+  run_exports:
+    - {{ pin_subpackage('mapping-iterative-assembler', max_pin="x") }}
 
 requirements:
   build:
@@ -20,6 +22,8 @@ requirements:
     - {{ compiler('cxx') }}
     - autoconf
     - automake
+    - libtool
+    - pkg-config
 
 test:
   commands:
@@ -27,8 +31,14 @@ test:
     - ccheck --help | grep "check"
 
 about:
-  home: https://github.com/mpieva/mapping-iterative-assembler
-  license: Artistic-2.0
+  home: "https://github.com/mpieva/mapping-iterative-assembler"
+  license: "Artistic-2.0"
   license_family: Other
   license_file: COPYING
   summary: "Consensus calling or `reference assisted assembly`, chiefly of ancient mitochondria."
+  dev_url: "https://github.com/mpieva/mapping-iterative-assembler"
+
+extra:
+  additional-platforms:
+    - linux-aarch64  
+    - osx-arm64
