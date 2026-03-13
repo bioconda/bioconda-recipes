@@ -23,7 +23,10 @@ if [ "$OS" = "Linux" ]; then
 fi
 
 $PREFIX/bin/pypy3 -m ensurepip
-$PREFIX/bin/pypy3 -m pip install mpmath==1.2.1
+MPMATH_SRC=$(python -c "import mpmath, os; print(os.path.dirname(mpmath.__file__))")
+PYPY_SITE=$(${PREFIX}/bin/pypy3 -c "import site; print(site.getsitepackages()[0])")
+cp -r ${MPMATH_SRC} ${PYPY_SITE}/
+
 
 pip install --no-deps --no-build-isolation .
 make CC=${GCC} CXX=${GXX}  PREFIX=${PREFIX}
