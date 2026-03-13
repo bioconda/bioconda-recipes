@@ -1,0 +1,49 @@
+{% set version = "1.0.0.1" %}
+package:
+  name: poseidon-qjanno
+  version: {{ version }}
+
+# documentation of preprocessing selectors:
+# https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#preprocessing-selectors
+source:
+  - url: https://github.com/poseidon-framework/qjanno/releases/download/v{{ version }}/qjanno-conda-linux # [linux]
+    md5: 7b929626c6eec7665911bacdf59e4288 # [linux]
+  - url: https://github.com/poseidon-framework/qjanno/releases/download/v{{ version }}/qjanno-macOS-X64 # [osx and x86_64]
+    md5: cca170374b3883d9a030dcf127761cb2 # [osx and x86_64]
+  - url: https://github.com/poseidon-framework/qjanno/releases/download/v{{ version }}/qjanno-macOS-ARM64 # [osx and arm64]
+    md5: 61995929cc5312dd3e80299d0be3edaf # [osx and arm64]
+
+build:
+  number: 0
+  script:
+    - "mkdir -p $PREFIX/bin"
+    - "mv qjanno-* $PREFIX/bin/qjanno"
+    - "chmod u+x $PREFIX/bin/qjanno"
+  run_exports:
+    - {{ pin_subpackage("poseidon-qjanno", max_pin=None) }}
+
+requirements:
+  build:
+    # Precompiled binaries still link against libgcc
+    - {{ compiler('c') }}
+  host:
+    - zlib
+    - gmp
+  run:
+    - zlib
+    - gmp
+
+test:
+  commands:
+  - echo "Tests are disabled test for debugging artifact."
+# Disabled test for debugging artiifact
+#      - qjanno --help
+
+about:
+  home: https://www.poseidon-adna.org/#/
+  license: MIT
+  summary: "A CLI tool to run SQL queries on Poseidon .janno files."
+
+extra:
+  additional-platforms:
+    - osx-arm64
