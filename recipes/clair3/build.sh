@@ -13,9 +13,9 @@ cp run_clair3.sh $PREFIX/bin/
 
 if [ "$OS" = "Linux" ]; then
     if [ "$ARCH" = "x86_64" ]; then
-        PYPY_DIR="${SRC_DIR}/pypy-linux64/pypy${PYPY_VER}-linux64"
+        PYPY_DIR="${SRC_DIR}/pypy-linux64"
     elif [ "$ARCH" = "aarch64" ]; then
-        PYPY_DIR="${SRC_DIR}/pypy-aarch64/pypy${PYPY_VER}-aarch64"
+        PYPY_DIR="${SRC_DIR}/pypy-aarch64"
     fi
     cp -rv ${PYPY_DIR} $PREFIX/bin/pypy3.11
     ln -s $PREFIX/bin/pypy3.11/bin/pypy $PREFIX/bin/pypy3
