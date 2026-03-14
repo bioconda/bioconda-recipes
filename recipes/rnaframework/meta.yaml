@@ -9,7 +9,7 @@ source:
   sha256: 81f89568fe34ae50cd9986afcda590bb2ca02e19d031d683c265dc8cbd7a86a1
 
 build:
-  number: 0
+  number: 1
   noarch: generic
   run_exports:
     - {{ pin_subpackage('rnaframework', max_pin="x") }}
@@ -34,14 +34,13 @@ requirements:
 
 test:
   commands:
-    - rf-map -h 2>&1 | grep -qi "usage\|rf-map\|options"
-    - rf-count -h 2>&1 | grep -qi "usage\|rf-count\|options"
-    - rf-norm -h 2>&1 | grep -qi "usage\|rf-norm\|options"
-    - rf-fold -h 2>&1 | grep -qi "usage\|rf-fold\|options"
-    - rf-index -h 2>&1 | grep -qi "usage\|rf-index\|options"
-    - rf-rctools -h 2>&1 | grep -qi "usage\|rf-rctools\|options"
-    # Verify the lib is reachable from the installed scripts
-    - perl -I${PREFIX}/share/rnaframework/lib -e "use Core::Mathematics; print 'OK\n'"
+    - grep -Fq "use lib \"${PREFIX}/share/rnaframework/lib\";" ${PREFIX}/share/rnaframework/rf-count
+    - PERL5LIB= rf-map -h 2>&1 | grep -qi "usage\|rf-map\|options"
+    - PERL5LIB= rf-count -h 2>&1 | grep -qi "usage\|rf-count\|options"
+    - PERL5LIB= rf-norm -h 2>&1 | grep -qi "usage\|rf-norm\|options"
+    - PERL5LIB= rf-fold -h 2>&1 | grep -qi "usage\|rf-fold\|options"
+    - PERL5LIB= rf-index -h 2>&1 | grep -qi "usage\|rf-index\|options"
+    - PERL5LIB= rf-rctools -h 2>&1 | grep -qi "usage\|rf-rctools\|options"
 
 about:
   home: https://github.com/dincarnato/RNAFramework
