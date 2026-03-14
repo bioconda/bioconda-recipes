@@ -35,3 +35,4 @@ if [ "$OS" = "Linux" ]; then
 fi
 
 mkdir -p $PREFIX/bin/models
+
