@@ -1,6 +1,9 @@
 #!/bin/bash
 set -exo pipefail
 
+# Ensure pkg-config finds .pc files for all host dependencies
+export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig:${PKG_CONFIG_PATH:-}"
+
 # Write version file (setuptools-scm fallback since no .git in tarball)
 echo "${PKG_VERSION}" > VERSION
 
