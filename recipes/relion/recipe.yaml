@@ -1,0 +1,68 @@
+context:
+  version: "5.1.0"
+
+package:
+  name: relion
+  version: ${{ version }}
+
+source:
+  url: https://github.com/3dem/relion/archive/refs/tags/${{ version }}.tar.gz
+  sha256: 4767804dd8ba2198efd1e1082b4632bc36aeca0ad09d4d2f7de956f84bbbb429
+
+build:
+  number: 0
+  skip:
+    - osx and x86_64
+
+requirements:
+  build:
+    - ${{ compiler('cxx') }}
+    - cmake <4
+    - make
+    # python really only used as a build tool; no ${PREFIX}/bin/python needed.
+    - python >=3
+    - pkg-config
+  host:
+    - libtiff
+    - fftw
+    - ghostscript
+    - libpng
+    - openmpi
+    - if: osx
+      then: llvm-openmp
+    - if: linux
+      then: libgomp
+    - if: x86_64
+      then: tbb-devel
+    - pbzip2
+    - xz
+    - zstd
+  run:
+    - openmpi
+    - if: osx
+      then: llvm-openmp
+    - if: linux
+      then: libgomp
+    - if: x86_64
+      then: tbb-devel
+    - pytorch
+  run_exports:
+    - ${{ pin_subpackage('relion', upper_bound="x") }}
+tests:
+  - script:
+      - relion_image_handler --help
+
+about:
+  homepage: "https://github.com/3dem/relion"
+  license: GPL-2.0-or-later
+  license_file: LICENSE
+  summary: "Image-processing software for cryo-electron microscopy."
+  repository: "https://github.com/3dem/relion"
+  documentation: "https://relion.readthedocs.io/en/latest"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - multimeric
