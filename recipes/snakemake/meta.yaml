@@ -12,7 +12,7 @@ source:
   sha256: a7b2b76d8f7dc61e7860e0f3351d7356cef65ce41f1a5e99dae537dae5afa659
 
 build:
-  number: 0
+  number: 1
   noarch: generic
   run_exports:
     - {{ pin_subpackage("snakemake", max_pin="x") }}
@@ -27,6 +27,11 @@ requirements:
     # options.extras_require: pep
     - eido
     - peppy
+    # eido depends on logmuse v0.2.8, which depends on setuptools, but that is
+    # not declared in the conda-forge package. Temporarily add it here to ensure
+    # eido works as expected, until a new build of logmuse with correct
+    # dependencies is available on conda-forge.
+    - setuptools
     # options.extras_require: reports
     - pygments
 
@@ -35,12 +40,15 @@ test:
     - snakemake
   commands:
     - export GIT\_PYTHON_REFRESH=warn
+    - pip check
     - snakemake --version
     - snakemake --version | grep "{{ version }}"
     # Generate a report to check whether graphviz dependencies (libXau) are properly installed:
     - 'printf %s\\n "rule empty:" > Snakefile && snakemake --cores 1 --report'
     # Remove test artifacts from command above.
     - rm -rf .snakemake Snakefile report.html
+  requires:
+    - pip
 
 about:
   home: "https://snakemake.github.io"
@@ -72,6 +80,9 @@ outputs:
 
     build:
       noarch: python
+      script_env:
+        # TODO remove once Snakemake does not depend on setuptools anymore (WIP)
+        - SETUPTOOLS_SCM_PRETEND_VERSION_SNAKEMAKE={{ version }}
       script: python -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
       entry_points:
         - snakemake = snakemake.cli:main
@@ -83,6 +94,7 @@ outputs:
         - python >=3.11
         - pip
         - setuptools
+        - setuptools-scm
       run:
         # Keep in sync with snakemake's pyproject.toml: https://github.com/snakemake/snakemake/blob/main/pyproject.toml
         - python >=3.11,<3.14 # we restrict to <3.13 because Python can have breaking changes in minor version bumps
@@ -121,8 +133,12 @@ outputs:
         - snakemake
       commands:
         - export GIT\_PYTHON_REFRESH=warn
+        - pip show snakemake
+        - pip check
         - snakemake --version
         - snakemake --version | grep "{{ version }}"
+      requires:
+        - pip
 
     about:
       home: "https://snakemake.github.io"
