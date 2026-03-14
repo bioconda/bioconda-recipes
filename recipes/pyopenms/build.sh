@@ -1,6 +1,10 @@
 #!/bin/bash
 
 export PLATFORM_CMAKE_EXTRAS=""
+
+# Tell CMake to use the installed libopenms
+export OPENMS_DIR=$PREFIX/lib/cmake/OpenMS
+
 if [[ "$CXX" == *gnu-c++* ]]; then
   # For stuff like this GCC bug (especially on ARM) https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111516
   echo "Detected gcc: ignoring some compile warnings."
@@ -29,13 +33,14 @@ cd build
 #  We do not recommend less than 12 for current CI runners. You can try to decrease when they get more RAM
 #  or faster CPUs.
 cmake -S ../src/pyOpenMS -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
-	-DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" -DOPENMS_GIT_SHORT_SHA1="27e3601" \
+	-DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" -DOPENMS_GIT_SHORT_SHA1="c1370fb" \
  	-DOPENMS_CONTRIB_LIBS="SILENCE_WARNING_SINCE_NOT_NEEDED" \
 	-DCMAKE_PREFIX_PATH="${PREFIX}" -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_BUILD_RPATH="$BUILD_PREFIX/lib" -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" -DCMAKE_INSTALL_REMOVE_ENVIRONMENT_RPATH=ON \
 	-DQT_HOST_PATH="${BUILD_PREFIX}" -DQT_HOST_PATH_CMAKE_DIR="${PREFIX}" \
     -DPython_EXECUTABLE="${PYTHON}" -DPython_FIND_STRATEGY="LOCATION" -DPY_NUM_MODULES=12 \
     -DNO_DEPENDENCIES=ON -DNO_SHARE=ON \
+	-DOPENMS_DIR=$OpenMS_DIR \
 	-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} \
  	${PLATFORM_CMAKE_EXTRAS}
 
