@@ -1,0 +1,57 @@
+{% set name = "phyloblitz" %}
+{% set version = "0.2.0" %}
+{% set sha256 = "94053eca05a7a6e097931631071f4bef964f601c8064e7b7b15615dabc497ce0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/kbseah/{{ name|lower }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  entry_points:
+    - phyloblitz = phyloblitz:main.main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}  
+
+requirements:
+  host:
+    - python >=3.10,<3.14
+    - hatchling
+    - pip
+  run:
+    - python >=3.10,<3.14
+    - isonclust3 >=0.3.0,<0.4
+    - matplotlib-base >=3.10.8,<4
+    - minimap2 >=2.30,<3
+    - mistune >=3.1.4,<4
+    - numpy >=2.3.5,<3
+    - oxli >=0.3.0,<0.4
+    - pyfastx >=2.2.0,<3
+    - pymarkovclustering >=0.1.1,<0.2
+    - pysam >=0.23.3,<0.24
+    - rich-click >=1.9.4,<2
+    - spoa >=4.1.5,<5
+
+test:
+  imports:
+    - phyloblitz
+  commands:
+    - phyloblitz --version
+
+about:
+  home: https://github.com/kbseah/phyloblitz
+  summary: "Rapid SSU rRNA marker gene screening of long read metagenomes."
+  license: MIT
+  license_file: LICENSE.txt
+  doc_url: https://github.com/kbseah/phyloblitz#readme
+  dev_url: https://github.com/kbseah/phyloblitz
+
+extra:
+  recipe-maintainers:
+    - kbseah 

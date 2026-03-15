@@ -1,0 +1,48 @@
+{% set name = "pharmcat3" %}
+{% set version = "3.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PharmGKB/PharmCAT/releases/download/v{{ version }}/pharmcat-pipeline-{{ version }}.tar.gz
+  sha256: a43d3c026f3a864181f42c078cbaa214f114db01997f1952ea4cfe47f28c5fcd
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  # script: bash build.sh
+
+requirements:
+  host:
+    - python
+  run:
+    - openjdk >=17
+    - python >=3.10
+    - pandas
+    - colorama
+    - packaging
+    - bcftools >=1.18
+    - htslib >=1.18
+
+test:
+  commands:
+    - pharmcat -version
+    - pharmcat_pipeline -V
+    - pharmcat_vcf_preprocessor -V
+
+about:
+  home: https://github.com/PharmGKB/PharmCAT
+  summary: Pharmacogenomics Clinical Annotation Tool (PharmCAT) CLI, pipeline, and preprocessor.
+  license: MPL-2.0
+  license_family: MOZILLA
+  license_file: LICENSE
+  doc_url: https://pharmcat.clinpgx.org/
+  dev_url: https://github.com/PharmGKB/PharmCAT
+
+extra:
+  recipe-maintainers:
+    - rkmishra3893

@@ -1,28 +1,58 @@
-{% set version = "1.5" %}
+{% set version = "1.9.6" %}
 
 package:
   name: phast
   version: {{ version }}
 
-build:
-  number: 7
-
 source:
-  url: http://compgen.cshl.edu/phast/downloads/phast.v1_5.tgz
-  sha256: bb629a3a27a67315a09138eaa0bbbce511bf00a8a9c2566d6a4d3fa4a2b108f9
+  url: https://github.com/CshlSiepelLab/phast/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e614b34514e37480dcadd0d17ec4cdf55e62cace179302a0932011009d1fb33e
+
+build:
+  number: 0
+  skip: true  # [win]
+  run_exports:
+    - {{ pin_subpackage('phast', max_pin='x') }}  
+  script:
+    # --- macOS-only: ensure conda-build uses cctools otool (avoids llvm-otool SIGABRT) ---
+    - ln -sf "${BUILD_PREFIX}/bin/${HOST}-otool" "${BUILD_PREFIX}/bin/otool"  # [osx]
+    - cmake -S . -B build
+      -DCMAKE_BUILD_TYPE=Release
+      -DCMAKE_INSTALL_PREFIX=${PREFIX}
+      -DCMAKE_INSTALL_LIBDIR=lib
+      -DCMAKE_INSTALL_BINDIR=bin
+      -DCMAKE_INSTALL_INCLUDEDIR=include
+    - cmake --build build --parallel ${CPU_COUNT}
+    - cmake --install build
 
 requirements:
   build:
-    - make
     - {{ compiler('c') }}
-    - wget
-
+    - cmake
+    - make
+    - cctools
+  host:
+    - pcre
+    - blas
+    - lapack
+  run:
+    - pcre >=8.45,<9.0a0
+    - libopenblas
+    
 test:
   commands:
-    - phastCons -h 2>&1 | grep 'USAGE' > /dev/null
+    - phastCons --help
+    - phyloFit --help
 
 about:
-  home: http://compgen.cshl.edu/phast/
-  license: BSD
-  license_file: LICENSE.txt
-  summary: PHAST is a freely available software package for comparative and evolutionary genomics.
+  home: https://github.com/CshlSiepelLab/phast
+  license: BSD-3-Clause
+  license_file: LICENSE
+  summary: "PHAST: Phylogenetic Analysis with Space/Time models"
+  description: |
+    PHAST is a C-based toolkit for phylogenetic analysis, comparative genomics,
+    and evolutionary modeling.
+
+extra:
+  recipe-maintainers:
+    - asiepel

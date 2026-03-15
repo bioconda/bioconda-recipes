@@ -1,5 +1,4 @@
 #!/bin/sh
-
 set -xe
 
 # Fix for OSX build
@@ -10,14 +9,21 @@ else
     CPP_FLAGS="${CXXFLAGS} -fopenmp -g -O3"
 fi
 
-# build
+# Build
 make -j"${CPU_COUNT}" CC="${CC}" CXX="${CXX}" CPP_FLAGS="${CPP_FLAGS}" all
 
+# Install binaries
 mkdir -p $PREFIX/bin
 install -v -m 0755 ./exe/* $PREFIX/bin/
 
-# Some of the tools inside the package require the information in /data_tables
-# This makes them accessible from a relative path to the binaries.
+# Install data tables
+DATA_DEST=$PREFIX/share/${PKG_NAME}/data_tables
+mkdir -p $DATA_DEST
+cp -r ./data_tables/* $DATA_DEST/
 
-mkdir -p $PREFIX/share/${PKG_NAME}/data_tables
-mv ./data_tables/* $PREFIX/share/${PKG_NAME}/data_tables/
+# Script pour définir DATAPATH automatiquement à l'activation de l'env
+mkdir -p $PREFIX/etc/conda/activate.d
+echo "export DATAPATH=$DATA_DEST/" > $PREFIX/etc/conda/activate.d/rnastructure_path.sh
+
+mkdir -p $PREFIX/etc/conda/deactivate.d
+echo "unset DATAPATH" > $PREFIX/etc/conda/deactivate.d/rnastructure_path.sh

@@ -1,0 +1,68 @@
+{% set name = "alphagenome" %}
+{% set version = "0.5.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: e7ca21dcb431ffa522d6f911ae7979d5f1e1ef63c621244d1e00db875ef8703b
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - hatchling
+    - grpcio-tools
+  run:
+    - python >=3.10
+    - absl-py
+    - anndata
+    - grpcio >=1.67.1
+    - immutabledict
+    - intervaltree
+    - jaxtyping
+    - matplotlib-base
+    - ml_dtypes
+    - numpy
+    - pandas
+    - protobuf >=5.28.3
+    - pyarrow
+    - scipy
+    - seaborn
+    - tqdm
+    - typeguard
+    - typing-extensions
+    - zstandard
+
+test:
+  imports:
+    - alphagenome
+    - alphagenome.data
+    - alphagenome.models
+
+about:
+  home: https://github.com/google-deepmind/alphagenome
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: Python SDK for interacting with and visualizing AlphaGenome genomic models
+  description: |
+    AlphaGenome is a unified DNA sequence model from Google DeepMind for
+    regulatory variant-effect prediction. This package provides the Python
+    SDK for interacting with the AlphaGenome API and visualizing predictions
+    across gene expression, splicing, chromatin features, and contact maps.
+  doc_url: https://www.alphagenomedocs.com/
+  dev_url: https://github.com/google-deepmind/alphagenome
+
+extra:
+  recipe-maintainers:
+    - dannon
