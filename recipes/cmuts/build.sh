@@ -69,30 +69,17 @@ done
 
 # === Install ===
 
-# Copy htscodecs lib into conda prefix so it's found at runtime
+# Copy htscodecs lib into conda prefix and fix its install_name so
+# conda-build's post_build can process binaries that link against it
 cp -a htscodecs/lib/libhtscodecs* "${PREFIX}/lib/"
+if [[ "$(uname)" == "Darwin" ]]; then
+    install_name_tool -id "@rpath/libhtscodecs.2.dylib" "${PREFIX}/lib/libhtscodecs.2.dylib"
+fi
 
-# Install binaries and fix rpaths
+# Install binaries — conda-build's post_build handles rpath rewriting
 install -d "${PREFIX}/bin"
 install -m 755 bin/cmuts-core "${PREFIX}/bin/"
 install -m 755 bin/_cmuts-generate-tests "${PREFIX}/bin/"
-
-# Rewrite htscodecs rpath from build dir to prefix
-if [[ "$(uname)" == "Darwin" ]]; then
-    for bin in "${PREFIX}/bin/cmuts-core" "${PREFIX}/bin/_cmuts-generate-tests"; do
-        old_path=$(otool -L "$bin" | grep libhtscodecs | awk '{print $1}')
-        if [[ -n "$old_path" ]]; then
-            install_name_tool -change \
-                "$old_path" \
-                "${PREFIX}/lib/libhtscodecs.2.dylib" \
-                "$bin"
-        fi
-    done
-else
-    for bin in "${PREFIX}/bin/cmuts-core" "${PREFIX}/bin/_cmuts-generate-tests"; do
-        patchelf --set-rpath "${PREFIX}/lib" "$bin"
-    done
-fi
 
 # Install shell scripts
 for script in src/scripts/cmuts src/scripts/cmuts-align src/scripts/cmuts-generate; do
