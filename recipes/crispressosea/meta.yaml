@@ -1,0 +1,45 @@
+{% set name = "CRISPRessoSea" %}
+{% set version = "0.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+source:
+  url: https://github.com/clementlab/CRISPRessoSea/archive/v{{ version }}.tar.gz
+  sha256: 351d223ec322470dbd00b68cb7a7f399d7671c692c092f563650e62d774ab90f
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.8
+    - numpy
+    - crispresso2
+    - pandas
+    - matplotlib-base
+    - scipy
+    - statsmodels
+    - seaborn
+
+test:
+  imports:
+    - CRISPRessoSea
+  commands:
+    - CRISPRessoSea Process -h
+
+about:
+  home: https://github.com/clementlab/CRISPRessoSea
+  license: MIT
+  license_file: LICENSE
+  summary: "CRISPRessoSea: a tool for processing CRISPR genome editing from multiple pooled amplicon sequencing experiments."
