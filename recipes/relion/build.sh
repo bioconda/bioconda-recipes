@@ -30,6 +30,7 @@ CMAKE_ARGS=(
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}"
 	-DTORCH_HOME_PATH="${PREFIX}/share/.cache/torch"
 	-DFETCH_WEIGHTS=OFF
+	-DPYTHON_EXE_PATH="$(command -v python3)"
 	-Wno-dev -Wno-deprecated
 	--no-warn-unused-cli
 )
