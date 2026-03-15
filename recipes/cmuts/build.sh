@@ -15,6 +15,9 @@ if [[ ! -f htscodecs/htscodecs/htscodecs.h ]]; then
     git -C htscodecs checkout 877e6051937f85c6e5f97b70d9b6c8ab887ce81e
 fi
 
+# Clean stale CMake cache (conda-build reruns for multiple Python variants)
+rm -rf build
+
 # Build C++ binaries (htscodecs + cmake)
 export HDF5_DIR="${PREFIX}"
 ./configure --build-only
