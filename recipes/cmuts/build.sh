@@ -1,6 +1,39 @@
 #!/bin/bash
 set -exo pipefail
 
+# === Diagnostics ===
+echo "=== conda build.sh diagnostics ==="
+echo "PREFIX=${PREFIX}"
+echo "BUILD_PREFIX=${BUILD_PREFIX:-unset}"
+echo "SRC_DIR=${SRC_DIR:-unset}"
+echo "PKG_VERSION=${PKG_VERSION}"
+echo "PYTHON=${PYTHON}"
+echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH:-unset}"
+echo "uname -m: $(uname -m)"
+echo "uname -s: $(uname -s)"
+
+# Verify host prefix has expected libraries
+for lib in hts hdf5 z; do
+    found=$(find "${PREFIX}/lib" -name "lib${lib}.*" -print -quit 2>/dev/null || true)
+    if [[ -z "$found" ]]; then
+        echo "WARNING: lib${lib} not found in ${PREFIX}/lib"
+        ls "${PREFIX}/lib"/ | head -20
+    else
+        echo "OK: found ${found}"
+    fi
+done
+
+# Verify htslib headers exist
+if [[ -f "${PREFIX}/include/htslib/hts.h" ]]; then
+    echo "OK: htslib/hts.h found in ${PREFIX}/include"
+else
+    echo "ERROR: htslib/hts.h NOT found in ${PREFIX}/include"
+    ls "${PREFIX}/include/" 2>/dev/null | head -20
+    exit 1
+fi
+
+# === Setup ===
+
 # Ensure CMake finds libraries in the conda host prefix
 export CMAKE_PREFIX_PATH="${PREFIX}"
 
@@ -15,12 +48,26 @@ if [[ ! -f htscodecs/htscodecs/htscodecs.h ]]; then
     git -C htscodecs checkout 877e6051937f85c6e5f97b70d9b6c8ab887ce81e
 fi
 
-# Clean stale CMake cache (conda-build reruns for multiple Python variants)
+# === Build ===
+
+# Clean stale build artifacts (conda-build reruns for multiple Python variants,
+# each with a different $PREFIX — stale CMake caches cause find_library failures)
 rm -rf build
+rm -rf htscodecs/build
 
 # Build C++ binaries (htscodecs + cmake)
 export HDF5_DIR="${PREFIX}"
 ./configure --build-only
+
+# Verify binaries were produced
+for bin in bin/cmuts-core bin/_cmuts-generate-tests; do
+    if [[ ! -f "$bin" ]]; then
+        echo "ERROR: $bin not produced by build"
+        exit 1
+    fi
+done
+
+# === Install ===
 
 # Copy htscodecs lib into conda prefix so it's found at runtime
 cp -a htscodecs/lib/libhtscodecs* "${PREFIX}/lib/"
@@ -57,3 +104,13 @@ done
 # Install Python package
 export SETUPTOOLS_SCM_PRETEND_VERSION="${PKG_VERSION}"
 ${PYTHON} -m pip install . --no-deps --no-build-isolation -vv
+
+# === Post-install verification ===
+echo "=== Installed files ==="
+ls -la "${PREFIX}/bin/cmuts"* "${PREFIX}/bin/_cmuts"* 2>/dev/null || true
+echo "=== Library dependencies ==="
+if [[ "$(uname)" == "Darwin" ]]; then
+    otool -L "${PREFIX}/bin/cmuts-core" || true
+else
+    ldd "${PREFIX}/bin/cmuts-core" || true
+fi
