@@ -69,17 +69,33 @@ done
 
 # === Install ===
 
-# Copy htscodecs lib into conda prefix and fix its install_name so
-# conda-build's post_build can process binaries that link against it
+# Copy htscodecs lib into conda prefix
 cp -a htscodecs/lib/libhtscodecs* "${PREFIX}/lib/"
-if [[ "$(uname)" == "Darwin" ]]; then
-    install_name_tool -id "@rpath/libhtscodecs.2.dylib" "${PREFIX}/lib/libhtscodecs.2.dylib"
-fi
 
-# Install binaries — conda-build's post_build handles rpath rewriting
+# Install binaries
 install -d "${PREFIX}/bin"
 install -m 755 bin/cmuts-core "${PREFIX}/bin/"
 install -m 755 bin/_cmuts-generate-tests "${PREFIX}/bin/"
+
+# Fix htscodecs install_name and references in binaries.
+# htscodecs is built with -install_name $SRC_DIR/htscodecs/.../libhtscodecs.2.dylib
+# which is a build-time path that won't exist at runtime.
+_INT=${INSTALL_NAME_TOOL:-install_name_tool}
+if [[ "$(uname)" == "Darwin" ]]; then
+    # Fix the dylib's own id
+    $_INT -id "@rpath/libhtscodecs.2.dylib" "${PREFIX}/lib/libhtscodecs.2.dylib"
+    # Fix references in binaries
+    old_path=$(otool -L bin/cmuts-core | grep libhtscodecs | awk '{print $1}')
+    if [[ -n "$old_path" ]]; then
+        for b in "${PREFIX}/bin/cmuts-core" "${PREFIX}/bin/_cmuts-generate-tests"; do
+            $_INT -change "$old_path" "@rpath/libhtscodecs.2.dylib" "$b"
+            $_INT -add_rpath "${PREFIX}/lib" "$b" 2>/dev/null || true
+        done
+    fi
+else
+    patchelf --set-rpath "${PREFIX}/lib" "${PREFIX}/bin/cmuts-core"
+    patchelf --set-rpath "${PREFIX}/lib" "${PREFIX}/bin/_cmuts-generate-tests"
+fi
 
 # Install shell scripts
 for script in src/scripts/cmuts src/scripts/cmuts-align src/scripts/cmuts-generate; do
