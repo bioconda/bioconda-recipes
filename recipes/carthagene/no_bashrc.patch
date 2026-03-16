@@ -1,0 +1,113 @@
+--- carthagene.in	2019-12-18 17:14:01.252099861 +0100
++++ carthagene.in	2019-12-18 17:13:11.642618291 +0100
+@@ -3,18 +3,23 @@
+ TCLSH=`(which tclsh8.5 2> /dev/null) || (which tclsh 2> /dev/null)`
+ WISH=`(which wish8.5 2> /dev/null) || (which wish 2> /dev/null)`
+ 
++export TCLLIBPATH="/opt/anaconda1anaconda2anaconda3/lib/tcl8.6 /opt/anaconda1anaconda2anaconda3/lib /opt/anaconda1anaconda2anaconda3/share/carthagene $TCLLIBPATH"
++
+ CGARGS=""
+ CGFE=""
+ INTERP=$TCLSH
+ 
++# Get the script directory
++WD=`cd $(dirname $0)/..; pwd`	# /.. because this script is now in $PREFIX/bin
++
+ function check_install_dotfile() {
+-	test -e ~/.$1 || ( echo "Installing default ~/.$1" && cp ${CMAKE_INSTALL_PREFIX}/share/carthagene/sample_$1 ~/.$1 )
++	test -e ~/.$1 || ( echo "Installing default ~/.$1" && cp $PREFIX/share/carthagene/sample_$1 ~/.$1 )
+ }
+ 
+ if [ "x$1" != "x--local-install" ]; then
+ 	while test "$1"; do
+ 		case "x$1" in
+-			"x-i")	CGARGS="${CMAKE_INSTALL_PREFIX}/share/carthagene/gui/CGW.tcl $CGARGS"
++			"x-i")	CGARGS="$PREFIX/share/carthagene/gui/CGW.tcl $CGARGS"
+ 				INTERP=$WISH
+ 				shift 1
+ 				;;
+@@ -27,13 +32,14 @@
+ 		esac
+ 	done
+ 
+-
+-	check_install_dotfile carthagenerc
+-	check_install_dotfile cgwopt
+-	check_install_dotfile cgwdefalgo
++  if [ -e ~/ ]; then
++		check_install_dotfile carthagenerc
++		check_install_dotfile cgwopt
++		check_install_dotfile cgwdefalgo
++	fi
+ 
+ 	#$CGFE ${CMAKE_INSTALL_PREFIX}/share/carthagene/CG $CGARGS
+-	$CGFE $INTERP ${CMAKE_INSTALL_PREFIX}/share/carthagene/cgsh/cgbootstrap.tcl $CGARGS
++	$CGFE $INTERP $PREFIX/share/carthagene/cgsh/cgbootstrap.tcl $CGARGS
+ 	exit $?
+ fi
+ 
+@@ -97,9 +103,6 @@
+ 	return $RET
+ }
+ 
+-# Get the script directory
+-WD=`cd $(dirname $0)/..; pwd`	# /.. because this script is now in $PREFIX/bin
+-
+ # Only meant to be run once.
+ 
+ LOCINSTFILE=.locally_installed
+@@ -139,22 +142,6 @@
+ sed -i "s,/usr/,$WD/,g" $WD/share/carthagene/cgsh/cgbootstrap.tcl
+ sed -i "s,/usr/,$WD/,g" $WD/share/carthagene/gui/CGShellWidget.tcl
+ 
+-# Now for the big hack
+-if check_path $RC_FILE; then
+-	# All done, just sit there and be nice.
+-	echo
+-else
+-	# If we detected the shell correctly, append to the ~/.*rc file
+-	if test "x$SH_NAME" != "x"; then
+-		echo "Detected a $SH_NAME."
+-		echo "Setting up PATH for CarthaGene in your $RC_FILE"
+-		$RC_ >> $RC_FILE
+-	else
+-		echo "I don't know how to automatically and permanently setup the PATH for CarthaGene in your current shell ($SHELL). Please update \$PATH as follows :"
+-		echo "PATH=$WD/bin:\$PATH"
+-	fi
+-fi
+-
+ echo "Thank you for using CarthaGene."
+ 
+ touch $WD/$LOCINSTFILE
+--- cgsh/cgbootstrap.tcl	2018-03-16 19:05:16.000000000 +0100
++++ cgsh/cgbootstrap.tcl_fixed	2019-12-20 11:56:43.713579027 +0100
+@@ -1,4 +1,8 @@
++puts $auto_path
+ lappend auto_path [file dirname [file dirname [info script]]]
++puts $auto_path
++set env(TCLLIBPATH) [list /opt/anaconda1anaconda2anaconda3/lib/tcl8.6 /opt/anaconda1anaconda2anaconda3/lib /opt/anaconda1anaconda2anaconda3/share/carthagene]
++puts $auto_path
+ package require CGsh
+ if { [llength $argv] == 1 } {
+ 	source [lindex $argv 0]
+@@ -13,8 +17,7 @@
+ 
+ 	foreach cmd [info commands ::CG::*] {
+ 		::tclreadline::readline add [$cmd -u]
+-	} 
++	}
+ 
+ 	::tclreadline::Loop
+ }
+-
+--- cgsh/cgbootstrap.tcl.in	2019-12-18 12:02:27.983182537 +0100
++++ cgsh/cgbootstrap.tcl.in_fixed	2019-12-20 11:56:38.104631483 +0100
+@@ -1,4 +1,8 @@
++puts $auto_path
+ lappend auto_path [file dirname [file dirname [info script]]]
++puts $auto_path
++set env(TCLLIBPATH) [list /opt/anaconda1anaconda2anaconda3/lib/tcl8.6 /opt/anaconda1anaconda2anaconda3/lib /opt/anaconda1anaconda2anaconda3/share/carthagene]
++puts $auto_path
+ 
+ package require CGsh
+ if { [llength $argv] == 1 } {
