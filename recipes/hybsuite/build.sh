@@ -17,6 +17,3 @@ cp -r dependencies/* $PREFIX/share/${PKG_NAME}/dependencies/
 chmod +x $PREFIX/bin/HybSuite.sh
 chmod -R 755 $PREFIX/share/${PKG_NAME}/
 
-# Create a symbolic link
-ln -s $PREFIX/bin/HybSuite.sh $PREFIX/bin/hybsuite
-
