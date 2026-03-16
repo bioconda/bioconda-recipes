@@ -10,7 +10,7 @@ mkdir -p $PREFIX/share/${PKG_NAME}/dependencies
 cp bin/HybSuite.sh $PREFIX/bin/hybsuite
 cp -r bin/*.py $PREFIX/share/${PKG_NAME}/bin/
 cp -r bin/*.R $PREFIX/share/${PKG_NAME}/bin/
-cp -r config/* $PREFIX/config/
+cp -r config $PREFIX/
 cp -r dependencies/* $PREFIX/share/${PKG_NAME}/dependencies/
 
 # Set execute permissions
