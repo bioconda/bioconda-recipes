@@ -1,0 +1,76 @@
+{% set name = "GeneFior" %}
+{% set version = "0.6.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0]|lower }}/{{ name|lower }}/genefior-{{ version }}.tar.gz
+  sha256: 69d7b90715e5527ce686b4e8f1c6e1c9fd901c5af8d8e22a442e8d8ee44be990
+  
+
+build:
+  entry_points:
+    - GeneFior = GeneFior.GeneFior:main
+    - geneFior = GeneFior.GeneFior:main
+    - genefior = GeneFior.GeneFior:main
+    - GeneFior-Recompute = GeneFior.GeneFior_Recompute:main
+    - GeneFior-recompute = GeneFior.GeneFior_Recompute:main
+    - genefior-recompute = GeneFior.GeneFior_Recompute:main
+    - GeneFior-Gene-Stats = GeneFior.GeneFior_Gene_Stats:main
+    - GeneFior-gene-stats = GeneFior.GeneFior_Gene_Stats:main
+    - genefior-gene-stats = GeneFior.GeneFior_Gene_Stats:main
+    - AMRFior = GeneFior.AMRfior:main
+    - AMRfior = GeneFior.AMRfior:main
+    - amrfior = GeneFior.AMRfior:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools
+    - wheel
+    - pip
+  run:
+    - python >=3.10
+    - samtools >=1.19.2
+    - blast >=2.17.0
+    - diamond >=2.1.13
+    - bowtie2 >=2.5.4
+    - bwa >=0.7.19
+    - minimap2 >=2.30
+    - mmseqs2
+    - seqtk >=1.4
+
+test:
+  imports:
+    - GeneFior
+  commands:
+    - pip check
+    - GeneFior --help
+    - genefior --help
+    - AMRfior --help
+    - amrfior --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/NickJD/Genefior
+  summary: 'Genefíor: A customisable and multi-tool approach for gene detection'
+  description: |
+    Genefíor orchestrates multiple alignment tools (BLAST, DIAMOND, Bowtie2, BWA, Minimap2 and MMseqs2) 
+    to search DNA and protein sequences against AMR and user-provided databases with transparent, 
+    coverage-based validation.
+  license: GPL-3.0-only
+  license_file: LICENSE
+  doc_url: https://github.com/NickJD/Genefior
+  dev_url: https://github.com/NickJD/Genefior
+
+extra:
+  recipe-maintainers:
+    - NickJD
