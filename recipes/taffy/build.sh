@@ -1,17 +1,12 @@
 #!/bin/bash
 set -ex
 
-# Patch the Makefile to append 'PREFIX=.' to the abPOA make command
-sed -i.bak 's|cd taffy/submodules/abPOA && ${MAKE}|& PREFIX=.|g' Makefile
-# Patch the Makefile to link htslib for bgzip support
-sed -i.bak 's|${LDLIBS}|${LDLIBS} -lhts|g' Makefile
-rm -f Makefile.bak
-
 export C_INCLUDE_PATH="${PREFIX}/include"
 export CPLUS_INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
-export CFLAGS="${CFLAGS} -DUSE_HTSLIB=1 -D_POSIX_C_SOURCE=200809L"
-export CXXFLAGS="${CXXFLAGS} -DUSE_HTSLIB=1 -D_POSIX_C_SOURCE=200809L"
+
+export CFLAGS="${CFLAGS} -DUSE_HTSLIB=1"
+export CXXFLAGS="${CXXFLAGS} -DUSE_HTSLIB=1"
 
 # Build and install the binary
 make CC="${CC}" CXX="${CXX}" AR="${AR}"
