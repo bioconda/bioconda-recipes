@@ -1,0 +1,48 @@
+{% set name = "afquery" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 16f2ed6146c26f638c35a631967f15a42b275f42835f62b9d1c26bef1e14979b
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - afquery = afquery.cli:cli
+
+requirements:
+  host:
+    - pip
+    - python >=3.10
+    - hatchling
+    - hatch-vcs
+  run:
+    - python >=3.10
+    - pyroaring >=0.4.8
+    - pyarrow >=14.0
+    - duckdb >=0.10
+    - click >=8.1
+    - cyvcf2 >=0.30
+    - tqdm >=4.60
+    # Note: pyranges may not be in bioconda — check before adding
+
+test:
+  imports:
+    - afquery
+  commands:
+    - afquery --help
+
+about:
+  home: https://github.com/dlopez-bioinfo/afquery
+  license: MIT
+  summary: Genomic allele frequency query engine with bitmap-encoded genotypes
+
+extra:
+  recipe-maintainers:
+    - dlopez-bioinfo
