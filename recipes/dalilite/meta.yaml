@@ -1,0 +1,49 @@
+package:
+  name: dalilite
+  version: 5
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('dalilite', max_pin="5") }}
+source:
+  sha256: 06cc987aaea4b17afef9e5115ff3818638beaabeedf49ad6ef3f07da590cf653
+  url: http://ekhidna2.biocenter.helsinki.fi/dali/DaliLite.v5.tar.gz
+  patches:
+    # Don't use hardcoded compilers 
+    - makefile.patch
+    # Remove the hardcoded binary paths
+    - test.patch
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('fortran') }}
+  host:
+    - perl
+  run:
+    - perl
+    - dssp
+    - blast
+    - gzip
+    - rsync
+    - grep
+    - curl
+    - perl-findbin 
+
+test:
+  source_files:
+    - test/
+    - test.csh
+    - DAT
+    - matrix_example.list
+    - toy_PDB
+  commands:
+    - bash -e -x test.csh
+
+about:
+  home: http://ekhidna2.biocenter.helsinki.fi/dali/README.v5.html
+  license: GPL-3.0-or-later
+  license_file: COPYING
+  summary: A standalone program for protein structural alignment and structure database search
