@@ -18,11 +18,21 @@ build:
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
+# Was getting an error about python_abi =3.14 *_cp314t conflicting with
+# matplotlib-base requiring python_abi =3.14 *_cp314
+# Seems related to: https://github.com/conda/conda-build/issues/5843
+# Using a fix like: https://github.com/3MAH/simcoon/pull/76
+# But since {{ python }} is a value like 3.14.* *_cpython instead of just 3.14
+# py_major and py_minor are used here instead
+{% set py_major = py // 100 %}
+{% set py_minor = py % 100 %}
+
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - python >=3.11
+    - python_abi {{ py_major }}.{{ py_minor }} *_cp{{ py_major }}{{ py_minor }}
     - setuptools >=80.0.0
     - cython >=3.2.0
     - pip
