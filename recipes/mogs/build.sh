@@ -14,7 +14,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Release \
          -DCONDA_BUILD=ON \
          -DWITH_MODULES=ON
 
-make -j 8 && make test
+make -j ${CPU_COUNT} && make test
 
 cp mogs $PREFIX/bin
 
