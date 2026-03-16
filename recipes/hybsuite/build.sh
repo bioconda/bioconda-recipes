@@ -14,6 +14,6 @@ cp -r config $PREFIX/
 cp -r dependencies/* $PREFIX/share/${PKG_NAME}/dependencies/
 
 # Set execute permissions
-chmod +x $PREFIX/bin/HybSuite.sh
+chmod +x $PREFIX/bin/hybsuite
 chmod -R 755 $PREFIX/share/${PKG_NAME}/
 
