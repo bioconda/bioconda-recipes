@@ -3,10 +3,11 @@ set -euo pipefail
 
 # Patch the Makefile to use conda-provided htslib and zstd headers
 # instead of the bundled (empty) git submodules
-sed -i \
+sed -i.bak \
     -e "s|HTS_OPTS = -I\$(HTS_DIR)/htslib/|HTS_OPTS = -I${PREFIX}/include/htslib|" \
     -e "s|ZSTD_OPTS = -I\$(ZSTD_DIR)/lib/|ZSTD_OPTS = -I${PREFIX}/include|" \
     Makefile
+rm -f Makefile.bak
 
 # Build all programs, overriding variables so make uses conda's htslib and
 # zstd instead of trying to build them from the (empty) submodule directories.
