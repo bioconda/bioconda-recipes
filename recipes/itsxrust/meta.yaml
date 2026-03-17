@@ -10,15 +10,16 @@ source:
   sha256: 3e17ba8a5859acad18e3c13ef038c5e02caa0d9986eb12f19690c862608e51cf
 
 build:
-  number: 0
+  number: 1
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
+    - itsxrust >=0.2.2,<0.3.0a0
 
 requirements:
   build:
     - {{ compiler('rust') }}
     - cargo-bundle-licenses
-  host: []
+  host:
+    - openssl
   run:
     - hmmer
 
@@ -26,14 +27,13 @@ test:
   commands:
     - itsxrust --help
     - itsxrust extract --help
+    - test -f "$PREFIX/share/itsxrust/hmm/F.hmm"
 
 about:
-  summary: "ITSxRust is a tool for extracting ITS regions from DNA sequences."
   home: https://github.com/ayobi/ITSxRust
   license: MIT
-  license_file:
-    - LICENSE
-    - THIRDPARTY.yml
+  license_file: LICENSE
+  summary: "HMMER-based ITS subregion extraction for long-read fungal metabarcoding."
 
 extra:
   recipe-maintainers:
