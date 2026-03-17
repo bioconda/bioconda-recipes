@@ -1,27 +1,29 @@
-{% set name = "PyVCF3" %}
-{% set version = "1.0.3" %}
+{% set name = "pyvcf3" %}
+{% set version = "1.0.4" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 4b16d71c8b97010487e2c939fb4d5707b7bbfa4e2b313df9dba3e372c5ba031d
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pyvcf3-{{ version }}.tar.gz
+  sha256: 6a251582b8f226f9cf363bb27f3323ace8a1c561a14c297f4bfafe1ffdb2e3d1
 
 build:
   number: 0
-  noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('pyvcf3', max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
+    - python
     - pip
-    - python =3
-    - setuptools
-
+    - cython
   run:
-    - python =3
+    - python
 
 test:
   imports:
@@ -29,12 +31,17 @@ test:
 
 about:
   home: "https://github.com/dridk/PyVCF3"
-  license: MIT
+  license: "BSD-3-Clause"
+  license_family: BSD
   license_file: LICENSE
-  summary: "A Variant Call Format reader for Python"
+  summary: "A Variant Call Format reader for Python."
   doc_url: "http://pyvcf.readthedocs.org/en/latest/index.html"
+  dev_url: "https://github.com/dridk/PyVCF3"
 
 extra:
   recipe-maintainers:
     - mbhall88
     - dridk
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

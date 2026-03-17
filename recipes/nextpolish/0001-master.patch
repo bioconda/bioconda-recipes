@@ -1,0 +1,136 @@
+diff --git a/source/lib/Makefile b/source/lib/Makefile
+index ca7cb93..b763244 100644
+--- a/source/lib/Makefile
++++ b/source/lib/Makefile
+@@ -3,11 +3,11 @@ HTSLIB = $(HTSDIR)/libhts.a
+ HTSLIB_CPPFLAGS = -I$(HTSDIR)
+ LIBS= -lm -lbz2 -llzma -lz
+ 
+-CC       = gcc
+-AR       = ar
+-CFLAGS = -Wall -O3 -std=c99 -fPIC -s 
++CC       = $(CC)
++AR       = $(AR)
++CFLAGS = -Wall -O3 -std=c11 -fPIC -s
+ ALL_CFLAGS = -I. $(HTSLIB_CPPFLAGS) $(CFLAGS)
+-ALL_LIBS = -lpthread $(LIBS)
++ALL_LIBS = -pthread $(LIBS)
+ 
+ DEFAULT = clean nextpolish1.so calgs.so nextpolish2.so
+ OBJECTS = main.o snpvalid.o snpphase.o kmercount.o lgspolish.o scorechain.o contig.o base.o seqlist.o config.o
+diff --git a/source/util/Makefile b/source/util/Makefile
+index 7364867..3058a80 100644
+--- a/source/util/Makefile
++++ b/source/util/Makefile
+@@ -3,17 +3,17 @@ SAMTOOLSDIR = ./samtools
+ MINIMAP2DIR = ./minimap2
+ HTSDIR = ../lib/htslib/
+ 
+-CC = gcc
++CC = $(CC)
+ CFLAGS = -Wall -O3 -s
+ PROGS = seq_split seq_count bwa_ samtools_ minimap2_
+ 
+ all: $(PROGS)
+ 
+ seq_split: kseq.h thpool.h seq_split.c thpool.c
+-	$(CC) $(CFLAGS) -pthread -o $@ seq_split.c thpool.c -lz 
++	$(CC) $(CFLAGS) -pthread -Wno-implicit-function-declaration -o $@ seq_split.c thpool.c -lz
+ 
+ seq_count: seq_count.c kseq.h
+-	$(CC) $(CFLAGS) -std=c99 -o $@ seq_count.c -lz
++	$(CC) $(CFLAGS) -Wno-implicit-function-declaration -std=c11 -o $@ seq_count.c -lz
+ 
+ bwa_:
+ 	@+make -C $(BWADIR)
+diff --git a/source/util/bwa/Makefile b/source/util/bwa/Makefile
+index 7151435..655d7f6 100644
+--- a/source/util/bwa/Makefile
++++ b/source/util/bwa/Makefile
+@@ -1,6 +1,6 @@
+-CC=			gcc
++CC=			$(CC)
+ #CC=			clang --analyze
+-CFLAGS=		-g -Wall -Wno-unused-function -O2
++CFLAGS=		-g -Wall -Wno-unused-function -O3
+ WRAP_MALLOC=-DUSE_MALLOC_WRAPPERS
+ AR=			ar
+ DFLAGS=		-DHAVE_PTHREAD $(WRAP_MALLOC)
+@@ -12,7 +12,7 @@ AOBJS=		bwashm.o bwase.o bwaseqio.o bwtgap.o bwtaln.o bamlite.o \
+ 			bwtsw2_chain.o fastmap.o bwtsw2_pair.o
+ PROG=		bwa
+ INCLUDES=	
+-LIBS=		-lm -lz -lpthread
++LIBS=		-lm -lz -pthread
+ SUBDIRS=	.
+ 
+ ifeq ($(shell uname -s),Linux)
+@@ -33,7 +33,7 @@ bwamem-lite:libbwa.a example.o
+ 		$(CC) $(CFLAGS) $(DFLAGS) example.o -o $@ -L. -lbwa $(LIBS)
+ 
+ libbwa.a:$(LOBJS)
+-		$(AR) -csru $@ $(LOBJS)
++		$(AR) -rcs $@ $(LOBJS)
+ 
+ clean:
+ 		rm -f gmon.out *.o a.out $(PROG) *~ *.a
+diff --git a/source/util/minimap2/Makefile b/source/util/minimap2/Makefile
+index 4118616..ab51e31 100644
+--- a/source/util/minimap2/Makefile
++++ b/source/util/minimap2/Makefile
+@@ -1,4 +1,4 @@
+-CFLAGS=		-g -Wall -O2 -Wc++-compat #-Wextra
++CFLAGS=		-g -Wall -O3 -Wc++-compat #-Wextra
+ CPPFLAGS=	-DHAVE_KALLOC
+ INCLUDES=
+ OBJS=		kthread.o kalloc.o misc.o bseq.o sketch.o sdust.o options.o index.o \
+@@ -6,7 +6,7 @@ OBJS=		kthread.o kalloc.o misc.o bseq.o sketch.o sdust.o options.o index.o \
+ 			ksw2_ll_sse.o
+ PROG=		minimap2
+ PROG_EXTRA=	sdust minimap2-lite
+-LIBS=		-lm -lz -lpthread
++LIBS=		-lm -lz -pthread
+ 
+ ifeq ($(arm_neon),) # if arm_neon is not defined
+ ifeq ($(sse2only),) # if sse2only is not defined
+@@ -51,7 +51,7 @@ minimap2-lite:example.o libminimap2.a
+ 		$(CC) $(CFLAGS) $< -o $@ -L. -lminimap2 $(LIBS)
+ 
+ libminimap2.a:$(OBJS)
+-		$(AR) -csru $@ $(OBJS)
++		$(AR) -rcs $@ $(OBJS)
+ 
+ sdust:sdust.c kalloc.o kalloc.h kdq.h kvec.h kseq.h ketopt.h sdust.h
+ 		$(CC) -D_SDUST_MAIN $(CFLAGS) $< kalloc.o -o $@ -lz
+diff --git a/source/util/samtools/Makefile b/source/util/samtools/Makefile
+index 4e76be9..0664627 100644
+--- a/source/util/samtools/Makefile
++++ b/source/util/samtools/Makefile
+@@ -21,11 +21,11 @@
+ # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ # DEALINGS IN THE SOFTWARE.
+ 
+-CC       = gcc
+-AR       = ar
++CC       = $(CC)
++AR       = $(AR)
+ CPPFLAGS =
+ #CFLAGS   = -g -Wall -O2 -pedantic -std=c99 -D_XOPEN_SOURCE=600
+-CFLAGS   = -g -Wall -O2
++CFLAGS   = -g -Wall -O3
+ LDFLAGS  =
+ LIBS     =
+ 
+@@ -138,10 +138,10 @@ LIBST_OBJS = sam_opts.o sam_utils.o
+ lib:libbam.a
+ 
+ libbam.a:$(LOBJS)
+-	$(AR) -csru $@ $(LOBJS)
++	$(AR) -rcs $@ $(LOBJS)
+ 
+ samtools: $(AOBJS) $(LZ4OBJS) libbam.a libst.a $(HTSLIB)
+-	$(CC) $(ALL_LDFLAGS) -o $@ $(AOBJS) $(LZ4OBJS) libbam.a libst.a $(HTSLIB_LIB) $(CURSES_LIB) -lm $(ALL_LIBS) -lpthread
++	$(CC) $(ALL_LDFLAGS) -o $@ $(AOBJS) $(LZ4OBJS) libbam.a libst.a $(HTSLIB_LIB) $(CURSES_LIB) -lm $(ALL_LIBS) -pthread
+ 
+ # For building samtools and its test suite only: NOT to be installed.
+ libst.a: $(LIBST_OBJS)

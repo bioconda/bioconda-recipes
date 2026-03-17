@@ -1,0 +1,104 @@
+recipe_sha: b5dec8063b6c0b33a18a000805b15c0f6a283bcbc287b30a14aaf64b0a9519bf  # The hash of the recipe's meta.yaml at which this recipe failed to build.
+skiplist: true # Set to true to skiplist this recipe so that it will be ignored as long as its latest commit is the one given above.
+log: |-
+  769 |          sprs::MulAcc  std::ops::Sub<&ndarray::ArrayBase<ndarray::OwnedRepr<F>, ndarray::Dim<[usize; 2]>>>,
+      |                        
+
+  error[E0277]: the trait bound &ArrayBase<OwnedRepr<F>, Dim<[usize; 2]>>: ndarray::impl_ops::ScalarOperand is not satisfied
+     --> /opt/conda/conda-bld/graphembed_1733953512994/work/.cargo/registry/src/index.crates.io-6f17d22bba15001f/annembed-0.1.3/src/tools/svdapprox.rs:778:46
+      |
+  778 |             let residue = csr_mat.to_dense() - &(q_mat.dot(&b));
+      |                                              ^ the trait ndarray::impl_ops::ScalarOperand is not implemented for &ArrayBase<OwnedRepr<F>, Dim<[usize; 2]>>, which is required by ndarray::ArrayBase<ndarray::data_repr::OwnedRepr<F>, ndarray::dimension::dim::Dim<[usize; 2]>>: Sub<&ArrayBase<OwnedRepr<F>, Dim<[usize; 2]>>>
+      |
+  help: there are multiple different versions of crate ndarray in the dependency graph
+     --> /opt/conda/conda-bld/graphembed_1733953512994/work/.cargo/registry/src/index.crates.io-6f17d22bba15001f/annembed-0.1.3/src/tools/svdapprox.rs:35:5
+      |
+  35  | use ndarray::{
+      |     ^^^^^^^ one version of crate ndarray is used here, as a direct dependency of the current crate
+  ...
+  53  | use sprs::{prod, CsMat, CsMatView, TriMat};
+      |     ^^^^ one version of crate ndarray is used here, as a dependency of crate sprs
+      = help: you can use cargo tree to explore your dependency tree
+      = note: required for ndarray::ArrayBase<ndarray::data_repr::OwnedRepr<F>, ndarray::dimension::dim::Dim<[usize; 2]>> to implement Sub<&ArrayBase<OwnedRepr<F>, Dim<[usize; 2]>>>
+
+  error[E0308]: mismatched types
+      --> /opt/conda/conda-bld/graphembed_1733953512994/work/.cargo/registry/src/index.crates.io-6f17d22bba15001f/annembed-0.1.3/src/tools/svdapprox.rs:780:52
+       |
+  780  |             let norm_residue = norm_frobenius_full(&residue.view());
+       |                                ------------------- ^^^^^^^^^^^^^^^ expected &ArrayBase<ViewRepr<&_>, _>, found &ArrayBase<ViewRepr<&F>, Dim<...>>
+       |                                |
+       |                                arguments to this function are incorrect
+       |
+       = note: ArrayBase<ViewRepr<&F>, Dim<...>> and ArrayBase<ViewRepr<&_>, _> have similar names, but are actually distinct types
+  note: ArrayBase<ViewRepr<&F>, Dim<...>> is defined in crate ndarray
+      --> /opt/conda/conda-bld/graphembed_1733953512994/work/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ndarray-0.16.1/src/lib.rs:1280:1
+       |
+  1280 | pub struct ArrayBase<S, D>
+       | ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  note: ArrayBase<ViewRepr<&_>, _> is defined in crate ndarray
+      --> /opt/conda/conda-bld/graphembed_1733953512994/work/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ndarray-0.15.6/src/lib.rs:1268:1
+       |
+  1268 | pub struct ArrayBase<S, D>
+       | ^^^^^^^^^^^^^^^^^^^^^^^^^^
+       = note: perhaps two different versions of crate ndarray are being used?
+  note: function defined here
+      --> /opt/conda/conda-bld/graphembed_1733953512994/work/.cargo/registry/src/index.crates.io-6f17d22bba15001f/annembed-0.1.3/src/tools/svdapprox.rs:935:8
+       |
+  935  | pub fn norm_frobenius_full<D: Dimension, F: Scalar>(v: &ArrayView<F, D>) -> F {
+       |        ^^^^^^^^^^^^^^^^^^^                          -------------------
+
+  error[E0277]: the trait bound ndarray::ArrayBase<ndarray::data_repr::OwnedRepr<F>, ndarray::dimension::dim::Dim<[usize; 2]>>: ndarray::linalg::impl_linalg::Dot<ArrayBase<OwnedRepr<F>, Dim<[usize; 1]>>> is not satisfied
+      --> /opt/conda/conda-bld/graphembed_1733953512994/work/.cargo/registry/src/index.crates.io-6f17d22bba15001f/annembed-0.1.3/src/tools/svdapprox.rs:1001:21
+       |
+  1001 |         v2 = a2.dot(&v1);
+       |                 --- ^^^ the trait ndarray::linalg::impl_linalg::Dot<ArrayBase<OwnedRepr<F>, Dim<[usize; 1]>>> is not implemented for ndarray::ArrayBase<ndarray::data_repr::OwnedRepr<F>, ndarray::dimension::dim::Dim<[usize; 2]>>
+       |                 |
+       |                 required by a bound introduced by this call
+       |
+       = help: the following other types implement trait ndarray::linalg::impl_linalg::Dot<Rhs>:
+                 ndarray::ArrayBase<DS2, ndarray::dimension::dim::Dim<[usize; 2]>> implements ndarray::linalg::impl_linalg::Dot<CsMatBase<N, I, IpS, IS, DS>>
+                 ndarray::ArrayBase<S, ndarray::dimension::dim::Dim<[usize; 1]>> implements ndarray::linalg::impl_linalg::Dot<ndarray::ArrayBase<S2, ndarray::dimension::dim::Dim<[usize; 1]>>>
+                 ndarray::ArrayBase<S, ndarray::dimension::dim::Dim<[usize; 1]>> implements ndarray::linalg::impl_linalg::Dot<ndarray::ArrayBase<S2, ndarray::dimension::dim::Dim<[usize; 2]>>>
+                 ndarray::ArrayBase<S, ndarray::dimension::dim::Dim<[usize; 2]>> implements ndarray::linalg::impl_linalg::Dot<ndarray::ArrayBase<S2, ndarray::dimension::dim::Dim<[usize; 1]>>>
+                 ndarray::ArrayBase<S, ndarray::dimension::dim::Dim<[usize; 2]>> implements ndarray::linalg::impl_linalg::Dot<ndarray::ArrayBase<S2, ndarray::dimension::dim::Dim<[usize; 2]>>>
+  note: required by a bound in ndarray::linalg::impl_linalg::<impl ndarray::ArrayBase<S, ndarray::dimension::dim::Dim<[usize; 2]>>>::dot
+      --> /opt/conda/conda-bld/graphembed_1733953512994/work/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ndarray-0.16.1/src/linalg/impl_linalg.rs:252:17
+       |
+  251  |     pub fn dot<Rhs>(&self, rhs: &Rhs) -> <Self as Dot<Rhs>>::Output
+       |            --- required by a bound in this associated function
+  252  |     where Self: Dot<Rhs>
+       |                 ^^^^^^^^ required by this bound in ndarray::linalg::impl_linalg::<impl ArrayBase<S, Dim<[usize; 2]>>>::dot
+
+  Some errors have detailed explanations: E0277, E0308.
+  For more information about an error, try rustc --explain E0277.
+  error: could not compile annembed (lib) due to 8 previous errors
+
+  Caused by:
+    process didn't exit successfully: rustc --crate-name annembed --edition=2021 /opt/conda/conda-bld/graphembed_1733953512994/work/.cargo/registry/src/index.crates.io-6f17d22bba15001f/annembed-0.1.3/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C opt-level=3 -C embed-bitcode=no --cfg 'feature="default"' --cfg 'feature="intel-mkl-static"' --check-cfg 'cfg(docsrs)' --check-cfg 'cfg(feature, values("blas-src", "default", "intel-mkl-static", "macos-accelerate", "openblas-static", "openblas-system", "simdeez_f", "stdsimd"))' -C metadata=8f1eac33f53e24f9 -C extra-filename=-8f1eac33f53e24f9 --out-dir /opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps -C linker=/opt/conda/conda-bld/graphembed_1733953512994/_build_env/bin/x86_64-conda-linux-gnu-cc -C strip=debuginfo -L dependency=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps --extern anyhow=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libanyhow-2cb14037eccbaced.rmeta --extern bincode=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libbincode-482e393e0e18fdaa.rmeta --extern bson=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libbson-d5bbcbd7138537aa.rmeta --extern byteorder=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libbyteorder-b4135b9eba9ebb4c.rmeta --extern clap=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libclap-92556b47ba2de303.rmeta --extern cpu_time=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libcpu_time-ea65c8f791473a6d.rmeta --extern csv=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libcsv-825c0d0997d5f831.rmeta --extern env_logger=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libenv_logger-d764e6d126d74489.rmeta --extern hdrhistogram=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libhdrhistogram-e2d8a939df217a95.rmeta --extern hnsw_rs=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libhnsw_rs-dc967f8b64ffcbb5.rmeta --extern indexmap=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libindexmap-28a5b5c9a6c1d4f5.rmeta --extern indxvec=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libindxvec-fae3aa8f90fde38e.rmeta --extern katexit=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libkatexit-9024b258914dd9ea.so --extern lazy_static=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/liblazy_static-5690c89ce0b7662a.rmeta --extern log=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/liblog-054a084181905fb9.rmeta --extern ndarray=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libndarray-53913e88501ada34.rmeta --extern ndarray_linalg=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libndarray_linalg-b3fc3ee6d478eb95.rmeta --extern num_traits=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libnum_traits-aecc12c36341049b.rmeta --extern num_cpus=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libnum_cpus-eac44804cf0ac575.rmeta --extern parking_lot=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libparking_lot-c40253ae1fcc8c36.rmeta --extern quantiles=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libquantiles-2666ecc50ba7153c.rmeta --extern rand=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/librand-e08d048f75edbaf0.rmeta --extern rand_distr=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/librand_distr-378e05c7437d1c1a.rmeta --extern rand_xoshiro=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/librand_xoshiro-719e2c7b858e8d7f.rmeta --extern rayon=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/librayon-780c7a62a46944f8.rmeta --extern serde=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libserde-28c8573a09818418.rmeta --extern sprs=/opt/conda/conda-bld/graphembed_1733953512994/work/target/release/deps/libsprs-7086abe54952007f.rmeta --cap-lints allow -L /home/conda/.local/share/ocipkg/ghcr.io/rust-math/rust-mkl/linux/mkl-static-lp64-seq/__2020.1-3038006115 (exit status: 1)
+  warning: build failed, waiting for other jobs to finish...
+  error: failed to compile graphembed v0.0.8 (/opt/conda/conda-bld/graphembed_1733953512994/work), intermediate artifacts can be found at /opt/conda/conda-bld/graphembed_1733953512994/work/target.
+  To reuse those artifacts with a future compilation, set the environment variable CARGO_TARGET_DIR to that path.
+  Traceback (most recent call last):
+    File "/opt/conda/lib/python3.10/site-packages/conda_build/build.py", line 2558, in build
+      utils.check_call_env(
+    File "/opt/conda/lib/python3.10/site-packages/conda_build/utils.py", line 404, in check_call_env
+      return _func_defaulting_env_to_os_environ("call", *popenargs, **kwargs)
+    File "/opt/conda/lib/python3.10/site-packages/conda_build/utils.py", line 380, in _func_defaulting_env_to_os_environ
+      raise subprocess.CalledProcessError(proc.returncode, _args)
+  subprocess.CalledProcessError: Command '['/bin/bash', '-o', 'errexit', '/opt/conda/conda-bld/graphembed_1733953512994/work/conda_build.sh']' returned non-zero exit status 101.
+
+  The above exception was the direct cause of the following exception:
+
+  Traceback (most recent call last):
+    File "/opt/conda/bin/conda-build", line 11, in <module>
+      sys.exit(execute())
+    File "/opt/conda/lib/python3.10/site-packages/conda_build/cli/main_build.py", line 589, in execute
+      api.build(
+    File "/opt/conda/lib/python3.10/site-packages/conda_build/api.py", line 209, in build
+      return build_tree(
+    File "/opt/conda/lib/python3.10/site-packages/conda_build/build.py", line 3712, in build_tree
+      packages_from_this = build(
+    File "/opt/conda/lib/python3.10/site-packages/conda_build/build.py", line 2566, in build
+      raise BuildScriptException(str(exc), caused_by=exc) from exc
+  conda_build.exceptions.BuildScriptException: Command '['/bin/bash', '-o', 'errexit', '/opt/conda/conda-bld/graphembed_1733953512994/work/conda_build.sh']' returned non-zero exit status 101.
+# Last 100 lines of the build log.

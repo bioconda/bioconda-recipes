@@ -1,0 +1,56 @@
+{% set name = "cligv" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 91068431060676ab81366b0a0ed011fdbdaab3a4e3a28aba3ba58958302f48b4
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv
+  entry_points:
+    - cligv = cligv.cli:main
+  run_exports:
+    - {{ pin_subpackage('cligv', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+    - setuptools >=42
+    - wheel
+  run:
+    - python >=3.7
+    - pysam >=0.19.0
+    - rich >=10.0.0
+
+test:
+  imports:
+    - cligv
+  commands:
+    - pip check
+    - cligv --version
+  requires:
+    - pip
+
+about:
+  home: https://github.com/jonasfreudig/cligv
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  summary: 'command line Interactive Genome Viewer'
+  description: |
+    clIGV (command line Interactive Genome Viewer) is a fast, interactive 
+    genome browser for the terminal. It allows visualization of genomic 
+    sequences, variants from VCF files, and alignments from BAM files, 
+    all with a simple interface directly in your terminal.
+  dev_url: https://github.com/jonasfreudig/cligv
+
+extra:
+  recipe-maintainers:
+    - jonasfreudig

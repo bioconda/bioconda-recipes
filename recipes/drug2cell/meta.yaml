@@ -1,0 +1,38 @@
+{% set name = "drug2cell" %}
+{% set version = "0.1.2" %}
+{% set sha256 = "bf159adfc569e14ca8bb827e1f9ca4e91fa6a3cfd9239a92544de14aef58fa7b" %}
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  run_exports:
+    - {{ pin_subpackage('drug2cell', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.11
+    - pip
+  run:
+    - python >=3.10,<3.11
+    - anndata
+    - pandas >=1.5.3,<2.0
+    - numpy
+    - statsmodels
+    - scipy  
+    - blitzgsea
+      
+test:
+  commands:
+    - python -c "import drug2cell"
+about:
+  home: https://github.com/teichlab/drug2cell/
+  license: non-commercial license
+  license_file: LICENSE
+  summary: "This is a collection of utility functions for gene group activity evaluation in scanpy"
+  

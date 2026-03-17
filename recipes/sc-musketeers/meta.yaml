@@ -1,0 +1,58 @@
+{% set name = "sc-musketeers" %}
+{% set version = "0.4.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/sc_musketeers-{{ version }}.tar.gz
+  sha256: 84f992eb2be9d40324025e095a943ad7973ba258ff38e20389a696309470cc52
+
+build:
+  entry_points:
+    - sc-musketeers = scmusketeers:__main__.main_entry_point
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('sc-musketeers', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.10.0,<4.0.0
+    - poetry >=1.8.1,<2.0.0
+    - numpy >=1.23.0,<2.0.0
+    - keras >=3.3.3,<4.0.0
+    - scanpy >=1.10.1,<2.0.0
+    - neptune >=1.10.4,<2.0.0
+    - pympler >=1.0.1,<2.0.0
+    - tensorflow >=2.10.0,<3.0.0
+    - pillow >=11.0.0,<12.0.0
+    - matplotlib-base >=3.9.3,<4.0.0
+    - pandas >=2.2.3,<3.0.0
+    - scikit-learn >=1.5.2,<2.0.0
+    - seaborn >=0.13.2,<0.14.0
+
+test:
+  imports:
+    - scmusketeers
+  commands:
+    - pip check
+    - sc-musketeers --help
+  requires:
+    - pip
+
+about:
+  home: https://sc-musketeers.readthedocs.io/
+  summary: A tri-partite modular autoencoder for addressing imbalanced cell type annotation and batch effect reduction
+  license: GPL-3.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - becavin-lab

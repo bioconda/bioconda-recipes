@@ -1,9 +1,11 @@
 #!/bin/bash
 
+set -xe
+
 mkdir -p ${PREFIX}/bin
 mkdir -p ${SP_DIR}
 
-make install CXX=${CXX}
+make -j ${CPU_COUNT} install CXX=${CXX}
 
 cp src/PhyloAcc-interface/phyloacc.py ${PREFIX}/bin/
 ln -s ${PREFIX}/bin/phyloacc.py ${PREFIX}/bin/phyloacc

@@ -1,0 +1,30 @@
+--- Makefile.old	2025-08-18 15:36:59.799096278 -0500
++++ Makefile	2025-08-18 22:14:11.615791554 -0500
+@@ -11,8 +11,8 @@
+ # Adjust $(HTSSRC) to point to your top-level htslib directory
+ ifdef HTSSRC
+ $(info HTSSRC defined)
+-HTS_INCDIR=$(realpath $(HTSSRC))
+-HTS_LIBDIR=$(realpath $(HTSSRC))/libhts.a
++HTS_INCDIR=$(realpath $(HTSSRC))/include
++HTS_LIBDIR=$(realpath $(HTSSRC))/lib/libhts.a
+ else
+ $(info HTSSRC not defined, assuming systemwide installation -lhts)
+ endif
+@@ -27,14 +27,14 @@
+ 	$(CXX) -MM $(CXXFLAGS) $*.cpp -I$(HTS_INCDIR) -D__WITH_BCF__ >$*.d
+ 
+ ngsRelate: $(OBJ)
+-	$(CXX) $(FLAGS)  -o ngsRelate *.o $(HTS_LIBDIR) -lz -lm -lbz2 -llzma -lpthread -lcurl -D__WITH_BCF__
++	$(CXX) $(FLAGS)  -o ngsRelate *.o $(HTS_LIBDIR) -lz -lm -lbz2 -llzma -lpthread -lcurl -ldeflate -ldl -D__WITH_BCF__
+ else
+ %.o: %.cpp
+ 	$(CXX) -c  $(CXXFLAGS)  -D__WITH_BCF__ $*.cpp
+ 	$(CXX) -MM $(CXXFLAGS)  -D__WITH_BCF__ $*.cpp >$*.d
+ 
+ ngsRelate: $(OBJ)
+-	$(CXX) $(FLAGS)  -o ngsRelate *.o -lz -lpthread -lhts  -lbz2 -llzma 
++	$(CXX) $(FLAGS)  -o ngsRelate *.o -lz -lpthread -lhts  -lbz2 -llzma -ldeflate -ldl
+ endif
+ 
+ clean:

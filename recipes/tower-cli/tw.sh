@@ -3,8 +3,7 @@
 # adapted from picard.sh launch script
 set -eu -o pipefail
 
-export LC_ALL=en_US.UTF-8
-jar_file="tw.jar"
+jar_file="tw-jar.jar"
 
 # Find original directory of bash script, resolving symlinks
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128

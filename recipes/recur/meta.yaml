@@ -1,0 +1,57 @@
+{% set name = "recur" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "565b8c36c4f1093800411d7bd9232797d4f6f9a3f0ddb8c579331f41f32092f6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/OrthoFinder/RECUR/releases/download/v{{ version }}/recur-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  entry_points:
+    - recur = recur.run.__main__:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+     - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9,<3.13
+    - pip
+    - setuptools >=64
+    - setuptools_scm >=8
+  run:
+    # --- Python-level deps ---
+    - python >=3.9,<3.13
+    - numpy
+    - dendropy
+    - pyyaml
+    - types-pyyaml
+    - psutil
+    - rich
+    # --- External tools RECUR calls  ---
+    - iqtree >=2,<3 
+
+test:
+  imports:
+    - recur
+  commands:
+    - recur --help
+  source_files:
+    - ExampleData/
+
+about:
+  home: "https://github.com/OrthoFinder/RECUR"
+  summary: "Detect recurrent amino-acid substitutions from multiple-sequence alignments."
+  license: "GPL-3.0-only"
+  license_file: LICENSE
+  license_family: GPL3
+  dev_url: "https://github.com/OrthoFinder/RECUR"
+  doc_url: "https://orthofinder.github.io/RECUR"

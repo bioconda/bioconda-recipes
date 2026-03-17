@@ -1,14 +1,27 @@
 #!/bin/bash
 
-export CFLAGS="$CFLAGS -I$PREFIX/include"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
-export LIBRARY_PATH="${PREFIX}/lib"
-export CPATH="${PREFIX}/include"
+export INCLUDES="-I${PREFIX}/include"
+export LIBPATH="-L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
 
-sed -i.bak 's/^GIT_HEADER/#GIT_HEADER/' makefile
+if [[ `uname` == "Darwin" ]]; then
+    export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+else
+    export CONFIG_ARGS=""
+fi
 
-make CXX=$CXX ARM=false
+cmake . -GNinja \
+    -DCONDA=ON \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+    -DCMAKE_CXX_COMPILER="${CXX}" \
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+    "${CONFIG_ARGS}"
 
-mkdir -p $PREFIX/bin
-cp atlas $PREFIX/bin 
+ninja || exit 1
+
+mkdir -p ${PREFIX}/bin
+cp atlas ${PREFIX}/bin || exit 1
+chmod +x ${PREFIX}/bin/atlas

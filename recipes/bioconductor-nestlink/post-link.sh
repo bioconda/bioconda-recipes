@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "nestlink-1.18.0"
+installBiocDataPackage.sh "nestlink-1.22.0"
