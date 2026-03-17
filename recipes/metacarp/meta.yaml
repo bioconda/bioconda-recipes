@@ -1,0 +1,65 @@
+{% set version = "1.0.0" %}
+
+package:
+  name: metacarp
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/m/metacarp/metacarp-{{ version }}.tar.gz
+  sha256: 74d9cdb67c58d32c26c9046d83638a36efca266348be57fe133be666392f229c
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - METACARP=metacarp.run_metacarp:main
+    - METACARP_galaxy=metacarp.galaxy:main
+    - GMM_screening=metacarp.run_GMM_screening:main
+  run_exports:
+    - {{ pin_subpackage("metacarp", max_pin="x.x") }}
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+    - biopython >=1.84
+    - pyyaml >=6.0
+  run:
+    - beautifulsoup4 >=4.11.1
+    - biopython >=1.84
+    - click ==8.3.1
+    - fastp >=0.23.4
+    - humanize ==4.15.0
+    - kma ==1.4.18
+    - kraken2 >=2.1.1
+    - minimap2 >=2.26
+    - nanofilt ==2.8.0
+    - ncbi-datasets-cli >=16.40.1
+    - numpy >=1.26.4
+    - pandas >=2.1.0
+    - PuLP ==2.7.0
+    - pydantic ==2.12.5
+    - pysam ==0.23.3
+    - PyYAML >=6.0
+    - samtools >=1.17
+    - screed ==1.1.2
+    - snakemake ==7.18.2
+    - yattag >=1.14.0
+
+about:
+  home: https://github.com/BioinformaticsPlatformWIV-ISP/MetaCARP
+  license: GPL-3.0-or-later
+  license_family: GPL
+  license_file: LICENSE
+  summary: MetaCARP (Metagenomic Contamination-Assessment-of-Retail-Products) is a workflow to screen shotgun metagenomic sequencing data. 
+  dev_url: https://github.com/BioinformaticsPlatformWIV-ISP/MetaCARP
+
+test:
+  imports:
+    - metacarp
+  commands:
+    - METACARP -h
+    - GMM_screening -h
+    - METACARP_galaxy -h
