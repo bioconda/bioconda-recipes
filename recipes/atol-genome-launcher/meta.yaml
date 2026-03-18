@@ -1,5 +1,5 @@
 {% set name = "atol-genome-launcher" %}
-{% set version = "0.3.1" %}
+{% set version = "0.6.0" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/TomHarrop/atol-genome-launcher/archive/refs/tags/{{ version }}.tar.gz
-  sha256: e7b258b6c3e5301f68b376e3c2ec13471ea7dbf6ff896d7dad756b4c4d51853b
+  sha256: 7b951951da08b86115620f42e2b8f13245f5eea48f45b62e316cde47f1906d36
 
 build:
   number: 0
@@ -16,33 +16,40 @@ build:
   script_env:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   entry_points:
+    - assembly-config-generator = assembly_config_generator.assembly_config_generator:main
     - assembly-data-downloader = assembly_data_downloader.assembly_data_downloader:main
     - bpa-file-downloader = bpa_file_downloader.bpa_file_downloader:main
+    - pipeline-result-uploader = pipeline_result_uploader.pipeline_result_uploader:main
+    - result-file-uploader = result_file_uploader.result_file_uploader:main
     - rnaseq-manifest-generator = rnaseq_manifest_generator.rnaseq_manifest_generator:main
     - rnaseq-reads-downloader = rnaseq_reads_downloader.rnaseq_reads_downloader:main
-    - assembly-config-generator = assembly_config_generator.assembly_config_generator:main
-
   run_exports:
     - {{ pin_subpackage('atol-genome-launcher', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.12,<3.13
     - pip
+    - python >=3.12,<3.13
     - setuptools-scm
   run:
-    - wget
+    - ca-certificates
     - pandas >=2.3.3,<3
+    - pigz
+    - pydantic >=2.12.5
     - python >=3.12,<3.15
+    - rclone
     - snakemake >=9.11.6,<10
+    - wget
 
 test:
   commands:
+    - "assembly-config-generator --help | grep 'usage: assembly-config-generator'"
     - "assembly-data-downloader --help | grep 'usage: assembly-data-downloader'"
     - "bpa-file-downloader --help | grep 'usage: bpa-file-downloader'"
+    - "pipeline-result-uploader --help | grep 'usage: pipeline-result-uploader'"
+    - "result-file-uploader --help | grep 'usage: result-file-uploader'"
     - "rnaseq-manifest-generator --help | grep 'usage: rnaseq-manifest-generator'"
     - "rnaseq-reads-downloader --help | grep 'usage: rnaseq-reads-downloader'"
-    - "assembly-config-generator --help | grep 'usage: assembly-config-generator'"
 
 about:
   home: "https://github.com/TomHarrop/atol-genome-launcher"
