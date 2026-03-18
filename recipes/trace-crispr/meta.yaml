@@ -1,5 +1,5 @@
 {% set name = "trace-crispr" %}
-{% set version = "0.4.0" %}
+{% set version = "0.6.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,15 +7,14 @@ package:
 
 source:
   url: https://pypi.io/packages/source/t/trace-crispr/trace_crispr-{{ version }}.tar.gz
-  sha256: 5ca1a53495f54eee50e05691020d344aaca6be40901f731a21f916c1f6329b8f
+  sha256: 889a1731bd1c9fdbfec39dfc52ba3a03f549d87ab7b184b16ba7637158d94701
 
 build:
   number: 0
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   entry_points:
-  run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
+    - trace = trace_crispr.cli:cli
 
 requirements:
   host:
@@ -31,7 +30,6 @@ requirements:
     - pyyaml >=6.0
     - rapidfuzz >=3.0
     - tqdm >=4.60
-    # External aligners
     - bwa >=0.7
     - bbmap >=39
     - minimap2 >=2.24
@@ -43,7 +41,6 @@ test:
     - trace_crispr.core
     - trace_crispr.preprocessing
     - trace_crispr.utils
-    - trace_crispr.multi_template
   commands:
     - trace --help
     - trace --version
@@ -59,7 +56,7 @@ about:
     including HDR, NHEJ, and large deletions using a triple-aligner
     consensus approach (BWA-MEM, BBMap, minimap2).
   dev_url: https://github.com/k-roy/TRACE
-  doc_url: https://github.com/k-roy/TRACE
+  doc_url: https://trace-crispr.readthedocs.io
 
 extra:
   recipe-maintainers:
