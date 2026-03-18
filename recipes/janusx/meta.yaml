@@ -1,0 +1,75 @@
+{% set name = "janusx" %}
+{% set version = "1.0.14" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/FJingxian/JanusX/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 44d856f25c98706ec71c7c211c9712cf008331b9cbad44cef9d5537ae13fbabc
+  md5: 1bc5439392240201fb5d066b01af8ba0
+
+build:
+  number: 0
+  skip: true  # [win or py<39]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+  host:
+    - python
+    - pip
+    - maturin >=1.7,<2
+  run:
+    - python
+    - numpy
+    - scipy
+    - scikit-learn
+    - xgboost
+    - pandas <3.0
+    - matplotlib-base
+    - psutil
+    - statsmodels
+    - rich
+    - tqdm
+    - rich-argparse
+    - joblib >=1.5
+    - mkl  # [linux and x86_64]
+    - pypardiso  # [linux and x86_64]
+
+test:
+  requires:
+    - python
+  commands:
+    - jxpy -h
+    - python -c "import janusx.janusx"
+    - python -c "import janusx.script.JanusX as jx; assert callable(jx.main)"
+
+about:
+  home: https://github.com/FJingxian/JanusX
+  summary: GWAS and genomic selection toolkit with Rust-accelerated kernels
+  description: |
+    JanusX is a high-performance toolkit for genome-wide association studies
+    (GWAS), genomic selection (GS), and post-analysis visualization.
+
+    This Bioconda recipe packages the Python+Rust core and provides the `jxpy`
+    command entrypoint. Launcher-specific features (`jx`, self-update/runtime
+    management, `fastq2vcf`, and `fastq2count`) are intentionally excluded
+    from this package scope.
+  license: AGPL-3.0-or-later
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  doc_url: https://github.com/FJingxian/JanusX/tree/v{{ version }}/doc
+  dev_url: https://github.com/FJingxian/JanusX
+
+extra:
+  identifiers:
+    - doi:10.64898/2026.01.20.700366
+  recipe-maintainers:
+    - FJingxian
