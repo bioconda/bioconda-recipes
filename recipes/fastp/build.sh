@@ -36,17 +36,16 @@ cmake -B build -G Ninja \
 cmake --build build -j"${CPU_COUNT}"
 cmake --install build
 
-# ---------- 4. zstd (make) ----------
-cd "${SRC_DIR}/zstd"
-make -j"${CPU_COUNT}" lib-release
-cp lib/libzstd.a "${STAGING}/lib/"
-cp lib/zstd.h lib/zstd_errors.h lib/zdict.h "${STAGING}/include/"
-
-# ---------- 5. fastp ----------
+# ---------- 4. fastp ----------
+# The upstream Makefile uses -static on Linux (full static incl. glibc),
+# which does not work in conda (no static glibc). Override LD_FLAGS to
+# link only the three vendored libs statically via their .a archives,
+# while keeping system libs (libc, libpthread) dynamic.
 cd "${SRC_DIR}/fastp"
 make CXX="${CXX}" \
     CXXFLAGS="${CXXFLAGS} -O3 -std=c++14" \
     INCLUDE_DIRS="${STAGING}/include" \
     LIBRARY_DIRS="${STAGING}/lib" \
+    LD_FLAGS="-L${STAGING}/lib ${STAGING}/lib/libisal.a ${STAGING}/lib/libdeflate.a ${STAGING}/lib/libhwy.a -lpthread" \
     -j"${CPU_COUNT}"
 make install PREFIX="${PREFIX}"
