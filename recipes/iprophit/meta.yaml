@@ -1,0 +1,55 @@
+{% set name = "iprophit" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/HongboZhang-z3d/iProphIT-FAFU/archive/refs/tags/v{{version}}.tar.gz
+  sha256: baab2ec3c2176be069314060c75f4d6ef5f5731018cabc4de008aa9052c07a07
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  entry_points:
+    - iprophit = iprophit.classifier:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - setuptools
+  
+  run:
+    - python >=3.12
+    - pytorch >=2.6.0
+    - biopython >=1.86
+    - numpy >=2.0
+    - pandas
+    - tqdm
+    - requests
+
+test:
+  imports:
+    - iprophit
+  commands:
+    - iprophit --help
+
+about:
+  home: https://github.com/HongboZhang-z3d/iProphIT-FAFU
+  license: GPL-3.0-only
+  license_file: LICENSE
+  summary: "Deep learning approach for identifying inducible prophage activity"
+  description: |
+    A deep learning approach that identifies the inducible activity of 
+    prophages from their DNA sequences.
+  doc_url: https://doi.org/10.5281/zenodo.17605580
+  dev_url: https://github.com/HongboZhang-z3d/iProphIT-FAFU
+
+extra:
+  recipe-maintainers:
+    - HongboZhang-z3d
