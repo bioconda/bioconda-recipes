@@ -1,6 +1,6 @@
 {% set name = "get_mnv" %}
-{% set version = "1.0.0" %}
-{% set sha256 = "b9ba6fe1a5f5f73afa98cde9e348f7861d44690f795338816a8a0724a66e1aa8" %}
+{% set version = "1.0.1" %}
+{% set sha256 = "68c771531b9f9b70f7e182cfebc6a6cacb98ce0786d937c7d39cfbde83af262a" %}
 
 package:
   name: "{{ name|lower }}"
@@ -9,11 +9,9 @@ package:
 source:
   url: "https://github.com/PathoGenOmics-Lab/{{ name }}/archive/refs/tags/{{ version }}.tar.gz"
   sha256: "{{ sha256 }}"
-  patches:
-    - get_mnv-aarch64.patch # [aarch64]
 
 build:
-  number: 1
+  number: 0
   script: |
     set -xe
     export LANG=C.UTF-8
@@ -28,8 +26,9 @@ build:
     #export CARGO_NET_OFFLINE=true
     export HTS_LIB_DIR=$PREFIX/lib
     export HTS_INCLUDE_DIR=$PREFIX/include
-    export LIBCLANG_PATH=$PREFIX/lib # [linux and aarch64]
-    export CPLUS_INCLUDE_PATH=$PREFIX/include # [linux and aarch64]
+    export LIBCLANG_PATH=$PREFIX/lib # [linux or aarch64]
+    export CPLUS_INCLUDE_PATH=$PREFIX/include # [linux or aarch64]
+    export BINDGEN_EXTRA_CLANG_ARGS="-I$PREFIX/include" # [linux or aarch64]
     export HTS_STATIC=1
     export HTS_SYS_BUNDLED=0
     cargo install --no-track --locked --verbose --root "${PREFIX}" --path .
@@ -38,6 +37,8 @@ build:
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
     - {{ compiler('rust') }}
     - pkg-config
   host:
@@ -47,7 +48,7 @@ requirements:
     - bzip2
     - xz
     - zlib
-    - clangdev >=16,<17 # [linux and aarch64]
+    - clangdev >=16,<17 # [linux or aarch64]
 
   run:
     - {{ pin_compatible('openssl') }}
