@@ -43,9 +43,11 @@ cmake --install build
 # ---------- 4. fastp ----------
 # Override LD_FLAGS to bypass upstream's -static (conda has no static glibc).
 # Link vendored .a archives directly, keep system libs dynamic.
+# Export CXXFLAGS as env var (not make arg) so Makefile's ':= ... ${CXXFLAGS}'
+# appends our flags instead of losing its own -I flags.
 cd "${SRC_DIR}/fastp"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
 make CXX="${CXX}" \
-    CXXFLAGS="${CXXFLAGS} -O3 -std=c++14" \
     INCLUDE_DIRS="${STAGING}/include" \
     LIBRARY_DIRS="${STAGING}/lib" \
     LD_FLAGS="-L${STAGING}/lib ${STAGING}/lib/libisal.a ${STAGING}/lib/libdeflate.a ${STAGING}/lib/libhwy.a -lpthread" \
