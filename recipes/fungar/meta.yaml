@@ -1,0 +1,46 @@
+{% set name = "fungar" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/resgen-br/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 58445c7fb151a8894e3a544726cf6f7d4df24f5f9d1b32253442aad91bd6230c
+
+build:
+  number: 0
+  noarch: generic
+  script:
+    - mkdir -p "$PREFIX/bin"
+    - install -m 755 FUNGAR.sh "$PREFIX/bin/fungar"
+    - mkdir -p "$PREFIX/share/FUNGAR"
+    - cp -r database/* "$PREFIX/share/FUNGAR/"
+
+requirements:
+  run:
+    - bash
+    - python >=3.8
+    - pandas
+    - diamond
+
+test:
+  commands:
+    - {{ name }} --help
+
+about:
+  home: https://github.com/resgen-br/{{ name }}
+  license: MIT
+  license_file: LICENSE
+  summary: Pipeline for detecting antifungal resistance genes and mutations from metagenomic sequencing reads
+  description: |
+    FUNGAR is a command-line pipeline for detecting antifungal resistance
+    genes and associated amino acid mutations from metagenomic sequencing data.
+    It uses DIAMOND for protein alignment and Python-based mutation parsing.
+
+extra:
+  skip-lints:
+    - missing_run_exports
+  identifiers:
+    - biotools:fungar
