@@ -6,9 +6,10 @@ mkdir -p "${STAGING}/lib" "${STAGING}/include" "${PREFIX}/bin"
 
 # ---------- 1. isa-l (autotools) ----------
 cd "${SRC_DIR}/isa-l"
-export AS=nasm
-# autogen.sh calls gcc directly; conda uses prefixed compilers ($CC).
-# Regenerate build scripts so configure picks up $CC from the environment.
+# On x86_64, nasm is the assembler; on aarch64, isa-l uses CC -D__ASSEMBLY__
+if [ "$(uname -m)" = "x86_64" ]; then
+    export AS=nasm
+fi
 ./autogen.sh
 ./configure --prefix="${STAGING}" --enable-static --disable-shared \
     CC="${CC}" CFLAGS="${CFLAGS:-}"
@@ -41,10 +42,9 @@ cmake --build build -j"${CPU_COUNT}"
 cmake --install build
 
 # ---------- 4. fastp ----------
-# Override LD_FLAGS to bypass upstream's -static (conda has no static glibc).
-# Link vendored .a archives directly, keep system libs dynamic.
 # Export CXXFLAGS as env var (not make arg) so Makefile's ':= ... ${CXXFLAGS}'
 # appends our flags instead of losing its own -I flags.
+# Override LD_FLAGS to bypass upstream's -static on Linux (conda has no static glibc).
 cd "${SRC_DIR}/fastp"
 export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
 make CXX="${CXX}" \
