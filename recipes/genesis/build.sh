@@ -24,6 +24,5 @@ mkdir -p "${PREFIX}/lib"
 cp "${SRC_DIR}/bin/libgenesis${SHLIB_EXT}" "${PREFIX}/lib/"
 
 # Install headers (preserve directory structure)
-mkdir -p "${PREFIX}/include/genesis"
-cd "${SRC_DIR}/lib/genesis"
-find . \( -name '*.hpp' -o -name '*.tpp' \) -exec install -Dm644 {} "${PREFIX}/include/genesis/{}" \;
+mkdir -p "${PREFIX}/include"
+cp -r "${SRC_DIR}/lib/genesis" "${PREFIX}/include/"
