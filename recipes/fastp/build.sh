@@ -6,6 +6,7 @@ mkdir -p "${STAGING}/lib" "${STAGING}/include" "${PREFIX}/bin"
 
 # ---------- 1. isa-l (autotools) ----------
 cd "${SRC_DIR}/isa-l"
+export AS=nasm
 ./autogen.sh
 ./configure --prefix="${STAGING}" --enable-static --disable-shared
 make -j"${CPU_COUNT}"
@@ -37,10 +38,8 @@ cmake --build build -j"${CPU_COUNT}"
 cmake --install build
 
 # ---------- 4. fastp ----------
-# The upstream Makefile uses -static on Linux (full static incl. glibc),
-# which does not work in conda (no static glibc). Override LD_FLAGS to
-# link only the three vendored libs statically via their .a archives,
-# while keeping system libs (libc, libpthread) dynamic.
+# Override LD_FLAGS to bypass upstream's -static (conda has no static glibc).
+# Link vendored .a archives directly, keep system libs dynamic.
 cd "${SRC_DIR}/fastp"
 make CXX="${CXX}" \
     CXXFLAGS="${CXXFLAGS} -O3 -std=c++14" \
