@@ -7,8 +7,11 @@ mkdir -p "${STAGING}/lib" "${STAGING}/include" "${PREFIX}/bin"
 # ---------- 1. isa-l (autotools) ----------
 cd "${SRC_DIR}/isa-l"
 export AS=nasm
+# autogen.sh calls gcc directly; conda uses prefixed compilers ($CC).
+# Regenerate build scripts so configure picks up $CC from the environment.
 ./autogen.sh
-./configure --prefix="${STAGING}" --enable-static --disable-shared
+./configure --prefix="${STAGING}" --enable-static --disable-shared \
+    CC="${CC}" CFLAGS="${CFLAGS:-}"
 make -j"${CPU_COUNT}"
 make install
 
