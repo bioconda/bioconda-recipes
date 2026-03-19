@@ -8,6 +8,7 @@ export LDLIBS="${LDLIBS} -lhdf5_cpp -lhdf5 -lhts"
 export LIBRARY_PATH="${PREFIX}/lib"
 
 cd taffy/submodules/abPOA
+sed -i.bak 's/-march=native//g' Makefile
 make CC="${CC}" CXX="${CXX}" PREFIX=$(pwd) EXTRA_FLAGS="-I${PREFIX}/include -L${PREFIX}/lib" -j"${CPU_COUNT}"
 cd ../../../
 
