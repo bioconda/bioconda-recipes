@@ -2,9 +2,9 @@
 
 CMAKE_EXTRA_FLAGS="-DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DUSE_VCF=ON -DUSE_TERRAPHAST=ON"
 
-if [ "$(uname -m)" == "aarch64" ]
+if [ "$(uname -m)" != "x86_64" ]
 then
-  # mannually disable x86 vector intrinsics on ARM
+  # mannually disable x86 vector intrinsics on ARM (or any other non-x86 system)
   CMAKE_EXTRA_FLAGS="${CMAKE_EXTRA_FLAGS} -DPORTABLE_BUILD=ON -DCORAX_ENABLE_SSE=OFF -DCORAX_ENABLE_AVX=OFF -DCORAX_ENABLE_AVX2=OFF"
 fi
 
