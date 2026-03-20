@@ -1,8 +1,8 @@
 diff --git a/bin/somatem b/bin/somatem
-index c57faef..10268fa 100755
+index c57faef..0402fe8 100755
 --- a/bin/somatem
 +++ b/bin/somatem
-@@ -4,61 +4,62 @@ set -euo pipefail
+@@ -4,61 +4,141 @@ set -euo pipefail
  PIPELINE_DIR="@@PIPELINE_DIR@@"
  
  show_help() {
@@ -20,20 +20,24 @@ index c57faef..10268fa 100755
 -  somatem -params-file assets/custom_metadata.yaml
 -  somatem --input samplesheet.csv --outdir results -profile conda
 -  somatem -profile docker --input samplesheet.csv --outdir results
--
++Commands:
++  16S                    Run 16S taxonomic profiling
++  pre_processing         Run the main pipeline with pre-processing analysis
++  mag                    Run the main pipeline with assembly analysis
++  taxonomic_profiling    Run taxonomic profiling (defaults to metagenomic data)
++  genome_dynamics        Run the main pipeline with genome dynamics analysis
++  get_example_data       Download example data
++  download_databases     Download required databases
++  help                   Show this help message
+ 
 -Notes:
 -  - Relative paths passed to -params-file or --params-file that match files
 -    inside the installed Somatem pipeline will be resolved automatically.
 -  - Any other arguments are passed directly to:
 -      nextflow run <pipeline>/main.nf
-+Commands:
-+  pre_processing        Run the pre-processing workflow
-+  mag                   Run the MAG assembly workflow
-+  taxonomic_profiling   Run the taxonomic profiling workflow
-+  genome_dynamics       Run the genome dynamics workflow
-+  get_example_data      Download example data
-+  download_databases    Download required databases
-+  help                  Show this help message
++Common shortcuts:
++  -i, --input            Input sample sheet CSV
++  -o, --outdir           Output directory
  
 -Support:
 -  - If you run into any issues, please feel free to reach out.
@@ -43,17 +47,21 @@ index c57faef..10268fa 100755
 -      https://github.com/treangenlab/Somatem/wiki
 -  - You can look through the GitHub wiki pages for documentation on the
 -    major subworkflows within Somatem.
--
++Examples:
++  somatem 16S -i samples.csv -o results
++  somatem taxonomic-profiling -i samples.csv -o results
++  somatem taxonomic-profiling --data_type 16S -i samples.csv -o results
++  somatem mag -i samples.csv -o results
++  somatem genome-dynamics -i samples.csv -o results
++  somatem get_example_data --outdir ./somatem_example_data
+ 
 -Help:
 -  somatem -h
 -  somatem --help
-+Examples:
-+  somatem pre_processing --help
-+  somatem mag --help
-+  somatem taxonomic_profiling --help
-+  somatem genome_dynamics --help
-+  somatem get_example_data --outdir ./somatem_example_data
-+  somatem download_databases --help
++Input CSV format:
++  sample,fastq_1
++  mock1,assets/examples/data/16S/mockm95_sub10k.fastq.gz
++  mock2,assets/examples/data/16S/mockm91_sub10k.fastq.gz
  EOF
  }
  
@@ -61,7 +69,10 @@ index c57faef..10268fa 100755
 -    show_help
 -    exit 0
 -fi
--
++resolve_args() {
++    RESOLVED_ARGS=()
++    HAS_DATA_TYPE=0
+ 
 -args=()
 -while [[ $# -gt 0 ]]; do
 -    case "$1" in
@@ -78,31 +89,96 @@ index c57faef..10268fa 100755
 -            args+=("$1")
 -            ;;
 -    esac
++    while [[ $# -gt 0 ]]; do
++        case "$1" in
++            -i)
++                shift
++                RESOLVED_ARGS+=("--input" "$1")
++                ;;
++            --input)
++                shift
++                RESOLVED_ARGS+=("--input" "$1")
++                ;;
++            -o)
++                shift
++                RESOLVED_ARGS+=("--outdir" "$1")
++                ;;
++            --outdir)
++                shift
++                RESOLVED_ARGS+=("--outdir" "$1")
++                ;;
++            --data_type)
++                shift
++                HAS_DATA_TYPE=1
++                RESOLVED_ARGS+=("--data_type" "$1")
++                ;;
++            -params-file|--params-file)
++                shift
++                pf="$1"
++                if [[ "$pf" != /* && -f "${PIPELINE_DIR}/${pf}" ]]; then
++                    RESOLVED_ARGS+=("--params-file" "${PIPELINE_DIR}/${pf}")
++                else
++                    RESOLVED_ARGS+=("--params-file" "$pf")
++                fi
++                ;;
++            *)
++                RESOLVED_ARGS+=("$1")
++                ;;
++        esac
++        shift
++    done
++}
++
 +cmd="${1:-help}"
 +if [[ $# -gt 0 ]]; then
      shift
 -done
 +fi
++
++resolve_args "$@"
  
 -exec nextflow run "${PIPELINE_DIR}/main.nf" "${args[@]}"
 +case "${cmd}" in
++    16S|16s)
++        exec nextflow run "${PIPELINE_DIR}/main.nf" \
++            --data_type 16S \
++            --analysis_type taxonomic-profiling \
++            "${RESOLVED_ARGS[@]}"
++        ;;
 +    pre_processing|pre-processing|preprocessing)
-+        exec nextflow run "${PIPELINE_DIR}/subworkflows/local/pre-processing.nf" "$@"
++        exec nextflow run "${PIPELINE_DIR}/main.nf" \
++            --analysis_type pre-processing \
++            "${RESOLVED_ARGS[@]}"
 +        ;;
 +    mag|assembly_mags|mag_assembly|assembly)
-+        exec nextflow run "${PIPELINE_DIR}/subworkflows/local/assembly_mags.nf" "$@"
++        exec nextflow run "${PIPELINE_DIR}/main.nf" \
++            --analysis_type assembly \
++            "${RESOLVED_ARGS[@]}"
 +        ;;
 +    taxonomic_profiling|taxonomic-profiling|tax|profiling)
-+        exec nextflow run "${PIPELINE_DIR}/subworkflows/local/taxonomic-profiling.nf" "$@"
++        if [[ "${HAS_DATA_TYPE}" -eq 1 ]]; then
++            exec nextflow run "${PIPELINE_DIR}/main.nf" \
++                --analysis_type taxonomic-profiling \
++                "${RESOLVED_ARGS[@]}"
++        else
++            exec nextflow run "${PIPELINE_DIR}/main.nf" \
++                --data_type metagenomic \
++                --analysis_type taxonomic-profiling \
++                "${RESOLVED_ARGS[@]}"
++        fi
 +        ;;
 +    genome_dynamics|genome-dynamics|dynamics)
-+        exec nextflow run "${PIPELINE_DIR}/subworkflows/local/genome-dynamics.nf" "$@"
++        exec nextflow run "${PIPELINE_DIR}/main.nf" \
++            --analysis_type genome-dynamics \
++            "${RESOLVED_ARGS[@]}"
 +        ;;
 +    get_example_data|example_data|examples)
-+        exec nextflow run "${PIPELINE_DIR}/subworkflows/local/get_example_data.nf" "$@"
++        exec nextflow run "${PIPELINE_DIR}/subworkflows/local/get_example_data.nf" \
++            "${RESOLVED_ARGS[@]}"
 +        ;;
 +    download_databases|download-databases|databases|dbs)
-+        exec nextflow run "${PIPELINE_DIR}/subworkflows/local/download_databases.nf" "$@"
++        exec nextflow run "${PIPELINE_DIR}/subworkflows/local/download_databases.nf" \
++            "${RESOLVED_ARGS[@]}"
 +        ;;
 +    help|-h|--help)
 +        show_help
