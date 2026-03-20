@@ -1,0 +1,79 @@
+{% set name = "aakomp" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/BirolLab/aakomp/releases/download/1.0.0/aakomp-1.0.0.tar.gz
+
+build:
+  skip: true  # [win]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('aakomp', max_pin='x') }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - meson
+    - ninja
+    - pigz
+  host:
+    - python >=3.9
+    - mamba
+    - gperftools
+    - sdsl-lite
+    - libdivsufsort
+    - libsequence
+    - zlib
+    - boost-cpp
+    - btllib
+    - hmmer =3.1
+    - r-base >=4.2,<5
+    - r-ggplot2
+    - r-dplyr
+    - r-readr
+    - r-cairo
+    - r-gridextra
+    - r-pracma
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+
+  run:
+    - python >=3.9
+    - mamba
+    - gperftools
+    - sdsl-lite
+    - libdivsufsort
+    - libsequence
+    - zlib
+    - boost-cpp
+    - btllib
+    - hmmer =3.1
+    - r-base >=4.2,<5
+    - r-ggplot2
+    - r-dplyr
+    - r-readr
+    - r-cairo
+    - r-gridextra
+    - r-pracma
+
+test:
+  commands:
+    - make_mibf --help
+    - aakomp --help
+    - run-aakomp --help
+
+about:
+  home: https://github.com/bcgsc/aakomp
+  license: GPL-3.0
+  license_file: LICENSE
+  summary: "amino acid k-mer-based genome completeness assessment"
+
+extra:
+  recipe-maintainers:
+    - jwcodee
+
