@@ -8,10 +8,14 @@ then
   CMAKE_EXTRA_FLAGS="${CMAKE_EXTRA_FLAGS} -DPORTABLE_BUILD=ON -DCORAX_ENABLE_SSE=OFF -DCORAX_ENABLE_AVX=OFF -DCORAX_ENABLE_AVX2=OFF"
 fi
 
-# on aarch64, build a portable binary using only armv8-a instructions
 if [ "$(uname -m)" == "aarch64" ]
 then
+  # on aarch64, build a portable binary using only armv8-a instructions
   CMAKE_EXTRA_FLAGS="${CMAKE_EXTRA_FLAGS} -DCORAX_BUILD_PORTABLE_ARCH=armv8-a"
+elif [ "$(uname -m)" == "arm64" ] && [ "$(uname)" == "Darwin" ]
+then
+  # on osx-amd64, build a portable binary with NEON support
+  CMAKE_EXTRA_FLAGS="${CMAKE_EXTRA_FLAGS} -DCORAX_BUILD_PORTABLE_ARCH=armv8-a+fp+simd"
 fi
 
 # pthreads
