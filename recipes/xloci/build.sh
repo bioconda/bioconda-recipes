@@ -8,5 +8,5 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
-cargo install --verbose --locked --path . --no-track --root ${PREFIX}
+cargo install --verbose --locked --path ./xloci --no-track --root ${PREFIX}
 
