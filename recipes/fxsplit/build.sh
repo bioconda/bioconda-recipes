@@ -6,7 +6,8 @@ export CARGO_NET_GIT_FETCH_WITH_CLI=true
 export CARGO_HOME="${BUILD_PREFIX}/.cargo"
 export RUST_BACKTRACE=1
 
-cargo-bundle-licenses --manifest-path fxsplit/Cargo.toml --format yaml --output THIRDPARTY.yml
+cd fxsplit
+cargo-bundle-licenses --format yaml --output "${SRC_DIR}/THIRDPARTY.yml"
 
 # build statically linked binary with Rust
-cargo install --verbose --locked --path ./fxsplit --no-track --root ${PREFIX}
+cargo install --verbose --locked --path . --no-track --root ${PREFIX}
