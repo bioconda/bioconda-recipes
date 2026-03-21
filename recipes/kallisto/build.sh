@@ -22,6 +22,7 @@ esac
 cd ext/htslib || exit 1
 autoreconf -if
 ./configure
+make -j${CPU_COUNT}
 cd ../.. || exit 1
 
 case $(uname -m) in
