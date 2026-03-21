@@ -2,7 +2,7 @@
 
 mkdir -p "${PREFIX}/bin"
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lhdf5 -lz -lbz2 -llzma -lcurl -lcrypto -lpthread"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 export CFLAGS="${CFLAGS} -O3"
@@ -56,6 +56,7 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-DCMAKE_C_COMPILER="${CC}" \
 	-DCMAKE_C_FLAGS="${CFLAGS}" \
+	-DCMAKE_EXE_LINKER_FLAGS='-lhdf5 -lz -lbz2 -llzma -lcurl -lcrypto -lpthread' \
 	-DUSE_HDF5=ON -DUSE_BAM=ON -DBUILD_FUNCTESTING=ON -DMAX_KMER_SIZE=64 \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${ARCH_OPTS}" \
