@@ -1,0 +1,92 @@
+{% set version = '1.0.0' %}
+{% set github_user = 'Ararder' %}
+{% set github_repo = 'tidyGWAS' %}
+{% set github_commit = '836e023' %}
+{% set ldsr_version = '0.4.0' %}
+
+package:
+  name: r-tidygwas
+  version: {{ version }}
+
+source:
+  url: https://github.com/{{ github_user }}/{{ github_repo }}/archive/{{ github_commit }}.tar.gz
+  sha256: b76ecea03525c6b28ea02b0a37881cbfd312e2596c08daea63afe652fd61b423
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('r-tidygwas', max_pin="x.x") }}
+  ignore_run_exports_from:
+    - r-ldsr
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  host:
+    - r-base
+    - r-arrow
+    - r-cli
+    - r-dplyr
+    - r-glue
+    - r-purrr
+    - r-prettyunits
+    - r-stringr
+    - r-rlang
+    - r-tidyr
+    - r-withr
+    - r-yaml
+    - r-curl
+    - r-httr
+    - r-jsonlite
+    - r-xml2
+    - r-fs
+    - r-rvest
+    - r-data.table
+    - r-r.utils
+    - r-ldsr >={{ ldsr_version }},<0.5.0a0
+  run:
+    - r-base
+    - r-arrow
+    - r-cli
+    - r-dplyr
+    - r-glue
+    - r-purrr
+    - r-prettyunits
+    - r-stringr
+    - r-rlang
+    - r-tidyr
+    - r-withr
+    - r-yaml
+    - r-curl
+    - r-httr
+    - r-jsonlite
+    - r-xml2
+    - r-fs
+    - r-rvest
+    - r-data.table
+    - r-r.utils
+    - r-ldsr >={{ ldsr_version }},<0.5.0a0
+
+test:
+  commands:
+    - $R -e "library('tidyGWAS')"
+
+about:
+  home: https://ararder.github.io/tidyGWAS/
+  license: MIT
+  license_file: LICENSE
+  summary: 'Quality control for GWAS summary statistics with minimal filtering'
+  description: |
+    tidyGWAS employs a version of dbSNP transformed into Apache Arrow parquet
+    files to restore and validate genome wide association summary statistics.
+    It detects duplicated rows, standardizes column names, automatically updates
+    merged RSIDs, validates CHR:POS:RSID against dbSNP v.155, handles indels and
+    multi-allelic variants, provides coordinates for both GRCh37 and GRCh38 genome
+    builds, and imputes missing columns when possible.
+  dev_url: https://github.com/Ararder/tidyGWAS
+
+extra:
+  recipe-maintainers:
+    - lyh970817
