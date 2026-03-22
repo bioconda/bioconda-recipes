@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# R refuses to build packages that mark themselves as Priority: Recommended
+mv DESCRIPTION DESCRIPTION.old
+grep -va '^Priority: ' DESCRIPTION.old > DESCRIPTION
+
+# Install the package
+$R CMD INSTALL --build . ${R_ARGS}
