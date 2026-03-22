@@ -1,0 +1,80 @@
+{% set name = "permutect" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/broadinstitute/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 14007f4b364d6d60571980f73db88b5356324db79e58b984fc51fd457202e780
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - refine_artifact_model = permutect.tools.refine_artifact_model:main
+    - train_artifact_model = permutect.tools.train_artifact_model:main
+    - filter_variants = permutect.tools.filter_variants:main
+    - preprocess_dataset = permutect.tools.preprocess_dataset:main
+    - edit_dataset = permutect.tools.edit_dataset:main
+    - prune_dataset = permutect.tools.prune_dataset:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+  run:
+    - python >=3.10
+    - pytorch >=2.1
+    - pytorch-lightning >=2.4
+    - tensorboard >=2.8
+    - numpy >=1.26
+    - scipy >=1.11
+    - scikit-learn >=1.3
+    - pandas >=2.1
+    - matplotlib-base >=3.8
+    - seaborn-base >=0.13
+    - pysam >=0.22
+    - cyvcf2 >=0.30
+    - biopython >=1.84
+    - pymc >=5.10
+    - pytensor >=2.18
+    - h5py >=3.10
+    - python-intervaltree >=3.1
+    - psutil >=5.9
+    - tqdm >=4.66
+    - dill >=0.3.7
+    - protobuf >=3.9
+    - pytorch_scatter >=2.1
+
+test:
+  imports:
+    - permutect
+  commands:
+    - filter_variants --help
+    - train_artifact_model --help
+    - preprocess_dataset --help
+
+about:
+  home: https://github.com/broadinstitute/{{ name }}
+  license: Apache-2.0
+  license_family: Apache
+  # TODO: license_file: LICENSE (pending https://github.com/broadinstitute/permutect/pull/259)
+  summary: "Deep learning architecture for somatic and germline variant calling"
+  description: |
+    Permutect is a pipeline for calling and filtering variants from genomic
+    sequencing data. It uses a permissive variant caller (Mutect2) followed by
+    a deep learning-based filtering model. Unlike Mutect2/FilterMutectCalls,
+    Permutect does not require a panel of normals and works across different
+    sequencing platforms for both somatic and germline variant calling.
+  dev_url: https://github.com/broadinstitute/{{ name }}
+  doc_url: https://github.com/broadinstitute/{{ name }}/blob/main/README.md
+
+extra:
+  recipe-maintainers:
+    - nh13
