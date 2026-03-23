@@ -5,9 +5,9 @@ set -xe
 mkdir -p $PREFIX/bin
 
 if [ "$(uname)" == "Darwin" ]; then
-    make "CGO_CFLAGS=$CGO_CFLAGS -I${CONDA_PREFIX}/include"
+    make "CGO_CFLAGS=$CGO_CFLAGS -I${CONDA_PREFIX}/include -buildvcs=false"
 else
-    make "CGO_CFLAGS=$CGO_CFLAGS -L$CONDA_PREFIX/lib -I$CONDA_PREFIX/include"
+    make "CGO_CFLAGS=$CGO_CFLAGS -L$CONDA_PREFIX/lib -I$CONDA_PREFIX/include -buildvcs=false"
 fi
 
 
