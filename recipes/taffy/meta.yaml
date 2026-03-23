@@ -1,0 +1,73 @@
+{% set name = "taffy" %}
+{% set version = "0.0.3" %} 
+{% set commit = "5ab000b8e12bef211352131b9891c8e2cfb94063" %} 
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  - git_url: https://github.com/ComparativeGenomicsToolkit/{{ name }}.git
+    git_rev: {{ commit }}
+    patches:
+      - makefile.patch
+      - line_iterator.patch
+  - url: https://github.com/ComparativeGenomicsToolkit/hal/archive/refs/tags/release-V2.3.zip
+    sha256: 052b28c8185adb090ceaae71e671e57637495cb46daf8e82c33250912a00c1e7
+    folder: taffy/submodules/hal
+
+build:
+  number: 0
+  skip: True # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }} 
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - python >=3.7
+    - pip
+    - setuptools
+    - cffi
+    - numpy 
+    - htslib
+    - zlib
+    - bzip2
+    - hdf5
+  run:
+    - python >=3.7
+    - cffi 
+    - numpy 
+    - htslib
+    - zlib
+    - bzip2
+    - hdf5
+
+test:
+  imports:
+    - taffy
+    - taffy.lib
+  commands:
+    - taffy
+
+about:
+  home: https://github.com/ComparativeGenomicsToolkit/taffy
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A C/Python/CLI library for working with TAF alignment files"
+  description: |
+    Taffy is a C and Python library with a CLI for manipulating, 
+    reading, and writing TAF and MAF format multiple sequence alignments. It allows 
+    conversion between the formats and manipulation of the alignments with utilities 
+    for preparing them for different use cases
+  dev_url: https://github.com/ComparativeGenomicsToolkit/taffy
+  doc_url: https://github.com/ComparativeGenomicsToolkit/taffy/blob/main/README.md
+
+extra:
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash
