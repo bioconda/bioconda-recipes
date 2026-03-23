@@ -1,0 +1,50 @@
+{% set name = "ferro-hgvs" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/fulcrumgenomics/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: ecbf53c29389843d0c62904c92367b8db53d5ff3032fd0b6696cab446f4203e6
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('ferro-hgvs', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - git
+    - pkg-config
+    - cargo-bundle-licenses
+  host:
+    - openssl
+    - libsqlite
+
+test:
+  commands:
+    - ferro --help
+    - ferro-benchmark --help
+
+about:
+  home: "https://github.com/fulcrumgenomics/{{ name }}"
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "HGVS variant parser and normalizer."
+  dev_url: "https://github.com/fulcrumgenomics/{{ name }}"
+  doc_url: "https://github.com/fulcrumgenomics/{{ name }}/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - nh13
+    - tfenne
