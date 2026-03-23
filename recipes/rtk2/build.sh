@@ -12,5 +12,4 @@ export C_INCLUDE_PATH="${PREFIX}/include"
 echo "RUN MAKE"
 make test CC="${CC}"
 
-chmod 755 rtk2
-mv rtk2 "$PREFIX"/bin/
+install -v -m 0755 "$PREFIX/bin"
