@@ -1,0 +1,58 @@
+{% set name = "tafinder3d" %}
+{% set version = "1.0.7" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/schmigle/TAfinder3D/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f0a1709f6c03ab8b489b2199e2ec3551310d2cc24abe7a4b9f4c6ba1d9abdd54
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('tafinder3d', max_pin="x") }}
+  script:
+    - pip install . --no-deps --no-build-isolation -v
+    - mkdir -p $PREFIX/share/tafinder3d
+    - cp -r tafinder_db $PREFIX/share/tafinder3d/
+
+requirements:
+  host:
+    - python >=3.9
+    - setuptools
+    - pip
+  run:
+    - python >=3.9
+    - numpy >=2.0
+    - pandas >=2.0
+    - mmseqs2
+    - hmmer >=3.4
+    - prodigal >=2.6
+    - prodigal-gv
+    - foldseek
+    - biopython
+    - pytorch
+    - transformers
+    - sentencepiece
+    - protobuf
+
+test:
+  commands:
+    - tafinder --help
+
+about:
+  home: https://github.com/schmigle/TAfinder3D
+  license: MIT
+  license_file: LICENSE
+  summary: 'Toxin-antitoxin system identification with 3D structure-based searching'
+  description: |
+    TAfinder3D identifies Types I-VIII toxin-antitoxin loci in bacterial genomes
+    using sequence homology (MMseqs2), domain detection (HMMER), and 3D
+    structure-based searching (Foldseek with GPU acceleration).
+
+extra:
+  recipe-maintainers:
+    - schmigle
