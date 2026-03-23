@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# TODO: re-enable VCF support with -DUSE_VCF=ON in raxml-ng 2.0.1, after fixing htslib linking issue
 CMAKE_EXTRA_FLAGS="-DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DUSE_VCF=OFF -DUSE_TERRAPHAST=ON"
 
 # manually disable x86 vector intrinsics on ARM (or any other non-x86 system)
