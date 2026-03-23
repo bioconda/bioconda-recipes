@@ -1,20 +1,13 @@
 #!/usr/bin/env bash
 set -ex
 
-mkdir -p "$PREFIX/bin"
-mkdir -p "$PREFIX/share/knotAnnotSV"
 
+mkdir -p "$PREFIX/share/knotAnnotSV"
 cp -R -- * "$PREFIX/share/knotAnnotSV"
 
-# Shebang is not generic -> create Bash wrappers:
-cat << EOF > "$PREFIX/bin/knotAnnotSV"
-#!/usr/bin/env bash
-perl "$PREFIX/share/knotAnnotSV/knotAnnotSV.pl" "\$@"
-EOF
-
-cat << EOF > "$PREFIX/bin/knotAnnotSV2XL"
-#!/usr/bin/env bash
-perl "$PREFIX/share/knotAnnotSV/knotAnnotSV2XL.pl" "\$@"
-EOF
+mkdir -p "$PREFIX/bin"
+cp "$PREFIX/share/knotAnnotSV"/*.pl "$PREFIX/bin"
+# Required otherwise no macro will be associated in the output:
+cp "$PREFIX/share/knotAnnotSV/vbaProject.bin" "$PREFIX/bin"
 
 chmod +x "$PREFIX"/bin/*
