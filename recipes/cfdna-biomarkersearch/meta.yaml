@@ -1,6 +1,6 @@
 {% set name = "cfDNA-BiomarkerSearch" %}
-{% set version = "0.1.3" %}
-{% set sha256 = "5a5290c8cb0dcb715618325d933b63b9ee6de983cd26e813ee87d738fe656800" %}
+{% set version = "0.1.6" %}
+{% set sha256 = "2ea7ef36ccb43d86e50168bc1d039395191e3c87d7d6f3157a95f461a41ddbc1" %}
 {% set repo_url = "https://github.com/avo-hcemm/cfDNA-biomarkers-pipeline" %}
 
 package:
@@ -19,25 +19,27 @@ build:
 
 requirements:
   run:
+    - python =3.11
+    - pip
     - wget
-    - ca-certificates
+    - ca-certificates =2025.7
     - unzip
     - tar
     - curl
     - gnupg
     - openjdk >=21
-    - fastqc
-    - trimmomatic
-    - bowtie2
-    - samtools
-    - multiqc 
-    - numpy
-    - pandas
-    - sklearn-compat
-    - imbalanced-learn
-    - xgboost
-    - scikit-bio
-    - scipy
+    - fastqc =0.12
+    - trimmomatic =0.39
+    - bowtie2 =2.5.4
+    - samtools =1.22.1
+    - multiqc =1.30
+    - numpy =2.2.6
+    - pandas =2.3.1
+    - sklearn-compat =0.1.3
+    - imbalanced-learn =0.13.0
+    - xgboost =3.0.2
+    - scikit-bio =0.7.0
+    - scipy =1.16.0
     - setuptools <81
 
 test:
@@ -48,12 +50,7 @@ test:
     - gunzip "$BASE_DIR/genome/chr22.fa.gz"
     - bowtie2-build "$BASE_DIR/genome/chr22.fa" "$BASE_DIR/genome/index"
 
-    - bash "$PREFIX"/share/cfdna-biomarkersearch/scripts/reads_preprocessing.sh \
-      -o "$PREFIX"/share/cfdna-biomarkersearch \
-      raw_data \
-      test \
-      config/adapterfile.fa \
-      genome/index
+    - bash "$PREFIX"/share/cfdna-biomarkersearch/scripts/reads_preprocessing.sh -o "$PREFIX"/share/cfdna-biomarkersearch raw_data test config/adapterfile.fa genome/index human
 
     - bash "$PREFIX"/share/cfdna-biomarkersearch/scripts/run_pipeline_module2to6.sh -o "$PREFIX"/share/cfdna-biomarkersearch input/human/genome.csv input/human/params.csv human --chromosome chr22
 
