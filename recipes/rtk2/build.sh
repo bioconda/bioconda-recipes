@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euxo pipefail
 
-mkdir -p "$PREFIX"/bin
+mkdir -p "$PREFIX/bin"
 
 echo "Setting environment variables"
 # Fix zlib
@@ -12,4 +12,4 @@ export C_INCLUDE_PATH="${PREFIX}/include"
 echo "RUN MAKE"
 make test CC="${CC}"
 
-install -v -m 0755 "$PREFIX/bin"
+install -v -m 0755 rtk2 "$PREFIX/bin"
