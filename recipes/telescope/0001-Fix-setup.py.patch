@@ -1,5 +1,5 @@
 diff --git a/setup.py b/setup.py
-index c856074..9cbbb42 100644
+index c856074..252ea8e 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -4,8 +4,9 @@
@@ -13,14 +13,15 @@ index c856074..9cbbb42 100644
  from setuptools import Extension
  from setuptools import find_packages
  
-@@ -16,13 +17,16 @@ __copyright__ = "Copyright (C) 2019 Matthew L. Bendall"
+@@ -16,13 +17,17 @@ __copyright__ = "Copyright (C) 2019 Matthew L. Bendall"
  
  USE_CYTHON = True
  
 -CONDA_PREFIX = environ.get("CONDA_PREFIX", '.')
 +CC = environ.get('CC', 'gcc')
 +os.environ['CC'] = CC
-+os.environ['LDSHARED'] = CC + ' -shared'
++LDSHARED = environ.get('LDSHARED', CC + ' - shared')
++os.environ['LDSHARED'] = LDSHARED
 +PREFIX = environ.get("PREFIX", '.')
  HTSLIB_INCLUDE_DIR = environ.get("HTSLIB_INCLUDE_DIR", None)
  
@@ -33,7 +34,7 @@ index c856074..9cbbb42 100644
  ]
  htslib_include_dirs = [d for d in htslib_include_dirs if path.exists(str(d)) ]
  
-@@ -31,6 +35,7 @@ extensions = [
+@@ -31,6 +36,7 @@ extensions = [
      Extension("telescope.utils.calignment",
                ["telescope/utils/calignment"+ext],
                include_dirs=htslib_include_dirs,
