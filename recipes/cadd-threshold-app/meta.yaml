@@ -1,0 +1,57 @@
+{% set name = "cadd_threshold_app" %}
+{% set version = "0.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 07c406d816dfe1fc94316b36b9425ee657c3f4b73de6c967e59f05383f20c72e
+
+build:
+  run_exports:
+    - {{ pin_subpackage('cadd_threshold_app', max_pin="x.x") }}
+  entry_points:
+    - cadd-threshold-app = cadd_threshold_app.main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools
+    - wheel
+    - pip
+  run:
+    - python >=3.10
+    - pandas
+    - pathlib
+    - anywidget
+    - shiny
+    - click
+    - numpy
+    - plotly
+    - shinywidgets
+    - scikit-learn
+
+test:
+  imports:
+    - cadd_threshold_app
+  commands:
+    - pip check
+    - cadd-threshold-app --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/kircherlab/CADD_threshold_app
+  summary: Shiny-for-Python app for exploring ClinVar distributions across CADD score thresholds.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - visze
+    - coraleif
