@@ -28,10 +28,9 @@ install -v -m 0755 build/wepp "${PREFIX}/bin/wepp"
 
 # Copy WEPP files to $PREFIX/WEPP
 mkdir -p ${PREFIX}/WEPP
-cp -rf "${SRC_DIR}"/* "${PREFIX}/WEPP"
+cp -rf "${SRC_DIR}/src" "${SRC_DIR}/config" "${SRC_DIR}/workflow" "${SRC_DIR}/primers" "${SRC_DIR}/LICENSE" "${SRC_DIR}/parsimony.proto" "${SRC_DIR}/sam.proto" "${PREFIX}/WEPP/"
 
-# Remove the dirty build directory (avoids "cmake not found" crashes) and copy  the compiled binary we just built 
-rm -rf "${PREFIX}/WEPP/build"
+# Copy the compiled binary we just built 
 mkdir -p "${PREFIX}/WEPP/build"
 cp build/wepp "${PREFIX}/WEPP/build/"
 cp build/closest_peak_clustering "${PREFIX}/WEPP/build/"
@@ -52,27 +51,12 @@ find "${PREFIX}/WEPP/src" -exec touch -t 200001010000 {} +
 touch "${PREFIX}/WEPP/build/Makefile"
 touch "${PREFIX}/WEPP/build/wepp"
 
-# Creates a function 'snakemake' that injects the -s argument
-ACTIVATE_DIR="${PREFIX}/etc/conda/activate.d"
-DEACTIVATE_DIR="${PREFIX}/etc/conda/deactivate.d"
-mkdir -p "${ACTIVATE_DIR}" "${DEACTIVATE_DIR}"
 
-cat <<'EOF' > "${ACTIVATE_DIR}/wepp_activate.sh"
+# Create the wrapper script
+cat <<WRAPPER > "${PREFIX}/bin/run-wepp"
 #!/bin/bash
+exec snakemake -s "\${CONDA_PREFIX}/WEPP/workflow/Snakefile" "\$@"
+WRAPPER
 
-run-wepp() {
-        # Calls the snakemake with correct Snakefile
-        command snakemake -s "$CONDA_PREFIX/WEPP/workflow/Snakefile" "$@"
-}
-# Want this command available in sub-shells/scripts
-export -f run-wepp 2>/dev/null || true
-EOF
-
-# Removes the function when the user exits the environment
-cat <<'EOF' > "${DEACTIVATE_DIR}/wepp_deactivate.sh"
-#!/bin/bash
-unset -f run-wepp
-EOF
-
-chmod +x "${ACTIVATE_DIR}/wepp_activate.sh"
-chmod +x "${DEACTIVATE_DIR}/wepp_deactivate.sh"
+# Make the wrapper executable
+chmod +x "${PREFIX}/bin/run-wepp"
