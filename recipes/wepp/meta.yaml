@@ -1,5 +1,5 @@
 {% set name = "wepp" %}
-{% set version = "0.1.5.2" %}
+{% set version = "0.1.5.4" %}
 
 package:
   name: {{ name }}
@@ -7,12 +7,12 @@ package:
 
 source:
   url: https://github.com/TurakhiaLab/WEPP/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 237e141f20f33e4c4c100042569b0304ec695c0d2b982d7de2c8bf9ba4084e6a
+  sha256: fa8af40c07d1cf732460075c8ae17348dcb1cc64b7b05f9d6ac16d81088833da
 
 build:
   number: 0
   run_exports:
-    - {{ pin_subpackage("wepp", max_pin="x.x") }}
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 requirements:
   build:
@@ -20,31 +20,30 @@ requirements:
     - cmake
     - make
     - pkg-config
-    - nodejs
 
   host:
-    - pip
-    - boost-cpp =1.78.0
-    - tbb >=2021.0
-    - tbb-devel 
+    - boost-cpp 1.78.*
+    - tbb >=2021.0,<2022.0
+    - tbb-devel >=2021.0,<2022.0
     - protobuf <4
     - mpich
     - jsoncpp
-    - nodejs
 
   run:
-    - conda
+    - python >=3.11
+    - conda >=24.7.1 # required for snakemake --use-conda 
     - pip
-    - boost =1.78.0
+    - boost 1.78.*
     - protobuf <4
-    - tbb >=2021.0
+    - tbb >=2021.0,<2022.0
     - mpich
     - jsoncpp
-    - snakemake-minimal >=7.0
+    - snakemake-minimal >=9.0
     - pandas
     - altair
     - aiohttp
     - biopython
+    - nodejs >=16,<24
 
 test:
   commands:
@@ -74,5 +73,8 @@ about:
   doc_url: "https://turakhia.ucsd.edu/WEPP"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - pgangwar-ucsd
