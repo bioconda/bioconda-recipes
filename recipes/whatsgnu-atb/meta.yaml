@@ -1,0 +1,58 @@
+{% set name = "whatsgnu-atb" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/w/{{ name }}/whatsgnu_atb-{{ version }}.tar.gz
+  sha256: c4ecacdae4bf2b50646f46426164589551a9325afa0c3f1ae663d373dc992a38
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68.0
+  run:
+    - python >=3.10
+    - numpy >=2.0
+    - lmdb >=1.4
+    - pandas >=2.0
+    - matplotlib-base >=3.8
+    - seaborn-base >=0.13
+    - networkx >=3.2
+    - adjusttext >=1.0
+    - scipy >=1.12
+
+test:
+  commands:
+    - Query_WhatsGNU_ATB.py --help
+    - WhatsGNU_ATB_DB.py --help
+    - download_osf.py --list
+
+about:
+  home: https://github.com/microbialARC/WhatsGNU-ATB
+  summary: WhatsGNU protein allele frequency analysis for AllTheBacteria (2.4M+ genomes)
+  description: |
+    A custom reimplementation of WhatsGNU optimised for AllTheBacteria scale.
+    Builds an LMDB-backed sharded database of protein allele frequencies across
+    2,438,285 bacterial genomes, and provides fast querying of any bacterial
+    genome to obtain per-protein allele counts and species distributions.
+    Includes a downloader for the pre-built database hosted on OSF.
+  license: GPL-3.0
+  license_family: GPL-3.0
+  license_file: LICENSE
+  doc_url: https://allthebacteria.readthedocs.io/en/latest/whatsgnu.html
+  dev_url: https://github.com/microbialARC/WhatsGNU-ATB
+
+extra:
+  recipe-maintainers:
+    - ahmedmagds
