@@ -1,0 +1,57 @@
+{% set name = "celltypist-so" %}
+{% set version = "1.6.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/c/celltypist-so/celltypist_so-${{ version }}.tar.gz
+  sha256: 0da56d4f878a65ac2693fae0977095861ab40b983468b02c8beec2aa3de08f46
+
+build:
+  number: 0
+  noarch: python
+  script: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  python:
+    entry_points:
+      - celltypist=celltypist.command_line:main
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - setuptools
+    - setuptools-git-versioning >=2.0,<3
+    - pip
+  run:
+    - python >={{ python_min }}
+    - numpy >=1.19.0
+    - pandas >=1.0.5
+    - scikit-learn >=0.24.1
+    - openpyxl >=3.0.4
+    - click >=7.1.2
+    - requests >=2.23.0
+    - scanpy >=1.7.0
+
+tests:
+  - python:
+      imports:
+        - celltypist
+      pip_check: true
+  - requirements:
+      run:
+        - pip
+        - python {{ python_min }}
+    script:
+      - celltypist --help
+
+about:
+  summary: "A tool for semi-automatic cell type classification. This is a fork that removes leidenalg from the requirements.txt file to remove any GPL dependencies (igraph). All credit goes to original CellTypist authors (Chuan Xu et al.: cx1@sanger.ac.uk)"
+  license: MIT
+  license_file: LICENSE
+  home: https://github.com/Mena-SA-Kamel/celltypist-SO
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - khaled196
