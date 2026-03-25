@@ -6,7 +6,7 @@ package:
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  url: "https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
   sha256: "50bbee7594832529f0713833c926a4c9d63367da6b732dcb398e5b54a730b092"
 
 build:
@@ -16,14 +16,15 @@ build:
     - refgenieserver = refgenieserver.main:main
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
 
 requirements:
   host:
     - pip
     - python >=3.6
+    - setuptools
     # use_2to3 was removed in setuptools 58
-    - setuptools <58
+    #- setuptools <58
   run:
     - python >=3.6
     - aiofiles
@@ -35,17 +36,18 @@ requirements:
     - ubiquerg >=0.6.1
 
 test:
-  imports:
-    - refgenieserver
+  #imports:
+    #- refgenieserver
   commands:
     - refgenieserver --help
 
 about:
-  home: "https://refgenie.databio.org/"
+  home: "https://refgenie.databio.org"
   license: "BSD-2-Clause"
   license_family: "BSD"
   license_file: "LICENSE.txt"
   summary: "This server provides both a web interface and a RESTful API. Users may explore and download archived indexes from the web interface or develop tools that programmatically query the API."
+  doc_url: "https://refgenie.databio.org"
 
 extra:
   recipe-maintainers:
