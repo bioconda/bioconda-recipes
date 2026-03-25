@@ -1,0 +1,52 @@
+{% set name = "pathotypr" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PathoGenOmics-Lab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e4983fffd531b8ce454dabdf5c72e4d72c6145f284854514bfe1dbbc8d44bdb2
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - pkg-config
+  host:
+    - openssl
+  run:
+    - openssl
+
+test:
+  commands:
+    - pathotypr --version
+    - pathotypr --help
+
+about:
+  home: https://github.com/PathoGenOmics-Lab/pathotypr
+  license: AGPL-3.0-only
+  license_family: AGPL
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "Harmonised MTBC lineage assignment and resistance-associated variant detection for genomic surveillance"
+  description: |
+    Pathotypr is a high-performance tool for Mycobacterium tuberculosis complex
+    genome classification using machine learning and SNP markers. It supports
+    14 MTBC lineages (L1-L10, A1-A4), drug resistance genotyping using the WHO
+    mutation catalogue (grades 1-2), and closest-reference matching.
+  dev_url: https://github.com/PathoGenOmics-Lab/pathotypr
+  doc_url: https://github.com/PathoGenOmics-Lab/pathotypr
+
+extra:
+  recipe-maintainers:
+    - paururo
