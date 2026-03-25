@@ -1,0 +1,102 @@
+{# Version: keep in sync with rust/Cargo.toml (single source of truth) #}
+{# Run scripts/check-version-consistency.sh to verify #}
+{% set name = "wasp2" %}
+{% set version = "1.4.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 8d73c53290eb7df01cb297661a7ca968a43cc04d132f278422221d09606c440c
+
+build:
+  number: 0
+  skip: true  # [win or py < 311 or py > 312]
+  run_exports:
+    - {{ pin_subpackage('wasp2', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - pkg-config
+    - cmake
+    - make
+    - clangdev
+    - python                              # [build_platform != target_platform]
+    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+    - crossenv                            # [build_platform != target_platform]
+    - maturin >=1.6,<2.0                  # [build_platform != target_platform]
+  host:
+    - python
+    - pip
+    - maturin >=1.6,<2.0
+    - htslib >=1.22
+    - bzip2
+    - xz
+    - zlib
+    - openssl  # [not osx]
+    - libcurl
+  run:
+    - python >=3.11,<3.13.0a0
+    # Data processing
+    - numpy >=1.21.0
+    - pandas >=1.5.0,<3.0.0
+    - polars >=0.19.0
+    - scipy >=1.10.0
+    # Bioinformatics
+    - pysam >=0.21.0
+    - pybedtools >=0.9.0
+    - anndata >=0.8.0,<0.12.0
+    - scanpy >=1.9.0
+    # CLI
+    - typer >=0.12.0
+    - rich >=13.0.0
+    # External tools (bioconda)
+    - samtools >=1.10
+    - bcftools
+    - bedtools
+
+test:
+  imports:
+    - counting
+    - mapping
+    - analysis
+    - wasp2_rust
+  requires:
+    - pip
+  commands:
+    - wasp2-count --help
+    - wasp2-map --help
+    - wasp2-analyze --help
+    - python -c "import wasp2_rust; print('Rust extension OK')"
+    - pip check
+
+about:
+  home: https://github.com/mcvickerlab/WASP2
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Allele-specific analysis of next-generation sequencing data with Rust acceleration
+  description: |
+    WASP2 is a high-performance tool for allele-specific analysis of NGS data.
+    It provides functionality for variant counting, read remapping for bias
+    correction, and statistical analysis of allelic imbalance. The package
+    includes a Rust extension for accelerated BAM processing.
+  doc_url: https://mcvickerlab.github.io/WASP2/
+  dev_url: https://github.com/mcvickerlab/WASP2
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - Jaureguy760
+  identifiers:
+    - biotools:wasp2
