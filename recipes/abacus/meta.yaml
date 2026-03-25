@@ -1,0 +1,78 @@
+{% set name = "abacus" %}
+{% set version = "0.0.0" %}  # <-- replace with your release tag
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  # Example: GitHub release tarball
+  url: https://github.com/MOMA-AUH/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: <sha256sum>  # run `shasum -a 256 v1.0.0.tar.gz` to compute
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+
+  run:
+    # Python
+    - python >=3.11
+    - python-levenshtein >=0.26.1
+    - numpy >=1.26.4
+    - pandas >=2.2.3
+    - pyfaidx
+    - pysam >=0.22.1
+    - rich >=13.7.1
+    - scikit-learn >=1.2.2
+    - scipy >=1.15.2
+    - typer >=0.12.4
+
+    # External tools
+    - minigraph >=0.21
+    - pyspoa >=0.2.1
+
+    # R
+    - r-base >=4.4.3
+    - r-kableextra >=1.4.0
+    - r-knitr >=1.50
+    - r-tidyverse >=2.0.0
+
+test:
+  requires:
+    - pytest
+  imports:
+    - abacus  # replace with actual Python import name if different
+  commands:
+    - abacus --help
+    - pytest --maxfail=1 --disable-warnings -q
+    - Rscript -e "library('knitr'); library('kableExtra'); library('tidyverse')"
+
+about:
+  home: https://github.com/your-org/abacus
+  license: MIT
+  license_file: LICENSE
+  summary: "Abacus: a tool for for analyzing Short Tandem Repeats (STRs) from Long-Read Sequencing data"
+  description: |
+    Abacus is a tool for analyzing STR (Short Tandem Repeat) data from Long-Read Sequencing technologies.
+    It is designed to work with data from the Oxford Nanopore Technologies (ONT) platform, but has also been 
+    tested with data from the Pacific Biosciences (PacBio) platform. The main goal of Abacus is to provide a
+    user-friendly interface for analyzing STR data and to provide a comprehensive report of the analysis results.
+    Abacus works by first converting the entries of an STR catalog (JSON) into graphs, which are then 
+    used to analyze the reads from an aligned BAM file. Each read in the BAM file is first mapped to 
+    the graph using minigraph, and the number of repeats of each satellite is calculated based on the 
+    resulting path. The reads are then grouped according to the satellite repeat counts, and the 
+    STR alleles (haplotypes) are called based on these groups. The analysis results are then saved
+    in a VCF similar to ExpansionHunter output, and an HTML report file, which contains information about 
+    the STR loci, the called STR alleles, and visualizations of the data. 
+    Abacus genomic analysis and VCF generation is implemented in python, and uses R for the report visualization.
+  dev_url: https://github.com/your-org/abacus
+  doc_url: https://your-docs-url  # optional
+
+extra:
+  recipe-maintainers:
+    - dNil
