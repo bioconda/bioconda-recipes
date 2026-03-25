@@ -1,17 +1,8 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
-sed -E -i.bak \
-    -e 's/^(CFLAGS|LDFLAGS)=/\1+=/' \
-    -e 's/(\s+)gcc \$\(CFLAGS\)/\1$(CC) $(CPPFLAGS) $(CFLAGS)/' \
-    Makefile.am
-rm Makefile.am.bak
-autoreconf --install
-./configure \
-  --prefix=$PREFIX
-  CC="${CC}" \
-  CFLAGS="${CFLAGS}" \
-  CPPFLAGS="${CPPFLAGS}" \
-  LDFLAGS="${LDFLAGS}"
-make
-make install
+set -xe
+
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+
+# build statically linked binary with Rust
+RUST_BACKTRACE=1 C_INCLUDE_PATH=$PREFIX/include LIBRARY_PATH=$PREFIX/lib cargo install --verbose --root $PREFIX --path . --no-track
