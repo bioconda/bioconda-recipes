@@ -2,4 +2,4 @@
 set -xeuo pipefail
 
 mkdir -p "${PREFIX}/bin"
-install -m 0755 package/bin/seqera "${PREFIX}/bin/seqera"
+install -m 0755 bin/seqera "${PREFIX}/bin/seqera"
