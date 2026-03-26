@@ -5,6 +5,7 @@ set -xe
 mkdir -p $PREFIX/bin
 
 if [[ "$(uname)" == "Darwin" ]]; then
+    export MACOSX_DEPLOYMENT_TARGET="12.0"
     make "CGO_CFLAGS=$CGO_CFLAGS -I${PREFIX}/include" GOFLAGS="-buildvcs=false"
 else
     make "CGO_CFLAGS=$CGO_CFLAGS -L$PREFIX/lib -I$PREFIX/include" GOFLAGS="-buildvcs=false"
