@@ -1,0 +1,47 @@
+{% set name = "fulgor" %}
+{% set version = "4.0.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/jermp/fulgor/releases/download/v{{ version}}/v{{ version }}.tar.gz"
+  sha256: "956b38c24998849db882fac546f895cb0e6bc3d7c6f19d45e035968a8d693ce9"
+  patches:
+    - GGCAT_Makefile.patch
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cmake
+    - make
+  host:
+    - zlib
+
+test:
+  commands:
+    - "fulgor 2>&1 | grep 'Fulgor: a colored de Bruijn graph index'"
+
+about:
+  home: "https://github.com/jermp/fulgor"
+  license: MIT
+  license_file: LICENSE
+  summary: "A fast and space-efficient colored de Bruijn graph index."
+  description: Fulgor is a colored de Bruijn graph index for large-scale matching and color queries, powered by SSHash and GGCAT.
+  dev_url: "https://github.com/jermp/fulgor"
+
+extra:
+  doi: "10.4230/artifacts.24311"
+  recipe-maintainers:
+    - jermp
+    - alessio-campa 
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
