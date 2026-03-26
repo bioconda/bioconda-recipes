@@ -16,3 +16,6 @@ packagemanager -add BEASTLabs
 # Install the required Jupyter extensions for interactive widgets
 jupyter nbextension enable --py --sys-prefix widgetsnbextension
 jupyter labextension install @jupyter-widgets/jupyterlab-manager
+
+# Install the beast-pype package itself
+python -m pip install . -vv --no-deps --no-build-isolation --no-cache-dir
