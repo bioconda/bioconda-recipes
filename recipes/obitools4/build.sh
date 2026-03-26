@@ -5,9 +5,9 @@ set -xe
 mkdir -p $PREFIX/bin
 
 if [[ "$(uname)" == "Darwin" ]]; then
-    make "CGO_CFLAGS=$CGO_CFLAGS -I${PREFIX}/include -buildvcs=false" GOFLAGS="-buildvcs=false"
+    make "CGO_CFLAGS=$CGO_CFLAGS -I${PREFIX}/include" GOFLAGS="-buildvcs=false"
 else
-    make "CGO_CFLAGS=$CGO_CFLAGS -L$PREFIX/lib -I$PREFIX/include -buildvcs=false" GOFLAGS="-buildvcs=false"
+    make "CGO_CFLAGS=$CGO_CFLAGS -L$PREFIX/lib -I$PREFIX/include" GOFLAGS="-buildvcs=false"
 fi
 
 
