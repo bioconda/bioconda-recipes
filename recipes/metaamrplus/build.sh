@@ -1,18 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Ensure target bin exists
+# Ensure bin directory exists
 mkdir -p "${PREFIX}/bin"
 
-# Copy executables from Bioconda files/
-cp "${RECIPE_DIR}/files/metaamrplus" "${PREFIX}/bin/"
-cp "${RECIPE_DIR}/files/metaamrplus_batch" "${PREFIX}/bin/"
-cp "${RECIPE_DIR}/files/metaamrplus-download-db" "${PREFIX}/bin/"
-cp "${RECIPE_DIR}/files/annotate_metaamrplus.py" "${PREFIX}/bin/"
+# Copy executables from source package (not recipe!)
+cp "${SRC_DIR}/bin/metaamrplus" "${PREFIX}/bin/"
+cp "${SRC_DIR}/bin/metaamrplus_batch" "${PREFIX}/bin/"
+cp "${SRC_DIR}/bin/metaamrplus-download-db" "${PREFIX}/bin/"
+cp "${SRC_DIR}/bin/annotate_metaamrplus.py" "${PREFIX}/bin/"
 
-# Ensure executables are runnable
+# Make executables runnable
 chmod +x "${PREFIX}/bin/metaamrplus"
 chmod +x "${PREFIX}/bin/metaamrplus_batch"
 chmod +x "${PREFIX}/bin/metaamrplus-download-db"
 chmod +x "${PREFIX}/bin/annotate_metaamrplus.py"
-
