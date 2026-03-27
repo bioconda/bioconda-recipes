@@ -8,7 +8,7 @@ cat <<EOF > $PREFIX/bin/mnbc-me
 
 MEM=\${MNBC_ME_MEM:-1G}
 
-exec java -Xmx\${MEM} \${JAVA_OPTS} -jar \$PREFIX/share/mnbc-me/MNBC_ME.jar "\$@"
+exec java -Xmx\${MEM} \${JAVA_OPTS} -jar \$CONDA_PREFIX/share/mnbc-me/MNBC_ME.jar "\$@"
 EOF
 
 chmod +x $PREFIX/bin/mnbc-me
