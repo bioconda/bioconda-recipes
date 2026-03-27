@@ -1,6 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
+if [[ "${target_platform}" == "linux-aarch64" ]]; then
+  export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+elif [[ "${target_platform}" == "osx-arm64" ]]; then
+  export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+else
+  export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+fi
+
 # Patch upstream CMake and replace ccp4-python references to use conda python
 grep -rlIZ --exclude-dir=.git 'ccp4-python' . | xargs -0 sed -i 's|ccp4-python|python|g'
 
