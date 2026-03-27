@@ -2,8 +2,7 @@
 set -euo pipefail
 
 # Patch upstream CMake and replace ccp4-python references to use conda python
-# sed -i '/find_package(Python/a set(Python_SITELIB "${SP_DIR}")' CMakeLists.txt
-grep -rlIZ --exclude-dir=.git 'ccp4-python' . | xargs -0 ${BUILD_PREFIX}/bin/sed -i 's|ccp4-python|python|g'
+grep -rlIZ --exclude-dir=.git 'ccp4-python' . | xargs -0 sed -i 's|ccp4-python|python|g'
 
 cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
