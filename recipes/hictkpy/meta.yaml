@@ -1,6 +1,6 @@
 {% set name = "hictkpy" %}
-{% set version = "1.1.0" %}
-{% set sha256 = "c9a651341412adabcb96a6220465e7640516945d25f002597536ba37261e6b0b" %}
+{% set version = "1.4.0" %}
+{% set sha256 = "4bd224bdfbd5348ee109f8e6187c1fb0c754fa62ca35c42b43ffd714e6044082" %}
 
 package:
   name: {{ name|lower }}
@@ -8,7 +8,7 @@ package:
 
 build:
   number: 0
-  skip: True  # [py < 39]
+  skip: True  # [py < 310]
   run_exports:
     - {{ pin_subpackage('hictkpy', max_pin='x') }}
 
@@ -20,25 +20,29 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - libboost-devel >=1.86
-    - cmake >=3.29
+    - ccache        # required to suppress warnings raised by CMake
+    - clang-tools   # required for LTO
+    - cmake >=3.29  # required for -DCMAKE_LINKER_TYPE
     - conan >=2
     - make
-    - eigen >=3.4
-    - fast_float >=7
-    - fmt >=11
-    - highfive >=2.10
-    - spdlog >=1.15
+    # - eigen >=5
+    - fast_float >=8
+    - fmt >=12
+    - highfive >=3
+    - lld         # required for LTO
+    - llvm-tools  # required for LTO
+    - spdlog >=1.16
 
   host:
     - python
     - pip
     - hdf5 >=1.12
     - libarrow >=16
+    - libarrow-compute >=16
     - libdeflate >=1
-    - lld  # [linux]
     - nanobind >=2
-    - numpy
+    - numpy >=2
+    - pyarrow >=16
     - scikit-build-core >=0.10
     - setuptools_scm
     - zstd >=1.5
@@ -47,7 +51,7 @@ requirements:
     - python
     - {{ pin_compatible('hdf5', min_pin='1.12') }}
     - {{ pin_compatible('libdeflate', min_pin='1') }}
-    - {{ pin_compatible('numpy') }}
+    - {{ pin_compatible('numpy', min_pin='2') }}
     - {{ pin_compatible('pandas', min_pin='2.1') }}
     - {{ pin_compatible('pyarrow', min_pin='16') }}
     - {{ pin_compatible('scipy') }}

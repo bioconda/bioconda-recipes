@@ -1,29 +1,43 @@
+{% set name = "yass" %}
+{% set version = "1.16" %}
+
 package:
-  name: yass
-  version: "1.14"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://bioinfo.lifl.fr/yass/files/yass-1.14/yass-1.14.tar.gz
-  sha256: 2ea4d2a32bb17fb6de590b0e8bce5231e2506b490b3456700b4bc029544a1982
+  url: https://bioinfo.lifl.fr/yass/files/{{ name }}-{{ version }}_alpha1/{{ name }}-{{ version }}.tar.gz
+  sha256: f1b0b19df52d9827348724b2013bbbe0ce165a8e641c25957f361df79b900de4
 
 build:
-  number: 7
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
-  run:
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - gnuconfig
 
 test:
   commands:
     - yass --help
 
 about:
-  home: http://bioinfo.lifl.fr/yass/
-  license: CeCILL Free Software License
-  summary: 'YASS is a genomic similarity search tool, for nucleic (DNA/RNA) sequences in fasta or plain text format.'
+  home: "https://bioinfo.lifl.fr/yass"
+  license: "CeCILL Free Software License"
+  summary: "YASS is a genomic similarity search tool, for nucleic (DNA/RNA) sequences in fasta or plain text format."
+  doc_url: "https://bioinfo.lifl.fr/yass"
+  dev_url: "https://github.com/laurentnoe/yass"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:yass

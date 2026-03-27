@@ -1,0 +1,48 @@
+{% set version = "1.2.0" %}
+{% set name = "seqera" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://registry.npmjs.org/@seqera/cli-linux-x64/-/cli-linux-x64-{{ version }}.tgz  # [linux]
+    sha256: 3383423bcd06164c34f987af2d8d680461ee10e250c7f0fc3939140d7c5df071  # [linux]
+  - url: https://registry.npmjs.org/@seqera/cli-darwin-x64/-/cli-darwin-x64-{{ version }}.tgz  # [osx and x86_64]
+    sha256: 21e5db2020859a377760e143cf4d28766435920508bc71b442510b2a653eed5c  # [osx and x86_64]
+  - url: https://registry.npmjs.org/@seqera/cli-darwin-arm64/-/cli-darwin-arm64-{{ version }}.tgz  # [osx and arm64]
+    sha256: 99d78236a9c8fb67d955ca1aa632821227c4ec7e9289a27fa0d5998ee0948ae1  # [osx and arm64]
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+test:
+  commands:
+    - which seqera  # binary requires glibc >=2.25; Bioconda CI runs in CentOS 7 (glibc 2.17), so we can't execute it
+
+about:
+  home: "https://seqera.io"
+  summary: "AI-powered CLI assistant for bioinformatics workflows and Seqera Platform"
+  description: |
+    Seqera AI is an intelligent command-line assistant for bioinformatics workflow
+    development and management. It can help you write, debug, and understand Nextflow
+    pipelines, generate configuration and schema files, build containerized environments
+    using Wave, and interact with workflows and compute resources on Seqera Platform
+    through a conversational interface.
+  license: "BUSL-1.1"
+  license_file: LICENSE
+  license_url: "https://spdx.org/licenses/BUSL-1.1.html"
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic  # pre-built platform-specific binaries, one per platform
+  additional-platforms:
+    - osx-arm64
+  recipe-maintainers:
+    - ewels
+    - edmundmiller
+    - vpatel85
+    - MythicalFish
+    - odagayev

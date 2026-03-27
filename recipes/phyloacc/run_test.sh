@@ -28,6 +28,19 @@ for file in "${files[@]}"; do
 done
 echo " ** TEST DATA DOWNLOAD OK."
 
+# echo " ** BEGIN BINARY TEST."
+# if ! PhyloAcc-ST; then
+#   echo " ** ERROR: Binary check failed for PhyloAcc-ST." >&2
+#   exit 1
+# fi
+
+# if ! PhyloAcc-GT; then
+#   echo " ** ERROR: Binary check failed for PhyloAcc-GT." >&2
+#   exit 1
+# fi
+# echo " ** BINARY TEST OK."
+# Can't do this because there are no options for the binaries that don't result in errors (e.g. --help or --version)
+
 echo " ** BEGIN DEPCHECK TEST."
 if ! phyloacc --depcheck; then
   echo " ** ERROR: Dependency check failed. Please ensure all dependencies are installed." >&2

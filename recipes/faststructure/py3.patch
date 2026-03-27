@@ -1,0 +1,296 @@
+diff --git a/chooseK.py b/chooseK.py
+index 07e0a04..98de39a 100644
+--- a/chooseK.py
++++ b/chooseK.py
+@@ -4,6 +4,10 @@ import vars.utils as utils
+ import glob
+ import sys
+ import pdb
++try:
++    import itertools.imap as map
++except ImportError:
++    pass
+ 
+ def parse_logs(files):
+ 
+@@ -50,7 +54,7 @@ def parse_varQs(files):
+     bestKs = []
+     for file in files:
+         handle = open(file,'r')
+-        Q = np.array([map(float,line.strip().split()) for line in handle])
++        Q = np.array([list(map(float,line.strip().split())) for line in handle])
+         Q = Q/utils.insum(Q,[1])
+         handle.close()
+ 
+@@ -79,9 +83,9 @@ def usage():
+     brief description of various flags and options for this script
+     """
+ 
+-    print "\nHere is how you can use this script\n"
+-    print "Usage: python %s"%sys.argv[0]
+-    print "\t --input=<file>"
++    print("\nHere is how you can use this script\n")
++    print("Usage: python %s"%sys.argv[0])
++    print("\t --input=<file>")
+ 
+ if __name__=="__main__":
+ 
+@@ -95,7 +99,7 @@ if __name__=="__main__":
+             usage()
+             sys.exit(2)
+     except getopt.GetoptError:
+-        print "Incorrect options passed"
++        print("Incorrect options passed")
+         usage()
+         sys.exit(2)
+ 
+@@ -108,5 +112,5 @@ if __name__=="__main__":
+     files = glob.glob('%s.*.meanQ'%filetag)
+     bestKs = parse_varQs(files)
+ 
+-    print "Model complexity that maximizes marginal likelihood = %d"%Ks[np.argmax(marginal_likelihoods)]
+-    print "Model components used to explain structure in data = %d"%np.argmax(np.bincount(bestKs)) 
++    print("Model complexity that maximizes marginal likelihood = %d"%Ks[np.argmax(marginal_likelihoods)])
++    print("Model components used to explain structure in data = %d"%np.argmax(np.bincount(bestKs))) 
+diff --git a/distruct.py b/distruct.py
+index a9e2398..22ab353 100644
+--- a/distruct.py
++++ b/distruct.py
+@@ -20,9 +20,9 @@ def plot_admixture(admixture, population_indices, population_labels, title):
+     width = 0.74
+     indiv_width = width/N
+     subplot = figure.add_axes([xmin,ymin,width,height])
+-    [spine.set_linewidth(0.001) for spine in subplot.spines.values()]
++    [spine.set_linewidth(0.001) for spine in list(subplot.spines.values())]
+ 
+-    for k in xrange(K):
++    for k in range(K):
+         if k:
+             bottoms = admixture[:,:k].sum(1)
+         else:
+@@ -64,7 +64,7 @@ def get_admixture_proportions(params):
+     admixture = admixture/admixture.sum(1).reshape(N,1)
+ 
+     # get population labels
+-    if params.has_key('popfile'):
++    if 'popfile' in params:
+         handle = open(params['popfile'],'r')
+         populations = [line.strip() for line in handle]
+         handle.close()
+@@ -83,8 +83,8 @@ def get_admixture_proportions(params):
+ 
+     else:
+ 
+-        print "file with population labels is not provided or does not exist .... \ncreating population labels based on inferred admixture proportions"
+-        population_labels = ['population %d'%i for i in xrange(1,K+1)]
++        print("file with population labels is not provided or does not exist .... \ncreating population labels based on inferred admixture proportions")
++        population_labels = ['population %d'%i for i in range(1,K+1)]
+         population_indices = np.argmax(admixture,1)
+ 
+         # re-order samples in admixture matrix
+@@ -92,7 +92,7 @@ def get_admixture_proportions(params):
+         population_indices = population_indices[order]
+         admixture = admixture[order,:]
+         order = np.arange(N)
+-        for k in xrange(K):
++        for k in range(K):
+             order[population_indices==k] = order[population_indices==k][np.argsort(admixture[population_indices==k,:][:,k])[::-1]]
+         admixture = admixture[order,:]
+ 
+@@ -131,13 +131,13 @@ def usage():
+     brief description of various flags and options for this script
+     """
+ 
+-    print "\nHere is how you can use this script\n"
+-    print "Usage: python %s"%sys.argv[0]
+-    print "\t -K <int>  (number of populations)"
+-    print "\t --input=<file>  (/path/to/input/file; same as output flag passed to structure.py)"
+-    print "\t --output=<file> (/path/to/output/file)"
+-    print "\t --popfile=<file> (file with known categorical labels; optional)"
+-    print "\t --title=<figure title> (a title for the figure; optional)"
++    print("\nHere is how you can use this script\n")
++    print("Usage: python %s"%sys.argv[0])
++    print("\t -K <int>  (number of populations)")
++    print("\t --input=<file>  (/path/to/input/file; same as output flag passed to structure.py)")
++    print("\t --output=<file> (/path/to/output/file)")
++    print("\t --popfile=<file> (file with known categorical labels; optional)")
++    print("\t --title=<figure title> (a title for the figure; optional)")
+ 
+ 
+ if __name__=="__main__":
+@@ -152,7 +152,7 @@ if __name__=="__main__":
+             usage()
+             sys.exit(2)
+     except getopt.GetoptError:
+-        print "Incorrect options passed"
++        print("Incorrect options passed")
+         usage()
+         sys.exit(2)
+ 
+@@ -160,7 +160,7 @@ if __name__=="__main__":
+     
+     # get the data to be plotted
+     admixture, population_indices, population_labels = get_admixture_proportions(params)
+-    if params.has_key('title'):
++    if 'title' in params:
+         title = params['title']
+     else:
+         title = params['inputfile']
+diff --git a/fastStructure.pyx b/fastStructure.pyx
+index f787f4d..6132de6 100644
+--- a/fastStructure.pyx
++++ b/fastStructure.pyx
+@@ -302,7 +302,7 @@ cdef np.ndarray CV(np.ndarray[np.uint8_t, ndim=2] Gtrue, ap.AdmixProp psi, af.Al
+ 
+         if not len(newmasks)>=cv:
+             wellmasked = False
+-            print "Failed"
++            print("Failed")
+ 
+     masks = newmasks[:cv]
+     meandeviance = np.zeros((cv,), dtype=float)
+diff --git a/parse_bed.pyx b/parse_bed.pyx
+index 34d95e5..5994ece 100644
+--- a/parse_bed.pyx
++++ b/parse_bed.pyx
+@@ -11,21 +11,22 @@ cdef dict genomap = dict([('00',0),('01',1),('11',2),('10',3)])
+ def load(file):
+ 
+     cdef int n, l, i, Nindiv, Nsnp, Nbytes
+-    cdef str line, checkA, checkB, checkC, bytestr
++    cdef bytes line
++    cdef str checkA, checkB, checkC, bytestr
+     cdef np.ndarray genotype
+ 
+     # number of individuals
+     handle = open(file+'.fam','r')
+-    for i,line in enumerate(handle):
++    for i, li in enumerate(handle):
+         pass
+     Nindiv = i+1
+ 
+     # Number of bytes to read in at a time
+-    Nbytes = Nindiv/4+(Nindiv%4>0)*1
++    Nbytes = Nindiv//4+(Nindiv%4>0)*1
+ 
+     # number of SNPs
+     handle = open(file+'.bim','r')
+-    for i,line in enumerate(handle):
++    for i, li in enumerate(handle):
+         pass
+     Nsnp = i+1
+ 
+@@ -44,7 +45,7 @@ def load(file):
+     checkC = bin(struct.unpack('<B', line)[0])[2:].zfill(8)[::-1]
+ 
+     if checkA!="00110110" or checkB!="11011000":
+-        print "This is not a valid bed file"
++        print("This is not a valid bed file")
+         handle.close()
+         sys.exit(2)
+ 
+diff --git a/structure.py b/structure.py
+index 9472251..2eb5664 100644
+--- a/structure.py
++++ b/structure.py
+@@ -41,7 +41,7 @@ def parseopts(opts):
+             params['prior'] = arg
+ 
+             if params['prior'] not in ['simple','logistic']:
+-                print "%s prior is not currently implemented, defaulting to the simple prior"
++                print("%s prior is not currently implemented, defaulting to the simple prior")
+                 params['prior'] = 'simple'
+ 
+         elif opt in ["--format"]:
+@@ -70,31 +70,31 @@ def checkopts(params):
+     """
+ 
+     if params['mintol']<=0:
+-        print "a non-positive value was provided as convergence criterion"
++        print("a non-positive value was provided as convergence criterion")
+         raise ValueError
+     
+     if params['cv']<0:
+-        print "a negative value was provided for the number of cross-validations folds"
++        print("a negative value was provided for the number of cross-validations folds")
+         raise ValueError
+ 
+-    if not params.has_key('K'):
+-        print "a positive integer should be provided for number of populations"
++    if 'K' not in params:
++        print("a positive integer should be provided for number of populations")
+         raise KeyError
+ 
+     if params['format'] not in ['bed','str']:
+-        print "%s data format is not currently implemented"
++        print("%s data format is not currently implemented")
+         raise ValueError
+ 
+     if params['K']<=0:
+-        print "a negative value was provided for the number of populations"
++        print("a negative value was provided for the number of populations")
+         raise ValueError
+     
+-    if not params.has_key('inputfile'):
+-        print "an input file needs to be provided"
++    if 'inputfile' not in params:
++        print("an input file needs to be provided")
+         raise KeyError 
+ 
+-    if not params.has_key('outputfile'):
+-        print "an output file needs to be provided"
++    if 'outputfile' not in params:
++        print("an output file needs to be provided")
+         raise KeyError
+     
+ def write_output(Q, P, other, params):
+@@ -128,17 +128,17 @@ def usage():
+     brief description of various flags and options for this script
+     """
+ 
+-    print "\nHere is how you can use this script\n"
+-    print "Usage: python %s"%sys.argv[0]
+-    print "\t -K <int> (number of populations)"
+-    print "\t --input=<file> (/path/to/input/file)"
+-    print "\t --output=<file> (/path/to/output/file)"
+-    print "\t --tol=<float> (convergence criterion; default: 10e-6)"
+-    print "\t --prior={simple,logistic} (choice of prior; default: simple)"
+-    print "\t --cv=<int> (number of test sets for cross-validation, 0 implies no CV step; default: 0)"
+-    print "\t --format={bed,str} (format of input file; default: bed)"
+-    print "\t --full (to output all variational parameters; optional)"
+-    print "\t --seed=<int> (manually specify seed for random number generator; optional)"
++    print("\nHere is how you can use this script\n")
++    print("Usage: python %s"%sys.argv[0])
++    print("\t -K <int> (number of populations)")
++    print("\t --input=<file> (/path/to/input/file)")
++    print("\t --output=<file> (/path/to/output/file)")
++    print("\t --tol=<float> (convergence criterion; default: 10e-6)")
++    print("\t --prior={simple,logistic} (choice of prior; default: simple)")
++    print("\t --cv=<int> (number of test sets for cross-validation, 0 implies no CV step; default: 0)")
++    print("\t --format={bed,str} (format of input file; default: bed)")
++    print("\t --full (to output all variational parameters; optional)")
++    print("\t --seed=<int> (manually specify seed for random number generator; optional)")
+ 
+ 
+ if __name__=="__main__":
+@@ -153,7 +153,7 @@ if __name__=="__main__":
+             usage()
+             sys.exit(2)
+     except getopt.GetoptError:
+-        print "Incorrect options passed"
++        print("Incorrect options passed")
+         usage()
+         sys.exit(2)
+ 
+diff --git a/vars/allelefreq.pyx b/vars/allelefreq.pyx
+index 961d162..805f0f8 100644
+--- a/vars/allelefreq.pyx
++++ b/vars/allelefreq.pyx
+@@ -6,6 +6,7 @@ from cpython cimport bool
+ from scipy.special import digamma, gammaln, polygamma
+ import scipy.optimize as opt
+ import utils
++from functools import reduce
+ 
+ ctypedef np.uint8_t uint8_t
+ 

@@ -1,18 +1,18 @@
 {% set name = "pyhmmer" %}
-{% set version = "0.11.0" %}
+{% set version = "0.12.0" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 4a4c3d72d2da0a46a083c1431739eb256e6850287120f99267a18cc5c57e8ab7
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 27cdfd3cdf72abcc7a6670825fc0195e8ff01d4820efd0f99aec03d3972a922e
 
 build:
   number: 0
-  skip: True  # [py2k or win]
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv"
+  skip: True  # [win]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage('pyhmmer', max_pin="x.x") }}
 
@@ -22,17 +22,16 @@ requirements:
     - cmake >=3.20
     - make
   host:
-    - python
+    - python {{ python }}
     - pip
-    - cython
+    - setuptools
+    - cython >=3.0
     - scikit-build-core
   run:
-    - python
-    - psutil >=6.0
+    - {{ pin_compatible("python") }}
+    - psutil >=6.0,<8.0
 
 test:
-  requires:
-    - importlib_resources #[py36 or py37 or py38]
   imports:
     - {{ name }}
   commands:

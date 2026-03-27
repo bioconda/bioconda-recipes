@@ -1,0 +1,48 @@
+{% set name = "snakemake-storage-plugin-xrootd" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/snakemake_storage_plugin_xrootd-{{ version }}.tar.gz
+  sha256: 1f7675f6259b3aace99023b3cf65cbb62e00935b76cf10b6dbdbcbe35b6fbfff
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - hatchling
+    - hatch-vcs
+    - pip
+  run:
+    - python >=3.11
+    - snakemake-interface-common >=1.15.0,<2
+    - snakemake-interface-storage-plugins >=4.1.0,<5
+    - xrootd >=5.6,<6
+
+test:
+  # We do not test the import as the plugin needs snakemake for importing, but adding
+  # it would create a circular dependency.
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/snakemake/snakemake-storage-plugin-xrootd
+  summary: 'A Snakemake storage plugin for XRootD storage'
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - MattMonk

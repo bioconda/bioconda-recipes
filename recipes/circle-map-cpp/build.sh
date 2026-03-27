@@ -1,19 +1,21 @@
-export C_INCLUDE_PATH="$PREFIX/include":$C_INCLUDE_PATH
-export INCLUDE_PATH="$PREFIX/include":$INCLUDE_PATH
-export CPLUS_INCLUDE_PATH="$PREFIX/include":$CPLUS_INCLUDE_PATH
-export LD_LIBRARY_PATH="$PREFIX/lib":$LD_LIBRARY_PATH
-export CFLAGS=" -L$PREFIX/lib $CFLAGS"
-export CPPFLAGS=" -L$PREFIX/lib $CPPFLAGS"
-export CXXFLAGS=" -L$PREFIX/lib $CXXFLAGS"
-export LD_FLAGS=" -L$PREFIX/lib $LD_FLAGS"
+#!/bin/bash
 
+export CFLAGS="$CFLAGS -O3 -L$PREFIX/lib"
+export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
+export CXXFLAGS="$CXXFLAGS -O3 -L$PREFIX/lib"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
-if [[ $(uname -s) == Darwin ]]; then
-  RPATH='@loader_path/../lib'
-else
-  ORIGIN='$ORIGIN'
-  export ORIGIN
-  RPATH='$${ORIGIN}/../lib'
-fi
-make condainstall PREFIX=$PREFIX CC=$CC CXX=$CXX
+mkdir -p "${PREFIX}/bin"
 
+case $(uname -m) in
+    aarch64)
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a|g' Makefile && rm -f *.bak
+	;;
+    arm64)
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a|g' Makefile && rm -f *.bak
+	;;
+esac
+
+make CXX="$CXX"
+
+install -v -m 0755 realign_cm merge_result read_extractor circle_map++ "${PREFIX}/bin"

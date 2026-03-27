@@ -1,0 +1,69 @@
+{% set name = "cascade-reg" %}
+{% set version = "0.5.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://files.pythonhosted.org/packages/source/{{ name[0] }}/{{ name.replace('-', '_') }}/{{ name.replace('-', '_') }}-{{ version }}.tar.gz"
+  sha256: bd64984ed9ab1e3a1e81bb2747a3351a358e8d0a9a652d62bf5c3dbc58be34b2
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - flit >=3.2,<4
+    - pip
+    - python >=3.8
+  run:
+    - anndata
+    - adjusttext
+    - kneed
+    - loguru
+    - matplotlib-base
+    - networkx
+    - numpy
+    - pandas
+    - pynvml
+    - pytorch-lightning >=2
+    - pyyaml
+    - rich
+    - scanpy
+    - scikit-learn
+    - scipy
+    - seaborn
+    - tensorboard
+    - pytorch >=2
+
+test:
+  imports:
+    - cascade
+    - cascade.data
+    - cascade.graph
+    - cascade.model
+    - cascade.utils
+
+about:
+  home: https://github.com/gao-lab/CASCADE
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Causal discovery of gene regulatory programs from single-cell genomics"
+  description: |
+    CASCADE stands for Causality-Aware Single-Cell Adaptive
+    Discover/Deduction/Design Engine. It is a deep learning-based bioinformatics
+    tool for causal gene regulatory network discovery, counterfactual
+    perturbation effect prediction, and targeted intervention design based on
+    high-content single-cell perturbation screens.
+  doc_url: https://cascade-reg.readthedocs.io
+  dev_url: https://github.com/gao-lab/CASCADE
+
+extra:
+  recipe-maintainers:
+    - Jeff1995

@@ -1,0 +1,53 @@
+{% set name = "protal" %}
+{% set version = "0.2.1a" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/4less/protal/archive/refs/tags/{{version}}.tar.gz
+  sha256: a07242ceb139f236de3118189c764cb3365634ce6095efe364a99abe5dbc601d
+
+build:
+  skip: true  # [osx]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('protal', max_pin="x.x") }}
+
+requirements:
+  build:
+    - cmake >=3.22
+    - ninja
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - pkg-config
+    - python >=3
+    - setuptools
+  host:
+    - libgomp      # [linux]
+    - llvm-openmp  # [osx]
+    - zlib
+  run:
+    - python >=3
+    - pigz
+    - libgomp      # [linux]
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - protal --help
+
+about:
+  home: "https://github.com/4less/protal"
+  dev_url: "https://github.com/4less/protal"
+  license: MIT
+  license_family: MIT
+  license_file: "license.txt"
+  summary: "Reference-based metagenomic analysis."
+  description: |
+    Protal is a computational tool for taxonomic profiling and strain-resolved analyses of bacterial communities from 
+    metagenomic shotgun sequencing data (short-reads). Following a reference-based approach, protal uses the same
+    120 universal marker genes GTDB uses to build their phylogeny (TIGRFAM, PFAM) and thus integrates well with other
+    120 universal marker genes GTDB uses to build their phylogeny (TIGRFAM, PFAM) and thus integrates well with other
+    tools working in the GTDB taxonomy space.

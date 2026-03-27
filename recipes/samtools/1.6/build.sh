@@ -14,14 +14,15 @@ sed -i.bak 's#misc/varfilter.py##g' Makefile
 sed -i.bak 's/ -rdynamic//g' Makefile
 sed -i.bak 's/ -rdynamic//g' htslib-$PKG_VERSION/configure
 
-export CPPFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+export CPPFLAGS="${CPPFLAGS} -I$PREFIX/include"
+export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
+export CFLAGS="${CFLAGS} -O3 -I$PREFIX/include -Wno-deprecated-declarations"
 
 cd htslib*
-./configure --prefix=$PREFIX --enable-libcurl CFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
+./configure --prefix="$PREFIX" --enable-libcurl CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
 make
 cd ..
 # Problem with ncurses from default channel we now get in bioconda so skip tview
 # https://github.com/samtools/samtools/issues/577
-./configure --prefix=$PREFIX --enable-libcurl --without-curses
-make install prefix=$PREFIX LIBS+=-lcrypto LIBS+=-lcurl
+./configure --prefix="$PREFIX" --enable-libcurl --without-curses
+make install prefix="$PREFIX" LIBS+=-lcrypto LIBS+=-lcurl

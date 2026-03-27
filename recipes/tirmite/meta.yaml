@@ -1,8 +1,8 @@
 {% set name = "tirmite" %}
-{% set version = "1.1.6" %}
+{% set version = "1.3.0" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "9267c94ec12db1c385a5fd6aca8b85d88005ee69ebf42b5e8dd92418454ae26e" %}
+{% set hash_value = "37fa0aaff11de3526cc3495a1782774e1fe533817c5baca22d18e7f54aebfa90" %}
 
 package:
   name: '{{ name|lower }}'
@@ -16,39 +16,42 @@ build:
   noarch: python
   number: 0
   entry_points:
-    - tirmite=tirmite.cmd_tirmite:main
-    - tsplit-TIR=tirmite.cmd_TIR:main
+    - tirmite=tirmite.cli.cli:main
   script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage('tirmite', max_pin="x") }}
+    - {{ pin_subpackage('tirmite', max_pin="x.x") }}
 
 requirements:
   host:
     - python >=3.8
     - pip
-    - setuptools
     - hatchling
     - hatch-vcs
   run:
-    - python >=3.8
-    - pandas >=0.23.4
     - biopython >=1.70
-    - pymummer >=0.10.3
+    - pandas >=0.23.4
+    - pyfaidx
+    - pyhmmer
+    - python >=3.8
+    - rich
 
 test:
   imports:
     - tirmite
   commands:
     - tirmite --help
-    - tsplit-TIR --help
+    - tirmite --version
+    - tirmite seed --help
+    - tirmite pair --help
 
 about:
   home: https://github.com/Adamtaranto/TIRmite
-  license: MIT
-  license_family: MIT
-  summary: "Map TIR-pHMM models to genomic sequences for annotation of MITES and complete DNA-Transposons."
-  description: "Build profile Hidden Markov Models for Terminal Inverted repeat families (TIR-pHMMs) and map to genomic sequences for annotation of MITES and complete DNA-Transposons with variable internal sequence composition."
+  dev_url: https://github.com/Adamtaranto/TIRmite
+  license: GPL-3
+  license_family: GPL-3
+  summary: "Map profile HMMs of transposon termini to genomic sequences for annotation of cryptic transposon variants."
+  description: "Map profile HMMs of transposon termini to genomic sequences for annotation of cryptic transposon variants."
 
 extra:
   recipe-maintainers:
-    - 'Adam Taranto'
+    - Adamtaranto
