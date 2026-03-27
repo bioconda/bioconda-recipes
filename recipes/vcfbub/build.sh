@@ -1,6 +1,11 @@
 #!/bin/bash -euo
 
-RUST_BACKTRACE=1 CARGO_HOME="${BUILD_PREFIX}/.cargo" cargo build --release
-
 mkdir -p $PREFIX/bin
-cp target/release/vcfbub $PREFIX/bin 
+
+export INCLUDE_PATH="${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
+
+RUST_BACKTRACE=1
+cargo install --verbose --no-track --path . --root "${PREFIX}"

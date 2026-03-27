@@ -1,5 +1,7 @@
 #!/bin/bash
 
-make CC="$CC -fcommon"
 mkdir -p $PREFIX/bin
-cp starcode $PREFIX/bin
+
+make CC="${CC} -fcommon" -j"${CPU_COUNT}"
+
+install -v -m 0755 starcode "$PREFIX/bin"

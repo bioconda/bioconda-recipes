@@ -1,6 +1,6 @@
 {% set name = "MEME" %}
-{% set version = "5.5.5" %}
-{% set sha256 = "bebb4a176e72d62e3a2d5ba5f22439185bbc4bbf4769604fbca12dff8e1f739f" %}
+{% set version = "5.5.9" %}
+{% set sha256 = "0406fb7b1dc27f6aab3d6d3a29ecdf617bbdd946690cfa97ca2129bc210bfd12" %}
 
 package:
   name: {{ name|lower }}
@@ -12,7 +12,6 @@ source:
 
 build:
   number: 0
-  detect_binary_files_with_prefix: True
   run_exports:
     - {{ pin_subpackage("meme", max_pin="x") }}
 
@@ -23,20 +22,22 @@ requirements:
     - autoconf
     - automake
     - libtool
+    - pkg-config
   host:
     - nodejs >=16.4.1
-    - openmpi
-    - yaml
-    - icu >=72.1,<73.0a0
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - icu
     - ghostscript
     - zlib
-    - xz
     - libxslt
     - libxml2
     - expat
     - perl
   run:
     - python >=3.7
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - perl
     - perl-app-cpanminus
     - perl-module-build
@@ -74,15 +75,17 @@ test:
     - dreme -version
 
 about:
-  home: https://meme-suite.org
+  home: "https://meme-suite.org"
   license: Custom
   license_file: COPYING
-  summary: Motif-based sequence analysis tools
+  summary: "Motif-based sequence analysis tools."
+  doc_url: "https://meme-suite.org/meme/doc/overview.html"
 
 extra:
-  container:
-    # openmpi needs ssh/rsh
-    extended-base: true
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:meme_suite
     - usegalaxy-eu:meme_dreme
+    - doi:10.1093/nar/gkv416

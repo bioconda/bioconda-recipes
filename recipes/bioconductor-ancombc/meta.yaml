@@ -1,32 +1,28 @@
-{% set version = "2.4.0" %}
+{% set version = "2.8.0" %}
 {% set name = "ANCOMBC" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 42059f62faa03e818d0cd15b7bcf0094
+about:
+  description: 'ANCOMBC is a package containing differential abundance (DA) and correlation analyses for microbiome data. Specifically, the package includes Analysis of Compositions of Microbiomes with Bias Correction 2 (ANCOM-BC2), Analysis of Compositions of Microbiomes with Bias Correction (ANCOM-BC), and Analysis of Composition of Microbiomes (ANCOM) for DA analysis, and Sparse Estimation of Correlations among Microbiomes (SECOM) for correlation analysis. Microbiome data are typically subject to two sources of biases: unequal sampling fractions (sample-specific biases) and differential sequencing efficiencies (taxon-specific biases). Methodologies included in the ANCOMBC package are designed to correct these biases and construct statistically consistent estimators.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Microbiome differential abudance and correlation analyses with bias correction
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-ancombc", max_pin="x.x") }}'
-  noarch: generic
-# Suggests: dplyr, knitr, rmarkdown, testthat, DT, tidyr, tidyverse, microbiome, magrittr
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: mia (>= 1.6.0), DT, S4Vectors, SingleCellExperiment, SummarizedExperiment, TreeSummarizedExperiment, dplyr, knitr, magrittr, microbiome, phyloseq, rmarkdown, testthat, tidyr, tidyverse
 requirements:
   host:
-    - 'bioconductor-mia >=1.10.0,<1.11.0'
-    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
-    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
-    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
-    - 'bioconductor-treesummarizedexperiment >=2.10.0,<2.11.0'
     - r-base
     - r-cvxr
     - r-desctools
@@ -44,11 +40,6 @@ requirements:
     - r-nloptr
     - r-rdpack
   run:
-    - 'bioconductor-mia >=1.10.0,<1.11.0'
-    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
-    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
-    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
-    - 'bioconductor-treesummarizedexperiment >=2.10.0,<2.11.0'
     - r-base
     - r-cvxr
     - r-desctools
@@ -65,12 +56,16 @@ requirements:
     - r-multcomp
     - r-nloptr
     - r-rdpack
+
+source:
+  md5: 4b876fab332f19e7fc9bbbfe070e53f8
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Microbiome differential abudance and correlation analyses with bias correction'
-  description: 'ANCOMBC is a package containing differential abundance (DA) and correlation analyses for microbiome data. Specifically, the package includes Analysis of Compositions of Microbiomes with Bias Correction 2 (ANCOM-BC2), Analysis of Compositions of Microbiomes with Bias Correction (ANCOM-BC), and Analysis of Composition of Microbiomes (ANCOM) for DA analysis, and Sparse Estimation of Correlations among Microbiomes (SECOM) for correlation analysis. Microbiome data are typically subject to two sources of biases: unequal sampling fractions (sample-specific biases) and differential sequencing efficiencies (taxon-specific biases). Methodologies included in the ANCOMBC package are designed to correct these biases and construct statistically consistent estimators.'
+    - $R -e "library('{{ name }}')"
 

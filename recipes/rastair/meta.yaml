@@ -1,0 +1,72 @@
+{% set name = "rastair" %}
+{% set version = "2.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://s3.eu-west-2.amazonaws.com/com.rastair.releases/build/release-v{{ version }}/rastair-{{ version }}-vendored.tar.gz
+  sha256: e340de77407ad3d666159925c957ec562bbb1ee9cb75ee32547cc5b4f60e734b
+
+build:
+  number: 0
+  skip: true  # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - {{ compiler("cxx") }}
+    - {{ compiler("rust") }}
+    - make
+    - cmake
+    - pkg-config
+    - clang  # [linux]
+    - libclang
+    - cargo-bundle-licenses
+  host:
+    - bzip2
+    - xz
+    - zlib
+  run:
+    - bzip2
+    # Optional (enables `rastair mbias`; `tabix` must be available separately, e.g. via `htslib`)
+    - r-base
+    - r-argparser
+    - r-rmarkdown
+    - r-data.table
+    - r-ggplot2
+    - r-ggside
+    - bioconductor-rsamtools
+    - bioconductor-genomicranges
+    - bioconductor-biostrings
+    - bcftools
+    - pandoc
+
+test:
+  commands:
+    - rastair --help
+    - rastair --version
+    - rastair mbias --help
+    - rastair bam --help
+    - rastair internal shell-completions bash > /dev/null
+    - test -f "${PREFIX}/share/rastair/scripts/mbias.R"
+    - test -f "${PREFIX}/share/rastair/scripts/QC_report.Rmd"
+
+about:
+  home: https://docs.rastair.com/
+  dev_url: https://bitbucket.org/bsblabludwig/rastair
+  summary: Fast and flexible extraction of methylation information from BAM files
+  license: LicenseRef-NonCommercial
+  license_file:
+    - LICENSE.txt
+    - THIRDPARTY.yml
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - ze97286

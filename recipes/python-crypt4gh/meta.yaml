@@ -1,6 +1,6 @@
 {% set name = "crypt4gh" %}
-{% set version = "1.6" %}
-{% set sha256_any = "8754f23182ee7dd5119ab0eb4999b3c8ffaa8bb8f8dbf2cdbaff790ac5b4f3a7" %}
+{% set version = "1.7" %}
+{% set sha256_any = "88785a298a9c47d900f179f69d9768052df58bd6904b5c7cbdc62cb21d475ef1" %}
 
 package:
   name: python-{{ name }}
@@ -13,13 +13,19 @@ source:
 build:
   number: 0
   noarch: python
+  entry_points:
+    - crypt4gh=crypt4gh.__main__:main
+    - crypt4gh-keygen=crypt4gh.keys.__init__:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('python-crypt4gh', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3
+    - python >=3.6
     - pip
   run:
-    - python >=3
+    - python >=3.6
     - pyyaml
     - docopt
     - cryptography
@@ -44,8 +50,10 @@ test:
     - diff testfile-help.txt message.bob.received
 
 about:
-  home: https://github.com/EGA-archive/crypt4gh
-  license: Apache-2.0
+  home: "https://github.com/EGA-archive/crypt4gh"
+  license: "Apache-2.0"
   license_family: APACHE
   license_file: LICENSE
-  summary: GA4GH cryptographic tools
+  summary: "GA4GH cryptographic tools"
+  dev_url: "https://github.com/EGA-archive/crypt4gh"
+  doc_url: "http://crypt4gh.readthedocs.io"

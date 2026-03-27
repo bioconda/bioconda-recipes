@@ -1,0 +1,51 @@
+diff --git i/Makefile w/Makefile
+index 10e42f5..42cb38d 100644
+--- i/Makefile
++++ w/Makefile
+@@ -142,24 +142,25 @@ GIT_VERSION = $(VERSION)
+ 
+ # Convert BITS=?? to a -m flag
+ BITS=32
++BITS_FLAG =
+ ifeq (x86_64,$(shell uname -m))
+ BITS=64
++BITS_FLAG = -m64
++else ifeq (aarch64,$(shell uname -m))
++BITS=64
+ endif
+ # msys will always be 32 bit so look at the cpu arch instead.
+ ifneq (,$(findstring AMD64,$(PROCESSOR_ARCHITEW6432)))
+ 	ifeq (1,$(MINGW))
+ 		BITS=64
++		BITS_FLAG = -m64
+ 	endif
+ endif
+-BITS_FLAG =
+ 
+ ifeq (32,$(BITS))
+ 	BITS_FLAG = -m32
+ endif
+ 
+-ifeq (64,$(BITS))
+-	BITS_FLAG = -m64
+-endif
+ SSE_FLAG=-msse2
+ 
+ DEBUG_FLAGS    = -O0 -g3 $(BIToS_FLAG) $(SSE_FLAG) -std=c++11
+diff --git i/third_party/cpuid.h w/third_party/cpuid.h
+index 6a9688f..7c935c9 100644
+--- i/third_party/cpuid.h
++++ w/third_party/cpuid.h
+@@ -21,6 +21,7 @@
+  * <http://www.gnu.org/licenses/>.
+  */
+ 
++#ifndef __ARM_NEON
+ /* %ecx */
+ #define bit_SSE3	(1 << 0)
+ #define bit_PCLMUL	(1 << 1)
+@@ -185,3 +186,4 @@ __get_cpuid (unsigned int __level,
+   __cpuid (__level, *__eax, *__ebx, *__ecx, *__edx);
+   return 1;
+ }
++#endif // not __ARM_NEON

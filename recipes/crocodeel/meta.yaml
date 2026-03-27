@@ -1,0 +1,50 @@
+{% set name = "crocodeel" %}
+{% set version = "1.2.1" %}
+
+package:
+    name: {{ name }}
+    version: {{ version }}
+
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/crocodeel-{{ version }}.tar.gz 
+  sha256: 521e1395859a79f26e228baeb0432ca9f560ac6466afec2cc167eef6e8af738c
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv 
+  entry_points:
+    - crocodeel = crocodeel.crocodeel:main
+  run_exports:
+    - {{ pin_subpackage('crocodeel', max_pin="x.x") }}
+
+requirements:
+    host:
+        - python >=3.12
+        - poetry-core
+        - pip
+    run:
+        - python >=3.12
+        - pandas >=2.3
+        - numpy >=2.4
+        - joblib >=1.5
+        - scipy >=1.17
+        - scikit-learn >=1.8,<1.9
+        - matplotlib-base >=3.10
+        - tqdm >=4.67
+
+test:
+    commands:
+        - crocodeel test_install
+
+about:
+  home: https://github.com/metagenopolis/crocodeel
+  license: GPL-3.0-or-later
+  license_file: COPYING
+  summary: 'CroCoDeEL is a tool that detects cross-sample contamination in shotgun metagenomic data'
+  description: |
+    CroCoDeEL is a tool that detects cross-sample (aka well-to-well) contamination in shotgun metagenomic data.
+    It accurately identifies contaminated samples but also pinpoints contamination sources and estimates contamination rates.
+    CroCoDeEL relies only on species abundance tables and does not need negative controls.
+  license_family: GPL3

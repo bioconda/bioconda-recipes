@@ -1,50 +1,55 @@
-{% set name = "checkm2" %}
-{% set version = "1.0.1" %}
+{% set name = "CheckM2" %}
+{% set version = "1.1.0" %}
+{% set sha256 = "7978e4ca08ae8ea3285931b955d1a4818684f9f955995837e98e6ab7ff90674f" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/CheckM2-{{ version }}.tar.gz
-  sha256: 31b228bd44609168d6971391f28c6fde29b4d1f52d411d705cb9a281d618bb17
+  url: https://github.com/chklovski/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  script: {{ PYTHON }} -m pip install . -vv
-  number: 0
+  number: 1
   noarch: python
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . -vv
 
 requirements:
   host:
     - python
     - pip
+    - setuptools
   run:
-    - python >=3.6, <3.9
-    - scikit-learn =0.23.2
-    - h5py =2.10.0
-    - numpy =1.19.2
-    - diamond =2.0.4
-    - tensorflow >=2.1.0, <2.6.0
-    - lightgbm =3.2.1
-    - pandas <=1.4.0
+    - python >3.12
+    - scikit-learn =1.6.1
+    - numpy
+    - diamond =2.1.11
+    - tensorflow =2.17
+    - lightgbm
+    - pandas
     - scipy
     - prodigal >=2.6.3
-    - setuptools
     - requests
     - packaging
     - tqdm
+    - keras
 
 test:
   commands:
-    - {{ name }} --version | grep '{{ version }}'
-
+    - checkm2 --help
 
 about:
   home: https://github.com/chklovski/CheckM2
-  summary: CheckM2 - Predicting the quality of metagenome-recovered bins
-  license: GPL-3.0
+  license: GPL-3.0-only
+  license_family: GPL
   license_file: LICENSE
+  summary: "Assessing the quality of metagenome-derived genome bins using machine learning."
+  dev_url: https://github.com/chklovski/CheckM2
 
 extra:
+  notes: "CheckM2 requries the DIAMOND database that can be downloaded with `checkm2 database --download`."
   recipe-maintainers:
     - chklovski

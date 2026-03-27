@@ -1,12 +1,17 @@
 #!/bin/bash
 
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
-export CPATH=${PREFIX}/include
+export CPATH="${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-array-bounds -Wno-vla-cxx-extension"
 
-sh autogen.sh
-./configure --prefix=$PREFIX
-make
+autoreconf -if
+./configure --prefix="${PREFIX}" \
+	--disable-option-checking --enable-silent-rules \
+	--disable-dependency-tracking CC="${CC}" CXX="${CXX}" \
+	CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" \
+	LDFLAGS="${LDFLAGS}"
+
+make -j"${CPU_COUNT}"
 make install
-
-

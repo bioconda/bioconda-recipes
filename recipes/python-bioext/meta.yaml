@@ -1,42 +1,38 @@
 {% set name = "BioExt" %}
-{% set version = "0.21.2" %}
-{% set sha256 = "bd3ae29e1dfc4e543b6b6acdd26d073157365233c690a31793d2924055999568" %}
+{% set version = "0.21.10" %}
+{% set sha256 = "4db48c852cc5fe37497b1a4dff030e7827bff8292fb491604c7d51c1d880f9be" %}
 
 package:
   name: python-{{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/bioext-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/bioext-{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
     - cythonize.patch
-    - osx-freetype.patch # [osx]
+    - osx-freetype.patch  # [osx]
 
 build:
   number: 0
-  skip: True # [py2k]
   run_exports:
-    - {{ pin_subpackage("python-bioext", max_pin="x.x") }}
+    - {{ pin_subpackage('python-bioext', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - freetype
     - python
-    - cython >=0.28
+    - pip
+    - cython
+    - numpy
     - setuptools
-    - biopython >=1.58
-    - numpy >1.20.3
-    - scipy
-    - pysam
   run:
     - freetype
     - python
-    - biopython >=1.58
-    - numpy >1.20.3
+    - biopython >=1.78
+    - numpy
     - scipy
     - pysam
     - joblib
@@ -68,7 +64,6 @@ test:
     - BioExt.tn93
     - BioExt.uds
     - BioExt.untranslate
-
   commands:
     - bam2fna 2>&1 | grep 'usage' > /dev/null
     - bam2msa 2>&1 | grep 'usage' > /dev/null
@@ -78,7 +73,13 @@ test:
     - seqmerge 2>&1 | grep 'usage' > /dev/null
 
 about:
-  home: https://github.com/veg/BioExt.git
-  license: GPL-3
+  home: "https://github.com/veg/bioext"
+  license: "GPL-3.0-only"
   license_family: GPL3
-  summary: 'A few handy bioinformatics tools not already in BioPython'
+  summary: "A few handy bioinformatics tools not already in BioPython."
+  dev_url: "https://github.com/veg/bioext"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

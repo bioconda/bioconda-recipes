@@ -1,0 +1,93 @@
+{% set name = "rpsbproc" %}
+{% set version = "0.5.1" %}
+{% set sha256 = "a20f4088e60113d89377927d3037fad29e1723813f2a58b56d916d182fbf6086" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://ftp.ncbi.nih.gov/pub/mmdb/cdd/rpsbproc/20250513_112041/RpsbProc-src.tar.gz
+    sha256: {{ sha256 }}
+    folder: rpsbproc
+    patches:
+      - literal_constexpr.patch
+      - no_librt.patch # [osx]
+      - normbase.patch
+
+    # Get the last supported BLAST version (contains a subset of the NCBI-CXX toolchain),
+    # required for building.
+  - url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.17.0/ncbi-blast-2.17.0+-src.tar.gz
+    sha256: 502057a88e9990e34e62758be21ea474cc0ad68d6a63a2e37b2372af1e5ea147
+    folder: ncbi_cxx
+    patches:
+      - add_rpsbproc.patch
+      - configurellvm.patch
+      - phonehome.patch
+      - project_tree_builder.patch
+      - update_configsub.patch
+      - vdb.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - bzip2
+      # required as of blast-2.15.0
+    - sqlite >=3.6.6
+      # no runtime dependencies as it's statically linked (except standard libs)
+  run:
+
+
+test:
+  commands:
+    - rpsbproc -version-full
+
+about:
+  home: https://ftp.ncbi.nih.gov/pub/mmdb/cdd/rpsbproc/README
+  license: Public Domain
+  license_file: LICENSE
+  summary: RpsbProc, the post-RPSBLAST Processing Utility.
+  description: |
+    The rpsbproc command line utility is an addition to the standalone version of
+    Reverse Position-Specific BLAST (RPS-BLAST), also known as CD-Search (Conserved
+    Domain Search).
+
+    It post-processes the results of local RPS-BLAST searches in order to provide a
+    non-redundant view of the search results, and to provide additional annotation
+    on query sequences, such as domain superfamilies and functional sites, similar to
+    the annotation provided by the corresponding web services (e.g., the NCBI Batch
+    CD-Search web service at
+    http://www.ncbi.nlm.nih.gov/Structure/bwrpsb/bwrpsb.cgi).
+
+    Specifically, the rpsbproc utility reads the output of rpsblast/rpstblastn,
+    fills in domain superfamily and functional site information for each region of
+    the sequence, re-sorts the hits by a different standard, and calculates a
+    set of non-redundent representative hits. In this way, it turns the
+    raw alignments into domain/site annotations on the query sequence at different
+    redundancy level, basically produce the same data as web-based Batch CD-Search
+    service does. The annotation data is presented in tab-delimited tables to be processed
+    either programatically or manually with a spreadsheet (see details below).
+
+    See the CDD and CD-Search help document for additional details about
+    superfamilies, conserved sites, and more:
+
+    http://www.ncbi.nlm.nih.gov/Structure/cdd/cdd_help.shtml
+
+
+extra:
+  identifiers:
+    - doi:10.1002/cpbi.90
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - ebete

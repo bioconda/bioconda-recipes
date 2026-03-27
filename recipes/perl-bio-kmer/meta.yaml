@@ -1,0 +1,58 @@
+{% set version = "0.55" %}
+{% set sha256 = "268745e0e4e20aad6462c3dd0958ac6a08b3b7eb43c0f326f9bb61e48f6547a0" %}
+
+# regex to use for Windows build hack
+{% set win_patch = "s|C:\\\\strawberry\\\\c|$ENV{LIBRARY_PREFIX}\\\\mingw-w64|g" %}
+
+package:
+  name: perl-bio-kmer
+  version: {{ version }}
+
+source:
+  url: https://cpan.metacpan.org/authors/id/L/LS/LSKATZ/Bio-Kmer-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports: 
+    - {{ pin_subpackage("perl-bio-kmer", max_pin="x.x") }}
+  # needed for linker to find some m2w64 libs
+  merge_build_host: True  # [win]
+  script:
+    - >-
+      perl Makefile.PL INSTALLDIRS=vendor NO_PERLLOCAL=1 NO_PACKLIST=1 MAKE=make
+      && (for /r . %%f in (*Makefile) do perl -i -pe "{{ win_patch }}" %%f)  # [win]
+      && make
+      && make test
+      && make install VERBINST=1
+
+requirements:
+  build:
+    - {{ compiler('c') }}  # [unix]
+    - m2w64-gcc  # [win]
+    - make
+  host:
+    - perl >=5.26
+    - perl-file-which
+    - perl-bioperl
+    - kmer-jellyfish >=2
+  run:
+    - perl >=5.26
+    - perl-file-which
+    - perl-bioperl
+    - kmer-jellyfish >=2
+
+test:
+  imports:
+    - Bio::Kmer
+
+about:
+  home: https://metacpan.org/pod/Bio::Kmer
+  summary: A perl module for helping with kmer analysis.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - lskatz
+   #- conda-forge/perl-packagers

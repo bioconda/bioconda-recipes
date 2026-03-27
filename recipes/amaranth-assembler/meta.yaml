@@ -1,0 +1,52 @@
+{% set name = "amaranth-assembler" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: "https://github.com/Shao-Group/amaranth/releases/download/v{{ version }}/amaranth-{{ version }}.tar.gz"
+  sha256: "faf6b134df69b012125d08b1beeac255d32cdc456baf4a7ce6f1a17db327a78a"
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - pkg-config
+    - autoconf
+    - automake
+    - libtool
+    - gnuconfig
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - htslib
+    - libxcrypt
+    - boost-cpp
+    - zlib
+
+test:
+  commands:
+    - amaranth --help
+
+about:
+  home: "https://github.com/Shao-Group/amaranth"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: LICENSE
+  summary: "Amaranth is a reference-based transcriptome assembler for single-cell RNA-seq."
+  dev_url: "https://github.com/Shao-Group/amaranth"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - shaogroup

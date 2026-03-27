@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "wgsmapp-1.14.0"
+installBiocDataPackage.sh "wgsmapp-1.18.0"

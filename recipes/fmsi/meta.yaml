@@ -1,0 +1,48 @@
+{% set version = "0.4.0" %}
+{% set sha256 = "f4b8ad79289f014e0b49ecfe0e131df2f7db47bcb496aaf3d9489b598524000d" %}
+
+package:
+  name: fmsi
+  version: {{ version }}
+
+source:
+  url: https://github.com/OndrejSladky/fmsi/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Makefile.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('fmsi', max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - cmake
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - sdsl-lite
+  run:
+    - sdsl-lite
+
+test:
+  commands:
+    - fmsi -h 2>&1 | grep "FMSI"
+
+about:
+  home: "https://github.com/OndrejSladky/fmsi"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "FMSI - memory efficient k-mer set index based on masked superstrings and Burrows-Wheeler transform."
+  dev_url: "https://github.com/OndrejSladky/fmsi"
+  doc_url: "https://github.com/OndrejSladky/fmsi/blob/v{{ version }}/README.md"
+
+extra:
+  identifiers:
+    - doi:10.1101/2024.03.06.583483
+    - doi:10.1101/2023.02.01.526717
+  additional-platforms:
+    - linux-aarch64

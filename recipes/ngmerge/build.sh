@@ -1,14 +1,13 @@
 #!/bin/bash
 
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
-if [[ "$(uname)" == Darwin ]]; then
-    version=`conda info llvm-openmp | grep '^version' | awk -F': ' '{print $2}'`
-    CFLAGS="-I${PREFIX}/lib/clang/${version}/include ${CFLAGS}"
-    LDFLAGS="-lomp $LDFLAGS"
+export CFLAGS="${CFLAGS} -g -Wall -std=gnu11 -O3 -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+if [[ "$(uname)" == "Darwin" ]]; then
+    export LDFLAGS="${LDFLAGS} -lomp"
 else
-    CFLAGS="-fopenmp $CFLAGS"
+    export CFLAGS="${CFLAGS} -fopenmp"
 fi 
 
-make
-make install PREFIX=$PREFIX
+make CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
+install -v -m 0755 NGmerge "${PREFIX}/bin"

@@ -2,6 +2,8 @@
 
 set -o errexit -o pipefail
 
+export LC_ALL="en_US.UTF-8"
+
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [[ -f Build.PL ]]; then
     perl Build.PL

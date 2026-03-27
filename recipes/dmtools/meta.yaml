@@ -1,0 +1,45 @@
+{% set name = "dmtools" %}
+{% set version = "0.2.6" %}
+{% set sha256 = "7492be776a73ed0aea639ec73d78726a37cfa45d6d31baa12dc7ecb7589d41e9" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: {{ version }}
+
+source:
+  url: https://github.com/ZhouQiangwei/dmtools/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('dmtools', max_pin="x.x") }}
+  skip: True # [osx]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - curl
+    - zlib
+    - libcurl
+    - htslib
+    - gsl
+  run:
+    - htslib
+    - zlib
+    - gsl
+    - libcurl
+    - perl
+
+test:
+  commands:
+    - dmtools
+
+about:
+  home: 'https://github.com/ZhouQiangwei/dmtools'
+  license: MIT
+  summary: 'BS-seq, WGBS, NOMe-Seq, RRBS data storage and analysis tool dmtools'
+  doc_url: 'https://dmtools-docs.readthedocs.io/en/latest/index.html'

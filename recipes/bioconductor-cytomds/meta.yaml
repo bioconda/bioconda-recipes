@@ -1,0 +1,68 @@
+{% set version = "1.2.0" %}
+{% set name = "CytoMDS" %}
+{% set bioc = "3.20" %}
+
+about:
+  description: This package implements a low dimensional visualization of a set of cytometry samples, in order to visually assess the 'distances' between them. This, in turn, can greatly help the user to identify quality issues like batch effects or outlier samples, and/or check the presence of potential sample clusters that might align with the exeprimental design. The CytoMDS algorithm combines, on the one hand, the concept of Earth Mover's Distance (EMD), a.k.a. Wasserstein metric and, on the other hand, the Multi Dimensional Scaling (MDS) algorithm for the low dimensional projection. Also, the package provides some diagnostic tools for both checking the quality of the MDS projection, as well as tools to help with the interpretation of the axes of the projection.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Low Dimensions projection of cytometry samples
+
+build:
+  noarch: generic
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-cytomds", max_pin="x.x") }}'
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: testthat (>= 3.0.0), vdiffr, diffviewer, knitr, rmarkdown, BiocStyle, HDCytoData
+requirements:
+  host:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-cytopipeline >=1.6.0,<1.7.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - r-base
+    - r-ggforce
+    - r-ggplot2
+    - r-ggrepel
+    - r-patchwork
+    - r-pracma
+    - r-reshape2
+    - r-rlang
+    - r-smacof
+    - r-transport
+    - r-withr
+  run:
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-cytopipeline >=1.6.0,<1.7.0
+    - bioconductor-flowcore >=2.18.0,<2.19.0
+    - r-base
+    - r-ggforce
+    - r-ggplot2
+    - r-ggrepel
+    - r-patchwork
+    - r-pracma
+    - r-reshape2
+    - r-rlang
+    - r-smacof
+    - r-transport
+    - r-withr
+
+source:
+  md5: ffe29cb8a8079ecd2fa20da75d196d7b
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+

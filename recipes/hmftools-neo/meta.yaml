@@ -1,25 +1,28 @@
-{% set version = "1.0.1" %}
-{% set sha256 = "292e322050965612c959296d11b45dcf9dba371d3c89d64bc10691116d867d90" %}
+{% set version = "1.2.1" %}
+{% set beta_suffix = "" %}
+{% set sha256 = "fa1b2affb23414fd598c9adb145d885a2034dd4719c4cf95651067193f1415cf" %}
 
 package:
   name: hmftools-neo
   version: '{{ version }}'
 
 source:
-  url: https://github.com/hartwigmedical/hmftools/releases/download/neo-v{{ version }}/neo_v{{ version }}.jar
+  url: https://github.com/hartwigmedical/hmftools/releases/download/neo-v{{ version }}/neo_v{{ version }}{{ beta_suffix }}.jar
   sha256: '{{ sha256 }}'
 
 build:
   noarch: generic
   number: 0
+  run_exports:
+    - {{ pin_subpackage("hmftools-neo", max_pin="x.x") }}
 
 requirements:
   run:
-    - openjdk >=8
+    - openjdk >=8,<=21
 
 test:
   commands:
-    - 'neo 2>&1 | grep -q "Neo version"'
+    - 'neo -version | grep "Neo version"'
 
 about:
   home: https://github.com/hartwigmedical/hmftools/tree/master/neo

@@ -1,0 +1,52 @@
+{% set version = "0.9.1" %}
+{% set sha256 = "97543b5c11bcbfd1fd42671c61fae11fa3040ba8235641ae77ce3fb91c2d5863" %}
+
+package:
+  name: gzrt
+  version: {{ version }}
+
+source:
+  url: https://github.com/arenn/gzrt/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Makefile.patch
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('gzrt', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - make
+    - zlib
+  host:
+    - zlib
+
+test:
+  commands:
+    - gzrecover -h
+    # Create and test with a corrupted gzip file
+    - echo "test" | gzip > test.gz
+    - dd if=/dev/zero of=test.gz bs=1 count=1 seek=5 conv=notrunc
+    - gzrecover test.gz || [[ $? -eq 1 ]]
+
+about:
+  home: "https://www.urbanophile.com/arenn/hacking/gzrt"
+  summary: "Unofficial build of the gzip Recovery Toolkit aka gzrecover."
+  license: "GPL-2.0-only"
+  license_family: GPL
+  license_file: "gpl-2.0.txt"
+  description: |
+    gzrecover is a program that will attempt to extract any readable data
+    out of a gzip file that has been corrupted.
+  dev_url: "https://github.com/arenn/gzrt"
+  doc_url: "https://github.com/arenn/gzrt/blob/v{{ version }}/README"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - mazzalab

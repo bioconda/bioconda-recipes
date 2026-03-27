@@ -1,0 +1,70 @@
+{% set name = "sadie-antibody" %}
+{% set version = "2.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/jwillis0720/sadie/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 29b3390b86bb6d16468c5ce4446e5f79e1bd0d0958efbc045d60b46f8e950e60
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vv
+  entry_points:
+    - sadie = sadie.app:sadie
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9,<3.14
+    - pip
+    - poetry-core
+  run:
+    - python >=3.9,<3.14
+    - pip
+    - biopython >=1.84
+    - semantic_version
+    - click >=8.0,<8.2
+    - filetype >=1.2.0
+    - pandas >=2.3,<3
+    - requests >=2.32.0
+    - pydantic >=2.0.0,<3.0.0
+    - python-levenshtein >=0.27.0
+    - pyarrow >=20.0.0
+    - pyyaml >=6.0
+    - scikit-learn >=1.5.0
+    - openpyxl >=3.1.0
+    - yarl >=1.9.0
+    - ipython >=8.18.0
+    - pyhmmer >=0.11.1
+    - scipy >=1.11.0
+    - rich >=14.1.0
+
+test:
+  imports:
+    - sadie
+    - sadie.airr
+  commands:
+    - sadie --help
+  requires:
+    - pip
+
+about:
+  home: https://sadie.jordanrwillis.com
+  dev_url: https://github.com/jwillis0720/sadie
+  license: MIT
+  summary: "The Complete Antibody Library"
+  description: |
+    SADIE (Sequencing Analysis and Data library for Immunoinformatics Exploration) provides
+    command-line apps and a Python API for antibody/AIRR analyses.
+
+extra:
+  recipe-maintainers:
+    - jwillis0720
+    - tmsincomb
+    - kipkurui
+    

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "sfedata-1.4.0"
+installBiocDataPackage.sh "sfedata-1.8.0"

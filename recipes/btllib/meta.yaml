@@ -1,16 +1,17 @@
 {% set name = "btllib" %}
-{% set version = "1.7.0" %}
+{% set version = "1.7.7" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/bcgsc/btllib/releases/download/v{{ version }}/{{ name|lower }}-{{ version }}.tar.gz
-  sha256: a9a2b7d5c65865b20ee6467657c08ac05c9ea1f7c993bf44c3ffcf044b200def
+  url: https://github.com/BirolLab/btllib/releases/download/v{{ version }}/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: 9e81a509f60d5bf7f19d5e5d052248a92425fec5809d0d31368537660336247a
+  patches:
+    - sdsl-louds-tree-fix.patch
 
 build:
-  skip: true  # [py < 38 or win]
   number: 0
   run_exports:
     - {{ pin_subpackage('btllib', max_pin="x") }}
@@ -18,26 +19,32 @@ build:
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - python
+    - cmake <4
+    - meson
+    - ninja
+    - pkg-config
+    - setuptools
   host:
     - python
     - pip
-    - wheel
-    - meson
-    - ninja
-    - cmake
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
-  run:
-    - python
+    - setuptools
     - samtools
+    - swig
+    - doxygen
     - pigz
-    - gzip # alternative to pigz
+    - gzip  # alternative to pigz
     - tar
     - bzip2
     - xz
-    - lrzip
+    - lrzip  # [linux]
     - zip
     - wget
+  run:
+    - python
+    - samtools
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
 
@@ -48,14 +55,18 @@ test:
     - btllib
 
 about:
-  home: https://github.com/bcgsc/btllib
-  license: GPL-3.0-or-later
+  home: "https://github.com/BirolLab/btllib"
+  license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: LICENSE
-  summary: 'Bioinformatics common code library in C++ with Python wrappers, from Bioinformatics Technology Lab'
-  doc_url: https://bcgsc.github.io/btllib/
+  summary: "Bioinformatics common code library in C++ with Python wrappers, from Bioinformatics Technology Lab."
+  doc_url: "https://birollab.github.io/btllib/"
+  dev_url: "https://github.com/BirolLab/btllib"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.21105/joss.04720
     - doi:10.1093/bioadv/vbad162

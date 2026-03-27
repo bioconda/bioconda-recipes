@@ -1,0 +1,44 @@
+{% set version = "1.1.8" %}
+{% set name = "mtGrasp" %}
+
+package:
+  name: {{ name | lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/BirolLab/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
+  sha256: e48ac50c69f607d75362c860cb7e1ded8456a4d7d1e603bd93d32b07e738cafa 
+
+build:
+  number: 1
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('mtgrasp', max_pin="x") }}
+
+requirements:
+  host:
+    - python <=3.12 # Needed to avoid version conflict errors in CI 
+  run:
+    - python <=3.12 # Needed to avoid version conflict errors in CI
+    - snakemake
+    - blast >=2.9.0
+    - biopython
+    - seqtk
+    - abyss
+    - ntjoin
+    - bwa
+    - samtools
+    - pilon
+    - ntcard
+    - mitos >=2.1.7
+
+
+test:
+  commands:
+    - mtgrasp.py -h
+
+about:
+  home: https://github.com/BirolLab/mtGrasp
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  summary: 'reference-grade de novo animal mitochondrial genome assembly and standardization'

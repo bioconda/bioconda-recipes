@@ -1,29 +1,28 @@
 {% set name = "comet-ms" %}
-{% set version = "2023012" %}
-{% set md5 = "d60433652e5a5e682288ddbdfb014eb4" %}
+{% set version = "2026.01.1" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/UWPR/Comet/archive/refs/tags/v2023.01.2.zip
-  md5: {{ md5 }}
+  - url: https://github.com/UWPR/Comet/releases/download/v{{ version }}/comet.aarch64.linux.exe # [linux and aarch64]
+    sha256: b05f24e22cfed69c6b5f3d7bf0370656fa338b7c96d305dc7c04d75760d14506 # [linux and aarch64]
+  - url: https://github.com/UWPR/Comet/releases/download/v{{ version }}/comet.aarch64.macos.exe # [osx and arm64]
+    sha256: 5308289f8c1b193c59e12e03cfbf0ff3f7cde836b5e42f3ba785d365ee256abb  # [osx and arm64]
+  - url: https://github.com/UWPR/Comet/releases/download/v{{ version }}/comet.linux.exe # [linux64]
+    sha256: 14be7759e7bfe9076d75830deba97bce2cc688828be8c32794fd2a53e83e475b # [linux64]
+  - url: https://github.com/UWPR/Comet/releases/download/v{{ version }}/comet.macos.exe # [osx and x86_64]
+    sha256: cfb9fb0ad25d5bc39353c41066566aa2dd66167e38218c9df78399904e48a2b5  # [osx and x86_64]
 
 build:
   run_exports:
     - {{ pin_subpackage('comet-ms', max_pin=None) }}
-  skip: True  # [osx] 
   number: 0
 
 requirements:
-  build:
-    - make
-    - unzip
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    # To have clock_gettime in glibc. Linking to librt did not work due to inflexible Makefiles
-    - sysroot_linux-64 2.17  # [linux64]
+  build: []
+  run: []
 
 test:
   commands:
@@ -32,10 +31,18 @@ test:
 
 about:
   home: https://uwpr.github.io/Comet/
-  license: Apache License 2.0
-  summary: 'Comet is a command line tool that does MS/MS database search.'
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: Comet is an open source tandem mass spectrometry (MS/MS) sequence database search tool.
+  dev_url: https://github.com/UWPR/Comet
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+    - osx-x86_64
+  skip-lints:
+    - should_be_noarch_generic
   identifiers:
     - doi:10.1007/s13361-015-1179-x
     - doi:10.1002/pmic.201200439

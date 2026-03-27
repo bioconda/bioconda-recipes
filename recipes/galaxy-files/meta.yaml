@@ -1,31 +1,35 @@
-{% set version = "23.2.1" %}
-{% set sha256 = "aa658c52eac6e7a7aa9eca7b132714d0887bf2649d5de472f90776d1c2ca7838" %}
+{% set version = "25.1.2" %}
+{% set sha256 = "61f115f92b7e51ccdab83f756315044c3c01a2955b98fbe0d4c0697d16cec87b" %}
 {% set galaxy_version = version.split(".")[:2]|join(".") %}
+{% set python_min = "3.9" %}
 
 package:
   name: galaxy-files
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/g/galaxy-files/galaxy-files-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/g/galaxy-files/galaxy_files-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --no-compile -vvv"
   run_exports:
-    -{{ pin_subpackage('galaxy-files', max_pin="x") }}
+    - {{ pin_subpackage('galaxy-files', max_pin="x") }}
 
 requirements:
   host:
+    - python {{ python_min }}
     - pip
-    - python >=3.7
+    - setuptools
   run:
+    - python >={{ python_min }},<3.14
     - galaxy-util >={{ galaxy_version }}
     - fs
+    - pydantic >=2.7.4
     - typing-extensions
-    - python >=3.7
+    - fsspec
 
 test:
   imports:
@@ -33,12 +37,13 @@ test:
     - galaxy.files
 
 about:
-  home: https://galaxyproject.org
-  license: AFL-3.0
-  license_file: LICENSE.txt
-  summary: The Galaxy file sources framework and default plugins.
-  doc_url: https://docs.galaxyproject.org
-  dev_url: https://github.com/galaxyproject/galaxy
+  home: "https://galaxyproject.org"
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: "LICENSE.txt"
+  summary: "The Galaxy file sources framework and default plugins."
+  doc_url: "https://docs.galaxyproject.org"
+  dev_url: "https://github.com/galaxyproject/galaxy"
 
 extra:
   identifiers:
