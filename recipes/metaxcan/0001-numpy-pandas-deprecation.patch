@@ -1,0 +1,225 @@
+diff --git a/software/PrediXcan.py b/software/PrediXcan.py
+index d6fc877..d5463ef 100644
+--- a/software/PrediXcan.py
++++ b/software/PrediXcan.py
+@@ -1,3 +1,4 @@
++#! /usr/bin/env python
+ import logging
+ from timeit import default_timer as timer
+ 
+diff --git a/software/metax/gwas/GWAS.py b/software/metax/gwas/GWAS.py
+index 990d1f2..92c8652 100644
+--- a/software/metax/gwas/GWAS.py
++++ b/software/metax/gwas/GWAS.py
+@@ -100,7 +100,7 @@ def load_gwas(source, gwas_format, strict=True, separator=None, skip_until_heade
+         logging.info("Reading input gwas: %s", source)
+         if separator is None or separator == "ANY_WHITESPACE":
+             separator = '\s+'
+-        d = pandas.read_table(source, separator)
++        d = pandas.read_table(source, sep=separator)
+ 
+     logging.info("Processing input gwas")
+     d = _rename_columns(d, gwas_format)
+@@ -183,7 +183,7 @@ def _enforce_numeric_columns(d):
+     for column in _numeric_columns:
+         if column in d:
+             a = d[column]
+-            if a.dtype == numpy.object:
++            if a.dtype == object:
+                 a = [str(x) for x in a]
+                 a = [GWASSpecialHandling.sanitize_component(x) for x in a]
+             d[column] = numpy.array(a, dtype=numpy.float64)
+diff --git a/software/metax/gwas/GWASSpecialHandling.py b/software/metax/gwas/GWASSpecialHandling.py
+index a47dbff..401b558 100644
+--- a/software/metax/gwas/GWASSpecialHandling.py
++++ b/software/metax/gwas/GWASSpecialHandling.py
+@@ -64,7 +64,12 @@ def gwas_data_source(path, snps=None, snp_column_name=None, skip_until_header=No
+                 s[comp].append(c)
+ 
+         for c in header_comps:
+-            s[c] = numpy.array(pandas.to_numeric(s[c], errors='ignore'))
++            try:
++                s[c] = numpy.array(pandas.to_numeric(s[c], errors='raise'))
++            except Exception as e:
++                # logging.error("Error converting array to_numeric: ", e)
++                s[c] = s[c] # This is the behavior "ignore" was doing
++
+ 
+     return s
+ 
+diff --git a/software/metax/gwas/Utilities.py b/software/metax/gwas/Utilities.py
+index 0ff50df..997e6b2 100644
+--- a/software/metax/gwas/Utilities.py
++++ b/software/metax/gwas/Utilities.py
+@@ -89,11 +89,11 @@ def gwas_from_data(data, extra_columns=None):
+     else:
+         rsid, chromosome, position, non_effect_allele, effect_allele, zscore = [], [], [], [], [], []
+ 
+-    g = pandas.DataFrame({Constants.SNP:numpy.array(rsid, dtype=numpy.str),
+-                        Constants.CHROMOSOME:numpy.array(chromosome, dtype=numpy.str),
++    g = pandas.DataFrame({Constants.SNP:numpy.array(rsid, dtype=str),
++                        Constants.CHROMOSOME:numpy.array(chromosome, dtype=str),
+                         Constants.POSITION:numpy.array(position),
+-                        Constants.EFFECT_ALLELE:numpy.array(effect_allele, dtype=numpy.str),
+-                        Constants.NON_EFFECT_ALLELE:numpy.array(non_effect_allele, dtype=numpy.str),
++                        Constants.EFFECT_ALLELE:numpy.array(effect_allele, dtype=str),
++                        Constants.NON_EFFECT_ALLELE:numpy.array(non_effect_allele, dtype=str),
+                         Constants.ZSCORE:numpy.array(zscore)})
+     if len(data) and extra_columns:
+         for k,i in extra_columns:
+diff --git a/software/metax/metaxcan/Utilities.py b/software/metax/metaxcan/Utilities.py
+index 9c00f64..3aa9d99 100644
+--- a/software/metax/metaxcan/Utilities.py
++++ b/software/metax/metaxcan/Utilities.py
+@@ -115,7 +115,7 @@ class OptimizedContext(SimpleContext):
+             while True:
+                 w = self._get_weights(gene)
+                 gwas = self._get_gwas(list(w.keys()))
+-                type = [numpy.str, numpy.float64, numpy.float64, numpy.float64]
++                type = [str, numpy.float64, numpy.float64, numpy.float64]
+                 columns = [Constants.SNP, WDBQF.K_WEIGHT, Constants.ZSCORE, Constants.BETA]
+                 d = {x: v for x, v in w.items() if x in gwas}
+ 
+diff --git a/software/setup.py b/software/setup.py
+index 970a78f..ca6c38a 100644
+--- a/software/setup.py
++++ b/software/setup.py
+@@ -16,21 +16,22 @@ setuptools.setup(name="MetaXcan",
+                  author="Alvaro Barbeira, Eric Torstenson",
+                  author_email='alvarobarbeira@gmail.com, eric.s.torstenson@vanderbilt.edu',
+                  url="TBD",
+-                 packages=['metax', 'tests','metax.misc', 'metax.gwas','metax.metaxcan', 'metax.deprecated'],
++                 packages=setuptools.find_packages(),
+                  license="TBD",
+                  scripts=[  'M00_prerequisites.py',
+                             'M01_covariances_correlations.py',
+                             'M02_variances.py',
+                             'M03_betas.py',
+                             'M04_zscores.py',
+-                            'PrediXcan.py',
++                            'Predict.py',
+                             'SPrediXcan.py',
+                             'MetaMany.py',
+                             'MulTiXcan.py',
+                             'SMulTiXcan.py'],
+                  description=["TBD"],
+-                 install_requires=['scipy>=1.2.2,<1.3', 'numpy>=1.14.2', 'pandas>=0.22.0', 'patsy>=0.5.0',
++                 install_requires=['scipy>=1.2.2', 'numpy>=1.14.2', 'pandas>=0.22.0', 'patsy>=0.5.0',
+                                    'statsmodels>=0.10.0', 'h5py>=2.7.1', 'h5py-cache>=1.0', 'bgen_reader>=3.0.3', 'cyvcf2>=0.8.0'],
++                 extras_require={"test": ["sqlalchemy"]},
+                  long_description=read('Readme.md'),
+                  keywords=['TBD'],
+                  test_suite='tests',
+diff --git a/software/tests/scz2_sample.py b/software/tests/scz2_sample.py
+index f1119c6..5179b05 100644
+--- a/software/tests/scz2_sample.py
++++ b/software/tests/scz2_sample.py
+@@ -1,10 +1,10 @@
+ import pandas
+ import numpy
+ 
+-expected_snp = pandas.Series(["rs940550", "rs6650104", "rs6594028", "rs9701055", "rs7417504", "rs12082473", "rs3094315", "rs3131971", "rs61770173", ], dtype=numpy.str)
+-expected_effect = pandas.Series(["C", "T", "T", "A", "T", "A", "A", "T", "A"], dtype=numpy.str)
+-expected_non_effect = pandas.Series(["G", "C", "C", "T", "C", "G", "G", "C", "C"], dtype=numpy.str)
+-expected_chromosome = pandas.Series(["chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr22", "chr22"], dtype=numpy.str)
++expected_snp = pandas.Series(["rs940550", "rs6650104", "rs6594028", "rs9701055", "rs7417504", "rs12082473", "rs3094315", "rs3131971", "rs61770173", ], dtype=str)
++expected_effect = pandas.Series(["C", "T", "T", "A", "T", "A", "A", "T", "A"], dtype=str)
++expected_non_effect = pandas.Series(["G", "C", "C", "T", "C", "G", "G", "C", "C"], dtype=str)
++expected_chromosome = pandas.Series(["chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr22", "chr22"], dtype=str)
+ expected_position = pandas.Series([729679, 731718, 734349, 736289, 751756, 752566, 752721, 752894, 753405])
+ expected_se = pandas.Series( [0.0173, 0.0198, 0.02, 0.0193, 0.0164, 0.0149, 0.0146, 0.015, 0.0159], dtype=numpy.float32)
+ expected_p = pandas.Series( [0.2083, 0.3298, 0.3055, 0.5132, 0.8431, 0.7870, 0.8229, 0.5065, 0.8181], dtype=numpy.float32)
+diff --git a/software/tests/test_gwas.py b/software/tests/test_gwas.py
+index a042764..ea34cad 100644
+--- a/software/tests/test_gwas.py
++++ b/software/tests/test_gwas.py
+@@ -48,19 +48,19 @@ def assert_gwas_zscore_pb(unit_test, gwas):
+     numpy.testing.assert_allclose(gwas[PVALUE], scz2_sample.expected_p, rtol=0.001)
+ 
+ def assert_gwas_extracted_from_data_3(unit_test, gwas):
+-    expected_snp = pandas.Series(["rs3", "rs6", "rs7"], dtype=numpy.str)
++    expected_snp = pandas.Series(["rs3", "rs6", "rs7"], dtype=str)
+     numpy.testing.assert_array_equal(gwas[SNP], expected_snp)
+ 
+-    expected_effect = pandas.Series(["G", "G", "T"], dtype=numpy.str)
++    expected_effect = pandas.Series(["G", "G", "T"], dtype=str)
+     numpy.testing.assert_array_equal(gwas[EFFECT_ALLELE], expected_effect)
+ 
+-    expected_non_effect = pandas.Series(["A", "A", "C"], dtype=numpy.str)
++    expected_non_effect = pandas.Series(["A", "A", "C"], dtype=str)
+     numpy.testing.assert_array_equal(gwas[NON_EFFECT_ALLELE], expected_non_effect)
+ 
+     expected_zscore = pandas.Series([1.3, 2.9, 4.35], dtype=numpy.float32)
+     numpy.testing.assert_allclose(gwas[ZSCORE], expected_zscore, rtol=0.001)
+ 
+-    expected_chromosome = pandas.Series(["chr1", "chr1", "chr1"], dtype=numpy.str)
++    expected_chromosome = pandas.Series(["chr1", "chr1", "chr1"], dtype=str)
+     numpy.testing.assert_array_equal(gwas[CHROMOSOME], expected_chromosome)
+ 
+ def _add_basic_to_format(format):
+@@ -169,10 +169,10 @@ class TestGWAS(unittest.TestCase):
+ 
+         gwas = GWAS.load_gwas("tests/_td/GWAS/scz2/scz2.gwas.results.txt.gz", gwas_format, snps={"rs940550", "rs6650104", "rs61770173"})
+ 
+-        numpy.testing.assert_array_equal(gwas[SNP], pandas.Series(["rs940550", "rs6650104", "rs61770173", ], dtype=numpy.str))
+-        numpy.testing.assert_array_equal(gwas[EFFECT_ALLELE], pandas.Series(["C", "T",  "A"], dtype=numpy.str))
+-        numpy.testing.assert_array_equal(gwas[NON_EFFECT_ALLELE], pandas.Series(["G", "C", "C"], dtype=numpy.str))
+-        numpy.testing.assert_array_equal(gwas[CHROMOSOME], pandas.Series(["chr1", "chr1",  "chr22"], dtype=numpy.str))
++        numpy.testing.assert_array_equal(gwas[SNP], pandas.Series(["rs940550", "rs6650104", "rs61770173", ], dtype=str))
++        numpy.testing.assert_array_equal(gwas[EFFECT_ALLELE], pandas.Series(["C", "T",  "A"], dtype=str))
++        numpy.testing.assert_array_equal(gwas[NON_EFFECT_ALLELE], pandas.Series(["G", "C", "C"], dtype=str))
++        numpy.testing.assert_array_equal(gwas[CHROMOSOME], pandas.Series(["chr1", "chr1",  "chr22"], dtype=str))
+         numpy.testing.assert_allclose(gwas[ZSCORE], pandas.Series([-1.254557, 0.974874, -0.232505],dtype=numpy.float32), rtol=0.001)
+         numpy.testing.assert_allclose(gwas[BETA], pandas.Series([-0.0217038334437866, 0.0193025022544974, -0.00369682484428976], dtype=numpy.float32), rtol=0.001)
+         numpy.testing.assert_allclose(gwas[SE], pandas.Series([0.0173, 0.0198,  0.0159], dtype=numpy.float32), rtol=0.001)
+diff --git a/software/tests/test_gwas_utilities.py b/software/tests/test_gwas_utilities.py
+index 13026cd..3f53825 100644
+--- a/software/tests/test_gwas_utilities.py
++++ b/software/tests/test_gwas_utilities.py
+@@ -15,38 +15,38 @@ from metax.Constants import POSITION
+ from . import SampleData
+ 
+ def assert_gwas_1(unit_test, gwas):
+-    expected_snp = pandas.Series(["rs1666", "rs1", "rs2", "rs3", "rs4", "rs6", "rs7", "rs7666", "rs8", "rs9"], dtype=numpy.str)
++    expected_snp = pandas.Series(["rs1666", "rs1", "rs2", "rs3", "rs4", "rs6", "rs7", "rs7666", "rs8", "rs9"], dtype=str)
+     numpy.testing.assert_array_equal(gwas[SNP], expected_snp)
+ 
+-    expected_effect = pandas.Series(["A", "C", "C", "G", "A", "G", "T", "A", "A", "A"], dtype=numpy.str)
++    expected_effect = pandas.Series(["A", "C", "C", "G", "A", "G", "T", "A", "A", "A"], dtype=str)
+     numpy.testing.assert_array_equal(gwas[EFFECT_ALLELE], expected_effect)
+ 
+-    expected_non_effect = pandas.Series(["G", "T", "T", "A", "G", "A", "C", "G", "G", "G"], dtype=numpy.str)
++    expected_non_effect = pandas.Series(["G", "T", "T", "A", "G", "A", "C", "G", "G", "G"], dtype=str)
+     numpy.testing.assert_array_equal(gwas[NON_EFFECT_ALLELE], expected_non_effect)
+ 
+     expected_zscore = pandas.Series([0.3, -0.2, 0.5, 1.3, -0.3, 2.9, 4.35, 1.3, 0.09, 0.09], dtype=numpy.float32)
+     numpy.testing.assert_allclose(gwas[ZSCORE], expected_zscore, rtol=0.001)
+ 
+-    expected_chromosome = pandas.Series(["chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr1"], dtype=numpy.str)
++    expected_chromosome = pandas.Series(["chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr1"], dtype=str)
+     numpy.testing.assert_array_equal(gwas[CHROMOSOME], expected_chromosome)
+ 
+     expected_position = pandas.Series([0, 1, 5, 20, 30, 42, 43, 45, 50, 70])
+     numpy.testing.assert_array_equal(gwas[POSITION], expected_position)
+ 
+ def assert_gwas_2(unit_test, gwas):
+-    expected_snp = pandas.Series(["rsC", "rs1666", "rs1", "rs2",  "rs4", "rsB", "rsA", "rs7666", "rs8", "rs9"], dtype=numpy.str)
++    expected_snp = pandas.Series(["rsC", "rs1666", "rs1", "rs2",  "rs4", "rsB", "rsA", "rs7666", "rs8", "rs9"], dtype=str)
+     numpy.testing.assert_array_equal(gwas[SNP], expected_snp)
+ 
+-    expected_effect = pandas.Series(["T", "A", "C", "C", "A", "G", "G", "A", "A", "A"], dtype=numpy.str)
++    expected_effect = pandas.Series(["T", "A", "C", "C", "A", "G", "G", "A", "A", "A"], dtype=str)
+     numpy.testing.assert_array_equal(gwas[EFFECT_ALLELE], expected_effect)
+ 
+-    expected_non_effect = pandas.Series(["C", "G", "T", "T", "G", "A", "A", "G", "G", "G"], dtype=numpy.str)
++    expected_non_effect = pandas.Series(["C", "G", "T", "T", "G", "A", "A", "G", "G", "G"], dtype=str)
+     numpy.testing.assert_array_equal(gwas[NON_EFFECT_ALLELE], expected_non_effect)
+ 
+     expected_zscore = pandas.Series([4.35, 0.3, -0.2, 1.3, -0.3, 2.9, 1.3, 1.3, 0.09, 0.09], dtype=numpy.float32)
+     numpy.testing.assert_allclose(gwas[ZSCORE], expected_zscore, rtol=0.001)
+ 
+-    expected_chromosome = pandas.Series(["chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr1"], dtype=numpy.str)
++    expected_chromosome = pandas.Series(["chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr1"], dtype=str)
+     numpy.testing.assert_array_equal(gwas[CHROMOSOME], expected_chromosome)
+ 
+     expected_position = pandas.Series([None, None, None, None, None, None, None, None, None, None])
