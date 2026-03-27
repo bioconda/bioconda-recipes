@@ -17,3 +17,10 @@ cmake --install build --parallel ${CPU_COUNT}
 if [ -e "${PREFIX}/libexec/libmol" ] && [ ! -e "${PREFIX}/bin/libmol" ]; then
     ln -sf "${PREFIX}/libexec/libmol" "${PREFIX}/bin/libmol"
 fi
+
+mkdir -p "${PREFIX}/etc/conda/activate.d"
+mkdir -p "${PREFIX}/etc/conda/deactivate.d"
+install -m 755 "${RECIPE_DIR}/activate.sh" "${PREFIX}/etc/conda/activate.d/acedrg_activate.sh"
+install -m 755 "${RECIPE_DIR}/deactivate.sh" "${PREFIX}/etc/conda/deactivate.d/acedrg_deactivate.sh"
+install -m 755 "${RECIPE_DIR}/activate.fish" "${PREFIX}/etc/conda/activate.d/acedrg_activate.fish"
+install -m 755 "${RECIPE_DIR}/deactivate.fish" "${PREFIX}/etc/conda/deactivate.d/acedrg_deactivate.fish"
