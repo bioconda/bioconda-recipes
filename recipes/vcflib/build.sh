@@ -61,7 +61,7 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-DOPENMP=ON -DPROFILING=ON -DZIG=ON -DBUILD_SHARED_LIBS=ON \
+	-DOPENMP=ON -DZIG=ON \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
