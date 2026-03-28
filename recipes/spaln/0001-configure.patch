@@ -1,7 +1,16 @@
 diff --git a/src/configure b/src/configure
-index b4f79b9..a97971b 100755
+index b4f79b9..d6678e2 100755
 --- a/src/configure
 +++ b/src/configure
+@@ -8,7 +8,7 @@
+ #	Copyright(c) Osamu Gotoh <<gotoh.osamu.67a@st.kyoto-u.ac.jp>>
+ 
+ VER=`sed -n -e '/VERSION "/s/.*"\(.*\)".*/\1/p' < iolib.src`
+-AR=${AR-"ar rc"}
++AR=${AR-"ar rcs"}
+ RANLIB=${RANLIB-"ranlib"}
+ exec_prefix=${exec_prefix-${HOME}/bin}
+ table_dir=${table_dir-${HOME}/table}
 @@ -50,18 +50,19 @@ case `(uname -sr || echo unknown) 2>/dev/null` in
  #UNIX_System_V\ 4.2.0)  CFLAGS=${CFLAGS-"-O"} ;;
  #UNIX_SV\ 4.2MP)  CFLAGS=${CFLAGS-"-O"} ;;
@@ -9,12 +18,13 @@ index b4f79b9..a97971b 100755
 -Linux*) CFLAGS=${CFLAGS-"-O3 -march=native"}; 
 -	CLIB=${CLIB-"clib.a"} ;; 
 -Darwin*) CFLAGS=${CFLAGS-"-O3 -std=c++11"}; 
-+Linux*) CFLAGS=${CFLAGS-"-O3 -march=x86-64-v3"};
-+	ILIB=${ILIB-"-pthread -lm -lz"} ;
-+	CLIB=${CLIB-"clib.a"} ;;
-+Darwin*) CFLAGS=${CFLAGS-"-O3 -std=c++14 -march=x86-64-v3"};
- 	CLIB=${CLIB-"clib.a libz.a"} ;;
+-	CLIB=${CLIB-"clib.a libz.a"} ;;
 -*)	CFLAGS=${CFLAGS-"-O3"} ;;
++Linux*) CFLAGS=${CFLAGS-"-O3 -march=x86-64-v3"};
++	CLIB=${CLIB-"clib.a"} ;
++	ILIB=${ILIB-"-pthread -lm -lz"} ;;
++Darwin*) CFLAGS=${CFLAGS-"-O3 -std=c++14 -march=x86-64-v3"}; 
++	CLIB=${CLIB-"clib.a"} ;;
 +*)	ILIB=${ILIB-"-pthread -lm -lz"} ;;
  esac
  
@@ -28,12 +38,3 @@ index b4f79b9..a97971b 100755
    echo "use CXX=$CXX CFLAGS=$CFLAGS"
  fi
  
-@@ -99,7 +100,7 @@ sed < iolib.src "
- /#table_dir#/s%#table_dir#%$table_dir%
- " > iolib.h
- 
--# udpate dbs.h 
-+# udpate dbs.h
- sed < dbs.src "
- /#alndbs_dir#/s%#alndbs_dir#%$alndbs_dir%
- " > dbs.h
