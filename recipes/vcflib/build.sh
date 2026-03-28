@@ -3,11 +3,9 @@ set -ex
 
 cp -rf "${RECIPE_DIR}/vcflib.pc.in" "${SRC_DIR}"
 
-sed -i.bak -e 's|1.0.13|1.0.14|' VERSION
 sed -i.bak -e 's|-fPIC|-fPIC -Wno-int-conversion -Wno-deprecated-declarations -Wno-absolute-value -Wno-unused-comparison|' CMakeLists.txt
 rm -rf *.bak
 
-export M4="${BUILD_PREFIX}/bin/m4"
 export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Itabixpp -Iwfa2 -I\$(INC_DIR)"
 export CFLAGS="${CFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
@@ -17,30 +15,8 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 OS=$(uname -s)
 ARCH=$(uname -m)
 
-if [[ "${OS}" == "Darwin" ]]; then
-	sed -i.bak 's|HTSCODECS_VERSION_TEXT|HTSCODECS_VERSION|' contrib/tabixpp/htslib/htscodecs/htscodecs/htscodecs.c
-	rm -rf contrib/tabixpp/htslib/htscodecs/htscodecs/*.bak
-fi
-
-if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
-	echo $(pwd)/zig-macos-x86_64-*
-	export PATH="$(pwd)/zig-macos-x86_64-0.15.0-dev/lib:${PATH}"
-	export PATH="$(pwd)/zig-macos-x86_64-0.15.0-dev:${PATH}"
-	wget https://github.com/alexey-lysiuk/macos-sdk/releases/download/13.3/MacOSX13.3.tar.xz
-	tar -xf MacOSX13.3.tar.xz
-	cp -rH MacOSX13.3.sdk /Applications/Xcode_15.2.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
-	export SDKROOT="/Applications/Xcode_15.2.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
-	export MACOSX_DEPLOYMENT_TARGET=13.0
-	export MACOSX_SDK_VERSION=13.0
-elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
-	echo $(pwd)/zig-macos-aarch64-*
-	export PATH="$(pwd)/zig-macos-aarch64-0.15.0-dev/lib:${PATH}"
-	export PATH="$(pwd)/zig-macos-aarch64-0.15.0-dev:${PATH}"
-else
-	echo $(pwd)/zig-linux-${ARCH}-*
-	export PATH="$(pwd)/zig-linux-${ARCH}-0.15.0-dev/lib:${PATH}"
-	export PATH="$(pwd)/zig-linux-${ARCH}-0.15.0-dev:${PATH}"
-fi
+sed -i.bak 's|HTSCODECS_VERSION_TEXT|HTSCODECS_VERSION|' contrib/tabixpp/htslib/htscodecs/htscodecs/htscodecs.c
+rm -f contrib/tabixpp/htslib/htscodecs/htscodecs/*.bak
 
 sed -i.bak 's/CFFFLAGS:= -O3/CFFFLAGS=-O3 -D_FILE_OFFSET_BITS=64/' contrib/smithwaterman/Makefile
 sed -i.bak 's/CFLAGS/CXXFLAGS/g' contrib/smithwaterman/Makefile
@@ -83,4 +59,4 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
-cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+cmake --build build --target install -j "${CPU_COUNT}"
