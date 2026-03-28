@@ -6,7 +6,7 @@ cp -rf "${RECIPE_DIR}/vcflib.pc.in" "${SRC_DIR}"
 sed -i.bak -e 's|-fPIC|-fPIC -Wno-int-conversion -Wno-deprecated-declarations -Wno-absolute-value -Wno-unused-comparison|' CMakeLists.txt
 rm -rf *.bak
 
-export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Itabixpp -Iwfa2 -I\$(INC_DIR)"
+export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Iwfa2 -I\$(INC_DIR)"
 export CFLAGS="${CFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64"
@@ -33,8 +33,8 @@ rm -rf contrib/intervaltree/*.bak
 
 # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14
 if [[ "${OS}" == "Darwin" ]]; then
-	export LIBPATH="-L${PREFIX}/lib -L. -Lhtslib -Ltabixpp -Lwfa2"
-	export LDFLAGS="${LDFLAGS} -lhts -ltabixpp -pthread -lz -lm -llzma -lbz2 -lcurl -fopenmp -lwfa2"
+	export LIBPATH="-L${PREFIX}/lib -L. -Lhtslib -Lwfa2"
+	export LDFLAGS="${LDFLAGS} -lhts -pthread -lz -lm -llzma -lbz2 -lcurl -fopenmp -lwfa2"
 	export CXXFLAGS="${CXXFLAGS}"
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DWFA_GITMODULE=OFF"
 	sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' contrib/smithwaterman/Makefile
@@ -42,8 +42,8 @@ if [[ "${OS}" == "Darwin" ]]; then
 	rm -rf contrib/smithwaterman/*.bak
 	rm -rf contrib/intervaltree/*.bak
 else
-	export LIBPATH="-L${PREFIX}/lib -L. -Lhtslib -Ltabixpp"
-	export LDFLAGS="${LDFLAGS} -lhts -ltabixpp -pthread -lz -lm -llzma -lbz2 -lcurl -fopenmp"
+	export LIBPATH="-L${PREFIX}/lib -L. -Lhtslib"
+	export LDFLAGS="${LDFLAGS} -lhts -pthread -lz -lm -llzma -lbz2 -lcurl -fopenmp"
  	export CONFIG_ARGS="-DWFA_GITMODULE=ON"
 fi
 
