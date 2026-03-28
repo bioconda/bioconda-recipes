@@ -65,4 +65,4 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
-cmake --build build --target install -j "${CPU_COUNT}"
+cmake --build build --target install -j1
