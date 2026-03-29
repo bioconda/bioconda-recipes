@@ -34,7 +34,7 @@ chmod +x "$SHARE/src/get_control_IPD"
 mkdir -p "$PREFIX/bin"
 cat <<'WRAPPER' > "$PREFIX/bin/modifi"
 #!/bin/bash
-DIR=$(cd "$(dirname "$0")" && pwd)
-exec python -B "$DIR/../share/modifi/main.py" "$@"
+DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+exec "$DIR/python" -B "$DIR/../share/modifi/main.py" "$@"
 WRAPPER
 chmod +x "$PREFIX/bin/modifi"
