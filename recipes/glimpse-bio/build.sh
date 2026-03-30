@@ -3,6 +3,17 @@
 export COMMIT_VERS="${PKG_VERSION}"
 export COMMIT_DATE="$(date -Idate -u)"
 
+if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
+	sed -i.bak -e "s/-mavx2 -mfma//" chunk/makefile
+	sed -i.bak -e "s/-mavx2 -mfma//" concordance/makefile
+	sed -i.bak -e "s/-mavx2 -mfma//" split_reference/makefile
+	sed -i.bak -e "s/-mavx2 -mfma//" phase/makefile
+	sed -i.bak -e "s/-mavx2 -mfma//" ligate/makefile
+	export EXTRA_ARGS=""
+else
+	export EXTRA_ARGS="-mavx2 -mfma"
+fi
+
 for subdir in chunk concordance split_reference phase ligate
 
 do
@@ -12,7 +23,7 @@ do
         -j 4 \
         DYN_LIBS="-lz -lpthread -lbz2 -llzma -lcurl -lhts -ldeflate -lm" \
         CXX="$CXX -std=c++17" \
-        CXXFLAG="$CXXFLAGS ${PREFIX} -D__COMMIT_ID__='\"${COMMIT_VERS}\"' -D__COMMIT_DATE__='\"${COMMIT_DATE}\"' -Wno-ignored-attributes -O3 -mavx2 -mfma" \
+        CXXFLAG="$CXXFLAGS ${PREFIX} -D__COMMIT_ID__='\"${COMMIT_VERS}\"' -D__COMMIT_DATE__='\"${COMMIT_DATE}\"' -Wno-ignored-attributes -O3 ${EXTRA_ARGS}" \
         LDFLAG="$LDFLAGS" \
         HTSLIB_INC="$PREFIX" \
         HTSLIB_LIB="-lhts" \
