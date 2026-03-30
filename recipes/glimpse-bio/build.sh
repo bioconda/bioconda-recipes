@@ -3,6 +3,10 @@
 export COMMIT_VERS="${PKG_VERSION}"
 export COMMIT_DATE="$(date -Idate -u)"
 
+OS=$(uname)
+ARCH=$(uname -m)
+cp -rf ${RECIPE_DIR}/sse2neon.h phase/src/models/
+
 if [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
 	sed -i.bak -e "s/-mavx2 -mfma//" chunk/makefile
 	sed -i.bak -e "s/-mavx2 -mfma//" concordance/makefile
