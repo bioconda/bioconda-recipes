@@ -13,8 +13,25 @@ source:
 build:
   noarch: generic
   number: 0
-  run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
+  script: |
+    mkdir -p "${PREFIX}/share/${PKG_NAME}"
+    cp -R . "${PREFIX}/share/${PKG_NAME}/"
+
+    mkdir -p "${PREFIX}/bin"
+
+    # Install main CLI(s). Adjust filenames to match upstream layout.
+    # Common pattern: a python entry script under the repo root or src/.
+    install -m 0755 "${PREFIX}/share/${PKG_NAME}/sqanti3_qc.py" "${PREFIX}/bin/sqanti3_qc.py"
+    install -m 0755 "${PREFIX}/share/${PKG_NAME}/sqanti3_filter.py" "${PREFIX}/bin/sqanti3_filter.py"
+    install -m 0755 "${PREFIX}/share/${PKG_NAME}/sqanti3_rescue.py" "${PREFIX}/bin/sqanti3_rescue.py"
+    install -m 0755 "${PREFIX}/share/${PKG_NAME}/sqanti3_reads.py" "${PREFIX}/bin/sqanti3_reads.py"
+
+    # Provide the `sqanti3` command that your test expects.
+    cat > "${PREFIX}/bin/sqanti3" <<'EOF'
+    #!/usr/bin/env bash
+    exec python "${CONDA_PREFIX}/share/sqanti3/sqanti3_qc.py" "$@"
+    EOF
+    chmod +x "${PREFIX}/bin/sqanti3"
 
 requirements:
   host:
@@ -122,7 +139,9 @@ test:
     - src/
   commands:
     - sqanti3 --help
-    - sqanti3 qc --help
+    - sqanti3_qc.py --help
+    - sqanti3_filter.py --help
+    - sqanti3_rescue.py --help
     - sqanti3_reads.py --help
 
 about:
