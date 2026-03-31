@@ -3,7 +3,9 @@ set -euxo pipefail
 
 export CARGO_HOME="${BUILD_PREFIX}/.cargo"
 
-cargo build --release --verbose
+cargo build --release --locked --verbose
+
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 mkdir -p "${PREFIX}/bin"
 
