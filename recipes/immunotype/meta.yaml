@@ -1,0 +1,60 @@
+{% set python_min = "3.10" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: immunotype
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/i/immunotype/immunotype-{{ version }}.tar.gz
+  sha256: 01aa78ccf4029f08a02d5f84f327c89eb7da82639752e662c5988e31e8a67829
+
+build:
+  entry_points:
+    - immunotype = immunotype.cli:main
+    - immunotype-app = immunotype.app:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('immunotype', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}.*
+    - hatchling
+    - pip
+  run:
+    - python >={{ python_min }}
+    - pandas >=1.5.0,<3
+    - numpy >=1.21.0
+    - pytorch >=2.0.0
+    - pytorch_geometric >=2.3.0
+    - tqdm >=4.64.0
+    - rich-click >=1.6.0
+    - pandera >=0.26.0
+    - gradio >=4.0.0
+    - matplotlib-base >=3.5.0
+
+test:
+  imports:
+    - immunotype
+  commands:
+    - pip check
+    - immunotype --help
+    - immunotype-app --help
+  requires:
+    - pip
+    - python {{ python_min }}.*
+
+about:
+  home: https://github.com/AG-Walz/immunotype
+  summary: Peptide-based HLA typing from immunopeptidomics data
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/AG-Walz/immunotype
+
+extra:
+  recipe-maintainers:
+    - jonasscheid
