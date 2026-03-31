@@ -1,0 +1,57 @@
+{% set version = "1.8.1" %}
+{% set sha256 = "2c38201b5e04e9e0df621ba053bbad93d70dc9b23bd6e0b78a1f6b22315cc1c0" %}
+
+package:
+  name: diann
+  version: {{ version }}
+
+source:
+  - url: https://github.com/vdemichev/DiaNN/releases/download/{{ version }}/diann_{{ version }}.deb
+    sha256: {{ sha256 }}
+
+build:
+  number: 0
+  rpaths:
+    - lib/
+  missing_dso_whitelist:
+    - /lib64/libpthread.so.0
+    - /lib64/librt.so.1
+    - /lib64/libstdc++.so.6
+    - /lib64/libm.so.6
+    - /lib64/libgcc_s.so.1
+    - /lib64/libc.so.6
+    - /lib64/ld-linux-x86-64.so.2
+    - /lib64/libgomp-52f2fd74.so.1
+    - $RPATH/libpthread.so.0
+    - $RPATH/librt.so.1
+    - $RPATH/libstdc++.so.6
+    - $RPATH/libm.so.6
+    - $RPATH/libgcc_s.so.1
+    - $RPATH/libc.so.6
+    - $RPATH/ld-linux-x86-64.so.2
+    - $RPATH/libgomp-52f2fd74.so.1
+
+requirements:
+  build:
+    - { { compiler('c') } }
+    - { { compiler('cxx') } }
+    - sysroot_linux-64 2.28
+    - libgomp
+  run:
+    - sysroot_linux-64 2.28
+    - libgomp
+
+test:
+  commands:
+    - ls -alh $PREFIX/lib/
+    - diann-1.8.1
+
+about:
+  home: https://github.com/vdemichev/DiaNN
+  license: INDIVIDUAL
+  license_file: 'LICENSE.txt'
+  summary: 'DIA-NN - a universal automated software suite for DIA proteomics data analysis.'
+
+extra:
+  recipe-maintainers:
+    - npinter
