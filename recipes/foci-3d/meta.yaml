@@ -1,0 +1,65 @@
+{% set name = "foci-3d" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/aryeelab/foci-3d/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 6217f19b22148d2f0f9cf2ed21eecef88ef71b18cc0d7fef62d6984075228d7d
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - foci-3d = foci3d.cli:main
+
+requirements:
+  host:
+    - python >=3.10
+    - hatchling >=1.27
+    - pip
+  run:
+    - python >=3.10
+    - joblib
+    - matplotlib-base
+    - numpy >=1.22,<2.0a0
+    - pairtools
+    - pandas
+    - psutil
+    - pysam
+    - samtools
+    - scikit-image
+    - scipy
+    - seaborn
+    - statsmodels
+    - tqdm
+    - htslib
+
+test:
+  imports:
+    - foci3d
+  commands:
+    - foci-3d --help
+    - foci-3d parse --help
+    - foci-3d count --help
+    - foci-3d detect --help
+    - foci-3d plot --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/aryeelab/foci-3d
+  summary: FOCI-3D tools for Micro-C transcription factor footprint analysis
+  description: |
+    FOCI-3D (Footprinting Of Chromatin Interactions in 3D) is a toolkit for
+    analyzing transcription factor footprints from Micro-C and related
+    MNase-based chromosome conformation capture assays.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - aryeelab
