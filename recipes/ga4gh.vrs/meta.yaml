@@ -1,0 +1,55 @@
+{% set name = "ga4gh.vrs" %}
+{% set version = "2.3.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/ga4gh_vrs-{{ version }}.tar.gz
+  sha256: 911cff7eadc8a7ca9e746147d85a90fe1affbb78d68c3f9aca177bdfa9bb07db
+
+build:
+  entry_points:
+    - vrs-annotate = ga4gh.vrs.extras.annotator.cli:_cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('ga4gh.vrs', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools >=65.3
+    - setuptools-scm >=8
+    - pip
+  run:
+    - python >=3.10
+    - click
+    - pydantic >=2.1,<3.dev0
+    - pysam
+    - bioutils
+    - biocommons.seqrepo >=0.5.1
+    - dill
+    - hgvs >=1.5.5,<2.0
+    - requests
+    - canonicaljson
+    - typing_extensions
+
+test:
+  imports:
+    - ga4gh
+  commands:
+    - vrs-annotate --help
+
+about:
+  home: https://vrs.ga4gh.org
+  summary: GA4GH Variation Representation Specification (VRS) reference implementation
+  dev_url: https://github.com/ga4gh/vrs-python
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - emmcauley
