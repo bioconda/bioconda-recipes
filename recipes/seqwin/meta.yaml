@@ -1,4 +1,4 @@
-{% set name = "seqwin" %}
+{% set name = "Seqwin" %}
 {% set version = "0.3.0" %}
 
 package:
@@ -11,17 +11,22 @@ source:
 
 build:
   number: 0
-  noarch: python
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake >=3.18
+    - ninja >=1.10
+    - make
   host:
     - python >=3.10
     - pip
-    - setuptools >=61
-    - wheel
+    - scikit-build-core >=0.12
+    - pybind11 >=2.12
+    - zlib
   run:
     - python >=3.10
     - numpy >=2
@@ -30,7 +35,6 @@ requirements:
     - networkx
     - pydantic >=2
     - typer
-    - btllib
     - mash
     - blast
     - ncbi-datasets-cli
@@ -38,13 +42,20 @@ requirements:
 test:
   imports:
     - seqwin
+    - seqwin.btllib
   commands:
     - seqwin --help
 
 about:
-  home: https://github.com/treangenlab/Seqwin
+  home: https://github.com/treangenlab/{{ name }}
   license: GPL-3.0-only
   license_family: GPL3
   license_file: LICENSE
   summary: "Ultrafast identification of signature sequences in microbial genomes"
-  dev_url: https://github.com/treangenlab/Seqwin
+  dev_url: https://github.com/treangenlab/{{ name }}
+  doc_url: https://github.com/treangenlab/{{ name }}/wiki
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
