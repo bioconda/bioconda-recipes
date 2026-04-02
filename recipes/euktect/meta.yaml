@@ -1,0 +1,76 @@
+{% set version = "1.0.0" %}
+
+package:
+  name: euktect
+  version: {{ version }}
+
+source:
+  url: https://github.com/NameFilled/Euktect/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 56306f285b2291d4a5ad66c56d75c42e3795154232d75c24511364222a87ee13
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools >=42
+
+  run:
+    - python >=3.8
+    # CPU-only PyTorch (build string selector matches cpu_mkl_*, cpu_openblas_*, etc.)
+    - pytorch * cpu_*
+    # Deep learning utilities
+    - pytorch-lightning >=1.8,<1.9
+    - transformers ==4.26.1
+    - huggingface_hub <0.15  # transformers 4.26.1 requires HfFolder which was removed in >=0.15
+    - hydra-core >=1.3
+    - omegaconf >=2.3
+    - protobuf <=3.20  # pytorch-lightning 1.8 requires tensorboardX which needs older protobuf
+    - setuptools <80  # pkg_resources removed in setuptools >=80
+    - einops
+    - opt_einsum
+    - timm
+    # Data science
+    - numpy
+    - scipy
+    - pandas
+    - scikit-learn
+    - matplotlib
+    - polars
+    # Utilities
+    - tqdm
+    - rich
+    - loguru
+    - pyyaml
+    # Bioinformatics (from bioconda)
+    - pyfaidx
+    - liftover
+
+test:
+  imports:
+    - euktect
+    - flash_attn_cpu
+    - flash_attn_cpu.modules.mha
+  commands:
+    - euktect-predict --help
+    - euktect-refine --help
+
+about:
+  home: https://github.com/NameFilled/Euktect
+  license: MIT
+  license_file: LICENSE
+  summary: Eukaryotic MAG quality assessment using HyenaDNA (CPU-only)
+  description: |
+    Euktect uses the HyenaDNA deep learning model to assess the quality of
+    Eukaryotic Metagenome-Assembled Genomes (MAGs). This CPU-only build does
+    not require CUDA or GPU hardware.
+
+extra:
+  recipe-maintainers:
+    - NameFilled
+  identifiers:
+    - biotools:euktect
