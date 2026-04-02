@@ -1,0 +1,55 @@
+{% set name = "rustqc" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/seqeralabs/RustQC/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e590700655f674e27751249a9910e15f71ad474b8bec0dbf62b5b52b50c72107
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - cmake
+    - make
+    - pkg-config
+    - clangdev
+  host:
+    - openssl  # [not osx]
+
+test:
+  commands:
+    - rustqc --version
+    - rustqc --help
+
+about:
+  home: "https://seqeralabs.github.io/RustQC/"
+  dev_url: "https://github.com/seqeralabs/RustQC"
+  summary: "RNA-seq quality control suite: dupRadar, featureCounts, RSeQC, preseq, samtools stats, and Qualimap in one pass"
+  description: |
+    RustQC is a suite of quality control tools for sequencing data, compiled to a
+    single binary. It reimplements dupRadar, featureCounts, 8 RSeQC tools, preseq,
+    samtools stats, and Qualimap in Rust for dramatically reduced execution time.
+    All outputs are format-compatible with the upstream tools and MultiQC.
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - ewels
