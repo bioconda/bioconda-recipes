@@ -22,12 +22,14 @@ build:
 requirements:
   host:
     - python =3.12
+    - setuptools <82
     - pip
   run:
     # Keep in sync with
     # https://github.com/bioconda/bioconda-utils/blob/master/bioconda_utils/bioconda_utils-requirements.txt
     # (The '.*' is removed as the '=' already does that)
     - conda-forge-pinning =2026.01.07.13.16.30
+    - setuptools <82
     - python =3.12
     - conda =25.7
     - conda-libmamba-solver =25.4
@@ -80,13 +82,13 @@ test:
     - bioconda-utils --help
     - bioconda-utils lint --help
     - bioconda-utils build --help
-    #- >
-      #CONDA_AGGRESSIVE_UPDATE_PACKAGES=
-      #CONDA_AUTO_UPDATE_CONDA=0
-      #"${PREFIX}/bin/mamba" install --prefix="${PREFIX}" --dry-run --satisfied-skip-solve
-      #--file="$( python -c
-      #'from os.path import dirname, join; import bioconda_utils; print(join(dirname(bioconda_utils.__file__), "bioconda_utils-requirements.txt"))'
-      #)" 2>&1 | grep -qF 'All requested packages already installed'
+    - >
+      CONDA_AGGRESSIVE_UPDATE_PACKAGES=
+      CONDA_AUTO_UPDATE_CONDA=0
+      "${PREFIX}/bin/mamba" install --prefix="${PREFIX}" --dry-run --satisfied-skip-solve
+      --file="$( python -c
+      'from os.path import dirname, join; import bioconda_utils; print(join(dirname(bioconda_utils.__file__), "bioconda_utils-requirements.txt"))'
+      )" 2>&1 | grep -qF 'All requested packages already installed'
 
 about:
   home: "https://bioconda.github.io/contributor/build-system.html"
