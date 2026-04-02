@@ -6,33 +6,23 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/seqeralabs/RustQC/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: e590700655f674e27751249a9910e15f71ad474b8bec0dbf62b5b52b50c72107
-  patches:
-    - enable-bindgen.patch
+  - url: https://github.com/seqeralabs/RustQC/releases/download/v{{ version }}/rustqc-linux-x86_64.tar.gz  # [linux and x86_64]
+    sha256: 1c403870ed936d95c0d8c11d173c593dde04a381e4e3d991f83d50018222f06a  # [linux and x86_64]
+  - url: https://github.com/seqeralabs/RustQC/releases/download/v{{ version }}/rustqc-linux-aarch64.tar.gz  # [linux and aarch64]
+    sha256: f479614d813de0f0ad8ff8fd428e70a0036589130777b586658e83fc4b9f7119  # [linux and aarch64]
+  - url: https://github.com/seqeralabs/RustQC/releases/download/v{{ version }}/rustqc-macos-x86_64.tar.gz  # [osx and x86_64]
+    sha256: a71c892fbea07780326d7cbfd44310bdeab6985f3ac3b0e5f923622d66ec716c  # [osx and x86_64]
+  - url: https://github.com/seqeralabs/RustQC/releases/download/v{{ version }}/rustqc-macos-aarch64.tar.gz  # [osx and arm64]
+    sha256: ee790582823c3db99947402396d834b88c02e8c8244f82756ad22bc23706ed8f  # [osx and arm64]
 
 build:
   number: 0
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
-requirements:
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - {{ compiler('rust') }}
-    - cargo-bundle-licenses
-    - cmake
-    - make
-    - pkg-config
-    - clangdev
-  host:
-    - openssl  # [not osx]
-
 test:
   commands:
-    - rustqc --version
-    - rustqc --help
+    - which rustqc  # pre-built binary requires glibc >=2.39; CI uses CentOS 7 (glibc 2.17)
 
 about:
   home: "https://seqeralabs.github.io/RustQC/"
@@ -45,11 +35,11 @@ about:
     All outputs are format-compatible with the upstream tools and MultiQC.
   license: "GPL-3.0-or-later"
   license_family: GPL3
-  license_file:
-    - LICENSE
-    - THIRDPARTY.yml
+  license_file: LICENSE
 
 extra:
+  skip-lints:
+    - should_be_noarch_generic  # pre-built platform-specific binaries
   additional-platforms:
     - linux-aarch64
     - osx-arm64
