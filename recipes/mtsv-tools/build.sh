@@ -23,4 +23,10 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 RUST_BACKTRACE=1
 cargo install -v --locked --no-track --root "$PREFIX" --path .
 
-"${STRIP}" "$PREFIX/bin/mtsv-tools"
+"${STRIP}" "$PREFIX/bin/mtsv-binner" \
+	"$PREFIX/bin/mtsv-build" \
+	"$PREFIX/bin/mtsv-chunk" \
+	"$PREFIX/bin/mtsv-collapse" \
+	"$PREFIX/bin/mtsv-partition" \
+	"$PREFIX/bin/mtsv-reference" \
+	"$PREFIX/bin/mtsv-resume-point"
