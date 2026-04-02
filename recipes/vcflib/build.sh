@@ -19,17 +19,17 @@ sed -i.bak 's|HTSCODECS_VERSION_TEXT|HTSCODECS_VERSION|' contrib/tabixpp/htslib/
 rm -f contrib/tabixpp/htslib/htscodecs/htscodecs/*.bak
 
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
-	echo $(pwd)/zig-macos-x86_64-*
-	export PATH="$(pwd)/zig-macos-x86_64-0.15.1/lib:${PATH}"
-	export PATH="$(pwd)/zig-macos-x86_64-0.15.1:${PATH}"
+	echo $(pwd)/zig-x86_64-macos-*
+	export PATH="$(pwd)/zig-x86_64-macos-0.15.1/lib:${PATH}"
+	export PATH="$(pwd)/zig-x86_64-macos-0.15.1:${PATH}"
 elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
-	echo $(pwd)/zig-macos-aarch64-*
-	export PATH="$(pwd)/zig-macos-aarch64-0.15.1/lib:${PATH}"
-	export PATH="$(pwd)/zig-macos-aarch64-0.15.1:${PATH}"
+	echo $(pwd)/zig-aarch64-macos-*
+	export PATH="$(pwd)/zig-aarch64-macos-0.15.1/lib:${PATH}"
+	export PATH="$(pwd)/zig-aarch64-macos-0.15.1:${PATH}"
 else
-	echo $(pwd)/zig-linux-${ARCH}-*
-	export PATH="$(pwd)/zig-linux-${ARCH}-0.15.1/lib:${PATH}"
-	export PATH="$(pwd)/zig-linux-${ARCH}-0.15.1:${PATH}"
+	echo $(pwd)/zig-${ARCH}-linux-*
+	export PATH="$(pwd)/zig-${ARCH}-linux-0.15.1/lib:${PATH}"
+	export PATH="$(pwd)/zig-${ARCH}-linux-0.15.1:${PATH}"
 fi
 
 sed -i.bak 's/CFFFLAGS:= -O3/CFFFLAGS=-O3 -D_FILE_OFFSET_BITS=64/' contrib/smithwaterman/Makefile
