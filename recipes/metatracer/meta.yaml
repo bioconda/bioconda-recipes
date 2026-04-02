@@ -3,7 +3,7 @@
 {% set sha256 = "d72e04d0b193fac14bd78b9e49bae59bacc3c8d742e85750a13be34de32ee159" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -12,24 +12,24 @@ source:
 
 build:
   number: 0
-  skip: true  # [osx or py>=314]
+  skip: True  # [osx or py > 313]
+  entry_points:
+    - metatracer = metatracer.cli:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
-
 
 requirements:
   host:
-    - python <=3.13
-    - pip
+    - python <3.14
     - setuptools >=64
-    - wheel
+    - pip
   run:
-    - python >=3.9,<3.14
+    - python <3.14
     - mtsv-tools >=2.1.0
     - click >=8.1
     - biopython >=1.80
-    - pysam >=0.21 # not compatible with python 3.14
+    - pysam >=0.21  # not compatible with python 3.14
     - intervaltree >=3.1
     - ete3 >=3.1
     - tqdm >=4.64
@@ -44,12 +44,14 @@ test:
 
 about:
   home: "https://github.com/FofanovLab/MetaTracer"
-  summary: "MetaTracer metatranscriptomic analysis pipeline"
+  summary: "MetaTracer metatranscriptomic analysis pipeline."
   license: MIT
+  license_family: MIT
   license_file: LICENSE
+  dev_url: "https://github.com/FofanovLab/MetaTracer"
 
 extra:
   recipe-maintainers:
     - tfursten
   skip-lints:
-    - should_be_noarch_generic # mtsv-tools dependency not available on macOS so not truly noarch.
+    - should_be_noarch_generic  # mtsv-tools dependency not available on macOS so not truly noarch.
