@@ -20,6 +20,12 @@ else
 	export CONFIG_ARGS=""
 fi
 
+if [[ `uname -m` == "aarch64" ]]; then
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a|g' CMakeLists.txt
+	sed -i.bak 's|-march=x86-64|-march=armv8-a|g' CMakeLists.txt
+	rm -f *.bak
+fi
+
 case $(uname -m) in
     aarch64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
