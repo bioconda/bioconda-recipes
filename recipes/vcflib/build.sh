@@ -18,6 +18,20 @@ ARCH=$(uname -m)
 sed -i.bak 's|HTSCODECS_VERSION_TEXT|HTSCODECS_VERSION|' contrib/tabixpp/htslib/htscodecs/htscodecs/htscodecs.c
 rm -f contrib/tabixpp/htslib/htscodecs/htscodecs/*.bak
 
+if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
+	echo $(pwd)/zig-macos-x86_64-*
+	export PATH="$(pwd)/zig-macos-x86_64-0.15.1/lib:${PATH}"
+	export PATH="$(pwd)/zig-macos-x86_64-0.15.1:${PATH}"
+elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
+	echo $(pwd)/zig-macos-aarch64-*
+	export PATH="$(pwd)/zig-macos-aarch64-0.15.1/lib:${PATH}"
+	export PATH="$(pwd)/zig-macos-aarch64-0.15.1:${PATH}"
+else
+	echo $(pwd)/zig-linux-${ARCH}-*
+	export PATH="$(pwd)/zig-linux-${ARCH}-0.15.1/lib:${PATH}"
+	export PATH="$(pwd)/zig-linux-${ARCH}-0.15.1:${PATH}"
+fi
+
 sed -i.bak 's/CFFFLAGS:= -O3/CFFFLAGS=-O3 -D_FILE_OFFSET_BITS=64/' contrib/smithwaterman/Makefile
 sed -i.bak 's/CFLAGS/CXXFLAGS/g' contrib/smithwaterman/Makefile
 sed -i.bak 's/$</$< $(LDFLAGS)/g' contrib/smithwaterman/Makefile
@@ -52,8 +66,8 @@ if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
 	tar -xf MacOSX13.3.tar.xz
 	cp -rH MacOSX13.3.sdk /Applications/Xcode_15.2.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
 	export SDKROOT="/Applications/Xcode_15.2.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
-	export MACOSX_DEPLOYMENT_TARGET=13.3
-	export MACOSX_SDK_VERSION=13.3
+	export MACOSX_DEPLOYMENT_TARGET="13.3"
+	export MACOSX_SDK_VERSION="13.3"
 	export CONFIG_ARGS="${CONFIG_ARGS} -DCMAKE_OSX_SYSROOT=/Applications/Xcode_15.2.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk"
 fi
 
@@ -61,8 +75,8 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-DOPENMP=ON -DZIG=ON \
+	-DOPENMP=ON -DZIG=ON -DBUILD_SHARED_LIBS=ON \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
-cmake --build build --clean-first --target install -j1
+cmake --build build --clean-first --target install -j "${CPU_COUNT}"
