@@ -1,0 +1,48 @@
+{% set version = "1.1.0" %}
+
+package:
+  name: blastdbbuilder
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/b/blastdbbuilder/blastdbbuilder-{{ version }}.tar.gz
+  sha256: c0dfd0fbd0d6e41858056633b970f5ac03919c3a1d9425ec756146fdb2ceacae
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('blastdbbuilder', max_pin="x") }}
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=64
+    - wheel
+  run:
+    - python >=3.9
+    - blast
+    - seqkit
+    - ncbi-datasets-cli
+
+test:
+  commands:
+    - blastdbbuilder --help
+
+about:
+  home: https://github.com/asadprodhan/blastdbbuilder
+  dev_url: https://github.com/asadprodhan/blastdbbuilder
+  summary: Build custom BLAST reference databases from NCBI genomes
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  skip-lints:
+    - build_number_needs_reset
+  recipe-maintainers:
+    - asadprodhan
+
+
+
