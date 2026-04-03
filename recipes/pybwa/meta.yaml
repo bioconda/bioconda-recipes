@@ -12,11 +12,11 @@ source:
 build:
   number: 0
   skip: True  # [py < 39]
-  script: {{ PYTHON }} -m pip install . -vvv --no-deps
+  script:
+    - export CC="${CC}"
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   run_exports:
     - {{ pin_subpackage('pybwa', max_pin="x") }}
-  script_env:
-    - M4=$BUILD_PREFIX/bin/m4  # [osx and arm64]
 
 requirements:
   build:
@@ -25,6 +25,7 @@ requirements:
     - autoconf
     - automake
     - libtool
+    - pkg-config
   host:
     - cython
     - pip
