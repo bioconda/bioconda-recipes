@@ -12,10 +12,10 @@ build:
   number: 0
   run_exports:
     - {{ pin_subpackage('gimmemotifs', max_pin="x.x") }}
-    - {{ pin_subpackage('gimmemotifs-minimal', max_pin="x.x") }}
   script:
     - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
     - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+    - export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations -Wno-implicit-int -Wno-int-conversion"
     - python -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   skip: True  # [py < 39 or py > 312]
 requirements:
@@ -39,6 +39,8 @@ requirements:
     - xxmotif >=1.6  # [not osx]
     #  - yamda >=0.1.00e9c9d          # bloats environment
 test:
+  imports:
+    - gimmemotifs
   commands:
     - rm -f ~/.config/gimmemotifs/gimmemotifs.cfg
     - export LD_PRELOAD="${PREFIX}/lib/libgomp.so.1" && gimme --help
@@ -46,10 +48,14 @@ test:
 outputs:
   - name: gimmemotifs-minimal
     build:
+      run_exports:
+        - {{ pin_subpackage('gimmemotifs-minimal', max_pin="x.x") }}
       script:
         - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
         - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+        - export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations -Wno-implicit-int -Wno-int-conversion"
         - python -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+      skip: True  # [py < 39 or py > 312]
     requirements:
       build:
         - {{ compiler('c') }}
@@ -87,6 +93,8 @@ outputs:
         - xdg
         - xgboost >=1.0.2
     test:
+      imports:
+        - gimmemotifs
       commands:
         - rm -f ~/.config/gimmemotifs/gimmemotifs.cfg
         - export LD_PRELOAD="${PREFIX}/lib/libgomp.so.1" && gimme --help
