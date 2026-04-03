@@ -1,0 +1,65 @@
+{% set name = "mytaxa" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bio-miga/MyTaxa/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 568e186e0ea6a25baf6b8515872af919f7e76d684bb9003425485cb210eb4cb8
+
+build:
+  number: 0
+  skip: true # [win]
+  run_exports:
+    - mytaxa
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+
+  host:
+
+  run:
+
+about:
+  home: https://github.com/bio-miga/MyTaxa
+  summary: "MyTaxa — Taxonomic classification of microbial genomes"
+  license: GPL-3.0-or-later
+  license_family: GPL
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - lmrodriguezr
+
+test:
+  commands:
+    - "command -v MyTaxa"
+    - "MyTaxa | grep Version:"
+
+notes: |
+    The MyTaxa reference database (~2.4 GB) is **not included** in the Bioconda package.
+
+    To download the database after installation, run:
+
+        python $CONDA_PREFIX/share/mytaxa/utils/download_db.py
+
+    This will create a `db/` directory containing the MyTaxa reference files.
+
+
+    After downloading, MyTaxa will look for the database directory in the
+    following order:
+
+      1. If the environment variable MYTAXA_DB is set and non-empty, MyTaxa
+         will use that directory.
+      2. Otherwise, it will fall back to the default location:
+         <directory_of_MyTaxa_executable>/db
+
+    Example usage:
+
+        export MYTAXA_DB=/path/to/mytaxa/db
+        MyTaxa -h
+
