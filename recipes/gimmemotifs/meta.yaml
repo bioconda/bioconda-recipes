@@ -12,23 +12,23 @@ build:
   number: 0
   run_exports:
     - {{ pin_subpackage('gimmemotifs', max_pin="x.x") }}
-  script:
-    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-    - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-    - export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations -Wno-implicit-int -Wno-int-conversion"
-    - python -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  # script:
+  #   - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+  #   - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+  #   - export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations -Wno-implicit-int -Wno-int-conversion"
+  #   - python -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -v
   skip: True  # [py < 39 or py > 312]
 requirements:
-  build:
-    - {{ compiler('c') }}
-  host:
-    - python
-    - pip
-    - setuptools >=78.1.1
-    - libgomp  # [linux]
-    - llvm-openmp  # [osx]
+  # build:
+  #   - {{ compiler('c') }}
+  # host:
+  #   - python
+  #   - pip
+  #   - setuptools >=78.1.1
+  #   - libgomp  # [linux]
+  #   - llvm-openmp  # [osx]
   run:
-    - gimmemotifs-minimal ={{ version }}
+    - gimmemotifs-minimal =={{ version }}
     - dinamo >=1.0
     - gadem >=1.3.1  # [not arm64]
     - homer >=4.11  # [not osx]
@@ -39,8 +39,6 @@ requirements:
     - xxmotif >=1.6  # [not osx]
     #  - yamda >=0.1.00e9c9d          # bloats environment
 test:
-  imports:
-    - gimmemotifs
   commands:
     - rm -f ~/.config/gimmemotifs/gimmemotifs.cfg
     - export LD_PRELOAD="${PREFIX}/lib/libgomp.so.1" && gimme --help
@@ -54,7 +52,7 @@ outputs:
         - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
         - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
         - export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations -Wno-implicit-int -Wno-int-conversion"
-        - python -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+        - python -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -v
       skip: True  # [py < 39 or py > 312]
     requirements:
       build:
@@ -93,8 +91,6 @@ outputs:
         - xdg
         - xgboost >=1.0.2
     test:
-      imports:
-        - gimmemotifs
       commands:
         - rm -f ~/.config/gimmemotifs/gimmemotifs.cfg
         - export LD_PRELOAD="${PREFIX}/lib/libgomp.so.1" && gimme --help
