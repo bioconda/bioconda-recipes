@@ -1,0 +1,85 @@
+{% set name = "strainify" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/treangenlab/Strainify/archive/refs/tags/V{{ version }}.tar.gz
+  sha256: df29c2645992a4add6f28bf66e65c6fb261a514825c26783a553522fe67341f2
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('strainify', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+  run:
+    - python >=3.12
+
+    # Workflow / CLI
+    - snakemake >=9.3
+    - typer >=0.15
+    - pyyaml >=6.0
+    - pandas >=2.2
+    - numpy >=2.2
+    - psutil >=7.0
+    - biopython >=1.85
+    - pulp >=2.8
+    - coincbc
+
+    # Bioinformatics tools
+    - bcftools >=1.21
+    - samtools >=1.21
+    - htslib >=1.21
+    - bwa >=0.7.18
+    - fastani >=1.34
+    - fasttree >=2.1.11
+    - harvesttools >=1.2
+    - mash >=2.3
+    - parsnp >=2.1.4
+    - phipack >=1.1
+    - pyspoa >=0.2.1
+    - raxml >=8.2.13
+    - wgatools >=1.1.0
+    - parallel
+
+    # Optional Utilities
+    - configargparse >=1.7.1
+    - jinja2 >=3.1
+    - jsonschema >=4.23
+    - tabulate >=0.9
+    - tqdm >=4.67
+    - gitpython >=3.1
+
+    # Converted from PIP to Conda
+    - clarabel >=0.10.0
+    - cvxpy >=1.6.5
+    - ecos >=2.0.14
+    - git-filter-repo >=2.47.0
+    - joblib >=1.5.0
+    - osqp >=1.0.4
+    - pysam >=0.23.0
+    - scikit-learn >=1.6.1
+    - scipy >=1.15.3
+    - scs >=3.2.7
+    - threadpoolctl >=3.6.0
+
+test:
+  commands:
+    - "strainify --help || test $? -eq 1" 
+
+about:
+  home: https://github.com/treangenlab/Strainify
+  license: MIT
+  license_file: LICENSE
+  summary: "Strain-level abundance analysis tool for short-read metagenomics"
+
+extra:
+  recipe-maintainers:
+    - rossie-luo
