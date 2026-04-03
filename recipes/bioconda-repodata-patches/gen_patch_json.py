@@ -11,7 +11,7 @@ import sys
 import tqdm
 import re
 import requests
-from packaging import version
+import pkg_resources
 
 CHANNEL_NAME = "bioconda"
 CHANNEL_ALIAS = "https://conda.anaconda.org"
@@ -85,7 +85,7 @@ def has_dep(record, name):
 def parse_version(version):
     if not isinstance(version, str):
         version = '.'.join(version)
-    return version.parse(version)
+    return pkg_resources.parse_version(version)
 
 
 changes = set([])
