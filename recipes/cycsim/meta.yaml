@@ -1,0 +1,61 @@
+{% set name = "cycsim" %}
+{% set version = "1.0.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  - url: https://github.com/BioEarthDigital/CycSim/archive/refs/tags/{{ version }}.tar.gz
+    sha256: 19121e49283c68876538a5c3f79d1c25d4789ed6391000437dea32ae4d37ef90
+
+  - url: https://github.com/Martinsos/edlib/archive/refs/tags/v1.2.6.tar.gz
+    sha256: 0436f14b0339dabd2aab7faf3779ac1b4bbbdc46246c1bff49be997fe4b4e2c7
+    folder: edlib_cpp_manual
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('cycsim', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - make
+    - cmake
+    - pkg-config
+    - cargo-bundle-licenses
+    - clang
+    - libclang
+    - llvm-openmp     
+  host:
+    - zlib
+    - curl
+    - openssl
+  run:
+    - zlib
+    - curl
+    - openssl
+
+test:
+  commands:
+    - cycsim --help
+
+about:
+  home: https://github.com/BioEarthDigital/CycSim
+  license: MIT
+  license_file: 
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "A context-based long-read simulator."
+  dev_url: https://github.com/BioEarthDigital/CycSim
+  doc_url: https://github.com/BioEarthDigital/CycSim/blob/main/README.md
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - moold
