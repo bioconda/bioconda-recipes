@@ -1,5 +1,5 @@
 {% set name = "gimmemotifs" %}
-{% set version = "0.18.1" %}
+{% set version = "0.18.2" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/vanheeringen-lab/gimmemotifs/releases/download/{{ version }}/gimmemotifs-{{ version }}.tar.gz
-  sha256: 80fd536dc55a325fdf41e542bbd6ca5a76bfed6a80a94746a5360361e60cd498
+  sha256: 950a20a736871cf1a35084265cb5f8132171044abeddc0c8a77b34819e5f83ab
 
 build:
   number: 0
@@ -16,19 +16,15 @@ build:
     - {{ pin_subpackage('gimmemotifs-minimal', max_pin="x.x") }}
 
 outputs:
-  - name: {{ name }}-minimal
+  - name: gimmemotifs-minimal
 
     build:
       script:
         - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
         - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-        - export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations -Wno-implicit-int -Wno-int-conversion"
-        - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
-        - sed -i.bak 's|"CONDA_BUILD"|"PREFIX"|' setup.py
-        - sed -i.bak 's|SafeConfigParser|ConfigParser|' versioneer.py
-        - sed -i.bak 's|readfp|read_file|' versioneer.py
+        # - export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations -Wno-implicit-int -Wno-int-conversion"
         - python -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
-      skip: True  # [py > 311]
+      skip: True  # [py > 312]
 
     requirements:
       build:
@@ -36,6 +32,7 @@ outputs:
       host:
         - python
         - pip
+        - setuptools >= 78.1.1
         - libgomp  # [linux]
         - llvm-openmp  # [osx]
       run:
@@ -45,17 +42,17 @@ outputs:
         - configparser
         - diskcache
         - feather-format
-        - genomepy >=0.14.0
+        - genomepy >=0.16.3
         - iteround
         - jinja2
         - logomaker
         - loguru
         - matplotlib-base >=3.3         # https://matplotlib.org/stable/devel/min_dep_policy.html#list-of-dependency-versions
         - numpy >=1.18                  # https://numpy.org/neps/nep-0029-deprecation_policy.html#support-table
-        - pandas >=1.3
+        - pandas >=1.3, <3
         - pybedtools >=0.9.0
         - pysam >=0.16
-        - python
+        - python >=3.9, <3.13
         - python-xxhash
         - qnorm  >=0.8.1
         - scikit-learn >=0.23.2         # https://scikit-learn.org/stable/install.html#installing-the-latest-release
@@ -64,13 +61,13 @@ outputs:
         - statsmodels
         - tqdm >=4.46.1
         - xdg
+        - xgboost >=1.0.2
 
-  - name: {{ name }}
+  - name: gimmemotifs
 
     requirements:
       run:
         - gimmemotifs-minimal ={{ version }}
-        # - xgboost >=1.0.2               # bloats environment
         - dinamo >=1.0
         - gadem >=1.3.1  # [not arm64]
         - homer >=4.11  # [not osx]
@@ -88,7 +85,6 @@ test:
 about:
   home: "https://github.com/vanheeringen-lab/gimmemotifs"
   license: MIT
-  license_family: MIT
   license_file: COPYING
   summary: "Motif prediction pipeline and various motif-related tools."
   description: "Motif prediction pipeline and various motif-related tools."
