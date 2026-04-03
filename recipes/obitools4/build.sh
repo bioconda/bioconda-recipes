@@ -4,14 +4,15 @@ set -xe
 
 mkdir -p $PREFIX/bin
 
-if [ "$(uname)" == "Darwin" ]; then
-    make "CGO_CFLAGS=$CGO_CFLAGS -I${CONDA_PREFIX}/include"
+if [[ "$(uname)" == "Darwin" ]]; then
+    export MACOSX_DEPLOYMENT_TARGET="12.0"
+    make "CGO_CFLAGS=$CGO_CFLAGS -I${PREFIX}/include" GOFLAGS="-buildvcs=false"
 else
-    make "CGO_CFLAGS=$CGO_CFLAGS -L$CONDA_PREFIX/lib -I$CONDA_PREFIX/include"
+    make "CGO_CFLAGS=$CGO_CFLAGS -L$PREFIX/lib -I$PREFIX/include" GOFLAGS="-buildvcs=false"
 fi
 
 
-cp \
+install -v -m 0755 \
     build/obiannotate \
     build/obiclean \
     build/obicleandb \
@@ -41,4 +42,4 @@ cp \
     build/obitagpcr \
     build/obitaxonomy \
     build/obiuniq \
-    ${PREFIX}/bin/
+    "${PREFIX}/bin"
