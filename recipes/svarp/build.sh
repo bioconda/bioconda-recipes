@@ -13,7 +13,9 @@ export LDFLAGS="${LDFLAGS:-} -L${PREFIX}/lib"
 
 make clean || true
 
-make USE_CONDA=1 BUILD=release PREFIX="${PREFIX}" -j"${CPU_COUNT}"
+make USE_CONDA=1 BUILD=release PREFIX="${PREFIX}" \
+     EXTRA_CFLAGS="-I${PREFIX}/include" EXTRA_LDFLAGS="-L${PREFIX}/lib" \
+     -j"${CPU_COUNT}"
 
 # Binary'leri install et
 mkdir -p "${PREFIX}/bin"
