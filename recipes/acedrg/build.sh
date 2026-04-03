@@ -36,3 +36,5 @@ install -m 755 "${RECIPE_DIR}/activate.ps1" "${PREFIX}/etc/conda/activate.d/${PK
 install -m 755 "${RECIPE_DIR}/deactivate.ps1" "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.ps1"
 install -m 755 "${RECIPE_DIR}/activate.xsh" "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.xsh"
 install -m 755 "${RECIPE_DIR}/deactivate.xsh" "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.xsh"
+install -m 755 "${RECIPE_DIR}/activate.csh" "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.csh"
+install -m 755 "${RECIPE_DIR}/deactivate.csh" "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.csh"
