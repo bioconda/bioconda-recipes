@@ -1,0 +1,52 @@
+{% set name = "fdedup" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/RaphaelRibes/FastDedup/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: a854f14329016c3e48929223e7d511ed1fd227734cd40f5687bcf18dec7b4ebe
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - cmake
+    - make
+    - pkg-config
+  host:
+    - zlib
+    - bzip2
+    - xz
+    - zstd
+  run:
+
+test:
+  commands:
+    - fdedup --help
+
+about:
+  home: https://github.com/RaphaelRibes/FastDedup
+  license: MIT
+  license_file:
+    - Licence
+    - THIRDPARTY.yml
+  summary: "A fast and memory-efficient FASTX PCR deduplication tool"
+  dev_url: https://github.com/RaphaelRibes/FastDedup
+
+
+extra:
+  recipe-maintainers:
+    - RaphaelRibes
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
