@@ -6,17 +6,22 @@ package:
   version: {{ version }}
 
 source:
-  url: https://crates.io/api/v1/crates/{{ name }}/{{ version }}/download
+  url: https://static.crates.io/crates/{{ name }}/{{ name }}-{{ version }}.crate
   sha256: 0ab60554d19b96321449c6493ca3e72aa7fbe83f15fe2b54cf987f96eb902267
 
 build:
   number: 0
+  script: |
+    tar -xzf {{ name }}-{{ version }}.crate
+    cd {{ name }}-{{ version }}
+    cargo install --locked --root "$PREFIX" --path .
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('rust') }}
+    - tar
 
 test:
   commands:
