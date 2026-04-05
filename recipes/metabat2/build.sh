@@ -12,7 +12,13 @@ sed -i.bak 's|2.17|2.18|' VERSION
 sed -i.bak 's/GIT-NOTFOUND/'$PKG_VERSION' (Bioconda)/' version.h
 
 sed -i.bak 's|VERSION 3.5.1|VERSION 3.5|' CMakeLists.txt
-rm -rf *.bak
+rm -f *.bak
+
+case $(uname -s) in
+	Darwin)
+	mv VERSION VERSION.txt
+	;;
+esac
 
 case $(uname -m) in
     aarch64)
