@@ -1,5 +1,5 @@
 {% set name = "beast-pype" %}
-{% set version = "0.2.3" %}
+{% set version = "0.3.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,10 +7,10 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/beast_pype-{{ version }}.tar.gz
-  sha256: e36da34faa1fa51557cfde8fb29db4a77c23e0bb310ce5f53fd41b4809fde3b5
+  sha256: cf89cd555d6b5a0f915d7a1dccbc4c08c19adffcf063d217895ffe3b97c9373a
 
 build:
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation --no-cache-dir
   entry_points:
     - beast_pype = beast_pype.cli:beast_pype
   noarch: python
@@ -23,44 +23,64 @@ requirements:
     - python >=3.10
     - setuptools >=77.0.3
     - unidep >=2.0.0
-    - wheel >=0.38
     - pip >=25.3
   run:
-    - dark-matter >=5.1.2
-    - beast2-xml >=1.5.0
+    # For unit testing
+    - pytest >=9.0.2
+    - pytest-xdist >=3.8.0
+    - psutil >=7.2.2
+    # BEAST itself
+    - beast2 >=2.6.0
+    # Python
     - python >=3.10
-    - arviz >=0.23.0
-    - ipykernel >=4.3.1
-    - bash_kernel >=0.10.0
+    # Bioinformatics
     - biopython >=1.86
-    - click >=8.3.1
+    - nextclade >=3.18.1
+    - iqtree >=3.0.1
+    - treetime >=0.11.4
+    - beast2-xml >=1.5.0
+    - dark-matter >=5.1.2
+    - seqkit >=2.12.0
     - ete3 >=3.1.1
-    - ipywidgets >=8.1.8
-    - jupyter >=1.1.1
-    - matplotlib-base >=3.10.8
-    - nbconvert >=7.16.6
-    - nbformat >=5.10.4
+    # Python Data Sci
+    - scipy >=1.16.3
+    - python-dateutil >=2.9.0
     - numpy >=2.4.0
     - pandas >=2.3.3
-    - papermill >=2.6.0
-    - treetime >=0.11.4
-    - python-dateutil >=2.9.0
-    - pyyaml >=6.0.3
-    - scipy >=1.16.3
+    # Plotting figures.
     - seaborn >=0.13.2
+    - matplotlib-base >=3.10.8
+    # MCMC diagnostics_of_selection
+    - arviz ==0.23.4
     - xarray >=2025.12.0
-    - beast2 >=2.6.3
-    - iqtree >=3.0.1
-    - seqkit >=2.12.0
+    # Utils
+    - click >=8.3.1
+    - pyyaml >=6.0.3
     - parallel >=2051122
+    # Jupyter & Jutyper based workflow
+    - jupyter >=1.1.1
+    - papermill >=2.6.0
+    - nbconvert >=7.16.6
+    - nbformat >=5.10.4
+    - ipywidgets >=8.1.8
+    - bash_kernel >=0.10.0
+    - ipykernel >=4.3.1
+    # For plotting trees using R
+    - r-irkernel >=1.3.2
+    - bioconductor-treeio >=1.34.0
+    - bioconductor-ggtree >=4.0.4
+    - r-ggplot2 >=4.0.2
+    - r-readr >=2.2.0
+    - r-lubridate >=1.9.5
+    - r-dplyr >=1.2.0
+    - r-png >=0.1_8
+    - r-tidyr >=1.3.2
+    - r-htmltools >=0.5.9
+
 
 test:
   imports:
     - beast_pype
-  commands:
-    - pip check
-  requires:
-    - pip
 
 about:
   summary: A package of BEAST 2 pipelines for phylodynamics.
