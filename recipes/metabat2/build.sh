@@ -14,6 +14,10 @@ sed -i.bak 's/GIT-NOTFOUND/'$PKG_VERSION' (Bioconda)/' version.h
 sed -i.bak 's|VERSION 3.5.1|VERSION 3.5|' CMakeLists.txt
 rm -f *.bak
 
+# Fix perl shebang
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' *.pl
+rm -f *.bak
+
 case $(uname -s) in
 	Darwin)
 	mv VERSION VERSION.txt
