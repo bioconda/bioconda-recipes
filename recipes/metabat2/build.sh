@@ -17,6 +17,8 @@ rm -f *.bak
 case $(uname -s) in
 	Darwin)
 	mv VERSION VERSION.txt
+	sed -i.bak 's|cat VERSION|cat VERSION.txt|' cmake/Modules/GetGitVersion.cmake
+	rm -f cmake/Modules/*.bak
 	;;
 esac
 
