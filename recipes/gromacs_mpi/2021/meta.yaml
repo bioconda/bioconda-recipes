@@ -1,17 +1,14 @@
-# Update from download page, e.g. https://manual.gromacs.org/documentation/2021/download.html
-# For latest release, see
-# https://manual.gromacs.org/documentation/
 {% set version = "2021.1" %}
 {% set md5sum = "3c13b7dc3d8627904dc401dc893934d6" %}
-{% set build = 0 %}
 
 package:
   name: gromacs_mpi
   version: {{ version }}
 
 build:
-  number: {{ build }}
-
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('gromacs_mpi',max_pin="x.x") }}
 source:
   url: http://ftp.gromacs.org/pub/gromacs/gromacs-{{ version }}.tar.gz
   md5: {{ md5sum }}
@@ -32,14 +29,14 @@ requirements:
     - khronos-opencl-icd-loader  # [osx]
     - libhwloc 2.*
     - fftw
-    - {{ mpi }}
+    - {{ mpi|default("openmpi") }}
   run:
     - ocl-icd # [linux]
     - khronos-opencl-icd-loader  # [osx]
     - ocl_icd_wrapper_apple # [osx]
     - fftw
     - libhwloc 2.*
-    - {{ mpi }}
+    - {{ mpi|default("openmpi") }}
 
 test:
   commands:
@@ -73,3 +70,5 @@ extra:
     - doi:10.1016/j.softx.2015.06.001 # journal article
     - rrid:SCR_014565
     - usegalaxy-eu:gmx_sim
+  additional-platforms:
+    - linux-aarch64
