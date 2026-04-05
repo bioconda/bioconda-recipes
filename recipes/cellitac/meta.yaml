@@ -1,0 +1,65 @@
+{% set name = "cellitac" %}
+{% set version = "1.0.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: b0104e0a6cadad8b22e69602cc244b6dde2bb685d26877bfe3ca2597cfaa48d6
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+  run_exports:
+    - {{ pin_subpackage('cellitac', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9,<3.13
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.9,<3.13
+    - numpy
+    - pandas
+    - scikit-learn
+    - xgboost
+    - imbalanced-learn
+    - matplotlib-base
+    - seaborn
+    - plotly
+    - networkx
+    - openpyxl
+    - rpy2
+    - r-base >=4.3
+    - r-seurat
+    - r-signac
+    - bioconductor-singler
+    - bioconductor-celldex
+    - bioconductor-ensdb.hsapiens.v75
+    - r-hdf5r
+    - r-matrix
+
+test:
+  imports:
+    - cellitac
+  commands:
+    - cellitac --help
+    - cellitac-preprocess --help
+    - cellitac-model --help
+
+about:
+  home: https://github.com/omicscodeathon/cellitac
+  dev_url: https://github.com/omicscodeathon/cellitac
+  license: MIT
+  license_file: LICENSE
+  summary: "Cell type identification using Transcription factor Analysis and Chromatin accessibility"
+
+extra:
+  recipe-maintainers:
+    - RanaHamedAbuZeid
+    - laitanawe

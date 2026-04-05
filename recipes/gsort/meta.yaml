@@ -1,30 +1,38 @@
-{% set version = "0.1.4" %}
+{% set version = "0.1.5" %}
 
 package:
   name: gsort
   version: {{ version }}
 
 source:
-  - url: https://github.com/brentp/gsort/releases/download/v{{ version }}/gsort_darwin_amd64  # [osx]
-    sha256: 618d07a62e002253b926e83a09c3df4f66241d67ebf7046ed48a3a84ebec1da3                 # [osx]
-  - url: https://github.com/brentp/gsort/releases/download/v{{ version }}/gsort_linux_amd64  # [linux]
-    sha256: c8f9cf67b4ff7036a65782b9ea2717db5294c534ddaeb91ea5bf9dac3c614d07                # [linux]
+  url: https://github.com/brentp/gsort/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: d2f47900b39e56ea69631f3d90f0b524c6d3a67f4418b1eb11d5e2b71ccba3a4
 
 build:
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('gsort', max_pin="x.x") }}
 
 requirements:
+  build:
+    - {{ compiler('go') }}
+    - go-licenses
+    - make
 
 test:
   commands:
     - gsort --help
 
 about:
-  home: https://github.com/brentp/gsort
+  home: "https://github.com/brentp/gsort"
   license: MIT
-  summary: sort genomic files according to a genomefile
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Sort genomic files according to a genomefile."
+  dev_url: "https://github.com/brentp/gsort"
+  doc_url: "https://github.com/brentp/gsort/blob/v{{ version }}/README.md"
 
 extra:
-  skip-lints:
-    - should_be_noarch_generic
-    - should_not_be_noarch_source
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

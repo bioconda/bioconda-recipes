@@ -1,0 +1,64 @@
+{% set name = "virprof" %}
+{% set version = "0.9.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/seiboldlab/{{name}}/archive/refs/tags/v{{version}}.tar.gz
+  sha256: 5a1c3deed9654fe8ae35d3de715d5db9f3424ffbe3dbcb5bfae2a41efadb6920
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.12
+    - pip
+    - setuptools >61.0,<81
+  run:
+    - ymp >=0.3.2,<0.4
+    - python >=3.10,<3.12
+    - graph-tool-base >=2.34
+    - biopython
+    - click
+    - tqdm
+    - networkx >=2.0
+    - requests
+
+test:
+  imports:
+    - virprof
+  commands:
+    - snakemake --version
+    - ymp --version
+    - virprof --help
+
+about:
+  home: https://github.com/seiboldlab/virprof
+  doc_url: https://github.com/seiboldlab/virprof
+  license: GPLv3
+  licence_family: GPL
+  licence_url: https://github.com/seiboldlab/virprof/blob/master/LICENSE
+  summary: Virus Identification, Quantification and Genome Recovery from RNA-Seq NGS data
+  description: |
+    VirProf is a dual RNA-seq analysis pipeline integrating host
+    expression profile generation with virus identification,
+    quantification, and genome recovery from host tissue RNA
+    sequencing data. VirProf combines an unguided metagenomic assembly
+    workflow with interleaved host read depletion followed by BLAST
+    based binning, scaffolding and classification. Application of
+    VirProf to poly-A selected RNA-seq data from nasal swabs with
+    respiratory virus qPCR data, revealed that VirProf was able to a)
+    quantify a range of viral infections at detection limits and
+    precision comparable to qPCR and b) recover complete, accurate
+    viral genomes suitable for phylogenetic analysis.
+    
+extra:
+  recipe-maintainers:
+    - epruesse

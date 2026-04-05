@@ -1,0 +1,55 @@
+{% set name = "sassy" %}
+{% set version = "0.2.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ragnargrootkoerkamp/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: f1a446ed5eca2d9e653eb97abfca53dbc9a6baf81617c230560f929478c3d57d
+
+build:
+  number: 0
+  script:
+    # The default config.toml has target-cpu=native,
+    # but we don't want that for portable CI builds.
+    # Instead, use x86-64-v3 for x64, apple-m14 (=M1) for macos,
+    # and the default otherwise.
+    - mv .cargo/config-portable.toml .cargo/config.toml
+
+    # For x86-64, build a single binary targeting both AVX2 (x86-64-v3) and AVX-512 (x86-64-v4).
+    - cargo install --locked cargo-multivers  # [x86_64]
+    - cargo multivers --profile dist --out-dir "${PREFIX}/bin" # [x86_64]
+
+    # On other platforms, use regular cargo install.
+    - cargo install --no-track --locked --profile dist --root "${PREFIX}" --path .  # [not x86_64]
+
+  run_exports:
+    - {{ pin_subpackage('sassy', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - sassy --help
+    - sassy grep --help
+    - sassy search --help
+    - sassy crispr --help
+
+about:
+  home: https://github.com/ragnargrootkoerkamp/sassy
+  license: MIT
+  license_file: LICENSE
+  summary: Fast approximate string searching
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - ragnargrootkoerkamp
+    - rickbeeloo

@@ -1,26 +1,30 @@
 {% set name = "FastMLST" %}
-{% set version = "0.0.16" %}
+{% set version = "0.0.19" %}
 {% set user = "EnzoAndree" %}
-{% set sha256 = "3a2f45079f085481f381047c2b56e40fd47f2ae3a80a7add0642fa41dd068b61" %}
+{% set sha256 = "13eb70fac204a8b483fb27b34eb5bd7cbbdd626001c11653b613b3148f501e15" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
-
-build:
-  noarch: python
-  number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
-  run_exports:
-    - {{ pin_subpackage('fastmlst', max_pin="x") }}
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
   url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: "{{ sha256 }}"
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - fastmlst = bin.fastmlst:main
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 requirements:
   build:
     - python >=3
+    - pip
+    - setuptools
   run:
     - python >=3
     - tqdm
@@ -33,6 +37,8 @@ test:
     - {{ name|lower }} -V
 
 about:
-  home: https://github.com/{{ user }}/{{ name }}
-  summary: A Fast Multilocus Sequence Typing scan against PubMLST typing schemes
-  license: LGPL-3.0-only
+  home: "https://github.com/{{ user }}/{{ name }}"
+  summary: "A Fast Multilocus Sequence Typing scan against PubMLST typing schemes."
+  license: "LGPL-3.0-only"
+  license_family: LGPL
+  dev_url: "https://github.com/{{ user }}/{{ name }}"

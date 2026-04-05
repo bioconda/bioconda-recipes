@@ -2,45 +2,50 @@
   # DALIGNER author does not create versioned releases. This is the
   # recommended version format from the software README, based on date of
   # commit
-{% set version = "1.0.20230620" %}
-{% set commit = "f9a35a82855abaddd49d509a75904dbf0fc46d60" %}
-{% set sha256 = "3cf7e92a83c346aa7bb2bcaec640f73891c9d90583c1c3e28016670313b50215" %}
-
+{% set version = "2.0.20240118" %}
+{% set commit = "335105d09ed94cbbdf44b48ed75b0a44b4d7fe25" %}
+{% set sha256 = "e128d8c5a858e96bd3ebdae5ee1b0e803fda5150f9bbdfff01b1ff1881f52191" %}
 
 package:
   name: {{ name }}
-  # DALIGNER author does not create versioned releases. This is the
-  # recommended version format from the software README, based on date of
-  # commit
   version: {{ version }}
 
+source:
+  url: https://github.com/thegenemyers/DALIGNER/archive/{{ commit }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Makefile.patch
+
 build:
-  number: 1
+  number: 0
   run_exports:
     - {{ pin_subpackage(name, max_pin=None) }}
-source:
-  sha256: {{ sha256 }}
-  url: https://github.com/thegenemyers/DALIGNER/archive/{{ commit }}.tar.gz
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
-  run:
 
 test:
   commands:
-    - daligner 2>&1 | grep Usage
-    - LAsort 2>&1 | grep Usage
-    - LAmerge 2>&1 | grep Usage
-    - LAshow 2>&1 | grep Usage
-    - LAcat 2>&1 | grep Usage
-    - LAsplit 2>&1 | grep Usage
-    - LAcheck 2>&1 | grep Usage
-    - HPC.daligner 2>&1 | grep Usage
+    - daligner 2>&1 | grep 'Usage'
+    - LAsort 2>&1 | grep 'Usage'
+    - LAmerge 2>&1 | grep 'Usage'
+    - LAshow 2>&1 | grep 'Usage'
+    - LAcat 2>&1 | grep 'Usage'
+    - LAsplit 2>&1 | grep 'Usage'
+    - LAcheck 2>&1 | grep 'Usage'
+    - HPC.daligner 2>&1 | grep 'Usage'
 
 about:
-  home: 'https://github.com/thegenemyers/DALIGNER'
+  home: "https://github.com/thegenemyers/DALIGNER"
   license: Custom
   license_file: LICENSE
-  summary: "DALIGNER: Find all significant local alignments between reads"
+  summary: "DALIGNER: Find all significant local alignments between reads."
+  dev_url: "https://github.com/thegenemyers/DALIGNER"
+  doc_url: "https://github.com/thegenemyers/DALIGNER/blob/master/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
