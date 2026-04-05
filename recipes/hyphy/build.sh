@@ -13,11 +13,11 @@ fi
 case $(uname -m) in
     aarch64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
-    export HYPHY_OPTS="-DNOSSE4=ON"
+    export HYPHY_OPTS="-DNOSSE4=ON -DNOSVE=ON"
 	;;
     arm64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
-    export HYPHY_OPTS="-DNOSSE4=ON"
+    export HYPHY_OPTS="-DNOSSE4=ON -DNOSVE=ON"
 	;;
     x86_64)
 	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
@@ -41,12 +41,15 @@ elif [[ "${OS}" == "Linux" && "${ARCH}" == "x86_64" ]]; then
     export HYPHY_OPTS="${HYPHY_OPTS} -DNONEON=ON"
 fi
 
+echo "DEBUG: HYPHY_OPTS = ${HYPHY_OPTS}"
+echo "DEBUG: CONFIG_ARGS = ${CONFIG_ARGS}"
+
 cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
-    "${HYPHY_OPTS}" \
-    "${CONFIG_ARGS}"
+    ${HYPHY_OPTS} \
+    ${CONFIG_ARGS}
 
 ninja -C build -j"${CPU_COUNT}" install

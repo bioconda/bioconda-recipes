@@ -1,0 +1,61 @@
+{% set name = "pridepy" %}
+{% set version = "0.0.12" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 39a71cc03d1c27161da1ef584441a6e82c0258db5d6448278bb680e9aa136df8
+
+build:
+  entry_points:
+    - pridepy = pridepy:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('pridepy', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - poetry-core
+    - pip
+  run:
+    - python >=3.9
+    - requests >=2.31.0,<3.0.0
+    - ratelimit >=2.2.1,<3.0.0
+    - click >=8.1.7,<9.0.0
+    - tqdm >=4.66.1,<5.0.0
+    - boto3 >=1.34.0,<2.0.0
+    - botocore >=1.34.0,<2.0.0
+    - httpx >=0.27.0,<0.28.0
+
+test:
+  imports:
+    - pridepy
+  commands:
+    - pip check
+    - pridepy --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/PRIDE-Archive/pridepy
+  summary: Python Client library for PRIDE Rest API
+  description: |
+    pridepy is a Python client library that enables users to download and
+    search proteomics data from the PRIDE database. It supports multiple
+    download protocols including FTP, Aspera, Globus, and S3.
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  dev_url: https://github.com/PRIDE-Archive/pridepy
+  doc_url: https://github.com/PRIDE-Archive/pridepy
+
+extra:
+  recipe-maintainers:
+    - jonasscheid
+    - ypriverol

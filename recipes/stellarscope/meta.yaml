@@ -3,7 +3,7 @@
 {% set sha256 = "cb8f4aceeac0ddbe591846aabc7da17e1086a221c84ec65f601516e75ea34c88" %}
 
 package:
-    name: {{ name|lower }}
+    name: {{ name }}
     version: {{ version }}
 
 source:
@@ -13,19 +13,21 @@ source:
         - 0001_pyproject_toml.patch
 
 build:
-    number: 0
-    script: |
-        export SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
-        {{ PYTHON }} -m pip install . -vv
+    number: 1
+    script:
+        - export SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+        - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+    entry_points:
+        - stellarscope = stellarscope.__main__:stellarscope
     run_exports:
-        - {{ pin_subpackage("stellarscope", max_pin="x.x") }}
+        - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
     build:
-        - {{ compiler('c') }}    
+        - {{ compiler('c') }}
     host:
         - python
-        - pip    
+        - pip
         - setuptools
         - cython
         - pysam >=0.19
@@ -33,8 +35,8 @@ requirements:
     run:
         - python
         - future >=0.17.1
-        - pyyaml >=5.1    
-        - {{ pin_compatible('numpy') }}
+        - pyyaml >=5.1
+        - numpy
         - scipy >=1.2.1
         - pysam >=0.19
         - intervaltree >=3.0.2
@@ -47,13 +49,17 @@ test:
         - stellarscope --version
 
 about:
-    home: 'https://github.com/nixonlab/stellarscope'
+    home: "https://github.com/nixonlab/stellarscope"
     license: MIT
     license_family: MIT
     license_file: LICENSE
-    summary: Single-cell Transposable Element Locus Level Analysis of scRNA Sequencing
+    summary: "Single-cell Transposable Element Locus Level Analysis of scRNA Sequencing."
+    dev_url: "https://github.com/nixonlab/stellarscope"
+    doc_url: "https://github.com/nixonlab/stellarscope/blob/{{ version }}/docs/protocol.md"
 
 extra:
     identifiers:
         - doi:10.1016/j.crmeth.2025.101086
-
+    additional-platforms:
+        - linux-aarch64
+        - osx-arm64

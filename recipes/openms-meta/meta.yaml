@@ -1,5 +1,5 @@
 {% set name = "OpenMS" %}
-{% set version = "3.4.1" %}  # if ends with 'dev' it is considered a development release and pulled from GitHub
+{% set version = "3.5.0" %}  # if ends with 'dev' it is considered a development release and pulled from GitHub
 
 package:
   name: {{ name|lower  }}-meta
@@ -12,16 +12,17 @@ source:
   # Note: This will only work correctly as long as the current X.Y.Zdev version is actually the latest
   # Retrospective builds not supported.
   git_rev: develop
+  git_depth: 1
   md5: unused
 {% else %}
 source:
   # PLEASE never use abbreviated versions anymore!
   url: https://github.com/OpenMS/OpenMS/releases/download/release%2F{{ version }}/OpenMS-{{ version }}.tar.gz
-  md5: 8d0b4d1d333f069959f7d5ff1c77a90f
+  sha256: 29ddff876b6f7e604edca962cbd2f57fe2467262db4b4f039aa43148589f2dbd
 {% endif %}
 
 build:
-  number: 1
+  number: 0
   overlinking_ignore_patterns: "*"
   # Linking is checked in the outputs not meta recipe
 
@@ -45,7 +46,9 @@ requirements:
       - coin-or-cgl
       - coin-or-cbc
       - eigen >=3.4.0
+      - libarrow =21  # Just to reduce build matrix/time. You can change it from time to time to build for other versions
       - libboost-devel
+      - libparquet
       - libsvm
       - qt6-main
       - xerces-c
@@ -131,6 +134,9 @@ outputs:
         - eigen
         - qt6-main
         - libsvm
+        # Tools also use it directly
+        - libparquet
+        - libarrow =21
       ignore_run_exports:
         - libsvm
       run:
@@ -145,6 +151,8 @@ outputs:
         - {{ pin_compatible('eigen', max_pin='x.x') }}
         - {{ pin_compatible('qt6-main', max_pin='x.x') }}
         - {{ pin_compatible('libsvm', upper_bound='400') }}
+        - {{ pin_compatible('libparquet', max_pin='x.x') }}
+        - {{ pin_compatible('libarrow', max_pin='x.x') }}
 
     test:
       commands:

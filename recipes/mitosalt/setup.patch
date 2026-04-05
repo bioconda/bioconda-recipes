@@ -1,41 +1,53 @@
---- setup.sh	2020-11-18 20:43:10.000000000 +0000
-+++ setup_patched.sh	2025-02-23 11:30:49.449356200 +0000
-@@ -19,115 +19,28 @@
- HISAT2_V=hisat2-2.1.0
- BBMAP_URL=https://downloads.sourceforge.net/project/bbmap/BBMap_38.05.tar.gz
- BBMAP_V=bbmap
+--- setup.sh	2025-11-21 10:07:48.544570000 +0100
++++ setup_mod.sh	2025-11-21 10:08:10.410018000 +0100
+@@ -1,273 +1,69 @@
+-#!/bin/bash
++#!/usr/bin/env bash
+ 
+-#EXIT IF INSTALLATION HAS WARNING OR ERROR
+-set -e
+-set -u
+-set -o pipefail
+-
+-#OUTPUT TO LOG
+-exec >  >(tee -ia setup.log)
+-exec 2> >(tee -ia setup.log >&2)
+-
+-#VARIABLES
+-TMPFILE=`mktemp`
+-PWD=`pwd`
+-now=`date`
+-
+-#SOFTWARES
+-HISAT2_URL=ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.1.0-Linux_x86_64.zip
+-HISAT2_V=hisat2-2.1.0
+-BBMAP_URL=https://downloads.sourceforge.net/project/bbmap/BBMap_38.05.tar.gz
+-BBMAP_V=bbmap
 -LAST_URL=http://last.cbrc.jp/last-941.zip
 -LAST_V=last-941
- 
- #BAM BED PROCESSING
+-
+-#BAM BED PROCESSING
 -BEDTOOLS2_URL=https://github.com/arq5x/bedtools2/releases/download/v2.27.1/bedtools-2.27.1.tar.gz
 -BEDTOOLS2_V=bedtools2
 -SAMTOOLS_URL=https://downloads.sourceforge.net/project/samtools/samtools/1.8/samtools-1.8.tar.bz2
 -SAMTOOLS_V=samtools-1.8
- SAMBAMBA_URL=https://github.com/biod/sambamba/releases/download/v0.6.8/sambamba-0.6.8-linux-static.gz
- SAMBAMBA_V=sambamba
- 
- #UCSC
- BG2BW_URL=http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64.v369/bedGraphToBigWig
- BG2BW_V=bedGraphToBigWig
+-SAMBAMBA_URL=https://github.com/biod/sambamba/releases/download/v0.6.8/sambamba-0.6.8-linux-static.gz
+-SAMBAMBA_V=sambamba
+-
+-#UCSC
+-BG2BW_URL=http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64.v369/bedGraphToBigWig
+-BG2BW_V=bedGraphToBigWig
 -FASR_URL=http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64.v369/faSomeRecords
-+FASR_URL=http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64.v385/faSomeRecords
- FASR_V=faSomeRecords
- FASZ_URL=http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64.v369/faSize
- FASZ_V=faSize
- 
+-FASR_V=faSomeRecords
+-FASZ_URL=http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64.v369/faSize
+-FASZ_V=faSize
+-
 -#R PACKAGES
 -PLOTRIX_URL=https://cran.r-project.org/src/contrib/Archive/plotrix/plotrix_3.7-3.tar.gz
 -PLOTRIX_V=plotrix_3.7-3.tar.gz
 -RCB_URL=https://cran.r-project.org/src/contrib/Archive/RColorBrewer/RColorBrewer_1.0-5.tar.gz
 -RCB_V=RColorBrewer_1.0-5.tar.gz
-+#SELECTORS
-+FOLDER=yes
-+HISAT=yes
-+BBMAP=yes
-+SAMBAMBA=yes
-+UCSC=yes
- 
+-
 -#GENOME DATA
 -HG19_URL=https://www.dropbox.com/s/e1xwzye9hieewxz/human_g1k_v37.fasta.gz
 -HG19_V=hg19_g1k.fasta
@@ -45,7 +57,7 @@
 -M38_V=mm10.fasta
 -MTM_V=mouse_mt.fasta
 -M38S_V=mm10.size
- 
+-
 -#ASK USER OPINION
 -echo -e "\x1b[30;43m Do you want basic installation (all tools and genomes installed by default)? (yes/no, no will take you to advanced installation): \x1b[m"
 -read BASIC;
@@ -120,14 +132,29 @@
 -fi
 -
 -echo -e "\n\n\x1b[30;43m $now: Ok! based on your selection it may take upto two hours to complete all the download and compiling!\x1b[m"
-+echo -e "\n\n\x1b[30;43m $now: Ok! it may take upto two hours to complete all the download and compiling!\x1b[m"
- #CLEAN DATA
- if [ "$FOLDER" == "yes" ]; then
-   echo -e "bam\nbin\nbw\ngenome\nindel\nlog\nplot\ntab" > tmp.list
-@@ -151,15 +64,6 @@
- mv $HISAT2_V bin/hisat2
- fi
- 
+-#CLEAN DATA
+-if [ "$FOLDER" == "yes" ]; then
+-  echo -e "bam\nbin\nbw\ngenome\nindel\nlog\nplot\ntab" > tmp.list
+-  while read -r dir; do
+-    if [[ -d $dir ]]; then
+-      rm -r $dir
+-      mkdir $dir
+-    else
+-      mkdir $dir
+-    fi  
+-  done < tmp.list
+-  rm tmp.list
+-fi
+-
+-#DOWNLOAD AND CONFIGURE SOFTWARES REQUIRED
+-echo -e "\x1b[97;41m $now:Installing Hisat2: \x1b[m"
+-if [ "$HISAT" == "yes" ]; then
+-wget -O $TMPFILE $HISAT2_URL
+-unzip -d $PWD $TMPFILE
+-rm $TMPFILE
+-mv $HISAT2_V bin/hisat2
+-fi
+-
 -echo -e "\x1b[97;41m $now:Installing Bedtools: \x1b[m"
 -if [ "$BEDTOOLS" == "yes" ]; then
 -wget -O $TMPFILE $BEDTOOLS2_URL
@@ -137,13 +164,13 @@
 -mv $BEDTOOLS2_V bin/bedtools2
 -fi
 -
- echo -e "\x1b[97;41m $now:Installing BBMap: \x1b[m"
- if [ "$BBMAP" == "yes" ]; then
- wget -O $TMPFILE $BBMAP_URL
-@@ -167,28 +71,6 @@
- rm $TMPFILE
- fi
- 
+-echo -e "\x1b[97;41m $now:Installing BBMap: \x1b[m"
+-if [ "$BBMAP" == "yes" ]; then
+-wget -O $TMPFILE $BBMAP_URL
+-tar xfvz $TMPFILE -C $PWD/bin/
+-rm $TMPFILE
+-fi
+-
 -
 -echo -e "\x1b[97;41m $now:Installing LAST: \x1b[m"
 -if [ "$LAST" == "yes" ]; then
@@ -166,13 +193,30 @@
 -mv $SAMTOOLS_V bin/samtools
 -fi
 -
- echo -e "\x1b[97;41m $now:Installing Sambamba: \x1b[m"
- if [ "$SAMBAMBA" == "yes" ]; then
- wget -O $TMPFILE $SAMBAMBA_URL
-@@ -213,61 +95,4 @@
- chmod 755 bin/$FASZ_V
- fi
- 
+-echo -e "\x1b[97;41m $now:Installing Sambamba: \x1b[m"
+-if [ "$SAMBAMBA" == "yes" ]; then
+-wget -O $TMPFILE $SAMBAMBA_URL
+-gunzip -c $TMPFILE > bin/$SAMBAMBA_V
+-chmod 755 bin/$SAMBAMBA_V
+-rm $TMPFILE
+-fi
+-
+-#GET UCSC UTILITIES
+-echo -e "\x1b[97;41m $now:Installing UCSC: \x1b[m"
+-if [ "$UCSC" == "yes" ]; then
+-wget -O $TMPFILE $BG2BW_URL
+-mv $TMPFILE bin/$BG2BW_V
+-chmod 755 bin/$BG2BW_V
+-
+-wget -O $TMPFILE $FASR_URL
+-mv $TMPFILE bin/$FASR_V
+-chmod 755 bin/$FASR_V
+-
+-wget -O $TMPFILE $FASZ_URL
+-mv $TMPFILE bin/$FASZ_V
+-chmod 755 bin/$FASZ_V
+-fi
+-
 -#DOWNLOAD HUMAN GENOME AND EXTRACT MT GENOME
 -echo -e "\x1b[97;41m $now:Download and index human genome: \x1b[m"
 -if [ "$HUMAN" == "yes" ]; then
@@ -230,4 +274,71 @@
 -  rm $RCB_V
 -fi
 -
- echo -e "\n\n\x1b[30;43m $now: Setup finished!\x1b[m"
+-echo -e "\n\n\x1b[30;43m $now: Setup finished!\x1b[m"
++# MITOSALT setup script (conda mode)
++# This version performs *no downloads, no compilation, no installation*.
++# It only prepares the working directory structure and verifies dependencies.
++
++set -euo pipefail
++
++NOW="$(date)"
++
++echo
++echo "------------------------------------------------------------"
++echo " MITOSALT setup — conda environment mode"
++echo " No downloads, no compilation, no external installations."
++echo "------------------------------------------------------------"
++echo
++
++# Required tools (must be provided by conda)
++REQUIRED_TOOLS=(
++  hisat2
++  lastdb
++  lastal
++  samtools
++  sambamba
++  bedtools
++  bbmap.sh
++  bedGraphToBigWig
++  faSomeRecords
++  faSize
++  Rscript
++)
++
++echo "[INFO] Checking required tools in PATH"
++for tool in "${REQUIRED_TOOLS[@]}"; do
++    if ! command -v "$tool" >/dev/null 2>&1; then
++        echo "[ERROR] Missing required tool: $tool"
++        echo "Please install it via conda or Bioconda:"
++        echo "  conda install -c bioconda ${tool}"
++        exit 1
++    fi
++done
++echo "[OK] All required tools found."
++
++echo
++echo "[INFO] Creating MITOSALT working directory structure"
++for d in bam bin bw genome indel log plot tab; do
++    mkdir -p "$d"
++done
++
++# Add placeholder files so pipeline scripts do not break
++touch genome/.keep bam/.keep plot/.keep
++
++echo
++echo "------------------------------------------------------------"
++echo " MITOSALT setup complete."
++echo
++echo " Place your reference genomes into the 'genome/' directory:"
++echo "   genome/hg19.fasta      (human nuclear)"
++echo "   genome/human_mt.fasta  (human mtDNA)"
++echo "   genome/mm10.fasta      (mouse nuclear)"
++echo "   genome/mouse_mt.fasta  (mouse mtDNA)"
++echo
++echo " To build HISAT2 or LAST indexes, run:"
++echo "   hisat2-build genome/your_fasta genome/index_prefix"
++echo "   lastdb genome/index_prefix genome/your_fasta"
++echo
++echo " No tools or genomes were downloaded—this environment is fully managed by conda."
++echo "------------------------------------------------------------"
++echo
