@@ -2,7 +2,7 @@
 set -xe
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -ldeflate"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-deprecated-declarations"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-deprecated-declarations -Wno-c++11-narrowing-const-reference -Wno-non-pod-varargs"
 export CXXFLAGS="${CXXFLAGS} -O3"
 export CFLAGS="${CFLAGS} -O3"
 
