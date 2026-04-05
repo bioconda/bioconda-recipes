@@ -1,0 +1,51 @@
+{% set version = "1.0.17" %}
+
+package:
+  name: janusx
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/source/j/janusx/janusx-{{ version }}.tar.gz
+  sha256: 77313e5c045cf7c364f0a91100b43515ffaeb19c510629cc1878b1765fa91abe
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('janusx', max_pin='x') }}
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps"
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+  host:
+    - python
+    - pip
+    - maturin >=1.7,<2
+    - setuptools
+  run:
+    - python >=3.9
+    - numpy
+    - scipy
+    - pandas <3.0
+    - matplotlib-base
+    - psutil
+    - rich
+    - tqdm
+    - rich-argparse
+    - joblib >=1.5
+
+test:
+  imports:
+    - janusx
+  commands:
+    - jxpy -h
+
+about:
+  home: https://github.com/FJingxian/JanusX
+  summary: A suite of genotyping tools for genome-wide association study and genomic selection
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - FJingxian
