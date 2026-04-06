@@ -1,0 +1,51 @@
+{% set name = "gfaviz" %}
+{% set version="1.0.0" %}
+{% set hash="4bc4327dd182812a9cfd53a39632bf41f461170e142df62ebbd0ba441239a6d4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+source:
+  url: https://github.com/ggonnella/gfaviz/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ hash }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - qt-main =5
+    - libgl-devel # [ linux ]
+    - {{ cdt('xorg-x11-server-xvfb') }} # [ linux ]
+  run:
+    - {{ pin_compatible('qt-main', max_pin='x.x.x') }}
+
+test:
+  commands:
+    - which gfaviz
+#    - xvfb-run gfaviz --help
+  scripts:
+    - run_test.sh
+#  requires:
+#    - {{ cdt('xorg-x11-server-xvfb') }} # [ linux ]
+
+about:
+  home: https://github.com/ggonnella/gfaviz
+  license: ISC
+  license_file: LICENSE.txt
+  summary: GfaViz is a graphical interactive tool for the visualization of sequence graphs in GFA format. It supports both the GFA1 and GFA2 formats.
+
+extra:
+  container:
+    # needed for libGL
+    extended-base: true
+  identifiers:
+    - doi:10.1093/bioinformatics/bty1046
+  recipe-maintainers:
+    - pbordron
