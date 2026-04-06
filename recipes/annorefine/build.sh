@@ -10,7 +10,7 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # Build the Rust binary from source, replacing the pre-built macOS binary
 # shipped in annorefine.data/scripts/
-cargo build --release -v -j "${CPU_COUNT}"
+cargo build --release --bin annorefine -v -j "${CPU_COUNT}"
 
 "${STRIP}" target/release/annorefine
 
