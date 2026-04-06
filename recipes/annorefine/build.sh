@@ -10,7 +10,9 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # Build the Rust binary from source, replacing the pre-built macOS binary
 # shipped in annorefine.data/scripts/
-maturin build --release --strip -v -j "${CPU_COUNT}"
+cargo build --release -v -j "${CPU_COUNT}"
+
+"${STRIP}" target/release/annorefine
 
 # Find the binary (may be in target/<triple>/release/ or target/release/)
 BINARY=$(find target -name annorefine -type f -executable -path "*/release/*" | head -1)
