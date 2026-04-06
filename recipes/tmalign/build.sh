@@ -23,6 +23,7 @@ if [[ `uname -s` == "Darwin" ]]; then
 	make TMscore CC="${CXX}" CFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
 	install -v -m 0755 TMalign TMscore "${PREFIX}/bin"
 else
-	"${CXX}" "${CXXFLAGS}" -static -o "${PREFIX}/bin/TMalign" TMalign.cpp
-	"${CXX}" "${CXXFLAGS}" -static -o "${PREFIX}/bin/TMscore" TMscore.cpp
+	make TMalign CC="${CXX}" CFLAGS="${CXXFLAGS} -static" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
+	make TMscore CC="${CXX}" CFLAGS="${CXXFLAGS} -static" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
+	install -v -m 0755 TMalign TMscore "${PREFIX}/bin"
 fi
