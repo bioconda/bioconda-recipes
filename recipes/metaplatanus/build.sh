@@ -6,16 +6,16 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 
 mkdir -p "$PREFIX/bin/sub_bin"
 
+if [[ `uname -s` == "Darwin" ]]; then
+	sed -i.bak 's|-finline-limit-50000||' src/metaplatanus_core/Makefile
+	rm -f src/metaplatanus_core/*.bak
+fi
+
 make CXX="${CXX}" -j"${CPU_COUNT}"
 
 install -v -m 0755 metaplatanus \
 	src/scripts/tgsgapcloser_mod "$PREFIX/bin"
 install -v -m 0755 sub_bin/* "$PREFIX/bin/sub_bin"
-
-if [[ `uname -s` == "Darwin" ]]; then
-	sed -i.bak 's|-finline-limit-50000||' src/metaplatanus_core/Makefile
-	rm -f src/metaplatanus_core/*.bak
-fi
 
 cd src/nextpolish
 
