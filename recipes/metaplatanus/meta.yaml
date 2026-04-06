@@ -6,35 +6,33 @@ package:
   version: {{ version }}
 
 source:
-  sha256: '{{sha256}}'
-  url: https://github.com/rkajitani/metaplatanus/archive/v{{version}}.tar.gz
+  sha256: {{ sha256 }}
+  url: https://github.com/rkajitani/metaplatanus/archive/v{{ version }}.tar.gz
 
 build:
-  number: 2
-  skip: True # [osx]
+  number: 3
+  run_exports:
+    - {{ pin_subpackage('metaplatanus', max_pin="x") }}
 
 requirements:
   build:
     - make
-    - zlib
-    - openmp
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - wget
+    - pkg-config
   host:
     - zlib
     - bzip2
-    - openmp
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+    - wget
   run:
-    - zlib
-    - gzip
-    - bzip2
-    - file
-    - openmp
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
     - perl >=5
     - tgsgapcloser >=1.0.3
     - racon >=1.4.20
-    - metabat2 >=2.12.1
+    - metabat2 >=2.12.1  # [x86_64]
     - bwa >=0.7.17
     - minimap2 >=2.17
     - samtools >=1.9
@@ -47,9 +45,18 @@ test:
     - metaplatanus -h
 
 about:
-  home: https://github.com/rkajitani/metaplatanus
-  license: GPL-3.0
+  home: "https://github.com/rkajitani/metaplatanus"
+  license_family: GPL3
   license_file: LICENSE
-  license_family: GPL
-  summary: |-
-    MetaPlatanus: A hybrid metagenome assembler
+  license: "GPL-3.0-or-later"
+  summary: "MetaPlatanus: A hybrid metagenome assembler."
+  dev_url: "https://github.com/rkajitani/metaplatanus"
+  doc_url: "https://github.com/rkajitani/MetaPlatanus/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:metaplatanus
+    - doi:10.1093/nar/gkab831
