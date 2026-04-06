@@ -1,0 +1,37 @@
+{% set name = "cgmlst-dists-py" %}
+{% set version = "0.1.1" %}
+{% set sha256 = "846bc11e4df1c31140e9ca85d877f436f7985b4e446707fdb2b9cc32a95dbe1c" %}
+{% set user = "genpat-it" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage("cgmlst-dists-py", max_pin="x.x") }}
+
+source:
+  url: https://github.com/{{ user }}/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  run:
+    - python >=3.8,<3.14
+    - numpy ==2.2.3
+    - pandas ==2.2.3
+    - numba ==0.62.0
+    - tqdm ==4.67.1
+    - psutil ==7.0.0  
+
+test:
+  commands:
+    - cgmlst-dists.py --version | grep -F '{{ version }}'
+    - cgmlst-dists.py -h
+
+about:
+  home: https://github.com/{{ user }}/{{ name }}
+  license: GPL3
+  summary: Python-implementation of cgmlst-dist
