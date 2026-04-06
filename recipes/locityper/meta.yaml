@@ -1,5 +1,5 @@
 {% set name = "locityper" %}
-{% set version = "1.3.4" %}
+{% set version = "1.4.5" %}
 
 package:
   name: {{ name }}
@@ -7,12 +7,14 @@ package:
 
 source:
   url: https://github.com/tprodanov/locityper/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: e5920e31d607bea243561e761823aa987dcd37888977733ae0a6de67d3125930
+  sha256: db0b5db3ea405afa0f389e2f1a5cdd8f0758434a1619d3cae1cf28afe27868e7
+  patches:
+    - 0001-rust-htslib.patch
 
 build:
   number: 0
   run_exports:
-    - {{ pin_subpackage("locityper", max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -20,12 +22,16 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake
     - make
-  host:
+    - pkg-config
     - clangdev
+  host:
     - libgomp  # [linux]
     - llvm-openmp  # [osx]
+    - htslib >=1.19
   run:
     - python
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - samtools >=1.19
     - kmer-jellyfish >=1.0
     - minimap2 >=2.26
@@ -43,6 +49,7 @@ about:
   license_family: MIT
   license_file: LICENSE
   dev_url: "https://github.com/tprodanov/locityper"
+  doc_url: "https://locityper.vercel.app"
 
 extra:
   additional-platforms:
