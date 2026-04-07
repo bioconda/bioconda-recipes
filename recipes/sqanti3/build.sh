@@ -1,4 +1,5 @@
 #!/bin/bash
+set -uex -o pipefail
 
 # Define the isolated share directory for this specific version
 SHARE_DIR=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
