@@ -17,4 +17,4 @@ chmod +x $PREFIX/bin/needLR
 sed -i "s?REFLOCPATH?$refloc?g" $PREFIX/bin/needLR
 
 #temporarily remove fancy printing
-sed -i 's/normal=$(tput normal)/normal=""/g' $PREFIX/bin/needLR
+#sed -i 's/normal=$(tput normal)/normal=""/g' $PREFIX/bin/needLR
