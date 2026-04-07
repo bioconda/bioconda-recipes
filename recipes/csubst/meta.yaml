@@ -11,8 +11,7 @@ source:
 
 build:
   number: 0
-  string: py{{ python | replace('.', '') }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}
-  skip: true  # [aarch64 or arm64]
+  skip: true  # [py < 310 or py >= 314 or aarch64 or arm64]
   script:
     - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
     - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -I$(python -c 'import numpy; print(numpy.get_include())')"
@@ -28,13 +27,13 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - python >=3.10,<3.14
+    - python
     - pip
     - cython
     - setuptools
     - numpy
   run:
-    - python >=3.10,<3.14
+    - python
     - ete4 >=4.3.0
     - numpy
     - scipy
