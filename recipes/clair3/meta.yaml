@@ -22,9 +22,15 @@ source:
     folder: pypy-aarch64
 {% endif %}
 
+{% if osx and arm64 %}
+  - url: https://downloads.python.org/pypy/pypy{{ pypy_version }}-macos_arm64.tar.bz2
+    sha256: 84a48e09c97f57df62cc9f01b7a6d8c3e306b6270671d871aa8ab8c06945940d
+    folder: pypy-macos-arm64
+{% endif %}
+
 build:
-  number: 1
-  skip: True  # [win or osx]
+  number: 2
+  skip: True  # [win or (osx and x86_64)]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
@@ -48,6 +54,7 @@ requirements:
     - longphase # [linux]
   run:
     - python 3.11.*
+    - libdeflate
     - pytorch-cpu  # [linux]
     - torchmetrics
     - numpy

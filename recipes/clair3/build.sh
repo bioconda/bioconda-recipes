@@ -25,11 +25,26 @@ if [ "$OS" = "Linux" ]; then
     MPMATH_SRC=$(python -c "import mpmath, os; print(os.path.dirname(mpmath.__file__))")
     PYPY_SITE=$(${PREFIX}/bin/pypy3 -c "import site; print(site.getsitepackages()[0])")
     cp -r ${MPMATH_SRC} ${PYPY_SITE}/
+elif [ "$OS" = "Darwin" ] && [ "$ARCH" = "arm64" ]; then
+    PYPY_DIR="${SRC_DIR}/pypy-macos-arm64"
+    cp -rv ${PYPY_DIR} $PREFIX/bin/pypy3.11
+    ln -s $PREFIX/bin/pypy3.11/bin/pypy $PREFIX/bin/pypy3
+    ln -s $PREFIX/bin/pypy3.11/bin/pypy $PREFIX/bin/pypy
+
+    $PREFIX/bin/pypy3 -m ensurepip
+    MPMATH_SRC=$(python -c "import mpmath, os; print(os.path.dirname(mpmath.__file__))")
+    PYPY_SITE=$(${PREFIX}/bin/pypy3 -c "import site; print(site.getsitepackages()[0])")
+    cp -r ${MPMATH_SRC} ${PYPY_SITE}/
 fi
 
 
+# Compile libclair3 Python extension from source so it links against the host environment's libdeflate rather than using the pre-built .so
+cd ${SRC_DIR}
+python setup.py build_ext --inplace
+python -c "import libclair3" || { echo "ERROR: libclair3 import failed after build"; exit 1; }
+
 make CC=${CC} CXX=${CXX}  PREFIX=${PREFIX}
-cp libclair3* $PREFIX/bin
+cp libclair3*.so $PREFIX/bin
 if [ "$OS" = "Linux" ]; then
     cp longphase $PREFIX/bin
 fi
