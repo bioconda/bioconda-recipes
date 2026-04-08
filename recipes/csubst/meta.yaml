@@ -10,8 +10,8 @@ source:
   sha256: 27a463ab0ab55e61e0c5957619660e5463cbad8e01a704a04115f72ef8734e76
 
 build:
-  number: 0
-  skip: true  # [py < 310 or py >= 314 or aarch64 or arm64]
+  number: 1
+  skip: True  # [py < 310 or py >= 314]
   script:
     - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
     - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -I$(python -c 'import numpy; print(numpy.get_include())')"
@@ -20,7 +20,7 @@ build:
     - {{ PYTHON }} setup.py build_ext --inplace
     - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -39,11 +39,11 @@ requirements:
     - scipy
     - pandas
     - matplotlib-base
-    - iqtree >=2.0.0  # required
-    - pyvolve         # optional: for csubst simulate
-    - biopython       # optional: for csubst site --pdb besthit
+    - iqtree >=2.0.0     # required
+    - pyvolve            # optional: for csubst simulate
+    - biopython          # optional: for csubst site --pdb besthit
     - pymol-open-source  # optional: for csubst site --pdb
-    - mafft           # optional: for alignment (CLI)
+    - mafft              # optional: for alignment (CLI)
 
 test:
   commands:
@@ -61,6 +61,10 @@ about:
   doc_url: "https://github.com/kfuku52/csubst/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    #ete4 not available on linux-aarch64
+    #- linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - kfuku52
   identifiers:
