@@ -1,10 +1,10 @@
 #!/bin/bash
 set -ex
 
-cp -rf "${RECIPE_DIR}/vcflib.pc.in" "${SRC_DIR}"
+cp -f "${RECIPE_DIR}/vcflib.pc.in" "${SRC_DIR}"
 
 sed -i.bak -e 's|-fPIC|-fPIC -Wno-int-conversion -Wno-deprecated-declarations -Wno-absolute-value -Wno-unused-comparison|' CMakeLists.txt
-rm -rf *.bak
+rm -f *.bak
 
 export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Iwfa2 -I\$(INC_DIR)"
 export CFLAGS="${CFLAGS} -O3"
@@ -22,6 +22,15 @@ if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
 	echo $(pwd)/zig-x86_64-macos-*
 	export PATH="$(pwd)/zig-x86_64-macos-0.15.1/lib:${PATH}"
 	export PATH="$(pwd)/zig-x86_64-macos-0.15.1:${PATH}"
+
+	sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoupdate
+	sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/aclocal
+	sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/automake
+	sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autom4te
+	sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoheader
+	sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoreconf
+	sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/ifnames
+	sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoscan
 elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
 	echo $(pwd)/zig-aarch64-macos-*
 	export PATH="$(pwd)/zig-aarch64-macos-0.15.1/lib:${PATH}"
