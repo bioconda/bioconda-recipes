@@ -1,28 +1,29 @@
 {% set name = "quantms-utils" %}
-{% set version = "0.0.28" %}
+{% set version = "0.0.29" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/quantms_utils-{{ version }}.tar.gz
-  sha256: e81f40c8dbfeedf427bbf9d71cb2f4b6440fe06ba294909d1f35d281620ab586
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/quantms_utils-{{ version }}.tar.gz
+  sha256: 23f5e92318b618a8f74d82e1545e7f58a059b1ee6366b899e012e92d2758f7f8
 
 build:
   entry_points:
-    - quantmsutilsc=quantmsutils.quantmsutilsc:main
+    - quantmsutilsc = quantmsutils.quantmsutilsc:main
   noarch: python
   run_exports:
-    - {{ pin_subpackage('quantms-utils', max_pin="x.x") }}
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   number: 0
 
 requirements:
   host:
-    - python
+    - python >=3.9,<3.13
     - pip
-    - poetry-core
+    - hatchling
+    - hatch-vcs
   run:
     - python >=3.9,<3.13
     - click
@@ -32,6 +33,7 @@ requirements:
     - numpy
     - pyarrow >=16.1.0
     - scipy
+
 test:
   imports:
     - quantmsutils
