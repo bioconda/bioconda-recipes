@@ -38,8 +38,6 @@ elif [ "$OS" = "Darwin" ] && [ "$ARCH" = "arm64" ]; then
 fi
 
 
-# libclair3.so is compiled from C source during make via build.py (CFFI),
-# linking against the locally built static libhts.a — there is no pre-built .so.
 cd ${SRC_DIR}
 make CC=${CC} CXX=${CXX} PREFIX=${PREFIX}
 cp libclair3*.so $PREFIX/bin
