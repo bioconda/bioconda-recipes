@@ -10,7 +10,7 @@ source:
   sha256: c62d54879ef4c6fd6bc639c95a58be25c88690c920173f71b66c8c091b90b92c
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('art_modern-openmpi', max_pin="x.x") }}
 
@@ -26,8 +26,8 @@ requirements:
     # Python is only needed for the build
     - python {{ python }}
   host:
-    # Boost version copied from package ProMod3 at bioconda recepies ver. 0ff2abb3f8
-    - libboost-devel >=1.86,<1.87
+    # Boost version copied from Pixi environment of art_modern.
+    - libboost-devel >=1.90.0,<2
     - zlib
     - openmpi
     - htslib # samtools does not specify HTSLib version, so do us.
@@ -35,7 +35,7 @@ requirements:
     # Conda do not have moodycamel-concurrentqueue, so using the bundled one.
   run:
     - openmpi
-    - libboost >=1.86,<1.87
+    - libboost >=1.90.0,<2
 
 test:
   commands:
@@ -44,6 +44,7 @@ test:
     # The --allow-run-as-root is needed to test inside containers.
     - mpiexec --allow-run-as-root -x ART_NO_LOG_DIR=1 -n 2 art_modern-mpi --version 2>&1 | grep -q "{{ version }}"
     - mpiexec --allow-run-as-root -x ART_NO_LOG_DIR=1 -n 1 art_profile_builder-mpi --version 2>&1 | grep -q "{{ version }}"
+    - mpiexec --allow-run-as-root -x ART_NO_LOG_DIR=1 -n 1 am_compress-mpi --version 2>&1 | grep -q "{{ version }}"
 
 about:
   home: "https://github.com/YU-Zhejian/art_modern"

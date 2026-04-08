@@ -10,7 +10,7 @@ source:
   sha256: c62d54879ef4c6fd6bc639c95a58be25c88690c920173f71b66c8c091b90b92c
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('art_modern', max_pin="x.x") }}
 
@@ -26,19 +26,20 @@ requirements:
     # Python is only needed for the build
     - python {{ python }}
   host:
-    # Boost version copied from package ProMod3 at bioconda recepies ver. 0ff2abb3f8
-    - libboost-devel >=1.86,<1.87
+    # Boost version copied from Pixi environment of art_modern.
+    - libboost-devel >=1.90.0,<2
     - zlib
     - htslib # samtools does not specify HTSLib version, so do us.
     - fmt
     # Conda do not have moodycamel-concurrentqueue, so using the bundled one.
   run:
-    - libboost >=1.86,<1.87
+    - libboost >=1.90.0,<2
 
 test:
   commands:
     - ART_NO_LOG_DIR=1 art_modern --version 2>&1 | grep -q "{{ version }}"
     - ART_NO_LOG_DIR=1 art_profile_builder --version 2>&1 | grep -q "{{ version }}"
+    - ART_NO_LOG_DIR=1 am_compress --version 2>&1 | grep -q "{{ version }}"
 
 about:
   home: "https://github.com/YU-Zhejian/art_modern"
