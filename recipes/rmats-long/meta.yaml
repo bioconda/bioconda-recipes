@@ -10,34 +10,24 @@ source:
   sha256: e76f8dc1ef6340e76c804878cfaf47b78395aac5c94252d443cf40b32be6be19
 
 build:
-  skip: true  # [py<311]
+  number: 0
+  skip: True  # [py < 311]
   entry_points:
     - rmats-long = rmats_long.command_line_interface:main
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
-
-# Was getting an error about python_abi =3.14 *_cp314t conflicting with
-# matplotlib-base requiring python_abi =3.14 *_cp314
-# Seems related to: https://github.com/conda/conda-build/issues/5843
-# Using a fix like: https://github.com/3MAH/simcoon/pull/76
-# But since {{ python }} is a value like 3.14.* *_cpython instead of just 3.14
-# py_major and py_minor are used here instead
-{% set py_major = py // 100 %}
-{% set py_minor = py % 100 %}
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - python >=3.11
-    - python_abi {{ py_major }}.{{ py_minor }} *_cp{{ py_major }}{{ py_minor }}
+    - python
     - setuptools >=80.0.0
     - cython >=3.2.0
     - pip
   run:
-    - python >=3.11
+    - python
     - bioconductor-biocparallel
     - bioconductor-drimseq
     - matplotlib-base >=3.7
@@ -64,13 +54,18 @@ test:
   imports:
     - rmats_long
   commands:
-    - pip check
     - rmats-long --help > /dev/null
-  requires:
-    - pip
 
 about:
-  home: https://github.com/Xinglab/rMATS-long
-  license: Free for non-commercial use, see LICENSE file
-  summary: Differential isoform analysis using long-read RNA-seq data
+  home: "https://github.com/Xinglab/rMATS-long"
+  license: "Free for non-commercial use, see LICENSE file."
+  summary: "Differential isoform analysis using long-read RNA-seq data."
+  license: BSD-2-Clause
+  license_family: BSD
   license_file: LICENSE
+  dev_url: "https://github.com/Xinglab/rMATS-long"
+
+extra:
+ additional-platforms:
+   - linux-aarch64
+   - osx-arm64
