@@ -38,12 +38,10 @@ elif [ "$OS" = "Darwin" ] && [ "$ARCH" = "arm64" ]; then
 fi
 
 
-# Compile libclair3 Python extension from source so it links against the host environment's libdeflate rather than using the pre-built .so
+# libclair3.so is compiled from C source during make via build.py (CFFI),
+# linking against the locally built static libhts.a — there is no pre-built .so.
 cd ${SRC_DIR}
-python setup.py build_ext --inplace
-python -c "import libclair3" || { echo "ERROR: libclair3 import failed after build"; exit 1; }
-
-make CC=${CC} CXX=${CXX}  PREFIX=${PREFIX}
+make CC=${CC} CXX=${CXX} PREFIX=${PREFIX}
 cp libclair3*.so $PREFIX/bin
 if [ "$OS" = "Linux" ]; then
     cp longphase $PREFIX/bin
