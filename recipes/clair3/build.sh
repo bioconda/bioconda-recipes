@@ -39,6 +39,8 @@ fi
 
 
 cd ${SRC_DIR}
+
+export LDFLAGS="${LDFLAGS} -ldeflate"
 make CC=${CC} CXX=${CXX} PREFIX=${PREFIX}
 cp libclair3*.so $PREFIX/bin
 if [ "$OS" = "Linux" ]; then
