@@ -1,9 +1,9 @@
-{% set name = "PAML" %}
+{% set name = "paml" %}
 {% set version = "4.10.10" %}
 {% set sha256 = "173e8754ad78000371099a96910f2c72b03a7b7b13c717405dc23385ae2f2c0f" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -13,7 +13,7 @@ source:
 build:
   number: 2
   run_exports:
-    - {{ pin_subpackage('paml', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -25,10 +25,8 @@ requirements:
 
 test:
   commands:
-    # The following cannot be tested because they require
-    # input files which, if not provided, prompt and wait:
-    # baseml, basemlg, codeml, infinitesites, mcmctree,
-    # pamp, yn00
+    # The following cannot be tested because they require input files which, if not provided, prompt and wait:
+    # baseml, basemlg, codeml, infinitesites, mcmctree, pamp, yn00
     - chi2 1 .1
     - evolver 1 | grep 'EVOLVER'
     - codeml /dev/null 2>&1 | grep 'paml'
@@ -49,3 +47,5 @@ extra:
   identifiers:
     - biotools:paml
     - doi:10.1093/bioinformatics/13.5.555
+  skip-lints:
+    - compiler_needs_stdlib_c
