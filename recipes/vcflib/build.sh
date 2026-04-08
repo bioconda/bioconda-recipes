@@ -1,10 +1,10 @@
 #!/bin/bash
 set -ex
 
-cp -rf "${RECIPE_DIR}/vcflib.pc.in" "${SRC_DIR}"
+cp -f "${RECIPE_DIR}/vcflib.pc.in" "${SRC_DIR}"
 
 sed -i.bak -e 's|-fPIC|-fPIC -Wno-int-conversion -Wno-deprecated-declarations -Wno-absolute-value -Wno-unused-comparison|' CMakeLists.txt
-rm -rf *.bak
+rm -f *.bak
 
 export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Iwfa2 -I\$(INC_DIR)"
 export CFLAGS="${CFLAGS} -O3"
