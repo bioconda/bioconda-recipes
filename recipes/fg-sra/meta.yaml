@@ -1,0 +1,58 @@
+{% set name = "fg-sra" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/fg-labs/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 8a3700e5ffbddc712d0e398ca4d44ec4e8b7f745b0ccfbad375adfedbf6877f6
+
+build:
+  number: 0
+  skip: True  # [win]
+  script_env:
+    - VDB_INCDIR
+    - VDB_LIBDIR
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - make
+    - pkg-config
+  host:
+    - ncbi-vdb
+    - libxml2
+    - zlib
+    - bzip2
+  run:
+    - libxml2
+    - zlib
+    - bzip2
+
+test:
+  commands:
+    - fg-sra --help
+    - fg-sra --version
+
+about:
+  home: https://github.com/fg-labs/fg-sra
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "High-performance SRA-to-SAM/BAM converter replacing NCBI sam-dump"
+  description: |
+    fg-sra is a fast, parallel converter from NCBI SRA format to SAM/BAM,
+    designed as a drop-in replacement for sam-dump with significantly
+    higher throughput on modern multi-core systems.
+  dev_url: https://github.com/fg-labs/fg-sra
+  doc_url: https://github.com/fg-labs/fg-sra
+
+extra:
+  recipe-maintainers:
+    - nh13
+  skip-lints:
+    - compiler_needs_stdlib_c  # until https://github.com/bioconda/bioconda-utils/issues/1095 is resolved
