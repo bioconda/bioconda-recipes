@@ -7,6 +7,12 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 
 install -d "${PREFIX}/bin"
 
+case $(uname -s) in
+    Darwin)
+	sed -i.bak 's/sysinfo\.h/sysctl.h/' src/sensmem.hpp && rm -f src/*.bak
+	;;
+esac
+
 case $(uname -m) in
     aarch64)
 	sed -i.bak 's|-std=c++11|-std=c++14 -march=armv8-a|' Makefile
