@@ -1,15 +1,17 @@
-#!/bin/bash
-set -x -e
+#!/usr/bin/env bash
+set -euo pipefail
 
-TIR_LEARNER_DIR="${PREFIX}/share/TIR-Learner3"
+# Install package files
+mkdir -p "$PREFIX/lib/tir-learner4"
+cp -r TIR-Learner4/* "$PREFIX/lib/tir-learner4/"
 
-mkdir -p ${PREFIX}/bin
-mkdir -p ${TIR_LEARNER_DIR}
-cp -rf TIR-Learner3/* ${TIR_LEARNER_DIR}
+# Fix shebang in main script (original has #!/usr/app/env python3, a typo)
+sed -i '1s|.*|#!/usr/bin/env python3|' "$PREFIX/lib/tir-learner4/TIR-Learner.py"
 
-cat <<END >>${PREFIX}/bin/TIR-Learner
-#!/bin/bash
-python3 ${TIR_LEARNER_DIR}/TIR-Learner.py \$@
-END
-
-chmod 0755 ${PREFIX}/bin/TIR-Learner
+# Create CLI wrapper
+mkdir -p "$PREFIX/bin"
+cat > "$PREFIX/bin/tirlearner4" << 'EOF'
+#!/usr/bin/env bash
+exec python3 "$(dirname "$(dirname "$(readlink -f "$0")")")/lib/tir-learner4/TIR-Learner.py" "$@"
+EOF
+chmod +x "$PREFIX/bin/tirlearner4"
