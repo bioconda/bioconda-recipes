@@ -14,3 +14,8 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
   CXXFLAGS="${CXXFLAGS}" || { cat config.log; exit 1; }
 make -j"${CPU_COUNT}"
 make install
+
+echo @@@@@@@@@@@@ ${PREFIX}  @@@@@@@@@@@@
+ls ${PREFIX}
+cat Makefile
+echo @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
