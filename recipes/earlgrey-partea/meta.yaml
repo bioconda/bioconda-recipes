@@ -1,0 +1,52 @@
+{% set name = "earlgrey-partea" %}
+{% set version = "0.1.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/TobyBaril/EarlGreyParTEA/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 117e5e45913151576df65c04f11fca06975e7e87848e372042de20129ff4a943
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('earlgrey-partea', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9,<3.13
+  run:
+    - python
+    - earlgrey >=7.1.0
+    - snakemake-minimal
+    - cd-hit
+    - graphviz
+    - matplotlib-base
+    - numpy
+
+test:
+  commands:
+    - earlGreyParTEA --help
+    - earlGreyParTEA_LibConstruct --help
+    - earlGreyParTEA_AnnotationOnly --help
+    - earlGreyParTEA --generate-config test_config.yaml
+    - test -f test_config.yaml
+
+about:
+  home: https://github.com/TobyBaril/EarlGreyParTEA
+  license: OSL-2.1
+  license_file: LICENSE
+  summary: 'Pangenome transposable element annotation pipeline using EarlGrey'
+  description: |
+    EarlGrey ParTEA extends EarlGrey for pangenome-scale transposable element
+    annotation. It processes multiple genomes in parallel, performs cross-species
+    clustering, and generates comprehensive repeat annotations.
+  doc_url: https://github.com/TobyBaril/EarlGreyParTEA
+  dev_url: https://github.com/TobyBaril/EarlGreyParTEA
+
+extra:
+  recipe-maintainers:
+    - TobyBaril
