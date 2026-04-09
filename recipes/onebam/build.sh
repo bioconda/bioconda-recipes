@@ -1,6 +1,21 @@
 #!/bin/bash
 set -euo pipefail
 
+case "$(uname -s)" in
+    Darwin)
+        shared_ext=".dylib"
+        ;;
+    *)
+        shared_ext=".so"
+        ;;
+esac
+
+hts_lib=$(find "${PREFIX}/lib" -maxdepth 1 -type f \( -name "libhts${shared_ext}" -o -name "libhts${shared_ext}.*" \) | head -n1)
+zstd_lib=$(find "${PREFIX}/lib" -maxdepth 1 -type f \( -name "libzstd${shared_ext}" -o -name "libzstd${shared_ext}.*" \) | head -n1)
+
+test -n "${hts_lib}"
+test -n "${zstd_lib}"
+
 # Patch the Makefile to use conda-provided htslib and zstd headers
 # instead of the bundled (empty) git submodules
 sed -i.bak \
@@ -13,12 +28,15 @@ rm -f Makefile.bak
 # zstd instead of trying to build them from the (empty) submodule directories.
 #
 #   HTS_LIB / ZSTD_LIB  – point to existing files; make skips their build rules
+#   HTS_LIBS / ZSTD_LIBS – link against the resolved conda shared libraries
 #   HTS_OBJS / ZSTD_OBJS – empty so no lib-copy order-only prerequisites fire
 #   R_PATH               – use conda prefix for -L and -rpath
 make onebam ONEview ONEstat seqstat seqconvert \
     CFLAGS="${CFLAGS} -I${PREFIX}/include/htslib" \
-    HTS_LIB="${PREFIX}/lib/libhts${SHLIB_EXT}" \
-    ZSTD_LIB="${PREFIX}/lib/libzstd${SHLIB_EXT}" \
+    HTS_LIB="${hts_lib}" \
+    ZSTD_LIB="${zstd_lib}" \
+    HTS_LIBS="${hts_lib}" \
+    ZSTD_LIBS="${zstd_lib}" \
     HTS_OBJS="" \
     ZSTD_OBJS="" \
     R_PATH="-L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
