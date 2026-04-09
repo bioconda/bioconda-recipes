@@ -2,30 +2,31 @@
 {% set version = "0.0.44" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  url: https://pypi.org/packages/source/p/pmultiqc/pmultiqc-{{ version }}.tar.gz
   sha256: f023e11a6fa2075edcd946246cfa4be71e732a38a39aeb532eadd24779132309
 
 build:
   number: 0
   noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage('pmultiqc', max_pin="x.x") }}
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.10,<3.13
+    - python >=3.10,<3.14
     - pip
     - hatchling
+    - hatch-vcs
   run:
-    - python >=3.10,<3.13
+    - python >=3.10,<3.14
     - pytest
     - lxml
-    - multiqc >=1.29,<=1.32
+    - multiqc >=1.29,<=1.33
     - pandas >=1.5
     - sdrf-pipelines >=0.1.2
     - pyteomics
@@ -43,13 +44,16 @@ test:
     - pmultiqc.modules.quantms
 
 about:
-  home: "https://github.com/bigbio/pmultiqc/"
+  home: "https://github.com/bigbio/pmultiqc"
   license: MIT
   license_family: MIT
-  summary: "Python package for quality control of proteomics datasets, based on multiqc package"
-  doc_url: https://github.com/bigbio/pmultiqc/
-  dev_url: https://github.com/bigbio/pmultiqc/
+  license_file: LICENSE
+  summary: "Python package for quality control of proteomics datasets, based on multiqc package."
+  doc_url: "https://pmultiqc.quantms.org"
+  dev_url: "https://github.com/bigbio/pmultiqc"
 
 extra:
+  identifiers:
+    - biotools:pmultiqc
   recipe-maintainers:
     - ypriverol
