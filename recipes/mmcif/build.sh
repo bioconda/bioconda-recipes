@@ -18,6 +18,6 @@ sed -i.bak -E \
     modules/pybind11/CMakeLists.txt
 sed -i.bak -E \
     's|cmake_minimum_required\(VERSION .*\)|cmake_minimum_required(VERSION 3.5)|' \
-    modules/pybind11_2_6_3_dev1/CMakeLists.txt
+    modules/pybind11_2_12_1/CMakeLists.txt
 
-${PYTHON} -m pip install . -vv --no-deps --no-build-isolation
+${PYTHON} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir

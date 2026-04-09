@@ -1,5 +1,5 @@
 {% set name = "csubst" %}
-{% set version = "1.4.20" %}
+{% set version = "1.11.10" %}
 
 package:
   name: {{ name }}
@@ -7,10 +7,11 @@ package:
 
 source:
   url: https://github.com/kfuku52/csubst/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 744939e9525f68cfa452d4fe7534fea9df0b4c7f34a92ffa880dfb6a691deb2c
+  sha256: 27a463ab0ab55e61e0c5957619660e5463cbad8e01a704a04115f72ef8734e76
 
 build:
   number: 1
+  skip: True  # [py < 310 or py >= 314]
   script:
     - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
     - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -I$(python -c 'import numpy; print(numpy.get_include())')"
@@ -19,7 +20,7 @@ build:
     - {{ PYTHON }} setup.py build_ext --inplace
     - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -33,18 +34,16 @@ requirements:
     - numpy
   run:
     - python
-    - ete3
+    - ete4 >=4.3.0
     - numpy
     - scipy
     - pandas
-    - joblib
     - matplotlib-base
-    - threadpoolctl
-    - iqtree >=2.0.0  # required
-    - pyvolve         # optional: for csubst simulate
-    - biopython       # optional: for csubst site --pdb besthit
+    - iqtree >=2.0.0     # required
+    - pyvolve            # optional: for csubst simulate
+    - biopython          # optional: for csubst site --pdb besthit
     - pymol-open-source  # optional: for csubst site --pdb
-    - mafft           # optional: for alignment (CLI)
+    - mafft              # optional: for alignment (CLI)
 
 test:
   commands:
@@ -54,18 +53,19 @@ test:
 
 about:
   home: "https://github.com/kfuku52/csubst"
-  license: "BSD-3-Clause"
-  license_family: BSD
+  license: "MIT"
+  license_family: MIT
   summary: "Tool for analyzing combinatorial codon substitutions in DNA sequences."
   license_file: LICENSE
   dev_url: "https://github.com/kfuku52/csubst"
   doc_url: "https://github.com/kfuku52/csubst/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    #ete4 not available on linux-aarch64
+    #- linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - kfuku52
-  additional-platforms:
-    - linux-aarch64
-    - osx-arm64
   identifiers:
     - doi:10.1038/s41559-022-01932-7

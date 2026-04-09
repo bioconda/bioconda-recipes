@@ -1,31 +1,33 @@
 {% set name = "olga" %}
-{% set version = "1.2.4" %}
+{% set version = "1.3.0" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 66b537a5c53aa840466c27fc51d22c24d57eb0124eeaf2cd2dfb6bbe53b38dda
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 09cbfdbc3abd198b39540aacb009be3b6d634b24e0de410fffe86d101f8ca8f1
 
 build:
   number: 0
   noarch: python
   entry_points:
-    - olga-compute_pgen=olga.compute_pgen:main
-    - olga-generate_sequences=olga.generate_sequences:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+    - olga-compute_pgen = olga.compute_pgen:main
+    - olga-generate_sequences = olga.generate_sequences:main
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-cache-dir --no-deps -vvv
   run_exports:
-    - {{ pin_subpackage('olga', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
     - pip
     - python
+    - setuptools
   run:
     - python
     - numpy >=1.20
+    - numba
 
 test:
   imports:
@@ -42,6 +44,7 @@ about:
   summary: "OLGA (Optimized Likelihood estimate of immunoGlobulin Amino-acid sequences) is a python 2.7/3.6 software 
   developed to compute the generation probability of amino acid and in-frame nucleotide CDR3 sequences from a 
   generative model of V(D)J recombination."
+  dev_url: "https://github.com/zsethna/OLGA"
 
 extra:
   recipe-maintainers:

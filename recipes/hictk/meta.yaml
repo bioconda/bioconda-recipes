@@ -1,6 +1,6 @@
 {% set name = "hictk" %}
-{% set version = "2.1.5" %}
-{% set sha256 = "842e0193d3c8d9286de89cd8a02a50ef11bdfd55e63fc757c64ce363d0958980" %}
+{% set version = "2.2.0" %}
+{% set sha256 = "989b6e84b967309d9822ee3274abf98daba66d3d6e6ae8c9abffcede07b24761" %}
 
 package:
   name: {{ name|lower }}
@@ -19,18 +19,23 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake >=3.25
-    - conan >=2
+    - ccache        # required to suppress warnings raised by CMake
+    - clang-tools   # required for LTO
+    - cmake >=3.29  # required for -DCMAKE_LINKER_TYPE
+    - conan >=2.21
+    - curl >=7.71   # required for --retry-all-errors
     - make
     - catch2 >=3.8
-    - cli11 >=2.5
+    - cli11 >=2.6
     - fast_float >=8
-    # - fmt >=12
+    - fmt >=12
     - highfive >=3
-    - libboost-devel >=1.88  # required for the hash2 library (header-only)
+    - libboost-devel >=1.89  # required for the hash2 library (header-only)
     - libopentelemetry-cpp-headers >=1
+    - lld         # required for LTO
+    - llvm-tools  # required for LTO
     - nlohmann_json >=3.12
-    # - spdlog >=1.15
+    - spdlog >=1.16
     - tomlplusplus >=3.3
 
   host:
@@ -59,7 +64,7 @@ test:
   requires:
     - python >=3.11,<3.14
     - pip
-    - curl
+    - curl >=7.71  # required for --retry-all-errors
     - perl-digest-sha1
     - zstd
   source_files:

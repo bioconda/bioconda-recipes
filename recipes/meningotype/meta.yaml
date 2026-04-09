@@ -1,5 +1,5 @@
 {% set name = "meningotype" %}
-{% set version = "0.8.5" %}
+{% set version = "0.8.6b" %}
 
 
 package:
@@ -7,32 +7,35 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/meningotype-{{ version }}.tar.gz
-  sha256: d5892a5cedfcde505fa6409b2b5ec04a2f79bf096a060c9d7cb35b29351884f9
+  url: https://github.com/MDU-PHL/meningotype/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: c987b1b665b4a8ba84920f3117a626e771ee7bd70fd5bfbba1d59a67bc57942a
 
 build:
-  number: 1
+  number: 0
   noarch: python
   entry_points:
     - meningotype=meningotype.meningotype:main
-  script: {{ PYTHON }} -m pip install . -vv
+  run_exports:
+    - {{ pin_subpackage('meningotype', max_pin="x.x") }}
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
 
 requirements:
   host:
     - pip
-    - python >=3.6
+    - python >=3.12
+    - setuptools
   run:
-    - biopython
-    - python >=3.6
-    - ispcr
+    - python >=3.12
+    - mlst
     - blast
-    - mlst >=2.12
+    - ispcr
+    - biopython
+    
 
 test:
   imports:
     - meningotype
   commands:
-    - pip check
     - meningotype --help
     - meningotype --test
   requires:
@@ -47,3 +50,4 @@ about:
 extra:
   recipe-maintainers:
     - andersgs
+    - kristyhoran
