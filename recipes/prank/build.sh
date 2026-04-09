@@ -4,7 +4,7 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-mkdir -p "${PREFIX}/bin"
+mkdir -p ${PREFIX}/bin
 
 case $(uname -m) in
     aarch64)
