@@ -42,7 +42,7 @@ cd ${SRC_DIR}
 
 make CC=${CC} CXX=${CXX} PREFIX=${PREFIX} CC_PATH=${CC}
 cp libclair3*.so $PREFIX/bin
-if [ "$OS" = "Linux" ]; then
+if [ -f longphase ]; then
     cp longphase $PREFIX/bin
 fi
 
