@@ -10,6 +10,9 @@ build:
   number: 0
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root ${PREFIX} --path .
 
 source:
   url: "https://github.com/pvanheus/ncbitaxonomy/archive/{{ version }}.tar.gz"
@@ -17,13 +20,8 @@ source:
 
 requirements:
   build:
-    - {{ stdlib('c') }}
-    - {{ compiler('c') }}
     - {{ compiler('rust') }}
-  host:
-    - sqlite
-  run:
-    - sqlite
+    - cargo-bundle-licenses
 
 test:
   commands:
@@ -42,6 +40,8 @@ about:
     This package provides some tools for working with (querying, converting) the NCBI Taxonomy database as well as filtering based on the NCBI Taxonomy and output of tools such as kraken2 and centrifuge
 
 extra:
+  recipe-maintainers:
+    - pvanheus
   additional-platforms:
     - linux-aarch64
     - osx-arm64
