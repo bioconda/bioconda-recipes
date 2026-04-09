@@ -39,4 +39,9 @@ make
 # --- Install binaries and Perl module ---
 mkdir -p "${PREFIX}/bin"
 cp csem csem-bam2wig csem-bam-processor csem-generate-input run-csem "${PREFIX}/bin/"
-cp csem_perl_utils.pm "${PREFIX}/bin/"
+
+# install perl module into perl's site/vendor lib
+perl -e 'use Config; print "$Config{vendorarch}\n"'
+PERL_VENDORARCH="$(perl -MConfig -e 'print $Config{vendorarch}')"
+mkdir -p "${PREFIX}/${PERL_VENDORARCH}"
+cp csem_perl_utils.pm "${PREFIX}/${PERL_VENDORARCH}/"
