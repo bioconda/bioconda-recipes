@@ -1,0 +1,45 @@
+{% set name = "somatem" %}
+{% set version = "0.7.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/treangenlab/Somatem/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 32a4efe92ea1fa6ec89bd873c533ee15b6898d7b7991b648c8b17507059fad20
+  patches:
+    - include-launcher-commands.patch
+
+build:
+  noarch: generic
+  number: 1
+
+requirements:
+  run:
+    - bash
+    - nextflow >=25.10.2
+    - micromamba
+    - coreutils
+
+test:
+  commands:
+    - somatem --help
+    - test -f "${PREFIX}/share/{{ name }}-{{ version }}/main.nf"
+    - test -f "${PREFIX}/share/{{ name }}-{{ version }}/nextflow.config"
+    - test -f "${PREFIX}/bin/{{ name }}"
+
+about:
+  home: https://github.com/treangenlab/Somatem
+  summary: "Best practices pipeline for long-read metagenomics analysis."
+  license: GPL-3.0
+  license_file: LICENSE
+  dev_url: https://github.com/treangenlab/Somatem
+  doc_url: https://github.com/treangenlab/Somatem#readme
+
+extra:
+  skip-lints:
+    - missing_run_exports  # Top-level Nextflow application package, not intended as a pinned downstream library dependency
+  recipe-maintainers:
+    - ppreshant
+    - microbemarsh
