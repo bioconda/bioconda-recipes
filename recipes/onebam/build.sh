@@ -17,14 +17,16 @@ test -n "${hts_lib}"
 test -n "${zstd_lib}"
 
 # Patch the Makefile to use conda-provided htslib and zstd headers
+# Use both ${PREFIX}/include and ${PREFIX}/include/htslib so that
+# #include "sam.h" resolves to ${PREFIX}/include/htslib/sam.h
 sed -i.bak \
-    -e "s|HTS_OPTS = -I\$(HTS_DIR)/htslib/|HTS_OPTS = -I${PREFIX}/include|" \
+    -e "s|HTS_OPTS = -I\$(HTS_DIR)/htslib/|HTS_OPTS = -I${PREFIX}/include -I${PREFIX}/include/htslib|" \
     -e "s|ZSTD_OPTS = -I\$(ZSTD_DIR)/lib/|ZSTD_OPTS = -I${PREFIX}/include|" \
     Makefile
 rm -f Makefile.bak
 
 make onebam ONEview ONEstat seqstat seqconvert \
-    CFLAGS="${CFLAGS} -I${PREFIX}/include" \
+    CFLAGS="${CFLAGS} -I${PREFIX}/include -I${PREFIX}/include/htslib" \
     LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib" \
     HTS_LIB="${hts_lib}" \
     ZSTD_LIB="${zstd_lib}" \
