@@ -11,7 +11,6 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 ./configure --prefix="${PREFIX}" --with-htslib=${PREFIX} \
   CXX="${CXX}" LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}" \
-  CXXFLAGS="${CXXFLAGS}" || cat config.log
-
+  CXXFLAGS="${CXXFLAGS}" || { cat config.log; exit 1; }
 make -j"${CPU_COUNT}"
 make install
