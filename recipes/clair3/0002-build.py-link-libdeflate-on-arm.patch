@@ -2,15 +2,14 @@ diff --git a/build.py b/build.py
 index b8efc1b..02b3ac4 100644
 --- a/build.py
 +++ b/build.py
-@@ -18,9 +18,22 @@ src_dir = os.path.join(file_directory, 'src')
+@@ -18,9 +18,20 @@ src_dir = os.path.join(file_directory, 'src')
  extra_compile_args = ['-std=c99', '-O3']
  if platform.machine() in {"aarch64", "arm64"}:
      if platform.system() == "Darwin":
 -        pass
 +        libraries.append('deflate')
 +        try:
-+            conda_path = os.environ['CONDA_PREFIX']
-+            extra_link_args = ['-Wl,-rpath={}/lib'.format(conda_path)]
++            conda_path = os.environ.get('PREFIX', os.environ['CONDA_PREFIX'])
 +            library_dirs.append(os.path.join(conda_path, 'lib'))
 +        except KeyError:
 +            print("[WARNING] Conda prefix not found, please activate clair3 conda environment first!\n")
@@ -18,8 +17,7 @@ index b8efc1b..02b3ac4 100644
          extra_compile_args.append("-march=armv8-a+simd")
 +        libraries.append('deflate')
 +        try:
-+            conda_path = os.environ['CONDA_PREFIX']
-+            extra_link_args = ['-Wl,-rpath={}/lib'.format(conda_path)]
++            conda_path = os.environ.get('PREFIX', os.environ['CONDA_PREFIX'])
 +            library_dirs.append(os.path.join(conda_path, 'lib'))
 +        except KeyError:
 +            print("[WARNING] Conda prefix not found, please activate clair3 conda environment first!\n")
