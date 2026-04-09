@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
+# Fail early with a clear error if the declared license file isn't where conda-build expects
+test -f "${SRC_DIR}/COPYING"
+
 # --------------------------------------------------------------------------
 # Compiler layout in CSEM makefiles:
 #   makefile        — CC = g++  (compiles/links C++ code, calls sam sub-make)
@@ -11,6 +14,11 @@ set -euo pipefail
 # Strategy: patch the hardcoded values in the makefiles so the conda-build
 # toolchain compilers ($CXX for C++, $CC for C) are used throughout.
 # --------------------------------------------------------------------------
+
+# If upstream uses LICENSE but recipe wants COPYING
+if [[ -f LICENSE && ! -f COPYING ]]; then
+  cp -v LICENSE COPYING
+fi
 
 # --- Root makefile: replace g++ with conda CXX ---
 sed -i "1s|CC = g++|CC = ${CXX}|" makefile
@@ -40,8 +48,6 @@ make
 mkdir -p "${PREFIX}/bin"
 cp csem csem-bam2wig csem-bam-processor csem-generate-input run-csem "${PREFIX}/bin/"
 
-# install perl module into perl's site/vendor lib
-perl -e 'use Config; print "$Config{vendorarch}\n"'
-PERL_VENDORARCH="$(perl -MConfig -e 'print $Config{vendorarch}')"
-mkdir -p "${PREFIX}/${PERL_VENDORARCH}"
-cp csem_perl_utils.pm "${PREFIX}/${PERL_VENDORARCH}/"
+# install perl module in an arch-independent location
+mkdir -p "${PREFIX}/share/perl5"
+cp csem_perl_utils.pm "${PREFIX}/share/perl5/"
