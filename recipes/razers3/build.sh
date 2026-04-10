@@ -1,36 +1,43 @@
 #!/bin/bash
 set -xe
 
-mkdir -p "${PREFIX}/bin"
-
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-deprecated-copy"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-deprecated-copy"
 
 case $(uname -m) in
     aarch64)
-	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
-	;;
+    export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+    ;;
     arm64)
-	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
-	;;
+    export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+    ;;
     x86_64)
-	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
-	;;
+    export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+    ;;
+    *)
+    ;;
 esac
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
-	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
-	export MACOSX_DEPLOYMENT_TARGET=11.3
+    export CONFIG_ARGS=(
+        -DCMAKE_FIND_FRAMEWORK=NEVER
+        -DCMAKE_FIND_APPBUNDLE=NEVER
+    )
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
 else
-	export CONFIG_ARGS=""
+    export CONFIG_ARGS=()
 fi
 
-cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
-	-DCMAKE_CXX_COMPILER="${CXX}" \
-	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
-	"${CONFIG_ARGS}"
-ninja -C build -j "${CPU_COUNT}" razers3
+cmake -S . \
+      -B build \
+      -G Ninja \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_CXX_COMPILER="${CXX}" \
+      -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+      -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+      -DSEQAN_BUILD_SYSTEM=APP:razers3 \
+      "${CONFIG_ARGS[@]}"
 
-install -v -m 755 build/bin/razers3 "${PREFIX}/bin"
+ninja -C build -j "${CPU_COUNT}"
+ninja -C build install

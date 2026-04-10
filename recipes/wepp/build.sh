@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# ---- Build and install ----
+# ---- Build ----
 mkdir -p "${PREFIX}/bin"
-cp -rf ${RECIPE_DIR}/CMakeLists.txt $SRC_DIR/CMakeLists.txt
 
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
@@ -23,11 +22,41 @@ cmake -S . -B build \
 
 cmake --build build -j "${CPU_COUNT}"
 
-install -v -m 0755 build/wepp ${PREFIX}/bin
+# Install the WEPP binary to $PREFIX/bin
+mkdir -p "${PREFIX}/bin"
+install -v -m 0755 build/wepp "${PREFIX}/bin/wepp"
 
 # Copy WEPP files to $PREFIX/WEPP
-mkdir -p $PREFIX/WEPP
-cp -rf "${SRC_DIR}"/* "${PREFIX}/WEPP"
+mkdir -p ${PREFIX}/WEPP
+cp -rf "${SRC_DIR}/src" "${SRC_DIR}/config" "${SRC_DIR}/workflow" "${SRC_DIR}/primers" "${SRC_DIR}/LICENSE" "${SRC_DIR}/parsimony.proto" "${SRC_DIR}/sam.proto" "${PREFIX}/WEPP/"
 
-# Copy the build directory
-cp -rf build "${PREFIX}/WEPP/"
+# Copy the compiled binary we just built 
+mkdir -p "${PREFIX}/WEPP/build"
+cp build/wepp "${PREFIX}/WEPP/build/"
+cp build/closest_peak_clustering "${PREFIX}/WEPP/build/"
+
+# This satisfies Snakemake's output requirement without running bad commands.
+cat <<'EOF' > "${PREFIX}/WEPP/build/Makefile"
+all:
+	@echo "WEPP is pre-compiled. Skipping build."
+install:
+	@echo "Nothing to install."
+clean:
+	@echo "Nothing to clean."
+EOF
+
+# Set Source Code date to the Past (Year 2000)
+find "${PREFIX}/WEPP/src" -exec touch -t 200001010000 {} +
+# Set Binary/Makefile date to Now
+touch "${PREFIX}/WEPP/build/Makefile"
+touch "${PREFIX}/WEPP/build/wepp"
+
+
+# Create the wrapper script
+cat <<WRAPPER > "${PREFIX}/bin/run-wepp"
+#!/bin/bash
+exec snakemake -s "\${CONDA_PREFIX}/WEPP/workflow/Snakefile" "\$@"
+WRAPPER
+
+# Make the wrapper executable
+chmod +x "${PREFIX}/bin/run-wepp"
