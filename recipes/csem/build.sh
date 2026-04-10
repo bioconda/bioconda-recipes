@@ -12,19 +12,20 @@ set -euo pipefail
 # toolchain compilers ($CXX for C++, $CC for C) are used throughout.
 # --------------------------------------------------------------------------
 
+# Fix the hardcoded -lz to point to Conda's library folder
+sed -i "s|-lz|-L${PREFIX}/lib -lz|g" makefile
 
-# Disable the curses TUI in the bundled samtools: it is only used by CSEM
-# internally (sort/index) and is not installed, so ncurses is not needed.
+# Disable the curses TUI in the bundled samtools (not needed)
 sed -i "s|-D_CURSES_LIB=1|-D_CURSES_LIB=0|" sam/Makefile
 sed -i "s|LIBCURSES=\t-lcurses.*|LIBCURSES=\t-L${PREFIX}/lib|" sam/Makefile
 
-# --- Build ---
+# Run Make, overriding their custom variables with Conda's paths
 make \
     CC="${CC}" \
     CXX="${CXX}" \
-    CFLAGS="${CFLAGS} -g -Wall -O2" \
-    CXXFLAGS="${CXXFLAGS} -Wall -O3" \
-    LDFLAGS="${LDFLAGS}"
+    COFLAGS="-Wall -O3 -c -I. -I${PREFIX}/include" \
+    CFLAGS="-g -Wall -O2 -I${PREFIX}/include -fcommon" \
+    LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 # --- Install binaries and Perl module ---
 mkdir -p "${PREFIX}/bin"
