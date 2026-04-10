@@ -1,5 +1,5 @@
 {% set name = "atol-genome-launcher" %}
-{% set version = "0.7.2" %}
+{% set version = "0.10.4" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/TomHarrop/atol-genome-launcher/archive/refs/tags/{{ version }}.tar.gz
-  sha256: b5f0c53af6cd5d4f985026c16fbfc8145e0958c76b71538e08ba36863434ab48
+  sha256: fa13193ee1df3bbc6345698300d1cb0a95df5d6d1ffa92f3c4ff45e2d503b040
 
 build:
   number: 0
@@ -16,9 +16,10 @@ build:
   script_env:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   entry_points:
-    - assembly-config-generator = assembly_config_generator.assembly_config_generator:main
     - assembly-data-downloader = assembly_data_downloader.assembly_data_downloader:main
     - bpa-file-downloader = bpa_file_downloader.bpa_file_downloader:main
+    - deploy-pipeline = deploy_pipeline.deploy_pipeline:main
+    - pipeline-config-generator = pipeline_config_generator.pipeline_config_generator:main
     - pipeline-result-uploader = pipeline_result_uploader.pipeline_result_uploader:main
     - result-file-uploader = result_file_uploader.result_file_uploader:main
     - rnaseq-manifest-generator = rnaseq_manifest_generator.rnaseq_manifest_generator:main
@@ -33,19 +34,22 @@ requirements:
     - setuptools-scm
   run:
     - ca-certificates
+    - git
     - pandas >=2.3.3,<3
     - pigz
     - pydantic >=2.12.5
     - python >=3.12,<3.15
     - rclone
     - snakemake >=9.11.6,<10
+    - snakedeploy >=0.11.0
     - wget
 
 test:
   commands:
-    - "assembly-config-generator --help | grep 'usage: assembly-config-generator'"
     - "assembly-data-downloader --help | grep 'usage: assembly-data-downloader'"
     - "bpa-file-downloader --help | grep 'usage: bpa-file-downloader'"
+    - "deploy-pipeline --help | grep 'usage: deploy-pipeline'"
+    - "pipeline-config-generator --help | grep 'usage: pipeline-config-generator'"
     - "pipeline-result-uploader --help | grep 'usage: pipeline-result-uploader'"
     - "result-file-uploader --help | grep 'usage: result-file-uploader'"
     - "rnaseq-manifest-generator --help | grep 'usage: rnaseq-manifest-generator'"
