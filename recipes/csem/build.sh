@@ -12,17 +12,20 @@ set -euo pipefail
 # toolchain compilers ($CXX for C++, $CC for C) are used throughout.
 # --------------------------------------------------------------------------
 
-# Fix the hardcoded -lz to point to Conda's library folder
-sed -i "s|-lz|-L${PREFIX}/lib -lz|g" makefile
+# --- 1. Patch Compilers (Your original strategy) ---
+sed -i "1s|CC = g++|CC = ${CXX}|" makefile
+sed -i "1s|CC=		gcc|CC=		${CC}|" sam/Makefile
+sed -i "1s|CC=		gcc|CC=		${CC}|" sam/bcftools/Makefile
+sed -i "1s|CC=		gcc|CC=		${CC}|" sam/misc/Makefile
+sed -i "2s|CXX=		g++|CXX=		${CXX}|" sam/misc/Makefile
 
-# Disable the curses TUI in the bundled samtools (not needed)
+# --- 2. Patch hardcoded library links ---
+sed -i "s|-lz|-L${PREFIX}/lib -lz|g" makefile
 sed -i "s|-D_CURSES_LIB=1|-D_CURSES_LIB=0|" sam/Makefile
 sed -i "s|LIBCURSES=\t-lcurses.*|LIBCURSES=\t-L${PREFIX}/lib|" sam/Makefile
 
-# Run Make, overriding their custom variables with Conda's paths
+# --- 3. Run Make (passing ONLY the flags, NOT the compilers) ---
 make \
-    CC="${CC}" \
-    CXX="${CXX}" \
     COFLAGS="-Wall -O3 -c -I. -I${PREFIX}/include" \
     CFLAGS="-g -Wall -O2 -I${PREFIX}/include -fcommon" \
     LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
