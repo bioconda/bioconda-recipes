@@ -21,10 +21,12 @@ sed -i "s|-lz|-L${PREFIX}/lib -lz|g" makefile
 
 # --- sam/Makefile: replace gcc with conda CC ---
 sed -i "1s|CC=\t\t*gcc|CC=\t\t${CC}|" sam/Makefile
-# Add conda include paths
-sed -i "s|CFLAGS=\t\t-g -Wall -O2|CFLAGS=\t\t-g -Wall -O2 -I${PREFIX}/include -I${PREFIX}/include/ncurses|" sam/Makefile
-# Replace -lcurses with -lncurses and add conda library path
-sed -i "s|LIBCURSES=\t-lcurses|LIBCURSES=\t-L${PREFIX}/lib -lncurses|" sam/Makefile
+# Add conda include path for zlib
+sed -i "s|CFLAGS=\t\t-g -Wall -O2|CFLAGS=\t\t-g -Wall -O2 -I${PREFIX}/include|" sam/Makefile
+# Disable the curses TUI in the bundled samtools: it is only used by CSEM
+# internally (sort/index) and is not installed, so ncurses is not needed.
+sed -i "s|-D_CURSES_LIB=1|-D_CURSES_LIB=0|" sam/Makefile
+sed -i "s|LIBCURSES=\t-lcurses.*|LIBCURSES=|" sam/Makefile
 
 # --- sam/bcftools/Makefile: replace gcc with conda CC ---
 sed -i "1s|CC=\t\t*gcc|CC=\t\t${CC}|" sam/bcftools/Makefile
