@@ -40,6 +40,11 @@ fi
 
 cd ${SRC_DIR}
 
+if [ "$OS" = "Darwin" ]; then
+    LDFLAGS="${LDFLAGS//-Wl,-rpath=/-Wl,-rpath,}"
+    export LDFLAGS
+fi
+
 make CC=${CC} CXX=${CXX} PREFIX=${PREFIX} CC_PATH=${CC}
 cp libclair3*.so $PREFIX/bin
 if [ -f longphase ]; then
