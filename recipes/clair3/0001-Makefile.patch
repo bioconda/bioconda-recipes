@@ -1,8 +1,20 @@
 diff --git a/Makefile b/Makefile
-index 2a5bfd8..3381491 100644
+index 2a5bfd8..9acd030 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -35,7 +35,7 @@ libhts.a: samtools-$(SAMVER)/Makefile
+@@ -10,7 +10,11 @@ SAMVER	=	1.15.1
+ PREFIX	?=	${CONDA_PREFIX}
+ LDFLAGS	=	-L ${PREFIX}/lib
+ CFLAGS	= -fpic -std=c99 -O3 -I ${PREFIX}/include -L ${PREFIX}/lib
++ifeq ($(OS),Darwin)
++CPPFLAGS	=	-std=c++11 -Wall -O3 -I ${PREFIX}/include -L ${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib
++else
+ CPPFLAGS	=	-std=c++11 -Wall -O3 -I ${PREFIX}/include -L ${PREFIX}/lib -Wl,-rpath=${PREFIX}/lib
++endif
+
+ ifeq ($(OS),Darwin)
+     # Mac settings
+@@ -35,7 +39,7 @@ libhts.a: samtools-$(SAMVER)/Makefile
  	@echo "\x1b[1;33mMaking $(@F)\x1b[0m"
  	cd samtools-${SAMVER}/htslib-${SAMVER}; \
  	if [ "$(OS)" = "Darwin" ]; then \
@@ -11,7 +23,7 @@ index 2a5bfd8..3381491 100644
  	else \
  		CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" ./configure; \
  	fi; \
-@@ -47,7 +47,7 @@ longphase:
+@@ -47,7 +51,7 @@ longphase:
  	if [ "$(OS)" = "Darwin" ]; then \
  		curl -L -o v${LPVER}.tar.gz https://github.com/twolinin/longphase/archive/refs/tags/v${LPVER}.tar.gz; \
  		tar -zxf v${LPVER}.tar.gz; \
