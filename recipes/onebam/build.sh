@@ -29,10 +29,10 @@ make onebam ONEview ONEstat seqstat seqconvert \
     ZSTD_LIB="${zstd_lib}" \
     HTS_LIBS="-L${PREFIX}/lib -lhts" \
     ZSTD_LIBS="-L${PREFIX}/lib -lzstd" \
-    LIBS="-L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib -lpthread -lm -lbz2 -llzma -lcurl -lz" \
+    LIBS="-lpthread -lm -lbz2 -llzma -lcurl -lz" \
     HTS_OBJS="" \
     ZSTD_OBJS="" \
-    R_PATH="-L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
+    R_PATH="${LDFLAGS}"
 
 mkdir -p "${PREFIX}/bin"
 install -m 755 onebam ONEview ONEstat seqstat seqconvert "${PREFIX}/bin/"
