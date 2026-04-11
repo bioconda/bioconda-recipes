@@ -46,7 +46,10 @@ install -v -m 755 bin/* "${PREFIX}/bin"
 
 rm -f lib/Makefile
 rm -f lib/*.o
+rm -f lib/*.c
+rm -f lib/*.h
 ls lib/
+
 cp -rf ./lib ${SHARE_DIR}/
 
 # fix hardcoded path
