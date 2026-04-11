@@ -11,25 +11,23 @@ source:
 
 build:
   number: 0
-  script: |
-    tar -xzf {{ name }}-{{ version }}.crate
-    cd {{ name }}-{{ version }}
-    cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
-    cargo install --locked --no-track --root "$PREFIX" --path .
-  run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
 
-requirements:
-  build:
-    - {{ compiler('rust') }}
-    - {{ stdlib('c') }}
-    - cargo-bundle-licenses
-    - tar
-
-test:
-  commands:
-    - meme2homer --help
-    - homer2meme --help
+outputs:
+  - name: {{ name }}
+    script: build.sh
+    build:
+      run_exports:
+        - {{ pin_subpackage(name, max_pin="x.x") }}
+    requirements:
+      build:
+        - {{ compiler('rust') }}
+        - {{ stdlib('c') }}
+        - cargo-bundle-licenses
+        - tar
+    test:
+      commands:
+        - meme2homer --help
+        - homer2meme --help
 
 about:
   home: https://github.com/zengyuanzhao/motif-bridge
