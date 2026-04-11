@@ -7,6 +7,10 @@ export CFLAGS="${CFLAGS} -O3"
 
 mkdir -p "${PREFIX}/bin"
 
+# Create share directory
+SHARE_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
+mkdir -p "${SHARE_DIR}"
+
 cd source
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
@@ -29,12 +33,9 @@ sed -i.bak "s|BIOCONDA_SED_REPLACE|$PKG_VERSION|" lib/kit.py
 rm -f util/*.bak
 rm -f lib/*.bak
 
-# Create share directory
-SHARE_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
-mkdir -p "${SHARE_DIR}"
-
 # Build
 make CC="${CC}" AR="${AR}" LDFLAGS="${LDFLAGS}" -j1
+make -C lib -j1
 
 install -v -m 755 bin/* "${PREFIX}/bin"
 
