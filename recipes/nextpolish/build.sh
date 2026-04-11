@@ -9,6 +9,10 @@ mkdir -p "${PREFIX}/bin"
 
 cd source
 
+if [[ "$(uname -s)" == "Darwin" ]]; then
+	sed -i.bak "s|#include<malloc.h>||" lib/seqlist.h
+fi
+
 # Skip copying of bwa, minimap2, and samtools
 sed -i.bak -e "s| bwa samtools minimap2||g" Makefile
 
@@ -31,7 +35,6 @@ mkdir -p "${SHARE_DIR}"
 
 # Build
 make CC="${CC}" AR="${AR}" LDFLAGS="${LDFLAGS}" -j1
-make -C lib -j1
 
 install -v -m 755 bin/* "${PREFIX}/bin"
 
