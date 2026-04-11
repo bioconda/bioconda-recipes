@@ -31,6 +31,7 @@ mkdir -p "${SHARE_DIR}"
 
 # Build
 make CC="${CC}" AR="${AR}" LDFLAGS="${LDFLAGS}" -j1
+make -C lib -j1
 
 install -v -m 755 bin/* "${PREFIX}/bin"
 
