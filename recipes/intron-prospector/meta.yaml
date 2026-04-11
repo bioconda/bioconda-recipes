@@ -1,0 +1,52 @@
+{% set name = "intron-prospector" %}
+{% set version = "1.5.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/diekhans/intron-prospector/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 7d3b76d936a8f7d5fbd78412b30f308dbf97e5d1cde68012d67846d5d6b31382
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - pkg-config
+  host:
+    - htslib
+    - libxcrypt
+    - zlib
+    - bzip2
+    - xz
+  run:
+    - htslib
+
+test:
+  commands:
+    - intron-prospector --help
+    - intron-prospector-merge --help
+
+about:
+  home: "https://github.com/diekhans/intron-prospector"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Identify putative introns from RNA-Seq alignments of short and long reads"
+  dev_url: "https://github.com/diekhans/intron-prospector"
+  doc_url: "https://github.com/diekhans/intron-prospector/blob/v{{ version }}/README.md"
+
+extra:
+  recipe-maintainers:
+    - diekhans
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c
