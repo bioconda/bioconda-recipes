@@ -40,14 +40,11 @@ rm -f lib/*.bak
 
 # Build
 make CC="${CC}" AR="${AR}" LDFLAGS="${LDFLAGS}" -j1
-make -C lib CC="${CC}" AR="${AR}" LDFLAGS="${LDFLAGS}" -j1
 
 install -v -m 755 bin/* "${PREFIX}/bin"
 
-rm -f lib/Makefile
-rm -f lib/*.o
-rm -f lib/*.c
-rm -f lib/*.h
+rm -f lib/Makefile && rm -f lib/*.o && rm -f lib/*.c && rm -f lib/*.h
+
 ls lib/
 
 cp -rf ./lib ${SHARE_DIR}/
