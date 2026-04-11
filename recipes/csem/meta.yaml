@@ -12,28 +12,29 @@ source:
 build:
   number: 0
   skip: true  # [not linux]
-  run_exports:
-    - {{ pin_subpackage('csem', max_pin='x') }}
 
-requirements:
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - {{ stdlib("c") }}
-    - make
-  host:
-    - zlib
-    - ncurses
-  run:
-    - perl
-    - zlib
-    - ncurses
-
-test:
-  commands:
-    - run-csem --help 2>&1 | grep -qi "csem"
-    - test -f "${PREFIX}/bin/run-csem"
-    - test -f "${PREFIX}/bin/sam/samtools"
+outputs:
+  - name: {{ name }}
+    script: build.sh
+    build:
+      run_exports:
+        - {{ pin_subpackage(name, max_pin='x') }}
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - {{ stdlib("c") }}
+        - make
+      host:
+        - zlib
+        - ncurses
+      run:
+        - perl
+    test:
+      commands:
+        - run-csem --help 2>&1 | grep -qi "csem"
+        - test -f "${PREFIX}/bin/run-csem"
+        - test -f "${PREFIX}/bin/sam/samtools"
 
 about:
   home: http://deweylab.biostat.wisc.edu/csem/
@@ -50,4 +51,3 @@ about:
     et al. Discovering Transcription Factor Binding Sites in Highly Repetitive
     Regions of Genomes with Multi-Read Analysis of ChIP-Seq Data.
     PLoS Comput Biol. 2011;7:e1002111.
-
