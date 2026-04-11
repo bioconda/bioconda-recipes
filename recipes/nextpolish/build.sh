@@ -16,7 +16,7 @@ sed -i.bak -e "s| bwa samtools minimap2||g" Makefile
 sed -i.bak \
 	-e "s| bwa_ samtools_ minimap2_||g" \
 	-e "s|gcc|$CC|g" \
-	-e "s|-lz|-lz -isystem ${PREFIX}/include|g" \
+	-e "s|-lz|-L${PREFIX}/lib -lz -isystem ${PREFIX}/include|g" \
 	util/Makefile
 
 # Add version info (original required internet connection)
@@ -30,11 +30,13 @@ SHARE_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
 mkdir -p "${SHARE_DIR}"
 
 # Build
-make CC="${CC}" AR="${AR}" LDFLAGS="${LDFLAGS}"
+make CC="${CC}" AR="${AR}" LDFLAGS="${LDFLAGS}" -j1
 
 install -v -m 755 bin/* "${PREFIX}/bin"
 
 rm -f lib/Makefile
+rm -f lib/*.o
+ls lib/
 cp -rf ./lib ${SHARE_DIR}/
 
 # fix hardcoded path
