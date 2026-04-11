@@ -2,7 +2,7 @@
 {% set version = "2.4" %}
 
 package:
-  name: {{ name }}-split
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -12,28 +12,27 @@ source:
 build:
   number: 0
   skip: true  # [not linux]
+  string: h47932c3_{{ PKG_BUILDNUM }}
   run_exports:
     - {{ pin_subpackage(name, max_pin='x') }}
 
-outputs:
-  - name: {{ name }}
-    script: build.sh
-    requirements:
-      build:
-        - {{ compiler('c') }}
-        - {{ compiler('cxx') }}
-        - {{ stdlib("c") }}
-        - make
-      host:
-        - zlib
-        - ncurses
-      run:
-        - perl
-    test:
-      commands:
-        - run-csem --help 2>&1 | grep -qi "csem"
-        - test -f "${PREFIX}/bin/run-csem"
-        - test -f "${PREFIX}/bin/sam/samtools"
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib("c") }}
+    - make
+  host:
+    - zlib
+    - ncurses
+  run:
+    - perl
+
+test:
+  commands:
+    - run-csem --help 2>&1 | grep -qi "csem"
+    - test -f "${PREFIX}/bin/run-csem"
+    - test -f "${PREFIX}/bin/sam/samtools"
 
 about:
   home: http://deweylab.biostat.wisc.edu/csem/
