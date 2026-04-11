@@ -14,6 +14,7 @@ build:
   script: |
     tar -xzf {{ name }}-{{ version }}.crate
     cd {{ name }}-{{ version }}
+    cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
     cargo install --locked --no-track --root "$PREFIX" --path .
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
@@ -21,6 +22,7 @@ build:
 requirements:
   build:
     - {{ compiler('rust') }}
+    - cargo-bundle-licenses
     - tar
 
 test:
@@ -31,7 +33,9 @@ test:
 about:
   home: https://github.com/hzauzengyuanzhao/motif-bridge
   license: MIT
-  license_file: {{ environ["RECIPE_DIR"] }}/LICENSE
+  license_file:
+    - {{ environ["RECIPE_DIR"] }}/LICENSE
+    - {{ name }}-{{ version }}/THIRDPARTY.yml
   summary: "Bidirectional converter between MEME and HOMER motif formats"
   description: |
     Cross-language toolkit (Perl/Python/Rust) for converting transcription
