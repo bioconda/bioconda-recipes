@@ -12,23 +12,29 @@ set -euo pipefail
 # toolchain compilers ($CXX for C++, $CC for C) are used throughout.
 # --------------------------------------------------------------------------
 
-# --- 1. Patch Compilers (Your original strategy) ---
+# --- Root makefile: replace g++ with conda CXX ---
 sed -i "1s|CC = g++|CC = ${CXX}|" makefile
-sed -i "1s|CC=		gcc|CC=		${CC}|" sam/Makefile
-sed -i "1s|CC=		gcc|CC=		${CC}|" sam/bcftools/Makefile
-sed -i "1s|CC=		gcc|CC=		${CC}|" sam/misc/Makefile
-sed -i "2s|CXX=		g++|CXX=		${CXX}|" sam/misc/Makefile
-
-# --- 2. Patch hardcoded library links ---
+# Add conda include path
+sed -i "s|COFLAGS = -Wall -O3 -c -I\.|COFLAGS = -Wall -O3 -c -I. -I${PREFIX}/include|" makefile
+# Add conda lib path for linking (all occurrences of -lz)
 sed -i "s|-lz|-L${PREFIX}/lib -lz|g" makefile
-sed -i "s|-D_CURSES_LIB=1|-D_CURSES_LIB=0|" sam/Makefile
-sed -i "s|LIBCURSES=\t-lcurses.*|LIBCURSES=\t-L${PREFIX}/lib|" sam/Makefile
 
-# --- 3. Run Make (passing ONLY the flags, NOT the compilers) ---
-make \
-    COFLAGS="-Wall -O3 -c -I. -I${PREFIX}/include" \
-    CFLAGS="-g -Wall -O2 -I${PREFIX}/include -fcommon" \
-    LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+# --- sam/Makefile: replace gcc with conda CC ---
+sed -i "1s|CC=\t\t*gcc|CC=\t\t${CC}|" sam/Makefile
+# Add conda include paths
+sed -i "s|CFLAGS=\t\t-g -Wall -O2|CFLAGS=\t\t-g -Wall -O2 -I${PREFIX}/include -I${PREFIX}/include/ncurses|" sam/Makefile
+# Replace -lcurses with -lncurses and add conda library path
+sed -i "s|LIBCURSES=\t-lcurses|LIBCURSES=\t-L${PREFIX}/lib -lncurses|" sam/Makefile
+
+# --- sam/bcftools/Makefile: replace gcc with conda CC ---
+sed -i "1s|CC=\t\t*gcc|CC=\t\t${CC}|" sam/bcftools/Makefile
+
+# --- sam/misc/Makefile: replace gcc and g++ with conda compilers ---
+sed -i "1s|CC=\t\t*gcc|CC=\t\t${CC}|" sam/misc/Makefile
+sed -i "2s|CXX=\t\t*g++|CXX=\t\t${CXX}|" sam/misc/Makefile
+
+# --- Build ---
+make
 
 # --- Install binaries and Perl module ---
 mkdir -p "${PREFIX}/bin"
