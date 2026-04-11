@@ -17,6 +17,11 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
 	sed -i.bak "s|#include<malloc.h>||" lib/seqlist.h
 fi
 
+sed -i.bak "s|-O2|-O3|g" lib/htslib/Makefile
+sed -i.bak "s|gcc|${CC}|" lib/htslib/Makefile
+sed -i.bak "s|= ar|= ${AR}|" lib/htslib/Makefile
+rm -f lib/htslib/*.bak
+
 # Skip copying of bwa, minimap2, and samtools
 sed -i.bak -e "s| bwa samtools minimap2||g" Makefile
 
@@ -28,14 +33,14 @@ sed -i.bak \
 	util/Makefile
 
 # Add version info (original required internet connection)
-sed -i.bak "s|BIOCONDA_SED_REPLACE|$PKG_VERSION|" lib/kit.py
+sed -i.bak "s|BIOCONDA_SED_REPLACE|${PKG_VERSION}|" lib/kit.py
 
 rm -f util/*.bak
 rm -f lib/*.bak
 
 # Build
 make CC="${CC}" AR="${AR}" LDFLAGS="${LDFLAGS}" -j1
-make -C lib -j1
+make -C lib CC="${CC}" AR="${AR}" LDFLAGS="${LDFLAGS}" -j1
 
 install -v -m 755 bin/* "${PREFIX}/bin"
 
@@ -45,7 +50,7 @@ ls lib/
 cp -rf ./lib ${SHARE_DIR}/
 
 # fix hardcoded path
-sed -i.bak "s|BIOCONDA_SED_REPLACE|$SHARE_DIR|" nextPolish
+sed -i.bak "s|BIOCONDA_SED_REPLACE|${SHARE_DIR}|" nextPolish
 rm -f *.bak
 
 install -v -m 755 nextPolish "${PREFIX}/bin"
