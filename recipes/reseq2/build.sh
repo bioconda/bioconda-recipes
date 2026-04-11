@@ -20,6 +20,7 @@ esac
 
 if [[ `uname -s` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	mv VERSION VERSION.txt
 else
 	export CONFIG_ARGS=""
 fi
