@@ -13,10 +13,12 @@ build:
   noarch: python
   entry_points:
     - fracsim = fracsim.main:main
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-          f [ -f $SP_DIR/fracsim-*.dist-info/requires.txt ]; then
-            sed -i '/pytest/d' $SP_DIR/fracsim-*.dist-info/requires.txt
-          fi
+  script: |
+    {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+    # 移除上游错误声明的 pytest 和 pytest-cov 运行时依赖
+    if [ -f $SP_DIR/fracsim-*.dist-info/requires.txt ]; then
+        sed -i '/pytest/d' $SP_DIR/fracsim-*.dist-info/requires.txt
+    fi
   number: 0
   run_exports:
     - {{ pin_subpackage('fracsim', max_pin='x.x') }}
