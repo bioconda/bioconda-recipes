@@ -7,3 +7,4 @@ mkdir -p "$DESTDIR"
 mkdir -p "$PREFIX/bin"
 cp -av * "$DESTDIR/"
 ln -s "$DESTDIR/bin/$EXE" "$PREFIX/bin/$EXE"
+"$PREFIX/bin/$EXE" --updatedb
