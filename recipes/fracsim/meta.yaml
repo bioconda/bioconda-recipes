@@ -10,23 +10,24 @@ source:
   sha256: 9b44d02819095e6e5cf781072b8915f9f373a2d495412d7f57dfe83e4636ba85
 
 build:
-  noarch: python                     # 关键：使包不绑定具体 Python 子版本
+  noarch: python
   entry_points:
     - fracsim = fracsim.main:main
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
+  run_exports:
+    - {{ pin_subpackage('fracsim', max_pin='x.x') }}
 
 requirements:
   host:
     - python >=3.8
     - pip
-    - setuptools                     # 构建 sdist 必需
-    - wheel                          # 构建 wheel 元数据推荐
-    # 注意：mmh3 不需要在 host 中，它会在 run 时自动安装
+    - setuptools
+    - wheel
   run:
     - python >=3.8
     - mmh3 >=4.0.0
-    - numpy >=1.21.0                 # 根据原始 PyPI 依赖补充
+    - numpy >=1.21.0
 
 test:
   imports:
