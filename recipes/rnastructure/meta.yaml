@@ -3,30 +3,30 @@
 {% set sha256 = "2e6064aebe568549beca149df0e7a3d977ddf12b9907eea01ae7b81984c8ad45" %}
 
 package:
-  name: {{ name | lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
+  url: https://rna.urmc.rochester.edu/Releases/{{ version }}/RNAstructureSource.tgz
   sha256: {{ sha256 }}
-  url: http://rna.urmc.rochester.edu/Releases/{{ version }}/RNAstructureSource.tgz
 
 build:
-  number: 1
+  number: 0
   run_exports:
-    - {{ pin_subpackage(name | lower, max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
+    - pkg-config
   host:
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
   run:
     - llvm-openmp  # [osx]
+    - libgomp      # [linux]
 
 # In  version 6.0, several commands are returning exit code 1 when called with
 # the -h option. Therefore, changed the modules that are tested.
@@ -36,10 +36,10 @@ test:
     - fold -h || true
 
 about:
-  home: http://rna.urmc.rochester.edu/RNAstructure.html
-  license: GPL-2.0-only
+  home: "https://rna.urmc.rochester.edu/RNAstructure.html"
+  license: "GPL-2.0-only"
   license_family: GPL
-  license_file: gpl.txt
+  license_file: "gpl.txt"
   summary: 'RNAstructure is a complete package for RNA and DNA secondary structure  prediction
     and analysis. It includes algorithms for   secondary structure  prediction, including
     facility to predict base pairing probabilities. It  also can be used to predict
@@ -50,8 +50,14 @@ about:
     Finally, RNAstructure  can take a number of different types of experiment mapping
     data to constrain  or restrain structure prediction. These include chemical mapping,
     enzymatic  mapping, NMR, and SHAPE data.'
+  doc_url: "https://rna.urmc.rochester.edu/Overview/index.html"
 
 extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
+  identifiers:
+    - doi:10.1093/bioinformatics/btv682
+    - biotools:rnastructure
+  skip-lints:
+    - compiler_needs_stdlib_c
