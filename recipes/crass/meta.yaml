@@ -3,7 +3,7 @@
 {% set shasum = "7078bcccb7a16bf4f2e54590f25d85f36d27d1bbaa9f2c484d4eaa81a5ead930" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -13,24 +13,26 @@ source:
     - patch
 
 build:
-  number: 6
-  skip: True  # [osx]
+  number: 7
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - autoconf >=2.61
-    - automake >=1.10
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - gnuconfig
   host:
-    - libtool >=2.2
+    - graphviz
+    - xerces-c
     - zlib
-    - xerces-c =3.1
   run:
-    - libtool >=2.2
-    - xerces-c =3.1
-    - zlib
+    - xerces-c
 
 test:
   commands:
@@ -38,6 +40,12 @@ test:
     - "crass --version 2>&1 | grep crass &> /dev/null"
 
 about:
-  home: 'https://mummer4.github.io/'
-  license: "GNU General Public License v3.0"
+  home: "https://github.com/ctSkennerton/crass"
+  license: "GPL-3.0-or-later"
   summary: "Crass (The CRISPR Assembler) is a program that searches through raw metagenomic reads for Clustered Regularly Interspersed Short Palindromic Repeats"
+  dev_url: "https://github.com/ctSkennerton/crass"
+
+extra: 
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

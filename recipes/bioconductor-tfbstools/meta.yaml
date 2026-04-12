@@ -1,24 +1,27 @@
-{% set version = "1.44.0" %}
+{% set version = "1.46.0" %}
 {% set name = "TFBSTools" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.21" %}
 
 about:
   description: TFBSTools is a package for the analysis and manipulation of transcription factor binding sites. It includes matrices conversion between Position Frequency Matirx (PFM), Position Weight Matirx (PWM) and Information Content Matrix (ICM). It can also scan putative TFBS from sequence/alignment, query JASPAR database and provides a wrapper of de novo motif discovery software.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL-2
+  home: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
+  license: "GPL-2.0-or-later"
+  license_family: GPL
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
-  summary: Software Package for Transcription Factor Binding Site (TFBS) Analysis
+  summary: "Software Package for Transcription Factor Binding Site (TFBS) Analysis."
+  doc_url: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
 
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  run_exports: '{{ pin_subpackage("bioconductor-tfbstools", max_pin="x.x") }}'
+  run_exports: {{ pin_subpackage('bioconductor-tfbstools', max_pin="x") }}
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:tfbstools
   parent_recipe:
@@ -28,7 +31,7 @@ extra:
 
 package:
   name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
+  version: {{ version }}
 
 # Suggests: BiocStyle(>= 1.7.7), JASPAR2014(>= 1.4.0), knitr(>= 1.11), testthat, JASPAR2016(>= 1.0.0), JASPAR2018(>= 1.0.0), rmarkdown
 requirements:
@@ -36,7 +39,6 @@ requirements:
   build:
     - {{ compiler('c') }}
     - make
-
   host:
     - bioconductor-biobase >=2.66.0,<2.67.0
     - bioconductor-biocgenerics >=0.52.0,<0.53.0
@@ -62,7 +64,6 @@ requirements:
     - r-xml >=3.98-1.3
     - libblas
     - liblapack
-
   run:
     - bioconductor-biobase >=2.66.0,<2.67.0
     - bioconductor-biocgenerics >=0.52.0,<0.53.0
@@ -88,7 +89,7 @@ requirements:
     - r-xml >=3.98-1.3
 
 source:
-  md5: 6a911dc2eaa79f199041039488ed7271
+  sha256: 739e9069fc82e689379f56c579c0f5883c70eb95cdae434fc8b43404c7862b91
   url:
     - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
     - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
@@ -98,4 +99,3 @@ source:
 test:
   commands:
     - $R -e "library('{{ name }}')"
-

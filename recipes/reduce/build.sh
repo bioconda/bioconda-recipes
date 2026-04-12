@@ -19,9 +19,17 @@ cmake -S . -B build -G Ninja \
   ${CMAKE_ARGS} \
   -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
   -DPython_ROOT_DIR="${PREFIX}" \
-  -DHET_DICTIONARY="${PREFIX}/reduce_wwPDB_het_dict.txt" \
-  -DHET_DICTOLD="${PREFIX}/reduce_het_dict.txt"
-cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+  -DHET_DICTIONARY="${PREFIX}/share/reduce/reduce_wwPDB_het_dict.txt" \
+  -DHET_DICTOLD="${PREFIX}/share/reduce/reduce_het_dict.txt"
+cmake --build build --clean-first --target install --parallel "${CPU_COUNT}"
+
+# Remove mislocated reduce_wwPDB_het_dict.txt
+# TODO: Remove the line after the upstream PR is merged
+rm "${PREFIX}/reduce_wwPDB_het_dict.txt"
+
+mkdir -p "${PREFIX}/share/reduce"
+install -m 644 reduce_wwPDB_het_dict.txt "${PREFIX}/share/reduce"
+install -m 755 update_het_dict.py "${PREFIX}/share/reduce"
 
 # Install a shared library file and a Python module
 mkdir -p "${SP_DIR}"
