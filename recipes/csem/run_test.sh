@@ -8,7 +8,7 @@ if { run-csem 2>&1 || true; } | grep -qF "Can't locate csem_perl_utils.pm"; then
 fi
 
 run_csem_output="run-csem \\[options\\] input_file fragment_length output_name"
-if { run_csem_output=$(run-csem --help 2>&1 || true; } | grep "$run_csem_output"); then
+if { run_csem_output=$(run-csem --help 2>&1 || true); } | grep "$run_csem_output"); then
      run_csem_status=0
  else
      run_csem_status=$?
@@ -44,7 +44,7 @@ if { csem-generate-input 2>&1 || true; } | grep -qF "Can't locate csem_perl_util
 fi
 
 csem_generate_input_output="csem-generate-input \\[options\\] input.bam output_name"
-if { csem_generate_input_output=$(csem-generate-input --help 2>&1 || true; } | grep "$csem_generate_input_output"); then
+if { csem_generate_input_output=$(csem-generate-input --help 2>&1 || true); } | grep "$csem_generate_input_output"; then
      csem_generate_input_status=0
  else
      csem_generate_input_status=$?
