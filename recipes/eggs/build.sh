@@ -1,5 +1,5 @@
 #!/bin/bash
-CFLAGS="$CFLAGS -I ${PREFIX}/lib"
+CFLAGS="$CFLAGS -I lib"
 $CC $CFLAGS -DHAVE_INLINE -c lib/gsl/error.c -o lib/gsl/error.o
 $CC $CFLAGS -DHAVE_INLINE -c lib/gsl/message.c -o lib/gsl/message.o
 $CC $CFLAGS -DHAVE_INLINE -c lib/gsl/stream.c -o lib/gsl/stream.o
@@ -16,7 +16,7 @@ $CC $CFLAGS -c src/GenotypeParser.c -o src/GenotypeParser.o
 $CC $CFLAGS -c src/Interface.c -o src/Interface.o
 $CC $CFLAGS -DHAVE_INLINE -c src/Main.c -o src/Main.o
 mkdir -p bin
-$CC -I ${PREFIX}/include -g -o bin/eggs src/*.o lib/*.o lib/gsl/*.o -lz -lm
+$CC -g -o bin/eggs src/*.o lib/*.o lib/gsl/*.o -lz -lm
 mkdir -p "$PREFIX/bin"
 cp bin/eggs "$PREFIX/bin"
 chmod +x "$PREFIX/bin/eggs"
