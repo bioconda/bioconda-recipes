@@ -1,5 +1,6 @@
 #!/bin/bash
 CFLAGS += -I lib
+LFLAGS += -g -o
 "$CC" "$CFLAGS" -DHAVE_INLINE -c lib/gsl/error.c -o lib/gsl/error.o
 "$CC" "$CFLAGS" -DHAVE_INLINE -c lib/gsl/message.c -o lib/gsl/message.o
 "$CC" "$CFLAGS" -DHAVE_INLINE -c lib/gsl/stream.c -o lib/gsl/stream.o
