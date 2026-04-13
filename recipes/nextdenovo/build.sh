@@ -4,7 +4,7 @@ set -ex
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
 
-OUTDIR="${SP_DIR}/nextdenovo"
+OUTDIR="${SP_DIR}/nextdenovo-${PKG_VERSION}"
 
 mkdir -p "${PREFIX}/bin" "${OUTDIR}"
 
