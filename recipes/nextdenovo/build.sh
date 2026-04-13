@@ -15,7 +15,7 @@ case $(uname -m) in
 	*) make CC="${CC}" -j"${CPU_COUNT}" ;;
 esac
 
-install -v -m 755 bin/* "${OUTDIR}"
 cp -rf ${SRC_DIR}/* "${OUTDIR}"
+
 chmod 755 ${OUTDIR}/nextDenovo
 ln -sf ${OUTDIR}/nextDenovo "${PREFIX}/bin/nextDenovo"
