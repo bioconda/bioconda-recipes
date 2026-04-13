@@ -2,5 +2,5 @@
 set -eux -o pipefail
 
 bin/barrnap --updatedb
-make -C buld clean
+make -C build clean
 cp -av * "$PREFIX/"
