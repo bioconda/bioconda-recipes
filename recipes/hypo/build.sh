@@ -9,14 +9,11 @@ mkdir -p "$PREFIX/bin"
 
 case $(uname -m) in
     aarch64)
-	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
-	;;
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a" ;;
     arm64)
-	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
-	;;
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a" ;;
     x86_64)
-	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
-	;;
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3" ;;
 esac
 
 if [[ `uname -s` == "Darwin" ]]; then
@@ -36,6 +33,13 @@ case $(uname -m) in
 	sed -i.bak 's|-march=nocona -mtune=haswell|-march=x86-64-v3|' CMakeLists.txt
 	;;
 esac
+
+if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
+	git clone https://github.com/DLTcollab/sse2neon.git
+	cp -f sse2neon/sse2neon.h external/spoa/src/
+	sed -i.bak 's|#include <immintrin.h>|#include "sse2neon.h"|' external/spoa/src/simd_alignment_engine.cpp
+	rm -f external/spoa/src/*.bak
+fi
 
 rm -f *.bak
 rm -rf build
