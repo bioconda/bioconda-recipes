@@ -1,0 +1,51 @@
+{% set name = "pangenomerge" %}
+{% set version = "0.9.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/qtoussaint/pangenome_merge/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 0587012af9d05727fe7b720300c6b122d7633acb869c5fe0aebe8c4c23ef8134
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python
+    - biopython >=1.80
+    - networkx >=3.4.2
+    - mmseqs2
+    - numpy
+    - pandas
+    - scipy
+    - scikit-learn
+    - python-edlib
+    - tqdm
+
+test:
+  imports:
+    - pangenomerge
+  commands:
+    - python -c "import pangenomerge; print(pangenomerge.__version__)"
+
+about:
+  home: https://github.com/qtoussaint/pangenome_merge
+  summary: "Create pangenome gene graphs for hundreds of thousands of bacterial genomes"
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - qtoussaint
