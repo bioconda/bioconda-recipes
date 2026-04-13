@@ -5,39 +5,58 @@ package:
   name: {{ name|lower }}
   version: {{ version }}
 
-build:
-  number: 2
-  skip: True  # [osx]
-
 source:
   url: https://github.com/kensung-lab/hypo/releases/download/v{{ version }}/hypo-v{{ version }}.tar.gz
   sha256: f936069830b8a1dbd8d9825593b35ee83fc891c0419c395b2f2c858f329b3810
   patches:
     - march.patch
+    - 0001-CMakeLists.patch
+
+build:
+  number: 3
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 requirements:
   build:
-    - make
+    - ninja
     - {{ compiler('cxx') }}
     - cmake
+    - pkg-config
   host:
     - zlib
-    - openmp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - htslib >=1.10
     - kmc >=3.0
     - sdsl-lite >=2.1.1
   run:
-    - zlib
-    - openmp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - htslib >=1.10
     - kmc >=3.0
     - sdsl-lite >=2.1.1
+
 test:
   commands:
     - hypo -h
 
 about:
-  home: https://github.com/kensung-lab/hypo
-  license: GPL-3.0
+  home: "https://github.com/kensung-lab/hypo"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: Super Fast and Accurate Polisher for Long Read Genome Assemblies.
+  summary: "Super Fast and Accurate Polisher for Long Read Genome Assemblies."
+  dev_url: "https://github.com/kensung-lab/hypo"
+  doc_url: "https://github.com/kensung-lab/hypo/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:hypo
+    - usegalaxy-eu:hypo
+    - doi:10.1101/2019.12.19.882506
+  skip-lints:
+    - compiler_needs_stdlib_c

@@ -1,14 +1,37 @@
 #!/bin/bash
 
-export CFLAGS=-I$PREFIX/include
-export CXXFLAGS=-I$PREFIX/include
-export LDFLAGS=-L$PREFIX/lib
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3"
+export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
 
-mkdir -p $PREFIX/bin
+mkdir -p "$PREFIX/bin"
+
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
+
+if [[ `uname -s` == "Darwin" ]]; then
+	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+else
+	export CONFIG_ARGS=""
+fi
+
 rm -rf build
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Conda ..
-make
-#make CC=${CC} CFLAGS="${CFLAGS} -L${PREFIX}/lib"  CXX=${CXX} CXXFLAGS="${CXXFLAGS} -L${PREFIX}/lib" LDFLAGS="${LDFLAGS}"
-cp ./bin/hypo $PREFIX/bin/hypo
+
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Conda \
+	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+	-DCMAKE_CXX_COMPILER="${CXX}" \
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
+	"${CONFIG_ARGS}"
+
+ninja -C build install -j "${CPU_COUNT}"
