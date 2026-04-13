@@ -38,15 +38,10 @@ make
 
 # --- Install binaries and Perl module ---
 mkdir -p "${PREFIX}/bin"
-cp csem csem-bam2wig csem-bam-processor csem-generate-input run-csem "${PREFIX}/bin/"
+cp csem csem-bam2wig csem-bam-processor csem-generate-input run-csem csem_perl_utils.pm "${PREFIX}/bin/"
 
 # --- Install bundled samtools (old 0.1.x API) used by run-csem and csem-generate-input ---
 # The Perl wrappers call "$FindBin::Bin/sam/samtools" with pre-1.0 syntax
 # (positional sort output prefix, no -o flag), incompatible with modern samtools.
 mkdir -p "${PREFIX}/bin/sam"
 cp sam/samtools "${PREFIX}/bin/sam/samtools"
-
-# --- Install Perl module to site lib directory ---
-PERL_LIB=$(perl -MConfig -e 'print $Config{installsitelib}')
-mkdir -p "${PERL_LIB}"
-cp csem_perl_utils.pm "${PERL_LIB}/"
