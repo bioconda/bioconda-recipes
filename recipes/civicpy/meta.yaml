@@ -1,47 +1,43 @@
 {% set name = "civicpy" %}
 {% set version = "5.3.0" %}
-
 package:
   name: {{ name|lower }}
   version: {{ version }}
-
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: 06747f1d1d15f4a80a0ab1df9b2e5555b7eea58ba1431e862cc653bc5b3267b6
-
 build:
-  number: 0
+  number: 1
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('civicpy', max_pin="x") }}
   entry_points:
     - civicpy = civicpy.cli:cli
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
-  run_exports:
-    - {{ pin_subpackage('civicpy', max_pin="x") }}
-
 requirements:
-  host: 
+  host:
     - pip
     - python >=3.10
     - setuptools
   run:
     - python >=3.10
-    - backports
     - backports-datetime-fromisoformat
     - click
     - deprecation
+    - ga4gh-vrs
+    - ga4gh-cat-vrs
+    - ga4gh-va-spec >=0.4.1,<0.5
     - networkx
     - obonet
-    - pandas
+    - pandas <=2.3.3
     - pysam
     - requests
-    - vcfpy
-
+    - vcfpy >=0.13.8,<0.14
 test:
   imports:
     - civicpy
-  #commands:
-    #- civicpy --help
-
+  commands:
+    - civicpy --help
 about:
   home: "https://civicpy.org"
   license: MIT
