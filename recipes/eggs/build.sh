@@ -1,3 +1,3 @@
-make CC=${CC} CFLAGS="${CFLAGS} -I${PREFIX}/include -I lib" LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+make CC=${CC}
 mkdir -p $PREFIX/bin
 cp bin/eggs $PREFIX/bin
