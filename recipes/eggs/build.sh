@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euxo pipefail
 CFLAGS="$CFLAGS -I lib"
 $CC $CFLAGS -DHAVE_INLINE -c lib/gsl/error.c -o lib/gsl/error.o
 $CC $CFLAGS -DHAVE_INLINE -c lib/gsl/message.c -o lib/gsl/message.o
