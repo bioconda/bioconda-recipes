@@ -7,17 +7,10 @@ if { run-csem 2>&1 || true; } | grep -qF "Can't locate csem_perl_utils.pm"; then
     exit 1
 fi
 
-run_csem_output="run-csem \\[options\\] input_file fragment_length output_name"
-if { run_csem_output=$(run-csem --help 2>&1 || true); } | grep "$run_csem_output"); then
-     run_csem_status=0
- else
-     run_csem_status=$?
- fi
-
- if [ "$run_csem_status" -ne 0 ]; then
-     echo "FAIL: run-csem --help exited with status $run_csem_status"
-     exit 1
- fi
+if ! { run-csem --help 2>&1 || true; } | grep -q "run-csem \\[options\\] input_file fragment_length output_name"; then
+    echo "FAIL: run-csem --help did not print expected usage string"
+    exit 1
+fi
 
 # Test 2: csem prints expected usage
 if ! { csem 2>&1 || true; } | grep -qF "Usage : csem input_type input_file fragment_length UPPERBOUND output_name number_of_threads [--extend-reads] [--prior prior_file]"; then
@@ -43,16 +36,9 @@ if { csem-generate-input 2>&1 || true; } | grep -qF "Can't locate csem_perl_util
     exit 1
 fi
 
-csem_generate_input_output="csem-generate-input \\[options\\] input.bam output_name"
-if { csem_generate_input_output=$(csem-generate-input --help 2>&1 || true); } | grep "$csem_generate_input_output"; then
-     csem_generate_input_status=0
- else
-     csem_generate_input_status=$?
- fi
-
- if [ "$csem_generate_input_status" -ne 0 ]; then
-     echo "FAIL: csem-generate-input --help exited with status $csem_generate_input_status"
-     exit 1
- fi
+if ! { csem-generate-input --help 2>&1 || true; } | grep -q "csem-generate-input \\[options\\] input.bam output_name"; then
+    echo "FAIL: csem-generate-input --help did not print expected usage string"
+    exit 1
+fi
 
 echo "All tests passed."

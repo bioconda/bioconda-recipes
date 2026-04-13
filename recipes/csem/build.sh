@@ -40,6 +40,10 @@ make
 mkdir -p "${PREFIX}/bin"
 cp csem csem-bam2wig csem-bam-processor csem-generate-input run-csem csem_perl_utils.pm "${PREFIX}/bin/"
 
+# --- Fix Perl shebangs to use conda environment perl ---
+sed -i "1s|#!/usr/bin/perl|#!${PREFIX}/bin/perl|" "${PREFIX}/bin/run-csem"
+sed -i "1s|#!/usr/bin/perl|#!${PREFIX}/bin/perl|" "${PREFIX}/bin/csem-generate-input"
+
 # --- Install bundled samtools (old 0.1.x API) used by run-csem and csem-generate-input ---
 # The Perl wrappers call "$FindBin::Bin/sam/samtools" with pre-1.0 syntax
 # (positional sort output prefix, no -o flag), incompatible with modern samtools.
