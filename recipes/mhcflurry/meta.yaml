@@ -1,16 +1,16 @@
 {% set name = "mhcflurry" %}
-{% set version = "2.1.5" %}
+{% set version = "2.2.0" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 7536096d59dd72d9f6a7014f01c3461df52adc6b925c20568cc17a774b2229ae
+  url: "https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: aaf352d3f9759f7d20b722382481d5a5ce0abb2c0ee9b8c302d90293ab8d9b5c
 
 build:
-  number: 0
+  number: 1
   noarch: python
   entry_points:
     - mhcflurry-downloads = mhcflurry.downloads_command:run
@@ -25,25 +25,25 @@ build:
     - mhcflurry-calibrate-percentile-ranks = mhcflurry.calibrate_percentile_ranks_command:run
     - mhcflurry-class1-train-presentation-models = mhcflurry.train_presentation_models_command:run
     - mhcflurry-cluster-worker-entry-point = mhcflurry.cluster_parallelism:worker_entry_point
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   run_exports:
     - {{ pin_subpackage('mhcflurry', max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.10,<3.13
     - pip
+    - setuptools
   run:
-    - six
-    - pandas >=0.20.3
+    - python >=3.10,<3.13
+    - pandas >=2.0
     - appdirs
     - scikit-learn
-    - mhcgnomes >=0.8.4
+    - mhcgnomes >=3.0.1
+    - numpy >=1.22.4
+    - pytorch >=2.0.0
     - pyyaml
     - tqdm
-    - tensorflow >=2.12.0
-    - np_utils
-    - tf-keras    
 
 test:
   imports:
