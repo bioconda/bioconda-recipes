@@ -16,7 +16,7 @@ $CC $CFLAGS -c src/GenotypeParser.c -o src/GenotypeParser.o
 $CC $CFLAGS -c src/Interface.c -o src/Interface.o
 $CC $CFLAGS -DHAVE_INLINE -c src/Main.c -o src/Main.o
 mkdir -p bin
-$CC $LFLAGS -g -o bin/eggs src/*.o lib/*.o lib/gsl/*.o -lz -lm
+$CC -g -o bin/eggs src/*.o lib/*.o lib/gsl/*.o -lz -lm
 mkdir -p "$PREFIX/bin"
 cp bin/eggs "$PREFIX/bin"
 chmod +x "$PREFIX/bin/eggs"
