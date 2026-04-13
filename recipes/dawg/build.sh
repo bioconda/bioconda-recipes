@@ -1,12 +1,39 @@
 #!/bin/bash
 
-cd build
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3"
+export CFLAGS="${CFLAGS} -O3"
 
-if [[ ${target_platform} =~ linux.* ]] ; then
-    # Workaround for glibc<2.17 where clock_gettime is in librt. (clock_time being used indirectly via Boost.)
-    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_EXE_LINKER_FLAGS_INIT=-lrt ..
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a";;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a";;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3";;
+esac
+
+if [[ `uname -s` == "Darwin" ]]; then
+	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
-    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${PREFIX}" ..
+	export CONFIG_ARGS="-DCMAKE_EXE_LINKER_FLAGS_INIT=-lrt"
 fi
-make
-make install
+
+rm -rf build
+
+sed -i.bak 's|3.1.0|3.5|' CMakeLists.txt
+
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' *.pl && rm -f *.bak
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' utils/*.pl && rm -f utils/*.bak
+
+cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+	-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-DCMAKE_C_COMPILER="${CC}" \
+	-DCMAKE_C_FLAGS="${CFLAGS}" \
+	-DBOOST_ROOT="${PREFIX}" \
+	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
+	"${CONFIG_ARGS}"
+
+ninja -C build install -j"${CPU_COUNT}"
