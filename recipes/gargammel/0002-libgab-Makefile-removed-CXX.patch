@@ -1,0 +1,114 @@
+diff --git a/libgab/Makefile b/libgab/Makefile
+index 55d86f3..b6a37a0 100644
+--- a/libgab/Makefile
++++ b/libgab/Makefile
+@@ -9,35 +9,35 @@ ifdef BAMTOOLSINC
+ 	BAMTOOLSINCAPI=${BAMTOOLSINC}
+ 	BAMTOOLSINCSHARED=${BAMTOOLSINC}
+ else
+-	BAMTOOLSINCAPI=${BAMTOOLS}/build/src/
+-	BAMTOOLSINCSHARED=${BAMTOOLS}/src/
++	BAMTOOLSINCAPI=${BAMTOOLS}/
++	BAMTOOLSINCSHARED=${BAMTOOLS}/
+ endif
+ 
+ ifdef BAMTOOLSLIB
+-	BAMTOOLSLIBOBJ=${BAMTOOLSLIB}/libbamtools.a 
++	BAMTOOLSLIBOBJ=${BAMTOOLSLIB}/libbamtools.a
+ else
+-	BAMTOOLSLIBOBJ=${BAMTOOLS}/build/src/libbamtools.a 
++	BAMTOOLSLIBOBJ=${BAMTOOLS}/lib/libbamtools.a
+ endif
+ 
+ ifeq ($(CXX),)
+-CXX := g++ #-g  -pg 
++CXX ?= $(CXX)
+ endif
+ 
+-ifeq ($(SAMTOOLSINC),)#no defined 
++ifeq ($(SAMTOOLSINC),)#no defined
+ SAMTOOLSINC := ${SAMTOOLS}
+ endif
+ 
+-ifeq ($(HTSLIBINC),)#no defined 
++ifeq ($(HTSLIBINC),)#no defined
+ HTSLIBINC := ${HTSLIB}
+ endif
+ 
+ 
+-CXXFLAGS += -Wall  -lm -O3 -I. -Igzstream/ -I${BAMTOOLSINCAPI} -I${BAMTOOLSINCSHARED} 
++CXXFLAGS += -Wall -lm -O3 -I. -Igzstream/ -I${BAMTOOLSINCAPI} -I${BAMTOOLSINCSHARED}
+ LDLIBS   += -lz
+-LDLIBSHTS = ${SAMTOOLSINC}/bedidx.o ${HTSLIBINC}/libhts.a  ${SAMTOOLSINC}/libst.a 
++LDLIBSHTS = ${SAMTOOLSINC}/bedidx.o ${HTSLIBINC}/libhts.a ${SAMTOOLSINC}/libst.a
+ CXXFLAGSHTS = -I${HTSLIBINC} -I${SAMTOOLSINC}
+ 
+-#.PHONY: clean all 
++#.PHONY: clean all
+ 
+ bamtools_target  = $(BAMTOOLSINCAPI)-$(wildcard $(BAMTOOLSINCAPI))
+ bamtools_present = $(BAMTOOLSINCAPI)-$(BAMTOOLSINCAPI)
+@@ -73,7 +73,7 @@ $(samtools_absent):
+ 
+ BamFunctions.o:
+ 	${CXX} ${CXXFLAGS} ${CXXFLAGSHTS} -c -o BamFunctions.o BamFunctions.cpp
+-	ar cr libgabbamhts.a BamFunctions.o
++	$(AR) rcs libgabbamhts.a BamFunctions.o
+ 
+ gzstream/libgzstream.a:
+ 	make CXX=${CXX} CPPFLAGS="${CXXFLAGS}" -C gzstream/
+@@ -91,7 +91,7 @@ testRecons:	testRecons.o libgab.a ${BAMTOOLSLIBOBJ}  ReconsReferenceBAM.o gzstre
+ 	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
+ 
+ libgab.a: libgab.o FastQObj.o FastQParser.o PutProgramInHeaderHTS.o
+-	ar cr libgab.a libgab.o FastQObj.o FastQParser.o PutProgramInHeaderHTS.o
++	$(AR) rcs libgab.a libgab.o FastQObj.o FastQParser.o PutProgramInHeaderHTS.o
+ 
+ test:	all
+ 	./test.sh
+diff --git a/libgab/ReconsReferenceBAM.h b/libgab/ReconsReferenceBAM.h
+index add362d..f15a0ad 100644
+--- a/libgab/ReconsReferenceBAM.h
++++ b/libgab/ReconsReferenceBAM.h
+@@ -15,6 +15,7 @@
+ #include "api/BamReader.h"
+ #include "api/BamWriter.h"
+ #include "api/BamAux.h"
++#include <stddef.h>
+ 
+ using namespace BamTools;
+ using namespace std;
+diff --git a/libgab/gzstream/Makefile b/libgab/gzstream/Makefile
+index 0a76664..afc0d56 100644
+--- a/libgab/gzstream/Makefile
++++ b/libgab/gzstream/Makefile
+@@ -35,12 +35,11 @@
+ # CXX      = CC -n32 -LANG:std   # for SGI Irix 6.5, MIPSpro CC version 7.30
+ 
+ ifeq ($(CXX),)
+-CXX := g++ 
++CXX ?= $(CXX)
+ endif
+ 
+-CPPFLAGS += -I. -O
+-LDFLAGS  += -L. -lgzstream -lz
+-AR       = ar cr
++CPPFLAGS += $(CXXFLAGS) -I$(PREFIX)/include -I. -O
++LDFLAGS  += -L$(PREFIX)/lib -L. -lgzstream -lz
+ 
+ # ----------------------------------------------------------------------------
+ # plain simple rules to make and cleanup the library:
+@@ -72,7 +71,7 @@ test_gunzip.o : test_gunzip.C gzstream.h
+ 	${CXX} ${CPPFLAGS} -c -o test_gunzip.o test_gunzip.C
+ 
+ libgzstream.a : gzstream.o
+-	${AR} libgzstream.a gzstream.o
++	$(AR) rcs libgzstream.a gzstream.o
+ 
+ test_gzip : test_gzip.o libgzstream.a
+ 	${CXX} -o test_gzip test_gzip.o ${LDFLAGS}
+@@ -88,4 +87,3 @@ cleanall :
+ 
+ # ============================================================================
+ # EOF
+-

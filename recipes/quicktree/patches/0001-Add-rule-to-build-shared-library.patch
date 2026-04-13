@@ -8,36 +8,38 @@ Subject: [PATCH] Add rule to build shared library
  1 file changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 14e42a4..7fe8385 100644
+index 14e42a4..a85599b 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -15,15 +15,18 @@ QUICKTREEOBJ = $(COMMON) $(OBJ)/quicktree.o $(OBJ)/buildtree.o $(OBJ)/tree.o
+@@ -14,15 +14,20 @@ COMMON = $(OBJ)/align.o \
+ QUICKTREEOBJ = $(COMMON) $(OBJ)/quicktree.o $(OBJ)/buildtree.o $(OBJ)/tree.o
  
  
- CC	= gcc
+-CC	= gcc
 -CFLAGS  = -c -I$(INC) -O2 -Wunused-result
-+CFLAGS  = -c -I$(INC) -O2 -Wunused-result -fPIC
++CC	= $(CC)
++CFLAGS ?= -O3
++CFLAGS += -Wno-unused-result -Wno-fortify-source -Wno-parentheses
++CFLAGS += -c -I$(INC) -fPIC
  
- LFLAGS = -g 
+-LFLAGS = -g 
++LDFLAGS += -g
  
 -all: quicktree
 +all: quicktree libquicktree.so
  
  quicktree : $(QUICKTREEOBJ)
- 	$(CC) $(LFLAGS) -o $@ $(QUICKTREEOBJ) -lm
- 
+-	$(CC) $(LFLAGS) -o $@ $(QUICKTREEOBJ) -lm
++	$(CC) $(LDFLAGS) -o $@ $(QUICKTREEOBJ) -lm
++
 +libquicktree.so: $(QUICKTREEOBJ)
 +	$(CC) -shared $(LFLAGS) -o $@ $(QUICKTREEOBJ) -lm
-+
+ 
  $(OBJ)/quicktree.o : $(SRC)/quicktree.c $(INC)/version.h
  	$(CC) $(CFLAGS) -o $(OBJ)/quicktree.o $(SRC)/quicktree.c
- 
-@@ -52,4 +55,4 @@ $(OBJ)/options.o : $(SRC)/options.c $(INC)/options.h
+@@ -52,4 +57,4 @@ $(OBJ)/options.o : $(SRC)/options.c $(INC)/options.h
  	$(CC) $(CFLAGS) -o $(OBJ)/options.o $(SRC)/options.c
  
  clean:
 -	rm $(OBJ)/*.o quicktree
-+	rm $(OBJ)/*.o quicktree libquicktree.so
--- 
-2.39.2
-
++	rm -f $(OBJ)/*.o quicktree libquicktree.so

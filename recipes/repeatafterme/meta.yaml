@@ -1,0 +1,47 @@
+{% set name = "RepeatAfterMe" %}
+{% set version = "0.0.7" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Dfam-consortium/RepeatAfterMe/archive/refs/tags/RepeatAfterMe_V{{ version }}.tar.gz
+  sha256: 8a4c96be6c0fcedf24ee28796fea3bffef022c7479d8f49fbd2f83e56d697f26
+  patches:
+    - 0001-Makefile.patch
+    - 0002-dnautil-macOS.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('repeatafterme', max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  run:
+    - perl
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - RAMExtend 2>&1 | grep 'RAMExtend Version'
+
+about:
+  home: "https://github.com/Dfam-consortium/RepeatAfterMe"
+  license: "CC0"
+  license_file: LICENSE
+  summary: "A package for the extension of repetitive DNA sequences."
+  dev_url: "https://github.com/Dfam-consortium/RepeatAfterMe"
+  doc_url: "https://github.com/Dfam-consortium/RepeatAfterMe/blob/RepeatAfterMe_V{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

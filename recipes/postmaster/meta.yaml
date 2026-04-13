@@ -1,0 +1,57 @@
+{% set name = "postmaster" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/COMBINE-lab/postmaster
+  git_rev: b4cb875f8365adb20732b941aa83029cb8a14ffa
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script:
+    - export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
+    - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - sed -i.bak -e 's|git = "https://github.com/rust-bio/rust-htslib", rev="9e01563"|version = "0.49.0"|' Cargo.toml  # [aarch64]
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - RUST_BACKTRACE=1 cargo install --verbose --no-track --root "${PREFIX}" --path .
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - cargo-bundle-licenses
+    - pkg-config
+    - clangdev  # [aarch64]
+    - llvmlite  # [aarch64]
+
+test:
+  commands:
+    - postmaster -h
+
+about:
+  home: "https://github.com/COMBINE-lab/postmaster"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "Postmaster is a tool for annotating transcriptome alignments with posterior alignment probabilities derived from salmon quantifications."
+  dev_url: "https://github.com/COMBINE-lab/postmaster"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - rob-p
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash

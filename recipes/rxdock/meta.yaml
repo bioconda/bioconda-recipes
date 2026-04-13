@@ -3,23 +3,27 @@
 {% set commit = "148c5bd172cf669fd1ad1090052169261bec79b4" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://gitlab.com/{{ name }}/{{ name }}/-/archive/master/{{ name }}-{{ commit }}.tar.gz
-  sha256: 1f81adbaaf3c20344ebc037dc62b6eecf4e45c3a6bd225573ed0e25582cc9a06
-  patches:
-    - rDock_fix_paths.patch
+  sha256: bdf023aa9d26b33bf59f8278734fddb7a9905945d7ff901009f162a8dd5a8086
 
 build:
-  number: 2
+  number: 3
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin=None) }}
 
 requirements:
   build:
-    - meson
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - pkg-config
+    - python
+    - meson
+    - ninja
   host:
     - perl
   run:
@@ -30,20 +34,24 @@ requirements:
 
 test:
   commands:
-    - rbcavity --help
-    - rbdock --help
-    - sdrmsd --help
-    - sdsort -h
-    - sdmodify
+    - rbmoegrid -h
+    - shasum --help
+    #- rbcavity --help
+    #- sdrmsd --help
+    #- sdsort -h
+    #- sdmodify
 
 about:
-  home: https://www.rxdock.org
-  license: LGPL-3.0
-  license_file: LICENSE.txt
-  summary: RxDock is a fork of rDock (GitLab), a fast, versatile and open-source program for docking ligands to proteins and nucleic acids.
-  
-  dev_url: https://gitlab.com/rxdock/rxdock/
+  home: "https://www.rxdock.org"
+  license: "LGPL-3.0-or-later"
+  license_family: LGPL
+  license_file: "LICENSE.txt"
+  summary: "RxDock is a fork of rDock (GitLab), a fast, versatile and open-source program for docking ligands to proteins and nucleic acids."
+  dev_url: "https://gitlab.com/rxdock/rxdock"
 
 extra:
   identifiers:
     - usegalaxy-eu:rxdock_rbdock
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

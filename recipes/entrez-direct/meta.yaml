@@ -1,24 +1,25 @@
 {% set name = "entrez-direct" %}
-{% set version = "22.4" %}
-{% set date = "20240717" %}
-{% set sha256 = "350b47cd285aa8370f8af7fc2f3d4a11f31d8118f3f9cb87204063c9f3374739" %}
+{% set version = "25.3" %}
+{% set date = "20260410" %}
+{% set sha256 = "189382f1fe4a1b43872855cd5b442ed25111192dd4b00330268c1cad6d7216bf" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
+
+source:
+  url: https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/edirect.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
-source:
-  url: https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/edirect.tar.gz
-  sha256: {{ sha256 }}
-
 requirements:
   build:
     - {{ compiler('go') }}
+    - go-licenses
   run:
     - wget
 
@@ -36,13 +37,18 @@ test:
     - xtract -version
 
 about:
-  home: https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/README
-  license: PUBLIC DOMAIN
-  summary: Entrez Direct (EDirect) is an advanced method for accessing the NCBI's set of interconnected databases (publication, sequence, structure, gene, variation, expression, etc.) from a UNIX terminal window. Functions take search terms from command-line arguments. Individual operations are combined to build multi-step queries. Record retrieval and formatting normally complete the process.
+  home: "https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/README"
+  license: "Public Domain"
+  summary: "Entrez Direct (EDirect) - Access to NCBI's Entrez databases"
+  description: |
+    Entrez Direct (EDirect) provides access to Entrez, the NCBI's suite of interconnected databases (publication, sequence, structure, gene, variation, expression, etc.) from a Unix terminal window. Search terms are entered as command-line arguments. Individual operations are connected with Unix pipes to construct multi-step queries. Selected records can then be retrieved in a variety of formats.
+  doc_url: "https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/README"
 
 extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
-  container:
-    extended-base: True
+  identifiers:
+    - biotools:entrez
+  skip-lints:
+    - compiler_needs_stdlib_c

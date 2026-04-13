@@ -1,0 +1,103 @@
+diff --git a/build_release.py b/build_release.py
+index 9e73bb4..0add862 100755
+--- a/build_release.py
++++ b/build_release.py
+@@ -29,7 +29,7 @@ def get_ver():
+             line = line.strip()
+             if "Version:" in line:
+                 return line.split("Version:")[-1].strip()
+-    print("Error: cannot read R_NOMAD_VERSION")
++    print("Error: cannot read KMC version")
+     sys.exit(1)
+ 
+ def get_os():
+diff --git a/kmc_CLI/kmc.cpp b/kmc_CLI/kmc.cpp
+index 15e579e..6360bcc 100644
+--- a/kmc_CLI/kmc.cpp
++++ b/kmc_CLI/kmc.cpp
+@@ -5,6 +5,7 @@
+ #include <fstream>
+ #include <algorithm>
+ #include <iomanip>
++#include <random>
+ using namespace std;
+ 
+ struct CLIParams
+@@ -36,7 +37,7 @@ void usage()
+ 		<< "  -sm - use strict memory mode (memory limit from -m<n> switch will not be exceeded)\n"
+ 		<< "  -hc - count homopolymer compressed k-mers (approximate and experimental)\n"
+ 		<< "  -p<par> - signature length (5, 6, 7, 8, 9, 10, 11); default: 9\n"
+-		<< "  -f<a/q/m/bam/kmc> - input in FASTA format (-fa), FASTQ format (-fq), multi FASTA (-fm) or BAM (-fbam) or KMC(-fkmc); default: FASTQ\n"
++		<< "  -f<a/q/m/bam/kmc> - input in FASTA format (-fa), FASTQ format (-fq), multi FASTA (-fm) or BAM (-fbam) or KMC (-fkmc); default: FASTQ\n"
+ 		<< "  -ci<value> - exclude k-mers occurring less than <value> times (default: 2)\n"
+ 		<< "  -cs<value> - maximal value of a counter (default: 255)\n"
+ 		<< "  -cx<value> - exclude k-mers occurring more of than <value> times (default: 1e9)\n"
+@@ -264,7 +265,7 @@ bool parse_parameters(int argc, char* argv[], Params& params)
+ 				input_file_names.push_back(s);
+ 
+ 		in.close();
+-		std::random_shuffle(input_file_names.begin(), input_file_names.end());
++		std::shuffle(input_file_names.begin(), input_file_names.end(), std::mt19937{});
+ 	}
+ 	stage1Params.SetInputFiles(input_file_names);
+ 
+diff --git a/kmc_api/kmer_api.h b/kmc_api/kmer_api.h
+index a5a1ebe..4f99aae 100644
+--- a/kmc_api/kmer_api.h
++++ b/kmc_api/kmer_api.h
+@@ -99,7 +99,7 @@ protected:
+ 
+ 	// ----------------------------------------------------------------------------------
+ 	template<typename RandomAccessIterator>
+-	inline void to_string_impl(RandomAccessIterator iter)
++	inline void to_string_impl(RandomAccessIterator iter) const
+ 	{
+ 		uchar *byte_ptr;
+ 		uchar c;
+@@ -431,7 +431,7 @@ public:
+ 	// Convert kmer into string (an alphabet ACGT)
+ 	// RET	: string kmer
+ 	//-----------------------------------------------------------------------
+-	inline std::string to_string()
++	inline std::string to_string() const
+ 	{
+ 		std::string string_kmer;		
+ 		string_kmer.resize(kmer_length);
+@@ -442,14 +442,14 @@ public:
+ 	// Convert kmer into string (an alphabet ACGT). The function assumes enough memory was allocated
+ 	// OUT	: str - string kmer. 
+ 	//-----------------------------------------------------------------------
+-	inline void to_string(char *str)
++	inline void to_string(char *str) const
+ 	{
+ 		to_string_impl(str);
+ 		str[kmer_length] = '\0';
+ 	};
+ 
+ 
+-	inline void to_long(std::vector<uint64>& kmer)
++	inline void to_long(std::vector<uint64>& kmer) const
+ 	{
+ 		kmer.resize(no_of_rows);
+ 		uint32 offset = 62 - ((kmer_length - 1 + byte_alignment) & 31) * 2;
+@@ -473,7 +473,7 @@ public:
+ 	// Convert kmer into string (an alphabet ACGT)
+ 	// OUT 	: str - string kmer
+ 	//-----------------------------------------------------------------------
+-	inline void to_string(std::string &str)
++	inline void to_string(std::string &str) const
+ 	{	
+ 		str.resize(kmer_length);
+ 		to_string_impl(str.begin());
+diff --git a/py_kmc_api/libs/pybind11/include/pybind11/attr.h b/py_kmc_api/libs/pybind11/include/pybind11/attr.h
+index 8732cfe..9981b2e 100644
+--- a/py_kmc_api/libs/pybind11/include/pybind11/attr.h
++++ b/py_kmc_api/libs/pybind11/include/pybind11/attr.h
+@@ -11,6 +11,7 @@
+ #pragma once
+ 
+ #include "cast.h"
++#include <cstdint>
+ 
+ NAMESPACE_BEGIN(PYBIND11_NAMESPACE)
+ 

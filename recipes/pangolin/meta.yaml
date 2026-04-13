@@ -1,4 +1,4 @@
-{% set version = "4.3" %}
+{% set version = "4.4" %}
 
 package:
   name: pangolin
@@ -6,29 +6,32 @@ package:
 
 source:
   url: https://github.com/cov-lineages/pangolin/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: daf13c111799943b05bc2c8eee8deb2316e1347ca8f40f0b40d22cdbcc72e3c1
+  sha256: c367075a9392cc0e288d3d4ea5c1a23eb4981177caa2b67f902daf74f1b73958
 
 build:
-  number: 2
+  number: 1
   noarch: python
-  script: python -m pip install --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed .
+  run_exports:
+    - {{ pin_subpackage('pangolin', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.7
-    - pip
+    - python >=3.10
+    - pip >=19.3.1
+    - setuptools
   run:
-    - python >=3.7
-    - biopython ==1.74
-    - pandas >=1.0.1
-    - tabulate
+    - python >=3.10
+    - biopython >=1.74
+    - pandas >=2.3.1
     - joblib >=0.11
-    - scikit-learn <1.3.0
+    - scikit-learn >=0.23.1,<1.3.0
+    - tabulate
     - pulp >=2
     - minimap2 >=2.16
-    - snakemake-minimal >=5.13,<=7.30.1
+    - snakemake-minimal >=9.9.0
     - gofasta
-    - usher >=0.6.2
+    - usher >=0.6.2,!=0.6.4,!=0.6.5
     - ucsc-fatovcf >=426
     - git
     - git-lfs
@@ -36,6 +39,7 @@ requirements:
     - constellations >=0.0.15
     - pangolin-data >=1.2.133.2
     - conda
+    - pip >=19.3.1
 
 test:
   commands:

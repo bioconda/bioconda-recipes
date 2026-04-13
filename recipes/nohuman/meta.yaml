@@ -1,4 +1,4 @@
-{% set version = "0.1.1" %}
+{% set version = "0.5.1" %}
 {% set name = "nohuman" %}
 
 package:
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/mbhall88/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: 73a79909e487e0669e1604407024c8f1db1a3a0adf2fb3d76d80987823d85fd2
+  sha256: e0840bf16f23b8269f08884b32a9d905ce1af9dd35cf455b5a85364c84492a7d
 
 build:
   number: 0
@@ -17,23 +17,37 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - pkg-config
   host:
-    - rust >=1.70
-    - openssl
+    - xz
   run:
-    - kraken2 =2.1
+    - kraken2 =2
 
 test:
   commands:
     - nohuman --help
+    - nohuman --check
 
 about:
-  home: https://github.com/mbhall88/nohuman
+  home: "https://github.com/mbhall88/nohuman"
   license: MIT
   license_family: MIT
-  summary: Remove human reads from a sequencing run
-  license_file: LICENSE
+  license_file: 
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "Remove human reads from a sequencing run."
+  dev_url: "https://github.com/mbhall88/nohuman"
+  doc_url: "https://github.com/mbhall88/nohuman/blob/{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/gigascience/giae010
   recipe-maintainers:
     - mbhall88
+  skip-lints:
+    - compiler_needs_stdlib_c  # until https://github.com/bioconda/bioconda-utils/issues/1095 is resolved

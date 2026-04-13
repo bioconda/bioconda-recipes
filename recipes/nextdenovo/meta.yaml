@@ -1,35 +1,45 @@
 {% set name = "nextdenovo" %}
 {% set version = "2.5.2" %}
-{% set sha256 = "5c7ca4aa3de234f4e0efd8aaf9eaf60ebd79b5e545ad2878a76162b29d815fe0" %}
+{% set sha256 = "f1d07c9c362d850fd737c41e5b5be9d137b1ef3f1aec369dc73c637790611190" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/Nextomics/NextDenovo/releases/download/{{ version }}/NextDenovo.tgz
-  # Source URL for version 2.5.2 does not have a 'v' preceding the version like previous releases
-  sha256: {{ sha256 }}
+  git_url: https://github.com/Nextomics/NextDenovo.git
+  git_rev: 0e5fa5d
+  sha256: unused
+  patches:
+    - 0001-master.patch
+    - 0002-minimap2.patch
+    - 0003-makefile.patch
 
 build:
-  number: 5
-  binary_has_prefix_files:
-    - nextDenovo
+  number: 7
   run_exports:
-    - {{ pin_subpackage('nextdenovo', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - make
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - gnuconfig
   host:
     - python
-    - pip
-    - paralleltask
+    - libcurl
+    - libxcrypt
+    - libdeflate
+    - openssl
     - bzip2
     - zlib
   run:
     - python
+    - setuptools
     - paralleltask
 
 test:
@@ -50,7 +60,13 @@ about:
   doc_url: "https://nextdenovo.readthedocs.io/en/latest"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.1101/2023.03.09.531669
     - biotools:nextdenovo
     - usegalaxy-eu:nextdenovo
+  skip-lints:
+    - uses_vcs_url
+    - compiler_needs_stdlib_c

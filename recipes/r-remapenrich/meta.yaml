@@ -1,0 +1,86 @@
+{% set version = '0.99.0' %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-remapenrich
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url: https://github.com/nigiord/ReMapEnrich/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 87764400fbe3fbb41fda2395b669c9e926f7e39323a590f53f2944a9cd720aaf
+
+build:
+  noarch: generic
+  merge_build_host: True  # [win]
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage('r-remapenrich', max_pin='x.x') }}
+
+# Suggests: knitr, rmarkdown
+requirements:
+  build:
+    - {{ posix }}filesystem        # [win]
+    - {{ posix }}git
+    - {{ posix }}zip               # [win]
+
+  host:
+    - r-base >=3.3
+    - bioconductor-genomicranges
+    - r-r.utils
+    - r-rmysql
+    - r-data.table
+
+  run:
+    - r-base >=3.3
+    - bioconductor-genomicranges
+    - r-r.utils
+    - r-rmysql
+    - r-data.table
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('ReMapEnrich')"           # [not win]
+    - "\"%R%\" -e \"library('ReMapEnrich')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://github.com/nigiord/ReMapEnrich
+  license: AGPL-3
+  summary: Bioinformatics tools to compute statistical enrichment of geonomic regions for ReMap
+    peaks
+  license_family: AGPL
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+
+extra:
+  recipe-maintainers:
+    - nigiord
+
+# The original CRAN metadata for this package was:
+
+# Package: ReMapEnrich
+# Title: Bioinformatics tools to compute statistical enrichment of geonomic regions for ReMap peaks
+# Version: 0.99.0
+# Authors@R: c(person("Zacharie", "Menetrier", email = "zacharie.menetrier@gmail.com", role = c("aut", "cre")), person("Martin", "Mestdagh", email = "martin.mestdagh@gmail.com", role = c("aut")))
+# Description: Bioinformatics tools to compute statistical enrichment of geonomic regions for ReMap peaks
+# Depends: R (>= 3.3), GenomicRanges, data.table, R.utils, RMySQL
+# LazyData: true
+# RoxygenNote: 6.1.1
+# License: GNU Affero General Public License
+# Suggests: knitr, rmarkdown
+# VignetteBuilder: knitr
+# biocViews: c("GeneExpression", "GeneSetEnrichment", "GenomeAnnotation", "Software")
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml

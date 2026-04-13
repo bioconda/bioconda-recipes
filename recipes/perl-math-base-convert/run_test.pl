@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 my @items = (
-    ["Math::Base::Convert", "0.11"],
+    ["Math::Base::Convert", "0.13"],
     ["Math::Base::Convert::Bases", "0.03"],
     ["Math::Base::Convert::CalcPP", "0.03"],
     ["Math::Base::Convert::Shortcuts", "0.05"],

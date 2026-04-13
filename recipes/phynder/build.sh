@@ -4,7 +4,7 @@ set +e
 
 mkdir -p $PREFIX/bin
 
-export CFLAGS="$CFLAGS -I$PREFIX/include"
+export CFLAGS="$CFLAGS -O3 -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export C_INCLUDE_PATH="${PREFIX}/include"
 
@@ -23,7 +23,7 @@ mv configure.ac2 configure.ac
 autoreconf -if
 
 ./configure --prefix=${PREFIX} --enable-libcurl --with-libdeflate --enable-plugins --enable-gcs --enable-s3
-make -j "${CPU_COUNT}" lib-static htslib_static.mk
+make -j"${CPU_COUNT}" lib-static htslib_static.mk
 make CC=$CC install
 
 ## Patch phynder Makefile to cloned htslib folder (original assumes alongside, not within)
@@ -31,8 +31,7 @@ cd ../
 sed -i.bak 's#HTSDIR=../htslib#HTSDIR=./htslib#g' Makefile
 sed -i.bak -e 's#LDLIBS=$(HTSLIB) -lpthread $(HTSLIB_static_LIBS)#LDLIBS=$(HTSLIB) -lpthread $(HTSLIB_static_LIBS) $(LDFLAGS)#g' -e 's#cp phynder ~/bin##g' Makefile
 
-make CC=$CC CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" -j "${CPU_COUNT}"
+make CC=$CC CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" -j"${CPU_COUNT}"
 make install
 
-chmod 755 phynder
-cp -f phynder $PREFIX/bin/
+install -v -m 0755 phynder "$PREFIX/bin"

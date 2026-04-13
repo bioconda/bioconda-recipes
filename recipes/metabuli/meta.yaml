@@ -1,18 +1,23 @@
-{% set version = "1.0.5" %}
-{% set sha256 = "c84a4e2436904f0cbea7126abf2a5f665a870735c8af786883e10f3f872bda28" %}
+{% set version = "1.2.0" %}
+{% set sha256 = "2cdeff949676852276930b9fb14c564b50fbc3c48b9c2f903531fc3d1bd3f50c" %}
 
 package:
   name: metabuli
   version: {{ version }}
 
 build:
-  number: 2
+  number: 0
   run_exports:
     - {{ pin_subpackage('metabuli', max_pin="x") }}
-
 source:
-  url: https://github.com/steineggerlab/metabuli/archive/{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  - url: https://github.com/steineggerlab/metabuli/archive/{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+  - url: https://github.com/jaebeom-kim/MMseqs2/archive/0.0.0.tar.gz
+    sha256: 91ecd98f413665760542798da867fdd49307c0c305fc9226493c38ff3566c2ec
+    folder: lib/mmseqs
+  - url: https://github.com/jaebeom-kim/fasta_validator/archive/0.0.0.tar.gz
+    sha256: fff01c6a9f60b27c6f8d3d98b2c6f67ab8bdb5079ebb4d50f3ebc860f1a56636
+    folder: lib/fasta_validator
 
 requirements:
   build:
@@ -20,19 +25,21 @@ requirements:
     - {{ compiler('c') }}
     - cmake
     - make
+    - pkg-config
+  host:
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
-  host:
     - perl
     - gawk
     - zlib
     - bzip2
   run:
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - perl
     - aria2
     - wget
     - gawk
-    - zlib
-    - bzip2
 
 test:
   commands:
@@ -42,7 +49,7 @@ about:
   home: https://github.com/steineggerlab/Metabuli
   license: GPLv3
   license_file: LICENSE
-  summary: "Metabuli: specific and sensitive metagenomic classification via joint analysis of DNA and amino acid"
+  summary: "Metabuli: specific and sensitive metagenomic classification via joint analysis of DNA and amino acid."
 
 extra:
   identifiers:
