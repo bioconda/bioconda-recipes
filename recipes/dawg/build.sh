@@ -1,8 +1,8 @@
 #!/bin/bash
 
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-narrowing"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -Wnarrowing"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-narrowing"
 export CFLAGS="${CFLAGS} -O3"
 
 case $(uname -m) in
