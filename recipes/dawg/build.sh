@@ -2,7 +2,7 @@
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wnarrowing"
 export CFLAGS="${CFLAGS} -O3"
 
 case $(uname -m) in
