@@ -2,9 +2,12 @@
 set -eux -o pipefail
 
 EXE="barrnap"
+
 DESTDIR="$PREFIX/lib/$EXE"
 mkdir -p "$DESTDIR"
-mkdir -p "$PREFIX/bin"
 cp -av * "$DESTDIR/"
+
+mkdir -p "$PREFIX/bin"
 ln -s "$DESTDIR/bin/$EXE" "$PREFIX/bin/$EXE"
-"$PREFIX/bin/$EXE" --updatedb
+
+"$DESTDIR/bin/$EXE" --updatedb
