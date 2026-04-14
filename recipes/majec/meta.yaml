@@ -1,0 +1,76 @@
+{% set name = "majec" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 09c48a633c567aa806d798871bc884a7875e6b6ceaf37628bf1badec24f0862f
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - majec_run_pipeline = majec.pipeline:main
+    - majec_precompute_annotations = majec.preprocess:main
+    - majec_build_db = majec.database:main
+    - majec_add_norm_factors = majec.tools.normalization:main
+    - majec_prepare_deseq2 = majec.analysis.deseq2:main
+    - majec_visualize = majec.analysis.visualization:main
+    - majec_calc_frag_len = majec.tools.fragment_lengths:main
+    - majec_calc_thresholds = majec.tools.thresholds:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - poetry-core >=1.0.0
+  run:
+    - python >=3.11
+    # --- Core Python dependencies ---
+    - numpy >=2.3
+    - pandas >=2.3
+    - scipy >=1.16
+    - intervaltree >=3.1
+    - polars >=1.33
+    # --- External bioinformatics tools ---
+    - subread >=2.0
+    - samtools >=1.20
+    - bedtools >=2.31
+    # --- Optional: visualization & analysis ---
+    # Uncomment if you want these installed by default:
+    # - plotly >=6.3
+    # - python-kaleido >=1.0
+    # - pypdf2 >=3.0
+    # - xlsxwriter
+
+test:
+  imports:
+    - majec
+    - majec.pipeline
+    - majec.preprocess
+  commands:
+    - majec_run_pipeline --help
+    - majec_precompute_annotations --help
+
+about:
+  home: https://github.com/calico/majec
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE
+  summary: "Momentum-Accelerated Junction-Enhanced Counting for RNA-seq quantification"
+  description: |
+    MAJEC is a unified framework for quantifying genes, transcript isoforms,
+    and individual transposable element loci from aligned RNA-seq reads (BAM files)
+    in a single analysis. It uses a junction-informed Expectation-Maximization
+    algorithm operating on a joint gene+TE feature space.
+  dev_url: https://github.com/calico/majec
+
+extra:
+  recipe-maintainers:
+    - ajfirestone
