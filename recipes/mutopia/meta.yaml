@@ -1,0 +1,90 @@
+{% set name = "mutopia" %}
+{% set version = "1.0.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: effa006e4d04d23e2db6113db614b0c79811f39c0cf4c9ede0880c54581baa79
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - gtensor = mutopia.cli.gtensor_cli:gtensor_cli
+    - topo-model = mutopia.cli.model_cli:model
+    - mutopia-sbs = mutopia.cli.sbs_cli:sbs
+  # Tight minor-version pin because MuTopia is early-stage software — minor                                                          
+  # releases may still introduce API/CLI changes. Revisit once 2.x lands.
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11,<3.12
+    - pip
+    - setuptools
+  run:
+    - python >=3.11,<3.12
+    # Core scientific stack
+    - scipy >=1.7,<2
+    - numpy >=1.21
+    - matplotlib-base >=3.5,<4
+    - scikit-learn ==1.4.2
+    - xarray ==2024.9.0
+    - pandas >=2.1.0
+    - sparse >=0.15.4
+    - numba >=0.60.0,<1
+    - netcdf4 >=1.7.1.post2,<2
+    # MuTopia utilities
+    - optuna >=3.4.0,<5
+    - pyfaidx
+    - tqdm
+    - click
+    - tabulate
+    - luigi >=3.3.0
+    - pydantic >=2.0.0
+    - pyyaml >=6.0.0
+    - colorlog >=6.0.0
+    # Bioinformatics subprocess tools — the reason we're on bioconda
+    - bedtools
+    - bcftools
+    - htslib                        # provides tabix
+    - ucsc-bigwigaverageoverbed
+
+test:
+  imports:
+    - mutopia
+    - mutopia.analysis
+    - mutopia.gtensor
+  commands:
+    - gtensor --help
+    - topo-model --help
+    - mutopia-sbs --help
+    - bedtools --version
+    - bcftools --version
+    - tabix --version
+    - which bigWigAverageOverBed
+
+about:
+  home: https://github.com/sigscape/MuTopia
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: "Topographic modeling of mutational signatures across the cancer genome"
+  description: |
+    MuTopia learns topographic models of somatic mutation — it simultaneously
+    decomposes a cancer cohort's mutations into signatures and explains how
+    local genomic context (chromatin state, replication timing, transcription
+    level, DNA sequence composition) shapes each signature's activity across
+    10 kb windows genome-wide. Provides G-Tensor data structures, SHAP-based
+    feature interpretability, and per-mutation VCF annotation.
+  doc_url: https://sigscape.github.io/MuTopia/
+  dev_url: https://github.com/sigscape/MuTopia
+
+extra:
+  recipe-maintainers:
+    - AllenWLynch
