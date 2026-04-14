@@ -17,7 +17,9 @@ build:
     export LANG=C.UTF-8
     export LC_ALL=C.UTF-8
     export RUST_BACKTRACE=1
-    cargo install --no-track --locked --verbose --root "${PREFIX}" --path .
+    # Remove src-tauri from workspace (needs system GUI libs not available in conda)
+    sed -i 's/members = \[".", "src-tauri"\]/members = ["."]/' Cargo.toml
+    cargo install --no-track --verbose --root "${PREFIX}" --path .
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
