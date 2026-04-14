@@ -1,0 +1,58 @@
+{% set name = "ohe-rs" %}
+{% set version = "0.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/genpat-it/ohe-rs/archive/v{{ version }}.tar.gz
+  sha256: 9e06ab483d636a69dbc99f4def3cb22d0b0bc36f430499339e85275aff0f2a48
+
+build:
+  number: 0
+  script: |
+    maturin build --release --interpreter ${PYTHON}
+    ${PYTHON} -m pip install target/wheels/*.whl --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+  host:
+    - python
+    - pip
+    - maturin >=1.0,<2.0
+    - numpy
+  run:
+    - python
+    - numpy >=1.20
+    - scipy >=1.7
+
+test:
+  imports:
+    - ohe_rs
+  commands:
+    - python -c "from ohe_rs import encode_sparse; import numpy as np; v,i,p,k = encode_sparse(np.array([0,1,2,0], dtype=np.int64)); assert k == 3"
+
+about:
+  home: https://github.com/genpat-it/ohe-rs
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Ultra-fast one-hot encoding for bioinformatics and ML, powered by Rust
+  description: |
+    ohe-rs is an ultra-fast one-hot encoding library with Python bindings,
+    built in Rust for maximum performance. Designed for cgMLST allele profiles
+    and large-scale categorical data in bioinformatics pipelines.
+    Features parallel encoding (rayon), sparse CSR output, multi-column
+    encoding, and optional CUDA GPU acceleration.
+  dev_url: https://github.com/genpat-it/ohe-rs
+  doc_url: https://github.com/genpat-it/ohe-rs
+
+extra:
+  recipe-maintainers:
+    - andreadlm
