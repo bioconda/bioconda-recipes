@@ -32,6 +32,3 @@ cd source
 make CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}"
 
 install -v -m 0755 bayescan_2.1 "${PREFIX}/bin"
-
-cd 'R functions'
-install -v -m 0755 *.r "${PREFIX}/bin"
