@@ -1,0 +1,56 @@
+{% set name = "samplesheet-parser" %}
+{% set name_underscore = "samplesheet_parser" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name_underscore[0] }}/{{ name_underscore }}/{{ name_underscore }}-{{ version }}.tar.gz
+  sha256: edf744c0ee3850ffaaefb92d7dacd6e1cc1d503c5b71496cc8f925b37ccce8ff
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - hatchling
+  run:
+    - python >=3.12
+    - loguru >=0.7
+    - typer >=0.9
+
+test:
+  imports:
+    - {{ name_underscore }}
+  commands:
+    - pip check
+    - python -c "from samplesheet_parser import __version__; print(__version__)"
+    - samplesheet --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/chaitanyakasaraneni/{{ name }}
+  summary: Format-agnostic parser for Illumina SampleSheet.csv files — supports IEM V1 and BCLConvert V2
+  description: |
+    A Python library for parsing, validating, converting, and merging
+    Illumina SampleSheet V1 and V2 files for BCLConvert and bcl2fastq.
+    Provides format auto-detection, bidirectional V1/V2 conversion,
+    structural and index validation, sheet diffing, and cross-project
+    merging with Hamming-distance collision detection.
+  license: Apache-2.0
+  license_file: LICENSE
+  doc_url: https://illumina-samplesheet.readthedocs.io
+  dev_url: https://github.com/chaitanyakasaraneni/{{ name }}
+
+extra:
+  recipe-maintainers:
+    - chaitanyakasaraneni
