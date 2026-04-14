@@ -2,7 +2,7 @@
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++20"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++20 -fexperimental-library"
 export CFLAGS="${CFLAGS} -O3"
 
 case $(uname -m) in
@@ -20,7 +20,7 @@ esac
 if [[ `uname -s` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DLANCET_BUILD_STATIC=OFF -DLANCET_ENABLE_CLOUD_IO=ON"
 else
-	export CONFIG_ARGS="-DLANCET_BUILD_STATIC=ON"
+	export CONFIG_ARGS="-DLANCET_BUILD_STATIC=OFF -DLANCET_ENABLE_CLOUD_IO=ON"
 fi
 
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
@@ -31,4 +31,4 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
-cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+cmake --build build --target install -j "${CPU_COUNT}"
