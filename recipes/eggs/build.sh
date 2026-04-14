@@ -1,8 +1,7 @@
 #!/bin/bash
 set -euxo pipefail
-export SOURCE_DATE_EPOCH=0
 export CFLAGS="${CFLAGS} -fdebug-prefix-map=$PWD=. -I lib"
-export LDFLAGS="${LDFLAGS} -I ${PREFIX}/include -o"
+export LDFLAGS="${LDFLAGS} -W"
 $CC $CFLAGS -DHAVE_INLINE -c lib/gsl/error.c -o lib/gsl/error.o
 $CC $CFLAGS -DHAVE_INLINE -c lib/gsl/message.c -o lib/gsl/message.o
 $CC $CFLAGS -DHAVE_INLINE -c lib/gsl/stream.c -o lib/gsl/stream.o
