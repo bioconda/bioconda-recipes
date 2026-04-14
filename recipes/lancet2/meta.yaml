@@ -6,13 +6,11 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/nygenome/Lancet2/archive/refs/tags/v2.9.0.tar.gz
+  url: https://github.com/nygenome/Lancet2/archive/refs/tags/v{{ version }}.tar.gz
   sha256: e676d9f991d800958e6cf1d451b42749e2ad1e5dadebd8d219192433efb644c9
 
 build:
   number: 0
-  run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
   script:
     - mkdir build && cd build
     - cmake -GNinja \
@@ -22,6 +20,8 @@ build:
       -DLANCET_ENABLE_CLOUD_IO=ON \
       ..
     - ninja install -v
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -38,12 +38,12 @@ requirements:
   run:
     - openssl
 
-tests:
+test:
   commands:
-    - Lancet2 pipeline --help
+    - "Lancet2 pipeline --help"
 
 about:
-  homepage: "https://github.com/nygenome/Lancet2"
+  home: "https://github.com/nygenome/Lancet2"
   license: "BSD-3-Clause"
   license_family: BSD
   license_file: LICENSE
