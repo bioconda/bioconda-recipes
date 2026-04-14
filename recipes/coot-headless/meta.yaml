@@ -1,5 +1,5 @@
 {% set name = "coot-headless" %}
-{% set version = "Release-1.1.20" %}
+{% set version = "Release-1.2" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/pemsley/coot/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 3bac75e3aaa7991ff2c24539cc594f1e1c205fe1bd7aa256e4f4d13120fdd04f
+  sha256: ebf19951382151a53ed9c176aea0cf732994235478c64be611cd3f6fc0bdc9ea
 
 build:
   number: 0
@@ -22,10 +22,11 @@ requirements:
     - {{ compiler("cxx") }}
     - cmake
     - doxygen
+    - ghostscript  # [osx and x86_64]
     - ninja
     - pkg-config
     - sed  # [osx]
-    - texlive-core  # [osx]
+    - texlive-core
   host:
     - cairo
     - clipper
@@ -34,33 +35,31 @@ requirements:
     - elfutils  # [linux]
     - fontconfig
     - freetype
-    - gemmi
+    - gemmi ==0.7.4  # Due to compatibility with servalcat
     - glm
     - gsl
-    - libboost-devel >=1.86,<1.87
+    - libboost-devel
     - libccp4
     - libffi
     - libintl-devel  # [osx]
     - libpng
-    - librdkit-dev ==2024.09.5
-    - libxml2
+    - librdkit-dev ==2026.03.1
+    - libxml2 *
     - mmdb2
     - nanobind
     - numpy {{ numpy }}
     - openblas
     - pixman
     - python {{ python }}
-    - rdkit ==2024.09.5
     - sqlite
     - ssm
+    - typing_extensions  # [py < 311]
     - zlib
   run:
-    - {{ pin_compatible("gemmi") }}
-    - {{ pin_compatible("librdkit-dev") }}
-    - {{ pin_compatible("numpy") }}
-    - {{ pin_compatible("python") }}
-    - {{ pin_compatible("rdkit") }}
-    - libopenblas
+    - numpy {{ numpy }}
+    - python {{ python }}
+    - rdkit ==2026.03.1
+    - servalcat >=0.4.128
 
 test:
   imports:
