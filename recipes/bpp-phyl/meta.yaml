@@ -6,20 +6,21 @@ package:
   name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 0
-
 source:
   url: https://github.com/BioPP/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - 0001-do-not-override-CXXFLAGS.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
     - cmake
+    - pkg-config
   host:
     - bpp-seq
   run:
@@ -27,12 +28,19 @@ requirements:
 
 test:
   commands:
-    - test -f ${PREFIX}/lib/libbpp-phyl.a
     - test -f ${PREFIX}/lib/libbpp-phyl.so  # [linux]
     - test -f ${PREFIX}/lib/libbpp-phyl.dylib  # [osx]
 
 about:
-  home: https://github.com/BioPP/bpp-phyl
+  home: "https://github.com/BioPP/bpp-phyl"
   license: CeCILL
-  license_file: COPYING.txt
+  license_file: "COPYING.txt"
   summary: "Bio++ is a set of C++ libraries for Bioinformatics."
+  dev_url: "https://github.com/BioPP/bpp-phyl"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c
