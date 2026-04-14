@@ -6,29 +6,38 @@ package:
   name: {{ name }}
   version: {{ version }}
 
+source:
+  url: https://github.com/BioPP/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
 build:
   number: 0
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
-
-source:
-  url: https://github.com/BioPP/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
     - cmake >=3.10
+    - pkg-config
 
 test:
   commands:
-    - test -f ${PREFIX}/lib/libbpp-core.a
     - test -f ${PREFIX}/lib/libbpp-core.so  # [linux]
     - test -f ${PREFIX}/lib/libbpp-core.dylib  # [osx]
 
 about:
-  home: https://github.com/BioPP/bpp-core
-  license: CECILL-2.1
-  license_file: LICENSES/CECILL-2.1.txt
+  home: "https://github.com/BioPP/bpp-core"
+  license: "CECILL-2.1"
+  license_file: "LICENSES/CECILL-2.1.txt"
   summary: "Bio++ is a set of C++ libraries for Bioinformatics."
+  dev_url: "https://github.com/BioPP/bpp-core"
+  doc_url: "https://github.com/BioPP/bpp-documentation/wiki"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c
