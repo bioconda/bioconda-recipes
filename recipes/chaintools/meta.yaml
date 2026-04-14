@@ -1,0 +1,48 @@
+{% set name = "chaintools" %}
+{% set version = "0.0.2" %}
+
+package:
+ name: {{ name }}
+ version: {{ version }}
+
+source:
+ url: https://github.com/alejandrogzi/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+ sha256: d1a43ec65fb2d593919e517bf2b9da5855b272a115d68bcdf37dd1ddadcaf493
+
+build:
+ number: 0
+ run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - {{ compiler("rust") }}
+    - cargo-bundle-licenses
+    - cmake
+    - make
+    - pkg-config
+
+test:
+ commands:
+   - chaintools --help
+   - chaintools --version
+
+about:
+ home: "https://github.com/alejandrogzi/chaintools"
+ license: "Apache-2.0"
+ license_family: APACHE
+ license_file:
+   - LICENSE
+   - THIRDPARTY.yml
+ summary: "work with .chain files in rust"
+ dev_url: "https://github.com/alejandrogzi/chaintools"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - alejandrogzi
+  skip-lints:
+    - compiler_needs_stdlib_c

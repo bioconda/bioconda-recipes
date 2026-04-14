@@ -1,6 +1,7 @@
 {% set name = "barrnap" %}
-{% set version = "0.9" %}
-{% set sha256 = "36c27cd4350531d98b3b2fb7d294a2d35c15b7365771476456d7873ba33cce15"%}
+{% set user = "tseemann" %}
+{% set version = "1.10.5" %}
+{% set sha256 = "37f1451b1c3521f3495fde0d6483e97600bd6f4a7ce625db11a78cbd06a68b19"%}
 
 package:
   name: {{ name }}
@@ -8,27 +9,47 @@ package:
 
 source:
   sha256: {{ sha256 }}
-  url: https://github.com/tseemann/{{ name }}/archive/{{ version }}.tar.gz
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
 
 build:
   noarch: generic
-  number: 4
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   run:
-    - perl
-    - hmmer >=3.1b
+    - perl >=5.32
+    - perl-list-moreutils
+    - perl-path-tiny
+    - perl-file-which
+    - infernal >=1.1.2
+    - aragorn
     - bedtools
+    - any2fasta >=0.6.0
+    - seqkit
+    - pyrodigal
+    - transtermhp >=2
+    - ziggypep
+    - diamond
+    - taxonkit
+    - make
+    - bats-core
+    - mmseqs2
 
 test:
   commands:
-    - (barrnap --help 2>&1; true) | grep -q Options
+    - {{ name }} --version | grep -F "{{ version }}"
+    - {{ name }} --help
+    - {{ name }} --listdb
 
 about:
-  home: https://github.com/tseemann/barrnap
+  home: https://github.com/{{ user }}/{{ name }}
   license: GPLv3
-  summary: 'Barrnap predicts the location of ribosomal RNA genes in genomes. (bacteria, archaea, metazoan mitochondria and eukaryotes.)'
+  license_family: GPL
+  license_file: LICENSE
+  summary: 'Rapid microbial RNA identidication'
 
 extra:
   identifiers:
-    - biotools:barrnap
+    - biotools:{{ name }}
