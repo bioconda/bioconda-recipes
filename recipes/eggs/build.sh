@@ -19,7 +19,7 @@ $CC $CFLAGS -c src/Interface.c -o src/Interface.o
 $CC $CFLAGS -DHAVE_INLINE -c src/Main.c -o src/Main.o
 mkdir -p bin
 objs=$(ls src/*.o lib/*.o lib/gsl/*.o | sort)
-$CC $LDFLAGS bin/eggs $objs -lz -lm
+$CC $LDFLAGS -o bin/eggs $objs -lz -lm
 mkdir -p "$PREFIX/bin"
 cp bin/eggs "$PREFIX/bin"
 chmod +x "$PREFIX/bin/eggs"
