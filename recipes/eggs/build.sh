@@ -20,7 +20,7 @@
 #mkdir -p bin
 #objs=$(ls src/*.o lib/*.o lib/gsl/*.o | sort)
 #$CC $LDFLAGS -o bin/eggs $objs -lz -lm
-make CC=${CC}
+make CC="${CC}" CFLAGS="-I${PREFIX}/include -c -Wall -g -I lib" LFLAGS="-L${PREFIX}/lib -g -o"
 mkdir -p "$PREFIX/bin"
 cp bin/eggs "$PREFIX/bin"
 chmod +x "$PREFIX/bin/eggs"
