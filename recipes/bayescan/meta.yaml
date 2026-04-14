@@ -1,30 +1,52 @@
-package:
-  name: bayescan
-  version: 2.0.1
+{% set name = "bayescan" %}
+{% set version = "2.1" %}
 
-build:
-  number: 7
-  skip: True  # [osx]
+package:
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: http://cmpg.unibe.ch/software/BayeScan/files/BayeScan2.01.zip
-  sha256: 7859e581e62471b1c33289a89e80ab14b244b97f2d61a2560083ca073a7ef1e9
+  url: https://cmpg.unibe.ch/software/BayeScan/files/BayeScan{{ version }}.zip
+  sha256: c6bbc52a5a6a30e895951faf2bd6291ca47fdccdc708e693fce02389548d5547
   patches:
     - 0001-Use-CXX-and-no-static.patch
-    - 0002-Fix-strcpy-overflow.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
   host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
   run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
 
 test:
   commands:
-    - bayescan2 | grep -qF BayeScan
+    - bayescan_2.1 | grep -qF BayeScan
 
 about:
-  home: http://cmpg.unibe.ch/software/BayeScan/
-  license: GPL
-  summary: Phylogenetics - Randomized Axelerated Maximum Likelihood.
+  home: "https://cmpg.unibe.ch/software/BayeScan"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: source/COPYING
+  summary: "Phylogenetics - Randomized Axelerated Maximum Likelihood."
+  doc_url: "https://cmpg.unibe.ch/software/BayeScan/files/BayeScan{{ version }}_manual.pdf"
+  dev_url: "https://cmpg.unibe.ch/software/BayeScan"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:bayescan
+    - usegalaxy-eu:BayeScan
+    - doi:10.1534/genetics.108.092221
+  skip-lints:
+    - compiler_needs_stdlib_c
