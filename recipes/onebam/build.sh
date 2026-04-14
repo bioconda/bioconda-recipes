@@ -1,21 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-case "$(uname -s)" in
-    Darwin)
-        shared_ext=".dylib"
-        ;;
-    *)
-        shared_ext=".so"
-        ;;
-esac
-
-hts_lib=$(find "${PREFIX}/lib" -maxdepth 1 -type f \( -name "libhts${shared_ext}" -o -name "libhts${shared_ext}.*" \) | head -n1)
-zstd_lib=$(find "${PREFIX}/lib" -maxdepth 1 -type f \( -name "libzstd${shared_ext}" -o -name "libzstd${shared_ext}.*" \) | head -n1)
-
-test -n "${hts_lib}"
-test -n "${zstd_lib}"
-
 # Patch the Makefile to use conda-provided htslib and zstd headers
 sed -i.bak \
     -e "s|HTS_OPTS = -I\$(HTS_DIR)/htslib/|HTS_OPTS = -I${PREFIX}/include -I${PREFIX}/include/htslib|" \
@@ -25,8 +10,8 @@ rm -f Makefile.bak
 
 make onebam ONEview ONEstat seqstat seqconvert \
     CFLAGS="${CFLAGS} -I${PREFIX}/include -I${PREFIX}/include/htslib" \
-    HTS_LIB="${hts_lib}" \
-    ZSTD_LIB="${zstd_lib}" \
+    HTS_LIB="${PREFIX}/lib/libhts${SHLIB_EXT}" \
+    ZSTD_LIB="${PREFIX}/lib/libzstd${SHLIB_EXT}" \
     HTS_LIBS="-L${PREFIX}/lib -lhts" \
     ZSTD_LIBS="-L${PREFIX}/lib -lzstd" \
     LIBS="-lpthread -lm -lbz2 -llzma -lcurl -lz" \
