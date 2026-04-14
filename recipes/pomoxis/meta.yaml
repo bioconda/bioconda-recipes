@@ -1,55 +1,49 @@
 {% set name = "pomoxis" %}
-{% set version = "0.3.16" %}
+{% set version = "0.4.1" %}
 
 package:
-  name: "{{ name|lower }}"
+  name: "{{ name }}"
   version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 461f201edfe5664bf3434755691c7e144d7f2861970c330e91f0c31ad93e4cdd
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 2edc865df6114b53dab74f96020b11917842435c5685be687a5c403e06ee2668
 
 build:
   number: 0
   noarch: python
   entry_points:
-    - catalogue_errors = pomoxis.catalogue_errors:main
-    - common_errors_from_bam = pomoxis.common_errors_from_bam:main
     - assess_homopolymers = pomoxis.assess_homopolymers:main
+    - catalogue_errors = pomoxis.catalogue_errors:main
     - coverage_from_bam = pomoxis.coverage_from_bam:main
-    - coverage_from_fastx = pomoxis.util:coverage_from_fastx
-    - fast_convert = pomoxis.util:fast_convert
-    - long_fastx = pomoxis.util:extract_long_reads
+    - filter_bam = pomoxis.filter_bam:main
     - pomoxis_path = pomoxis:show_prog_path
-    - qscores_from_summary = pomoxis.qscores_from_summary:main
+    - ref_seqs_from_bam = pomoxis.ref_seqs_from_bam:main
     - reverse_bed = pomoxis.util:reverse_bed
-    - split_fastx = pomoxis.util:split_fastx_cmdline
     - stats_from_bam = pomoxis.stats_from_bam:main
     - subsample_bam = pomoxis.subsample_bam:main
-    - filter_bam = pomoxis.filter_bam:main
     - summary_from_stats = pomoxis.summary_from_stats:main
+    - split_fastx = pomoxis.split_fastx:main
     - tag_bam = pomoxis.util:tag_bam
     - trim_alignments = pomoxis.trim_alignments:main
-    - ref_seqs_from_bam = pomoxis.ref_seqs_from_bam:main
-    - find_indels = pomoxis.find_indels:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage('pomoxis', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.6
+    - python >=3.10,<3.15
     - setuptools
   run:
-    - python >=3.6
-    - biopython >=1.63
+    - python >=3.10,<3.15
+    - biopython
     - intervaltree >=3
-    - matplotlib-base >=3.2.1
-    - numpy >=1.16.1
-    - pandas >=0.24.2
+    - matplotlib-base
+    - numpy >=2.0
+    - pandas
     - porechop
-    - pysam >=0.15.2
+    - pysam >=0.22
     # above is reqs. of python code, additional binaries:
     - minimap2 >=2.17
     - miniasm >=0.3_r179
@@ -66,31 +60,29 @@ test:
     - pomoxis.bio
     - pomoxis.util
   commands:
-    - catalogue_errors -h
-    - common_errors_from_bam -h
-    - assess_homopolymers -h
-    - coverage_from_bam -h
-    - coverage_from_fastx -h
-    - fast_convert -h
-    - long_fastx -h
-    - pomoxis_path -h
-    - qscores_from_summary -h
-    - split_fastx -h
-    - stats_from_bam -h
-    - subsample_bam -h
-    - summary_from_stats -h
-    - trim_alignments -h
-    - ref_seqs_from_bam -h
-    - find_indels -h
+    - assess_homopolymers --help
+    - catalogue_errors --help
+    - coverage_from_bam --help
+    - filter_bam --help
+    - pomoxis_path --help
+    - ref_seqs_from_bam --help
+    - reverse_bed --help
+    - stats_from_bam --help
+    - subsample_bam --help
+    - summary_from_stats --help
+    - split_fastx --help
+    - tag_bam --help
+    - trim_alignments --help
 
 about:
-  home: https://github.com/nanoporetech/pomoxis
-  license: MPL-2.0
+  home: "https://github.com/nanoporetech/pomoxis"
+  license: "MPL-2.0"
   license_family: OTHER
-  license_file: LICENSE.md
-  summary: Assembly, consensensus, and analysis tools by ONT research
-  doc_url: https://nanoporetech.github.io/pomoxis/index.html
-  dev_url: https://github.com/nanoporetech/pomoxis
+  license_file: "LICENSE.md"
+  summary: "Assembly, consensensus, and analysis tools by ONT research."
+  doc_url: "https://nanoporetech.github.io/pomoxis/index.html"
+  dev_url: "https://github.com/nanoporetech/pomoxis"
+
 extra:
   recipe-maintainers:
     - cjw85
