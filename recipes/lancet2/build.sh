@@ -2,7 +2,7 @@
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++20 -fexperimental-library"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++20"
 export CFLAGS="${CFLAGS} -O3"
 
 case $(uname -m) in
@@ -18,9 +18,9 @@ case $(uname -m) in
 esac
 
 if [[ `uname -s` == "Darwin" ]]; then
-	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DLANCET_BUILD_STATIC=OFF -DLANCET_ENABLE_CLOUD_IO=ON"
+	export CONFIG_ARGS="-D_LIBCPP_DISABLE_AVAILABILITY -DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
-	export CONFIG_ARGS="-DLANCET_BUILD_STATIC=OFF -DLANCET_ENABLE_CLOUD_IO=ON"
+	export CONFIG_ARGS=""
 fi
 
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
@@ -28,6 +28,7 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-DCMAKE_C_COMPILER="${CC}" \
 	-DCMAKE_C_FLAGS="${CFLAGS}" \
+	-DLANCET_BUILD_STATIC=OFF -DLANCET_ENABLE_CLOUD_IO=ON \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
