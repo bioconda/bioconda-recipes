@@ -19,6 +19,9 @@ case $(uname -m) in
 	;;
 esac
 
+sed -i.bak "s|-lgsl -lz|-L${PREFIX}/lib -lgsl -lz|" Makefile
+rm -f *.bak
+
 make GCC_FLAGS="${CXXFLAGS}" release
 
 install -v -m 0755 bin/gemma "${PREFIX}/bin"
