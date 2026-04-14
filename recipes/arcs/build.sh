@@ -4,7 +4,7 @@
 if [[ ${target_platform} =~ osx.* ]]; then
 	./configure --prefix=${PREFIX} CXXFLAGS="${CXXFLAGS} -Wno-error=unused-result -Wno-error=unknown-warning-option"
 else
-	./configure --prefix=${PREFIX} CXXFLAGS="${CXXFLAGS} -Wno-error=unused-result -fopenmp"
+	./configure --prefix=${PREFIX} CXXFLAGS="${CXXFLAGS} -Wno-error=unused-result -Wno-error=dangling-reference -fopenmp"
 fi
 
 make install

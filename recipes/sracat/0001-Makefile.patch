@@ -1,0 +1,52 @@
+diff --git a/Makefile b/Makefile
+index 074c30e..90b44c0 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,12 +1,12 @@
+-OBJS = 
+-	
+-CC = c++
+-cc = cc
++OBJS =
+ 
+-FLAGS = -O3 -Wall
++CC = $(CXX)
++cc = $(CC)
++
++FLAGS = -O3 -march=x86-64-v3 -Wall
+ 
+ PROFILE = #-pg
+-OPENMP = #-fopenmp
++OPENMP = -fopenmp
+ 
+ # Edit the SRA_INCLUDE_PATH to point to the SRA toolkit on your system
+ SRA_PATH = SRA
+@@ -14,22 +14,20 @@ SRA_PATH = SRA
+ INC = -I. -I$(SRA_PATH)/include
+ 
+ # Linux/g++7 needs -lpthread, while clang does not
+-LIBS = -lm -lz -lpthread -L$(SRA_PATH)/lib64 \
+-	-lncbi-ngs-c++ -lncbi-ngs -lngs-c++ -lncbi-vdb-static -ldl
++LIBS = -lm -lz -pthread -L$(SRA_PATH)/lib \
++	-lncbi-ngs-c++ -lncbi-ngs -lngs-c++ -lncbi-vdb-static -ldl -lstdc++
+ 
+ .SUFFIXES : .o .cpp .c
+ .cpp.o:
+ 	$(CC) $(FLAGS) $(PROFILE) $(OPENMP) $(INC) -c $<
+- 
++
+ .c.o:
+ 	$(cc) $(FLAGS) $(PROFILE) $(OPENMP) $(INC) -c $<
+ 
+-all: sracat 
+-	 	
+-sracat: $(OBJS) sracat.o 
++all: sracat
++
++sracat: $(OBJS) sracat.o
+ 	$(CC) $(PROFILE) -o sracat $(OBJS) $(OPENMP) sracat.o $(LIBS)
+ 
+ clean:
+ 	-rm -f *.o
+-
+-
