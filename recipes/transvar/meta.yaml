@@ -1,0 +1,51 @@
+{% set name = "transvar" %}
+{% set version = "2.5.10.20211024" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/source/T/TransVar/TransVar-{{ version }}.tar.gz
+  sha256: a52a3b27079317da6530f85359d0f4064419f2765b460973108ac9efb57fd724
+
+build:
+  number: 0
+  skip: true  # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin=None) }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+  host:
+    - python
+    - pip
+    - setuptools
+    - zlib
+  run:
+    - python
+    - future
+
+
+test:
+  commands:
+    - transvar --help
+
+about:
+  license: MIT
+  license_file: LICENSE.txt
+  summary: Transcript-based variant annotator
+  description: |
+    TransVar is a multi-way annotator for genetic elements and genetic variations.
+    It supports genomic, cDNA, and protein-level variant annotation.
+  dev_url: https://github.com/zwdzwd/transvar
+  doc_url: https://transvar.readthedocs.io/
+
+extra:
+  identifiers:
+    - biotools:transvar
+  additional-platforms:
+    - osx-arm64
