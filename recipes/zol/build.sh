@@ -1,8 +1,13 @@
 #!/bin/bash
 set -xe
-
 mkdir -p ${PREFIX}/bin
 
+# setup gravis from forked version
+# pip installation configuration based on conda-forge recipe: https://github.com/conda-forge/gravis-feedstock/blob/main/recipe/meta.yaml
+cd gravis_fork_folder/
+$PYTHON -m pip install . -vv
+
+cd ../zol_folder/
 $PYTHON -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
 
 export LDFLAGS=
@@ -31,3 +36,5 @@ cat <<EOF >> ${PREFIX}/etc/conda/deactivate.d/zol.sh
 unset ZOL_DATA_PATH
 unset ZOL_EXEC_PATH
 EOF
+
+echo "Users of zol, please note, we use an unofficial fork of gravis (v0.1.1; https://github.com/raufs/gravis), not the original/official gravis (https://github.com/robert-haas/gravis)"

@@ -1,0 +1,70 @@
+{% set name = "rustqc" %}
+{% set version = "0.2.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/seqeralabs/RustQC/releases/download/v{{ version }}/rustqc-linux-x86_64.tar.gz  # [linux and x86_64]
+    sha256: 2fa72e96a4dbeae06eaf53f3f75850ba4f8b82b086d09e736c4e214078bf804a  # [linux and x86_64]
+    folder: baseline  # [linux and x86_64]
+  - url: https://github.com/seqeralabs/RustQC/releases/download/v{{ version }}/rustqc-linux-x86_64-v3.tar.gz  # [linux and x86_64]
+    sha256: 190d1b0def829c35a2d7ba4815e1f99c7a845c133ef64d198f5ffe8e0834d37c  # [linux and x86_64]
+    folder: simd-v3  # [linux and x86_64]
+  - url: https://github.com/seqeralabs/RustQC/releases/download/v{{ version }}/rustqc-linux-x86_64-v4.tar.gz  # [linux and x86_64]
+    sha256: 40a8525a1cf2369b1b0571316497b0b3dcb94a8d41b4f835fa2bbd7e9d239746  # [linux and x86_64]
+    folder: simd-v4  # [linux and x86_64]
+  - url: https://github.com/seqeralabs/RustQC/releases/download/v{{ version }}/rustqc-linux-aarch64.tar.gz  # [linux and aarch64]
+    sha256: 036cc392672d6aa31e42fc1eaf37c5b8a591bcfc91505e1405666f424f3b0769  # [linux and aarch64]
+    folder: baseline  # [linux and aarch64]
+  - url: https://github.com/seqeralabs/RustQC/releases/download/v{{ version }}/rustqc-linux-aarch64-neoverse-v1.tar.gz  # [linux and aarch64]
+    sha256: 9fc4feb13756ec8e7da1ef21dbd8a21e168ac8b1a760b7737119cae6c4ae76a3  # [linux and aarch64]
+    folder: simd-neoverse-v1  # [linux and aarch64]
+  - url: https://github.com/seqeralabs/RustQC/releases/download/v{{ version }}/rustqc-macos-x86_64.tar.gz  # [osx and x86_64]
+    sha256: 6c3803bfc9405357c854ce419b85f6597778cf7413511b579c5c17580a03fec5  # [osx and x86_64]
+    folder: baseline  # [osx and x86_64]
+  - url: https://github.com/seqeralabs/RustQC/releases/download/v{{ version }}/rustqc-macos-aarch64-apple-m1.tar.gz  # [osx and arm64]
+    sha256: 80afdb232654cc338cda5859697cd88b51ef848a0798a522e1f7071371ec9394  # [osx and arm64]
+    folder: baseline  # [osx and arm64]
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  run:
+    - freetype
+    - fontconfig
+    - fonts-conda-ecosystem
+
+test:
+  commands:
+    - which rustqc  # pre-built binary requires glibc >=2.39; CI uses CentOS 7 (glibc 2.17)
+
+about:
+  home: "https://seqeralabs.github.io/RustQC/"
+  dev_url: "https://github.com/seqeralabs/RustQC"
+  summary: "RNA-seq quality control suite: dupRadar, featureCounts, RSeQC, preseq, samtools stats, and Qualimap in one pass"
+  description: |
+    RustQC is a suite of quality control tools for sequencing data, compiled to a
+    single binary. It reimplements dupRadar, featureCounts, 8 RSeQC tools, preseq,
+    samtools stats, and Qualimap in Rust for dramatically reduced execution time.
+    All outputs are format-compatible with the upstream tools and MultiQC.
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: baseline/LICENSE
+
+extra:
+  notes: |
+    On Linux, rustqc ships baseline, AVX2, AVX-512, and Neoverse V1 (SVE)
+    binaries. A wrapper script automatically selects the best variant for
+    your CPU at runtime.
+  skip-lints:
+    - should_be_noarch_generic  # pre-built platform-specific binaries
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - ewels

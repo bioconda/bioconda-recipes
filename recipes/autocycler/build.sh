@@ -8,3 +8,5 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
 cargo install --verbose --no-track --path . --root "${PREFIX}"
+
+"${STRIP}" "$PREFIX/bin/autocycler"

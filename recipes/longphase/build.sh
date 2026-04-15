@@ -10,7 +10,7 @@ export CPATH="${PREFIX}/include"
 
 mkdir -p "$PREFIX/bin"
 
-echo -e "5.3.0" > jemalloc/version.txt
+echo "5.3.0-0-g0000000" > jemalloc/VERSION
 
 autoreconf -if
 ./configure --prefix="${PREFIX}" \
@@ -19,6 +19,8 @@ autoreconf -if
   CXXFLAGS="${CXXFLAGS}" \
   CPPFLAGS="${CPPFLAGS}" \
   LDFLAGS="${LDFLAGS}"
+
+rm -f jemalloc/version
 
 sed -i.bak 's|$(HTSLIB_LIB)|-L$(PREFIX)/lib $(HTSLIB_LIB)|' Makefile
 rm -f *.bak
