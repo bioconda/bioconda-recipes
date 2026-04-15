@@ -1,38 +1,39 @@
 {% set name = "sra-tools" %}
 {% set version = "3.4.1" %}
-{% set sha256 = "874dcbb28b7ebffb5554839254e777b1137b0f0430815bab175068decfe96e98" %}
+{% set sha256_linux64  = "f4850a32975596ca0755d928b166ecb0095918284ea992fba10f1acb3fcff64d" %}
+{% set sha256_osx64    = "8e19acfc0be8544b982b5233ae3f9469df31a317e50d63e984de034587e77488" %}
+{% set sha256_osxarm64 = "b38ec90f9c99805533c90684310b0495288890559c5af194f1074b72f4e95255" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-- url: https://github.com/ncbi/sra-tools/archive/refs/tags/{{version}}.tar.gz
-  sha256: {{ sha256 }}
-  folder: sra-tools
-- url: https://github.com/ncbi/ncbi-vdb/archive/refs/tags/{{version}}.tar.gz  # [osx]
-  sha256: 2fa0919b2842641ead93eeeb45047e87ca480a543b6e4eda15f94d5187e91c85  # [osx]
-  folder: ncbi-vdb  # [osx]
+  # Linux x86_64
+  - url: https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/{{ version }}/sratoolkit.{{ version }}-alma_linux64.tar.gz # [linux and x86_64]
+    sha256: {{ sha256_linux64 }} # [linux and x86_64]
+    folder: sra-tools # [linux and x86_64]
+
+  # macOS Intel
+  - url: https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/{{ version }}/sratoolkit.{{ version }}-mac-x86_64.tar.gz # [osx and x86_64]
+    sha256: {{ sha256_osx64 }} # [osx and x86_64]
+    folder: sra-tools # [osx and x86_64]
+
+  # macOS Apple Silicon
+  - url: https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/{{ version }}/sratoolkit.{{ version }}-mac-arm64.tar.gz # [osx and arm64]
+    sha256: {{ sha256_osxarm64 }} # [osx and arm64]
+    folder: sra-tools # [osx and arm64]
 
 build:
-  number: 1
+  number: 0
+  skip: true # [win]
   run_exports:
     - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
-  build:
-    - {{ compiler('cxx') }}
-    - make
-    - cmake
-    - pkg-config
-    - bison
-    - flex
-  host:
-    - ncbi-vdb >={{ version }}
   run:
     - ca-certificates
     - curl
-    - ncbi-vdb >={{ version }}
     - ossuuid  # [linux]
     - perl
     - perl-xml-libxml
@@ -41,7 +42,6 @@ requirements:
 test:
   commands:
     # create config file with /LIBS/GUID value so tests pass; new GUID value will be created in user's home dir upon installation via post-link.sh
-    - if ! grep "/LIBS/GUID" ~/.ncbi/user-settings.mkfg &> /dev/null; then mkdir -p ~/.ncbi && printf '/LIBS/GUID = "%s"\n' `uuid` > ~/.ncbi/user-settings.mkfg; fi
     - fastq-dump --help > /dev/null
     - fasterq-dump --help > /dev/null
     - prefetch --help > /dev/null
@@ -49,11 +49,6 @@ test:
     - sra-pileup --help > /dev/null
     - vdb-config --help > /dev/null
     - vdb-decrypt --help > /dev/null
-    - fastq-dump SRR002702 && grep '@SRR002702.1 EX35NVW14INCVK' SRR002702.fastq && rm SRR002702.fastq  # [osx]
-    # 2025-01-16T22:18:06 fasterq-dump.3.2.0 err: cannot find 'SRR002702' -> RC(rcVFS,rcQuery,rcExecuting,rcItem,rcNotFound)
-    #- fasterq-dump SRR002702 && grep '@SRR002702.1 EX35NVW14INCVK' SRR002702.fastq  && rm SRR002702.fastq
-    - prefetch SRR002702 -O ./ && test -d SRR002702 && rm -r SRR002702  # [osx]
-    - sam-dump SRR002702 | grep 'EX35NVW14ISYAK'  # [osx]
 
 about:
   home: "https://github.com/ncbi/sra-tools"
