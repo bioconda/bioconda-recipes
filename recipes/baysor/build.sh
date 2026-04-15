@@ -2,6 +2,4 @@
 
 mkdir -p $PREFIX/bin
 
-ln -s bin/baysor $PREFIX/bin/baysor
-
-chmod +x $PREFIX/bin/baysor
+install -m 0755 bin/baysor $PREFIX/bin/baysor
