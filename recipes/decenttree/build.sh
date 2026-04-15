@@ -38,5 +38,3 @@ cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	"${CONFIG_ARGS}"
 
 ninja -C build install -j "${CPU_COUNT}"
-
-install -Dvm755 decenttree "$PREFIX/bin/decenttree"
