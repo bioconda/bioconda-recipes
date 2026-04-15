@@ -20,6 +20,6 @@ make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
     PREFIX="${PREFIX}/bin" \
     PKG_VERSION="${PKG_VERSION}" \
     "${EXTRA_ARGS}" \
-    -j"${CPU_COUNT}"
+    -j1
 
 make install
