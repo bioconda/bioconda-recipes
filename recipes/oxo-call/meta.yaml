@@ -1,0 +1,53 @@
+{% set name = "oxo-call" %}
+{% set version = "0.11.0" %}
+{% set sha256 = "bdcf08e1cea151b6fcc0d69bbcf2a535e4481da340d4d69309d21abf04831106" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Traitome/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True  # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - oxo-call --help
+
+about:
+  home: "https://github.com/Traitome/{{ name }}"
+  license: Custom
+  license_family: OTHER
+  license_file:
+    - LICENSE
+    - LICENSE-ACADEMIC
+    - LICENSE-COMMERCIAL
+    - THIRDPARTY.yml
+  summary: "Model-intelligent orchestration for CLI bioinformatics — call any tool with LLM intelligence"
+  description: >
+    oxo-call is an AI-powered CLI assistant for bioinformatics. Instead of 
+    memorizing hundreds of flags across dozens of tools, you describe what 
+    you want to accomplish — oxo-call translates that into a correct, grounded command.
+  dev_url: "https://github.com/Traitome/{{ name }}"
+  doc_url: "https://traitome.github.io/oxo-call/documentation"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - ShixiangWang
+  skip-lints:
+    - compiler_needs_stdlib_c

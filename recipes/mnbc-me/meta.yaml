@@ -1,0 +1,37 @@
+{% set version = "1.0" %}
+{% set name = "MNBC-ME" %}
+{% set sha256 = "53cb7d7066ae228e343ee9cdb3e09d21ad834af54d293a2ae2196c9c503078c0" %}
+{% set user = "ComputationalPathogens" %}
+
+package:
+  name: mnbc-me
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports: []
+
+source:
+  url: https://github.com/{{ user }}/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  host:
+    - openjdk >=17.0
+
+  run:
+    - openjdk >=17.0
+
+test:
+  commands:
+    - mnbc-me taxonomy ncbi -h
+    - MNBC_ME_MEM=4G mnbc-me classify -c 2 -h
+    - JAVA_OPTS="-Xms512M" mnbc-me build -c 2 -h
+
+about:
+  home: https://github.com/{{ user}}/{{ name }}
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: 'MNBC-ME is a tool for mobile elements detection'
+  description: 'MNBC-ME is tool for identification of both short and long ME-originated reads across a wide variety of read types. It also identifies potential low-level host taxa for plasmid reads, and source taxa for chromosomal and viral reads.' 

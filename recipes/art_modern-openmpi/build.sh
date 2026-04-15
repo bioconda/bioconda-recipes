@@ -11,7 +11,6 @@ env -C "${TMPDIR}" cmake \
     -DUSE_MALLOC=NOP \
     -DUSE_HTSLIB=hts \
     -DUSE_LIBFMT=fmt \
-    -DUSE_ABSL=SYSTEM \
     -DWITH_MPI=ON \
     ${CMAKE_ARGS} \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \

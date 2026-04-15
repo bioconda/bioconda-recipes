@@ -1,0 +1,60 @@
+{% set name = "gwaslab" %}
+{% set version = "4.1.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 6f2dbfb382c3940e94def6514add49c1b8a0d0de908a454eb9d68b28b981ba30
+  patches:
+    - 0001-defer-sumstats-liftover-import.patch
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.9
+    - pandas !=1.5,>=1.3,<=2.3.3
+    - numpy >=1.21.2,<2
+    - matplotlib-base >=3.8,<3.9
+    - seaborn >=0.12
+    - scipy >=1.12
+    - pysam ==0.22.1
+    - adjusttext >=0.7.3,<=0.8
+    - scikit-allel >=1.3.5
+    - h5py >=3.10.0
+    - pyarrow
+    - polars >=1.27.0
+    - requests
+    - pyyaml
+    - bitarray
+    - platformdirs
+
+test:
+  imports:
+    - gwaslab
+  commands:
+    - gwaslab --help
+
+about:
+  home: https://cloufield.github.io/gwaslab/
+  summary: Python toolkit for handling GWAS summary statistics
+  license: GPL-3.0-only
+  license_file: LICENSE
+  dev_url: https://github.com/Cloufield/gwaslab
+
+extra:
+  recipe-maintainers:
+    - lyh970817

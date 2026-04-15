@@ -1,0 +1,51 @@
+{% set version = "1.0.0" %}
+{% set name = "anndataR" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 5db508c164cc0f5208ea9600fca3c8a2
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-anndatar", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocFileCache, BiocStyle, knitr, processx, rhdf5 (>= 2.52.1), rmarkdown, S4Vectors, Seurat, SeuratObject, SingleCellExperiment, spelling, SummarizedExperiment, testthat (>= 3.0.0), vctrs, withr, yaml
+requirements:
+  host:
+    - r-base >=4.5.0
+    - r-cli
+    - r-lifecycle
+    - r-matrix
+    - r-purrr
+    - 'r-r6 >=2.4.0'
+    - 'r-reticulate >=1.41.1'
+    - r-rlang
+  run:
+    - r-base >=4.5.0
+    - r-cli
+    - r-lifecycle
+    - r-matrix
+    - r-purrr
+    - 'r-r6 >=2.4.0'
+    - 'r-reticulate >=1.41.1'
+    - r-rlang
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'MIT + file LICENSE'
+  summary: 'AnnData interoperability in R'
+  description: 'Bring the power and flexibility of AnnData to the R ecosystem, allowing you to effortlessly manipulate and analyse your single-cell data. This package lets you work with backed h5ad and zarr files, directly access various slots (e.g. X, obs, var), or convert the data into SingleCellExperiment and Seurat objects.'
+  license_file: LICENSE
+
