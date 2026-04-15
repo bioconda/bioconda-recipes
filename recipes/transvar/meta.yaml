@@ -14,9 +14,9 @@ source:
 build:
   number: 0
   skip: true  # [win]
-  run_exports:
-    - {{ pin_subpackage(name, max_pin=None) }}
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  script: |
+    export PIP_NO_USER_CONFIG_FILE=1
+    {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir
 
 requirements:
   build:
@@ -27,6 +27,7 @@ requirements:
     - pip
     - setuptools
     - zlib
+    - wheel
   run:
     - python
     - future
@@ -51,3 +52,4 @@ extra:
     - biotools:transvar
   skip-lints:
     - compiler_needs_stdlib_c  # until https://github.com/bioconda/bioconda-utils/issues/1095 is resolved
+    - missing_run_exports  # transvar is a CLI application; no ABI/API run_exports neededs
