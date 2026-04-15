@@ -1,7 +1,17 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-set -xe
+set -euxo pipefail
 
-mkdir -p $PREFIX/bin
+mkdir -p "${PREFIX}/share/baysor"
+cp -r bin/baysor/* "${PREFIX}/share/baysor/"
 
-install -m 0755 bin/baysor/bin/baysor $PREFIX/bin/baysor
+mkdir -p "${PREFIX}/bin"
+
+cat << 'EOF' > "${PREFIX}/bin/baysor"
+#!/usr/bin/env bash
+set -euo pipefail
+
+exec "${CONDA_PREFIX}/share/baysor/bin/baysor" "$@"
+EOF
+
+chmod +x "${PREFIX}/bin/baysor"
