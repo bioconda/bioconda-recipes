@@ -1,5 +1,5 @@
 {% set name = "iobrpy" %}
-{% set version = "0.1.7" %}
+{% set version = "0.1.8" %}
 
 package:
   name: {{ name|lower }}
@@ -7,24 +7,22 @@ package:
 
 source:
   url: https://files.pythonhosted.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 9e3519d3cfe81adc9b9a6e020fd41f73922e0fced5af6e885f7e8737d1f2e8c6
+  sha256: 60046891042a276d7bc6426c608920db44be9e1dc1df8f5fd4f3f28faca51104
 
 build:
   number: 0
-  noarch: python
-  run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
+  skip: true  # [not linux]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
 
 requirements:
   host:
-    - python >=3.9
+    - python >=3.11
     - pip
     - setuptools
     - wheel
 
   run:
-    - python >=3.9
+    - python >=3.11
     - numpy >=1.22
     - pandas >=1.5
     - scipy >=1.9
@@ -32,12 +30,17 @@ requirements:
     - statsmodels >=0.13
     - matplotlib-base >=3.7
     - tqdm >=4.66
+    - click >=8.0
     - gseapy >=1.0.6
     - joblib >=1.3
     - regex >=2024.5
     - tiktoken >=0.11,<0.13
     - multiqc ==1.31
     - xarray >=0.20
+    - requests >=2.32
+    - prompt-toolkit >=3.0
+    - pysam ==0.23.3
+    - biopython >=1.83
     - fastp
     - star
     - salmon
@@ -46,7 +49,9 @@ requirements:
 
 test:
   commands:
+    - python -c "import iobrpy.main"
     - iobrpy --help
+    - iobrpy-cli --help
 
 about:
   home: https://github.com/IOBR/IOBRpy
