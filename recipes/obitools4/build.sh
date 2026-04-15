@@ -21,4 +21,4 @@ else
     make CGO_CFLAGS="$CGO_CFLAGS -L$PREFIX/lib" LDFLAGS="${LDFLAGS}"
 fi
 
-install -v -m 0755 "build/obi*" "${PREFIX}/bin"
+install -v -m 0755 build/obi* "${PREFIX}/bin"
