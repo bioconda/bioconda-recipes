@@ -47,3 +47,5 @@ ${BINDIR}/masurca -g masurca_config_example.txt
 cd ${SRC_DIR}/Flye
 make -j"${CPU_COUNT}"
 install -v -m 0755 bin/flye* "${PREFIX}/bin"
+
+find "${PREFIX}/bin" -name "*.pl" -exec sed -i '1s|^#!.*perl.*|#!/usr/bin/env perl|' {} +
