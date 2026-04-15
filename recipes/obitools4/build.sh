@@ -1,16 +1,19 @@
 #!/bin bash
-
 set -xe
 
-mkdir -p $PREFIX/bin
+export CGO_ENABLED=0
+export GOPATH=$PWD
+export GOCACHE=$PWD/.cache/
 
-if [[ "$(uname)" == "Darwin" ]]; then
+mkdir -p "${GOCACHE}"
+mkdir -p "${PREFIX}/bin"
+
+if [[ "$(uname -s)" == "Darwin" ]]; then
     export MACOSX_DEPLOYMENT_TARGET="12.0"
-    make "CGO_CFLAGS=$CGO_CFLAGS -I${PREFIX}/include" GOFLAGS="-buildvcs=false"
+    GOFLAGS="-buildvcs=false" make "CGO_CFLAGS=$CGO_CFLAGS -I${PREFIX}/include"
 else
-    make "CGO_CFLAGS=$CGO_CFLAGS -L$PREFIX/lib -I$PREFIX/include" GOFLAGS="-buildvcs=false"
+    GOFLAGS="-buildvcs=false" make "CGO_CFLAGS=$CGO_CFLAGS -L$PREFIX/lib -I$PREFIX/include"
 fi
-
 
 install -v -m 0755 \
     build/obiannotate \
