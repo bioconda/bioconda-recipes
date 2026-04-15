@@ -1,8 +1,5 @@
 {% set version = '1.1.1' %}
 
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
-
 package:
   name: r-clustermole
   version: {{ version|replace("-", "_") }}
@@ -16,50 +13,35 @@ source:
 build:
   noarch: generic
   number: 0
-
-  # This is required to make R link correctly on Linux.
   rpaths:
     - lib/R/lib/
     - lib/
 
-# Suggests: covr, knitr, rmarkdown, roxygen2, testthat
 requirements:
-  build:
-    - {{ posix }}zip               # [win]
-
   host:
     - r-base >=4.3
     - bioconductor-gseabase
     - bioconductor-gsva >=1.50.0
+    - bioconductor-singscore
     - r-dplyr
     - r-magrittr
     - r-rlang
-    - bioconductor-singscore
     - r-tibble
     - r-tidyr
-
   run:
     - r-base >=4.3
     - bioconductor-gseabase
     - bioconductor-gsva >=1.50.0
+    - bioconductor-singscore
     - r-dplyr
     - r-magrittr
     - r-rlang
-    - bioconductor-singscore
     - r-tibble
     - r-tidyr
 
 test:
   commands:
-    # You can put additional test commands to be run here.
-    - $R -e "library('clustermole')"           # [not win]
-    - "\"%R%\" -e \"library('clustermole')\""  # [win]
-
-  # You can also put a file called run_test.r, run_test.py, run_test.sh,
-  # or run_test.bat in the recipe that will be run at test time.
-
-  # requires:
-    # Put any additional test requirements here.
+    - $R -e "library('clustermole')"
 
 about:
   home: https://igordot.github.io/clustermole/
@@ -78,33 +60,3 @@ about:
 extra:
   recipe-maintainers:
     - Yuri-Kawahara
-
-
-# The original CRAN metadata for this package was:
-
-# Type: Package
-# Package: clustermole
-# Title: Unbiased Single-Cell Transcriptomic Data Cell Type Identification
-# Version: 1.1.1
-# Authors@R: person("Igor", "Dolgalev", , "igor.dolgalev@nyumc.org", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-4451-126X"))
-# Description: Assignment of cell type labels to single-cell RNA sequencing (scRNA-seq) clusters is often a time-consuming process that involves manual inspection of the cluster marker genes complemented with a detailed literature search. This is especially challenging when unexpected or poorly described populations are present. The clustermole R package provides methods to query thousands of human and mouse cell identity markers sourced from a variety of databases.
-# License: MIT + file LICENSE
-# URL: https://igordot.github.io/clustermole/
-# BugReports: https://github.com/igordot/clustermole/issues
-# Depends: R (>= 4.3)
-# Imports: dplyr, GSEABase, GSVA (>= 1.50.0), magrittr, methods, rlang, singscore, tibble, tidyr, utils
-# Suggests: covr, knitr, rmarkdown, roxygen2, testthat
-# VignetteBuilder: knitr
-# biocViews:
-# Encoding: UTF-8
-# RoxygenNote: 7.2.3
-# NeedsCompilation: no
-# Packaged: 2024-01-08 15:22:18 UTC; id460
-# Author: Igor Dolgalev [aut, cre] (<https://orcid.org/0000-0003-4451-126X>)
-# Maintainer: Igor Dolgalev <igor.dolgalev@nyumc.org>
-# Repository: CRAN
-# Date/Publication: 2024-01-08 22:20:06 UTC
-
-# See
-# https://docs.conda.io/projects/conda-build for
-# more information about meta.yaml
