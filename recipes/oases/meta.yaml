@@ -8,20 +8,24 @@ package:
 source:
   git_url: https://github.com/dzerbino/oases.git
   git_rev: 1b4c14c
+  sha256: unused
 
 build:
-  number: 3
+  number: 4
   run_exports:
-    - {{ pin_subpackage(name, max_pin = "x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
+  host:
+    - libgomp  # [linux]
     - llvm-openmp  # [osx]
     - git-lfs
   run:
     - velvet
+    - libgomp  # [linux]
     - llvm-openmp  # [osx]
 
 test:
@@ -35,13 +39,15 @@ about:
   license_file: "LICENSE.txt"
   summary: "De novo transcriptome assembler for short reads."
   dev_url: "https://github.com/dzerbino/oases"
+  doc_url: "https://github.com/dzerbino/oases/blob/{{ version }}/README.md"
 
 extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
+  identifiers:
+    - doi:10.1093/bioinformatics/bts094
+    - biotools:oases
   skip-lints:
     - uses_vcs_url
-    - missing_hash
-  identifiers:
-    - biotools:oases
+    - compiler_needs_stdlib_c
