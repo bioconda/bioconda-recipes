@@ -13,9 +13,9 @@ rm -f *.bak
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
     export MACOSX_DEPLOYMENT_TARGET="12.0"
-    GOFLAGS="-buildvcs=false" make "CGO_CFLAGS=$CGO_CFLAGS -I${PREFIX}/include"
+    make "CGO_CFLAGS=$CGO_CFLAGS -I${PREFIX}/include"
 else
-    GOFLAGS="-buildvcs=false" make "CGO_CFLAGS=$CGO_CFLAGS -L$PREFIX/lib -I$PREFIX/include"
+    make "CGO_CFLAGS=$CGO_CFLAGS -L$PREFIX/lib -I$PREFIX/include"
 fi
 
 install -v -m 0755 "build/obi*" "${PREFIX}/bin"
