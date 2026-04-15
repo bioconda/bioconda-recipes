@@ -1,7 +1,6 @@
 #!/bin bash
 set -xe
 
-export CGO_ENABLED=0
 export GOPATH="$PWD"
 export GOCACHE="$PWD/.cache"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
@@ -19,34 +18,4 @@ else
     GOFLAGS="-buildvcs=false" make "CGO_CFLAGS=$CGO_CFLAGS -L$PREFIX/lib -I$PREFIX/include"
 fi
 
-install -v -m 0755 \
-    build/obiannotate \
-    build/obiclean \
-    build/obicleandb \
-    build/obicomplement \
-    build/obiconsensus \
-    build/obiconvert \
-    build/obicount \
-    build/obicsv \
-    build/obidemerge \
-    build/obidistribute \
-    build/obigrep \
-    build/obijoin \
-    build/obikmermatch \
-    build/obikmersimcount \
-    build/obilandmark \
-    build/obimatrix \
-    build/obimicrosat \
-    build/obimultiplex \
-    build/obipairing \
-    build/obipcr \
-    build/obireffamidx \
-    build/obirefidx \
-    build/obiscript \
-    build/obisplit \
-    build/obisummary \
-    build/obitag \
-    build/obitagpcr \
-    build/obitaxonomy \
-    build/obiuniq \
-    "${PREFIX}/bin"
+install -v -m 0755 "build/obi*" "${PREFIX}/bin"
