@@ -1,3 +1,8 @@
 #!/bin/bash
 set -ex
-RUSTFLAGS="-C target-cpu=x86-64-v2" cargo install --no-track --locked --root "$PREFIX" --path .
+
+# Build and install
+cargo install --no-track --locked --root "$PREFIX" --path .
+
+# Bundle third-party licenses
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
