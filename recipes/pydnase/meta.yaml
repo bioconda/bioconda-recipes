@@ -5,12 +5,15 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/p/pyDNase/pyDNase-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/p/pyDNase/pyDNase-{{ version }}.tar.gz
   sha256: dba03cadca37929a1cc41545e962136f29efc41f8e3c6de042c51c47ee04d558
 
 build:
-  number: 6
-  skip: True # [py<30]
+  number: 7
+  skip: True  # [py > 311]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  run_exports:
+    - {{ pin_subpackage('pydnase', max_pin="x.x") }}
 
 requirements:
   build:
@@ -37,9 +40,18 @@ test:
     - wellington_footprints.py --help
 
 about:
-  home: http://jpiper.github.io/pyDNase
+  home: "https://jpiper.github.io/pyDNase"
   license: MIT
   license_family: MIT
-  summary: DNase-seq analysis library
-  description: 'A suite of tools for analysing DNase-seq data.'
-  doc_url: 'http://pythonhosted.org/pyDNase/index.html'
+  license_file: "LICENSE.TXT"
+  summary: "DNase-seq analysis library"
+  description: "A suite of tools for analysing DNase-seq data."
+  doc_url: "https://pythonhosted.org/pyDNase/index.html"
+  dev_url: "https://github.com/jpiper/pyDNase"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c
