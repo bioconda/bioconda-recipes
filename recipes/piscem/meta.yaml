@@ -8,28 +8,29 @@ package:
 
 build:
   number: 0
+  skip: True  # [win]
   script_env:
     - CFLAGS=-I$PREFIX/include
     - CXXFLAGS=-I$PREFIX/include
     - LDFLAGS=-L$PREFIX/lib
   run_exports:
     - {{ pin_subpackage("piscem", max_pin="x.x") }}
-  
+
 source:
   url: https://github.com/COMBINE-lab/piscem/releases/download/v{{ version }}/source-full.tar.gz
   sha256: {{ sha256 }}
-    
+
 channels:
   - conda-forge
   - bioconda
   - defaults
-  
+
 requirements:
   build:
     - cmake <4.0.0
     - autoconf
     - make
-    - bzip2 
+    - bzip2
     - jemalloc >=5.2.1
     - {{ compiler('rust') }}
     - {{ compiler('cxx') }}
@@ -39,10 +40,10 @@ requirements:
   host:
     - bzip2
     - jemalloc >=5.2.1
-    - tapi # [osx and x86_64]
+    - tapi  # [osx and x86_64]
   run:
     - __osx >={{ MACOSX_DEPLOYMENT_TARGET|default("10.9") }}  # [osx and x86_64]
-    
+
 test:
   commands:
     - piscem --help
@@ -56,4 +57,4 @@ about:
 extra:
   additional-platforms:
     - linux-aarch64
-    - osx-arm64 
+    - osx-arm64
