@@ -23,6 +23,14 @@ else
 	export CONFIG_ARGS=""
 fi
 
+case $(uname -m) in
+    aarch64|arm64)
+        sed -i.bak 's|-msse3||g' CMakeLists.txt ;;
+esac
+
+sed -i.bak 's|-O2|-O3|g' CMakeLists.txt
+rm -f *.bak
+
 cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
