@@ -6,7 +6,7 @@ package:
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
   run_exports:
     # Ronny said VRNA is stable in x.x releases
     - {{ pin_subpackage('viennarna', max_pin='x.x') }}
@@ -20,6 +20,7 @@ source:
 requirements:
   build:
     - make
+    - swig
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
@@ -32,6 +33,7 @@ requirements:
     - lapack
     - llvm-openmp # [osx]
   run:
+    - perl
     - python
     - llvm-openmp # [osx]
 
@@ -40,10 +42,13 @@ test:
     - RNAalifold --version
     - RNAeval    --version
     - RNAfold    --version
+    - RNAplot    --version
     - RNAplfold  --version
     - RNAsubopt  --version
     - RNAlocmin  --version
     - kinwalker  --help >& /dev/null
+    - python -c "import RNA"
+    - perl -MRNA -e "print qq(ok\n)"
 
 about:
   home: http://www.tbi.univie.ac.at/RNA/
