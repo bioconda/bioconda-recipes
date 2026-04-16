@@ -1,6 +1,7 @@
 #!/bin bash
 
 set -xe
+export GOFLAGS="-buildvcs=false"
 
 mkdir -p $PREFIX/bin
 
