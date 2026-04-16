@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
 export LDFLAGS="${LDFLAGS} -L{$PREFIX}/lib"
 export C_INCLUDE_PATH="${PREFIX}/include"
 
