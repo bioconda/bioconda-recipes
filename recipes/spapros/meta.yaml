@@ -1,43 +1,42 @@
 {% set name = "spapros" %}
-{% set version = "0.1.5" %}
+{% set version = "0.1.6" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/spapros-{{ version }}.tar.gz
-  sha256: 2fa7fcd64067ee2017b1447b75c38a395d367e781bc8cf7db4a40cd484e74c9e
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/spapros-{{ version }}.tar.gz
+  sha256: a3d9600cc61470bd368d91f5708f21639ee094c77bbc74414e3e4c9afffeab20
   patches:
     - remove_pypi_latest_1.patch
     - remove_pypi_latest_2.patch
     - remove_pypi_latest_3.patch
 
 build:
+  number: 0
+  noarch: python
   entry_points:
     - spapros = spapros.__main__:main
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  number: 0
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
-
 requirements:
   host:
-    - python >=3.9,<3.10
+    - python >=3.11,<3.14
     - poetry-core >=1.0.0
     - pip
   run:
-    - python >=3.9,<3.10
+    - python >=3.11,<3.14
     - click >=8.0.1
     - rich >=10.1.0
     - pyyaml >=6.0.1
     - jinja2 >=3.0.1
-    - numpy ==1.26.4
-    - pandas >=1.3.0,<2.0.0
+    - numpy <2
+    - pandas >=2.0.0,<3.0.0
     - scanpy >=1.9.8
-    - seaborn >=0.11.1
+    - seaborn-base >=0.11.1
     - matplotlib-base >=3.6.3
     - leidenalg >=0.8.7
     - questionary >=1.10.0
@@ -50,25 +49,29 @@ requirements:
     - bandit >=1.7.6
     - venndata >=0.1.0
     - pillow >=10.0.2
-    - upsetplot >=0.7.0 
+    - upsetplot >=0.7.0
 
 test:
   imports:
     - spapros
   commands:
-    - pip check
     - spapros --help
     - pandoc --version  # Ensure pandoc is available
   requires:
-    - pip
     - pandoc
 
 about:
-  home: https://github.com/theislab/spapros
-  summary: Probe set selection for targeted spatial transcriptomics.
+  home: "https://github.com/theislab/spapros"
+  summary: "Probe set selection for targeted spatial transcriptomics."
   license: MIT
+  license_family: MIT
   license_file: LICENSE
+  dev_url: "https://github.com/theislab/spapros"
+  doc_url: "https://spapros.readthedocs.io/en/latest"
 
 extra:
   recipe-maintainers:
     - heylf
+  identifiers:
+    - doi:10.1038/s41592-024-02496-z
+    - biotools:spapros
