@@ -1,6 +1,6 @@
 {% set name = "medaka" %}
-{% set version = "2.1.1" %}
-{% set sha256 = "81f048bf0c56753bdfeee84114b78fa08655bc38e6f2fcdc06214de47e07426a" %}
+{% set version = "2.2.1" %}
+{% set sha256 = "c4a16872c8c1747f2329b931150e59016689366d0ca6d62ff98ad8707cd24cda" %}
 # Bot PRs - Always review requirements.txt for new release
 
 package:
@@ -15,13 +15,14 @@ source:
 
 build:
   number: 0
+  skip: True  # [py > 312]
   entry_points:
     - medaka = medaka.medaka:main
     - medaka_counts = medaka.medaka_counts:main
     - medaka_data_path = medaka.common:print_data_path
     - medaka_version_report = medaka:report_binaries
   run_exports:
-    - {{ pin_subpackage('medaka', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -43,7 +44,8 @@ requirements:
     - h5py
     - intervaltree
     - mappy
-    - numpy >=1.21.0,<2.0.0
+    - cffi
+    - numpy >=2.0.0
     - nomkl  # [osx]
     - ont-fast5-api
     - parasail-python
@@ -51,7 +53,8 @@ requirements:
     - pyspoa >=0.2.1
     - pysam >=0.16.0.1
     - python-edlib
-    - pytorch >=2.3,<2.4
+    - pytorch =2.9.*
+    - tensordict
     - requests
     - toml
     - tqdm
@@ -89,3 +92,5 @@ extra:
     - usegalaxy-eu:medaka_variant
     - usegalaxy-eu:medaka_variant_pipeline
     - biotools:medaka
+  skip-lints:
+    - compiler_needs_stdlib_c

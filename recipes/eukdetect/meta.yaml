@@ -1,0 +1,63 @@
+{% set name = "eukdetect" %}
+{% set version = "2.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/allind/EukDetect/archive/refs/tags/v2.0.0.tar.gz
+  sha256: 4069d41d2e5bee94b4e4ec058f136bcc0cc4acc51102fb236203bc861c1393f1
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('eukdetect', max_pin='x.x') }}
+
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools >=61.0
+  run:
+    - python >=3.8
+    - biopython
+    - pyyaml
+    - snakemake-minimal >=8
+    - bowtie2 >=2.5
+    - samtools >=1.15
+    - ete3
+    - pysam
+    - pandas
+    - numpy
+
+test:
+  imports:
+    - eukdetect
+    - eukdetect.wrappers.main
+    - eukdetect.util.build_config
+    - eukdetect.util.validate
+    - eukdetect.util.execute
+    - eukdetect.util.complexity_filter
+  commands:
+    - eukdetect --help
+    - eukdetect-normalize --help
+
+about:
+  home: https://github.com/allind/EukDetect
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Detect eukaryotes from shotgun metagenomic sequencing data
+  description: |
+    EukDetect detects and quantifies eukaryotic microbes in shotgun metagenomic
+    sequencing data using a curated database of conserved marker genes.
+  doc_url: https://github.com/allind/EukDetect
+  dev_url: https://github.com/allind/EukDetect
+
+extra:
+  recipe-maintainers:
+    - allind
