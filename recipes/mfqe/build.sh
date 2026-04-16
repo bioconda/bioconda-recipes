@@ -12,8 +12,7 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # Build statically linked binary with Rust
 RUST_BACKTRACE=1
-cargo build --release -j "${CPU_COUNT}"
+cargo install --verbose --root "$PREFIX" --path . --no-track
 
-# Install the binary
-install -v -m 0755 target/release/mfqe "$PREFIX/bin"
+# Strip the binary
 "${STRIP}" "$PREFIX/bin/mfqe"
