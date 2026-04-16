@@ -11,34 +11,6 @@ fi
 
 make GOFLAGS="-buildvcs=false"
 
-cp \
-    build/obiannotate \
-    build/obiclean \
-    build/obicleandb \
-    build/obicomplement \
-    build/obiconsensus \
-    build/obiconvert \
-    build/obicount \
-    build/obicsv \
-    build/obidemerge \
-    build/obidistribute \
-    build/obigrep \
-    build/obijoin \
-    build/obikmermatch \
-    build/obikmersimcount \
-    build/obilandmark \
-    build/obimatrix \
-    build/obimicrosat \
-    build/obimultiplex \
-    build/obipairing \
-    build/obipcr \
-    build/obireffamidx \
-    build/obirefidx \
-    build/obiscript \
-    build/obisplit \
-    build/obisummary \
-    build/obitag \
-    build/obitagpcr \
-    build/obitaxonomy \
-    build/obiuniq \
-    ${PREFIX}/bin/
+for f in build/obi*; do
+    [ -f "$f" ] && cp "$f" $PREFIX/bin/
+done
