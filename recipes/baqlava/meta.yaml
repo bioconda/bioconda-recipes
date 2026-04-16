@@ -1,0 +1,50 @@
+{% set name = "baqlava" %}
+{% set version = "0.5" %}
+package:
+  name: baqlava
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/b/baqlava/baqlava-{{ version }}.tar.gz
+  sha256: e09659998f39857d35cba71d4e5c4bd1dba0f6a56f523581b6e3f86912745861
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("baqlava", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+  run:
+    - python >=3.10
+    - anadama2
+    - pandas
+    - numpy
+    - scipy
+    - biopython
+
+test:
+  imports:
+    - baqlava
+  commands:
+    - baqlava --help
+    - python -c "from baqlava.utility_scripts.join_tables import main"
+    - baqlava_database --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://github.com/biobakery/baqlava
+  summary: 'BAQLaVa: Bioinformatic Application of Quantification and Labeling of Viral Taxonomy (BAQLaVa).'
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - Matt-BF
