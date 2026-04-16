@@ -1,10 +1,13 @@
 #!/bin/bash
 set -e
 
-# Create the destination database folder (tool expects a 'database' subdirectory)
-DEST="$PREFIX/share/staphscope/modules/sccmec_module/database"
-mkdir -p "$DEST"
+# Find the directory containing mec_database_20171117.fasta
+DB_DIR=$(find $SRC_DIR -type f -name "mec_database_20171117.fasta" -exec dirname {} \; | head -1)
+if [ -z "$DB_DIR" ]; then
+    echo "ERROR: mec_database_20171117.fasta not found in $SRC_DIR"
+    exit 1
+fi
 
-# Copy all contents from SRC_DIR into DEST
-# (The tarball contains the database files directly)
-cp -r $SRC_DIR/* "$DEST/"
+DEST="$SP_DIR/staphscope/modules/sccmec_module"
+mkdir -p "$DEST"
+cp -r "$DB_DIR" "$DEST/"
