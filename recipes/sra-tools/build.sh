@@ -6,7 +6,6 @@ export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
 
 mkdir -p obj/ngs/ngs-java/javadoc/ngs-doc  # prevent error on OSX
 
-
 # Execute Make commands from a separate subdirectory. Else:
 # ERROR: In source builds are not allowed
 export SRA_BUILD_DIR=${SRC_DIR}/build_sratools
@@ -37,7 +36,7 @@ cmake -S sra-tools/ -B build_sratools/ \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	${CONFIG_ARGS}
 
-cmake --build build_sratools/ --target install -j "${CPU_COUNT}" -v
+cmake --build build_sratools/ --target install -j "${CPU_COUNT}"
 
 
 # Strip package version from binary names

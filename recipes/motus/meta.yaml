@@ -1,35 +1,45 @@
-{% set version = "3.1.0" %}
-{% set sha256 = "d0ab3a89b23c5d93349d938aba5e08f025737f14b2daf37458d956f84306fff4" %}
+{% set version = "4.0.4" %}
+{% set sha256 = "e42f671f0dd46ac5606bc8c68a93ffdd09bfb90e8eb12e4b22269c320d0adc52" %}
 
 package:
   name: motus
   version: '{{ version }}'
 
 source:
-  url: https://github.com/motu-tool/mOTUs/archive/{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/m/motus_tool/motus_tool-{{ version }}.tar.gz
   sha256: '{{ sha256 }}'
 
 build:
   number: 0
   noarch: python
+  run_exports:
+    - {{ pin_subpackage("motus", max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.8
+    - python >=3.12
     - pip
+    - setuptools
   run:
-    - metasnv =1.0.3
-    - samtools >=1.9
-    - bwa >=0.7.17
-    - python >=3.8
+    - bwa >=0.7.19
+    - vsearch >=2.30.4
+    - python >=3.12
+    - biopython >=1.8.5
+    - pysam >=0.23.3
+    - polars >=1.32.2
+    - rapidfuzz >=3.13.0
+    - tqdm >=4.67.3
+    - fetchmgs >=2.1.2
 
 test:
+  import:
+    - motus
   commands:
-    - motus --version 2>&1 >/dev/null | { grep -i "downloaddb" ; echo $? ;}
+    - 'motus --help 2>&1 | grep "Version" | sed "s%^.*Version: %%" | grep -qF "{{ version }}"'
 
 about:
-  home: http://motu-tool.org/
-  license: GPL-3.0
+  home: http://motus-tool.org/
+  license: GPL-3.0-or-later
   license_file: LICENSE
   license_family: GPL
   summary: Marker gene-based OTU (mOTU) profiling
@@ -40,4 +50,8 @@ extra:
   additional notes identifiers:
     - biotools:motus
   recipe-maintainers:
-    - AlessioMilanese
+    - hjruscheweyh
+    - saulpierotti
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64

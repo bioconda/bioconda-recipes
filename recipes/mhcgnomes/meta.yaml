@@ -1,41 +1,49 @@
 {% set name = "mhcgnomes" %}
-{% set version = "2.0" %}
+{% set version = "3.31.1" %}
 
 package:
-  name: "{{ name|lower }}"
+  name: "{{ name }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 48813eda6511b529854c4c2f9b2472c31356febac840bc281001563648494b1c
+  url: "https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 7e2a773b94fb060105df809e618f34e47ec36159a4aeac783994776afe6596d7
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  entry_points:
+    - mhcgnomes = mhcgnomes.cli:main
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.9
+    - setuptools
   run:
     - numpy
     - pandas
-    - python
+    - python >=3.9
     - pyyaml >=5.4
     - serializable
 
 test:
   imports:
     - mhcgnomes
+  commands:
+    - mhcgnomes --help
 
 about:
-  home: "https://github.com/til-unc/mhcgnomes"
-  license: Apache Software
+  home: "https://github.com/pirl-unc/mhcgnomes"
+  license: "Apache-2.0"
   license_family: APACHE
-  summary: "Python library for parsing MHC nomenclature in the wild"
+  license_file: LICENSE
+  summary: "Python library for parsing MHC nomenclature in the wild."
+  dev_url: "https://github.com/pirl-unc/mhcgnomes"
+  doc_url: "https://pirl-unc.github.io/mhcgnomes"
 
 extra:
   recipe-maintainers:

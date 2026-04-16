@@ -1,0 +1,61 @@
+{% set version = "1.0" %}
+
+package:
+  name: onebam
+  version: {{ version }}
+
+source:
+  url: https://github.com/richarddurbin/onebam/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 414854fbd0556a39098549774b552d76cd95b1b28324311af558da387a6c2d42
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('onebam', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - htslib
+    - zstd
+    - libcurl
+    - bzip2
+    - xz
+    - zlib
+  run:
+    - htslib
+
+test:
+  commands:
+    - onebam 2>&1 | head -5
+    - ONEview 2>&1 | head -5
+    - ONEstat 2>&1 | head -5
+    - seqstat 2>&1 | head -5
+    - seqconvert 2>&1 | head -5
+
+about:
+  home: https://github.com/richarddurbin/onebam
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "ONEcode replacement for SAM/BAM in large-scale eDNA mapping and taxonomic analysis."
+  description: |
+    onebam converts read-sorted SAM/BAM/CRAM files into a compact ONEcode
+    .1read format, storing reads with sequences, quality scores, best-match
+    damage information, and taxonomy hit data. It supports merging, LCA
+    (Lowest Common Ancestor) assignment, taxonomic reporting, and read
+    extraction, making it suitable for eDNA workflows mapping against very
+    large reference databases such as all of NCBI.
+  doc_url: https://github.com/richarddurbin/onebam
+  dev_url: https://github.com/richarddurbin/onebam
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c  # https://github.com/bioconda/bioconda-utils/issues/1095
+  recipe-maintainers:
+    - 7PintsOfCherryGarcia
