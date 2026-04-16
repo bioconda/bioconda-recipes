@@ -1,0 +1,62 @@
+{% set name = "cif-tools" %}
+{% set version = "1.0.13" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PDB-REDO/{{ name|lower }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 0d18a69c18fbaf8f4fc59b85b3a171de613734ea34f524e86ee79f17c50cc4be
+
+build:
+  number: 0
+  run_exports: []
+
+requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - cmake
+    - ninja
+    - pkg-config
+    - sed  # [osx]
+  host:
+    - fast_float
+    - libcifpp ==9.0.5
+    - libmcfp ==1.4.2
+    - zlib
+
+test:
+  commands:
+    - pdb2cif --help
+    - cif2pdb --help || true
+    - cif-diff --help
+    - cif-grep --help
+    - cif-merge --help
+    - cif-validate --help
+    - mmCQL --help
+  files:
+    - test.cql
+  source_files:
+    - 443d_final.cif
+    - 7f95-carb.cif
+    - 7f95-carb.pdb
+    - 7f95_flipper.pdb
+
+about:
+  home: https://github.com/PDB-REDO/cif-tools
+  dev_url: https://github.com/PDB-REDO/cif-tools
+  doc_url: https://github.com/PDB-REDO/cif-tools/tree/v{{ version }}/doc
+  summary: "A suite of programs to manipulate and examine mmCIF files"
+  license: 'BSD-2-Clause "Simplified"'
+  license_family: BSD
+  license_file: LICENSE
+  description: |
+    The cif-tools suite of programs are tools you can use to examine and manipulate mmCIF and PDB files.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - eunos-1128

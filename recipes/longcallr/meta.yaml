@@ -1,51 +1,45 @@
 {% set name = "longcallr" %}
-{% set version = "1.11.0" %}
+{% set version = "2.0.0" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/huangnengCSU/longcallR/archive/v{{ version }}.tar.gz
-  sha256: 0d50c435ad55595dfdb2488a8f0743e562f04ceb9ceb191fdfd22545fc85e072
+  url: https://github.com/huangnengCSU/longcallR/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: a9dc7355770a9f1adc92a281b1e38504ab0c773700c4e23b05e90172c380bf03
 
 build:
-  number: 0
+  number: 1
   run_exports:
-    - {{ pin_subpackage('longcallr', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('rust') }}
-  host:
-    - python >=3.7
-    - pysam
-    - intervaltree
-    - scipy
-    - statsmodels
-    - networkx
-    - numpy
-  run:
-    - python >=3.7
-    - pysam
-    - intervaltree
-    - scipy
-    - statsmodels
-    - networkx
-    - numpy
+    - cargo-bundle-licenses
+    - pkg-config
+    - clangdev
 
 test:
   commands:
     - longcallR --help
     - longcallR --version
-    - longcallR-asj --help
-    - longcallR-ase --help
+    - longcallR ase --help
+    - longcallR asj --help
 
 about:
-  home: https://github.com/huangnengCSU/longcallR
+  home: "https://github.com/huangnengCSU/longcallR"
   license: MIT
-  summary: "A Rust tool for SNP calling and haplotype phasing with long RNA-seq reads."
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A Rust tool for SNP calling, haplotype phasing, and allele-specific analysis with long RNA-seq reads."
+  dev_url: "https://github.com/huangnengCSU/longcallR"
+  doc_url: "https://huangnengcsu.github.io/longcallR"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - huangnengCSU

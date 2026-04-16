@@ -1,0 +1,24 @@
+--- a/src/Parasail/build	2025-09-19 10:42:46.296690000 -0400
++++ b/src/Parasail/build	2025-09-19 10:42:46.296690000 -0400
+@@ -33,7 +33,11 @@
+   local TMP_FILE="${SCRIPT_DIR}/temp_file_to_check_header.c"
+   local TMP_OUT="${SCRIPT_DIR}/temp_file_to_check_header.out"
+   echo '#include <xlocale.h>' > "${TMP_FILE}" || return 1
+-  gcc -H -fsyntax-only "${TMP_FILE}" 2>/dev/null
++  local CC="${CC}"
++  if [[ -z "${CC}" ]]; then
++    local CC=gcc
++  fi
++  "${CC}" -H -fsyntax-only "${TMP_FILE}" 2>/dev/null
+   local RETURN_CODE="$?"
+   if [[ "${RETURN_CODE}" -eq 0 ]]; then
+     # xlocale is found
+@@ -42,7 +46,7 @@
+   fi
+ 
+   echo '#include <locale.h>' > "${TMP_FILE}" || return 1
+-  gcc -H -fsyntax-only "${TMP_FILE}" 2> "${TMP_OUT}"
++  "${CC}" -H -fsyntax-only "${TMP_FILE}" 2> "${TMP_OUT}"
+   local RETURN_CODE="$?"
+   rm "${TMP_FILE}" || return 1
+   if [[ "${RETURN_CODE}" -ne 0 ]]; then

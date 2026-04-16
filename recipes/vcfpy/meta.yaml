@@ -1,35 +1,41 @@
-{% set version = "0.13.8" %}
-{% set sha256 = "e7d00965105e7ca9567299f073ad60c6bbfc78d685d25ba33353988af9b33160" %}
+{% set name = "vcfpy" %}
+{% set version = "0.14.2" %}
+{% set sha256 = "89786ed8f49013c2a6fd4add57a1590a43140c3fac4628da0f27e92d50bfd891" %}
 
 package:
-  name: vcfpy
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/v/vcfpy/vcfpy-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/vcfpy-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - fix-package-path.patch
 
 build:
-  noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
   run_exports:
-    - {{ pin_subpackage('vcfpy', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.8
+    - python >=3.10,<3.14
     - pip
+    - hatchling
   run:
-    - python >=3.8
-    - pysam >=0.10.0
+    - python >=3.10,<3.14
 
 test:
   imports:
     - vcfpy
 
 about:
-  home: https://github.com/bihealth/vcfpy
+  home: "https://github.com/bihealth/vcfpy"
   license: MIT
   license_family: MIT
-  summary: Python 3 VCF library with good support for both reading and writing
+  license_file: LICENSE
+  summary: "Python 3 VCF library with good support for both reading and writing."
+  dev_url: "https://github.com/bihealth/vcfpy"
+  doc_url: "https://vcfpy.readthedocs.io/en/stable"

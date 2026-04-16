@@ -5,13 +5,12 @@ set -uex
 
 mkdir -p bin nobin
 # Don't install these most bespoke scripts
-mv custom-* idx-* pm-* xy-* nobin
+mv xy-* nobin
 # Move ordinary scripts into a subdirectory for convenience
 mv $(find * -type d -prune -o -print | sed '/^[A-Z]/d;/[.]pdf$/d;/[.]pem$/d;/[.]py$/d;/conda/d;/build/d') bin
 
 mkdir -p $PREFIX/bin
 (cd cmd && sh -ex ./build.sh $PREFIX/bin)
-(cd extern && sh -ex ./build.sh $PREFIX/bin)
 
 # Ensure conda-build can tidy up this compiler cache tree
 test -d gopath && chmod -R u+wX gopath
