@@ -1,20 +1,28 @@
+{% set name = "bioconda-repodata-patches" %}
+{% set version = "20251216" %}  # ensure that this is the "current" date, and always higher than the latest version in master
+
 package:
-  name: bioconda-repodata-patches
-  version: 20251216  # ensure that this is the "current" date, and always higher than the latest version in master
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   path: .
 
 build:
-  noarch: generic
-  number: 0
+  number: 1
+  noarch: python
   run_exports:
-    - {{ pin_subpackage("bioconda-repodata-patches", max_pin=None) }}
+    - {{ pin_subpackage(name, max_pin=None) }}
 
 requirements:
-  build:
-    - python 3.*
-    - setuptools
+  host:
+    - python =3
+    - setuptools <82
+    - requests
+    - tqdm
+  run:
+    - python =3
+    - setuptools <82
     - requests
     - tqdm
 
@@ -35,4 +43,4 @@ extra:
     - bioconda/core
   skip-lints:
     - missing_hash
-    - should_be_noarch_python
+    - repodata_patches_no_version_bump
