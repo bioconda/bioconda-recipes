@@ -1,5 +1,8 @@
 #!/bin/bash
-echo "BUILD SCRIPT IS RUNNING"
-make CC="${CC}" CFLAGS="-I${PREFIX}/include -c -Wall -I lib" LFLAGS="-L${PREFIX}/lib -o"
+
 mkdir -p "$PREFIX/bin"
-cp bin/eggs "$PREFIX/bin"
+
+echo "BUILD SCRIPT IS RUNNING"
+make CC="${CC}" CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include -c -Wall -I lib" LFLAGS="${LDFLAGS} -L${PREFIX}/lib -o"
+
+install -v -m 0755 bin/eggs "$PREFIX/bin"
