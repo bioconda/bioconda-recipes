@@ -3,24 +3,29 @@
 {% set sha256 = "de77c66c75b4dec7b90a24ef6a8db435e807d1424b3ba66208877cb7db25157a" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  noarch: python
   number: 0
+  noarch: python
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.10
     - pip
     - setuptools_scm
   run:
-    - python
+    - python >=3.10
     - six
     - genomedata
     - gmtk >=1.4.4
@@ -43,10 +48,12 @@ test:
   - segway --help
 
 about:
-  home: http://segway.hoffmanlab.org/
-  license: GPL2
+  home: "https://segway.hoffmanlab.org"
+  license: "GPL-2.0-or-later"
   license_file: LICENSE
-  summary: 'a tool for easy pattern discovery and identification in functional genomics data.'
+  summary: "A tool for easy pattern discovery and identification in functional genomics data."
+  doc_url: "https://segway.readthedocs.io/en/latest"
+  dev_url: "https://github.com/hoffmangroup/segway"
 
 extra:
   recipe-maintainers:
