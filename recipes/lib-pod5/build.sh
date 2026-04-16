@@ -7,9 +7,8 @@ export CXXFLAGS="${CXXFLAGS} -O3 -Wno-deprecated-declarations -Wno-implicit-func
 mkdir -p ${PREFIX}/include
 mkdir -p ${PREFIX}/lib
 
-cp -rf ${RECIPE_DIR}/POD5Version.cmake cmake/
-
 ${PYTHON} -m setuptools_scm
+${PYTHON} -m pod5_make_version
 
 OS=$(uname -s)
 ARCH=$(uname -m)
@@ -30,24 +29,25 @@ else
 	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
 
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX="$(pwd)" \
+cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DBUILD_PYTHON_WHEEL=ON \
-	-DPython_EXECUTABLE="${PYTHON}" -Wno-dev -Wno-deprecated \
-	--no-warn-unused-cli "${CONFIG_ARGS}"
+	-DPython_EXECUTABLE="${PYTHON}" \
+	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
+	"${CONFIG_ARGS}"
 
-cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+ninja -C build install -j "${CPU_COUNT}"
 
 if [[ "${OS}" == "Darwin" ]]; then
 	${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
-	install -v lib/*.a "${PREFIX}/lib"
+	#install -v lib/*.a "${PREFIX}/lib"
 else
 	${PYTHON} -m pip install *.whl --no-deps --no-build-isolation --no-cache-dir -vvv
-	install -v lib64/*.a "${PREFIX}/lib"
+	#install -v lib64/*.a "${PREFIX}/lib"
 fi
 
-install -v include/pod5_format/*.h "${PREFIX}/include"
-cp -rf include/pod5_format/svb16 "${PREFIX}/include"
+#install -v include/pod5_format/*.h "${PREFIX}/include"
+#cp -rf include/pod5_format/svb16 "${PREFIX}/include"
 
 cd python/lib_pod5/
 ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
