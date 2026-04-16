@@ -1,14 +1,17 @@
 #!/bin bash
 
 set -xe
-export GOFLAGS="-buildvcs=false"
 
 mkdir -p $PREFIX/bin
 
 if [ "$(uname)" == "Darwin" ]; then
-    make "CGO_CFLAGS=$CGO_CFLAGS -I${CONDA_PREFIX}/include"
+    make \
+        GOFLAGS="-buildvcs=false" \
+        "CGO_CFLAGS=$CGO_CFLAGS -I${CONDA_PREFIX}/include"
 else
-    make "CGO_CFLAGS=$CGO_CFLAGS -L$CONDA_PREFIX/lib -I$CONDA_PREFIX/include"
+    make \
+        GOFLAGS="-buil dvcs=false" \ 
+        "CGO_CFLAGS=$CGO_CFLAGS -L$CONDA_PREFIX/lib -I$CONDA_PREFIX/include"
 fi
 
 
