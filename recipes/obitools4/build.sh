@@ -10,7 +10,7 @@ if [ "$(uname)" == "Darwin" ]; then
         "CGO_CFLAGS=$CGO_CFLAGS -I${CONDA_PREFIX}/include"
 else
     make \
-        GOFLAGS="-buil dvcs=false" \ 
+        GOFLAGS="-buildvcs=false" \ 
         "CGO_CFLAGS=$CGO_CFLAGS -L$CONDA_PREFIX/lib -I$CONDA_PREFIX/include"
 fi
 
