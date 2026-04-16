@@ -1,0 +1,120 @@
+diff --git a/ragtag_agp2fa.py b/ragtag_agp2fa.py
+index 879051b..9bb0a66 100644
+--- a/ragtag_agp2fa.py
++++ b/ragtag_agp2fa.py
+@@ -66,9 +66,9 @@ def main():
+             sys.stdout.write("N"*agp_line.gap_len)
+         else:
+             if agp_line.orientation == "-":
+-                sys.stdout.write(reverse_complement(fai.fetch(agp_line.comp, agp_line.comp_beg-1, agp_line.comp_end)))
++                sys.stdout.write(reverse_complement(fai.fetch(agp_line.comp, agp_line.comp_beg-1, agp_line.comp_end).decode('utf-8')))
+             else:
+-                sys.stdout.write(fai.fetch(agp_line.comp, agp_line.comp_beg-1, agp_line.comp_end))
++                sys.stdout.write(fai.fetch(agp_line.comp, agp_line.comp_beg-1, agp_line.comp_end).decode('utf-8'))
+ 
+     # End the FASTA file with a newline
+     sys.stdout.write("\n")
+diff --git a/ragtag_utilities/AGPFile.py b/ragtag_utilities/AGPFile.py
+index 4799a68..4cd2ef8 100644
+--- a/ragtag_utilities/AGPFile.py
++++ b/ragtag_utilities/AGPFile.py
+@@ -73,6 +73,8 @@ class AGPFile:
+         self._comment_lines = []
+         self._objects = []
+ 
++        self._n_lines = 0
++
+         # Store info enabling us to keep track of the state of the AGP file
+         self._current_obj = None
+         self._seen_objs = set()
+@@ -106,6 +108,7 @@ class AGPFile:
+                 if line.startswith("#"):
+                     if not in_body:
+                         self._comment_lines.append(line)
++                        self._n_lines += 1
+                     else:
+                         raise AGPError(self.fname, line_number, "illegal comment in AGP body")
+                     continue
+@@ -141,6 +144,7 @@ class AGPFile:
+             # Add the new object to our master list
+             agp_obj = AGPObject(self.fname, agp_line)
+             self._objects.append(agp_obj)
++            self._n_lines += agp_obj.num_lines
+ 
+             # Initialize all the info for this new object
+             self._current_obj = agp_obj.obj
+@@ -148,6 +152,7 @@ class AGPFile:
+ 
+         else:
+             self._objects[-1].add_line(agp_line)
++            self._n_lines += 1
+ 
+     @property
+     def agp_version(self):
+@@ -160,7 +165,7 @@ class AGPFile:
+     @property
+     def num_lines(self):
+         """ Calculate the number of lines in the current state of the AGP file. """
+-        return sum([len(self._comment_lines)] + [obj.num_lines for obj in self._objects])
++        return self._n_lines
+ 
+     @property
+     def num_objs(self):
+@@ -169,6 +174,7 @@ class AGPFile:
+     def add_pragma(self):
+         pragma = "## agp-version {}".format(self.agp_version)
+         if self._comment_lines:
++            self._n_lines -= len(self._comment_lines)
+             new_comment_lines = [pragma]
+             for i in self._comment_lines:
+                 if i != pragma:
+@@ -176,6 +182,7 @@ class AGPFile:
+             self._comment_lines = new_comment_lines
+         else:
+             self._comment_lines.append(pragma)
++        self._n_lines += len(self._comment_lines)
+ 
+     def iterate_objs(self):
+         """ Iterate over the objects of the AGP file. """
+@@ -197,6 +204,7 @@ class AGPFile:
+ 
+         if c not in self._comment_lines:
+             self._comment_lines.append(c)
++            self._n_lines += 1
+ 
+     def add_seq_line(self, obj, obj_beg, obj_end, pid, comp_type, comp, comp_beg, comp_end, orientation):
+         """
+@@ -244,6 +252,8 @@ class AGPFile:
+         else:
+             self._objects[-1].pop_line()
+ 
++        self._n_lines -= 1
++
+     def write(self):
+         """ Write the agp contents to a file. """
+         with open(self.fname, "w") as f:
+@@ -269,6 +279,7 @@ class AGPObject:
+         self.fname = agp_fname
+         self._obj = in_agp_line.obj
+         self._agp_lines = []
++        self._n_agp_lines = 0
+ 
+         # Store info enabling us to keep track of the state of the object
+         self.previous_pid = 0
+@@ -300,7 +311,7 @@ class AGPObject:
+ 
+     @property
+     def num_lines(self):
+-        return len(self._agp_lines)
++        return self._n_agp_lines
+ 
+     def add_line(self, agp_line):
+         # Perform validity checks if this is a new object
+@@ -319,6 +330,7 @@ class AGPObject:
+         self.previous_pid = agp_line.pid
+         self.obj_intervals.append((agp_line.obj_beg - 1, agp_line.obj_end))
+         self._agp_lines.append(agp_line)
++        self._n_agp_lines += 1
+ 
+     def iterate_lines(self):
+         for i in self._agp_lines:
