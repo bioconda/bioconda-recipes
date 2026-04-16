@@ -6,6 +6,9 @@ export CXXFLAGS="${CXXFLAGS} -O3 -Wno-deprecated-declarations -Wno-array-bounds"
 
 mkdir -p ${PREFIX}/include
 mkdir -p ${PREFIX}/lib
+# fixes: file COPY_FILE failed to copy
+# /opt/conda/conda-bld/lib-pod5_1776303586892/work/LICENSE.md
+mkdir -p python/lib_pod5/licenses
 
 ${PYTHON} -m setuptools_scm
 ${PYTHON} -m pod5_make_version
@@ -29,14 +32,14 @@ else
 	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
 
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX="$(pwd)" \
+cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DBUILD_PYTHON_WHEEL=ON \
 	-DPython_EXECUTABLE="${PYTHON}" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
-cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+ninja -C build install -j "${CPU_COUNT}"
 
 if [[ "${OS}" == "Darwin" ]]; then
 	${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
