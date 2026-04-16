@@ -7,11 +7,11 @@ mkdir -p $PREFIX/bin
 if [ "$(uname)" == "Darwin" ]; then
     make \
         GOFLAGS="-buildvcs=false" \
-        "CGO_CFLAGS=$CGO_CFLAGS -I${CONDA_PREFIX}/include"
+        CGO_CFLAGS="$CGO_CFLAGS -I${CONDA_PREFIX}/include"
 else
     make \
         GOFLAGS="-buildvcs=false" \ 
-        "CGO_CFLAGS=$CGO_CFLAGS -L$CONDA_PREFIX/lib -I$CONDA_PREFIX/include"
+        CGO_CFLAGS="$CGO_CFLAGS -L$CONDA_PREFIX/lib -I$CONDA_PREFIX/include"
 fi
 
 
