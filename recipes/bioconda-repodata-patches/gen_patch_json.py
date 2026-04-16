@@ -190,6 +190,11 @@ def _gen_new_index(repodata, subdir):
                 if dep.startswith("pulp") and has_no_upper_bound(dep):
                     deps[i] = "pulp >=2.0,<2.8.0"
 
+        # snakemake-minimal >=9.6.0,<9.19.0 was missing the dependency: referencing
+        # it was fixed for version 9.19.0 here: https://github.com/bioconda/bioconda-recipes/pull/64534
+        if record_name == 'snakemake-minimal' and version >= "9.6.0" and version < "9.19.0" and not has_dep(record, "referencing"):
+            deps.append('referencing')
+
         # snakemake requires pandas <3
         if record_name.startswith('snakemake') and has_dep(record, "pandas"):
             for i, dep in enumerate(deps):
