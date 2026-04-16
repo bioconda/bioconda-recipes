@@ -1,0 +1,51 @@
+{% set name = "csem" %}
+{% set version = "2.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/descostesn/CSEM-copy/archive/refs/tags/2.4.tar.gz
+  sha256: "fb50f91df2a6ebd6b8cb03c15fad64b675502ea459a1a675060d419b25ce7986"
+
+build:
+  number: 0
+  skip: true  # [not linux]
+  string: h47932c3_{{ PKG_BUILDNUM }}
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib("c") }}
+    - make
+  host:
+    - zlib
+    - ncurses
+  run:
+    - perl
+
+test:
+  commands:
+    - run-csem --help 2>&1 | grep -qi "csem"
+    - test -f "${PREFIX}/bin/run-csem"
+    - test -f "${PREFIX}/bin/sam/samtools"
+
+about:
+  home: http://deweylab.biostat.wisc.edu/csem/
+  dev_url: https://github.com/descostesn/CSEM-copy
+  license: GPL-3.0-or-later
+  license_family: GPL
+  license_file: COPYING
+  summary: "ChIP-Seq multi-read allocation using Expectation-Maximization"
+  description: |
+    CSEM (Chung et al. 2011) uses an expectation-maximization algorithm to
+    probabilistically reassign multi-mapping reads across the genome, producing
+    a BAM in which multi-reads are allocated proportionally to local enrichment.
+    Reference: Chung D, Kuan PF, Li B, Sanalkumar R, Liang K, Bresnick EH,
+    et al. Discovering Transcription Factor Binding Sites in Highly Repetitive
+    Regions of Genomes with Multi-Read Analysis of ChIP-Seq Data.
+    PLoS Comput Biol. 2011;7:e1002111.
