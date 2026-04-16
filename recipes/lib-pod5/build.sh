@@ -42,3 +42,6 @@ cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 ninja -C build install -j "${CPU_COUNT}"
 
 ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+
+cd python/lib_pod5
+${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
