@@ -11,7 +11,7 @@ else
     export CGO_CFLAGS="${CGO_CFLAGS} -L${CONDA_PREFIX}/lib -I${CONDA_PREFIX}/include"
 fi
 
-make
+make -e
 
 cp \
     build/obiannotate \
