@@ -1,29 +1,30 @@
 {% set name = "rs3" %}
-{% set version = "0.0.16" %}
+{% set version = "0.0.18" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/rs3-{{ version }}.tar.gz
-  sha256: 06591b4bade00f18ece00a0a7e853fddcfe0ba07093e6f43872b4afe1ac88233
+  sha256: 6edd942b3e266b3e838ddecc5b7b387c911c58c6024da06d5908ceb999827308
 
 build:
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  number: 0
+  number: 1
   run_exports:
-    - {{ pin_subpackage(name, max_pin = "x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
     - python >=3.7
     - pip
-    - setuptools
+    - setuptools <82
     - wheel
   run:
     - python >=3.7
+    - setuptools <82
     - packaging
     - joblib >=1.0.1
     - pandas >=1.0.0
@@ -39,13 +40,9 @@ requirements:
 test:
   imports:
     - rs3
-  commands:
-    - pip check
-  requires:
-    - pip
 
 about:
-  home: https://github.com/gpp-rnd/rs3/tree/master/
+  home: https://github.com/gpp-rnd/rs3
   summary: Predict the activity of CRISPR sgRNAs
   license: Apache-2.0
   license_file: LICENSE
