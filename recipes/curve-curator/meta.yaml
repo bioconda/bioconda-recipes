@@ -1,0 +1,57 @@
+{% set name = "curve-curator" %}
+{% set version = "0.6.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/curve_curator-{{ version }}.tar.gz
+  sha256: d323dbf900a2c390de7e4ee744a74268d328f917decb277216043ffabccd1a92
+
+build:
+  entry_points:
+    - CurveCurator = curve_curator.__main__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("curve-curator", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11,<3.14
+    - poetry-core
+    - pip
+  run:
+    - python >=3.11,<3.14
+    - bokeh >=3.4.0,<3.8.0
+    - numpy >=1.25.0,<3.0
+    - pandas >=2.1.0,<3.0.0
+    - scipy >=1.10.1,<2.0.0
+    - statsmodels >=0.14.0,<0.15.0
+    - tqdm >=4.66.1,<5.0.0
+    - pytest >=7.4.3,<8.0.0
+
+test:
+  imports:
+    - curve_curator
+  commands:
+    - pip check
+    - CurveCurator --help
+  requires:
+    - pip
+
+about:
+  summary: "CurveCurator is an open-source analysis platform for any dose-dependent data. It fits a classical 4-parameter \
+    \ equation to estimate effect potency, effect size, and the statistical significance of the observed response. \ 
+    \ 2D-thresholding efficiently reduces false positives in high-throughput experiments and separates relevant from irrelevant \ 
+    or insignificant hits in an automated and unbiased manner. An interactive dashboard allows users to quickly explore data locally."
+  license: Apache-2.0
+  license_file: LICENSE
+  home: https://github.com/kusterlab/curve_curator
+  doc_url: https://github.com/kusterlab/curve_curator
+
+extra:
+  recipe-maintainers:
+    - JudithBernett

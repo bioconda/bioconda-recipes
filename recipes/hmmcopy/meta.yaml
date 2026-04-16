@@ -1,26 +1,30 @@
+{% set name = "hmmcopy" %}
+{% set version = "0.1.1" %}
+
 package:
-  name: hmmcopy
-  version: 0.1.1
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: http://compbio-bccrc.sites.olt.ubc.ca/files/2013/12/HMMcopy.zip
-  md5: 205a719e7ac9b9f9ba811cdd7cbdae0a
+  sha256: 9439a921d44bc70ab52aa69e23ab38f1c9c3a81ffd83c300164c42a7b07e1828
 
 build:
-  number: 11
+  number: 12
   run_exports:
-    - {{ pin_subpackage("hmmcopy", max_pin="x.x") }}
+    - {{ pin_subpackage('hmmcopy', max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
-    - cmake
+    - cmake <4
+    - pkg-config
   host:
     - zlib
+    - zstd
   run:
-    - zlib
     - bowtie
     - perl
 
@@ -30,10 +34,12 @@ test:
     - generateMap.pl -h
 
 about:
-  home: http://compbio.bccrc.ca/software/hmmcopy/
-  license: GPL-3
-  summary: C++ based programs for analyzing BAM files and preparing read counts -- used with bioconductor-hmmcopy
+  home: "http://compbio.bccrc.ca/software/hmmcopy"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  summary: "C++ based programs for analyzing BAM files and preparing read counts -- used with bioconductor-hmmcopy."
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
