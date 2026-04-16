@@ -1,0 +1,53 @@
+{% set name = "lirtmats" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/lirtmats-{{ version }}.tar.gz
+  sha256: e35117957f86f201c1d56465018f880061a148faa5896cb84b52fab2de314bd8
+
+build:
+  entry_points:
+    - lirtmats = lirtmats.__main__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('lirtmats', max_pin="x") }}   
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools >=61.0
+    - wheel
+    - pip
+  run:
+    - python >=3.8
+    - numpy
+    - scipy
+    - pandas
+    - openpyxl
+    - lamps
+
+test:
+  imports:
+    - lirtmats
+  commands:
+    - pip check
+    - lirtmats --help
+  requires:
+    - pip
+
+about:
+  home: https://pypi.org/project/lirtmats/
+  summary: LiRTMaTS - Liverpool retention time matching software
+  dev_url: https://github.com/wanchanglin/lirtmats
+  license: GPL-3.0-only
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - harryln-1

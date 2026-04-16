@@ -1,0 +1,46 @@
+{% set name = "bigsdb-downloader" %}
+{% set version = "1.0.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/bigsdb_downloader-{{ version }}.tar.gz
+  sha256: 0b32aab5f0cb7b32333911ec5c9457491ad71d53288e78705b64ebb1470ebdcd
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("bigsdb-downloader", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - setuptools >=61.0.0
+    - wheel
+    - pip
+  run:
+    - python >=3.9
+    - rauth >=0.7.3
+
+test:
+  imports:
+    - bigsdb_downloader
+  commands:
+    - pip check
+    - bigsdb-downloader --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/kjolley/BIGSdb_downloader
+  summary: BIGSdb Downloader
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - kjolley
