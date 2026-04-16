@@ -67,6 +67,10 @@ test:
     - python -c "import mumemto; r = mumemto.mum([['ACGTACGT'], ['TACGTAAA']], min_match_len=3); assert r.num_matches() >= 0"
     - python -c "import mumemto, numpy as np; r = mumemto.mem([['ACGTACGT'], ['TACGTAAA']], min_match_len=3, max_doc_freq=2); assert r.num_matches() > 0; t = r.match_at(0); assert isinstance(t[1], np.ndarray); assert not t[1].flags['OWNDATA']"
     - |
+      if [[ -n "${MULLED_TEST:-}" ]]; then
+        echo "Skipping C++ ABI compile/link smoke-test under mulled."
+        exit 0
+      fi
       export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH:-}"
       export DYLD_LIBRARY_PATH="${PREFIX}/lib:${DYLD_LIBRARY_PATH:-}"
       echo '#include "mumemto.hpp"
@@ -74,6 +78,10 @@ test:
       ${CXX} -std=c++17 -I"${PREFIX}/include" mum_abi_smoke.cpp -L"${PREFIX}/lib" -lmumemto ${LDFLAGS} -o mum_abi_smoke
       ./mum_abi_smoke
     - |
+      if [[ -n "${MULLED_TEST:-}" ]]; then
+        echo "Skipping C++ API link smoke-test under mulled."
+        exit 0
+      fi
       export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH:-}"
       export DYLD_LIBRARY_PATH="${PREFIX}/lib:${DYLD_LIBRARY_PATH:-}"
       python - <<'PY'
@@ -97,6 +105,10 @@ test:
       ${CXX} -std=c++17 -I"${PREFIX}/include" mum_cpp_api_link.cpp -L"${PREFIX}/lib" -lmumemto ${LDFLAGS} -o mum_cpp_api_link
       ./mum_cpp_api_link
     - |
+      if [[ -n "${MULLED_TEST:-}" ]]; then
+        echo "Skipping C ABI compile/link smoke-test under mulled."
+        exit 0
+      fi
       export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH:-}"
       export DYLD_LIBRARY_PATH="${PREFIX}/lib:${DYLD_LIBRARY_PATH:-}"
       echo '#include "mumemto.h"
