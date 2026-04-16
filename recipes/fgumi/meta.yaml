@@ -1,0 +1,50 @@
+{% set name = "fgumi" %}
+{% set version = "0.1.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/fulcrumgenomics/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 64c4ac2fad72aadbdc698c967718367da97a66b9d5f72b55d26330c86b168b7e
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+  run:
+    - r-base
+    - r-ggplot2
+    - r-scales
+
+test:
+  commands:
+    - fgumi --help
+
+about:
+  home: "https://github.com/fulcrumgenomics/{{ name }}"
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "High-performance tools for UMI-tagged sequencing data."
+  dev_url: "https://github.com/fulcrumgenomics/{{ name }}"
+  doc_url: "https://github.com/fulcrumgenomics/{{ name }}/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - nh13
+    - tfenne
+  skip-lints:
+    - compiler_needs_stdlib_c
