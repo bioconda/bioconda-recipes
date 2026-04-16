@@ -1,26 +1,28 @@
 {% set name = "stringmeup" %}
-{% set version = "0.1.4" %}
+{% set version = "0.1.5" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/danisven/StringMeUp/archive/{{ version }}.tar.gz
-  sha256: b3c313c11b608061764dacfeca33307057734e97b90db92b7b9c8900dbeca23c
+  sha256: ef4b9c5ee41c829179baca6b91940542c4286063c372d832a6063f19ec91d694
 
 build:
   number: 0
-  entry_points:
-    - stringmeup=stringmeup.stringmeup:stringmeup
-  script: python -m pip install --no-deps --ignore-installed . 
   noarch: python
+  entry_points:
+    - stringmeup = stringmeup.stringmeup:stringmeup
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
     - pip
     - python >3
-
+    - setuptools
   run:
     - python >3
     - dataclasses
@@ -30,11 +32,12 @@ test:
     - stringmeup --help
 
 about:
-  home: https://github.com/danisven/StringMeUp
+  home: "https://github.com/danisven/StringMeUp"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: A post-processing tool to reclassify Kraken 2 output based on the confidence score and/or minimum minimizer hit groups.
+  summary: "A post-processing tool to reclassify Kraken 2 output based on the confidence score and/or minimum minimizer hit groups."
+  dev_url: "https://github.com/danisven/StringMeUp"
 
 extra:
   recipe-maintainers:

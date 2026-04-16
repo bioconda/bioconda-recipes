@@ -1,5 +1,5 @@
 {% set name = "mitos" %}
-{% set version = "2.1.9" %}
+{% set version = "2.1.10" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,11 +7,12 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 88fc8980c815ae8497518ee7ff58ff69e51b1a35c1efe2ae9b0925b7c4f364f5
+  sha256: 0fcc84806fcca5a5dc49b5acd3874c499e72349a5648bb58a9d4870604a36c21
 
 build:
-  number: 1
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vv "
+  number: 0
+  ## --ignore-requires-python should be removed with the next verison
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 --ignore-requires-python -vv "
   noarch: python
   run_exports:
     - {{ pin_subpackage('mitos', max_pin="x.x") }}
@@ -19,15 +20,16 @@ build:
 requirements:
   host:
     - pip
-    - python >=3
+    - python >=3.10,<3.14
     - setuptools
   run:
     - biopython <1.82
-    - python >=3
-    - blast >=2.9
+    - python >=3.10,<3.14
+    - typing-extensions
+    - blast >=2.9,<3
     - hmmer =3.4
-    - infernal >=1.1.5
-    - viennarna
+    - infernal >=1.1.5,<2
+    - viennarna <2
     - r-base
     - r-ggplot2
     - r-reshape2
@@ -59,9 +61,8 @@ test:
     - mitos.tbl
     - mitos.trna
     - mitos.update
-    - mitos.webserver
   commands:
-    - runmitos.py -h
+    - runmitos -h
     - 'R -e "library(''reshape2'')"'
     - 'R -e "library(''ggplot2'')"'
 
