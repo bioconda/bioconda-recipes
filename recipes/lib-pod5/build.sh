@@ -41,4 +41,4 @@ cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 
 ninja -C build install -j "${CPU_COUNT}"
 
-${PYTHON} -m pip install *.whl --no-deps --no-build-isolation --no-cache-dir -vvv
+${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
