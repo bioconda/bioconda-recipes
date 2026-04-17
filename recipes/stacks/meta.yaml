@@ -1,16 +1,10 @@
 {% set name = "stacks" %}
-{% set version="2.68" %}
-{% set sha256="9dc51ea356d60eb4557b0b2d1a8854aafae492aed87f974e0249cc09aa5e7650" %}
+{% set version = "2.68" %}
+{% set sha256 = "9dc51ea356d60eb4557b0b2d1a8854aafae492aed87f974e0249cc09aa5e7650" %}
 
 package:
-  name: {{name}}
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 2
-  skip: True  # [osx]
-  run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
 
 source:
   sha256: {{ sha256 }}
@@ -20,14 +14,23 @@ source:
     - kmer_exit.patch
     - limits.patch
 
+build:
+  number: 3
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - pkg-config
+    - libtool
+    - gnuconfig
   host:
     - zlib
-
+    - llvm-openmp  # [osx]
   run:
+    - llvm-openmp  # [osx]
     - perl
     - perl-bioperl-core
     - perl-file-spec
@@ -63,16 +66,29 @@ test:
     - stacks-samtools-tview 2>&1 | grep "usage"
 
 about:
-  home: https://catchenlab.life.illinois.edu/stacks/
-  license: GPL-3
+  home: "https://catchenlab.life.illinois.edu/stacks"
+  license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: LICENSE
   summary: "Stacks is a software pipeline for building loci from short-read sequences."
+  doc_url: "https://catchenlab.life.illinois.edu/stacks"
 
 extra:
   additional-platforms:
     - linux-aarch64
-
+    - osx-arm64
   identifiers:
-    - biotools:Stacks
+    - biotools:stacks
+    - usegalaxy-eu:stacks2_shortreads
+    - usegalaxy-eu:stacks2_kmerfilter
+    - usegalaxy-eu:stacks2_clonefilter
+    - usegalaxy-eu:stacks2_tsv2bam
+    - usegalaxy-eu:stacks2_refmap
+    - usegalaxy-eu:stacks2_denovomap
+    - usegalaxy-eu:stacks2_procrad
+    - usegalaxy-eu:stacks2_populations
+    - usegalaxy-eu:stacks2_gstacks
+    - usegalaxy-eu:stacks2_sstacks
+    - usegalaxy-eu:stacks2_cstacks
+    - usegalaxy-eu:stacks2_ustacks
     - doi:10.1111/mec.12354
