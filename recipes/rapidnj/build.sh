@@ -10,9 +10,11 @@ install -d "${PREFIX}/bin"
 case $(uname -m) in
     aarch64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a|' Makefile
 	;;
     arm64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a|' Makefile
 	;;
     x86_64)
 	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
