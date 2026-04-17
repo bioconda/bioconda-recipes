@@ -16,4 +16,4 @@ rm .cargo/config.toml  # remove custom config.toml for now
 
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
-python -m pip install ./mehari-python --no-deps --no-build-isolation --disable-pip-version-check -vv
+${PYTHON} -m pip install ./mehari-python --no-deps --no-build-isolation --disable-pip-version-check -vv
