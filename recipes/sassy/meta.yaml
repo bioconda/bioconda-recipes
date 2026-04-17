@@ -1,5 +1,5 @@
 {% set name = "sassy" %}
-{% set version = "0.2.0" %}
+{% set version = "0.2.2" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/ragnargrootkoerkamp/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 4082c3580259877c2aa633943846e52dc0b0c153d23972058031742ae4892454
+  sha256: f1a446ed5eca2d9e653eb97abfca53dbc9a6baf81617c230560f929478c3d57d
 
 build:
   number: 0
@@ -17,7 +17,14 @@ build:
     # Instead, use x86-64-v3 for x64, apple-m14 (=M1) for macos,
     # and the default otherwise.
     - mv .cargo/config-portable.toml .cargo/config.toml
-    - cargo install --no-track --locked --verbose --root "${PREFIX}" --path .
+
+    # For x86-64, build a single binary targeting both AVX2 (x86-64-v3) and AVX-512 (x86-64-v4).
+    - cargo install --locked cargo-multivers  # [x86_64]
+    - cargo multivers --profile dist --out-dir "${PREFIX}/bin" # [x86_64]
+
+    # On other platforms, use regular cargo install.
+    - cargo install --no-track --locked --profile dist --root "${PREFIX}" --path .  # [not x86_64]
+
   run_exports:
     - {{ pin_subpackage('sassy', max_pin="x.x") }}
 
