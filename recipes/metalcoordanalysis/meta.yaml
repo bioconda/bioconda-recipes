@@ -1,0 +1,73 @@
+{% set name = "MetalCoordAnalysis" %}
+{% set version = "0.2.13" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Lekaveh/MetalCoordAnalysis/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 5e638ecd18c4e2a7a63949f25f4b9c12581cd7484db19a48d96c055ab03f73d4
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - metalCoord = metalCoord.run:main_func
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python {{ python_min }}.*
+    - poetry-core >=1.0.0
+    - poetry-dynamic-versioning >=1.0.0,<2.0.0
+  run:
+    - gemmi >=0.7.3
+    - networkx >=3.2.1,<4
+    - numpy >=1.26.4
+    - pandas >=2.0.0
+    - python >={{ python_min }}
+    - scipy >=1.0.0
+    - scikit-learn >=1.4.0,<2
+    - tqdm >=4.0.0
+
+test:
+  imports:
+    - metalCoord
+    - metalCoord.analysis
+    - metalCoord.service
+    - metalCoord.cli
+  commands:
+    - pip check
+    - metalCoord --version
+    - metalCoord --help
+    - metalCoord coord
+    - metalCoord coord -n 6
+    - metalCoord coord -m ZN
+    - metalCoord table
+  requires:
+    - pip
+    - python {{ python_min }}.*
+  source_files:
+    - tests/data/*
+
+about:
+  home: https://github.com/Lekaveh/MetalCoordAnalysis
+  summary: Python application designed for analyzing metal coordination in biological macromolecules such as proteins and nucleic acids
+  doc_url: https://github.com/Lekaveh/MetalCoordAnalysis/blob/v{{ version }}/README.md
+  dev_url: https://github.com/Lekaveh/MetalCoordAnalysis
+  license: MPL-2.0
+  license_family: MOZILLA
+  license_file: LICENSE
+  description: |
+    The Metal Coordination Analysis Tool is a Python application designed for analyzing metal coordination in biological macromolecules such as proteins and nucleic acids.
+    This tool provides a set of functionalities to process molecular structures, identify metal coordination sites, and generate insightful visualizations.
+
+extra:
+  identifiers:
+    - doi:10.1107/S2059798324011458
+  recipe-maintainers:
+    - eunos-1128
