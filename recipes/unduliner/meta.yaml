@@ -1,0 +1,63 @@
+{% set version = "1.0.1" %}
+
+package:
+  name: unduliner
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/u/unduliner/unduliner-{{ version }}.tar.gz
+  sha256: 7b72feb8e5f601a05f19e11aa47722b106837493fed8a95e8035ed0928295fda
+
+build:
+  entry_points:
+    - unduliner = unduliner.cli:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('unduliner', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools
+    - pip
+  run:
+    - python 
+    - pandas 
+    - matplotlib-base 
+    - seaborn 
+    - pysam 
+    - bx-python
+    - scikit-learn 
+    - scipy 
+    - numpy 
+    - pillow
+    - statsmodels 
+    - pytorch 
+    - torchvision
+    - samtools 
+    - joblib
+
+test:
+  imports:
+    - unduliner
+  commands:
+    - pip check
+    - unduliner --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://pypi.org/project/unduliner/
+  summary: CLI tool to link variants to methylation changes from nanopore data
+  doc_url: https://github.com/Chisomgold/unduliner/tree/main
+  dev_url: https://github.com/Chisomgold/unduliner
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic
+  recipe-maintainers:
+    - Chisomgold
