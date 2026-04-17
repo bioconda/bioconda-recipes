@@ -1,0 +1,44 @@
+{% set name = "tefinder" %}
+{% set version = "2.32" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://urgi.versailles.inra.fr/download/repet/te_finder_light-{{ version }}.tar.gz
+  sha256: 826cb7ba7bf0222126dd468c7cef420316fa11083b78ec6ceaa146e2ff9915ed
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake
+    - pkg-config
+  host:
+    - cppunit
+  run:
+    - blast
+    - blast-legacy
+
+test:
+  commands:
+    - blaster2.32 -h >> /dev/null
+
+about:
+  home: "https://forge.inrae.fr/urgi/urgi-anagen/te_finder"
+  license: CeCILL
+  license_file: LICENSE
+  summary: "Programs for transposable element search and annotation in large eukaryotic genome sequence."
+  dev_url: "https://forge.inrae.fr/urgi/urgi-anagen/te_finder"
+  doc_url: "https://forge.inrae.fr/urgi/urgi-anagen/te_finder/-/blob/release-{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

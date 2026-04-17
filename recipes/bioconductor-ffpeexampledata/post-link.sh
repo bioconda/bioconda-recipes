@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "ffpeexampledata-1.40.0"
+installBiocDataPackage.sh "ffpeexampledata-1.44.0"

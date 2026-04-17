@@ -1,3 +1,5 @@
+diff --git a/setup.py b/setup.py
+index ef361aa..4f7f819 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -10,13 +10,6 @@ from setuptools import setup, Extension, Command
@@ -14,7 +16,7 @@
  import numpy as np
  
  
-@@ -236,6 +229,7 @@ htslib_include_dirs = ["htslib", "htslib/htslib"]
+@@ -236,19 +229,22 @@ htslib_include_dirs = ["htslib", "htslib/htslib"]
  
  # Build the Cython extension by statically linking to the bundled htslib
  sources = ["cyvcf2/cyvcf2.pyx", "cyvcf2/helpers.c"]
@@ -22,3 +24,19 @@
  
  extensions = [
      Extension(
+         "cyvcf2.cyvcf2",
+         sources,
+         extra_objects=htslib_objects,
+-        libraries=htslib_librarys,
++        libraries=htslib_librarys + extra_libs,
+         extra_compile_args=[
+             "-Wno-sign-compare",
+             "-Wno-unused-function",
+             "-Wno-strict-prototypes",
+             "-Wno-unused-result",
+             "-Wno-discarded-qualifiers",
++            "-Wno-implicit-function-declaration",
++            "-Wno-int-conversion",
+         ],
+         include_dirs=["cyvcf2", np.get_include()] + htslib_include_dirs,
+         library_dirs=htslib_library_dirs,

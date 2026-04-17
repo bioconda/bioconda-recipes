@@ -1,62 +1,61 @@
-{% set version = "1.10.0" %}
+{% set version = "1.14.0" %}
 {% set name = "epialleleR" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: cbe73c32dc61dac41266279db72e4bee
+about:
+  description: Epialleles are specific DNA methylation patterns that are mitotically and/or meiotically inherited. This package calls and reports cytosine methylation as well as frequencies of hypermethylated epialleles at the level of genomic regions or individual cytosines in next-generation sequencing data using binary alignment map (BAM) files as an input. Among other things, this package can also extract and visualise methylation patterns and assess allele specificity of methylation.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Fast, Epiallele-Aware Methylation Caller and Reporter
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-epialleler", max_pin="x.x") }}'
-# Suggests: RUnit, knitr, rmarkdown, ggplot2, ggstance, gridExtra
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: GenomeInfoDb, SummarizedExperiment, VariantAnnotation, RUnit, knitr, rmarkdown, ggplot2
 # SystemRequirements: C++17, GNU make
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
-    - 'bioconductor-genomeinfodb >=1.38.0,<1.39.0'
-    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
-    - 'bioconductor-rhtslib >=2.4.0,<2.5.0'
-    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
-    - 'bioconductor-variantannotation >=1.48.0,<1.49.0'
-    - 'bioconductor-zlibbioc >=1.48.0,<1.49.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-rhtslib >=3.2.0,<3.3.0
     - r-base
     - r-bh
     - r-data.table
     - r-rcpp
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
-    - 'bioconductor-genomeinfodb >=1.38.0,<1.39.0'
-    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
-    - 'bioconductor-rhtslib >=2.4.0,<2.5.0'
-    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
-    - 'bioconductor-variantannotation >=1.48.0,<1.49.0'
-    - 'bioconductor-zlibbioc >=1.48.0,<1.49.0'
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-rhtslib >=3.2.0,<3.3.0
     - r-base
     - r-bh
     - r-data.table
     - r-rcpp
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
+source:
+  md5: 4bfbef7adb6ed8da885b81a9b72335ca
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Fast, Epiallele-Aware Methylation Caller and Reporter'
-  description: 'Epialleles are specific DNA methylation patterns that are mitotically and/or meiotically inherited. This package calls and reports cytosine methylation as well as frequencies of hypermethylated epialleles at the level of genomic regions or individual cytosines in next-generation sequencing data using binary alignment map (BAM) files as an input. Among other things, this package can also extract methylation patterns and assess allele specificity of methylation.'
+    - $R -e "library('{{ name }}')"
 

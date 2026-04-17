@@ -1,0 +1,47 @@
+{% set name = "busco_phylogenomics" %}
+{% set version = "20260305" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/jamiemcg/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 3ea85c261b8d564f3eefd66e7f23fcc8aec4f7209472597d51f30de49ea163df
+
+build:
+  number: 0
+  noarch: python
+  script: bash conda_build_package.sh
+
+  run_exports:
+    - {{ pin_subpackage('busco_phylogenomics', max_pin=None) }}
+
+requirements:
+  build:
+    - python >=3.8
+  run:
+    - python >=3.8
+    - biopython
+    - muscle >=5.1
+    - iqtree
+    - fasttree
+    - trimal
+    - tqdm
+    - mafft
+
+test:
+  commands:
+    - BUSCO_phylogenomics.py -h
+    - count_buscos.py -h
+
+about:
+  home: https://github.com/jamiemcg/BUSCO_phylogenomics
+  license: MIT
+  license_file: LICENSE
+  license_family: MIT
+  summary: 'Utility script to construct species phylogenies using BUSCO proteins.'
+
+extra:
+  maintainers:
+    - jamiemcg

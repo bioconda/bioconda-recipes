@@ -1,7 +1,6 @@
 {% set name = "mtsv-tools" %}
-{% set version = "2.0.2" %}
-{% set sha256 = "465c33390b9ed1f4abff28e93bdd603e8529c428009d777c22830846d8e075da" %}
-
+{% set version = "2.1.1" %}
+{% set sha256 = "8b467f5e2df0254a8f24107b399516a37db2acd52ce7ed0c670bb21523f50e99" %}
 
 package:
   name: {{ name }}
@@ -12,31 +11,33 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 3
-  skip: True # [osx]
+  number: 2
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-  host:
-    - rust>1.29.0
-  
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - pkg-config
+
 test:
   commands:
-    - mtsv-build --help > /dev/null
-    - mtsv-chunk --help > /dev/null
-    - mtsv-binner --help > /dev/null
-    - mtsv-collapse --help > /dev/null
-
+    - mtsv-build --version
 
 about:
-  home: https://github.com/FofanovLab/mtsv_tools
+  home: "https://github.com/FofanovLab/mtsv_tools"
   license: MIT
-  license_file: LICENSE
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
   license_family: MIT
-  summary: |
-    mtsv_tools contains core tools for alignment-based metagenomic binning
+  summary: "mtsv_tools contains core tools for alignment-based metagenomic/metatranscriptomic assignment."
+  dev_url: "https://github.com/FofanovLab/mtsv_tools"
+  doc_url: "https://github.com/FofanovLab/mtsv_tools/blob/{{ version }}/README.md"
 
 extra:
-  recipe_maintainers: tfursten
-    
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

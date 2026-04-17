@@ -1,0 +1,68 @@
+{% set name = "mrpast" %}
+{% set version = "0.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 33c0335c6980ab53841b7d5e5848bc6415ff673c23d15bbaeefcfa52aaeb22c5
+
+build:
+  number: 0
+  entry_points:
+    - mrpast=mrpast.main:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage('mrpast', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+  host:
+    - numpy >=2.0.0
+    - dataclasses-json
+    - msprime
+    - orjson
+    - pandas
+    - pip
+    - pyfaidx
+    - python
+    - pyyaml
+    - tabulate
+    - tqdm
+    - tskit
+  run:
+    - {{ pin_compatible('numpy') }}
+    - dataclasses-json
+    - msprime
+    - orjson
+    - pandas
+    - pyfaidx
+    - python
+    - pyyaml
+    - tabulate
+    - tqdm
+    - tskit
+
+test:
+  imports:
+    - mrpast
+  commands:
+    - mrpast --help
+
+about:
+  home: "https://aprilweilab.github.io/"
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Demographic inference from Ancestral Recombination Graphs."
+  doc_url: "https://mrpast.readthedocs.io/en/latest/"
+  dev_url: "https://github.com/aprilweilab/mrpast"
+
+extra:
+  recipe-maintainers:
+    - dcdehaas

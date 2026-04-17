@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "stexampledata-1.10.0"
+installBiocDataPackage.sh "stexampledata-1.14.0"

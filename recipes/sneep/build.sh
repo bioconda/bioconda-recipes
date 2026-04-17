@@ -13,7 +13,7 @@ else
 	sed -i.bak 's/CFLAGS=/CFLAGS+=/' Makefile
 	sed -i.bak 's/LDLAGS_=/LDFLAGS_+=/' Makefile
 	sed -i.bak 's/CPPFLAGS_=/CPPFLAGS_+=/' Makefile
-	make CC=$CXX
+	make CC=$CXX LDFLAGS="${LDFLAGS}"
 fi
 
 cp -a ${SRC_DIR}/src/. $PREFIX/bin

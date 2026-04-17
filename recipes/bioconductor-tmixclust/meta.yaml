@@ -1,30 +1,32 @@
-{% set version = "1.24.0" %}
+{% set version = "1.28.0" %}
 {% set name = "TMixClust" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 3e0e6852e806722f305ed45332c23179
+about:
+  description: Implementation of a clustering method for time series gene expression data based on mixed-effects models with Gaussian variables and non-parametric cubic splines estimation. The method can robustly account for the high levels of noise present in typical gene expression time series datasets.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=2)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Time Series Clustering of Gene Expression with Gaussian Mixed-Effects Models and Smoothing Splines
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-tmixclust", max_pin="x.x") }}'
-  noarch: generic
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
 # Suggests: rmarkdown, knitr, BiocStyle, testthat
 requirements:
   host:
-    - 'bioconductor-biobase >=2.62.0,<2.63.0'
-    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
-    - 'bioconductor-spem >=1.42.0,<1.43.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-spem >=1.46.0,<1.47.0
     - r-base
     - r-cluster
     - r-flexclust
@@ -32,22 +34,25 @@ requirements:
     - r-mvtnorm
     - r-zoo
   run:
-    - 'bioconductor-biobase >=2.62.0,<2.63.0'
-    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
-    - 'bioconductor-spem >=1.42.0,<1.43.0'
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocparallel >=1.40.0,<1.41.0
+    - bioconductor-spem >=1.46.0,<1.47.0
     - r-base
     - r-cluster
     - r-flexclust
     - r-gss
     - r-mvtnorm
     - r-zoo
+
+source:
+  md5: ebab6e8362666c78cde53e6dcbf29a23
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>=2)'
-  summary: 'Time Series Clustering of Gene Expression with Gaussian Mixed-Effects Models and Smoothing Splines'
-  description: 'Implementation of a clustering method for time series gene expression data based on mixed-effects models with Gaussian variables and non-parametric cubic splines estimation. The method can robustly account for the high levels of noise present in typical gene expression time series datasets.'
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+    - $R -e "library('{{ name }}')"
 

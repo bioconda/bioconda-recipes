@@ -1,23 +1,25 @@
 {% set name = "PyLiftover" %}
-{% set version = "0.4" %}
-{% set sha256 = "72bcfb7de907569b0eb75e86c817840365297d63ba43a961da394187e399da41" %}
+{% set version = "0.4.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/c0/20/4386926f08410d472ed81c1f14f25069dac3d62d21e2c1c366eff7b8a035/{{ name|lower }}-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pyliftover-{{ version }}.tar.gz
+  sha256: 33ad187e35d1b6662ba446432f4dd1a808ac2914ce1645eef37598fa5a3860cd
 
 build:
-  number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('pyliftover', max_pin="x.x") }}
 
 requirements:
   host:
     - python
+    - pytest
     - pip
   run:
     - python
@@ -25,10 +27,17 @@ requirements:
 test:
   imports:
     - pyliftover
+  commands:
+    - pip check
+  requires:
+    - pip
 
 about:
   home: https://github.com/konstantint/pyliftover
+  summary: Pure-python implementation of UCSC ``liftOver`` genome coordinate conversion.
   license: MIT
-  license_family: MIT
-  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
-  summary: "Pure-python implementation of UCSC ``liftOver`` genome coordinate conversion."
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - nebfield

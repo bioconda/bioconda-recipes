@@ -1,4 +1,4 @@
-{% set version = "2.0.4" %}
+{% set version = "2.0.7" %}
 
 package:
   name: cami-amber
@@ -6,18 +6,18 @@ package:
 
 source:
   url:  https://pypi.io/packages/source/c/cami-amber/cami-amber-{{ version }}.tar.gz
-  sha256: a671517d1ea2d43b74f0bd1934621b59b9d6e160f64ef485c03f612c9de21e3a
+  sha256: 01f11fbab7cb0f24497932669b00981292b1dc0df2ce6cd4b707a7ddd675bf8d
 
 build:
   noarch: python
-  number: 1
+  number: 0
   run_exports:
-    - {{ pin_subpackage("cami-amber", max_pin="x.x") }}
+    - {{ pin_subpackage("cami-amber", max_pin="x") }}
   script:
-    - python -m pip install --no-deps --ignore-installed .
-    - cp ./src/utils/add_length_column.py $PREFIX/bin
-    - cp ./src/utils/convert_fasta_bins_to_biobox_format.py $PREFIX/bin
-    - cp ./src/utils/argparse_parents.py $PREFIX/bin
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+    - cp -rf ./cami_amber/utils/add_length_column.py $PREFIX/bin
+    - cp -rf ./cami_amber/utils/convert_fasta_bins_to_biobox_format.py $PREFIX/bin
+    - cp -rf ./cami_amber/utils/argparse_parents.py $PREFIX/bin
 
 requirements:
   host:
@@ -25,14 +25,14 @@ requirements:
     - pip
   run:
     - python >=3.6
-    - numpy >=1.24.2
-    - biopython >=1.81
-    - matplotlib-base >=3.7.1
-    - pandas >=1.5.3
-    - bokeh >=3.1.0
-    - seaborn >=0.12.2
-    - jinja2 >=3.1.2
-    - pyarrow >=11.0.0
+    - numpy >=2.0.1
+    - biopython >=1.84
+    - matplotlib-base >=3.8.4
+    - pandas >=2.2.2
+    - bokeh >=3.5.1
+    - seaborn-base >=0.13.2
+    - jinja2 >=3.1.4
+    - pyarrow >=17.0.0
 
 test:
   commands:
@@ -42,6 +42,8 @@ test:
 
 about:
   home: https://github.com/CAMI-challenge/AMBER
-  license: GPL v3
+  license: GPL-3.0-or-later
+  license_family: GPL3
   license_file: LICENSE
   summary: 'AMBER: Assessment of Metagenome BinnERs'
+  dev_url: https://github.com/CAMI-challenge/AMBER

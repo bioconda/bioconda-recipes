@@ -1,0 +1,34 @@
+diff --git a/Makefile b/Makefile
+index 9fabeb0a..9024dc94 100644
+--- a/Makefile
++++ b/Makefile
+@@ -7,7 +7,7 @@ modules = api setup caf bar hal reference pipeline preprocessor
+ # submodules are in multiple pass to handle dependencies cactus2hal being dependent on
+ # both cactus and sonLib
+ # jemalloc is conditionally added based on include.mk settings
+-submodules1 = sonLib cPecan hal matchingAndOrdering pinchesAndCacti abPOA lastz paffy red collapse-bubble FASTGA FASTAN alntools
++submodules1 = sonLib cPecan hal matchingAndOrdering pinchesAndCacti abPOA paffy red collapse-bubble FASTGA alntools
+ submodules2 = cactus2hal
+ submodules = ${submodules1} ${submodules2}
+ 
+@@ -294,11 +294,6 @@ suball.abPOA:
+ 	ln -f submodules/abPOA/include/*.h ${INCLDIR}
+ 	rm -fr ${INCLDIR}/simde && cp -r submodules/abPOA/include/simde ${INCLDIR}
+ 
+-suball.lastz:
+-	cd submodules/lastz/src && sed -i Makefile -e 's/-lm -o/-lm $${LIBS} -o/g'
+-	cd submodules/lastz && LIBS="${jemallocLib}" ${MAKE}
+-	ln -f submodules/lastz/src/lastz bin
+-
+ suball.paffy:
+ 	cd submodules/paffy && LIBS="${jemallocLib}" ${MAKE}
+ 	rm -rf submodules/paffy/bin/*.dSYM
+
+@@ -321,7 +321,4 @@
+	ln -f submodules/FASTGA/GIXmake ${BINDIR}
+	ln -f submodules/FASTGA/GIXrm ${BINDIR}
+-suball.FASTAN:
+-	cd submodules/FASTAN && sed -i Makefile -e 's/-lm -lz/-lm -lpthread -lz/g' && ${MAKE} || true
+- 	ln -f submodules/FASTAN/FasTAN ${BINDIR}
+ suball.alntools:
+	cd submodules/alntools && ${MAKE}

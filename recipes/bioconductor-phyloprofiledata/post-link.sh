@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "phyloprofiledata-1.16.0"
+installBiocDataPackage.sh "phyloprofiledata-1.20.0"

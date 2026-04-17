@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "pasillatranscriptexpr-1.30.0"
+installBiocDataPackage.sh "pasillatranscriptexpr-1.33.0"

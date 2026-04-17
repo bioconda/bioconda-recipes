@@ -1,35 +1,49 @@
-{% set version = "1.11.1" %}
-{% set sha256 = "63886057a752a890f492bf4ca7ec97435eceebb4ac5ecb5664c69ae2736eaa80" %}
+{% set name = "kmer-db" %}
+{% set version = "2.3.1" %}
 
+{% set system = "x64_linux" %}       # [linux and x86_64]
+{% set system = "x64_mac" %}         # [osx and x86_64]
+{% set system = "arm64_linux" %}     # [linux and aarch64]
+{% set system = "arm64_mac" %}       # [osx and arm64]
+
+{% set sha256 = "334ec41f6b37496adc20661bb78ed92fa266b834b18bad4e19cbf42596d71e22" %}  # [linux and x86_64]
+{% set sha256 = "9c94521bd77f28efc472e62407cd55eac76a906a5c2844576be2c4ed87a15369" %}  # [osx and x86_64]
+{% set sha256 = "7502e6bdfbc67f702c7efb969da3d68634215398d57fc94dc39e8941d36d7846" %}  # [linux and aarch64]
+{% set sha256 = "5458b889f33c1dd2fd350d4e4d89c79dc351ecc4cfc0cb9bc87edaca2f1acfec" %}  # [osx and arm64]
 
 package:
   name: kmer-db
   version: {{ version }}
 
-build:
-  number: 2
-
 source:
-  url: https://github.com/refresh-bio/kmer-db/archive/v{{ version }}.tar.gz
+  url: https://github.com/refresh-bio/kmer-db/releases/download/v{{ version }}/kmer-db-v{{ version }}-{{ system }}.tar.gz
   sha256: {{ sha256 }}
 
-requirements:
-  build:
-    - make
-    - {{ compiler('cxx') }}
-    - make 
-  host:
-    - zlib
-  run:
-    - zlib
+build:
+  number: 0
+  script:
+    - mkdir -p "${PREFIX}/bin"
+    - install -v -m 0755 kmer-db "${PREFIX}/bin"
+  run_exports:
+    - {{ pin_subpackage('kmer-db', max_pin="x") }}
 
 about:
-  home: https://github.com/refresh-bio/kmer-db
+  home: "https://github.com/refresh-bio/kmer-db"
   summary: "Kmer-db is a fast and memory-efficient tool for estimating evolutionary distances."
-  license: GPL-3
-  license_family: GPL
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
+  dev_url: "https://github.com/refresh-bio/kmer-db"
 
 test:
   commands:
     - kmer-db > /dev/null
+    - kmer-db -help
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - should_be_noarch_generic
+    - should_not_be_noarch_source

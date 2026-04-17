@@ -1,27 +1,33 @@
 #!/bin/bash
 
-export JAVA_HOME="${PREFIX}"
+mkdir -p "${PREFIX}/"{lib,include}
+export JAVA_HOME="${PREFIX}/lib/jvm"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+if [[ `uname` == "Darwin" ]]; then
+	cp -rf ${PREFIX}/lib/jvm/include/darwin/jni_md.h ${PREFIX}/lib/jvm/include/
+else
+	cp -rf ${PREFIX}/lib/jvm/include/linux/jni_md.h ${PREFIX}/lib/jvm/include/
+fi
 
 cd src
-make \
-    CC="${CC}" CXX="${CXX}" \
-    CFLAGS="${CFLAGS} ${LDFLAGS}" \
-    CXXFLAGS="${CXXFLAGS} ${LDFLAGS}"
+make CC="${CC}" CXX="${CXX}" \
+	CFLAGS="${CFLAGS} ${LDFLAGS}" \
+	CXXFLAGS="${CXXFLAGS} ${LDFLAGS}" -j"${CPU_COUNT}"
 make java \
-    CC="${CC}" CXX="${CXX}" \
-    CFLAGS="${CFLAGS} ${LDFLAGS}" \
-    CXXFLAGS="${CXXFLAGS} ${LDFLAGS}"
+	CC="${CC}" CXX="${CXX}" \
+	CFLAGS="${CFLAGS} ${LDFLAGS}" \
+	CXXFLAGS="${CXXFLAGS} ${LDFLAGS}" -j"${CPU_COUNT}"
 
 install -d "${PREFIX}/bin"
-install \
-    example_cpp \
-    *.py* \
-    ssw_test \
-    ssw.jar \
-    "${PREFIX}/bin/"
+install -v -m 0755 \
+	example_cpp \
+	*.py* \
+	ssw_test \
+	ssw.jar \
+	"${PREFIX}/bin"
 
-mkdir -p "${PREFIX}/"{lib,include}
-cp *.so "${PREFIX}/lib"
-cp *.h "${PREFIX}/include"
-cp ssw.c "${PREFIX}/include"
-cp ssw_cpp.cpp "${PREFIX}/include"
+cp -rf *.so "${PREFIX}/lib"
+cp -rf *.h "${PREFIX}/include"
+cp -rf ssw.c "${PREFIX}/include"
+cp -rf ssw_cpp.cpp "${PREFIX}/include"

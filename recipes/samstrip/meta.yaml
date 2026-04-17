@@ -1,0 +1,42 @@
+{% set name = "samstrip" %}
+{% set version = "0.2.1" %}
+{% set sha256 = "c14b4f0126bb28d7f74efc2d36d09cc22025b39c8fe802b9d37c9b75ada45095" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+    
+source:
+  url: https://github.com/jakobnissen/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler("rust") }}
+    - cargo-bundle-licenses
+  host:
+  run:
+
+test:
+  commands:
+    - samstrip --help
+
+about:
+  home: https://github.com/jakobnissen/samstrip
+  license: MIT
+  license_file: 
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Strip SAM files of data not needed for alignment computations.
+
+extra:
+  recipe-maintainers:
+    - apcamargo
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -8,6 +8,10 @@ export CXXPATH=${PREFIX}/include
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export CXXFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-cmake -Dspring_optimize_for_portability=ON ..
+if [ $(arch) == "aarch64" ]; then
+   cmake ..
+  else
+      cmake -Dspring_optimize_for_portability=ON ..
+fi
 make
 cp spring $PREFIX/bin

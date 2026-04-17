@@ -1,6 +1,6 @@
 {% set name = "ntm-profiler" %}
-{% set version = "0.4.0" %}
-{% set sha256 = "6d9625d3b0ad2ee8a757cf6ab69381fd8d63c7d9adde76e56076b616f3039deb" %}
+{% set version = "0.8.1" %}
+{% set sha256 = "0bb096d80e1f52108b243bc440d0c03d354872107d06dfbbb6914defdead01cc" %}
 
 package:
   name: {{name}}
@@ -13,30 +13,33 @@ source:
 build:
   noarch: python
   script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('ntm-profiler', max_pin="x") }}
 
 requirements:
   host:
+    - flit
     - python >=3.7
     - pip
-    - gatk4
-    - samtools =1.10
-    - bwa
-    - snpeff =5.0
   run:
     - python >=3.7
-    - mash =2.3
-    - pathogen-profiler =4.1.0
+    - pathogen-profiler >=5.1.0
+    - packaging
+    - pydantic >=2.6
+    - rich-argparse
+    - tqdm
     - jinja2
     - sourmash >=4.8.3
+    - sylph
 
 test:
   imports:
     - ntm_profiler
   commands:
     - ntm-profiler -h
+    - ntm-profiler update_db -h
+    - ntm-profiler profile -h
 
 about:
   home: https://github.com/jodyphelan/NTM-Profiler

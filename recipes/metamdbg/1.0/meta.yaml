@@ -1,0 +1,42 @@
+{% set version = "1.0" %}
+
+package:
+  name: metamdbg
+  version: {{ version }}
+
+source:
+  url: https://github.com/GaetanBenoitDev/metaMDBG/archive/refs/tags/metaMDBG-{{ version }}.tar.gz
+  sha256: 6e759e1bed8977e5c44ad0314eecb328747e11cb0546510d23e8802862fd2d36
+
+build:
+  skip: True  # [osx]
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('metamdbg', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+  host:
+    - zlib
+    - libgomp
+  run:
+    - zlib
+    - libgomp
+    - minimap2 =2.28
+    - time =1.8
+
+test:
+  commands:
+    - metaMDBG 2>&1 | grep 'Usage'
+
+about:
+  home: https://github.com/GaetanBenoitDev/metaMDBG
+  license: MIT
+  summary: 'MetaMDBG: a lightweight assembler for long and accurate metagenomics reads.'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
