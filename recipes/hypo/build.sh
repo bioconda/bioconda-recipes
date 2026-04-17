@@ -18,6 +18,8 @@ esac
 
 if [[ `uname -s` == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	sed -i.bak 's|#include <ext/algorithm>|#include <algorithm>|' external/suk/external/kmc_api/kmer_defs.h
+	rm -f external/suk/external/kmc_api/*.bak
 else
 	export CONFIG_ARGS=""
 fi
