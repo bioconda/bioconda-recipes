@@ -1,0 +1,66 @@
+{% set version = "0.42.0" %}
+{% set sha256 = "ff829d01cf6330b36da413b1dcc5976be44107f8cb593bc766ddfc3458688048" %}
+
+package:
+  name: mehari-python
+  version: {{ version }}
+
+source:
+  url: https://github.com/varfish-org/mehari/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('mehari-python', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cmake
+    - make
+    - cargo-bundle-licenses
+    - pkg-config
+    - python                              # [build_platform != target_platform]
+    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+    - crossenv                            # [build_platform != target_platform]
+    - maturin >=1.12,<2.0                 # [build_platform != target_platform]
+  host:
+    - clangdev
+    - llvmlite
+    - openssl
+    - protobuf
+    - libprotobuf
+    - zlib
+    - sqlite
+    - python
+    - pip
+    - maturin >=1.12,<2.0
+  run:
+    - sqlite
+    - polars >=1.39.3
+    - pyarrow >=23.0.1
+
+test:
+  imports:
+    - mehari
+
+about:
+  home: "https://varfish-org.github.io/mehari"
+  license: MIT
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  summary: "Python bindings for mehari."
+  dev_url: "https://github.com/varfish-org/mehari"
+  doc_url: "https://github.com/varfish-org/mehari/blob/v{{ version }}/mehari-python/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - doi:10.5281/zenodo.10603122
+  skip-lints:
+    - compiler_needs_stdlib_c
