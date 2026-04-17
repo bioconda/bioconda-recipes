@@ -1,0 +1,44 @@
+{% set name = "manc_cojo" %}
+{% set version = "1.1.0" %}
+{% set sha256 = "0be0b3aba4adc0bb95b622beac365d317ad18d4332a0e209f2d4333c9e9bd9e9" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/light156/multi-ancestry-COJO/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: true  # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - manc_cojo --help
+
+about:
+  home: https://github.com/light156/multi-ancestry-COJO
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Multi-ancestry conditional and joint analysis (COJO) of GWAS summary statistics."
+  description: |
+    Manc-COJO extends COJO to multiple ancestries, using population-specific LD to improve
+    independent signal detection. It can also run single-ancestry COJO compatible with GCTA-COJO.
+  dev_url: https://github.com/light156/multi-ancestry-COJO
+  doc_url: https://light156.github.io/multi-ancestry-COJO-docs

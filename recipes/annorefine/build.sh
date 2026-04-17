@@ -1,12 +1,16 @@
 #!/bin/bash
 set -euxo pipefail
 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
+
 # Generate third-party license file
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # Build the Rust binary from source, replacing the pre-built macOS binary
 # shipped in annorefine.data/scripts/
-cargo build --release --bin annorefine
+cargo build --release -v -j "${CPU_COUNT}" --bin annorefine
 
 # Find the binary (may be in target/<triple>/release/ or target/release/)
 BINARY=$(find target -name annorefine -type f -executable -path "*/release/*" | head -1)
