@@ -1,23 +1,46 @@
-#!/bin/sh
-
+#!/bin/bash
 set -xe
 
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+mkdir -p "$PREFIX/bin"
+
+DATA_DEST="$PREFIX/share/${PKG_NAME}/data_tables"
+mkdir -p "$DATA_DEST"
+
 # Fix for OSX build
-if [ `uname` == Darwin ]; then
-    CPP_FLAGS="${CXXFLAGS} -g -O3 -fopenmp -I${PREFIX}/include"
-    sed -i.bak "s/gomp/omp/g" compiler.h
+if [[ `uname -s` == Darwin ]]; then
+	CPP_FLAGS="${CXXFLAGS} -g -O3 -fopenmp -I${PREFIX}/include"
+	sed -i.bak "s/gomp/omp/g" compiler.h
 else
-    CPP_FLAGS="${CXXFLAGS} -fopenmp -g -O3"
+	CPP_FLAGS="${CXXFLAGS} -fopenmp -g -O3"
 fi
 
-# build
+case $(uname -m) in
+    aarch64)
+	export CPP_FLAGS="${CPP_FLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CPP_FLAGS="${CPP_FLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CPP_FLAGS="${CPP_FLAGS} -march=x86-64-v3"
+	;;
+esac
+
+# Build
 make -j"${CPU_COUNT}" CC="${CC}" CXX="${CXX}" CPP_FLAGS="${CPP_FLAGS}" all
 
-mkdir -p $PREFIX/bin
-install -v -m 0755 ./exe/* $PREFIX/bin/
+# Install binaries
+install -v -m 0755 ./exe/* "$PREFIX/bin"
 
-# Some of the tools inside the package require the information in /data_tables
-# This makes them accessible from a relative path to the binaries.
+# Install data tables
+cp -r ./data_tables/* $DATA_DEST/
 
-mkdir -p $PREFIX/share/${PKG_NAME}/data_tables
-mv ./data_tables/* $PREFIX/share/${PKG_NAME}/data_tables/
+# Script pour définir DATAPATH automatiquement à l'activation de l'env
+mkdir -p $PREFIX/etc/conda/activate.d
+echo "export DATAPATH=$DATA_DEST/" > $PREFIX/etc/conda/activate.d/rnastructure_path.sh
+
+mkdir -p $PREFIX/etc/conda/deactivate.d
+echo "unset DATAPATH" > $PREFIX/etc/conda/deactivate.d/rnastructure_path.sh

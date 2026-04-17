@@ -1,0 +1,50 @@
+{% set name = "svarp" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/asylvz/SVarp/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 17203cbd36a138dec8b4fae9b3afdc7fef45f3289661d0ad1336e81886163f50
+
+build:
+  number: 0
+  # _stdio.h:78:10: fatal error: _bounds.h: No such file or directory
+  skip: True  # [not linux]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - pkg-config
+  host:
+    - zlib
+    - htslib
+    - wget
+  run:
+    - samtools
+    # graphaligner not available on aarch64/arm64
+    - graphaligner
+    - minimap2
+
+test:
+  commands:
+    - svarp --help
+
+about:
+  home: "https://github.com/asylvz/SVarp"
+  summary: "Pangenome-based structural variant discovery (SVarp)"
+  license: "MIT"
+  license_file: "LICENSE"
+  doc_url: "https://github.com/asylvz/SVarp"
+  dev_url: "https://github.com/asylvz/SVarp"
+
+extra:
+  identifiers:
+    - doi:10.1101/2024.02.18.580171
+  recipe-maintainers:
+    - asylvz
