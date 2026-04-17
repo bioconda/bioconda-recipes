@@ -1,9 +1,7 @@
-#!/bin bash
+#!/bin/bash
 
 set -xe
 mkdir -p $PREFIX/bin
-
-export GOFLAGS="-buildvcs=false"
 
 if [ "$(uname)" == "Darwin" ]; then
     make "CGO_CFLAGS=$CGO_CFLAGS -I${CONDA_PREFIX}/include"
