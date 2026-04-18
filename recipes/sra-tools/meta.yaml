@@ -40,6 +40,19 @@ requirements:
     - perl-xml-libxml
     - perl-uri
 
+test:
+  commands:
+    - test -x "${PREFIX}/bin/prefetch"     # [linux]
+    - test -x "${PREFIX}/bin/fastq-dump"   # [linux]
+    - test -x "${PREFIX}/bin/vdb-config"   # [linux]
+    - test -x "${PREFIX}/bin/fasterq-dump" # [linux]
+    - prefetch --version # [osx]
+    - fastq-dump --version  # [osx]
+    - vdb-config --version  # [osx]
+    - fasterq-dump --version # [osx]
+    - prefetch SRR000001 # [osx]
+    - fasterq-dump SRR000001 --stdout --concatenate-reads | head -n 10 # [osx]
+
 about:
   home: "https://github.com/ncbi/sra-tools"
   license: "Public Domain"
@@ -53,10 +66,11 @@ about:
 extra:
   additional-platforms:
     - osx-arm64
-  notes: 'After installation, you should run the configuration tool: ./vdb-config
-    -i. This tool will setup your download/cache area for downloaded files and references.'
+  notes: '
+    The tool requires glibc ≥ 2.28 at runtime.
+    After installation, you should run the configuration tool: ./vdb-config -i
+    This tool will setup your download/cache area for downloaded files and references.'
   identifiers:
     - biotools:sra-tools
   skip-lints:
     - should_be_noarch_generic
-    - missing_tests
