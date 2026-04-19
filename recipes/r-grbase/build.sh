@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export LC_ALL="en_US.UTF-8"
+export DISABLE_AUTOBREW=1
+
 if [[ $target_platform =~ linux.* ]] || [[ $target_platform == win-32 ]] || [[ $target_platform == win-64 ]] || [[ $target_platform == osx-64 ]]; then
   export DISABLE_AUTOBREW=1
   $R CMD INSTALL --build . "${R_ARGS}"
