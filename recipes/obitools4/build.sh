@@ -3,6 +3,9 @@
 set -xe
 mkdir -p $PREFIX/bin
 
+sed -i.bak 's|GOFLAGS=|GOFLAGS=-buildvcs=false|' Makefile
+rm -f *.bak
+
 if [ "$(uname)" == "Darwin" ]; then
     make "CGO_CFLAGS=$CGO_CFLAGS -I${CONDA_PREFIX}/include"
 else
