@@ -4,6 +4,7 @@ set -xe
 export GOPATH="$PWD"
 export GOCACHE="$PWD/.cache"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export GO_FLAGS="-trimpath -ldflags="-extldflags '-static' -s -w" -tags netgo"
 export CGO_LDFLAGS="-L${PREFIX}/lib -lz"
 export CGO_CFLAGS="$CGO_CFLAGS -I${PREFIX}/include"
 
@@ -21,11 +22,9 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
     export MACOSX_DEPLOYMENT_TARGET="13.0"
     export MACOSX_SDK_VERSION="13.0"
     export CGO_LDFLAGS="-mmacosx-version-min=13.0"
-    make CGO_CFLAGS="$CGO_CFLAGS"
+    make GO_FLAGS="${GO_FLAGS}" CGO_CFLAGS="$CGO_CFLAGS"
 else
-    make CGO_CFLAGS="$CGO_CFLAGS -L$PREFIX/lib"
+    make CGO_CFLAGS="$CGO_CFLAGS -L$PREFIX/lib" GO_FLAGS="${GO_FLAGS}"
 fi
 
 install -v -m 0755 build/obi* "${PREFIX}/bin"
-
-"${STRIP}" ${PREFIX}/bin/obi*
