@@ -28,10 +28,11 @@ cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}/interop" \
 	-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -Wno-dev -Wno-deprecated \
 	--no-warn-unused-cli -DENABLE_PYTHON=ON -DPython_EXECUTABLE="${PYTHON}" \
+	-DENABLE_SWIG=ON \
 	-DPython_ROOT_DIR="${PREFIX}/bin" -DPYTHON_VERSION=$(python -c 'import platform; print(platform.python_version())') \
 	"${CONFIG_ARGS}"
 
-ninja -C build -j"${CPU_COUNT}" install
+ninja -C build install -j"${CPU_COUNT}" install
 
 for FPATH in $(find ${PREFIX}/interop/bin -maxdepth 1 -mindepth 1 -type f -or -type l); do
     ln -sfvn ${FPATH} ${PREFIX}/bin/interop_$(basename ${FPATH})
