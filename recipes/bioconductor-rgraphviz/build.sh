@@ -20,4 +20,4 @@ CXX14=$CXX" > ~/.R/Makevars
 
 autoreconf -if
 
-$R CMD INSTALL --build . --configure-args="--with-graphviz=${PREFIX}"
+$R CMD INSTALL --build .
