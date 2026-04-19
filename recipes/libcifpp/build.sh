@@ -4,7 +4,7 @@ export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-int-conversion -Wno-implicit-function-declaration"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -D_LIBCPP_DISABLE_AVAILABILITY"
 export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig"
 
 if [[ $(uname) == "Darwin" ]]; then
@@ -23,6 +23,7 @@ cmake -S . -B build -G Ninja \
     -DBUILD_TESTING=OFF \
     -DCIFPP_DOWNLOAD_CCD=ON \
     -DCIFPP_INSTALL_UPDATE_SCRIPT=OFF \
+    -DBUILD_SQLITE_INTERFACE=ON \
     -DCIFPP_DATA_DIR='' \
     -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp" \
     ${CONFIG_ARGS}

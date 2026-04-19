@@ -3,7 +3,7 @@
 {% set sha256 = "73e48f40418f92b8cf036ca1da727ca3941da9b78d4c285b81ba3267326ac4ee" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -11,20 +11,19 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 11
+  number: 12
   run_exports:
-    - {{ pin_subpackage('kraken', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - perl
     - {{ compiler('cxx') }}
-    - llvm-openmp  # [osx]
-
+    - pkg-config
+    - clangdev  # [osx]
   host:
     - perl
-    - clangdev  # [osx]
     - llvm-openmp  # [osx]
   run:
     - kmer-jellyfish 1.*
@@ -44,10 +43,13 @@ test:
     - kraken-translate --version
 
 about:
-  home: http://ccb.jhu.edu/software/kraken/
-  license: GPLv3
+  home: "https://ccb.jhu.edu/software/kraken"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: Kraken is a system for assigning taxonomic labels to short DNA sequences, usually obtained through metagenomic studies.
+  summary: "Kraken is a system for assigning taxonomic labels to short DNA sequences, usually obtained through metagenomic studies."
+  doc_url: "https://ccb.jhu.edu/software/kraken"
+  dev_url: "https://github.com/DerrickWood/kraken"
 
 extra:
   identifiers:
@@ -55,4 +57,4 @@ extra:
     - doi:10.1186/gb-2014-15-3-r46
   additional-platforms:
     - linux-aarch64
-
+    - osx-arm64
