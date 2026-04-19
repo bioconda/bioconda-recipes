@@ -147,7 +147,7 @@ def _gen_new_index(repodata, subdir):
                     deps[i] = 'bokeh >=2.4,<3'
                     break
 
-        # Pin all old packages that do not have a pin to openssl 1.1.1 which should have been available 
+        # Pin all old packages that do not have a pin to openssl 1.1.1 which should have been available
         # TODO once we have updated to openssl 3, below timestamp should be updated
         if has_dep(record, "openssl") and record.get("timestamp", 0) < 1678355208942:
             for i, dep in enumerate(deps):
@@ -169,7 +169,7 @@ def _gen_new_index(repodata, subdir):
         if has_dep(record, 'htslib'):
             # skip deps prior to 1.10, which was the first with soversion 3
             # TODO adjust replacement (exclusive) upper bound with each new compatible HTSlib
-            _pin_looser(fn, record, 'htslib', min_lower_bound='1.10', upper_bound='1.23')
+            _pin_looser(fn, record, 'htslib', min_lower_bound='1.10', upper_bound='1.24')
 
         # future libdeflate versions are compatible until they bump their soversion; relax dependencies accordingly
         if record_name in ['htslib', 'staden_io_lib', 'fastp', 'pysam'] and has_dep(record, 'libdeflate'):
@@ -189,6 +189,14 @@ def _gen_new_index(repodata, subdir):
             for i, dep in enumerate(deps):
                 if dep.startswith("pulp") and has_no_upper_bound(dep):
                     deps[i] = "pulp >=2.0,<2.8.0"
+
+        # snakemake requires pandas <3
+        if record_name.startswith('snakemake') and has_dep(record, "pandas"):
+            for i, dep in enumerate(deps):
+                if dep == "pandas":
+                    deps[i] = "pandas <3"
+                elif dep.startswith("pandas") and has_no_upper_bound(dep):
+                    deps[i] += ",<3"
 
         # scprep <=1.2.3 requires pandas <2.1
         if record_name == 'scprep' and has_dep(record, "pandas") and version <= "1.2.3":

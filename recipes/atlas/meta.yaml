@@ -1,4 +1,4 @@
-{% set version = "2.0.0" %}
+{% set version = "2.0.3" %}
 
 package:
   name: atlas
@@ -6,10 +6,10 @@ package:
 
 source:
   url: https://bitbucket.org/wegmannlab/atlas/get/{{ version }}.tar.gz
-  sha256: 9b1268240e75c103f8cc27a80fcafd66b6985d8ed5cbcd4db840ce4d9d67e0c6
+  sha256: 1bef65602ab1aae222ce1720444fb1a71a65965c8a67498245b03e9f3c7d9992
 
 build:
-  number: 8
+  number: 0
   run_exports:
     - {{ pin_subpackage("atlas", max_pin="x") }}
 
@@ -42,11 +42,11 @@ test:
   commands:
     - atlas | grep "successfully"
     - atlas simulate
-    - atlas HKY85 --bam ATLAS_simulations.bam --fasta ATLAS_simulations.fasta
+    - atlas summaryStats --bam ATLAS_simulations.bam --fasta ATLAS_simulations.fasta
     - atlas GLF --bam ATLAS_simulations.bam
-    - atlas saf --glf ATLAS_simulations.glf.gz --fasta ATLAS_simulations.fasta
-    - atlas majorMinor --glf ATLAS_simulations.glf.gz
-    - rm ATLAS_* *.parameters saf.saf.* || exit 1
+    - atlas saf --glf ATLAS_simulations_GLF.glf.gz --fasta ATLAS_simulations.fasta
+    - atlas majorMinor --glf ATLAS_simulations_GLF.glf.gz
+    - rm ATLAS* saf.saf.* simulate.* || exit 1
 
 about:
   home: https://atlaswiki.netlify.app
@@ -57,3 +57,5 @@ extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c
