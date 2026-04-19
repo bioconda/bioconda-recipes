@@ -6,6 +6,9 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3"
 export SHARE_PATH="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
 
+mkdir -p "${PREFIX}/bin"
+mkdir -p "${SHARE_PATH}"
+
 case $(uname -m) in
     aarch64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
