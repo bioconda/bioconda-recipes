@@ -1,5 +1,5 @@
 {% set name = "iobrpy" %}
-{% set version = "0.1.4" %}
+{% set version = "0.1.8" %}
 
 package:
   name: {{ name|lower }}
@@ -7,24 +7,24 @@ package:
 
 source:
   url: https://files.pythonhosted.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 0807b6b95193b2ac73a2770e60241092cb59ae6cb36d61d47b319d2c728a0ca4
+  sha256: 60046891042a276d7bc6426c608920db44be9e1dc1df8f5fd4f3f28faca51104
 
 build:
   number: 0
-  noarch: python
+  skip: true  # [not linux64 or py<311 or py>=314]
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
 
 requirements:
   host:
-    - python >=3.9
+    - python
     - pip
     - setuptools
     - wheel
 
   run:
-    - python >=3.9
+    - python >=3.11,<3.14
     - numpy >=1.22
     - pandas >=1.5
     - scipy >=1.9
@@ -32,19 +32,28 @@ requirements:
     - statsmodels >=0.13
     - matplotlib-base >=3.7
     - tqdm >=4.66
+    - click >=8.0
     - gseapy >=1.0.6
     - joblib >=1.3
     - regex >=2024.5
     - tiktoken >=0.11,<0.13
     - multiqc ==1.31
+    - xarray >=0.20
+    - requests >=2.32
+    - prompt-toolkit >=3.0
+    - pysam ==0.23.3
+    - biopython >=1.83
     - fastp
     - star
     - salmon
     - gzip
+    - trust4
 
 test:
   commands:
+    - python -c "import iobrpy.main"
     - iobrpy --help
+    - iobrpy-cli --help
 
 about:
   home: https://github.com/IOBR/IOBRpy
@@ -57,3 +66,5 @@ about:
 extra:
   recipe-maintainers:
     - hhn0527
+  skip-lints:
+    - should_be_noarch_generic
