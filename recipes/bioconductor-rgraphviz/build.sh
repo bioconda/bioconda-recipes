@@ -3,8 +3,7 @@
 export DISABLE_AUTOBREW=1
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* src/graphviz/config/
-cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .//
-cp -f ${RECIPE_DIR}/configure.ac ./
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* ./
 
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
