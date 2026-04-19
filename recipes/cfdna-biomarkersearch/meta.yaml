@@ -15,13 +15,14 @@ build:
   noarch: generic
   number: 0
   run_exports:
-    - {{ pin_compatible("numpy", max_pin="x.x") }}
+    - {{ pin_compatible(name, max_pin="x.x") }}
 
 requirements:
   run:
     - python =3.11
     - pip
     - wget
+    - bash
     - ca-certificates =2025.7
     - unzip
     - tar
@@ -49,10 +50,8 @@ test:
     - wget -P "$BASE_DIR/genome" https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr22.fa.gz
     - gunzip "$BASE_DIR/genome/chr22.fa.gz"
     - bowtie2-build "$BASE_DIR/genome/chr22.fa" "$BASE_DIR/genome/index"
-
-    - bash "$PREFIX"/share/cfdna-biomarkersearch/scripts/reads_preprocessing.sh -o "$PREFIX"/share/cfdna-biomarkersearch raw_data test config/adapterfile.fa genome/index human
-
-    - bash "$PREFIX"/share/cfdna-biomarkersearch/scripts/run_pipeline_module2to6.sh -o "$PREFIX"/share/cfdna-biomarkersearch input/human/genome.csv input/human/params.csv human --chromosome chr22
+    - bash "$PREFIX/share/cfdna-biomarkersearch/scripts/reads_preprocessing.sh" -o "$PREFIX/share/cfdna-biomarkersearch" raw_data test config/adapterfile.fa genome/index human
+    - bash "$PREFIX/share/cfdna-biomarkersearch/scripts/run_pipeline_module2to6.sh" -o "$PREFIX/share/cfdna-biomarkersearch" input/human/genome.csv input/human/params.csv human --chromosome chr22
 
 about:
   home: {{ repo_url }}
