@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-cat > src/Makefile <<'MAKE_EOF'
+cat > "$SRC_DIR/src/Makefile" <<'MAKE_EOF'
 .PHONY: all tools-old clean distclean
 
 all: tools-old
@@ -44,12 +44,12 @@ distclean: clean
 	find ./deps -name '.libs' -type d -prune -exec rm -rf {} +
 MAKE_EOF
 
-sed -i '/^import(BSgenome\.Mmusculus\.UCSC\.mm10)$/d' NAMESPACE
-sed -i '/BSgenome\.Mmusculus\.UCSC\.mm10/d' DESCRIPTION || true
+sed -i '/^import(BSgenome\.Mmusculus\.UCSC\.mm10)$/d' "$SRC_DIR/NAMESPACE"
+sed -i '/BSgenome\.Mmusculus\.UCSC\.mm10/d' "$SRC_DIR/DESCRIPTION" || true
 
-cd src
+cd "$SRC_DIR/src"
 make clean || true
 make CC="$CC" CXX="$CXX" AR="$AR" RANLIB="$RANLIB" LINKER="$CXX" PREFIX="$PREFIX"
-cd ..
+cd "$SRC_DIR"
 
 $R CMD INSTALL --build .
