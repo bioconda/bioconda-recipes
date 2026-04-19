@@ -9,7 +9,7 @@ mkdir -p ~/.R
 
 echo -e "CC=$CC
 FC=$FC
-CC17=$CC -std=gnu17
+CC17=$CC
 CXX=$CXX
 CXX98=$CXX
 CXX11=$CXX
