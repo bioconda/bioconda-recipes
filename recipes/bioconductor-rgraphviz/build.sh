@@ -3,6 +3,7 @@
 export DISABLE_AUTOBREW=1
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* src/graphviz/config/
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .//
 cp -f ${RECIPE_DIR}/configure.ac ./
 
 mv DESCRIPTION DESCRIPTION.old
@@ -17,5 +18,7 @@ CXX=$CXX
 CXX98=$CXX
 CXX11=$CXX
 CXX14=$CXX" > ~/.R/Makevars
+
+autoreconf -if
 
 $R CMD INSTALL --build . --configure-args="--with-graphviz=${PREFIX}"
