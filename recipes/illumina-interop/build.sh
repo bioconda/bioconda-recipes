@@ -11,6 +11,7 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 case $(uname -m) in
     aarch64)
 		export CXXFLAGS="${CXXFLAGS} -march=armv8-a";;
+	# CMakeLists.txt does not recognize -march=armv8.4-a
     #arm64)
 		#export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a";;
     x86_64)
@@ -27,7 +28,7 @@ cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}/interop" \
 	-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" -Wno-dev -Wno-deprecated \
 	--no-warn-unused-cli -DENABLE_PYTHON=ON -DPython_EXECUTABLE="${PYTHON}" \
-	-DGTEST_ROOT="${PREFIX}/lib" -DENABLE_SWIG=ON -DGTEST_INCLUDE_DIR="${PREFIX}/include/gtest" -DGTEST_LIBRARY="${PREFIX}/lib" \
+	-DENABLE_SWIG=ON \
 	-DPython_ROOT_DIR="${PREFIX}/bin" \
 	-DPYTHON_VERSION=$(python -c 'import platform; print(platform.python_version())') \
 	"${CONFIG_ARGS}"
