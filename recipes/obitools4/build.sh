@@ -4,7 +4,7 @@ set -xe
 export GOPATH="$PWD"
 export GOCACHE="$PWD/.cache"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export GO_FLAGS="-trimpath -ldflags='-extldflags '-static' -s -w' -buildvcs=false"
+export GO_FLAGS='-trimpath -ldflags='-extldflags -static -s -w' -buildvcs=false'
 export CGO_LDFLAGS="-L${PREFIX}/lib -lz"
 export CGO_CFLAGS="$CGO_CFLAGS -I${PREFIX}/include"
 
