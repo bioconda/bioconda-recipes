@@ -17,11 +17,4 @@ case $(uname -m) in
 	;;
 esac
 
-if [[ "$target_platform" == "osx-64" || "$target_platform" == "osx-arm64" ]]; then
-    SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
-    echo "-isysroot is ${SDKROOT}"
-    export CFLAGS="${CFLAGS} -isysroot ${SDKROOT}"
-    export LDFLAGS="${LDFLAGS} -isysroot ${SDKROOT}"
-fi
-
-${PYTHON} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
