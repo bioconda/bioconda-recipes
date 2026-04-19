@@ -27,3 +27,5 @@ else
 fi
 
 install -v -m 0755 build/obi* "${PREFIX}/bin"
+
+"${STRIP}" ${PREFIX}/bin/obi*
