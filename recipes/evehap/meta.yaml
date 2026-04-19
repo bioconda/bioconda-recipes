@@ -1,0 +1,54 @@
+{% set name = "evehap" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: f02a2c13a4dee6de11392dd2a3d7c2021872e76565706fae1a2b5151c178445b
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - evehap = evehap.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools >=61.0
+  run:
+    - python >=3.8
+    - click >=8.0
+    - pysam >=0.21.0
+    - biopython >=1.80
+
+test:
+  imports:
+    - evehap
+  commands:
+    - evehap --help
+    - evehap version
+
+about:
+  home: https://github.com/trianglegrrl/eveHap
+  license: PolyForm-Noncommercial-1.0.0
+  license_file: LICENSE
+  summary: Universal mtDNA haplogroup classifier for ancient and modern DNA
+  description: |
+    eveHap is a universal mtDNA (mitochondrial DNA) haplogroup classifier.
+    It classifies ancient and modern DNA samples against phylogenetic haplogroup
+    references, supporting multiple input formats (BAM, VCF, FASTA, HSD, microarray)
+    and providing both high-coverage (Kulczynski scoring) and low-coverage
+    (tree traversal) classification methods.
+  dev_url: https://github.com/trianglegrrl/eveHap
+
+extra:
+  recipe-maintainers:
+    - trianglegrrl
