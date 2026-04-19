@@ -13,7 +13,7 @@ if ! { run-csem --help 2>&1 || true; } | grep -q "run-csem \\[options\\] input_f
 fi
 
 # Test 2: csem prints expected usage
- if ! { csem 2>&1 || true; } | grep -qE "Usage[[:space:]:]+csem([[:space:]]|$)"; then
+if ! { csem 2>&1 || true; } | grep -qE "Usage[[:space:]:]+csem([[:space:]]|$)"; then
     echo "FAIL: csem did not print expected usage string"
     exit 1
 fi
