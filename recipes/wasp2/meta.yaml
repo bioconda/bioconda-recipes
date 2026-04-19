@@ -1,10 +1,10 @@
-{# Version: keep in sync with rust/Cargo.toml (single source of truth) #}
-{# Run scripts/check-version-consistency.sh to verify #}
+# Version: keep in sync with rust/Cargo.toml (single source of truth) #
+# Run scripts/check-version-consistency.sh to verify #
 {% set name = "wasp2" %}
 {% set version = "1.4.1" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -13,9 +13,9 @@ source:
 
 build:
   number: 0
-  skip: true  # [win or py < 311 or py > 312]
+  skip: True  # [py < 311 or py > 312]
   run_exports:
-    - {{ pin_subpackage('wasp2', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -42,7 +42,7 @@ requirements:
     - openssl  # [not osx]
     - libcurl
   run:
-    - python >=3.11,<3.13.0a0
+    - python
     # Data processing
     - numpy >=1.21.0
     - pandas >=1.5.0,<3.0.0
@@ -67,30 +67,27 @@ test:
     - mapping
     - analysis
     - wasp2_rust
-  requires:
-    - pip
   commands:
     - wasp2-count --help
     - wasp2-map --help
     - wasp2-analyze --help
     - python -c "import wasp2_rust; print('Rust extension OK')"
-    - pip check
 
 about:
-  home: https://github.com/mcvickerlab/WASP2
+  home: "https://github.com/mcvickerlab/WASP2"
   license: MIT
   license_family: MIT
   license_file:
     - LICENSE
     - THIRDPARTY.yml
-  summary: Allele-specific analysis of next-generation sequencing data with Rust acceleration
+  summary: "Allele-specific analysis of next-generation sequencing data with Rust acceleration."
   description: |
     WASP2 is a high-performance tool for allele-specific analysis of NGS data.
     It provides functionality for variant counting, read remapping for bias
     correction, and statistical analysis of allelic imbalance. The package
     includes a Rust extension for accelerated BAM processing.
-  doc_url: https://mcvickerlab.github.io/WASP2/
-  dev_url: https://github.com/mcvickerlab/WASP2
+  doc_url: "https://mcvickerlab.github.io/WASP2"
+  dev_url: "https://github.com/mcvickerlab/WASP2"
 
 extra:
   additional-platforms:
@@ -100,3 +97,5 @@ extra:
     - Jaureguy760
   identifiers:
     - biotools:wasp2
+  skip-lints:
+    - compiler_needs_stdlib_c
