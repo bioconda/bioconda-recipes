@@ -12,8 +12,7 @@ case $(uname -m) in
     aarch64)
 		export CXXFLAGS="${CXXFLAGS} -march=armv8-a";;
     arm64)
-		export CXXFLAGS="${CXXFLAGS} -march=armv8-a";;
-		#export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a";;
+		export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a";;
     x86_64)
 		export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3";;
 esac
