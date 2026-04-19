@@ -10,7 +10,7 @@ export CGO_CFLAGS="$CGO_CFLAGS -I${PREFIX}/include"
 mkdir -p "${GOCACHE}"
 mkdir -p "${PREFIX}/bin"
 
-sed -i.bak 's|GOFLAGS=|GOFLAGS=-buildvcs=false -trimpath -ldflags="-extldflags '-static' -s -w"|' Makefile
+sed -i.bak 's|GOFLAGS=|GOFLAGS=-buildvcs=false -trimpath|' Makefile
 rm -f *.bak
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
