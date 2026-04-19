@@ -12,7 +12,7 @@ source:
 build:
   number: 0
   run_exports:
-    - {{ pin_subpackage('mim', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
   script:
     # The default config.toml has target-cpu=native,
     # but we don't want that for portable CI builds.
@@ -20,12 +20,12 @@ build:
     # and the default otherwise.
     - mv .cargo/config-portable.toml .cargo/config.toml
     - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
-    - cargo install -v --locked --no-track --root $PREFIX --path .
+    - cargo install -v --locked --no-track --root $PREFIX --path mim-index/
 
 requirements:
   build:
     - {{ compiler('rust') }}
-    - {{ compiler('c') }}              # [not win]
+    - {{ compiler('c') }}  # [not win]
     - cargo-bundle-licenses
 
 test:
@@ -39,11 +39,10 @@ test:
     - mim download --help
 
 about:
-  home: https://github.com/COMBINE-lab/mim
-  license: BSD-3-Clause
-  summary: A small, auxiliary index to massively improve parallel fastq parsing 
-  license_file:
-    - LICENSE
+  home: "https://github.com/COMBINE-lab/mim"
+  license: "BSD-3-Clause"
+  summary: "A small, auxiliary index to massively improve parallel fastq parsing."
+  license_file: LICENSE
 
 extra:
   additional-platforms:
@@ -52,3 +51,5 @@ extra:
   recipe-maintainers:
     - rob-p
     - RagnarGrootKoerkamp
+  skip-lints:
+    - compiler_needs_stdlib_c
