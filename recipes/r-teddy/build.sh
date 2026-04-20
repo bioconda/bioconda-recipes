@@ -52,8 +52,8 @@ distclean: clean
 	find ./deps -name '.libs' -type d -prune -exec rm -rf {} +
 MAKE_EOF
 
-sed -i '/^import(BSgenome\.Mmusculus\.UCSC\.mm10)$/d' "$PKGDIR/NAMESPACE"
-sed -i '/BSgenome\.Mmusculus\.UCSC\.mm10/d' "$PKGDIR/DESCRIPTION" || true
+perl -0pi -e 's/^import\(BSgenome\.Mmusculus\.UCSC\.mm10\)\n//mg' "$PKGDIR/NAMESPACE"
+perl -0pi -e 's/^.*BSgenome\.Mmusculus\.UCSC\.mm10.*\n//mg' "$PKGDIR/DESCRIPTION" || true
 
 cd "$PKGDIR/src"
 make clean || true
