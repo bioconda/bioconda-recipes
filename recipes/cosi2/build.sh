@@ -2,7 +2,7 @@
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-array-bounds -Wno-narrowing -Wno-deprecated-declarations -Wno-double-promotion"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-array-bounds -Wno-narrowing -Wno-deprecated-declarations -Wno-double-promotion -Wno-vexing-parse"
 export CFLAGS="${CFLAGS} -O3"
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* m4/
@@ -20,6 +20,7 @@ case $(uname -m) in
 esac
 
 sed -i.bak 's|2.3.0rc1|2.4.0|' configure.ac
+sed -i.bak 's|-Werror||' configure.ac
 rm -f *.bak
 sed -i.bak 's|2.3.0rc4|2.4.0|' cosi/cositop.cc
 rm -f cosi/*.bak
