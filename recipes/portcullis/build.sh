@@ -13,8 +13,6 @@ cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* deps/ranger-0.3.8/
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* deps/htslib-1.3/
 
-
-
 case $(uname -m) in
     aarch64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
