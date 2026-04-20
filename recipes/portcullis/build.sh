@@ -13,10 +13,7 @@ cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* deps/ranger-0.3.8/
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* deps/htslib-1.3/
 
-sed -i.bak 's|find_packages|find_namespace_packages|' scripts/junctools/setup.py
-sed -i.bak 's|find_packages|find_namespace_packages|' scripts/portcullis/setup.py
-rm -f scripts/junctools/*.bak
-rm -f scripts/portcullis/*.bak
+
 
 case $(uname -m) in
     aarch64)
@@ -46,6 +43,11 @@ autoreconf -if
 
 make -j"${CPU_COUNT}"
 make -j"${CPU_COUNT}" check
+
+sed -i.bak 's|find_packages|find_namespace_packages|' scripts/junctools/setup.py
+sed -i.bak 's|find_packages|find_namespace_packages|' scripts/portcullis/setup.py
+rm -f scripts/junctools/*.bak
+rm -f scripts/portcullis/*.bak
 
 cd scripts/junctools
 $PYTHON -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
