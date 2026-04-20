@@ -1,40 +1,52 @@
 {% set name = "cosi2" %}
-{% set version = "2.3.0rc4" %}
-{% set sha256 = "fa2c4f74edb27e316300da6abdf53c7451c568171cccf2c7c24eec793e799944" %}
-
-build:
-  number: 1
+{% set version = "2.4.0" %}
+{% set sha256 = "f008a2ec25afe526ba2837c70d7ccb2befe23ec49ab565957b5aa4be93bd438c" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/broadinstitute/{{ name }}/archive/v{{ version }}.tar.gz
+  url: https://github.com/broadinstitute/cosi2/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - {{ stdlib("c") }}
     - autoconf
     - automake
     - libtool
     - pkg-config
-  host:
-    - python
+    - gnuconfig
   run:
     - python
 
 test:
   commands:
     - coalescent -h 2>&1 | grep "Specifying the model" > /dev/null
+
 about:
-  home: https://www.broadinstitute.org/mpg/cosi2/
-  license: GPLv3
-  summary: cosi2 is an efficient coalescent simulator with support for selection, population structure, variable recombination rates, and gene conversion. It supports exact and approximate simulation modes.
+  home: "https://software.broadinstitute.org/mpg/cosi2"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: COPYING
+  summary: "cosi2 is an efficient coalescent simulator with support for selection, population structure, variable recombination rates, and gene conversion. It supports exact and approximate simulation modes."
+  dev_url: "https://github.com/broadinstitute/cosi2"
+  doc_url: "https://github.com/broadinstitute/cosi2/blob/v{{ version }}/README.org"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/bioinformatics/btu562
   recipe-maintainers:
     - notestaff
     - tomkinsc
