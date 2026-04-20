@@ -1,7 +1,17 @@
 #!/bin/bash
 set -euo pipefail
 
-cat > "$SRC_DIR/src/Makefile" <<'MAKE_EOF'
+PKGDIR="$SRC_DIR"
+if [ ! -d "$PKGDIR/src" ]; then
+  PKGDIR=$(find "$SRC_DIR" -maxdepth 2 -type d -name src | head -1 | xargs dirname)
+fi
+
+echo "SRC_DIR=$SRC_DIR"
+echo "PKGDIR=$PKGDIR"
+ls -la "$SRC_DIR"
+ls -la "$PKGDIR"
+
+cat > "$PKGDIR/src/Makefile" <<'MAKE_EOF'
 .PHONY: all tools-old clean distclean
 
 all: tools-old
@@ -44,12 +54,12 @@ distclean: clean
 	find ./deps -name '.libs' -type d -prune -exec rm -rf {} +
 MAKE_EOF
 
-sed -i '/^import(BSgenome\.Mmusculus\.UCSC\.mm10)$/d' "$SRC_DIR/NAMESPACE"
-sed -i '/BSgenome\.Mmusculus\.UCSC\.mm10/d' "$SRC_DIR/DESCRIPTION" || true
+sed -i '/^import(BSgenome\.Mmusculus\.UCSC\.mm10)$/d' "$PKGDIR/NAMESPACE"
+sed -i '/BSgenome\.Mmusculus\.UCSC\.mm10/d' "$PKGDIR/DESCRIPTION" || true
 
-cd "$SRC_DIR/src"
+cd "$PKGDIR/src"
 make clean || true
 make CC="$CC" CXX="$CXX" AR="$AR" RANLIB="$RANLIB" LINKER="$CXX" PREFIX="$PREFIX"
-cd "$SRC_DIR"
+cd "$PKGDIR"
 
 $R CMD INSTALL --build .
