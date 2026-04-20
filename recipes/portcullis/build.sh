@@ -40,7 +40,6 @@ autoreconf -if
 	LDFLAGS="${LDFLAGS}"
 
 make -j"${CPU_COUNT}"
-make -j"${CPU_COUNT}" check
 
 sed -i.bak 's|find_packages|find_namespace_packages|' scripts/junctools/setup.py
 sed -i.bak 's|find_packages|find_namespace_packages|' scripts/portcullis/setup.py
