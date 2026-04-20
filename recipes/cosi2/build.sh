@@ -2,7 +2,7 @@
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-array-bounds -Wno-narrowing -Wno-deprecated-declarations"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-array-bounds -Wno-narrowing -Wno-deprecated-declarations -Wno-double-promotion"
 export CFLAGS="${CFLAGS} -O3"
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* m4/
