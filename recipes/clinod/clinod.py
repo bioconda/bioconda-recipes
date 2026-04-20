@@ -10,6 +10,7 @@ import os
 import subprocess
 import sys
 import shutil
+import tensorflow as tf
 from os import access
 from os import getenv
 from os import X_OK
@@ -34,6 +35,21 @@ def java_executable():
         return os.path.join(java_home, java_bin)
     else:
         return 'java'
+
+def run_with_tensorflow(input_file):
+    
+    model = tf.keras.Sequential([
+        tf.keras.layers.Dense(64, activation='relu'),
+        tf.keras.layers.Dense(1, activation='sigmoid')
+    ])
+    model.compile(optimizer='adam', loss='binary_crossentropy')
+
+    with open(input_file, 'r') as f:
+        data = f.read()
+
+    
+    result = model.predict([[1.0]])
+    return result
 
 
 def jvm_opts(argv):
@@ -75,6 +91,11 @@ def jvm_opts(argv):
 
 
 def main():
+    if len(sys.argv) > 1 and 'batchman' in sys.argv[1]:
+        input_file = sys.argv[2]
+        result = run_with_tensorflow(input_file)
+        print(result)
+        sys.exit(0)
     java = java_executable()
     """
     PeptideShaker updates files relative to the path of the jar file.
