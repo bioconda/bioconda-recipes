@@ -5,7 +5,6 @@ export CFLAGS="$CFLAGS -O3"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export CXXFLAGS="$CXXFLAGS -O3"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-
 export ax_cv_python_version_ok=yes
 
 mkdir -p build-aux
@@ -13,6 +12,11 @@ cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* deps/ranger-0.3.8/
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* deps/htslib-1.3/
+
+sed -i.bak 's|find_packages|find_namespace_packages|' scripts/junctools/setup.py
+sed -i.bak 's|find_packages|find_namespace_packages|' scripts/portcullis/setup.py
+rm -f scripts/junctools/*.bak
+rm -f scripts/portcullis/*.bak
 
 case $(uname -m) in
     aarch64)
@@ -43,4 +47,12 @@ autoreconf -if
 make -j"${CPU_COUNT}"
 make -j"${CPU_COUNT}" check
 
+cd scripts/junctools
+$PYTHON -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+cd ../portcullis
+$PYTHON -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+cd ../../
+
 make install
+
+"${STRIP}" ${PREFIX}/bin/portcullis

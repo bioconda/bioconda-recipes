@@ -2,18 +2,24 @@
 {% set version = "1.2.4" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/EI-CoreBioinformatics/portcullis/archive/refs/tags/Release-{{ version }}.tar.gz
   sha256: 9183c4e8108af1e813dbc35e537e16e5d0e13f53ed4c0a36b182c3f8bfcea438
   patches:
-    - boost-leaf.patch
+    - 0001-boost-leaf.patch
+    - 0002-ax_python_devel.patch
+    - 0003-src.patch
+    - 0004-python_helper.patch
     - m64.patch
 
 build:
   number: 5
+  entry_points:
+    - junctools = junctools.__main__:main
+    - portcullis_rule_filter = portcullis.rule_filter:main
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
@@ -29,22 +35,25 @@ requirements:
     - gnuconfig
   host:
     - python
-    - cython <3.0
     - pip
-    - setuptools <80.9
+    - setuptools <82
     - boost-cpp
     - libboost-python-devel
     - samtools >=1.9
     - zlib
     - pandas
+    - sphinx
   run:
     - python
     - libboost
     - libboost-python-devel
     - tabulate
-    - {{ pin_compatible('numpy') }}
+    - sphinx
+    - matplotlib-base
+    - numpy
     - pandas
     - samtools >=1.9
+    - setuptools <82
 
 test:
   commands:
@@ -64,3 +73,5 @@ extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c
