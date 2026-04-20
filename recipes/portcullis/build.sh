@@ -3,7 +3,7 @@ set -x -e
 
 export CFLAGS="$CFLAGS -O3"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
-export CXXFLAGS="$CXXFLAGS -O3"
+export CXXFLAGS="$CXXFLAGS -O3 -std=c++14"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export ax_cv_python_version_ok=yes
 
@@ -39,7 +39,7 @@ autoreconf -if
 	CPPFLAGS="${CPPFLAGS}" \
 	LDFLAGS="${LDFLAGS}"
 
-make -j"${CPU_COUNT}"
+make -j"${CPU_COUNT}";
 
 sed -i.bak 's|find_packages|find_namespace_packages|' scripts/junctools/setup.py
 sed -i.bak 's|find_packages|find_namespace_packages|' scripts/portcullis/setup.py
