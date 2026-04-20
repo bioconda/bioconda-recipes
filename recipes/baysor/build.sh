@@ -3,7 +3,10 @@
 export JULIA_DEPOT_PATH="$PREFIX/share/julia"
 mkdir -p "$JULIA_DEPOT_PATH"
 
-julia -e 'using Pkg; Pkg.develop(path="."); Pkg.build("Baysor")'
+julia \
+    --startup-file=no \
+    --history-file=no \
+    -e 'using Pkg; Pkg.develop(path="."); Pkg.build("Baysor")'
 
 mkdir -p "$PREFIX/bin"
 mv "$PREFIX/share/julia/bin/baysor" "$PREFIX/bin/baysor"
