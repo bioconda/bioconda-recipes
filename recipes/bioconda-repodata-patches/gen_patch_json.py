@@ -50,30 +50,24 @@ def _add_removals(instructions, subdir):
     instructions["remove"].extend(tuple(set(currvals)))
 
 
-def _gen_patch_instructions(index, new_index, subdir):
-    instructions = {
-        "patch_instructions_version": 1,
-        "packages": defaultdict(dict),
-        "revoke": [],
-        "remove": [],
-    }
-
+def _gen_patch_instructions_per_key(index_per_key, new_index, subdir):
     #_add_removals(instructions, subdir)
+    instructions = defaultdict(dict)
 
     # diff all items in the index and put any differences in the instructions
-    for fn in index:
+    for fn in index_per_key:
         assert fn in new_index
 
         # replace any old keys
-        for key in index[fn]:
-            assert key in new_index[fn], (key, index[fn], new_index[fn])
-            if index[fn][key] != new_index[fn][key]:
-                instructions['packages'][fn][key] = new_index[fn][key]
+        for key in index_per_key[fn]:
+            assert key in new_index[fn], (key, index_per_key[fn], new_index[fn])
+            if index_per_key[fn][key] != new_index[fn][key]:
+                instructions[fn][key] = new_index[fn][key]
 
         # add any new keys
         for key in new_index[fn]:
-            if key not in index[fn]:
-                instructions['packages'][fn][key] = new_index[fn][key]
+            if key not in index_per_key[fn]:
+                instructions[fn][key] = new_index[fn][key]
 
     return instructions
 
@@ -91,14 +85,14 @@ def parse_version(version):
 changes = set([])
 
 
-def _gen_new_index(repodata, subdir):
+def _gen_new_index_per_key(repodata, packages_key, subdir):
     """Make any changes to the index by adjusting the values directly.
 
     This function returns the new index with the adjustments.
     Finally, the new and old indices are then diff'ed to produce the repo
     data patches.
     """
-    index = copy.deepcopy(repodata["packages"])
+    index = copy.deepcopy(repodata[packages_key])
 
     for fn, record in index.items():
         record_name = record["name"]
@@ -375,12 +369,24 @@ def main():
         if not isdir(prefix_subdir):
             os.makedirs(prefix_subdir)
 
-        # Step 2a. Generate a new index.
-        new_index = _gen_new_index(repodatas[subdir], subdir)
+        # basic structure of the patch instructions file
+        instructions = {
+            "patch_instructions_version": 1,
+            "packages": defaultdict(dict),
+            "packages.conda": defaultdict(dict),
+            "revoke": [],
+            "remove": [],
+        }
 
-        # Step 2b. Generate the instructions by diff'ing the indices.
-        instructions = _gen_patch_instructions(
-            repodatas[subdir]['packages'], new_index, subdir)
+        # iterate over legacy ("packages") and current ("packages.conda")
+        # top-level key in the repodata.json structure
+        for packages_key in ["packages", "packages.conda"]:
+            # Step 2a. Generate a new index.
+            new_index = _gen_new_index_per_key(repodatas[subdir], packages_key, subdir)
+
+            # Step 2b. Generate the instructions by diff'ing the indices.
+            instructions[packages_key] = _gen_patch_instructions_per_key(
+                repodatas[subdir][packages_key], new_index, subdir)
 
         # Step 2c. Output this to $PREFIX so that we bundle the JSON files.
         patch_instructions_path = join(
