@@ -50,7 +50,7 @@ autoreconf -if
 	CPPFLAGS="${CPPFLAGS}" \
 	LDFLAGS="${LDFLAGS}"
 
-make CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}"
+make CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
 make install
 
 if [[ $PY3K -eq 1 ]]; then
