@@ -1,0 +1,66 @@
+package:
+  name: metaamrplus
+  version: 1.5.1
+
+source:
+  url: https://github.com/migshaw03/MetaAMRplus/archive/refs/tags/v1.5.1.tar.gz
+  sha256: 5ae9181e0eb5b64e929e4980bbef47c7aec7e2c81ae8bfda1d5a3e072b4f89ec
+
+build:
+  noarch: generic
+  number: 0
+  script: |
+    set -euo pipefail
+
+    echo "==== MetaAMRplus build starting ===="
+    echo "VERSION: 1.5.1"
+
+    mkdir -p "$PREFIX/bin"
+    mkdir -p "$PREFIX/share/metaamrplus/db"
+
+    install -m 755 "$SRC_DIR/bin/metaamrplus" "$PREFIX/bin/metaamrplus"
+    install -m 755 "$SRC_DIR/bin/metaamrplus_batch" "$PREFIX/bin/metaamrplus_batch"
+
+    if [[ -f "$SRC_DIR/bin/metaamrplus-download-db" ]]; then
+      install -m 755 "$SRC_DIR/bin/metaamrplus-download-db" "$PREFIX/bin/metaamrplus-download-db"
+    fi
+
+    install -m 755 "$SRC_DIR/bin/annotate_metaamrplus.py" \
+      "$PREFIX/bin/annotate_metaamrplus.py"
+
+    DB_DIR="$SRC_DIR/db"
+
+    cp "$DB_DIR"/MetaAMRplus_DB_v1.0.* "$PREFIX/share/metaamrplus/db/" || true
+
+    if [[ -f "$DB_DIR/MetaAMRplus_v1.0.idmap.tsv" ]]; then
+      cp "$DB_DIR/MetaAMRplus_v1.0.idmap.tsv" "$PREFIX/share/metaamrplus/db/"
+    fi
+
+    chmod +x "$PREFIX/bin/metaamrplus"
+    chmod +x "$PREFIX/bin/metaamrplus_batch"
+    chmod +x "$PREFIX/bin/annotate_metaamrplus.py"
+
+    echo "==== Build completed successfully ===="
+
+requirements:
+  build:
+    - coreutils
+
+  host:
+    - python >=3.8
+
+  run:
+    - python >=3.8
+    - coreutils
+    - gawk
+    - blast >=2.14
+    - prodigal
+
+test:
+  commands:
+    - metaamrplus --help
+
+about:
+  home: https://github.com/migshaw03/MetaAMRplus
+  license: MIT
+  summary: "MetaAMRplus: AMR + metal resistance + colocalisation analysis"
