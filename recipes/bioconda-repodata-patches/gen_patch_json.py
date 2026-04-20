@@ -172,17 +172,22 @@ def _gen_new_index_per_key(repodata, packages_key, subdir):
             _pin_looser(fn, record, 'libdeflate', min_lower_bound='1.3', upper_bound='1.26')
 
         # nanosim <=3.1.0 requires scikit-learn<=0.22.1
-        if record_name.startswith('nanosim') and has_dep(record, "scikit-learn") and version <= "3.1.0":
+        if record_name.startswith('nanosim') and has_dep(record, "scikit-learn") and parse_version(version) <= parse_version("3.1.0"):
             for i, dep in enumerate(deps):
                 if dep.startswith("scikit-learn") and has_no_upper_bound(dep):
                     deps[i] += ",<=0.22.1"  # append an upper bound
                     break
 
         # snakemake <8.1.2 requires pulp <2.8.0
-        if record_name == 'snakemake-minimal' and has_dep(record, "pulp") and version < "8.1.2":
+        if record_name == 'snakemake-minimal' and has_dep(record, "pulp") and parse_version(version) < parse_version("8.1.2"):
             for i, dep in enumerate(deps):
                 if dep.startswith("pulp") and has_no_upper_bound(dep):
                     deps[i] = "pulp >=2.0,<2.8.0"
+
+        # snakemake-minimal >=9.6.0,<=9.19.0 was missing the dependency: referencing
+        # it was fixed for build 1 of version 9.19.0 here: https://github.com/bioconda/bioconda-recipes/pull/64534
+        if record_name == 'snakemake-minimal' and parse_version(version) >= parse_version("9.6.0") and parse_version(version) <= parse_version("9.19.0") and not has_dep(record, "referencing"):
+            deps.append('referencing')
 
         # snakemake requires pandas <3
         if record_name.startswith('snakemake') and has_dep(record, "pandas"):
@@ -193,7 +198,7 @@ def _gen_new_index_per_key(repodata, packages_key, subdir):
                     deps[i] += ",<3"
 
         # scprep <=1.2.3 requires pandas <2.1
-        if record_name == 'scprep' and has_dep(record, "pandas") and version <= "1.2.3":
+        if record_name == 'scprep' and has_dep(record, "pandas") and parse_version(version) <= parse_version("1.2.3"):
             for i, dep in enumerate(deps):
                 if dep == "pandas":
                     deps[i] = "pandas <2.1"
