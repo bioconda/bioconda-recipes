@@ -20,7 +20,7 @@ case $(uname -m) in
 esac
 
 sed -i.bak 's|2.3.0rc1|2.4.0|' configure.ac
-sed -i.bak 's|-Werror||' configure.ac
+sed -i.bak 's|-Werror||g' configure.ac
 rm -f *.bak
 sed -i.bak 's|2.3.0rc4|2.4.0|' cosi/cositop.cc
 rm -f cosi/*.bak
