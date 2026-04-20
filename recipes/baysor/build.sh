@@ -1,17 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-set -euxo pipefail
+export JULIA_DEPOT_PATH="$PREFIX/share/julia"
+mkdir -p "$JULIA_DEPOT_PATH"
 
-mkdir -p "${PREFIX}/share/baysor"
-cp -r bin/baysor/* "${PREFIX}/share/baysor/"
+julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/kharchenkolab/Baysor.git")); Pkg.build()'
 
-mkdir -p "${PREFIX}/bin"
-
-cat << 'EOF' > "${PREFIX}/bin/baysor"
-#!/usr/bin/env bash
-set -euo pipefail
-
-exec "${CONDA_PREFIX}/share/baysor/bin/baysor" "$@"
-EOF
-
-chmod +x "${PREFIX}/bin/baysor"
+mkdir -p "$PREFIX/bin"
+mv "$PREFIX/share/julia/bin/baysor" "$PREFIX/bin/baysor"
