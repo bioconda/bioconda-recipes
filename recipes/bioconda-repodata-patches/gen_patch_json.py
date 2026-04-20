@@ -186,7 +186,7 @@ def _gen_new_index_per_key(repodata, packages_key, subdir):
 
         # snakemake-minimal >=9.6.0,<=9.19.0 was missing the dependency: referencing
         # it was fixed for build 1 of version 9.19.0 here: https://github.com/bioconda/bioconda-recipes/pull/64534
-        if record_name == 'snakemake-minimal' and version >= "9.6.0" and version <= "9.19.0" and not has_dep(record, "referencing"):
+        if record_name == 'snakemake-minimal' and parse_version(version) >= parse_version("9.6.0") and parse_version(version) <= parse_version("9.19.0") and not has_dep(record, "referencing"):
             deps.append('referencing')
 
         # snakemake requires pandas <3
