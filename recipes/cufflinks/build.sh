@@ -27,6 +27,9 @@ sed -i.bak 's|-m64||' configure.ac
 sed -i.bak "s|$CFLAGS -std=c++03|$CXXFLAGS -std=c++14|" configure.ac
 rm -f *.bak
 
+sed -i.bak 's|#include <Eigen/Dense>|#include <eigen3/Eigen/Dense>|' src/abundances.h
+rm -f src/*.bak
+
 autoreconf -if
 ./configure --prefix="${PREFIX}" \
 	--with-boost="${PREFIX}" \
