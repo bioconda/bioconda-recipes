@@ -2,7 +2,7 @@
 {% set version = "2.3.5rc3" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -10,10 +10,15 @@ source:
   sha256: e4a9a18ebfda5c1548487f609fc641010b0a4d4f6d4a791fe48ab6fb8f628d93
 
 build:
-  number: 0
+  number: 1
+  skip: True  # [py > 312]
   entry_points:
     - mikado = Mikado.__main__:main
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|g' setup.py
+    - sed -i.bak 's|<3.11|<3.13|' setup.py
+    - rm -f *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
@@ -21,16 +26,17 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - pkg-config
   host:
-    - python >=3.9,<3.11
+    - python
     - pip
     - setuptools <80.9
-    - cython ==0.29.32
-    - numpy ==1.23.3
+    - cython <3
+    - numpy <2
     - scipy ==1.11.1
   run:
-    - python >=3.9,<3.11
+    - python
     - biopython ==1.79
     - datrie >=0.8
     - docutils ==0.19
@@ -40,7 +46,7 @@ requirements:
     - marshmallow-dataclass ==8.5.3
     - msgpack-python ==1.0.4
     - networkx ==2.8.7
-    - numpy ==1.23.3
+    - numpy <2
     - pandas >=1.5.0
     - pyfaidx ==0.5.9.5
     - pysam >=0.23.3
@@ -90,5 +96,5 @@ extra:
     - swarbred
   identifiers:
     - biotools:mikado
-  skip-lints:
-    - compiler_needs_stdlib_c
+    - doi:10.1093/gigascience/giy093
+    - doi:10.1093/gigascience/giy131
