@@ -24,6 +24,7 @@ mkdir -p build-aux
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* build-aux/
 
 sed -i.bak 's|-m64||' configure.ac
+sed -i.bak "s|$CFLAGS -std=c++03|$CXXFLAGS -std=c++14|" configure.ac
 rm -f *.bak
 
 autoreconf -if
@@ -42,7 +43,7 @@ autoreconf -if
 	CPPFLAGS="${CPPFLAGS}" \
 	LDFLAGS="${LDFLAGS}"
 
-make -j"${CPU_COUNT}"
+make CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}"
 make install
 
 if [[ $PY3K -eq 1 ]]; then
