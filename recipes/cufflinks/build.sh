@@ -5,6 +5,7 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-register -D_LIBCPP_DISABLE_AVAILABILITY -D_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION -D_LIBCPP_ENABLE_CXX17_REMOVED_BINDERS"
 export CFLAGS="${CFLAGS} -O3"
 export LC_ALL="en_US.UTF-8"
+export BAM_ROOT="${PREFIX}"
 
 case $(uname -m) in
     aarch64)
@@ -39,7 +40,6 @@ autoreconf -if
 	--with-boost="${PREFIX}" \
 	--with-zlib="${PREFIX}" \
 	--with-eigen="${PREFIX}" \
-	--with-bam="${PREFIX}" \
 	--disable-option-checking \
 	--enable-dependency-tracking \
 	--enable-silent-rules \
