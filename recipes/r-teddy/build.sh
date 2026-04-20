@@ -8,8 +8,6 @@ fi
 
 echo "SRC_DIR=$SRC_DIR"
 echo "PKGDIR=$PKGDIR"
-ls -la "$SRC_DIR"
-ls -la "$PKGDIR"
 
 cat > "$PKGDIR/src/Makefile" <<'MAKE_EOF'
 .PHONY: all tools-old clean distclean
@@ -20,7 +18,7 @@ tools-old:
 	rm -rf ./deps/libdeflate/build
 	cmake -S ./deps/libdeflate -B ./deps/libdeflate/build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF
 	cmake --build ./deps/libdeflate/build -j1
-	cd ./deps/bzip2 && make clean || true && make
+	cd ./deps/bzip2 && make clean || true && make CC="$(CC)" AR="$(AR)" RANLIB="$(RANLIB)"
 	cd ./deps/xz && make clean || true && ./configure --prefix=$$(pwd)/install && make -j1 && make install
 	cd ./deps/htslib && make clean || true && make \
 		CC="$(CC)" AR="$(AR)" RANLIB="$(RANLIB)" \
