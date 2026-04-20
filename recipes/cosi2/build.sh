@@ -20,7 +20,6 @@ case $(uname -m) in
 esac
 
 sed -i.bak 's|2.3.0rc1|2.4.0|' configure.ac
-sed -i.bak 's|2.3.0rc1|2.4.0|' configure
 rm -f *.bak
 sed -i.bak 's|2.3.0rc4|2.4.0|' cosi/cositop.cc
 rm -f cosi/*.bak
@@ -30,7 +29,7 @@ autoreconf -if
 	--disable-option-checking --enable-silent-rules \
 	--disable-dependency-tracking \
 	CC="${CC}" CFLAGS="${CFLAGS}" \
-	CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" \
+	CXX="${CXX}" CXXFLAGS="${CXXFLAGS} -Wno-type-limits -Wno-mismatched-tags -Wno-unused-parameter -Wno-delete-non-abstract-non-virtual-dtor" \
 	CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}"
 
 make
