@@ -1,35 +1,39 @@
-{% set version = "2.3" %}
-{% set sha256 = "78c57e8a3d1096b81b1cd990f93bb14248b0ffcdcb3119ed275519c8cca323db" %}
+{% set version = "3.0.1" %}
+{% set sha256 = "766bedd70b5afad912bd0f1af88d3f85450b8897e0ee608bf4701628e96fa7c0" %}
 
 package:
   name: mimick
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   url: https://github.com/pdimens/mimick/releases/download/{{ version }}/mimick.{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  sha256: {{ sha256 }}
 
 build:
   number: 0
   noarch: python
   run_exports:
     - {{ pin_subpackage('mimick', max_pin="x") }}
-  script: ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  script: |
+    {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   entry_points:
     - mimick = mimick.__main__:mimick
+    - test_mimick = mimick.__main__:mimick_test
+    - install_mimick = mimick.__main__:mimick_install
 
 requirements:
   host:
-    - python
+    - julia >=1.10
     - pip
+    - pyjuliacall >=0.9.26
+    - python
     - setuptools >=80
   run:
-    - click >=8
-    - numpy >=1.15.3
-    - rich-click >=1.8
-    - pysam >=0.22.0
-    - python >=3.11
-    - pywgsim >=0.6
+    - click >=8.2
+    - julia >=1.10
+    - pyjuliacall >=0.9.26
+    - python >=3.10
+    - rich-click >=1.9.3
 
 test:
   commands:
@@ -42,10 +46,10 @@ about:
   license_file: LICENSE
   summary: "Simulate linked-read data"
   description: |
-    Mimick, formerly known as XENIA from the VISOR project, is a simple but effective way of
-    simulating linked-read FASTQ data (10x, haplotagging, stlfr, tellseq). Mimick allows
-    you to simulate an arbitrary number of haplotypes, set overall coverage, molecule coverage,
-    and mix-match barcodes with linked-read chemistries.
+    Mimick, formerly known as XENIA from the VISOR project, can simulate all manner of available
+    linked-read chemistries (10x, haplotagging, stlfr, tellseq). It allows you to simulate an
+    arbitrary number of haplotypes, set overall coverage, molecule coverage, molecules per barcode,
+    whether DNA is circular, etc.
   doc_url: "https://pdimens.github.io/mimick"
   dev_url: "https://github.com/pdimens/mimick"
 

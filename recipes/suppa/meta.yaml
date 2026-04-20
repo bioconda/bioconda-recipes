@@ -1,20 +1,28 @@
+{% set name = "SUPPA" %}
+{% set version = "2.4" %}
+# version number patched manually, should be verified in next version
+
 package:
-  name: suppa
-  version: "2.3"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.python.org/packages/a5/e5/b90c9bcd85ad5605d25a3e7ed0615c8ef212e6f94813b9638ab9c376e2de/SUPPA-2.3.tar.gz
-  md5: fde473f063cfaaa381b8ea254c3dc1f1
+  url: https://github.com/comprna/SUPPA/archive/refs/tags/v2.4.tar.gz
+  md5: "71738389d69da347786dbf1303c77f95"
   patches: patches
 
 build:
   noarch: python
-  number: 2
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('suppa', max_pin="x") }}
+  number: 0
 
 requirements:
   host:
     - python >=3
     - pip
+    - setuptools
   run:
     - python >=3
     - scipy >=0.15.1
@@ -28,9 +36,20 @@ test:
     - lib
   commands:
     - suppa.py --help
+    - suppa.py generateEvents --help
+    - suppa.py psiPerEvent --help
+    - suppa.py psiPerIsoform --help
+    - suppa.py diffSplice --help
+    - suppa.py clusterEvents --help
+    - suppa.py joinFiles --help
 
 about:
   home: https://github.com/comprna/SUPPA
-  license: MIT License
+  license: MIT
   summary: 'A tool to study splicing across multiple conditions at high speed and accuracy.'
   license_family: MIT
+
+extra:
+  recipe-maintainers:
+    - dpryan79
+    - kbseah

@@ -2,53 +2,79 @@
 {% set version = "3.0.7" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+- url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: b3c9f10c10c8a12c390a79016e01b7e4d165bf1c94dce48e72d31891cb552c29
+  # pomegranate build from source as pomegranate in conda-forge only builds up to python 3.10 and is not available on osx-arm64
+- url: https://files.pythonhosted.org/packages/81/a6/72be9d8675e346fdccb0fde3bd1c4c3b28f0369c125da7fe4a0d136a0079/pomegranate-0.14.9.tar.gz
+  sha256: 339b7a6c214b511d9561d077a37061a40d360126ff9b1dea917d859cfc8c0464
+  folder: pomegranate-0.14.9
 
 build:
-  number: 0
-  skip: true  # [py >= 311]
+  number: 2
+  skip: True  # [py > 312]
   entry_points:
     - b2bTools = b2bTools.__main__:main
     - b2btools = b2bTools.__main__:main
-  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+  script:
+    - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - export CXXFLAGS="${CXXFLAGS} -O3"
+    - cd pomegranate-0.14.9
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+    - cd ..
+    - {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir --use-pep517 -vvv
   run_exports:
-    - {{ pin_subpackage('b2btools', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }} # [linux]
-    - {{ compiler('cxx') }} # [linux]
-    - clang_osx-64 # [osx]
-    - clangxx_osx-64 # [osx]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - pkg-config
+    - clangdev  # [osx]
+    - llvmlite  # [osx]
   host:
-    - python <3.11
+    - python
     - pip
+    - cython <3
+    - numpy ==1.21.6  # [py == 37]
+    - numpy ==1.24.4  # [py == 38]
+    - numpy >=1.21.6,<1.27  # [py >= 39]
+    - scipy ==1.7.3  # [py < 38]
+    - scipy ==1.10.1  # [py >= 38 and py < 310]
+    - scipy ==1.12.0  # [py >= 310]
   run:
-    - python <3.11
+    - python
     - hmmer
     - t-coffee
-    - biopython >=1.80,<2 # [py < 310]
-    - biopython >=1.83,<2 # [py >= 310]
-    - matplotlib-base >=3.5.3,<3.6
-    - numpy ==1.21.6 # [py == 37]
-    - numpy ==1.24.4 # [py == 38]
-    - numpy >=1.21.6,<1.27 # [py >= 39]
-    - pandas >=1.1,<1.2 # [py < 38]
-    - pandas >=1.5.3,<1.6 # [py >= 38]
-    - pomegranate >=0.14.8,<=0.14.9
-    - requests >=2.0 # [py <= 39]
-    - requests >=2.31.0,<2.32 # [py > 39]
-    - scikit-learn ==1.0.2 # [py <= 310]
-    - scipy ==1.7.3 # [py < 38]
-    - scipy ==1.10.1 # [py >= 38 and py < 310]
-    - scipy ==1.12.0 # [py >= 310]
-    - pytorch >=1.11.0,<=1.13.1 # [py <= 310]
+    - biopython >=1.80,<2  # [py < 310]
+    - biopython >=1.83,<2  # [py >= 310]
+    - matplotlib-base >=3.5.3,<3.6  # [py <= 310]
+    - matplotlib-base >=3.8.0  # [py > 310]
+    - numpy ==1.21.6  # [py == 37]
+    - numpy ==1.24.4  # [py == 38]
+    - numpy >=1.21.6,<1.27  # [py >= 39]
+    - pandas >=1.1,<1.2  # [py < 38]
+    - pandas >=1.5.3  # [py >= 38]
+    #- pomegranate >=0.14.8,<=0.14.9
+    - requests >=2.0  # [py <= 39]
+    - requests >=2.31.0,<2.32  # [py > 39]
+    - scikit-learn ==1.0.2  # [py <= 310]
+    - scikit-learn  # [py > 310]
+    - scipy ==1.7.3  # [py < 38]
+    - scipy ==1.10.1  # [py >= 38 and py < 310]
+    - scipy ==1.12.0  # [py >= 310]
+    - pytorch >=1.11.0,<=1.13.1  # [py <= 310]
+    - pytorch >1.13.1  # [py > 310]
     - urllib3 >=1.26.6,<1.27
+    # pomegranate deps
+    - joblib >=0.9.0b4
+    - networkx >=2.4
+    - pyyaml
 
 test:
   imports:
@@ -60,10 +86,10 @@ test:
 
 about:
   home: "https://bio2byte.be/b2btools"
-  license: 'GNU General Public License v3 (GPLv3)'
+  license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: LICENSE
-  summary: "The bio2Byte software suite to predict protein biophysical properties"
+  summary: "The bio2Byte software suite to predict protein biophysical properties."
   description: |
     This package provides you with structural predictions for protein sequences made by the Bio2Byte group which researches the relation between protein sequence and biophysical behavior.
 
@@ -74,17 +100,16 @@ about:
     4. AgMata: Single-sequence-based predictor of protein regions that are likely to cause beta-aggregation.
     5. PSPer: PSP (Phase Separating Protein) predicts whether a protein is likely to phase-separate with a particular mechanism involving RNA interacts (FUS-like proteins).
     6. ShiftCrypt: Auto-encoding NMR chemical shifts from their native vector space to a residue-level biophysical index.
-  doc_url: https://pypi.org/project/b2bTools/
-  dev_url: http://bitbucket.org/bio2byte/b2btools_releases
+  doc_url: "https://bio2byte.be/b2btools"
+  dev_url: "https://bitbucket.org/bio2byte/b2btools_releases"
 
 extra:
-  author: Wim Vranken <wim.vranken@vub.be>
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  author: "Wim Vranken <wim.vranken@vub.be>"
   recipe-maintainers:
-    - Adrián Díaz <adrian.diaz@vub.be> (@agdiaz)
-    - Jose Gavaldá-García <jose.gavalda.garcia@vub.be> (@GavaldaGarcia)
-  maintainers:
-    - Adrián Díaz <adrian.diaz@vub.be> (@agdiaz)
-    - Jose Gavaldá-García <jose.gavalda.garcia@vub.be> (@GavaldaGarcia)
+    - agdiaz
   identifiers:
-    - doi:10.48550/arXiv.2405.02136 # bioRxiv preprint
+    - doi:10.48550/arXiv.2405.02136  # bioRxiv preprint
     - biotools:b2btools

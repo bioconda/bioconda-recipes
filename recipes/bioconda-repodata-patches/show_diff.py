@@ -8,7 +8,7 @@ import urllib
 
 from gen_patch_json import _gen_new_index, _gen_patch_instructions, SUBDIRS
 
-from conda_build.index import _apply_instructions
+from conda_index.index import _apply_instructions
 
 CACHE_DIR = os.environ.get(
     "CACHE_DIR",

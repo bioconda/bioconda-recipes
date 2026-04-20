@@ -5,10 +5,11 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -frtti"
 
-if [[ "${target_platform}" == "osx-"* ]]; then
-  export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
-else
-  export CONFIG_ARGS=""
+# Set environment variables to locate dependency libraries in `build/`
+if [[ "${target_platform}" == "linux-"* ]]; then
+  export LD_LIBRARY_PATH="${PWD}/build:${LD_LIBRARY_PATH}"
+elif [[ "${target_platform}" == "osx-"* ]]; then
+  export DYLD_LIBRARY_PATH="${PWD}/build:${DYLD_LIBRARY_PATH}"
 fi
 
 if [[ "${target_platform}" == "linux-aarch64" ]]; then
@@ -19,19 +20,26 @@ else
   export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
 
-sed -i.bak '/find_package(RDKit CONFIG COMPONENTS RDGeneral REQUIRED)/a\
+pushd api/doxy-sphinx
+doxygen coot-api-dox.cfg
+popd
+
+mkdir -p "${PREFIX}/share/doxy-sphinx"
+cp -r api/doxy-sphinx/* "${PREFIX}/share/doxy-sphinx"
+
+# Boost 1.86.0 still needs `system` component
+sed -i 's|Boost COMPONENTS iostreams|Boost COMPONENTS iostreams system|' CMakeLists.txt
+sed -i 's|Boost::thread Boost::iostreams|Boost::thread Boost::iostreams Boost::system|' CMakeLists.txt
+
+sed -i '/find_package(RDKit CONFIG COMPONENTS RDGeneral REQUIRED)/a\
 set_target_properties(RDKit::rdkit_base PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${RDKit_INCLUDE_DIRS}")' CMakeLists.txt
-rm -rf *.bak
 
 cmake -S . -B build -G Ninja \
-  -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-  -DCMAKE_PREFIX_PATH="${PREFIX}" \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DBUILD_SHARED_LIBS=ON \
-  -DCMAKE_CXX_COMPILER="${CXX}" \
-  -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+  ${CMAKE_ARGS} \
   -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" \
   -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
+  -DCMAKE_CXX_COMPILER="${CXX}" \
+  -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
   -DPython_EXECUTABLE="${PYTHON}" \
   -Dnanobind_DIR="${SP_DIR}/nanobind/cmake" \
   -DBOOST_ROOT="${PREFIX}" \
@@ -57,11 +65,12 @@ cmake -S . -B build -G Ninja \
   -DCLIPPER-CONTRIB_LIBRARY="${PREFIX}/lib/libclipper-contrib${SHLIB_EXT}" \
   -DCLIPPER-CIF_LIBRARY="${PREFIX}/lib/libclipper-cif${SHLIB_EXT}" \
   -DPYTHON_SITE_PACKAGES="${SP_DIR}" \
-  -Wno-dev -Wno-deprecated --no-warn-unused-cli \
-  ${CONFIG_ARGS}
+  -DPython_SITELIB="${SP_DIR}" \
+  -DMAKE_COOT_HEADLESS_API_PYI=ON \
+  -Wno-dev -Wno-deprecated --no-warn-unused-cli
 
-cmake --build build --clean-first --target coot_headless_api -j "${CPU_COUNT}"
-cmake --install build -j "${CPU_COUNT}"
+cmake --build build --parallel "${CPU_COUNT}"
+cmake --install build --parallel "${CPU_COUNT}"
 
 mkdir -p "${PREFIX}/etc/conda/activate.d"
 mkdir -p "${PREFIX}/etc/conda/deactivate.d"
