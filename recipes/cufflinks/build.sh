@@ -28,6 +28,9 @@ sed -i.bak "s|$CFLAGS -std=c++03|$CXXFLAGS -std=c++14|" configure.ac
 rm -f *.bak
 
 sed -i.bak 's|#include <Eigen/Dense>|#include <eigen3/Eigen/Dense>|' src/abundances.h
+sed -i.bak 's|#include <Eigen/Dense>|#include <eigen3/Eigen/Dense>|' src/abundances.cpp
+sed -i.bak 's|#include <Eigen/Dense>|#include <eigen3/Eigen/Dense>|' src/jensen_shannon.h
+sed -i.bak 's|#include <Eigen/Dense>|#include <eigen3/Eigen/Dense>|' src/sampling.h
 sed -i.bak 's|#include <boost/tr1/unordered_map.hpp>|#include <boost/unordered_map.hpp>|' src/biascorrection.h
 rm -f src/*.bak
 
