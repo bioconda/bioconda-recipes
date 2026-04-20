@@ -39,7 +39,7 @@ autoreconf -if
 	--with-boost="${PREFIX}" \
 	--with-zlib="${PREFIX}" \
 	--with-eigen="${PREFIX}" \
-	--with-bam="${PREFIX}/include" \
+	--with-bam="${PREFIX}" \
 	--disable-option-checking \
 	--enable-dependency-tracking \
 	--enable-silent-rules \
