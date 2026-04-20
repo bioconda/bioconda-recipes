@@ -6,6 +6,7 @@ mkdir -p "$JULIA_DEPOT_PATH"
 julia \
     --startup-file=no \
     --history-file=no \
+    --threads 1 \
     -e 'using Pkg; Pkg.develop(path="."); Pkg.build("Baysor")'
 
 mkdir -p "$PREFIX/bin"
