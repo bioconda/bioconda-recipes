@@ -1,0 +1,47 @@
+{% set name = "fastqc-rs-yb" %}
+{% set version = "0.14.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/AI4S-YB/fastqc-rs/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f56eda1fd79f1aee8645dbcf9d879559b090061341c1ef7846c44c484222c985
+
+build:
+  number: 0
+  script:
+    - cargo install --locked --no-track --root $PREFIX --path .
+  skip: True  # [win]
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - make
+    - pkg-config
+  host:
+    - zlib
+  run:
+
+test:
+  commands:
+    - fqc --help
+
+about:
+  home: https://github.com/AI4S-YB/fastqc-rs
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: A fast quality control tool for FASTQ files written in Rust
+  description: |
+    A fast quality control tool for FASTQ files written in Rust.
+    Generates self-contained HTML reports with visualizations for all
+    quality statistics, and can also produce summary files compatible
+    with MultiQC.
+  dev_url: https://github.com/AI4S-YB/fastqc-rs
+
+extra:
+  recipe-maintainers:
+    - AI4S-YB
