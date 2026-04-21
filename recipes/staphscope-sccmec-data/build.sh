@@ -1,10 +1,11 @@
 #!/bin/bash
 set -e
-cd "$SRC_DIR"
-# If there is exactly one subdirectory, step into it
-if [ $(ls -1 | wc -l) -eq 1 ] && [ -d "$(ls -1)" ]; then
-    cd "$(ls -1)"
-fi
+set -x
+echo "=== SRC_DIR = $SRC_DIR"
+ls -la "$SRC_DIR"
 DEST="$PREFIX/share/staphscope/modules"
+echo "=== DEST = $DEST"
 mkdir -p "$DEST"
-cp -r ./* "$DEST/"
+cp -rv "$SRC_DIR"/* "$DEST/"
+echo "=== Contents of DEST:"
+ls -la "$DEST"
