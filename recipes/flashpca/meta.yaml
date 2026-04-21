@@ -9,30 +9,42 @@ source:
 build:
   number: 0
   script: build.sh
+  run_exports:
+    - {{ pin_subpackage('flashpca', max_pin="x") }}
 
 requirements:
   build:
-    - ${{ compiler('cxx') }}
-    - cmake
+    - {{ compiler('cxx') }}
     - make
   host:
     - boost
-    - eigen >=3.3,<3.4
+    - eigen
+    - spectra
     - openblas
   run:
     - boost
-    - eigen >=3.3,<3.4
+    - eigen
+    - spectra
     - openblas
 
-tests:
-  - script:
+test:
+  commands:
     - flashpca --help
+    - flashpca --version || true
 
 about:
-  homepage: https://github.com/gabraham/flashpca
+  home: https://github.com/gabraham/flashpca
   license: GPL-3.0-or-later
+  license_family: GPL
+  license_file: LICENSE
   summary: Fast principal component analysis of SNP data (FlashPCA2)
-  description: FlashPCA performs fast PCA on large-scale genome-wide SNP data using randomised algorithms.
+  description: |
+    FlashPCA performs fast principal component analysis (PCA) of 
+    large-scale genome-wide SNP data using randomised algorithms 
+    and the Spectra library.
+
 extra:
   recipe-maintainers:
     - dbaku42
+  identifiers:
+    - biotools:flashpca
