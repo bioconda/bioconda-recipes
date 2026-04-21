@@ -1,7 +1,7 @@
 set -e
 
 # Configuration
-N_FILES_IN_TAR=307538
+N_FILES_IN_TAR=263
 DB_URL="https://data.gtdb.aau.ecogenomic.org/releases/release232/232.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r232_data.tar.gz"
 TARGET_TAR_NAME="gtdbtk_r232_data.tar.gz"
 
