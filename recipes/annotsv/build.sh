@@ -10,6 +10,3 @@ mkdir -p "${PREFIX}/tests/AnnotSV"
 make install PREFIX=$PREFIX
 
 install -v -m 0755 bin/INSTALL_annotations.sh "${PREFIX}/bin"
-
-make install -j"${CPU_COUNT}"
-
