@@ -14,38 +14,6 @@ build:
   noarch: generic
   run_exports:
     - {{ pin_subpackage("metaamrplus", max_pin="x") }}
-  script: |
-    set -euo pipefail
-
-    echo "==== MetaAMRplus build starting ===="
-    echo "VERSION: {{ version }}"
-
-    mkdir -p "$PREFIX/bin"
-    mkdir -p "$PREFIX/share/metaamrplus/db"
-
-    install -m 755 "$SRC_DIR/bin/metaamrplus" "$PREFIX/bin/metaamrplus"
-    install -m 755 "$SRC_DIR/bin/metaamrplus_batch" "$PREFIX/bin/metaamrplus_batch"
-
-    if [[ -f "$SRC_DIR/bin/metaamrplus-download-db" ]]; then
-      install -m 755 "$SRC_DIR/bin/metaamrplus-download-db" "$PREFIX/bin/metaamrplus-download-db"
-    fi
-
-    install -m 755 "$SRC_DIR/bin/annotate_metaamrplus.py" \
-      "$PREFIX/bin/annotate_metaamrplus.py"
-
-    DB_DIR="$SRC_DIR/db"
-
-    cp "$DB_DIR"/MetaAMRplus_DB_v1.0.* "$PREFIX/share/metaamrplus/db/" || true
-
-    if [[ -f "$DB_DIR/MetaAMRplus_v1.0.idmap.tsv" ]]; then
-      cp "$DB_DIR/MetaAMRplus_v1.0.idmap.tsv" "$PREFIX/share/metaamrplus/db/"
-    fi
-
-    chmod +x "$PREFIX/bin/metaamrplus"
-    chmod +x "$PREFIX/bin/metaamrplus_batch"
-    chmod +x "$PREFIX/bin/annotate_metaamrplus.py"
-
-    echo "==== Build completed successfully ===="
 
 requirements:
   build:
