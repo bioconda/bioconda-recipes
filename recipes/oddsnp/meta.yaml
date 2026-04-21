@@ -1,0 +1,65 @@
+{% set version = "0.1.1" %}
+{% set name = "oddsnp" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/o/oddsnp/oddsnp-{{ version }}.tar.gz
+  sha256: f9226df4f803f40b9d6c748f4414c1430c5d9d654c83700a93c999d0dfc62d55
+  
+build:
+  entry_points:
+    - oddSNP = oddSNP.__main__:oddSNP
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("oddsnp", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - setuptools
+
+  run:
+    - python >=3.12
+    - click
+    - pandas
+    - pysam
+    - plotly
+    - nbformat
+    - python-kaleido      # conda-forge name for kaleido
+    - tqdm
+    - more-itertools      # conda-forge name for more_itertools
+    - joblib
+    - requests
+    - ipykernel
+    - threadpoolctl
+    - vireosnp
+    - cellsnp-lite 
+
+test:
+  imports:
+    - oddSNP
+  commands:
+    - oddSNP --help
+  requires:
+    - python
+    - pip
+
+about:
+  home: https://github.com/nemoto-lab/oddSNP
+  summary: A CLI tool for Optimizing demultiplexing pooled experiments based on Single-Nucleotide Polymorphism
+  doc_url: https://nemoto-lab.github.io/oddSNP/
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  authors:
+    - Rodolfo Allendes <rodolfo.allendes.prime@osaka-u.ac.jp>
+    - Takahiro Nemoto <nemoto.takahiro.prime@osaka-u.ac.jp>
+  recipe-maintainers:
+    - RodolfoAllendes
