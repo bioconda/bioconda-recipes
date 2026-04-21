@@ -26,24 +26,21 @@ for script in rf-*; do
 done
 
 cat > "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_perl5lib.sh" <<'EOF'
-if [ "${PERL5LIB+x}" = x ]; then
-    export _RF_OLD_PERL5LIB="${PERL5LIB}"
-    export _RF_HAD_PERL5LIB=1
-else
-    unset _RF_OLD_PERL5LIB
-    export _RF_HAD_PERL5LIB=0
-fi
+# The `use lib` injected into rf-* scripts only sets @INC for the top-level process.
+# PERL5LIB is needed so child Perl processes (system/backticks) can also find rnaframework modules.
 export PERL5LIB="${CONDA_PREFIX}/share/rnaframework/lib${PERL5LIB:+:${PERL5LIB}}"
 EOF
 
 cat > "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_perl5lib.sh" <<'EOF'
-if [ "${_RF_HAD_PERL5LIB:-0}" = 1 ]; then
-    export PERL5LIB="${_RF_OLD_PERL5LIB}"
-else
-    unset PERL5LIB
+_rf_lib="${CONDA_PREFIX}/share/rnaframework/lib"
+if [ -n "${PERL5LIB:-}" ]; then
+    PERL5LIB=":${PERL5LIB}:"
+    PERL5LIB="${PERL5LIB//:${_rf_lib}:/:}"
+    PERL5LIB="${PERL5LIB#:}"
+    PERL5LIB="${PERL5LIB%:}"
+    [ -z "${PERL5LIB}" ] && unset PERL5LIB || export PERL5LIB
 fi
-unset _RF_OLD_PERL5LIB
-unset _RF_HAD_PERL5LIB
+unset _rf_lib
 EOF
 
 echo "RNAFramework ${PKG_VERSION} installed successfully."
