@@ -1,19 +1,24 @@
+{% set name = "metaamrplus" %}
+{% set version = "1.5.1" %}
+
 package:
-  name: metaamrplus
-  version: 1.5.1
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/migshaw03/MetaAMRplus/archive/refs/tags/v1.5.1.tar.gz
+  url: https://github.com/migshaw03/MetaAMRplus/archive/refs/tags/v{{ version }}.tar.gz
   sha256: 5ae9181e0eb5b64e929e4980bbef47c7aec7e2c81ae8bfda1d5a3e072b4f89ec
 
 build:
+  number: 1
   noarch: generic
-  number: 0
+  run_exports:
+    - {{ pin_subpackage("metaamrplus", max_pin="x") }}
   script: |
     set -euo pipefail
 
     echo "==== MetaAMRplus build starting ===="
-    echo "VERSION: 1.5.1"
+    echo "VERSION: {{ version }}"
 
     mkdir -p "$PREFIX/bin"
     mkdir -p "$PREFIX/share/metaamrplus/db"
@@ -64,3 +69,8 @@ about:
   home: https://github.com/migshaw03/MetaAMRplus
   license: MIT
   summary: "MetaAMRplus: AMR + metal resistance + colocalisation analysis"
+  description: "MetaAMRplus is a command-line tool for detecting antimicrobial resistance genes, metal/biocide resistance genes, and their genomic colocalisation."
+
+extra:
+  recipe-maintainers:
+    - migshaw03
