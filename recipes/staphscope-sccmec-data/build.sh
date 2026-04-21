@@ -1,11 +1,5 @@
 #!/bin/bash
 set -e
-set -x
-echo "=== SRC_DIR = $SRC_DIR"
-ls -la "$SRC_DIR"
-DEST="$PREFIX/share/staphscope/modules"
-echo "=== DEST = $DEST"
+DEST="$PREFIX/share/staphscope/modules/sccmec_module"
 mkdir -p "$DEST"
-cp -rv "$SRC_DIR"/* "$DEST/"
-echo "=== Contents of DEST:"
-ls -la "$DEST"
+cp -r $SRC_DIR/* "$DEST/"
