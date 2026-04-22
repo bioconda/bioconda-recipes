@@ -1,0 +1,85 @@
+{% set name = "rastqc" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}-split
+  version: {{ version }}
+
+source:
+  url: https://github.com/Huang-lab/RastQC/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 8f1417836958637602e17e1c17ced3e4a05bcbe7d013dd6cc34ed0dc341136d1
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+    - pkg-config
+  host:
+    - hdf5
+    - libarrow
+
+outputs:
+  - name: rastqc
+    script: build-core.sh
+    build:
+      script_env:
+        - CARGO_NET_GIT_FETCH_WITH_CLI=true
+    requirements:
+      build:
+        - {{ compiler('rust') }}
+        - {{ compiler('c') }}
+      run_exports:
+        - {{ pin_subpackage('rastqc', max_pin='x.x') }}
+    test:
+      commands:
+        - rastqc --version
+        - rastqc --help
+
+  - name: rastqc-nanopore
+    script: build-nanopore.sh
+    build:
+      script_env:
+        - CARGO_NET_GIT_FETCH_WITH_CLI=true
+    requirements:
+      build:
+        - {{ compiler('rust') }}
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - pkg-config
+      host:
+        - hdf5
+        - libarrow
+      run:
+        - hdf5
+        - libarrow
+    test:
+      commands:
+        - rastqc-nanopore --version
+        - rastqc-nanopore --help
+        - rastqc-nanopore --long-read --help
+
+about:
+  home: https://github.com/Huang-lab/RastQC
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Fast Rust-based quality control for high-throughput sequencing data
+  description: |
+    RastQC is a drop-in replacement for FastQC written in Rust. It implements
+    all 12 FastQC modules plus 3 long-read modules (N50, quality-stratified
+    length, homopolymer content) with matching algorithms and output formats
+    (HTML, fastqc_data.txt, ZIP, native MultiQC JSON). The streaming parallel
+    pipeline runs 2-3x faster than FastQC on real sequencing data. The
+    rastqc-nanopore variant adds Fast5 (HDF5) and POD5 (Arrow) readers for
+    Oxford Nanopore data.
+  dev_url: https://github.com/Huang-lab/RastQC
+  doc_url: https://github.com/Huang-lab/RastQC/blob/main/README.md
+
+extra:
+  recipe-maintainers:
+    - Huang-lab
