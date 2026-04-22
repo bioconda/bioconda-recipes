@@ -22,4 +22,4 @@ install -v -m 0755 RRIkinDP "${PREFIX}/bin"
 
 cd ../../
 
-${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
