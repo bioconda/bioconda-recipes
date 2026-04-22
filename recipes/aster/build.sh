@@ -14,7 +14,7 @@ done
 
 case $(uname -s) in
     Darwin)
-	export LDFLAGS="${LDFLAGS} -Wl,-headerpad_max_install_names" ;;
+	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names" ;;
 esac
 
 case $(uname -m) in
