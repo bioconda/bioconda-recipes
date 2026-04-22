@@ -26,6 +26,7 @@ else
 	make -j"${CPU_COUNT}"
 fi
 
+sed -i.bak 's|-Ofast|-Ofast -pthread|' makefile
 sed -i.bak 's|-O2|-O3 -pthread|' makefile
 rm -rf *.bak
 
