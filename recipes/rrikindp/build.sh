@@ -15,10 +15,11 @@ case $(uname -m) in
 	;;
 esac
 
-${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
-
 cd src/rrikindp
 
-make -j"${CPU_COUNT}"
-
+make LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
 install -v -m 0755 RRIkinDP "${PREFIX}/bin"
+
+cd ../../
+
+${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
