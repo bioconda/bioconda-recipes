@@ -2,6 +2,7 @@
 set -euo pipefail
 
 export CARGO_HOME="${SRC_DIR}/.cargo"
+export CARGO_NET_GIT_FETCH_WITH_CLI=true
 export HDF5_DIR="${PREFIX}"
 export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
 
