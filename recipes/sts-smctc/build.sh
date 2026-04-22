@@ -27,7 +27,7 @@ mkdir -p "${PREFIX}/"{lib,include}
 sed -i.bak 's|2.8.1|3.5|' CMakeLists.txt
 rm -f *.bak
 
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}"
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
