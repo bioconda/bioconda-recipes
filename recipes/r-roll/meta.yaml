@@ -1,0 +1,86 @@
+{% set version = '1.2.0' %}
+{% set posix = 'm2-' if win else '' %}
+
+package:
+  name: r-roll
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/roll_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/roll/roll_{{ version }}.tar.gz
+  sha256: 6ede8e9ae4a34a0cc15088681a8a39cf0815a4ff9e08c7a38552bcada4ec67fe
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  missing_dso_whitelist:
+    - '*/R.dll'        # [win]
+    - '*/Rblas.dll'    # [win]
+    - '*/Rlapack.dll'  # [win]
+
+requirements:
+  build:
+    - {{ compiler('c') }}              # [not win]
+    - {{ compiler('m2w64_c') }}        # [win]
+    - {{ compiler('cxx') }}            # [not win]
+    - {{ compiler('m2w64_cxx') }}      # [win]
+    - {{ posix }}filesystem        # [win]
+    - {{ posix }}make
+    - {{ posix }}sed               # [win]
+    - {{ posix }}coreutils         # [win]
+    - {{ posix }}zip               # [win]
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
+  host:
+    - r-base
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-rcppparallel
+  run:
+    - r-base
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-rcppparallel
+
+test:
+  commands:
+    - $R -e "library('roll')"           # [not win]
+    - "\"%R%\" -e \"library('roll')\""  # [win]
+
+about:
+  home: https://github.com/jasonjfoster/roll
+  license: GPL-2.0-only
+  summary: Fast and efficient computation of rolling and expanding statistics for time-series
+    data.
+  license_family: GPL2
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
+extra:
+  recipe-maintainers:
+    - conda-forge/r
+
+# Package: roll
+# Type: Package
+# Title: Rolling and Expanding Statistics
+# Version: 1.2.0
+# Date: 2025-08-22
+# Authors@R: person("Jason", "Foster", , "jason.j.foster@gmail.com", c("aut", "cre"))
+# Description: Fast and efficient computation of rolling and expanding statistics for time-series data.
+# License: GPL (>= 2)
+# URL: https://github.com/jasonjfoster/roll
+# BugReports: https://github.com/jasonjfoster/roll/issues
+# Imports: Rcpp, RcppParallel
+# LinkingTo: Rcpp, RcppArmadillo, RcppParallel
+# SystemRequirements: GNU make
+# RoxygenNote: 7.3.2
+# Encoding: UTF-8
+# Suggests: covr, testthat, zoo
+# NeedsCompilation: yes
+# Packaged: 2025-08-22 11:35:21 UTC; jason
+# Author: Jason Foster [aut, cre]
+# Maintainer: Jason Foster <jason.j.foster@gmail.com>
+# Repository: CRAN
+# Date/Publication: 2025-08-22 12:00:02 UTC

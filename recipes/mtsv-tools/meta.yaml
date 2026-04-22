@@ -11,21 +11,16 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
-  skip: True  # [osx]
+  number: 2
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
-  script:
-    - export C_INCLUDE_PATH="$PREFIX/include"
-    - export LIBRARY_PATH="$PREFIX/lib"
-    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
-    - cargo install -v --locked --no-track --root $PREFIX --path .
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('rust') }}
     - cargo-bundle-licenses
-    - {{ compiler('c') }}
+    - pkg-config
 
 test:
   commands:
@@ -40,9 +35,9 @@ about:
   license_family: MIT
   summary: "mtsv_tools contains core tools for alignment-based metagenomic/metatranscriptomic assignment."
   dev_url: "https://github.com/FofanovLab/mtsv_tools"
+  doc_url: "https://github.com/FofanovLab/mtsv_tools/blob/{{ version }}/README.md"
 
 extra:
   additional-platforms:
-    # requires <emmintrin.h>
-    #- linux-aarch64
+    - linux-aarch64
     - osx-arm64
