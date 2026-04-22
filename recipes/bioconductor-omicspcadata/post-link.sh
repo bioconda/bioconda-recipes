@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "omicspcadata-1.24.0"
+installBiocDataPackage.sh "omicspcadata-1.28.0"
