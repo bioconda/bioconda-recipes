@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "Running post-link (post build) script for beast-pype"
-echo "Installing Jupyter kernels for Python and R"
+echo "Installing Jupyter kernels for Bash, Python and R"
 python -m ipykernel install --user --name=beast_pype
 python -m bash_kernel.install --user
 Rscript -e 'IRkernel::installspec(name="beast_pype_R", displayname = "beast_pype_R")'
