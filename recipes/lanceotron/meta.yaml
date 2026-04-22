@@ -3,31 +3,33 @@
 {% set sha256 = "2d33ec07f8f7038b6f6a34582329de6a1cdd8a5634f123ea18bbe2cef10da7b7" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
   url: https://github.com/LHentges/LanceOtron/archive/36cdafa6ba697b0ced022c1344d7ead8e11c6272.tar.gz
   sha256: {{ sha256 }}
 
 build:
+  number: 0
   noarch: python
-  script: python -m pip install --no-deps --ignore-installed lanceotron/
+  entry_points:
+    - lanceotron = lanceotron.cli:cli
+  script: {{ PYTHON }} -m pip install lanceotron/ --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage('lanceotron', max_pin="x") }}
-  number: 0
-
 
 requirements:
   host:
-    - python
+    - python >=3.7
     - pip
+    - setuptools
   run:
     - natsort
     - numpy
     - pandas
     - pybigwig
-    - python
+    - python >=3.7
     - scikit-learn
     - scipy
     - tensorflow >2
@@ -41,8 +43,6 @@ test:
   imports:
     - lanceotron
     - lanceotron.static
-  requires:
-    - pip
 
 about:
   home: https://lanceotron.molbiol.ox.ac.uk
