@@ -9,18 +9,21 @@ mkdir -p "${PREFIX}/bin"
 for CHANGE in "activate" "deactivate"
 do
 	mkdir -p "${PREFIX}/etc/conda/${CHANGE}.d"
-	cp -rf "${RECIPE_DIR}/${CHANGE}.sh" "${PREFIX}/etc/conda/${CHANGE}.d/${PKG_NAME}_${CHANGE}.sh"
+	cp -f "${RECIPE_DIR}/${CHANGE}.sh" "${PREFIX}/etc/conda/${CHANGE}.d/${PKG_NAME}_${CHANGE}.sh"
 done
+
+case $(uname -s) in
+    Darwin)
+	export LDFLAGS="${LDFLAGS} -headerpad_max_install_names" ;;
+esac
 
 case $(uname -m) in
     aarch64)
 	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a|g' makefile
-	rm -f *.bak
-	;;
+	rm -f *.bak ;;
     arm64)
 	sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a|g' makefile
-	rm -f *.bak
-	;;
+	rm -f *.bak ;;
 esac
 
 make -j"${CPU_COUNT}"
