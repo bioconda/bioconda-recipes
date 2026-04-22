@@ -1,47 +1,53 @@
 {% set name = "metaquantome" %}
-{% set version = "2.0.2" %}
+{% set version = "2.0.3" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "71ea1cffd82f11be87efd92a922baef12f1214caab0ea3d682d7057e1f6b8750" %}
+{% set hash_value = "c2c27a89b31079efb21b854384ecd9b173f673fc1a9e581c33ed5af7a5dc66ed" %}
 
 package:
-  name: '{{ name }}'
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/galaxyproteomics/{{ name }}/archive/v{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  '{{ hash_type }}': {{ hash_value }}
 
 build:
-  noarch: python
   number: 0
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  noarch: python
+  entry_points:
+    - metaquantome = metaquantome.cli:cli
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-deps
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
-    - python >=3
+    - python >=3.5
+    - pip
     - setuptools
   run:
-    - python >=3
-    - ete3 3.1.2
-    - goatools 0.7.*
-    - statsmodels 0.8.*
-    - biopython 1.73.*
-    - pandas 0.23.*
-    - numpy 1.15.*
-    - r-gplots 3.0.*
-    - r-ggplot2 3.0.*
-    - r-base 3.5.1
-    - r-jsonlite 1.5.*
-    - r-scico 1.1.0
-    - r-dplyr 0.8.*
-    - r-tidyr 0.8.*
-    - libiconv 1.15.*
+    - python >=3.5
+    - setuptools <82
+    - legacy-cgi 
+    - ete3
+    - goatools
+    - statsmodels
+    - biopython
+    - pandas
+    - numpy
+    - r-gplots
+    - r-ggplot2
+    - r-base
+    - r-jsonlite
+    - r-scico
+    - r-dplyr
+    - r-tidyr
+    - libiconv
 
 test:
   import:
     - metaquantome
-
   commands:
     - metaquantome -h
     - metaquantome expand -h
@@ -50,14 +56,15 @@ test:
     - metaquantome viz -h
 
 about:
-  home: 'https://github.com/galaxyproteomics/metaquantome'
-  license: Apache Software License
+  home: "https://github.com/galaxyproteomics/metaquantome"
+  license: "Apache-2.0"
   license_family: APACHE
-  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
-  summary: Quantitative metaproteomics analysis of taxonomy and function.
-  dev_url: 'https://github.com/galaxyproteomics/metaquantome'
+  license_file: LICENSE
+  summary: "Quantitative metaproteomics analysis of taxonomy and function."
+  dev_url: "https://github.com/galaxyproteomics/metaquantome"
+  doc_url: "https://galaxyproteomics.github.io/metaquantome_mcp_analysis/cli_tutorial/cli_tutorial.html"
 
 extra:
   container:
     # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
-    extended-base: true
+    extended-base: True
