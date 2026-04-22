@@ -17,7 +17,7 @@ esac
 
 cd src/rrikindp
 
-make LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
+make CXXFLAGS="${CXXFLAGS} "LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
 install -v -m 0755 RRIkinDP "${PREFIX}/bin"
 
 cd ../../
