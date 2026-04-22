@@ -19,6 +19,6 @@ ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-p
 
 cd src/rrikindp
 
-make CXXFLAGS+="-I${PREFIX}/include -L${PREFIX}/lib" -j"${CPU_COUNT}"
+make -j"${CPU_COUNT}"
 
 install -v -m 0755 RRIkinDP "${PREFIX}/bin"
