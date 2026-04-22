@@ -1,25 +1,32 @@
 {% set name = "read2tree" %}
-{% set version = "0.1.5" %}
-{% set checksum = "c1a7f4801c0abc4742ff03c9af4e8817e4e8c9aa9ced0735e2275df2c7dd8e3d" %}
+{% set version = "2.0.1" %}
+{% set sha256 = "e72790d4f392d51e19342a3010055fcfef4ec930dc40410c1119b6a1f33545f9" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/DessimozLab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: {{ checksum }}
+  sha256: {{ sha256 }}
 
 build:
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
   number: 0
+  noarch: python
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -f *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
     - python >=3.7
     - pip
+    - setuptools
   run:
+    - python >=3.7
     - numpy
     - biopython
     - lxml
@@ -39,6 +46,8 @@ requirements:
     - filelock
     - pyham
     - pysam
+    - minimap2
+
 test:
   imports:
     - read2tree
@@ -46,13 +55,15 @@ test:
     - read2tree -h 
 
 about:
-  home: https://github.com/DessimozLab/read2tree
-  summary: Building phylogenetic trees directly from sequencing reads
+  home: "https://github.com/DessimozLab/read2tree"
+  summary: "Building phylogenetic trees directly from sequencing reads."
   license: MIT
+  license_family: MIT
   license_file: LICENSE
+  dev_url: "https://github.com/DessimozLab/read2tree"
 
 extra:
   recipe-maintainers:
     - alpae
   identifiers:
-    - doi:10.1101/2022.04.18.488678
+    - doi:10.1038/s41587-023-01753-4

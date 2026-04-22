@@ -1,0 +1,50 @@
+{% set name = "daisyblast" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/daisyblast-{{ version }}.tar.gz
+  sha256: be3403b4f94c735630b6a1fe70377de956158d55460ae238e7f0a2c4ec3a3190
+
+build:
+  entry_points:
+    - daisyblast = daisyblast.cli:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools >=61.0
+    - pip
+  run:
+    - python >=3.8
+    - blast
+    - biopython
+    - matplotlib-base
+    - pycirclize
+
+test:
+  imports:
+    - daisyblast
+  commands:
+    - pip check
+    - daisyblast --help
+  requires:
+    - pip
+
+about:
+  home: "https://github.com/erinyoung/daisyblast"
+  summary: A Python tool to find, plot, and export synteny blocks from all-vs-all BLAST.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - erinyoung

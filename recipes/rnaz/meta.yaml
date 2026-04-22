@@ -1,24 +1,28 @@
 package:
   name: rnaz
-  version: '2.1.1'
+  version: "2.1.1"
 
 source:
   url: https://github.com/ViennaRNA/RNAz/archive/v2.1.1.tar.gz
   sha256: 926f1a86f767ccf56d7b09dfd0b02a8e8eb289832c240773ea32b6609178f998
   patches:
-    - "rnaz.patch"
+    - rnaz.patch
 
 build:
-  number: 7
-  skip: True # [osx]
+  number: 8
+  run_exports:
+    - {{ pin_subpackage('rnaz', max_pin="x") }}
 
-  
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - automake
+    - autoconf
+    - libtool
+    - pkg-config
+    - gnuconfig
   host:
     - perl
   run:
@@ -35,17 +39,28 @@ test:
     - rnazSort.pl -h |grep Usage
     - rnazBEDsort.pl -h |grep Usage
     - rnazBlast.pl -h |grep Usage
-    - rnazFilter.pl -h |grep Usage 
+    - rnazFilter.pl -h |grep Usage
     - rnazMAF2BED.pl -h |grep Usage
     - rnazSelectSeqs.pl -h |grep Usage
     - rnazWindow.pl -h |grep Usage
-      
+
 about:
-  home: https://www.tbi.univie.ac.at/~wash/RNAz/
-  license: MIT-like
+  home: "https://github.com/ViennaRNA/RNAz"
+  license: "MIT-like"
   license_file: COPYING
-  summary: predicting structural noncoding RNAs
+  summary: "Predicting structural noncoding RNAs."
+  dev_url: "https://github.com/ViennaRNA/RNAz"
+  doc_url: "https://www.tbi.univie.ac.at/software/RNAz"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:rnaz
+    - usegalaxy-eu:rnaz_cluster
+    - usegalaxy-eu:rnaz_randomize_aln
+    - usegalaxy-eu:rnaz_select_seqs
+    - usegalaxy-eu:rnaz_window
+    - usegalaxy-eu:rnaz_annotate
+    - usegalaxy-eu:rnaz

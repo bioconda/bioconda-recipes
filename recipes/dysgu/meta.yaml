@@ -1,9 +1,9 @@
 {% set name = "dysgu" %}
-{% set version = "1.8.1" %}
-{% set sha256hash = "fb29291e5139cbd179dd12281bb43890f96a69141aa5a166410bc5e5f9ddb100" %}
+{% set version = "1.8.8" %}
+{% set sha256hash = "c607ecad5ba3605c1ee75a338f71c695822c88dbf4113f5b0db975b0a8321588" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -12,20 +12,23 @@ source:
 
 build:
   number: 0
-  binary_relocation: false
+  binary_relocation: False
   entry_points:
     - dysgu = dysgu.main:cli
   run_exports:
-    - {{ pin_subpackage('dysgu', max_pin='x') }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - clangdev  # [osx]
   host:
     - python
+    - pip
     - cython >=0.29
+    - meson-python
     - htslib >=1.12
     - numpy >=1.18
     - lightgbm >=3.1
@@ -35,13 +38,14 @@ requirements:
     - openssl >=1.1
     - bzip2 >=1.0.8
     - xz >=5.2
-    - wheel
     - scipy >=1.7
     - pandas >=1.2
     - networkx >=2.4
     - scikit-learn >=0.22
+    - superintervals >=0.3.0
   run:
     - python
+    - cython >=0.29
     - numpy >=1.18
     - scipy >=1.7
     - pandas >=1.2
@@ -49,16 +53,11 @@ requirements:
     - scikit-learn >=0.22
     - sortedcontainers
     - lightgbm >=3.1
-    - zlib >=1.2
     - click >=8.0
-    - pysam >=0.22
-    - libcurl >=7.75
+    - pysam >=0.23
     - openssl >=1.1
-    - bzip2 >=1.0.8
-    - xz >=5.2
     - htslib >=1.12
-    - cython >=0.29
-    - superintervals >=0.2.10
+    - superintervals >=0.3.0
 
 test:
   requires:
@@ -71,19 +70,24 @@ test:
     - dysgu --help
 
 about:
-  home: https://github.com/kcleal/dysgu
-  summary: A collection of tools for calling structural variants using short or long reads
+  home: "https://github.com/kcleal/dysgu"
+  summary: "A collection of tools for calling structural variants using short or long reads."
   license: MIT
   license_family: MIT
-  license_file: LICENSE.md
-  dev_url: https://github.com/kcleal/dysgu
+  license_file: "LICENSE.md"
+  dev_url: "https://github.com/kcleal/dysgu"
+  doc_url: "https://github.com/kcleal/dysgu/blob/v{{ version }}/README.rst"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   container:
-    extended-base: true
+    extended-base: True
   recipe-maintainers:
     - kcleal
   skip-lints:
     - cython_must_be_in_host
+    - compiler_needs_stdlib_c
+  identifiers:
+    - doi:10.1093/nar/gkac039

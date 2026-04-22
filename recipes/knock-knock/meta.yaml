@@ -1,29 +1,31 @@
 {% set name = "knock-knock" %}
-{% set version = "0.4.2" %}
+{% set version = "0.8.2" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/knock_knock-{{ version }}.tar.gz"
-  sha256: "69128026055c1b8aa7e7b6e2947f108b21795a406687199e1689bd9815197d5f"
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/knock_knock-{{ version }}.tar.gz
+  sha256: bba7ac4b2979568a5a010c46380ca66f0c1a83e512f598cb6b0ccf3b057a9f50
 
 build:
-  noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage('knock-knock', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.7
+    - python >=3.12
+    - setuptools
   run:
-    - python >=3.7
+    - python >=3.12
     - bokeh >=2.4.2
-    - biopython >=1.80
+    - anndata
+    - biopython >=1.86
     - h5py >=3.1.0
     - ipywidgets >=7.1.2
     - matplotlib-base >=2.1.2
@@ -34,10 +36,13 @@ requirements:
     - pillow >=5.0.0
     - pysam >=0.14
     - pyyaml >=3.12
-    - hits >=0.4.0
+    - scipy >=1.16.2
+    - pytables
+    - hits >=0.5.1
     - tqdm >=4.31.1
+    - viennarna >=2.6.4
     - blast >=2.7.1
-    - minimap2 ==2.16
+    - minimap2 >=2.16
     - samtools >=1.9
     - star >=2.7.1
     - parallel >=20190522
@@ -58,6 +63,7 @@ about:
   license_family: GPL3
   license_file: LICENSE
   summary: "toolkit for analyzing CRISPR knock-in experiments"
+  dev_url: "https://github.com/jeffhussmann/knock-knock"
 
 extra:
   recipe-maintainers:

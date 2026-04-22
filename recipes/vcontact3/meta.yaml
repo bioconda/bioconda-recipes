@@ -1,58 +1,66 @@
 {% set name = "vcontact3" %}
-{% set version = "3.0.0.b74" %}
+{% set version = "3.1.6" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: "https://bitbucket.org/MAVERICLab/vcontact3/get/{{ version }}.tar.gz"
-  sha256: 73c7565279f6c14690f05040b9eb8dfda2e7c14148fb24609386aa81a5d39ad2
+  url: https://bitbucket.org/MAVERICLab/vcontact3/get/{{ version }}.tar.gz
+  sha256: 702cdccf95c417558447e41a7a1214419a98780c900c29962ead9a08379acf2c
 
 build:
   number: 0
   noarch: python
   run_exports:
     - {{ pin_subpackage('vcontact3', max_pin='x') }}
-  script: "{{ PYTHON }} -m pip install --no-deps ."
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+    - PIP_NO_BUILD_ISOLATION=1
+    - SETUPTOOLS_SCM_FALLBACK_VERSION={{ version }}
+  script: |
+    {{ PYTHON }} -m pip install . --no-deps --no-build-isolation
 
 requirements:
   host:
+    - python >=3.10,<3.12
     - pip
-    - python >=3.9,<3.11
+    - wheel
+    - setuptools-scm
+    - setuptools >=70
   run:
-    - python >=3.9,<3.11
-    - numpy >=1.23.5
+    - python >=3.10,<3.12
+    - pip
+    - numpy >=1.23.5,<2.0.0
     - pandas >=2.1.1
-    - scikit-learn >=1.2.2
+    - scikit-learn >=1.5.0
     - seaborn >=0.12.1
     - matplotlib-base >=3.7.1
     - scipy >=1.10.1
-    - jenkspy >=0.3.2
-    - networkx >=3.1
     - upsetplot >=0.7.0
     - tqdm >=4.65.0
     - ete3 >=3.1.3
-    - jinja2 >=3.0.3
+    - jinja2 >=3.1.6
     - scikit-bio >=0.5.8
     - pyrodigal >=2.3.0
     - pyrodigal-gv >=0.3.1
     - joblib >=1.2.0
-    - python-igraph >=0.10.4
     - psutil >=5.9.5
     - biopython >=1.81
     - swifter >=1.3.4
-    - pyarrow >=11.0.0
+    - pyarrow >=14.0.1
     - dill >=0.3.6
     - pytables >=3.8.0
     - markupsafe >=2.0.1
     - mmseqs2 >=15.6f452
-    - bioinfokit >=2.1.3
-    - networkit >=11.0
+    - fastcluster >=1.2.6,<1.3.0
+    - networkit <=11.0
 
 test:
   commands:
     - vcontact3 --help
+    - vcontact3 version
+    - python -c "import vcontact3; print('vcontact3.__version__ =', vcontact3.__version__); assert vcontact3.__version__ == '{{ version }}'"
 
 about:
   home: https://bitbucket.org/MAVERICLab/vcontact3

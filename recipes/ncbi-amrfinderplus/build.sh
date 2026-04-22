@@ -9,6 +9,7 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 # fix error because of gnu++17 features. Suggested by https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk
 CXXFLAGS="${CXXFLAGS} -O3 -D_LIBCPP_DISABLE_AVAILABILITY"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 # Get StxTyper source as well
 git submodule update --init
@@ -24,4 +25,3 @@ esac
 make CXX="$CXX $LDFLAGS" CPPFLAGS="$CXXFLAGS -I${PREFIX}/include" PREFIX="$PREFIX" DEFAULT_DB_DIR="${PREFIX}/share/amrfinderplus/data" -j"${CPU_COUNT}"
 
 make install INSTALL_DIR="$PREFIX/bin"
-

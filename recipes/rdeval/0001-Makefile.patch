@@ -1,34 +1,42 @@
 diff --git a/Makefile b/Makefile
-index 1682ec3..d9991ae 100644
+index 2fbed66..2b4436c 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -1,5 +1,5 @@
+@@ -1,5 +1,10 @@
 -CXX ?= g++
--INCLUDE_DIR += -I./include -I./gfalibs/include
 +CXX ?= $(CXX)
-+INCLUDE_DIR += -I./include -I./gfalibs/include -I$(PREFIX)/include
+ INCLUDE_DIR += -I./include -I./gfalibs/include
++
++ifneq ($(origin PREFIX), undefined)
++    INCLUDE_DIR += -I$(PREFIX)/include
++endif
++
  WARNINGS = -Wall -Wextra
  
  CXXFLAGS = -g -std=gnu++14 -O3 $(INCLUDE_DIR) $(WARNINGS) $(CFLAGS)
-@@ -12,7 +12,11 @@ SOURCE = src
+@@ -12,8 +17,14 @@ SOURCE = src
  INCLUDE = include
  BINDIR := $(BUILD)/.o
  
 -LDFLAGS += -pthread
+-LIBS = -lz -lcrypto -lhts
 +ifeq ($(origin LDFLAGS), undefined)
-+	LDFLAGS := -pthread
++    LDFLAGS := -pthread
 +else
-+	LDFLAGS := $(LDFLAGS) -pthread
++    LDFLAGS := $(LDFLAGS) -pthread
 +endif
- LIBS = -lz -lcrypto -lhts
++
++SSL_LIBS = -lcrypto
++LIBS = -lz $(SSL_LIBS) -lhts -lpthread
  
- OBJS := main input reads
-@@ -30,7 +34,7 @@ head: $(BINS) gfalibs | $(BUILD)
+ # Static linking settings
+ ifeq ($(UNAME_S),Linux)
+@@ -52,7 +63,7 @@ debug-pkg:
  all: head validate regenerate
  
  $(BINDIR)%: $(SOURCE)/%.cpp $(INCLUDE)/%.h | $(BINDIR)
 -	$(CXX) $(CXXFLAGS) $(EVP) -c $(SOURCE)/$(notdir $@).cpp -o $@
-+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) $(EVP) -c $(SOURCE)/$(notdir $@).cpp -o $@
++	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(EVP) -c $(SOURCE)/$(notdir $@).cpp -o $@ $(SSL_LIBS)
  
  .PHONY: gfalibs
  gfalibs:

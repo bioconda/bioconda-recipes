@@ -1,6 +1,6 @@
 {% set name = "metadmg" %}
-{% set version = "0.4" %}
-{% set sha256 = "072486bf4103c256bbc907d265d24993b3f5a90eca7dd3fced63f5a8f5840b64" %}
+{% set version = "0.4.4" %}
+{% set sha256 = "ab9416438fa12dc35c628b3bb7a7ff8051aa90c9c1fee577f9e4e8025a034d23" %}
 
 package:
   name: {{ name }}
@@ -11,49 +11,43 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
-  skip: false
+  number: 0
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - make
-    - {{ compiler('cxx') }}
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - pkg-config
   host:
-    - openssl
     - htslib
-    - zlib
-    - bzip2
-    - xz
     - gsl
-    - eigen
-  run:
-    - openssl
-    - htslib
     - zlib
-    - bzip2
-    - xz
-    - gsl
-    - eigen
-
 test:
   commands:
-    - metaDMG-cpp 2>&1 | grep 'metaDMG-cpp'
-    - metaDMG-cpp getdamage 2>&1 | grep 'getdamage'
-    - metaDMG-cpp lca 2>&1 | grep 'lca'
-    - compressbam 2>&1 | grep 'compressbam'
-
+    - metaDMG-cpp >/dev/null 2>&1
+    - metaDMG-cpp getdamage  >/dev/null 2>&1 
+    - metaDMG-cpp lca > /dev/null 2>&1
+    - compressbam  > /dev/null 2>&1 
+    - extract_reads > /dev/null 2>&1
 about:
-  home: https://github.com/metaDMG-dev/metaDMG-cpp
-  license: GPLv3, MIT
-  #license_file: LICENSE
-  summary: "metaDMG-cpp: fast and efficient method for estimating mutation and damage rates in ancient DNA data"
+  home: "https://github.com/metaDMG-dev/metaDMG-cpp"
+  license: "GPL-3.0-or-later, MIT"
+  license_family: "GPL3"
+  license_file: "{{ RECIPE_DIR }}/gpl-3.0.txt"
+  summary: "metaDMG-cpp: fast and efficient method for estimating mutation and damage rates in ancient DNA data."
+  dev_url: "https://github.com/metaDMG-dev/metaDMG-cpp"
+  doc_url: "https://github.com/metaDMG-dev/metaDMG-cpp/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - ANGSD
-    - rahenriksen
+    - fgvieira
   identifiers:
     - doi:10.1101/2022.12.06.519264

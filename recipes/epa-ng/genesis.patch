@@ -1,0 +1,30 @@
+--- a/libs/genesis/lib/genesis/utils/core/options.cpp	2025-04-10 08:38:47.759032821 +0000
++++ b/libs/genesis/lib/genesis/utils/core/options.cpp	2025-04-10 08:40:29.708483722 +0000
+@@ -40,7 +40,9 @@
+ #   include <io.h>
+ #   include <windows.h>
+ #else
++#ifndef __aarch64__
+ #   include <cpuid.h>
++#endif
+ #   include <stdio.h>
+ #   include <sys/ioctl.h>
+ #   include <unistd.h>
+@@ -129,6 +131,9 @@
+ 
+ bool Options::hyperthreads_enabled() const
+ {
++#ifdef __aarch64__
++return false;
++#else
+     // Get CPU info.
+     int32_t info[4];
+     #ifdef _WIN32
+@@ -138,6 +143,7 @@
+     #endif
+ 
+     return (bool) (info[3] & (0x1 << 28));
++#endif
+ }
+ 
+ unsigned int Options::guess_number_of_threads( bool use_openmp ) const

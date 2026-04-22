@@ -5,7 +5,7 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/bcgsc/transabyss/releases/download/{{ version }}/transabyss-{{ version }}.zip
+  url: https://github.com/BirolLab/transabyss/releases/download/{{ version }}/transabyss-{{ version }}.zip
   sha256: 542779af2d1232ca872a57b922cfd32e1c6e9e7e0b5fae56ef2e7682dfdf6040
   patches:
     - transabyss.patch
@@ -13,12 +13,15 @@ source:
 
 build:
   noarch: python
-  number: 7
+  number: 8
+  run_exports:
+    - {{ pin_subpackage("transabyss", max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python <=3.6 # Python 3.6 mentioned as requirement in README
+    - setuptools
   run:
     - abyss 2.0.*
     # This recipe pins python-igraph to an old version for which builds lack to
@@ -27,7 +30,8 @@ requirements:
     - python-igraph 0.7.*
     - samtools
     - blat
-    - python
+    - python <=3.6
+    - setuptools
 
 test:
   commands:
@@ -35,7 +39,7 @@ test:
     - transabyss-merge --help
 
 about:
-  home: https://github.com/bcgsc/transabyss
-  license: GPL-3.0
+  home: https://github.com/BirolLab/transabyss
+  license: GPL-3.0-or-later
   license_file: LICENSE
   summary: 'de novo assembly of RNA-Seq data using ABySS'

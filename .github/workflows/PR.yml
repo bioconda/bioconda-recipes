@@ -76,6 +76,27 @@ jobs:
       max-parallel: 13
     needs: lint
     steps:
+      - name: Free space
+        # HACK fixes 'No space left on device'
+        # see:
+        # - https://github.com/orgs/community/discussions/25678#discussioncomment-5242449
+        # - https://github.com/galaxyproteomics/tools-galaxyp/blob/master/.github/workflows/pr.yaml#L293
+        # NOTE we don't use those, bioconda-utils run everything inside conda environment, anyway
+        run: |
+          sudo rm -rf \
+            /opt/hostedtoolcache \
+            /opt/google/chrome \
+            /opt/microsoft/msedge \
+            /opt/microsoft/powershell \
+            /opt/pipx \
+            /usr/local/julia* \
+            /usr/local/lib/android \
+            /usr/local/lib/node_modules \
+            /usr/local/share/chromium \
+            /usr/local/share/powershell \
+            /usr/share/dotnet \
+            /usr/share/swift
+
       - uses: actions/checkout@v4
 
       - name: Fetch commits through the merge base
@@ -153,7 +174,7 @@ jobs:
               xargs -n1 -P4 bash -c '
                 test -n "${1+x}" || exit 0
                 echo "Start compressing docker image ${1} ..."
-                docker save "${1}" | gzip -c > "${1##*/}.tar.gz"
+                docker save "${1}" | pigz -1 -c > "${1##*/}.tar.gz"
                 echo "Finished compressing docker image ${1} ."
                 ' --
             # There's no : allowed in artifact names, replace it with ---
@@ -162,16 +183,17 @@ jobs:
           ) || true
 
       - name: Archive packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: linux-packages
           path: |
             /tmp/artifacts
+          compression-level: 0
 
 
   build-osx-64:
     name: OSX-64 Tests
-    runs-on: macos-13
+    runs-on: macos-15-intel
     strategy:
       fail-fast: true
       max-parallel: 4
@@ -253,18 +275,19 @@ jobs:
               rm -rf /tmp/artifacts
               mkdir -p /tmp/artifacts/packages
               cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
-              find -name .cache | xargs rm -rf || true
+              find . -name .cache | xargs rm -rf || true
               for n in index.html channeldata.json linux-64 osx-64 noarch; do
                 cp -rv $n /tmp/artifacts/packages || true
               done
               ) || true
 
       - name: Archive packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: osx-packages
           path: |
             /tmp/artifacts
+          compression-level: 0
 
   # Disabled due to concurrency limits on GHA for OSX. osx-arm64 builds are on CircleCI.
   # build_and_test-osx-arm64:
@@ -341,7 +364,7 @@ jobs:
 
   #     - name: Archive packages
   #       if: steps.additional_platforms.outputs.skip_build != 'true'
-  #       uses: actions/upload-artifact@v4
+  #       uses: actions/upload-artifact@v6
   #       with:
   #         name: osx-arm64-packages
   #         path: |
