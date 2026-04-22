@@ -34,5 +34,3 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	"${CONFIG_ARGS}"
 
 cmake --build build --target install -j "${CPU_COUNT}"
-
-cp -f include/*.hh "${PREFIX}/include/"
