@@ -21,6 +21,9 @@ case $(uname -m) in
 	;;
 esac
 
+ln -s ${CC} $BUILD_PREFIX/bin/gcc
+ln -s ${CXX} $BUILD_PREFIX/bin/g++
+
 sed -i.bak 's|-C "$homeDir/cpp/"|-C "$homeDir/cpp/" CXX=CXX DEBUG=CXXFLAGS|' configureHomer.pl
 sed -i.bak "s|CXX=CXX DEBUG=CXXFLAGS|CXX=$CXX DEBUG=$CXXFLAGS|" configureHomer.pl
 rm -f *.bak
