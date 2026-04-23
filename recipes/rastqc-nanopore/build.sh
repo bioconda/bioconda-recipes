@@ -17,7 +17,9 @@ export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
 # direct VFD. Remove this workaround once upstream migrates off hdf5 0.8.
 if [ -f "${PREFIX}/include/H5pubconf.h" ]; then
     chmod u+w "${PREFIX}/include/H5pubconf.h"
-    sed -i '/^#define H5_HAVE_DIRECT[[:space:]]/d' "${PREFIX}/include/H5pubconf.h"
+    # `-i.bak` form works with both GNU sed (Linux) and BSD sed (macOS).
+    sed -i.bak '/^#define H5_HAVE_DIRECT[[:space:]]/d' "${PREFIX}/include/H5pubconf.h"
+    rm -f "${PREFIX}/include/H5pubconf.h.bak"
 fi
 
 cargo install --no-track --locked --root "${PREFIX}" --path . --bin rastqc \
