@@ -1,5 +1,5 @@
-{% set name = "halla" %}
-{% set version = "0.8.17" %}
+{% set name = "HAllA" %}
+{% set version = "0.8.40" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,36 +7,34 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: b20f018a2ae91a45169c563b9032f964347144949cfbe465f2545dfe25cec8e1
+  sha256: eabf0d5e73e41801162ca3ac73ff0bb3cf374765a9e56fae0dfb94dc06d5a334
 
 build:
-  number: 1
-  entry_points:
-    - halla = halla.halla:main
-    - hallagram = halla.hallagram:main
-    - halladata = halla.synthetic_data:main
-    - hallascatter = halla.hallascatter:main
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vv"
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('halla', max_pin="x.x") }}
 
 requirements:
   host:
+    - python >=3.8
     - pip
-    - python
-    - jenkspy >=0.1.4
-    - matplotlib >=1.5.1
-    - minepy >=1.0.0
-    - numpy >=1.9.2
-    - pandas >=0.18.1
-    - scikit-learn >=0.14.1
-    - scipy >=0.17.0
+    - setuptools
   run:
-    - python
-    - jenkspy >=0.1.4
-    - matplotlib >=1.5.1
-    - minepy >=1.0.0
-    - numpy >=1.9.2
-    - pandas >=0.18.1
-    - scikit-learn >=0.14.1
-    - scipy >=0.17.0
+    - jenkspy >=0.1.5
+    - matplotlib-base >=3.5.3
+    - numpy >=1.19.0
+    - pandas >=1.0.5
+    - pyyaml >=5.4
+    - rpy2 >=3.3.5
+    - scikit-learn >=0.23.1
+    - scipy >=1.5.1
+    - seaborn >=0.10.1
+    - statsmodels >=0.11.1
+    - tqdm >=4.50.2
+    - r-eva >=0.2.6
+    - r-xicor >=0.3.3
 
 test:
   imports:
@@ -45,7 +43,7 @@ test:
     - halla --help
     - hallagram --help
     - halladata --help
-    - hallascatter --help
+    - hallagnostic --help
 
 about:
   home: http://huttenhower.sph.harvard.edu/halla
@@ -53,7 +51,3 @@ about:
   license_family: MIT
   license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE.txt' 
   summary: "HAllA: Hierarchically All-against-All Association Testing."
-
-extra:
-  skip-lints:
-    - should_be_noarch_python

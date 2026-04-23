@@ -1,13 +1,18 @@
-{% set version = "1.14.0" %}
+{% set version = "1.18.0" %}
 {% set name = "ptairMS" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: This package implements a suite of methods to preprocess data from PTR-TOF-MS instruments (HDF5 format) and generates the 'sample by features' table of peak intensities in addition to the sample and feature metadata (as a singl<e ExpressionSet object for subsequent statistical analysis). This package also permit usefull tools for cohorts management as analyzing data progressively, visualization tools and quality control. The steps include calibration, expiration detection, peak detection and quantification, feature alignment, missing value imputation and feature annotation. Applications to exhaled air and cell culture in headspace are described in the vignettes and examples. This package was used for data analysis of Gassin Delyle study on adults undergoing invasive mechanical ventilation in the intensive care unit due to severe COVID-19 or non-COVID-19 acute respiratory distress syndrome (ARDS), and permit to identfy four potentiel biomarquers of the infection.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL-3
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-  summary: Pre-processing PTR-TOF-MS Data
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 0bf4823122363eac409e5a7a9f8c7671
 
 build:
   number: 0
@@ -15,10 +20,6 @@ build:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-ptairms", max_pin="x.x") }}'
-
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
 
 # Suggests: knitr, rmarkdown, BiocStyle, testthat (>= 2.1.0), ptairData, ropls
 requirements:
@@ -29,9 +30,9 @@ requirements:
     - make
 
   host:
-    - bioconductor-biobase >=2.66.0,<2.67.0
-    - bioconductor-msnbase >=2.32.0,<2.33.0
-    - bioconductor-rhdf5 >=2.50.0,<2.51.0
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-msnbase >=2.36.0,<2.37.0
+    - bioconductor-rhdf5 >=2.54.0,<2.55.0
     - r-base
     - r-bit64
     - r-chron
@@ -54,11 +55,13 @@ requirements:
     - r-signal
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
 
   run:
-    - bioconductor-biobase >=2.66.0,<2.67.0
-    - bioconductor-msnbase >=2.32.0,<2.33.0
-    - bioconductor-rhdf5 >=2.50.0,<2.51.0
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-msnbase >=2.36.0,<2.37.0
+    - bioconductor-rhdf5 >=2.54.0,<2.55.0
     - r-base
     - r-bit64
     - r-chron
@@ -80,15 +83,14 @@ requirements:
     - r-shinyscreenshot
     - r-signal
 
-source:
-  md5: 2197daf83bbc4b82563b65efaa58c890
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  summary: Pre-processing PTR-TOF-MS Data
+  description: This package implements a suite of methods to preprocess data from PTR-TOF-MS instruments (HDF5 format) and generates the 'sample by features' table of peak intensities in addition to the sample and feature metadata (as a singl<e ExpressionSet object for subsequent statistical analysis). This package also permit usefull tools for cohorts management as analyzing data progressively, visualization tools and quality control. The steps include calibration, expiration detection, peak detection and quantification, feature alignment, missing value imputation and feature annotation. Applications to exhaled air and cell culture in headspace are described in the vignettes and examples. This package was used for data analysis of Gassin Delyle study on adults undergoing invasive mechanical ventilation in the intensive care unit due to severe COVID-19 or non-COVID-19 acute respiratory distress syndrome (ARDS), and permit to identfy four potentiel biomarquers of the infection.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 

@@ -1,0 +1,50 @@
+{% set name = "viral_usher" %}
+{% set version = "0.10.3" %}
+{% set sha256 = "75139a3e028ea7ba4782d62403eac6c392a950445a9e30fa00ef2e583bf1f94e" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://files.pythonhosted.org/packages/b6/f3/2c2f0e92ef1806077fc7ad2e2133d43c98d62904062cf6e45e9171eb1f17/viral_usher-0.10.3.tar.gz"
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - viral_usher = viral_usher.cli:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage('viral_usher', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools
+  run:
+    - python >=3.11
+    - requests
+    - biopython
+    - docker-py
+
+test:
+  imports:
+    - viral_usher
+  commands:
+    - viral_usher --help
+
+about:
+  home: "https://github.com/AngieHinrichs/viral_usher"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Easily configure and run a pipeline to build a tree of virus genomes using UShER"
+  doc_url: "https://github.com/AngieHinrichs/viral_usher"
+  dev_url: "https://github.com/AngieHinrichs/viral_usher"
+
+extra:
+  recipe-maintainers:
+    - AngieHinrichs
