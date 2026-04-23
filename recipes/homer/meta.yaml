@@ -7,16 +7,15 @@
 
 package:
   name: homer
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
-  - url: http://homer.ucsd.edu/homer/configureHomer.pl
-    sha256: ccdaa3004a0e0df0882634671d4a1acc88364761e0e6c7ea329ebbf1eb729537
+  url: http://homer.ucsd.edu/homer/configureHomer.pl
+  sha256: ccdaa3004a0e0df0882634671d4a1acc88364761e0e6c7ea329ebbf1eb729537
 
 build:
-  number: 0
+  number: 1
   # Ships pre-built binaries that install_name_tool isn't able to fix.
-  skip: True  # [osx]
   run_exports:
     - {{ pin_subpackage('homer', max_pin="x") }}
 
@@ -24,9 +23,11 @@ build:
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - make
+    - libtool
   host:
-    - 'perl =5.26'
+    - perl
     - wget
     - unzip
     - zip
@@ -44,13 +45,23 @@ test:
     - makeTagDirectory > /dev/null 2>&1
 
 about:
-  home: 'http://homer.ucsd.edu/homer/index.html'
-  license: "GNU General Public v3 (GPLv3)"
+  home: "http://homer.ucsd.edu/homer/index.html"
+  license: "GPL-3.0-or-later"
   license_family: "GPL3"
-  license_file: "LICENSE.txt"
-  summary: 'Software for motif discovery and next generation sequencing analysis'
-  maintainer: BioNinja, cokelaer, simonvh, r78v10a07
+  license_file: "COPYING"
+  summary: "Software for motif discovery and next generation sequencing analysis."
+  doc_url: "http://homer.ucsd.edu/homer/index.html"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1016/j.molcel.2010.05.004
+    - biotools:homer
+    - usegalaxy-eu:homer_gtf_to_annotations
+  recipe-maintainers:
+    - BioNinja
+    - cokelaer
+    - simonvh
+    - r78v10a07
