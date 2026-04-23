@@ -49,4 +49,6 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 
 cmake --build build --clean-first -j "${CPU_COUNT}"
 
+"${STRIP}" build/XXmotif
+
 install -v -m 0755 build/XXmotif "$PREFIX/bin"
