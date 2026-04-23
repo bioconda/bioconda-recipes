@@ -15,6 +15,14 @@ case $(uname -m) in
 	;;
 esac
 
+case $(uname -s) in
+    Linux)
+	sed -i.bak "s|, 'omp'||" setup.py ;;
+esac
+
+sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+rm -f *.bak
+
 cd src/rrikindp
 
 make CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
