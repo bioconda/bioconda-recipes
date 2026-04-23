@@ -21,7 +21,8 @@ case $(uname -m) in
 	;;
 esac
 
-sed -i.bak 's|-C "$homeDir/cpp/"|-C "$homeDir/cpp/" CXX="$CXX" DEBUG="${CXXFLAGS}"|' configureHomer.pl
+sed -i.bak 's|-C "$homeDir/cpp/"|-C "$homeDir/cpp/" CXX=CXX DEBUG=CXXFLAGS|' configureHomer.pl
+sed -i.bak "s|CXX=CXX DEBUG=CXXFLAGS|CXX=$CXX DEBUG=$CXXFLAGS|" configureHomer.pl
 rm -f *.bak
 
 chmod +rwx configureHomer.pl
