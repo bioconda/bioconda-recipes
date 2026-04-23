@@ -3,7 +3,7 @@
 {% set sha256 = "9b78c2fe9b16f231d7f8402acd2b9c617f0264215b63a0b7056eeff6fdcd2a9f" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -14,34 +14,40 @@ source:
     - patches/0015-update-cmakelist.txt-for-v3.6.patch
 
 build:
-  number: 0
+  number: 1
+  skip: true # [osx]
   run_exports:
     - {{ pin_subpackage('regenie', max_pin="x") }}
-    
+
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
-    - binutils >=2.33.1  # [linux]
+    - binutils >=2.33.1              # [linux]
+    - pkg-config
     - cmake >=3.13
     - make
-    - llvm-openmp  # [osx]
-    - libgomp  # [linux]
   host:
     - bgenix >=1.1.7
     - boost-cpp 1.74
-    - liblapack * *mkl
-    - mkl >=2020.4
-    - mkl-include
+    - liblapack * *mkl               # [x86_64]
+    - liblapack >=3.8.0              # [linux and aarch64]
+    - mkl >=2020.4                   # [x86_64]
+    - mkl-include                    # [x86_64]
+    - llvm-openmp                    # [osx]
+    - libgomp                        # [linux]
     - zlib
     - zstd
+    - liblapack * *openblas  # [osx]  
+    - openblas >=0.3.20      # [osx] 
   run:
     - boost-cpp 1.74
-    - mkl >=2020.4
+    - mkl >=2020.4                   # [x86_64]
     - sqlite
-    - zlib
-    - zstd
+    - llvm-openmp                    # [osx]
+    - libgomp                        # [linux]
+    - openblas >=0.3.20      # [osx]
 
 test:
   commands:
@@ -50,15 +56,17 @@ test:
     - regenie --version
 
 about:
-  home: https://rgcgithub.github.io/regenie/
+  home: "https://rgcgithub.github.io/regenie"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: 'Regenie is a C++ program for whole genome regression modelling of large genome-wide association studies (GWAS).'
-  dev_url: https://github.com/rgcgithub/regenie
-  doc_url: https://rgcgithub.github.io/regenie/options/
+  summary: "Regenie is a C++ program for whole genome regression modelling of large genome-wide association studies (GWAS)."
+  dev_url: "https://github.com/rgcgithub/regenie"
+  doc_url: "https://rgcgithub.github.io/regenie/options"
 
 extra:
   recipe-maintainers:
     - matuskosut
     - joellembatchou
+  additional-platforms:
+    - linux-aarch64
