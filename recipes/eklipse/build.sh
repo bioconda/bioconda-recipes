@@ -3,6 +3,8 @@
 sed -i 's/from collections import namedtuple, Iterable/from collections import namedtuple\nfrom collections.abc import Iterable/' tabulate.py
 sed -i 's/from itertools import zip_longest as izip_longest/from itertools import zip_longest/' tabulate.py
 
+python3 ${RECIPE_DIR}/fix_py310.py
+
 chmod +x eKLIPse.py
 sed -i '1s|.*|#!/usr/bin/env python\n&|' eKLIPse.py
 mkdir -p ${PREFIX}/bin

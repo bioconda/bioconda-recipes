@@ -8,6 +8,15 @@
  from eKLIPse_fct import *
  
  
+@@ -91,7 +90,7 @@ def circosConf(titleBam,dicoInit,lstError):
+         CIRCOS1 = open(pathSCblastCircos1,'w')
+         CIRCOS2 = open(pathSCblastCircos2,'w')
+         CIRCOS3 = open(pathSCblastCircos3,'w')        
+-        for key in dicoDel.keys():
++        for key in list(dicoDel.keys()):
+             start = int(split(key,"-")[0])
+             end = int(split(key,"-")[1])
+             meanFreq = (dicoDel[key]['freqF']+dicoDel[key]['freqR'])/2.0
 @@ -124,7 +123,7 @@ def circosConf(titleBam,dicoInit,lstError):
  
          #***** CREATE Main Circos Configuration File *****#
@@ -27,6 +36,19 @@
  
  
  #=================================================================================================================================================#
+@@ -50,10 +49,10 @@ def load_json(path):
+ def byteify(input):
+     if isinstance(input, dict):
+         return {byteify(key): byteify(value)
+-                for key, value in input.iteritems()}
++                for key, value in list(input.items())}
+     elif isinstance(input, list):
+         return [byteify(element) for element in input]
+-    elif isinstance(input, unicode):
++    elif isinstance(input, str):
+         return input.encode('utf-8')
+     else:
+         return input
 --- a/eKLIPse_init.py
 +++ b/eKLIPse_init.py
 @@ -68,12 +68,12 @@ def arg_manager(argv,pathRootDir,boolColor,boolQT,spinner):
@@ -63,6 +85,15 @@
                          except: name = feature.qualifiers['gene'][0]
                          dicoInit["dicoGbk"]['lstGene'].append([name,int(feature.location.start)+1,int(feature.location.end),geneType])
          # Results Directory
+@@ -221,7 +221,7 @@ def arg_manager(argv,pathRootDir,boolColor,boolQT,spinner):
+     else:
+         # Copy circos conf files
+         headerBool = False
+-        for titleBam in dicoInit["dicoBam"].keys():
++        for titleBam in list(dicoInit["dicoBam"].keys()):
+             # Test bai
+             if not os.path.isfile(dicoInit['dicoBam'][titleBam]['path']+".bai"):
+                 cmd_index = dicoInit['pathSamtools']+" index "+dicoInit['dicoBam'][titleBam]['path']
 @@ -231,9 +231,9 @@ def arg_manager(argv,pathRootDir,boolColor,boolQT,spinner):
              if dicoInit['windows']==False: cmd_idxstats = dicoInit['pathSamtools']+" idxstats "+dicoInit['dicoBam'][titleBam]['path']+" 1>"+path_idxstats+" 2>/dev/null"
              else: cmd_idxstats = dicoInit['pathSamtools']+" idxstats "+dicoInit['dicoBam'][titleBam]['path']+" 1>"+path_idxstats+" 2> nul"
@@ -75,6 +106,15 @@
                  if len(split_line)>1:
                      refName = split_line[0]
                      refSize = int(split_line[1])
+@@ -302,7 +302,7 @@ def manual_display(lst_error,dicoInit,spinner):
+ #=================================================================================================================================================#
+ 
+ def config_display(dicoInit):
+-    print "\n"
++    print("\n")
+     format_time = time.strftime('%d/%m/%y %H:%M:%S',time.localtime(dicoInit['startTime']))
+     printcolor("    Start time           : ","bold white",dicoInit['boolColor'])
+     printcolor(format_time+"\n","white",dicoInit['boolColor']) ; time.sleep(0.1)
 --- a/eKLIPse_sc.py
 +++ b/eKLIPse_sc.py
 @@ -2,7 +2,6 @@ import json
@@ -85,6 +125,15 @@
  from eKLIPse_fct import *
  
  
+@@ -36,7 +35,7 @@ def Read_alignment(titleBam,dicoInit,lstError):
+                         except: pass # None case
+                     # Count softclipped (right soft-clipping)
+                     length, operation = alignment.sam_cigar_list[len(alignment.sam_cigar_list)-1]
+-                    if alignment.sam_qname=="MG1U0:00377:02144": print 
++                    if alignment.sam_qname=="MG1U0:00377:02144": print() 
+                     if operation=="S":
+                         # dicoBam[lastMappedPos]['nb_sc_reads_F']+=1
+                         # Write to Fasta (apply filter) / not consider 'N'
 @@ -91,13 +90,13 @@ def SC_blast(titleBam,dicoInit,lstError):
              os.system(cmd)
              #***** Read Blast output file *****#
@@ -102,6 +151,39 @@
                      SCposRead = int(splitQread[0])
                      SCmappedpart = int(splitQread[1])
                      readOrient = splitQread[2]
+@@ -158,12 +157,12 @@ def deletionPrediction(titleBam,dicoInit,lstError):
+         #**** SHIFT Deletions *****#
+         # Block one position and apply shift
+         dico_shift_del = {}
+-        for delName in dicoDel.keys():
++        for delName in list(dicoDel.keys()):
+             start = int(split(delName,"-")[0])
+             end = int(split(delName,"-")[1])
+             dico_index = len(dico_shift_del)
+             dico_shift_del[dico_index] = [delName]
+-            for delName2 in dicoDel.keys():
++            for delName2 in list(dicoDel.keys()):
+                 if delName!=delName2:
+                     start2 = int(split(delName2,"-")[0])
+                     end2 = int(split(delName2,"-")[1])
+@@ -171,14 +170,14 @@ def deletionPrediction(titleBam,dicoInit,lstError):
+                     if (start==start2 and (abs(end-end2)<=dicoInit["delShift"])) or (end==end2 and (abs(start-start2)<=dicoInit["delShift"])):
+                         dico_shift_del[dico_index].append(delName2)
+         # Merge set
+-        for key in dico_shift_del.keys():
+-            for key2 in dico_shift_del.keys():
++        for key in list(dico_shift_del.keys()):
++            for key2 in list(dico_shift_del.keys()):
+                 if key!=key2:
+                     if len(set(dico_shift_del[key]).intersection(set(dico_shift_del[key2])))>0:
+                         dico_shift_del[key] = set(dico_shift_del[key]).union(set(dico_shift_del[key2]))
+                         dico_shift_del[key2] = set()
+         # Merge to one maximal blast position
+-        for key in dico_shift_del.keys():
++        for key in list(dico_shift_del.keys()):
+             if len(dico_shift_del[key])>0:
+                 nbBlast_F = 0 ; nbBlast_R = 0
+                 lst_start_sc_fasta = [] ; lst_end_sc_fasta = []
 @@ -188,8 +187,8 @@ def deletionPrediction(titleBam,dicoInit,lstError):
                  initial_SCposRead_F = [] ; initial_SCposRead_R = []
                  # Browse deletion
@@ -113,7 +195,7 @@
                      try: delnbblastF = dicoDel[delName]['scrF']['nbBlast']
                      except: delnbblastF = 0
                      try: delnbblastR = dicoDel[delName]['scrR']['nbBlast']
-@@ -214,8 +213,8 @@ def deletionPrediction(titleBam,dicoInit,lstError):
+@@ -214,14 +213,14 @@ def deletionPrediction(titleBam,dicoInit,lstError):
                      # Del entry
                      try : del(dicoDel[delName])
                      except: pass
@@ -124,83 +206,188 @@
                  dicoDel[maxBlast_start+"-"+maxBlast_end] = { 'scrF':{'nbBlast':nbBlast_F,'limit':limit_max_start,'initial_SCposRead':initial_SCposRead_F},\
                                                               'scrR':{'nbBlast':nbBlast_R,'limit':limit_max_end,'initial_SCposRead':initial_SCposRead_R},\
                                                               'freqF':0.0, 'freqR':0.0 }
+ 
+         #***** COMPUTE Frequencies *****#
+-        for delName in dicoDel.keys():
++        for delName in list(dicoDel.keys()):
+             # FILTERs 
+             if dicoInit["bilateral"]==True and (dicoDel[delName]['scrF']['nbBlast']<dicoInit["minblast"] or dicoDel[delName]['scrR']['nbBlast']<dicoInit["minblast"]): del(dicoDel[delName])
+             elif dicoInit["bilateral"]==False and dicoDel[delName]['scrF']['nbBlast']<dicoInit["minblast"] and dicoDel[delName]['scrR']['nbBlast']<dicoInit["minblast"]: del(dicoDel[delName])
+@@ -266,11 +265,11 @@ def deletionPrediction(titleBam,dicoInit,lstError):
+ 
+         #***** CUMULATIVE Frequency *****#
+         dicoCumulFreq = {}
+-        for delPos in dicoDel.keys():
++        for delPos in list(dicoDel.keys()):
+             start = int(split(delPos,"-")[0])
+             end = int(split(delPos,"-")[1])
+-            if start<end: posRange = range(start,end+1,1)
+-            else: posRange = range(start,dicoInit["dicoGbk"]['refLength']+1,1) ; posRange.extend(range(1,end+1,1))
++            if start<end: posRange = list(range(start,end+1,1))
++            else: posRange = list(range(start,dicoInit["dicoGbk"]['refLength']+1,1)) ; posRange.extend(list(range(1,end+1,1)))
+             for pos in posRange:
+                 if pos in dicoCumulFreq: dicoCumulFreq[pos]+=(dicoDel[delPos]['freqF']+dicoDel[delPos]['freqR'])/200.0
+                 else: dicoCumulFreq[pos] = (dicoDel[delPos]['freqF']+dicoDel[delPos]['freqR'])/200.0
+@@ -301,12 +300,12 @@ def create_results_table(dicoInit,lstError):
+     headerDel = "\"Title\";\"5' breakpoint\";\"3' breakpoint\";\"Freq\";\"Freq For\";\"Freq Rev\";\"5' Blast\";\"3' Blast\";\"5' Depth\";\"3' Depth\";\"Repetition\"\n"
+     OUTDEL.write(headerDel)
+     headerGenes = "\"Gene\";\"Start\";\"End\";\"Type\""
+-    for titleBam in dicoInit["dicoBam"].keys(): headerGenes = headerGenes+",\""+titleBam+"\""
++    for titleBam in list(dicoInit["dicoBam"].keys()): headerGenes = headerGenes+",\""+titleBam+"\""
+     OUTGENES.write(headerGenes+"\n")
+ 
+     #***** BROWSE input alignments *****#
+     dico_max_gene = {}
+-    for titleBam in dicoInit["dicoBam"].keys():
++    for titleBam in list(dicoInit["dicoBam"].keys()):
+         # Load json results files
+         dicoDel = load_json(os.path.join(dicoInit['pathTmpDir'],titleBam+"_BLAST.json"))
+         dicoCumulFreq = load_json(os.path.join(dicoInit['pathTmpDir'],titleBam+"_cumul.json"))
+@@ -314,15 +313,15 @@ def create_results_table(dicoInit,lstError):
+         #***** DELETIONS Results File *****#
+         # Sort deletion by deletion start and stop
+         dicoSortDel = {}
+-        for deletion in dicoDel.keys():
++        for deletion in list(dicoDel.keys()):
+             start = int(split(deletion,"-")[0])
+             end = int(split(deletion,"-")[1])
+             if start in dicoSortDel: dicoSortDel[start][end] = deletion
+             else: dicoSortDel[start] = { end:deletion }
+-        lst_start = dicoSortDel.keys() ; lst_start.sort()
++        lst_start = list(dicoSortDel.keys()) ; lst_start.sort()
+         # Browse sorted deletions
+         for start in lst_start:
+-            lst_end = dicoSortDel[start].keys() ; lst_end.sort()
++            lst_end = list(dicoSortDel[start].keys()) ; lst_end.sort()
+             for end in lst_end:
+                 # Search repetition (right)
+                 repetition_right = "" ; cpt_right = 0
+@@ -353,13 +352,13 @@ def create_results_table(dicoInit,lstError):
+         for features in dicoInit["dicoGbk"]['lstGene']:
+             try: dico_max_gene[features[0]][titleBam] = 0.0
+             except:  dico_max_gene[features[0]] = { titleBam:0.0 }
+-            for pos in dicoCumulFreq.keys():
++            for pos in list(dicoCumulFreq.keys()):
+                 if int(pos)>=features[1] and int(pos)<=features[2]: dico_max_gene[features[0]][titleBam] = max(dico_max_gene[features[0]][titleBam],dicoCumulFreq[pos])
+             
+     #***** GENES Results File *****#
+     for features in dicoInit["dicoGbk"]['lstGene']:
+         ToWrite = "\""+features[0]+"\";\""+str(features[1])+"\";\""+str(features[2])+"\";\""+features[3]+"\""
+-        for titleBam in dicoInit["dicoBam"].keys():
++        for titleBam in list(dicoInit["dicoBam"].keys()):
+             ToWrite = ToWrite+";\""+str(dico_max_gene[features[0]][titleBam]*100.0).replace(".",",")+"\""
+         OUTGENES.write(ToWrite+"\n")
+ 
+--- a/eKLIPse_threading.py
++++ b/eKLIPse_threading.py
+@@ -14,7 +14,7 @@ def launch_threads_cli(dicoInit,description,target_fct,thread_nameformat):
+     lstThreadcopy = []
+     PrevNbFinishThread = 0
+     # One thread per BAM
+-    for titleBam in dicoInit["dicoBam"].keys():
++    for titleBam in list(dicoInit["dicoBam"].keys()):
+         if target_fct=="Alignment_downsampling":
+             if dicoInit['dicoBam'][titleBam]['nbReads']>dicoInit['downCov']: lstThread.append(threading.Thread(target=Alignment_downsampling, args=(titleBam,dicoInit,lstError), name=thread_nameformat+titleBam))
+             else: dicoInit['dicoBam'][titleBam]['path_downsampling'] = dicoInit['dicoBam'][titleBam]['path']
+@@ -56,7 +56,7 @@ def launch_threads_qt(dicoInit,description,target_fct,thread_nameformat,qtproces
+     lst_progress = []
+     PrevNbFinishThread = 0
+     # One thread per BAM
+-    for titleBam in dicoInit["dicoBam"].keys():
++    for titleBam in list(dicoInit["dicoBam"].keys()):
+         if target_fct=="Alignment_downsampling":
+             if dicoInit['dicoBam'][titleBam]['nbReads']>dicoInit['downCov']: lstThread.append(threading.Thread(target=Alignment_downsampling, args=(titleBam,dicoInit,lstError), name=thread_nameformat+titleBam))
+             else: dicoInit['dicoBam'][titleBam]['path_downsampling'] = dicoInit['dicoBam'][titleBam]['path']
 --- a/pybam.py
 +++ b/pybam.py
-@@ -169,7 +169,7 @@ class read:
-             self.file_name = os.path.basename(os.path.realpath(self._file.name))
-             self.file_directory = os.path.dirname(os.path.realpath(self._file.name))
+@@ -100,7 +100,7 @@ Github:     http://github.com/JohnLonginotto/pybam
+ [ Force Internal bgzip Decompressor ]
+   my_bam = pybam.read('/my/data.bam',decompressor='internal')
+ [ Parse Words (hah) ]'''
+-wat += '\n'+''.join([('\n===============================================================================================\n\n  ' if code is 'file_alignments_read' or code is 'sam' else '  ')+(code+' ').ljust(25,'-')+description+'\n' for code,description in sorted(parse_codes.items())]) + '\n'
++wat += '\n'+''.join([('\n===============================================================================================\n\n  ' if code == 'file_alignments_read' or code == 'sam' else '  ')+(code+' ').ljust(25,'-')+description+'\n' for code,description in sorted(parse_codes.items())]) + '\n'
  
--            if magic == 'BAM\1':
-+            if magic == b'BAM\1':
-                 # The user has passed us already unzipped BAM data! Job done :)
-                 data = 'BAM\1' + self._file.read(35536)
-                 self.file_bytes_read += len(data)
-@@ -182,7 +182,7 @@ class read:
-                 DEVNULL.close()
-                 raise StopIteration
+ class read:
+     '''
+@@ -135,19 +135,19 @@ class read:
+         self.file_chromosome_lengths = {}
  
--            elif magic == "\x1f\x8b\x08\x04":  # The user has passed us compressed gzip/bgzip data, which is typical for a BAM file
-+            elif magic == b"\x1f\x8b\x08\x04":  # The user has passed us compressed gzip/bgzip data, which is typical for a BAM file
+         if fields is not False:
+-            if type(fields) is not list or len(fields) is 0:
++            if type(fields) is not list or len(fields) == 0:
+                 raise PybamError('\n\nFields for the static parser must be provided as a non-empty list. You gave a ' + str(type(fields)) + '\n')
+             else:
+                 for field in fields:
+                     if field.startswith('sam') or field.startswith('bam'):
+-                        if field not in parse_codes.keys():
++                        if field not in list(parse_codes.keys()):
+                             raise PybamError('\n\nStatic parser field "' + str(field) + '" from fields ' + str(fields) + ' is not known to this version of pybam!\nPrint "pybam.wat" to see available field names with explinations.\n')
+                     else:
+                         raise PybamError('\n\nStatic parser field "' + str(field) + '" from fields ' + str(fields) + ' does not start with "sam" or "bam" and thus is not an avaliable field for the static parsing.\nPrint "pybam.wat" in interactive python to see available field names with explinations.\n')
+ 
+         if decompressor:
+             if type(decompressor) is str:
+-                 if decompressor is not 'internal' and '{}' not in decompressor: raise PybamError('\n\nWhen a custom decompressor is used and the input file is a string, the decompressor string must contain at least one occurence of "{}" to be substituted with a filepath by pybam.\n')
++                 if decompressor != 'internal' and '{}' not in decompressor: raise PybamError('\n\nWhen a custom decompressor is used and the input file is a string, the decompressor string must contain at least one occurence of "{}" to be substituted with a filepath by pybam.\n')
+             else: raise PybamError('\n\nUser-supplied decompressor must be a string that when run on the command line decompresses a named file (or stdin), to stdout:\ne.g. "lzma --decompress --stdout {}" if pybam is provided a path as input file, where {} is substituted for that path.\nor just "lzma --decompress --stdout" if pybam is provided a file object instead of a file path, as data from that file object will be piped via stdin to the decompression program.\n')
+ 
+         ## First we make a generator that will return chunks of uncompressed data, regardless of how we choose to decompress:
+@@ -184,7 +184,7 @@ class read:
+ 
+             elif magic == "\x1f\x8b\x08\x04":  # The user has passed us compressed gzip/bgzip data, which is typical for a BAM file
                  # use custom decompressor if provided:
-                 if decompressor is not False and decompressor is not 'internal':
+-                if decompressor is not False and decompressor is not 'internal':
++                if decompressor is not False and decompressor != 'internal':
                      if type(f) is str: self._subprocess = subprocess.Popen(                                    decompressor.replace('{}',f),    shell=True, stdout=subprocess.PIPE, stderr=DEVNULL)
-@@ -243,7 +243,7 @@ class read:
-                             bs = 0
-                         magic = raw_data[bs:bs+4]
-                         if not magic: break # a child's heart
--                        if magic != "\x1f\x8b\x08\x04": raise PybamError('\n\nThe input file is not in a format I understand. First four bytes: ' + repr(magic) + '\n')
-+                        if magic != b"\x1f\x8b\x08\x04": raise PybamError('\n\nThe input file is not in a format I understand. First four bytes: ' + repr(magic) + '\n')
-                         try:
-                             more_bs = bs + unpack("<H", raw_data[bs+16:bs+18])[0] +1
-                             internal_cache.append(decompress(raw_data[bs+18:more_bs-8],-15))
-@@ -278,12 +278,12 @@ class read:
-                             '''
-                         blocks_left_to_grab -= 1
-                         if blocks_left_to_grab == 0:
--                            yield ''.join(internal_cache)
-+                            yield b''.join(internal_cache)
-                             internal_cache = []
-                             blocks_left_to_grab = 50
-                     self._file.close()
-                     DEVNULL.close()
--                    if internal_cache != '': yield ''.join(internal_cache)
-+                    if internal_cache != '': yield b''.join(internal_cache)
+                     else:              self._subprocess = subprocess.Popen('{ printf "'+magic+'"; cat; } | ' + decompressor, stdin=self._file, shell=True, stdout=subprocess.PIPE, stderr=DEVNULL)
+                     self.file_decompressor = decompressor
+@@ -211,7 +211,7 @@ class read:
+                             use = 'gzip'
+                         except OSError: use = 'internal'
+ 
+-                    if use is not 'internal' and decompressor is not 'internal':
++                    if use != 'internal' and decompressor != 'internal':
+                         if type(f) is str: self._subprocess = subprocess.Popen([                                   use , '--decompress','--stdout',       f           ], stdout=subprocess.PIPE, stderr=DEVNULL)
+                         else:              self._subprocess = subprocess.Popen('{ printf "'+magic+'"; cat; } | ' + use + ' --decompress  --stdout', stdin=f, shell=True, stdout=subprocess.PIPE, stderr=DEVNULL)
+                         time.sleep(1)
+@@ -286,7 +286,7 @@ class read:
+                     if internal_cache != '': yield ''.join(internal_cache)
                      raise StopIteration
  
-             elif decompressor is not False and decompressor is not 'internal':
-@@ -311,11 +311,11 @@ class read:
-         self._generator = generator()
+-            elif decompressor is not False and decompressor is not 'internal':
++            elif decompressor is not False and decompressor != 'internal':
+                 # It wouldn't be safe to just print to the shell four random bytes from the beginning of a file, so instead it's
+                 # written to a temp file and cat'd. The idea here being that we trust the decompressor string as it was written by 
+                 # someone with access to python, so it has system access anyway. The file/data, however, should not be trusted.
+@@ -573,7 +573,7 @@ class read:
+                 'py4py':py4py,
+                 'cigar_codes':cigar_codes
+             }
+-            exec code in exec_dict            # exec() compiles "code" to real code, creating the "parser" function and adding it to exec_dict['parser']
++            exec(code, exec_dict)            # exec() compiles "code" to real code, creating the "parser" function and adding it to exec_dict['parser']
+             return exec_dict['parser']
  
-         ## So lets parse the BAM header:
--        header_cache = ''
-+        header_cache = b''
-         while len(header_cache) < 8: header_cache += next(self._generator)
+         if fields:
+@@ -582,6 +582,7 @@ class read:
+         else:
+             def next_read(): return next(self._new_entry)
+         self.next = next_read
++        self.__next__ = next_read
  
-         p_from = 0; p_to = 4
--        if header_cache[p_from:p_to] != 'BAM\1':
-+        if header_cache[p_from:p_to] != b'BAM\1':
-             raise PybamError('\n\nInput file ' + self.file_name + ' does not appear to be a BAM file.\n')
- 
-         ## Parse the BAM header:
-@@ -334,18 +334,18 @@ class read:
-             l_name = unpack('<l',header_cache[p_from:p_to])[0]
-             p_from = p_to; p_to += l_name
-             while len(header_cache) < p_to: header_cache += next(self._generator)
--            self.file_chromosomes.append(header_cache[p_from:p_to -1])
-+            self.file_chromosomes.append(header_cache[p_from:p_to -1].decode('ascii', errors='replace'))
-             p_from = p_to; p_to += 4
-             while len(header_cache) < p_to: header_cache += next(self._generator)
-             self.file_chromosome_lengths[self.file_chromosomes[-1]] = unpack('<l',header_cache[p_from:p_to])[0]
- 
-         self.file_bytes_read = p_to
--        self.file_binary_header = buffer(header_cache[:p_to])
-+        self.file_binary_header = memoryview(bytes(header_cache[:p_to]))
-         header_cache = header_cache[p_to:]
- 
-         # A quick check to make sure the header of this BAM file makes sense:
-         chromosomes_from_header = []
--        for line in self.file_header.split('\n'):
-+        for line in self.file_header.decode('ascii', errors='replace').split('\n'):
-             if line.startswith('@SQ\tSN:'):
-                 chromosomes_from_header.append(line.split('\t')[1][3:])
-         if chromosomes_from_header != self.file_chromosomes:
+     def __iter__(self): return self
+     def __str__(self):  return self.sam
+@@ -671,10 +672,10 @@ class read:
+                 offset_end = offset+8+(unpack('<i',self.bam[offset+4:offset+8])[0]*py4py[self.bam[offset+3]])
+                 tag_data = array(self.bam[offset+3] , self.bam[offset+8:offset_end] )
+             else:
+-                print 'PYBAM ERROR: I dont know how to parse BAM tags in this format: ',repr(tag_type)
+-                print '             This is simply because I never saw this kind of tag during development.'
+-                print '             If you could mail the following chunk of text to john at john.uk.com, ill fix this up :)'
+-                print repr(tag_type),repr(self.bam[offset+3:end])
++                print(('PYBAM ERROR: I dont know how to parse BAM tags in this format: ',repr(tag_type)))
++                print('             This is simply because I never saw this kind of tag during development.')
++                print('             If you could mail the following chunk of text to john at john.uk.com, ill fix this up :)')
++                print((repr(tag_type),repr(self.bam[offset+3:end])))
+                 exit()
+             result.append((tag_name,tag_type,tag_data))
+             offset = offset_end
