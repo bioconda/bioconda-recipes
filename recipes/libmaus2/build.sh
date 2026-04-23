@@ -24,7 +24,7 @@ autoreconf -if
 ./configure --prefix="${PREFIX}" CXX="${CXX}" CC="${CC}" \
 	LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}" \
 	CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}" \
-	--with-snappy --with-io_lib --with-libdeflate \
+	--with-snappy --with-io_lib \
 	--with-libsecrecy --with-nettle \
 	--with-lzma --with-gmp --with-parasail \
 	--enable-shared-libmaus2 --disable-option-checking \
