@@ -32,7 +32,7 @@ cp -rf XXmasker $SHARE_DIR/
 ln -s $SHARE_DIR/XXmasker/*.pl ${PREFIX}/bin/
 
 sed -i.bak 's|VERSION 2.8|VERSION 3.5|' CMakeLists.txt
-sed -i.bak 's|-std=c++11|-std=gnu++14 -march=x86-64-v3|' CMakeLists.txt
+sed -i.bak 's|-std=c99|-std=gnu++14 -march=x86-64-v3|' CMakeLists.txt
 
 case $(uname -m) in
 	arm64) sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a|' CMakeLists.txt ;;
