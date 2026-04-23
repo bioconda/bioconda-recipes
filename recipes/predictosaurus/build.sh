@@ -4,8 +4,6 @@ export CFLAGS="${CFLAGS} -O3 -fno-rtti -Wno-implicit-function-declaration"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-export AWS_LC_SYS_NO_ASM=1
-
 export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
 curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --profile=minimal -y
