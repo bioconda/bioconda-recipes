@@ -8,7 +8,7 @@
  from eKLIPse_fct import *
  
  
-@@ -123,7 +122,7 @@ def circosConf(titleBam,dicoInit,lstError):
+@@ -124,7 +123,7 @@ def circosConf(titleBam,dicoInit,lstError):
  
          #***** CREATE Main Circos Configuration File *****#
          IN = open(pathConfTemplate,'r')
@@ -85,7 +85,7 @@
  from eKLIPse_fct import *
  
  
-@@ -90,13 +89,13 @@ def SC_blast(titleBam,dicoInit,lstError):
+@@ -91,13 +90,13 @@ def SC_blast(titleBam,dicoInit,lstError):
              os.system(cmd)
              #***** Read Blast output file *****#
              IN = open(pathSCDELBLAST,'r')
@@ -102,7 +102,7 @@
                      SCposRead = int(splitQread[0])
                      SCmappedpart = int(splitQread[1])
                      readOrient = splitQread[2]
-@@ -187,8 +186,8 @@ def deletionPrediction(titleBam,dicoInit,lstError):
+@@ -188,8 +187,8 @@ def deletionPrediction(titleBam,dicoInit,lstError):
                  initial_SCposRead_F = [] ; initial_SCposRead_R = []
                  # Browse deletion
                  for delName in dico_shift_del[key]:
@@ -113,7 +113,7 @@
                      try: delnbblastF = dicoDel[delName]['scrF']['nbBlast']
                      except: delnbblastF = 0
                      try: delnbblastR = dicoDel[delName]['scrR']['nbBlast']
-@@ -213,8 +212,8 @@ def deletionPrediction(titleBam,dicoInit,lstError):
+@@ -214,8 +213,8 @@ def deletionPrediction(titleBam,dicoInit,lstError):
                      # Del entry
                      try : del(dicoDel[delName])
                      except: pass
@@ -126,57 +126,81 @@
                                                               'freqF':0.0, 'freqR':0.0 }
 --- a/pybam.py
 +++ b/pybam.py
-@@ -100,7 +100,7 @@ Github:     http://github.com/JohnLonginotto/pybam
- [ Force Internal bgzip Decompressor ]
-   my_bam = pybam.read('/my/data.bam',decompressor='internal')
- [ Parse Words (hah) ]'''
--wat += '\n'+''.join([('\n===============================================================================================\n\n  ' if code is 'file_alignments_read' or code is 'sam' else '  ')+(code+' ').ljust(25,'-')+description+'\n' for code,description in sorted(parse_codes.items())]) + '\n'
-+wat += '\n'+''.join([('\n===============================================================================================\n\n  ' if code == 'file_alignments_read' or code == 'sam' else '  ')+(code+' ').ljust(25,'-')+description+'\n' for code,description in sorted(parse_codes.items())]) + '\n'
+@@ -169,7 +169,7 @@ class read:
+             self.file_name = os.path.basename(os.path.realpath(self._file.name))
+             self.file_directory = os.path.dirname(os.path.realpath(self._file.name))
  
- class read:
-     '''
-@@ -135,7 +135,7 @@ class read:
-         self.file_chromosome_lengths = {}
+-            if magic == 'BAM\1':
++            if magic == b'BAM\1':
+                 # The user has passed us already unzipped BAM data! Job done :)
+                 data = 'BAM\1' + self._file.read(35536)
+                 self.file_bytes_read += len(data)
+@@ -182,7 +182,7 @@ class read:
+                 DEVNULL.close()
+                 raise StopIteration
  
-         if fields is not False:
--            if type(fields) is not list or len(fields) is 0:
-+            if type(fields) is not list or len(fields) == 0:
-                 raise PybamError('\n\nFields for the static parser must be provided as a non-empty list. You gave a ' + str(type(fields)) + '\n')
-             else:
-                 for field in fields:
-@@ -147,7 +147,7 @@ class read:
- 
-         if decompressor:
-             if type(decompressor) is str:
--                 if decompressor is not 'internal' and '{}' not in decompressor: raise PybamError('\n\nWhen a custom decompressor is used and the input file is a string, the decompressor string must contain at least one occurence of "{}" to be substituted with a filepath by pybam.\n')
-+                 if decompressor != 'internal' and '{}' not in decompressor: raise PybamError('\n\nWhen a custom decompressor is used and the input file is a string, the decompressor string must contain at least one occurence of "{}" to be substituted with a filepath by pybam.\n')
-             else: raise PybamError('\n\nUser-supplied decompressor must be a string that when run on the command line decompresses a named file (or stdin), to stdout:\ne.g. "lzma --decompress --stdout {}" if pybam is provided a path as input file, where {} is substituted for that path.\nor just "lzma --decompress --stdout" if pybam is provided a file object instead of a file path, as data from that file object will be piped via stdin to the decompression program.\n')
- 
-         ## First we make a generator that will return chunks of uncompressed data, regardless of how we choose to decompress:
-@@ -184,7 +184,7 @@ class read:
- 
-             elif magic == "\x1f\x8b\x08\x04":  # The user has passed us compressed gzip/bgzip data, which is typical for a BAM file
+-            elif magic == "\x1f\x8b\x08\x04":  # The user has passed us compressed gzip/bgzip data, which is typical for a BAM file
++            elif magic == b"\x1f\x8b\x08\x04":  # The user has passed us compressed gzip/bgzip data, which is typical for a BAM file
                  # use custom decompressor if provided:
--                if decompressor is not False and decompressor is not 'internal':
-+                if decompressor is not False and decompressor != 'internal':
+                 if decompressor is not False and decompressor is not 'internal':
                      if type(f) is str: self._subprocess = subprocess.Popen(                                    decompressor.replace('{}',f),    shell=True, stdout=subprocess.PIPE, stderr=DEVNULL)
-                     else:              self._subprocess = subprocess.Popen('{ printf "'+magic+'"; cat; } | ' + decompressor, stdin=self._file, shell=True, stdout=subprocess.PIPE, stderr=DEVNULL)
-                     self.file_decompressor = decompressor
-@@ -211,7 +211,7 @@ class read:
-                             use = 'gzip'
-                         except OSError: use = 'internal'
- 
--                    if use is not 'internal' and decompressor is not 'internal':
-+                    if use != 'internal' and decompressor != 'internal':
-                         if type(f) is str: self._subprocess = subprocess.Popen([                                   use , '--decompress','--stdout',       f           ], stdout=subprocess.PIPE, stderr=DEVNULL)
-                         else:              self._subprocess = subprocess.Popen('{ printf "'+magic+'"; cat; } | ' + use + ' --decompress  --stdout', stdin=f, shell=True, stdout=subprocess.PIPE, stderr=DEVNULL)
-                         time.sleep(1)
-@@ -286,7 +286,7 @@ class read:
-                     if internal_cache != '': yield ''.join(internal_cache)
+@@ -243,7 +243,7 @@ class read:
+                             bs = 0
+                         magic = raw_data[bs:bs+4]
+                         if not magic: break # a child's heart
+-                        if magic != "\x1f\x8b\x08\x04": raise PybamError('\n\nThe input file is not in a format I understand. First four bytes: ' + repr(magic) + '\n')
++                        if magic != b"\x1f\x8b\x08\x04": raise PybamError('\n\nThe input file is not in a format I understand. First four bytes: ' + repr(magic) + '\n')
+                         try:
+                             more_bs = bs + unpack("<H", raw_data[bs+16:bs+18])[0] +1
+                             internal_cache.append(decompress(raw_data[bs+18:more_bs-8],-15))
+@@ -278,12 +278,12 @@ class read:
+                             '''
+                         blocks_left_to_grab -= 1
+                         if blocks_left_to_grab == 0:
+-                            yield ''.join(internal_cache)
++                            yield b''.join(internal_cache)
+                             internal_cache = []
+                             blocks_left_to_grab = 50
+                     self._file.close()
+                     DEVNULL.close()
+-                    if internal_cache != '': yield ''.join(internal_cache)
++                    if internal_cache != '': yield b''.join(internal_cache)
                      raise StopIteration
  
--            elif decompressor is not False and decompressor is not 'internal':
-+            elif decompressor is not False and decompressor != 'internal':
-                 # It wouldn't be safe to just print to the shell four random bytes from the beginning of a file, so instead it's
-                 # written to a temp file and cat'd. The idea here being that we trust the decompressor string as it was written by 
-                 # someone with access to python, so it has system access anyway. The file/data, however, should not be trusted.
+             elif decompressor is not False and decompressor is not 'internal':
+@@ -311,11 +311,11 @@ class read:
+         self._generator = generator()
+ 
+         ## So lets parse the BAM header:
+-        header_cache = ''
++        header_cache = b''
+         while len(header_cache) < 8: header_cache += next(self._generator)
+ 
+         p_from = 0; p_to = 4
+-        if header_cache[p_from:p_to] != 'BAM\1':
++        if header_cache[p_from:p_to] != b'BAM\1':
+             raise PybamError('\n\nInput file ' + self.file_name + ' does not appear to be a BAM file.\n')
+ 
+         ## Parse the BAM header:
+@@ -334,18 +334,18 @@ class read:
+             l_name = unpack('<l',header_cache[p_from:p_to])[0]
+             p_from = p_to; p_to += l_name
+             while len(header_cache) < p_to: header_cache += next(self._generator)
+-            self.file_chromosomes.append(header_cache[p_from:p_to -1])
++            self.file_chromosomes.append(header_cache[p_from:p_to -1].decode('ascii', errors='replace'))
+             p_from = p_to; p_to += 4
+             while len(header_cache) < p_to: header_cache += next(self._generator)
+             self.file_chromosome_lengths[self.file_chromosomes[-1]] = unpack('<l',header_cache[p_from:p_to])[0]
+ 
+         self.file_bytes_read = p_to
+-        self.file_binary_header = buffer(header_cache[:p_to])
++        self.file_binary_header = memoryview(bytes(header_cache[:p_to]))
+         header_cache = header_cache[p_to:]
+ 
+         # A quick check to make sure the header of this BAM file makes sense:
+         chromosomes_from_header = []
+-        for line in self.file_header.split('\n'):
++        for line in self.file_header.decode('ascii', errors='replace').split('\n'):
+             if line.startswith('@SQ\tSN:'):
+                 chromosomes_from_header.append(line.split('\t')[1][3:])
+         if chromosomes_from_header != self.file_chromosomes:
