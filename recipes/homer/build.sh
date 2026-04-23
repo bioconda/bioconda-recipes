@@ -1,13 +1,13 @@
 #!/bin/bash
 
-outdir="$PREFIX/share/$PKG_NAME"
-mkdir -p "$outdir"
-mkdir -p "$outdir/bin"
-mkdir -p "$PREFIX/bin"
-
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3"
+export outdir="$PREFIX/share/$PKG_NAME"
+
+mkdir -p "$outdir"
+mkdir -p "$outdir/bin"
+mkdir -p "$PREFIX/bin"
 
 case $(uname -m) in
     aarch64)
@@ -24,8 +24,8 @@ esac
 ln -s ${CC} $BUILD_PREFIX/bin/gcc
 ln -s ${CXX} $BUILD_PREFIX/bin/g++
 
-sed -i.bak 's|-C "$homeDir/cpp/"|-C "$homeDir/cpp/" CXX=CXX DEBUG=CXXFLAGS|' configureHomer.pl
-sed -i.bak "s|CXX=CXX DEBUG=CXXFLAGS|CXX=$CXX DEBUG=$CXXFLAGS|" configureHomer.pl
+sed -i.bak 's|-C "$homeDir/cpp/"|-C "$homeDir/cpp/" COMPILER=CXX|' configureHomer.pl
+sed -i.bak "s|COMPILER=CXX|COMPILER=${CXX}|" configureHomer.pl
 rm -f *.bak
 
 chmod +rwx configureHomer.pl
