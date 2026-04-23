@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-unused-variable"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
 export CFLAGS="${CFLAGS} -O3"
