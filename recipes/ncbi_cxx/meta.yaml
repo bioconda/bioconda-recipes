@@ -1,0 +1,70 @@
+{% set version = "22.0.0" %}
+{% set sha256 = "ef39429bbc7f13c44c0d327432d9cfb430f9f20d10d825e6b2c4ddd7ccce457f" %}
+
+package:
+  name: ncbi_cxx
+  version: {{ version }}
+
+source:
+  - url: ftp://ftp.ncbi.nih.gov/toolbox/ncbi_tools++/CURRENT/ncbi_cxx--{{ version|replace(".", "_") }}.tar.gz
+    sha256: {{ sha256 }}
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - bzip2
+    - pcre
+    - entrez-direct
+    - curl
+    - llvm-openmp  # [osx]
+  run:
+    - zlib
+    - bzip2
+    - pcre
+    - perl
+    - perl-list-moreutils
+    - perl-archive-tar
+    - perl-json
+    - entrez-direct
+    - curl
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - blastn -help
+    - blastp -help
+    - makeblastdb -help
+    - blastdb_aliastool -version > /dev/null
+    - blastdbcheck -version > /dev/null
+    - blastdbcmd -version > /dev/null
+    - blastn -version > /dev/null
+    - blastp -version > /dev/null
+    - blastx -version > /dev/null
+    - convert2blastmask -version > /dev/null
+    - dustmasker -version > /dev/null
+    - makeblastdb -version > /dev/null
+    - makembindex -version > /dev/null
+    - psiblast -version > /dev/null
+    - rpsblast -version > /dev/null
+    - rpstblastn -version > /dev/null
+    - rpsbproc -version > /dev/null
+    - segmasker -version > /dev/null
+    - tblastn -version > /dev/null
+    - tblastx -version > /dev/null
+    - windowmasker -version > /dev/null
+    - update_blastdb.pl --version > /dev/null
+    - get_species_taxids.sh -h > /dev/null
+
+about:
+  home: https://ncbi.github.io/cxx-toolkit/
+  license: Public Domain
+  summary: NCBI C++ Toolkit.
+
+extra:
+  recipe-maintainers:
+    - bernt-matthias
