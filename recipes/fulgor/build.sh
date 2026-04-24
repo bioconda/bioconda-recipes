@@ -17,7 +17,7 @@ echo "Build Fulgor"
 
 mkdir build
 cd build
-cmake ..
+cmake .. ${CMAKE_ARGS}
 make -j${CPU_COUNT}
 
 # Installation

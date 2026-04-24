@@ -1,13 +1,18 @@
-{% set version = "2.16.0" %}
+{% set version = "2.20.0" %}
 {% set name = "RnaSeqSampleSize" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: RnaSeqSampleSize package provides a sample size calculation method based on negative binomial model and the exact test for assessing differential expression analysis of RNA-seq data. It controls FDR for multiple testing and utilizes the average read count and dispersion distributions from real data to estimate a more reliable sample size. It is also equipped with several unique features, including estimation for interested genes or pathway, power curve visualization, and parameter optimization.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL (>= 2)
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-  summary: RnaSeqSampleSize
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 4ca9945f8daf0693b52d3c07ad6951ad
 
 build:
   number: 0
@@ -16,10 +21,6 @@ build:
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-rnaseqsamplesize", max_pin="x.x") }}'
 
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
-
 # Suggests: BiocStyle, knitr, testthat
 requirements:
   build:
@@ -27,12 +28,12 @@ requirements:
     - {{ compiler('cxx') }}
     - make
   host:
-    - bioconductor-biomart >=2.62.0,<2.63.0
-    - bioconductor-edger >=4.4.0,<4.5.0
-    - bioconductor-keggrest >=1.46.0,<1.47.0
-    - bioconductor-recount >=1.32.0,<1.33.0
-    - bioconductor-rnaseqsamplesizedata >=1.38.0,<1.39.0
-    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-biomart >=2.66.0,<2.67.0
+    - bioconductor-edger >=4.8.0,<4.9.0
+    - bioconductor-keggrest >=1.50.0,<1.51.0
+    - bioconductor-recount >=1.36.0,<1.37.0
+    - bioconductor-rnaseqsamplesizedata >=1.42.0,<1.43.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-base
     - r-dplyr
     - r-ggplot2
@@ -44,13 +45,15 @@ requirements:
     - r-tidyselect
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - bioconductor-biomart >=2.62.0,<2.63.0
-    - bioconductor-edger >=4.4.0,<4.5.0
-    - bioconductor-keggrest >=1.46.0,<1.47.0
-    - bioconductor-recount >=1.32.0,<1.33.0
-    - bioconductor-rnaseqsamplesizedata >=1.38.0,<1.39.0
-    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-biomart >=2.66.0,<2.67.0
+    - bioconductor-edger >=4.8.0,<4.9.0
+    - bioconductor-keggrest >=1.50.0,<1.51.0
+    - bioconductor-recount >=1.36.0,<1.37.0
+    - bioconductor-rnaseqsamplesizedata >=1.42.0,<1.43.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-base
     - r-dplyr
     - r-ggplot2
@@ -61,15 +64,14 @@ requirements:
     - r-tidyr
     - r-tidyselect
 
-source:
-  md5: 4be5717671e4e3becac1dd4e8479545b
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  summary: RnaSeqSampleSize
+  description: RnaSeqSampleSize package provides a sample size calculation method based on negative binomial model and the exact test for assessing differential expression analysis of RNA-seq data. It controls FDR for multiple testing and utilizes the average read count and dispersion distributions from real data to estimate a more reliable sample size. It is also equipped with several unique features, including estimation for interested genes or pathway, power curve visualization, and parameter optimization.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 
