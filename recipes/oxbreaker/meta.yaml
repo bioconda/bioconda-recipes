@@ -2,7 +2,7 @@
 {% set version = "1.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -12,16 +12,17 @@ source:
 build:
   number: 0
   run_exports:
-    - {{ name }}
+    - {{ pin_subpackage(name, max_pin="x") }}
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  entry_points:
+    - oxbreaker = oxbreaker.gui:main
 
 requirements:
   host:
     - python >=3.9
     - pip
     - setuptools
-    - wheel
   run:
     - python >=3.9
     - pygobject
@@ -33,9 +34,6 @@ requirements:
     - glib
     - nextflow >=24
 
-entry_points:
-    - oxbreaker = oxbreaker.gui:main
-
 test:
   commands:
     - oxbreaker --help
@@ -43,12 +41,14 @@ test:
 
 about:
   home: "https://github.com/oxfordmmm/OxBreaker"
-  license: LGPL-2.1
+  license: "LGPL-2.1-only"
+  license_family: LPGL
   license_file: LICENSE
-  summary: "GTK4 GUI wrapper that launches a Nextflow pipeline"
+  summary: "GTK4 GUI wrapper that launches a Nextflow pipeline."
   description:
     OxBreaker is a GTK4-based interface that collects parameters and launches a Nextflow pipeline.
     The package bundles the Nextflow project files and assets so they are available at runtime.
+  dev_url: "https://github.com/oxfordmmm/OxBreaker"
 
 extra:
   recipe-maintainers:
