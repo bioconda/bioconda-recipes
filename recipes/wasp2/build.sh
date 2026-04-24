@@ -59,7 +59,7 @@ fi
 
 case $(uname -s) in
     Linux)
-	sed -i.bak 's|version = "1.0", default-features = false|version = "1.0", features = ["static"]|' rust/Cargo.toml && rm -f rust/*.bak ;;
+	sed -i.bak 's|version = "1.0", default-features = false|version = "0.49.0", features = ["static"]|' rust/Cargo.toml && rm -f rust/*.bak ;;
 esac
 
 unset PKG_CONFIG_PATH
