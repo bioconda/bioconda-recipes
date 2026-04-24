@@ -58,7 +58,7 @@ if [[ "${target_platform:-}" == osx-* ]]; then
 fi
 
 case $(uname -s) in
-    Darwin)
+    Linux)
 	sed -i.bak 's|"1.0",|"0.49.0",|' rust/Cargo.toml && rm -f rust/*.bak ;;
 esac
 
