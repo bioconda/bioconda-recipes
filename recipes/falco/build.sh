@@ -2,9 +2,11 @@
 set -xe
 
 # add Configuration and example files to opt
-falco=$PREFIX/opt/falco
+export falco="$PREFIX/share/${PKG_NAME}-${PKG_VERSION}"
 mkdir -p $falco
 cp -rf ./* $falco
+
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 
 #to fix problems with htslib
 export C_INCLUDE_PATH=$C_INCLUDE_PATH:"${PREFIX}/include"
@@ -23,20 +25,25 @@ case $(uname -m) in
 	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
 	;;
     arm64)
-	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a -D_LIBCPP_DISABLE_AVAILABILITY"
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
 	;;
     x86_64)
-	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3 -D_LIBCPP_DISABLE_AVAILABILITY"
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 	;;
 esac
+
+if [[ `uname -s` == "Darwin" ]]; then
+	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+fi
 
 cd $falco
 
 autoreconf -if
 ./configure --prefix="$falco" \
-  --enable-hts \
-  CXX="${CXX}" \
-  CXXFLAGS="${CXXFLAGS}"
+  CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" \
+  LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}" \
+  --enable-hts --disable-option-checking \
+  --enable-silent-rules --disable-dependency-tracking
 
 make -j"${CPU_COUNT}"
 make install
@@ -47,4 +54,3 @@ do
 done
 
 install -v -m 0755 $falco/bin/falco "$PREFIX/bin"
-rm -rf bin
