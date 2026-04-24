@@ -9,7 +9,7 @@ cp -r $SRC_DIR/scripts $PREFIX
 ln -s $PREFIX/bin/MentaLiST.jl $PREFIX/bin/mentalist
 chmod +x $PREFIX/bin/mentalist
 
-julia --threads ${CPU_COUNT} -e 'using Pkg; Pkg.develop(path="src/MentaLiST.jl"); using MentaLiST'
+julia --threads ${CPU_COUNT} -e 'using Pkg; Pkg.develop(path="src/"); using MentaLiST'
 
 #"${PREFIX}/bin/julia" -e 'using Pkg; Pkg.add("Distributed")';
 #"${PREFIX}/bin/julia" -e 'using Pkg; Pkg.add("ArgParse")';
