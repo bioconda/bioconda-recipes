@@ -4,9 +4,6 @@ set -ex
 # WASP2 Bioconda Build Script
 # Handles Rust compilation via maturin for Python+Rust hybrid package
 
-# Ensure cargo is available
-export PATH="${CARGO_HOME}/bin:${PATH}"
-
 # Bundle Rust crate licenses (Bioconda requirement)
 # conda-forge cargo-bundle-licenses only supports --format and --output
 # Must run from directory containing Cargo.toml
@@ -59,6 +56,11 @@ if [[ "${target_platform:-}" == osx-* ]]; then
         fi
     done
 fi
+
+case $(uname -s) in
+    Darwin)
+	sed -i.bak 's|"1.0",|"0.49.0",|' rust/Cargo.toml && rm -f rust/*.bak ;;
+esac
 
 # Build the Rust extension with maturin
 maturin build \
