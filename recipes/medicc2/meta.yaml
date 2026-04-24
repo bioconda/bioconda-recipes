@@ -16,8 +16,11 @@ build:
   script:
     - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
     - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-    - export CFLAGS="${CFLAGS} -O3"
-    - CONDA_PREFIX="${PREFIX}" {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+    - export CXXFLAGS="${CXXFLAGS} -O3"
+    - sed -i.bak 's|-std=c++17|-std=c++14|' setup.py
+    - sed -i.bak 's|"CONDA_PREFIX"|"PREFIX"|' setup.py
+    - rm -f *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
@@ -30,7 +33,7 @@ requirements:
     - python
     - pip
     # The following are needed for building the Cython extension
-    - openfst >=1.8.3
+    - openfst ==1.8.3
     - setuptools
     - cython >=0.29,<3
     - pathlib2
@@ -38,7 +41,7 @@ requirements:
     - python
     - numpy >=1.20.1,<2.0
     - pyyaml >=5.4.1
-    - openfst >=1.8.3
+    - openfst ==1.8.3
     - pandas >=1.2,<2.1
     - joblib >=1.0.1
     - biopython >=1.78
