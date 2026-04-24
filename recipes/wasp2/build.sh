@@ -17,11 +17,11 @@ export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
 export BINDGEN_EXTRA_CLANG_ARGS="${CPPFLAGS} ${CFLAGS}"
 
 # Set up environment for htslib linking
-export HTSLIB_DIR="${PREFIX}"
-export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}"
-export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH}"
-export LIBRARY_PATH="${PREFIX}/lib:${LIBRARY_PATH}"
-export CPATH="${PREFIX}/include:${CPATH}"
+#export HTSLIB_DIR="${PREFIX}"
+#export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+#export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH}"
+#export LIBRARY_PATH="${PREFIX}/lib:${LIBRARY_PATH}"
+#export CPATH="${PREFIX}/include:${CPATH}"
 
 # Set correct linker for conda-provided compiler
 export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="$CC"
@@ -59,9 +59,10 @@ fi
 
 case $(uname -s) in
     Linux)
-	sed -i.bak 's|"1.0",|"0.49.0",|' rust/Cargo.toml && rm -f rust/*.bak ;;
+	sed -i.bak 's|version = "1.0", default-features = false|version = "1.0", features = ["static"]|' rust/Cargo.toml && rm -f rust/*.bak ;;
 esac
 
+unset PKG_CONFIG_PATH
 # Build the Rust extension with maturin
 maturin build \
     --release \
