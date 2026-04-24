@@ -2,6 +2,9 @@
 set -o errexit -o pipefail
 
 export LC_ALL="en_US.UTF-8"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [[ -f Build.PL ]]; then
