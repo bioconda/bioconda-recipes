@@ -1,23 +1,26 @@
 {% set name = "janusx" %}
-{% set version = "1.0.15" %}
+{% set version = "1.0.20" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/FJingxian/JanusX/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 9d7cfedaff0dcfe8b251b97f224fc65bade609837818f404767244759331edc1
-  md5: 33cf306c6d96d02f9b287185591c82fb
+  url: https://github.com/FJingxian/JanusX/archive/v{{ version }}.tar.gz
+  sha256: bd539966ecd7a04d291cbca05082f34616e2c1c94b69a0de883fb19389c13a4c
 
 build:
   number: 0
-  skip: true  # [win or py<39]
+  skip: True  # [win or py<39]
+  entry_points:
+    - jxpy = janusx.script.JanusX:main
+    - jx = janusx.script.JanusX:main
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('rust') }}
     - cargo-bundle-licenses
@@ -25,6 +28,8 @@ requirements:
     - python
     - pip
     - maturin >=1.7,<2
+    - numpy >=1.23
+    - pybind11 >=2.13.0
   run:
     - python
     - numpy
@@ -51,8 +56,8 @@ test:
     - python -c "import janusx.script.JanusX as jx; assert callable(jx.main)"
 
 about:
-  home: https://github.com/FJingxian/JanusX
-  summary: GWAS and genomic selection toolkit with Rust-accelerated kernels
+  home: "https://github.com/FJingxian/JanusX"
+  summary: "GWAS and genomic selection toolkit with Rust-accelerated kernels."
   description: |
     JanusX is a high-performance toolkit for genome-wide association studies
     (GWAS), genomic selection (GS), and post-analysis visualization.
@@ -61,14 +66,17 @@ about:
     command entrypoint. Launcher-specific features (`jx`, self-update/runtime
     management, `fastq2vcf`, and `fastq2count`) are intentionally excluded
     from this package scope.
-  license: AGPL-3.0-or-later
+  license: "AGPL-3.0-or-later"
   license_file:
     - LICENSE
     - THIRDPARTY.yml
-  doc_url: https://github.com/FJingxian/JanusX/tree/v{{ version }}/doc
-  dev_url: https://github.com/FJingxian/JanusX
+  doc_url: "https://github.com/FJingxian/JanusX/tree/v{{ version }}/doc"
+  dev_url: "https://github.com/FJingxian/JanusX"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.64898/2026.01.20.700366
   recipe-maintainers:
