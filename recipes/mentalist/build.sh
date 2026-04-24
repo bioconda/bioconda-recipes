@@ -22,8 +22,8 @@ chmod +x $PREFIX/bin/mentalist
 "${PREFIX}/bin/julia" -e 'using Pkg; Pkg.add("LightXML")';
 "${PREFIX}/bin/julia" -e 'using Pkg; Pkg.instantiate()';
 
-#rm -f "$PREFIX"/share/julia/site/lib/v*/*.ji
-#rm -rf "$PREFIX"/share/julia/site/v*/METADATA
-#rm -f "$PREFIX"/share/julia/site/v*/META_BRANCH
+rm -f "$PREFIX"/share/julia/site/lib/v*/*.ji
+rm -rf "$PREFIX"/share/julia/site/v*/METADATA
+rm -f "$PREFIX"/share/julia/site/v*/META_BRANCH
 
 rm "${BUILD_PREFIX}/gcc"
