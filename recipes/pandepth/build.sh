@@ -2,6 +2,9 @@
 set -eu -o pipefail
 
 sed -i.bak 's/g++/${CXX}/g' Makefile
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i.bak 's/-rpath=/-rpath,/g' Makefile
+fi
 
 make CXX="${CXX}" \
      CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include -O3" \
