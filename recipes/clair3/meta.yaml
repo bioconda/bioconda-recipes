@@ -1,17 +1,30 @@
 {% set name = "clair3" %}
-{% set version = "1.2.0" %}
+{% set version = "2.0.0" %}
+{% set pypy_version = "3.11-v7.3.20" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: http://www.bio8.cs.hku.hk/clair3/bioconda/Clair3_v{{ version }}.zip
-  sha256: a7c398148ebd2ddcf1970a4f44298d419739d00269ae2a46ddb47144c9805a13
+  - url: https://github.com/HKU-BAL/Clair3/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: 8a2d6bb6ded3163361a1d762168013f599d232a65d9a4a7777dd3e178ae7951b
+
+{% if linux and x86_64 %}
+  - url: https://downloads.python.org/pypy/pypy{{ pypy_version }}-linux64.tar.bz2
+    sha256: 1410db3a7ae47603e2b7cbfd7ff6390b891b2e041c9eb4f1599f333677bccb3e
+    folder: pypy-linux64
+{% endif %}
+
+{% if linux and aarch64 %}
+  - url: https://downloads.python.org/pypy/pypy{{ pypy_version }}-aarch64.tar.bz2
+    sha256: 9347fe691a07fd9df17a1b186554fb9d9e6210178ffef19520a579ce1f9eb741
+    folder: pypy-aarch64
+{% endif %}
 
 build:
   number: 0
-  skip: True  # [osx]
+  skip: True  # [win or osx]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
@@ -19,36 +32,44 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - make
+    - automake
   host:
-    - cffi
+    - python 3.11.*
+    - pip
+    - mpmath
+    - cffi <2
     - bzip2
     - xz
-    - zlib
-    - python <=3.10.0
-    - automake
-    - make
+    - zlib  
     - libcurl
     - openssl
+    - libdeflate
+    - longphase # [linux]
   run:
-    - python <=3.10.0
-    - tensorflow <=2.16.0
+    - python 3.11.*
+    - pytorch-cpu  # [linux]
+    - torchmetrics
     - numpy
-    - pytables
-    - samtools
-    - whatshap
+    - h5py
+    - hdf5plugin
+    - numexpr
+    - tqdm
+    - samtools >=1.15
+    - whatshap >=1.0
     - pigz
-    - parallel
+    - parallel >=20191122
     - zstd
     - openssl
-    - cffi
+    - cffi <2
+    - longphase # [linux]
 
 test:
-  imports:
-    - tensorflow
   commands:
-    - longphase --version
-    - which clair3.py
+    - longphase --version # [linux]
+    - which run_clair3.sh
     - run_clair3.sh -v
+
 extra:
   container:
     extended-base: true
@@ -57,4 +78,6 @@ about:
   home: 'https://github.com/HKU-BAL/Clair3'
   license: BSD-3-Clause
   license_file: LICENSE.md
-  summary: "Clair3 is a small variant caller for long-reads. Compare to PEPPER (r0.4), Clair3 (v0.1) shows a better SNP F1-score with ≤30-fold of ONT data (precisionFDA Truth Challenge V2), and a better Indel F1-score, while runs generally four times faster. Clair3 makes the best of both worlds of using pileup or full-alignment as input for deep-learning based long-read small variant calling. Clair3 is simple and modular for easy deployment and integration."
+  summary: "Clair3 is a small variant caller for long-reads. Clair3 makes the best of both worlds of using pileup or full-alignment as input for deep-learning based long-read small variant calling. Clair3 is simple and modular for easy deployment and integration."
+  doc_url: https://github.com/HKU-BAL/Clair3
+  dev_url: https://github.com/HKU-BAL/Clair3
