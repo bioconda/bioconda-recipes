@@ -19,6 +19,11 @@ case $(uname -m) in
 	;;
 esac
 
+case $(uname -s) in
+    Darwin)
+	export CXXFLAGS="${CXXFLAGS} -stdlib=libc++" ;;
+esac
+
 mkdir -p "$PREFIX/bin"
 mkdir -p build-aux
 
