@@ -5,7 +5,8 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations"
 
-autoreconf -if
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
+
 ./configure --prefix="${PREFIX}" \
 	CC="${CC}" \
 	CFLAGS="${CFLAGS}" \
@@ -13,7 +14,7 @@ autoreconf -if
 	LDFLAGS="${LDFLAGS}" \
 	--disable-option-checking --enable-silent-rules --disable-dependency-tracking
 
-ln -sf gadem_documentation_v1.3.1.pdf doc/GADEM_documentation.pdf
+cp -f gadem_documentation_v1.3.1.pdf doc/GADEM_documentation.pdf
 
-make -j1
+make -j"${CPU_COUNT}"
 make install
