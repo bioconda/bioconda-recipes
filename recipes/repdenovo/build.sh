@@ -3,17 +3,19 @@ set -x -e
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -Wno-register"
 
 mkdir -p "${PREFIX}/bin"
 
 case $(uname -m) in
     aarch64)
-	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a|' TERefiner/Makefile
-	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a|' ContigsCompactor-v0.2.0/ContigsMerger/Makefile ;;
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a -Wno-register|' TERefiner/Makefile
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a -Wno-register|' ContigsCompactor-v0.2.0/ContigsMerger/Makefile ;;
     arm64)
-	sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a|' TERefiner/Makefile
-	sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a|' ContigsCompactor-v0.2.0/ContigsMerger/Makefile ;;
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a -Wno-register|' TERefiner/Makefile
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a -Wno-register|' ContigsCompactor-v0.2.0/ContigsMerger/Makefile ;;
+	*)
+	sed -i.bak 's|-march=x86-64-v3|-march=x86-64-v3 -Wno-register|' TERefiner/Makefile
+	sed -i.bak 's|-march=x86-64-v3|-march=x86-64-v3 -Wno-register|' ContigsCompactor-v0.2.0/ContigsMerger/Makefile ;;
 esac
 
 case $(uname -s) in
