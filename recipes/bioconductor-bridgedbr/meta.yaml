@@ -1,31 +1,26 @@
-{% set version = "2.16.0" %}
+{% set version = "2.20.0" %}
 {% set name = "BridgeDbR" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: Use BridgeDb functions and load identifier mapping databases in R. It uses GitHub, Zenodo, and Figshare if you use this package to download identifier mappings files.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: AGPL-3
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
-  summary: Code for using BridgeDb identifier mapping framework from within R
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: c6fe3d37ebcfc47442a0f46cd921ab18
 
 build:
-  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-bridgedbr", max_pin="x.x") }}'
-
-extra:
-  parent_recipe:
-    name: bioconductor-bridgedbr
-    path: recipes/bioconductor-bridgedbr
-    version: 1.16.0
-
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
+  noarch: generic
 
 # Suggests: BiocStyle, knitr, rmarkdown, testthat
 requirements:
@@ -38,15 +33,20 @@ requirements:
     - r-curl
     - r-rjava
 
-source:
-  md5: 40d8122a411aace02a4c0a426baa83ec
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: AGPL-3
+  summary: Code for using BridgeDb identifier mapping framework from within R
+  description: Use BridgeDb functions and load identifier mapping databases in R. It uses GitHub, Zenodo, and Figshare if you use this package to download identifier mappings files.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+
+extra:
+  parent_recipe:
+    name: bioconductor-bridgedbr
+    path: recipes/bioconductor-bridgedbr
+    version: 1.16.0
 
