@@ -1,0 +1,41 @@
+{% set name = "braid" %}
+{% set pypi_name = "pybraid" %}
+{% set version = "1.0.2" %} 
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ pypi_name[0] }}/{{ pypi_name }}/{{ pypi_name }}-{{ version }}.tar.gz
+  sha256: "6023725cd77855b59b2d4426f793fd38c468c3a2fdd55f2e5afb7c422d5e3737"
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.8
+    - setuptools
+
+  run:
+    - python >=3.8
+    - pysam
+    - biopython
+
+test:
+  imports:
+    - braid 
+  commands:
+    - braid --help
+
+about:
+  home: https://github.com/YuefanHuang1998/BRAID
+  summary: "A software tool for Block Resolution and Annotation of Integrated DNA."
+  license: MIT
+  license_family: MIT

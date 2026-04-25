@@ -1,13 +1,23 @@
-package:
-  name: tedna
-  version: "1.2.2"
+{% set name = "tedna" %}
+{% set version = "1.3.1" %}
 
-build:
-  number: 2
+package:
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://urgi.versailles.inra.fr/content/download/3481/29402/file/tedna_1.2.2.tar.gz
-  md5: 24c3fbb94d63d3cb911941b1266a3908
+  url: https://github.com/mzytnicki/tedna/archive/refs/tags/{{ version }}.tar.gz
+  sha256: a299c712d6a673ae25dea5cc87539f2f55c9a6985bae5811f1f891dcb9391e4c
+  patches:
+    - 0001-makefile.patch
+    - 0002-cstdint.patch
+
+build:
+  number: 0
+  # ./sparsehash/sparse_hash_map:94:10: fatal error: 'tr1/functional' file not found
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -16,15 +26,24 @@ requirements:
     - {{ compiler('cxx') }}
   host:
     - sparsehash
-    - bc
-
-  run:
 
 test:
   commands:
     - tedna -v
 
 about:
-  home: https://urgi.versailles.inra.fr/Tools/Tedna
-  license: GNU Affero General Public License
-  summary: Tedna is a lightweight de novo transposable element assembler
+  home: "https://github.com/mzytnicki/tedna"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Tedna is a lightweight de novo transposable element assembler."
+  dev_url: "https://github.com/mzytnicki/tedna"
+  doc_url: "https://github.com/mzytnicki/tedna/blob/{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/bioinformatics/btu365
+    - biotools:tedna
