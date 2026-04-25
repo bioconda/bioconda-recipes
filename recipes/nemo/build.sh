@@ -31,9 +31,9 @@ case $(uname -m) in
 esac
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-	make GSL_PATH="$PREFIX/" CC="$CXX" C_OPTS="${CPPFLAGS} ${CXXFLAGS}" SHELL="/bin/bash" MAC=1 -j"${CPU_COUNT}"
+	C_OPTS="${CPPFLAGS} ${CXXFLAGS}" make GSL_PATH="$PREFIX/" CC="$CXX" SHELL="/bin/bash" MAC=1 -j"${CPU_COUNT}"
 else
-	make GSL_PATH="$PREFIX/" CC="$CXX" C_OPTS="${CPPFLAGS} ${CXXFLAGS}" SHELL="/bin/bash" -j"${CPU_COUNT}"
+	C_OPTS="${CPPFLAGS} ${CXXFLAGS}" make GSL_PATH="$PREFIX/" CC="$CXX" SHELL="/bin/bash" -j"${CPU_COUNT}"
 fi
 
 make install BIN_INSTALL="$PREFIX/bin/" LIB_INSTALL="$PREFIX/lib/"
