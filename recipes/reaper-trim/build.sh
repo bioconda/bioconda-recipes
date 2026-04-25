@@ -6,6 +6,9 @@ export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
 
 install -d "${PREFIX}/bin"
 
+sed -i.bak "s|-lz|-L${PREFIX}/lib -lz|" src/Makefile
+rm -f src/*.bak
+
 cd src
 
 make CC="${CC}" -j"${CPU_COUNT}"
