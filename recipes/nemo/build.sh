@@ -18,10 +18,22 @@ case $(uname -m) in
 	;;
 esac
 
+case $(uname -m) in
+    aarch64)
+	sed -i.bak 's|-march=native|-O3 -std=c++14 -march=armv8-a -Wno-narrowing|' Makefile
+	;;
+    arm64)
+	sed -i.bak 's|-march=native|-O3 -std=c++14 -march=armv8.4-a -Wno-narrowing|' Makefile
+	;;
+    x86_64)
+	sed -i.bak 's|-march=native|-O3 -std=c++14 -march=x86-64-v3 -Wno-narrowing|' Makefile
+	;;
+esac
+
 if [[ "$OSTYPE" == "darwin"* ]]; then
-	C_OPTS="${CPPFLAGS} ${CXXFLAGS}" make GSL_PATH="$PREFIX/" CC="$CXX" MAC=1 SHELL="/bin/bash" -j"${CPU_COUNT}"
+	make GSL_PATH="$PREFIX/" CC="$CXX" C_OPTS="${CPPFLAGS} ${CXXFLAGS}" MAC=1 -j"${CPU_COUNT}"
 else
-	C_OPTS="${CPPFLAGS} ${CXXFLAGS}" make GSL_PATH="$PREFIX/" CC="$CXX" SHELL="/bin/bash" -j"${CPU_COUNT}"
+	make GSL_PATH="$PREFIX/" CC="$CXX" C_OPTS="${CPPFLAGS} ${CXXFLAGS}" -j"${CPU_COUNT}"
 fi
 
-make install BIN_INSTALL="$PREFIX/bin/" LIB_INSTALL="$PREFIX/lib/" SHELL="/bin/bash"
+make install BIN_INSTALL="$PREFIX/bin/" LIB_INSTALL="$PREFIX/lib/"
