@@ -19,8 +19,8 @@ esac
 mkdir -p "${PREFIX}/bin"
 mkdir -p bin/
 
-C_OPTS="${CPPFLAGS} ${CXXFLAGS}" make CC="${CXX}" GSL_PATH="${PREFIX}/"
+C_OPTS="${CPPFLAGS} ${CXXFLAGS}" make CC="${CXX}" GSL_PATH="${PREFIX}/" -j"${CPU_COUNT}"
 
 make install BIN_INSTALL="${PREFIX}/bin/"
 
-mv ${PREFIX}/bin/nemoage* ${PREFIX}/bin/nemoage
+mv ${PREFIX}/bin/nemoage* "${PREFIX}/bin/nemoage"
