@@ -45,7 +45,9 @@ autoreconf -if
   --enable-hts --disable-option-checking \
   --enable-silent-rules --disable-dependency-tracking
 
-make -j"${CPU_COUNT}"
+make clean
+
+make -j"${CPU_COUNT}";
 make install
 
 for i in $(ls -1 | grep -v Configuration | grep -v bin);
