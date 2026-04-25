@@ -2,7 +2,7 @@
 set -eu
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-unused-variable -Wno-template-id-cdtor -Wno-unknown-warning-option"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lstdc++fs"
 export CXXFLAGS="${CXXFLAGS} -O3 -Wno-unused-but-set-variable"
 export CFLAGS="${CFLAGS} -O3"
 
