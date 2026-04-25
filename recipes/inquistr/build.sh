@@ -13,3 +13,5 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1 cargo install --verbose --root "${PREFIX}" --no-track --locked --path .
+
+"${STRIP}" "${PREFIX}/bin/inquiSTR"
