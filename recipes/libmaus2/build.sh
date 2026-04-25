@@ -3,7 +3,7 @@ set -eu
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-unused-variable -Wno-template-id-cdtor -Wno-unknown-warning-option"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-unused-but-set-variable"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-unused-but-set-variable"
 export CFLAGS="${CFLAGS} -O3"
 
 case $(uname -m) in
@@ -16,6 +16,13 @@ case $(uname -m) in
     x86_64)
 	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 	;;
+esac
+
+case $(uname -s) in
+    Darwin)
+	export CXXFLAGS="${CXXFLAGS} -std=c++20" ;;
+	Linux)
+	export CXXFLAGS="${CXXFLAGS} -std=c++14" ;;
 esac
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
