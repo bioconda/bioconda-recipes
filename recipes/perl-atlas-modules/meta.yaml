@@ -1,4 +1,4 @@
-{% set version = "0.3.1" %}
+{% set version = "0.3.2" %}
 
 package:
   name: perl-atlas-modules
@@ -6,20 +6,21 @@ package:
 
 source:
   url: https://github.com/ebi-gene-expression-group/perl-atlas-modules/archive/{{ version }}.tar.gz
-  sha256: 3f5e9df3ee36a97d46d8754d3d26c880f67bfaa264fc37765d8490829168e824
+  sha256: 98fb532865ada7b41190e378f66d40bda11fd9b21ee2a0b188a7f2d0efce6c7d
 
-# If this is a new build for the same version, increment the build
-# number. If you do not include this key, it defaults to 0.
 build:
-  number: 6
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('perl-atlas-modules', max_pin="x.x") }}
 
 requirements:
   build:
    - make
    - {{ compiler('c') }}
    - {{ compiler('cxx') }}
+   - {{ stdlib('c') }}
   host:
-   - perl=5.26.2
+   - perl
    - perl-algorithm-diff
    - perl-app-cpanminus
    - perl-archive-extract
@@ -38,7 +39,7 @@ requirements:
    - perl-datetime-format-strptime
    - perl-dbd-mysql
    - perl-dbd-pg
-   - perl-dbi<1.642
+   - perl-dbi
    - perl-devel-symdump
    - perl-extutils-cbuilder
    - perl-extutils-config
@@ -88,9 +89,8 @@ requirements:
    - perl-xml-writer
    - perl-yaml
    - perl-test-needs
-
   run:
-   - perl=5.26.2
+   - perl
    - perl-algorithm-diff
    - perl-array-compare
    - perl-archive-extract
@@ -110,7 +110,7 @@ requirements:
    - perl-datetime-format-strptime
    - perl-dbd-mysql
    - perl-dbd-pg
-   - perl-dbi<1.642
+   - perl-dbi
    - perl-devel-symdump
    - perl-extutils-cbuilder
    - perl-extutils-config
@@ -182,12 +182,17 @@ test:
     - EBI::FGPT::CheckSet::AEAtlas
 
 about:
-  home: https://github.com/ebi-gene-expression-group/perl-atlas-modules
-  license: Apache Software License
+  home: "https://github.com/ebi-gene-expression-group/perl-atlas-modules"
+  license: "Apache-2.0"
   license_family: APACHE
-  license_file: 'LICENSE'
-  summary: A package exporting in-house perl functions and classes used in the data production of EMBL-EBI Expression Atlas data.
+  license_file: LICENSE
+  summary: "A package exporting in-house perl functions and classes used in the data production of EMBL-EBI Expression Atlas data."
+  dev_url: "https://github.com/ebi-gene-expression-group/perl-atlas-modules"
 
 extra:
   recipe-maintainers:
     - pinin4fjords
+  additional-platforms:
+    - linux-aarch64
+    # requires perl-socket but is missing perl-extutils-constant on arm64
+    #- osx-arm64

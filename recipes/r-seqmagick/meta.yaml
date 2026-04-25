@@ -10,12 +10,17 @@ source:
     - {{ cran_mirror }}/src/contrib/Archive/seqmagick/seqmagick_{{ version }}.tar.gz
   sha256: 259591499edc61d947e135a44f0ef91f6fc002104172974b0cfd991c5df387b8
 
+
 build:
-  number: 0
+  number: 1
   noarch: generic
   rpaths:
     - lib/R/lib/
     - lib/
+  missing_dso_whitelist:
+    - '*/R.dll'        # [win]
+    - '*/Rblas.dll'    # [win]
+    - '*/Rlapack.dll'  # [win]
   run_exports:
     - {{ pin_subpackage('r-seqmagick', max_pin="x.x") }}
 
@@ -31,17 +36,22 @@ requirements:
     - r-magrittr
     - r-yulab.utils >0.1.6
 
+
 test:
   commands:
-    - $R -e "library('seqmagick')"
+    - $R -e "library('seqmagick')"           # [not win]
+    - "\"%R%\" -e \"library('seqmagick')\""  # [win]
 
 about:
   home: https://github.com/YuLab-SMU/seqmagick
   license: Artistic-2.0
-  summary: Supports reading and writing sequences for different formats (currently interleaved
-    and sequential formats for 'FASTA' and 'PHYLIP'), file conversion, and manipulation
-    (e.g. filter sequences that contain specify pattern, export consensus sequence from
-    an alignment).
+  summary: Tools for reading and writing biological sequences in multiple formats, including
+    'FASTA', 'PHYLIP', 'CLUSTAL', 'STOCKHOLM', 'MEGA' and 'GenBank'. Supports interleaved
+    and sequential layouts where applicable, converts between formats, and manipulates
+    sequence sets (e.g., filtering by patterns and computing consensus sequences from
+    alignments). Also includes functions to download nucleotide records from NCBI by
+    accession.
   license_family: OTHER
   license_file:
-    - {{ environ["PREFIX"] }}/lib/R/share/licenses/Artistic-2.0
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/Artistic-2.0'
+

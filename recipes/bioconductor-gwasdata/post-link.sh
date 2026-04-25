@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "gwasdata-1.44.0"
+installBiocDataPackage.sh "gwasdata-1.48.0"
