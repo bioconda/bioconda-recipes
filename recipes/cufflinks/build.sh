@@ -6,6 +6,7 @@ export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-register -D_LIBCPP_DISABLE_AVAI
 export CFLAGS="${CFLAGS} -O3"
 export LC_ALL="en_US.UTF-8"
 export BAM_ROOT="${PREFIX}"
+export BOOST_ROOT="${PREFIX}"
 
 case $(uname -m) in
     aarch64)
@@ -42,7 +43,7 @@ rm -f src/*.bak
 
 autoreconf -if
 ./configure --prefix="${PREFIX}" \
-	--with-boost="${PREFIX}" \
+	#--with-boost="${PREFIX}" \
 	--with-zlib="${PREFIX}" \
 	--with-eigen="${PREFIX}" \
 	--disable-option-checking \
