@@ -47,7 +47,7 @@ autoreconf -if
 
 make clean
 
-make -j"${CPU_COUNT}";
+make CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}";
 make install
 
 for i in $(ls -1 | grep -v Configuration | grep -v bin);
