@@ -16,12 +16,14 @@ case $(uname -m) in
 	;;
 esac
 
+sed -i.bak "s|g++|${CXX}|" Makefile
+
 case $(uname -s) in
     Darwin)
-    sed -i.bak "s|g++|${CXX}|" Makefile
-		sed -i.bak 's|-lrt||g' Makefile
-    rm -f *.bak ;;
+	sed -i.bak 's|-lrt||g' Makefile ;;
 esac
+
+rm -f *.bak
 
 mkdir -p "${PREFIX}/bin"
 
