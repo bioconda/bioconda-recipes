@@ -2,7 +2,7 @@
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
 
 case $(uname -m) in
     aarch64)
@@ -16,11 +16,18 @@ case $(uname -m) in
 	;;
 esac
 
+sed -i.bak "s|g++|${CXX}|" Makefile
+sed -i.bak "s|-lrt|-L${PREFIX}/lib -lrt|g" Makefile
+
+case $(uname -s) in
+    Darwin)
+	sed -i.bak 's|-lrt||g' Makefile ;;
+esac
+
+rm -f *.bak
+
 mkdir -p "${PREFIX}/bin"
-mkdir -p bin/
 
-C_OPTS="${CPPFLAGS} ${CXXFLAGS}" make CC="${CXX}" GSL_PATH="${PREFIX}/" -j"${CPU_COUNT}"
+make -j"${CPU_COUNT}"
 
-make install BIN_INSTALL="${PREFIX}/bin/"
-
-mv ${PREFIX}/bin/nemoage* "${PREFIX}/bin/nemoage"
+install -v -m 0755 molemap "${PREFIX}/bin"
