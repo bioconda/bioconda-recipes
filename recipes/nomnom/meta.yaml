@@ -1,0 +1,44 @@
+{% set name = "nomnom" %}
+{% set version = "0.1.0" %}
+{% set sha256 = "0ac1f0f44a323ae7985d5075c4b5755034b8bf066e3dac6e607228075596cc8c" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/diegomics/NomNom/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  run_exports:
+    - {{ pin_subpackage("nomnom", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools
+  run:
+    - python >=3.11
+    - pandas >=2.3
+    - numpy >=2.3
+    - openpyxl >=3.1
+    - xlrd >=2.0
+    - numbers-parser >=4.16
+    - odfpy >=1.4
+    - pyyaml >=6.0
+
+test:
+  commands:
+    - nomnom --help
+
+about:
+  home: https://github.com/diegomics/NomNom
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: A tool for converting genomic data tables into hierarchical YAML files

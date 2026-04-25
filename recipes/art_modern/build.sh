@@ -6,8 +6,8 @@ env -C "${TMPDIR}" cmake \
     -Wdev -Wdeprecated --warn-uninitialized \
     -DCEU_CM_SHOULD_USE_NATIVE=OFF \
     -DCEU_CM_SHOULD_ENABLE_TEST=OFF \
-    -DUSE_THREAD_PARALLEL=ASIO \
-    -DUSE_RANDOM_GENERATOR=STL \
+    -DUSE_THREAD_PARALLEL=BS \
+    -DUSE_RANDOM_GENERATOR=PCG \
     -DUSE_MALLOC=NOP \
     -DUSE_HTSLIB=hts \
     -DUSE_LIBFMT=fmt \
