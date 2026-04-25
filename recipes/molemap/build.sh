@@ -17,6 +17,7 @@ case $(uname -m) in
 esac
 
 sed -i.bak "s|g++|${CXX}|" Makefile
+sed -i.bak "s|-lrt|-L${PREFIX}/lib -lrt|g" Makefile
 
 case $(uname -s) in
     Darwin)
