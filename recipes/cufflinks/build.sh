@@ -43,7 +43,7 @@ rm -f src/*.bak
 
 autoreconf -if
 ./configure --prefix="${PREFIX}" \
-	#--with-boost="${PREFIX}" \
+	--with-boost="${PREFIX}" \
 	--with-zlib="${PREFIX}" \
 	--with-eigen="${PREFIX}" \
 	--disable-option-checking \
