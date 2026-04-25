@@ -1,0 +1,49 @@
+diff --git a/ContigsCompactor-v0.2.0/ContigsMerger/Makefile b/ContigsCompactor-v0.2.0/ContigsMerger/Makefile
+index dab79e2..54a5c50 100644
+--- a/ContigsCompactor-v0.2.0/ContigsMerger/Makefile
++++ b/ContigsCompactor-v0.2.0/ContigsMerger/Makefile
+@@ -1,10 +1,10 @@
+-CC = g++
+-CFLAGS =  -O3 -Wall -mcmodel=medium
++CC ?= $(CXX)
++CFLAGS = -O3 -Wall -march=x86-64-v3 -mcmodel=medium
+ 
+ 
+-all: ContigsMerger 
++all: ContigsMerger
+ 
+-abstractcharsequence.o: abstractcharsequence.cpp abstractcharsequence.h 
++abstractcharsequence.o: abstractcharsequence.cpp abstractcharsequence.h
+ 	$(CC)  $(CFLAGS) -c abstractcharsequence.cpp
+ 
+ fastareader.o: fastareader.cpp fastareader.h
+@@ -45,4 +45,4 @@ ContigsMerger:  abstractcharsequence.o main.o fastareader.o fastaMultiSeqs.o  Ge
+   Utils-basic.o GraphUtils.o ScaffoldUtils.o
+ 	$(CC) $(CFLAGS) -o ContigsMerger abstractcharsequence.o main.o fastareader.o fastaMultiSeqs.o  GenSeqsUtils.o MurmurHash3.o ContigsCompactor.o \
+          KmerUtils.o Utils-basic.o GraphUtils.o ScaffoldUtils.o \
+-         -lz -lm -lpthread
++         -L$(PREFIX)/lib -lz -lm -pthread
+diff --git a/TERefiner/Makefile b/TERefiner/Makefile
+index 05899d7..824c826 100644
+--- a/TERefiner/Makefile
++++ b/TERefiner/Makefile
+@@ -1,8 +1,8 @@
+-BAMTOOLS=/usr/local/include/bamtools/
+-BAMTOOLS_LD=/usr/local/lib/
++BAMTOOLS=$(PREFIX)/include/bamtools/
++BAMTOOLS_LD=$(PREFIX)/lib/
+ 
+-CC = g++
+-CFLAGS =  -O3 -Wall -static -I$(BAMTOOLS) -L$(BAMTOOLS_LD) -Wl,-rpath,$(BAMTOOLS_LD)
++CC ?= $(CXX)
++CFLAGS =  -O3 -Wall -march=x86-64-v3 -static -I$(BAMTOOLS) -L$(BAMTOOLS_LD) -Wl,-rpath,$(BAMTOOLS_LD)
+ 
+ all: TERefiner
+ 
+@@ -44,4 +44,4 @@ main.o: main.cpp
+ 
+ TERefiner: public_func.o StrOperation.o local_alignment.o Alignment.o bam_parse.o fai_parser.o contigs.o Coverage.o scaffolding.o RepeatsClassifier.o refiner.o main.o 
+ 	$(CC) $(CFLAGS) -o TERefiner_1 public_func.o StrOperation.o local_alignment.o Alignment.o bam_parse.o fai_parser.o contigs.o Coverage.o scaffolding.o RepeatsClassifier.o refiner.o main.o \
+-	-lbamtools -lz -lm
+\ No newline at end of file
++	-lbamtools -lz -lm
