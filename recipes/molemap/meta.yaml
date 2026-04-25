@@ -8,7 +8,6 @@ source:
 
 build:
   number: 0
-  skip: True # [osx]
   run_exports:
     - {{ pin_subpackage('molemap', max_pin="x") }}
 
@@ -17,13 +16,14 @@ requirements:
     - {{ compiler('c') }}
     - {{ stdlib("c") }}
     - {{ compiler('cxx') }}
-    - llvm-openmp # [osx] 
     - make
-    - libzlib
-    - zlib-ng
-    - zlib
   host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - zlib
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
 
 test:
   commands:
@@ -36,3 +36,8 @@ about:
   license_file: LICENSE
   summary: "Ultra fast molecule mapping for linked- and long-read data."
   dev_url: "https://github.com/kehrlab/molemap"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
