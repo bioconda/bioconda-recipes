@@ -3,6 +3,7 @@ set -eu -o pipefail
 
 export CFLAGS="${CFLAGS} -O3"
 export LDFLAGS="${LDFLAGS}"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
 mkdir -p "${PREFIX}/bin"
 
@@ -17,8 +18,7 @@ if [[ "$(uname -m)" == "arm64" ]]; then
 
 	echo "gcc.exe = \"${CC}\"" >> nim-2.2.*/config/nim.cfg
 	echo "gcc.linkerexe =\"${CC}\"" >>  nim-2.2.*/config/nim.cfg
-	echo "gcc.options.linker %= \"\${gcc.options.linker} ${LDFLAGS}\"" >>  nim-2.2.*/config/nim.cfg
-	cat nim-2.2.*/config/nim.cfg
+	echo "gcc.options.linker %= \"\${gcc.options.linker} ${LDFLAGS}\"" >> nim-2.2.*/config/nim.cfg
 fi
 
 pushd hts-nim
