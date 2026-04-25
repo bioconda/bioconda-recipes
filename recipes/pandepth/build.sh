@@ -3,7 +3,7 @@ set -eu -o pipefail
 
 ${CXX} ${CXXFLAGS} ${LDFLAGS} --std=c++11 -g -O3 src/PanDepth.cpp \
     -lhts -ldeflate -lz -pthread \
-    -I${PREFIX}/include -L${PREFIX}/lib -o pandepth
+    -I${PREFIX}/include -Iinclude -L${PREFIX}/lib -o pandepth
 
 cp pandepth ${PREFIX}/bin/
 
