@@ -14,7 +14,7 @@ cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 	LDFLAGS="${LDFLAGS}" \
 	--disable-option-checking --enable-silent-rules --disable-dependency-tracking
 
-cp -f gadem_documentation_v1.3.1.pdf doc/GADEM_documentation.pdf
+cp -f "doc/gadem_documentation_v${PKG_VERSION}.pdf" doc/GADEM_documentation.pdf
 
 make -j"${CPU_COUNT}"
 make install
