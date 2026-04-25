@@ -9,16 +9,20 @@ mkdir -p "${PREFIX}/bin"
 
 case $(uname -m) in
     aarch64)
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a|' TERefiner/Makefile
 	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a|' ContigsCompactor-v0.2.0/ContigsMerger/Makefile ;;
     arm64)
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a|' TERefiner/Makefile
 	sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a|' ContigsCompactor-v0.2.0/ContigsMerger/Makefile ;;
 esac
-rm -f Release/*.bak
 
 case $(uname -s) in
     "Darwin")
-	sed -i.bak 's| -static||' TERefiner/Makefile && rm -f TERefiner/*.bak ;;
+	sed -i.bak 's| -static||' TERefiner/Makefile ;;
 esac
+
+rm -f TERefiner/*.bak
+rm -f ContigsCompactor-v0.2.0/ContigsMerger/*.bak
 
 pushd TERefiner
 make CC="${CXX}" -j"${CPU_COUNT}"
