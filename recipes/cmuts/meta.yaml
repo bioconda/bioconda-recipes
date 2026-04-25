@@ -1,0 +1,76 @@
+{% set name = "cmuts" %}
+{% set version = "1.4.5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/hmblair/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 85798502754b04a1fd0bd70c080c5da71a7301013fa87092f576144a0fa32783
+
+build:
+  number: 0
+  skip: true  # [win or (osx and x86_64)]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake >=3.29
+    - make
+    - autoconf
+    - automake
+    - libtool
+    - git
+    - patchelf  # [linux]
+  host:
+    - htslib
+    - hdf5
+    - zlib
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - python
+    - pip
+    - setuptools >=61.0
+    - setuptools-scm >=8.0
+  run:
+    - htslib
+    - hdf5
+    - zlib
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - python >=3.9
+    - numpy >=1.21,<3.0
+    - scipy >=1.9,<2.0
+    - matplotlib-base >=3.5
+    - h5py >=3.0
+    - dask >=2022.1
+    - biopython >=1.80
+
+test:
+  commands:
+    - cmuts --help
+    - cmuts-core --version
+    - cmuts-normalize --help
+  imports:
+    - cmuts
+
+about:
+  home: https://github.com/hmblair/cmuts
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.md
+  summary: Chemical mutation profiling for RNA MaP-seq experiments
+  description: |
+    cmuts counts chemical mutations in RNA MaP-seq experiments. It processes
+    BAM/CRAM files against a reference FASTA and outputs mutation counts in
+    HDF5 format. Features OpenMP parallelism and optional MPI support.
+  doc_url: https://hmblair.github.io/cmuts
+  dev_url: https://github.com/hmblair/cmuts
+
+extra:
+  recipe-maintainers:
+    - hmblair
