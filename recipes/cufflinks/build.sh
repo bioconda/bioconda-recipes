@@ -23,7 +23,7 @@ esac
 case $(uname -s) in
     Darwin)
 	export CXXFLAGS="${CXXFLAGS} -stdlib=libc++"
-	export LDFLAGS="${LDFLAGS} -lboost_serialization -lboost_thread" ;;
+	export LDFLAGS="${LDFLAGS} -lboost_serialization -lboost_thread" -Wl,-allow_multiple_definition ;;
 esac
 
 mkdir -p "$PREFIX/bin"
