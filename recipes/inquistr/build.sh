@@ -6,6 +6,9 @@ export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
+sed -i.bak 's|2024|2021|' Cargo.toml
+rm -f *.bak
+
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # build statically linked binary with Rust
