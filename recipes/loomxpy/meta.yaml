@@ -1,0 +1,48 @@
+{% set name = "loomxpy" %}
+{% set version = "0.4.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/aertslab/LoomXpy/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: c5c3c29e3abde34acb38ff034225ee849e67cfe84a89b81b8ce6f90fd694ccb6
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  run_exports: {{ pin_compatible("loomxpy", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - poetry
+    - setuptools
+  run:
+    - python >={{ python_min }}
+    - numpy >=1.20.2
+    - pandas >=1.2.4
+    - click
+    - loompy >=3.0.7,<4.0.0
+    - scikit-learn >=0.24.2
+    - pyscenic >=0.12.0
+    - dataclasses-json >=0.5.3
+
+test:
+  commands:
+    - loomxpy --help
+  imports:
+    - loomxpy
+
+about:
+  home: https://github.com/aertslab/loomxpy
+  license: MIT
+  license_file: LICENSE.txt
+  summary: Python package (compatible with SCope) to create .loom files and extend them with other data (like SCENIC regulons)
+
+extra:
+  recipe-maintainers:
+    - nilchia

@@ -1,7 +1,5 @@
 #!/bin/bash
-set -ex 
-
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+set -ex
 
 case $(uname -m) in
 	aarch64|arm64) sed -i.bak 's|-mavx2||' include.mk && sed -i.bak 's|-D__AVX2__||' include.mk && rm -rf *.bak
@@ -15,17 +13,28 @@ make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DU
 cd ../../
 
 cd submodules/FASTGA
+make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}"
+cd ../../
+
+cd submodules/FASTAN
+sed -i.bak -e 's/-lm -lz/-lm -lpthread -lz/g' Makefile
+rm -f *.bak
+make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}" FasTAN
+ln -f FasTAN "${PREFIX}/bin/"
+cd ../../
+
+cd submodules/alntools
 make CFLAGS="${CFLAGS} -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}"
 cd ../../
 
 cd submodules/cPecan/externalTools/lastz-distrib-1.03.54/src
-export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include -I${PREFIX}/include/libxml2"
+export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include/libxml2"
 make CC="${CC}" -j"${CPU_COUNT}"
 cd ../../../../../
 
 sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
 rm -rf *.bak
-${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+${PYTHON} -m pip install ./submodules/sonLib . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
 
 make
 mv bin/* ${PREFIX}/bin

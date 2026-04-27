@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#  Force C locale to be  Deterministic, Portable, and avoid warnings
+export LC_ALL=C
+export LANG=C
+
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     perl Build.PL

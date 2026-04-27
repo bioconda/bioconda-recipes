@@ -1,0 +1,64 @@
+{% set name = "Seqwin" %}
+{% set version = "0.3.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/treangenlab/Seqwin/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 2b716ec89172208d6115b3a994d6b11e1972372652f7eb47af7e47cfbc6526fc
+
+build:
+  number: 0
+  skip: true  # [py < 310]
+  script:
+    - export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"  # [osx]
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake >=3.18
+    - ninja >=1.10
+    - make
+  host:
+    - python
+    - pip
+    - scikit-build-core >=0.12
+    - pybind11 >=2.12
+  run:
+    - python
+    - numpy >=2
+    - numba
+    - pandas >=2
+    - networkx
+    - pydantic >=2
+    - typer
+    - mash
+    - blast
+    - ncbi-datasets-cli
+
+test:
+  imports:
+    - seqwin
+    - seqwin.btllib
+  commands:
+    - seqwin --help
+
+about:
+  home: https://github.com/treangenlab/{{ name }}
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Ultrafast identification of signature sequences in microbial genomes"
+  dev_url: https://github.com/treangenlab/{{ name }}
+  doc_url: https://github.com/treangenlab/{{ name }}/wiki
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
