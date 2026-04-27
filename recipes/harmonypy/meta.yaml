@@ -11,20 +11,24 @@ source:
 
 build:
   number: 0
-  noarch: python
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - {{ stdlib("c") }}
+    - cmake >=3.15
+    - make
   host:
     - hatchling
     - pip
     - python >=3.9
     - scikit-build-core >=0.10
     - nanobind >=2.0
-    - cmake >=3.15
     - ninja
+    - libopenblas # [linux]
   run:
     - numpy
     - pandas
@@ -32,6 +36,7 @@ requirements:
     - scipy
     - scikit-learn
     - pytorch
+    - libopenblas # [linux]
 
 test:
   imports:
