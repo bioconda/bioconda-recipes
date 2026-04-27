@@ -9,5 +9,9 @@ mkdir -p $BEAST_DIR
 # Copy full beast2 installation directory
 cp -r $SRC_DIR/beast2/* $BEAST_DIR
 
+# I found that the "bin/" directory was not auto created during build (likely depends on dependencies of this package)
+# If the recipie changes so that "bin/" gets created, then this mkdir can be removed
+mkdir -p $PREFIX/bin
+
 # Setup symlinks in conda "bin/" directory to the beast2 install directory
 ln -f -s ../${BEAST_DIR_SUFFIX}/bin/{applauncher,beast,beauti,densitree,loganalyser,logcombiner,packagemanager,treeannotator} $PREFIX/bin
