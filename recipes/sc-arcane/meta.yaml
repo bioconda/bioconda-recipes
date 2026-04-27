@@ -1,0 +1,56 @@
+{% set version = "0.1.1" %}
+
+package:
+  name: sc-arcane
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/s/sc-arcane/sc_arcane-{{ version }}.tar.gz
+  sha256: 3c3e01d2e098f3a554a1715b5345567c82edb67bda43c40d9929b4fc3f6bd779
+
+build:
+  entry_points:
+    - arcane = arcane.arcane.arcane_main:main
+    - scfastqsim = arcane.scfastqsim.scfastqsim_main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.12
+    - setuptools >=69.0.3
+    - pip
+  run:
+    - python >=3.12
+    - numpy
+    - numba
+    - pytest
+    - jsonargparse >=4.29.0
+    - pip
+    - llvmlite
+    - clangdev
+    - xz
+    - tabix
+    - bzip2
+
+test:
+  imports:
+    - arcane
+  commands:
+    - pip check
+    - arcane --help
+    - scfastqsim --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://gitlab.com/rahmannlab/arcane
+  summary: alignment free scRNAseq expression estimation
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - JZentgraf
