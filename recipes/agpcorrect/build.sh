@@ -1,7 +1,7 @@
 #!/bin/bash
 mkdir -p $PREFIX/bin
 
-cp $SRC_DIR/AGPCorrect $PREFIX/bin/AGPCorrect
+cp $SRC_DIR/agpcorrect $PREFIX/bin/agpcorrect
 
-chmod +x $PREFIX/bin/AGPCorrect
+chmod +x $PREFIX/bin/agpcorrect
 
