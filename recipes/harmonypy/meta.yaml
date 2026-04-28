@@ -1,5 +1,5 @@
 {% set name = "harmonypy" %}
-{% set version = "0.2.0" %}
+{% set version = "2.0.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,20 +7,28 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "9678a059f943723ba954f58d04e1a72e8a5c49ef4d95ba04fb33c9c1b5c67a77"
+  sha256: "98c18954781aec9a82aaec3cde3764d89fd2ef93e84ece6724bc0f25b37244ed"
 
 build:
   number: 0
-  noarch: python
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - {{ stdlib("c") }}
+    - cmake >=3.15
+    - make
   host:
     - hatchling
     - pip
     - python >=3.9
+    - scikit-build-core >=0.10
+    - nanobind >=2.0
+    - ninja
+    - libopenblas # [linux]
   run:
     - numpy
     - pandas
@@ -28,6 +36,7 @@ requirements:
     - scipy
     - scikit-learn
     - pytorch
+    - libopenblas # [linux]
 
 test:
   imports:
