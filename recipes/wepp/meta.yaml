@@ -1,5 +1,5 @@
 {% set name = "wepp" %}
-{% set version = "0.1.5.3" %}
+{% set version = "0.1.5.5" %}
 
 package:
   name: {{ name }}
@@ -7,20 +7,20 @@ package:
 
 source:
   url: https://github.com/TurakhiaLab/WEPP/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 071430ceef6742af4b6b07fa3bfe91eeade940c9b3cc278ac26205e1e9f98cc6
+  sha256: 9d03882ad6f6ed23826d7b1f819da0da10ae80c3907c9a2d7e42ee5d898f7b45
 
 build:
   number: 1
   run_exports:
-    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - cmake
     - make
     - pkg-config
-
   host:
     - boost-cpp 1.78.*
     - tbb >=2021.0,<2022.0
@@ -28,11 +28,9 @@ requirements:
     - protobuf <4
     - mpich
     - jsoncpp
-
   run:
-    - python >=3.11
-    - conda >=24.7.1 # required for snakemake --use-conda 
-    - pip
+    - python
+    - conda >=24.7.1  # required for snakemake --use-conda 
     - boost 1.78.*
     - protobuf <4
     - tbb >=2021.0,<2022.0
@@ -69,7 +67,6 @@ about:
     candidate pool, which is passed to a deconvolution algorithm to estimate their 
     relative abundances. An interactive dashboard enables visualization of 
     haplotypes in the global phylogenetic tree and read-level analysis.
-
   doc_url: "https://turakhia.ucsd.edu/WEPP"
 
 extra:
