@@ -1,13 +1,14 @@
 #!/bin/bash
-set -ex
-
-git submodule update --init --recursive
+set -euxo pipefail
 
 mkdir -p build
 cd build
 
-cmake .. -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release
-make -j"${CPU_COUNT}"
+cmake ${CMAKE_ARGS} .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX="${PREFIX}"
+
+make -j"${CPU_COUNT}" alerax
 
 mkdir -p "${PREFIX}/bin"
 cp bin/alerax "${PREFIX}/bin/alerax"
