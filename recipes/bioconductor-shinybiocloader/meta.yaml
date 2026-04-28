@@ -1,0 +1,41 @@
+{% set version = "1.0.0" %}
+{% set name = "shinybiocloader" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 0b06a967937afcdf8a1d852998311aa7
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-shinybiocloader", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: shinydashboard, tinytest, quarto
+# SystemRequirements: quarto
+requirements:
+  host:
+    - r-base
+    - r-htmltools
+    - r-shiny
+  run:
+    - r-base
+    - r-htmltools
+    - r-shiny
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Use a Shiny Bioconductor CSS loader
+  description: Add a Bioconductor themed CSS loader to your shiny app. It is based on the shinycustomloader R package. Use a spinning Bioconductor note loader to enhance your shiny app loading screen. This package is intended for developer use.
+
