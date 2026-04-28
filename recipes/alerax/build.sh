@@ -1,8 +1,7 @@
 #!/bin/bash
 set -ex
 
-# Fix CMakeLists.txt - comment out missing ext subdirectory
-sed -i 's/add_subdirectory(ext)/#add_subdirectory(ext)/g' CMakeLists.txt
+git submodule update --init --recursive
 
 mkdir -p build
 cd build
