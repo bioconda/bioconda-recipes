@@ -1,0 +1,51 @@
+{% set name = "directclean" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 42f9faf1d9f9f945bc6e4492fe70d1073d61b514838ee8aaa8abf7faedb2adf4
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('directclean', max_pin="x.x") }}
+  entry_points:
+    - directclean = directclean.cli.app:app
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - poetry-core
+  run:
+    # Python dependencies (from pyproject.toml)
+    - python >=3.10
+    - pysam >=0.21.0
+    - biopython >=1.81
+    - typer >=0.9.0
+    - rich >=13.0.0
+    - edlib >=1.3.9
+    
+    # External system dependencies (from environment.yml)
+    - minimap2
+    - samtools
+    - breakinator >=1.1.1
+    - restrander
+
+test:
+  commands:
+    - directclean --help
+
+about:
+  home: "https://github.com/ylab-hi/DirectClean"
+  license: "MIT"
+  license_family: "MIT"
+  summary: "Strand orientation, artifact removal, and chimeric read rescue for ONT direct-cDNA"
+  description: "DirectClean processes raw ONT direct-cDNA FASTQ files and produces clean, oriented reads ready for transcript quantification and gene fusion analysis, eliminating foldback inversions and homopolymer RT template switching artifacts."
+  dev_url: "https://github.com/ylab-hi/DirectClean"
