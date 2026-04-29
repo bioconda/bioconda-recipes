@@ -1,0 +1,56 @@
+{% set name = "gpid" %}
+{% set version_match = load_file_regex(load_file="VERSION", regex_pattern="^([0-9][A-Za-z0-9._!+-]*)") %}
+{% set version = version_match.group(1) %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/BenKuhnhaeuser/GPID/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 81255487c794fe77057d909fba89e10807556c362b2c4ce1dd04036d20f21550
+build:
+  number: 0
+  skip: true  # [win]
+
+requirements:
+  host:
+    - bash
+  run:
+    - bash >=4
+    - blast
+    - coreutils
+    - gawk
+    - grep
+    - sed
+    - r-base
+    - r-dplyr
+    - r-ggplot2
+    - r-ggpubr
+    - r-ggtext
+    - r-stringr
+    - r-svglite
+    - r-tidyr
+    - r-withr
+
+test:
+  commands:
+    - gpid help
+    - gpid reference -h
+    - test -f "${PREFIX}/share/gpid/VERSION"
+    - test -f "${PREFIX}/share/gpid/scripts/parliament.R"
+    - Rscript -e "packages <- c('dplyr', 'tidyr', 'ggplot2', 'ggpubr', 'ggtext', 'stringr', 'svglite', 'withr'); missing <- packages[!vapply(packages, requireNamespace, logical(1), quietly = TRUE)]; stopifnot(length(missing) == 0)"
+
+about:
+  home: https://github.com/BenKuhnhaeuser/GPID/tags
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: GeneParliamentID pipeline for multi-gene species identification 
+  description: |
+    GPID prepares BLAST reference databases, calibrates alignment and gene
+    performance thresholds, validates confidence support, and identifies
+    samples from multiple single-sequence-per-gene FASTA files.
+
+extra:
+  recipe-maintainers:
+    - Benedikt Kuhnhaeuser
