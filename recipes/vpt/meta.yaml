@@ -13,7 +13,11 @@ build:
   entry_points:
     - vpt = vpt.vizgen_postprocess:entry_point
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script:
+    # Build a wheel first, then install it. This is often more robust in CI than
+    # `pip install .` from an sdist, and tends to avoid long silent hangs.
+    - {{ PYTHON }} -m pip wheel . -vv --no-deps --no-build-isolation -w dist
+    - {{ PYTHON }} -m pip install dist/*.whl -vv --no-deps --no-build-isolation
   number: 0
   run_exports:
   - {{ pin_subpackage("vpt", max_pin="x.x.x") }}
