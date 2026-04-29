@@ -1,56 +1,63 @@
-{% set name = "pyfaidx" %}
-{% set version = "0.9.0.4" %}
+{% set name = "trash-py" %}
+{% set version = "1.0.0" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/19/af/da148aaa8e75c9890a41dbe5516f8006def2b74831e66acf79f81bb7bb5b/pyfaidx-0.9.0.4.tar.gz
-  sha256: 801bdd208b12bff6f4fb2da10a16834158dbb1c6f146e4015c9ff45e509acd65
+  url: https://github.com/mbeavitt/trash-py/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 4a939e4121474e78d439b5d93f2dba95297327564302e482441bd852db69e510
 
 build:
   number: 0
-  noarch: python
-  script_env:
-    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  skip: True  # [py < 311]
   entry_points:
-    - faidx = pyfaidx.cli:main
+    - trash-py = trash_py.cli:main
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage('pyfaidx', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
-    - python >=3.7
+    - python >=3.11
     - pip
-    - setuptools-scm
+    - setuptools >=68
   run:
-    - python >=3.7
-    - six
-    - setuptools  # uses pkg_resources
-    # the following are not mentioned in setup.py but conditionally imported at runtime
-    - packaging  # https://github.com/mdshw5/pyfaidx/blob/58d8b4e381f1348b9e669d55d88019e2498c71de/pyfaidx/__init__.py#L398
-    - pyvcf3  # https://github.com/mdshw5/pyfaidx/blob/58d8b4e381f1348b9e669d55d88019e2498c71de/pyfaidx/__init__.py#L1183
-    - biopython  # https://github.com/mdshw5/pyfaidx/blob/58d8b4e381f1348b9e669d55d88019e2498c71de/pyfaidx/__init__.py#L396
-    - importlib-metadata
+    - python >=3.11
+    - biopython >=1.83
+    - numpy >=1.26
+    - rapidfuzz >=3.6
+    - hmmer
+    - clustalo
 
 test:
   imports:
-    - pyfaidx
+    - trash_py
+    - trash_py._ext
   commands:
-    - faidx --help
+    - trash-py --help
 
 about:
-  home: "https://github.com/mdshw5/pyfaidx"
-  license: "BSD"
-  summary: "pyfaidx: efficient pythonic random access to fasta subsequences"
-  license_family: BSD
+  home: "https://github.com/mbeavitt/trash-py"
+  license: MIT
+  license_family: MIT
   license_file: LICENSE
-  doc_url: "https://pypi.org/project/pyfaidx"
-  dev_url: "https://github.com/mdshw5/pyfaidx"
+  summary: "Tandem-repeat array identifier — Python port of TRASH."
+  description: |
+    trash-py is a Python re-implementation of the TRASH program (Tandem
+    Repeat Annotation and Structural Hierarchy) originally written in R by
+    Piotr Włodzimierz. It identifies tandem repeat arrays in genome
+    assemblies and exposes a library of reusable repeat-annotation
+    primitives in addition to the drag-and-drop CLI replacement for the
+    upstream pipeline. Performance-critical routines are implemented as a
+    C extension.
+  dev_url: "https://github.com/mbeavitt/trash-py"
 
 extra:
   identifiers:
-    - biotools:pyfaidx
-    - doi:10.7287/peerj.preprints.970v1
+    - doi:10.1093/bioinformatics/btad308
+  recipe-maintainers:
+    - mbeavitt
