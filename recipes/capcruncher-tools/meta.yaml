@@ -1,0 +1,49 @@
+{% set name = "capcruncher-tools" %}
+{% set version = "0.2.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/source/c/capcruncher-tools/capcruncher_tools-{{ version }}.tar.gz
+  sha256: b1abc4a0e75a2e90955a900f724bf32ab2510751cd3ea108e34d1ae40e2db334
+
+build:
+  number: 0
+  skip: true  # [py<312]
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+  host:
+    - python >=3.12
+    - pip
+    - maturin ==1.13.1
+  run:
+    - python >=3.12
+    - loguru >=0.7.0,<0.8.0
+    - pandas >=2.1.0,<3.0.0
+    - polars >=1.6.0,<2.0.0
+
+test:
+  imports:
+    - capcruncher_tools
+    - capcruncher_tools.api
+  commands:
+    - python -c "from capcruncher_tools.api import deduplicate_fastq, digest_fastq, digest_genome"
+  requires:
+    - python >=3.12
+
+about:
+  home: https://github.com/alsmith151/CapCruncherTools
+  summary: Extra utilities to enhance CapCruncher
+  license: GPL-3.0-only
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+
+extra:
+  recipe-maintainers:
+    - alsmith151
