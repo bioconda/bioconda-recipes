@@ -7,4 +7,3 @@ cp bin/* ${PREFIX}/bin
 
 # Move bactopia nextflow
 mv bin/ conf/ data/ modules/ subworkflows/ tests/ workflows/ main.nf catalog.json nextflow.config nextflow_schema.json ${BACTOPIA}
-
