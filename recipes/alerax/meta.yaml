@@ -1,0 +1,52 @@
+{% set version = "1.4.2" %}
+{% set name = "alerax" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/BenoitMorel/AleRax.git
+  git_tag: "v{{ version }}"
+  sha256: e8c9dfdfe1d37cf787a9114cacf9b0ffb4a91671
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake
+  host:
+    - openmpi
+  run:
+    - openmpi
+
+test:
+  commands:
+    - alerax --help
+
+about:
+   home: "https://github.com/BenoitMorel/AleRax"
+   license: "GNU GPL-3.0-or-later"
+   license_family: GPL
+   license_file: "LICENSE"
+   summary: "Gene tree - species tree reconciliation from gene tree distributions "
+   dev_url: "https://github.com/BenoitMorel/AleRax"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  container:
+    # openmpi needs ssh client
+    extended-base: True
+  skip-lints:
+    # uses submodules
+    - uses_vcs_url
+  identifiers:
+    - doi:10.1093/bioinformatics/btae162
