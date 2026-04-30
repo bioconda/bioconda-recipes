@@ -1,0 +1,53 @@
+{% set name = "aiedit" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/BirolLab/AIEdit/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 3701b25d9baaa2fdaba174a8167a9619a911342da853a7c99cbe1cba6d8d01d9
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - aiedit = aiedit.main:main
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - ninja
+  
+  host:
+    - python
+    - pip
+    - scikit-build-core
+    - pybind11
+    - pytorch
+    - cpuonly
+    - btllib >=1.7.2
+  
+  run:
+    - python
+    - pytorch
+    - cpuonly
+    - btllib >=1.7.2
+    - ntcard
+    - ntstat
+    - ntedit
+
+test:
+  imports:
+    - aiedit
+  commands:
+    - aiedit polish --help
+
+about:
+  home: https://github.com/BirolLab/AIEdit
+  license: GPL-3.0-only
+  license_family: GPL
+  license_file: LICENSE
+  summary: "ML-based alignment-free genome assembly polisher"
