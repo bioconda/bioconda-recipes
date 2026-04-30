@@ -1,12 +1,13 @@
 #!/bin/bash
-ant linux
+set -xe
 
-mkdir -p ${PREFIX}/bin ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/lib
+BEAST_DIR_SUFFIX="opt/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
+BEAST_DIR="$PREFIX/${BEAST_DIR_SUFFIX}"
 
-for file in applauncher beast beauti densitree loganalyser logcombiner packagemanager treeannotator
-    do envsubst '${PREFIX}:${PKG_NAME}:${PKG_VERSION}:${PKG_BUILDNUM}' < release/Linux/beast/bin/$file > ${PREFIX}/bin/$file
-    chmod +x ${PREFIX}/bin/$file
-done
+mkdir -p $BEAST_DIR
 
-cp -R release/Linux/beast/lib/ ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
-cp -R release/Linux/beast/{examples,images,templates} ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
+# Copy full beast2 installation directory
+cp -r $SRC_DIR/beast/* $BEAST_DIR
+
+# Setup symlinks in conda "bin/" directory to the beast2 install directory
+ln -f -s ../${BEAST_DIR_SUFFIX}/bin/{applauncher,beast,beauti,densitree,loganalyser,logcombiner,packagemanager,treeannotator} $PREFIX/bin

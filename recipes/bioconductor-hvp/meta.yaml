@@ -1,0 +1,39 @@
+{% set version = "1.0.0" %}
+{% set name = "HVP" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 589de48530ad0708aedd5baffe0a6f50
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-hvp", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: SingleCellExperiment, SummarizedExperiment, Seurat, SeuratObject, ggplot2, progress, testthat, splatter, scater, devtools, knitr, rmarkdown, BiocStyle, ExperimentHub
+requirements:
+  host:
+    - r-base
+    - r-matrix
+  run:
+    - r-base
+    - r-matrix
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Hierarchical Variance Partitioning
+  description: HVP is a quantitative batch effect metric that estimates the proportion of variance associated with batch effects in a data set.
+  license_file: LICENSE
+

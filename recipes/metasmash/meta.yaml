@@ -1,0 +1,83 @@
+{% set name = "metasmash" %}
+{% set version = "0.1.1" %}
+{% set sha256 = "1b5ea79e166762db5483b9e3c87c91a7c8c534701543c3bee239ab7b57819ff7" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/canerbagci/metasmash/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py && rm -f *.bak
+    - {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir --use-pep517 -vvv
+  entry_points:
+    - download-antismash-databases = antismash.download_databases:_main
+    - metasmash = antismash.__main__:entrypoint
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools
+  run:
+    - python >=3.11
+    - brawn ==1.0.2
+    - numpy ==2.2.5
+    - biopython ==1.81
+    - helperlibs ==0.2.1
+    - jinja2 ==3.1.6
+    - joblib ==1.4.2
+    - jsonschema ==4.25.1
+    - markupsafe ==3.0.2
+    - nrpys ==0.1.1
+    - bcbio-gff ==0.7.1
+    - libsass ==0.23.0
+    - matplotlib-base ==3.10.1
+    - orjson ==3.10.16
+    - scipy ==1.15.2
+    - scikit-learn ==1.6.1
+    - moods ==1.9.4.2
+    - diamond >=2.1.21
+    - fasttree
+    - hmmer2
+    - hmmer
+    - blast
+    - prodigal
+  run_constrained:
+    # metasmash installs into site-packages/antismash/, so it cannot coexist
+    # with the antismash package in the same environment.
+    - antismash <0a0
+
+test:
+  commands:
+    - metasmash --version
+    - download-antismash-databases --help
+    - blastp -help
+    - fasttree -help
+    - diamond --help 2>&1 > /dev/null
+    - hmmsearch -h
+    - prodigal -h
+
+about:
+  home: "https://github.com/canerbagci/metasmash"
+  license: "AGPL-3.0-or-later"
+  license_family: AGPL
+  license_file: "LICENSE.txt"
+  summary: "metaSMASH - scalable metagenome-scale BGC mining, a fork of antiSMASH."
+  description: |
+    metaSMASH is a fork of antiSMASH that scales biosynthetic gene cluster
+    mining to metagenome-scale inputs with bounded memory usage.
+  dev_url: "https://github.com/canerbagci/metasmash"
+  doc_url: "https://github.com/canerbagci/metasmash#readme"
+
+extra:
+  recipe-maintainers:
+    - canerbagci
