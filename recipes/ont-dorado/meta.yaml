@@ -1,0 +1,42 @@
+{% set version = "1.4" %}
+
+package:
+  name: ont-dorado
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/nanoporetech/dorado.git
+  git_rev: {{ version }}
+  sha256: {{ hash }}
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - cmake
+    - make
+    - autoconf
+    - {{ compiler('cuda') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - arm-variant * {{ arm_variant_type }}  # [linux and aarch64 and cuda_compiler_version != "None"]
+    - {{ stdlib('c') }}
+  host:
+    - libcublas-dev
+    - cuda-version={{ cuda_compiler_version }}
+    - libtorch
+    - pytorch
+    - python
+    - zlib
+    - cusparselt-dev
+
+test:
+  commands:
+    - dorado basecaller --help
+
+about:
+  home: https://github.com/nanoporetech/dorado
+  license: PROPRIETARY
+  license_file: LICENSE.txt
+  summary: Oxford Nanopore's Basecaller
