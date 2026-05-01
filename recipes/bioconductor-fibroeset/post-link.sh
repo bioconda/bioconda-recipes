@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "fibroeset-1.48.0"
+installBiocDataPackage.sh "fibroeset-1.52.0"
