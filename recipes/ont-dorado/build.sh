@@ -1,2 +1,3 @@
 #!/bin/bash
-cmake -DCUDAToolkit_ROOT=${BUILD_PREFIX} -DDORADO_LIBTORCH_DIR=${PREFIX}/lib -DCMAKE_C_COMPILER=${CC} -DCMAKE_CXX_COMPILER=${CXX} -S . -B cmake-build
+mv bin/* ${PREFIX}/bin/
+mv lib/* ${PREFIX}/lib/

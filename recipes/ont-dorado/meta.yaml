@@ -5,33 +5,16 @@ package:
   version: {{ version }}
 
 source:
-  git_url: https://github.com/nanoporetech/dorado.git
-  git_rev: v{{ version }}
-  version: {{ version }}
-  sha256: ignored
+  url: https://cdn.oxfordnanoportal.com/software/analysis/dorado-{{ version }}-linux-x64.tar.gz  # [linux and not aarch64]
+  sha256: ea15250d911c6b6efdb21cc142008b2be8a5c781c8b0a4593b82f27b07385731  # [linux and not aarch64]
+  url: https://cdn.oxfordnanoportal.com/software/analysis/dorado-{{ version }}-linux-arm64-cuda-13.0.tar.gz  # [linux and not aarch64]
+  sha256: 18c83c06d8913697a134e7f3ba03e810a80a83ccd53974d2899cbb39b8874d44  # [linux and aarch64]
 
 build:
   number: 0
   skip: true  # [osx]
   run_exports:
     - {{ pin_subpackage("ont-dorado", max_pin="x.x") }}
-
-requirements:
-  build:
-    - cmake
-    - make
-    - autoconf
-    - cuda-nvcc 12.9
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - arm-variant * {{ arm_variant_type }}  # [linux and aarch64 and cuda_compiler_version != "None"]
-    - {{ stdlib('c') }}
-  host:
-    - libcublas-dev
-    - cuda
-    - pytorch-gpu
-    - zlib
-    - cusparselt
 
 test:
   commands:
@@ -45,4 +28,4 @@ about:
 
 extra:
   skip-lints:
-    - uses_vcs_url  # There are a LOT of submodules and they don't supply a single tarball :(
+    - should_be_noarch_generic 
