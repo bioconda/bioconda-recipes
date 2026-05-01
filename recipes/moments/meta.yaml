@@ -1,5 +1,5 @@
 {% set name = "moments" %}
-{% set version = "1.5.0" %}
+{% set version = "1.5.3" %}
 
 package:
   name: {{ name }}
@@ -7,11 +7,11 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}-popgen/{{ name }}_popgen-{{ version }}.tar.gz
-  sha256: 291ecce9adab87253484daf032c97fa86fbba99c22396747622b488ee390a7e1
+  sha256: 1c1c0de283bfc85ebca9858fd391676731e9560f5d8c731b79672f7e4b7ae221
 
 build:
   number: 0
-  skip: True  # [py < 310]
+  skip: True  # [py > 314 or py < 311]
   script_env:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   script:
@@ -28,19 +28,14 @@ requirements:
     - pip
     - python
     - setuptools-scm
-    - numpy ==1.12.1  # [py == 36]
-    - numpy ==1.15.4  # [py == 37]
-    - numpy ==1.17.5  # [py == 38]
-    - numpy ==1.19.5  # [py == 39]
-    - numpy ==1.22.3  # [py == 310]
-    - numpy  # [py >= 311]
-    - cython
+    - numpy
+    - cython >=3.1
   run:
     - python
-    - {{ pin_compatible('numpy') }}
-    - scipy
-    - mpmath
-    - demes
+    - numpy
+    - scipy >=1.3,<1.17
+    - mpmath >=1.0,<1.4
+    - demes >=0.2
 
 test:
   imports:
@@ -63,3 +58,5 @@ extra:
     - doi:10.1534/genetics.117.200493 
     - doi:10.1371/journal.pgen.1008204
     - doi:10.1093/molbev/msz265
+  skip-lints:
+    - compiler_needs_stdlib_c
