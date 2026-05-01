@@ -1,3 +1,3 @@
 #!/bin/bash
-mv bin/* ${PREFIX}/bin/
-mv lib/* ${PREFIX}/lib/
+mv bin ${PREFIX}/
+mv lib ${PREFIX}/
