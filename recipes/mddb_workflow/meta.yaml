@@ -1,0 +1,76 @@
+{% set name = "mddb_workflow" %}
+{% set version = "0.1.10" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/mmb-irb/MDDB-workflow/archive/refs/tags/v{{ version }}.zip"
+  sha256: 775276109324349c7fde9c62f7c98626df522e860f7f511b5732062f6d046e21
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11,<=3.12
+    - pip
+    - setuptools
+  run:
+    - python >=3.11,<=3.12
+    - pyyaml
+    - ambertools
+    - biopython >1.79
+    - cmip
+    - fpocket
+    - gromacs_mddb ==2025.3=h61c8354_3
+    - mdanalysis
+    - mdtraj >=1.11.0
+    - numpy
+    - scipy
+    - vmd ==1.9.3=hbf76b22_2
+    - xmltodict
+    - rdkit
+    - mordredcommunity 
+    - biobb_mem ==5.1.2
+    - requests
+    - openssl ==3.4.1
+    - biotite
+    - curves
+    - plotext
+    - rich
+    - jinja2
+    - python-xxhash
+test:
+  imports:
+    - mddb_workflow
+  commands:
+    - mwf --help
+    - mwf run -h
+
+about:
+  home: https://github.com/mmb-irb/MDDB-workflow
+  license: GPL-3.0-or-later
+  license_family: GPL
+  license_file: LICENSE
+  summary: MDDB-workflow is a tool for standardizing, validating, and analyzing molecular dynamics projects.
+  description: |
+    The **MDDB Workflow** is a tool that standardizes, validates, and analyzes molecular
+    dynamics projects by converting raw simulation outputs into normalized structure and
+    trajectory files and running automated QA and analysis pipelines. Results and metadata
+    are packaged for ingestion into the MDDB via the [loader](https://github.com/mmb-irb/MDDB-loader),
+    making them immediately viewable in the [MDposit client](https://mdposit.mddbr.eu/).
+    The workflow is designed to run reproducibly on a laptop, in containers, or on HPC systems,
+    supporting multiple input formats, automated checks, and flexible deployment.
+    
+  doc_url: https://mddb-workflow.readthedocs.io/en/latest/
+  dev_url: https://github.com/mmb-irb/MDDB-workflow
+
+extra:
+  recipe-maintainers: 
+    - RubenChM
