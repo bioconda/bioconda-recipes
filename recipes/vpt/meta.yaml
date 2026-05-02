@@ -1,5 +1,5 @@
 {% set name = "vpt" %}
-{% set version = "1.3.0" %}
+{% set version = "1.3.3" %}
 
 package:
   name: {{ name|lower }}
@@ -7,13 +7,17 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/vpt-{{ version }}.tar.gz
-  sha256: 796569f2cbf22f689e4512442c51276281cb36680b1eb14e68526a8b6afca691
+  sha256: e85bcaa2da1b48c6b28be826fa5260516c4c9b5702f9c94b8ac5bcb841c635a7
 
 build:
   entry_points:
     - vpt = vpt.vizgen_postprocess:entry_point
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script:
+    # Build a wheel first, then install it. This is often more robust in CI than
+    # `pip install .` from an sdist, and tends to avoid long silent hangs.
+    - {{ PYTHON }} -m pip wheel . -vv --no-deps --no-build-isolation -w dist
+    - {{ PYTHON }} -m pip install dist/*.whl -vv --no-deps --no-build-isolation
   number: 0
   run_exports:
   - {{ pin_subpackage("vpt", max_pin="x.x.x") }}
