@@ -9,7 +9,7 @@ source:
   sha256: 81f89568fe34ae50cd9986afcda590bb2ca02e19d031d683c265dc8cbd7a86a1
 
 build:
-  number: 1
+  number: 2
   noarch: generic
   run_exports:
     - {{ pin_subpackage('rnaframework', max_pin="x") }}
@@ -35,6 +35,9 @@ requirements:
 test:
   commands:
     - grep -Fq "use lib \"${PREFIX}/share/rnaframework/lib\";" ${PREFIX}/share/rnaframework/rf-count
+    - grep -Fq 'export PERL5LIB="${CONDA_PREFIX}/share/rnaframework/lib${PERL5LIB:+:${PERL5LIB}}"' ${PREFIX}/etc/conda/activate.d/rnaframework_perl5lib.sh
+    - bash -c 'unset PERL5LIB; source "${PREFIX}/etc/conda/activate.d/rnaframework_perl5lib.sh"; [[ "${PERL5LIB}" == "${PREFIX}/share/rnaframework/lib" ]]; source "${PREFIX}/etc/conda/deactivate.d/rnaframework_perl5lib.sh"; [[ -z "${PERL5LIB+x}" ]]'
+    - bash -c 'export PERL5LIB="existing"; source "${PREFIX}/etc/conda/activate.d/rnaframework_perl5lib.sh"; [[ "${PERL5LIB}" == "${PREFIX}/share/rnaframework/lib:existing" ]]; source "${PREFIX}/etc/conda/deactivate.d/rnaframework_perl5lib.sh"; [[ "${PERL5LIB}" == "existing" ]]'
     - PERL5LIB= rf-map -h 2>&1 | grep -qi "usage\|rf-map\|options"
     - PERL5LIB= rf-count -h 2>&1 | grep -qi "usage\|rf-count\|options"
     - PERL5LIB= rf-norm -h 2>&1 | grep -qi "usage\|rf-norm\|options"
