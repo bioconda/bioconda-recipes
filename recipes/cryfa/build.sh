@@ -7,12 +7,14 @@ export LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
 
 # Parameters
 BUILD_TYPE=Release
-BUILD=${PREFIX}/build
+BUILD=${SRC_DIR}/build
 PARALLEL=4
 BIN=${PREFIX}/bin
 
 # Configure CMake
-cmake -B $BUILD -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+cmake -B $BUILD \
+    -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+    -DCRYFA_VERSION_OVERRIDE=${PKG_VERSION}
 
 # Build
 cmake --build $BUILD --parallel $PARALLEL --config $BUILD_TYPE
