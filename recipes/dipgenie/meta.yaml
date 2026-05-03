@@ -1,0 +1,49 @@
+{% set name = "dipgenie" %}
+{% set version = "1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/gsc74/DipGenie/archive/v{{ version }}.tar.gz
+  sha256: 624de036528498de2f8ae88b1bbc5f7d571ca080a36904b4925552b01ff00a38
+
+build:
+  number: 0
+  skip: true  # [not linux or not x86_64]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - zlib
+    - libgomp  # [linux]
+  run:
+    - zlib
+
+test:
+  commands:
+    - DipGenie --version
+
+about:
+  home: https://github.com/gsc74/DipGenie
+  license: MIT AND Apache-2.0
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Diploid genome inference using pangenome graphs"
+  description: |
+    DipGenie is a tool designed to infer haplotypes using pangenome graphs.
+    It estimates full haplotype sequences from low-coverage short-read
+    sequencing data for both haploid and diploid genomes. Users may provide
+    a pangenome reference in GFA or VCF format.
+  dev_url: https://github.com/gsc74/DipGenie
+  doc_url: https://github.com/gsc74/DipGenie
+
+extra:
+  recipe-maintainers:
+    - gsc74
