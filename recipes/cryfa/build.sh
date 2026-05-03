@@ -11,6 +11,10 @@ BUILD=${SRC_DIR}/build
 PARALLEL=4
 BIN=${PREFIX}/bin
 
+if [[ "${target_platform}" == osx-* ]]; then
+    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+fi
+
 # Configure CMake
 cmake -B $BUILD \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
