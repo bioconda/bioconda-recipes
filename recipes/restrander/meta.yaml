@@ -1,0 +1,58 @@
+{% set name = "restrander" %}
+{% set version = "1.1.3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/jakob-schuster/restrander/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: e046ffa436a64c54339d766d62baa4f9392f3cc78ce6d0f6f119895d7a2905f4
+
+build:
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('restrander', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - zlib
+  run:
+    - zlib
+
+test:
+  commands:
+    - test -x ${PREFIX}/bin/restrander
+    - test -f ${PREFIX}/share/restrander/config/PCB109.json
+    - test -f ${PREFIX}/share/restrander/config/DCS109.json
+    - test -f ${PREFIX}/share/restrander/config/DCS-LSK114.json
+    - test -f ${PREFIX}/share/restrander/config/PCB114.json
+
+about:
+  home: "https://github.com/jakob-schuster/restrander"
+  license: "MIT"
+  license_family: "MIT"
+  license_file: LICENSE
+  summary: "A fast, accurate program for orienting and quality-checking cDNA sequencing reads."
+  description: |
+    Restrander parses an input FASTQ from Oxford Nanopore long-read cDNA
+    sequencing protocols, infers the orientation of each read, and prints
+    to an output FASTQ with all reads in the same orientation as the
+    original transcripts. Configuration files for common protocols
+    (PCB109, PCB111, PCB114, DCS109, DCS-LSK114, 10X-3prime, 10X-5prime,
+    NEBNext) are installed under $PREFIX/share/restrander/config/.
+
+    Note: This package is currently Linux-only. Upstream does not test
+    on macOS, and the source uses std::filesystem features that are not
+    available with the macOS deployment target used by bioconda.
+  dev_url: "https://github.com/jakob-schuster/restrander"
+
+extra:
+  recipe-maintainers:
+    - qingxiangguo
