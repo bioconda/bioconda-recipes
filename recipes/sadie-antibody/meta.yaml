@@ -12,7 +12,10 @@ source:
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vv
+  # bypass poetry-dynamic-versioning because the source is a tarball, not a tagged git repo
+  script: |
+    export POETRY_DYNAMIC_VERSIONING_BYPASS="{{ version }}"
+    {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vv
   entry_points:
     - sadie = sadie.app:sadie
   run_exports:
@@ -26,7 +29,6 @@ requirements:
     - poetry-dynamic-versioning
   run:
     - python >=3.9,<3.14
-    - pip
     - biopython >=1.84
     - semantic_version
     - click >=8.0,<8.2
@@ -68,4 +70,3 @@ extra:
     - jwillis0720
     - tmsincomb
     - kipkurui
-    
