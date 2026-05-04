@@ -6,25 +6,29 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/kharchenkolab/Baysor/archive/v{{ version }}.tar.gz
-  sha256: 217cbb683c8bbff70a7b6e1f81e0dbe25a91e7b465598e9b0f4932eba8a3e6e3
+  url: https://github.com/kharchenkolab/Baysor/releases/download/v{{ version }}/baysor-x86_x64-linux-v{{ version }}_build.zip
+  sha256: f37f02695a068fd360ade7abd0f91b07c5199a3cce6e91ded550689459fbe5c0
 
 build:
   number: 0
+  skip: True # [not linux]
+  platforms:
+    - linux-64
   run_exports:
     - {{ pin_subpackage('baysor', max_pin="x.x") }}
+  binary_relocation: false
+  detect_binary_files_with_prefix: false
+
+  missing_dso_whitelist:
+    - /lib64/libm.so.6
+    - /lib64/libc.so.6
+    - /lib64/libpthread.so.0
+    - /lib64/libdl.so.2
+    - /lib64/librt.so.1
 
 requirements:
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - {{ stdlib("c") }}
-  host:
-    - julia =1.10
-    - hdf5 1.8.17
   run:
-    - julia =1.10
-    - hdf5 1.8.17
+    - libgcc-ng
 
 test:
   commands:

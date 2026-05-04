@@ -1,18 +1,17 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-export JULIA_DEPOT_PATH="$PREFIX/share/julia"
-mkdir -p "$JULIA_DEPOT_PATH"
+set -euxo pipefail
 
-# PackageCompiler.jl autodetects only `gcc`/`clang` by name; point it at conda's CC.
-export JULIA_CC="$CC"
+mkdir -p "${PREFIX}/share/baysor"
+cp -r bin/baysor/* "${PREFIX}/share/baysor/"
 
-# Ghostscript_jll's libgs.so dlopens libz.so.1 and the CentOS 7 /lib64 one is too old
-# (missing ZLIB_1.2.9). Prefer conda's newer zlib.
-export LD_LIBRARY_PATH="$PREFIX/lib:$BUILD_PREFIX/lib:$LD_LIBRARY_PATH"
+mkdir -p "${PREFIX}/bin"
 
-julia -e 'using Pkg; Pkg.add("HDF5"); Pkg.develop(path="."); Pkg.build("Baysor")'
+cat << 'EOF' > "${PREFIX}/bin/baysor"
+#!/usr/bin/env bash
+set -euo pipefail
 
-mkdir -p "$PREFIX/bin"
-mv "$PREFIX/share/julia/bin/baysor" "$PREFIX/bin/baysor"
+exec "${CONDA_PREFIX}/share/baysor/bin/baysor" "$@"
+EOF
 
-chmod +x "$PREFIX/bin/baysor"
+chmod +x "${PREFIX}/bin/baysor"
