@@ -1,6 +1,5 @@
-diff -upr a/eKLIPse_circos.py b/eKLIPse_circos.py
---- a/eKLIPse_circos.py	2025-06-25 13:52:57.472534371 +0100
-+++ b/eKLIPse_circos.py	2025-06-25 14:14:51.106975741 +0100
+--- a/eKLIPse_circos.py
++++ b/eKLIPse_circos.py
 @@ -1,7 +1,6 @@
  import sys
  import os
@@ -9,30 +8,75 @@ diff -upr a/eKLIPse_circos.py b/eKLIPse_circos.py
  from eKLIPse_fct import *
  
  
-@@ -166,4 +165,4 @@ def circosPlot(titleBam,dicoInit,lstErro
-             lstError.append("PlotThread \""+titleBam+"\": any output .png created (check log file)")
-     except: 
-         exc_type, exc_value, exc_traceback = sys.exc_info()
--        lstError.append("PlotThread \""+titleBam+"\": "+str(exc_value)+" (line "+str(exc_traceback.tb_lineno)+")")
-\ No newline at end of file
-+        lstError.append("PlotThread \""+titleBam+"\": "+str(exc_value)+" (line "+str(exc_traceback.tb_lineno)+")")
-Only in b: eKLIPse_circos.py~
-diff -upr a/eKLIPse_fct.py b/eKLIPse_fct.py
---- a/eKLIPse_fct.py	2025-06-25 13:52:57.459534225 +0100
-+++ b/eKLIPse_fct.py	2025-06-25 14:08:08.823175321 +0100
-@@ -2,7 +2,7 @@ import sys
+@@ -123,7 +122,7 @@ def circosConf(titleBam,dicoInit,lstError):
+ 
+         #***** CREATE Main Circos Configuration File *****#
+         IN = open(pathConfTemplate,'r')
+-        lst_lines = split(IN.read(),"\n")
++        lst_lines = IN.read().split("\n")
+         IN.close()
+         OUT = open(pathConf,'w')
+         for line in lst_lines:
+--- a/eKLIPse_fct.py
++++ b/eKLIPse_fct.py
+@@ -2,7 +2,6 @@ import sys
  import os
  import glob
  import json
 -from string import split
-+
  
  
  #=================================================================================================================================================#
-Only in b: eKLIPse_fct.py~
-diff -upr a/eKLIPse_sc.py b/eKLIPse_sc.py
---- a/eKLIPse_sc.py	2025-06-25 13:52:57.459534225 +0100
-+++ b/eKLIPse_sc.py	2025-06-25 14:14:30.700987364 +0100
+--- a/eKLIPse_init.py
++++ b/eKLIPse_init.py
+@@ -68,12 +68,12 @@ def arg_manager(argv,pathRootDir,boolColor,boolQT,spinner):
+             if not os.path.isfile(argv[i+1]): lstErrorDisplay.append("Input file \""+argv[i+1]+"\" not found")
+             else:
+                 dicoInit['pathInput'] = argv[i+1]
+-                IN = open(argv[i+1],'r') ; lstLine = split(IN.read(),"\n") ; IN.close()
++                IN = open(argv[i+1],'r') ; lstLine = IN.read().split("\n") ; IN.close()
+                 for j in range(len(lstLine)):
+                     if lstLine[j]!="" and not lstLine[j][0]=="#":
+                         try:
+-                            pathBam = split(lstLine[j],"\t")[0]
+-                            titleBam = split(lstLine[j],"\t")[1]
++                            pathBam = lstLine[j].split("\t")[0]
++                            titleBam = lstLine[j].split("\t")[1]
+                             if not os.path.isfile(pathBam): lstErrorDisplay.append("Input file at line"+str(j+1)+": \""+pathBam+"\" not found")
+                             if titleBam in dicoInit['lstTitleBam']: lstErrorDisplay.append("Input file at line "+str(j+1)+": \""+titleBam+"\" name already used")
+                             dicoInit['lstTitleBam'].append(titleBam)
+@@ -95,7 +95,7 @@ def arg_manager(argv,pathRootDir,boolColor,boolQT,spinner):
+                             if feature.qualifiers['nomenclature'][0].lower().__contains__("trna"): geneType = "trna"
+                             elif feature.qualifiers['nomenclature'][0].lower().__contains__("rna"): geneType = "rrna"
+                             else: geneType = "protein"
+-                            try: name = split(split(feature.qualifiers['nomenclature'][0],"|")[0],":")[1].replace(" ","")
++                            try: name = feature.qualifiers['nomenclature'][0].split("|")[0].split(":")[1].replace(" ","")
+                             except: name = feature.qualifiers['gene'][0]
+                             dicoInit["dicoGbk"]['lstGene'].append([name,int(feature.location.start)+1,int(feature.location.end),geneType])
+             if len(dicoInit["dicoGbk"])==0: lstErrorDisplay.append("Cannot Read Reference GBK file \""+argv[i+1]+"\"")
+@@ -115,7 +115,7 @@ def arg_manager(argv,pathRootDir,boolColor,boolQT,spinner):
+                         if feature.qualifiers['nomenclature'][0].lower().__contains__("trna"): geneType = "trna"
+                         elif feature.qualifiers['nomenclature'][0].lower().__contains__("rna"): geneType = "rrna"
+                         else: geneType = "protein"
+-                        try: name = split(split(feature.qualifiers['nomenclature'][0],"|")[0],":")[1].replace(" ","")
++                        try: name = feature.qualifiers['nomenclature'][0].split("|")[0].split(":")[1].replace(" ","")
+                         except: name = feature.qualifiers['gene'][0]
+                         dicoInit["dicoGbk"]['lstGene'].append([name,int(feature.location.start)+1,int(feature.location.end),geneType])
+         # Results Directory
+@@ -231,9 +231,9 @@ def arg_manager(argv,pathRootDir,boolColor,boolQT,spinner):
+             if dicoInit['windows']==False: cmd_idxstats = dicoInit['pathSamtools']+" idxstats "+dicoInit['dicoBam'][titleBam]['path']+" 1>"+path_idxstats+" 2>/dev/null"
+             else: cmd_idxstats = dicoInit['pathSamtools']+" idxstats "+dicoInit['dicoBam'][titleBam]['path']+" 1>"+path_idxstats+" 2> nul"
+             os.system(cmd_idxstats)
+-            IN = open(path_idxstats,'r') ; lst_lines = split(IN.read(),"\n") ; IN.close()
++            IN = open(path_idxstats,'r') ; lst_lines = IN.read().split("\n") ; IN.close()
+             for line in lst_lines:
+-                split_line = split(line,"\t")
++                split_line = line.split("\t")
+                 if len(split_line)>1:
+                     refName = split_line[0]
+                     refSize = int(split_line[1])
+--- a/eKLIPse_sc.py
++++ b/eKLIPse_sc.py
 @@ -2,7 +2,6 @@ import json
  import os
  import sys
@@ -41,11 +85,48 @@ diff -upr a/eKLIPse_sc.py b/eKLIPse_sc.py
  from eKLIPse_fct import *
  
  
-Only in b: eKLIPse_sc.py~
-diff -upr a/pybam.py b/pybam.py
---- a/pybam.py	2025-06-25 13:52:57.459534225 +0100
-+++ b/pybam.py	2025-06-25 14:29:50.900849159 +0100
-@@ -100,7 +100,7 @@ Github:     http://github.com/JohnLongin
+@@ -90,13 +89,13 @@ def SC_blast(titleBam,dicoInit,lstError):
+             os.system(cmd)
+             #***** Read Blast output file *****#
+             IN = open(pathSCDELBLAST,'r')
+-            lst_lines = split(IN.read(),"\n")
++            lst_lines = IN.read().split("\n")
+             IN.close()
+             for line in lst_lines:
+                 if line!="":
+                     # Blast line parser
+-                    splitLine = split(line,",")
+-                    splitQread = split(splitLine[0],"_")
++                    splitLine = line.split(",")
++                    splitQread = splitLine[0].split("_")
+                     SCposRead = int(splitQread[0])
+                     SCmappedpart = int(splitQread[1])
+                     readOrient = splitQread[2]
+@@ -187,8 +186,8 @@ def deletionPrediction(titleBam,dicoInit,lstError):
+                 initial_SCposRead_F = [] ; initial_SCposRead_R = []
+                 # Browse deletion
+                 for delName in dico_shift_del[key]:
+-                    start = split(delName,"-")[0]
+-                    end = split(delName,"-")[1]
++                    start = delName.split("-")[0]
++                    end = delName.split("-")[1]
+                     try: delnbblastF = dicoDel[delName]['scrF']['nbBlast']
+                     except: delnbblastF = 0
+                     try: delnbblastR = dicoDel[delName]['scrR']['nbBlast']
+@@ -213,8 +212,8 @@ def deletionPrediction(titleBam,dicoInit,lstError):
+                     # Del entry
+                     try : del(dicoDel[delName])
+                     except: pass
+-                if maxBlast_start=="": maxBlast_start = split(delName,"-")[0]
+-                if maxBlast_end=="": maxBlast_end = split(delName,"-")[1]
++                if maxBlast_start=="": maxBlast_start = delName.split("-")[0]
++                if maxBlast_end=="": maxBlast_end = delName.split("-")[1]
+                 dicoDel[maxBlast_start+"-"+maxBlast_end] = { 'scrF':{'nbBlast':nbBlast_F,'limit':limit_max_start,'initial_SCposRead':initial_SCposRead_F},\
+                                                              'scrR':{'nbBlast':nbBlast_R,'limit':limit_max_end,'initial_SCposRead':initial_SCposRead_R},\
+                                                              'freqF':0.0, 'freqR':0.0 }
+--- a/pybam.py
++++ b/pybam.py
+@@ -100,7 +100,7 @@ Github:     http://github.com/JohnLonginotto/pybam
  [ Force Internal bgzip Decompressor ]
    my_bam = pybam.read('/my/data.bam',decompressor='internal')
  [ Parse Words (hah) ]'''
@@ -99,24 +180,3 @@ diff -upr a/pybam.py b/pybam.py
                  # It wouldn't be safe to just print to the shell four random bytes from the beginning of a file, so instead it's
                  # written to a temp file and cat'd. The idea here being that we trust the decompressor string as it was written by 
                  # someone with access to python, so it has system access anyway. The file/data, however, should not be trusted.
-@@ -724,4 +724,4 @@ class read:
- 
- 
- class PybamWarn(Exception): pass
--class PybamError(Exception): pass
-\ No newline at end of file
-+class PybamError(Exception): pass
-Only in b: pybam.py~
-diff -upr a/tabulate.py b/tabulate.py
---- a/tabulate.py	2025-06-25 13:52:57.472534371 +0100
-+++ b/tabulate.py	2025-06-25 13:53:21.856804789 +0100
-@@ -4,7 +4,8 @@
- 
- 
- 
--from collections import namedtuple, Iterable
-+from collections import namedtuple
-+from collections.abc import Iterable
- from platform import python_version_tuple
- import re
- 

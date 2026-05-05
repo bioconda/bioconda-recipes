@@ -1,8 +1,7 @@
 #!/bin/bash
+set -xeuo pipefail
 
-mkdir -p $PREFIX/bin
-chmod a+x trim_galore
-#/usr/bin/perl is hardcoded, need to point to env
-sed -i.bak 's/perl/env perl/g' trim_galore
-
-cp trim_galore $PREFIX/bin
+# conda_build hoists the single top-level directory out of our tarball,
+# so trim_galore + LICENSE land directly in $SRC_DIR.
+mkdir -p "${PREFIX}/bin"
+install -m 0755 trim_galore "${PREFIX}/bin/trim_galore"

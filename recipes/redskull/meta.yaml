@@ -1,0 +1,56 @@
+{% set name = "redskull" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/fg-labs/redskull/archive/v{{ version }}.tar.gz
+  sha256: 99fcc2bdc92469f71a33c4cb31d97b69ad08db7219325f0d3faa732cc00155f0
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("redskull", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    # stdlib('c') intentionally omitted — see skip-lints below.
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - pkg-config
+    - make
+  host:
+    - libgit2
+    - openssl
+    - zlib
+  run:
+    - libgit2
+    - openssl
+    - zlib
+
+test:
+  commands:
+    - redskull --help
+
+about:
+  home: https://github.com/fg-labs/redskull
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: A conda recipe generator for Rust crates.
+  dev_url: https://github.com/fg-labs/redskull
+  doc_url: https://github.com/fg-labs/redskull/blob/v{{ version }}/README.md
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - nh13
+  skip-lints:
+    - compiler_needs_stdlib_c  # until https://github.com/bioconda/bioconda-utils/issues/1095 is resolved
