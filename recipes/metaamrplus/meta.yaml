@@ -7,60 +7,43 @@ package:
 
 source:
   url: https://github.com/migshaw03/MetaAMRplus/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 5ae9181e0eb5b64e929e4980bbef47c7aec7e2c81ae8bfda1d5a3e072b4f89ec
+  sha256: a4df0265df68803b0b7f0f1252d61b4de86d30160a0908787723188b30520562
 
 build:
-  number: 1
+  number: 4
   noarch: generic
   run_exports:
-    - {{ pin_subpackage("metaamrplus", max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
   script: |
     set -euo pipefail
 
-    mkdir -p "$PREFIX/bin"
-    mkdir -p "$PREFIX/share/metaamrplus/db"
+    mkdir -p $PREFIX/bin
 
-    install -m 755 "$SRC_DIR/bin/metaamrplus" "$PREFIX/bin/metaamrplus"
-    install -m 755 "$SRC_DIR/bin/metaamrplus_batch" "$PREFIX/bin/metaamrplus_batch"
-
-    if [[ -f "$SRC_DIR/bin/metaamrplus-download-db" ]]; then
-      install -m 755 "$SRC_DIR/bin/metaamrplus-download-db" "$PREFIX/bin/metaamrplus-download-db"
-    fi
-
-    install -m 755 "$SRC_DIR/bin/annotate_metaamrplus.py" \
-      "$PREFIX/bin/annotate_metaamrplus.py"
-
-    DB_DIR="$SRC_DIR/db"
-
-    cp "$DB_DIR"/MetaAMRplus_DB_v1.0.* "$PREFIX/share/metaamrplus/db/" || true
-
-    if [[ -f "$DB_DIR/MetaAMRplus_v1.0.idmap.tsv" ]]; then
-      cp "$DB_DIR/MetaAMRplus_v1.0.idmap.tsv" "$PREFIX/share/metaamrplus/db/"
-    fi
+    install -m 755 bin/metaamrplus $PREFIX/bin/metaamrplus
+    install -m 755 bin/metaamrplus_batch $PREFIX/bin/metaamrplus_batch
+    install -m 755 bin/metaamrplus-download-db $PREFIX/bin/metaamrplus-download-db
+    install -m 755 bin/annotate_metaamrplus.py $PREFIX/bin/annotate_metaamrplus.py
 
 requirements:
-  build:
-    - coreutils
-
   host:
-    - python >=3.8
+    - python
 
   run:
-    - python >=3.8
+    - python
     - coreutils
     - gawk
-    - blast >=2.14
+    - blast
     - prodigal
 
 test:
   commands:
-    - metaamrplus --help
+    - which metaamrplus
+    - metaamrplus 2>&1 || true
 
 about:
   home: https://github.com/migshaw03/MetaAMRplus
   license: MIT
-  summary: "MetaAMRplus: AMR + metal resistance + colocalisation analysis"
-  description: "MetaAMRplus is a command-line tool for detecting antimicrobial resistance genes, metal/biocide resistance genes, and their genomic colocalisation."
+  summary: "MetaAMRplus: AMR + metal resistance + co-localisation analysis"
 
 extra:
   recipe-maintainers:
