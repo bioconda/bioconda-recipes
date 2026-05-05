@@ -1,0 +1,51 @@
+{% set name = "flavotyper" %}
+{% set version = "0.4.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 78c5ad531a9ad60ff865fe39ca144113fe2ed527a63efe045adeb92de2fbdab6
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  noarch: python
+  entry_points:
+    - flavotyper = flavotyper.cli:main
+  run_exports:
+    - {{ pin_subpackage('flavotyper', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+  run:
+    - python >=3.10
+    - pillow >=9.0
+    - pyyaml >=6.0
+    - blast >=2.12
+    - fastani >=1.3
+
+test:
+  imports:
+    - flavotyper
+  commands:
+    - flavotyper --version
+    - flavotyper --help
+
+about:
+  home: https://forge.inrae.fr/eric.duchaud/flavotyper
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: In silico serotyping for Flavobacterium psychrophilum
+  doc_url: https://forge.inrae.fr/eric.duchaud/flavotyper/-/blob/main/README.md
+  dev_url: https://forge.inrae.fr/eric.duchaud/flavotyper
+
+extra:
+  recipe-maintainers:
+    - SalmaM2
