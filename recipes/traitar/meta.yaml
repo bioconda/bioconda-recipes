@@ -11,23 +11,34 @@ source:
 
 
 build:
-  number: 0
+  number: 1
   noarch: python
   script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+    - {{ pin_subpackage("traitar", max_pin="x") }}
+    - {{ pin_subpackage("traitar", max_pin="x.x") }}
 
 requirements:
+  build:
+    - python >=3.7,<3.11
+    - setuptools <78
   host:
     - python >=3.7,<3.11
     - pip
+    - setuptools <78
   run:
     - python >=3.7,<3.11
     - hmmer
     - scipy
     - pandas >1.2,<2
+    - parallel
+    - prodigal
     - numpy
+    - setuptools <78
     - matplotlib-base
 
 test:
+  requires:
+    - setuptools
   imports:
     - traitar
   commands:
@@ -45,4 +56,3 @@ about:
   description: 'Traitar is a software for characterizing microbial samples from nucleotide or protein sequences'
   doc_url: 'https://github.com/nick-youngblut/traitar3'
   dev_url: ''
-
