@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# atomic_flag::wait/notify_all require macOS 11.0; std::filesystem/aligned_alloc need 10.15
+export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-11.0}"
+
 mkdir -p build && cd build
 
 cmake .. \
