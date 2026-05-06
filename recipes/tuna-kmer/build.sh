@@ -11,7 +11,8 @@ cmake .. \
     -DTUNA_USE_ZLIB_NG=OFF \
     -DCMAKE_CXX_FLAGS="-O3 -march=x86-64" \
     -DCMAKE_THREAD_PREFER_PTHREAD=ON \
-    -DTHREADS_PREFER_PTHREAD_FLAG=ON
+    -DTHREADS_PREFER_PTHREAD_FLAG=ON \
+    -DFETCHCONTENT_SOURCE_DIR_KFF_SRC="${SRC_DIR}/../kff_src"
 
 cmake --build . --target tuna -j"${CPU_COUNT}"
 
