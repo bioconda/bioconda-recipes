@@ -19,4 +19,5 @@ cmake .. \
 
 cmake --build . --target tuna -j"${CPU_COUNT}"
 
-install -Dm755 tuna "${PREFIX}/bin/tuna"
+mkdir -p "${PREFIX}/bin"
+install -m755 tuna "${PREFIX}/bin/tuna"
