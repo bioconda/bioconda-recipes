@@ -6,6 +6,7 @@ mkdir -p build && cd build
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+    -DCMAKE_PREFIX_PATH="${PREFIX}" \
     -DTUNA_CONDA_PROFILE=ON \
     -DTUNA_USE_ZLIB_NG=OFF \
     -DCMAKE_CXX_FLAGS="-O3 -march=x86-64" \
