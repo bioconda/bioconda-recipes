@@ -1,0 +1,45 @@
+{% set name = "smd-variant-tools" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/SMD-Bioinformatics-Lund/smd-variant-tools/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 3e5d2154011198b0e4b4598c3e1868059d01dca42e0440df46d639e65f58f4ae
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - hatchling
+
+  run:
+    - python >=3.10
+
+test:
+  imports:
+    - smd_variant_tools
+
+  commands:
+    - smd_variant --help
+    - smd_variant --version
+
+about:
+  home: https://github.com/SMD-Bioinformatics-Lund/smd-variant-tools
+  dev_url: https://github.com/SMD-Bioinformatics-Lund/smd-variant-tools
+  summary: SMD variant filtering and VCF utility commands for somatic panel workflows.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - ramnanduri
