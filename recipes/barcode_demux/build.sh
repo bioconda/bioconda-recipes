@@ -6,6 +6,9 @@ set -ex
 export CARGO_HOME=$BUILD_PREFIX/cargo
 mkdir -p $CARGO_HOME
 
+# 关键修复：让 bindgen 找到 libclang
+export LIBCLANG_PATH=$BUILD_PREFIX/lib
+
 # 强制链接到 Conda 提供的外部 htslib
 export HTSLIB_INCLUDE_DIR=$PREFIX/include
 export HTSLIB_LIBRARY_DIR=$PREFIX/lib
