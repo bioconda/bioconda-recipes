@@ -6,13 +6,12 @@ set -ex
 export CARGO_HOME=$BUILD_PREFIX/cargo
 mkdir -p $CARGO_HOME
 
-# 让 bindgen 找到 libclang
+# 关键：让 bindgen 找到编译环境中的 libclang
 export LIBCLANG_PATH=$BUILD_PREFIX/lib
 
-# 关键修复：由于项目使用的 rust-htslib 版本较老
-# 我们取消强制链接系统 htslib，让 hts-sys 静态编译它自带的兼容版本
-# export HTSLIB_INCLUDE_DIR=$PREFIX/include
-# export HTSLIB_LIBRARY_DIR=$PREFIX/lib
+# 关键：强制 rust-htslib 使用其自带的 HTSlib 源码进行静态编译
+# 这样可以完美解决字段找不到的冲突问题
+export HTSLIB_LOCAL=1
 
 # 编译并安装到 Conda 环境的 bin 目录
 cargo install --locked --root $PREFIX --path .
