@@ -25,12 +25,29 @@ if [ "$OS" = "Linux" ]; then
     MPMATH_SRC=$(python -c "import mpmath, os; print(os.path.dirname(mpmath.__file__))")
     PYPY_SITE=$(${PREFIX}/bin/pypy3 -c "import site; print(site.getsitepackages()[0])")
     cp -r ${MPMATH_SRC} ${PYPY_SITE}/
+elif [ "$OS" = "Darwin" ] && [ "$ARCH" = "arm64" ]; then
+    PYPY_DIR="${SRC_DIR}/pypy-macos-arm64"
+    cp -rv ${PYPY_DIR} $PREFIX/bin/pypy3.11
+    ln -s $PREFIX/bin/pypy3.11/bin/pypy $PREFIX/bin/pypy3
+    ln -s $PREFIX/bin/pypy3.11/bin/pypy $PREFIX/bin/pypy
+
+    $PREFIX/bin/pypy3 -m ensurepip
+    MPMATH_SRC=$(python -c "import mpmath, os; print(os.path.dirname(mpmath.__file__))")
+    PYPY_SITE=$(${PREFIX}/bin/pypy3 -c "import site; print(site.getsitepackages()[0])")
+    cp -r ${MPMATH_SRC} ${PYPY_SITE}/
 fi
 
 
-make CC=${CC} CXX=${CXX}  PREFIX=${PREFIX}
-cp libclair3* $PREFIX/bin
-if [ "$OS" = "Linux" ]; then
+cd ${SRC_DIR}
+
+if [ "$OS" = "Darwin" ]; then
+    LDFLAGS="${LDFLAGS//-Wl,-rpath=/-Wl,-rpath,}"
+    export LDFLAGS
+fi
+
+make CC=${CC} CXX=${CXX} PREFIX=${PREFIX} CC_PATH=${CC}
+cp libclair3*.so $PREFIX/bin
+if [ -f longphase ]; then
     cp longphase $PREFIX/bin
 fi
 

@@ -1,0 +1,69 @@
+{% set name = "panmap" %}
+{% set version = "0.1.1" %}
+{% set panman_version = "0.1.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/amkram/panmap/archive/v{{ version }}.tar.gz
+    sha256: de75b4da70f033d4f4968163696745ff962543334ecfb3ba123aaf589086c7a9
+    folder: panmap
+  - url: https://github.com/TurakhiaLab/panman/archive/refs/tags/v{{ panman_version }}.tar.gz
+    sha256: 6e987799cd4f713f88b6e3ddafa9b59798a210c8ff1d8b59381bbc5fd2661c72
+    folder: panman
+
+build:
+  number: 0
+  # Fixed build string: avoids hash mismatch between bioconda-utils fast-resolve
+  # (bypass_env_check) and conda-build full solver, caused by run_exports from
+  # spdlog/fmt/libabseil not being discovered in the fast-resolve path.
+  # Safe because panmap is an end-user tool, not a library.
+  string: "0"
+  skip: True  # [osx and x86_64]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake
+    - make
+  host:
+    - zlib
+    - htslib
+    - libboost-devel
+    - libprotobuf
+    - tbb-devel
+    - capnproto >=1.0
+    - jsoncpp
+    - spdlog
+    - fmt
+    - libabseil
+    - zstd
+    - eigen
+  run:
+    - spdlog >=1.16,<1.17
+    - fmt >=12.0,<13
+    - libabseil >=20250512
+
+test:
+  commands:
+    - panmap --help
+    - panmanUtils --help
+
+about:
+  home: "https://github.com/amkram/{{ name }}"
+  license: "MIT"
+  license_family: MIT
+  license_file: "panmap/LICENSE"
+  summary: "Pangenome-based sequence placement, alignment, and genotyping"
+  dev_url: "https://github.com/amkram/{{ name }}"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -10,8 +10,8 @@ source:
   sha256: 481040c7f22f91fb5e3aa25bab8ac1eed2d04dc8d432aa8c4861aa9ca7f0fff9
 
 build:
-  number: 0
-  skip: True  # [osx]
+  number: 1
+  skip: True  # [win or (osx and x86_64)]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
@@ -25,10 +25,13 @@ requirements:
     - pkg-config
     - make
     - cmake
+    - gnuconfig
   host:
     - zlib
     - bzip2
     - xz
+    - libcurl
+    - llvm-openmp  # [osx]
 
 test:
   commands:
@@ -41,7 +44,11 @@ about:
   license_file: LICENSE
   summary: "LongPhase is an ultra-fast program for simultaneously co-phasing SNPs, small indels, large SVs, and (5mC) modifications for Nanopore and PacBio platforms."
   dev_url: "https://github.com/twolinin/longphase"
+  doc_url: "https://github.com/twolinin/longphase/blob/v{{ version }}/README.md"
+
 extra:
-   additional-platforms:
-     - linux-aarch64
-     - osx-arm64
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c
