@@ -1,0 +1,46 @@
+{% set version = "0.1.0" %}
+
+package:
+  name: mft-tools
+  version: {{ version }}
+
+source:
+  url: "https://github.com/treangenlab/mft-tools/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: ce3c9a5b3433230fccfc5059dfefbe306ec318c07df85466c22e57f49fab644a
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('mft-tools', max_pin="x.x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path 
+
+test:
+  commands:
+    - mft --help
+
+
+requirements:
+  build: 
+    - {{ compiler("rust") }}
+    - cargo-bundle-licenses
+    - make
+
+about:
+  home: "https://github.com/treangenlab/mft-tools"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Tranform DNA sequences using the Min-Frame Transformation (MFT)" 
+  doc_url: "https://github.com/treangenlab/mft-tools/blob/main/README.md"
+  dev_url: "https://github.com/treangenlab/mft-tools"
+
+extra:
+  recipe-maintainers:
+    - rdoughty10
+  additional-platforms:
+    -linux-aarch64
+    -osx-arm64
+
+
