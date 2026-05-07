@@ -1,7 +1,6 @@
 #!/bin/bash
 set -ex
 
-export MACOSX_DEPLOYMENT_TARGET=10.15
 export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 echo "Build GGCAT"
 
