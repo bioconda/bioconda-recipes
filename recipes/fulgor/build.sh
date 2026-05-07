@@ -1,6 +1,7 @@
 #!/bin/bash
 set -ex
 
+export MACOSX_DEPLOYMENT_TARGET=10.15
 echo "Build GGCAT"
 
 (cd external/ggcat/crates/capi/ggcat-cpp-api && make)
