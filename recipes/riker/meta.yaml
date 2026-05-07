@@ -1,5 +1,5 @@
 {% set name = "riker" %}
-{% set version = "0.1.0" %}
+{% set version = "0.2.0" %}
 
 package:
   name: {{ name }}
@@ -7,15 +7,28 @@ package:
 
 source:
   url: https://github.com/fulcrumgenomics/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 0e140b02d723713c3648763e9fd3535a4fa6dca6c7371f8ef8ea9b5272801841
+  sha256: fd7ae8267c5b6dd665fedeb73de8346efb264b3cf6caf7c71d121a9600393399
 
 build:
   number: 0
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    # x86_64: build a single launcher that embeds x86-64-v1/v2/v4 variants
+    # via cargo-multivers (configured by [package.metadata.multivers.x86_64]
+    # in Cargo.toml).
+    - cargo install --locked cargo-multivers                                       # [x86_64]
+    - cargo multivers --profile dist --out-dir "${PREFIX}/bin"                     # [x86_64]
+    # aarch64: a single portable ARMv8-A binary built with the dist profile.
+    # Do NOT use cargo-multivers here -- on non-x86_64 it would expand to every
+    # rustc-known CPU rather than the v1-v4 microarch levels.
+    - cargo install --no-track --locked --profile dist --root "${PREFIX}" --path . # [not x86_64]
   run_exports:
     - {{ pin_subpackage('riker', max_pin="x.x") }}
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
     - {{ compiler('rust') }}
     - cargo-bundle-licenses
 
@@ -38,8 +51,6 @@ extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
-  skip-lints:
-    - compiler_needs_stdlib_c  # until https://github.com/bioconda/bioconda-utils/issues/1095 is resolved
   recipe-maintainers:
     - nh13
     - tfenne
