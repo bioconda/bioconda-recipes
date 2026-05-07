@@ -5,10 +5,13 @@ package:
 source:
   git: https://github.com/luhan125/Drmutascan.git
   tag: v1.0.0
+  sha256: "a4373f76f8f6a13d2ee71cfa05304aa6bc53457732288fb51164bbaf4696e9c0"
 
 build:
-  number: 1                     # 版本号递增
+  number: 0
   noarch: generic
+  run_exports:
+    - {{ pin_subpackage("drmutascan", max_pin="x") }}
   script: |
     mkdir -p $PREFIX/bin
     cp -r $SRC_DIR/scripts/* $PREFIX/bin/
@@ -27,7 +30,11 @@ requirements:
     - numpy
     - openjdk
 
+test:
+  commands:
+    - DRMutaScan --help || test $? -eq 1
+
 about:
   home: https://github.com/luhan125/Drmutascan
   license: MIT
-  summary: "Drmutascan - 病原微生物耐药基因突变分析软件"
+  summary: "DRMutaScan - Drug Resistance Mutation Scanner for assembled pathogen genomes"
