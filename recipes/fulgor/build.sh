@@ -2,6 +2,7 @@
 set -ex
 
 export MACOSX_DEPLOYMENT_TARGET=10.15
+export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 echo "Build GGCAT"
 
 (cd external/ggcat/crates/capi/ggcat-cpp-api && make)
