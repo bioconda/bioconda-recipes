@@ -1,0 +1,132 @@
+{% set version = '0.28' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-nmf
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/NMF_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/NMF/NMF_{{ version }}.tar.gz
+  sha256: 77dfe7b323ee5e5f8801851d1d4356932e2ffc810a7ac7faf5542cbfd92eeefb
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+  # no skip
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: fastICA, doMPI, bigmemory (>= 4.2), synchronicity(>= 1.3.2), corpcor, xtable, devtools, knitr, RUnit
+requirements:
+  build:
+    - {{ compiler('c') }}              # [not win]
+    - {{ compiler('m2w64_c') }}        # [win]
+    - {{ compiler('cxx') }}            # [not win]
+    - {{ compiler('m2w64_cxx') }}      # [win]
+    - {{ posix }}filesystem        # [win]
+    - {{ posix }}make
+    - {{ posix }}sed               # [win]
+    - {{ posix }}coreutils         # [win]
+    - {{ posix }}zip               # [win]
+
+  host:
+    - r-base
+    - bioconductor-biobase
+    - r-biocmanager
+    - r-rcolorbrewer
+    - r-cluster
+    - r-codetools
+    - r-colorspace
+    - r-digest
+    - r-doparallel
+    - r-foreach
+    - r-ggplot2
+    - r-gridbase
+    - r-registry
+    - r-reshape2
+    - r-rngtools >=1.2.3
+    - r-stringr >=1.0.0
+
+  run:
+    - r-base
+    - {{native}}gcc-libs         # [win]
+    - bioconductor-biobase
+    - r-biocmanager
+    - r-rcolorbrewer
+    - r-cluster
+    - r-codetools
+    - r-colorspace
+    - r-digest
+    - r-doparallel
+    - r-foreach
+    - r-ggplot2
+    - r-gridbase
+    - r-registry
+    - r-reshape2
+    - r-rngtools >=1.2.3
+    - r-stringr >=1.0.0
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('NMF')"           # [not win]
+    - "\"%R%\" -e \"library('NMF')\""  # [win]
+
+  # You can also put a file called run_test.r, run_test.py, run_test.sh,
+  # or run_test.bat in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: http://renozao.github.io/NMF/
+  license: GPL-2
+  summary: Provides a framework to perform Non-negative Matrix Factorization (NMF). The package
+    implements a set of already published algorithms and seeding methods, and provides
+    a framework to test, develop and plug new/custom algorithms. Most of the built-in
+    algorithms have been optimized in C++, and the main interface function provides
+    an easy way of performing parallel computations on multicore machines.
+  license_family: GPL2
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
+extra:
+  recipe-maintainers:
+    - Yuri-Kawahara
+
+# The original CRAN metadata for this package was:
+
+# Package: NMF
+# Type: Package
+# Title: Algorithms and Framework for Nonnegative Matrix Factorization (NMF)
+# Version: 0.28
+# Date: 2024-08-19
+# Authors@R: c( person("Renaud", "Gaujoux", role = c("aut")), person("Cathal", "Seoighe", role = c("aut")), person("Nicolas", "Sauwen", role = c("cre"), email = "nicolas.sauwen@openanalytics.eu") )
+# Maintainer: Nicolas Sauwen <nicolas.sauwen@openanalytics.eu>
+# Description: Provides a framework to perform Non-negative Matrix Factorization (NMF). The package implements a set of already published algorithms and seeding methods, and provides a framework to test, develop and plug new/custom algorithms. Most of the built-in algorithms have been optimized in C++, and the main interface function provides an easy way of performing parallel computations on multicore machines.
+# License: GPL (>= 2)
+# URL: http://renozao.github.io/NMF/
+# LazyLoad: yes
+# VignetteBuilder: knitr
+# Depends: R (>= 3.0.0), methods, utils, registry, rngtools (>= 1.2.3), cluster
+# Imports: graphics, stats, stringr (>= 1.0.0), digest, grid, grDevices, gridBase, colorspace, RColorBrewer, foreach, doParallel, ggplot2, reshape2, Biobase, codetools, BiocManager
+# Suggests: fastICA, doMPI, bigmemory (>= 4.2), synchronicity(>= 1.3.2), corpcor, xtable, devtools, knitr, RUnit
+# Collate: 'colorcode.R' 'options.R' 'grid.R' 'atracks.R' 'aheatmap.R' 'algorithmic.R' 'nmf-package.R' 'rmatrix.R' 'utils.R' 'versions.R' 'NMF-class.R' 'transforms.R' 'Bioc-layer.R' 'NMFstd-class.R' 'NMFOffset-class.R' 'heatmaps.R' 'NMFns-class.R' 'nmfModel.R' 'fixed-terms.R' 'NMFfit-class.R' 'NMFSet-class.R' 'NMFStrategy-class.R' 'registry.R' 'NMFSeed-class.R' 'NMFStrategyFunction-class.R' 'NMFStrategyIterative-class.R' 'NMFplots.R' 'registry-algorithms.R' 'algorithms-base.R' 'algorithms-lnmf.R' 'algorithms-lsnmf.R' 'algorithms-pe-nmf.R' 'algorithms-siNMF.R' 'algorithms-snmf.R' 'data.R' 'extractFeatures.R' 'parallel.R' 'registry-seed.R' 'nmf.R' 'rnmf.R' 'run.R' 'seed-base.R' 'seed-ica.R' 'seed-nndsvd.R' 'setNMFClass.R' 'simulation.R' 'tests.R' 'vignetteFunctions.R'
+# Packaged: 2024-08-22 07:48:23 UTC; nsauwen
+# NeedsCompilation: yes
+# Repository: CRAN
+# Date/Publication: 2024-08-22 16:20:01 UTC
+# RoxygenNote: 7.3.1
+# Author: Renaud Gaujoux [aut], Cathal Seoighe [aut], Nicolas Sauwen [cre]
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml
