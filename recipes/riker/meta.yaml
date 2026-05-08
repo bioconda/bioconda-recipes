@@ -11,6 +11,12 @@ source:
 
 build:
   number: 0
+  # The cargo-multivers launcher is a single statically-linked binary that
+  # embeds zstd-compressed CPU-variant payloads. conda-build's macOS rpath
+  # post-processing runs `llvm-otool -l` on every binary and intermittently
+  # SIGABRTs on the launcher. We have nothing to relocate (no $PREFIX/lib
+  # rpaths -- everything is statically linked), so skip the pass entirely.
+  binary_relocation: false
   script:
     - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
     # x86_64: build a single launcher that embeds x86-64-v1/v2/v4 variants
