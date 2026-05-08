@@ -2,25 +2,24 @@
 
 set -ex
 
-# 设置 Rust 编译环境变量
+# 1. 设置 Rust 环境
 export CARGO_HOME=$BUILD_PREFIX/cargo
 mkdir -p $CARGO_HOME
 
-# 1. 确保 bindgen 找到 libclang
+# 2. 让 bindgen 能够解析头文件成员的关键修复
+# 指向 clang 本身
+export CLANG_PATH=$BUILD_PREFIX/bin/clang
+# 指向 libclang 路径
 export LIBCLANG_PATH=$BUILD_PREFIX/lib
+# 强制让 bindgen 搜索 Conda 环境中的头文件目录（解决 opaque struct 问题）
+export CPATH="$PREFIX/include:$BUILD_PREFIX/include"
 
-# 2. 关键修复：让 rust-htslib 链接到 conda 环境提供的库，而不是系统库
-# 设置 HTSLIB 链接路径
+# 3. 链接到 Conda 提供的外部 htslib
 export HTSLIB_INCLUDE_DIR=$PREFIX/include
 export HTSLIB_LIBRARY_DIR=$PREFIX/lib
 
-# 3. 强制 hts-sys 静态编译它自带的源码
-# 这是解决 "no field block_address" 错误的最彻底方法
-# 因为 1.0.0 版本的 rust-htslib 与 Conda 环境中某些版本的 htslib 可能存在 API 微差
-export HTSLIB_LOCAL=1
-
-# 编译并安装
+# 4. 执行编译
 cargo install --locked --root $PREFIX --path .
 
-# 清理
+# 5. 清理
 rm -f $PREFIX/.crates.toml $PREFIX/.crates2.json
