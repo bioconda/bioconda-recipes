@@ -1,0 +1,66 @@
+{% set name = "kraut" %}
+{% set pypi_name = "krautils" %}
+{% set version = "0.5.0" %}
+{% set python_min = "3.10" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.org/packages/source/{{ pypi_name[0] }}/{{ pypi_name }}/{{ pypi_name }}-{{ version }}.tar.gz"
+  sha256: 432efd5272dff24fe4c297c7230cf855b6aa4251b15cb2c9f953849dbb4160cf
+
+ 
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - kraut = kraut.commands.cli:app
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools >=77.0.3
+  run:
+    - python >={{ python_min }}
+    - click
+    - matplotlib-base
+    - numpy
+    - pandas
+    - plotly
+    - rich
+    - scikit-bio >=0.7
+    - typer
+
+test:
+  imports:
+    - kraut
+    - kraut.commands.cli
+    - kraut.models.kraken_data
+  commands:
+    - kraut --help
+    - kraut --version | grep {{ version }}
+    - pip check
+  requires:
+    - pip
+    - python {{ python_min }}
+
+about:
+  home: "https://quadram-institute-bioscience.github.io/kraut"
+  dev_url: "https://github.com/quadram-institute-bioscience/kraut"
+  doc_url: "https://quadram-institute-bioscience.github.io/kraut"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Parse, merge, analyze, and plot Kraken2 taxonomic classification reports"
+  description: |
+    Kraut is a Python CLI tool and library for parsing, merging, filtering,
+    analyzing, and visualizing Kraken2 taxonomic classification output files.
+
+extra:
+  recipe-maintainers:
+    - telatin
