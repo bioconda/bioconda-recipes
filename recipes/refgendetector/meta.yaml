@@ -2,6 +2,7 @@
 {% set name = "refgendetector" %}
 {% set version = "3.0.5" %}
 
+
 package:
   name: {{ name }}
   version: {{ version }}
@@ -12,17 +13,20 @@ source:
 build:
   noarch: python
   number: 0
-  script: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   entry_points:
     - refgenDetector=refgenDetector.refgenDetector_main:main
     - refgenDetector-manager=refgenDetector.ref_manager:main
   run_exports:
-        - {{ pin_subpackage('beacon2-ri-tools', max_pin="x.x") }}
+        - {{ pin_subpackage(name, max_pin="x") }}
 
 
 requirements:
   host:
     - python >={{ python_min }}
+    - pip
+    - setuptools
+    - setuptools-git-versioning >=2.0,<3
   run:
     - python >={{ python_min }}
     - pysam
@@ -33,7 +37,7 @@ requirements:
     - msgpack-python
     - numpy
 
-tests:
+test:
   imports:
     - refgenDetector
   commands:
