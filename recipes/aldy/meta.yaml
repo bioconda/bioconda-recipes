@@ -1,0 +1,63 @@
+{% set name = "aldy" %}
+{% set version = "4.8.3" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/a/aldy/aldy-{{ version }}.tar.gz
+  sha256: 2612e849b35bc3c11fd0ee5752c8c732ae7d39fe095975d5249ea1666e867acd
+
+build:
+  number: 0
+  skip: True  # [win]
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib("c") }}
+  host:
+    - python >=3.7
+    - pip
+    - setuptools
+    - cython
+    - pysam
+    - numpy
+  run:
+    - python >=3.7
+    - pyyaml
+    - logbook
+    - pysam
+    - ortools >=9
+    - natsort
+    - mappy
+    - numpy
+    - importlib_resources
+
+test:
+  imports:
+    - aldy
+  commands:
+    - aldy --help
+
+about:
+  home: https://github.com/0xTCG/aldy
+  license: "LicenseRef-Aldy-IURTC"
+  license_family: OTHER
+  license_file: LICENSE.rst
+  summary: "Genotyping and phasing of pharmacogenes using star-allele nomenclature"
+  description: |
+    Aldy 4 is a tool for allelic decomposition (haplotype reconstruction) and
+    exact genotyping of highly polymorphic and structurally variant pharmacogenes
+    (CYP2D6, CYP2A6, CYP2B6, CYP2C19, DPYD, and many more). It uses integer
+    linear programming to call star-alleles with phasing support for WGS, WES,
+    PGRNseq, PacBio HiFi, and 10X Genomics data.
+    Free for non-commercial/academic use only.
+  doc_url: https://aldy.readthedocs.io/en/latest/
+  dev_url: https://github.com/0xTCG/aldy
+
+extra:
+  recipe-maintainers:
+    - rkmishra3893
