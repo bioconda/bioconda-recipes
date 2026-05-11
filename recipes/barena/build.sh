@@ -17,7 +17,8 @@ if [[ "$(uname -m)" == "aarch64" ]]; then
 fi
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
-	sed -i.bak 's|--passC:"-mpopcnt"|--passC:"-Wno-incompatible-function-pointer-types"|' nim.cfg
+	echo "gcc.exe = \"${CC}\"" >> nim.cfg
+	echo "gcc.linkerexe = \"${CC}\"" >> nim.cfg
 fi
 
 nimble --localdeps build -y --verbose -d:release
