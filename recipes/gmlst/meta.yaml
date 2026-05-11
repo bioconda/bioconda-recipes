@@ -1,0 +1,58 @@
+{% set name = "gmlst" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/gmlst-{{ version }}.tar.gz
+  sha256: f75ccfcb468bb728cb87d7e6a0f5e22f9b24e035f4cfe8d00e69833abe373129
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - gmlst = gmlst.cli:main
+  run_exports:
+    - {{ pin_subpackage('gmlst', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.12,<3.13
+    - hatchling
+    - pip
+  run:
+    - python >=3.12,<3.13
+    - click >=8.1
+    - flask >=3.0
+    - pyrodigal >=3.4
+    - pyyaml >=6.0
+    - requests >=2.31
+    - rich >=13.0
+    - python-xxhash >=3.0
+
+test:
+  imports:
+    - gmlst
+  commands:
+    - gmlst --help
+
+about:
+  home: https://github.com/indexofire/gmlst
+  summary: "Fast bacterial genome typing with MLST, cgMLST, and scheme-free discovery"
+  description: |
+    gmlst is a fast Python CLI for bacterial genome typing with classical MLST,
+    large cgMLST and wgMLST schemes, and scheme-free discovery workflows.
+    It supports assembled genomes and raw reads, several alignment backends
+    (BLAST+, KMA, minimap2, MUMmer4), multiple public data providers,
+    custom local schemes, offline cache reuse, and local MST visualization.
+  license: MIT
+  license_file: LICENSE
+  doc_url: https://indexofire.github.io/gmlst/
+  dev_url: https://github.com/indexofire/gmlst
+
+extra:
+  recipe-maintainers:
+    - indexofire
