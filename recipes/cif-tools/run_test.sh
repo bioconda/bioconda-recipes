@@ -1,7 +1,7 @@
 #!/bin/bash
 set -exu
 
-pdb2cif 6yrb_0cyc.pdb
+pdb2cif 7f95_flipper.pdb
 
 # buggy commands
 cif2pdb 7f95-carb.cif
