@@ -1,7 +1,7 @@
 #!/bin/bash
 set -exu
 
-# pdb2cif fails on duplicate _refine keys in PDB files
+# pdb2cif fails on duplicate `_refine` keys in PDB files
 pdb2cif 7f95_flipper.pdb || true
 
 cif2pdb 1cbs_final.cif
