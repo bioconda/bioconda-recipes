@@ -1,51 +1,51 @@
 {% set name = "salmon" %}
-{% set version = "1.10.3" %}
-{% set sha256 = "a053fba63598efc4ade3684aa2c8e8e2294186927d4fcdf1041c36edc2aa0871" %}
+{% set version = "1.11.4" %}
+{% set sha256 = "9410904fa787f1f9aca635626fcdca08f3af9b02f820963f9439e80fb56d23b8" %}
+{% set pufferfish_sha256 = "4ca26b1172b5c9b22340f44ca7555e5551151f2f68e723c2ecd90a8da6df9568" %}
+{% set fqfeeder_sha256 = "f962fa55a6f534f91c6f6a761206a56dd4a0b272bcb6d6f9e1b4ca0689abc94d" %}
+{% set gff_sha256 = "96d2bda64aaf9cf7b6c1a42205e408b0ef2a353ba42dad560db215e7ec105e2e" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/COMBINE-lab/salmon/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
-  patches:
-    - 0001-CMakeLists.patch
-
+  - url: https://github.com/COMBINE-lab/salmon/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+    
 build:
-  number: 5
+  number: 0
   run_exports:
     - {{ pin_subpackage("salmon", max_pin="x") }}
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - autoconf
-    - automake
-    - libtool
-    - cmake
+    - cmake >=3.24
+    - ninja
     - make
     - pkg-config
-    - gnuconfig
   host:
-    - boost-cpp
-    - jemalloc >=5.1.0
-    - tbb-devel >=2021.4.0
-    - staden_io_lib >=1.15.0
-    - libgff
-    - cereal
-    - libcurl
+    - cereal >=1.3.2
+    - boost-cpp >=1.84
+    - tbb >=2021.4
+    - htslib >=1.23
+    - mimalloc >=3.2.8
+    - tbb-devel >=2022.3.0
     - libiconv
-    - libdeflate
-    - xz
-    - zlib
-    - zstd
     - bzip2
-    - unzip
+    - xz
+    - curl
   run:
+    - {{ pin_compatible('htslib') }}
+    - {{ pin_compatible('boost-cpp') }}
+    - tbb
+    - bzip2
+    - xz
+    - curl
     - boost-cpp
     - icu
-    - staden_io_lib >=1.15.0
 
 test:
   source_files:

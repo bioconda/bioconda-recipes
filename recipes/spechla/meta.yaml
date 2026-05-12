@@ -1,0 +1,88 @@
+{% set name = "spechla" %}
+{% set version = "1.0.10" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/deepomicslab/SpecHLA/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: c6ed080caa84ef48db6bd05c269f72ba031eaee7d5ac05d2432cc1f431f3c438
+
+build:
+  number: 0
+  skip: true  # [not linux64]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake >=3.6
+    - make
+  host:
+    - python >=3.8,<3.13
+    - htslib
+    - arpack
+    - zlib
+    - bowtie2
+  run:
+    # Core (all modes)
+    - python >=3.8,<3.13
+    - samtools >=1.13
+    - bcftools
+    - htslib
+    - perl
+    - perl-findbin
+    - perl-getopt-long
+    # Python libraries (all modes)
+    - pysam
+    - biopython
+    - numpy
+    - pandas
+    - scipy
+    - pyvcf3
+    - pulp
+    - python-edlib
+    # Short-read mode
+    - bwa
+    - bowtie2
+    - freebayes
+    - blast
+    - blat
+    - bedtools
+    - bamutil
+    - fermikit
+    - k8
+    - parallel
+    - trinity
+    # Long-read mode
+    - minimap2
+    - longshot
+    # Structural variant detection (optional, -v flag)
+    - pbmm2
+    - pbsv
+
+test:
+  commands:
+    - spechla -h 2>&1 | grep -q "SpecHLA"
+    - command -v SpecHap
+    - command -v ExtractHAIRs
+    - test -d ${PREFIX}/share/spechla/db/HLA
+    - test -d ${PREFIX}/share/spechla/db/ref
+
+about:
+  home: https://github.com/deepomicslab/SpecHLA
+  license: MIT
+  license_family: MIT
+  license_file: License
+  summary: "Full-resolution HLA typing from sequencing data"
+  description: |
+    SpecHLA enables full-resolution HLA typing from various sequencing
+    data types including WGS, WES, RNA-seq, and long-read sequencing.
+  dev_url: https://github.com/deepomicslab/SpecHLA
+
+extra:
+  recipe-maintainers:
+    - jonasscheid
+    - wshuai294
