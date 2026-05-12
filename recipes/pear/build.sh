@@ -1,7 +1,7 @@
 #!/bin/bash
 set -xeuo pipefail
-automake --add-missing
 autoreconf
+automake --add-missing
 ./configure --prefix=$PREFIX LDFLAGS="$(pkg-config --libs zlib)" CFLAGS="$(pkg-config --cflags zlib)"
 make
 make install
