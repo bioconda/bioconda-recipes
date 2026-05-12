@@ -4,7 +4,7 @@ set -exu
 pdb2cif --no-validate 7f95_flipper.pdb
 
 # buggy commands
-cif2pdb 7f95-carb.cif
+cif2pdb 1cbs_final.cif
 cif-diff 443d_final.cif 7f95-carb.cif
 
 cif-grep 'STRUCTURES OF M-IODO HOECHST-DNA COMPLEXES' 443d_final.cif
