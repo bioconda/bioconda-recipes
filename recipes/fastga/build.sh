@@ -2,7 +2,7 @@
 
 mkdir -p ${PREFIX}/bin
 
-export CFLAGS="${CFLAGS} -O3 -I$PREFIX/include -L$PREFIX/lib"
+export CFLAGS="${CFLAGS} -O3 -I$PREFIX/include -L$PREFIX/lib -pthread"
 
 make -j"${CPU_COUNT}" CC="${CC}" CFLAGS="${CFLAGS}"
 

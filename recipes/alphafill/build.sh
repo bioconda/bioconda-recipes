@@ -22,7 +22,12 @@ cmake -S . -B build -G Ninja \
   ${CMAKE_ARGS} \
   -DCMAKE_INSTALL_SYSCONFDIR="${PREFIX}/etc" \
   -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+  -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" \
+  -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON \
   -DZLIB_ROOT="${PREFIX}" \
+  -Dmcfp_DIR="${PREFIX}/lib/cmake/mcfp" \
+  -Dcifpp_DIR="${PREFIX}/lib/cmake/cifpp" \
+  -Dzeep_DIR="${PREFIX}/lib/cmake/zeep" \
   -DBUILD_WEB_APPLICATION=OFF \
   -DBUILD_DOCUMENTATION=OFF \
   -DALPHAFILL_DATA_DIR="" \

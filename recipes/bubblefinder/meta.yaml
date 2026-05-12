@@ -1,24 +1,51 @@
 {% set name = "bubblefinder" %}
-{% set version = "1.0.1" %}
+{% set version = "1.0.4" %}
+{% set build_number = 0 %}
 
 {% set ogdf_tag = "elderberry-202309" %}
-{% set spdlog_version = "1.15.3" %}
-{% set spdlog_tag = "v" + spdlog_version %}
+{% set vendored_log_version = "1.15.3" %}
+{% set vendored_log_tag = "v" + vendored_log_version %}
+
+{% set sdsl_commit = "349de444ded81547cb55a718abeada41960531b5" %}
+{% set libhandlegraph_commit = "b95f7637968b4c8c3c4d1bad13aaa1835c607fe0" %}
+{% set gbwt_commit = "a76330b2a08c44092a9677dd5c8cf2845b0407d0" %}
+{% set gbwtgraph_commit = "964cbc9c73de9b4bc51a98aaf558a8f97453193a" %}
+
+{% set libdivsufsort_commit = "0f24acd8de208464769c782119dacf158647f7ed" %}
+{% set googletest_commit = "71815bbf7de6e10c11821d654a2fae2cf42de0f7" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  - url: https://github.com/algbio/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
-    sha256: c0e529b576272074f317a89c6410a632ea67bb64c836df04f4cb9a1bba50f869
+  - url: https://github.com/algbio/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: 02d72996a1abee106833f682c4dfa19416d0bbba9232d740ea960cea7e934e8e
     folder: .
   - url: https://github.com/ogdf/ogdf/archive/refs/tags/{{ ogdf_tag }}.tar.gz
     sha256: 3438205d3a6ff69d24c3a6db748d2a5a78688605baf3092456073901a2b623f3
     folder: ogdf-src
-  - url: https://github.com/gabime/spdlog/archive/refs/tags/{{ spdlog_tag }}.tar.gz
+  - url: https://github.com/gabime/spdlog/archive/refs/tags/{{ vendored_log_tag }}.tar.gz
     sha256: 15a04e69c222eb6c01094b5c7ff8a249b36bb22788d72519646fb85feb267e67
-    folder: spdlog-src
+    folder: vendor-log-src
+  - url: https://github.com/vgteam/sdsl-lite/archive/{{ sdsl_commit }}.tar.gz
+    sha256: 7484154b7237108ab7aca14651b920620fb3b93af9fae092b01bbd16a17738f3
+    folder: sdsl-lite-src
+  - url: https://github.com/vgteam/libhandlegraph/archive/{{ libhandlegraph_commit }}.tar.gz
+    sha256: 9a5f4f1b967be74863a59e3486af16a1385928ba860e271e1c7a4671d6cf8ca7
+    folder: libhandlegraph-src
+  - url: https://github.com/jltsiren/gbwt/archive/{{ gbwt_commit }}.tar.gz
+    sha256: 9e048f50c967cc9a307fbe6714801369eda93cafca80d6461f340d78f494b365
+    folder: gbwt-src
+  - url: https://github.com/jltsiren/gbwtgraph/archive/{{ gbwtgraph_commit }}.tar.gz
+    sha256: 30919bb5343666c5b5cce31581b6ebe511c5a631342a4f4261d8752b944a9bd7
+    folder: gbwtgraph-src
+  - url: https://github.com/simongog/libdivsufsort/archive/{{ libdivsufsort_commit }}.tar.gz
+    sha256: 41f94b06b1677952ac19c72c4048bbb874140b50089713e683f11adec80643b7
+    folder: libdivsufsort-src
+  - url: https://github.com/google/googletest/archive/{{ googletest_commit }}.tar.gz
+    sha256: 14ff60d4414d60eed97046bf83177f74f4634928061863b8116ff210d9412194
+    folder: googletest-src
 
 build:
   number: 0
@@ -29,17 +56,25 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - cmake
     - make
     - pkg-config
+    - libgomp        # [linux]
+    - llvm-openmp    # [osx]
   host:
-    - coincbc
+    - openssl
+    - zstd
+    - libgomp        # [linux]
+    - llvm-openmp    # [osx]
   run:
-    - coincbc
+    - {{ pin_compatible('openssl', max_pin='x') }}
+    - {{ pin_compatible('zstd', max_pin='x.x') }}
 
 test:
   commands:
     - BubbleFinder --help
+    - test -x "${PREFIX}/bin/snarls_bf"
 
 about:
   home: https://github.com/algbio/BubbleFinder

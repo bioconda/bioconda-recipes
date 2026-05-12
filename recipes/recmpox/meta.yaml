@@ -1,0 +1,66 @@
+{% set name = "recmpox" %}
+{% set version = "0.0.5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/DaanJansen94/RecMpox/archive/v{{ version }}.tar.gz
+  sha256: 4d8355c7e31d2ced9762fe9a2cf378a69e0c8e5f733bc51bd567ac1bbb0c0f26
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - recmpox=recmpox.recmpox:main
+  script:
+    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+    - mkdir -p $PREFIX/etc/conda/activate.d
+    - echo 'export PYTHONNOUSERSITE=1' > $PREFIX/etc/conda/activate.d/recmpox-env-vars.sh
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+  run:
+    - python >=3.9
+    - minimap2
+    - samtools
+    - squirrel
+    - iqtree =2.4.0
+    - r-base
+    - r-ape
+    - r-ggplot2
+    - r-phytools
+    - bioconductor-ggtree
+
+test:
+  imports:
+    - recmpox
+  commands:
+    - recmpox --help
+
+about:
+  home: https://github.com/DaanJansen94/RecMpox
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: RecMpox flags potential recombination events in monkeypox consensus genomes.
+  description: |
+    RecMpox is a command-line tool that flags potential recombination events in monkeypox viruses.
+    It identifies recombination tract breakpoints within your own provided consensus genomes.
+    It does not confirm recombination; it flags genomes that may be recombinant for further investigation.
+    RecMpox takes two references (e.g. Clade Ia vs Ib, or IIa vs IIb), aligns them, finds diagnostic sites,
+    and classifies each genome along the alignment to infer recombination tracts and breakpoints.
+    Optionally, RecMpox can build a phylogeny of the inferred tract sequences alongside outbreak references,
+    to help confirm true recombination and reduce false positives caused by ancestral population structure.
+  doc_url: https://github.com/DaanJansen94/RecMpox/blob/main/README.md
+  dev_url: https://github.com/DaanJansen94/RecMpox
+
+extra:
+  recipe-maintainers:
+    - DaanJansen94

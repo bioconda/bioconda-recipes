@@ -1,0 +1,57 @@
+{% set name = "cifi" %}
+{% set version = "0.2.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: "a67d2eb74cfa310f7c0d52289151a2379f9b3a02212c5715a97058a1ced0235f"
+
+build:
+  number: 0
+  skip: true  # [win]
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+  run_exports:
+    - {{ pin_subpackage('cifi', max_pin="x.x") }}
+  entry_points:
+    - cifi = cifi.cli:main
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake >=3.15
+    - make
+    - pkg-config
+  host:
+    - python
+    - pip
+    - scikit-build-core >=0.4.3
+    - nanobind >=1.3.2
+    - htslib
+    - zlib
+  run:
+    - python >=3.9
+    - click >=8.0
+    - jinja2 >=3.0
+    - htslib
+
+test:
+  imports:
+    - cifi
+  commands:
+    - cifi --help
+    - cifi enzymes
+
+about:
+  home: "https://github.com/mr-eyes/cifi-toolkit"
+  summary: "CiFi - toolkit for downstream processing of CiFi long reads"
+  license: "MIT"
+  license_family: "MIT"
+  license_file: "LICENSE"
+
+extra:
+  recipe-maintainers:
+    - mr-eyes

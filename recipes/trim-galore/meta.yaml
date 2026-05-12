@@ -1,40 +1,61 @@
-{% set version = "0.6.10" %}
-{% set sha256 = "aec32bf75502a0270fa7b869a80397fe8431fc24ec86ea29e1ceeab42e372b76" %}
+{% set name = "trim-galore" %}
+{% set version = "2.2.0" %}
 
 package:
-  name: trim-galore
-  version: '{{version}}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/FelixKrueger/TrimGalore/archive/{{version}}.zip
-  sha256: '{{sha256}}'
+  - url: https://github.com/FelixKrueger/TrimGalore/releases/download/v{{ version }}/trim_galore-linux-x86_64.tar.gz  # [linux and x86_64]
+    sha256: 7ed9de04632ef4b8430aa03ee9a8d0872822299279dfda4d637ff73cde7a6474  # [linux and x86_64]
+  - url: https://github.com/FelixKrueger/TrimGalore/releases/download/v{{ version }}/trim_galore-linux-aarch64.tar.gz  # [linux and aarch64]
+    sha256: 507c203ae72374a7a1ffa84ea20560707908fb720741d64dfb81984bfda22118  # [linux and aarch64]
+  - url: https://github.com/FelixKrueger/TrimGalore/releases/download/v{{ version }}/trim_galore-macos-aarch64.tar.gz  # [osx and arm64]
+    sha256: cac32ddcd2ecd6837e770d097892002af2564781c9b3843ca70d75dda862d15b  # [osx and arm64]
 
 build:
-  number: 2
-  noarch: generic
+  number: 0
+  skip: True  # [osx and x86_64]
   run_exports:
-    - {{ pin_subpackage("trim-galore", max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
-  build:
-  run:
-    - perl
-    - fastqc
-    - cutadapt ==5.2
+  run: []
 
 test:
   commands:
-    - trim_galore --help | grep trim_galore > /dev/null
+    - which trim_galore   # pre-built binaries may require glibc >=2.39; bioconda CI uses CentOS 7 (glibc 2.17)
 
 about:
-  home: https://github.com/FelixKrueger/TrimGalore
+  home: https://www.trimgalore.com/
+  dev_url: https://github.com/FelixKrueger/TrimGalore
+  summary: "Fast adapter and quality trimming for NGS data — Oxidized Edition (Rust)"
+  description: |
+    Trim Galore v2 is a Rust rewrite of the original Perl Trim Galore. Single
+    static binary, no Python/Perl/Cutadapt/Java/igzip/pigz dependencies. Drop-in
+    compatible with v0.6.x scripts and pipelines (same CLI, same output
+    filenames, same report format) with adapter auto-detection (Illumina,
+    Nextera, Small RNA, BGI/DNBSEQ), poly-G/poly-A trimming, paired-end
+    single-pass processing, RRBS support, and bundled FastQC integration via
+    fastqc-rust.
   license: GPL-3.0-only
   license_family: GPL
   license_file: LICENSE
-  summary: Trim Galore! is a wrapper script to automate quality and adapter trimming
-    as well as quality control
-  dev_url: https://github.com/FelixKrueger/TrimGalore
 
 extra:
+  notes: |
+    Linux x86_64, Linux aarch64, and macOS aarch64 (Apple Silicon) prebuilt
+    binaries ship via the GitHub Releases page. Intel Mac users (osx-x86_64)
+    should install via `cargo install trim-galore`, or pull the Docker
+    linux/amd64 image (`docker pull ghcr.io/felixkrueger/trimgalore:latest` on
+    Apple Silicon Docker also works — pulls the linux/arm64 multi-arch variant).
+  skip-lints:
+    - should_be_noarch_generic
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - usegalaxy-eu:trim_galore
+  recipe-maintainers:
+    - FelixKrueger
+    - ewels

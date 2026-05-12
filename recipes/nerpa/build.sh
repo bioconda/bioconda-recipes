@@ -1,56 +1,43 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
-ARCH=$(uname -m)
-PREFIX="${PREFIX:-$(pwd)/install}"
-BUILD_DIR="${BUILD_DIR:-build}"
-SRC_DIR="$(dirname "$0")"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3"
+export SHARE_PATH="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
 
-# 架构参数修正
-case "$ARCH" in
-  aarch64) 
-    export CFLAGS="${CFLAGS//-march=nocona/-march=armv8-a}"
-    export CFLAGS="${CFLAGS//-mtune=haswell/-mtune=cortex-a53}"
-    export CXXFLAGS="$CFLAGS"
-    ;;
+mkdir -p "${PREFIX}/bin"
+mkdir -p "${SHARE_PATH}"
+
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
 esac
 
-export CC="${CC:-$(command -v aarch64-conda-linux-gnu-cc || command -v gcc || command -v clang)}"
-export CXX="${CXX:-$(command -v aarch64-conda-linux-gnu-c++ || command -v g++ || command -v clang++)}"
-[ -z "$CC" ] && { echo "C compiler not found"; exit 1; }
+if [[ `uname -s` == "Darwin" ]]; then
+	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+else
+	export CONFIG_ARGS=""
+fi
 
-fix_cxxopts() {
-  local header_path="$1"
-  if [ -f "$header_path" ] && ! grep -q "#include <cstring>" "$header_path"; then
-    sed -i '/#include <vector>/a #include <cstring>' "$header_path"
-    echo "$header_path"
-  fi
-}
+cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+	-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
+	"${CONFIG_ARGS}"
 
-detect_generator() {
-  if command -v ninja >/dev/null; then
-    echo "Ninja"
-  else
-    echo "Unix Makefiles"
-  fi
-}
+ninja -C build -j "${CPU_COUNT}"
 
-main() {
-  find "$SRC_DIR" -name 'cxxopts.hpp' | while read -r file; do
-    fix_cxxopts "$file"
-  done
+install -v -m 0755 build/hmm_nrp_matcher "${PREFIX}/bin"
 
-  mkdir -p "$BUILD_DIR" && cd "$BUILD_DIR" || exit 1
+cp -rf * ${SHARE_PATH}/
 
-  cmake -G Ninja \
-    -DCMAKE_INSTALL_PREFIX="$PREFIX" \
-    -DCMAKE_C_COMPILER="$CC" \
-    -DCMAKE_CXX_COMPILER="$CXX" \
-    -DCMAKE_CXX_STANDARD=14 \
-    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-    .. || { echo "CMake configuration failed"; exit 1; }
-
-  ninja install -j "${CPU_COUNT}"
-}
-
-main 2>&1 | tee build.log
+ln -s ${SHARE_PATH}/nerpa.py ${PREFIX}/bin/nerpa.py
+ln -s ${SHARE_PATH}/nerpa.py ${PREFIX}/bin/nerpa

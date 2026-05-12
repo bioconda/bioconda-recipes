@@ -1,0 +1,42 @@
+{% set name = "seqtui" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ranwez-search/SeqTUI/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: cc7cfa9054cd8f39b6d8060bca57ee9767b36e5eecb96401239317b45ac85f76
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('seqtui', max_pin="x.x") }}
+  skip: true  # [win]
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path .
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - make
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - seqtui --version
+
+about:
+  home: https://github.com/ranwez-search/SeqTUI
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "Terminal-based viewer and CLI toolkit for biological sequences (DNA/AA)."
+
+extra:
+  recipe-maintainers:
+    - ranwez

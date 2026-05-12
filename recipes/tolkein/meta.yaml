@@ -11,21 +11,25 @@ source:
   sha256: 2bba56ac0d49b8e0168992f4efa2eb7a6db39f88decd091af6f4a6d9b2f2aae5
 
 build:
-  number: 0
+  number: 1
   noarch: python
   entry_points:
     - tolkein = tolkein:cli
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
     - pip
     - python
+    - setuptools
   run:
     - docopt >=0.6.2
     - python
     - pyyaml
     - requests >=2.24.0
+    - setuptools <78
     - tqdm >=4.48.1
     - ujson >=3.0.0
     - xmltodict >=0.12.0
