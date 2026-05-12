@@ -1,6 +1,8 @@
 #!/bin/bash
 set -exu
 
+export LIBCIFPP_DATA_DIR="${CONDA_PREFIX}/share/libcifpp"
+
 # pdb2cif fails on duplicate `_refine` keys in PDB files
 pdb2cif 7f95_flipper.pdb || true
 
