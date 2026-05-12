@@ -4,7 +4,7 @@ set -exu
 pdb2cif 7f95_flipper.pdb || true
 
 # buggy commands
-cif2pdb --dict="${PREFIX}/share/libcifpp/mmcif_pdbx.dic" 1cbs_final.cif
+LIBCIFPP_DATA_DIR="${PREFIX}/share/libcifpp" cif2pdb 1cbs_final.cif
 cif-diff 443d_final.cif 7f95-carb.cif
 
 cif-grep 'STRUCTURES OF M-IODO HOECHST-DNA COMPLEXES' 443d_final.cif
