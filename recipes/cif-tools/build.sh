@@ -19,8 +19,7 @@ cmake -S . -B build -G Ninja \
   -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON \
   -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
   -Dmcfp_DIR="${PREFIX}/lib/cmake/mcfp" \
-  -Dcifpp_DIR="${PREFIX}/lib/cmake/cifpp" \
-  -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp"
+  -Dcifpp_DIR="${PREFIX}/lib/cmake/cifpp"
 
 cmake --build build --parallel "${CPU_COUNT}"
 cmake --install build
