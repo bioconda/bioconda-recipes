@@ -64,6 +64,7 @@ cmake -S . -B build -G Ninja \
   -DCLIPPER-MINIMOL_LIBRARY="${PREFIX}/lib/libclipper-minimol${SHLIB_EXT}" \
   -DCLIPPER-CONTRIB_LIBRARY="${PREFIX}/lib/libclipper-contrib${SHLIB_EXT}" \
   -DCLIPPER-CIF_LIBRARY="${PREFIX}/lib/libclipper-cif${SHLIB_EXT}" \
+  -DOSPRAY_PREFIX=${PREFIX} \
   -DPYTHON_SITE_PACKAGES="${SP_DIR}" \
   -DPython_SITELIB="${SP_DIR}" \
   -DMAKE_COOT_HEADLESS_API_PYI=ON \
