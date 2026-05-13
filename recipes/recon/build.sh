@@ -12,6 +12,7 @@ make CC="${CC}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
 make install
 make clean
 install -v -m 0755 ./scripts/* "${PREFIX}/bin"
+install -v -m 0755 ./src/* "${PREFIX}/bin"
 
 # add read permissions to LICENSE
 chmod a+r "${SRC_DIR}/LICENSE"
