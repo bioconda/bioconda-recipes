@@ -10,8 +10,8 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  skip: True  # [osx]
-  number: 0
+  skip: True  # [osx or py<312]
+  number: 1
   run_exports:
     - {{ pin_subpackage("grz-check-python", max_pin="x.x") }}
 
@@ -25,8 +25,12 @@ requirements:
     - make
     - cargo-bundle-licenses
     - pkg-config
+    - python                              # [build_platform != target_platform]
+    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+    - crossenv                            # [build_platform != target_platform]
+    - maturin >=1,<2                      # [build_platform != target_platform]
   host:
-    - python >=3.12
+    - python
     - pip
     - maturin >=1,<2
     - clangdev
@@ -34,7 +38,7 @@ requirements:
     - openssl
     - zlib
   run:
-    - python >=3.12
+    - python
 
 test:
   imports:
