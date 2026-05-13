@@ -1,0 +1,44 @@
+{% set name = "dotmatch" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/dnncha/dotmatch/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 2080f2b1b72945dcad305621014e6091fa7900ec0cd62f8d7eeab738f6284b97
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("dotmatch", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - zlib
+
+test:
+  commands:
+    - dotmatch dist ACGT AGGT | grep '^1$'
+    - dotmatch leq 1 ACGT AGGT | grep '^true$'
+
+about:
+  home: https://github.com/dnncha/dotmatch
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: Fast exact short-DNA known-target assignment
+  description: |
+    DotMatch is a deterministic known-target short-DNA assignment engine for
+    CRISPR guides, barcodes, primers, panels, and whitelist-style target sets.
+    It is not a genome aligner and does not emit SAM/BAM or CIGAR output.
+  dev_url: https://github.com/dnncha/dotmatch
+  doc_url: https://github.com/dnncha/dotmatch#readme
+
+extra:
+  recipe-maintainers:
+    - dnncha
