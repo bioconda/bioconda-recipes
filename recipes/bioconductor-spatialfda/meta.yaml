@@ -1,0 +1,70 @@
+{% set version = "1.2.0" %}
+{% set name = "spatialFDA" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 1804e0f18209031aad8986c7d058ed4c
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-spatialfda", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: stringr, knitr, rmarkdown, BiocStyle, testthat (>= 3.0.0), mgcv
+requirements:
+  host:
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-spatialexperiment >=1.20.0,<1.21.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-dplyr
+    - r-fda
+    - r-ggplot2
+    - r-patchwork
+    - r-purrr
+    - r-refund
+    - r-scales
+    - r-spatstat.explore
+    - r-spatstat.geom
+    - r-tidyr
+  run:
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-spatialexperiment >=1.20.0,<1.21.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-dplyr
+    - r-fda
+    - r-ggplot2
+    - r-patchwork
+    - r-purrr
+    - r-refund
+    - r-scales
+    - r-spatstat.explore
+    - r-spatstat.geom
+    - r-tidyr
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 3) + file LICENSE
+  summary: A Tool for Spatial Multi-sample Comparisons
+  description: spatialFDA is a package to calculate spatial statistics metrics. The package takes a SpatialExperiment object and calculates spatial statistics metrics using the package spatstat. Then it compares the resulting functions across samples/conditions using functional additive models as implemented in the package refund. Furthermore, it provides exploratory visualisations using functional principal component analysis, as well implemented in refund.
+  license_file: LICENSE
+

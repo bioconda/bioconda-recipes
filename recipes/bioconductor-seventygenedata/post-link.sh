@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "seventygenedata-1.42.0"
+installBiocDataPackage.sh "seventygenedata-1.46.0"
