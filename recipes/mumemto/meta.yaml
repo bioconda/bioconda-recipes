@@ -1,13 +1,16 @@
 {% set name = "mumemto" %}
-{% set version = "1.3.4" %}
+{% set version = "1.4.0" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
+  # Local build from this repo (repo root is parent of this folder):
+  # path: ..
+  # Bioconda PR: replace `path` with release tarball after tagging, e.g.:
   url: https://github.com/vikshiv/mumemto/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 0ddaae23cbbd76f5863015e1b252e52a2e0e633ef6921c79d78be27d744d5528
+  sha256: 0918a5556065e4a2d19446d6fac58288444c77109a250875d0dfa271f0e88aa5
 
 build:
   number: 0
@@ -22,15 +25,26 @@ requirements:
     - pkg-config
   host:
     - python
+    - pip
     - zlib
+    - numpy
+    - pybind11
+    - scikit-build-core
+    - setuptools
+    - wheel
   run:
     - python
+    - libgcc-ng >=12  # [linux]
+    - libstdcxx-ng >=12  # [linux]
     - matplotlib-base
     - numpy
     - tqdm
     - numba
 
 test:
+  imports:
+    - mumemto
+    - mumemto.utils
   commands:
     - mumemto --help
     - mumemto viz --help
@@ -43,8 +57,11 @@ test:
     - mumemto label --help
     - mumemto merge --help
     - mumemto bed --help
-  imports:
-    - mumemto.utils
+    - test -f "${PREFIX}/lib/cmake/Mumemto/MumemtoConfig.cmake"
+    - test -f "${PREFIX}/include/mumemto.hpp"
+    - test -f "${PREFIX}/include/mumemto.h"
+    - python -c "import mumemto; r = mumemto.mum([['ACGTACGT'], ['TACGTAAA']], min_match_len=3); assert r.num_matches() >= 0"
+    - python -c "import mumemto, numpy as np; r = mumemto.mem([['ACGTACGT'], ['TACGTAAA']], min_match_len=3, max_doc_freq=2); assert r.num_matches() > 0; t = r.match_at(0); assert isinstance(t[1], np.ndarray); assert not t[1].flags['OWNDATA']"
 
 about:
   home: "https://github.com/vikshiv/mumemto"
@@ -52,6 +69,9 @@ about:
   description: |
     Mumemto is a tool for finding a variety of matches across collections of sequences like a pangenome.
     It includes a visualization tool for visualizing pangenome synteny.
+    The conda package installs the CLI, the C/C++ library (headers include mumemto.h and mumemto.hpp)
+    and CMake package (find_package(Mumemto)),
+    and the Python package (utilities plus pybind11 bindings).
   license: "GPL-3.0-only"
   license_family: GPL3
   license_file: LICENSE
@@ -64,3 +84,5 @@ extra:
     - osx-arm64
   recipe-maintainers:
     - vikshiv
+  skip-lints:
+    - compiler_needs_stdlib_c

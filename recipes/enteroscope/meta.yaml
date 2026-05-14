@@ -1,0 +1,88 @@
+{% set name = "enteroscope" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bbeckley-hub/enteroscope/archive/v{{ version }}.tar.gz
+  sha256: 56aa47b44489d55254c78201c4a74def7350782c8963b6f94319c286796e1948
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+  run:
+    - python >=3.9
+    - pandas >=1.5.0
+    - biopython >=1.85
+    - psutil >=5.9.0
+    - requests >=2.28.0
+    - tqdm >=4.64.1
+    - click >=8.0.0
+    - beautifulsoup4 >=4.11.0
+    - lxml >=4.9.0
+    - matplotlib-base >=3.5.0
+    - seaborn >=0.12.0
+    - scipy >=1.10.1
+    - plotly >=5.10.0
+    - abricate >=1.2.0
+    - perl
+    - any2fasta
+    - blast >=2.13.0
+    - perl-moo
+    - perl-list-moreutils
+    - perl-json
+    - perl-lwp-protocol-https
+    - perl-path-tiny
+    - perl-data-dumper
+    - perl-getopt-long
+    - perl-file-which
+
+test:
+  commands:
+    - enteroscope --help
+
+about:
+  home: https://github.com/bbeckley-hub/enteroscope
+  license: MIT
+  license_file: LICENSE
+  summary: 'EnteroScope: Comprehensive Enterobacter cloacae complex genomic typing pipeline with parallel execution'
+  description: |
+    EnteroScope is a complete, automated genomic analysis pipeline for Enterobacter cloacae complex,
+    featuring parallel execution for rapid processing of bacterial genomes. The pipeline integrates
+    multiple analysis modules into a unified workflow:
+
+    • Quality Control (FASTA QC) – Comprehensive sequence validation
+    • Multi-Locus Sequence Typing (MLST) – Enterobacter cloacae specific scheme
+    • Antimicrobial Resistance (AMR) – Resistance gene detection via AMRfinderPlus
+    • Virulence & Plasmid Profiling (ABRicate) – Multi-database screening (CARD, ResFinder, VFDB, NCBI, MEGARes, BacMet, PlasmidFinder)
+    • Critical Genes Flagging – Priority markers for infection control (carbapenemases, ESBLs, colistin, tigecycline)
+    • Interactive HTML Reports – Gene-centric integrated analysis
+    • Cross-genome pattern discovery
+
+    Key Features:
+    🚀 Parallel Execution – QC and MLST run simultaneously for maximum speed
+    📊 Interactive Reports – HTML summaries with search, sort, export, print
+    🧬 Multi-Database Integration – AMRfinderPlus + ABRicate with 10+ databases
+    ⚡ Easy Deployment – Single command analysis with automatic result aggregation
+    🎯 Critical Gene Tracking – Carbapenemases (KPC, NDM, OXA-48), ESBLs, mcr, tet(X), biofilm, efflux pumps
+
+    Designed for clinical microbiology, outbreak investigation, and genomic surveillance,
+    EnteroScope provides clinical labs and researchers with a complete solution for
+    Enterobacter cloacae complex genomic characterization from raw sequencing data to publication-ready reports.
+  doc_url: https://github.com/bbeckley-hub/enteroscope
+  dev_url: https://github.com/bbeckley-hub/enteroscope
+
+extra:
+  recipe-maintainers:
+    - bbeckley-hub
