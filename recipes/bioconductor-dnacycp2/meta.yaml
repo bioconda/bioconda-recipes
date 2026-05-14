@@ -1,0 +1,40 @@
+{% set version = "1.2.0" %}
+{% set name = "DNAcycP2" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 601de72b09b14f55ad7682188ca59725
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-dnacycp2", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: knitr, rmarkdown, BiocGenerics, RUnit, tinytest, BiocStyle, Biostrings
+requirements:
+  host:
+    - bioconductor-basilisk >=1.22.0,<1.23.0
+    - r-base
+    - r-reticulate
+  run:
+    - bioconductor-basilisk >=1.22.0,<1.23.0
+    - r-base
+    - r-reticulate
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: DNA Cyclizability Prediction
+  description: This package performs prediction of intrinsic cyclizability of of every 50-bp subsequence in a DNA sequence. The input could be a file either in FASTA or text format. The output will be the C-score, the estimated intrinsic cyclizability score for each 50 bp sequences in each entry of the sequence set.
+

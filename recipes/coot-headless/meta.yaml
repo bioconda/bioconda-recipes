@@ -10,19 +10,22 @@ source:
   sha256: ebf19951382151a53ed9c176aea0cf732994235478c64be611cd3f6fc0bdc9ea
 
 build:
-  number: 0
+  number: 1
   run_exports:
     # Minor version changes may be disruptive
     # Refer to https://github.com/pemsley/coot/issues/239#issuecomment-3031606299
     - {{ pin_subpackage(name, max_pin="x.x.x") }}
+  # No builds of acedrg for linux-aarch64 with python 3.10
+  skip: True  # [(linux and aarch64) and py <= 310]
 
 requirements:
   build:
     - {{ compiler("c") }}
     - {{ compiler("cxx") }}
+    - {{ stdlib("c") }}
     - cmake
     - doxygen
-    - ghostscript  # [osx and x86_64]
+    - ghostscript
     - ninja
     - pkg-config
     - sed  # [osx]
@@ -56,6 +59,7 @@ requirements:
     - typing_extensions  # [py < 311]
     - zlib
   run:
+    - acedrg
     - numpy {{ numpy }}
     - python {{ python }}
     - rdkit ==2026.03.1
