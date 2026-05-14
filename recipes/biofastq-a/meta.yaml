@@ -1,0 +1,44 @@
+{% set name = "BioFastq-a" %}
+{% set version = "2.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/DilaDeniz/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 3f59eda199944a004058fb75df4f2216109e27b9ec19d447e77cffc05fcc7e16
+
+build:
+  number: 0
+  skip: True  # [win]
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+
+test:
+  commands:
+    - biofastq-a --version | grep '{{ version }}'
+
+about:
+  home: "https://github.com/DilaDeniz/{{ name }}"
+  license: MIT
+  license_file: LICENSE
+  summary: "High-performance FASTQ/FASTA quality analysis tool written in Rust."
+  description: |
+    BioFastq-A is a fast, multi-threaded FASTQ/FASTA quality control tool
+    written in Rust. It produces self-contained HTML reports, JSON output,
+    adapter trimming, duplication estimation, per-tile quality, N50/N90,
+    k-mer analysis, and a real-time terminal UI.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - DilaDeniz
+  skip-lints:
+    - compiler_needs_stdlib_c
