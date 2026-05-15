@@ -1,6 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+make clean
+make -j"${CPU_COUNT:-1}" \
+  CC="${CC}" \
+  CXX="${CXX}" \
+  HTSSRC=systemwide \
+  PACKAGE_VERSION="${PKG_VERSION}"
+
+install -d "${PREFIX}/bin"
+install -m 755 ngsRelate "${PREFIX}/bin/ngsRelate"
+fvr124@SUN1024817 ngsrelate % cat meta.yaml 
 {% set name = "NgsRelate" %}
-{% set version = "2.0" %}
-{% set sha256 = "f2c20228720298d6ef2fd34324449ba7ebdd4b987477c78bd20ed99f176218c6" %}
+{% set version = "2.2.0" %}
+{% set sha256 = "32e137c382f2ef52022437396b78eb940e35105888bd6c3f6a01ec9a968b2138" %}
 
 package:
   name: {{ name|lower }}
@@ -9,13 +22,9 @@ package:
 source:
   url: https://github.com/ANGSD/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - makefile.patch
 
 build:
   number: 0
-  # OSX requires older G++ version
-  skip: True  # [osx]
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin='x') }}
 
@@ -24,21 +33,12 @@ requirements:
     - make
     - {{ compiler('cxx') }}
   host:
-    - zlib
-    - bzip2
-    - xz
     - htslib
-    - libdeflate
-  run:
     - zlib
-    - bzip2
-    - xz
-    - htslib
-    - libdeflate
-  
+      
 test:
   commands:
-    - ngsRelate
+    - ngsRelate 2>&1 | grep -E "Version:|NgsRelate version:"
 
 about:
   home: https://github.com/ANGSD/NgsRelate
