@@ -1,8 +1,12 @@
-#! /bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-mkdir -p ${PREFIX}/bin
+make clean
+make -j"${CPU_COUNT:-1}" \
+  CC="${CC}" \
+  CXX="${CXX}" \
+  HTSSRC=systemwide \
+  PACKAGE_VERSION="${PKG_VERSION}"
 
-make HTSSRC="${PREFIX}" CC="$CC" CXX="$CXX" FLAGS="-I${PREFIX}/include -L${PREFIX}/lib"
-
-chmod +x ngsRelate
-cp ngsRelate ${PREFIX}/bin/
+install -d "${PREFIX}/bin"
+install -m 755 ngsRelate "${PREFIX}/bin/ngsRelate"
