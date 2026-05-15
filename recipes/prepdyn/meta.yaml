@@ -1,0 +1,52 @@
+{% set name = "prepdyn" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/danimelsz/PrepDyn.git
+  git_rev: v{{ version }}
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation --no-cache-dir
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.8
+    - biopython
+    - matplotlib-base
+    - numpy
+    - termcolor
+    - mafft
+
+test:
+  imports:
+    - prepDyn_auxiliary
+    - GB2MSA
+    - addSeq
+    - UP2AP
+  commands:
+    - prepDyn --help
+    - GB2MSA --help
+    - addSeq --help
+    - UP2AP --help
+
+about:
+  home: https://github.com/danimelsz/PrepDyn
+  license: GPL-3.0-only
+  license_file: LICENSE
+  summary: Preprocessing toolkit for dynamic homology datasets
+  dev_url: https://github.com/danimelsz/PrepDyn
+
+extra:
+  recipe-maintainers:
+    - danimelsz
