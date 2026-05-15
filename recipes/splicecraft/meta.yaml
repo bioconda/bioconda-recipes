@@ -1,0 +1,78 @@
+{% set name = "splicecraft" %}
+{% set version = "0.8.9" %}
+
+# Conda-forge / bioconda recipe for SpliceCraft.
+#
+# This recipe lives in the SpliceCraft repo as a reference; the canonical
+# copy belongs at:
+#   https://github.com/bioconda/bioconda-recipes/tree/master/recipes/splicecraft/
+#
+# After a new PyPI release, bump `version` above and regenerate `source.sha256`:
+#
+#   curl -sL https://pypi.io/packages/source/s/splicecraft/splicecraft-X.Y.Z.tar.gz | sha256sum
+#
+# …then open a PR against bioconda-recipes. Bot feedback arrives within minutes.
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  # Regenerate this on every version bump (see comment above).
+  sha256: a4b3680d3322c4617010efb76473ffe28709024d893cfa2e5b90c7ff85f2d0a9
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - splicecraft     = splicecraft:main
+    - splicecraft-cli = splicecraft_cli:main
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - hatchling >=1.24
+  run:
+    - python >=3.10
+    - textual >=8.2.6
+    - biopython >=1.87
+    - primer3-py >=2.3.0
+    - platformdirs >=4.9.6
+    - pyhmmer >=0.12.1
+
+test:
+  imports:
+    - splicecraft
+  commands:
+    - splicecraft --version
+    - splicecraft-cli --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/Binomica-Labs/SpliceCraft
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Terminal-based plasmid workbench — map viewer, sequence editor, primer / mutagenesis / Golden Braid + MoClo cloning, in-process BLAST + HMMscan
+  description: |
+    SpliceCraft is a terminal-native plasmid workbench built for daily lab
+    work. It renders circular and linear maps via Unicode braille graphics,
+    edits sequence with full undo / redo, designs primers (detection,
+    cloning, Golden Braid L0, generic) via Primer3, runs SOE-PCR
+    site-directed mutagenesis on any CDS, manages a collection-driven
+    plasmid library with atomic writes and on-disk backups, and provides
+    in-process similarity search (BLASTN / BLASTP / HMMscan) via pyhmmer
+    against the user's plasmid collections — no external blast+ install.
+    Local .gb / .gbk and .dna files (popular commercial plasmid editor
+    format) load directly; bulk-import an archive into a new collection
+    from the panel.
+  dev_url: https://github.com/Binomica-Labs/SpliceCraft
+  doc_url: https://github.com/Binomica-Labs/SpliceCraft
+
+extra:
+  recipe-maintainers:
+    - ATinyGreenCell
