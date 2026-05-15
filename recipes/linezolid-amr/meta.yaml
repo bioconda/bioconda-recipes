@@ -1,5 +1,5 @@
 {% set name = "linezolid-amr" %}
-{% set version = "0.1.1" %}
+{% set version = "0.1.3" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/iowa69/linezolid-amr/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 38ed406269c00324cf98633bbee8c6e329b801edb25619e96e5a4ada832dba3a
+  sha256: bd503ee45ef4fab0842653d3634eab14f4a3c6cced3a19b7c8164161e14dc804
 
 build:
   number: 0
@@ -32,14 +32,23 @@ requirements:
     - minimap2 >=2.24
     - samtools >=1.18
     - bcftools >=1.18
+    # NOTE: `mlst` (Seemann) is an optional companion for organism auto-inference
+    # and MLST sequence typing. It is NOT listed as a hard dep because
+    # `mlst >=2.19` transitively pulls `perl-bio-samtools 1.43`, which pins
+    # samtools 0.1.x and conflicts with our samtools >=1.18 constraint. Users
+    # who want MLST inference can install it in a separate env or via
+    # `mamba install --no-deps mlst`. The Python code degrades gracefully when
+    # `mlst` is not on PATH — users just pass --organism explicitly.
 
 test:
   imports:
     - linezolid_amr
     - linezolid_amr.cli
     - linezolid_amr.amrfinder
+    - linezolid_amr.mlst
     - linezolid_amr.rrna23s
     - linezolid_amr.references
+    - linezolid_amr.summary
   commands:
     - linezolid-amr --version
     - linezolid-amr --help
@@ -53,13 +62,19 @@ about:
   summary: Integrated AMR profiling (AMRFinderPlus) + 23S rRNA linezolid-resistance frequency analysis
   description: |
     linezolid-amr combines NCBI AMRFinderPlus gene/mutation detection on an
-    assembly with species-aware mapping of raw reads to 23S rRNA references to
-    detect heteroresistant linezolid-resistance mutations (e.g. G2576T, G2505A)
-    in Staphylococcus aureus, Enterococcus faecalis/faecium, Streptococcus
-    pneumoniae, and Mycobacterium tuberculosis. The same --organism flag drives
-    both AMRFinderPlus species mode and 23S reference selection. Mutations are
-    reported in E. coli K-12 23S numbering (the clinical-literature convention)
-    via a pairwise-alignment-derived position map computed at fetch time.
+    assembly with species-aware mapping of raw reads to bundled 23S rRNA
+    references to detect heteroresistant linezolid-resistance mutations
+    (e.g. G2576T, G2505A) in Staphylococcus aureus, Enterococcus
+    faecalis/faecium, and Streptococcus pneumoniae. Per-organism 23S FASTA
+    and E. coli K-12 position maps are shipped inside the package so the
+    tool works fully offline. AMRFinderPlus species mode and 23S reference
+    selection share the same --organism flag (optionally inferred via
+    Seemann's mlst when installed separately). Mutations are reported in
+    E. coli K-12 23S numbering (clinical literature convention) via a
+    pairwise-alignment-derived position map. Outputs include a per-sample
+    wide CSV (Kleborate-style), a long CSV (one row per gene/mutation),
+    a sorted indexed BAM, and a full 23S VCF. A `folder` subcommand
+    processes an entire input directory in a single command.
   dev_url: https://github.com/iowa69/linezolid-amr
   doc_url: https://github.com/iowa69/linezolid-amr#readme
 
