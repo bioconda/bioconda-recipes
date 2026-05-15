@@ -1,5 +1,5 @@
 {% set name = "linezolid-amr" %}
-{% set version = "0.1.1" %}
+{% set version = "0.1.2" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/iowa69/linezolid-amr/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 38ed406269c00324cf98633bbee8c6e329b801edb25619e96e5a4ada832dba3a
+  sha256: 8910a3ffc5b2a9e0e30716690494cbe6d005de91560c8f63922f6bdd260a8109
 
 build:
   number: 0
@@ -32,14 +32,17 @@ requirements:
     - minimap2 >=2.24
     - samtools >=1.18
     - bcftools >=1.18
+    - mlst >=2.19
 
 test:
   imports:
     - linezolid_amr
     - linezolid_amr.cli
     - linezolid_amr.amrfinder
+    - linezolid_amr.mlst
     - linezolid_amr.rrna23s
     - linezolid_amr.references
+    - linezolid_amr.summary
   commands:
     - linezolid-amr --version
     - linezolid-amr --help
@@ -50,16 +53,19 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: Integrated AMR profiling (AMRFinderPlus) + 23S rRNA linezolid-resistance frequency analysis
+  summary: Integrated AMR profiling (AMRFinderPlus + MLST) + 23S rRNA linezolid-resistance frequency analysis
   description: |
-    linezolid-amr combines NCBI AMRFinderPlus gene/mutation detection on an
-    assembly with species-aware mapping of raw reads to 23S rRNA references to
-    detect heteroresistant linezolid-resistance mutations (e.g. G2576T, G2505A)
-    in Staphylococcus aureus, Enterococcus faecalis/faecium, Streptococcus
-    pneumoniae, and Mycobacterium tuberculosis. The same --organism flag drives
-    both AMRFinderPlus species mode and 23S reference selection. Mutations are
-    reported in E. coli K-12 23S numbering (the clinical-literature convention)
-    via a pairwise-alignment-derived position map computed at fetch time.
+    linezolid-amr combines NCBI AMRFinderPlus gene/mutation detection and
+    Seemann's MLST on an assembly with species-aware mapping of raw reads to
+    23S rRNA references to detect heteroresistant linezolid-resistance
+    mutations (e.g. G2576T, G2505A) in Staphylococcus aureus, Enterococcus
+    faecalis/faecium, and Streptococcus pneumoniae. MLST runs first to infer
+    the organism and Sequence Type; the same organism drives both
+    AMRFinderPlus species mode and 23S reference selection. Mutations are
+    reported in E. coli K-12 23S numbering (clinical literature convention)
+    via a pairwise-alignment-derived position map. Outputs include
+    per-sample and cohort-level wide (Kleborate-style) and long CSV summaries
+    plus a full 23S VCF.
   dev_url: https://github.com/iowa69/linezolid-amr
   doc_url: https://github.com/iowa69/linezolid-amr#readme
 
