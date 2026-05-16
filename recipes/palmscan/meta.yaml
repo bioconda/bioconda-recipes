@@ -1,0 +1,50 @@
+{% set name = "palmscan" %}
+{% set version = "2.0" %}
+{% set commit = "954a5642a3651879455ff701d9d35d059e01afab" %}
+{% set sha256 = "d4b0326ace8e9a0a7a92ca2144446ea83ad88c849d434a8764ff87fa462b75fc" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/rcedgar/palmscan/archive/{{ commit }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-drop-static-linking.patch
+
+build:
+  number: 0
+  skip: True  # [not linux64]
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - libgomp  # [linux]
+  run:
+    - libgomp  # [linux]
+
+test:
+  commands:
+    - palmscan2 -version 2>&1 | grep "^palmscan2 v"
+
+about:
+  home: https://github.com/rcedgar/palmscan
+  license: AGPL-3.0-only
+  license_family: AGPL
+  license_file: LICENSE
+  summary: "Detect viral polymerase palmprint barcode sequences via PSSMs"
+  description: |
+    Palmscan2 finds palmprint regions in nucleotide and protein sequences
+    using position-specific scoring matrices. It is used for RNA virus
+    classification and is a runtime dependency of palm_annot.
+  dev_url: https://github.com/rcedgar/palmscan
+
+extra:
+  recipe-maintainers:
+    - shoichisakaguchi
