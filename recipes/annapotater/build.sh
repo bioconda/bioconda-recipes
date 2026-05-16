@@ -14,4 +14,7 @@ make test
 make install
 
 echo "Finding annapotater executable(s) in $PREFIX or else listing files in $PREFIX with annapotater in the name:"
-which annapotater.pl || find "$PREFIX" -name 'annapotater*' -executable -type f -print
+#which annapotater.pl || find "$PREFIX" -name 'annapotater*' -executable -type f -print
+
+cp scripts/annapotater.pl "$PREFIX/bin/annapotater.pl"
+chmod +x "$PREFIX/bin/annapotater.pl"
