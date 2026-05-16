@@ -12,3 +12,6 @@ perl Makefile.PL INSTALLDIRS=site NO_PERLLOCAL=1 NO_PACKLIST=1
 make
 make test
 make install
+
+echo "Finding annapotater executable(s) in $PREFIX or else listing files in $PREFIX with annapotater in the name:"
+which annapotater.pl || find "$PREFIX" -name 'annapotater*' -executable -type f -print
