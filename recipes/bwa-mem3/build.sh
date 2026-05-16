@@ -38,6 +38,19 @@ MAKE_ARGS=(
   # (Sandy/Ivy Bridge, Bulldozer/Piledriver, older Atom) are not
   # supported by this build.
   BASELINE_ARCH=avx2
+  # Use conda-forge's libsais (host/run dep) instead of compiling the
+  # bundled ext/libsais sources. Clearing LIBSAIS_OBJS drops the bundled
+  # libsais.o/libsais64.o from both the link line and the prereq chain
+  # (the Makefile's pattern rule $(LIBSAIS_DIR)/src/%.o is only fired by
+  # demand), and -lsais (appended to LIBS_EXTRA below) resolves the
+  # symbols against ${PREFIX}/lib/libsais.{so,dylib}. The bundled headers
+  # in ext/libsais/include are the exact v2.10.4 sources, so the existing
+  # -Iext/libsais/include in INCLUDES matches the conda-forge libsais
+  # 2.10.4 ABI; -DLIBSAIS_OPENMP (already in CPPFLAGS) keeps the _omp
+  # APIs visible. The conda-forge libsais was built with
+  # LIBSAIS_USE_OPENMP=ON and has a SONAME dep on libgomp/libomp, so
+  # OpenMP-parallel construction continues to work.
+  LIBSAIS_OBJS=""
 )
 
 if [ "$(uname)" = "Darwin" ]; then
@@ -53,12 +66,12 @@ if [ "$(uname)" = "Darwin" ]; then
     MIMALLOC_LIB="${PREFIX}/lib/libmimalloc.dylib"
     MIMALLOC_LDFLAGS="-L${PREFIX}/lib -lmimalloc -Wl,-rpath,${PREFIX}/lib"
     HTS_LIB="${PREFIX}/lib/libhts.dylib"
+    LIBS_EXTRA="-L${PREFIX}/lib -lsais -Wl,-rpath,${PREFIX}/lib"
   )
 else
   # bwa-mem3 calls shm_open/shm_unlink, which on conda's CentOS-7 sysroot
   # (glibc 2.17) live in librt. Newer Linux glibc (>= 2.34) folds them
   # into libc, so upstream CI on ubuntu-latest doesn't need this.
-  MAKE_ARGS+=( LIBS_EXTRA="-lrt" )
   # Use conda-forge's mimalloc and htslib. conda-forge ships only the
   # shared library form on Linux (no .a), so switch from the upstream
   # Makefile's `-Wl,--whole-archive libmimalloc.a -Wl,--no-whole-archive`
@@ -70,6 +83,7 @@ else
     MIMALLOC_LIB="${PREFIX}/lib/libmimalloc.so"
     MIMALLOC_LDFLAGS="-L${PREFIX}/lib -lmimalloc -Wl,-rpath,${PREFIX}/lib"
     HTS_LIB="${PREFIX}/lib/libhts.so"
+    LIBS_EXTRA="-lrt -L${PREFIX}/lib -lsais -Wl,-rpath,${PREFIX}/lib"
   )
 fi
 
