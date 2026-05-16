@@ -7,7 +7,9 @@ set -euxo pipefail
 # invoke maven against the Gedi module from inside it.
 mkdir -p build_out
 cd build_out
-mvn -f "${SRC_DIR}/Gedi/pom.xml" package -DskipTests=true -B
+mvn -f "${SRC_DIR}/Gedi/pom.xml" package -DskipTests=true -B \
+    -Dproject.build.sourceEncoding=UTF-8 \
+    -Dfile.encoding=UTF-8
 
 # The above produces in build_out/:
 #   Gedi-${version}.jar
