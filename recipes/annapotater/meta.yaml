@@ -2,9 +2,6 @@
 {% set version = "0.5" %}
 {% set sha256 = "20ee9b5c0662486f3d71e9f805aaac55cdd9c582f8b7c0cb9485da20135d19a5" %}
 
-# regex to use for Windows build hack
-{% set win_patch = "s|C:\\\\strawberry\\\\c|$ENV{LIBRARY_PREFIX}\\\\mingw-w64|g" %}
-
 package:
   name: {{ name }}
   version: {{ version }}
@@ -15,27 +12,17 @@ source:
 
 build:
   number: 0
-  run_exports: 
+  run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
-  # needed for linker to find some m2w64 libs
-  merge_build_host: True  # [win]
-  script:
-    - export PERL5LIB="$PREFIX/lib/perl5:${PERL5LIB}"  # [unix]
-    - cpanm --notest --local-lib "$PREFIX" Array::IntSpan@2.003  # [unix]
-    - perl Makefile.PL INSTALLDIRS=vendor NO_PERLLOCAL=1 NO_PACKLIST=1 MAKE=make  # [unix]
-    - make  # [unix]
-    - make test  # [unix]
-    - make install VERBINST=1  # [unix]
 
 requirements:
   build:
-    - {{ compiler('c') }}  # [unix]
+    - {{ compiler('c') }}
     - {{ stdlib('c') }}
-    - m2w64-gcc  # [win]
     - make
     - perl >=5.26
     - perl-bioperl >=1.7.0
-    - perl-app-cpanminus # Array::IntSpan not on conda-forge/bioconda
+    - perl-app-cpanminus  # needed for Array::IntSpan which is not on conda-forge/bioconda
   host:
     - perl >=5.26
     - perl-bioperl >=1.7.0
