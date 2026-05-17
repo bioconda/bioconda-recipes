@@ -12,7 +12,9 @@ build:
   entry_points:
     - PhageBoost = PhageBoost.main:main
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script: |
+    sed -i.bak "s|path = os.getcwd()|path = __import__('os').path.dirname(__file__)|g" setup.py
+    {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
   run_exports:
     - {{ pin_subpackage('phageboost', max_pin="x") }}
@@ -40,7 +42,7 @@ test:
   imports:
     - PhageBoost
   commands:
-    - pip check
+    # - pip check  # Disabled because pip gets confused by conda's pytables
     - PhageBoost --help
   requires:
     - pip
