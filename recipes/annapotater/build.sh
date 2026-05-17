@@ -14,6 +14,3 @@ perl Makefile.PL INSTALLDIRS=site NO_PERLLOCAL=1 NO_PACKLIST=1
 make
 make test
 make install
-
-cp scripts/annapotater.pl "$PREFIX/bin/annapotater.pl"
-chmod +x "$PREFIX/bin/annapotater.pl"
