@@ -1,0 +1,81 @@
+{% set name = "mlstudio" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/iowa69/mlstudio/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 0790835d0b8f68c23b05250c0e89d4f89c75313af1194eb1885af1cc84b6c2c2
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - mlstudio = mlstudio.cli:app
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - hatchling >=1.21
+  run:
+    - python >=3.11
+    - typer >=0.12
+    - rich >=13.7
+    - httpx >=0.27
+    - fastapi >=0.111
+    - uvicorn-standard >=0.30
+    - websockets >=12
+    - python-multipart >=0.0.9
+    - pydantic >=2.7
+    - numpy >=1.26
+    - pandas >=2.2
+    - pyarrow >=16
+    - biopython >=1.83
+    - pysam >=0.22
+    - networkx >=3.3
+    - platformdirs >=4.2
+    # External tools used at runtime
+    - blast >=2.15
+    - bowtie2 >=2.5
+    - samtools >=1.20
+    - fastp >=0.23
+    - seqkit >=2.8
+    - prodigal >=2.6
+
+test:
+  imports:
+    - mlstudio
+    - mlstudio.api
+    - mlstudio.calling
+    - mlstudio.schemes
+  commands:
+    - mlstudio --version
+    - mlstudio --help
+    - mlstudio schemes --help
+    - mlstudio call --help
+
+about:
+  home: https://github.com/iowa69/mlstudio
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'MLST and cgMLST typing with an interactive minimum spanning tree, for Linux.'
+  description: |
+    MLSTudio takes a folder of assembled bacterial genomes (and optionally
+    paired-end Illumina reads), pulls the appropriate typing scheme from
+    PubMLST.org or BIGSdb-Pasteur, calls alleles with BLAST across all
+    available cores, computes pairwise allele distances, and renders an
+    interactive minimum spanning tree in the browser. Cluster halos with
+    user-set thresholds, metadata-driven coloring, identical-genotype
+    pie collapsing, multiple missing-data policies, ad-hoc cgMLST scheme
+    building from a single reference genome, incremental analysis caching.
+  dev_url: https://github.com/iowa69/mlstudio
+  doc_url: https://github.com/iowa69/mlstudio#readme
+
+extra:
+  recipe-maintainers:
+    - iowa69
