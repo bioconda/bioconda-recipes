@@ -40,12 +40,14 @@ MAKE_ARGS=(
 )
 
 # Use conda-forge sse2neon on ARM: overriding SSE2NEON_INCLUDES replaces
-# the bundled -Iext/sse2neon with the conda-forge header location under
-# ${PREFIX}/include. ARM-only because the Makefile only references
-# sse2neon under its IS_ARM branch.
+# the bundled -Iext/sse2neon with the conda-forge header location. The
+# conda-forge package installs the header at ${PREFIX}/include/sse2neon/
+# (subdir), so the include path points one level deeper to let
+# bwa-mem3's `#include "sse2neon.h"` resolve. ARM-only because the
+# Makefile only references sse2neon under its IS_ARM branch.
 case "$(uname -m)" in
   aarch64|arm64)
-    MAKE_ARGS+=( SSE2NEON_INCLUDES="-I${PREFIX}/include" )
+    MAKE_ARGS+=( SSE2NEON_INCLUDES="-I${PREFIX}/include/sse2neon" )
     ;;
 esac
 
