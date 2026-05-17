@@ -2,11 +2,14 @@
 
 set -euo pipefail
 
-# Array::IntSpan is not on conda-forge/bioconda; PERL_MM_OPT ensures cpanm
-# installs to the versioned site_perl path that Perl's @INC already searches
-export PERL_MM_OPT="INSTALLDIRS=site"
-cpanm --notest Array::IntSpan@2.003
+# Install Array::IntSpan from bundled source (not on conda-forge/bioconda)
+cd "$SRC_DIR/Array-IntSpan"
+perl Makefile.PL INSTALLDIRS=site
+make
+make install
 
+# Build annapotater
+cd "$SRC_DIR/annapotater"
 perl Makefile.PL INSTALLDIRS=site NO_PERLLOCAL=1 NO_PACKLIST=1
 make
 make test
