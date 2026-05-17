@@ -3,18 +3,12 @@ set -ex
 
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-# Use conda-forge's htslib (host/run dep) instead of building the bundled
-# submodule. ext/htslib stays in place because the Makefile has explicit
-# dependency rules listing ext/htslib/htslib/*.h as prereqs of bwa-mem3's
-# object files; deleting the dir breaks those rules. Instead the bundled
-# 1.21 headers stay on the include path for compilation, while linking
-# resolves -lhts via conda's -L${PREFIX}/lib (which precedes the bundled
-# -Lext/htslib in the link line). The Makefile's $(HTS_LIB): rule has no
-# prerequisites, so when HTS_LIB points at an already-existing file make
-# treats it as up-to-date and skips the autoreconf+configure+make chain.
-# The 1.21->1.23 ABI drift across bwa-mem3's small htslib API surface
-# (hts_open/close, sam_hdr_init/add_line/add_lines/destroy/write,
-# bam_aux_append) is zero -- all stable since htslib 1.0.
+# Use conda-forge htslib instead of building the bundled submodule.
+# ext/htslib stays on disk because the Makefile has explicit prereqs
+# on ext/htslib/htslib/*.h; pointing HTS_LIB at the conda-forge file
+# makes the bundled $(HTS_LIB): rule a no-op and -lhts resolves via
+# -L${PREFIX}/lib. The meta.yaml htslib pin keeps the bundled headers
+# ABI-compatible with the conda shared library.
 
 MAKE_ARGS=(
   -j${CPU_COUNT}
