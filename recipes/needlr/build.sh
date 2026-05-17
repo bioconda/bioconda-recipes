@@ -10,6 +10,8 @@ cd $SRC_DIR
 cp needLR $PREFIX/bin/
 cp -r src/ $PREFIX/bin/
 cp -r backend_files/* $refloc/
+cp -r examples/ $refloc/
+
 chmod +x $PREFIX/bin/needLR
 
 
