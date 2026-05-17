@@ -53,6 +53,23 @@ MAKE_ARGS=(
   LIBSAIS_OBJS=""
 )
 
+# Use conda-forge's sse2neon (header-only build dep) on ARM targets
+# instead of the bundled ext/sse2neon/sse2neon.h. The conda-forge
+# sse2neon 1.9.1 is bit-identical to bwa-mem3's submodule
+# (commit 92f6de1 = v1.9.1 tag), so the resulting binary is unchanged.
+# The Makefile's IS_ARM branch sets SSE2NEON_INCLUDES=-Iext/sse2neon;
+# clearing it drops that include path and lets the conda-forge header
+# at ${PREFIX}/include/sse2neon.h resolve via the -I${PREFIX}/include
+# that conda-build adds to CXXFLAGS via the compiler activation. The
+# Makefile's IS_ARM detection (uname -m in {arm64,aarch64}) matches
+# this case statement, so the override only fires where the bundled
+# include path would otherwise be used.
+case "$(uname -m)" in
+  aarch64|arm64)
+    MAKE_ARGS+=( SSE2NEON_INCLUDES="" )
+    ;;
+esac
+
 if [ "$(uname)" = "Darwin" ]; then
   # The Makefile's macOS branch expects LIBOMP_PREFIX to point at a directory
   # containing include/ and lib/libomp.dylib. The conda llvm-openmp package
