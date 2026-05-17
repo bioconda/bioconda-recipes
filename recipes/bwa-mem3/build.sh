@@ -38,32 +38,17 @@ MAKE_ARGS=(
   # (Sandy/Ivy Bridge, Bulldozer/Piledriver, older Atom) are not
   # supported by this build.
   BASELINE_ARCH=avx2
-  # Use conda-forge's libsais (host/run dep) instead of compiling the
-  # bundled ext/libsais sources. Clearing LIBSAIS_OBJS drops the bundled
-  # libsais.o/libsais64.o from both the link line and the prereq chain
-  # (the Makefile's pattern rule $(LIBSAIS_DIR)/src/%.o is only fired by
-  # demand), and -lsais (appended to LIBS_EXTRA below) resolves the
-  # symbols against ${PREFIX}/lib/libsais.{so,dylib}. The bundled headers
-  # in ext/libsais/include are the exact v2.10.4 sources, so the existing
-  # -Iext/libsais/include in INCLUDES matches the conda-forge libsais
-  # 2.10.4 ABI; -DLIBSAIS_OPENMP (already in CPPFLAGS) keeps the _omp
-  # APIs visible. The conda-forge libsais was built with
-  # LIBSAIS_USE_OPENMP=ON and has a SONAME dep on libgomp/libomp, so
-  # OpenMP-parallel construction continues to work.
+  # Use conda-forge libsais: clearing LIBSAIS_OBJS skips the bundled
+  # compile, and -lsais (in LIBS_EXTRA below) resolves the symbols.
+  # The meta.yaml libsais pin keeps the bundled headers in
+  # ext/libsais/include ABI-compatible with the conda shared library.
   LIBSAIS_OBJS=""
 )
 
-# Use conda-forge's sse2neon (header-only build dep) on ARM targets
-# instead of the bundled ext/sse2neon/sse2neon.h. The conda-forge
-# sse2neon 1.9.1 is bit-identical to bwa-mem3's submodule
-# (commit 92f6de1 = v1.9.1 tag), so the resulting binary is unchanged.
-# The Makefile's IS_ARM branch sets SSE2NEON_INCLUDES=-Iext/sse2neon;
-# clearing it drops that include path and lets the conda-forge header
-# at ${PREFIX}/include/sse2neon.h resolve via the -I${PREFIX}/include
-# that conda-build adds to CXXFLAGS via the compiler activation. The
-# Makefile's IS_ARM detection (uname -m in {arm64,aarch64}) matches
-# this case statement, so the override only fires where the bundled
-# include path would otherwise be used.
+# Use conda-forge sse2neon on ARM: clearing SSE2NEON_INCLUDES drops
+# the bundled include path, and -I${PREFIX}/include (from conda-build's
+# compiler activation) resolves the header. ARM-only because the
+# Makefile only references sse2neon under its IS_ARM branch.
 case "$(uname -m)" in
   aarch64|arm64)
     MAKE_ARGS+=( SSE2NEON_INCLUDES="" )
