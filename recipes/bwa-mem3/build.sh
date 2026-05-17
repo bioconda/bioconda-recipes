@@ -39,13 +39,13 @@ MAKE_ARGS=(
   LIBSAIS_OBJS=""
 )
 
-# Use conda-forge sse2neon on ARM: clearing SSE2NEON_INCLUDES drops
-# the bundled include path, and -I${PREFIX}/include (from conda-build's
-# compiler activation) resolves the header. ARM-only because the
-# Makefile only references sse2neon under its IS_ARM branch.
+# Use conda-forge sse2neon on ARM: overriding SSE2NEON_INCLUDES replaces
+# the bundled -Iext/sse2neon with the conda-forge header location under
+# ${PREFIX}/include. ARM-only because the Makefile only references
+# sse2neon under its IS_ARM branch.
 case "$(uname -m)" in
   aarch64|arm64)
-    MAKE_ARGS+=( SSE2NEON_INCLUDES="" )
+    MAKE_ARGS+=( SSE2NEON_INCLUDES="-I${PREFIX}/include" )
     ;;
 esac
 
