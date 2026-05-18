@@ -1,0 +1,69 @@
+{% set name = "bipode-httr" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name|replace("-", "_") }}-{{ version }}.tar.gz
+  sha256: c45c324fcf84bcb5c8dde883711c278dad20f204134193e5748fe3d774e7cc86
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  entry_points:
+    - bipode-httr = bipode_httr.cli:cli
+  run_exports:
+    - {{ pin_subpackage('bipode-httr', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - hatchling
+  run:
+    - python >=3.10
+    - numpy >=2.0.0,<3.0
+    - pandas >=2.0.0,<3.0  
+    - cmdstanpy >=1.2.0,<2.0
+    - scipy >=1.10.0,<2.0
+    - pyyaml >=6.0
+    - multiqc ==1.28
+    - plotly >=6.0.0,<7.0
+    - click
+
+test:
+  imports:
+    - bipode_httr
+    - bipode_httr.core
+    - bipode_httr.models
+    - bipode_httr.utils
+    - bipode_httr.visualization
+    - bipode_httr.data
+  commands:
+    - bipode-httr --help
+    - bipode-httr run-analysis --help
+    - bipode-httr create-report --help
+    - bipode-httr compress-output --help
+    - bipode-httr prepare-inputs --help
+    - bipode-httr split-data --help
+    - bipode-httr compile-model --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/seqera-services/bipode-httr
+  license: LGPL-3.0
+  license_family: LGPL
+  license_file: LICENSE
+  summary: Pre-release version for testing purposes only
+  description: Pre-release version for testing purposes only
+  dev_url: https://github.com/seqera-services/bipode-httr
+
+extra:
+  recipe-maintainers:
+    - pinin4fjords
+    - JoeReynolds257
+    - mark-liddell 

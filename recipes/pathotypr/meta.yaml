@@ -1,0 +1,56 @@
+{% set name = "pathotypr" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PathoGenOmics-Lab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e4983fffd531b8ce454dabdf5c72e4d72c6145f284854514bfe1dbbc8d44bdb2
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - pkg-config
+    - cmake
+    - make
+  host:
+    - openssl
+  run:
+    - openssl
+
+test:
+  commands:
+    - pathotypr --version
+    - pathotypr --help
+
+about:
+  home: https://github.com/PathoGenOmics-Lab/pathotypr
+  license: AGPL-3.0-only
+  license_family: AGPL
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "Alignment-free genome classification using SNP markers and machine learning for genomic surveillance"
+  description: |
+    Pathotypr is a high-performance, alignment-free tool for genome classification
+    using SNP markers and a pre-trained Random Forest model. It can be adapted to
+    any organism given a custom set of markers or a trained model. The current
+    curated models support Mycobacterium tuberculosis complex (MTBC) lineage
+    assignment (L1-L10, A1-A4) and drug resistance genotyping using the WHO
+    mutation catalogue (grades 1-2).
+  dev_url: https://github.com/PathoGenOmics-Lab/pathotypr
+  doc_url: https://github.com/PathoGenOmics-Lab/pathotypr
+
+extra:
+  recipe-maintainers:
+    - paururo
