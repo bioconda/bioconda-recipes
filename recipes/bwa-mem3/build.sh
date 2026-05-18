@@ -14,11 +14,6 @@ MAKE_ARGS=(
   -j${CPU_COUNT}
   CC="${CC}"
   CXX="${CXX}"
-  # safestringlib's safeclib_private.h calls abort()/memcpy() via macros
-  # without including <stdlib.h>/<string.h>. bwa-mem3's Makefile force-
-  # includes them for clang/Darwin only; modern conda gcc on Linux also
-  # promotes -Wimplicit-function-declaration to an error.
-  SAFE_EXTRA_CFLAGS="-include stdlib.h -include ctype.h"
   # bwa-mem3's Makefile derives VERSION_STRING from `git describe`; the
   # source tarball has no .git, so set the version explicitly.
   VERSION_STRING="${PKG_VERSION}"
