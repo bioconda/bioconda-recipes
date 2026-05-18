@@ -1,0 +1,47 @@
+{% set name = "peek-bio" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/pwilson97/peek-bio/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: cb9f7aef4a4905bca1ea4d8e395c35d05f80398843d77a7e2134286198f71090
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - peek = peek_bio.cli:main
+  run_exports:
+    - {{ pin_subpackage("peek-bio", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools >=64
+  run:
+    - python >=3.8
+    - openpyxl >=3.0
+    - anndata >=0.8
+    - pybigwig >=0.3
+    - pysam >=0.20
+
+test:
+  commands:
+    - peek --version
+    - peek --formats
+
+about:
+  home: https://github.com/pwilson97/peek-bio
+  license: MIT
+  license_file: LICENSE
+  summary: Instant file previews for genomics data
+  dev_url: https://github.com/pwilson97/peek-bio
+
+extra:
+  recipe-maintainers:
+    - pwilson97

@@ -1,29 +1,32 @@
-{% set version = "1.4.0" %}
+{% set version = "1.8.0" %}
 {% set name = "gDRstyle" %}
-{% set bioc = "3.20" %}
-
-about:
-  description: Package fills a helper package role for whole gDR suite. It helps to support good development practices by keeping style requirements and style tests for other packages. It also contains build helpers to make all package requirements met.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: Artistic-2.0
-  summary: A package with style requirements for the gDR suite
-
-build:
-  noarch: generic
-  number: 0
-  rpaths:
-    - lib/R/lib/
-    - lib/
-  run_exports: '{{ pin_subpackage("bioconductor-gdrstyle", max_pin="x.x") }}'
+{% set bioc = "3.22" %}
 
 package:
   name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
 
-# Suggests: BiocStyle, knitr, testthat (>= 3.0.0)
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: d28303a0f35b3120651abc1d890235bd
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-gdrstyle", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: knitr, pkgdown, testthat (>= 3.0.0)
 requirements:
   host:
-    - bioconductor-bioccheck >=1.42.0,<1.43.0
+    - bioconductor-bioccheck >=1.46.0,<1.47.0
+    - bioconductor-biocstyle >=2.38.0,<2.39.0
     - r-base
     - r-biocmanager
     - r-checkmate
@@ -37,7 +40,8 @@ requirements:
     - r-withr
     - r-yaml
   run:
-    - bioconductor-bioccheck >=1.42.0,<1.43.0
+    - bioconductor-bioccheck >=1.46.0,<1.47.0
+    - bioconductor-biocstyle >=2.38.0,<2.39.0
     - r-base
     - r-biocmanager
     - r-checkmate
@@ -51,15 +55,13 @@ requirements:
     - r-withr
     - r-yaml
 
-source:
-  md5: 8c65fb73bd818d5a00adbc49fab2de0c
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: A package with style requirements for the gDR suite
+  description: Package fills a helper package role for whole gDR suite. It helps to support good development practices by keeping style requirements and style tests for other packages. It also contains build helpers to make all package requirements met.
 

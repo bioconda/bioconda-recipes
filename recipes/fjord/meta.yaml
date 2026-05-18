@@ -1,0 +1,53 @@
+# FJORD conda recipe
+# Build locally: conda build . -c bioconda -c conda-forge
+# Submit to bioconda: fork bioconda-recipes, add recipes/fjord/ with this file + build.sh
+
+{% set name = "fjord" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/adnsvrtsn/fjord/archive/v{{ version }}.tar.gz
+  sha256: 83915f23de315080f7f51cc0278e26b1aff3486465145c396e6f42302ce674a3  # Update with: sha256sum v1.0.0.tar.gz
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  run:
+    - bash >=3.2
+    - python >=3.8
+    - biopython
+    - x-mapper
+    - samtools >=1.15
+    - blast
+    - vsearch
+
+test:
+  commands:
+    - fjord --version
+    - fjord --help
+
+about:
+  home: https://github.com/adnsvrtsn/fjord
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "ONT amplicon sequencing pipeline for bacterial identification"
+  description: |
+    FJORD (Flexible Joint Operational pipeline for Reference-based Diagnostics)
+    is an amplicon sequencing pipeline for bacterial identification from Oxford
+    Nanopore Technologies long-read data. It maps reads to a GTDB-formatted
+    reference database, generates consensus sequences, clusters similar
+    sequences with IUPAC-aware consolidation, and assigns taxonomy via BLAST.
+  dev_url: https://github.com/adnsvrtsn/fjord
+
+extra:
+  recipe-maintainers:
+    - adnsvrtsn

@@ -1,0 +1,45 @@
+{% set name = "holodeck" %}
+{% set version = "0.2.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/fg-labs/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: a4627fc3e7000dd1ea385b0967b86c5f8f6fa63448c4515e32aa18a2fc9bb28a
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("holodeck", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - cmake
+    - make
+
+test:
+  commands:
+    - holodeck --help
+
+about:
+  home: https://github.com/fg-labs/holodeck
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Modern NGS read simulator
+  dev_url: https://github.com/fg-labs/holodeck
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c  # until https://github.com/bioconda/bioconda-utils/issues/1095 is resolved
+  recipe-maintainers:
+    - tfenne
