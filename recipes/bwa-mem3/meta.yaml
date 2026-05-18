@@ -1,0 +1,59 @@
+{% set name = "bwa-mem3" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/fg-labs/{{ name }}/releases/download/v{{ version }}/Source_code_including_submodules.tar.gz
+  sha256: ed74c191d6dde30e5f943867a9c73f1a6717c31215e91490504da69f3726d7b3
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('bwa-mem3', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+  host:
+    - zlib
+    - mimalloc >=3.3,<4
+    - htslib >=1.21,<2
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  run:
+    - mimalloc >=3.3,<4
+    - htslib >=1.21,<2
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+
+test:
+  commands:
+    - bwa-mem3 version
+
+about:
+  home: "https://github.com/fg-labs/bwa-mem3"
+  license: "MIT AND Apache-2.0"
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - ext/safestringlib/LICENSE
+    - ext/libsais/LICENSE
+    - ext/sse2neon/LICENSE
+  summary: "Short-read aligner derived from bwa-mem2 with correctness fixes, performance improvements, and methylation alignment."
+  dev_url: "https://github.com/fg-labs/bwa-mem3"
+  doc_url: "https://bwa-mem3.readthedocs.io"
+
+extra:
+  recipe-maintainers:
+    - nh13
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1109/IPDPS.2019.00041

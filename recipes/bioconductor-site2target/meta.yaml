@@ -1,0 +1,54 @@
+{% set version = "1.2.0" %}
+{% set name = "Site2Target" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 050fbe495fc48b8eedc3017b0db79f9c
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-site2target", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: BiocStyle, knitr, rmarkdown, testthat (>= 3.0.0)
+requirements:
+  host:
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-genomeinfodb >=1.46.0,<1.47.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - r-base
+    - r-mass
+  run:
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-genomeinfodb >=1.46.0,<1.47.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - r-base
+    - r-mass
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  summary: An R package to associate peaks and target genes
+  description: Statistics implemented for both peak-wise and gene-wise associations. In peak-wise associations, the p-value of the target genes of a given set of peaks are calculated. Negative binomial or Poisson distributions can be used for modeling the unweighted peaks targets and log-nromal can be used to model the weighted peaks. In gene-wise associations a table consisting of a set of genes, mapped to specific peaks, is generated using the given rules.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+

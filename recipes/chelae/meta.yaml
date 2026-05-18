@@ -1,0 +1,62 @@
+{% set name = "chelae" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/fulcrumgenomics/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 39cb2c912da5f411d05a8f8b6b2c38561bfb945d5bdebade7360594ba6853d13
+
+build:
+  number: 0
+  # The cargo-multivers launcher is a single statically-linked binary that
+  # embeds zstd-compressed CPU-variant payloads. conda-build's macOS rpath
+  # post-processing runs `llvm-otool -l` on every binary and intermittently
+  # SIGABRTs on the launcher. We have nothing to relocate (no $PREFIX/lib
+  # rpaths -- everything is statically linked), so skip the pass entirely.
+  binary_relocation: false
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    # x86_64: build a single launcher that embeds x86-64-v1/v2/v4 variants
+    # via cargo-multivers (configured by [package.metadata.multivers.x86_64]
+    # in Cargo.toml).
+    - cargo install --locked cargo-multivers                                       # [x86_64]
+    - cargo multivers --profile dist --out-dir "${PREFIX}/bin"                     # [x86_64]
+    # aarch64: a single portable ARMv8-A binary built with the dist profile.
+    # Do NOT use cargo-multivers here -- on non-x86_64 it would expand to every
+    # rustc-known CPU rather than the v1-v4 microarch levels.
+    - cargo install --no-track --locked --profile dist --root "${PREFIX}" --path . # [not x86_64]
+  run_exports:
+    - {{ pin_subpackage('chelae', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - chelae --help
+
+about:
+  home: "https://github.com/fulcrumgenomics/{{ name }}"
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "A toolkit for trimming and filtering FASTQ reads."
+  dev_url: "https://github.com/fulcrumgenomics/{{ name }}"
+  doc_url: "https://github.com/fulcrumgenomics/{{ name }}/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - nh13
+    - tfenne
