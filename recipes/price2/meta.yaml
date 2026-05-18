@@ -1,0 +1,64 @@
+{% set name = "price2" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/kilian-m/PRICE2/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 79f246c73d46d681db3d5e536a6cff2e387655fb53aefe3b3df8774fb33795e3
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  entry_points:
+    - price2 = price2.price:main
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=61
+  run:
+    - python >=3.10
+    - numpy
+    - scipy
+    - pandas
+    - numba
+    - htseq
+    - pysam
+    - pyfaidx
+    - pebble
+    - filelock
+    - psutil
+    - tqdm
+    - matplotlib-base
+    - samtools
+
+test:
+  imports:
+    - price2
+  commands:
+    - price2 --help
+
+about:
+  home: https://github.com/kilian-m/PRICE2
+  summary: "Detect actively translated ORFs from multiple Ribo-seq datasets using group-LASSO penalized Poisson regression."
+  description: |
+    PRICE 2 detects actively translated open reading frames based on multiple
+    Ribo-seq or TI-seq datasets. It builds on ideas from PRICE and a generative
+    model for isoform deconvolution, using group-LASSO penalized Poisson
+    regression over read equivalence groups.
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  doc_url: https://github.com/kilian-m/PRICE2/blob/main/README.md
+  dev_url: https://github.com/kilian-m/PRICE2
+
+extra:
+  recipe-maintainers:
+    - kilian-m
