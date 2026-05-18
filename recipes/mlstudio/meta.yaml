@@ -1,13 +1,13 @@
 {% set name = "mlstudio" %}
-{% set version = "0.1.0" %}
+{% set version = "1.3.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/iowa69/mlstudio/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 0790835d0b8f68c23b05250c0e89d4f89c75313af1194eb1885af1cc84b6c2c2
+  url: https://github.com/iowa69/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 14dbdaa4feabc921a3be87e3a92c8b7cdecbf50829ff950afad5e77fbd7e1504
 
 build:
   number: 0
@@ -23,6 +23,7 @@ requirements:
     - hatchling >=1.21
   run:
     - python >=3.11
+    # Python deps (mirror of pyproject.toml [project.dependencies])
     - typer >=0.12
     - rich >=13.7
     - httpx >=0.27
@@ -38,43 +39,45 @@ requirements:
     - pysam >=0.22
     - networkx >=3.3
     - platformdirs >=4.2
-    # External tools used at runtime
-    - blast >=2.15
-    - bowtie2 >=2.5
-    - samtools >=1.20
-    - fastp >=0.23
-    - seqkit >=2.8
-    - prodigal >=2.6
+    # External CLI binaries invoked via subprocess
+    - blast >=2.14         # blastn, makeblastdb
+    - prodigal >=2.6.3     # ad-hoc scheme CDS prediction
+    - fastp >=0.23         # paired-read QC + platform autodetect
+    - ncbi-amrfinderplus >=3.12   # AMR scanning alongside typing
 
 test:
   imports:
     - mlstudio
-    - mlstudio.api
-    - mlstudio.calling
-    - mlstudio.schemes
+    - mlstudio.api.server
+    - mlstudio.calling.cgmlst
+    - mlstudio.calling.mlst
+    - mlstudio.profiles.distance
+    - mlstudio.profiles.mst
   commands:
     - mlstudio --version
     - mlstudio --help
-    - mlstudio schemes --help
-    - mlstudio call --help
+    # Confirm the required external binaries are co-installed
+    - blastn -version
+    - makeblastdb -version
+    - prodigal -v 2>&1 | grep -i prodigal
+    - fastp --version 2>&1 | grep -i fastp
+    - amrfinder --version
 
 about:
   home: https://github.com/iowa69/mlstudio
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: 'MLST and cgMLST typing with an interactive minimum spanning tree, for Linux.'
+  summary: Free, open-source MLST/cgMLST typing with an interactive minimum-spanning-tree GUI for Linux.
   description: |
-    MLSTudio takes a folder of assembled bacterial genomes (and optionally
-    paired-end Illumina reads), pulls the appropriate typing scheme from
-    PubMLST.org or BIGSdb-Pasteur, calls alleles with BLAST across all
-    available cores, computes pairwise allele distances, and renders an
-    interactive minimum spanning tree in the browser. Cluster halos with
-    user-set thresholds, metadata-driven coloring, identical-genotype
-    pie collapsing, multiple missing-data policies, ad-hoc cgMLST scheme
-    building from a single reference genome, incremental analysis caching.
+    MLSTudio is an integrated MLST and cgMLST typing tool for bacterial isolates,
+    bundling scheme management (PubMLST, BIGSdb-Pasteur, cgMLST.org, ad-hoc),
+    BLAST-based allele calling, AMRFinderPlus integration, and a local web UI
+    with a Cytoscape.js minimum-spanning-tree viewer. Aimed at filling the gap
+    between calling-only tools (chewBBACA) and visualization-only tools
+    (GrapeTree) without a SeqSphere-style licence cost.
+  doc_url: https://github.com/iowa69/mlstudio
   dev_url: https://github.com/iowa69/mlstudio
-  doc_url: https://github.com/iowa69/mlstudio#readme
 
 extra:
   recipe-maintainers:
