@@ -1,5 +1,5 @@
 {% set name = "dotmatch" %}
-{% set version = "0.1.0" %}
+{% set version = "0.1.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,12 +7,13 @@ package:
 
 source:
   url: https://github.com/dnncha/dotmatch/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 2080f2b1b72945dcad305621014e6091fa7900ec0cd62f8d7eeab738f6284b97
+  sha256: 361301d2ec65cadf860a7a97b1cac53fea59406f9d3a160c64990de2f944c011
 
 build:
   number: 0
   run_exports:
     - {{ pin_subpackage("dotmatch", max_pin="x.x") }}
+  skip: true  # [win]
 
 requirements:
   build:
@@ -24,6 +25,7 @@ requirements:
 
 test:
   commands:
+    - dotmatch --version | grep '^dotmatch {{ version }}$'
     - dotmatch dist ACGT AGGT | grep '^1$'
     - dotmatch leq 1 ACGT AGGT | grep '^true$'
 
