@@ -1,0 +1,48 @@
+{% set name = "annapotater" %}
+{% set version = "0.5" %}
+{% set sha256 = "20ee9b5c0662486f3d71e9f805aaac55cdd9c582f8b7c0cb9485da20135d19a5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/lskatz/annapotater/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - perl >=5.26
+    - perl-bioperl >=1.7.0
+    - perl-array-intspan >=2.003
+    - gzip
+  run:
+    - perl >=5.26
+    - perl-bioperl >=1.7.0
+    - perl-array-intspan >=2.003
+    - gzip
+
+test:
+  commands:
+    - annapotater.pl --help
+    - annapotater.pl --version
+
+about:
+  home: https://github.com/lskatz/annapotater
+  dev_url: https://github.com/lskatz/annapotater
+  summary: A fast SNP annotation tool for haploid genomes
+  license: GPL-3.0-only
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - lskatz
