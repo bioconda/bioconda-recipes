@@ -1,0 +1,49 @@
+{% set name = "ba3" %}
+{% set version = "3.4.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/brannala/BA3/releases/download/v{{ version }}/BA3-{{ version }}.tar.gz
+  sha256: 2ef42af31610cfcd1c0c1b6511427a145c1ef83c96d113cfb5d9e97c22285f4e
+
+build:
+  number: 0
+  skip: true  # [win]
+  run_exports:
+    - {{ pin_subpackage("ba3", max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - gsl
+    - htslib
+
+test:
+  commands:
+    - BA3 -h
+
+about:
+  home: https://github.com/brannala/BA3
+  license: AGPL-3.0-or-later
+  license_family: AGPL
+  license_file: LICENSE
+  summary: Bayesian inference of recent migration rates from multilocus genotypes
+  description: |
+    BA3 (BayesAss Edition 3) is a Bayesian MCMC program that estimates
+    recent migration rates between populations from multilocus genotype
+    data (SNPs or microsatellites). In addition to migration rates, it
+    infers first- and second-generation migrant individuals, population
+    allele frequencies, and inbreeding coefficients. Supports both the
+    native BA3 text format and VCF input.
+  doc_url: https://github.com/brannala/BA3/wiki
+  dev_url: https://github.com/brannala/BA3
+
+extra:
+  recipe-maintainers:
+    - brannala
