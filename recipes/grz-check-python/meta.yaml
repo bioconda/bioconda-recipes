@@ -1,0 +1,61 @@
+{% set version = "0.3.1" %}
+{% set sha256 = "48795ee9eb6e89e49ea99a89ae42110814c3bbddf60de9fc0111a609e9b13f2b" %}
+
+package:
+  name: grz-check-python
+  version: {{ version }}
+
+source:
+  url: https://github.com/BfArM-MVH/grz-tools/archive/refs/tags/grz-check-v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  skip: True  # [osx or py<312]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("grz-check-python", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cmake
+    - make
+    - cargo-bundle-licenses
+    - pkg-config
+    - python                              # [build_platform != target_platform]
+    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+    - crossenv                            # [build_platform != target_platform]
+    - maturin >=1,<2                      # [build_platform != target_platform]
+  host:
+    - python
+    - pip
+    - maturin >=1,<2
+    - clangdev
+    - llvmlite
+    - openssl
+    - zlib
+  run:
+    - python
+
+test:
+  imports:
+    - grz_check
+
+about:
+  home: "https://github.com/BfArM-MVH/grz-tools/tree/main/packages/grz-check"
+  license: MIT
+  license_family: MIT
+  summary: "Python bindings for grz-check, validator for Modellvorhaben §64e submissions."
+  dev_url: "https://github.com/BfArM-MVH/grz-tools/tree/main/packages/grz-check"
+  doc_url: "https://github.com/BfArM-MVH/grz-tools/blob/grz-check-v{{ version }}/packages/grz-check/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - tedil
+    - twrightsman
+    - hoeze

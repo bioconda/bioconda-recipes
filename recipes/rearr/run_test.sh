@@ -1,1 +1,1 @@
-python -m unittest test.test_suite_no_genome
+python -m unittest test.test_suite_all

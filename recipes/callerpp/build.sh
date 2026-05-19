@@ -28,7 +28,7 @@ case $(uname -m) in
 	;;
 esac
 
-make CXX="${CXX} -std=c++11 ${ARCH_OPTS}" \
+make CXX="${CXX} -std=c++14 ${ARCH_OPTS}" \
   CXX_FLAGS="${CXXFLAGS} -I${PREFIX}/include ${LDFLAGS}"
 
 install -v -m 0755 bin/callerpp "${PREFIX}/bin"
