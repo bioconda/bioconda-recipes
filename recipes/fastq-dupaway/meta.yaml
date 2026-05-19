@@ -1,0 +1,42 @@
+{% set name = "fastq-dupaway" %}
+{% set version = "1.5.0" %}
+
+package:
+  name: {{ name }}
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/AndrewSigorskih/fastq-dupaway/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 5d970a15548d1e4e27c8440e73241246e3ec1206d7dad1696af9c29b2b2a0a73
+
+build:
+  number: 0
+  detect_binary_files_with_prefix: true
+  run_exports:
+    weak:
+      - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake
+  host:
+    - boost-cpp
+  run:
+    - boost-cpp
+
+test:
+  commands:
+    - fastq-dupaway --help >stdout.txt 2>stderr.txt || true
+    - grep -E "^fastq-dupaway V" stderr.txt
+
+about:
+  home: https://github.com/AndrewSigorskih/fastq-dupaway
+  license: MIT
+  summary: "Bioinformatics tool for memory-efficient deduplication of single-end and paired-end FASTQ and FASTA files"
+extra:
+  identifiers:
+    - doi:10.1038/s41598-025-28948-w
+  skip-lints:
+    - compiler_needs_stdlib_c
