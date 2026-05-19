@@ -14,6 +14,11 @@ elif [[ "${target_platform}" == "osx-"* ]]; then
     export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic -framework OpenGL"
 fi
 
+if [[ "${target_platform}" == osx-64 ]]; then
+  export FFLAGS="-m64 -fPIC"
+  export FCFLAGS="-m64 -fPIC"
+fi
+
 mkdir -p build && cd build
 
 cmake .. \

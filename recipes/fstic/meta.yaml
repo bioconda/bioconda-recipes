@@ -1,0 +1,33 @@
+{% set name = "fstic" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "28b30226090ecc4cf340dcc7697f49f06b5076d8d245e361510dabaf5fd43050" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: "https://github.com/PathoGenOmics-Lab/{{ name }}/archive/v{{ version }}.tar.gz"
+  sha256: "{{ sha256 }}"
+
+build:
+  number: 0
+  script: "cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+
+test:
+  commands:
+    - fstic --version
+
+about:
+  home: "https://github.com/PathoGenOmics-Lab/fstic"
+  license: "GPL-3.0-only"
+  license_file: LICENSE
+  license_family: GPL3
+  summary: "High-performance Rust tool for computing multiple genetic distance metrics (FST, GST, Jost’s D, etc.) from VCFs or allele-frequency tables, with parallel processing and advanced filtering."
+

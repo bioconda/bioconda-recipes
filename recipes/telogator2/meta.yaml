@@ -1,0 +1,65 @@
+{% set name = "telogator2" %}
+{% set version = "2.2.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/zstephens/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 9d6ee33773dddb612cf045a586d6bb1dbcfad5ea1804f0684ecc21cecb2c9e69
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - telogator2=telogator2:main
+    - make_telogator_ref=make_telogator_ref:main
+  run_exports:
+    - {{ pin_subpackage('telogator2', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=61.0
+  run:
+    - python >=3.10
+    - biopython >=1.86
+    - matplotlib-base >=3.3.4
+    - numpy >=1.19.0
+    - pysam >=0.16.0,<=0.22.0
+    - pywavelets >=1.1.1
+    - scipy >=1.6.0
+    - minimap2
+
+test:
+  imports:
+    - telogator2
+  commands:
+    - telogator2 --help
+    - make_telogator_ref --help
+
+about:
+  home: https://github.com/zstephens/telogator2
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'Analyze allele-specific telomere length from PacBio and Nanopore reads'
+  description: |
+    Telogator2 is a bioinformatics tool for analyzing telomeres from long-read sequencing data.
+    It measures allele-specific telomere length and characterizes telomere variant repeat (TVR)
+    sequences from PacBio HiFi and Oxford Nanopore sequencing platforms. The tool supports
+    human and non-human reference genomes and provides detailed output including TSV results
+    and visualization plots.
+  doc_url: https://github.com/zstephens/telogator2/blob/main/README.md
+  dev_url: https://github.com/zstephens/telogator2
+
+extra:
+  recipe-maintainers:
+    - smeds
+    - zstephens
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

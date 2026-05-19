@@ -1,0 +1,79 @@
+--- a/src/jgi_gc.h	2025-09-24 15:29:37.567083700 +0800
++++ b/src/jgi_gc.h	2025-09-24 16:09:20.903083700 +0800
+@@ -24,9 +24,12 @@
+ #include <zlib.h>
+ 
+ // popcnt internal call
++#if defined(__aarch64__)
++#include <sse2neon.h>
++#else
+ #include <immintrin.h>
+ #include <x86intrin.h>
+-
++#endif
+ // force BOOST ublas optimizations
+ #define BOOST_UBLAS_INLINE inline
+ #define BOOST_UBLAS_CHECK_ENABLE 0
+@@ -201,26 +204,15 @@
+ 	//refer to http://danluu.com/assembly-intrinsics/
+ 	static inline Word builtin_popcnt_unrolled_errata_manual(const Word* buf, Word len) {
+ 		assert(len % 4 == 0);
+-		Word cnt[4];
+-		for (int i = 0; i < 4; ++i) {
+-			cnt[i] = 0;
+-		}
+-
+-		for (Word i = 0; i < len; i += 4) {
+-			__asm__(
+-					"popcnt %4, %4  \n\t"
+-					"add %4, %0     \n\t"
+-					"popcnt %5, %5  \n\t"
+-					"add %5, %1     \n\t"
+-					"popcnt %6, %6  \n\t"
+-					"add %6, %2     \n\t"
+-					"popcnt %7, %7  \n\t"
+-					"add %7, %3     \n\t"
+-					: "+r" (cnt[0]), "+r" (cnt[1]), "+r" (cnt[2]), "+r" (cnt[3])
+-					: "r" (buf[i]), "r" (buf[i+1]), "r" (buf[i+2]), "r" (buf[i+3])
+-			);
+-		}
+-		return cnt[0] + cnt[1] + cnt[2] + cnt[3];
++                Word cnt[4] = {0};
++
++                for (Word i = 0; i < len; i += 4) {
++                    cnt[0] += __builtin_popcountll(buf[i]);
++                    cnt[1] += __builtin_popcountll(buf[i+1]);
++                    cnt[2] += __builtin_popcountll(buf[i+2]);
++                    cnt[3] += __builtin_popcountll(buf[i+3]);
++                }
++                return cnt[0] + cnt[1] + cnt[2] + cnt[3];
+ 	}
+ 
+ 	// simple loop
+@@ -229,7 +221,7 @@
+ 		assert(len <= getNumWords());
+ 		Word cnt = 0;
+ 		for (Word i = 0; i < len; i++) {
+-			cnt += _popcnt64(buf[i]);
++			cnt += _mm_popcnt_u64(buf[i]);
+ 		}
+ 		return cnt;
+ 	}
+@@ -638,9 +630,15 @@
+ }
+ 
+ unsigned long long rdtsc() {
++  #if defined(__aarch64__)
++	uint64_t val;
++        __asm__ __volatile__("mrs %0, cntvct_el0" : "=r"(val));
++        return (unsigned long long)val;
++  #else
+ 	unsigned int lo, hi;
+-	__asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
+-	return ((unsigned long long) hi << 32) | lo;
++        __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
++        return ((unsigned long long) hi << 32) | lo;
++  #endif
+ }
+ 
+ #ifdef __APPLE__

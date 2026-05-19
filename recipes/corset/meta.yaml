@@ -2,37 +2,52 @@
 {% set version = "1.09" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 5
 
 source:
   url: https://github.com/Oshlack/Corset/archive/version-1.09.tar.gz
   sha256: 729539ee9c6805a04a470f155ee225d814e47e9fc1ca47284d42c503ac3a05a5
   patches:
     - patch
+    - 0001-cstdint.patch
+
+build:
+  number: 6
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - gnuconfig
   host:
     - zlib
     - samtools 0.1.19
   run:
+    - samtools 0.1.19
 
 test:
   commands:
-    - corset 2>&1 | grep Usage
+    - corset 2>&1 | grep "Usage"
 
 about:
-  home: https://github.com/Oshlack/Corset
-  license: GPLv3
-  summary: 'Software for clustering de novo assembled transcripts and counting overlapping reads.'
+  home: "https://github.com/Oshlack/Corset"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  summary: "Software for clustering de novo assembled transcripts and counting overlapping reads."
+  dev_url: "https://github.com/Oshlack/Corset"
+  doc_url: "https://github.com/Oshlack/Corset/wiki"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:corset
     - doi:10.1186/s13059-014-0410-6

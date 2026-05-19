@@ -1,0 +1,54 @@
+{% set version = "2.1" %}
+
+package:
+  name: bioc
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/b/bioc/bioc-{{ version }}.tar.gz
+  sha256: 7d9248198bdae291b0ebb218de2dc653c96d32a7eac2fa0ef4ed0c74ce45aaaa
+
+build:
+  entry_points:
+    - bioc-split = bioc.cli.split_bioc:main
+    - brat2bioc = bioc.cli.brat2bioc:main
+  noarch: python
+  run_exports:
+    weak:
+      - bioc
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.6
+    - setuptools
+    - pip
+  run:
+    - python >=3.6
+    - lxml >=4.6.3
+    - jsonlines >=1.2.0
+    - intervaltree
+    - tqdm
+    - docopt
+
+test:
+  imports:
+    - bioc
+  commands:
+    - pip check
+    - bioc-split --help
+    - brat2bioc --help
+  requires:
+    - pip
+
+about:
+  summary: bioc - Processing BioC, Brat, and PubTator with Python.
+  license: MIT
+  license_file: LICENSE
+  home: https://github.com/bionlplab/bioc
+
+extra:
+  recipe-maintainers:
+    - FelixMoelder
+    - fxwiegand

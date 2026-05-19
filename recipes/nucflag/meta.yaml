@@ -1,0 +1,53 @@
+{% set name = "nucflag" %}
+{% set version = "0.3.8" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/nucflag-{{ version }}.tar.gz
+  sha256: 5dd50089f641a022074371f730baaee59bd9b8eba48285574c7a353c15cc0053
+
+build:
+  entry_points:
+    - nucflag = nucflag.main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.12
+    - setuptools
+    - pip
+  run:
+    - python >=3.12
+    - matplotlib-base >=3.8.3
+    - numpy >=1.26.4
+    - polars >=1.6.0
+    - intervaltree >=3.1.0
+    - pysam >=0.22.0
+    - scipy >=1.12.0
+    - pybigwig >=0.3.24
+
+test:
+  imports:
+    - nucflag
+  commands:
+    - pip check
+    - nucflag --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/logsdon-lab/NucFlag
+  summary: NucFlag misassembly identifier.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - koisland

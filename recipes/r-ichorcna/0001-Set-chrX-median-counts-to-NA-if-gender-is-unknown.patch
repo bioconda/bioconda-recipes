@@ -1,0 +1,29 @@
+From 3691bc9bece0bd6c55e0c98aef0f819fee05b4be Mon Sep 17 00:00:00 2001
+From: Luca Beltrame <luca.beltrame@humanitasresearch.it>
+Date: Tue, 2 Dec 2025 10:38:24 +0100
+Subject: [PATCH 1/2] Set chrX median counts to NA if gender is unknown
+
+NULL doesn't have a dimension, while NA is a vector of length 1
+If this is not done, building a PoN with data missing sex chromosomes
+will fail, because the code will try to bind NA (with dimensions)
+with NULL (no dimension), leading to a hard-to-debug-message
+---
+ R/utils.R | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/R/utils.R b/R/utils.R
+index 318e589..bf64931 100644
+--- a/R/utils.R
++++ b/R/utils.R
+@@ -251,7 +251,7 @@ getGender <- function(rawReads, normReads, gc, map, fracReadsInChrYForMale = 0.0
+ 	}else{
+ 		gender <- "unknown" # chrX is not provided
+ 		chrYCov <- NA
+-		chrXMedian <- NULL
++		chrXMedian <- NA
+ 	}
+ 	return(list(gender=gender, chrYCovRatio=chrYCov, chrXMedian=chrXMedian))
+ }
+-- 
+2.52.0
+

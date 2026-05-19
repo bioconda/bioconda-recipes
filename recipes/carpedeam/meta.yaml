@@ -1,50 +1,56 @@
-{% set version = "1.0.0" %}
-{% set sha256 = "92deec3d670810f8433c0345758588b47fa460349e61ce8aa549374f5cf4a812" %}
+{% set version = "1.0.1" %}
+{% set sha256 = "14ac5b372137a388bf489d7a9d20cec9a2e665fbeec86cadbf5899bf1db40537" %}
 
 package:
   name: carpedeam 
   version: {{ version|replace("-", ".")  }}
 
-build:
-  number: 1
-  run_exports:
-    - {{ pin_subpackage('carpedeam', max_pin="x.x") }}
-
 source:
   url: https://github.com/LouisPwr/CarpeDeam/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('carpedeam', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
-    - cmake
+    - cmake <4
     - make
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
+    - pkg-config
   host:
-    - perl
+    - llvm-openmp  # [osx]
     - gawk
     - zlib
     - bzip2
   run:
+    - llvm-openmp  # [osx]
     - gawk
-    - zlib
-    - bzip2
+    - perl
 
 test:
   commands:
     - carpedeam --version | grep "Ancient Metagenome Assembler."
 
 about:
-  home: https://github.com/LouisPwr/CarpeDeam
-  license: GPL-3.0-only
+  home: "https://github.com/LouisPwr/CarpeDeam"
+  license: "GPL-3.0-only"
   license_family: GPL3
-  summary: "CarpeDeam - A metagenomic assembler for heavily damaged ancient datasets"
+  license_file: "LICENCE.md"
+  summary: "CarpeDeam - A metagenomic assembler for heavily damaged ancient datasets."
+  dev_url: "https://github.com/LouisPwr/CarpeDeam"
+  doc_url: "https://github.com/LouisPwr/CarpeDeam/blob/v{{ version }}/README.md"
 
 extra:
+  # Does not support aarch64/arm64
+  #additional-platforms:
+    #- linux-aarch64
+    #- osx-arm64
   identifiers:
-    - biotools:carpedeam
+    - doi:10.1101/2024.08.09.607291
   recipe-maintainers:
     - gabriel-renaud
     - louis-kraft

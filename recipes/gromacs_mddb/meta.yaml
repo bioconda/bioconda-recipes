@@ -1,0 +1,65 @@
+{% set name = "gromacs_mddb" %}
+{% set version = "2025.3" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: "https://ftp.gromacs.org/gromacs/gromacs-{{ version }}.tar.gz"
+  sha256: 8bdfca0268f3f10a7ca3c06e59b62f73ea02420c67211c0ff3912f32d7833c65
+  patches:
+    - 1000-add-json-output-to-gmx-dump-v2025.3.patch
+
+build:
+  number: 3
+  skip: true  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - cmake >=3.28
+    - pocl
+    - python >=3.7
+    - perl
+    - libgomp
+  host:
+    - ocl-icd
+    - libhwloc <2.12.2
+    - fftw
+  run:
+    - ocl-icd
+    - fftw
+    - libhwloc <2.12.2
+
+test:
+  commands:
+    - gmx -version
+
+about:
+  home: https://www.gromacs.org/
+  license: LGPL-2.1-or-later
+  license_family: LGPL
+  license_file: COPYING
+  summary: GROMACS is a versatile package to perform molecular dynamics.
+  description: |
+    Development version of GROMACS in colaboration to MDDB to add the
+    possibility to export tpr to json.
+
+    GROMACS is a versatile package to perform molecular dynamics, i.e.
+    simulate the Newtonian equations of motion for systems with hundreds
+    to millions of particles. It is primarily designed for biochemical
+    molecules like proteins, lipids and nucleic acids that have a lot of
+    complicated bonded interactions, but since GROMACS is extremely fast
+    at calculating the nonbonded interactions (that usually dominate
+    simulations) many groups are also using it for research on
+    non-biological systems, e.g. polymers.
+  doc_url: https://manual.gromacs.org/
+  dev_url: https://gitlab.com/gromacs/gromacs/-/tree/pj_mddb_json_proto-2025
+
+extra:
+  recipe-maintainers:
+    - RubenChM

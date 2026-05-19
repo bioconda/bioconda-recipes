@@ -1,0 +1,69 @@
+{% set name = "density-fitness" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PDB-REDO/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: dc6c897e6ef00a0a82642ce4d8fb11281f836820fb638168368c6134c460f3bc
+
+build:
+  number: 0
+  run_exports: []
+
+requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - cmake
+    - ninja
+  host:
+    - eigen
+    - fast_float
+    - libcifpp >=9.0.0
+    - libmcfp >=1.3.5
+    - libpdb-redo >=3.3.1
+    - nlohmann_json
+    - zlib
+  run:
+    # Requires macOS 13.3+ for std::to_chars floating-point support
+    - __osx >=13.3  # [osx]
+
+test:
+  commands:
+    - density-fitness --help
+    - density-fitness --version
+
+about:
+  home: https://github.com/PDB-REDO/density-fitness
+  dev_url:  https://github.com/PDB-REDO/density-fitness
+  doc_url: https://github.com/PDB-REDO/density-fitness/blob/v1.2.0/doc/density-fitness.pdf
+  summary: "Application to calculate the density statistics (RSR, SRSR, RSCCS, EDIAm and OPIA) for x-ray structures"
+  license: BSD-2-Clause
+  license_family: BSD
+  license_file: LICENSE
+  description: >
+    The program density-fitness calculates electron density metrics,
+    for main- (includes Cβ atom) and side-chain atoms of individual residues.
+
+    For this calculation, the program uses the structure model in either PDB
+    or mmCIF format and the electron density from the 2mFo-DFc and mFo-DFc maps.
+    If these maps are not readily available, the MTZ file and model can be used
+    to calculate maps clipper. Density-fitness support both X-ray and electron
+    diffraction data.
+
+    This program is essentially a reimplementation of _edstats_, a program
+    available from the CCP4 suite. However, the output now contains only the
+    RSR, SRSR and RSCC fields as in _edstats_ with the addition of EDIAm
+    and OPIA and no longer requires pre-calculated map coefficients.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1107/S0907444911035918
+    - doi:10.1021/acs.jcim.7b00391
+  recipe-maintainers:
+    - eunos-1128

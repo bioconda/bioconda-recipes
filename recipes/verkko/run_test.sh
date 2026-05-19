@@ -27,7 +27,7 @@ touch empty.fasta
 
 ONT="--nano ./reference.fasta.gz"
 
-verkko --unitig-abundance 0 --no-correction -d asm --hifi ./reference.fasta.gz $ONT > run.out 2>&1
+verkko --unitig-abundance 0 --no-correction -d asm --hifi ./reference.fasta.gz $ONT > run.out 2>&1 || cat run.out
 
 if [ -s asm/assembly.fasta ]; then
    head -n 2 asm/assembly.fasta > asm/tmp.fasta

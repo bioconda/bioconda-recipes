@@ -1,16 +1,22 @@
+{% set name = "collectl" %}
+{% set version = "4.3.20.2" %}
+
 package:
-  name: collectl
-  version: 4.0.4
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: http://downloads.sourceforge.net/project/collectl/collectl/collectl-4.0.4/collectl-4.0.4.src.tar.gz
-  sha256: 03fc26ece3e9db6e410b708ada45fdec8c566ad82e67cb933c6ff8c005058ecf
+  url: https://github.com/sharkcz/collectl/archive/refs/tags/{{ version }}.tar.gz
+  sha256: f917146c0ebea0e643acf738b21943e5abc16b786a7930352a825dfa031055de
   patches:
+    - 0001-INSTALL.patch
     - usrenvbin.patch
 
 build:
+  number: 0
   noarch: generic
-  number: 3
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
@@ -18,13 +24,14 @@ requirements:
     - zlib
   run:
     - perl
-    - zlib
 
 test:
   commands:
     - collectl --help
 
 about:
-  home: http://collectl.sourceforge.net/
-  license: Artistic License
-  summary: collectl monitoring tool
+  home: "https://github.com/sharkcz/collectl"
+  license: "Artistic License"
+  summary: "Collectl is a light-weight performance monitoring tool capable of reporting interactively as well as logging to disk."
+  doc_url: "https://collectl.sourceforge.net"
+  dev_url: "https://github.com/sharkcz/collectl"

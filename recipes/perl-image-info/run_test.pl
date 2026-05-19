@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 my @items = (
-    ["Image::Info", "1.42"],
+    ["Image::Info", "1.45"],
 );
 
 foreach $item (@items) {

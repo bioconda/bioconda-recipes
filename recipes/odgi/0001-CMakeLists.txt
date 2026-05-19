@@ -1,0 +1,52 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 3ff51768..2e4a7888 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -37,7 +37,11 @@ include(ExternalProject)
+ include(FeatureSummary)
+ 
+ find_package(PkgConfig REQUIRED)
++set(PYBIND11_FINDPYTHON ON)
+ find_package(pybind11 CONFIG)
++
++# Find jemalloc
++pkg_search_module(JEMALLOC jemalloc)
+ # Find CUDA if GPU option is enabled
+ if (USE_GPU)
+     find_package(CUDA REQUIRED)  # Adjust this if you're using modern CMake with FindCUDAToolkit.
+@@ -697,6 +701,7 @@ endif (NOT INLINE_HANDLEGRAPH_SOURCES)
+ add_dependencies(odgi_objs ${odgi_DEPS})
+ 
+ set(odgi_INCLUDES
++  "$ENV{PREFIX}/include"
+   "${CMAKE_SOURCE_DIR}/src"
+   "${CMAKE_SOURCE_DIR}/src/algorithms"
+   "${SDSLLITE_INCLUDE_DIRS}"
+@@ -877,6 +882,9 @@ else (NOT PIC)
+   set_target_properties(libodgi_shared PROPERTIES OUTPUT_NAME "odgi")
+   set_target_properties(libodgi_shared PROPERTIES PUBLIC_HEADER "${odgi_HEADERS}")
+   target_link_libraries(libodgi_shared ${odgi_LIBS})
++  if(JEMALLOC_FOUND)
++    target_link_libraries(libodgi_shared ${JEMALLOC_LDFLAGS})
++  endif()
+   add_dependencies(libodgi_shared ${odgi_DEPS})
+ endif (NOT PIC)
+ 
+@@ -898,7 +906,7 @@ else (NOT PIC)
+   # as not to confuse things with the old bindings
+   pybind11_add_module(odgi_ffi "${CMAKE_SOURCE_DIR}/src/pythonffi.cpp")
+   add_dependencies(odgi_ffi ${odgi_DEPS} libodgi_shared)
+-  target_include_directories(odgi_ffi PUBLIC ${odgi_INCLUDES})
++  target_include_directories(odgi_ffi PUBLIC ${odgi_INCLUDES} $ENV{PREFIX}/include)
+   target_link_libraries(odgi_ffi PUBLIC "${odgi_LIBS}" $<TARGET_FILE:libodgi_shared>)
+   set_target_properties(odgi_ffi PROPERTIES OUTPUT_NAME "odgi_ffi")
+   install(TARGETS odgi_ffi LIBRARY DESTINATION lib)
+@@ -908,7 +916,7 @@ else (NOT PIC)
+   # Build original Python module
+   pybind11_add_module(odgi_pybind11 "${CMAKE_SOURCE_DIR}/src/pythonmodule.cpp")
+   add_dependencies(odgi_pybind11 ${odgi_DEPS} libodgi_static)
+-  target_include_directories(odgi_pybind11 PUBLIC ${odgi_INCLUDES})
++  target_include_directories(odgi_pybind11 PUBLIC ${odgi_INCLUDES} $ENV{PREFIX}/include)
+   target_link_libraries(odgi_pybind11 PRIVATE "${CMAKE_SOURCE_DIR}/lib/libodgi.a" "${odgi_LIBS}")
+   set_target_properties(odgi_pybind11 PROPERTIES OUTPUT_NAME "odgi")
+   install(TARGETS odgi_pybind11 LIBRARY DESTINATION lib)

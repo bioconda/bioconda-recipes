@@ -1,4 +1,5 @@
 {% set version = "1.0.3" %}
+
 package:
   name: psiclass
   version: {{ version }}
@@ -6,23 +7,28 @@ package:
 source:
   url: https://github.com/splicebox/PsiCLASS/archive/v{{ version }}.tar.gz
   sha256: c60c0f33f9a076b97ccdba68b9140a5fb6936a5c5e309d70b3d0cf558828f73d
+  patches:
+    - 0001-master.patch
 
 build:
-  number: 5
+  number: 6
   run_exports:
-    - {{ pin_subpackage("psiclass", max_pin="x.x") }}
+    - {{ pin_subpackage('psiclass', max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
+    - pkg-config
+    - clangdev  # [osx]
   host:
-    - zlib >=1.2.11
+    - zlib
     - samtools 0.1.19.*
   run:
     - perl
     - samtools 0.1.19.*
+
 test:
   commands:
     - classes 2>&1 | cat > /dev/null
@@ -30,13 +36,24 @@ test:
     - trust-splice 2>&1 | cat > /dev/null
     - subexon-info 2>&1 | cat > /dev/null
     - combine-subexons 2>&1 | cat > /dev/null
-    - vote-transcripts 2>&1 | cat > /dev/null 
+    - vote-transcripts 2>&1 | cat > /dev/null
     - add-genename 2>&1 | cat > /dev/null
-    - which FilterSplice.pl
-    - which psiclass
+    - test -x ${PREFIX}/bin/psiclass
 
 about:
-  home: https://github.com/splicebox/PsiCLASS
-  license: GPL-3.0-only
+  home: "https://github.com/splicebox/PsiCLASS"
+  license: "GPL-3.0-only"
+  license_family: GPL3
   license_file: LICENSE
-  summary: Simultaneous multi-sample transcript assembler for RNA-seq data 
+  summary: "Simultaneous multi-sample transcript assembler for RNA-seq data."
+  dev_url: "https://github.com/splicebox/PsiCLASS"
+  doc_url: "https://github.com/splicebox/PsiCLASS/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1038/s41467-019-12990-0
+    - biotools:psiclass
+    - usegalaxy-eu:psiclass

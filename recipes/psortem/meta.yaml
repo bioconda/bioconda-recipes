@@ -1,0 +1,44 @@
+{% set version = "0.4.2" %}
+{% set name = "psortem" %}
+{% set sha256 = "39209b950854c78ab40d1f6c4a2c5aa77e7c09e4e63e37fcd140d23942e33fd5" %}
+{% set user = "tseemann" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+    
+requirements:
+  build:
+
+  run:
+    - perl >=5.32.0
+    - coreutils >=9.5
+    - vmtouch
+    - make
+
+test:
+  commands:
+    - {{ name }} -v 
+    - {{ name }} -h
+    - {{ name }} -C
+
+about:
+  home: https://github.com/{{ user }}/{{ name }}
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: Parallel external merge sort
+
+extra:
+  identifiers:
+    - biotools:{{ name }}

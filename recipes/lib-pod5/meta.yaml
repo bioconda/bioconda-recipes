@@ -1,43 +1,46 @@
 {% set name = "lib-pod5" %}
-{% set version = "0.3.27" %}
+{% set version = "0.3.39" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   git_url: https://github.com/nanoporetech/pod5-file-format.git
   git_rev: {{ version }}
   sha256: unused
+  patches:
+    - 0001-CMakeLists.patch
 
 build:
   number: 0
-  skip: True  # [py < 38]
+  skip: True  # [py < 310]
   script_env:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   run_exports:
-    - {{ pin_subpackage('lib-pod5', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - cmake
-    - make
+    - ninja
     - pkg-config
   host:
     - python
     - pip
     - setuptools
-    - setuptools-scm
+    - setuptools-scm ==7.1.0
+    - python-build
     - pybind11
     - flatbuffers
-    - pyarrow
+    - pyarrow <21
     - zstd
     - zlib
   run:
     - python
     - numpy >=1.21.0
-    - pyarrow
+    - pyarrow <21
 
 test:
   imports:
@@ -50,7 +53,7 @@ about:
   license_family: OTHER
   license_file: "LICENSE.md"
   description: |
-    [![Documentation Status](https://readthedocs.org/projects/pod5-file-format/badge/?version=latest)](https://pod5-file-format.readthedocs.io/)
+    [![Documentation Status](https://readthedocs.org/projects/pod5-file-format/badge/?version=latest)](https://pod5-file-format.readthedocs.io)
 
     **Python bindings for the POD5 file format**
 
@@ -73,3 +76,4 @@ extra:
     - osx-arm64
   skip-lints:
     - uses_vcs_url
+    - compiler_needs_stdlib_c

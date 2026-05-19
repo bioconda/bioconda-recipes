@@ -4,39 +4,42 @@ package:
   name: phcue-ck
   version: {{ version }}
 
-build:
-  number: 3
-
 source:
   url: https://github.com/lgi-onehealth/phcue-ck/archive/refs/tags/v{{ version }}.tar.gz
   sha256: 896510bb42e5eb03390c53f28bd2078d68cf29de2714221a74fba47a73a654c3
 
+build:
+  number: 4
+  run_exports:
+    - {{ pin_subpackage('phcue-ck', max_pin="x.x") }}
+
 requirements:
   build:
     - {{ compiler("c") }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}    
     - make
-    - rust>=1.60
+    - pkg-config
     - openssl
   host:
     - ca-certificates
   run:
-   - ca-certificates
-    
+    - ca-certificates
+
 test:
   commands:
     - phcue-ck --help
     - phcue-ck -a SRR16298173
 
 about:
-  home: https://lgi-onehealth.github.io/phcue-ck/
+  home: "https://lgi-onehealth.github.io/phcue-ck"
   license: MIT
-  summary: |
-    phcue-ck (pronounced "F-Q-Seek") is a simple tool to get FTP urls for FASTQ files on ENA.
+  license_family: MIT
+  summary: 'phcue-ck (pronounced "F-Q-Seek") is a simple tool to get FTP urls for FASTQ files on ENA.'
 
 extra:
   recipe-maintainers:
     - andersgs
-  skip-lints:
-    - should_be_noarch_generic
-    - should_not_be_noarch_source
-
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

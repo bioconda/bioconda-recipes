@@ -1,0 +1,51 @@
+diff --git a/Makefile b/Makefile
+index b0d754d..f1ce6f1 100644
+--- a/Makefile
++++ b/Makefile
+@@ -2,39 +2,38 @@
+ # HAPCUT2 MAKEFILE
+ default: all
+ 
+-CFLAGS=-Wall -g -O3 -Wall -D_GNU_SOURCE
++CFLAGS=-Wall -g -O3 -Wall -D_GNU_SOURCE -I$(PREFIX)/include -I$(PREFIX)/include/htslib
++LDFLAGS=-L$(PREFIX)/lib -lhts
+ 
+ # DIRECTORIES
+ B=build
+ H=hairs-src
+ X=hapcut2-src
+-HTSLIB=htslib #/usr/common/src/htslib #path/to/htslib/
++HTSLIB=$(PREFIX)  #/usr/common/src/htslib #path/to/htslib/
+ T=test
+ # below is the path to CUnit directory, change if need be
+ CUNIT=/usr/include/CUnit
+-LDFLAGS=-L$(HTSLIB)
+ 
+ all: $(B)/extractHAIRS $(B)/HAPCUT2
+ 
+-#temporarily removed -O2 flag after -I$(HTSLIB)
+ $(B)/extractHAIRS: $(B)/bamread.o $(B)/hashtable.o $(B)/readvariant.o $(B)/readfasta.o $(B)/hapfragments.o $(H)/extracthairs.c $(H)/parsebamread.c $(H)/realignbamread.c $(H)/nw.c $(H)/realign_pairHMM.c $(H)/estimate_hmm_params.c | $(B)
+-	$(CC) $(CFLAGS) $(LDFLAGS) -I$(HTSLIB) -g $(B)/bamread.o $(B)/hapfragments.o $(B)/hashtable.o $(B)/readfasta.o $(B)/readvariant.o -o $(B)/extractHAIRS $(H)/extracthairs.c -pthread -lhts -lm -lz -lcurl -llzma -lbz2
++	$(CC) $(CFLAGS) $(LDFLAGS) -g $(B)/bamread.o $(B)/hapfragments.o $(B)/hashtable.o $(B)/readfasta.o $(B)/readvariant.o -o $(B)/extractHAIRS $(H)/extracthairs.c -pthread -lhts -lm -lz -lcurl -llzma -lbz2
+ #temporarily removed -O2 flag after -I$(HTSLIB)
+ 
+ $(B)/hapfragments.o: $(H)/hapfragments.c $(H)/hapfragments.h $(H)/readvariant.h | $(B)
+ 	$(CC) -c $(CFLAGS) $(H)/hapfragments.c -o $(B)/hapfragments.o
+ 
+ $(B)/readvariant.o: $(H)/readvariant.c $(H)/readvariant.h $(H)/hashtable.h $(H)/hashtable.c | $(B)
+-	$(CC) -c $(CFLAGS) -I$(HTSLIB) $(H)/readvariant.c -o $(B)/readvariant.o
++	$(CC) -c $(CFLAGS) $(H)/readvariant.c -o $(B)/readvariant.o
+ 
+ $(B)/bamread.o: $(H)/bamread.h $(H)/bamread.c $(H)/readfasta.h $(H)/readfasta.c | $(B)
+-	$(CC) -c $(CFLAGS) -I$(HTSLIB) $(H)/bamread.c -lhts -o $(B)/bamread.o
++	$(CC) -c $(CFLAGS) $(H)/bamread.c -lhts -o $(B)/bamread.o
+ 
+ $(B)/hashtable.o: $(H)/hashtable.h $(H)/hashtable.c | $(B)
+ 	$(CC) -c $(CFLAGS) $(H)/hashtable.c -o $(B)/hashtable.o
+ 
+ $(B)/readfasta.o: $(H)/readfasta.c $(H)/readfasta.h | $(B)
+-	$(CC) -c $(CFLAGS) -I$(HTSLIB) $(H)/readfasta.c -o $(B)/readfasta.o
++	$(CC) -c $(CFLAGS) $(H)/readfasta.c -o $(B)/readfasta.o
+ 
+ # BUILD HAPCUT2
+ 

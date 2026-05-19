@@ -1,0 +1,66 @@
+diff --git a/src/main.cpp b/src/main.cpp
+index 395f417..2daf14d 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -199,6 +199,7 @@ int main (const int argc, const char* argv[]) {
+ 	// Open the FASTA file(s)
+ 	vector<int> sites_to_ignore;
+ 	DNA fa;
++	fa.nseq=0;
+ 	if(FASTA_FILE_LIST) {
+ 		ifstream file_list(fasta_file);
+ 		if(!file_list.is_open()) {
+@@ -211,11 +212,12 @@ int main (const int argc, const char* argv[]) {
+ 		while(!file_list.eof()) {
+ 			string filename;
+ 			file_list >> filename;
++			if (file_list.eof()) break;
+ 			// Pre-check: does it exist?
+ 			ifstream file_list1(filename.c_str());
+ 			if(!file_list1.is_open()) {
+ 				stringstream errTxt;
+-				errTxt << "could not find listed file " << fasta_file;
++				errTxt << "could not find listed file " << filename;
+ 				error(errTxt.str().c_str());
+ 			}
+ 			// Read the file
+@@ -224,10 +226,11 @@ int main (const int argc, const char* argv[]) {
+ 			if(L==-1) L = fa1.lseq;
+ 			if(fa1.lseq!=L) {
+ 				stringstream errTxt;
+-				errTxt << "listed file " << fasta_file << " had sequence length " << fa1.lseq << " expecting " << L;
++				errTxt << "listed file " << filename << " had sequence length " << fa1.lseq << " expecting " << L;
+ 				error(errTxt.str().c_str());
+ 			}
+ 			// Add to list
++			fa.lseq=L;
+ 			int ni;
+ 			for(ni=0;ni<fa1.nseq;ni++) {
+ 				fa.label.push_back(fa1.label[ni]);
+diff --git a/src/makefile b/src/makefile
+index 1342bac..abe3426 100644
+--- a/src/makefile
++++ b/src/makefile
+@@ -1,10 +1,10 @@
+ # Makefile for ClonalFrameML
+-CC = g++
+-CFLAGS += -O3
++CC = $(CXX)
++CXXFLAGS += -O3
+ OBJECTS = main.o
+ HEADERS = main.h brent.h powell.h
+ 
+-.PHONY: clean 
++.PHONY: clean
+ 
+ all: ClonalFrameML
+ 
+@@ -12,7 +12,7 @@ ClonalFrameML: $(OBJECTS)
+ 	$(CC) $(LDFLAGS) -o ClonalFrameML $(OBJECTS)
+ 
+ main.o: main.cpp $(HEADERS)
+-	$(CC) $(CFLAGS) -c -o main.o main.cpp
++	$(CC) $(CXXFLAGS) -c -o main.o main.cpp
+ 
+ clean:
+ 	rm -f $(OBJECTS)

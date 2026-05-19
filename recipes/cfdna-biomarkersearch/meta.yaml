@@ -1,0 +1,80 @@
+{% set name = "cfDNA-BiomarkerSearch" %}
+{% set version = "0.1.3" %}
+{% set sha256 = "5a5290c8cb0dcb715618325d933b63b9ee6de983cd26e813ee87d738fe656800" %}
+{% set repo_url = "https://github.com/avo-hcemm/cfDNA-biomarkers-pipeline" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: {{ repo_url }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_compatible("numpy", max_pin="x.x") }}
+
+requirements:
+  run:
+    - wget
+    - ca-certificates
+    - unzip
+    - tar
+    - curl
+    - gnupg
+    - openjdk >=21
+    - fastqc
+    - trimmomatic
+    - bowtie2
+    - samtools
+    - multiqc 
+    - numpy
+    - pandas
+    - sklearn-compat
+    - imbalanced-learn
+    - xgboost
+    - scikit-bio
+    - scipy
+    - setuptools <81
+
+test:
+  commands:
+    - pip install --upgrade shap-hypetune        # until it is available in conda
+    - BASE_DIR="$PREFIX/share/cfdna-biomarkersearch"
+    - wget -P "$BASE_DIR/genome" https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr22.fa.gz
+    - gunzip "$BASE_DIR/genome/chr22.fa.gz"
+    - bowtie2-build "$BASE_DIR/genome/chr22.fa" "$BASE_DIR/genome/index"
+
+    - bash "$PREFIX"/share/cfdna-biomarkersearch/scripts/reads_preprocessing.sh \
+      -o "$PREFIX"/share/cfdna-biomarkersearch \
+      raw_data \
+      test \
+      config/adapterfile.fa \
+      genome/index
+
+    - bash "$PREFIX"/share/cfdna-biomarkersearch/scripts/run_pipeline_module2to6.sh -o "$PREFIX"/share/cfdna-biomarkersearch input/human/genome.csv input/human/params.csv human --chromosome chr22
+
+about:
+  home: {{ repo_url }}
+  license: MIT
+  license_family: MIT
+  license_file: license/MIT_License
+  summary: Pipeline to identify candidate cfDNA biomarker sequences from WGS data
+  description: |
+    cfDNA-BiomarkerDiscovery is a pipeline designed to identify candidate biomarker sequences from cell-free DNA (cfDNA) derived from blood samples. The pipeline takes as input:
+    •	An archive of FASTQ files containing paired-end reads from whole-genome sequencing (WGS) of one or more case cohorts and a control cohort.
+    •	Additional required files: adapter sequences, genome version for download, genome information file, parameter file, and an archive with genome FASTA files.
+    The pipeline performs:
+    1.	Preprocessing: adapter trimming, quality filtering, and alignment to the reference genome.
+    2.	Analysis: identification of candidate genomic regions as potential biomarkers.
+    If informative regions are identified, the pipeline generates a CSV file listing the candidate biomarker sequences along with their associated genomic coordinates.
+
+  doc_url: {{ repo_url }}/blob/master/README.md
+  dev_url: {{ repo_url }}
+
+extra:
+  recipe-maintainers:
+    - avo-hcemm

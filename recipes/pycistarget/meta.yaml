@@ -1,0 +1,47 @@
+{% set name = "pycistarget" %}
+{% set version = "1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/aertslab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 7b63b318a7e371264d6fd3d19d7f25c01048bee63a0a857348bde62a2f3bb144
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  run_exports: {{ pin_compatible("pycistarget", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >={{ python_min }},<3.12
+    - pip
+    - poetry-core
+    - setuptools
+  run:
+    - python >={{ python_min }},<3.12
+    - numpy <2.0.0
+    - pandas >=1.5.0,<2.0.0
+    - pyranges >=0.0.111,<0.1.0
+    - h5py >=3.10.0,<4.0.0
+    - ctxcore >=0.2.0,<0.3.0
+    - ipython >=8.0.0
+    - scikit-learn >=1.3.2,<2.0.0
+test:
+  commands:
+    - pycistarget --help
+  imports:
+    - pycistarget
+
+about:
+  home: https://github.com/aertslab/pycistarget
+  license: OTHER
+  license_file: LICENSE.txt
+  summary: pycistarget is a python module to perform motif enrichment analysis in sets of regions with different tools and identify high confidence TF cistromes.
+
+extra:
+  recipe-maintainers:
+    - nilchia

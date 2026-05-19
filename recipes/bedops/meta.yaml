@@ -1,22 +1,32 @@
+{% set name = "bedops" %}
 {% set version = "2.4.42" %}
 
 package:
-  name: bedops
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 0
-  run_exports:
-    - {{ pin_subpackage("bedops", max_pin="x.x.x") }}  
 
 source:
   url: https://github.com/bedops/bedops/archive/v{{ version }}.tar.gz
   sha256: 9daa0c098e37490a07f84664d2c61ff8909689995cf7e1673d259ccd4f1c453c
+  patches:
+    - 0001-Makefile.patch
+    - 0002-Makefile-darwin.patch  # [osx]
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('bedops', max_pin="x") }}
 
 requirements:
   build:
-    - make
     - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - make
+    - pkg-config
+  host:
+    - jansson
+    - bzip2
+    - zlib
   run:
     # seems to be needed for bam2bed
     - samtools
@@ -27,13 +37,19 @@ test:
     - gtf2bed --help
 
 about:
-  home: http://bedops.readthedocs.io
-  license: GPLv2
-  summary: High-performance genomic feature operations.
+  home: "https://github.com/bedops/bedops"
+  license: "GPL-2.0-or-later"
+  license_family: GPL
+  license_file: LICENSE
+  summary: "High-performance genomic feature operations."
+  dev_url: "https://github.com/bedops/bedops"
+  doc_url: "https://bedops.readthedocs.io"
 
 extra:
   identifiers:
     - biotools:Bedops
+    - usegalaxy-eu:bedops-sort-bed
     - doi:10.1093/bioinformatics/bts277
   additional-platforms:
     - linux-aarch64
+    - osx-arm64

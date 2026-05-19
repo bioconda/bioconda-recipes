@@ -1,0 +1,50 @@
+{% set name = "sapling" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/elkebir-group/Sapling/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f98fbc760e64bd200070cb4dc126e5720b679f28e482804828cb0c0a37a9bd97
+
+build:
+  number: 0
+  noarch: python 
+  script: {{ PYTHON }} -m pip install . -vv --no-deps
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - setuptools
+  run:
+    - python >=3.6
+    - numpy
+    - pandas
+    - tqdm
+    - fastppm
+
+test:
+  imports:
+    - sapling
+  commands:
+    - sapling --help
+
+about:
+  home: "https://github.com/elkebir-group/Sapling"
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: "Inferring and Summarizing Tumor Phylogenies from Bulk DNA Data"
+  description: |
+    Sapling is a Python tool for inferring and summarizing tumor phylogenies
+    from bulk DNA data. In addition to identifying full trees, Sapling also
+    identifies "backbone trees" that summarize the space of plausible 
+    evolutionary histories. Sapling supports multiple solvers (fastPPM, CVXOPT,
+    Gurobi) to estimate frequency matrices and infer high-likelihood trees.
+  dev_url: "https://github.com/elkebir-group/Sapling"
+  doc_url: "https://github.com/elkebir-group/Sapling/blob/v{{ version }}/README.md"

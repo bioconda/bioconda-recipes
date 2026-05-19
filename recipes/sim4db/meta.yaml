@@ -5,28 +5,31 @@ package:
   name: {{ name }}
   version: {{ version }}
 
-about:
-  home: 'http://kmer.sourceforge.net/wiki/index.php/Getting_Started_with_Sim4db'
-  license: "GPL"
-  summary: "Sim4db and leaff: Utilities for fast batch spliced alignment and sequence indexing"
-
 source:
-  url: http://sourceforge.net/projects/kmer/files/sim4db-r2008.tar.bz2
-  md5: fa04c8fc71323bbe1aec58c9d6e765be
+  url: https://sourceforge.net/projects/kmer/files/sim4db-r{{ version }}.tar.bz2
+  sha256: 26501c2fff4ac6c5049db9a0272a80aa83340dfd7f1ee8f0a1c409011b6abde8
+  patches:
+    - 0001-configure.sh.patch
+    - Makefile.patch
 
 build:
-  number: 1
-  skip: True # [py > 30]
+  number: 2
+  run_exports:
+    - {{ pin_subpackage(name, max_pin=None) }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
-    - python
+    - {{ compiler('cxx') }}
+    - pkg-config
+    - python >=3
   host:
     - bzip2
+    - perl
   run:
-    - bzip2
+    - perl
+
 test:
   commands:
     - comparePolishes 2>&1 | grep comparePolishes
@@ -40,3 +43,13 @@ test:
     - reportAlignmentDifferences 2>&1 | grep reportAlignmentDifferences
     - sim4db 2>&1 | grep sim4db
 
+about:
+  home: "https://sourceforge.net/projects/kmer"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  summary: "Sim4db and leaff: Utilities for fast batch spliced alignment and sequence indexing."
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

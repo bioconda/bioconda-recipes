@@ -1,17 +1,25 @@
 #!/bin/bash
 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3"
+
 mkdir -p "${PREFIX}/bin"
 
-gunzip squid.tar.gz
-tar xf squid.tar
+tar -xvzf squid.tar.gz
+
 cd squid-1.9g
 
-./configure --prefix=$PREFIX -q
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
+
+./configure --prefix="${PREFIX}"
+
 make clean
+
 make
 make install
 
 cd ..
 
-make CC="${CC}" CFLAGS+=' -O3' LIBS="${LDFLAGS} -lm -lsquid"
-cp randfold "${PREFIX}/bin/"
+make CC="${CC}" CFLAGS="${CFLAGS}" INCLUDE="-I. -I${PREFIX}/include" LIBS="${LDFLAGS} -lm -lsquid"
+
+install -v -m 0755 randfold "${PREFIX}/bin"

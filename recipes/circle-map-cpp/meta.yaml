@@ -1,27 +1,30 @@
 package:
-  name: circle-map-cpp
-  version: 0.5.0
+  name: "circle-map-cpp"
+  version: "1.0.0"
 
 source:
-  url: http://www.bgiocean.com/vt3d_example/download/other/Circle-Map-cpp-0.5.0.tar.gz
-  sha256: 701c4c49d28863491bf86c94e874ae84e4415db639ef09252c1a33014fd882c7
+  url: https://github.com/BGI-Qingdao/Circle-Map-cpp/archive/refs/tags/v1.0.0.tar.gz
+  sha256: 7752d4bb32434ead3f9fcecfc9369cbaa2bd735e25dd0955940d97125b6fec37
+  patches:
+    - 0001-master.patch
+    - 0002-Makefile.patch
 
 build:
-  number: 1
-
-  # not compiling on macOS
-  skip: True # [osx]
-
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('circle-map-cpp', max_pin="x") }}
 
 requirements:
   build:
     - make
-    - htslib
+    - pkg-config
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
     - htslib
+    - zlib
   run:
+    - python
     - numpy
     - pysam >=0.20.0
     - htslib
@@ -32,11 +35,16 @@ test:
     - circle_map++
 
 about:
-  home: https://github.com/BGI-Qingdao/Circle-Map-cpp
-  license: GPL-3.0-only
-  license_file: LICENSE
-  summary: Circle-Map-cpp is the C++ version of Circle-Map
+  home: "https://github.com/BGI-Qingdao/Circle-Map-cpp"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  #license_file: LICENSE
+  summary: "Circle-Map-cpp is the C++ version of Circle-Map."
+  dev_url: "https://github.com/BGI-Qingdao/Circle-Map-cpp"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - cchd0001

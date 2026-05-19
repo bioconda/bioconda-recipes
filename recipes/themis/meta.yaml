@@ -1,0 +1,67 @@
+{% set name = "themis" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  - url: https://github.com/xujialupaoli/Themis/releases/download/{{ version }}/{{ name }}.tar.gz
+    sha256: 06cc6aa093531dabdf2c6f9e386f0a51423f48d7ffadb6edea5fd226f43fb854
+build:
+  skip: True  # [osx]
+  number: 0            
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }} 
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - cmake >=3.18
+    - ninja
+    - make
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+    - seqan3 ==3.3.0
+    - cxxopts >=2.2.0
+    - catch2 ==2.*
+    - zlib
+    - bzip2
+    - raptor ==3.*
+    - pandas >=1.2.0
+    - multitax >=1.3.1
+    - genome_updater >=0.6.4
+    - grep
+    - coreutils
+    - curl
+    - diffutils
+  run:
+    - python >=3.10
+    - pandas >=1.2.0
+    - multitax >=1.3.1
+    - genome_updater >=0.6.4
+    - grep
+    - coreutils
+    - curl
+    - diffutils
+    - zlib
+    - bzip2
+    - raptor ==3.*
+    - fastp
+
+
+test:
+  commands:
+    - themis -h
+
+
+about:
+  home: https://github.com/xujialupaoli/Themis
+  summary: "Themis: metagenomic profiler"
+  license: GPL-3.0-or-later
+  license_file: LICENSE

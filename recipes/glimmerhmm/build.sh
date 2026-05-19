@@ -1,8 +1,27 @@
 #!/bin/bash
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -g -O3"
 
-if [[ `uname` == "Darwin" ]]; then
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
+
+# make directories for storing training data and binaries
+mkdir -p $PREFIX/bin
+mkdir -p $PREFIX/share/glimmerhmm
+mkdir -p $PREFIX/share/glimmerhmm/train
+
+if [[ `uname -s` == "Darwin" ]]; then
 	sed -i.bak "s~#include <malloc.h>~#include <stdlib.h>~g" sources/util.c
 	sed -i.bak "s~#include <malloc.h>~#include <stdlib.h>~g" sources/oc1.h
 	sed -i.bak "s~#include <malloc.h>~#include <stdlib.h>~g" train/utils.c
@@ -22,22 +41,15 @@ sed -i.bak 's|FindBin;|FindBin qw($RealBin);|g' train/trainGlimmerHMM
 sed -i.bak 's|$FindBin::Bin;|"$RealBin/../share/glimmerhmm/train";|g' train/trainGlimmerHMM
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' bin/glimmhmm.pl
 
-rm -rf train/*.bak
-rm -rf bin/*.bak
-
-# make directories for storing training data and binaries
-mkdir -p $PREFIX/bin
-mkdir -p $PREFIX/share/glimmerhmm
-mkdir -p $PREFIX/share/glimmerhmm/train
+rm -f train/*.bak
+rm -f bin/*.bak
 
 # make
-make -C sources CC="$CXX" -j"${CPU_COUNT}"
-make -C train clean && make -C train all C="$CC" CC="$CXX" -j"${CPU_COUNT}"
+make -C sources CC="${CXX}" CFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}"
+make -C train clean && make -C train all C="${CC}" CC="${CXX}" CFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}"
 
-# copy the executables	
-install -v -m 0755 bin/glimmhmm.pl $PREFIX/bin
-install -v -m 0755 sources/glimmerhmm $PREFIX/bin
-install -v -m 0755 train/trainGlimmerHMM $PREFIX/bin
+# copy the executables
+install -v -m 0755 bin/glimmhmm.pl sources/glimmerhmm train/trainGlimmerHMM $PREFIX/bin
 install -v -m 0755 train/build-icm train/build-icm-noframe train/build1 train/build2 train/erfapp $PREFIX/share/glimmerhmm/train
 install -v -m 0755 train/falsecomp train/findsites train/karlin train/score train/score2 train/scoreATG $PREFIX/share/glimmerhmm/train
 install -v -m 0755 train/scoreATG2 train/scoreSTOP train/scoreSTOP2 train/splicescore $PREFIX/share/glimmerhmm/train
@@ -47,3 +59,5 @@ cp -f train/*.pm $PREFIX/share/glimmerhmm/train/
 
 # copy the training data
 cp -Rf trained_dir $PREFIX/share/glimmerhmm/
+
+make -C train clean

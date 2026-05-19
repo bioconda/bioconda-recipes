@@ -1,10 +1,16 @@
 #!/bin/bash
 
-make \
-    CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS} -std=c++11" \
-    CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
-    USER_WARNINGS='-Wno-strict-overflow'
- 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
 mkdir -p "${PREFIX}/"{lib,include}
-cp libStatGen*.a "${PREFIX}/lib/"
-cp include/* "${PREFIX}/include/"
+
+make CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS} -std=c++14" \
+    CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+    USER_WARNINGS='-Wno-strict-overflow' \
+    -j"${CPU_COUNT}"
+ 
+cp libStatGen*.a "${PREFIX}/lib"
+cp include/* "${PREFIX}/include"

@@ -1,26 +1,39 @@
-{% set version = "3.1.0" %}
+{% set version = "3.2.1" %}
 
 package:
   name: "python-intervaltree"
   version: {{ version }}
+
 source:
-  url: https://files.pythonhosted.org/packages/50/fb/396d568039d21344639db96d940d40eb62befe704ef849b27949ded5c3bb/intervaltree-3.1.0.tar.gz
-  sha256: 902b1b88936918f9b2a19e0e5eb7ccb430ae45cde4f39ea4b36932920d33952d
+  url: https://pypi.org/packages/source/i/intervaltree/intervaltree-{{ version }}.tar.gz
+  sha256: f3f7e8baeb7dd75b9f7a6d33cf3ec10025984a8e66e3016d537e52130c73cfe2
+
 build:
   number: 0
   noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-cache-dir --no-build-isolation -vvv
+  run_exports:
+    - {{ pin_subpackage("python-intervaltree", max_pin="x") }}
+
 requirements:
   host:
-    - python
-    - setuptools
+    - python >=3.5
+    - hatchling
+    - uv-dynamic-versioning
+    - pip
   run:
-    - python
+    - python >=3.5
     - python-sortedcontainers
+
 test:
   imports:
     - intervaltree
+
 about:
-  home: https://pypi.org/project/intervaltree/#description
-  dev_uri: https://github.com/chaimleib/intervaltree
-  license: Apache
-  summary: "Faster than intervaltree_bio"
+  home: "https://github.com/chaimleib/intervaltree"
+  dev_url: "https://github.com/chaimleib/intervaltree"
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: "LICENSE.txt"
+  summary: "Faster than intervaltree_bio; editable interval tree data structure"
+  doc_url: "https://github.com/chaimleib/intervaltree/blob/{{ version }}/README.md"

@@ -1,0 +1,50 @@
+{% set name = "bgen-cpp" %}
+{% set version = "1.1.7" %}
+{% set sha256 = "69703c3f5d6d8c22bd933d2550caf4496f9c8b9876299b162e0b9a2ab2cfa605" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  # bgen is distributed via a fossil repo, so I created a git mirror by importing fossil's history
+  # (the repo hasn't been updated for a few years)
+  url: https://github.com/nebfield/bgen-git-mirror/archive/refs/tags/v{{version}}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('bgen-cpp', max_pin="x") }}
+  # clang builds fail on osx x86_64 which I can't reproduce
+  skip: True  # [osx and x86_64]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+
+test:
+  commands:
+    - bgenix -help
+    - cat-bgen -help
+    - edit-bgen -help
+
+about:
+  home: https://enkre.net/cgi-bin/code/bgen/
+  license: Boost Software License
+  summary: 'Reference implementation of the BGEN format, written in C++'
+  description: |
+    Reference implementation of the BGEN format, written in C++.
+    The library can be used as the basis for BGEN support
+    in other software, or as a reference for developers
+    writing their own implementations of the BGEN format.
+    Includes applications for working with BGEN files: bgenix,
+    cat-bgen, and edit-bgen.
+
+extra:
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64

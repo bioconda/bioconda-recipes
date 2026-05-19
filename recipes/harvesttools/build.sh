@@ -2,5 +2,4 @@
 
 mkdir -p "$PREFIX/bin"
 
-cp harvesttools $PREFIX/bin/
-
+install -v -m 0755 harvesttools "$PREFIX/bin"

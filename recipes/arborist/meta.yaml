@@ -1,0 +1,49 @@
+{% set name = "Arborist" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/VanLoo-lab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 9072b16e8a738b6a944adbc8181ef546e1df5b150af4830d308f4c393b2261c3
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('arborist', max_pin='x.x') }} 
+  script:
+    - "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+    - setuptools >=42
+  run:
+    - python >=3.7
+    - numpy >=1.26
+    - scipy >=1.7
+    - pandas >=1.3,<3.0
+    - networkx >=3.6
+    - pygraphviz 
+    - numba >=0.61,<0.62
+ 
+test:
+  commands:
+    - arborist -h 
+    - python -c "from arborist import arborist"
+    - python -c "from arborist import read_trees"
+  
+
+about:
+  home: https://github.com/VanLoo-lab/Arborist
+  license: BSD-3-Clause
+  license_file: LICENSE
+  summary: "Arborist is a tool to rank SNV phylogenies inferred from bulk DNA sequencing via scDNA-seq data"
+
+extra:
+  maintainers:
+    - lweber21

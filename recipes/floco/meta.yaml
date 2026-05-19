@@ -1,0 +1,50 @@
+{% set name = "floco" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/hugocarmaga/floco/archive/v{{ version }}.tar.gz
+  sha256: 907bff0d2e394fb3efe8fe21a0aed106faa2d7366a516d36b935b587e44b126b
+
+build:
+  entry_points:
+    - floco = floco.floco:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("floco", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - hatchling
+    - pip
+  run:
+    - python >=3.10
+    - numpy >=2.3.2
+    - scikit-learn >=1.7.1
+    - scipy >=1.16.1
+
+test:
+  imports:
+    - floco
+  commands:
+    - pip check
+    - floco --help
+  requires:
+    - pip
+
+about:
+  summary: "Sequence-to-graph alignment based copy number calling using a network flow formulation"
+  home: "https://github.com/hugocarmaga/floco"
+  license: "MIT"
+  license_file: "LICENSE.md"
+
+extra:
+  recipe-maintainers:
+    - hugocarmaga
+    - tprodanov

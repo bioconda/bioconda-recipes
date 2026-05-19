@@ -1,10 +1,10 @@
-{% set genepopS_version = "4.8.2" %}
-{% set r_genepop_version = "1.2.2" %}
-{% set sha256 = "d8ca49a9c11e267305a85a97a8b2d6ada39d814b474a4d58d2c54edf66fb75e9" %}
+{% set genepopS_version = "4.8.4" %}
+{% set r_genepop_version = "1.2.11" %}
+{% set sha256 = "cb452e66e176a0da91073d370c0f76f4227de0543a7bb2fc27ddfcb0054042e0" %}
 
 package:
   name: genepop
-  version: "{{ genepopS_version }}"
+  version: {{ genepopS_version }}
 # After talking with the author, we decided that, for existing genepop
 # versions, we would take the out from the exinsting R packages.
 # So, the R package is 1.2.2 but Genepop is 4.8.2. People do not really know
@@ -14,31 +14,33 @@ package:
 # All this kerfufle is just to make sure we are able to maintain exact
 # versions (reproducibility and all).
 
-build:
-  number: 1
-  run_exports:
-    - {{ pin_subpackage("genepop", max_pin="x") }}
-
 source:
   url: https://github.com/cran/genepop/archive/refs/tags/{{ r_genepop_version }}.tar.gz
   sha256: {{ sha256 }}
 
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('genepop', max_pin="x") }}
+
 requirements:
   build:
     - {{ compiler('cxx') }}
-
-about:
-  home: https://f-rousset.r-universe.dev/genepop
-  license: CeCILL-2
-  summary: Population Genetic Data Analysis package.
-  dev_url: https://github.com/cran/genepop
-  doc_url: https://f-rousset.r-universe.dev/genepop
+    - pkg-config
 
 test:
   commands:
     # Check for existence and exec bit. The program is interactive and it is hard to exit from it
     - test -x ${PREFIX}/bin/Genepop
 
+about:
+  home: "https://f-rousset.r-universe.dev/genepop"
+  license: "CeCILL-2"
+  summary: "Population Genetic Data Analysis package."
+  dev_url: "https://github.com/cran/genepop"
+  doc_url: "https://f-rousset.r-universe.dev/genepop"
+
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64

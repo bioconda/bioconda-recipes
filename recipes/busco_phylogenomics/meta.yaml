@@ -1,5 +1,5 @@
 {% set name = "busco_phylogenomics" %}
-{% set version = "20240919" %}
+{% set version = "20260305" %}
 
 package:
   name: {{ name|lower }}
@@ -7,15 +7,13 @@ package:
 
 source:
   url: https://github.com/jamiemcg/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 989cfb137cc06e0014daa4475e9b6bd070bd3ea77baed8fd6f26562ee84b9f5b
+  sha256: 3ea85c261b8d564f3eefd66e7f23fcc8aec4f7209472597d51f30de49ea163df
 
 build:
   number: 0
   noarch: python
   script: bash conda_build_package.sh
-  entry_points:
-    - BUSCO_phylogenomics = BUSCO_phylogenomics.BUSCO_phylogenomics:main
-    - count_buscos = BUSCO_phylogenomics.count_buscos:main
+
   run_exports:
     - {{ pin_subpackage('busco_phylogenomics', max_pin=None) }}
 
@@ -29,6 +27,9 @@ requirements:
     - iqtree
     - fasttree
     - trimal
+    - tqdm
+    - mafft
+
 test:
   commands:
     - BUSCO_phylogenomics.py -h

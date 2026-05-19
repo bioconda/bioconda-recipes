@@ -1,24 +1,25 @@
 #!/bin/bash
 
 # fix zlib error
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -I$PREFIX/include"
+export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
 
-MATAM_HOME=$PREFIX/opt/matam-$PKG_VERSION
+MATAM_HOME="$PREFIX/opt/matam-$PKG_VERSION"
 mkdir -p $MATAM_HOME/{bin,scripts}
 
 git submodule update --init --recursive -- componentsearch ovgraphbuild
 
 # componentsearch
 # use make CC=$CXX instead of make to avoid g++ not found
-cd $SRC_DIR/componentsearch && make CC=$CXX
+cd $SRC_DIR/componentsearch && make CC="${CXX}" -j"${CPU_COUNT}"
 COMPONENT_SEARCH=$MATAM_HOME/componentsearch
 mkdir $COMPONENT_SEARCH
 cp $SRC_DIR/componentsearch/componentsearch $COMPONENT_SEARCH
 
 # ovgraphbuild
 OVGRAPHBUILD_BUILD_DIR=$SRC_DIR/ovgraphbuild/build
-mkdir $OVGRAPHBUILD_BUILD_DIR && cd $OVGRAPHBUILD_BUILD_DIR && cmake .. -G"CodeBlocks - Unix Makefiles" && make
+mkdir $OVGRAPHBUILD_BUILD_DIR && cd $OVGRAPHBUILD_BUILD_DIR && cmake .. -G"CodeBlocks - Unix Makefiles" && make -j"${CPU_COUNT}"
 OVGRAPHBUILD=$MATAM_HOME/ovgraphbuild/bin
 mkdir -p $OVGRAPHBUILD
 cp $SRC_DIR/ovgraphbuild/bin/ovgraphbuild $OVGRAPHBUILD
@@ -40,4 +41,3 @@ ln -s $MATAM_HOME/scripts/matam_* $MATAM_HOME/bin/
 mkdir -p $PREFIX/bin
 ln -s $MATAM_HOME/index_default_ssu_rrna_db.py $PREFIX/bin/
 ln -s $MATAM_HOME/bin/matam_* $PREFIX/bin/
-
