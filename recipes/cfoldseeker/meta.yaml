@@ -1,0 +1,53 @@
+{% set name = "cfoldseeker" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: d5a395ca1615573919af920011a1e6bbd877103296e8739fdc494f7f8229bf37
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - cfoldseeker = cfoldseeker.main:main
+    - cfoldseeker-cds = cfoldseeker.build_cds_db:main
+  script: "{{ PYTHON }} -m pip install . -vvv --no-build-isolation --no-cache-dir"
+  run_exports:
+    - {{ pin_subpackage('cfoldseeker', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - setuptools
+  run:
+    - python >=3.12
+    - biopython
+    - cblaster >=1.4.0
+    - polars >=1.0.0
+    - foldseek
+    - networkx
+    - requests
+    - tqdm
+    - kegg_pull
+
+test:
+  commands:
+    - cfoldseeker -h
+
+about:
+  home: "https://github.com/LucoDevro/CAGEcleaner"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Tool to find gene clusters using protein structure similarity"
+  doc_url: "https://github.com/LucoDevro/CAGEcleaner/wiki"
+  dev_url: "https://github.com/LucoDevro/CAGEcleaner"
+
+extra:
+  recipe-maintainers:
+    - LucoDevro
