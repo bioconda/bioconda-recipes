@@ -1,0 +1,44 @@
+{% set name = "plast" %}
+{% set version = "2.3.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/PLAST-software/plast-library/releases/download/v{{ version }}/plast_source_v{{ version }}.tar.gz
+  sha256: "39c07cfaf1f49e1e071cdb4670d26129e845a8b13b3d1f60f46b383e8ad5988b"
+
+build:
+  number: 0
+  skip: true # [osx]
+  run_exports:
+    - {{ pin_subpackage("plast", max_pin="x.x") }}
+
+requirements:
+  build:
+    - cmake
+    - make
+    - openjdk
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - openjdk
+
+about:
+  home: https://github.com/PLAST-software/plast-library
+  license: AGPL-3.0-or-later
+  license_file: LICENSE
+  summary: "PLAST: Parallel Local Alignment Search Tool"
+  description: |
+    PLAST is a tool for high-performance local alignment search (DNA/protein), 
+    parallellized and optimized to exploit SIMD / multithreading architectures.
+
+extra:
+  recipe-maintainers:
+    - nylander
+
+test:
+  commands:
+    - plast -h
+

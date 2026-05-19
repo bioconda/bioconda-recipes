@@ -1,8 +1,8 @@
 {% set name = "tirmite" %}
-{% set version = "1.2.0" %}
+{% set version = "1.4.0" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "10c7fb7724d1c9841a363b5db7121a88377284a1be4792bc498a4a31e6e6779e" %}
+{% set hash_value = "62b135fa8b42f8a45cd649018b941a68e7437663266d59ce62b263cb1b2c6ec9" %}
 
 package:
   name: '{{ name|lower }}'
@@ -16,36 +16,45 @@ build:
   noarch: python
   number: 0
   entry_points:
-    - tirmite=tirmite.cmd_tirmite:main
+    - tirmite=tirmite.cli.cli:main
   script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage('tirmite', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.8
+    - python >=3.9
     - pip
     - hatchling
     - hatch-vcs
   run:
-    - python >=3.8
-    - pandas >=0.23.4
     - biopython >=1.70
-    - pymummer >=0.10.3
+    - blast >=2.17.0
+    - mafft
+    - pandas >=0.23.4
+    - pyfaidx
+    - pyhmmer
+    - python >=3.9
+    - rich
 
 test:
   imports:
     - tirmite
   commands:
     - tirmite --help
+    - tirmite --version
+    - tirmite seed --help
+    - tirmite search --help
+    - tirmite pair --help
+    - tirmite validate --help
 
 about:
   home: https://github.com/Adamtaranto/TIRmite
   dev_url: https://github.com/Adamtaranto/TIRmite
-  license: MIT
-  license_family: MIT
-  summary: "Map TIR-pHMM models to genomic sequences for annotation of MITES and complete DNA-Transposons."
-  description: "Build profile Hidden Markov Models for Terminal Inverted repeat families (TIR-pHMMs) and map to genomic sequences for annotation of MITES and complete DNA-Transposons with variable internal sequence composition."
+  license: GPL-3
+  license_family: GPL-3
+  summary: "Annotation of cryptic transposon variants using Hidden Markov Models to detect conserved terminal features."
+  description: "Annotation of cryptic transposon variants using Hidden Markov Models to detect conserved terminal features."
 
 extra:
   recipe-maintainers:

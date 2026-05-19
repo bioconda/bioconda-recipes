@@ -1,5 +1,5 @@
 {% set name = "PhyClone" %}
-{% set version = "0.7.1" %}
+{% set version = "0.8.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,13 +7,13 @@ package:
 
 source:
   url: https://github.com/Roth-Lab/PhyClone/archive/{{ version }}.tar.gz
-  sha256: f10eece93ac115fbfa5873c4d8f4f0b513326e801c6a963faf8a788fcee0db2a
+  sha256: 8b779dd7a7a800f59ea6850c41a343b80d8e4f56733cd255d926fe3d8c3eb36d
 
 build:
   entry_points:
     - phyclone = phyclone.cli:main
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation --no-cache-dir
   number: 0
   run_exports:
     - {{ pin_subpackage('phyclone', max_pin="x.x") }}
@@ -25,25 +25,26 @@ requirements:
     - setuptools-rust
     - pip
   run:
-    - llvmdev
     - python >=3.12
     - numba >=0.61.2
-    - numpy >=1.26.4
+    - numpy >=2.0.0
     - scipy
-    - click >=8.0
+    - click >=8.3
     - python-xxhash >=3.3.0
-    - networkx
+    - networkx >=3.6.1
     - rustworkx >=0.15.1
     - pandas >=2.2.2
+    - h5py >=3.15
 
 test:
   imports:
     - phyclone
   commands:
-    - pip check
     - phyclone --help
-  requires:
-    - pip
+    - phyclone run --help
+    - phyclone map --help
+    - phyclone consensus --help
+    - phyclone topology-report --help
 
 about:
   summary: Accurate Bayesian reconstruction of cancer phylogenies from bulk sequencing.
