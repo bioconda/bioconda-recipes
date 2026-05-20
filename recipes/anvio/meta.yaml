@@ -1,52 +1,111 @@
-{% set version = "7" %}
+{% set version = "9" %}
 
 package:
   name: anvio
   version: {{ version }}
 
 build:
+  number: 0
   noarch: generic
-  number: 1
+  run_exports:
+    - {{ pin_subpackage('anvio', max_pin="x") }}
 
 requirements:
   run:
+    # Pin exactly to the matching anvio-minimal build
     - anvio-minimal =={{ version }}
+    - python ==3.10.*
+
+    # SQLite floor required by anvi'o 9
+    - sqlite >=3.46
+
+    # Gene callers / ORF prediction
     - prodigal
+
+    # Assembly
+    - idba
+    - megahit
+    - spades
+
+    # Read mapping
+    - bowtie2
+    - bwa
+    - samtools >=1.9
+
+    # MSA / clustering
     - mcl
-    - muscle
+    - muscle ==3.8.1551
+    - famsa
+    - trimal
+
+    # HMMs / homology search
     - hmmer
     - diamond
     - blast
-    - megahit
-    - spades
-    - bowtie2
-    - bwa
-    - samtools
-    - centrifuge
-    - trimal
+
+    # Phylogenetics / tRNAs
     - iqtree
-    - fastani
-    - trnascan-se
-    - r-base
-    - r-stringi
-    - r-tidyverse
-    - r-magrittr
-    - r-optparse
-    - bioconductor-qvalue
     - fasttree
+    - trnascan-se
+
+    # Misc bioinformatics
+    - vmatch
+    - meme
+
+    # Plotting / rendering
+    - graphviz
+    - ghostscript
+
+    # JS runtime used by the interactive interface helpers
+    - nodejs ==20.12.2
+
+    # Numerics (already pulled in by anvio-minimal, kept explicit
+    # so the metapackage is self-describing)
+    - numba
+    - llvmlite
+
+    # R stack used by a handful of anvi'o helper scripts
+    - r-base
+    - r-tidyverse
+    - r-optparse
+    - r-stringi
+    - r-magrittr
+    - bioconductor-qvalue
 
 test:
   commands:
     - anvi-self-test --help
+    - anvi-pan-genome --help
+    - prodigal -h 2>&1 | grep -q "Prodigal"
+    - hmmscan -h | grep -q HMMER
+    - diamond --version
+    - mcl --version
+    - muscle -version 2>&1 | grep -q "MUSCLE"
+    - samtools --version | head -n 1
+    - bowtie2 --version | head -n 1
+    - bwa 2>&1 | grep -q "Version"
+    - megahit --version
+    - spades.py --version
+    - iqtree --version | head -n 1
+    - FastTree 2>&1 | head -n 1
+    - tRNAscan-SE --help 2>&1 | head -n 1
+    - trimal --version
+    - famsa --help 2>&1 | head -n 1
+    - dot -V 2>&1
+    - gs --version
+    - node --version
+    - R --version | head -n 1
 
 about:
-  home: http://merenlab.org/software/anvio/
+  home: https://merenlab.org/software/anvio/
   license: GPL-3.0-or-later
   license_family: GPL3
-  summary: "A platform for integrated multi-omics"
-  dev_url:  https://github.com/merenlab/anvio
+  license_file: LICENSE.txt
+  summary: "Full anvi'o install: anvio-minimal plus the recommended external tools"
+  dev_url: https://github.com/merenlab/anvio
+  doc_url: https://anvio.org/learn/
 
 extra:
-  container:
-    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
-    extended-base: True
+  identifiers:
+    - biotools:anvio
+    - doi:10.1038/s41564-020-00834-3
