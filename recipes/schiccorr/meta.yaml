@@ -1,0 +1,49 @@
+{% set name = "scHicCorr" %}
+{% set version = "0.0.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/schiccorr-{{ version }}.tar.gz
+  sha256: c626dbadf44a58ab23e8c62331741f385a087b2d56bb04f6933ba0cf6be4fa7e
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("schiccorr", max_pin="x.x.x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - schiccorr = schiccorr.main:main
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=61.0
+  run:
+    - python >=3.10
+    - loguru >=0.7
+    - cooler >=0.10
+    - numba >=0.62
+    - numpy >=2.0
+    - pandas >=2.0
+    - pyarrow >=21.0
+
+test:
+  imports:
+    - schiccorr
+  commands:
+    - schiccorr --help
+
+about:
+  home: https://github.com/srinzema/scHicCorr
+  license: MIT
+  license_file: LICENSE
+  summary: "Correlate single-cell Hi-C data."
+
+extra:
+  recipe-maintainers:
+    - srinzema
