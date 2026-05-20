@@ -1,0 +1,72 @@
+{% set name = "maketube" %}
+{% set version = "4.2.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: "https://github.com/adrienlemeur/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: 33da519293f684e74cb997a6f512c2b9f8fa4f007f53254224087d25b100ef4a
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage("maketube", max_pin="x.x") }}
+
+channels:
+  - conda-forge
+  - bioconda
+
+requirements:
+  host:
+    - r-base
+    - python
+    - zlib
+    - liblzma-devel
+    - curl
+    - r-R6
+    - r-Rcpp
+    - r-ape
+    - r-optparse
+    - r-dplyr
+    - r-seqinr
+    - bioconductor-biostrings
+    - bioconductor-rhtslib
+  run:
+    - r-base
+    - python
+    - zlib
+    - liblzma-devel
+    - curl
+    - r-R6
+    - r-Rcpp
+    - r-ape
+    - r-optparse
+    - r-dplyr
+    - r-seqinr
+    - bioconductor-biostrings
+    - bioconductor-rhtslib
+    - cyvcf2
+
+
+test:
+  commands:
+    # jackalope need GLIBC 2.23 so fail
+    #- $R -e "library('jackalope')"
+    #- maketube.R -h
+    #- vcf2metrics.py -h
+
+about:
+  home: https://github.com/adrienlemeur/maketube
+  license: AGPL-3.0-or-later
+  licence_family: GNU 3.0+
+  license_file: LICENSE
+  summary: maketube creates in silico M. tuberculosis genomes with structural variant for benchmark 
+
+extra:
+  recipe-maintainers:
+    - adrienlemeur
+  skip-lints:
+    - missing_tests
